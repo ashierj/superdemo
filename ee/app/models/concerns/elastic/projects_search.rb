@@ -38,7 +38,7 @@ module Elastic
         return if pending_delete?
 
         updated_attributes = updated_attributes.map(&:to_sym)
-        if (updated_attributes & BLOB_AND_COMMIT_TRACKED_FIELDS).any?
+        if (updated_attributes & BLOB_AND_COMMIT_TRACKED_FIELDS).any? && !::Gitlab::Geo.secondary?
           ElasticCommitIndexerWorker.perform_async(id, false, { force: true })
         end
 

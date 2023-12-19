@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe ProjectFeature, feature_category: :groups_and_projects do
+  include EE::GeoHelpers
+
   let_it_be_with_reload(:project) { create(:project, :public) }
   let_it_be_with_reload(:user) { create(:user) }
 
@@ -31,21 +33,26 @@ RSpec.describe ProjectFeature, feature_category: :groups_and_projects do
     using RSpec::Parameterized::TableSyntax
 
     context 'for repository' do
-      where(:maintaining_elasticsearch, :maintaining_indexed_associations, :worker_expected) do
-        true  | true  | true
-        false | true  | false
-        true  | false | false
-        false | false | false
+      where(:maintaining_elasticsearch, :maintaining_indexed_associations, :geo, :worker_expected) do
+        true  | true  | :disabled   | true
+        true  | true  | :primary    | true
+        true  | true  | :secondary  | false
+
+        false | true  | :disabled   | false
+        true  | false | :disabled   | false
+        false | false | :disabled   | false
       end
 
       with_them do
         before do
+          public_send("stub_#{geo}_node") unless geo == :disabled
+
           allow(project).to receive(:maintaining_elasticsearch?).and_return(maintaining_elasticsearch)
           allow(project).to receive(:maintaining_indexed_associations?).and_return(maintaining_indexed_associations)
         end
 
         context 'when updating repository_access_level' do
-          it 'enqueues a worker to index commit data' do
+          it 'initiates commits reindexing when expected' do
             if worker_expected
               expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(project.id, false, { force: true })
             else

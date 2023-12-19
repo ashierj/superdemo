@@ -15,6 +15,8 @@ module Elastic
     end
 
     def index_commits_and_blobs
+      return if ::Gitlab::Geo.secondary?
+
       ::ElasticCommitIndexerWorker.perform_async(project.id)
     end
   end

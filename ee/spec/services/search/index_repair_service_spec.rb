@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe ::Search::IndexRepairService, feature_category: :global_search do
+  include EE::GeoHelpers
+
   let(:logger) { instance_double(::Gitlab::Elasticsearch::Logger) }
   let(:client) { instance_double(::Gitlab::Search::Client) }
 
@@ -40,21 +42,23 @@ RSpec.describe ::Search::IndexRepairService, feature_category: :global_search do
     end
   end
 
-  shared_examples 'a service that does no repair work for the blobs index' do
+  shared_examples 'a service that does no repair work for the blobs index' do |logging_expected: true|
     it 'does not queue blobs for indexing' do
-      expected_hash = {
-        message: 'blob documents missing from index for project',
-        class: described_class.to_s,
-        namespace_id: project.namespace_id,
-        root_namespace_id: project.root_namespace.id,
-        project_id: project.id,
-        project_last_repository_updated_at: be_within(0.05.seconds).of(project.last_repository_updated_at),
-        index_status_last_commit: index_status&.last_commit,
-        index_status_indexed_at: be_within(0.05.seconds).of(project.index_status&.indexed_at),
-        repository_size: 100
-      }.stringify_keys
+      if logging_expected
+        expected_hash = {
+          message: 'blob documents missing from index for project',
+          class: described_class.to_s,
+          namespace_id: project.namespace_id,
+          root_namespace_id: project.root_namespace.id,
+          project_id: project.id,
+          project_last_repository_updated_at: be_within(0.05.seconds).of(project.last_repository_updated_at),
+          index_status_last_commit: index_status&.last_commit,
+          index_status_indexed_at: be_within(0.05.seconds).of(project.index_status&.indexed_at),
+          repository_size: 100
+        }.stringify_keys
 
-      expect(logger).to receive(:warn).with(a_hash_including(expected_hash)).once
+        expect(logger).to receive(:warn).with(a_hash_including(expected_hash)).once
+      end
 
       expect(ElasticCommitIndexerWorker).not_to receive(:perform_in)
 
@@ -145,18 +149,26 @@ RSpec.describe ::Search::IndexRepairService, feature_category: :global_search do
         end
 
         it_behaves_like 'a service that repairs the blobs index' do
-          let(:expected_hash) do
-            {
-              message: 'blob documents missing from index for project',
-              class: described_class.to_s,
-              namespace_id: project.namespace_id,
-              root_namespace_id: project.root_namespace.id,
-              project_id: project.id,
-              project_last_repository_updated_at: be_within(0.05.seconds).of(project.last_repository_updated_at),
-              index_status_last_commit: nil,
-              index_status_indexed_at: nil,
-              repository_size: 100
-            }.stringify_keys
+          let(:expected_hash) { blobs_missing_log_hash }
+        end
+
+        context 'when Geo is enabled' do
+          context 'on primary node' do
+            before do
+              stub_primary_node
+            end
+
+            it_behaves_like 'a service that repairs the blobs index' do
+              let(:expected_hash) { blobs_missing_log_hash }
+            end
+          end
+
+          context 'on secondary node' do
+            before do
+              stub_secondary_node
+            end
+
+            it_behaves_like 'a service that does no repair work for the blobs index', logging_expected: false
           end
         end
       end
@@ -164,24 +176,39 @@ RSpec.describe ::Search::IndexRepairService, feature_category: :global_search do
       context 'when index_status exists' do
         let_it_be_with_reload(:index_status) { create(:index_status, project: project) }
 
+        let(:expected_blobs_missing_hash) do
+          blobs_missing_log_hash(
+            index_status_last_commit: 'FAKE_SHA',
+            index_status_indexed_at: index_status.indexed_at
+          )
+        end
+
         context 'when index_status last_commit does not match last project commit' do
           before do
             index_status.update!(last_commit: 'FAKE_SHA')
           end
 
           it_behaves_like 'a service that repairs the blobs index' do
-            let(:expected_hash) do
-              {
-                message: 'blob documents missing from index for project',
-                class: described_class.to_s,
-                namespace_id: project.namespace_id,
-                root_namespace_id: project.root_namespace.id,
-                project_id: project.id,
-                project_last_repository_updated_at: be_within(0.05.seconds).of(project.last_repository_updated_at),
-                index_status_last_commit: 'FAKE_SHA',
-                index_status_indexed_at: index_status.indexed_at,
-                repository_size: 100
-              }.stringify_keys
+            let(:expected_hash) { expected_blobs_missing_hash }
+          end
+
+          context 'when Geo is enabled' do
+            context 'on primary node' do
+              before do
+                stub_primary_node
+              end
+
+              it_behaves_like 'a service that repairs the blobs index' do
+                let(:expected_hash) { expected_blobs_missing_hash }
+              end
+            end
+
+            context 'on secondary node' do
+              before do
+                stub_secondary_node
+              end
+
+              it_behaves_like 'a service that does no repair work for the blobs index', logging_expected: false
             end
           end
         end
@@ -197,6 +224,20 @@ RSpec.describe ::Search::IndexRepairService, feature_category: :global_search do
 
           it_behaves_like 'a service that does no repair work for the blobs index'
         end
+      end
+
+      def blobs_missing_log_hash(index_status_last_commit: nil, index_status_indexed_at: nil)
+        {
+          message: 'blob documents missing from index for project',
+          class: described_class.to_s,
+          namespace_id: project.namespace_id,
+          root_namespace_id: project.root_namespace.id,
+          project_id: project.id,
+          project_last_repository_updated_at: be_within(0.05.seconds).of(project.last_repository_updated_at),
+          index_status_last_commit: index_status_last_commit,
+          index_status_indexed_at: index_status_indexed_at,
+          repository_size: 100
+        }.stringify_keys
       end
     end
 
