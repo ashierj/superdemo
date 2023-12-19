@@ -247,6 +247,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
       {
         namespace_id: group.id,
         namespace_name: group.name,
+        is_public_namespace: group.public?.to_s,
         full_path: group.full_path,
         seat_usage_export_path: group_seat_usage_path(group, format: :csv),
         pending_members_page_path: pending_members_group_usage_quotas_path(group),
@@ -284,6 +285,20 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     context 'when free user cap is enforced' do
       let(:enforcement_free_user_cap) { true }
       let(:expected_data) { data.merge({ enforcement_free_user_cap_enabled: 'true' }) }
+
+      it { is_expected.to eql(expected_data) }
+    end
+
+    context 'when is private namespace' do
+      let(:expected_data) { data.merge({ is_public_namespace: 'false' }) }
+
+      it { is_expected.to eql(expected_data) }
+    end
+
+    context 'when is public namespace' do
+      let_it_be(:group) { create(:group, :public) }
+
+      let(:expected_data) { data.merge({ is_public_namespace: 'true' }) }
 
       it { is_expected.to eql(expected_data) }
     end
