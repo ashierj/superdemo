@@ -2,6 +2,7 @@ import { CubejsApi, HttpTransport } from '@cubejs-client/core';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
 import csrf from '~/lib/utils/csrf';
+import { joinPaths } from '~/lib/utils/url_utility';
 import {
   EVENTS_TABLE_NAME,
   RETURNING_USERS_TABLE_NAME,
@@ -30,8 +31,13 @@ const convertToCommonChartFormat = (resultSet) => {
   }));
 };
 
-const getLinkDimensions = (key, visualizationOptions) =>
-  visualizationOptions?.links?.find(({ text, href }) => [text, href].includes(key));
+const findLinkOptions = (key, visualizationOptions) => {
+  const links = visualizationOptions?.links;
+  if (!links) return null;
+
+  const normalizedLinks = links.map(({ text, href }) => ({ text, href: [href].flat() }));
+  return normalizedLinks.find(({ text, href }) => [text, ...href].includes(key));
+};
 
 export const convertToTableFormat = (resultSet, _query, visualizationOptions) => {
   const columns = resultSet.tableColumns();
@@ -45,23 +51,24 @@ export const convertToTableFormat = (resultSet, _query, visualizationOptions) =>
     return Object.fromEntries(
       Object.entries(row)
         .map(([key, value]) => {
-          const linkDimensions = getLinkDimensions(key, visualizationOptions);
+          const linkOptions = findLinkOptions(key, visualizationOptions);
 
-          switch (key) {
-            case linkDimensions?.href:
-              // Skipped because the href gets rendered as part of the link text.
-              return null;
-            case linkDimensions?.text:
-              return [
-                columnTitles[key],
-                {
-                  text: value,
-                  href: row[linkDimensions.href],
-                },
-              ];
-            default:
-              return [columnTitles[key], value];
+          if (key === linkOptions?.text) {
+            return [
+              columnTitles[key],
+              {
+                text: value,
+                href: joinPaths(...linkOptions.href.map((hrefPart) => row[hrefPart])),
+              },
+            ];
           }
+
+          if (linkOptions?.href.includes(key)) {
+            // Skipped because the href gets rendered as part of the link text column.
+            return null;
+          }
+
+          return [columnTitles[key], value];
         })
         .filter(Boolean),
     );

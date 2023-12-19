@@ -81,7 +81,7 @@ describe('Cube Analytics Data Source', () => {
       });
 
       describe('data tables', () => {
-        it('returns the expected data format for', async () => {
+        it('returns the expected data format', async () => {
           const result = await fetch({ projectId, visualizationType: 'DataTable', query });
 
           expect(result[0]).toMatchObject({
@@ -91,32 +91,61 @@ describe('Cube Analytics Data Source', () => {
           });
         });
 
-        it('returns the expected data format when links config is defined', async () => {
-          mockLoad.mockImplementationOnce(() => mockTableWithLinksResultSet);
+        describe('with links config', () => {
+          beforeEach(() => mockLoad.mockImplementationOnce(() => mockTableWithLinksResultSet));
 
-          const result = await fetch({
-            projectId,
-            visualizationType: 'DataTable',
-            query: {
-              measures: ['TrackedEvents.pageViewsCount'],
-              dimensions: ['TrackedEvents.docPath', 'TrackedEvents.url'],
-            },
-            visualizationOptions: {
-              links: [
-                {
-                  text: 'TrackedEvents.docPath',
-                  href: 'TrackedEvents.url',
-                },
-              ],
-            },
+          it('returns the expected data format when href is a single dimension', async () => {
+            const result = await fetch({
+              projectId,
+              visualizationType: 'DataTable',
+              query: {
+                measures: ['TrackedEvents.pageViewsCount'],
+                dimensions: ['TrackedEvents.docPath', 'TrackedEvents.url'],
+              },
+              visualizationOptions: {
+                links: [
+                  {
+                    text: 'TrackedEvents.docPath',
+                    href: 'TrackedEvents.url',
+                  },
+                ],
+              },
+            });
+
+            expect(result[0]).toMatchObject({
+              page_views_count: '1',
+              doc_path: {
+                text: '/foo',
+                href: 'https://example.com/foo',
+              },
+            });
           });
 
-          expect(result[0]).toMatchObject({
-            page_views_count: '1',
-            doc_path: {
-              text: '/foo',
-              href: 'https://example.com/foo',
-            },
+          it('returns the expected data format when href is an array of dimensions', async () => {
+            const result = await fetch({
+              projectId,
+              visualizationType: 'DataTable',
+              query: {
+                measures: ['TrackedEvents.pageViewsCount'],
+                dimensions: ['TrackedEvents.docPath', 'TrackedEvents.url'],
+              },
+              visualizationOptions: {
+                links: [
+                  {
+                    text: 'TrackedEvents.docPath',
+                    href: ['TrackedEvents.url', 'TrackedEvents.docPath'],
+                  },
+                ],
+              },
+            });
+
+            expect(result[0]).toMatchObject({
+              page_views_count: '1',
+              doc_path: {
+                text: '/foo',
+                href: 'https://example.com/foo/foo',
+              },
+            });
           });
         });
       });
