@@ -1,7 +1,7 @@
 ---
 name: geo_skip_download_if_exists
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96935
-rollout_issue_url:
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/435788
 milestone: '16.8'
 type: development
 group: group::geo
