@@ -1,0 +1,10 @@
+mutation updateDependencyProxyPackagesSettings(
+  $input: UpdateDependencyProxyPackagesSettingsInput!
+) {
+  updateDependencyProxyPackagesSettings(input: $input) {
+    dependencyProxyPackagesSetting {
+      enabled
+    }
+    errors
+  }
+}
