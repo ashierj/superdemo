@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Elastic::ProjectsSearch, feature_category: :global_search do
+  include EE::GeoHelpers
+
   subject do
     Class.new do
       include Elastic::ProjectsSearch
@@ -40,21 +42,37 @@ RSpec.describe Elastic::ProjectsSearch, feature_category: :global_search do
   describe '#maintain_elasticsearch_update' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:attribute_updated, :indexing_expected) do
-      :archived         | true
-      :name             | false
-      :visibility_level | true
+    where(:attribute_updated, :geo, :commit_indexing_expected, :wiki_indexing_expected) do
+      :archived         | :disabled  | true  | true
+      :name             | :disabled  | false | false
+      :visibility_level | :disabled  | true  | true
+
+      :archived         | :primary   | true  | true
+      :name             | :primary   | false | false
+      :visibility_level | :primary   | true  | true
+
+      :archived         | :secondary | false | true
+      :name             | :secondary | false | false
+      :visibility_level | :secondary | false | true
     end
 
     with_them do
+      before do
+        public_send("stub_#{geo}_node") unless geo == :disabled
+      end
+
       it 'initiates repository reindexing when attributes change for when indexing is expected' do
         expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once.and_return(true)
 
-        if indexing_expected
+        if commit_indexing_expected
           expect(::ElasticCommitIndexerWorker).to receive(:perform_async).and_return(true)
-          expect(::ElasticWikiIndexerWorker).to receive(:perform_async).and_return(true)
         else
           expect(::ElasticCommitIndexerWorker).not_to receive(:perform_async)
+        end
+
+        if wiki_indexing_expected
+          expect(::ElasticWikiIndexerWorker).to receive(:perform_async).and_return(true)
+        else
           expect(::ElasticWikiIndexerWorker).not_to receive(:perform_async)
         end
 

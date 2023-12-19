@@ -84,6 +84,7 @@ module Search
     end
 
     def should_repair_index_for_blobs?
+      return false if ::Gitlab::Geo.secondary?
       return false unless blobs_missing?
       return true if project.index_status.blank?
 

@@ -3,22 +3,41 @@
 require 'spec_helper'
 
 RSpec.describe Elastic::ProcessInitialBookkeepingService, feature_category: :global_search do
+  include EE::GeoHelpers
+
   let_it_be(:project) { create(:project) }
   let_it_be(:issue) { create(:issue) }
 
   describe '.backfill_projects!' do
     context 'when project is maintaining indexed associations' do
-      before do
-        allow(project).to receive(:maintaining_indexed_associations?).and_return(true)
+      using RSpec::Parameterized::TableSyntax
+
+      where(:geo, :commit_indexing_expected) do
+        :disabled  | true
+        :primary   | true
+        :secondary | false
       end
 
-      it 'indexes itself and calls ElasticCommitIndexerWorker and, ElasticWikiIndexerWorker' do
-        expect(described_class).to receive(:track!).with(project)
-        expect(described_class).to receive(:maintain_indexed_associations).with(project, Elastic::ProcessInitialBookkeepingService::INDEXED_PROJECT_ASSOCIATIONS)
-        expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(project.id, false, { force: true })
-        expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(project.id, project.class.name, { force: true })
+      with_them do
+        before do
+          public_send("stub_#{geo}_node") unless geo == :disabled
 
-        described_class.backfill_projects!(project)
+          allow(project).to receive(:maintaining_indexed_associations?).and_return(true)
+        end
+
+        it 'indexes itself and initiates wiki reindexing, commits reindexing when indexing is excepted' do
+          expect(described_class).to receive(:track!).with(project)
+          expect(described_class).to receive(:maintain_indexed_associations).with(project, Elastic::ProcessInitialBookkeepingService::INDEXED_PROJECT_ASSOCIATIONS)
+          expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(project.id, project.class.name, { force: true })
+
+          if commit_indexing_expected
+            expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(project.id, false, { force: true })
+          else
+            expect(ElasticCommitIndexerWorker).not_to receive(:perform_async)
+          end
+
+          described_class.backfill_projects!(project)
+        end
       end
     end
 

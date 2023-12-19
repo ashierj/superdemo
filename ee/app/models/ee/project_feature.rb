@@ -47,7 +47,7 @@ module EE
           ElasticAssociationIndexerWorker.perform_async(project.class.name, project_id, associations_to_update)
         end
 
-        if elasticsearch_project_blobs_need_updating?
+        if elasticsearch_project_blobs_need_updating? && !::Gitlab::Geo.secondary?
           ElasticCommitIndexerWorker.perform_async(project.id, false, { force: true })
         end
 

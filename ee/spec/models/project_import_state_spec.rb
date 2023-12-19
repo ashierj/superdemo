@@ -59,39 +59,42 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
         end
       end
 
-      context 'elasticsearch indexing disabled for this project' do
-        before do
-          expect(project).to receive(:use_elasticsearch?).and_return(false)
-        end
+      using RSpec::Parameterized::TableSyntax
 
-        it 'does not index the repository' do
-          expect(ElasticCommitIndexerWorker).not_to receive(:perform_async)
+      where(:geo, :elasticsearch_indexing_enabled, :index_status_exists, :repository_indexing_expected) do
+        :disabled  | true  | true  | true
+        :disabled  | true  | false | true
+        :disabled  | false | false | false
+        :disabled  | false | true  | false
 
-          import_state.finish
-        end
+        :primary   | true  | true  | true
+        :primary   | true  | false | true
+        :primary   | false | false | false
+        :primary   | false | true  | false
+
+        :secondary | true  | false | false
+        :secondary | true  | true  | false
+        :secondary | false | true  | false
+        :secondary | false | false | false
       end
 
-      context 'elasticsearch indexing enabled for this project' do
+      with_them do
         before do
-          expect(project).to receive(:use_elasticsearch?).and_return(true)
+          public_send("stub_#{geo}_node") unless geo == :disabled
+
+          expect(project).to receive(:use_elasticsearch?).and_return(elasticsearch_indexing_enabled)
+
+          IndexStatus.create!(project: project, indexed_at: Time.current, last_commit: 'foo') if index_status_exists
         end
 
-        context 'no index status' do
-          it 'schedules a full index of the repository' do
+        it 'schedules a full index of the repository if indexing is expected' do
+          if repository_indexing_expected
             expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(import_state.project_id)
-
-            import_state.finish
+          else
+            expect(ElasticCommitIndexerWorker).not_to receive(:perform_async)
           end
-        end
 
-        context 'with index status' do
-          let(:index_status) { IndexStatus.create!(project: project, indexed_at: Time.current, last_commit: 'foo') }
-
-          it 'schedules a full index of the repository' do
-            expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(import_state.project_id)
-
-            import_state.finish
-          end
+          import_state.finish
         end
       end
 

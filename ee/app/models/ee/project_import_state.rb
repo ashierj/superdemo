@@ -71,7 +71,7 @@ module EE
             state.geo_handle_after_import_finished
           end
 
-          if state.project.use_elasticsearch?
+          if state.project.use_elasticsearch? && !::Gitlab::Geo.secondary?
             state.run_after_commit do
               ElasticCommitIndexerWorker.perform_async(state.project_id)
             end
