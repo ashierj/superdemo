@@ -164,7 +164,7 @@ RSpec.describe Groups::AutocompleteService, feature_category: :groups_and_projec
 
         it 'returns available commands' do
           available_commands = [
-            :todo, :unsubscribe, :award, :shrug, :tableflip, :cc, :title, :close,
+            :todo, :unsubscribe, :react, :shrug, :tableflip, :cc, :title, :close,
             :child_epic, :remove_child_epic, :parent_epic, :remove_parent_epic, :confidential
           ]
 
@@ -179,7 +179,7 @@ RSpec.describe Groups::AutocompleteService, feature_category: :groups_and_projec
 
         it 'returns available commands' do
           available_commands = [
-            :todo, :unsubscribe, :award, :shrug, :tableflip, :cc, :title, :close, :confidential
+            :todo, :unsubscribe, :react, :shrug, :tableflip, :cc, :title, :close, :confidential
           ]
 
           expect(subject.commands(epic).map { |c| c[:name] }).to match_array(available_commands)
