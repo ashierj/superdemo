@@ -6,6 +6,7 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import { parseCustomFileConfiguration } from 'ee/security_orchestration/components/policy_editor/utils';
+import { toYaml } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import SectionLayout from '../../section_layout.vue';
 import { ACTION_AND_LABEL } from '../../constants';
 import {
@@ -65,10 +66,12 @@ export default {
       this.initAction?.ci_configuration_path,
     );
 
+    const yamlEditorValue = (this.initAction?.ci_configuration || '').trim();
+
     return {
       selectedProject,
       selectedType: showLinkedFile ? LINKED_EXISTING_FILE : INSERTED_CODE_BLOCK,
-      yamlEditorValue: '',
+      yamlEditorValue,
     };
   },
   computed: {
@@ -108,10 +111,16 @@ export default {
     setSelectedType(type) {
       this.selectedType = type;
       this.selectedProject = null;
+      this.yamlEditorValue = '';
       this.resetActionToDefault();
     },
     updateYaml(val) {
       this.yamlEditorValue = val;
+      const yaml = toYaml(val);
+
+      this.triggerChanged({
+        ci_configuration: yaml,
+      });
     },
     setSelectedRef(ref) {
       this.triggerChanged({

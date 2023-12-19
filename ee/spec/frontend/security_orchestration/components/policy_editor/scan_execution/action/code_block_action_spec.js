@@ -1,6 +1,7 @@
 import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
+import { toYaml } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import CodeBlockAction from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_action.vue';
 import CodeBlockFilePath from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_file_path.vue';
@@ -55,20 +56,58 @@ describe('CodeBlockAction', () => {
   });
 
   describe('code block', () => {
+    const fileContents = 'foo: bar';
+
     it('should render the import button when code exists', async () => {
       createComponent();
       await waitForPromises();
-      await findYamlEditor().vm.$emit('input', 'foo: bar');
+      await findYamlEditor().vm.$emit('input', fileContents);
       expect(findCodeBlockImport().props('hasExistingCode')).toBe(true);
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [{ ci_configuration: toYaml(fileContents), scan: 'custom' }],
+      ]);
     });
 
     it('updates the yaml when a file is imported', async () => {
-      const fileContents = 'foo: bar';
       createComponent();
       await waitForPromises();
       await findCodeBlockImport().vm.$emit('changed', fileContents);
       expect(findYamlEditor().props('value')).toBe(fileContents);
       expect(findCodeBlockImport().props('hasExistingCode')).toBe(true);
+      expect(wrapper.emitted('changed')).toEqual([
+        [{ ci_configuration: toYaml(fileContents), scan: 'custom' }],
+      ]);
+    });
+
+    it('renders existing custom ci configuration', async () => {
+      createComponent({
+        propsData: {
+          initAction: {
+            ci_configuration: fileContents,
+          },
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findYamlEditor().props('value')).toBe(fileContents);
+      expect(findCodeBlockImport().props('hasExistingCode')).toBe(true);
+    });
+
+    it('renders existing custom ci configuration for empty content', async () => {
+      createComponent({
+        propsData: {
+          initAction: {
+            ci_configuration: undefined,
+          },
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findYamlEditor().props('value')).toBe('');
+      expect(findCodeBlockImport().props('hasExistingCode')).toBe(false);
     });
   });
 
