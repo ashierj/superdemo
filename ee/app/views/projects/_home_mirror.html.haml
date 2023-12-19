@@ -1,6 +1,9 @@
+- ff_reorg_enabled_classes = Feature.enabled?(:project_overview_reorg) ? 'gl-text-secondary gl-mt-2 gl-mb-0' : ''
+
 - if @project.mirror? && can?(current_user, :admin_project, @project)
-  %p
+  %p{ class: ff_reorg_enabled_classes }
     - import_url = @project.safe_import_url
     = format(_('Mirrored from %{link}.'), link: link_to(import_url, import_url)).html_safe
     %br
     = render "shared/mirror_status"
+
