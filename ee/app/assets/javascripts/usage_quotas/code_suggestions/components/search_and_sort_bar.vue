@@ -46,6 +46,8 @@ export default {
       this.$emit('onFilter', this.getFilterParams(filterOptions));
     },
     getFilterParams(filters = []) {
+      let searchTerm = '';
+
       return filters.reduce((filterParams, filter) => {
         const { type, value } = filter || {};
         if (!value?.data) return filterParams;
@@ -53,7 +55,8 @@ export default {
           case TOKEN_TYPE_PROJECT:
             return { ...filterParams, filterByProjectId: value.data };
           case FILTERED_SEARCH_TERM:
-            return { ...filterParams, search: value.data };
+            searchTerm = searchTerm.concat(' ', value.data).trim();
+            return { ...filterParams, search: searchTerm };
           default:
             return filterParams;
         }

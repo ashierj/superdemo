@@ -79,8 +79,8 @@ describe('SearchAndSortBar', () => {
 
   describe('when searching', () => {
     describe('with search term only', () => {
-      it('emits search event with appropriate params', () => {
-        const searchTerm = 'search term';
+      it('emits search event with appropriate params when search term has no spaces', () => {
+        const searchTerm = 'userone';
         const searchTokens = [
           { type: FILTERED_SEARCH_TERM, value: { data: searchTerm } },
           { type: FILTERED_SEARCH_TERM, value: { data: '' } },
@@ -90,6 +90,21 @@ describe('SearchAndSortBar', () => {
         findFilteredSearchBar().vm.$emit('onFilter', searchTokens);
 
         expect(wrapper.emitted('onFilter')[0][0]).toStrictEqual({ search: searchTerm });
+      });
+
+      it('emits search event with appropriate params when search term has spaces', () => {
+        const token1 = 'search';
+        const token2 = 'with spaces';
+        const searchTokens = [
+          { type: FILTERED_SEARCH_TERM, value: { data: token1 } },
+          { type: FILTERED_SEARCH_TERM, value: { data: token2 } },
+          { type: FILTERED_SEARCH_TERM, value: { data: '' } },
+        ];
+
+        createComponent();
+        findFilteredSearchBar().vm.$emit('onFilter', searchTokens);
+
+        expect(wrapper.emitted('onFilter')[0][0]).toStrictEqual({ search: 'search with spaces' });
       });
     });
 
