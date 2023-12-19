@@ -18,11 +18,7 @@ module Groups
 
     override :schedule_repository_storage_update_worker
     def schedule_repository_storage_update_worker
-      Groups::UpdateRepositoryStorageWorker.perform_async(
-        group_id,
-        destination_storage_name,
-        id
-      )
+      Groups::UpdateRepositoryStorageWorker.perform_async(id)
     end
 
     private
