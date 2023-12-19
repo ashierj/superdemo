@@ -1,4 +1,4 @@
-import { updateDependencyProxyPackagesToggleSettings } from 'ee_component/packages_and_registries/settings/project/graphql/utils/cache_update';
+import { cacheUpdateDependencyProxyPackagesSettings } from 'ee_component/packages_and_registries/settings/project/graphql/utils/cache_update';
 import dependencyProxyPackagesSettingsQuery from 'ee_component/packages_and_registries/settings/project/graphql/queries/get_dependency_proxy_packages_settings.query.graphql';
 
 describe('Package and Registries settings project cache updates', () => {
@@ -39,12 +39,12 @@ describe('Package and Registries settings project cache updates', () => {
         },
       };
       it('calls readQuery', () => {
-        updateDependencyProxyPackagesToggleSettings('path')(client, payload);
+        cacheUpdateDependencyProxyPackagesSettings('path')(client, payload);
         expect(client.readQuery).toHaveBeenCalledWith(queryAndVariables);
       });
 
       it('writes the correct result in the cache', () => {
-        updateDependencyProxyPackagesToggleSettings('path')(client, payload);
+        cacheUpdateDependencyProxyPackagesSettings('path')(client, payload);
         expect(client.writeQuery).toHaveBeenCalledWith({
           ...queryAndVariables,
           data: {

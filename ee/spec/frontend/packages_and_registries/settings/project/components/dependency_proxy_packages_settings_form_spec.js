@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlFormGroup, GlFormInput, GlSkeletonLoader, GlToggle } from '@gitlab/ui';
+import { GlSkeletonLoader, GlToggle } from '@gitlab/ui';
 import Tracking from '~/tracking';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -8,6 +8,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import DependencyProxyPackagesSettingsForm from 'ee_component/packages_and_registries/settings/project/components/dependency_proxy_packages_settings_form.vue';
 import updateDependencyProxyPackagesSettings from 'ee_component/packages_and_registries/settings/project/graphql/mutations/update_dependency_proxy_packages_settings.mutation.graphql';
 import dependencyProxyPackagesSettingsQuery from 'ee_component/packages_and_registries/settings/project/graphql/queries/get_dependency_proxy_packages_settings.query.graphql';
+import MavenForm from 'ee_component/packages_and_registries/settings/project/components/maven_form.vue';
 import {
   dependencyProxyPackagesSettingsData,
   dependencyProxyPackagesSettingsPayload,
@@ -41,9 +42,9 @@ describe('Dependency proxy packages settings form', () => {
     label: 'dependendency_proxy_packages_settings',
   };
 
-  const findForm = () => wrapper.find('form');
   const findEnableProxyToggle = () => wrapper.findComponent(GlToggle);
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
+  const findMavenForm = () => wrapper.findComponent(MavenForm);
 
   const mountComponent = ({ props = defaultProps } = {}) => {
     wrapper = shallowMountExtended(DependencyProxyPackagesSettingsForm, {
@@ -71,8 +72,8 @@ describe('Dependency proxy packages settings form', () => {
     });
   };
 
-  describe('form', () => {
-    it('is hidden when isLoading is set to true', () => {
+  describe('fields', () => {
+    it('are hidden when isLoading is set to true', () => {
       mountComponent({
         props: {
           ...defaultProps,
@@ -80,15 +81,26 @@ describe('Dependency proxy packages settings form', () => {
         },
       });
 
-      expect(findForm().exists()).toBe(false);
+      expect(findEnableProxyToggle().exists()).toBe(false);
+      expect(findMavenForm().exists()).toBe(false);
       expect(findLoader().exists()).toBe(true);
     });
 
-    it('is visible when isLoading is set to false', () => {
+    it('are visible when isLoading is set to false', () => {
+      const {
+        enabled,
+        mavenExternalRegistryUrl,
+        mavenExternalRegistryUsername,
+      } = dependencyProxyPackagesSetting;
+
       mountComponent();
 
-      expect(findForm().exists()).toBe(true);
       expect(findLoader().exists()).toBe(false);
+      expect(findEnableProxyToggle().props('value')).toBe(enabled);
+      expect(findMavenForm().props('data')).toStrictEqual({
+        mavenExternalRegistryUrl,
+        mavenExternalRegistryUsername,
+      });
     });
   });
 
@@ -138,7 +150,7 @@ describe('Dependency proxy packages settings form', () => {
             .mockResolvedValue(dependencyProxyPackagesToggleSettingMutationMock());
         });
 
-        it('emits a success event', async () => {
+        it('shows a toast with success message', async () => {
           mountComponentWithApollo();
 
           fillApolloCache();
@@ -224,33 +236,6 @@ describe('Dependency proxy packages settings form', () => {
           expect(show).toHaveBeenCalledWith('An error occurred while saving the settings.');
         });
       });
-    });
-  });
-
-  describe('maven registry', () => {
-    it('renders header', () => {
-      mountComponent();
-
-      expect(wrapper.find('h5').text()).toBe('Maven');
-    });
-
-    it.each`
-      index | field         | description                               | value
-      ${0}  | ${'URL'}      | ${'Base URL of the external registry.'}   | ${defaultProps.value.mavenExternalRegistryUrl}
-      ${1}  | ${'Username'} | ${'Username of the external registry.'}   | ${defaultProps.value.mavenExternalRegistryUsername}
-      ${2}  | ${'Password'} | ${'Password for your external registry.'} | ${''}
-    `('renders $field', ({ index, field, description, value }) => {
-      mountComponent();
-
-      const formGroup = wrapper.findAllComponents(GlFormGroup).at(index);
-      const formInput = formGroup.findComponent(GlFormInput);
-
-      expect(formGroup.attributes()).toMatchObject({
-        label: field,
-        description,
-      });
-
-      expect(formInput.attributes('value')).toBe(value);
     });
   });
 });

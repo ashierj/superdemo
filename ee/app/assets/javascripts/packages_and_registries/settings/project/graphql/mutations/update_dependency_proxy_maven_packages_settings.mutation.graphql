@@ -1,0 +1,11 @@
+mutation updateDependencyProxyMavenPackagesSettings(
+  $input: UpdateDependencyProxyPackagesSettingsInput!
+) {
+  updateDependencyProxyPackagesSettings(input: $input) {
+    dependencyProxyPackagesSetting {
+      mavenExternalRegistryUrl
+      mavenExternalRegistryUsername
+    }
+    errors
+  }
+}
