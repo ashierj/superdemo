@@ -10,7 +10,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::CiEditorAssistant::Prompts::VertexAi, 
       expect(prompt).to include('foo')
       expect(prompt).to include(
         <<~PROMPT
-          System: You are an ai assistant talking to a devops or software engineer.
+          You are an ai assistant talking to a devops or software engineer.
           You should coach users to author a ".gitlab-ci.yml" file which can be used to create a GitLab pipeline.
           Please provide concrete and detailed yaml that implements what the user asks for as closely as possible, assuming a single yaml file will be used.
 

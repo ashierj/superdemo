@@ -15,6 +15,12 @@ module Gitlab
 
           # approximate that one token is ~4 characters.
           MAX_CHARACTERS = (INPUT_TOKEN_LIMIT * CHARACTERS_IN_TOKEN).to_i.freeze
+
+          ROLE_NAMES = {
+            Llm::AiMessage::ROLE_USER => 'Human',
+            Llm::AiMessage::ROLE_ASSISTANT => 'Assistant',
+            Llm::AiMessage::ROLE_SYSTEM => ''
+          }.freeze
         end
       end
     end

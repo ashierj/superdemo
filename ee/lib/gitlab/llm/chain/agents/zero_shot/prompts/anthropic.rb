@@ -6,17 +6,14 @@ module Gitlab
       module Agents
         module ZeroShot
           module Prompts
-            ROLE_NAMES = {
-              Llm::AiMessage::ROLE_USER => 'Human',
-              Llm::AiMessage::ROLE_ASSISTANT => 'Assistant'
-            }.freeze
-
             class Anthropic < Base
               include Concerns::AnthropicPrompt
 
               def self.prompt(options)
+                human_role = ROLE_NAMES[Llm::AiMessage::ROLE_USER]
+
                 text = <<~PROMPT
-                  #{ROLE_NAMES[Llm::AiMessage::ROLE_USER]}: #{base_prompt(options)}
+                  #{human_role}: #{base_prompt(options)}
                 PROMPT
 
                 history = truncated_conversation(options[:conversation], Requests::Anthropic::PROMPT_SIZE - text.size)
@@ -32,7 +29,8 @@ module Gitlab
 
                 result = ''
                 conversation.reverse_each do |message|
-                  new_str = "#{ROLE_NAMES[message.role]}: #{message.content}\n\n#{result}"
+                  role = ROLE_NAMES[message.role]
+                  new_str = "#{role}: #{message.content}\n\n#{result}"
                   break if limit < new_str.size
 
                   result = new_str

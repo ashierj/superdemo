@@ -27,6 +27,24 @@ module Gitlab
             format(prompt, input_variables)
           end
 
+          def self.role_text(prompt_template, input_variables, roles: {})
+            prompt = prompt_template.map do |template|
+              next if template.last.empty?
+
+              role = roles.fetch(template.first.to_s, nil)
+
+              "#{role}#{separator(role)}#{template.last}"
+            end.join("\n\n")
+
+            format(prompt, input_variables)
+          end
+
+          def self.separator(predecessor)
+            return if predecessor.blank?
+
+            ': '
+          end
+
           def self.role_conversation(prompt_template, input_variables)
             prompt_template.map do |x|
               { role: x.first, content: format(x.last, input_variables) }

@@ -28,6 +28,67 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Prompt, feature_category: :duo_chat do
     end
   end
 
+  describe '#role_text' do
+    let(:input_vars) { { message: 'input' } }
+
+    context 'with roles defined' do
+      let(:roles) { Gitlab::Llm::Chain::Concerns::AnthropicPrompt::ROLE_NAMES }
+
+      context 'for assistant' do
+        let(:prompt) { described_class.as_assistant(content) }
+
+        it 'returns role-based text from role based prompt' do
+          expect(described_class.role_text([prompt], input_vars, roles: roles))
+            .to eq("Assistant: multi\nline\ninput")
+        end
+      end
+
+      context 'for user' do
+        let(:prompt) { described_class.as_user(content) }
+
+        it 'returns role-based text from role based prompt' do
+          expect(described_class.role_text([prompt], input_vars, roles: roles))
+            .to eq("Human: multi\nline\ninput")
+        end
+      end
+
+      context 'for system' do
+        let(:prompt) { described_class.as_system(content) }
+
+        it 'returns role-based text from role based prompt' do
+          expect(described_class.role_text([prompt], input_vars, roles: roles))
+            .to eq("multi\nline\ninput")
+        end
+      end
+    end
+
+    context 'without roles defined' do
+      context 'for assistant' do
+        let(:prompt) { described_class.as_assistant(content) }
+
+        it 'returns role-based text from role based prompt' do
+          expect(described_class.role_text([prompt], input_vars)).to eq("multi\nline\ninput")
+        end
+      end
+
+      context 'for user' do
+        let(:prompt) { described_class.as_user(content) }
+
+        it 'returns role-based text from role based prompt' do
+          expect(described_class.role_text([prompt], input_vars)).to eq("multi\nline\ninput")
+        end
+      end
+
+      context 'for system' do
+        let(:prompt) { described_class.as_system(content) }
+
+        it 'returns role-based text from role based prompt' do
+          expect(described_class.role_text([prompt], input_vars)).to eq("multi\nline\ninput")
+        end
+      end
+    end
+  end
+
   describe '#role_conversation' do
     let(:prompt) { described_class.as_assistant(content) }
     let(:input_vars) { { message: 'input' } }

@@ -7,13 +7,18 @@ module Gitlab
         module CiEditorAssistant
           module Prompts
             class Anthropic
+              include Concerns::AnthropicPrompt
+
+              MODEL = 'claude-2.1'
+
               def self.prompt(options)
-                base_prompt = Utils::Prompt.no_role_text(
-                  ::Gitlab::Llm::Chain::Tools::CiEditorAssistant::Executor::PROMPT_TEMPLATE, options
-                )
+                template = ::Gitlab::Llm::Chain::Tools::CiEditorAssistant::Executor::PROMPT_TEMPLATE.dup
+                template << Utils::Prompt.as_assistant('```yaml')
+                base_prompt = Utils::Prompt.role_text(template, options, roles: ROLE_NAMES)
+
                 {
-                  prompt: "\n\nHuman: #{base_prompt}\n\nAssistant:```yaml",
-                  options: {}
+                  prompt: base_prompt,
+                  options: { model: MODEL }
                 }
               end
             end
