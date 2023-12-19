@@ -1442,6 +1442,34 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       it { is_expected.to eq(true) }
     end
 
+    context 'when service class is Ci::CompareLicenseScanningReportsCollapsedService' do
+      let(:service_class) { ::Ci::CompareLicenseScanningReportsCollapsedService }
+
+      it { is_expected.to eq(true) }
+
+      context 'with feature disabled' do
+        before do
+          stub_feature_flags(scan_result_policy_license_scanning_merge_base_pipeline: false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+
+    context 'when service class is Ci::CompareLicenseScanningReportsService' do
+      let(:service_class) { ::Ci::CompareLicenseScanningReportsService }
+
+      it { is_expected.to eq(true) }
+
+      context 'with feature disabled' do
+        before do
+          stub_feature_flags(scan_result_policy_license_scanning_merge_base_pipeline: false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+
     context 'when service class is different' do
       let(:service_class) { ::Ci::GenerateCoverageReportsService }
 
@@ -2271,6 +2299,100 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
           it 'returns the latest base pipeline with security reports' do
             expect(pipeline).to eq(old_base_pipeline)
           end
+        end
+      end
+    end
+  end
+
+  describe '#latest_comparison_pipeline_with_sbom_reports' do
+    let_it_be(:project) { create(:project, :public, :repository) }
+    let_it_be_with_refind(:merge_request) do
+      create(:merge_request, :with_merge_request_pipeline, source_project: project)
+    end
+
+    let_it_be(:base_pipeline) do
+      create(
+        :ci_pipeline,
+        :with_test_reports,
+        project: project,
+        ref: merge_request.target_branch,
+        sha: merge_request.diff_base_sha)
+    end
+
+    subject(:pipeline) { merge_request.latest_comparison_pipeline_with_sbom_reports }
+
+    before do
+      merge_request.update_head_pipeline
+    end
+
+    context 'when there are merge base pipelines' do
+      let_it_be(:old_merge_base_pipeline) do
+        create(
+          :ee_ci_pipeline,
+          :with_cyclonedx_report,
+          project: project,
+          ref: merge_request.target_branch,
+          sha: merge_request.target_branch_sha)
+      end
+
+      let_it_be(:most_recent_merge_base_pipeline) do
+        create(
+          :ee_ci_pipeline,
+          :with_cyclonedx_report,
+          project: project,
+          ref: merge_request.target_branch,
+          sha: merge_request.target_branch_sha)
+      end
+
+      context 'when all pipelines have SBOM artifacts' do
+        it 'returns the most recent merge base pipeline' do
+          expect(pipeline).to eq(most_recent_merge_base_pipeline)
+        end
+      end
+
+      context 'when the most recent pipeline does not have an SBOM artifact' do
+        before do
+          most_recent_merge_base_pipeline.job_artifacts.cyclonedx.delete_all
+        end
+
+        it 'returns the latest merge base pipeline with an SBOM artifact' do
+          expect(pipeline).to eq(old_merge_base_pipeline)
+        end
+      end
+    end
+
+    context 'when there is no merge base pipeline' do
+      let_it_be(:old_base_pipeline) do
+        create(
+          :ee_ci_pipeline,
+          :with_cyclonedx_report,
+          project: project,
+          ref: merge_request.target_branch,
+          sha: merge_request.diff_base_sha)
+      end
+
+      let_it_be(:most_recent_base_pipeline) do
+        create(
+          :ee_ci_pipeline,
+          :with_cyclonedx_report,
+          project: project,
+          ref: merge_request.target_branch,
+          sha: merge_request.diff_base_sha)
+      end
+
+      context 'when all pipelines have SBOM artifacts' do
+        it 'returns the most recent base pipeline' do
+          expect(pipeline).to eq(most_recent_base_pipeline)
+        end
+      end
+
+      context 'when the most recent pipeline does not have an SBOM artifact' do
+        before do
+          most_recent_base_pipeline.job_artifacts.cyclonedx.delete_all
+        end
+
+        it 'returns the latest base pipeline with an SBOM artifact' do
+          expect(pipeline).to eq(old_base_pipeline)
         end
       end
     end

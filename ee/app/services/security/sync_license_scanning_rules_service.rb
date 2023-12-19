@@ -132,8 +132,15 @@ module Security
     end
 
     def target_branch_report(merge_request)
-      target_pipeline = merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy
-      ::Gitlab::LicenseScanning.scanner_for_pipeline(project, target_pipeline).report
+      ::Gitlab::LicenseScanning.scanner_for_pipeline(project, target_branch_pipeline(merge_request)).report
+    end
+
+    def target_branch_pipeline(merge_request)
+      if Feature.enabled?(:scan_result_policy_license_scanning_merge_base_pipeline, project)
+        merge_request.latest_comparison_pipeline_with_sbom_reports
+      else
+        merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy
+      end
     end
 
     def new_dependency_names(target_branch_report)
