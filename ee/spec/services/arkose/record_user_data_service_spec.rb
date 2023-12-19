@@ -30,17 +30,15 @@ RSpec.describe Arkose::RecordUserDataService, feature_category: :instance_resili
       expect(user.custom_attributes.find_by(key: 'arkose_custom_score').value).to eq('0')
     end
 
-    it 'stores risk scores in abuse trust scores' do
-      # Create and store initial scores
-      create(:abuse_trust_score, user: user, score: 12.0, source: :arkose_global_score)
-      create(:abuse_trust_score, user: user, score: 15.0, source: :arkose_custom_score)
+    it 'executes abuse trust score workers' do
+      expect(Abuse::TrustScoreWorker).to receive(:perform_async).once.ordered.with(
+        user.id, :arkose_global_score, 0.0
+      )
+      expect(Abuse::TrustScoreWorker).to receive(:perform_async).once.ordered.with(
+        user.id, :arkose_custom_score, 0.0
+      )
 
       service.execute
-
-      # Response mock json values from arkose_verify_response are stored after executing the service,
-      # we should expect `arkose_global_score` and `arkose_custom_score` to point to these values
-      expect(user_scores.arkose_global_score).to eq(0.0)
-      expect(user_scores.arkose_custom_score).to eq(0.0)
     end
 
     it 'returns a success response' do
