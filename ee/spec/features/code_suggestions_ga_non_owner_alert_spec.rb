@@ -41,11 +41,13 @@ RSpec.describe 'Code suggestions GA notify non-owner alert', :saas, :js, feature
   context 'when primary CTA button clicked' do
     it 'is dismissed and remains dismissed' do
       visit group_path(group)
+
+      expect(page).to have_link('Learn more',
+        href: help_page_path('user/project/repository/code_suggestions/saas', anchor: 'use-code-suggestions'))
+
       click_on 'Learn more'
 
       wait_for_requests
-
-      expect(page).to have_current_path('/ee/user/project/repository/code_suggestions/saas.html')
 
       visit group_path(group)
 
