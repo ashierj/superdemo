@@ -35,8 +35,6 @@ module PackageMetadata
     end
 
     def self.advisory_configs
-      return [] unless Feature.enabled?(:package_metadata_advisory_sync)
-
       storage_type, base_uri = Location.for_advisories
 
       permitted_purl_types.map do |purl_type, _|

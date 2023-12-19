@@ -51,18 +51,13 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
 
       subject(:configurations) { described_class.configs_for('advisories') }
 
-      where(:ff_enabled, :enabled_purl_types, :expected_purl_types) do
-        true  | ref(:all_purl_types)  | ref(:all_purl_types)
-        true  | [1, 5]                | [1, 5]
-        true  | []                    | []
-        false | ref(:all_purl_types)  | []
+      where(:enabled_purl_types, :expected_purl_types) do
+        ref(:all_purl_types)  | ref(:all_purl_types)
+        [1, 5]                | [1, 5]
+        []                    | []
       end
 
       with_them do
-        before do
-          stub_feature_flags(package_metadata_advisory_sync: ff_enabled)
-        end
-
         it_behaves_like 'it returns all enabled sync configs'
       end
     end
