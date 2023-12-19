@@ -44,15 +44,16 @@ RSpec.describe 'RunnersExportUsage', :click_house, :enable_admin_mode, :sidekiq_
   it 'sends email with report' do
     expect(Notify).to receive(:runner_usage_by_project_csv_email)
       .with(
-        current_user, DateTime.new(2023, 11, 1), DateTime.new(2023, 11, 1).end_of_month, anything, anything
-      ) do |_user, csv_data, status|
-      expect(status[:rows_written]).to eq 1
+        user: current_user, from_time: DateTime.new(2023, 11, 1), to_time: DateTime.new(2023, 11, 1).end_of_month,
+        csv_data: anything, export_status: anything
+      ) do |args|
+        expect(args.dig(:export_status, :rows_written)).to eq 1
 
-      parsed_csv = CSV.parse(csv_data, headers: true)
-      expect(parsed_csv[0]['Project ID']).to eq build2.project.id.to_s
+        parsed_csv = CSV.parse(args[:csv_data], headers: true)
+        expect(parsed_csv[0]['Project ID']).to eq build2.project.id.to_s
 
-      instance_double(ActionMailer::MessageDelivery, deliver_now: true)
-    end
+        instance_double(ActionMailer::MessageDelivery, deliver_now: true)
+      end
 
     post_response
     expect_graphql_errors_to_be_empty
