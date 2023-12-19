@@ -59,6 +59,7 @@ RSpec.describe API::Experiments, feature_category: :acquisition do
             key: 'null_hypothesis',
             definition: {
               name: 'null_hypothesis',
+              feature_issue_url: nil,
               introduced_by_url: 'https://gitlab.com/gitlab-org/gitlab/-/merge_requests/45840',
               rollout_issue_url: nil,
               milestone: '13.7',
