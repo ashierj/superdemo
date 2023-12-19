@@ -18060,6 +18060,9 @@ msgstr ""
 msgid "Drag your designs here or %{linkStart}click to upload%{linkEnd}."
 msgstr ""
 
+msgid "Drop or %{linkStart}upload%{linkEnd} an avatar."
+msgstr ""
+
 msgid "Drop or %{linkStart}upload%{linkEnd} file to attach"
 msgstr ""
 
@@ -33861,6 +33864,9 @@ msgid "Organization|Organization URL is too short (minimum is 2 characters)."
 msgstr ""
 
 msgid "Organization|Organization URL successfully changed."
+msgstr ""
+
+msgid "Organization|Organization avatar"
 msgstr ""
 
 msgid "Organization|Organization name"
