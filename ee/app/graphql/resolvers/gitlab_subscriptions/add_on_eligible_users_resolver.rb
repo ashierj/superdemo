@@ -26,11 +26,13 @@ module Resolvers
 
         return [] unless code_suggestions_available?(namespace)
 
-        ::GitlabSubscriptions::AddOnEligibleUsersFinder.new(
+        users = ::GitlabSubscriptions::AddOnEligibleUsersFinder.new(
           namespace,
           add_on_type: add_on_type,
           search_term: search
         ).execute
+
+        offset_pagination(users)
       end
 
       private

@@ -129,6 +129,56 @@ RSpec.describe 'Query.namespace.addOnEligibleUsers', feature_category: :seat_cos
             }
           ])
       end
+
+      context 'with pagination' do
+        let(:end_cursor) { graphql_data_at(:namespace, :add_on_eligible_users, :page_info, :end_cursor) }
+
+        let(:first_page_query) do
+          graphql_query_for(
+            :namespace, { full_path: add_on_purchase.namespace.full_path },
+            query_graphql_field(
+              :addOnEligibleUsers,
+              { add_on_type: :CODE_SUGGESTIONS, search: 'Group User', first: 1 },
+              "pageInfo { endCursor } #{query_fields}"
+            )
+          )
+        end
+
+        let(:second_page_query) do
+          graphql_query_for(
+            :namespace, { full_path: add_on_purchase.namespace.full_path },
+            query_graphql_field(
+              :addOnEligibleUsers,
+              { add_on_type: :CODE_SUGGESTIONS, search: 'Group User', after: end_cursor, first: 1 },
+              query_fields
+            )
+          )
+        end
+
+        it 'returns the correct order of records when paginating' do
+          post_graphql(first_page_query, current_user: current_user)
+          first_page_nodes = graphql_data_at(:namespace, :add_on_eligible_users, :nodes)
+
+          expect(first_page_nodes.count).to eq(1)
+          expect(first_page_nodes).to contain_exactly(
+            {
+              'id' => global_id_of(developer).to_s,
+              'addOnAssignments' => { 'nodes' => [expected_add_on_purchase_data(add_on_purchase)] }
+            }
+          )
+
+          post_graphql(second_page_query, current_user: current_user)
+          second_page_nodes = graphql_data_at(:namespace, :add_on_eligible_users, :nodes)
+
+          expect(second_page_nodes.count).to eq(1)
+          expect(second_page_nodes).to contain_exactly(
+            {
+              'id' => global_id_of(guest).to_s,
+              'addOnAssignments' => { 'nodes' => [expected_add_on_purchase_data(add_on_purchase)] }
+            }
+          )
+        end
+      end
     end
 
     context 'when there are no search args' do
