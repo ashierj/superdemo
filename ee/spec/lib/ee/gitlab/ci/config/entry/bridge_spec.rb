@@ -102,6 +102,24 @@ RSpec.describe Gitlab::Ci::Config::Entry::Bridge, feature_category: :pipeline_co
       end
     end
 
+    context 'when bridge trigger contains needs one' do
+      let(:config) do
+        {
+          needs: [{ pipeline: 'some/project' }, { pipeline: 'some/project2' }]
+        }
+      end
+
+      describe '#valid' do
+        it { is_expected.not_to be_valid }
+      end
+
+      describe '#errors' do
+        it 'returns an error message' do
+          expect(subject.errors).to include('bridge config should contain at most one bridge need')
+        end
+      end
+    end
+
     context 'when upstream config is nil' do
       let(:config) { { needs: nil } }
 
