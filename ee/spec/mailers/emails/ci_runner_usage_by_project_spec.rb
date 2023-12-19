@@ -12,13 +12,13 @@ RSpec.describe Emails::CiRunnerUsageByProject, feature_category: :fleet_visibili
     let_it_be(:user_email) { 'sam@email.com' }
     let_it_be(:current_user) { build_stubbed :user, email: user_email, name: 'UserName' }
 
-    let(:from_time) { DateTime.new(2023, 11, 1) }
-    let(:to_time) { DateTime.new(2023, 11, 30, 23, 59, 59) }
+    let(:from_date) { Date.new(2023, 11, 1) }
+    let(:to_date) { Date.new(2023, 11, 30) }
     let(:content_type) { 'text/csv' }
     let(:csv_data) { 'csv,separated,things' }
     let(:export_status) { { rows_expected: 3, rows_written: 2, truncated: false } }
 
-    let(:expected_filename) { "ci_runner_usage_report_#{from_time.iso8601}_#{to_time.iso8601}.csv" }
+    let(:expected_filename) { "ci_runner_usage_report_2023-11-01_2023-11-30.csv" }
     let(:expected_plain_text) { 'Your CSV export of the top 2 projects has been added to this email as an attachment.' }
     let(:expected_html_text) do
       'Your CI runner usage CSV export containing the top 2 projects has been added to this email as an attachment.'
@@ -27,8 +27,8 @@ RSpec.describe Emails::CiRunnerUsageByProject, feature_category: :fleet_visibili
     subject(:mail) do
       Notify.runner_usage_by_project_csv_email(
         user: current_user,
-        from_time: from_time,
-        to_time: to_time,
+        from_date: from_date,
+        to_date: to_date,
         csv_data: csv_data,
         export_status: export_status
       )
