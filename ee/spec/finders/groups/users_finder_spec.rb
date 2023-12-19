@@ -38,6 +38,10 @@ RSpec.describe Groups::UsersFinder, feature_category: :user_management do
       it 'finds both saml users and service accounts' do
         expect(finder.execute).to match_array([saml_user1, saml_user2, service_account1, service_account2])
       end
+
+      it 'orders by id descending' do
+        expect(finder.execute).to eq([service_account2, service_account1, saml_user2, saml_user1])
+      end
     end
 
     context 'when params includes only saml users' do
@@ -45,6 +49,18 @@ RSpec.describe Groups::UsersFinder, feature_category: :user_management do
 
       it 'finds only saml users' do
         expect(finder.execute).to match_array([saml_user1, saml_user2])
+      end
+
+      context 'when active param is true' do
+        let(:params) { { active: true, include_saml_users: true } }
+
+        before do
+          saml_user2.block!
+        end
+
+        it 'includes only active users' do
+          expect(finder.execute).to match_array([saml_user1])
+        end
       end
     end
 
