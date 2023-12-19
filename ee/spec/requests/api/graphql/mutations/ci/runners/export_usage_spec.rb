@@ -10,7 +10,7 @@ RSpec.describe 'RunnersExportUsage', :click_house, :enable_admin_mode, :sidekiq_
   let_it_be(:current_user) { create(:admin) }
   let_it_be(:instance_runner) { create(:ci_runner, :instance) }
   let_it_be(:group_runner) { create(:ci_runner, :group) }
-  let_it_be(:start_time) { 1.month.ago }
+  let_it_be(:start_time) { DateTime.new(2023, 11, 15) }
   let_it_be(:build1) do
     build(:ci_build, :success, created_at: start_time, queued_at: start_time, started_at: start_time,
       finished_at: start_time + 10.minutes, runner: instance_runner)
@@ -56,18 +56,18 @@ RSpec.describe 'RunnersExportUsage', :click_house, :enable_admin_mode, :sidekiq_
         runner_type: ::Ci::Runner.runner_types[runner_type],
         **mutation_args.slice(:from_date, :to_date, :max_project_count)
       }).and_call_original
-    expect(Notify).to receive(:runner_usage_by_project_csv_email)
-      .with(
-        user: current_user, from_date: mutation_args[:from_date], to_date: mutation_args[:to_date],
-        csv_data: anything, export_status: anything
-      ) do |args|
-        expect(args.dig(:export_status, :rows_written)).to eq 1
+    expect(Notify).to receive(:runner_usage_by_project_csv_email) do |args|
+      expect(args).to match(
+        a_hash_including(
+          user: current_user, from_date: mutation_args[:from_date], to_date: mutation_args[:to_date],
+          csv_data: an_instance_of(String), export_status: a_hash_including(rows_written: 1)
+        ))
 
-        parsed_csv = CSV.parse(args[:csv_data], headers: true)
-        expect(parsed_csv[0]['Project ID']).to eq build2.project.id.to_s
+      parsed_csv = CSV.parse(args[:csv_data], headers: true)
+      expect(parsed_csv[0]['Project ID']).to eq build2.project.id.to_s
 
-        instance_double(ActionMailer::MessageDelivery, deliver_now: true)
-      end
+      instance_double(ActionMailer::MessageDelivery, deliver_now: true)
+    end
 
     post_response
     expect_graphql_errors_to_be_empty
