@@ -14,6 +14,7 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
   let(:in_response_to) { '12345' }
   let(:last_request_id) { in_response_to }
   let(:saml_response) { instance_double(OneLogin::RubySaml::Response, in_response_to: in_response_to) }
+  let(:saml_groups) { [] }
 
   before do
     stub_licensed_features(group_saml: true)
@@ -91,7 +92,7 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
 
   context "valid credentials" do
     before do
-      @original_env_config_omniauth_auth = mock_auth_hash(provider, uid, user.email, response_object: saml_response)
+      @original_env_config_omniauth_auth = mock_auth_hash(provider, uid, user.email, response_object: saml_response, groups: saml_groups)
       stub_omniauth_provider(provider, context: request)
       stub_last_request_id(last_request_id)
     end
@@ -326,22 +327,42 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
           end
         end
 
-        context 'when a custom role is specified in the SAML provider', feature_category: :permissions do
+        context 'custom roles', feature_category: :permissions do
           let(:member_role) { create(:member_role, namespace: group) }
-          let!(:saml_provider) do
-            create(:saml_provider, group: group,
-              default_membership_role: member_role.base_access_level,
-              member_role: member_role)
-          end
 
           before do
-            stub_licensed_features(custom_roles: true)
+            stub_licensed_features(group_saml: true, saml_group_sync: true, custom_roles: true)
           end
 
-          it 'sets the `member_role` of the member as per the specified `member_role`' do
-            post provider, params: { group_id: group }
+          context 'when a custom role is specified in the SAML provider' do
+            let!(:saml_provider) do
+              create(:saml_provider, group: group,
+                default_membership_role: member_role.base_access_level,
+                member_role: member_role)
+            end
 
-            expect(group.member(user).member_role).to eq(member_role)
+            it 'sets the `member_role` of the member as per the specified `member_role`' do
+              post provider, params: { group_id: group }
+
+              expect(group.member(user).member_role).to eq(member_role)
+            end
+          end
+
+          context 'when a group is provided and a saml group link exists with a custom role' do
+            let(:custom_roles_group_name) { 'Custom Roles Group' }
+            let(:saml_groups) { [custom_roles_group_name] }
+            let!(:saml_group_link) do
+              create(:saml_group_link, group: group,
+                saml_group_name: custom_roles_group_name,
+                member_role: member_role,
+                access_level: member_role.base_access_level)
+            end
+
+            it 'sets the `member_role` of the member as defined in the saml group link', :sidekiq_inline do
+              post provider, params: { group_id: group }
+
+              expect(group.member(user).member_role).to eq(member_role)
+            end
           end
         end
 

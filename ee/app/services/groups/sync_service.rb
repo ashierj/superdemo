@@ -9,7 +9,7 @@
 #   manage_group_ids: array_of_group_ids
 # ).execute
 #
-# Given group links must respond to `group_id` and `access_level`.
+# Given group links must respond to `group_id`, `access_level` and `member_role_id`.
 #
 # This is a generic group sync service, reusable by many IdP-specific
 # implementations. The worker (caller) is responsible for providing the
@@ -58,37 +58,47 @@ module Groups
           group_id: member.source_id,
           action: :removed,
           prior_access_level: member.access_level,
-          access_level: nil
+          access_level: nil,
+          prior_member_role_id: member.member_role_id,
+          member_role_id: nil
         )
       end
     end
 
     def update_current_memberships
       group_links_by_group.each do |group, group_links|
-        access_level = max_access_level(group_links)
+        group_link = max_access_level_group_link(group_links)
+        access_level = group_link.access_level
+        member_role_id = group_link.member_role_id if custom_roles_enabled?
         existing_member = existing_member_by_group(group)
 
-        next if correct_access_level?(existing_member, access_level) || group.last_owner?(current_user)
+        next if correct_access_level?(existing_member, access_level, member_role_id) || group.last_owner?(current_user)
 
-        add_member(group, access_level, existing_member)
+        add_member(group, access_level, existing_member, member_role_id)
       end
     end
 
-    def add_member(group, access_level, existing_member)
-      member = group.add_member(current_user, access_level)
+    def add_member(group, access_level, existing_member, member_role_id)
+      member = group.add_member(current_user, access_level, member_role_id: member_role_id)
 
-      return member unless member.persisted? && member.access_level == access_level
+      return member unless member.persisted? && correct_access_level?(member, access_level, member_role_id)
 
       log_membership_update(
         group_id: group.id,
         action: (existing_member ? :updated : :added),
         prior_access_level: existing_member&.access_level,
-        access_level: access_level
+        access_level: access_level,
+        prior_member_role_id: existing_member&.member_role_id,
+        member_role_id: member_role_id
       )
     end
 
-    def correct_access_level?(member, access_level)
-      member && member.access_level == access_level
+    def correct_access_level?(member, access_level, member_role_id)
+      member && member.access_level == access_level && member.member_role_id == member_role_id
+    end
+
+    def custom_roles_enabled?
+      group.custom_roles_enabled? && ::Feature.enabled?(:custom_roles_for_saml_group_links)
     end
 
     def members_to_remove
@@ -123,14 +133,22 @@ module Groups
       end
     end
 
-    def max_access_level(group_links)
-      group_links.map(&:access_level_before_type_cast).max
+    def max_access_level_group_link(group_links)
+      # Return link with highest access level and for tie-breakers, return link with most recent member_role.
+      group_links.max_by { |group_link| [group_link.access_level, group_link.member_role_id.to_i] }
     end
 
-    def log_membership_update(group_id:, action:, prior_access_level:, access_level:)
+    def log_membership_update(group_id:, action:, prior_access_level:, access_level:, prior_member_role_id:, member_role_id:)
       @updated_membership[action] += 1
 
-      Gitlab::AppLogger.debug(message: "#{self.class.name} User: #{current_user.username} (#{current_user.id}), Action: #{action}, Group: #{group_id}, Prior Access: #{prior_access_level}, New Access: #{access_level}")
+      Gitlab::AppLogger.debug(message: "#{self.class.name} " \
+                                       "User: #{current_user.username} (#{current_user.id}), " \
+                                       "Action: #{action}, " \
+                                       "Group: #{group_id}, " \
+                                       "Prior Access: #{prior_access_level}, " \
+                                       "New Access: #{access_level}, " \
+                                       "Prior Member Role ID: #{prior_member_role_id}, " \
+                                       "New Member Role ID: #{member_role_id}")
     end
   end
 end
