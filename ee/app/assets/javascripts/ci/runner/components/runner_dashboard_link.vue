@@ -16,6 +16,6 @@ export default {
 <template>
   <gl-button v-if="runnerDashboardPath" variant="link" :href="runnerDashboardPath">
     {{ s__('Runners|Fleet dashboard')
-    }}<gl-badge variant="info" size="sm" class="gl-ml-1">{{ s__('Runners|New') }}</gl-badge>
+    }}<gl-badge variant="info" size="sm" class="gl-ml-2">{{ s__('Runners|New') }}</gl-badge>
   </gl-button>
 </template>
