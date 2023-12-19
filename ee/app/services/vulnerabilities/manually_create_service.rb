@@ -20,6 +20,8 @@ module Vulnerabilities
       timestamps_dont_match_state_message = match_state_fields_with_state
       return ServiceResponse.error(message: timestamps_dont_match_state_message) if timestamps_dont_match_state_message
 
+      ensure_timestamps!
+
       vulnerability = initialize_vulnerability(@params[:vulnerability])
       identifiers = initialize_identifiers(@params[:vulnerability][:identifiers])
       scanner = initialize_scanner(@params[:vulnerability][:scanner])
@@ -71,9 +73,11 @@ module Vulnerabilities
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
-    def match_state_fields_with_state
-      state = @params.dig(:vulnerability, :state)
+    def state
+      @params.dig(:vulnerability, :state)
+    end
 
+    def match_state_fields_with_state
       case state
       when "detected"
         return CONFIRMED_MESSAGE if exists_in_vulnerability_params?(:confirmed_at)
@@ -90,6 +94,14 @@ module Vulnerabilities
 
     def exists_in_vulnerability_params?(column_name)
       @params.dig(:vulnerability, column_name.to_sym).present?
+    end
+
+    def ensure_timestamps!
+      return unless %w[confirmed resolved dismissed].include?(state)
+
+      timestamp = "#{state}_at".to_sym
+
+      @params[:vulnerability][timestamp] = @params[:vulnerability][timestamp].presence || Time.zone.now
     end
   end
 end
