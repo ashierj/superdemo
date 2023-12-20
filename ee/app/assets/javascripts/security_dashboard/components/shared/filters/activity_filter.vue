@@ -1,5 +1,5 @@
 <script>
-import { GlBadge, GlCollapsibleListbox } from '@gitlab/ui';
+import { GlBadge, GlCollapsibleListbox, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { without } from 'lodash';
 import { s__ } from '~/locale';
 import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
@@ -78,15 +78,21 @@ export const GROUPS = [
   },
 ];
 
+const DEFAULT_VALUES = [ITEMS.STILL_DETECTED.value];
+
 export default {
   components: {
     GlBadge,
     QuerystringSync,
     GlCollapsibleListbox,
+    GlIcon,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   mixins: [glFeatureFlagsMixin()],
   data: () => ({
-    selected: [],
+    selected: DEFAULT_VALUES,
   }),
   computed: {
     toggleText() {
@@ -111,21 +117,24 @@ export default {
     },
   },
   watch: {
-    selected() {
-      const hasResolution = this.setSelectedValue('NO_LONGER_DETECTED', 'STILL_DETECTED');
-      const hasIssues = this.setSelectedValue('HAS_ISSUE', 'DOES_NOT_HAVE_ISSUE');
-      const hasMergeRequest = this.setSelectedValue(
-        'HAS_MERGE_REQUEST',
-        'DOES_NOT_HAVE_MERGE_REQUEST',
-      );
-      const hasRemediations = this.setSelectedValue('HAS_SOLUTION', 'DOES_NOT_HAVE_SOLUTION');
+    selected: {
+      immediate: true,
+      handler() {
+        const hasResolution = this.setSelectedValue('NO_LONGER_DETECTED', 'STILL_DETECTED');
+        const hasIssues = this.setSelectedValue('HAS_ISSUE', 'DOES_NOT_HAVE_ISSUE');
+        const hasMergeRequest = this.setSelectedValue(
+          'HAS_MERGE_REQUEST',
+          'DOES_NOT_HAVE_MERGE_REQUEST',
+        );
+        const hasRemediations = this.setSelectedValue('HAS_SOLUTION', 'DOES_NOT_HAVE_SOLUTION');
 
-      this.$emit('filter-changed', {
-        hasResolution,
-        hasIssues,
-        ...(this.glFeatures.activityFilterHasMr ? { hasMergeRequest } : {}),
-        ...(this.glFeatures.activityFilterHasMr ? { hasRemediations } : {}),
-      });
+        this.$emit('filter-changed', {
+          hasResolution,
+          hasIssues,
+          ...(this.glFeatures.activityFilterHasMr ? { hasMergeRequest } : {}),
+          ...(this.glFeatures.activityFilterHasMr ? { hasRemediations } : {}),
+        });
+      },
     },
   },
   methods: {
@@ -137,10 +146,11 @@ export default {
     updateSelected(selected) {
       const selectedValue = selected?.at(-1);
 
-      // If the ALL_ID option is being selected (last item in selected) or
-      // it's clicked when already selected, the selected items should be empty
-      if (selectedValue === ALL_ID) {
-        this.selected = [];
+      const noneSelected = selected.length <= 0;
+      const allIdSelected = selectedValue === ALL_ID;
+
+      if (noneSelected || allIdSelected) {
+        this.selected = [ALL_ID];
         return;
       }
 
@@ -159,6 +169,15 @@ export default {
         this.selected = selectedWithoutAll;
       }
     },
+    updateSelectedFromQS(selected) {
+      if (selected.includes(ALL_ID)) {
+        this.selected = [ALL_ID];
+      } else if (selected.length > 0) {
+        this.selected = selected;
+      } else {
+        this.selected = DEFAULT_VALUES;
+      }
+    },
     setSelectedValue(keyWhenTrue, keyWhenFalse) {
       // The variables can be true, false, or unset, so we need to use if/else-if here instead
       // of if/else.
@@ -170,14 +189,23 @@ export default {
   i18n: {
     label: s__('SecurityReports|Activity'),
     allItemsText: s__('SecurityReports|All activity'),
+    activityFilterTooltip: s__(
+      'SecurityReports|The Activity filter now defaults to showing only vulnerabilities that are "still detected". To see vulnerabilities regardless of their detection status, remove this filter.',
+    ),
   },
 };
 </script>
 
 <template>
   <div>
-    <querystring-sync v-model="selected" querystring-key="activity" />
+    <querystring-sync v-model="selected" querystring-key="activity" @input="updateSelectedFromQS" />
     <label class="gl-mb-2">{{ $options.i18n.label }}</label>
+    <gl-icon
+      v-gl-tooltip="$options.i18n.activityFilterTooltip"
+      name="status-active"
+      :size="12"
+      class="gl-text-blue-500"
+    />
     <gl-collapsible-listbox
       :items="items"
       :selected="selectedItems"
