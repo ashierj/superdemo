@@ -179,7 +179,7 @@ module API
         use :optional_deploy_access_levels
         use :optional_approval_rules
       end
-      put ':id/protected_environments/:name' do
+      put ':id/protected_environments/:name', requirements: ENVIRONMENT_ENDPOINT_REQUIREMENTS do
         not_found! unless protected_environment
 
         declared_params = declared_params(include_missing: false)
