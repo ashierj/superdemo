@@ -13,6 +13,7 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
     # project.repository
     allow(Project).to receive(:find).with(project.id).and_return(project)
     allow(project).to receive(:use_zoekt?).and_return(use_zoekt)
+    stub_feature_flags(zoekt_random_force_reindexing: false)
   end
 
   describe '#perform' do
@@ -58,6 +59,19 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
 
       it 'does not send the project to Zoekt for indexing' do
         expect(project.repository).not_to receive(:update_zoekt_index!)
+
+        subject.perform(project.id)
+      end
+    end
+
+    context 'with random force reindexing' do
+      before do
+        stub_feature_flags(zoekt_random_force_reindexing: true)
+        stub_const("#{described_class}::REINDEXING_CHANCE_PERCENTAGE", 100)
+      end
+
+      it 'sends the project to Zoekt for indexing with force: true' do
+        expect(project.repository).to receive(:update_zoekt_index!).with(force: true)
 
         subject.perform(project.id)
       end
