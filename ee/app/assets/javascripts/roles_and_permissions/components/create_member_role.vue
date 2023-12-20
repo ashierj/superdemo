@@ -116,8 +116,10 @@ export default {
         :label="s__('MemberRole|Base role to use as template')"
         :description="s__('MemberRole|Select a standard role to add permissions.')"
         :invalid-feedback="__('This field is required.')"
+        label-for="base-role-select"
       >
         <gl-form-select
+          id="base-role-select"
           v-model.number="baseRole"
           :options="$options.BASE_ROLES"
           :state="baseRoleValid"
@@ -129,8 +131,10 @@ export default {
         :label="s__('MemberRole|Role name')"
         :description="s__('MemberRole|Enter a short name.')"
         :invalid-feedback="__('This field is required.')"
+        label-for="role-name"
       >
         <gl-form-input
+          id="role-name"
           v-model.trim="name"
           :placeholder="s__('MemberRole|Incident manager')"
           :state="nameValid"
