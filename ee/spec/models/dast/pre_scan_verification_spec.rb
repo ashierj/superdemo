@@ -3,8 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Dast::PreScanVerification, :dynamic_analysis,
-  feature_category: :dynamic_application_security_testing,
-  type: :model do
+  feature_category: :dynamic_application_security_testing do
   let_it_be(:project) { create(:project) }
   let_it_be_with_reload(:dast_profile) { create(:dast_profile, project: project) }
 

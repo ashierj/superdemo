@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Dast::Branch do
+RSpec.describe Dast::Branch, :dynamic_analysis,
+  feature_category: :dynamic_application_security_testing do
   subject { described_class.new(dast_profile) }
 
   context 'when repository does not exist' do

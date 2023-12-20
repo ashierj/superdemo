@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Dast::Profile, type: :model do
+RSpec.describe Dast::Profile, :dynamic_analysis,
+  feature_category: :dynamic_application_security_testing do
   let_it_be(:project) { create(:project) }
 
   subject { create(:dast_profile, project: project) }
