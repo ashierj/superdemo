@@ -21,8 +21,12 @@ module Registrations
       @group = Group.new(visibility_level: Gitlab::CurrentSettings.default_group_visibility)
       @project = Project.new(namespace: @group)
       @initialize_with_readme = true
+      @group_creation_tracking_label = onboarding_status.group_creation_tracking_label
 
       track_event('view_new_group_action')
+
+      experiment(:default_to_import_tab, actor: current_user)
+        .track(:render, label: @group_creation_tracking_label)
     end
 
     def create
@@ -50,11 +54,27 @@ module Registrations
     def actions_after_success(payload)
       finish_onboarding(current_user)
 
+      experiment(:default_to_import_tab, actor: current_user).track(
+        :assignment,
+        namespace: payload[:group] || payload[:project]&.namespace,
+        label: onboarding_status.group_creation_tracking_label
+      )
+
       if import?
+        experiment(:default_to_import_tab, actor: current_user).track(
+          :successfully_submitted_import_form,
+          label: onboarding_status.group_creation_tracking_label
+        )
+
         import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{payload[:group].id}").to_s
         redirect_to import_url
       else
         track_event('successfully_submitted_form')
+
+        experiment(:default_to_import_tab, actor: current_user).track(
+          :successfully_submitted_form,
+          label: onboarding_status.group_creation_tracking_label
+        )
 
         redirect_to onboarding_project_learn_gitlab_path(payload[:project],
           trial_onboarding_flow: params[:trial_onboarding_flow]

@@ -8,6 +8,8 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
+  let(:experiment) { instance_double(ApplicationExperiment) }
+
   shared_examples 'finishing onboarding' do
     let_it_be(:url) { '_url_' }
     let_it_be(:onboarding_in_progress) { true }
@@ -95,6 +97,17 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
           )
         end
 
+        it 'tracks default_to_import_tab experiment' do
+          allow(controller)
+            .to receive(:experiment)
+            .with(:default_to_import_tab, actor: user)
+            .and_return(experiment)
+
+          expect(experiment).to receive(:track).with(:render, label: 'free_registration')
+
+          get_new
+        end
+
         context 'when on trial' do
           it 'tracks the new group view event' do
             get :new, params: { trial_onboarding_flow: true }
@@ -175,6 +188,25 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
         )
       end
 
+      it 'tracks default_to_import_tab experiment' do
+        allow(controller)
+          .to receive(:experiment)
+          .with(:default_to_import_tab, actor: user)
+          .and_return(experiment)
+
+        expect(experiment)
+          .to receive(:track)
+          .once
+          .with(:assignment, namespace: instance_of(Group), label: 'free_registration')
+
+        expect(experiment)
+          .to receive(:track)
+          .once
+          .with(:successfully_submitted_form, label: 'free_registration')
+
+        post_create
+      end
+
       context 'when on trial' do
         let(:extra_params) { { trial_onboarding_flow: true } }
 
@@ -224,6 +256,17 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
             label: 'free_registration',
             user: user
           )
+        end
+
+        it 'does not track default_to_import_tab experiment' do
+          allow(controller)
+            .to receive(:experiment)
+            .with(:default_to_import_tab, actor: user)
+            .and_return(experiment)
+
+          expect(experiment).not_to receive(:track)
+
+          post_create
         end
       end
 
@@ -295,6 +338,25 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
 
         it_behaves_like 'hides email confirmation warning'
         it_behaves_like 'finishing onboarding'
+
+        it 'tracks default_to_import_tab experiment' do
+          allow(controller)
+            .to receive(:experiment)
+            .with(:default_to_import_tab, actor: user)
+            .and_return(experiment)
+
+          expect(experiment)
+            .to receive(:track)
+            .once
+            .with(:assignment, namespace: instance_of(Group), label: 'free_registration')
+
+          expect(experiment)
+            .to receive(:track)
+            .once
+            .with(:successfully_submitted_import_form, label: 'free_registration')
+
+          post_create
+        end
 
         context "when a group can't be created" do
           before do
