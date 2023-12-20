@@ -9,7 +9,7 @@ import {
   SEARCH_PLACEHOLDER,
   GROUP_OPTIONS,
   DROPDOWN_OPTION_ALL_GROUPS,
-} from '../constants';
+} from '../../constants';
 
 function addType(type) {
   return (items) => items.map((obj) => Object.assign(obj, { type }));

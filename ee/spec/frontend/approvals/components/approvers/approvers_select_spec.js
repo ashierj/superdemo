@@ -5,7 +5,7 @@ import { shallowMount } from '@vue/test-utils';
 import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import Api from 'ee/api';
-import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
+import ApproversSelect from 'ee/approvals/components/approvers/approvers_select.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { TYPE_USER, GROUP_OPTIONS } from 'ee/approvals/constants';
 

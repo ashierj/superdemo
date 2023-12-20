@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlLink, GlSprintf } from '@gitlab/ui';
-import RuleName from 'ee/approvals/components/rule_name.vue';
+import RuleName from 'ee/approvals/components/rules/rule_name.vue';
 
 export default {
   components: {

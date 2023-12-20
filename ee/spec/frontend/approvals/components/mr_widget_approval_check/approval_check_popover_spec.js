@@ -1,7 +1,7 @@
 import { GlPopover, GlLink, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import component from 'ee/approvals/components/approval_check_popover.vue';
+import component from 'ee/approvals/components/mr_widget_approval_check/approval_check_popover.vue';
 import { TEST_HOST } from 'helpers/test_constants';
 
 describe('Approval Check Popover', () => {

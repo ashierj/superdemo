@@ -4,8 +4,8 @@ import { GlButton, GlCard, GlIcon, GlLoadingIcon } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 import { __ } from '~/locale';
 import showToast from '~/vue_shared/plugins/global_toast';
-import ModalRuleCreate from './modal_rule_create.vue';
-import ModalRuleRemove from './modal_rule_remove.vue';
+import ModalRuleCreate from './rule_modal/create_rule.vue';
+import ModalRuleRemove from './rule_modal/remove_rule.vue';
 
 export default {
   components: {

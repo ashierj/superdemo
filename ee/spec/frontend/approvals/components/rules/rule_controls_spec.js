@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
-import RuleControls from 'ee/approvals/components/rule_controls.vue';
+import RuleControls from 'ee/approvals/components/rules/rule_controls.vue';
 import { createStoreOptions } from 'ee/approvals/stores';
 import MREditModule from 'ee/approvals/stores/modules/mr_edit';
 

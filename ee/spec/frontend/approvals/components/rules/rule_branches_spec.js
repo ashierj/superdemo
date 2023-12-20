@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import RuleBranches from 'ee/approvals/components/rule_branches.vue';
+import RuleBranches from 'ee/approvals/components/rules/rule_branches.vue';
 import {
   ALL_BRANCHES,
   ALL_PROTECTED_BRANCHES,

@@ -6,7 +6,7 @@ import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 
-import ApprovalSettings from 'ee/approvals/components/approval_settings.vue';
+import ApprovalSettings from 'ee/approvals/components/approval_settings/approval_settings.vue';
 import GroupSettingsApp from 'ee/approvals/components/group_settings/app.vue';
 import { GROUP_APPROVAL_SETTINGS_LABELS_I18N } from 'ee/approvals/constants';
 import { mergeRequestApprovalSettingsMappers } from 'ee/approvals/mappers';

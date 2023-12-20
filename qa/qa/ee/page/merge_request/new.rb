@@ -17,7 +17,7 @@ module QA
                 element 'add-approval-rule'
               end
 
-              view 'ee/app/assets/javascripts/approvals/components/rule_form.vue' do
+              view 'ee/app/assets/javascripts/approvals/components/rules/rule_form.vue' do
                 element 'approvals-required'
                 element 'approvers-group'
                 element 'rule-name-field'

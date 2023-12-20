@@ -1,8 +1,8 @@
 import { GlFormRadio } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
-import ApprovalSettingsRadio from 'ee/approvals/components/approval_settings_radio.vue';
-import ApprovalSettingsLockedIcon from 'ee/approvals/components/approval_settings_locked_icon.vue';
+import ApprovalSettingsRadio from 'ee/approvals/components/approval_settings/approval_settings_radio.vue';
+import ApprovalSettingsLockedIcon from 'ee/approvals/components/approval_settings/approval_settings_locked_icon.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 

@@ -1,6 +1,6 @@
 import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import EmptyRule from 'ee/approvals/components/empty_rule.vue';
+import EmptyRule from 'ee/approvals/components/rules/empty_rule.vue';
 
 describe('Empty Rule', () => {
   let wrapper;

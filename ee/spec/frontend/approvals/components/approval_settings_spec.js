@@ -4,7 +4,7 @@ import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 
-import ApprovalSettings from 'ee/approvals/components/approval_settings.vue';
+import ApprovalSettings from 'ee/approvals/components/approval_settings/approval_settings.vue';
 import {
   PROJECT_APPROVAL_SETTINGS_LABELS_I18N,
   APPROVAL_SETTINGS_I18N,

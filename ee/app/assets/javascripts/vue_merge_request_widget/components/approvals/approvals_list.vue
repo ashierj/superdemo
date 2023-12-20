@@ -1,8 +1,8 @@
 <script>
 import { GlSkeletonLoader } from '@gitlab/ui';
 import { uniqueId, orderBy } from 'lodash';
-import ApprovalCheckRulePopover from 'ee/approvals/components/approval_check_rule_popover.vue';
-import EmptyRuleName from 'ee/approvals/components/empty_rule_name.vue';
+import ApprovalCheckRulePopover from 'ee/approvals/components/mr_widget_approval_check/approval_check_rule_popover.vue';
+import EmptyRuleName from 'ee/approvals/components/rules/empty_rule_name.vue';
 import { RULE_TYPE_CODE_OWNER, RULE_TYPE_ANY_APPROVER } from 'ee/approvals/constants';
 import { sprintf, __, s__ } from '~/locale';
 import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list.vue';

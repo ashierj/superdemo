@@ -15,9 +15,9 @@ import {
   TYPE_HIDDEN_GROUPS,
   COVERAGE_CHECK_NAME,
   APPROVAL_DIALOG_I18N,
-} from '../constants';
-import ApproversList from './approvers_list.vue';
-import ApproversSelect from './approvers_select.vue';
+} from '../../constants';
+import ApproversList from '../approvers/approvers_list.vue';
+import ApproversSelect from '../approvers/approvers_select.vue';
 
 const DEFAULT_NAME = 'Default';
 

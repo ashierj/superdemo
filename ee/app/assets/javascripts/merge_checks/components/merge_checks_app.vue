@@ -1,6 +1,6 @@
 <script>
 import { sprintf } from '~/locale';
-import ApprovalSettingsCheckbox from 'ee/approvals/components/approval_settings_checkbox.vue';
+import ApprovalSettingsCheckbox from 'ee/approvals/components/approval_settings/approval_settings_checkbox.vue';
 import { I18N } from '../constants';
 
 export default {

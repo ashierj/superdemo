@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import ApprovalCheckRulePopover from 'ee/approvals/components/approval_check_rule_popover.vue';
-import ApprovalCheckPopover from 'ee/approvals/components/approval_check_popover.vue';
+import ApprovalCheckRulePopover from 'ee/approvals/components/mr_widget_approval_check/approval_check_rule_popover.vue';
+import ApprovalCheckPopover from 'ee/approvals/components/mr_widget_approval_check/approval_check_popover.vue';
 import { COVERAGE_CHECK_NAME, APPROVAL_RULE_CONFIGS } from 'ee/approvals/constants';
 import { TEST_HOST } from 'helpers/test_constants';
 

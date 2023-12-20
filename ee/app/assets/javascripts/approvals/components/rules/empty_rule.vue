@@ -2,8 +2,8 @@
 import { GlButton } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
+import RuleInput from '../mr_edit/rule_input.vue';
 import EmptyRuleName from './empty_rule_name.vue';
-import RuleInput from './mr_edit/rule_input.vue';
 import RuleBranches from './rule_branches.vue';
 
 export default {

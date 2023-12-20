@@ -3,8 +3,8 @@ import Vue, { nextTick } from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import MRRules from 'ee/approvals/components/mr_edit/mr_rules.vue';
-import RuleControls from 'ee/approvals/components/rule_controls.vue';
-import Rules from 'ee/approvals/components/rules.vue';
+import RuleControls from 'ee/approvals/components/rules/rule_controls.vue';
+import Rules from 'ee/approvals/components/rules/rules.vue';
 import { createStoreOptions } from 'ee/approvals/stores';
 import MREditModule from 'ee/approvals/stores/modules/mr_edit';
 import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list.vue';
