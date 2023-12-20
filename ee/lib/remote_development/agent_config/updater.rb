@@ -5,6 +5,7 @@ module RemoteDevelopment
   module AgentConfig
     class Updater
       include Messages
+      UNLIMITED_QUOTA = -1
       NETWORK_POLICY_EGRESS_DEFAULT = [
         {
           allow: "0.0.0.0/0",
@@ -32,6 +33,9 @@ module RemoteDevelopment
 
         model_instance = RemoteDevelopmentAgentConfig.find_or_initialize_by(agent: agent) # rubocop:todo CodeReuse/ActiveRecord -- Use a finder class here
         model_instance.enabled = config_from_agent_config_file.fetch(:enabled, false)
+        model_instance.workspaces_quota = config_from_agent_config_file.fetch(:workspaces_quota, UNLIMITED_QUOTA)
+        model_instance.workspaces_per_user_quota = config_from_agent_config_file.fetch(:workspaces_per_user_quota,
+          UNLIMITED_QUOTA)
         model_instance.dns_zone = config_from_agent_config_file[:dns_zone]
         model_instance.network_policy_enabled =
           config_from_agent_config_file.fetch(:network_policy, {}).fetch(:enabled, true)

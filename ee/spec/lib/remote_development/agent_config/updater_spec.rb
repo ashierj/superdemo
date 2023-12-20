@@ -7,6 +7,8 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
 
   let(:enabled) { true }
   let(:dns_zone) { 'my-awesome-domain.me' }
+  let(:saved_quota) { 5 }
+  let(:quota) { 5 }
   let(:network_policy_present) { false }
   let(:default_network_policy_egress) { RemoteDevelopment::AgentConfig::Updater::NETWORK_POLICY_EGRESS_DEFAULT }
   let(:network_policy_egress) { default_network_policy_egress }
@@ -53,6 +55,12 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
     remote_development_config[:gitlab_workspaces_proxy] = gitlab_workspaces_proxy if gitlab_workspaces_proxy_present
     remote_development_config[:default_resources_per_workspace_container] = default_resources_per_workspace_container
     remote_development_config[:max_resources_per_workspace] = max_resources_per_workspace
+
+    if quota
+      remote_development_config[:workspaces_quota] = quota
+      remote_development_config[:workspaces_per_user_quota] = quota
+    end
+
     {
       remote_development: remote_development_config
     }
@@ -90,6 +98,8 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
           .to eq(default_resources_per_workspace_container)
         expect(config_instance.max_resources_per_workspace.deep_symbolize_keys)
           .to eq(max_resources_per_workspace)
+        expect(config_instance.workspaces_quota).to eq(saved_quota)
+        expect(config_instance.workspaces_per_user_quota).to eq(saved_quota)
 
         expect(result)
           .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
@@ -192,6 +202,13 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
 
           it_behaves_like 'successful update'
         end
+      end
+
+      context 'when workspace quotas are not explicitly specified in the config passed' do
+        let(:quota) { nil }
+        let(:saved_quota) { -1 }
+
+        it_behaves_like 'successful update'
       end
     end
 
