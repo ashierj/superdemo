@@ -1945,6 +1945,30 @@ Input type: `BoardListUpdateLimitMetricsInput`
 | <a id="mutationboardlistupdatelimitmetricserrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationboardlistupdatelimitmetricslist"></a>`list` | [`BoardList`](#boardlist) | Updated list. |
 
+### `Mutation.branchRuleCreate`
+
+WARNING:
+**Introduced** in 16.7.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Input type: `BranchRuleCreateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationbranchrulecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationbranchrulecreatename"></a>`name` | [`String!`](#string) | Branch name, with wildcards, for the branch rules. |
+| <a id="mutationbranchrulecreateprojectpath"></a>`projectPath` | [`ID!`](#id) | Full path to the project that the branch is associated with. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationbranchrulecreatebranchrule"></a>`branchRule` | [`BranchRule`](#branchrule) | Branch rule after mutation. |
+| <a id="mutationbranchrulecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationbranchrulecreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.branchRuleUpdate`
 
 WARNING:
