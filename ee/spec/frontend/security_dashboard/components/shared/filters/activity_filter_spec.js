@@ -1,4 +1,4 @@
-import { GlCollapsibleListbox, GlBadge } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlBadge, GlIcon } from '@gitlab/ui';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
 import ActivityFilter, {
   ITEMS,
@@ -7,9 +7,12 @@ import ActivityFilter, {
   GROUPS_SOLUTION,
 } from 'ee/security_dashboard/components/shared/filters/activity_filter.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
 
 const [, ...GROUPS_WITHOUT_DEFAULT] = GROUPS;
+
+const DEFAULT_VALUE = 'STILL_DETECTED';
 
 describe('Activity Filter component', () => {
   let wrapper;
@@ -18,15 +21,21 @@ describe('Activity Filter component', () => {
   const findItem = (value) => wrapper.findByTestId(`listbox-item-${value}`);
   const findHeader = (text) => wrapper.findByTestId(`header-${text}`);
   const findQuerystringSync = () => wrapper.findComponent(QuerystringSync);
+  const findIcon = () => wrapper.findComponent(GlIcon);
   const clickItem = (value) => findItem(value).trigger('click');
 
   const expectSelectedItems = (values) => {
     expect(findListbox().props('selected')).toEqual(values);
   };
 
+  const unselectDefaultValue = () => clickItem(DEFAULT_VALUE);
+
   const createWrapper = ({ glFeatures = {} } = {}) => {
     wrapper = mountExtended(ActivityFilter, {
       stubs: { QuerystringSync: true, GlBadge: true },
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
+      },
       provide: {
         glFeatures: {
           activityFilterHasMr: true,
@@ -39,44 +48,6 @@ describe('Activity Filter component', () => {
 
   beforeEach(() => {
     createWrapper();
-  });
-
-  describe('QuerystringSync component', () => {
-    it('has expected props', () => {
-      expect(findQuerystringSync().props()).toMatchObject({
-        querystringKey: 'activity',
-        value: [],
-      });
-    });
-
-    it.each`
-      emitted                             | expected
-      ${[]}                               | ${[ALL_ID]}
-      ${[ITEMS.NO_LONGER_DETECTED.value]} | ${[ITEMS.NO_LONGER_DETECTED.value]}
-    `('restores selected items - $emitted', async ({ emitted, expected }) => {
-      await findQuerystringSync().vm.$emit('input', emitted);
-
-      expectSelectedItems(expected);
-    });
-  });
-
-  describe('toggleText', () => {
-    it(`passes '${ITEMS.NO_LONGER_DETECTED.text}' when only '${ITEMS.NO_LONGER_DETECTED.text}' is selected`, async () => {
-      await clickItem(ITEMS.NO_LONGER_DETECTED.value);
-
-      expect(findListbox().props('toggleText')).toBe(ITEMS.NO_LONGER_DETECTED.text);
-    });
-
-    it(`passes '${ITEMS.NO_LONGER_DETECTED.text} +1 more' when '${ITEMS.NO_LONGER_DETECTED.text}' and item from Issue group is selected`, async () => {
-      await clickItem(ITEMS.NO_LONGER_DETECTED.value);
-      await clickItem(ITEMS.HAS_ISSUE.value);
-
-      expect(findListbox().props('toggleText')).toBe(`${ITEMS.NO_LONGER_DETECTED.text} +1 more`);
-    });
-
-    it(`passes "${ActivityFilter.i18n.allItemsText}" when no option is selected`, () => {
-      expect(findListbox().props('toggleText')).toBe(ActivityFilter.i18n.allItemsText);
-    });
   });
 
   it('renders the header text for each non default group', () => {
@@ -106,16 +77,18 @@ describe('Activity Filter component', () => {
     const { value } = ITEMS.HAS_ISSUE;
     await clickItem(value);
 
-    expectSelectedItems([value]);
+    expectSelectedItems([DEFAULT_VALUE, value]);
 
     await clickItem(value);
 
-    expectSelectedItems([ALL_ID]);
+    expectSelectedItems([DEFAULT_VALUE]);
   });
 
   it.each(GROUPS_WITHOUT_DEFAULT.map((group) => [group.text, group]))(
     'allows only one item to be selected for the %s group',
     async (_groupName, group) => {
+      await unselectDefaultValue();
+
       for await (const { value } of group.options) {
         await clickItem(value);
 
@@ -125,6 +98,8 @@ describe('Activity Filter component', () => {
   );
 
   it('allows multiple selection of items across groups', async () => {
+    await unselectDefaultValue();
+
     // Get the first item in each group and click on them.
     const values = GROUPS_WITHOUT_DEFAULT.map((group) => group.options[0].value);
     for await (const value of values) {
@@ -134,12 +109,81 @@ describe('Activity Filter component', () => {
     expectSelectedItems(values);
   });
 
+  it('renders activity icon with tooltip', () => {
+    const icon = findIcon();
+
+    expect(icon.exists()).toBe(true);
+    expect(getBinding(icon.element, 'gl-tooltip').value).toBe(
+      'The Activity filter now defaults to showing only vulnerabilities that are "still detected". To see vulnerabilities regardless of their detection status, remove this filter.',
+    );
+  });
+
+  describe('QuerystringSync component', () => {
+    it('has expected props', () => {
+      expect(findQuerystringSync().props()).toMatchObject({
+        querystringKey: 'activity',
+        value: [DEFAULT_VALUE],
+      });
+    });
+
+    it.each`
+      emitted                             | expected
+      ${[ALL_ID]}                         | ${[ALL_ID]}
+      ${[ITEMS.NO_LONGER_DETECTED.value]} | ${[ITEMS.NO_LONGER_DETECTED.value]}
+    `('restores selected items - $emitted', async ({ emitted, expected }) => {
+      await findQuerystringSync().vm.$emit('input', emitted);
+
+      expectSelectedItems(expected);
+    });
+  });
+
+  describe('toggleText', () => {
+    it(`is 'No longer detected' when only 'No longer detected' is selected`, async () => {
+      await unselectDefaultValue();
+
+      await clickItem(ITEMS.NO_LONGER_DETECTED.value);
+
+      expect(findListbox().props('toggleText')).toBe('No longer detected');
+    });
+
+    it(`passes 'No longer detected +1 more' when 'No longer detected' and item from Issue group is selected`, async () => {
+      await clickItem(ITEMS.NO_LONGER_DETECTED.value);
+      await clickItem(ITEMS.HAS_ISSUE.value);
+
+      expect(findListbox().props('toggleText')).toBe('No longer detected +1 more');
+    });
+
+    it(`passes 'Still detected' by default`, () => {
+      expect(findListbox().props('toggleText')).toBe('Still detected');
+    });
+
+    it(`passes 'All activity' when no option is selected`, async () => {
+      await unselectDefaultValue();
+
+      expect(findListbox().props('toggleText')).toBe('All activity');
+    });
+
+    it(`passes 'All activity' when All option is selected`, async () => {
+      await clickItem(ALL_ID);
+
+      expect(findListbox().props('toggleText')).toBe('All activity');
+    });
+  });
+
   describe('filter-changed event', () => {
+    it('is emitted with DEFAULT_VALUES when created', () => {
+      expect(wrapper.emitted('filter-changed')[0][0]).toStrictEqual({
+        hasIssues: undefined,
+        hasResolution: false,
+        hasMergeRequest: undefined,
+        hasRemediations: undefined,
+      });
+    });
+
     it('emits the expected data for the all option', async () => {
       await clickItem(ALL_ID);
 
-      expect(wrapper.emitted('filter-changed')).toHaveLength(1);
-      expect(wrapper.emitted('filter-changed')[0][0]).toStrictEqual({
+      expect(wrapper.emitted('filter-changed')[1][0]).toStrictEqual({
         hasIssues: undefined,
         hasResolution: undefined,
         hasMergeRequest: undefined,
@@ -168,15 +212,14 @@ describe('Activity Filter component', () => {
     `(
       'emits the expected data for $selectedItems',
       async ({ selectedItems, hasIssues, hasResolution, hasMergeRequest, hasRemediations }) => {
+        await unselectDefaultValue();
+
         for await (const value of selectedItems) {
           await clickItem(value);
         }
 
-        // Take the emit of the last item as this will include the change of all items
-        const emitIndexToCheck = selectedItems.length - 1;
-
         expectSelectedItems(selectedItems);
-        expect(wrapper.emitted('filter-changed')[emitIndexToCheck][0]).toEqual({
+        expect(wrapper.emitted('filter-changed').at(-1)[0]).toEqual({
           hasIssues,
           hasMergeRequest,
           hasResolution,
@@ -200,8 +243,7 @@ describe('Activity Filter component', () => {
     it('emits the expected data for the all option', async () => {
       await clickItem(ALL_ID);
 
-      expect(wrapper.emitted('filter-changed')).toHaveLength(1);
-      expect(wrapper.emitted('filter-changed')[0][0]).toStrictEqual({
+      expect(wrapper.emitted('filter-changed')[1][0]).toStrictEqual({
         hasIssues: undefined,
         hasResolution: undefined,
       });
@@ -214,15 +256,14 @@ describe('Activity Filter component', () => {
     `(
       'emits the expected data for $selectedItems',
       async ({ selectedItems, hasIssues, hasResolution }) => {
+        await unselectDefaultValue();
+
         for await (const value of selectedItems) {
           await clickItem(value);
         }
 
-        // Take the emit of the last item as this will include the change of all items
-        const emitIndexToCheck = selectedItems.length - 1;
-
         expectSelectedItems(selectedItems);
-        expect(wrapper.emitted('filter-changed')[emitIndexToCheck][0]).toEqual({
+        expect(wrapper.emitted('filter-changed').at(-1)[0]).toEqual({
           hasIssues,
           hasResolution,
         });
