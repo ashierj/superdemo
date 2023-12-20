@@ -10,7 +10,7 @@ RSpec.describe 'Admin::AuditLogs', :js, feature_category: :audit_events do
 
   before do
     sign_in(admin)
-    enable_admin_mode!(admin)
+    gitlab_enable_admin_mode_sign_in(admin)
   end
 
   context 'unlicensed' do

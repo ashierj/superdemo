@@ -22,7 +22,7 @@ RSpec.describe 'Expiring Subscription Message', :js, :freeze_time, feature_categ
         end
 
         sign_in(admin)
-        enable_admin_mode!(admin, use_ui: true)
+        gitlab_enable_admin_mode_sign_in(admin, use_mock_admin_mode: false)
       end
 
       context 'with a license with no expiration' do

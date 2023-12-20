@@ -24,7 +24,7 @@ RSpec.describe 'DevOps Reports page', :js, feature_category: :devops_reports do
   before do
     admin = create(:admin)
     sign_in(admin)
-    enable_admin_mode!(admin)
+    gitlab_enable_admin_mode_sign_in(admin)
   end
 
   context 'with ultimate license' do

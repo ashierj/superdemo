@@ -11,7 +11,7 @@ RSpec.describe 'Admin::Users', feature_category: :user_profile do
 
   before do
     sign_in(admin)
-    enable_admin_mode!(admin)
+    gitlab_enable_admin_mode_sign_in(admin)
   end
 
   describe 'GET /admin/users/edit' do

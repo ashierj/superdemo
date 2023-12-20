@@ -6,7 +6,7 @@ RSpec.describe 'Admin Dashboard', feature_category: :shared do
   before do
     admin = create(:admin)
     sign_in(admin)
-    enable_admin_mode!(admin)
+    gitlab_enable_admin_mode_sign_in(admin)
   end
 
   describe 'Users statistic' do

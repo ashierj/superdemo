@@ -53,7 +53,7 @@ RSpec.describe 'Clusterable > Show page', feature_category: :deployment_manageme
     let(:cluster) { create(:cluster, :provided_by_gcp, :instance) }
 
     before do
-      enable_admin_mode!(current_user)
+      gitlab_enable_admin_mode_sign_in(current_user)
     end
 
     it 'shows the environments tab' do

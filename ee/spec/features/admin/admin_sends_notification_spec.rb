@@ -16,7 +16,7 @@ RSpec.describe "Admin sends notification", :js, :sidekiq_might_not_need_inline, 
     group.add_developer(user2)
 
     sign_in(admin)
-    enable_admin_mode!(admin)
+    gitlab_enable_admin_mode_sign_in(admin)
 
     visit(admin_email_path)
 
