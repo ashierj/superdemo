@@ -4,7 +4,7 @@ import { GlCard, GlLink, GlButton, GlIcon, GlFormGroup } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import Container from '../rules.vue';
+import Container from '../rules/rules.vue';
 import ScanResultPolicy from './scan_result_policy.vue';
 import PolicyDetails from './policy_details.vue';
 

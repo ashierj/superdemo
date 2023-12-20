@@ -3,9 +3,9 @@ import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
-import ApproversList from 'ee/approvals/components/approvers_list.vue';
-import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
-import RuleForm, { READONLY_NAMES } from 'ee/approvals/components/rule_form.vue';
+import ApproversList from 'ee/approvals/components/approvers/approvers_list.vue';
+import ApproversSelect from 'ee/approvals/components/approvers/approvers_select.vue';
+import RuleForm, { READONLY_NAMES } from 'ee/approvals/components/rules/rule_form.vue';
 import { TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS } from 'ee/approvals/constants';
 import { createStoreOptions } from 'ee/approvals/stores';
 import projectSettingsModule from 'ee/approvals/stores/modules/project_settings';
@@ -23,7 +23,7 @@ import {
   TEST_RULE_WITH_PROTECTED_BRANCHES,
   TEST_RULE_WITH_ALL_BRANCHES,
   TEST_RULE_WITH_ALL_PROTECTED_BRANCHES,
-} from '../mocks';
+} from '../../mocks';
 
 const TEST_PROJECT_ID = '7';
 const TEST_APPROVERS = [{ id: 7, type: TYPE_USER }];

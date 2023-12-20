@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
-import ModalRuleRemove from 'ee/approvals/components/modal_rule_remove.vue';
+import ModalRuleRemove from 'ee/approvals/components/rule_modal/remove_rule.vue';
 import { stubComponent } from 'helpers/stub_component';
 import GlModalVuex from '~/vue_shared/components/gl_modal_vuex.vue';
 

@@ -2,8 +2,8 @@
 import { GlButton, GlTooltipDirective, GlAvatarLabeled } from '@gitlab/ui';
 import { __ } from '~/locale';
 import { AVATAR_SHAPE_OPTION_CIRCLE, AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
-import { TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS } from '../constants';
-import HiddenGroupsItem from './hidden_groups_item.vue';
+import { TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS } from '../../constants';
+import HiddenGroupsItem from '../hidden_groups_item.vue';
 
 const VALID_APPROVER_TYPES = [TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS];
 

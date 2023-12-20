@@ -1,6 +1,6 @@
 import { GlButton, GlAvatarLabeled } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import ApproversListItem from 'ee/approvals/components/approvers_list_item.vue';
+import ApproversListItem from 'ee/approvals/components/approvers/approvers_list_item.vue';
 import HiddenGroupsItem from 'ee/approvals/components/hidden_groups_item.vue';
 import { TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS } from 'ee/approvals/constants';
 import { AVATAR_SHAPE_OPTION_CIRCLE, AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';

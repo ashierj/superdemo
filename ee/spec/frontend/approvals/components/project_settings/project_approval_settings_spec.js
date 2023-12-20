@@ -2,7 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
-import ApprovalSettings from 'ee/approvals/components/approval_settings.vue';
+import ApprovalSettings from 'ee/approvals/components/approval_settings/approval_settings.vue';
 import ProjectApprovalSettings from 'ee/approvals/components/project_settings/project_approval_settings.vue';
 import { PROJECT_APPROVAL_SETTINGS_LABELS_I18N } from 'ee/approvals/constants';
 import { mergeRequestApprovalSettingsMappers } from 'ee/approvals/mappers';

@@ -1,7 +1,7 @@
 import { GlIcon, GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
-import ApprovalSettingsLockedIcon from 'ee/approvals/components/approval_settings_locked_icon.vue';
+import ApprovalSettingsLockedIcon from 'ee/approvals/components/approval_settings/approval_settings_locked_icon.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 describe('ApprovalSettingsLockedIcon', () => {

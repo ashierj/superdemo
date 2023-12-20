@@ -5,7 +5,7 @@ import { __, s__ } from '~/locale';
 
 import SettingsBlock from '~/vue_shared/components/settings/settings_block.vue';
 import { GROUP_APPROVAL_SETTINGS_LABELS_I18N } from '../../constants';
-import ApprovalSettings from '../approval_settings.vue';
+import ApprovalSettings from '../approval_settings/approval_settings.vue';
 
 export default {
   name: 'GroupApprovalSettingsApp',

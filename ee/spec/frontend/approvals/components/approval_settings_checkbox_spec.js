@@ -1,7 +1,7 @@
 import { GlFormCheckbox } from '@gitlab/ui';
 
-import ApprovalSettingsCheckbox from 'ee/approvals/components/approval_settings_checkbox.vue';
-import ApprovalSettingsLockedIcon from 'ee/approvals/components/approval_settings_locked_icon.vue';
+import ApprovalSettingsCheckbox from 'ee/approvals/components/approval_settings/approval_settings_checkbox.vue';
+import ApprovalSettingsLockedIcon from 'ee/approvals/components/approval_settings/approval_settings_locked_icon.vue';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('ApprovalSettingsCheckbox', () => {

@@ -3,7 +3,7 @@
 import { mapState } from 'vuex';
 import { __ } from '~/locale';
 import GlModalVuex from '~/vue_shared/components/gl_modal_vuex.vue';
-import RuleForm from './rule_form.vue';
+import RuleForm from '../rules/rule_form.vue';
 
 export default {
   components: {

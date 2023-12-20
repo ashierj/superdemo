@@ -1,5 +1,5 @@
 <script>
-import { COVERAGE_CHECK_NAME, APPROVAL_RULE_CONFIGS } from '../constants';
+import { COVERAGE_CHECK_NAME, APPROVAL_RULE_CONFIGS } from '../../constants';
 import ApprovalCheckPopover from './approval_check_popover.vue';
 
 export default {
