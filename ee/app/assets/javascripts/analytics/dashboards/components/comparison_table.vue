@@ -65,7 +65,7 @@ export default {
 };
 </script>
 <template>
-  <gl-table-lite :fields="dashboardTableFields" :items="tableData">
+  <gl-table-lite :fields="dashboardTableFields" :items="tableData" table-class="gl-my-0">
     <template #head()="{ field: { label, start, end } }">
       <template v-if="!start || !end">
         {{ label }}
