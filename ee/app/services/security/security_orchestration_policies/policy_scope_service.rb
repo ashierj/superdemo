@@ -4,13 +4,21 @@ module Security
   module SecurityOrchestrationPolicies
     class PolicyScopeService < BaseProjectService
       def policy_applicable?(policy)
-        return true if Feature.disabled?(:security_policies_policy_scope, project)
+        return true unless policy_scope_enabled?
         return false if policy.blank?
 
         applicable_for_compliance_framework?(policy) && applicable_for_project?(policy)
       end
 
       private
+
+      def policy_scope_enabled?
+        group = project.group
+        return false if group.nil?
+
+        Feature.enabled?(:security_policies_policy_scope, group) &&
+          group.namespace_settings.toggle_security_policies_policy_scope?
+      end
 
       def applicable_for_compliance_framework?(policy)
         policy_scope_compliance_frameworks = policy.dig(:policy_scope, :compliance_frameworks).to_a

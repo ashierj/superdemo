@@ -652,6 +652,84 @@ RSpec.describe GroupsController, feature_category: :groups_and_projects do
       end
     end
 
+    context 'when `toggle_security_policies_policy_scope` is specified' do
+      let(:params) { { toggle_security_policies_policy_scope: true } }
+      let(:submitted_group) { group }
+
+      subject(:put_update) do
+        put :update, params: { id: submitted_group.to_param, group: params }
+      end
+
+      before_all do
+        group.add_owner(user)
+      end
+
+      before do
+        sign_in(user)
+      end
+
+      it 'allows the parameter' do
+        expect(group.namespace_settings.toggle_security_policies_policy_scope?).to eq(false)
+
+        put_update
+
+        expect(group.reload.namespace_settings.toggle_security_policies_policy_scope?).to eq(true)
+      end
+
+      context 'when the security_policies_policy_scope feature is disabled' do
+        before do
+          stub_feature_flags(security_policies_policy_scope: false)
+        end
+
+        it 'does not allow the parameter' do
+          expect(group.namespace_settings.toggle_security_policies_policy_scope?).to eq(false)
+
+          put_update
+
+          expect(group.reload.namespace_settings.toggle_security_policies_policy_scope?).to eq(false)
+        end
+      end
+    end
+
+    context 'when `lock_toggle_security_policies_policy_scope` is specified' do
+      let(:params) { { lock_toggle_security_policies_policy_scope: true } }
+      let(:submitted_group) { group }
+
+      subject(:put_update) do
+        put :update, params: { id: submitted_group.to_param, group: params }
+      end
+
+      before_all do
+        group.add_owner(user)
+      end
+
+      before do
+        sign_in(user)
+      end
+
+      it 'allows the parameter' do
+        expect(group.namespace_settings.lock_toggle_security_policies_policy_scope?).to eq(false)
+
+        put_update
+
+        expect(group.reload.namespace_settings.lock_toggle_security_policies_policy_scope?).to eq(true)
+      end
+
+      context 'when the security_policies_policy_scope feature is disabled' do
+        before do
+          stub_feature_flags(security_policies_policy_scope: false)
+        end
+
+        it 'does not allow the parameter' do
+          expect(group.namespace_settings.lock_toggle_security_policies_policy_scope?).to eq(false)
+
+          put_update
+
+          expect(group.reload.namespace_settings.lock_toggle_security_policies_policy_scope?).to eq(false)
+        end
+      end
+    end
+
     context 'when `default_branch_protection` is specified' do
       let(:params) do
         { id: group.to_param, group: { default_branch_protection: Gitlab::Access::PROTECTION_NONE } }

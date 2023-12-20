@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_policy_management do
-  let_it_be_with_reload(:project) { create(:project) }
+  let_it_be_with_reload(:project) { create(:project, group: create(:group)) }
   let_it_be_with_reload(:namespace) { create(:group, :public) }
   let_it_be(:timezones) { [{ identifier: "Europe/Paris" }] }
 
@@ -108,6 +108,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           role_approver_types: %w[developer maintainer owner],
           scan_policy_documentation_path: kind_of(String),
           scan_result_approvers: approvers&.to_json,
+          security_policies_policy_scope_toggle_enabled: 'false',
           software_licenses: [apache_license.name, mit_license.name],
           global_group_approvers_enabled:
             Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled.to_json,
@@ -169,6 +170,14 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           }.to_json))
         end
       end
+
+      context 'when toggle_security_policies_policy_scope is enabled' do
+        before_all do
+          project.group.namespace_settings.update!(toggle_security_policies_policy_scope: true)
+        end
+
+        it { is_expected.to match(base_data.merge(security_policies_policy_scope_toggle_enabled: 'true')) }
+      end
     end
 
     context 'for namespace' do
@@ -192,6 +201,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           namespace_path: namespace.full_path,
           namespace_id: namespace.id,
           scan_result_approvers: approvers&.to_json,
+          security_policies_policy_scope_toggle_enabled: 'false',
           software_licenses: [apache_license.name, mit_license.name],
           global_group_approvers_enabled:
             Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled.to_json,
@@ -258,6 +268,14 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
             branch: policy_management_project.default_branch_or_main
           }.to_json))
         end
+      end
+
+      context 'when toggle_security_policies_policy_scope is enabled' do
+        before_all do
+          namespace.namespace_settings.update!(toggle_security_policies_policy_scope: true)
+        end
+
+        it { is_expected.to match(base_data.merge(security_policies_policy_scope_toggle_enabled: 'true')) }
       end
     end
   end
