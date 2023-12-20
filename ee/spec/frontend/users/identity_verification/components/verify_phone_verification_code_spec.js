@@ -29,7 +29,6 @@ describe('Verify phone verification code input component', () => {
 
   const SEND_CODE_PATH = '/users/identity_verification/send_phone_verification_code';
   const VERIFY_CODE_PATH = '/users/identity_verification/verify_phone_verification_code';
-  const MOCK_ARKOSE_TOKEN = 'verification-token';
 
   const findForm = () => wrapper.findComponent(GlForm);
 
@@ -53,7 +52,6 @@ describe('Verify phone verification code input component', () => {
           internationalDialCode: INTERNATIONAL_DIAL_CODE,
           number: NUMBER,
         },
-        arkoseToken: MOCK_ARKOSE_TOKEN,
         ...props,
       },
       provide: {
@@ -146,6 +144,8 @@ describe('Verify phone verification code input component', () => {
       beforeEach(() => {
         axiosMock.onPost(SEND_CODE_PATH).reply(HTTP_STATUS_OK, { success: true });
 
+        createComponent({ additionalRequestParams: { captcha_token: '1234' } });
+
         resendCode();
         return waitForPromises();
       });
@@ -154,9 +154,14 @@ describe('Verify phone verification code input component', () => {
         expect(wrapper.emitted('verification-attempt')).toHaveLength(1);
       });
 
-      it('posts correct data', () => {
+      it('posts correct data with additional request params', () => {
         expect(axiosMock.history.post[0].data).toBe(
-          '{"country":"US","international_dial_code":"1","phone_number":"555","arkose_labs_token":"verification-token"}',
+          JSON.stringify({
+            country: 'US',
+            international_dial_code: '1',
+            phone_number: '555',
+            captcha_token: '1234',
+          }),
         );
       });
 
@@ -199,14 +204,19 @@ describe('Verify phone verification code input component', () => {
       beforeEach(() => {
         axiosMock.onPost(VERIFY_CODE_PATH).reply(HTTP_STATUS_OK, { success: true });
 
+        createComponent({ additionalRequestParams: { captcha_token: '1234' } });
+
         enterCode('123');
         submitForm();
         return waitForPromises();
       });
 
-      it('posts correct data', () => {
+      it('posts correct data with additional request params', () => {
         expect(axiosMock.history.post[0].data).toBe(
-          '{"verification_code":"123","arkose_labs_token":"verification-token"}',
+          JSON.stringify({
+            verification_code: '123',
+            captcha_token: '1234',
+          }),
         );
       });
 
@@ -265,12 +275,11 @@ describe('Verify phone verification code input component', () => {
       });
     });
 
-    describe('Arkose challenge', () => {
-      describe('when arkose challenge is shown but not solved', () => {
+    describe('Captcha', () => {
+      describe('when disableSubmitButton is true', () => {
         beforeEach(() => {
           createComponent({
-            arkoseChallengeShown: true,
-            arkoseChallengeSolved: false,
+            disableSubmitButton: true,
           });
 
           enterCode('000');
@@ -281,24 +290,6 @@ describe('Verify phone verification code input component', () => {
           expect(findVerifyCodeButton().attributes('disabled')).toBe('true');
           expect(findGoBackLink().exists()).toBe(false);
           expect(findResendCodeButton().exists()).toBe(false);
-        });
-      });
-
-      describe('when arkose challenge is shown and solved', () => {
-        beforeEach(() => {
-          createComponent({
-            arkoseChallengeShown: true,
-            arkoseChallengeSolved: true,
-          });
-
-          enterCode('000');
-          return waitForPromises();
-        });
-
-        it('should enable the verify, go back and resend buttons', () => {
-          expect(findVerifyCodeButton().attributes('disabled')).toBe(undefined);
-          expect(findGoBackLink().exists()).toBe(true);
-          expect(findResendCodeButton().exists()).toBe(true);
         });
       });
     });

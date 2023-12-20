@@ -50,19 +50,6 @@ module PhoneVerification
         error
       end
 
-      def self.daily_transaction_limit_exceeded?
-        return false unless Feature.enabled?(:soft_limit_daily_phone_verifications)
-
-        ::Gitlab::ApplicationRateLimiter.peek(:soft_phone_verification_transactions_limit, scope: nil)
-      end
-
-      def self.assume_user_high_risk_if_daily_limit_exceeded!(user)
-        return unless user
-        return unless daily_transaction_limit_exceeded?
-
-        user.assume_high_risk(reason: 'Phone verification daily transaction limit exceeded')
-      end
-
       private
 
       attr_reader :user, :params, :record
@@ -151,14 +138,7 @@ module PhoneVerification
       end
 
       def success(risk_result, send_code_result)
-        if Feature.enabled?(:soft_limit_daily_phone_verifications) &&
-            ::Gitlab::ApplicationRateLimiter.throttled?(:soft_phone_verification_transactions_limit, scope: nil)
-          ::Gitlab::AppLogger.info(
-            class: self.class.name,
-            message: 'IdentityVerification::Phone',
-            event: 'Phone verification daily transaction limit exceeded'
-          )
-        end
+        PhoneVerification::Users::RateLimitService.increase_daily_attempts
 
         attrs = { telesign_reference_xid: send_code_result[:telesign_reference_xid] }
         attrs[:risk_score] = risk_result[:risk_score] if Feature.enabled?(:telesign_intelligence)

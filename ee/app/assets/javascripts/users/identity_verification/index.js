@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-
+import { getParsedDataset } from '~/pages/admin/application_settings/utils';
 import IdentityVerificationWizard from './components/wizard.vue';
 
 export const initIdentityVerification = () => {
@@ -20,6 +20,11 @@ export const initIdentityVerification = () => {
     successfulVerificationPath,
   } = convertObjectPropsToCamelCase(JSON.parse(el.dataset.data), { deep: true });
 
+  const phoneNumberParsedData = getParsedDataset({
+    dataset: phoneNumber,
+    booleanAttributes: ['enableArkoseChallenge', 'showArkoseChallenge', 'showRecaptchaChallenge'],
+  });
+
   return new Vue({
     el,
     apolloProvider,
@@ -27,11 +32,11 @@ export const initIdentityVerification = () => {
     provide: {
       email,
       creditCard,
-      phoneNumber,
+      phoneNumber: phoneNumberParsedData,
       offerPhoneNumberExemption,
       verificationStatePath,
       phoneExemptionPath,
-      arkose,
+      arkoseConfiguration: arkose,
       successfulVerificationPath,
     },
     render: (createElement) => createElement(IdentityVerificationWizard),

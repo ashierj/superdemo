@@ -4,7 +4,7 @@ import { s__ } from '~/locale';
 import PhoneVerification from 'ee/users/identity_verification/components/phone_verification.vue';
 import InternationalPhoneInput from 'ee/users/identity_verification/components/international_phone_input.vue';
 import VerifyPhoneVerificationCode from 'ee/users/identity_verification/components/verify_phone_verification_code.vue';
-import PhoneVerificationArkoseApp from 'ee/arkose_labs/components/phone_verification_arkose_app.vue';
+import Captcha from 'ee/users/identity_verification/components/identity_verification_captcha.vue';
 
 describe('Phone Verification component', () => {
   let wrapper;
@@ -15,29 +15,22 @@ describe('Phone Verification component', () => {
     number: '555',
   };
 
-  const MOCK_PUBLIC_KEY = 'arkose-labs-public-api-key';
-  const MOCK_DOMAIN = 'client-api.arkoselabs.com';
-  const MOCK_ARKOSE_TOKEN = 'verification-token';
-
   const findInternationalPhoneInput = () => wrapper.findComponent(InternationalPhoneInput);
   const findVerifyCodeInput = () => wrapper.findComponent(VerifyPhoneVerificationCode);
   const findPhoneExemptionLink = () =>
     wrapper.findByText(s__('IdentityVerification|Verify with a credit card instead?'));
 
-  const findPhoneVerificationArkoseApp = () => wrapper.findComponent(PhoneVerificationArkoseApp);
+  const findCaptcha = () => wrapper.findComponent(Captcha);
 
-  const createComponent = (provide = {}, props = {}, glFeatures = {}) => {
+  const createComponent = (provide = {}, props = {}) => {
     wrapper = shallowMountExtended(PhoneVerification, {
       provide: {
         offerPhoneNumberExemption: true,
-        arkose: {
-          apiKey: MOCK_PUBLIC_KEY,
-          domain: MOCK_DOMAIN,
-        },
         phoneNumber: {
-          challengeUser: false,
+          enableArkoseChallenge: true,
+          showArkoseChallenge: true,
+          showRecaptchaChallenge: true,
         },
-        glFeatures,
         ...provide,
       },
       propsData: props,
@@ -136,116 +129,60 @@ describe('Phone Verification component', () => {
     });
   });
 
-  describe('Arkose challenge', () => {
-    it('does not show phone verification arkose app by default', () => {
-      expect(findPhoneVerificationArkoseApp().exists()).toBe(false);
-    });
+  describe('Captcha', () => {
+    it('renders the phone verification captcha component', () => {
+      expect(findCaptcha().exists()).toBe(true);
 
-    it('passes arkoseChallengeShown prop as false', () => {
-      expect(findInternationalPhoneInput().props()).toMatchObject({
-        arkoseChallengeShown: false,
-        arkoseChallengeSolved: false,
-        arkoseToken: '',
+      expect(findCaptcha().props()).toMatchObject({
+        enableArkoseChallenge: true,
+        showArkoseChallenge: true,
+        showRecaptchaChallenge: true,
+        verificationAttempts: 0,
       });
     });
 
-    describe('when `arkoseLabsPhoneVerificationChallenge` feature flag is enabled', () => {
-      describe('when `challengeUser` is true', () => {
-        beforeEach(() => {
-          createComponent(
-            { phoneNumber: { challengeUser: true } },
-            {},
-            { arkoseLabsPhoneVerificationChallenge: true },
-          );
-        });
+    describe('when `verification-attempt` event is emitted', () => {
+      it('passes it as a prop to phone verification captcha component', async () => {
+        findInternationalPhoneInput().vm.$emit('verification-attempt');
+        await nextTick();
 
-        it('shows phone verification arkose app', () => {
-          expect(findPhoneVerificationArkoseApp().exists()).toBe(true);
-
-          expect(findPhoneVerificationArkoseApp().props()).toMatchObject({
-            publicKey: MOCK_PUBLIC_KEY,
-            domain: MOCK_DOMAIN,
-            resetSession: false,
-          });
-        });
-
-        it('passes correct arkose props to InternationalPhoneInput', () => {
-          expect(findInternationalPhoneInput().props()).toMatchObject({
-            arkoseChallengeShown: true,
-            arkoseChallengeSolved: false,
-            arkoseToken: '',
-          });
-        });
-
-        it('passes the correct arkose props to VerifyPhoneVerificationCode', async () => {
-          findInternationalPhoneInput().vm.$emit('next', PHONE_NUMBER);
-          await nextTick();
-
-          expect(findVerifyCodeInput().props()).toMatchObject({
-            arkoseChallengeShown: true,
-            arkoseChallengeSolved: false,
-            arkoseToken: '',
-          });
-        });
-
-        describe('when the arkose challenge is solved', () => {
-          it('passes correct arkose props to InternationalPhoneInput', async () => {
-            findPhoneVerificationArkoseApp().vm.$emit('challenge-solved', MOCK_ARKOSE_TOKEN);
-            await nextTick();
-
-            expect(findInternationalPhoneInput().props()).toMatchObject({
-              arkoseChallengeShown: true,
-              arkoseChallengeSolved: true,
-              arkoseToken: MOCK_ARKOSE_TOKEN,
-            });
-          });
-
-          it('passes the correct arkose props to VerifyPhoneVerificationCode', async () => {
-            findInternationalPhoneInput().vm.$emit('next', PHONE_NUMBER);
-            await nextTick();
-
-            findPhoneVerificationArkoseApp().vm.$emit('challenge-solved', MOCK_ARKOSE_TOKEN);
-            await nextTick();
-
-            expect(findVerifyCodeInput().props()).toMatchObject({
-              arkoseChallengeShown: true,
-              arkoseChallengeSolved: true,
-              arkoseToken: MOCK_ARKOSE_TOKEN,
-            });
-          });
-
-          it('passes resetSession prop as false to PhoneVerificationArkoseApp', async () => {
-            findPhoneVerificationArkoseApp().vm.$emit('challenge-solved', MOCK_ARKOSE_TOKEN);
-            await nextTick();
-
-            expect(findPhoneVerificationArkoseApp().props()).toMatchObject({
-              publicKey: MOCK_PUBLIC_KEY,
-              domain: MOCK_DOMAIN,
-              resetSession: false,
-            });
-          });
+        expect(findCaptcha().props()).toMatchObject({
+          verificationAttempts: 1,
         });
       });
+    });
 
-      describe('when verification attempts are greater than or equal to 3', () => {
-        beforeEach(() => {
-          createComponent({}, {}, { arkoseLabsPhoneVerificationChallenge: true });
+    describe('when `captcha-shown` event is emitted', () => {
+      it('passes disableSubmitButton prop as true', async () => {
+        findCaptcha().vm.$emit('captcha-shown');
+        await nextTick();
 
-          findInternationalPhoneInput().vm.$emit('verification-attempt');
-          findInternationalPhoneInput().vm.$emit('verification-attempt');
-          findInternationalPhoneInput().vm.$emit('verification-attempt');
-
-          return nextTick();
+        expect(findInternationalPhoneInput().props()).toMatchObject({
+          disableSubmitButton: true,
         });
+      });
+    });
 
-        it('shows phone verification arkose app with resetSession prop as true', () => {
-          expect(findPhoneVerificationArkoseApp().exists()).toBe(true);
+    describe('when `captcha-solved` event is emitted', () => {
+      it('passes correct props', async () => {
+        findCaptcha().vm.$emit('captcha-solved', { captcha_token: '1234' });
+        await nextTick();
 
-          expect(findPhoneVerificationArkoseApp().props()).toMatchObject({
-            publicKey: MOCK_PUBLIC_KEY,
-            domain: MOCK_DOMAIN,
-            resetSession: true,
-          });
+        expect(findInternationalPhoneInput().props()).toMatchObject({
+          disableSubmitButton: false,
+          additionalRequestParams: { captcha_token: '1234' },
+        });
+      });
+    });
+
+    describe('when `captcha-reset` event is emitted', () => {
+      it('passes correct props', async () => {
+        findCaptcha().vm.$emit('captcha-reset');
+        await nextTick();
+
+        expect(findInternationalPhoneInput().props()).toMatchObject({
+          disableSubmitButton: true,
+          additionalRequestParams: {},
         });
       });
     });

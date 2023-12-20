@@ -14,9 +14,6 @@ feature_category: :system_access do
   before do
     stub_application_setting_enum('email_confirmation_setting', 'hard')
     stub_application_setting(require_admin_approval_after_user_signup: false)
-
-    allow(::PhoneVerification::Users::SendVerificationCodeService)
-      .to receive(:daily_transaction_limit_exceeded?).and_return(false)
   end
 
   shared_examples 'it requires a valid verification_user_id' do
@@ -176,9 +173,11 @@ feature_category: :system_access do
       }
       logger_args[:reason] = reason.to_s if reason
 
-      expect(Gitlab::AppLogger).to receive(:info).with(hash_including(logger_args))
+      allow(Gitlab::AppLogger).to receive(:info).and_call_original
 
       do_request
+
+      expect(Gitlab::AppLogger).to have_received(:info).with(a_hash_including(logger_args))
 
       tracking_args = {
         category: message,
@@ -192,67 +191,204 @@ feature_category: :system_access do
     end
   end
 
-  shared_examples 'verifies arkose token before phone verification' do
-    subject { response }
+  shared_examples 'it verifies arkose token before phone verification' do
+    before do
+      stub_feature_flags(soft_limit_daily_phone_verifications: false)
+    end
 
     context 'when feature flag arkose_labs_phone_verification_challenge is disabled' do
       before do
         stub_feature_flags(arkose_labs_phone_verification_challenge: false)
+      end
+
+      it 'returns 200' do
+        do_request
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
+    context 'when arkose is enabled' do
+      before do
+        allow(::Gitlab::ApplicationRateLimiter)
+        .to receive(:peek)
+        .with(:phone_verification_challenge, scope: user)
+        .and_return(false)
+      end
+
+      it 'increases verification attempts' do
+        expect(::Gitlab::ApplicationRateLimiter)
+          .to receive(:throttled?)
+          .with(:phone_verification_challenge, scope: user)
 
         do_request
       end
 
-      it { is_expected.to have_gitlab_http_status(:ok) }
-    end
-
-    context 'when arkose rate-limit hasn\'t been triggered' do
-      before do
-        allow(::Gitlab::ApplicationRateLimiter)
-          .to receive(:throttled?)
-          .with(:phone_verification_challenge, scope: user)
-          .and_return(false)
-
+      it 'returns 200' do
         do_request
+
+        expect(response).to have_gitlab_http_status(:ok)
       end
 
-      it { is_expected.to have_gitlab_http_status(:ok) }
-    end
-
-    context 'when arkose rate-limit has been triggered' do
-      before do
-        allow(::Gitlab::ApplicationRateLimiter)
-          .to receive(:throttled?)
-          .with(:phone_verification_challenge, scope: user)
-          .and_return(true)
-      end
-
-      it_behaves_like 'logs and tracks the event', :phone, :verification_challenge_triggered
-
-      context 'when arkose_labs_token param is not present' do
-        it 'returns a 400 with an error message', :aggregate_failures do
-          do_request
-
-          expect(response).to have_gitlab_http_status(:bad_request)
-          expect(response.body).to eq(
-            { message: s_('IdentityVerification|Complete verification to sign up.') }.to_json)
-        end
-      end
-
-      context 'when arkose_labs_token param is present' do
-        let(:params) do
-          { arkose_labs_token: 'verification-token', identity_verification: { phone_number: '555' } }
-        end
-
+      context 'when phone verification challenge rate-limit has been reached' do
         before do
-          verification_params = { session_token: params[:arkose_labs_token], user: nil }
+          allow(::Gitlab::ApplicationRateLimiter)
+            .to receive(:peek)
+            .with(:phone_verification_challenge, scope: user)
+            .and_return(true)
+        end
 
-          allow_next_instance_of(Arkose::TokenVerificationService, verification_params) do |instance|
-            allow(instance).to receive(:execute).and_return(service_response)
+        it_behaves_like 'logs and tracks the event', :phone, :arkose_challenge_shown
+
+        context 'when arkose_labs_token param is not present' do
+          it 'returns a 400 with an error message', :aggregate_failures do
+            do_request
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(response.body).to eq(
+              { message: s_('IdentityVerification|Complete verification to sign up.') }.to_json)
           end
         end
 
-        context 'when token verification fails' do
-          let(:service_response) { ServiceResponse.error(message: 'Captcha was not solved') }
+        context 'when arkose_labs_token param is present' do
+          let(:params) do
+            { arkose_labs_token: 'verification-token', identity_verification: { phone_number: '555' } }
+          end
+
+          before do
+            verification_params = { session_token: params[:arkose_labs_token], user: nil }
+
+            allow_next_instance_of(Arkose::TokenVerificationService, verification_params) do |instance|
+              allow(instance).to receive(:execute).and_return(service_response)
+            end
+          end
+
+          context 'and token verification fails' do
+            let(:service_response) { ServiceResponse.error(message: 'captcha was not solved') }
+
+            it 'returns a 400 with an error message', :aggregate_failures do
+              do_request
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(response.body).to eq(
+                { message: s_('IdentityVerification|Complete verification to sign up.') }.to_json)
+            end
+          end
+
+          context 'and token verification succeeds' do
+            let(:service_response) { ServiceResponse.success }
+
+            it 'returns a 200' do
+              do_request
+
+              expect(response).to have_gitlab_http_status(:ok)
+            end
+          end
+        end
+      end
+    end
+  end
+
+  shared_examples 'it loads reCAPTCHA' do
+    before do
+      stub_feature_flags(arkose_labs_phone_verification_challenge: false)
+      stub_session(verification_user_id: unconfirmed_user.id)
+    end
+
+    context 'when reCAPTCHA is disabled' do
+      before do
+        allow(Gitlab::Recaptcha).to receive(:enabled?).and_return(false)
+      end
+
+      it 'does not load recaptcha configuration' do
+        expect(Gitlab::Recaptcha).not_to receive(:load_configurations!)
+
+        do_request
+      end
+    end
+
+    context 'when reCAPTCHA is enabled but daily limit has not been exceeded' do
+      before do
+        allow(Gitlab::Recaptcha).to receive(:enabled?).and_return(true)
+        allow(::Gitlab::ApplicationRateLimiter)
+          .to receive(:peek)
+          .with(:soft_phone_verification_transactions_limit, scope: nil)
+          .and_return(false)
+      end
+
+      it 'does not load reCAPTCHA configuration' do
+        expect(Gitlab::Recaptcha).not_to receive(:load_configurations!)
+
+        do_request
+      end
+    end
+
+    context 'when reCAPTCHA is enabled and daily limit has been exceeded' do
+      before do
+        allow(Gitlab::Recaptcha).to receive(:enabled?).and_return(true)
+        allow(::Gitlab::ApplicationRateLimiter)
+          .to receive(:peek)
+          .with(:soft_phone_verification_transactions_limit, scope: nil)
+          .and_return(true)
+      end
+
+      it 'loads reCAPTCHA configuration' do
+        expect(Gitlab::Recaptcha).to receive(:load_configurations!)
+
+        do_request
+      end
+    end
+  end
+
+  shared_examples 'it verifies reCAPTCHA response' do
+    before do
+      stub_feature_flags(arkose_labs_phone_verification_challenge: false)
+    end
+
+    context 'when feature flag soft_limit_daily_phone_verifications is disabled' do
+      before do
+        stub_feature_flags(soft_limit_daily_phone_verifications: false)
+      end
+
+      it 'returns 200' do
+        do_request
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
+    context 'when reCAPTCHA is enabled' do
+      before do
+        allow(Gitlab::Recaptcha).to receive(:enabled?).and_return(true)
+
+        allow(::Gitlab::ApplicationRateLimiter)
+          .to receive(:peek)
+          .with(:soft_phone_verification_transactions_limit, scope: nil)
+          .and_return(false)
+      end
+
+      it 'returns 200' do
+        do_request
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+
+      context 'when daily limit has been reached' do
+        before do
+          allow(::Gitlab::ApplicationRateLimiter)
+          .to receive(:peek)
+          .with(:soft_phone_verification_transactions_limit, scope: nil)
+          .and_return(true)
+        end
+
+        it_behaves_like 'logs and tracks the event', :phone, :recaptcha_shown
+
+        context 'and when reCAPTCHA has not been solved' do
+          before do
+            allow_next_instance_of(described_class) do |instance|
+              allow(instance).to receive(:verify_recaptcha).and_return(false)
+            end
+          end
 
           it 'returns a 400 with an error message', :aggregate_failures do
             do_request
@@ -263,13 +399,34 @@ feature_category: :system_access do
           end
         end
 
-        context 'when token verification succeeds' do
-          let(:service_response) { ServiceResponse.success }
+        context 'and when reCAPTCHA is solved' do
+          before do
+            allow_next_instance_of(described_class) do |instance|
+              allow(instance).to receive(:verify_recaptcha).and_return(true)
+            end
+          end
 
-          it 'returns a 200' do
+          it 'returns 200' do
             do_request
 
             expect(response).to have_gitlab_http_status(:ok)
+          end
+
+          context 'when arkose challenge is also enabled' do
+            before do
+              stub_feature_flags(arkose_labs_phone_verification_challenge: true)
+
+              allow(::Gitlab::ApplicationRateLimiter)
+                .to receive(:peek)
+                .with(:phone_verification_challenge, scope: user)
+                .and_return(true)
+            end
+
+            it 'does not expect an arkose token and returns a 200' do
+              do_request
+
+              expect(response).to have_gitlab_http_status(:ok)
+            end
           end
         end
       end
@@ -282,6 +439,7 @@ feature_category: :system_access do
     it_behaves_like 'it requires a valid verification_user_id'
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
+    it_behaves_like 'it loads reCAPTCHA'
 
     it 'renders template show with layout minimal' do
       stub_session(verification_user_id: unconfirmed_user.id)
@@ -418,9 +576,14 @@ feature_category: :system_access do
 
     context 'when rate limited' do
       before do
-        allow(Gitlab::ApplicationRateLimiter).to receive(:throttled?)
+        allow(::Gitlab::ApplicationRateLimiter).to receive(:peek)
+          .with(:soft_phone_verification_transactions_limit, scope: nil).and_return(false)
+
+        allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?)
           .with(:email_verification_code_send, scope: user).and_return(true)
+
         stub_session(verification_user_id: user.id)
+
         do_request
       end
 
@@ -490,7 +653,8 @@ feature_category: :system_access do
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
     it_behaves_like 'it ensures verification attempt is allowed', 'phone'
-    it_behaves_like 'verifies arkose token before phone verification'
+    it_behaves_like 'it verifies arkose token before phone verification'
+    it_behaves_like 'it verifies reCAPTCHA response'
 
     context 'when sending the code is successful' do
       it 'responds with status 200 OK' do
@@ -550,7 +714,8 @@ feature_category: :system_access do
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
     it_behaves_like 'it ensures verification attempt is allowed', 'phone'
-    it_behaves_like 'verifies arkose token before phone verification'
+    it_behaves_like 'it verifies arkose token before phone verification'
+    it_behaves_like 'it verifies reCAPTCHA response'
 
     context 'when code verification is successful' do
       it 'responds with status 200 OK' do
@@ -681,7 +846,7 @@ feature_category: :system_access do
       end
 
       it 'is executed' do
-        service = PhoneVerification::Users::SendVerificationCodeService
+        service = PhoneVerification::Users::RateLimitService
         expect(service).to receive(:assume_user_high_risk_if_daily_limit_exceeded!).with(user)
 
         do_request

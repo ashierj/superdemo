@@ -43,6 +43,7 @@ describe('initArkoseLabsScript', () => {
       `https://${TEST_DOMAIN}/v2/${TEST_PUBLIC_KEY}/api.js`,
     );
     expect(scriptTag.dataset.callback).toBe(EXPECTED_CALLBACK_NAME);
+    expect(scriptTag.getAttribute('id')).toBe('arkose-challenge-script');
   });
 
   it('when callback is called, cleans up the global object and resolves the Promise', () => {
@@ -62,5 +63,12 @@ describe('initArkoseLabsScript', () => {
     scriptTag.onerror(error);
 
     return expect(subject).rejects.toThrow(error);
+  });
+
+  it('only creates one script tag', () => {
+    initSubject();
+    initSubject();
+
+    expect(findScriptTags()).toHaveLength(1);
   });
 });
