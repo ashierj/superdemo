@@ -100,7 +100,8 @@ RSpec.describe Issue, :elastic_delete_by_query, feature_category: :global_search
         'visibility_level' => Gitlab::VisibilityLevel::INTERNAL,
         'hashed_root_namespace_id' => issue.project.namespace.hashed_root_namespace_id,
         'hidden' => issue.hidden?,
-        'archived' => issue.project.archived?
+        'archived' => issue.project.archived?,
+        'work_item_type_id' => issue.work_item_type_id
       })
     end
 
@@ -120,6 +121,13 @@ RSpec.describe Issue, :elastic_delete_by_query, feature_category: :global_search
       it 'does not include archived' do
         set_elasticsearch_migration_to :add_archived_to_issues, including: false
         expect(issue.__elasticsearch__.as_indexed_json).not_to include('archived')
+      end
+    end
+
+    context 'when add_work_item_type_id_to_issues migration is not finished' do
+      it 'does not include work_item_type_id' do
+        set_elasticsearch_migration_to :add_work_item_type_id_to_issues, including: false
+        expect(issue.__elasticsearch__.as_indexed_json).not_to include('work_item_type_id')
       end
     end
 

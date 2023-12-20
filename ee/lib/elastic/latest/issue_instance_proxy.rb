@@ -3,7 +3,7 @@
 module Elastic
   module Latest
     class IssueInstanceProxy < ApplicationInstanceProxy
-      SCHEMA_VERSION = 23_09
+      SCHEMA_VERSION = 23_12
 
       def as_indexed_json(options = {})
         data = {}
@@ -38,7 +38,15 @@ module Elastic
           data['archived'] = target.project.archived?
         end
 
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_work_item_type_id_to_issues)
+          data['work_item_type_id'] = target.work_item_type_id
+        end
+
         data.merge(generic_attributes)
+      end
+
+      def es_id
+        target.id.to_s
       end
 
       private
