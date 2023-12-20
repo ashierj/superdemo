@@ -469,6 +469,7 @@ RSpec.describe Admin::ApplicationSettingsController do
 
       before do
         allow(::Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
+        allow(helper).to receive(:index_exists?).and_return true
       end
 
       it 'warns when NOT using index aliases' do
@@ -488,6 +489,13 @@ RSpec.describe Admin::ApplicationSettingsController do
         get :advanced_search
         expect(assigns[:elasticsearch_warn_if_not_using_aliases]).to be_falsy
         expect(response).to have_gitlab_http_status(:ok)
+      end
+
+      it 'does NOT warn when default index does not exist' do
+        allow(helper).to receive(:alias_missing?).and_return true
+        allow(helper).to receive(:index_exists?).and_return false
+        get :advanced_search
+        expect(assigns[:elasticsearch_warn_if_not_using_aliases]).to be_falsey
       end
     end
 
