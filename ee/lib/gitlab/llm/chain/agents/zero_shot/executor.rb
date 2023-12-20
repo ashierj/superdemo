@@ -250,7 +250,10 @@ module Gitlab
                 PROMPT
               ),
               Utils::Prompt.as_user("Question: %<user_input>s"),
-              Utils::Prompt.as_assistant("Assistant: %<agent_scratchpad>s"),
+              # We're explicitly adding "\n" before the `Assistant:` in order to avoid the Anthropic API error
+              # `prompt must end with "\n\nAssistant:" turn`.
+              # See https://gitlab.com/gitlab-org/gitlab/-/issues/435911 for more information.
+              Utils::Prompt.as_assistant("\nAssistant: %<agent_scratchpad>s"),
               Utils::Prompt.as_assistant("Thought: ")
             ].freeze
           end
