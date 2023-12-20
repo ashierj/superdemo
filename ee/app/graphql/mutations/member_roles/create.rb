@@ -50,6 +50,10 @@ module Mutations
         GraphQL::Types::Boolean,
         required: false,
         description: 'Permission to read vulnerability.'
+      argument :remove_project,
+        GraphQL::Types::Boolean,
+        required: false,
+        description: 'Permission to delete projects.'
 
       def resolve(args)
         group = ::Gitlab::Graphql::Lazy.force(find_object(group_path: args.delete(:group_path))) if args[:group_path]

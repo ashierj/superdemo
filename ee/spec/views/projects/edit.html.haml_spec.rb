@@ -39,15 +39,22 @@ RSpec.describe 'projects/edit' do
     end
   end
 
-  context 'when rendering for a user that is not an owner' do
+  context 'when rendering for a user that is not an owner', feature_category: :permissions do
     let_it_be(:user) { create(:user) }
+
+    let(:can_archive_projects) { false }
+    let(:can_remove_projects) { false }
 
     before do
       allow(view).to receive(:can?).with(user, :archive_project, project).and_return(can_archive_projects)
+      allow(view).to receive(:can?).with(user, :remove_project, project).and_return(can_remove_projects)
       render
     end
 
     subject { rendered }
+
+    it { is_expected.not_to have_link(_('Archive project')) }
+    it { is_expected.not_to have_text(_('Delete this project')) }
 
     context 'when the user can archive projects' do
       let(:can_archive_projects) { true }
@@ -55,10 +62,10 @@ RSpec.describe 'projects/edit' do
       it { is_expected.to have_link(_('Archive project')) }
     end
 
-    context 'when the user cannot archive projects' do
-      let(:can_archive_projects) { false }
+    context 'when the user can remove projects' do
+      let(:can_remove_projects) { true }
 
-      it { is_expected.not_to have_link(_('Archive project')) }
+      it { is_expected.to have_text(_('Delete this project')) }
     end
   end
 end

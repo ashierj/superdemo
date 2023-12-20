@@ -655,6 +655,23 @@ module EE
         enable :archive_project
       end
 
+      desc "Custom role on project that enables deleting projects"
+      condition(:custom_role_enables_remove_projects) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :remove_project
+        ).has_ability?
+      end
+
+      rule { custom_roles_allowed & custom_role_enables_remove_projects }.policy do
+        enable :remove_project
+      end
+
+      rule { can?(:admin_project) | can?(:archive_project) | can?(:remove_project) }.policy do
+        enable :view_edit_page
+      end
+
       rule { needs_new_sso_session }.policy do
         prevent :read_project
       end
