@@ -1,14 +1,4 @@
-#import "~/graphql_shared/fragments/page_info.fragment.graphql"
-
-query getNamespaceStorageStatistics(
-  $fullPath: ID!
-  $searchTerm: String = ""
-  $first: Int
-  $last: Int
-  $after: String
-  $before: String
-  $sortKey: NamespaceProjectSort
-) {
+query getNamespaceStorageStatistics($fullPath: ID!) {
   namespace(fullPath: $fullPath) {
     id
     storageSizeLimit
@@ -30,39 +20,6 @@ query getNamespaceStorageStatistics(
       packagesSize
       wikiSize
       snippetsSize
-    }
-    projects(
-      includeSubgroups: true
-      notAimedForDeletion: true
-      search: $searchTerm
-      first: $first
-      last: $last
-      after: $after
-      before: $before
-      sort: $sortKey
-    ) {
-      nodes {
-        id
-        fullPath
-        nameWithNamespace
-        avatarUrl
-        webUrl
-        name
-        statistics {
-          storageSize
-          costFactoredStorageSize
-          repositorySize
-          lfsObjectsSize
-          containerRegistrySize
-          buildArtifactsSize
-          packagesSize
-          wikiSize
-          snippetsSize
-        }
-      }
-      pageInfo {
-        ...PageInfo
-      }
     }
   }
 }

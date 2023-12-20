@@ -16,7 +16,6 @@ import { __ } from '~/locale';
 export const parseGetStorageResults = (data) => {
   const {
     namespace: {
-      projects,
       storageSizeLimit,
       totalRepositorySize,
       containsLockedProjects,
@@ -33,10 +32,6 @@ export const parseGetStorageResults = (data) => {
     : __('Not applicable.');
 
   return {
-    projects: {
-      data: projects.nodes,
-      pageInfo: projects.pageInfo,
-    },
     additionalPurchasedStorageSize,
     actualRepositorySizeLimit,
     containsLockedProjects,

@@ -2,7 +2,7 @@ import { GlSkeletonLoader } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import NamespaceLimitsTotalStorageAvailableBreakdownCard from 'ee/usage_quotas/storage/components/namespace_limits_total_storage_available_breakdown_card.vue';
 import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
-import { withRootStorageStatistics, defaultNamespaceProvideValues } from '../mock_data';
+import { namespace, defaultNamespaceProvideValues } from '../mock_data';
 
 describe('NamespaceLimitsTotalStorageAvailableBreakdownCard', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
@@ -11,7 +11,7 @@ describe('NamespaceLimitsTotalStorageAvailableBreakdownCard', () => {
   const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(NamespaceLimitsTotalStorageAvailableBreakdownCard, {
       propsData: {
-        purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
+        purchasedStorage: namespace.additionalPurchasedStorageSize,
         loading: false,
         ...props,
       },
@@ -43,7 +43,7 @@ describe('NamespaceLimitsTotalStorageAvailableBreakdownCard', () => {
   });
 
   it('renders purchased storage', () => {
-    expect(findStoragePurchased().text()).toContain('321 B');
+    expect(findStoragePurchased().text()).toContain('10.0 GiB');
   });
 
   it('renders total storage', () => {

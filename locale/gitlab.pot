@@ -52258,6 +52258,9 @@ msgstr ""
 msgid "UsageQuota|%{storage_limit_link_start}A namespace storage limit%{link_end} of %{limit} will soon be enforced for the %{strong_start}%{namespace_name}%{strong_end} namespace. %{extra_message}"
 msgstr ""
 
+msgid "UsageQuota|An error occured while loading the storage usage details. Please refresh the page to try again."
+msgstr ""
+
 msgid "UsageQuota|Any additional purchased storage will be displayed here."
 msgstr ""
 
@@ -52394,9 +52397,6 @@ msgid "UsageQuota|Something went wrong while fetching pipeline statistics"
 msgstr ""
 
 msgid "UsageQuota|Something went wrong while fetching project storage statistics"
-msgstr ""
-
-msgid "UsageQuota|Something went wrong while loading usage details"
 msgstr ""
 
 msgid "UsageQuota|Storage"
