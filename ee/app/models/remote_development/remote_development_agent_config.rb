@@ -28,6 +28,8 @@ module RemoteDevelopment
     validates :max_resources_per_workspace,
       json_schema: { filename: 'remote_development_agent_configs_workspace_container_resources' }
     validates :max_resources_per_workspace, 'remote_development/workspace_container_resources': true
+    validates :workspaces_quota, numericality: { only_integer: true, greater_than_or_equal_to: -1 }
+    validates :workspaces_per_user_quota, numericality: { only_integer: true, greater_than_or_equal_to: -1 }
 
     # noinspection RubyResolve - likely due to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31540
     before_validation :prevent_dns_zone_update, if: ->(record) { record.persisted? && record.dns_zone_changed? }
