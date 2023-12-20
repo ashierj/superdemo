@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlSprintf, GlButton } from '@gitlab/ui';
+import { GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { DOC_PATH_SECURITY_SCANNER_INTEGRATION_RETENTION_PERIOD } from 'ee/security_dashboard/constants';
 
@@ -9,7 +9,7 @@ export default {
   components: {
     GlAlert,
     GlSprintf,
-    GlButton,
+    GlLink,
   },
   i18n: {
     reportStatusTitle: s__('SecurityReports|Report has expired'),
@@ -27,14 +27,11 @@ export default {
     <p class="gl-mt-3">
       <gl-sprintf :message="$options.i18n.reportExpiredMessage" data-testid="description">
         <template #helpPageLink="{ content }">
-          <gl-button
-            variant="link"
-            icon="external-link"
+          <gl-link
             :href="$options.DOC_PATH_SECURITY_SCANNER_INTEGRATION_RETENTION_PERIOD"
             target="_blank"
+            >{{ content }}</gl-link
           >
-            {{ content }}
-          </gl-button>
         </template>
       </gl-sprintf>
     </p>

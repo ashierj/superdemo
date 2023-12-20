@@ -1,5 +1,5 @@
 <script>
-import { GlAccordion, GlAccordionItem, GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
+import { GlAccordion, GlAccordionItem, GlAlert, GlLink, GlSprintf } from '@gitlab/ui';
 import { DOC_PATH_SECURITY_SCANNER_INTEGRATION_REPORT } from 'ee/security_dashboard/constants';
 
 export const TYPE_ERRORS = 'errors';
@@ -10,7 +10,7 @@ export default {
     GlAccordion,
     GlAccordionItem,
     GlAlert,
-    GlButton,
+    GlLink,
     GlSprintf,
   },
   props: {
@@ -59,14 +59,9 @@ export default {
     <p class="gl-mt-3">
       <gl-sprintf :message="description" data-testid="description">
         <template #helpPageLink="{ content }">
-          <gl-button
-            variant="link"
-            icon="external-link"
-            :href="$options.DOC_PATH_SECURITY_SCANNER_INTEGRATION_REPORT"
-            target="_blank"
-          >
-            {{ content }}
-          </gl-button>
+          <gl-link :href="$options.DOC_PATH_SECURITY_SCANNER_INTEGRATION_REPORT" target="_blank">{{
+            content
+          }}</gl-link>
         </template>
       </gl-sprintf>
     </p>

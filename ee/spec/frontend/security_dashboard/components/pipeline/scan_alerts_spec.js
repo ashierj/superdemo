@@ -1,4 +1,4 @@
-import { GlAccordion, GlAccordionItem, GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
+import { GlAccordion, GlAccordionItem, GlAlert, GlLink, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import PipelineScanAlerts from 'ee/security_dashboard/components/pipeline/scan_alerts.vue';
 import { trimText } from 'helpers/text_helper';
@@ -24,7 +24,7 @@ const TEST_SCANS_WITH_ERRORS = [
   },
 ];
 
-describe('ee/security_dashboard/components/pipeline_scan_alerts.vue', () => {
+describe('ee/security_dashboard/components/pipeline/scan_alerts.vue', () => {
   let wrapper;
   let type = 'errors';
 
@@ -52,7 +52,7 @@ describe('ee/security_dashboard/components/pipeline_scan_alerts.vue', () => {
     findAllAccordionItems().filter((item) => item.props('title') === title);
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findErrorList = () => wrapper.findByRole('list');
-  const findHelpPageLink = () => wrapper.findComponent(GlButton);
+  const findHelpPageLink = () => wrapper.findComponent(GlLink);
 
   beforeEach(() => {
     wrapper = createWrapper();
