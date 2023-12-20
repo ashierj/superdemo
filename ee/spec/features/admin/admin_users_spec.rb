@@ -8,7 +8,7 @@ RSpec.describe "Admin::Users", :js, feature_category: :user_management do
 
   before do
     sign_in(current_user)
-    enable_admin_mode!(current_user)
+    gitlab_enable_admin_mode_sign_in(current_user)
   end
 
   describe 'GET /admin/users' do

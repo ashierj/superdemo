@@ -10,7 +10,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
 
   before do
     sign_in(admin)
-    enable_admin_mode!(admin)
+    gitlab_enable_admin_mode_sign_in(admin)
   end
 
   shared_examples 'an "Export license usage file" button' do

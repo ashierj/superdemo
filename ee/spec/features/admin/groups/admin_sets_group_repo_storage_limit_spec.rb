@@ -8,7 +8,7 @@ RSpec.describe 'Sets group repository storage limit', :js, :saas, feature_catego
 
   before do
     sign_in(admin)
-    enable_admin_mode!(admin)
+    gitlab_enable_admin_mode_sign_in(admin)
   end
 
   it 'saves and displays the value' do

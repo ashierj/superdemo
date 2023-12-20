@@ -8,7 +8,7 @@ RSpec.describe 'Roles and Permissions', feature_category: :user_management do
 
   before do
     sign_in(admin)
-    enable_admin_mode!(admin)
+    gitlab_enable_admin_mode_sign_in(admin)
     stub_licensed_features(custom_roles: true)
   end
 

@@ -10,7 +10,7 @@ RSpec.describe "Admin Runners", feature_category: :fleet_visibility do
 
   before do
     sign_in(admin)
-    enable_admin_mode!(admin)
+    gitlab_enable_admin_mode_sign_in(admin)
 
     wait_for_requests
   end
