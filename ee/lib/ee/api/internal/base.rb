@@ -88,15 +88,11 @@ module EE
 
           namespace 'internal' do
             get '/authorized_certs', feature_category: :source_code_management, urgency: :high do
-              certificate = ::Groups::SshCertificate.find_by_fingerprint!(params[:key])
-              group = certificate.group
+              response = ::Groups::SshCertificates::FindService.new(params[:key], params[:user_identifier]).execute
 
-              forbidden!('Feature is not available') unless group.licensed_feature_available?(:ssh_certificates)
+              render_api_error!(response.message, response.reason) if response.error?
 
-              user = group.users.find_by_login(params[:user_identifier])
-
-              not_found!('User') unless user
-              forbidden!('Not an Enterprise User of the group') unless user.enterprise_user_of_group?(group)
+              group, user = response.payload.values_at(:group, :user)
 
               status 200
 
