@@ -19,8 +19,7 @@ import FilteredSearch from './filter_bar/tracing_filtered_search.vue';
 import ScatterChart from './tracing_scatter_chart.vue';
 
 const PAGE_SIZE = 500;
-const CHART_HEIGHT = 300;
-const TRACING_LIST_VERTICAL_PADDING = 120; // Accounts for the search bar height + the legend height + some more v padding
+const TRACING_LIST_VERTICAL_PADDING = 140; // Accounts for the search bar height + the legend height + some more v padding
 
 export default {
   components: {
@@ -66,7 +65,13 @@ export default {
       return null;
     },
     listHeight() {
-      return window.innerHeight - contentTop() - TRACING_LIST_VERTICAL_PADDING - CHART_HEIGHT;
+      return this.containerHeight - this.chartHeight - TRACING_LIST_VERTICAL_PADDING;
+    },
+    chartHeight() {
+      return (this.containerHeight * 30) / 100;
+    },
+    containerHeight() {
+      return window.innerHeight - contentTop();
     },
   },
   created() {
@@ -139,7 +144,6 @@ export default {
       this.highlightedTraceId = null;
     },
   },
-  CHART_HEIGHT,
 };
 </script>
 
@@ -159,7 +163,7 @@ export default {
         @sort="onSort"
       />
       <scatter-chart
-        :height="$options.CHART_HEIGHT"
+        :height="chartHeight"
         :traces="traces"
         @chart-item-selected="chartItemSelected"
         @chart-item-over="debouncedChartItemOver"
