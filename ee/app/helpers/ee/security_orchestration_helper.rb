@@ -47,7 +47,8 @@ module EE::SecurityOrchestrationHelper
       max_active_scan_execution_policies_reached: max_active_scan_execution_policies_reached(container).to_s,
       max_active_scan_result_policies_reached: max_active_scan_result_policies_reached(container).to_s,
       max_scan_result_policies_allowed: Security::ScanResultPolicy::LIMIT,
-      max_scan_execution_policies_allowed: Security::ScanExecutionPolicy::POLICY_LIMIT
+      max_scan_execution_policies_allowed: Security::ScanExecutionPolicy::POLICY_LIMIT,
+      security_policies_policy_scope_toggle_enabled: security_policies_policy_scope_toggle_enabled(container).to_s
     }
 
     if container.is_a?(::Project)
@@ -56,6 +57,16 @@ module EE::SecurityOrchestrationHelper
       )
     else
       policy_data
+    end
+  end
+
+  def security_policies_policy_scope_toggle_enabled(container)
+    if container.is_a?(::Project)
+      return false unless container.group
+
+      container.group.namespace_settings.toggle_security_policies_policy_scope?
+    else
+      container.namespace_settings.toggle_security_policies_policy_scope?
     end
   end
 

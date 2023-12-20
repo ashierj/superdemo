@@ -3,11 +3,23 @@
 require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeService, feature_category: :security_policy_management do
-  let_it_be(:group) { create(:group) }
+  let_it_be_with_refind(:namespace_settings) do
+    create(:namespace_settings, toggle_security_policies_policy_scope: true)
+  end
+
+  let_it_be_with_refind(:group) { create(:group, namespace_settings: namespace_settings) }
   let_it_be_with_refind(:project) { create(:project, group: group) }
   let_it_be(:compliance_framework) { create(:compliance_framework, namespace: group) }
 
   let(:service) { described_class.new(project: project) }
+
+  shared_examples 'when toggle_security_policies_policy_scope is disabled for group' do
+    before do
+      namespace_settings.update!(toggle_security_policies_policy_scope: false)
+    end
+
+    it { is_expected.to eq true }
+  end
 
   describe '#policy_applicable?' do
     let(:policy) { nil }
@@ -27,6 +39,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeService, feat
         let(:policy) { {} }
 
         it { is_expected.to eq false }
+
+        it_behaves_like 'when toggle_security_policies_policy_scope is disabled for group'
       end
 
       context 'when policy is not empty' do
@@ -48,6 +62,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeService, feat
           context 'when project does not have compliance framework set' do
             it { is_expected.to eq false }
 
+            it_behaves_like 'when toggle_security_policies_policy_scope is disabled for group'
+
             context 'when policy additionally includes the project in policy' do
               let(:policy) do
                 {
@@ -60,7 +76,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeService, feat
                 }
               end
 
-              it { is_expected.to eq false }
+              it_behaves_like 'when toggle_security_policies_policy_scope is disabled for group'
             end
           end
 
@@ -86,6 +102,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeService, feat
               end
 
               it { is_expected.to eq false }
+
+              it_behaves_like 'when toggle_security_policies_policy_scope is disabled for group'
             end
 
             context 'when non-existing compliance framework is set' do
@@ -98,6 +116,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeService, feat
               end
 
               it { is_expected.to eq false }
+
+              it_behaves_like 'when toggle_security_policies_policy_scope is disabled for group'
             end
           end
         end
@@ -116,6 +136,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeService, feat
               end
 
               it { is_expected.to eq false }
+
+              it_behaves_like 'when toggle_security_policies_policy_scope is disabled for group'
             end
 
             context 'when included project scope is matching project id' do
@@ -144,6 +166,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeService, feat
                 end
 
                 it { is_expected.to eq false }
+
+                it_behaves_like 'when toggle_security_policies_policy_scope is disabled for group'
               end
             end
           end
@@ -175,6 +199,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeService, feat
               end
 
               it { is_expected.to eq false }
+
+              it_behaves_like 'when toggle_security_policies_policy_scope is disabled for group'
             end
           end
         end
