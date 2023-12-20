@@ -8,7 +8,7 @@ RSpec.describe 'Namespace (JavaScript fixtures)', type: :controller do
 
   runners_token = 'runnerstoken:intabulasreferre'
 
-  let(:namespace) { create(:namespace, name: 'frontend-fixtures' ) }
+  let(:namespace) { create(:namespace, :with_root_storage_statistics, name: 'frontend-fixtures') }
 
   let(:project_dummy) do
     create(
@@ -45,6 +45,50 @@ RSpec.describe 'Namespace (JavaScript fixtures)', type: :controller do
   describe 'Storage' do
     describe GraphQL::Query, type: :request do
       include GraphqlHelpers
+
+      base_input_path = 'usage_quotas/storage/queries/'
+      base_output_path = 'graphql/usage_quotas/storage/'
+
+      context 'for namespace storage statistics query' do
+        before do
+          namespace.update!(
+            additional_purchased_storage_size: 10_240
+          )
+
+          namespace.root_storage_statistics.update!(
+            storage_size: 4.gigabytes,
+            container_registry_size: 1200.megabytes,
+            registry_size_estimated: false,
+            dependency_proxy_size: 1300.megabytes,
+            repository_size: 100.megabytes,
+            lfs_objects_size: 100.megabytes,
+            wiki_size: 100.megabytes,
+            build_artifacts_size: 100.megabytes,
+            packages_size: 100.megabytes,
+            snippets_size: 100.megabytes,
+            pipeline_artifacts_size: 100.megabytes,
+            uploads_size: 100.megabytes,
+            notification_level: "warning"
+          )
+        end
+
+        query_name = 'namespace_storage.query.graphql'
+
+        it "#{base_output_path}#{query_name}.json" do
+          query = get_graphql_query_as_string("#{base_input_path}#{query_name}", ee: true)
+
+          post_graphql(
+            query,
+            current_user: user,
+            variables: {
+              fullPath: namespace.full_path
+            }
+          )
+
+          expect_graphql_errors_to_be_empty
+        end
+      end
+
       context 'for project storage statistics query' do
         before do
           project_twitter.update!(
@@ -85,9 +129,7 @@ RSpec.describe 'Namespace (JavaScript fixtures)', type: :controller do
           )
         end
 
-        base_input_path = 'usage_quotas/storage/queries/'
-        base_output_path = 'graphql/usage_quotas/storage/'
-        query_name = 'namespace_storage.query.graphql'
+        query_name = 'project_list_storage.query.graphql'
 
         it "#{base_output_path}#{query_name}.json" do
           query = get_graphql_query_as_string("#{base_input_path}#{query_name}", ee: true)

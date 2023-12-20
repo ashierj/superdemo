@@ -15,7 +15,7 @@ import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.
 import { createMockClient } from 'helpers/mock_apollo_helper';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
-import { withRootStorageStatistics, defaultNamespaceProvideValues } from '../mock_data';
+import { namespace, defaultNamespaceProvideValues } from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -29,6 +29,7 @@ const defaultApolloData = {
 };
 
 describe('StorageUsageStatistics', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const createComponent = ({ props = {}, provide = {}, apolloData = defaultApolloData } = {}) => {
@@ -46,8 +47,8 @@ describe('StorageUsageStatistics', () => {
 
     wrapper = shallowMountExtended(StorageUsageStatistics, {
       propsData: {
-        additionalPurchasedStorageSize: withRootStorageStatistics.additionalPurchasedStorageSize,
-        usedStorage: withRootStorageStatistics.rootStorageStatistics.storageSize,
+        additionalPurchasedStorageSize: namespace.additionalPurchasedStorageSize,
+        usedStorage: namespace.rootStorageStatistics.storageSize,
         loading: false,
         ...props,
       },
@@ -227,7 +228,7 @@ describe('StorageUsageStatistics', () => {
       });
 
       expect(findStorageUsageOverviewCard().props()).toEqual({
-        usedStorage: withRootStorageStatistics.rootStorageStatistics.storageSize,
+        usedStorage: namespace.rootStorageStatistics.storageSize,
         loading: false,
       });
     });
@@ -236,8 +237,8 @@ describe('StorageUsageStatistics', () => {
       createComponent();
 
       expect(findNamespaceLimitsStorageUsageOverviewCard().props()).toEqual({
-        usedStorage: withRootStorageStatistics.rootStorageStatistics.storageSize,
-        purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
+        usedStorage: namespace.rootStorageStatistics.storageSize,
+        purchasedStorage: namespace.additionalPurchasedStorageSize,
         loading: false,
       });
     });
@@ -278,7 +279,7 @@ describe('StorageUsageStatistics', () => {
       createComponent();
 
       expect(findNamespaceLimitsTotalStorageAvailableBreakdownCard().props()).toEqual({
-        purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
+        purchasedStorage: namespace.additionalPurchasedStorageSize,
         loading: false,
       });
     });
@@ -324,7 +325,7 @@ describe('StorageUsageStatistics', () => {
       });
 
       expect(findNoLimitsPurchasedStorageBreakdownCard().props()).toEqual({
-        purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
+        purchasedStorage: namespace.additionalPurchasedStorageSize,
         loading: false,
       });
     });
@@ -345,7 +346,7 @@ describe('StorageUsageStatistics', () => {
       });
 
       expect(findProjectLimitsExcessStorageBreakdownCard().props()).toEqual({
-        purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
+        purchasedStorage: namespace.additionalPurchasedStorageSize,
         limitedAccessModeEnabled: false,
         loading: false,
       });

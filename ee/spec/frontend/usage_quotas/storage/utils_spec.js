@@ -1,13 +1,12 @@
 import { parseGetStorageResults } from 'ee/usage_quotas/storage/utils';
-import { mockGetNamespaceStorageStatisticsGraphQLResponse } from './mock_data';
+import { mockGetNamespaceStorageGraphQLResponse } from './mock_data';
 
 describe('parseGetStorageResults', () => {
   it('returns the object keys we use', () => {
     const objectKeys = Object.keys(
-      parseGetStorageResults(mockGetNamespaceStorageStatisticsGraphQLResponse.data),
+      parseGetStorageResults(mockGetNamespaceStorageGraphQLResponse.data),
     );
     expect(objectKeys).toEqual([
-      'projects',
       'additionalPurchasedStorageSize',
       'actualRepositorySizeLimit',
       'containsLockedProjects',

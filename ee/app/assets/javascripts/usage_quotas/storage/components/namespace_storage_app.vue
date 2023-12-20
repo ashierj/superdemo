@@ -2,13 +2,11 @@
 import { GlAlert, GlKeysetPagination } from '@gitlab/ui';
 import { captureException } from '~/ci/runner/sentry_utils';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
-import { __ } from '~/locale';
+import { s__, __ } from '~/locale';
 import NamespaceStorageQuery from '../queries/namespace_storage.query.graphql';
+import ProjectListStorageQuery from '../queries/project_list_storage.query.graphql';
 import { parseGetStorageResults } from '../utils';
-import {
-  NAMESPACE_STORAGE_ERROR_MESSAGE,
-  NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE,
-} from '../constants';
+import { NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE } from '../constants';
 import SearchAndSortBar from '../../components/search_and_sort_bar/search_and_sort_bar.vue';
 import ProjectList from './project_list.vue';
 import DependencyProxyUsage from './dependency_proxy_usage.vue';
@@ -40,40 +38,52 @@ export default {
       variables() {
         return {
           fullPath: this.namespacePath,
+        };
+      },
+      update: parseGetStorageResults,
+      error(error) {
+        this.namespaceLoadingError = true;
+        captureException({ error, component: this.$options.name });
+      },
+    },
+    projects: {
+      query: ProjectListStorageQuery,
+      variables() {
+        return {
+          fullPath: this.namespacePath,
           searchTerm: this.searchTerm,
           first: this.defaultPerPage,
           sortKey: this.sortKey,
         };
       },
-      update: parseGetStorageResults,
-      result() {
-        this.firstFetch = false;
+      update(data) {
+        return data.namespace.projects;
       },
       error(error) {
-        this.loadingError = true;
+        this.projectsLoadingError = true;
         captureException({ error, component: this.$options.name });
       },
     },
   },
   i18n: {
-    NAMESPACE_STORAGE_ERROR_MESSAGE,
     NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE,
     search: __('Search'),
+    dataFetchingError: s__(
+      'UsageQuota|An error occured while loading the storage usage details. Please refresh the page to try again.',
+    ),
   },
   data() {
     return {
       namespace: {},
+      projects: null,
       searchTerm: '',
-      firstFetch: true,
-      loadingError: false,
+      namespaceLoadingError: false,
+      projectsLoadingError: false,
       sortKey: this.isUsingProjectEnforcementWithLimits ? 'STORAGE' : 'STORAGE_SIZE_DESC',
       initialSortBy: this.isUsingProjectEnforcementWithLimits ? null : 'storage',
     };
   },
   computed: {
-    namespaceProjects() {
-      return this.namespace.projects?.data ?? [];
-    },
     costFactoredStorageSize() {
       return this.namespace.rootStorageStatistics?.costFactoredStorageSize;
     },
@@ -86,17 +96,14 @@ export default {
     dependencyProxyTotalSize() {
       return this.namespace.rootStorageStatistics?.dependencyProxySize ?? 0;
     },
+    projectList() {
+      return this.projects?.nodes ?? [];
+    },
     pageInfo() {
-      return this.namespace.projects?.pageInfo ?? {};
+      return this.projects?.pageInfo;
     },
     showPagination() {
       return Boolean(this.pageInfo?.hasPreviousPage || this.pageInfo?.hasNextPage);
-    },
-    isQueryLoading() {
-      return this.$apollo.queries.namespace.loading;
-    },
-    isStorageUsageStatisticsLoading() {
-      return this.loadingError || this.isQueryLoading;
     },
   },
   methods: {
@@ -121,7 +128,7 @@ export default {
       this.sortKey = sortKey;
     },
     fetchMoreProjects(vars) {
-      this.$apollo.queries.namespace.fetchMore({
+      this.$apollo.queries.projects.fetchMore({
         variables: {
           fullPath: this.namespacePath,
           ...vars,
@@ -146,13 +153,18 @@ export default {
 </script>
 <template>
   <div>
-    <gl-alert v-if="loadingError" variant="danger" :dismissible="false" class="gl-mt-4">
-      {{ $options.i18n.NAMESPACE_STORAGE_ERROR_MESSAGE }}
+    <gl-alert
+      v-if="namespaceLoadingError || projectsLoadingError"
+      variant="danger"
+      :dismissible="false"
+      class="gl-mt-4"
+    >
+      {{ $options.i18n.dataFetchingError }}
     </gl-alert>
     <storage-usage-statistics
       :additional-purchased-storage-size="namespace.additionalPurchasedStorageSize"
       :used-storage="costFactoredStorageSize"
-      :loading="isStorageUsageStatisticsLoading"
+      :loading="$apollo.queries.namespace.loading"
     />
 
     <h3 data-testid="breakdown-subtitle">
@@ -161,12 +173,12 @@ export default {
     <dependency-proxy-usage
       v-if="!userNamespace"
       :dependency-proxy-total-size="dependencyProxyTotalSize"
-      :loading="isQueryLoading"
+      :loading="$apollo.queries.namespace.loading"
     />
     <container-registry-usage
       :container-registry-size="containerRegistrySize"
       :container-registry-size-is-estimated="containerRegistrySizeIsEstimated"
-      :loading="isQueryLoading"
+      :loading="$apollo.queries.namespace.loading"
     />
 
     <section class="gl-mt-5">
@@ -179,8 +191,8 @@ export default {
       </div>
 
       <project-list
-        :projects="namespaceProjects"
-        :is-loading="isQueryLoading"
+        :projects="projectList"
+        :is-loading="$apollo.queries.projects.loading"
         :help-links="helpLinks"
         :sort-by="initialSortBy"
         :sort-desc="true"

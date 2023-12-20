@@ -7,7 +7,7 @@ import StorageTypeHelpLink from 'ee/usage_quotas/storage/components/storage_type
 import StorageTypeWarning from 'ee/usage_quotas/storage/components/storage_type_warning.vue';
 import { storageTypeHelpPaths } from '~/usage_quotas/storage/constants';
 import { stubComponent } from 'helpers/stub_component';
-import { projects, defaultNamespaceProvideValues } from '../mock_data';
+import { projectList, defaultNamespaceProvideValues } from '../mock_data';
 
 /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
 let wrapper;
@@ -19,7 +19,7 @@ const createComponent = ({ provide = {}, props = {}, stubs } = {}) => {
       ...provide,
     },
     propsData: {
-      projects,
+      projects: projectList,
       helpLinks: storageTypeHelpPaths,
       isLoading: false,
       sortBy: 'storage',
@@ -134,7 +134,7 @@ describe('ProjectList', () => {
   });
 
   describe('Project items are rendered', () => {
-    describe.each(projects)('$name', (project) => {
+    describe.each(projectList)('$name', (project) => {
       let tableText;
 
       beforeEach(() => {
@@ -156,10 +156,10 @@ describe('ProjectList', () => {
     });
 
     it.each`
-      project        | projectUrlWithUsageQuotas
-      ${projects[0]} | ${'http://localhost/frontend-fixtures/twitter/-/usage_quotas'}
-      ${projects[1]} | ${'http://localhost/frontend-fixtures/html5-boilerplate/-/usage_quotas'}
-      ${projects[2]} | ${'http://localhost/frontend-fixtures/dummy-project/-/usage_quotas'}
+      project           | projectUrlWithUsageQuotas
+      ${projectList[0]} | ${'http://localhost/frontend-fixtures/twitter/-/usage_quotas'}
+      ${projectList[1]} | ${'http://localhost/frontend-fixtures/html5-boilerplate/-/usage_quotas'}
+      ${projectList[2]} | ${'http://localhost/frontend-fixtures/dummy-project/-/usage_quotas'}
     `('renders project link as usage_quotas URL', ({ project, projectUrlWithUsageQuotas }) => {
       createComponent({ props: { projects: [project] } });
 

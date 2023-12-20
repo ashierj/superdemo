@@ -1,7 +1,11 @@
-import { mockedNamespaceStorageResponse } from 'ee_jest/usage_quotas/storage/mock_data';
+import {
+  defaultNamespaceProvideValues,
+  mockGetNamespaceStorageGraphQLResponse,
+  mockGetProjectListStorageGraphQLResponse,
+} from 'ee_jest/usage_quotas/storage/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { storageTypeHelpPaths as helpLinks } from '~/usage_quotas/storage/constants';
 import getNamespaceStorageQuery from 'ee/usage_quotas/storage/queries/namespace_storage.query.graphql';
+import getProjectListStorageQuery from 'ee/usage_quotas/storage/queries/project_list_storage.query.graphql';
 import NamespaceStorageApp from './namespace_storage_app.vue';
 
 const meta = {
@@ -11,7 +15,7 @@ const meta = {
 
 export default meta;
 
-const MEBIBYTE = 1024 * 1024; // bytes in a mebibyte
+const GIBIBYTE = 1024 * 1024 * 1024; // bytes in a gibibyte
 
 const createTemplate = (config = {}) => {
   let { provide, apolloProvider } = config;
@@ -22,7 +26,8 @@ const createTemplate = (config = {}) => {
 
   if (apolloProvider == null) {
     const requestHandlers = [
-      [getNamespaceStorageQuery, () => Promise.resolve(mockedNamespaceStorageResponse)],
+      [getNamespaceStorageQuery, () => Promise.resolve(mockGetNamespaceStorageGraphQLResponse)],
+      [getProjectListStorageQuery, () => Promise.resolve(mockGetProjectListStorageGraphQLResponse)],
     ];
     apolloProvider = createMockApollo(requestHandlers);
   }
@@ -31,21 +36,7 @@ const createTemplate = (config = {}) => {
     components: { NamespaceStorageApp },
     apolloProvider,
     provide: {
-      namespaceId: '1',
-      namespacePath: '/namespace/',
-      userNamespace: false,
-      defaultPerPage: 20,
-      namespacePlanName: 'free',
-      perProjectStorageLimit: 10 * MEBIBYTE,
-      namespaceStorageLimit: 5 * MEBIBYTE,
-      purchaseStorageUrl: '//purchase-storage-url',
-      buyAddonTargetAttr: 'buyAddonTargetAttr',
-      isInNamespaceLimitsPreEnforcement: false,
-      totalRepositorySizeExcess: 0,
-      isUsingProjectEnforcementWithLimits: false,
-      isUsingProjectEnforcementWithNoLimits: false,
-      isUsingNamespaceEnforcement: true,
-      helpLinks,
+      ...defaultNamespaceProvideValues,
       ...provide,
     },
     props: Object.keys(argTypes),
@@ -61,6 +52,7 @@ export const SaasWithNamespaceLimitsLoading = {
   render: (...args) => {
     const apolloProvider = createMockApollo([
       [getNamespaceStorageQuery, () => new Promise(() => {})],
+      [getProjectListStorageQuery, () => new Promise(() => {})],
     ]);
 
     return createTemplate({
@@ -75,7 +67,7 @@ export const SaasWithProjectLimits = {
       isUsingNamespaceEnforcement: false,
       isUsingProjectEnforcementWithLimits: true,
       isUsingProjectEnforcementWithNoLimits: false,
-      totalRepositorySizeExcess: MEBIBYTE,
+      totalRepositorySizeExcess: 3 * GIBIBYTE,
     },
   }),
 };
@@ -109,6 +101,7 @@ export const SaasWithProjectLimitsLoading = {
   render: (...args) => {
     const apolloProvider = createMockApollo([
       [getNamespaceStorageQuery, () => new Promise(() => {})],
+      [getProjectListStorageQuery, () => new Promise(() => {})],
     ]);
 
     return createTemplate({
@@ -117,7 +110,7 @@ export const SaasWithProjectLimitsLoading = {
         isUsingNamespaceEnforcement: false,
         isUsingProjectEnforcementWithLimits: true,
         isUsingProjectEnforcementWithNoLimits: false,
-        totalRepositorySizeExcess: MEBIBYTE,
+        totalRepositorySizeExcess: 3 * GIBIBYTE,
       },
     })(...args);
   },
@@ -125,7 +118,10 @@ export const SaasWithProjectLimitsLoading = {
 
 export const SaasLoadingError = {
   render: (...args) => {
-    const apolloProvider = createMockApollo([[getNamespaceStorageQuery, () => Promise.reject()]]);
+    const apolloProvider = createMockApollo([
+      [getNamespaceStorageQuery, () => Promise.reject()],
+      [getProjectListStorageQuery, () => Promise.reject()],
+    ]);
 
     return createTemplate({
       apolloProvider,
@@ -158,7 +154,7 @@ export const SelfManagedWithProjectLimits = {
       ...selfManagedDefaultProvide,
       isUsingProjectEnforcementWithLimits: true,
       isUsingProjectEnforcementWithNoLimits: false,
-      perProjectStorageLimit: 10 * MEBIBYTE,
+      perProjectStorageLimit: 10 * GIBIBYTE,
     },
   }),
 };
@@ -167,6 +163,7 @@ export const SelfManagedLoading = {
   render: (...args) => {
     const apolloProvider = createMockApollo([
       [getNamespaceStorageQuery, () => new Promise(() => {})],
+      [getProjectListStorageQuery, () => new Promise(() => {})],
     ]);
 
     return createTemplate({
