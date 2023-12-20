@@ -138,14 +138,6 @@ module EE
       ]
     end
 
-    def prepare_error_app_data(registry)
-      {
-        synchronizationFailure: registry.last_repository_sync_failure,
-        verificationFailure: registry.last_repository_verification_failure,
-        retryCount: registry.repository_retry_count || 0
-      }.to_json
-    end
-
     def format_file_size_for_checksum(file_size)
       return file_size if file_size.length.even?
 
