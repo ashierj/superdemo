@@ -1,6 +1,8 @@
 - @html_class = "subscriptions-layout-html"
 - @hide_flash = true
 - page_title _('Your GitLab group')
+- create_tab_class = active_tab_classes[:create_tab]
+- import_tab_class = active_tab_classes[:import_tab]
 - form_params = { trial_onboarding_flow: params[:trial_onboarding_flow],
   glm_source: params[:glm_source], glm_content: params[:glm_content], trial: params[:trial] }
 - content_for :page_specific_javascripts do
@@ -18,14 +20,28 @@
       .js-toggle-container.gl-w-full
         %ul.nav.nav-tabs.nav-links.gitlab-tabs.js-group-project-tabs{ role: 'tablist' }
           %li.nav-item{ role: 'presentation' }
-            %a#blank-project-tab.nav-link.active{ href: '#blank-project-pane', data: { toggle: 'tab', track_label: 'blank_project', track_action: 'click_tab', track_value: '' }, role: 'tab' }
+            %a#blank-project-tab.nav-link{ href: '#blank-project-pane',
+              class: create_tab_class,
+              role: 'tab',
+              data: { toggle: 'tab',
+                track_experiment: 'default_to_import_tab',
+                track_action: 'click_tab',
+                track_property: 'blank_project',
+                track_label: @group_creation_tracking_label } }
               %span= s_('ProjectsNew|Create')
           %li.nav-item{ role: 'presentation' }
-            %a#import-project-tab.nav-link{ href: '#import-project-pane', data: { toggle: 'tab', track_label: 'import_project', track_action: 'click_tab', track_value: '' }, role: 'tab' }
+            %a#import-project-tab.nav-link{ href: '#import-project-pane',
+              class: import_tab_class,
+                role: 'tab',
+                data: { toggle: 'tab',
+                  track_experiment: 'default_to_import_tab',
+                  track_action: 'click_tab',
+                  track_property: 'import_project',
+                  track_label: @group_creation_tracking_label } }
               %span= s_('ProjectsNew|Import')
 
         .tab-content.gitlab-tab-content.gl-bg-white.js-group-project-tab-contents
-          #blank-project-pane.tab-pane.js-toggle-container.active{ role: 'tabpanel' }
+          #blank-project-pane.tab-pane.js-toggle-container{ class: create_tab_class, role: 'tabpanel' }
             = gitlab_ui_form_for :project_group, url: users_sign_up_groups_path(form_params), html: { class: 'gl-show-field-errors gl-w-full gl-p-4 js-groups-projects-form' } do |f|
               = form_errors(@group, type: "Group")
               = form_errors(@project, type: "Project")
@@ -38,9 +54,15 @@
                 initialize_with_readme: @initialize_with_readme.to_s,
                 root_url: root_url } }
 
-              = f.submit _('Create project'), class: 'btn-block', data: { qa_selector: 'submit_button' }, pajamas_button: true
+              = f.submit _('Create project'), class: 'btn-block',
+                pajamas_button: true,
+                data: { qa_selector: 'submit_button',
+                  track_experiment: 'default_to_import_tab',
+                  track_action: 'click_button',
+                  track_property: 'submit_button',
+                  track_label: @group_creation_tracking_label }
 
-          #import-project-pane.tab-pane.import-project-pane.js-toggle-container{ role: 'tabpanel' }
+          #import-project-pane.tab-pane.import-project-pane.js-toggle-container{ class: import_tab_class, role: 'tabpanel' }
             - if import_sources_enabled?
               = form_tag users_sign_up_groups_path(form_params), class: 'gl-show-field-errors gl-w-full gl-p-4 js-import-project-form' do
                 = form_errors(@group, type: "Group")
@@ -56,7 +78,10 @@
                 = submit_tag nil, class: 'gl-display-none'
 
               .js-import-project-buttons
-                = render 'projects/import_project_pane', destination_namespace_id: @namespace&.id
+                = render 'projects/import_project_pane',
+                  track_experiment: 'default_to_import_tab',
+                  track_label: @group_creation_tracking_label,
+                  destination_namespace_id: @namespace&.id
             - else
               .nothing-here-block
                 %h4= s_('ProjectsNew|No import options available')
