@@ -44,7 +44,8 @@ module EE
         end
 
         def elasticsearch_warn_if_not_using_aliases
-          @elasticsearch_warn_if_not_using_aliases = ::Gitlab::Elastic::Helper.default.alias_missing?
+          @elasticsearch_warn_if_not_using_aliases = ::Gitlab::Elastic::Helper.default.alias_missing? &&
+            ::Gitlab::Elastic::Helper.default.index_exists?
         rescue StandardError => e
           log_exception(e)
         end
