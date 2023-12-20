@@ -32,10 +32,10 @@ GitLab Duo Code Suggestions are available:
 - In the GitLab Web IDE.
 
 <div class="video-fallback">
-  <a href="https://youtu.be/wAYiy05fjF0">View how to setup and use GitLab Duo Code Suggestions</a>.
+  <a href="https://youtu.be/xQUlrbIWo8o">View how to setup and use GitLab Duo Code Suggestions</a>.
 </div>
 <figure class="video-container">
-  <iframe src="https://www.youtube-nocookie.com/embed/wAYiy05fjF0" frameborder="0" allowfullscreen> </iframe>
+  <iframe src="https://www.youtube-nocookie.com/embed/xQUlrbIWo8o" frameborder="0" allowfullscreen> </iframe>
 </figure>
 
 During Beta, usage of Code Suggestions is governed by the [GitLab Testing Agreement](https://about.gitlab.com/handbook/legal/testing-agreement/).
