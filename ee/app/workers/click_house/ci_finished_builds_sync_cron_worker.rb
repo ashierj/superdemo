@@ -14,7 +14,7 @@ module ClickHouse
 
     def perform(*args)
       return unless job_version == 2
-      return unless Feature.enabled?(:ci_data_ingestion_to_click_house)
+      return unless ::ClickHouse::DataIngestion::CiFinishedBuildsSyncService.enabled?
 
       total_workers = args.first || 1
 

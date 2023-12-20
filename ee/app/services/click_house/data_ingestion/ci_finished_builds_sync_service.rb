@@ -14,6 +14,10 @@ module ClickHouse
       BUILDS_BATCH_COUNT = 10 # How many batches to process before submitting the CSV to ClickHouse
       BUILD_ID_PARTITIONS = 100
 
+      def self.enabled?
+        ::ClickHouse::Client.database_configured?(:main)
+      end
+
       def initialize(worker_index: 0, total_workers: 1)
         @runtime_limiter = Analytics::CycleAnalytics::RuntimeLimiter.new(MAX_RUNTIME)
         @worker_index = worker_index
@@ -21,17 +25,12 @@ module ClickHouse
       end
 
       def execute
-        unless enabled?
+        unless self.class.enabled?
           return ServiceResponse.error(
-            message: 'Feature ci_data_ingestion_to_click_house is disabled',
-            reason: :disabled,
+            message: 'Disabled: ClickHouse database is not configured.',
+            reason: :db_not_configured,
             payload: service_payload
           )
-        end
-
-        unless ClickHouse::Client.database_configured?(:main)
-          return ServiceResponse.error(
-            message: 'ClickHouse database is not configured', reason: :db_not_configured, payload: service_payload)
         end
 
         # Prevent parallel jobs
@@ -48,10 +47,6 @@ module ClickHouse
       end
 
       private
-
-      def enabled?
-        Feature.enabled?(:ci_data_ingestion_to_click_house)
-      end
 
       def continue?
         !@reached_end_of_table && !@runtime_limiter.over_time?

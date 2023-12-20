@@ -4,92 +4,52 @@ require 'spec_helper'
 
 RSpec.describe ClickHouse::CiFinishedBuildsSyncCronWorker, :click_house, :freeze_time, feature_category: :fleet_visibility do
   let(:worker) { described_class.new }
+  let(:total_workers) { 3 }
+  let(:args) { [total_workers] }
 
   subject(:perform) { worker.perform(*args) }
 
-  include_examples 'an idempotent worker' do
-    context 'when job version is nil' do
-      before do
-        allow(worker).to receive(:job_version).and_return(nil)
-      end
+  it 'invokes 3 workers' do
+    expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(0, 3).once
+    expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(1, 3).once
+    expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(2, 3).once
 
-      context 'when arguments are not specified' do
-        let(:args) { [] }
+    perform
+  end
 
-        it 'does nothing' do
-          expect(ClickHouse::CiFinishedBuildsSyncWorker).not_to receive(:perform_async)
+  context 'when arguments are not specified' do
+    let(:args) { [] }
 
-          perform
-        end
-      end
+    it 'invokes 1 worker with specified arguments' do
+      expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(0, 1)
 
-      context 'when arguments are specified' do
-        let(:args) { [worker_index, total_workers] }
+      perform
+    end
+  end
 
-        context 'with total_workers set to 3' do
-          let(:total_workers) { 3 }
-
-          context 'with worker_index set to 0' do
-            let(:worker_index) { 0 }
-
-            it 'does nothing' do
-              expect(ClickHouse::CiFinishedBuildsSyncWorker).not_to receive(:perform_async)
-
-              perform
-            end
-          end
-        end
-      end
+  context 'when job version is nil' do
+    before do
+      allow(worker).to receive(:job_version).and_return(nil)
     end
 
-    context 'when job version is present' do
-      context 'when arguments are not specified' do
-        let(:args) { [] }
+    context 'when arguments are not specified' do
+      it 'does nothing' do
+        expect(ClickHouse::CiFinishedBuildsSyncWorker).not_to receive(:perform_async)
 
-        it 'invokes 1 worker with specified arguments' do
-          expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(0, 1)
-
-          perform
-        end
+        perform
       end
+    end
+  end
 
-      context 'when arguments are specified' do
-        let(:args) { [total_workers] }
+  context 'when clickhouse database is not available' do
+    before do
+      allow(::ClickHouse::Client).to receive(:database_configured?).with(:main).and_return(false)
+    end
 
-        context 'with total_workers set to 1' do
-          let(:total_workers) { 1 }
+    it 'does nothing' do
+      expect(ClickHouse::CiFinishedBuildsSyncWorker).not_to receive(:perform_async)
 
-          it 'invokes 1 worker' do
-            expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(0, 1)
-
-            perform
-          end
-
-          context 'when ci_data_ingestion_to_click_house is disabled' do
-            before do
-              stub_feature_flags(ci_data_ingestion_to_click_house: false)
-            end
-
-            it 'does nothing' do
-              expect(ClickHouse::CiFinishedBuildsSyncWorker).not_to receive(:perform_async)
-
-              perform
-            end
-          end
-        end
-
-        context 'with total_workers set to 3', :aggregate_failures do
-          let(:total_workers) { 3 }
-
-          it 'invokes 3 workers' do
-            expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(0, 3)
-            expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(1, 3)
-            expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(2, 3)
-
-            perform
-          end
-        end
-      end
+      perform
     end
   end
 end
