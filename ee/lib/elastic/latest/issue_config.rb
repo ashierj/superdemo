@@ -40,6 +40,7 @@ module Elastic
         indexes :namespace_ancestry_ids, type: :keyword
         indexes :label_ids, type: :keyword
         indexes :hashed_root_namespace_id, type: :integer
+        indexes :work_item_type_id, type: :integer
 
         indexes :schema_version, type: :short
       end
