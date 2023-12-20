@@ -11,7 +11,7 @@ RSpec.describe 'Admin interacts with merge requests approvals settings', :js, fe
 
   before do
     sign_in(user)
-    gitlab_enable_admin_mode_sign_in(user)
+    enable_admin_mode!(user)
 
     stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
     allow(License).to receive(:feature_available?).and_return(true)

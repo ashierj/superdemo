@@ -8,7 +8,7 @@ RSpec.describe 'Admin::CredentialsInventory', feature_category: :user_management
   before do
     admin = create(:admin)
     sign_in(admin)
-    gitlab_enable_admin_mode_sign_in(admin)
+    enable_admin_mode!(admin)
   end
 
   context 'unlicensed' do

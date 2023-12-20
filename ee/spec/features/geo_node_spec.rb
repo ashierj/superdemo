@@ -42,7 +42,7 @@ RSpec.describe 'Geo Sites', :geo, feature_category: :geo_replication do
       stub_licensed_features(geo: true)
 
       sign_in(admin_user)
-      gitlab_enable_admin_mode_sign_in(admin_user)
+      enable_admin_mode!(admin_user)
     end
 
     describe 'Geo Sites admin screen' do

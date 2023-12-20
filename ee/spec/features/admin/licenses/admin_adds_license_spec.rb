@@ -12,7 +12,7 @@ RSpec.describe "Admin add license", :js, feature_category: :sm_provisioning do
     # (supposed to be) in-memory record in `Gitlab::CurrentSettings.in_memory_application_settings`
     stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
     sign_in(admin)
-    gitlab_enable_admin_mode_sign_in(admin)
+    enable_admin_mode!(admin)
   end
 
   context 'default state' do
