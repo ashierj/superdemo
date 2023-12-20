@@ -29,7 +29,7 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
       expect(results.blobs_count).to eq 5
     end
 
-    it 'instanciates zoekt cache with correct arguments' do
+    it 'instantiates zoekt cache with correct arguments' do
       query = 'use.*egex'
       results = described_class.new(user, query, limit_project_ids, node_id: node_id)
 
@@ -99,6 +99,26 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
       results = described_class.new(user, 'asdfg', limit_project_ids, node_id: node_id)
 
       expect(results.blobs_count).to eq 0
+    end
+
+    it 'returns zero when error is raised by client' do
+      client_error = ::Search::Zoekt::Errors::ClientConnectionError.new('test')
+      allow(::Gitlab::Search::Zoekt::Client).to receive(:search).and_raise(client_error)
+
+      results = described_class.new(user, 'test', limit_project_ids, node_id: node_id)
+
+      expect(results.blobs_count).to eq 0
+      expect(results.error).to eq(client_error.message)
+    end
+
+    it 'returns zero when a node backoff occurs' do
+      client_error = ::Search::Zoekt::Errors::BackoffError.new('test')
+      allow(::Gitlab::Search::Zoekt::Client).to receive(:search).and_raise(client_error)
+
+      results = described_class.new(user, 'test', limit_project_ids, node_id: node_id)
+
+      expect(results.blobs_count).to eq 0
+      expect(results.error).to eq(client_error.message)
     end
 
     context 'when searching with special characters', :aggregate_failures do

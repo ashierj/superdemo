@@ -38,7 +38,7 @@ module Gitlab
           raise 'Node can not be found' unless target_node
 
           with_node_exception_handling(target_node) do
-            response = post(
+            response = post_request(
               join_url(target_node.search_base_url, path),
               payload,
               allow_local_requests: true,
@@ -84,12 +84,14 @@ module Gitlab
         end
 
         def truncate
-          ::Search::Zoekt::Node.find_each { |node| post(join_url(node.index_base_url, '/indexer/truncate')) }
+          ::Search::Zoekt::Node.find_each do |node|
+            post_request(join_url(node.index_base_url, '/indexer/truncate'))
+          end
         end
 
         private
 
-        def post(url, payload = {}, **options)
+        def post_request(url, payload = {}, **options)
           defaults = {
             headers: { "Content-Type" => "application/json" },
             body: payload.to_json,
@@ -100,6 +102,9 @@ module Gitlab
             url,
             defaults.merge(options)
           )
+        rescue *Gitlab::HTTP::HTTP_ERRORS => e
+          logger.error(message: e.message)
+          raise ::Search::Zoekt::Errors::ClientConnectionError, e.message
         end
 
         def delete_request(url, **options)
@@ -111,13 +116,16 @@ module Gitlab
             url,
             defaults.merge(options)
           )
+        rescue *Gitlab::HTTP::HTTP_ERRORS => e
+          logger.error(message: e.message)
+          raise ::Search::Zoekt::Errors::ClientConnectionError, e.message
         end
 
         def zoekt_indexer_post(path, payload, node_id)
           target_node = node(node_id)
           raise 'Node can not be found' unless target_node
 
-          post(
+          post_request(
             join_url(target_node.index_base_url, path),
             payload,
             timeout: INDEXING_TIMEOUT_S
@@ -192,6 +200,9 @@ module Gitlab
 
         def parse_response(response)
           ::Gitlab::Json.parse(response.body).with_indifferent_access
+        rescue Gitlab::Json.parser_error => e
+          logger.error(message: e.message)
+          raise ::Search::Zoekt::Errors::ClientConnectionError, e.message
         end
 
         def add_request_details(start_time:, path:, body:)

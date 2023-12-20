@@ -141,13 +141,17 @@ module Gitlab
         if response[:Error]
           @blobs_count = 0
           @error = response[:Error]
-          return [{}, 0]
+          return [{}, @blobs_count]
         end
 
         total_count = response[:Result][:MatchCount].clamp(0, ZOEKT_COUNT_LIMIT)
         results = zoekt_extract_result_pages(response, per_page: per_page, page_limit: page_limit)
 
         [results, total_count]
+      rescue ::Search::Zoekt::Errors::ClientConnectionError, ::Search::Zoekt::Errors::BackoffError => e
+        @blobs_count = 0
+        @error = e.message
+        [{}, @blobs_count]
       end
 
       # Extracts results from the Zoekt response
