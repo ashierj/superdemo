@@ -334,7 +334,7 @@ RSpec.describe Gitlab::Checks::DiffCheck, feature_category: :source_code_managem
       end
 
       context 'when the branch is being deleted' do
-        let(:newrev) { Gitlab::Git::BLANK_SHA }
+        let(:newrev) { Gitlab::Git::SHA1_BLANK_SHA }
 
         it 'does not run' do
           path_lock

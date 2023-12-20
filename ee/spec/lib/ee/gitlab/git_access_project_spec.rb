@@ -27,7 +27,7 @@ RSpec.describe Gitlab::GitAccessProject do
     shared_examples_for 'a push to repository over the limit' do
       it 'rejects the push' do
         expect do
-          push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_smallest_changes} refs/heads/master")
+          push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_smallest_changes} refs/heads/master")
         end.to raise_error(
           described_class::ForbiddenError,
           size_checker.error_message.push_error
@@ -37,7 +37,7 @@ RSpec.describe Gitlab::GitAccessProject do
       context 'when deleting a branch' do
         it 'accepts the operation' do
           expect do
-            push_changes("#{sha_with_smallest_changes} #{::Gitlab::Git::BLANK_SHA} refs/heads/feature")
+            push_changes("#{sha_with_smallest_changes} #{::Gitlab::Git::SHA1_BLANK_SHA} refs/heads/feature")
           end.not_to raise_error
         end
       end
@@ -55,7 +55,7 @@ RSpec.describe Gitlab::GitAccessProject do
           master_sha = project.commit('master').id
 
           expect do
-            push_changes("#{Gitlab::Git::BLANK_SHA} #{master_sha} refs/heads/my_branch")
+            push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{master_sha} refs/heads/my_branch")
           end.not_to raise_error
         end
       end
@@ -95,7 +95,7 @@ RSpec.describe Gitlab::GitAccessProject do
 
               it 'rejects the push' do
                 expect do
-                  push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+                  push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
                 end.to raise_forbidden_error
               end
             end
@@ -126,7 +126,7 @@ RSpec.describe Gitlab::GitAccessProject do
 
               it 'rejects the push' do
                 expect do
-                  push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+                  push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
                 end.to raise_forbidden_error
               end
             end
@@ -193,7 +193,7 @@ RSpec.describe Gitlab::GitAccessProject do
                 expect(repository.new_blobs(sha_with_2_mb_file)).to be_present
 
                 expect do
-                  push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+                  push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
                 end.to raise_forbidden_error
               end
             end
@@ -203,7 +203,7 @@ RSpec.describe Gitlab::GitAccessProject do
                 expect(repository.new_blobs(sha_with_smallest_changes)).to be_present
 
                 expect do
-                  push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_smallest_changes} refs/heads/my_branch_3")
+                  push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_smallest_changes} refs/heads/my_branch_3")
                 end.not_to raise_error
               end
             end
@@ -219,7 +219,7 @@ RSpec.describe Gitlab::GitAccessProject do
                 expect(repository.new_blobs(sha_with_smallest_changes)).to be_present
 
                 expect do
-                  push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_smallest_changes} refs/heads/my_branch_3")
+                  push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_smallest_changes} refs/heads/my_branch_3")
                 end.not_to raise_error
               end
             end
@@ -234,7 +234,7 @@ RSpec.describe Gitlab::GitAccessProject do
                 expect(repository.new_blobs(sha_with_2_mb_file)).to be_present
 
                 expect do
-                  push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+                  push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
                 end.to raise_forbidden_error
               end
             end
@@ -248,7 +248,7 @@ RSpec.describe Gitlab::GitAccessProject do
                 expect(repository.new_blobs(sha_with_smallest_changes)).to be_present
 
                 expect do
-                  push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_smallest_changes} refs/heads/my_branch_3")
+                  push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_smallest_changes} refs/heads/my_branch_3")
                 end.not_to raise_error
               end
             end

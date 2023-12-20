@@ -108,7 +108,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
     end
 
     context "when `repository_ref` isn't the default branch" do
-      let(:repository_ref) { Gitlab::Git::BLANK_SHA }
+      let(:repository_ref) { Gitlab::Git::SHA1_BLANK_SHA }
 
       it 'displays that exact code search is disabled' do
         expect(page).to have_content('Advanced search is disabled')
