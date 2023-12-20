@@ -119,8 +119,8 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
       requirement = params[:requirement]
 
       next unless self[permission] # skipping permissions not set for the object
-      next unless requirement # skipping permissions that have no requirement
-      next if self[requirement] # the requierement is met
+      next unless requirement.present? # skipping permissions that have no requirement
+      next if self[requirement] # the requirement is met
 
       errors.add(:base,
         format(s_("MemberRole|%{requirement} has to be enabled in order to enable %{permission}"),

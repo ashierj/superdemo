@@ -2780,7 +2780,14 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     context 'for a member role with archive_project true' do
       let(:member_role_abilities) { { archive_project: true } }
-      let(:allowed_abilities) { [:archive_project] }
+      let(:allowed_abilities) { [:archive_project, :view_edit_page] }
+
+      it_behaves_like 'custom roles abilities'
+    end
+
+    context 'for a member role with `remove_project` true' do
+      let(:member_role_abilities) { { remove_project: true } }
+      let(:allowed_abilities) { [:remove_project, :view_edit_page] }
 
       it_behaves_like 'custom roles abilities'
     end

@@ -49,7 +49,7 @@ module EE
           end
 
           def custom_roles_general_menu_item?
-            can?(context.current_user, :archive_project, context.project)
+            can?(context.current_user, :view_edit_page, context.project)
           end
 
           def custom_roles_access_token_menu_item?

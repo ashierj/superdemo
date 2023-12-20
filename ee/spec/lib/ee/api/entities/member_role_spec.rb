@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::API::Entities::MemberRole do
+RSpec.describe EE::API::Entities::MemberRole, feature_category: :permissions do
   describe 'exposes expected fields' do
     let_it_be(:group) { create(:group) }
     let_it_be(:owner) { create(:group_member, :owner, source: group) }
@@ -22,6 +22,7 @@ RSpec.describe EE::API::Entities::MemberRole do
       expect(subject[:admin_vulnerability]).to eq member_role.admin_vulnerability
       expect(subject[:manage_project_access_tokens]).to eq member_role.manage_project_access_tokens
       expect(subject[:archive_project]).to eq member_role.archive_project
+      expect(subject[:remove_project]).to eq member_role.remove_project
       expect(subject[:group_id]).to eq(member_role.namespace.id)
     end
   end

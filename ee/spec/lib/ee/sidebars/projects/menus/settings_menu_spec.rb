@@ -41,15 +41,29 @@ RSpec.describe Sidebars::Projects::Menus::SettingsMenu, feature_category: :navig
     describe 'General' do
       let(:item_id) { :general }
 
-      describe 'when the user is not an admin but has archive_project custom permission' do
-        before do
-          allow(Ability).to receive(:allowed?).and_call_original
-          allow(Ability).to receive(:allowed?).with(user, :admin_project, project).and_return(false)
-          allow(Ability).to receive(:allowed?).with(user, :archive_project, project).and_return(true)
+      describe 'when the user is not an admin' do
+        let_it_be(:user) { create(:user) }
+
+        before_all do
+          project.add_guest(user)
         end
 
-        it 'includes general menu item' do
-          expect(subject.title).to eql('General')
+        before do
+          allow(Ability).to receive(:allowed?).and_call_original
+        end
+
+        it 'does not include the general menu item' do
+          expect(subject).to be_nil
+        end
+
+        context 'when the user has the `view_edit_page` ability' do
+          before do
+            allow(Ability).to receive(:allowed?).with(user, :view_edit_page, project).and_return(true)
+          end
+
+          it 'includes the general menu item' do
+            expect(subject.title).to eql('General')
+          end
         end
       end
     end
