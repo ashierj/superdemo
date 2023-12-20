@@ -163,10 +163,10 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
             stub_licensed_features(code_suggestions: true)
           end
 
-          # TODO: clean up date-related tests after the Code Suggestions feature becomes GA (16.9+)
+          # TODO: clean up date-related tests after the Code Suggestions service start date (16.9+)
           context 'when before the service start date' do
             around do |example|
-              travel_to(CodeSuggestions::SelfManaged::GA_SERVICE_START_TIME - 1.day) do
+              travel_to(CodeSuggestions::SelfManaged::SERVICE_START_DATE - 1.day) do
                 example.run
               end
             end
@@ -179,7 +179,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
 
           context 'when after the service start date' do
             around do |example|
-              travel_to(CodeSuggestions::SelfManaged::GA_SERVICE_START_TIME + 1.day) do
+              travel_to(CodeSuggestions::SelfManaged::SERVICE_START_DATE + 1.day) do
                 example.run
               end
             end
@@ -260,11 +260,11 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
     end
   end
 
-  # Tests specific license-related UI change that happens when the Code Suggestions feature becomes GA:
+  # Tests specific license-related UI change that happens on the Code Suggestions service start date:
   # (internal) https://gitlab.com/gitlab-org/gitlab/-/issues/425047#note_1673643291
-  # TODO: clean-up after Code Suggestions is GA (16.9+)
+  # TODO: clean-up after the Code Suggestions service start date (16.9+)
   describe 'entire instance-level ai-powered menu section visibility', feature_category: :duo_chat do
-    where(:before_ga, :ai_chat_available, :code_suggestions_available, :expect_section_is_visible) do
+    where(:before_start_date, :ai_chat_available, :code_suggestions_available, :expect_section_is_visible) do
       true  | false | false | false
       true  | false | true  | true
       true  | true  | false | true
@@ -280,8 +280,8 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
         allow(::Gitlab).to receive(:org_or_com?).and_return(false)
         stub_licensed_features(ai_chat: ai_chat_available, code_suggestions: code_suggestions_available)
 
-        ga_time = CodeSuggestions::SelfManaged::GA_SERVICE_START_TIME
-        test_time = before_ga ? ga_time - 1.day : ga_time + 1.day
+        service_start_date = CodeSuggestions::SelfManaged::SERVICE_START_DATE
+        test_time = before_start_date ? service_start_date - 1.day : service_start_date + 1.day
 
         travel_to(test_time) do
           render
