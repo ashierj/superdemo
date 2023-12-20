@@ -61,6 +61,7 @@ module EE
         mount ::API::ResourceWeightEvents
         mount ::API::ResourceIterationEvents
         mount ::API::SamlGroupLinks
+        mount ::API::Sbom::Occurrences
         mount ::API::Iterations
         mount ::API::GroupRepositoryStorageMoves
         mount ::API::GroupProtectedBranches
