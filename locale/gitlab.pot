@@ -32385,6 +32385,9 @@ msgstr ""
 msgid "Not all data has been processed yet, the accuracy of the chart for the selected timeframe is limited."
 msgstr ""
 
+msgid "Not applicable"
+msgstr ""
+
 msgid "Not applicable."
 msgstr ""
 
