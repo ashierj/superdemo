@@ -98,4 +98,28 @@ RSpec.describe 'Project show page', :feature, feature_category: :groups_and_proj
       end
     end
   end
+
+  context 'with FF project_overview_reorg enabled' do
+    let_it_be(:project) { create(:project, :public, :repository) }
+
+    before do
+      stub_feature_flags(project_overview_reorg: true)
+    end
+
+    context "when user has no permissions" do
+      it 'does not render settings button if user has no permissions', :js do
+        visit project_path(project)
+
+        expect(page).not_to have_selector('[data-testid="project-settings-button"]')
+      end
+
+      it 'renders settings button if user has permissions', :js do
+        project.add_maintainer(user)
+        sign_in(user)
+        visit project_path(project)
+
+        expect(page).to have_selector('[data-testid="project-settings-button"]')
+      end
+    end
+  end
 end
