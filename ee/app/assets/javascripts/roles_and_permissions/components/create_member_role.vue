@@ -10,24 +10,17 @@ import {
   GlFormTextarea,
 } from '@gitlab/ui';
 import { createMemberRole } from 'ee/rest_api';
-import { createAlert, VARIANT_DANGER } from '~/alert';
-import {
-  BASE_ROLES,
-  I18N_CANCEL,
-  I18N_CREATE_ROLE,
-  I18N_CREATION_ERROR,
-  I18N_FIELD_FORM_ERROR,
-  I18N_NEW_ROLE_BASE_ROLE_DESCRIPTION,
-  I18N_NEW_ROLE_BASE_ROLE_LABEL,
-  I18N_NEW_ROLE_DESCRIPTION_LABEL,
-  I18N_NEW_ROLE_NAME_DESCRIPTION,
-  I18N_NEW_ROLE_NAME_LABEL,
-  I18N_NEW_ROLE_NAME_PLACEHOLDER,
-  I18N_NEW_ROLE_PERMISSIONS_LABEL,
-} from '../constants';
+import { createAlert } from '~/alert';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { s__ } from '~/locale';
+import { ACCESS_LEVEL_GUEST_INTEGER, ACCESS_LEVEL_LABELS } from '~/access_level/constants';
+
+// Base roles with Guest access or higher.
+export const BASE_ROLES = Object.entries(ACCESS_LEVEL_LABELS)
+  .filter(([value]) => value >= ACCESS_LEVEL_GUEST_INTEGER)
+  .map(([value, text]) => ({ value, text }));
 
 export default {
-  name: 'CreateMemberRole',
   components: {
     GlButton,
     GlForm,
@@ -38,6 +31,7 @@ export default {
     GlFormSelect,
     GlFormTextarea,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     groupId: {
       type: String,
@@ -57,15 +51,15 @@ export default {
       name: '',
       nameValid: true,
       permissions: [],
-      permissionsValid: null,
+      permissionsValid: true,
     };
   },
   computed: {
     selectablePermissions() {
       return this.availablePermissions.filter(({ value }) => {
         switch (value) {
-          case 'manage_project_access_tokens':
-            return Boolean(gon.features.manageProjectAccessTokens);
+          case 'MANAGE_PROJECT_ACCESS_TOKENS':
+            return this.glFeatures.manageProjectAccessTokens;
           default:
             return true;
         }
@@ -73,28 +67,12 @@ export default {
     },
   },
   methods: {
-    areFieldsValid() {
-      this.baseRoleValid = true;
-      this.nameValid = true;
-      this.permissionsValid = null; // Do not change it for `true`, it will turn the checkboxes green.
+    validateFields() {
+      this.baseRoleValid = this.baseRole !== null;
+      this.nameValid = Boolean(this.name);
+      this.permissionsValid = this.permissions.length > 0;
 
-      if (!this.baseRole) {
-        this.baseRoleValid = false;
-      }
-
-      if (!this.name) {
-        this.nameValid = false;
-      }
-
-      if (this.permissions.length === 0) {
-        this.permissionsValid = false;
-      }
-
-      if (this.baseRoleValid && this.nameValid && this.permissionsValid === null) {
-        return true;
-      }
-
-      return false;
+      return this.baseRoleValid && this.nameValid && this.permissionsValid;
     },
     cancel() {
       this.$emit('cancel');
@@ -102,7 +80,7 @@ export default {
     async createMemberRole() {
       this.alert?.dismiss();
 
-      if (!this.areFieldsValid()) {
+      if (!this.validateFields()) {
         return;
       }
 
@@ -112,7 +90,7 @@ export default {
         description: this.description,
       };
       this.permissions.forEach((permission) => {
-        data[permission] = 1;
+        data[permission.toLowerCase()] = 1;
       });
 
       try {
@@ -120,88 +98,57 @@ export default {
         this.$emit('success');
       } catch (error) {
         this.alert = createAlert({
-          message: error?.response?.data?.message || I18N_CREATION_ERROR,
-          variant: VARIANT_DANGER,
+          message: error?.response?.data?.message || s__('MemberRole|Failed to create role.'),
         });
       }
     },
   },
-  baseRoles: BASE_ROLES,
-  i18n: {
-    baseRole: {
-      id: 'group-1',
-      label: I18N_NEW_ROLE_BASE_ROLE_LABEL,
-      description: I18N_NEW_ROLE_BASE_ROLE_DESCRIPTION,
-    },
-    cancel: I18N_CANCEL,
-    createRole: I18N_CREATE_ROLE,
-    description: {
-      id: 'group-2',
-      label: I18N_NEW_ROLE_DESCRIPTION_LABEL,
-    },
-    fieldFormError: I18N_FIELD_FORM_ERROR,
-    name: {
-      id: 'group-3',
-      label: I18N_NEW_ROLE_NAME_LABEL,
-      placeholder: I18N_NEW_ROLE_NAME_PLACEHOLDER,
-      description: I18N_NEW_ROLE_NAME_DESCRIPTION,
-    },
-    permissions: {
-      label: I18N_NEW_ROLE_PERMISSIONS_LABEL,
-    },
-  },
+  BASE_ROLES,
 };
 </script>
 
 <template>
   <gl-form @submit.prevent="createMemberRole">
-    <h4 class="gl-mt-0">{{ $options.i18n.createRole }}</h4>
+    <h4 class="gl-mt-0">{{ s__('MemberRole|Create new role') }}</h4>
     <div class="row">
       <gl-form-group
         class="col-md-4"
-        :label="$options.i18n.baseRole.label"
-        :description="$options.i18n.baseRole.description"
-        :invalid-feedback="$options.i18n.fieldFormError"
-        :label-for="$options.i18n.baseRole.id"
+        :label="s__('MemberRole|Base role to use as template')"
+        :description="s__('MemberRole|Select a standard role to add permissions.')"
+        :invalid-feedback="__('This field is required.')"
       >
         <gl-form-select
-          :id="$options.i18n.baseRole.id"
-          v-model="baseRole"
-          :options="$options.baseRoles"
+          v-model.number="baseRole"
+          :options="$options.BASE_ROLES"
           :state="baseRoleValid"
         />
       </gl-form-group>
 
       <gl-form-group
         class="col-md-4"
-        :label="$options.i18n.name.label"
-        :description="$options.i18n.name.description"
-        :invalid-feedback="$options.i18n.fieldFormError"
-        :label-for="$options.i18n.name.id"
+        :label="s__('MemberRole|Role name')"
+        :description="s__('MemberRole|Enter a short name.')"
+        :invalid-feedback="__('This field is required.')"
       >
         <gl-form-input
-          :id="$options.i18n.name.id"
-          v-model="name"
-          :placeholder="$options.i18n.name.placeholder"
+          v-model.trim="name"
+          :placeholder="s__('MemberRole|Incident manager')"
           :state="nameValid"
         />
       </gl-form-group>
 
-      <gl-form-group
-        class="col-lg-8"
-        :label="$options.i18n.description.label"
-        :label-for="$options.i18n.description.id"
-      >
-        <gl-form-textarea :id="$options.i18n.description.id" v-model="description" />
+      <gl-form-group class="col-lg-8" :label="s__('MemberRole|Description')">
+        <gl-form-textarea v-model="description" />
       </gl-form-group>
     </div>
 
-    <gl-form-group :label="$options.i18n.permissions.label">
-      <gl-form-checkbox-group v-model="permissions" :state="permissionsValid">
+    <gl-form-group :label="s__('MemberRole|Permissions')">
+      <gl-form-checkbox-group v-model="permissions" :state="permissionsValid ? null : false">
         <gl-form-checkbox
           v-for="permission in selectablePermissions"
           :key="permission.value"
           :value="permission.value"
+          :data-testid="permission.value"
         >
           {{ permission.name }}
           <template v-if="permission.description" #help>
@@ -217,11 +164,12 @@ export default {
         data-testid="submit-button"
         variant="confirm"
         class="js-no-auto-disable"
-        >{{ $options.i18n.createRole }}</gl-button
       >
-      <gl-button type="reset" data-testid="cancel-button" @click="cancel">{{
-        $options.i18n.cancel
-      }}</gl-button>
+        {{ s__('MemberRole|Create new role') }}
+      </gl-button>
+      <gl-button type="reset" data-testid="cancel-button" @click="cancel">
+        {{ __('Cancel') }}
+      </gl-button>
     </div>
   </gl-form>
 </template>
