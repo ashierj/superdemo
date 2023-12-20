@@ -4,6 +4,7 @@ import Vue, { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import VueApollo from 'vue-apollo';
 import { createMockSubscription } from 'mock-apollo-client';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import aiActionMutation from 'ee/graphql_shared/mutations/ai_action.mutation.graphql';
 import Api from 'ee/api';
@@ -117,6 +118,9 @@ describe('Vulnerability Header', () => {
   const createWrapper = ({ vulnerability = {}, apolloProvider, glFeatures }) => {
     wrapper = shallowMount(Header, {
       apolloProvider,
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
+      },
       propsData: {
         vulnerability: {
           ...defaultVulnerability,
@@ -565,6 +569,23 @@ describe('Vulnerability Header', () => {
           }),
         });
         expect(findBadge().text()).toBe('Experiment');
+      });
+
+      it('renders the tooltip', () => {
+        createWrapper({
+          vulnerability: getVulnerability({
+            canResolveWithAI: true,
+          }),
+        });
+
+        const tooltipText =
+          'This is an experiment feature that uses AI to provide recommendations for resolving this vulnerability. Use this feature with caution.';
+        const resolveAIButton = findGlButton();
+        const tooltip = getBinding(findGlButton().element, 'gl-tooltip');
+
+        expect(tooltip).toBeDefined();
+        expect(resolveAIButton.attributes('title')).toBe(tooltipText);
+        expect(resolveAIButton.attributes('aria-label')).toBe(tooltipText);
       });
 
       it('continues to show the loading state into the redirect call', async () => {

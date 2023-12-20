@@ -1,5 +1,5 @@
 <script>
-import { GlLoadingIcon, GlButton, GlBadge } from '@gitlab/ui';
+import { GlLoadingIcon, GlButton, GlBadge, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.vue';
@@ -32,6 +32,9 @@ export default {
     StatusDescription,
     VulnerabilityStateDropdown: () => import('./vulnerability_state_dropdown.vue'),
     SplitButton: () => import('ee/vue_shared/security_reports/components/split_button.vue'),
+  },
+  directives: {
+    GlTooltip,
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
@@ -334,6 +337,9 @@ export default {
         />
         <gl-button
           v-else-if="actionButtons.length > 0"
+          v-gl-tooltip
+          :title="actionButtons[0].tooltip"
+          :aria-label="actionButtons[0].tooltip"
           :icon="actionButtons[0].icon"
           class="gl-ml-2"
           variant="confirm"
