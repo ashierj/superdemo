@@ -441,7 +441,7 @@ export default {
 
 <template>
   <div>
-    <section class="gl-display-flex gl-align-items-center gl-my-6">
+    <section class="gl-display-flex gl-align-items-center gl-my-4">
       <div class="gl-display-flex gl-flex-direction-column gl-w-full">
         <h2 v-if="showEditControls" data-testid="edit-mode-title" class="gl-mt-0 gl-mb-6">
           {{
@@ -453,7 +453,7 @@ export default {
         <h2 v-else data-testid="dashboard-title" class="gl-my-0">{{ dashboard.title }}</h2>
         <div
           v-if="showDashboardDescription"
-          class="gl-display-flex gl-mt-5"
+          class="gl-display-flex gl-mt-3"
           data-testid="dashboard-description"
         >
           <p class="gl-mb-0">
@@ -524,11 +524,9 @@ export default {
         >{{ s__('Analytics|Edit') }}</gl-button
       >
     </section>
-    <div
-      class="grid-stack-container gl-mx-n5 gl-pl-2 gl-pr-2 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
-    >
+    <div class="grid-stack-container gl-mx-n5">
       <div class="grid-stack-container gl-display-flex">
-        <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-py-3">
+        <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1">
           <section
             v-if="showFilters"
             data-testid="dashboard-filters"
