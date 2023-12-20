@@ -138,8 +138,8 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
           member_role.admin_vulnerability = true
 
           expect(member_role).not_to be_valid
-          expect(member_role.errors[:admin_vulnerability])
-            .to include(s_("MemberRole|read_vulnerability has to be enabled in order to enable admin_vulnerability."))
+          expect(member_role.errors[:base])
+            .to include(s_("MemberRole|Read vulnerability has to be enabled in order to enable Admin vulnerability"))
         end
       end
     end
