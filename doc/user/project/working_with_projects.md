@@ -121,7 +121,7 @@ You can [view projects that are pending deletion](#view-projects-pending-deletio
 and use the Rails console to
 [find projects that are pending deletion](#find-projects-that-are-pending-deletion).
 
-### Delete a project immediately
+### Delete a project immediately **(PREMIUM ALL)**
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/191367) in GitLab 14.1.
 > - Option to delete projects immediately from the Admin Area and as a group setting removed [on GitLab.com](https://gitlab.com/gitlab-org/gitlab/-/issues/393622) and [on self-managed](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/119606) in GitLab 16.0.
@@ -144,7 +144,7 @@ To immediately delete a project marked for deletion:
 1. In the **Delete this project** section, select **Delete project**.
 1. On the confirmation dialog, enter the project name and select **Yes, delete project**.
 
-### View projects pending deletion
+### View projects pending deletion **(PREMIUM ALL)**
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/37014) in GitLab 13.3 for Administrators.
 > - [Tab renamed](https://gitlab.com/gitlab-org/gitlab/-/issues/347468) from **Deleted projects** in GitLab 14.6.
