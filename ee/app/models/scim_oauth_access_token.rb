@@ -3,9 +3,11 @@
 class ScimOauthAccessToken < ApplicationRecord
   include TokenAuthenticatable
 
+  TOKEN_PREFIX = 'glsoat-'
+
   belongs_to :group, optional: true
 
-  add_authentication_token_field :token, encrypted: :required
+  add_authentication_token_field :token, encrypted: :required, format_with_prefix: :prefix_for_token
 
   before_save :ensure_token
 
@@ -30,5 +32,9 @@ class ScimOauthAccessToken < ApplicationRecord
 
   def as_entity_json
     ScimOauthAccessTokenEntity.new(self).as_json
+  end
+
+  def prefix_for_token
+    Feature.enabled?(:prefix_scim_tokens) ? TOKEN_PREFIX : ''
   end
 end
