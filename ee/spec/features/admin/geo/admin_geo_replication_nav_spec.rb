@@ -12,7 +12,7 @@ RSpec.describe 'admin Geo Replication Nav', :js, :geo, feature_category: :geo_re
   before do
     stub_licensed_features(geo: true)
     sign_in(admin)
-    gitlab_enable_admin_mode_sign_in(admin)
+    enable_admin_mode!(admin)
     stub_current_geo_node(secondary_node)
     stub_geo_setting(registry_replication: { enabled: true })
   end

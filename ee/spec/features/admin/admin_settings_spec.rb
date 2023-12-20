@@ -11,7 +11,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
     admin = create(:admin)
     sign_in(admin)
-    gitlab_enable_admin_mode_sign_in(admin)
+    enable_admin_mode!(admin)
     allow(License).to receive(:feature_available?).and_return(true)
     allow(Gitlab::Elastic::Helper.default).to receive(:index_exists?).and_return(true)
   end
