@@ -11,6 +11,11 @@ module Search
       estimate_cluster_size
       mark_reindex_failed
       list_pending_migrations
+      enable_search_with_elasticsearch
+      index_projects_status
+      index_users
+      index_projects
+      index_epics
     ].freeze
 
     attr_reader :logger
@@ -92,6 +97,68 @@ module Search
       end
     end
 
+    def enable_search_with_elasticsearch
+      if Gitlab::CurrentSettings.elasticsearch_search?
+        puts "Setting `elasticsearch_search` was already enabled."
+      else
+        ApplicationSettings::UpdateService.new(
+          Gitlab::CurrentSettings.current_application_settings,
+          nil,
+          { elasticsearch_search: true }
+        ).execute
+
+        puts "Setting `elasticsearch_search` has been enabled."
+      end
+    end
+
+    def index_projects_status
+      projects = elastic_enabled_projects.size
+      indexed = IndexStatus.for_project(elastic_enabled_projects).size
+      percent = (indexed / projects.to_f) * 100.0
+
+      puts format("Indexing is %.2f%% complete (%d/%d projects)", percent, indexed, projects)
+    end
+
+    def index_users
+      logger = Logger.new($stdout)
+      logger.info("Indexing users...")
+
+      User.each_batch do |users|
+        ::Elastic::ProcessInitialBookkeepingService.track!(*users)
+      end
+
+      logger.info("Indexing users... #{'done'.color(:green)}")
+    end
+
+    def index_projects
+      print "Enqueuing projects…"
+
+      count = project_id_batches do |ids|
+        ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(*Project.find(ids))
+        print "."
+      end
+
+      marker = count > 0 ? "✔" : "∅"
+      puts " #{marker} (#{count})"
+    end
+
+    def index_epics
+      logger = Logger.new($stdout)
+      logger.info("Indexing epics...")
+
+      groups = if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
+                 ::Gitlab::CurrentSettings.elasticsearch_limited_namespaces.where(type: "Group") # rubocop:disable CodeReuse/ActiveRecord -- This has been moved from ee/lib/tasks/gitlab/elastic.rake
+               else
+                 Group.all
+               end
+
+      groups.each_batch do |batch|
+        ::Elastic::ProcessInitialBookkeepingService.maintain_indexed_group_associations!(*batch)
+      end
+
+      logger.info("Indexing epics... #{'done'.color(:green)}")
+    end
+
     def display_pending_migrations(pending_migrations)
       puts "Pending Migrations".color(:yellow)
       pending_migrations.each do |migration|
@@ -99,6 +166,30 @@ module Search
         migration_info << " [Obsolete]".color(:red) if migration.obsolete?
         puts migration_info
       end
+    end
+
+    def elastic_enabled_projects
+      return Project.all unless ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
+
+      ::Gitlab::CurrentSettings.elasticsearch_limited_projects
+    end
+
+    def project_id_batches
+      relation = Project.all
+
+      if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
+        relation.merge!(::Gitlab::CurrentSettings.elasticsearch_limited_projects)
+      end
+
+      count = 0
+      relation.in_batches(start: ENV['ID_FROM'], finish: ENV['ID_TO']) do |relation| # rubocop:disable Cop/InBatches -- We need start/finish IDs here
+        ids = relation.reorder(:id).pluck(:id) # rubocop:disable CodeReuse/ActiveRecord,Database/AvoidUsingPluckWithoutLimit -- this was ported from elastic.rake
+        yield ids
+
+        count += ids.size
+      end
+
+      count
     end
   end
 end
