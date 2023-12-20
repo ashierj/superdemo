@@ -89,6 +89,7 @@ end
 RSpec.configure do |config|
   config.define_derived_metadata do |meta|
     meta[:clean_gitlab_redis_cache] = true if meta[:elastic] || meta[:elastic_delete_by_query] || meta[:elastic_clean]
+    meta[:clean_gitlab_redis_cache] = true if meta[:zoekt]
   end
 
   # If using the :elastic tag is causing issues, use :elastic_clean instead.

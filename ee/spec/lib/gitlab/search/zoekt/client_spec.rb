@@ -50,7 +50,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     it 'send request to the correct URL' do
       case method
       when :post
-        expect(client).to receive(:post)
+        expect(client).to receive(:post_request)
           .with((custom_node.index_base_url + expected_path), anything, anything)
           .and_return(success)
       when :delete
@@ -102,12 +102,32 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       end
 
       context 'when a backoff is active for zoekt node' do
-        it 'raises an exception' do
+        it 'does not raise an exception' do
           node.backoff.backoff!
 
           expect { make_request }.not_to raise_error
         end
       end
+    end
+  end
+
+  shared_examples 'with connection errors' do |method|
+    Gitlab::HTTP::HTTP_ERRORS.each do |error|
+      context "when an `#{error}` is raised while trying to connect to zoekt" do
+        before do
+          allow(::Gitlab::HTTP).to receive(method).and_raise(error)
+        end
+
+        it { expect { subject }.to raise_error(::Search::Zoekt::Errors::ClientConnectionError) }
+      end
+    end
+
+    context 'when an exception is raised during json parsing' do
+      before do
+        allow(::Gitlab::Json).to receive(:parse).and_raise(Gitlab::Json.parser_error)
+      end
+
+      it { expect { subject }.to raise_error(::Search::Zoekt::Errors::ClientConnectionError) }
     end
   end
 
@@ -175,6 +195,8 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     it_behaves_like 'with node backoffs', :post do
       let(:make_request) { subject }
     end
+
+    it_behaves_like 'with connection errors', :post
   end
 
   describe '#index' do
@@ -254,6 +276,8 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     it_behaves_like 'with node backoffs', :post do
       let(:make_request) { subject }
     end
+
+    it_behaves_like 'with connection errors', :post
   end
 
   describe '#delete' do
@@ -303,6 +327,8 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     it_behaves_like 'with node backoffs', :delete do
       let(:make_request) { subject }
     end
+
+    it_behaves_like 'with connection errors', :delete
   end
 
   describe '#truncate' do
