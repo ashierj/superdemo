@@ -428,23 +428,35 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
   end
 
   describe '#documents_count' do
-    subject { helper.documents_count }
+    context 'when refresh is unset' do
+      subject { helper.documents_count }
 
-    context 'when there is a legacy index' do
-      include_context 'with a legacy index'
+      context 'when there is a legacy index' do
+        include_context 'with a legacy index'
 
-      it { is_expected.to eq(0) }
+        it { is_expected.to eq(0) }
+      end
+
+      context 'when there is an alias' do
+        include_context 'with an existing index and alias'
+
+        it { is_expected.to eq(0) }
+
+        it 'supports providing the alias name' do
+          alias_name = helper.target_name
+
+          expect(helper.documents_count(index_name: alias_name)).to eq(0)
+        end
+      end
     end
 
-    context 'when there is an alias' do
-      include_context 'with an existing index and alias'
+    context 'when refresh is set' do
+      subject(:count) { helper.documents_count(refresh: true) }
 
-      it { is_expected.to eq(0) }
+      it 'refreshes the index' do
+        expect(helper).to receive(:refresh_index)
 
-      it 'supports providing the alias name' do
-        alias_name = helper.target_name
-
-        expect(helper.documents_count(index_name: alias_name)).to eq(0)
+        count
       end
     end
   end

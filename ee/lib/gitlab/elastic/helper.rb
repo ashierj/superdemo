@@ -248,8 +248,10 @@ module Gitlab
         client.indices.stats.dig('indices', index, 'total')
       end
 
-      def documents_count(index_name: nil)
+      def documents_count(index_name: nil, refresh: false)
         index = target_index_name(target: index_name || target_index_name)
+
+        refresh_index(index_name: index) if refresh
 
         client.indices.stats.dig('indices', index, 'primaries', 'docs', 'count')
       end
