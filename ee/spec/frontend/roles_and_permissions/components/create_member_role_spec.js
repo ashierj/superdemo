@@ -3,9 +3,9 @@ import { nextTick } from 'vue';
 import { createAlert, VARIANT_DANGER } from '~/alert';
 import { createMemberRole } from 'ee/api/member_roles_api';
 import CreateMemberRole from 'ee/roles_and_permissions/components/create_member_role.vue';
-import { I18N_CREATION_ERROR } from 'ee/roles_and_permissions/constants';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { stubComponent } from 'helpers/stub_component';
 
 jest.mock('ee/api/member_roles_api');
 
@@ -25,12 +25,19 @@ const DEFAULT_PERMISSIONS = [
 describe('CreateMemberRole', () => {
   let wrapper;
 
-  const createComponent = ({ availablePermissions = DEFAULT_PERMISSIONS } = {}) => {
+  const createComponent = ({
+    availablePermissions = DEFAULT_PERMISSIONS,
+    manageProjectAccessTokens = false,
+    archiveProjects = false,
+    stubs = {},
+  } = {}) => {
     wrapper = mountExtended(CreateMemberRole, {
       propsData: {
         groupId: '4',
         availablePermissions,
       },
+      provide: { glFeatures: { manageProjectAccessTokens, archiveProjects } },
+      stubs,
     });
   };
 
@@ -39,39 +46,31 @@ describe('CreateMemberRole', () => {
   const findNameField = () => wrapper.findComponent(GlFormInput);
   const findCheckboxes = () => wrapper.findAllComponents(GlFormCheckbox);
   const findSelect = () => wrapper.findComponent(GlFormSelect);
-  const findOptions = () => findSelect().findAll('option');
   const findTextArea = () => wrapper.findComponent(GlFormTextarea);
 
-  const name = 'My role name';
-  const description = 'My description';
   const fillForm = () => {
     findSelect().setValue('10');
-    findNameField().setValue(name);
-    findTextArea().setValue(description);
+    findNameField().setValue('My role name');
+    findTextArea().setValue('My description');
     findCheckboxes().at(0).find('input').setChecked();
   };
 
-  beforeEach(() => {
-    window.gon.features = {};
-    createComponent();
-  });
+  it('shows the role dropdown with the expected options', () => {
+    // GlFormSelect doesn't stub the options prop properly, create a stub that does it properly.
+    const stubs = { GlFormSelect: stubComponent(GlFormSelect, { props: ['options'] }) };
+    createComponent({ stubs });
 
-  it('has five base roles to select', () => {
-    const options = findOptions();
-    expect(options).toHaveLength(5);
-    expect(options.at(0).attributes()).toMatchObject({ value: '10' });
-    expect(options.at(0).text()).toBe('Guest');
-    expect(options.at(1).attributes()).toMatchObject({ value: '20' });
-    expect(options.at(1).text()).toBe('Reporter');
-    expect(options.at(2).attributes()).toMatchObject({ value: '30' });
-    expect(options.at(2).text()).toBe('Developer');
-    expect(options.at(3).attributes()).toMatchObject({ value: '40' });
-    expect(options.at(3).text()).toBe('Maintainer');
-    expect(options.at(4).attributes()).toMatchObject({ value: '50' });
-    expect(options.at(4).text()).toBe('Owner');
+    expect(findSelect().props('options')).toEqual([
+      { value: '10', text: 'Guest' },
+      { value: '20', text: 'Reporter' },
+      { value: '30', text: 'Developer' },
+      { value: '40', text: 'Maintainer' },
+      { value: '50', text: 'Owner' },
+    ]);
   });
 
   it('has the expected permissions checkboxes', () => {
+    createComponent();
     DEFAULT_PERMISSIONS.forEach((permission, index) => {
       const checkbox = findCheckboxes().at(index);
 
@@ -80,31 +79,31 @@ describe('CreateMemberRole', () => {
     });
   });
 
-  describe('manage_project_access_token feature flag is on', () => {
-    beforeEach(() => {
-      window.gon.features = { manageProjectAccessTokens: true };
+  describe('manageProjectAccessTokens feature flag', () => {
+    const permission = {
+      name: 'Manage tokens',
+      description: 'Manage tokens description',
+      value: 'MANAGE_PROJECT_ACCESS_TOKENS',
+    };
+
+    it('does not show the manage project access token permission when the feature flag is off', () => {
+      createComponent({ manageProjectAccessTokens: false, availablePermissions: [permission] });
+
+      expect(findCheckboxes()).toHaveLength(0);
     });
 
-    it('renders manage project access token permission', () => {
-      const permission = { name: 'Permission D', description: 'Description D' };
-      createComponent({ availablePermissions: [permission] });
+    it('shows the manage project access token permission when the feature flag is on', () => {
+      createComponent({ manageProjectAccessTokens: true, availablePermissions: [permission] });
       const checkbox = findCheckboxes().at(0);
 
-      expect(checkbox.text()).toContain(permission.name);
-      expect(checkbox.text()).toContain(permission.description);
+      expect(checkbox.text()).toContain('Manage tokens');
+      expect(checkbox.text()).toContain('Manage tokens description');
     });
-  });
-
-  it('renders archive project permission', () => {
-    const permission = { name: 'Permission E', description: 'Description E' };
-    createComponent({ availablePermissions: [permission] });
-    const checkbox = findCheckboxes().at(0);
-
-    expect(checkbox.text()).toContain(permission.name);
-    expect(checkbox.text()).toContain(permission.description);
   });
 
   it('emits cancel event', () => {
+    createComponent();
+
     expect(wrapper.emitted('cancel')).toBeUndefined();
 
     findButtonCancel().trigger('click');
@@ -113,6 +112,8 @@ describe('CreateMemberRole', () => {
   });
 
   describe('field validation', () => {
+    beforeEach(createComponent);
+
     it('shows a warning if no base role is selected', async () => {
       expect(findSelect().classes()).not.toContain('is-invalid');
 
@@ -143,6 +144,7 @@ describe('CreateMemberRole', () => {
 
   describe('when successful submission', () => {
     beforeEach(() => {
+      createComponent();
       fillForm();
     });
 
@@ -152,8 +154,8 @@ describe('CreateMemberRole', () => {
 
       expect(createMemberRole).toHaveBeenCalledWith('4', {
         base_access_level: 10,
-        name,
-        description,
+        name: 'My role name',
+        description: 'My description',
         permission_a: 1,
       });
     });
@@ -170,6 +172,7 @@ describe('CreateMemberRole', () => {
 
   describe('when unsuccessful submission', () => {
     beforeEach(() => {
+      createComponent();
       fillForm();
 
       createMemberRole.mockRejectedValue(new Error());
@@ -180,7 +183,7 @@ describe('CreateMemberRole', () => {
       await waitForPromises();
 
       expect(createAlert).toHaveBeenCalledWith({
-        message: I18N_CREATION_ERROR,
+        message: 'Failed to create role.',
         variant: VARIANT_DANGER,
       });
     });
