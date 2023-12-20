@@ -1,17 +1,10 @@
 import { GlCard, GlEmptyState, GlModal, GlTable } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { createAlert, VARIANT_DANGER } from '~/alert';
+import { createAlert } from '~/alert';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import { getMemberRoles, deleteMemberRole } from 'ee/api/member_roles_api';
 import CreateMemberRole from 'ee/roles_and_permissions/components/create_member_role.vue';
-import {
-  I18N_CREATION_SUCCESS,
-  I18N_DELETION_ERROR,
-  I18N_DELETION_SUCCESS,
-  I18N_FETCH_ERROR,
-  I18N_LICENSE_ERROR,
-} from 'ee/roles_and_permissions/constants';
 import ListMemberRoles from 'ee/roles_and_permissions/components/list_member_roles.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -147,8 +140,7 @@ describe('ListMemberRoles', () => {
       await waitForPromises();
 
       expect(createAlert).toHaveBeenCalledWith({
-        message: I18N_LICENSE_ERROR,
-        variant: VARIANT_DANGER,
+        message: 'Make sure the group is in the Ultimate tier.',
       });
     });
 
@@ -157,10 +149,7 @@ describe('ListMemberRoles', () => {
       createComponent({ groupId: '100' });
       await waitForPromises();
 
-      expect(createAlert).toHaveBeenCalledWith({
-        message: I18N_FETCH_ERROR,
-        variant: VARIANT_DANGER,
-      });
+      expect(createAlert).toHaveBeenCalledWith({ message: 'Failed to fetch roles.' });
     });
 
     it('dismisses previous alerts', async () => {
@@ -196,7 +185,7 @@ describe('ListMemberRoles', () => {
       it('shows toast', () => {
         findCreateMemberRole().vm.$emit('success');
 
-        expect(mockToastShow).toHaveBeenCalledWith(I18N_CREATION_SUCCESS);
+        expect(mockToastShow).toHaveBeenCalledWith('Role successfully created.');
       });
 
       it('fetches roles', async () => {
@@ -294,7 +283,7 @@ describe('ListMemberRoles', () => {
         findModal().vm.$emit('primary');
         await waitForPromises();
 
-        expect(mockToastShow).toHaveBeenCalledWith(I18N_DELETION_SUCCESS);
+        expect(mockToastShow).toHaveBeenCalledWith('Role successfully deleted.');
       });
 
       it('fetches roles', async () => {
@@ -317,10 +306,7 @@ describe('ListMemberRoles', () => {
         findModal().vm.$emit('primary');
         await waitForPromises();
 
-        expect(createAlert).toHaveBeenCalledWith({
-          message: I18N_DELETION_ERROR,
-          variant: VARIANT_DANGER,
-        });
+        expect(createAlert).toHaveBeenCalledWith({ message: 'Failed to delete the role.' });
       });
     });
   });
