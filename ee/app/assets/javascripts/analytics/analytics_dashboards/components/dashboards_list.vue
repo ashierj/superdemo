@@ -67,7 +67,7 @@ export default {
   },
   computed: {
     showDesignerAndNewDashboardButtons() {
-      return this.customDashboardsProject;
+      return this.isProject && this.customDashboardsProject;
     },
     showValueStreamsDashboard() {
       return !this.isProject && this.glFeatures.groupAnalyticsDashboards;

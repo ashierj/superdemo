@@ -162,6 +162,14 @@ describe('DashboardsList', () => {
       it('should not render the Value streams dashboards link', () => {
         expect(findListItems()).toHaveLength(0);
       });
+
+      it('does not render the visualization designer button', () => {
+        expect(findVisualizationDesignerButton().exists()).toBe(false);
+      });
+
+      it('does not render the new dashboard button', () => {
+        expect(findNewDashboardButton().exists()).toBe(false);
+      });
     });
 
     describe('when `groupAnalyticsDashboards` FF is enabled', () => {
