@@ -138,7 +138,7 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
     let_it_be(:user) { create(:user) }
     let_it_be(:parent_group) { create(:group, name: 'parent-group') }
     let_it_be(:template_group) { create(:group, parent: parent_group, name: 'template-group') }
-    let_it_be(:template_project) { create(:project, group: template_group, name: 'template-project') }
+    let_it_be_with_reload(:template_project) { create(:project, group: template_group, name: 'template-project') }
 
     before_all do
       parent_group.update!(custom_project_templates_group_id: template_group.id)
@@ -161,6 +161,28 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
 
       specify do
         expect(helper.group_project_templates_count(parent_group.id)).to eq 0
+      end
+    end
+
+    context 'when template project is archived' do
+      before do
+        template_project.update!(archived: true)
+      end
+
+      it 'does not return the project' do
+        expect(helper.group_project_templates_count(parent_group.id)).to eq 0
+        expect(helper.group_project_templates_count(template_group.id)).to eq 0
+      end
+
+      context 'when "project_templates_without_min_access" FF is disabled' do
+        before do
+          stub_feature_flags(project_templates_without_min_access: false)
+        end
+
+        it 'does not return the project' do
+          expect(helper.group_project_templates_count(parent_group.id)).to eq 0
+          expect(helper.group_project_templates_count(template_group.id)).to eq 0
+        end
       end
     end
 
@@ -210,7 +232,7 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
     let_it_be(:user) { create(:user) }
     let_it_be(:parent_group) { create(:group, name: 'parent-group') }
     let_it_be(:template_group) { create(:group, parent: parent_group, name: 'template-group') }
-    let_it_be(:template_project) { create(:project, group: template_group, name: 'template-project') }
+    let_it_be_with_reload(:template_project) { create(:project, group: template_group, name: 'template-project') }
 
     before_all do
       parent_group.update!(custom_project_templates_group_id: template_group.id)
@@ -233,6 +255,28 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
 
       specify do
         expect(helper.group_project_templates(parent_group)).to be_empty
+      end
+    end
+
+    context 'when template project is archived' do
+      before do
+        template_project.update!(archived: true)
+      end
+
+      it 'does not return the project' do
+        expect(helper.group_project_templates(parent_group)).to be_empty
+        expect(helper.group_project_templates(template_group)).to be_empty
+      end
+
+      context 'when "project_templates_without_min_access" FF is disabled' do
+        before do
+          stub_feature_flags(project_templates_without_min_access: false)
+        end
+
+        it 'does not return the project' do
+          expect(helper.group_project_templates(parent_group)).to be_empty
+          expect(helper.group_project_templates(template_group)).to be_empty
+        end
       end
     end
 
