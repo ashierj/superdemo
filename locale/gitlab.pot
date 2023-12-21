@@ -7413,6 +7413,9 @@ msgstr ""
 msgid "AwardEmoji|No emoji found."
 msgstr ""
 
+msgid "B"
+msgstr ""
+
 msgid "Back"
 msgstr ""
 
@@ -21999,6 +22002,9 @@ msgstr ""
 msgid "Get started!"
 msgstr ""
 
+msgid "GiB"
+msgstr ""
+
 msgid "Git"
 msgstr ""
 
@@ -27915,6 +27921,9 @@ msgstr ""
 msgid "Ki"
 msgstr ""
 
+msgid "KiB"
+msgstr ""
+
 msgid "Kroki"
 msgstr ""
 
@@ -30597,6 +30606,9 @@ msgid "Metrics|e.g. req/sec"
 msgstr ""
 
 msgid "Mi"
+msgstr ""
+
+msgid "MiB"
 msgstr ""
 
 msgid "Microsoft|Client ID"
