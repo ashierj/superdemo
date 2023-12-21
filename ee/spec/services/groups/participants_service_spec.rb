@@ -66,7 +66,8 @@ RSpec.describe Groups::ParticipantsService, feature_category: :groups_and_projec
       service.instance_variable_set(:@noteable, epic)
       result = service.execute(epic)
 
-      expected_users = (group.self_and_hierarchy.flat_map(&:users) + subproject.users)
+      group_hierarchy_users = group.self_and_hierarchy.flat_map(&:group_members).map(&:user)
+      expected_users = (group_hierarchy_users + subproject.users)
         .map { |user| user_to_autocompletable(user) }
 
       expect(expected_users.count).to eq(5)

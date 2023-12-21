@@ -57,7 +57,7 @@ RSpec.describe Members::Groups::CreatorService, feature_category: :groups_and_pr
           member = described_class.add_member(group, user, :owner)
 
           expect(member).not_to be_persisted
-          expect(group.users.reload).not_to include(user)
+          expect(group).not_to have_user(user)
           expect(member.errors.full_messages).to include(/cannot be added since you've reached/)
         end
       end
@@ -111,7 +111,7 @@ RSpec.describe Members::Groups::CreatorService, feature_category: :groups_and_pr
                 member = add_member
 
                 expect(member).not_to be_persisted
-                expect(group.users.reload).not_to include(user)
+                expect(group).not_to have_user(user)
                 expect(member.errors.full_messages)
                   .to include(/the member access level can't be higher than the current user's one/)
               end

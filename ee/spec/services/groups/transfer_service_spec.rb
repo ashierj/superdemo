@@ -93,12 +93,12 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
         end
 
         it 'ensures there is still an owner for the transferred group' do
-          expect(subgroup.owners).to be_empty
+          expect(subgroup.all_owner_members).to be_empty
 
           transfer_service.execute(nil)
           subgroup.reload
 
-          expect(subgroup.owners).to match_array(user)
+          expect(subgroup.all_owner_members.preload_user.map(&:user)).to match_array(user)
           expect(subgroup.parent).to be_nil
         end
       end

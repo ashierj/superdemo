@@ -255,7 +255,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
         expect(controller).to set_flash.to 'Your request for access has been queued for review.'
         expect(response).to redirect_to(group_path(group))
         expect(group.requesters.exists?(user_id: requesting_user)).to be_truthy
-        expect(group.users).not_to include requesting_user
+        expect(group).not_to have_user(requesting_user)
       end
     end
 
@@ -289,7 +289,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
               "The member's email address is not verified."
             expect(response).to redirect_to(group_path(group))
             expect(group.requesters.exists?(user_id: requesting_user)).to be_falsey
-            expect(group.users).not_to include requesting_user
+            expect(group).not_to have_user(requesting_user)
           end
         end
 
@@ -330,7 +330,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
           expect(response).to redirect_to(new_user_session_path)
           expect(controller).to set_flash.to I18n.t('devise.failure.unconfirmed')
           expect(group.requesters.exists?(user_id: requesting_user)).to be_falsey
-          expect(group.users).not_to include requesting_user
+          expect(group).not_to have_user(requesting_user)
         end
       end
 

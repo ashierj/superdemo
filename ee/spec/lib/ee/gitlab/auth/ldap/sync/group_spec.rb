@@ -683,7 +683,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
           it 'adds new members and sets ldap attribute to true' do
             sync_group.update_permissions
 
-            expect(group.users).to include(user)
+            expect(group).to have_user(user)
             expect(group.members.find_by(user_id: user.id).ldap?).to be_truthy
           end
 
@@ -692,7 +692,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
 
             sync_group.update_permissions
 
-            expect(group.users).to include(user)
+            expect(group).to have_user(user)
           end
         end
       end
