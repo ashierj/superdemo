@@ -1,11 +1,12 @@
 <script>
-import { GlButton, GlIcon, GlLoadingIcon } from '@gitlab/ui';
+import { GlButton, GlIcon } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
 import Zuora from 'ee/billings/components/zuora_simple.vue';
 import { I18N_GENERIC_ERROR, RELATED_TO_BANNED_USER } from '../constants';
+import Captcha from './identity_verification_captcha.vue';
 
 export const EVENT_CATEGORY = 'IdentityVerification::CreditCard';
 export const EVENT_FAILED = 'failed_attempt';
@@ -15,8 +16,8 @@ export default {
   components: {
     GlButton,
     GlIcon,
-    GlLoadingIcon,
     Zuora,
+    Captcha,
   },
   mixins: [Tracking.mixin({ category: EVENT_CATEGORY })],
   inject: ['creditCard', 'offerPhoneNumberExemption'],
@@ -26,14 +27,24 @@ export default {
       formId: this.creditCard.formId,
       hasLoadError: false,
       isFormLoading: true,
-      isCheckingForReuse: false,
       errorMessage: undefined,
       isRelatedToBannedUser: false,
+      disableSubmitButton: false,
+      isLoading: false,
+      captchaData: {},
     };
   },
   computed: {
     loadingStyle() {
       return { height: `${this.$options.zuoraFormHeight}px` };
+    },
+    isSubmitButtonDisabled() {
+      return (
+        this.disableSubmitButton ||
+        this.isFormLoading ||
+        this.hasLoadError ||
+        this.isRelatedToBannedUser
+      );
     },
   },
   methods: {
@@ -68,19 +79,41 @@ export default {
       this.track(EVENT_FAILED, { property: message });
     },
     handleValidationSuccess() {
-      this.isCheckingForReuse = true;
+      this.isLoading = true;
 
       axios
         .get(this.creditCard.verifyCreditCardPath)
         .then(this.handleCheckForReuseResponse)
         .catch(this.handleCheckForReuseError)
         .finally(() => {
-          this.isCheckingForReuse = false;
+          this.isLoading = false;
         });
     },
+    onCaptchaShown() {
+      this.disableSubmitButton = true;
+    },
+    onCaptchaSolved(data) {
+      this.disableSubmitButton = false;
+      this.captchaData = data;
+    },
+    onCaptchaReset() {
+      this.disableSubmitButton = true;
+      this.captchaData = {};
+    },
     submit() {
-      this.alert?.dismiss();
-      this.$refs.zuora.submit();
+      this.isLoading = true;
+      axios
+        .post(this.creditCard.verifyCaptchaPath, this.captchaData)
+        .then(() => {
+          this.alert?.dismiss();
+          this.$refs.zuora.submit();
+        })
+        .catch((error) => {
+          createAlert({ message: error.response?.data?.message || I18N_GENERIC_ERROR });
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
   },
   i18n: {
@@ -95,15 +128,7 @@ export default {
 </script>
 <template>
   <div class="gl-display-flex gl-flex-direction-column">
-    <div
-      v-if="isCheckingForReuse"
-      class="gl-display-flex gl-justify-content-center gl-align-items-center"
-      :style="loadingStyle"
-    >
-      <gl-loading-icon size="lg" />
-    </div>
     <zuora
-      v-else
       ref="zuora"
       :current-user-id="currentUserId"
       :initial-height="$options.zuoraFormHeight"
@@ -120,11 +145,19 @@ export default {
       <span class="gl-ml-2">{{ $options.i18n.formInfo }}</span>
     </div>
 
+    <captcha
+      :show-recaptcha-challenge="creditCard.showRecaptchaChallenge"
+      @captcha-shown="onCaptchaShown"
+      @captcha-solved="onCaptchaSolved"
+      @captcha-reset="onCaptchaReset"
+    />
+
     <gl-button
       class="gl-mt-6"
       variant="confirm"
       type="submit"
-      :disabled="isFormLoading || hasLoadError || isRelatedToBannedUser"
+      :disabled="isSubmitButtonDisabled"
+      :loading="isLoading"
       @click="submit"
     >
       {{ $options.i18n.formSubmit }}

@@ -73,7 +73,9 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
     end
 
     describe '#enable_arkose_challenge' do
-      subject(:enable_arkose) { helper.enable_arkose_challenge? }
+      let(:category) { :phone }
+
+      subject(:enable_arkose) { helper.enable_arkose_challenge?(category) }
 
       before do
         stub_feature_flags(arkose_labs_phone_verification_challenge: feature_flag_enabled)
@@ -101,11 +103,20 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
 
           it { is_expected.to be_falsey }
         end
+
+        context 'and category is credit_card' do
+          let(:category) { :credit_card }
+          let(:recaptcha_enabled) { true }
+
+          it { is_expected.to be_falsey }
+        end
       end
     end
 
     describe '#show_arkose_challenge' do
-      subject(:show_arkose) { helper.show_arkose_challenge?(user) }
+      let(:category) { :phone }
+
+      subject(:show_arkose) { helper.show_arkose_challenge?(user, category) }
 
       before do
         allow(helper).to receive(:enable_arkose_challenge?).and_return(arkose_enabled)
@@ -184,7 +195,9 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
         credit_card: {
           user_id: user.id,
           form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID,
-          verify_credit_card_path: verify_credit_card_identity_verification_path
+          verify_credit_card_path: verify_credit_card_identity_verification_path,
+          verify_captcha_path: verify_credit_card_captcha_identity_verification_path,
+          show_recaptcha_challenge: 'false'
         },
         phone_number: {
           send_code_path: send_phone_verification_code_identity_verification_path,
