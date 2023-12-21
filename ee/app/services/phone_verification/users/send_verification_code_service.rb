@@ -142,7 +142,7 @@ module PhoneVerification
         PhoneVerification::Users::RateLimitService.increase_daily_attempts
 
         attrs = { telesign_reference_xid: send_code_result[:telesign_reference_xid] }
-        attrs[:risk_score] = risk_result[:risk_score] if Feature.enabled?(:telesign_intelligence)
+        attrs[:risk_score] = risk_result[:risk_score] if Feature.enabled?(:telesign_intelligence, type: :ops)
 
         record.update!(attrs)
 
@@ -150,7 +150,7 @@ module PhoneVerification
       end
 
       def store_risk_score(risk_score)
-        return unless Feature.enabled?(:telesign_intelligence)
+        return unless Feature.enabled?(:telesign_intelligence, type: :ops)
 
         Abuse::TrustScore.create!(user: user, score: risk_score.to_f, source: :telesign)
       end
