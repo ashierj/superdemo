@@ -1,13 +1,13 @@
 <script>
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import App from '../app.vue';
+import ApprovalRulesApp from '../approval_rules_app.vue';
 import ScanResultPolicies from '../security_orchestration/scan_result_policies.vue';
 import ProjectApprovalSettings from './project_approval_settings.vue';
 import ProjectRules from './project_rules.vue';
 
 export default {
   components: {
-    App,
+    ApprovalRulesApp,
     ProjectApprovalSettings,
     ProjectRules,
     ScanResultPolicies,
@@ -18,11 +18,11 @@ export default {
 
 <template>
   <div>
-    <app :is-mr-edit="false">
+    <approval-rules-app :is-mr-edit="false">
       <template #rules>
         <project-rules />
       </template>
-    </app>
+    </approval-rules-app>
     <scan-result-policies v-if="glFeatures.securityOrchestrationPolicies" class="gl-mt-5" />
     <project-approval-settings class="gl-mt-5" />
   </div>

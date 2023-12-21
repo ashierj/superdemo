@@ -8,6 +8,7 @@ import ModalRuleCreate from './rule_modal/create_rule.vue';
 import ModalRuleRemove from './rule_modal/remove_rule.vue';
 
 export default {
+  name: 'ApprovalRulesApp',
   components: {
     ModalRuleCreate,
     ModalRuleRemove,

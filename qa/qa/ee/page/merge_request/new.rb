@@ -13,7 +13,7 @@ module QA
             base.class_eval do
               include ::QA::Page::Component::Dropdown
 
-              view 'ee/app/assets/javascripts/approvals/components/app.vue' do
+              view 'ee/app/assets/javascripts/approvals/components/approval_rules_app.vue' do
                 element 'add-approval-rule'
               end
 

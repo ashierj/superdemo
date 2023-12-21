@@ -6,7 +6,7 @@ import SafeHtml from '~/vue_shared/directives/safe_html';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { __, n__, sprintf, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import App from '../app.vue';
+import ApprovalRulesApp from '../approval_rules_app.vue';
 import MrRules from './mr_rules.vue';
 import MrRulesHiddenInputs from './mr_rules_hidden_inputs.vue';
 
@@ -16,7 +16,7 @@ export default {
     GlAccordionItem,
     GlSprintf,
     GlLink,
-    App,
+    ApprovalRulesApp,
     MrRules,
     MrRulesHiddenInputs,
   },
@@ -116,7 +116,7 @@ export default {
 
     <gl-accordion :header-level="3">
       <gl-accordion-item :title="accordionTitle">
-        <app>
+        <approval-rules-app>
           <template #rules>
             <mr-rules />
           </template>
@@ -144,7 +144,7 @@ export default {
               </div>
             </div>
           </template>
-        </app>
+        </approval-rules-app>
       </gl-accordion-item>
     </gl-accordion>
   </div>
