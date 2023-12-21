@@ -107,7 +107,7 @@ module QA
             end
 
             def set_use_product_analytics_enabled
-              expand_content(:permission_lfs_2fa_content)
+              expand_content('permissions-settings')
               check_element('use-experimental-features-checkbox', true)
               check_element('use-product-analytics-checkbox', true)
               click_element(:save_permissions_changes_button)
