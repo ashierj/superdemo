@@ -435,15 +435,6 @@
   :weight: 1
   :idempotent: false
   :tags: []
-- :name: cronjob:open_ai_clear_conversations
-  :worker_name: OpenAi::ClearConversationsWorker
-  :feature_category: :ai_abstraction_layer
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: cronjob:package_metadata_advisories_sync
   :worker_name: PackageMetadata::AdvisoriesSyncWorker
   :feature_category: :software_composition_analysis
@@ -998,15 +989,6 @@
   :feature_category: :system_access
   :has_external_dependencies: false
   :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
-- :name: ci_llm_generate_config
-  :worker_name: Ci::Llm::GenerateConfigWorker
-  :feature_category: :pipeline_composition
-  :has_external_dependencies: false
-  :urgency: :high
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
