@@ -24290,6 +24290,8 @@ CREATE TABLE topics (
     total_projects_count bigint DEFAULT 0 NOT NULL,
     non_private_projects_count bigint DEFAULT 0 NOT NULL,
     title text,
+    slug text,
+    CONSTRAINT check_0eda72aeb0 CHECK ((char_length(slug) <= 255)),
     CONSTRAINT check_223b50f9be CHECK ((char_length(title) <= 255)),
     CONSTRAINT check_26753fb43a CHECK ((char_length(avatar) <= 255)),
     CONSTRAINT check_5d1a07c8c8 CHECK ((char_length(description) <= 1024)),
@@ -34837,6 +34839,8 @@ CREATE INDEX index_topics_on_lower_name ON topics USING btree (lower(name));
 CREATE UNIQUE INDEX index_topics_on_name ON topics USING btree (name);
 
 CREATE INDEX index_topics_on_name_trigram ON topics USING gin (name gin_trgm_ops);
+
+CREATE UNIQUE INDEX index_topics_on_slug ON topics USING btree (slug) WHERE (slug IS NOT NULL);
 
 CREATE INDEX index_topics_total_projects_count ON topics USING btree (total_projects_count DESC, id);
 
