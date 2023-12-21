@@ -8618,6 +8618,7 @@ Input type: `WorkItemUpdateInput`
 | <a id="mutationworkitemupdateiterationwidget"></a>`iterationWidget` | [`WorkItemWidgetIterationInput`](#workitemwidgetiterationinput) | Input for iteration widget. |
 | <a id="mutationworkitemupdatelabelswidget"></a>`labelsWidget` | [`WorkItemWidgetLabelsUpdateInput`](#workitemwidgetlabelsupdateinput) | Input for labels widget. |
 | <a id="mutationworkitemupdatemilestonewidget"></a>`milestoneWidget` | [`WorkItemWidgetMilestoneInput`](#workitemwidgetmilestoneinput) | Input for milestone widget. |
+| <a id="mutationworkitemupdatenoteswidget"></a>`notesWidget` | [`WorkItemWidgetNotesInput`](#workitemwidgetnotesinput) | Input for notes widget. |
 | <a id="mutationworkitemupdatenotificationswidget"></a>`notificationsWidget` | [`WorkItemWidgetNotificationsUpdateInput`](#workitemwidgetnotificationsupdateinput) | Input for notifications widget. |
 | <a id="mutationworkitemupdateprogresswidget"></a>`progressWidget` | [`WorkItemWidgetProgressInput`](#workitemwidgetprogressinput) | Input for progress widget. |
 | <a id="mutationworkitemupdatestartandduedatewidget"></a>`startAndDueDateWidget` | [`WorkItemWidgetStartAndDueDateUpdateInput`](#workitemwidgetstartandduedateupdateinput) | Input for start and due date widget. |
@@ -29070,6 +29071,7 @@ Represents a notes widget.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="workitemwidgetnotesdiscussionlocked"></a>`discussionLocked` | [`Boolean`](#boolean) | Discussion lock attribute of the work item. |
 | <a id="workitemwidgetnotestype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
 #### Fields with arguments
@@ -34511,6 +34513,7 @@ Attributes for value stream stage.
 | <a id="workitemupdatedtaskinputid"></a>`id` | [`WorkItemID!`](#workitemid) | Global ID of the work item. |
 | <a id="workitemupdatedtaskinputlabelswidget"></a>`labelsWidget` | [`WorkItemWidgetLabelsUpdateInput`](#workitemwidgetlabelsupdateinput) | Input for labels widget. |
 | <a id="workitemupdatedtaskinputmilestonewidget"></a>`milestoneWidget` | [`WorkItemWidgetMilestoneInput`](#workitemwidgetmilestoneinput) | Input for milestone widget. |
+| <a id="workitemupdatedtaskinputnoteswidget"></a>`notesWidget` | [`WorkItemWidgetNotesInput`](#workitemwidgetnotesinput) | Input for notes widget. |
 | <a id="workitemupdatedtaskinputnotificationswidget"></a>`notificationsWidget` | [`WorkItemWidgetNotificationsUpdateInput`](#workitemwidgetnotificationsupdateinput) | Input for notifications widget. |
 | <a id="workitemupdatedtaskinputstartandduedatewidget"></a>`startAndDueDateWidget` | [`WorkItemWidgetStartAndDueDateUpdateInput`](#workitemwidgetstartandduedateupdateinput) | Input for start and due date widget. |
 | <a id="workitemupdatedtaskinputstateevent"></a>`stateEvent` | [`WorkItemStateEvent`](#workitemstateevent) | Close or reopen a work item. |
@@ -34601,6 +34604,14 @@ Attributes for value stream stage.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="workitemwidgetmilestoneinputmilestoneid"></a>`milestoneId` | [`MilestoneID`](#milestoneid) | Milestone to assign to the work item. |
+
+### `WorkItemWidgetNotesInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemwidgetnotesinputdiscussionlocked"></a>`discussionLocked` | [`Boolean!`](#boolean) | Discussion lock attribute for notes widget of the work item. |
 
 ### `WorkItemWidgetNotificationsUpdateInput`
 

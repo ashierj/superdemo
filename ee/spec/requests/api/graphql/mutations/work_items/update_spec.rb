@@ -20,19 +20,8 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
     it 'ignores the update' do
       expect do
         post_graphql_mutation(mutation, current_user: current_user)
-      end.not_to change { work_item.reload }
-    end
-  end
-
-  shared_examples 'user without permission to admin work item cannot update the attribute' do
-    # A guest user who is also the author of a work item can update some of its attrs (policy :update_work_item.)
-    # Only a reporter (or above) may update the weight (policy :admin_work_item.)
-    context 'when a guest user is also an author of the work item' do
-      let(:current_user) { guest }
-
-      let_it_be(:work_item) { create(:work_item, project: project, author: guest) }
-
-      it_behaves_like 'work item is not updated'
+        work_item.reload
+      end.not_to change(&work_item_change)
     end
   end
 
@@ -71,7 +60,9 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
         stub_licensed_features(iterations: false)
       end
 
-      it_behaves_like 'work item is not updated'
+      it_behaves_like 'work item is not updated' do
+        let(:work_item_change) { -> { work_item.iteration } }
+      end
     end
 
     context 'when iterations feature is licensed' do
@@ -79,7 +70,10 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
         stub_licensed_features(iterations: true)
       end
 
-      it_behaves_like 'user without permission to admin work item cannot update the attribute'
+      it_behaves_like 'work item is not updated' do
+        let(:current_user) { guest }
+        let(:work_item_change) { -> { work_item.iteration } }
+      end
 
       context 'when user has permissions to admin a work item' do
         let(:current_user) { reporter }
@@ -111,7 +105,9 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
       context 'when the user does not have permission to update the work item' do
         let(:current_user) { guest }
 
-        it_behaves_like 'work item is not updated'
+        it_behaves_like 'work item is not updated' do
+          let(:work_item_change) { -> { work_item.iteration } }
+        end
 
         context 'when a base attribute is present' do
           before do
@@ -155,7 +151,9 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
         stub_licensed_features(issue_weights: false)
       end
 
-      it_behaves_like 'work item is not updated'
+      it_behaves_like 'work item is not updated' do
+        let(:work_item_change) { -> { work_item.weight } }
+      end
     end
 
     context 'when issuable weights is licensed' do
@@ -221,7 +219,9 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
                 .find_by_widget_type(:weight).update!(disabled: true)
             end
 
-            it_behaves_like 'work item is not updated'
+            it_behaves_like 'work item is not updated' do
+              let(:work_item_change) { -> { work_item.weight } }
+            end
           end
         end
 
@@ -232,7 +232,10 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
         end
       end
 
-      it_behaves_like 'user without permission to admin work item cannot update the attribute'
+      it_behaves_like 'work item is not updated' do
+        let(:current_user) { guest }
+        let(:work_item_change) { -> { work_item.weight } }
+      end
     end
   end
 
@@ -276,7 +279,10 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
         stub_licensed_features(okrs: false)
       end
 
-      it_behaves_like 'work item is not updated'
+      it_behaves_like 'work item is not updated' do
+        let(:current_user) { guest }
+        let(:work_item_change) { -> { work_item_progress } }
+      end
     end
 
     context 'when okrs is licensed' do
@@ -306,12 +312,12 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
         end
       end
 
-      it_behaves_like 'user without permission to admin work item cannot update the attribute'
-
       context 'when the user does not have permission to update the work item' do
         let(:current_user) { guest }
 
-        it_behaves_like 'work item is not updated'
+        it_behaves_like 'work item is not updated' do
+          let(:work_item_change) { -> { work_item_progress } }
+        end
 
         context 'when a base attribute is present' do
           before do
@@ -359,7 +365,9 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
         stub_licensed_features(requirements: false)
       end
 
-      it_behaves_like 'work item is not updated'
+      it_behaves_like 'work item is not updated' do
+        let(:work_item_change) { -> { work_item_status } }
+      end
     end
 
     context 'when requirements is licensed' do
@@ -394,12 +402,17 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
         end
       end
 
-      it_behaves_like 'user without permission to admin work item cannot update the attribute'
+      it_behaves_like 'work item is not updated' do
+        let(:current_user) { guest }
+        let(:work_item_change) { -> { work_item_status } }
+      end
 
       context 'when the user does not have permission to update the work item' do
         let(:current_user) { guest }
 
-        it_behaves_like 'work item is not updated'
+        it_behaves_like 'work item is not updated' do
+          let(:work_item_change) { -> { work_item_status } }
+        end
 
         context 'when a base attribute is present' do
           before do
@@ -447,7 +460,9 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
         stub_licensed_features(issuable_health_status: false)
       end
 
-      it_behaves_like 'work item is not updated'
+      it_behaves_like 'work item is not updated' do
+        let(:work_item_change) { -> { work_item.health_status } }
+      end
     end
 
     context 'when issuable_health_status is licensed' do
@@ -455,7 +470,10 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
         stub_licensed_features(issuable_health_status: true)
       end
 
-      it_behaves_like 'user without permission to admin work item cannot update the attribute'
+      it_behaves_like 'work item is not updated' do
+        let(:current_user) { guest }
+        let(:work_item_change) { -> { work_item.health_status } }
+      end
 
       context 'when user has permissions to update the work item' do
         let(:current_user) { reporter }
@@ -518,7 +536,103 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
                 .find_by_widget_type(:health_status).update!(disabled: true)
             end
 
-            it_behaves_like 'work item is not updated'
+            it_behaves_like 'work item is not updated' do
+              let(:work_item_change) { -> { work_item.health_status } }
+            end
+          end
+        end
+      end
+    end
+  end
+
+  context 'with notes widget input' do
+    let(:discussion_locked) { true }
+    let(:input) { { 'notesWidget' => { 'discussionLocked' => true } } }
+
+    let(:fields) do
+      <<~FIELDS
+        workItem {
+          widgets {
+            type
+            ... on WorkItemWidgetNotes {
+              discussionLocked
+            }
+          }
+        }
+        errors
+      FIELDS
+    end
+
+    it_behaves_like 'work item is not updated' do
+      let(:current_user) { guest }
+      let(:work_item_change) { -> { work_item.discussion_locked } }
+    end
+
+    context 'when user has permissions to update the work item' do
+      let(:current_user) { reporter }
+
+      it 'updates work item discussion locked attribute on notes widget' do
+        expect do
+          post_graphql_mutation(mutation, current_user: current_user)
+          work_item.reload
+        end.to change { work_item.discussion_locked }.from(nil).to(true)
+
+        expect(response).to have_gitlab_http_status(:success)
+        expect(mutation_response['workItem']['widgets']).to include(
+          {
+            'discussionLocked' => true,
+            'type' => 'NOTES'
+          }
+        )
+      end
+
+      context 'when using quick action' do
+        let(:input) { { 'descriptionWidget' => { 'description' => "/lock" } } }
+
+        it 'updates work item discussion locked attribute on notes widget' do
+          expect do
+            post_graphql_mutation(mutation, current_user: current_user)
+            work_item.reload
+          end.to change { work_item.discussion_locked }.from(nil).to(true)
+
+          expect(response).to have_gitlab_http_status(:success)
+          expect(mutation_response['workItem']['widgets']).to include(
+            {
+              'discussionLocked' => true,
+              'type' => 'NOTES'
+            }
+          )
+        end
+
+        context 'when unlocking discussion' do
+          let(:input) { { 'descriptionWidget' => { 'description' => "/unlock" } } }
+
+          before do
+            work_item.update!(discussion_locked: true)
+          end
+
+          it 'updates work item discussion locked attribute on notes widget' do
+            expect do
+              post_graphql_mutation(mutation, current_user: current_user)
+              work_item.reload
+            end.to change { work_item.discussion_locked }.from(true).to(false)
+
+            expect(response).to have_gitlab_http_status(:success)
+          end
+        end
+
+        context 'when the work item type does not support the notes widget' do
+          let(:input) do
+            { 'descriptionWidget' => { 'description' => "Updating notes discussion locked.\n/lock" } }
+          end
+
+          before do
+            WorkItems::Type.default_by_type(:issue).widget_definitions
+              .find_by_widget_type(:notes).update!(disabled: true)
+          end
+
+          it_behaves_like 'work item is not updated' do
+            let(:work_item_change) { -> { work_item.discussion_locked } }
           end
         end
       end
