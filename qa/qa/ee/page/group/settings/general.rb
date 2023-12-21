@@ -110,7 +110,7 @@ module QA
               expand_content('permissions-settings')
               check_element('use-experimental-features-checkbox', true)
               check_element('use-product-analytics-checkbox', true)
-              click_element(:save_permissions_changes_button)
+              click_element('save-permissions-changes-button')
             end
 
             def set_prevent_forking_outside_group_enabled
