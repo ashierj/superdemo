@@ -17,10 +17,6 @@ module EE
       super && !::Gitlab::CurrentSettings.personal_access_tokens_disabled?
     end
 
-    def users_sentence(users, link_class: nil)
-      users.map { |user| link_to(user.name, user, class: link_class) }.to_sentence.html_safe
-    end
-
     def user_badges_in_admin_section(user)
       super(user).tap do |badges|
         if !::Gitlab.com? && user.using_license_seat?
