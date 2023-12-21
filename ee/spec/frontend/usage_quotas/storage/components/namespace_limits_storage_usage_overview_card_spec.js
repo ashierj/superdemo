@@ -1,4 +1,4 @@
-import { GlProgressBar, GlSkeletonLoader, GlLink } from '@gitlab/ui';
+import { GlProgressBar, GlLink } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
 import NamespaceLimitsStorageUsageOverviewCard from 'ee/usage_quotas/storage/components/namespace_limits_storage_usage_overview_card.vue';
@@ -32,7 +32,7 @@ describe('NamespaceLimitsStorageUsageOverviewCard', () => {
   const findPercentageRemaining = () =>
     wrapper.findByTestId('namespace-storage-percentage-remaining');
   const findProgressBar = () => wrapper.findComponent(GlProgressBar);
-  const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
+  const findSkeletonLoaders = () => wrapper.findAll('.gl-animate-skeleton-loader');
 
   describe('card title', () => {
     beforeEach(() => {
@@ -161,12 +161,12 @@ describe('NamespaceLimitsStorageUsageOverviewCard', () => {
   describe('skeleton loader', () => {
     it('renders skeleton loader when loading prop is true', () => {
       createComponent({ props: { loading: true } });
-      expect(findSkeletonLoader().exists()).toBe(true);
+      expect(findSkeletonLoaders().exists()).toBe(true);
     });
 
     it('does not render skeleton loader when loading prop is false', () => {
       createComponent({ props: { loading: false } });
-      expect(findSkeletonLoader().exists()).toBe(false);
+      expect(findSkeletonLoaders().exists()).toBe(false);
     });
   });
 });

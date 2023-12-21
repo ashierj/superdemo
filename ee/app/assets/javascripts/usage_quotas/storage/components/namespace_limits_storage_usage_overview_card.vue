@@ -1,5 +1,5 @@
 <script>
-import { GlCard, GlProgressBar, GlSkeletonLoader, GlIcon, GlLink } from '@gitlab/ui';
+import { GlCard, GlProgressBar, GlIcon, GlLink } from '@gitlab/ui';
 import { sprintf } from '~/locale';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
 import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
@@ -14,7 +14,6 @@ export default {
   components: {
     GlCard,
     GlProgressBar,
-    GlSkeletonLoader,
     GlIcon,
     GlLink,
     NumberToHumanSize,
@@ -75,42 +74,48 @@ export default {
 
 <template>
   <gl-card>
-    <gl-skeleton-loader v-if="loading" :height="64">
-      <rect width="140" height="30" x="5" y="0" rx="4" />
-      <rect width="240" height="10" x="5" y="40" rx="4" />
-      <rect width="340" height="10" x="5" y="54" rx="4" />
-    </gl-skeleton-loader>
+    <div class="gl-font-weight-bold" data-testid="namespace-storage-card-title">
+      {{ $options.i18n.STORAGE_STATISTICS_NAMESPACE_STORAGE_USED }}
 
-    <div v-else>
-      <div class="gl-font-weight-bold" data-testid="namespace-storage-card-title">
-        {{ $options.i18n.STORAGE_STATISTICS_NAMESPACE_STORAGE_USED }}
+      <gl-link
+        :href="$options.usageQuotasHelpPaths.usageQuotasNamespaceStorageLimit"
+        target="_blank"
+        class="gl-ml-2"
+        :aria-label="$options.i18n.STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE"
+      >
+        <gl-icon name="question-o" />
+      </gl-link>
+    </div>
 
-        <gl-link
-          :href="$options.usageQuotasHelpPaths.usageQuotasNamespaceStorageLimit"
-          target="_blank"
-          class="gl-ml-2"
-          :aria-label="$options.i18n.STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE"
-        >
-          <gl-icon name="question-o" />
-        </gl-link>
-      </div>
-      <div class="gl-font-size-h-display gl-font-weight-bold gl-line-height-ratio-1000 gl-my-3">
-        <number-to-human-size label-class="gl-font-lg" :value="usedStorage" plain-zero />
-        <template v-if="totalStorageAvailable">
-          /
-          <number-to-human-size
-            label-class="gl-font-lg"
-            :value="totalStorageAvailable"
-            plain-zero
-          />
-        </template>
-      </div>
-      <template v-if="percentageUsed !== null">
-        <gl-progress-bar :value="percentageUsed" class="gl-my-4" />
-        <div data-testid="namespace-storage-percentage-remaining">
-          {{ percentageRemaining }}
-        </div>
+    <div
+      v-if="loading"
+      class="gl-animate-skeleton-loader gl-max-w-26 gl-h-7 gl-rounded-base gl-my-3"
+    ></div>
+    <div
+      v-else
+      class="gl-font-size-h-display gl-font-weight-bold gl-line-height-ratio-1000 gl-my-3"
+    >
+      <number-to-human-size label-class="gl-font-lg" :value="usedStorage" plain-zero />
+      <template v-if="totalStorageAvailable">
+        /
+        <number-to-human-size label-class="gl-font-lg" :value="totalStorageAvailable" plain-zero />
       </template>
     </div>
+
+    <template v-if="percentageUsed !== null">
+      <div
+        v-if="loading"
+        class="gl-animate-skeleton-loader gl-h-2 gl-max-w-none! gl-rounded-base gl-mb-4"
+      ></div>
+      <gl-progress-bar v-else :value="percentageUsed" class="gl-my-4" />
+
+      <div
+        v-if="loading"
+        class="gl-animate-skeleton-loader gl-max-w-26 gl-h-5 gl-rounded-base gl-my-3"
+      ></div>
+      <div v-else data-testid="namespace-storage-percentage-remaining">
+        {{ percentageRemaining }}
+      </div>
+    </template>
   </gl-card>
 </template>
