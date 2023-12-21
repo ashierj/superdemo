@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Dast::ProfileSchedule, type: :model do
+RSpec.describe Dast::ProfileSchedule, :dynamic_analysis,
+  feature_category: :dynamic_application_security_testing do
   let(:dast_profile_schedule) { create(:dast_profile_schedule, project: project) }
 
   let_it_be_with_reload(:project) { create(:project) }

@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Dast::ScannerProfilesBuild, type: :model do
+RSpec.describe Dast::ScannerProfilesBuild, :dynamic_analysis,
+  feature_category: :dynamic_application_security_testing do
   subject { create(:dast_scanner_profiles_build) }
 
   describe 'associations' do

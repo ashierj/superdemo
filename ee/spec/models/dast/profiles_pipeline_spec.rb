@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Dast::ProfilesPipeline, type: :model do
+RSpec.describe Dast::ProfilesPipeline, :dynamic_analysis,
+  feature_category: :dynamic_application_security_testing do
   subject { create(:dast_profiles_pipeline) }
 
   describe 'associations' do

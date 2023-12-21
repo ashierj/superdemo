@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Dast::SiteProfilesBuild, type: :model do
+RSpec.describe Dast::SiteProfilesBuild, :dynamic_analysis,
+  feature_category: :dynamic_application_security_testing do
   subject { create(:dast_site_profiles_build) }
 
   describe 'associations' do

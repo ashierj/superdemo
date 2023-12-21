@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Dast::SiteProfileSecretVariable, type: :model do
+RSpec.describe Dast::SiteProfileSecretVariable, :dynamic_analysis,
+  feature_category: :dynamic_application_security_testing do
   let_it_be(:dast_site_profile) { create(:dast_site_profile) }
 
   subject { create(:dast_site_profile_secret_variable, dast_site_profile: dast_site_profile) }
