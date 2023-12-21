@@ -164,10 +164,11 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
         end
 
         let(:merged_at) { 1.day.ago }
+        let(:merged_at_2) { 7.days.ago }
 
         before do
           merge_request.metrics.update!(merged_at: merged_at)
-          merge_request_2.metrics.update!(merged_at: 7.days.ago)
+          merge_request_2.metrics.update!(merged_at: merged_at_2)
 
           visit group_security_compliance_dashboard_path(group, vueroute: :violations)
           wait_for_requests
@@ -180,6 +181,10 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
           expect(first_row).to have_content('Approved by committer')
           expect(first_row).to have_content(merge_request.title)
           expect(first_row).to have_content(merged_at.to_date.to_s)
+          expect(second_row).to have_content('Medium')
+          expect(second_row).to have_content('Approved by author')
+          expect(second_row).to have_content(merge_request_2.title)
+          expect(second_row).to have_content(merged_at_2.to_date.to_s)
         end
 
         it 'can sort the violations by clicking on a column header' do
