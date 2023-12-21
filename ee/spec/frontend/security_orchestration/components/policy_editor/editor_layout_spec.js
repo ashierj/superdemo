@@ -42,6 +42,7 @@ describe('EditorLayout component', () => {
         ...propsData,
       },
       provide: {
+        securityPoliciesPolicyScopeToggleEnabled: false,
         policiesPath,
         namespaceType,
         ...provide,
@@ -299,16 +300,19 @@ describe('EditorLayout component', () => {
 
   describe('policy scope', () => {
     it.each`
-      flagEnabled | type                       | expectedResult
-      ${true}     | ${NAMESPACE_TYPES.GROUP}   | ${true}
-      ${true}     | ${NAMESPACE_TYPES.PROJECT} | ${false}
-      ${false}    | ${NAMESPACE_TYPES.GROUP}   | ${false}
-      ${false}    | ${NAMESPACE_TYPES.PROJECT} | ${false}
+      flagEnabled | securityPoliciesPolicyScopeToggleEnabled | type                       | expectedResult
+      ${true}     | ${true}                                  | ${NAMESPACE_TYPES.GROUP}   | ${true}
+      ${true}     | ${true}                                  | ${NAMESPACE_TYPES.PROJECT} | ${false}
+      ${false}    | ${false}                                 | ${NAMESPACE_TYPES.GROUP}   | ${false}
+      ${false}    | ${false}                                 | ${NAMESPACE_TYPES.PROJECT} | ${false}
+      ${true}     | ${false}                                 | ${NAMESPACE_TYPES.GROUP}   | ${false}
+      ${true}     | ${false}                                 | ${NAMESPACE_TYPES.PROJECT} | ${false}
     `(
       'renders policy scope conditionally for $namespaceType level based on feature flag',
-      ({ flagEnabled, type, expectedResult }) => {
+      ({ flagEnabled, securityPoliciesPolicyScopeToggleEnabled, type, expectedResult }) => {
         factory({
           provide: {
+            securityPoliciesPolicyScopeToggleEnabled,
             namespaceType: type,
             glFeatures: { securityPoliciesPolicyScope: flagEnabled },
           },
@@ -323,6 +327,7 @@ describe('EditorLayout component', () => {
 
       factory({
         provide: {
+          securityPoliciesPolicyScopeToggleEnabled: true,
           namespaceType: NAMESPACE_TYPES.GROUP,
           glFeatures: { securityPoliciesPolicyScope: true },
         },

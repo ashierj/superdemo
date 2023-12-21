@@ -29,6 +29,7 @@ export default (el, namespaceType) => {
     scanResultApprovers,
     softwareLicenses,
     timezones,
+    securityPoliciesPolicyScopeToggleEnabled,
   } = el.dataset;
 
   const policyProject = JSON.parse(assignedPolicyProject);
@@ -84,6 +85,9 @@ export default (el, namespaceType) => {
       scanPolicyDocumentationPath,
       scanResultPolicyApprovers,
       parsedSoftwareLicenses,
+      securityPoliciesPolicyScopeToggleEnabled: parseBoolean(
+        securityPoliciesPolicyScopeToggleEnabled,
+      ),
       timezones: parsedTimezones,
       existingPolicy: policy ? { type: policyType, ...JSON.parse(policy) } : undefined,
       assignedPolicyProject: policyProject
