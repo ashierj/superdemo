@@ -21,7 +21,11 @@ RSpec.describe Admin::UsersController, feature_category: :user_management do
 
   describe 'POST update' do
     context 'update custom attributes' do
-      let!(:custom_attribute) { user.custom_attributes.create!(key: UserCustomAttribute::ARKOSE_RISK_BAND, value: Arkose::VerifyResponse::RISK_BAND_MEDIUM) }
+      let!(:custom_attribute) do
+        user.custom_attributes.create!(key: UserCustomAttribute::ARKOSE_RISK_BAND,
+          value: Arkose::VerifyResponse::RISK_BAND_MEDIUM)
+      end
+
       let(:params) do
         {
           id: user.to_param,
@@ -121,7 +125,8 @@ RSpec.describe Admin::UsersController, feature_category: :user_management do
     end
 
     it 'enqueues a new worker' do
-      expect(AuditEvents::UserImpersonationEventCreateWorker).to receive(:perform_async).with(admin.id, user.id, anything, 'started', DateTime.current).once
+      expect(AuditEvents::UserImpersonationEventCreateWorker).to receive(:perform_async).with(admin.id, user.id,
+        anything, 'started', DateTime.current).once
 
       post :impersonate, params: { id: user.username }
     end
@@ -183,6 +188,48 @@ RSpec.describe Admin::UsersController, feature_category: :user_management do
 
         expect(controller).to set_flash[:alert].to(_('Something went wrong. Unable to remove identity verification exemption.'))
         expect(response).to redirect_to(admin_user_path(user))
+      end
+    end
+  end
+
+  describe 'GET #card_match', :saas do
+    it 'redirects with no match notice by default' do
+      get :card_match, params: { id: user.to_param }
+
+      expect(controller).to set_flash[:notice].to(_('No credit card data for matching'))
+      expect(response).to redirect_to(admin_user_path(user))
+    end
+
+    context 'when the user has a validated credit card' do
+      before do
+        create(:credit_card_validation, user: user)
+      end
+
+      it 'loads the matching credit card page' do
+        get :card_match, params: { id: user.to_param }
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+  end
+
+  describe 'GET #phone_match', :saas do
+    it 'redirects with no match notice by default' do
+      get :phone_match, params: { id: user.to_param }
+
+      expect(controller).to set_flash[:notice].to(_('No phone number data for matching'))
+      expect(response).to redirect_to(admin_user_path(user))
+    end
+
+    context 'when the user has a validated phone number' do
+      before do
+        create(:phone_number_validation, user: user)
+      end
+
+      it 'loads the matching phone number page' do
+        get :phone_match, params: { id: user.to_param }
+
+        expect(response).to have_gitlab_http_status(:ok)
       end
     end
   end

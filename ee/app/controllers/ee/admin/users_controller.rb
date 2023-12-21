@@ -41,6 +41,18 @@ module EE
         end
       end
 
+      def phone_match
+        return render_404 unless ::Gitlab.com?
+
+        phone_number_validation = user.phone_number_validation
+
+        if phone_number_validation.present?
+          @similar_phone_number_validations = phone_number_validation.similar_records.page(params[:page]).per(100)
+        else
+          redirect_to [:admin, @user], notice: _('No phone number data for matching')
+        end
+      end
+
       private
 
       override :users_with_included_associations
