@@ -46,7 +46,7 @@ dont-interrupt-me:
 clone-gitlab-repo:
   extends:
     - .absolutely-predictive-job
-  # rules: [when: never]  # Uncomment this to clone instead of using artifacts
+  rules: [when: never]  # Uncomment this to clone instead of using artifacts
   stage: sync
   script:
     - echo OK
