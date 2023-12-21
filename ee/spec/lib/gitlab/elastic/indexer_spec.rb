@@ -31,7 +31,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
 
       indexer.run
 
-      expect_index_status(Gitlab::Git::BLANK_SHA)
+      expect_index_status(Gitlab::Git::SHA1_BLANK_SHA)
     end
 
     context 'when indexing a project with no repository' do
@@ -41,7 +41,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
 
         indexer.run
 
-        expect_index_status(Gitlab::Git::BLANK_SHA)
+        expect_index_status(Gitlab::Git::SHA1_BLANK_SHA)
       end
     end
 
@@ -66,7 +66,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
     end
 
     it 'returns nil for unreachable commits', :aggregate_failures do
-      expect(indexer.find_indexable_commit(Gitlab::Git::BLANK_SHA)).to be_nil
+      expect(indexer.find_indexable_commit(Gitlab::Git::SHA1_BLANK_SHA)).to be_nil
       expect(indexer.find_indexable_commit(Gitlab::Git::EMPTY_TREE_ID)).to be_nil
     end
 

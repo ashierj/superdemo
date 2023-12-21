@@ -77,7 +77,7 @@ module Gitlab
         end
 
         # update the index status only if all writes were successful
-        update_index_status(commit_sha || Gitlab::Git::BLANK_SHA)
+        update_index_status(commit_sha || Gitlab::Git::SHA1_BLANK_SHA)
 
         true
       end
@@ -238,7 +238,7 @@ module Gitlab
       end
 
       def last_commit_ancestor_of?(to_sha)
-        return true if from_sha == Gitlab::Git::BLANK_SHA
+        return true if from_sha == Gitlab::Git::SHA1_BLANK_SHA
         return false unless repository_contains_last_indexed_commit?
 
         # we always treat the `EMPTY_TREE_ID` as an ancestor to make sure

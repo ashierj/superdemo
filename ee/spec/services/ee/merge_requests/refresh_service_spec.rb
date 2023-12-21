@@ -55,7 +55,7 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
     end
 
     context 'when branch is deleted' do
-      let(:newrev) { Gitlab::Git::BLANK_SHA }
+      let(:newrev) { Gitlab::Git::SHA1_BLANK_SHA }
 
       it 'does not check merge train status' do
         expect(MergeTrains::CheckStatusService).not_to receive(:new)
@@ -126,13 +126,13 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
           end
 
           context 'when the branch is deleted' do
-            let(:newrev) { Gitlab::Git::BLANK_SHA }
+            let(:newrev) { Gitlab::Git::SHA1_BLANK_SHA }
 
             it_behaves_like 'does not refresh the code owner rules'
           end
 
           context 'when the branch is created' do
-            let(:oldrev) { Gitlab::Git::BLANK_SHA }
+            let(:oldrev) { Gitlab::Git::SHA1_BLANK_SHA }
 
             it_behaves_like 'does not refresh the code owner rules'
           end

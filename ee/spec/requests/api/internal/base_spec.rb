@@ -34,7 +34,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
     let(:branch_name) { 'feature' }
 
     let(:changes) do
-      "#{Gitlab::Git::BLANK_SHA} 570e7b2abdd848b95f2f578043fc23bd6f6fd24d refs/heads/#{branch_name}"
+      "#{Gitlab::Git::SHA1_BLANK_SHA} 570e7b2abdd848b95f2f578043fc23bd6f6fd24d refs/heads/#{branch_name}"
     end
 
     let(:git_push_http) { double('GitPushHttp') }
@@ -343,7 +343,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
           end
 
           it 'does not apply a cost factor to the push size and rejects the push' do
-            push(key, project_fork, changes: "#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+            push(key, project_fork, changes: "#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
 
             expect(response).to have_gitlab_http_status(:unauthorized)
             expect(json_response["status"]).to eq(false)
@@ -418,7 +418,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
             usage_guide = ::Gitlab::Routing.url_helpers.help_page_url('user/usage_quotas', anchor: 'manage-storage-usage')
             read_only_guide = ::Gitlab::Routing.url_helpers.help_page_url('user/read_only_namespaces', anchor: 'restricted-actions')
 
-            push(key, project, changes: "#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+            push(key, project, changes: "#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
 
             expect(response).to have_gitlab_http_status(:unauthorized)
             expect(json_response["status"]).to eq(false)
@@ -434,7 +434,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
           it 'accepts git push when the size is under the limit' do
             set_used_storage(group, megabytes: 1)
 
-            push(key, project, changes: "#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+            push(key, project, changes: "#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
 
             expect(response).to have_gitlab_http_status(:ok)
             expect(json_response["status"]).to eq(true)
@@ -458,7 +458,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
         it 'accepts git push to a fork when the push size with the cost factor applied is under the limit' do
           set_used_storage(group, megabytes: 3)
 
-          push(key, project_fork, changes: "#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+          push(key, project_fork, changes: "#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response["status"]).to eq(true)
@@ -582,7 +582,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
           context 'when the changes list is specified' do
             let(:params) do
               super().merge({
-                changes: "#{Gitlab::Git::BLANK_SHA} 570e7b2abdd848b95f2f578043fc23bd6f6fd24d refs/heads/mybranch"
+                changes: "#{Gitlab::Git::SHA1_BLANK_SHA} 570e7b2abdd848b95f2f578043fc23bd6f6fd24d refs/heads/mybranch"
               })
             end
 

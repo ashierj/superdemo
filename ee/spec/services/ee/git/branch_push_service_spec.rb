@@ -7,7 +7,7 @@ RSpec.describe Git::BranchPushService, feature_category: :source_code_management
 
   let_it_be(:user) { create(:user) }
 
-  let(:blankrev)   { Gitlab::Git::BLANK_SHA }
+  let(:blankrev)   { Gitlab::Git::SHA1_BLANK_SHA }
   let(:oldrev)     { sample_commit.parent_id }
   let(:newrev)     { sample_commit.id }
   let(:ref)        { 'refs/heads/master' }

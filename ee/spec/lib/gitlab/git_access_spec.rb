@@ -262,7 +262,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
         project.create_push_rule(commit_message_regex: "Change some files")
 
         # push to new branch, so use a blank old rev and new ref
-        expect { push_changes("#{Gitlab::Git::BLANK_SHA} #{end_sha} refs/heads/new-branch") }.not_to raise_error
+        expect { push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{end_sha} refs/heads/new-branch") }.not_to raise_error
       end
 
       it 'allows githook for any change with an old bad commit' do
@@ -334,7 +334,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
     end
 
     describe "max file size check" do
-      let(:start_sha) { ::Gitlab::Git::BLANK_SHA }
+      let(:start_sha) { ::Gitlab::Git::SHA1_BLANK_SHA }
       # SHA of the 2-mb-file branch
       let(:end_sha)   { 'bf12d2567099e26f59692896f73ac819bae45b00' }
       let(:changes) { "#{start_sha} #{end_sha} refs/heads/my-branch" }
@@ -396,14 +396,14 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
     shared_examples_for 'a push to repository over the limit' do
       it 'rejects the push' do
         expect do
-          push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_smallest_changes} refs/heads/master")
+          push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_smallest_changes} refs/heads/master")
         end.to raise_error(described_class::ForbiddenError, /Your push has been rejected/)
       end
 
       context 'when deleting a branch' do
         it 'accepts the operation' do
           expect do
-            push_changes("#{sha_with_smallest_changes} #{::Gitlab::Git::BLANK_SHA} refs/heads/feature")
+            push_changes("#{sha_with_smallest_changes} #{::Gitlab::Git::SHA1_BLANK_SHA} refs/heads/feature")
           end.not_to raise_error
         end
       end
@@ -421,7 +421,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
           master_sha = project.commit('master').id
 
           expect do
-            push_changes("#{Gitlab::Git::BLANK_SHA} #{master_sha} refs/heads/my_branch")
+            push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{master_sha} refs/heads/my_branch")
           end.not_to raise_error
         end
       end
@@ -471,7 +471,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
 
           it 'rejects the push' do
             expect do
-              push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+              push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
             end.to raise_error(described_class::ForbiddenError, /Your push to this repository would cause it to exceed the size limit/)
           end
         end
@@ -479,7 +479,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
         context 'when object directory (quarantine) size does not exceed the limit' do
           it 'accepts the push' do
             expect do
-              push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_smallest_changes} refs/heads/my_branch_3")
+              push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_smallest_changes} refs/heads/my_branch_3")
             end.not_to raise_error
           end
         end
@@ -527,7 +527,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
             expect(repository.new_blobs(sha_with_2_mb_file)).to be_present
 
             expect do
-              push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+              push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
             end.to raise_error(described_class::ForbiddenError, /Your push to this repository would cause it to exceed the size limit/)
           end
         end
@@ -537,7 +537,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
             expect(repository.new_blobs(sha_with_smallest_changes)).to be_present
 
             expect do
-              push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_smallest_changes} refs/heads/my_branch_3")
+              push_changes("#{Gitlab::Git::SHA1_BLANK_SHA} #{sha_with_smallest_changes} refs/heads/my_branch_3")
             end.not_to raise_error
           end
         end
@@ -985,13 +985,13 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
 
     let(:changes) do
       { any: Gitlab::GitAccess::ANY,
-        push_new_branch: "#{Gitlab::Git::BLANK_SHA} #{end_sha} refs/heads/wow",
+        push_new_branch: "#{Gitlab::Git::SHA1_BLANK_SHA} #{end_sha} refs/heads/wow",
         push_master: "#{start_sha} #{end_sha} refs/heads/master",
         push_protected_branch: "#{start_sha} #{end_sha} refs/heads/feature",
-        push_remove_protected_branch: "#{end_sha} #{Gitlab::Git::BLANK_SHA} "\
+        push_remove_protected_branch: "#{end_sha} #{Gitlab::Git::SHA1_BLANK_SHA} "\
                                       "refs/heads/feature",
         push_tag: "#{start_sha} #{end_sha} refs/tags/v1.0.0",
-        push_new_tag: "#{Gitlab::Git::BLANK_SHA} #{end_sha} refs/tags/v7.8.9",
+        push_new_tag: "#{Gitlab::Git::SHA1_BLANK_SHA} #{end_sha} refs/tags/v7.8.9",
         push_all: ["#{start_sha} #{end_sha} refs/heads/master", "#{start_sha} #{end_sha} refs/heads/feature"],
         merge_into_protected_branch: "0b4bc9a #{merge_into_protected_branch} refs/heads/feature" }
     end
