@@ -4309,4 +4309,48 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       it { is_expected.to be_falsey }
     end
   end
+
+  describe '#allows_multiple_merge_request_assignees?' do
+    let(:project) { build_stubbed(:project) }
+
+    subject(:allows_multiple_merge_request_assignees?) { project.allows_multiple_merge_request_assignees? }
+
+    context 'when multiple_merge_request_assignees feature is enabled' do
+      before do
+        stub_licensed_features(multiple_merge_request_assignees: true)
+      end
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when multiple_merge_request_assignees feature is disabled' do
+      before do
+        stub_licensed_features(multiple_merge_request_assignees: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+  end
+
+  describe '#allows_multiple_merge_request_reviewers?' do
+    let(:project) { build_stubbed(:project) }
+
+    subject(:allows_multiple_merge_request_reviewers?) { project.allows_multiple_merge_request_reviewers? }
+
+    context 'when multiple_merge_request_reviewers feature is enabled' do
+      before do
+        stub_licensed_features(multiple_merge_request_reviewers: true)
+      end
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when multiple_merge_request_reviewers feature is disabled' do
+      before do
+        stub_licensed_features(multiple_merge_request_reviewers: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+  end
 end

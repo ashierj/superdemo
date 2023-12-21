@@ -428,42 +428,6 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     let(:set_mentionable_text) { ->(txt) { subject.description = txt } }
   end
 
-  describe '#allows_multiple_assignees?' do
-    it 'does not allow multiple assignees without license' do
-      stub_licensed_features(multiple_merge_request_assignees: false)
-
-      merge_request = build_stubbed(:merge_request)
-
-      expect(merge_request.allows_multiple_assignees?).to be(false)
-    end
-
-    it 'allows multiple assignees when licensed' do
-      stub_licensed_features(multiple_merge_request_assignees: true)
-
-      merge_request = build(:merge_request)
-
-      expect(merge_request.allows_multiple_assignees?).to be(true)
-    end
-  end
-
-  describe '#allows_multiple_reviewers?' do
-    it 'returns false without license' do
-      stub_licensed_features(multiple_merge_request_reviewers: false)
-
-      merge_request = build_stubbed(:merge_request)
-
-      expect(merge_request.allows_multiple_reviewers?).to be(false)
-    end
-
-    it 'returns true when licensed' do
-      stub_licensed_features(multiple_merge_request_reviewers: true)
-
-      merge_request = build(:merge_request)
-
-      expect(merge_request.allows_multiple_reviewers?).to be(true)
-    end
-  end
-
   describe '#allow_external_status_checks?' do
     subject { merge_request.allow_external_status_checks? }
 

@@ -3206,6 +3206,16 @@ class Project < ApplicationRecord
   end
   strong_memoize_attr :code_suggestions_enabled?
 
+  # Overridden in EE
+  def allows_multiple_merge_request_assignees?
+    false
+  end
+
+  # Overridden in EE
+  def allows_multiple_merge_request_reviewers?
+    false
+  end
+
   private
 
   # overridden in EE
