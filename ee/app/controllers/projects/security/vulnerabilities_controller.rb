@@ -8,7 +8,6 @@ module Projects
 
       before_action do
         push_frontend_feature_flag(:create_vulnerability_jira_issue_via_graphql, @project)
-        push_frontend_feature_flag(:resolve_vulnerability_ai, @project)
       end
 
       before_action :vulnerability, except: [:new]
@@ -25,6 +24,10 @@ module Projects
         push_force_frontend_feature_flag(
           :explain_vulnerability,
           can?(current_user, :explain_vulnerability, vulnerability)
+        )
+        push_force_frontend_feature_flag(
+          :resolve_vulnerability,
+          can?(current_user, :resolve_vulnerability, vulnerability)
         )
         pipeline = vulnerability.finding.first_finding_pipeline
         @pipeline = pipeline if can?(current_user, :read_pipeline, pipeline)

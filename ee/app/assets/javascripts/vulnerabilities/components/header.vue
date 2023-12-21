@@ -67,7 +67,7 @@ export default {
       }
 
       if (
-        this.glFeatures.resolveVulnerabilityAi &&
+        this.glFeatures.resolveVulnerability &&
         this.vulnerability.reportType === REPORT_TYPE_SAST
       ) {
         buttons.push(HEADER_ACTION_BUTTONS.mergeRequestCreationAi);

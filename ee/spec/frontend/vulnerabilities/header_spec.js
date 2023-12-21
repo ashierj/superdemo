@@ -130,7 +130,7 @@ describe('Vulnerability Header', () => {
       provide: {
         dismissalDescriptions,
         glFeatures: {
-          resolveVulnerabilityAi: true,
+          resolveVulnerability: true,
           ...glFeatures,
         },
       },
@@ -653,12 +653,12 @@ describe('Vulnerability Header', () => {
     });
   });
 
-  describe('when FF "resolveVulnerabilityAi" is disabled', () => {
+  describe('when FF "resolveVulnerability" is disabled', () => {
     describe('split button', () => {
       it('renders the create merge request and issue button as a split button', async () => {
         createWrapper({
           glFeatures: {
-            resolveVulnerabilityAi: false,
+            resolveVulnerability: false,
           },
           vulnerability: getVulnerability({
             canCreateMergeRequest: true,
@@ -677,7 +677,7 @@ describe('Vulnerability Header', () => {
       it('does not render the split button if there is only one action', () => {
         createWrapper({
           glFeatures: {
-            resolveVulnerabilityAi: false,
+            resolveVulnerability: false,
           },
           vulnerability: getVulnerability({
             canCreateMergeRequest: true,
@@ -690,7 +690,7 @@ describe('Vulnerability Header', () => {
     it('does not display if there are no actions', () => {
       createWrapper({
         glFeatures: {
-          resolveVulnerabilityAi: false,
+          resolveVulnerability: false,
         },
         vulnerability: getVulnerability({}),
       });
