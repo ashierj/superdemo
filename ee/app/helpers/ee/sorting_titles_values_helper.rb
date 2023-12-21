@@ -25,10 +25,6 @@ module EE
       s_('SortOptions|Blocking')
     end
 
-    def sort_title_project_name
-      s_('SortOptions|Project')
-    end
-
     def sort_title_version
       s_('SortOptions|Version')
     end
