@@ -75,6 +75,9 @@ export default {
       const activeIndex = this.stepList.findIndex(({ id }) => id === this.activeStep.id);
       return this.isFinished && index < activeIndex;
     },
+    shouldShowError() {
+      return this.nextStepButtonText && !this.isValid && this.errorMessage;
+    },
   },
   methods: {
     handleError(error) {
@@ -127,7 +130,7 @@ export default {
     <div v-show="isActive" class="gl-mt-5" data-testid="active-step-body" @keyup.enter="nextStep">
       <slot name="body" :active="isActive"></slot>
       <gl-form-group
-        v-if="nextStepButtonText && !isValid && errorMessage"
+        v-if="shouldShowError"
         :invalid-feedback="errorMessage"
         :state="isValid"
         class="gl-mb-5"
