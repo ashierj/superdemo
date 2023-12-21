@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import approvalRulesSecurityPoliciesResponse from 'test_fixtures/graphql/merge_requests/approvals/approval_rules_with_scan_result_policies.json';
 import approvalRulesResponse from 'test_fixtures/graphql/merge_requests/approvals/approval_rules.json';
 import approvalRulesCodeownersResponse from 'test_fixtures/graphql/merge_requests/approvals/approval_rules_with_code_owner.json';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -261,6 +262,26 @@ describe('EE MRWidget approvals list', () => {
       const ruleSection = wrapper.findAll('[data-testid="rule-section"]');
 
       expect(ruleSection.at(0).text()).toEqual('Frontend');
+    });
+  });
+
+  describe('tooltip', () => {
+    it('renders tooltip for security rule', async () => {
+      createComponent(approvalRulesSecurityPoliciesResponse);
+      await waitForPromises();
+      const row = findRows().at(5);
+      const codeOwnerRow = findRowElement(row, 'name');
+      expect(codeOwnerRow.find('[data-testid="approval-name"]').attributes('title')).toBe(
+        'This policy needs 1 approval because a license scanner found license violations, a merge request has been opened against a protected branch and a security scanner found vulnerabilities matching the criteria',
+      );
+    });
+
+    it('does not render tooltip for non-security rule', async () => {
+      createComponent(approvalRulesCodeownersResponse);
+      await waitForPromises();
+      const row = findRows().at(5);
+      const codeOwnerRow = findRowElement(row, 'name');
+      expect(codeOwnerRow.find('[data-testid="approval-name"]').attributes('title')).toBe('');
     });
   });
 });
