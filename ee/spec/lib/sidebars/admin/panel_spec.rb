@@ -39,8 +39,22 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
       end
 
       context 'when self_managed_code_suggestions feature flag is enabled' do
-        it 'renders code suggestions menu' do
-          expect(menus).to include(instance_of(::Sidebars::Admin::Menus::CodeSuggestionsMenu))
+        context 'when instance has a paid license' do
+          it 'renders code suggestions menu' do
+            license = build(:license, plan: License::PREMIUM_PLAN)
+
+            allow(License).to receive(:current).and_return(license)
+
+            expect(menus).to include(instance_of(::Sidebars::Admin::Menus::CodeSuggestionsMenu))
+          end
+        end
+
+        context 'when instance has no paid license' do
+          before do
+            allow(License).to receive(:current).and_return(nil)
+          end
+
+          it_behaves_like 'hides code suggestions menu'
         end
       end
 
@@ -49,7 +63,23 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
           stub_feature_flags(self_managed_code_suggestions: false)
         end
 
-        it_behaves_like 'hides code suggestions menu'
+        context 'when instance has a paid license' do
+          before do
+            license = build(:license, plan: License::PREMIUM_PLAN)
+
+            allow(License).to receive(:current).and_return(license)
+          end
+
+          it_behaves_like 'hides code suggestions menu'
+        end
+
+        context 'when instance has no paid license' do
+          before do
+            allow(License).to receive(:current).and_return(nil)
+          end
+
+          it_behaves_like 'hides code suggestions menu'
+        end
       end
     end
 
