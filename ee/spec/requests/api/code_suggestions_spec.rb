@@ -591,7 +591,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                   file_name: file_name,
                   content_above_cursor: prefix,
                   content_below_cursor: ''
-                }
+                },
+                model_name: 'claude-2.1'
               )
               expect(Gitlab::Workhorse)
                 .to receive(:send_url)
@@ -617,7 +618,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                     file_name: file_name,
                     content_above_cursor: prefix,
                     content_below_cursor: ''
-                  }
+                  },
+                  model_name: 'claude-2.1'
                 )
                 expect(Gitlab::Workhorse)
                   .to receive(:send_url)
@@ -775,7 +777,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                   file_name: file_name,
                   content_above_cursor: prefix,
                   content_below_cursor: ""
-                }
+                },
+                model_name: 'claude-2.1'
               )
 
               expect(Gitlab::Workhorse)
@@ -802,7 +805,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                     file_name: file_name,
                     content_above_cursor: prefix,
                     content_below_cursor: ''
-                  }
+                  },
+                  model_name: 'claude-2.1'
                 )
 
                 expect(Gitlab::Workhorse)

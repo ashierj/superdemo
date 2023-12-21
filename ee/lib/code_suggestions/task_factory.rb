@@ -6,6 +6,7 @@ module CodeSuggestions
 
     VERTEX_AI = :vertex_ai
     ANTHROPIC = :anthropic
+    ANTHROPIC_MODEL = 'claude-2.1'
 
     def initialize(current_user, params:, unsafe_passthrough_params: {})
       @current_user = current_user
@@ -53,7 +54,8 @@ module CodeSuggestions
         prefix: instructions[:prefix],
         instruction: instructions[:instruction],
         code_generation_model_family: ANTHROPIC,
-        project: project
+        project: project,
+        model_name: Feature.enabled?(:code_suggestions_claude21, current_user) ? ANTHROPIC_MODEL : nil
       )
     end
 

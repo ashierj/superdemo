@@ -16,7 +16,9 @@ module CodeSuggestions
             model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
             prompt_version: GATEWAY_PROMPT_VERSION,
             prompt: prompt
-          }
+          }.tap do |opts|
+            opts[:model_name] = params[:model_name] if params[:model_name].present?
+          end
         end
 
         private

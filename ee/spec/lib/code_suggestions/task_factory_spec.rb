@@ -70,7 +70,8 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
             code_generation_model_family: expected_family,
             instruction: 'instruction',
             prefix: 'trimmed prefix',
-            project: expected_project
+            project: expected_project,
+            model_name: described_class::ANTHROPIC_MODEL
           ),
           unsafe_passthrough_params: {}
         }
