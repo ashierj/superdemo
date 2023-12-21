@@ -431,6 +431,11 @@ module EE
         enable :edit_on_demand_dast_scan
       end
 
+      rule { on_demand_scans_enabled & security_policy_bot }.policy do
+        enable :read_on_demand_dast_scan
+        enable :create_on_demand_dast_scan
+      end
+
       # If licensed but not reporter+, prevent access
       rule { can?(:read_merge_request) & can?(:read_issue) & licensed_cycle_analytics_available }.policy do
         enable :read_cycle_analytics

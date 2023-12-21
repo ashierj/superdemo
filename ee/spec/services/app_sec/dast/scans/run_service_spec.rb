@@ -4,10 +4,13 @@ require 'spec_helper'
 
 RSpec.describe AppSec::Dast::Scans::RunService, feature_category: :dynamic_application_security_testing do
   let_it_be(:user) { create(:user) }
+  let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
   let_it_be(:project) { create(:project, :repository, creator: user) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, :with_dast_submit_field, project: project) }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project, spider_timeout: 42, target_timeout: 21) }
   let_it_be(:dast_profile) { create(:dast_profile, project: project, dast_site_profile: dast_site_profile, dast_scanner_profile: dast_scanner_profile) }
+
+  let(:current_user) { user }
 
   before do
     stub_licensed_features(security_on_demand_scans: true)
@@ -18,11 +21,11 @@ RSpec.describe AppSec::Dast::Scans::RunService, feature_category: :dynamic_appli
     subject do
       config_result = AppSec::Dast::ScanConfigs::BuildService.new(
         container: project,
-        current_user: user,
+        current_user: current_user,
         params: { branch: project.default_branch, dast_profile: dast_profile }
       ).execute
 
-      described_class.new(project, user).execute(**config_result.payload)
+      described_class.new(project, current_user).execute(**config_result.payload)
     end
 
     let(:status) { subject.status }
@@ -39,11 +42,7 @@ RSpec.describe AppSec::Dast::Scans::RunService, feature_category: :dynamic_appli
       end
     end
 
-    context 'when the user can run a dast scan' do
-      before do
-        project.add_developer(user)
-      end
-
+    shared_context 'when the user can run a dast scan' do
       it 'returns a success status' do
         expect(status).to eq(:success)
       end
@@ -222,6 +221,26 @@ RSpec.describe AppSec::Dast::Scans::RunService, feature_category: :dynamic_appli
           expect(message).to eq('Insufficient permissions')
         end
       end
+    end
+
+    context 'when developer with access to the project is running the scan' do
+      let(:current_user) { user }
+
+      before do
+        project.add_developer(user)
+      end
+
+      it_behaves_like 'when the user can run a dast scan'
+    end
+
+    context 'when security_policy_bot user is running the scan' do
+      let(:current_user) { security_policy_bot }
+
+      before do
+        project.add_guest(security_policy_bot)
+      end
+
+      it_behaves_like 'when the user can run a dast scan'
     end
   end
 end
