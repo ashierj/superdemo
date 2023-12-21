@@ -14286,7 +14286,8 @@ CREATE TABLE ci_pipeline_chat_data (
     id bigint NOT NULL,
     chat_name_id integer NOT NULL,
     response_url text NOT NULL,
-    pipeline_id bigint NOT NULL
+    pipeline_id bigint NOT NULL,
+    partition_id bigint DEFAULT 100 NOT NULL
 );
 
 CREATE SEQUENCE ci_pipeline_chat_data_id_seq
