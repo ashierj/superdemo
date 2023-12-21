@@ -46594,9 +46594,6 @@ msgstr ""
 msgid "SortOptions|Title"
 msgstr ""
 
-msgid "SortOptions|Type"
-msgstr ""
-
 msgid "SortOptions|Version"
 msgstr ""
 
