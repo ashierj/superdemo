@@ -8,7 +8,15 @@ components:
     container:
       image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
       args:
-        - /projects/.gl-editor/start_server.sh
+        - |-
+          sshd_path=$(which sshd)
+          if [ -x "$sshd_path" ]; then
+            echo "Starting sshd on port ${GL_SSH_PORT}"
+            $sshd_path -D -p $GL_SSH_PORT &
+          else
+            echo "'sshd' not found in path. Not starting SSH server."
+          fi
+          /projects/.gl-editor/start_server.sh
       command:
         - "/bin/sh"
         - "-c"
@@ -16,11 +24,13 @@ components:
         - name: gl-workspace-data
           path: /projects
       env:
-        - name: EDITOR_VOLUME_DIR
+        - name: GL_EDITOR_VOLUME_DIR
           value: "/projects/.gl-editor"
-        - name: EDITOR_PORT
+        - name: GL_EDITOR_LOG_LEVEL
+          value: "info"
+        - name: GL_EDITOR_PORT
           value: "60001"
-        - name: SSH_PORT
+        - name: GL_SSH_PORT
           value: "60022"
       endpoints:
         - name: editor-server
@@ -39,17 +49,13 @@ components:
       size: 15Gi
   - name: gl-editor-injector
     container:
-      image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:4
+      image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:5
       volumeMounts:
         - name: gl-workspace-data
           path: /projects
       env:
-        - name: EDITOR_VOLUME_DIR
+        - name: GL_EDITOR_VOLUME_DIR
           value: "/projects/.gl-editor"
-        - name: EDITOR_PORT
-          value: "60001"
-        - name: SSH_PORT
-          value: "60022"
       memoryLimit: 256Mi
       memoryRequest: 128Mi
       cpuLimit: 500m

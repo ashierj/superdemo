@@ -591,20 +591,33 @@ RSpec.shared_context 'with remote development shared fixtures' do
             containers: [
               {
                 args: [
-                  "/projects/.gl-editor/start_server.sh"
+                  <<~"SH".chomp
+                    sshd_path=$(which sshd)
+                    if [ -x "$sshd_path" ]; then
+                      echo "Starting sshd on port ${GL_SSH_PORT}"
+                      $sshd_path -D -p $GL_SSH_PORT &
+                    else
+                      echo "'sshd' not found in path. Not starting SSH server."
+                    fi
+                    /projects/.gl-editor/start_server.sh
+                  SH
                 ],
                 command: %w[/bin/sh -c],
                 env: [
                   {
-                    name: "EDITOR_VOLUME_DIR",
+                    name: "GL_EDITOR_VOLUME_DIR",
                     value: "/projects/.gl-editor"
                   },
                   {
-                    name: "EDITOR_PORT",
+                    name: "GL_EDITOR_LOG_LEVEL",
+                    value: "info"
+                  },
+                  {
+                    name: "GL_EDITOR_PORT",
                     value: "60001"
                   },
                   {
-                    name: "SSH_PORT",
+                    name: "GL_SSH_PORT",
                     value: "60022"
                   },
                   {
@@ -718,16 +731,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
               {
                 env: [
                   {
-                    name: "EDITOR_VOLUME_DIR",
+                    name: "GL_EDITOR_VOLUME_DIR",
                     value: "/projects/.gl-editor"
-                  },
-                  {
-                    name: "EDITOR_PORT",
-                    value: "60001"
-                  },
-                  {
-                    name: "SSH_PORT",
-                    value: "60022"
                   },
                   {
                     name: "PROJECTS_ROOT",
@@ -738,7 +743,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
                     value: "/projects"
                   }
                 ],
-                image: "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:4",
+                image: "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:5",
                 imagePullPolicy: "Always",
                 name: "gl-editor-injector-gl-editor-injector-command-2",
                 resources: {
