@@ -280,6 +280,8 @@ Consider the following when using Outbound Private Links:
   - Ask for the Availability Zone IDs in the ticket you raise to enable the link and ensure the NLB is enabled in those AZs, or
   - Ensure the NLB has is enabled in every Availability Zone in the region.
 
+You can view the `Reverse Private Link IAM Principal` attribute in the **Tenant Details** section of Switchboard.
+
 To enable an Outbound Private Link:
 
 1. [Create the Endpoint service](https://docs.aws.amazon.com/vpc/latest/privatelink/create-endpoint-service.html) through which your internal service
