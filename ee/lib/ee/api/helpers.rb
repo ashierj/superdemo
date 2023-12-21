@@ -78,7 +78,7 @@ module EE
       end
 
       override :find_group!
-      def find_group!(id, organization: nil)
+      def find_group!(id)
         # CI job token authentication:
         # currently we do not allow any group access for CI job token
         if job_token_authentication?
