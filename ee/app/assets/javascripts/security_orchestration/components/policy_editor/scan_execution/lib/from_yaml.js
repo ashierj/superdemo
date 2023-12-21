@@ -74,6 +74,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
 
       if (gon?.features?.compliancePipelineInPolicies) {
         actionsKeys.push('ci_configuration_path');
+        actionsKeys.push('ci_configuration');
       }
 
       /**

@@ -259,6 +259,8 @@ actions:
   - scan: custom
     ci_configuration_path:
       file: file
+    ci_configuration:
+      file: file
 `;
 
 export const mockCodeBlockFilePathScanExecutionObject = {
@@ -278,6 +280,9 @@ export const mockCodeBlockFilePathScanExecutionObject = {
     {
       scan: 'custom',
       ci_configuration_path: {
+        file: 'file',
+      },
+      ci_configuration: {
         file: 'file',
       },
     },
