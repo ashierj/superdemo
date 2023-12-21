@@ -25,6 +25,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
 
   let(:instruction) { '' }
   let(:file_name) { 'main.go' }
+  let(:model_name) { 'claude-2.1' }
 
   let(:unsafe_params) do
     {
@@ -40,7 +41,8 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
     {
       prefix: prefix,
       instruction: instruction,
-      current_file: unsafe_params['current_file'].with_indifferent_access
+      current_file: unsafe_params['current_file'].with_indifferent_access,
+      model_name: model_name
     }
   end
 
@@ -66,6 +68,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
       it 'returns expected request params' do
         request_params = {
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
+          model_name: model_name,
           prompt_version: 2,
           prompt: <<~PROMPT
             Human: You are a coding autocomplete agent. We want to generate new Go code inside the
@@ -128,6 +131,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
       it 'returns expected request params' do
         request_params = {
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
+          model_name: model_name,
           prompt_version: 2,
           prompt: <<~PROMPT
             Human: You are a coding autocomplete agent. We want to generate new Go code inside the
@@ -297,6 +301,23 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
           expect(subject.request_params[:prompt]).to eq(request_params[:prompt].strip)
         end
 
+        context 'when model_name is missing' do
+          before do
+            params.delete(:model_name)
+          end
+
+          it 'does not include model_name in request params' do
+            request_params = {
+              model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
+              prompt_version: 2,
+              prompt: prompt
+            }
+
+            expect(subject.request_params.except(:prompt)).to eq(request_params.except(:prompt))
+            expect(subject.request_params[:prompt]).to eq(request_params[:prompt].strip)
+          end
+        end
+
         context 'when XRay data exceeds maximum limit' do
           let(:expected_libs) do
             <<~LIBS
@@ -332,6 +353,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
       it 'returns expected request params' do
         request_params = {
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
+          model_name: model_name,
           prompt_version: 2,
           prompt: <<~PROMPT
             Human: You are a coding autocomplete agent. We want to generate new Go code inside the
@@ -379,6 +401,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
       it 'returns expected request params' do
         request_params = {
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
+          model_name: model_name,
           prompt_version: 2,
           prompt: <<~PROMPT
             Human: You are a coding autocomplete agent. We want to generate new Go code inside the
@@ -428,6 +451,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
       it 'returns expected request params' do
         request_params = {
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
+          model_name: model_name,
           prompt_version: 2,
           prompt: <<~PROMPT
             Human: You are a coding autocomplete agent. We want to generate new  code inside the
@@ -481,6 +505,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
       it 'returns expected request params' do
         request_params = {
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
+          model_name: model_name,
           prompt_version: 2,
           prompt: <<~PROMPT
             Human: You are a coding autocomplete agent. We want to generate new  code inside the
