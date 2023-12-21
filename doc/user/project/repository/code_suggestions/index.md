@@ -55,7 +55,11 @@ For languages not listed in the following table, Code Suggestions might not func
 
 ### Supported languages in IDEs
 
-Editor support for languages is documented in the following table.
+Code Suggestions is aware of common popular programming concepts and
+infrastructure-as-code interfaces, like Kubernetes Resource Model (KRM),
+Google Cloud CLI, and Terraform.
+
+The editor supports these languages: 
 
 | Language         | VS Code                | JetBrains IDEs         | Visual Studio          | Neovim |
 |------------------|------------------------|------------------------|------------------------|--------|
@@ -73,8 +77,6 @@ Editor support for languages is documented in the following table.
 | Scala            | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
 | Swift            | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
 | TypeScript       | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
-| Google Cloud     | **{dotted-circle}** No | **{dotted-circle}** No | **{dotted-circle}** No | **{dotted-circle}** No |
-| Kubernetes Resource Model (KRM) | **{dotted-circle}** No | **{dotted-circle}** No | **{dotted-circle}** No | **{dotted-circle}** No |
 | Terraform        | **{check-circle}** Yes (Requires third-party extension providing Terraform support) | **{check-circle}** Yes | **{dotted-circle}** No | **{check-circle}** Yes (Requires third-party extension providing the `terraform` file type) |
 
 NOTE:
