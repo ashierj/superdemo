@@ -10112,6 +10112,9 @@ msgstr ""
 msgid "Checkout|Billing address"
 msgstr ""
 
+msgid "Checkout|Billing contact"
+msgstr ""
+
 msgid "Checkout|CI minutes"
 msgstr ""
 
@@ -10122,6 +10125,9 @@ msgid "Checkout|Checkout"
 msgstr ""
 
 msgid "Checkout|City"
+msgstr ""
+
+msgid "Checkout|Company information"
 msgstr ""
 
 msgid "Checkout|Compute pack"
@@ -10259,6 +10265,9 @@ msgstr ""
 msgid "Checkout|Submitting the credit card form failed with code %{errorCode}: %{errorMessage}"
 msgstr ""
 
+msgid "Checkout|Subscription contact"
+msgstr ""
+
 msgid "Checkout|Subscription details"
 msgstr ""
 
@@ -10269,6 +10278,9 @@ msgid "Checkout|Success: subscription"
 msgstr ""
 
 msgid "Checkout|Tax"
+msgstr ""
+
+msgid "Checkout|Tax ID"
 msgstr ""
 
 msgid "Checkout|Total"
