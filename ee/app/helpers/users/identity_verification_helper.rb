@@ -10,11 +10,7 @@ module Users
           verification_state_path: verification_state_identity_verification_path,
           offer_phone_number_exemption: user.offer_phone_number_exemption?,
           phone_exemption_path: toggle_phone_exemption_identity_verification_path,
-          credit_card: {
-            user_id: user.id,
-            form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID,
-            verify_credit_card_path: verify_credit_card_identity_verification_path
-          },
+          credit_card: credit_card_verification_data(user),
           phone_number: phone_number_verification_data(user),
           email: email_verification_data(user),
           arkose: arkose_labs_data,
@@ -48,14 +44,15 @@ module Users
       format(message, interval: interval)
     end
 
-    def enable_arkose_challenge?
+    def enable_arkose_challenge?(category)
+      return false unless category == :phone
       return false if show_recaptcha_challenge?
 
       Feature.enabled?(:arkose_labs_phone_verification_challenge)
     end
 
-    def show_arkose_challenge?(user)
-      enable_arkose_challenge? &&
+    def show_arkose_challenge?(user, category)
+      enable_arkose_challenge?(category) &&
         PhoneVerification::Users::RateLimitService.verification_attempts_limit_exceeded?(user)
     end
 
@@ -78,8 +75,8 @@ module Users
       paths = {
         send_code_path: send_phone_verification_code_identity_verification_path,
         verify_code_path: verify_phone_verification_code_identity_verification_path,
-        enable_arkose_challenge: enable_arkose_challenge?.to_s,
-        show_arkose_challenge: show_arkose_challenge?(user).to_s,
+        enable_arkose_challenge: enable_arkose_challenge?(:phone).to_s,
+        show_arkose_challenge: show_arkose_challenge?(user, :phone).to_s,
         show_recaptcha_challenge: show_recaptcha_challenge?.to_s
       }
 
@@ -93,6 +90,16 @@ module Users
           number: phone_number_validation.phone_number
         }
       )
+    end
+
+    def credit_card_verification_data(user)
+      {
+        user_id: user.id,
+        form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID,
+        verify_credit_card_path: verify_credit_card_identity_verification_path,
+        verify_captcha_path: verify_credit_card_captcha_identity_verification_path,
+        show_recaptcha_challenge: show_recaptcha_challenge?.to_s
+      }
     end
   end
 end

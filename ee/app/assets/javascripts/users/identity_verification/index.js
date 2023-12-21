@@ -25,13 +25,18 @@ export const initIdentityVerification = () => {
     booleanAttributes: ['enableArkoseChallenge', 'showArkoseChallenge', 'showRecaptchaChallenge'],
   });
 
+  const creditCardParsedData = getParsedDataset({
+    dataset: creditCard,
+    booleanAttributes: ['showRecaptchaChallenge'],
+  });
+
   return new Vue({
     el,
     apolloProvider,
     name: 'IdentityVerificationRoot',
     provide: {
       email,
-      creditCard,
+      creditCard: creditCardParsedData,
       phoneNumber: phoneNumberParsedData,
       offerPhoneNumberExemption,
       verificationStatePath,

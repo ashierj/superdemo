@@ -69,7 +69,7 @@ module Users
     end
 
     def send_phone_verification_code
-      unless ensure_challenge_completed
+      unless ensure_challenge_completed(:phone)
         return render status: :bad_request, json: {
           message: s_('IdentityVerification|Complete verification to sign up.')
         }
@@ -97,7 +97,7 @@ module Users
     end
 
     def verify_phone_verification_code
-      unless ensure_challenge_completed
+      unless ensure_challenge_completed(:phone)
         return render status: :bad_request, json: {
           message: s_('IdentityVerification|Complete verification to sign up.')
         }
@@ -164,6 +164,16 @@ module Users
         log_event(:credit_card, :success)
         render json: {}
       end
+    end
+
+    def verify_credit_card_captcha
+      unless ensure_challenge_completed(:credit_card)
+        return render status: :bad_request, json: {
+          message: s_('IdentityVerification|Complete verification to sign up.')
+        }
+      end
+
+      render json: { status: :success }
     end
 
     def toggle_phone_exemption
@@ -312,10 +322,10 @@ module Users
       show_recaptcha_challenge? && Gitlab::Recaptcha.load_configurations!
     end
 
-    def ensure_challenge_completed
+    def ensure_challenge_completed(category)
       # save values in variables before increase in attempts
       recaptcha_shown = show_recaptcha_challenge?
-      arkose_shown = show_arkose_challenge?(@user)
+      arkose_shown = show_arkose_challenge?(@user, category)
 
       # if total daily attempts reach 16K, show reCAPTCHA on every request
       if recaptcha_enabled? && recaptcha_shown
@@ -325,7 +335,7 @@ module Users
       end
 
       # if user makes more than 2 incorrect verification attempts, show arkose challenge
-      if enable_arkose_challenge?
+      if enable_arkose_challenge?(category)
         PhoneVerification::Users::RateLimitService.increase_verification_attempts(@user)
 
         if arkose_shown

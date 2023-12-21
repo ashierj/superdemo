@@ -1,7 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
-import { GlLoadingIcon } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -12,6 +11,7 @@ import CreditCardVerification, {
   EVENT_SUCCESS,
   EVENT_FAILED,
 } from 'ee/users/identity_verification/components/credit_card_verification.vue';
+import Captcha from 'ee/users/identity_verification/components/identity_verification_captcha.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { createAlert } from '~/alert';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
@@ -23,17 +23,20 @@ import {
 jest.mock('~/alert');
 
 const MOCK_VERIFY_CREDIT_CARD_PATH = '/mock/verify_credit_card/path';
+const MOCK_VERIFY_CAPTCHA_PATH = '/mock/verify_credit_card_captcha/path';
 
 describe('CreditCardVerification', () => {
   let trackingSpy;
   let wrapper;
+  let axiosMock;
+
   const zuoraSubmitSpy = jest.fn();
 
-  const findCheckForReuseLoading = () => wrapper.findComponent(GlLoadingIcon);
   const findZuora = () => wrapper.findComponent(Zuora);
   const findSubmitButton = () => wrapper.find('[type="submit"]');
   const findPhoneExemptionLink = () =>
     wrapper.findByText(s__('IdentityVerification|Verify with a phone number instead?'));
+  const findCaptcha = () => wrapper.findComponent(Captcha);
 
   const createComponent = (providedProps = {}) => {
     wrapper = shallowMountExtended(CreditCardVerification, {
@@ -42,6 +45,8 @@ describe('CreditCardVerification', () => {
           formId: 'form_id',
           userId: 927,
           verifyCreditCardPath: MOCK_VERIFY_CREDIT_CARD_PATH,
+          verifyCaptchaPath: MOCK_VERIFY_CAPTCHA_PATH,
+          showRecaptchaChallenge: true,
         },
         offerPhoneNumberExemption: true,
         ...providedProps,
@@ -57,7 +62,12 @@ describe('CreditCardVerification', () => {
     trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
   };
 
+  beforeEach(() => {
+    axiosMock = new MockAdapter(axios);
+  });
+
   afterEach(() => {
+    axiosMock.restore();
     createAlert.mockClear();
     unmockTracking();
   });
@@ -71,16 +81,6 @@ describe('CreditCardVerification', () => {
   });
 
   describe('when zuora emits success', () => {
-    let axiosMock;
-
-    beforeEach(() => {
-      axiosMock = new MockAdapter(axios);
-    });
-
-    afterEach(() => {
-      axiosMock.restore();
-    });
-
     describe('when check for reuse request returns a successful response', () => {
       beforeEach(() => {
         axiosMock.onGet(MOCK_VERIFY_CREDIT_CARD_PATH).reply(HTTP_STATUS_OK);
@@ -90,8 +90,7 @@ describe('CreditCardVerification', () => {
       });
 
       it('displays loading state', () => {
-        expect(findCheckForReuseLoading().exists()).toBe(true);
-        expect(findZuora().exists()).toBe(false);
+        expect(findSubmitButton().props('loading')).toBe(true);
       });
 
       it('emits a completed event', async () => {
@@ -133,7 +132,7 @@ describe('CreditCardVerification', () => {
       });
 
       it('re-displays the form and displays an alert with the returned message', async () => {
-        expect(findCheckForReuseLoading().exists()).toBe(false);
+        expect(findSubmitButton().props('loading')).toBe(false);
         expect(findZuora().exists()).toBe(true);
 
         findZuora().vm.$emit('loading', false);
@@ -199,13 +198,43 @@ describe('CreditCardVerification', () => {
   });
 
   describe('clicking the submit button', () => {
-    beforeEach(() => {
-      createComponent();
-      findSubmitButton().vm.$emit('click');
+    describe('when captcha is verified successfully', () => {
+      beforeEach(() => {
+        axiosMock.onPost(MOCK_VERIFY_CAPTCHA_PATH).reply(HTTP_STATUS_OK);
+
+        createComponent();
+        findSubmitButton().vm.$emit('click');
+      });
+
+      it('displays loading state', () => {
+        expect(findSubmitButton().props('loading')).toBe(true);
+      });
+
+      it('calls the submit method of the Zuora component', async () => {
+        await waitForPromises();
+
+        expect(zuoraSubmitSpy).toHaveBeenCalled();
+        expect(findSubmitButton().props('loading')).toBe(false);
+      });
     });
 
-    it('calls the submit method of the Zuora component', () => {
-      expect(zuoraSubmitSpy).toHaveBeenCalled();
+    describe('when captcha could not be verified', () => {
+      beforeEach(() => {
+        axiosMock
+          .onPost(MOCK_VERIFY_CAPTCHA_PATH)
+          .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, { message: 'Complete verification' });
+
+        createComponent();
+        findSubmitButton().vm.$emit('click');
+      });
+
+      it('displays an alert with given error message', async () => {
+        await waitForPromises();
+
+        expect(createAlert).toHaveBeenCalledWith({
+          message: 'Complete verification',
+        });
+      });
     });
   });
 
@@ -254,6 +283,66 @@ describe('CreditCardVerification', () => {
       findPhoneExemptionLink().vm.$emit('click');
 
       expect(wrapper.emitted('exemptionRequested')).toHaveLength(1);
+    });
+  });
+
+  describe('captcha', () => {
+    beforeEach(() => {
+      axiosMock.onPost(MOCK_VERIFY_CAPTCHA_PATH).reply(HTTP_STATUS_OK);
+
+      createComponent();
+    });
+
+    it('renders the identity verification captcha component', () => {
+      expect(findCaptcha().exists()).toBe(true);
+
+      expect(findCaptcha().props()).toMatchObject({
+        showRecaptchaChallenge: true,
+        verificationAttempts: 0,
+      });
+    });
+
+    describe('when `captcha-shown` event is emitted', () => {
+      it('disables the submit button', async () => {
+        findZuora().vm.$emit('loading', false);
+
+        await nextTick();
+
+        expect(findSubmitButton().props('disabled')).toBe(false);
+
+        findCaptcha().vm.$emit('captcha-shown');
+
+        await nextTick();
+
+        expect(findSubmitButton().props('disabled')).toBe(true);
+      });
+    });
+
+    describe('when `captcha-solved` event is emitted', () => {
+      it('calls verify captcha with the correct data', async () => {
+        findCaptcha().vm.$emit('captcha-solved', { captcha_token: '1234' });
+
+        findSubmitButton().vm.$emit('click');
+        await waitForPromises();
+
+        expect(axiosMock.history.post[0].data).toBe(JSON.stringify({ captcha_token: '1234' }));
+      });
+    });
+
+    describe('when `captcha-reset` event is emitted', () => {
+      it('disables the submit button', async () => {
+        findZuora().vm.$emit('loading', false);
+
+        await nextTick();
+
+        expect(findSubmitButton().props('disabled')).toBe(false);
+
+        findCaptcha().vm.$emit('captcha-reset');
+
+        await nextTick();
+
+        expect(findSubmitButton().props('disabled')).toBe(true);
+      });
     });
   });
 });

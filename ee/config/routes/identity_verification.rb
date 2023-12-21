@@ -11,6 +11,7 @@ scope :users, module: :users do
     patch :toggle_phone_exemption
     get :arkose_labs_challenge
     get :verify_credit_card
+    post :verify_credit_card_captcha
     get :success
   end
 end

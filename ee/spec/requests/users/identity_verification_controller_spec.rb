@@ -433,7 +433,7 @@ feature_category: :system_access do
     end
   end
 
-  describe '#show' do
+  describe 'GET show' do
     subject(:do_request) { get identity_verification_path }
 
     it_behaves_like 'it requires a valid verification_user_id'
@@ -479,7 +479,7 @@ feature_category: :system_access do
     end
   end
 
-  describe '#verification_state' do
+  describe 'GET verification_state' do
     subject(:do_request) { get verification_state_identity_verification_path }
 
     it_behaves_like 'it requires a valid verification_user_id'
@@ -519,7 +519,7 @@ feature_category: :system_access do
     end
   end
 
-  describe '#verify_email_code' do
+  describe 'POST verify_email_code' do
     let_it_be(:user) { unconfirmed_user }
     let_it_be(:params) { { identity_verification: { code: '123456' } } }
     let_it_be(:service_response) { { status: :success } }
@@ -565,7 +565,7 @@ feature_category: :system_access do
     end
   end
 
-  describe '#resend_email_code' do
+  describe 'POST resend_email_code' do
     let_it_be(:user) { unconfirmed_user }
 
     subject(:do_request) { post resend_email_code_identity_verification_path }
@@ -632,7 +632,7 @@ feature_category: :system_access do
     end
   end
 
-  describe '#send_phone_verification_code' do
+  describe 'POST send_phone_verification_code' do
     let_it_be(:unconfirmed_user) { create(:user, :medium_risk) }
     let_it_be(:user) { unconfirmed_user }
     let_it_be(:service_response) { ServiceResponse.success }
@@ -693,7 +693,7 @@ feature_category: :system_access do
     end
   end
 
-  describe '#verify_phone_verification_code' do
+  describe 'POST verify_phone_verification_code' do
     let_it_be(:unconfirmed_user) { create(:user, :medium_risk) }
     let_it_be(:user) { unconfirmed_user }
     let_it_be(:service_response) { ServiceResponse.success }
@@ -1078,6 +1078,18 @@ feature_category: :system_access do
     end
   end
 
+  describe 'POST verify_credit_card_captcha' do
+    let_it_be(:user) { unconfirmed_user }
+
+    before do
+      stub_session(verification_user_id: user.id)
+    end
+
+    subject(:do_request) { post verify_credit_card_captcha_identity_verification_path }
+
+    it_behaves_like 'it verifies reCAPTCHA response'
+  end
+
   describe 'PATCH toggle_phone_exemption' do
     let_it_be(:user) { unconfirmed_user }
 
@@ -1096,7 +1108,7 @@ feature_category: :system_access do
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires a valid verification_user_id'
 
-    describe 'when offering phone exemption' do
+    context 'when offering phone exemption' do
       it 'toggles phone exemption' do
         expect { do_request }.to change { User.find(user.id).exempt_from_phone_number_verification? }.to(true)
       end
@@ -1113,7 +1125,7 @@ feature_category: :system_access do
       it_behaves_like 'logs and tracks the event', :toggle_phone_exemption, :success
     end
 
-    describe 'when not offering phone exemption' do
+    context 'when not offering phone exemption' do
       let(:offer_phone_number_exemption) { false }
 
       it_behaves_like 'logs and tracks the event', :toggle_phone_exemption, :failed
