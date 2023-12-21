@@ -25,7 +25,7 @@ module Gitlab
         @project = project
         @client = client
         @parallel = parallel
-        @page_counter = PageCounter.new(project, collection_method)
+        @page_counter = Gitlab::Import::PageCounter.new(project, collection_method)
         @already_imported_cache_key = format(ALREADY_IMPORTED_CACHE_KEY, project: project.id,
           collection: collection_method)
         @job_waiter_cache_key = format(JOB_WAITER_CACHE_KEY, project: project.id, collection: collection_method)

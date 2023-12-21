@@ -98,7 +98,7 @@ RSpec.describe Gitlab::GithubImport::Importer::SingleEndpointIssueEventsImporter
       )
     end
 
-    let(:page_counter) { instance_double(Gitlab::GithubImport::PageCounter) }
+    let(:page_counter) { instance_double(Gitlab::Import::PageCounter) }
 
     before do
       allow(Gitlab::Redis::SharedState).to receive(:with).and_return('OK')
@@ -152,7 +152,7 @@ RSpec.describe Gitlab::GithubImport::Importer::SingleEndpointIssueEventsImporter
     end
 
     it 'triggers page number increment' do
-      expect(Gitlab::GithubImport::PageCounter)
+      expect(Gitlab::Import::PageCounter)
         .to receive(:new).with(project, 'issues/1/issue_timeline')
         .and_return(page_counter)
       expect(page_counter).to receive(:current).and_return(1)
@@ -166,7 +166,7 @@ RSpec.describe Gitlab::GithubImport::Importer::SingleEndpointIssueEventsImporter
 
     context 'when page is already processed' do
       before do
-        page_counter = Gitlab::GithubImport::PageCounter.new(
+        page_counter = Gitlab::Import::PageCounter.new(
           project, subject.page_counter_id(issuable)
         )
         page_counter.set(page.number)
