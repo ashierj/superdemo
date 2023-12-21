@@ -81,6 +81,14 @@ RSpec.describe Geo::VerificationState, feature_category: :geo_replication do
           expect(subject.verification_started_at).to be_present
         end
 
+        it 'resets verification checksum' do
+          subject.update!(verification_checksum: 'abc')
+
+          subject.class.verification_pending_batch(batch_size: 3)
+
+          expect(subject.reload.verification_checksum).to be_nil
+        end
+
         it 'limits with batch_size and orders records by verified_at with NULLs first' do
           expected = [subject.id, other_pending_ids.first]
 
@@ -140,6 +148,14 @@ RSpec.describe Geo::VerificationState, feature_category: :geo_replication do
 
             expect(subject.reload.verification_started?).to be_truthy
             expect(subject.verification_started_at).to be_present
+          end
+
+          it 'resets verification checksum' do
+            subject.update!(verification_checksum: 'abc')
+
+            subject.class.verification_failed_batch(batch_size: 3)
+
+            expect(subject.reload.verification_checksum).to be_nil
           end
 
           it 'limits with batch_size and orders records by verification_retry_at with NULLs first' do
@@ -256,6 +272,14 @@ RSpec.describe Geo::VerificationState, feature_category: :geo_replication do
           expect do
             expect(subject.class.reverify_batch(batch_size: 100)).to eq 1
           end.to change { subject.reload.verification_pending? }.to be_truthy
+        end
+
+        it 'resets verification checksum' do
+          subject.update!(verification_checksum: 'abc')
+
+          subject.class.reverify_batch(batch_size: 100)
+
+          expect(subject.reload.verification_checksum).to be_nil
         end
 
         it 'limits the update with batch_size' do
