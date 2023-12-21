@@ -11,12 +11,6 @@ module EE
         end
       end
 
-      def keep_deleted_option_label
-        number = ::Gitlab::CurrentSettings.deletion_adjourned_period
-
-        ns_("DeletionSettings|Keep deleted projects for %{number} day", "DeletionSettings|Keep deleted projects for %{number} days", number) % { number: number }
-      end
-
       def saas_user_caps_help_text(group)
         project_sharing_docs_url = help_page_path('user/group/access_and_permissions', anchor: 'prevent-a-project-from-being-shared-with-groups')
         group_sharing_docs_url = help_page_path('user/group/access_and_permissions', anchor: 'prevent-group-sharing-outside-the-group-hierarchy')
