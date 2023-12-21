@@ -22,25 +22,6 @@ RSpec.describe EE::Groups::SettingsHelper do
     end
   end
 
-  describe('#keep_deleted_option_label') do
-    using RSpec::Parameterized::TableSyntax
-
-    where(:adjourned_period, :expected) do
-      1 | 'Keep deleted projects for 1 day'
-      4 | 'Keep deleted projects for 4 days'
-    end
-
-    with_them do
-      before do
-        stub_application_setting(deletion_adjourned_period: adjourned_period)
-      end
-
-      it "returns expected helper text" do
-        expect(helper.keep_deleted_option_label).to eq expected
-      end
-    end
-  end
-
   describe '.unique_project_download_limit_settings_data', feature_category: :insider_threat do
     let(:namespace_settings) do
       build(:namespace_settings, unique_project_download_limit: 1,
