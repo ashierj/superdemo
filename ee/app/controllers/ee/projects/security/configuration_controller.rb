@@ -27,22 +27,6 @@ module EE
           urgency :low, [:show, :auto_fix]
         end
 
-        # rubocop:disable Gitlab/ModuleWithInstanceVariables
-        override :show
-        def show
-          return super unless security_dashboard_feature_enabled? && can_read_security_dashboard?
-
-          @configuration ||= configuration_presenter
-
-          respond_to do |format|
-            format.html
-            format.json do
-              render status: :ok, json: @configuration.to_h
-            end
-          end
-        end
-        # rubocop:enable Gitlab/ModuleWithInstanceVariables
-
         def auto_fix
           service = ::Security::Configuration::SaveAutoFixService
                       .new(project, auto_fix_params[:feature])
