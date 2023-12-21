@@ -43995,6 +43995,18 @@ msgstr ""
 msgid "SecurityOrchestration|You don't have any security policies yet"
 msgstr ""
 
+msgid "SecurityOrchestration|a license scanner found license violations"
+msgstr ""
+
+msgid "SecurityOrchestration|a merge request has been opened against a protected branch"
+msgstr ""
+
+msgid "SecurityOrchestration|a security policy has been violated"
+msgstr ""
+
+msgid "SecurityOrchestration|a security scanner found vulnerabilities matching the criteria"
+msgstr ""
+
 msgid "SecurityOrchestration|all namespaces"
 msgstr ""
 
@@ -50063,6 +50075,11 @@ msgstr ""
 
 msgid "This pipeline was triggered using the api"
 msgstr ""
+
+msgid "This policy needs %{approvals} approval because %{rules}"
+msgid_plural "This policy needs %{approvals} approvals because %{rules}"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "This process deletes the project repository and all related resources."
 msgstr ""

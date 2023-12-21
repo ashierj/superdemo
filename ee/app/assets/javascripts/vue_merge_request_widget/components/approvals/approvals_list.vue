@@ -1,5 +1,5 @@
 <script>
-import { GlSkeletonLoader } from '@gitlab/ui';
+import { GlSkeletonLoader, GlTooltipDirective } from '@gitlab/ui';
 import { uniqueId, orderBy } from 'lodash';
 import ApprovalCheckRulePopover from 'ee/approvals/components/mr_widget_approval_check/approval_check_rule_popover.vue';
 import EmptyRuleName from 'ee/approvals/components/rules/empty_rule_name.vue';
@@ -11,6 +11,7 @@ import ApprovedIcon from './approved_icon.vue';
 import NumberOfApprovals from './number_of_approvals.vue';
 import ApprovalsUsersList from './approvals_users_list.vue';
 import approvalRulesQuery from './queries/approval_rules.query.graphql';
+import { createSecurityPolicyRuleHelpText } from './utils';
 
 const INCLUDE_APPROVERS = 1;
 const DO_NOT_INCLUDE_APPROVERS = 2;
@@ -36,6 +37,9 @@ export default {
     EmptyRuleName,
     NumberOfApprovals,
     ApprovalsUsersList,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
@@ -88,6 +92,10 @@ export default {
     },
   },
   methods: {
+    getTooltipText(rule) {
+      if (!rule?.scanResultPolicies) return '';
+      return createSecurityPolicyRuleHelpText(rule.scanResultPolicies);
+    },
     summaryText(rule) {
       return rule.approvalsRequired === 0
         ? this.summaryOptionalText(rule)
@@ -196,7 +204,14 @@ export default {
                 >
                   {{ rule.section }}
                 </span>
-                <span :class="rule.nameClass" :title="rule.name">{{ rule.name }}</span>
+                <span
+                  v-gl-tooltip.left
+                  :class="rule.nameClass"
+                  :title="getTooltipText(rule)"
+                  data-testid="approval-name"
+                >
+                  {{ rule.name }}
+                </span>
               </span>
               <approval-check-rule-popover
                 :rule="rule"

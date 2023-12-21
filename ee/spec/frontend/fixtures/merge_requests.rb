@@ -196,6 +196,31 @@ RSpec
           expect_graphql_errors_to_be_empty
         end
       end
+
+      context 'with scan result policies' do
+        base_input_path = 'vue_merge_request_widget/components/approvals/queries/'
+        base_output_path = 'graphql/merge_requests/approvals/'
+        query_name = 'approval_rules.query.graphql'
+
+        before do
+          configuration = create(:security_orchestration_policy_configuration, project: project)
+
+          create(:report_approver_rule, :license_scanning, merge_request: merge_request,
+            security_orchestration_policy_configuration: configuration, approvals_required: 1)
+          create(:report_approver_rule, :any_merge_request, merge_request: merge_request, name: 'Any MR',
+            security_orchestration_policy_configuration: configuration, approvals_required: 2)
+          create(:report_approver_rule, :scan_finding, merge_request: merge_request,
+            security_orchestration_policy_configuration: configuration, approvals_required: 1)
+        end
+
+        it "#{base_output_path}approval_rules_with_scan_result_policies.json" do
+          query = get_graphql_query_as_string("#{base_input_path}#{query_name}", ee: true)
+
+          post_graphql(query, current_user: user, variables: variables)
+
+          expect_graphql_errors_to_be_empty
+        end
+      end
     end
   end
 end
