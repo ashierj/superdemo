@@ -32,7 +32,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::MembershipUpdater, feature_category: :sy
     it 'adds the user to the group' do
       subject
 
-      expect(group.users).to include(user)
+      expect(group).to have_user(user)
     end
 
     it 'adds the member with the specified `default_membership_role`' do

@@ -20,7 +20,7 @@ RSpec.describe 'Groups > Members > Leave group', feature_category: :groups_and_p
   end
 
   context 'with block_password_auth_for_saml_users feature flag switched on' do
-    it 'guest provisoned by this group leaves the group and is signed off', :js do
+    it 'guest provisioned by this group leaves the group and is signed off', :js do
       group.add_guest(user)
       group.add_owner(other_user)
 
@@ -30,7 +30,7 @@ RSpec.describe 'Groups > Members > Leave group', feature_category: :groups_and_p
       accept_gl_confirm(button_text: 'Leave group')
 
       expect(page).to have_current_path(new_user_session_path, ignore_query: true)
-      expect(group.users).not_to include(user)
+      expect(group).not_to have_user(user)
     end
 
     it 'guest leaves the group by url param and is signed off', :js do
@@ -42,7 +42,7 @@ RSpec.describe 'Groups > Members > Leave group', feature_category: :groups_and_p
       wait_for_all_requests
 
       expect(page).to have_current_path(new_user_session_path, ignore_query: true)
-      expect(group.users).not_to include(user)
+      expect(group).not_to have_user(user)
     end
   end
 
@@ -60,7 +60,7 @@ RSpec.describe 'Groups > Members > Leave group', feature_category: :groups_and_p
       wait_for_all_requests
 
       expect(page).to have_current_path(dashboard_groups_path, ignore_query: true)
-      expect(group.users).not_to include(user)
+      expect(group).not_to have_user(user)
     end
 
     it 'guest leaves the group as last member', :js do
@@ -72,7 +72,7 @@ RSpec.describe 'Groups > Members > Leave group', feature_category: :groups_and_p
       accept_gl_confirm(button_text: 'Leave group')
 
       expect(page).to have_current_path(dashboard_groups_path, ignore_query: true)
-      expect(group.users).not_to include(user)
+      expect(group).not_to have_user(user)
     end
   end
 end

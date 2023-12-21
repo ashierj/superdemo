@@ -66,7 +66,8 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
     end
     wait_for_requests
 
-    expect_avatar(find('.js-members'), group.users)
+    group_users = group.group_members.preload_user.map(&:user)
+    expect_avatar(find('.js-members'), group_users)
   end
 
   context 'with an approver group' do
