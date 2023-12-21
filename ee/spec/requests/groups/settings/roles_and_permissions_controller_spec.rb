@@ -49,6 +49,10 @@ RSpec.describe Groups::Settings::RolesAndPermissionsController, feature_category
       stub_licensed_features(custom_roles: true)
     end
 
+    context 'when not logged in' do
+      it_behaves_like 'page is not found'
+    end
+
     context 'with different access levels not allowed' do
       where(access_level: [nil, :guest, :reporter, :developer, :maintainer])
 

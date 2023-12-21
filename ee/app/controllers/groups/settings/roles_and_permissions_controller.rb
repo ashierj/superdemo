@@ -15,7 +15,7 @@ module Groups
       private
 
       def authorize_admin_member_roles!
-        render_404 unless current_user.can?(:admin_group_member, group)
+        render_404 unless can?(current_user, :admin_group_member, group)
       end
 
       def ensure_root_group!
