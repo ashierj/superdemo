@@ -73,9 +73,11 @@ RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_inline, :disable_
 
     before do
       stub_group_wikis(true)
-      [group_wiki, wiki].each do |w|
-        w.create_page('test.md', '# term')
-        w.index_wiki_blobs
+      Sidekiq::Worker.skipping_transaction_check do
+        [group_wiki, wiki].each do |w|
+          w.create_page('test.md', '# term')
+          w.index_wiki_blobs
+        end
       end
       ensure_elasticsearch_index!
     end
