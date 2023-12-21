@@ -43,9 +43,14 @@ export default {
       required: false,
       default: '',
     },
+    initialValue: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   data() {
-    return { selectedValue: null };
+    return { selectedValue: this.initialValue };
   },
   computed: {
     fieldName() {
