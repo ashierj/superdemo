@@ -21,10 +21,6 @@ module EE
         html_escape(saas_user_caps_i18n_string(group)) % { project_sharing_docs_link_start: project_sharing_docs_link_start, group_sharing_docs_link_start: group_sharing_docs_link_start, link_end: '</a>'.html_safe }
       end
 
-      def delayed_deletion_disabled
-        ::Gitlab::CurrentSettings.delayed_group_deletion == false
-      end
-
       def unique_project_download_limit_settings_data
         settings = @group.namespace_settings || ::NamespaceSetting.new
         limit = settings.unique_project_download_limit
