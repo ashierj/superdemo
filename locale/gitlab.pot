@@ -23502,6 +23502,9 @@ msgstr ""
 msgid "GroupSettings|Enforce SSH Certificates"
 msgstr ""
 
+msgid "GroupSettings|Experiment"
+msgstr ""
+
 msgid "GroupSettings|Experiment and Beta features"
 msgstr ""
 
@@ -23553,7 +23556,7 @@ msgstr ""
 msgid "GroupSettings|Reporting"
 msgstr ""
 
-msgid "GroupSettings|Security policy custom CI Experiment"
+msgid "GroupSettings|Security policy Pipeline Execution Action Experiment"
 msgstr ""
 
 msgid "GroupSettings|Security policy scope Experiment"
