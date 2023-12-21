@@ -130,13 +130,15 @@ export default {
 
         if ('ref' in config) delete config.ref;
 
-        this.triggerChanged({
-          ci_configuration_path: {
-            ...config,
-            project: project?.fullPath,
-            id: getIdFromGraphQLId(project?.id),
-          },
-        });
+        if (project) {
+          config.project = project?.fullPath;
+          config.id = getIdFromGraphQLId(project?.id);
+        } else {
+          delete config.project;
+          delete config.id;
+        }
+
+        this.triggerChanged({ ci_configuration_path: config });
       });
     },
     updatedFilePath(path) {

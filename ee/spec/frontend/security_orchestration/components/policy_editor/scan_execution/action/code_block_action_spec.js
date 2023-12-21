@@ -219,5 +219,15 @@ describe('CodeBlockAction', () => {
         { ci_configuration_path: { id: 29, project: project.fullPath }, scan: 'custom' },
       ]);
     });
+
+    it('clears project on deselect', async () => {
+      await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
+
+      await findCodeBlockFilePath().vm.$emit('select-project', undefined);
+
+      expect(wrapper.emitted('changed')[1]).toEqual([
+        { ci_configuration_path: {}, scan: 'custom' },
+      ]);
+    });
   });
 });
