@@ -74,14 +74,15 @@ describe('CustomStageFields', () => {
   });
 
   describe.each([
-    ['Name', findNameField, undefined],
-    ['Start event', findStartEventField, undefined],
-    ['End event', findEndEventField, 'true'],
-  ])('Default state', (field, finder, fieldDisabledValue) => {
+    ['Name', findNameField, undefined, 'value', undefined],
+    ['Start event', findStartEventField, undefined, 'defaultdropdowntext', 'Select start event'],
+    ['End event', findEndEventField, 'true', 'defaultdropdowntext', 'Select end event'],
+  ])('Default state', (field, finder, fieldDisabledValue, valueAttribute, value) => {
     it(`field '${field}' is disabled ${fieldDisabledValue ? 'true' : 'false'}`, () => {
       const $el = finder();
       expect($el.exists()).toBe(true);
       expect($el.attributes('disabled')).toBe(fieldDisabledValue);
+      expect($el.attributes(valueAttribute)).toBe(value);
     });
   });
 
@@ -109,11 +110,11 @@ describe('CustomStageFields', () => {
     });
 
     it('selects the correct start events for the start events dropdown', () => {
-      expect(wrapper.vm.startEvents).toEqual(startEventOptions);
+      expect(findStartEventField().props('eventsList')).toEqual(startEventOptions);
     });
 
     it('does not select end events for the start events dropdown', () => {
-      expect(wrapper.vm.startEvents).not.toEqual(endEventOptions);
+      expect(findStartEventField().props('eventsList')).not.toEqual(endEventOptions);
     });
 
     describe('start event label', () => {
@@ -153,11 +154,11 @@ describe('CustomStageFields', () => {
     });
 
     it('selects the end events based on the start event', () => {
-      expect(wrapper.vm.endEvents).toEqual(allowedEndEventOpts);
+      expect(findEndEventField().props('eventsList')).toEqual(allowedEndEventOpts);
     });
 
     it('does not select start events for the end events dropdown', () => {
-      expect(wrapper.vm.endEvents).not.toEqual(startEventOptions);
+      expect(findEndEventField().props('eventsList')).not.toEqual(startEventOptions);
     });
 
     describe('end event label', () => {
@@ -198,6 +199,31 @@ describe('CustomStageFields', () => {
 
       it('does not display the stage actions component', () => {
         expect(findStageFieldActions().exists()).toBe(false);
+      });
+    });
+  });
+
+  describe('Editing', () => {
+    beforeEach(() => {
+      wrapper = createComponent({
+        stage: {
+          name: 'lol',
+          startEventIdentifier: labelStartEvent.identifier,
+          endEventIdentifier: labelEndEvent.identifier,
+        },
+      });
+    });
+
+    describe.each([
+      ['Name', findNameField, 'value', 'lol'],
+      ['Start event', findStartEventField, 'initialvalue', 'issue_label_added'],
+      ['End event', findEndEventField, 'initialvalue', 'issue_label_added'],
+    ])('will initialize the field', (field, finder, valueAttribute, value) => {
+      it(`'${field}' to value '${value}'`, () => {
+        const $el = finder();
+        expect($el.exists()).toBe(true);
+
+        expect($el.attributes(valueAttribute)).toBe(value);
       });
     });
   });
