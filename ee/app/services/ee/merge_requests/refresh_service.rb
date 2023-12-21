@@ -15,7 +15,9 @@ module EE
 
         update_approvers_for_source_branch_merge_requests
         update_approvers_for_target_branch_merge_requests
+
         reset_approvals_for_merge_requests(push.ref, push.newrev)
+
         trigger_suggested_reviewers_fetch
         sync_any_merge_request_approval_rules
       end
@@ -31,15 +33,19 @@ module EE
       end
 
       def reset_approvals_for_merge_requests(ref, newrev)
-        # Add a flag that prevents unverified changes from getting through in the 10 second window below
+        # Add a flag that prevents unverified changes from getting through in the
+        #   10 second window below
+        #
         merge_requests_for(push.branch_name, mr_states: [:opened, :closed]).each do |mr|
           if reset_approvals?(mr, newrev)
             mr.approval_state.temporarily_unapprove!
           end
         end
 
-        # We need to make sure the code owner approval rules have all been synced first, so we delay for 10s
-        # We are trying to pin down and fix the race condition: https://gitlab.com/gitlab-org/gitlab/-/issues/373846
+        # We need to make sure the code owner approval rules have all been synced
+        #   first, so we delay for 10s. We are trying to pin down and fix the race
+        #   condition: https://gitlab.com/gitlab-org/gitlab/-/issues/373846
+        #
         MergeRequestResetApprovalsWorker.perform_in(10.seconds, project.id, current_user.id, ref, newrev)
       end
 
