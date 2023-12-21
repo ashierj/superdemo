@@ -2,7 +2,7 @@ import Vue from 'vue';
 import { __, sprintf } from '~/locale';
 import CommaSeparatedListTokenSelector from '../components/comma_separated_list_token_selector.vue';
 
-export default ({ selector, props = {}, qaSelector, customValidator = null }) => {
+export default ({ selector, props = {}, testid, customValidator = null }) => {
   const el = document.querySelector(selector);
 
   if (!el) return;
@@ -33,7 +33,7 @@ export default ({ selector, props = {}, qaSelector, customValidator = null }) =>
     render(createElement) {
       return createElement('comma-separated-list-token-selector', {
         attrs: {
-          'data-qa-selector': qaSelector,
+          'data-testid': testid,
         },
         props: {
           hiddenInputId: this.hiddenInputId,
