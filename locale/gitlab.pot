@@ -32664,6 +32664,12 @@ msgstr ""
 msgid "Notify users by email when sign-in location is not recognized."
 msgstr ""
 
+msgid "Notify|%{added} was added as an assignee."
+msgstr ""
+
+msgid "Notify|%{added} were added as assignees."
+msgstr ""
+
 msgid "Notify|%{author_link}'s issue %{issue_reference_link} is due soon."
 msgstr ""
 
@@ -32712,6 +32718,12 @@ msgstr ""
 msgid "Notify|%{project_link_start}Download%{project_link_end} the project export."
 msgstr ""
 
+msgid "Notify|%{removed} was removed as an assignee."
+msgstr ""
+
+msgid "Notify|%{removed} were removed as assignees."
+msgstr ""
+
 msgid "Notify|%{singular_or_plural_line} %{error_lines}: Work item type cannot be found or is not supported."
 msgstr ""
 
@@ -32742,16 +32754,13 @@ msgstr ""
 msgid "Notify|After it expires, you can %{a_start} request a new one %{a_end}."
 msgstr ""
 
+msgid "Notify|All assignees were removed."
+msgstr ""
+
 msgid "Notify|All discussions on merge request %{mr_link} were resolved by %{name}"
 msgstr ""
 
 msgid "Notify|And %{total_stripped_new_commits_count} more"
-msgstr ""
-
-msgid "Notify|Assignee changed from %{fromNames} to %{toNames}"
-msgstr ""
-
-msgid "Notify|Assignee changed to %{toNames}"
 msgstr ""
 
 msgid "Notify|Author: %{author_name}"
