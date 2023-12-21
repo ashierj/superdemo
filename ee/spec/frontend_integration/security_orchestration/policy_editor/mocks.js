@@ -26,6 +26,7 @@ export const DEFAULT_PROVIDE = {
   rootNamespacePath: 'path/to/root',
   parsedSoftwareLicenses: [],
   timezones: [],
+  securityPoliciesPolicyScopeToggleEnabled: true,
 };
 
 export const mockSecurityScanResultManifest = `type: scan_result_policy

@@ -60,7 +60,7 @@ export default {
   },
   directives: { GlModal: GlModalDirective, GlTooltip: GlTooltipDirective },
   mixins: [glFeatureFlagsMixin()],
-  inject: ['namespaceType', 'policiesPath'],
+  inject: ['namespaceType', 'policiesPath', 'securityPoliciesPolicyScopeToggleEnabled'],
   props: {
     customSaveButtonText: {
       type: String,
@@ -138,7 +138,11 @@ export default {
       return this.namespaceType === NAMESPACE_TYPES.GROUP;
     },
     shouldShowScope() {
-      return this.glFeatures.securityPoliciesPolicyScope && this.isGroupLevel;
+      return (
+        this.glFeatures.securityPoliciesPolicyScope &&
+        this.securityPoliciesPolicyScopeToggleEnabled &&
+        this.isGroupLevel
+      );
     },
     deleteModalTitle() {
       return sprintf(s__('SecurityOrchestration|Delete policy: %{policy}'), {
