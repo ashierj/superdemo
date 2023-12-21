@@ -20,13 +20,17 @@ module PhoneVerification
       def execute
         return error_in_params unless valid?
 
-        if related_to_banned_user? && Feature.enabled?(:identity_verification_auto_ban)
-          ::Users::AutoBanService.new(user: user, reason: :banned_phone_number).execute
-          return error_banned_user
+        if related_to_banned_user?
+          record.save!
+
+          if Feature.enabled?(:identity_verification_auto_ban)
+            ::Users::AutoBanService.new(user: user, reason: :banned_phone_number).execute
+          end
+
+          return error_related_to_banned_user
         end
 
         return error_rate_limited if rate_limited?
-        return error_high_risk_number if related_to_banned_user?
 
         risk_result = ::PhoneVerification::TelesignClient::RiskScoreService.new(
           phone_number: phone_number,
@@ -87,7 +91,7 @@ module PhoneVerification
         ServiceResponse.error(
           message: format(
             s_(
-              'PhoneVerification|You\'ve reached the maximum number of tries. '\
+              'PhoneVerification|You\'ve reached the maximum number of tries. ' \
               'Wait %{interval} and try again.'
             ),
             interval: interval
@@ -96,19 +100,16 @@ module PhoneVerification
         )
       end
 
-      def error_banned_user
-        ServiceResponse.error(
-          message: user_banned_error_message,
-          reason: :related_to_banned_user
+      def error_related_to_banned_user
+        message = s_(
+          'PhoneVerification|There was a problem with the phone number you entered. ' \
+          'Enter a different phone number and try again.'
         )
-      end
 
-      def error_high_risk_number
+        message = user_banned_error_message if Feature.enabled?(:identity_verification_auto_ban)
+
         ServiceResponse.error(
-          message: s_(
-            'PhoneVerification|There was a problem with the phone number you entered. '\
-            'Enter a different phone number and try again.'
-          ),
+          message: message,
           reason: :related_to_banned_user
         )
       end

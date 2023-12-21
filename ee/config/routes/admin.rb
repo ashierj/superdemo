@@ -7,6 +7,7 @@ namespace :admin do
       delete :destroy_identity_verification_exemption
       post :reset_runners_minutes
       get :card_match
+      get :phone_match
     end
   end
 
