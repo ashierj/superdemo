@@ -7,12 +7,12 @@ module Ci
     #
     class SendUsageCsvService
       # @param [User] current_user The user performing the reporting
-      # @param [Symbol] runner_type The type of runners to report on. Defaults to nil, reporting on all runner types
-      # @param [Date] from_date The start date of the period to examine. Defaults to start of last full month
-      # @param [Date] to_date The end date of the period to examine. Defaults to end of month
+      # @param [Symbol] runner_type The type of runners to report on, or nil to report on all types
+      # @param [Date] from_date The start date of the period to examine
+      # @param [Date] to_date The end date of the period to examine
       # @param [Integer] max_project_count The maximum number of projects in the report. All others will be folded
-      #   into an 'Other projects' entry. Defaults to 1000
-      def initialize(current_user:, runner_type: nil, from_date: nil, to_date: nil, max_project_count: nil)
+      #   into an 'Other projects' entry
+      def initialize(current_user:, runner_type:, from_date:, to_date:, max_project_count:)
         @current_user = current_user
         @runner_type = runner_type
         @from_date = from_date
@@ -33,7 +33,7 @@ module Ci
         return result if result.error?
 
         Notify.runner_usage_by_project_csv_email(
-          user: @current_user, from_date: generate_csv_service.from_date, to_date: generate_csv_service.to_date,
+          user: @current_user, from_date: @from_date, to_date: @to_date,
           csv_data: result.payload[:csv_data], export_status: result.payload[:status]
         ).deliver_now
 
