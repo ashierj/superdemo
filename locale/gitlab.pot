@@ -55303,6 +55303,9 @@ msgstr ""
 msgid "WorkItem|No child items are currently assigned. Use child items to break down this issue into smaller parts."
 msgstr ""
 
+msgid "WorkItem|No epics or issues are currently assigned."
+msgstr ""
+
 msgid "WorkItem|No iteration"
 msgstr ""
 

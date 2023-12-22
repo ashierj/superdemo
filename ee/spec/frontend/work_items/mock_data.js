@@ -27,6 +27,7 @@ export const createWorkItemMutationResponse = {
         confidential: false,
         createdAt: '2022-08-03T12:41:54Z',
         closedAt: null,
+        webUrl: 'http://127.0.0.1:3000/groups/gitlab-org/-/work_items/1',
         project: {
           __typename: 'Project',
           id: '1',
@@ -54,7 +55,7 @@ export const createWorkItemMutationErrorResponse = {
   data: {
     workItemCreate: {
       __typename: 'WorkItemCreatePayload',
-      workItem: {},
+      workItem: null,
       errors: ['Title is too long (maximum is 255 characters)'],
     },
   },
