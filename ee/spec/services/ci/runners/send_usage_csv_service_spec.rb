@@ -11,8 +11,10 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
 
   let(:from_date) { 1.month.ago }
   let(:to_date) { Date.current }
+  let(:max_project_count) { 5 }
   let(:service) do
-    described_class.new(current_user: current_user, runner_type: :instance_type, from_date: from_date, to_date: to_date)
+    described_class.new(current_user: current_user, runner_type: :instance_type, from_date: from_date, to_date: to_date,
+      max_project_count: max_project_count)
   end
 
   subject(:response) { service.execute }
@@ -28,7 +30,10 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
   end
 
   it 'sends the csv by email' do
-    expect_next_instance_of(Ci::Runners::GenerateUsageCsvService) do |service|
+    expect_next_instance_of(Ci::Runners::GenerateUsageCsvService,
+      current_user: current_user, runner_type: :instance_type, from_date: from_date, to_date: to_date,
+      max_project_count: max_project_count
+    ) do |service|
       expect(service).to receive(:execute).and_call_original
     end
 

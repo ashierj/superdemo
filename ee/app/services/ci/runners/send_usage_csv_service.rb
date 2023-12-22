@@ -10,11 +10,14 @@ module Ci
       # @param [Symbol] runner_type The type of runners to report on. Defaults to nil, reporting on all runner types
       # @param [Date] from_date The start date of the period to examine. Defaults to start of last full month
       # @param [Date] to_date The end date of the period to examine. Defaults to end of month
-      def initialize(current_user:, runner_type: nil, from_date: nil, to_date: nil)
+      # @param [Integer] max_project_count The maximum number of projects in the report. All others will be folded
+      #   into an 'Other projects' entry. Defaults to 1000
+      def initialize(current_user:, runner_type: nil, from_date: nil, to_date: nil, max_project_count: nil)
         @current_user = current_user
         @runner_type = runner_type
         @from_date = from_date
         @to_date = to_date
+        @max_project_count = max_project_count
       end
 
       def execute
@@ -22,7 +25,8 @@ module Ci
           current_user: @current_user,
           runner_type: @runner_type,
           from_date: @from_date,
-          to_date: @to_date
+          to_date: @to_date,
+          max_project_count: @max_project_count
         )
         result = generate_csv_service.execute
 

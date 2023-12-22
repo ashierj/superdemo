@@ -6747,6 +6747,7 @@ Input type: `RunnersExportUsageInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationrunnersexportusageclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationrunnersexportusagemaxprojectcount"></a>`maxProjectCount` | [`Int`](#int) | Maximum number of projects to return. All other runner usage will be attributed to a '<Other projects>' entry. Defaults to 1000 projects. |
 | <a id="mutationrunnersexportusagetype"></a>`type` | [`CiRunnerType`](#cirunnertype) | Scope of the runners to include in the report. |
 
 #### Fields

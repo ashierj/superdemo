@@ -21,9 +21,10 @@ RSpec.describe 'RunnersExportUsage', :click_house, :enable_admin_mode, :sidekiq_
       finished_at: start_time + 10.minutes, runner: group_runner)
   end
 
-  let(:runner_type) { 'GROUP_TYPE' }
+  let(:runner_type) { 'group_type' }
+  let(:max_project_count) { 7 }
   let(:mutation) do
-    graphql_mutation(:runners_export_usage, type: runner_type) do
+    graphql_mutation(:runners_export_usage, type: runner_type.upcase, max_project_count: max_project_count) do
       <<~QL
         errors
       QL
@@ -42,9 +43,13 @@ RSpec.describe 'RunnersExportUsage', :click_house, :enable_admin_mode, :sidekiq_
   end
 
   it 'sends email with report' do
+    expect(::Ci::Runners::ExportUsageCsvWorker).to receive(:perform_async)
+      .with(current_user.id, {
+        runner_type: ::Ci::Runner.runner_types[runner_type], max_project_count: max_project_count
+      }).and_call_original
     expect(Notify).to receive(:runner_usage_by_project_csv_email)
       .with(
-        user: current_user, from_time: DateTime.new(2023, 11, 1), to_time: DateTime.new(2023, 11, 1).end_of_month,
+        user: current_user, from_date: Date.new(2023, 11, 1), to_date: Date.new(2023, 11, 1).end_of_month,
         csv_data: anything, export_status: anything
       ) do |args|
         expect(args.dig(:export_status, :rows_written)).to eq 1
@@ -57,6 +62,26 @@ RSpec.describe 'RunnersExportUsage', :click_house, :enable_admin_mode, :sidekiq_
 
     post_response
     expect_graphql_errors_to_be_empty
+  end
+
+  context 'when max_project_count is out-of-range' do
+    context 'and is below acceptable range' do
+      let(:max_project_count) { 0 }
+
+      it 'returns an error' do
+        post_response
+        expect_graphql_errors_to_include('maxProjectCount must be between 1 and 1000')
+      end
+    end
+
+    context 'and is above acceptable range' do
+      let(:max_project_count) { ::Ci::Runners::GenerateUsageCsvService::MAX_PROJECT_COUNT + 1 }
+
+      it 'returns an error' do
+        post_response
+        expect_graphql_errors_to_include('maxProjectCount must be between 1 and 1000')
+      end
+    end
   end
 
   context 'when feature is not available' do
