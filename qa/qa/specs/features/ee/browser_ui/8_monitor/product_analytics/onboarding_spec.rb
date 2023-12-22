@@ -62,7 +62,7 @@ module QA
 
         EE::Page::Project::Analyze::AnalyticsDashboards::Dashboard.perform do |dashboard|
           panels = dashboard.behavior_dashboard_panels
-          aggregate_failures 'test audience dashboard' do
+          aggregate_failures 'test behavior dashboard' do
             expect(panels.count).to equal(5)
             expect(panels[2]).to have_content('Total events')
             expect(panels[2]).to have_content("1")
