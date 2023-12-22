@@ -5,13 +5,14 @@ import {
   normalizeHeaders,
   parseIntPagination,
 } from '~/lib/utils/common_utils';
-import { __ } from '~/locale';
+import { __, sprintf } from '~/locale';
 import pollUntilComplete from '~/lib/utils/poll_until_complete';
 import download from '~/lib/utils/downloader';
 import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import {
   DEPENDENCIES_FILENAME,
   FETCH_ERROR_MESSAGE,
+  FETCH_ERROR_MESSAGE_WITH_DETAILS,
   FETCH_EXPORT_ERROR_MESSAGE,
   LICENSES_FETCH_ERROR_MESSAGE,
   VULNERABILITIES_FETCH_ERROR_MESSAGE,
@@ -78,9 +79,14 @@ export const fetchDependencies = ({ state, dispatch }, params) => {
     })
     .catch((error) => {
       dispatch('receiveDependenciesError', error);
-      createAlert({
-        message: FETCH_ERROR_MESSAGE,
-      });
+
+      const errorDetails = error?.response?.data?.message;
+
+      const message = errorDetails
+        ? sprintf(FETCH_ERROR_MESSAGE_WITH_DETAILS, { errorDetails })
+        : FETCH_ERROR_MESSAGE;
+
+      createAlert({ message });
     });
 };
 

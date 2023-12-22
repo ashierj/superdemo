@@ -5,7 +5,6 @@ import * as actions from 'ee/dependencies/store/modules/list/actions';
 import {
   FILTER,
   SORT_DESCENDING,
-  FETCH_ERROR_MESSAGE,
   FETCH_EXPORT_ERROR_MESSAGE,
   DEPENDENCIES_FILENAME,
   LICENSES_FETCH_ERROR_MESSAGE,
@@ -261,10 +260,11 @@ describe('Dependencies actions', () => {
     });
 
     describe.each`
-      responseType             | responseDetails
-      ${'an invalid response'} | ${[HTTP_STATUS_OK, { foo: 'bar' }]}
-      ${'a response error'}    | ${[HTTP_STATUS_INTERNAL_SERVER_ERROR]}
-    `('given $responseType', ({ responseDetails }) => {
+      responseType                         | responseDetails                                                             | expectedErrorMessage
+      ${'invalid response'}                | ${[HTTP_STATUS_OK, { foo: 'bar' }]}                                         | ${'Error fetching the dependency list. Please check your network connection and try again.'}
+      ${'a response error'}                | ${[HTTP_STATUS_INTERNAL_SERVER_ERROR]}                                      | ${'Error fetching the dependency list. Please check your network connection and try again.'}
+      ${'a response error with a message'} | ${[HTTP_STATUS_INTERNAL_SERVER_ERROR, { message: 'Custom error message' }]} | ${'Error fetching the dependency list: Custom error message'}
+    `('given $responseType', ({ responseDetails, expectedErrorMessage }) => {
       beforeEach(() => {
         mock.onGet(state.endpoint).replyOnce(...responseDetails);
       });
@@ -287,7 +287,7 @@ describe('Dependencies actions', () => {
         ).then(() => {
           expect(createAlert).toHaveBeenCalledTimes(1);
           expect(createAlert).toHaveBeenCalledWith({
-            message: FETCH_ERROR_MESSAGE,
+            message: expectedErrorMessage,
           });
         }));
     });
