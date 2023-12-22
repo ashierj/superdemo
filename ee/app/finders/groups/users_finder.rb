@@ -25,7 +25,8 @@ module Groups
 
       return relations.first if relations.size == 1
 
-      ::User.from_union(relations) # rubocop:disable CodeReuse/ActiveRecord -- Simple union of existing relations/scopes
+      union = ::User.from_union(relations) # rubocop:disable CodeReuse/ActiveRecord -- Simple union of existing relations/scopes
+      union.order_id_desc
     end
 
     def relations_to_join(users)

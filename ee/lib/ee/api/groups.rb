@@ -268,6 +268,9 @@ module EE
             ]
           end
           params do
+            optional :search, type: String, desc: 'Search users by name, email or username'
+            optional :active, type: ::Grape::API::Boolean, default: false, desc: 'Filters only active users'
+
             optional :include_saml_users,
               type: Grape::API::Boolean,
               desc: 'Return users with a SAML identity in this group'
@@ -275,8 +278,6 @@ module EE
               type: Grape::API::Boolean,
               desc: 'Return service accounts owned by this group'
             at_least_one_of :include_saml_users, :include_service_accounts
-
-            optional :search, type: String, desc: 'Search users by name, email or username'
 
             use :pagination
           end
