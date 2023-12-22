@@ -73,7 +73,7 @@ information, see [Merge request approval rules](../../project/merge_requests/app
 
 ### Export standards adherence report for projects in a group
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/413736) in GitLab 16.7 [with a flag](../../../administration/feature_flags.md) named `compliance_standards_adherence_csv_export`. Disabled by default.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/413736) in GitLab 16.8 [with a flag](../../../administration/feature_flags.md) named `compliance_standards_adherence_csv_export`. Disabled by default.
 
 FLAG:
 On self-managed GitLab, by default this feature is not available. To make it available, an administrator can [enable the feature flag](../../../administration/feature_flags.md)
