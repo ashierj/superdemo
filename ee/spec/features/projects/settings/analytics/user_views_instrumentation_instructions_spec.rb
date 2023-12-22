@@ -74,8 +74,25 @@ RSpec.describe 'Project > Settings > Analytics -> Instrumentation instructions',
     end
   end
 
+  context 'when product analytics is disabled on an instance' do
+    before do
+      allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(false)
+      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+      project.group.root_ancestor.namespace_settings.update!(
+        experiment_features_enabled: true,
+        product_analytics_enabled: true
+      )
+      stub_licensed_features(product_analytics: true)
+    end
+
+    it 'does not show instrumentation instructions' do
+      expect(page).not_to have_content s_('View instrumentation instructions')
+    end
+  end
+
   context 'with valid license, toggle and feature flags' do
     before do
+      allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
       allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       project.group.root_ancestor.namespace_settings.update!(
         experiment_features_enabled: true,

@@ -16,6 +16,7 @@ RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category
     let(:slug) { nil }
 
     before do
+      allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
       allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: false)
       project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,

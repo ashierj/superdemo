@@ -30,6 +30,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
       subject { described_class.for(container: resource_parent, user: user) }
 
       before do
+        allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
         allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         project.group.root_ancestor.namespace_settings.update!(
           experiment_features_enabled: true,

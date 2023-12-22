@@ -54,6 +54,7 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
     let(:resource_parent_type) { :project }
 
     before do
+      allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
       allow(resource_parent.group.root_ancestor.namespace_settings)
         .to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: true)

@@ -12,17 +12,21 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
   describe '#product_analytics_enabled?' do
     subject { project.product_analytics_enabled? }
 
-    where(:licensed, :dashboards_flag, :beta_optin_flag, :toggle, :outcome) do
-      false | false | false | false | false
-      true  | false | false | false | false
-      false | true  | false | false | false
-      false | false | true  | false | false
-      false | false | false | true  | false
-      true  | true  | true  | true |  true
+    where(:instance_enabled, :licensed, :dashboards_flag, :beta_optin_flag, :toggle, :outcome) do
+      false | false | false | false | false | false
+      true  | false | false | false | false | false
+      false | false | false | false | false | false
+      false | true  | false | false | false | false
+      false | false | true  | false | false | false
+      false | false | false | true  | false | false
+      false | false | false | false | true  | false
+      false | true  | true  | true  | true  | false
+      true  | true  | true  | true  | true  | true
     end
 
     with_them do
       before do
+        allow(::Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(instance_enabled)
         allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         stub_feature_flags(product_analytics_dashboards: dashboards_flag, product_analytics_beta_optin: beta_optin_flag)
         stub_licensed_features(product_analytics: licensed)
@@ -103,6 +107,7 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
 
     context 'without configuration project' do
       before do
+        allow(::Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return true
         allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         stub_licensed_features(product_analytics: true)
         project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
@@ -161,6 +166,7 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
     context 'when the feature is available and toggle is enabled' do
       before do
         stub_licensed_features(product_analytics: true)
+        allow(::Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return true
         group.root_ancestor.namespace_settings.update!(product_analytics_enabled: true)
       end
 

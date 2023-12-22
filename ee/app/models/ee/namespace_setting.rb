@@ -83,7 +83,9 @@ module EE
       end
 
       def product_analytics_settings_allowed?
-        experiment_settings_allowed? && ::Feature.enabled?(:product_analytics_beta_optin, namespace)
+        experiment_settings_allowed? &&
+          ::Feature.enabled?(:product_analytics_beta_optin, namespace) &&
+          ::Gitlab::CurrentSettings.product_analytics_enabled?
       end
 
       def ai_assist_ui_enabled?

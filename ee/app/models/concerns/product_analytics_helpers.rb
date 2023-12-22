@@ -4,6 +4,8 @@ module ProductAnalyticsHelpers
   extend ActiveSupport::Concern
 
   def product_analytics_enabled?
+    return false unless ::Gitlab::CurrentSettings.product_analytics_enabled?
+
     return false unless is_a?(Project)
     return false unless licensed_feature_available?(:product_analytics)
     return false unless ::Feature.enabled?(:product_analytics_dashboards, self)
