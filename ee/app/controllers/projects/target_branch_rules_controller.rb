@@ -20,7 +20,7 @@ module Projects
 
       if result[:status] == :success
         redirect_to(project_settings_merge_requests_path(@project, anchor: 'target-branch-rules'),
-          notice: _('Target branch rule created.'))
+          notice: _('Branch target created.'))
       else
         redirect_to(project_settings_merge_requests_path(@project, anchor: 'target-branch-rules'),
           alert: result[:message].join(', '))
@@ -32,7 +32,7 @@ module Projects
 
       if result[:status] == :success
         redirect_to(project_settings_merge_requests_path(@project, anchor: 'target-branch-rules'),
-          notice: _('Target branch rule deleted.'))
+          notice: _('Branch target deleted.'))
       else
         redirect_to(project_settings_merge_requests_path(@project, anchor: 'target-branch-rules'),
           alert: result[:message])

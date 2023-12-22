@@ -19,7 +19,7 @@ RSpec.describe TargetBranchRules::DestroyService, feature_category: :code_review
       response = service.execute
 
       expect(response[:status]).to eq(:error)
-      expect(response[:message]).to eq(_('You have insufficient permissions to delete a target branch rule'))
+      expect(response[:message]).to eq(_('You have insufficient permissions to delete a branch target'))
     end
   end
 
@@ -28,7 +28,7 @@ RSpec.describe TargetBranchRules::DestroyService, feature_category: :code_review
       response = service.execute
 
       expect(response[:status]).to eq(:error)
-      expect(response[:message]).to eq(_('You have insufficient permissions to delete a target branch rule'))
+      expect(response[:message]).to eq(_('You have insufficient permissions to delete a branch target'))
     end
   end
 
@@ -48,7 +48,7 @@ RSpec.describe TargetBranchRules::DestroyService, feature_category: :code_review
         response = service.execute
 
         expect(response[:status]).to eq(:error)
-        expect(response[:message]).to eq('Target branch rule does not exist')
+        expect(response[:message]).to eq('Branch target does not exist')
       end
     end
 
@@ -61,7 +61,7 @@ RSpec.describe TargetBranchRules::DestroyService, feature_category: :code_review
         response = service.execute
 
         expect(response[:status]).to eq(:error)
-        expect(response[:message]).to eq('Failed to delete target branch rule')
+        expect(response[:message]).to eq('Failed to delete branch target')
       end
     end
 

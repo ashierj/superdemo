@@ -4,12 +4,12 @@ module TargetBranchRules
   class DestroyService < TargetBranchRules::BaseService
     def execute
       return error_no_permissions unless authorized?
-      return error(_('Target branch rule does not exist')) unless target_branch_rule
+      return error(_('Branch target does not exist')) unless target_branch_rule
 
       if target_branch_rule.destroy
         success(payload: { target_branch_rule: target_branch_rule })
       else
-        error(target_branch_rule.errors&.full_messages.presence || _('Failed to delete target branch rule'))
+        error(target_branch_rule.errors&.full_messages.presence || _('Failed to delete branch target'))
       end
     end
 
@@ -20,7 +20,7 @@ module TargetBranchRules
     end
 
     def error_no_permissions
-      error(_('You have insufficient permissions to delete a target branch rule'))
+      error(_('You have insufficient permissions to delete a branch target'))
     end
 
     def target_branch_rule

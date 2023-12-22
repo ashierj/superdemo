@@ -84,7 +84,7 @@ RSpec.describe Projects::TargetBranchRulesController, feature_category: :code_re
         post project_target_branch_rules_path(project), params: { projects_target_branch_rule: params }
 
         expect(response).to redirect_to(project_settings_merge_requests_path(project, anchor: 'target-branch-rules'))
-        expect(flash[:notice]).to eq("Target branch rule created.")
+        expect(flash[:notice]).to eq("Branch target created.")
       end
     end
   end
@@ -115,7 +115,7 @@ RSpec.describe Projects::TargetBranchRulesController, feature_category: :code_re
         delete project_target_branch_rule_path(project, non_existing_record_id)
 
         expect(response).to redirect_to(project_settings_merge_requests_path(project, anchor: 'target-branch-rules'))
-        expect(flash[:alert]).to eq("Target branch rule does not exist")
+        expect(flash[:alert]).to eq("Branch target does not exist")
       end
     end
 
@@ -130,7 +130,7 @@ RSpec.describe Projects::TargetBranchRulesController, feature_category: :code_re
         delete project_target_branch_rule_path(project, rule)
 
         expect(response).to redirect_to(project_settings_merge_requests_path(project, anchor: 'target-branch-rules'))
-        expect(flash[:notice]).to eq("Target branch rule deleted.")
+        expect(flash[:notice]).to eq("Branch target deleted.")
       end
     end
   end
