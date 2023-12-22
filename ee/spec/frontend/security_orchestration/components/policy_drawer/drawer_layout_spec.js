@@ -10,6 +10,7 @@ import {
   NOT_ENABLED_LABEL,
   PROJECT_TYPE_LABEL,
 } from 'ee/security_orchestration/components/policy_drawer/constants';
+import ScopeInfoRow from 'ee/security_orchestration/components/policy_drawer/scope_info_row.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   mockGroupScanExecutionPolicy,
@@ -27,14 +28,17 @@ describe('DrawerLayout component', () => {
   const findEnabledText = () => wrapper.findByTestId('enabled-status-text');
   const findNotEnabledText = () => wrapper.findByTestId('not-enabled-status-text');
   const findSourceSection = () => wrapper.findByTestId('policy-source');
+  const findScopeInfoRow = () => wrapper.findComponent(ScopeInfoRow);
   const findSprintf = () => wrapper.findComponent(GlSprintf);
   const findLink = () => wrapper.findComponent(GlLink);
-
   const componentStatusText = (status) => (status ? 'does' : 'does not');
 
-  const factory = ({ propsData = {}, provide = { namespaceType: NAMESPACE_TYPES.PROJECT } }) => {
+  const factory = ({ propsData = {}, provide = {} }) => {
     wrapper = shallowMountExtended(DrawerLayout, {
-      provide,
+      provide: {
+        namespaceType: NAMESPACE_TYPES.PROJECT,
+        ...provide,
+      },
       propsData: {
         type: TYPE,
         ...propsData,
@@ -127,6 +131,31 @@ describe('DrawerLayout component', () => {
 
         expect(findLink().exists()).toBe(false);
         expect(findSourceSection().text()).toBe(expectedResult);
+      },
+    );
+  });
+
+  describe('policy scope', () => {
+    it.each`
+      namespaceType              | securityPoliciesPolicyScope | expectedResult
+      ${NAMESPACE_TYPES.PROJECT} | ${true}                     | ${false}
+      ${NAMESPACE_TYPES.GROUP}   | ${true}                     | ${true}
+      ${NAMESPACE_TYPES.PROJECT} | ${false}                    | ${false}
+      ${NAMESPACE_TYPES.GROUP}   | ${false}                    | ${false}
+    `(
+      `renders policy scope for $namespaceType $expectedResult`,
+      ({ namespaceType, securityPoliciesPolicyScope, expectedResult }) => {
+        factory({
+          propsData: {
+            policy: mockProjectScanExecutionPolicy,
+          },
+          provide: {
+            glFeatures: { securityPoliciesPolicyScope },
+            namespaceType,
+          },
+        });
+
+        expect(findScopeInfoRow().exists()).toBe(expectedResult);
       },
     );
   });

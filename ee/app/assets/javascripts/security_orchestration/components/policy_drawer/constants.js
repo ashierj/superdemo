@@ -11,6 +11,15 @@ export const NOT_ENABLED_LABEL = s__('SecurityOrchestration|Not enabled');
 export const TYPE_TITLE = s__('SecurityOrchestration|Policy Type');
 
 export const SOURCE_TITLE = s__('SecurityOrchestration|Source');
+export const SCOPE_TITLE = s__('SecurityOrchestration|Scope');
+export const DEFAULT_SCOPE_LABEL = s__('SecurityOrchestration|No scope');
+export const COMPLIANCE_FRAMEWORKS_DESCRIPTION = s__(
+  'SecurityOrchestration|This applies to %{projects} associated with following compliance frameworks:',
+);
+
+export const COMPLIANCE_FRAMEWORKS_DESCRIPTION_NO_PROJECTS = s__(
+  'SecurityOrchestration|This applies to following compliance frameworks:',
+);
 
 export const STATUS_TITLE = s__('SecurityOrchestration|Status');
 

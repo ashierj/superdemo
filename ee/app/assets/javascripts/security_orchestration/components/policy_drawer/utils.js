@@ -1,4 +1,6 @@
 import { sprintf, s__, n__ } from '~/locale';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 
 /**
  * Convert branch exceptions to readable string
@@ -47,3 +49,21 @@ export const buildBranchExceptionsString = (exceptions) => {
 
   return n__(' except branch:', ' except branches:', exceptions.length);
 };
+
+/**
+ * Convert single short id format to full GraphqlQl id
+ * @param type GraphQl type name
+ * @param id Short Number or String id
+ * @returns {*}
+ */
+export const mapShortIdToFullGraphQlFormat = (type = TYPENAME_PROJECT, id = '') =>
+  convertToGraphQLId(type, id);
+
+/**
+ * Convert array of short id format to full GraphqlQl id
+ * @param type GraphQl type name
+ * @param ids Short Number or String ids
+ * @returns {*[]}
+ */
+export const mapShortIdsToFullGraphQlFormat = (type, ids = []) =>
+  ids?.map((id) => mapShortIdToFullGraphQlFormat(type, id)) || [];

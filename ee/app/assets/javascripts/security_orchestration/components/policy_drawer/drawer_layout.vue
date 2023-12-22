@@ -1,6 +1,7 @@
 <script>
 import { GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
 import { getSecurityPolicyListUrl } from '~/editor/extensions/source_editor_security_policy_schema_ext';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { isPolicyInherited, policyHasNamespace } from '../utils';
 import {
@@ -16,6 +17,7 @@ import {
   STATUS_TITLE,
   TYPE_TITLE,
 } from './constants';
+import ScopeInfoRow from './scope_info_row.vue';
 import InfoRow from './info_row.vue';
 
 export default {
@@ -24,6 +26,7 @@ export default {
     GlLink,
     GlSprintf,
     InfoRow,
+    ScopeInfoRow,
   },
   i18n: {
     policyTypeTitle: TYPE_TITLE,
@@ -36,12 +39,18 @@ export default {
     groupTypeLabel: GROUP_TYPE_LABEL,
     projectTypeLabel: PROJECT_TYPE_LABEL,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType'],
   props: {
     description: {
       type: String,
       required: false,
       default: '',
+    },
+    policyScope: {
+      type: Object,
+      required: false,
+      default: () => ({}),
     },
     policy: {
       type: Object,
@@ -54,6 +63,12 @@ export default {
     },
   },
   computed: {
+    isGroup() {
+      return this.namespaceType === NAMESPACE_TYPES.GROUP;
+    },
+    showScopeInfoBox() {
+      return this.glFeatures.securityPoliciesPolicyScope && this.isGroup;
+    },
     isInherited() {
       return isPolicyInherited(this.policy.source);
     },
@@ -67,7 +82,7 @@ export default {
       return this.policy?.enabled ? ENABLED_LABEL : NOT_ENABLED_LABEL;
     },
     typeLabel() {
-      if (this.namespaceType === NAMESPACE_TYPES.GROUP) {
+      if (this.isGroup) {
         return this.$options.i18n.groupTypeLabel;
       }
       return this.$options.i18n.projectTypeLabel;
@@ -94,6 +109,8 @@ export default {
         {{ $options.i18n.defaultDescription }}
       </div>
     </info-row>
+
+    <scope-info-row v-if="showScopeInfoBox" :policy-scope="policyScope" />
 
     <info-row :label="$options.i18n.sourceTitle">
       <div data-testid="policy-source">

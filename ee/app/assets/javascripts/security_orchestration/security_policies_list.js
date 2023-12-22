@@ -22,6 +22,7 @@ export default (el, namespaceType) => {
     documentationPath,
     newPolicyPath,
     namespacePath,
+    rootNamespacePath,
   } = el.dataset;
 
   return new Vue({
@@ -38,6 +39,7 @@ export default (el, namespaceType) => {
       emptyListSvgPath,
       namespacePath,
       namespaceType,
+      rootNamespacePath,
     },
     render(createElement) {
       return createElement(SecurityPoliciesListApp);
