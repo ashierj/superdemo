@@ -239,7 +239,12 @@ module EE
             revisions.each do |revision|
               # We could try to handle pagination, but it is likely to timeout way earlier given the
               # huge default limit (100000) of entries, so we log an error if we get too many results.
-              entries, cursor = ::Gitlab::Git::Tree.tree_entries(project.repository, revision, nil, true, true, nil)
+              entries, cursor = ::Gitlab::Git::Tree.tree_entries(
+                repository: project.repository,
+                sha: revision,
+                recursive: true,
+                rescue_not_found: false
+              )
 
               # TODO: Handle pagination in the upcoming iterations
               # We don't raise because we could still provide a hint to the user
