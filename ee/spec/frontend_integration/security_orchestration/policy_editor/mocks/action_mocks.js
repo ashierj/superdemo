@@ -55,3 +55,46 @@ actions:
     group_approvers_ids:
       - ${GROUP.id}
 `;
+
+const mockScanExecutionManifest = `type: scan_execution_policy
+name: ''
+description: ''
+enabled: true
+rules:
+  - type: pipeline
+    branches:
+      - '*'
+actions:
+  - scan: secret_detection
+`;
+
+export const mockActionsVariablesScanExecutionManifest = `type: scan_execution_policy
+name: ''
+description: ''
+enabled: true
+rules:
+  - type: pipeline
+    branches:
+      - '*'
+actions:
+  - scan: secret_detection
+    variables:
+      '': ''
+`;
+
+export const mockDastActionScanExecutionManifest = `type: scan_execution_policy
+name: ''
+description: ''
+enabled: true
+rules:
+  - type: pipeline
+    branches:
+      - '*'
+actions:
+  - scan: dast
+    site_profile: ''
+    scanner_profile: ''
+`;
+
+export const createScanActionScanExecutionManifest = (scanType) =>
+  mockScanExecutionManifest.replace('scan: secret_detection', `scan: ${scanType}`);
