@@ -108,8 +108,13 @@ export default {
           this.environment = '';
         })
         .catch((error) => {
+          this.errorMessage = s__('ProtectedEnvironment|Failed to protect the environment.');
+
+          if (error.response.data?.message) {
+            this.errorMessage = `${this.errorMessage} ${error.response.data.message}`;
+          }
+
           Sentry.captureException(error);
-          this.errorMessage = __('Failed to protect the environment');
         })
         .finally(() => {
           this.loading = false;

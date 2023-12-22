@@ -146,13 +146,26 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
   });
 
   describe('on failed protected environment', () => {
-    it('should show an error message', async () => {
-      mockAxios.onPost().replyOnce(HTTP_STATUS_BAD_REQUEST, {});
-      createComponent();
-      await submitForm();
-      await waitForPromises();
+    it.each([
+      {
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        expectedMessage: 'Failed to protect the environment.',
+      },
+      {
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        responseData: { message: 'Serverside message' },
+        expectedMessage: 'Failed to protect the environment. Serverside message',
+      },
+    ])(
+      'should show a correct error message',
+      async ({ statusCode, expectedMessage, responseData }) => {
+        mockAxios.onPost().replyOnce(statusCode, responseData);
+        createComponent();
+        await submitForm();
+        await waitForPromises();
 
-      expect(findAlert().text()).toBe(__('Failed to protect the environment'));
-    });
+        expect(findAlert().text()).toBe(expectedMessage);
+      },
+    );
   });
 });

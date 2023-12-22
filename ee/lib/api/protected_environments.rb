@@ -149,7 +149,7 @@ module API
         protected_environment = user_project.protected_environments.find_by_name(params[:name])
 
         if protected_environment
-          conflict!("Protected environment '#{params[:name]}' already exists")
+          conflict!(format(s_("ProtectedEnvironment|Environment '%{environment_name}' is already protected"), environment_name: params[:name]))
         end
 
         declared_params = declared_params(include_missing: false)
