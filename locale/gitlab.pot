@@ -39372,10 +39372,16 @@ msgstr ""
 msgid "ProtectedEnvironment|Environment"
 msgstr ""
 
+msgid "ProtectedEnvironment|Environment '%{environment_name}' is already protected"
+msgstr ""
+
 msgid "ProtectedEnvironment|Environments protected upstream"
 msgstr ""
 
 msgid "ProtectedEnvironment|Failed to load details for this group."
+msgstr ""
+
+msgid "ProtectedEnvironment|Failed to protect the environment."
 msgstr ""
 
 msgid "ProtectedEnvironment|No environments in this project are protected."
