@@ -42,7 +42,9 @@ RSpec.describe 'Activate a subscription', feature_category: :purchase do
         variables: {
           activationCode: activation_code,
           automated: false,
-          instanceIdentifier: application_setting.uuid
+          instanceIdentifier: application_setting.uuid,
+          gitlabVersion: Gitlab::VERSION,
+          hostname: Gitlab.config.gitlab.host
         }
       })
       .and_return(remote_response)
@@ -86,7 +88,9 @@ RSpec.describe 'Activate a subscription', feature_category: :purchase do
           variables: {
             activationCode: activation_code,
             automated: false,
-            instanceIdentifier: application_setting.uuid
+            instanceIdentifier: application_setting.uuid,
+            gitlabVersion: Gitlab::VERSION,
+            hostname: Gitlab.config.gitlab.host
           }
         })
         .and_return(remote_response)
