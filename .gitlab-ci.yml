@@ -27,11 +27,20 @@ default:
   # Default job timeout doesn't work: https://gitlab.com/gitlab-org/gitlab/-/issues/387528
   timeout: 90m
 
+.old-ruby-variables: &old-ruby-variables
+  RUBY_VERSION: "3.0"
+  CACHE_EDITION: "GITLAB_RUBY3_0"
+  USE_OLD_RUBY_VERSION: "true"
+
 .default-ruby-variables: &default-ruby-variables
   RUBY_VERSION: "3.1"
+  CACHE_EDITION: "GITLAB_RUBY3_1"
+  USE_OLD_RUBY_VERSION: "true"
 
 .next-ruby-variables: &next-ruby-variables
   RUBY_VERSION: "3.2"
+  CACHE_EDITION: "GITLAB_RUBY3_2"
+  USE_OLD_RUBY_VERSION: "false"
 
 .default-branch-pipeline-failure-variables: &default-branch-pipeline-failure-variables
   CREATE_RAILS_TEST_FAILURE_ISSUES: "true"
@@ -51,6 +60,7 @@ workflow:
   rules:
     - if: '$CI_PROJECT_PATH == "gitlab-org/gitaly" && $CI_PIPELINE_SOURCE == "parent_pipeline" && $GITALY_TEST'
       variables:
+        <<: *default-ruby-variables
         PIPELINE_NAME: 'Gitaly Rails Test Pipeline'
     # If `$FORCE_GITLAB_CI` is set, create a pipeline.
     - if: '$FORCE_GITLAB_CI'
@@ -64,26 +74,36 @@ workflow:
     # they serve no purpose and will run anyway when the changes are merged.
     - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^release-tools\/\d+\.\d+\.\d+-rc\d+$/ && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^[\d-]+-stable(-ee)?$/ && $CI_PROJECT_PATH == "gitlab-org/gitlab"'
       when: never
-    # For merge requests running exclusively in Ruby 3.1
+    - if: '$CI_MERGE_REQUEST_LABELS =~ /pipeline:run-in-ruby3_0/'
+      variables:
+        <<: *old-ruby-variables
+        PIPELINE_NAME: 'Ruby $RUBY_VERSION $CI_MERGE_REQUEST_EVENT_TYPE MR pipeline'
+        NO_SOURCEMAPS: 'true'
     - if: '$CI_MERGE_REQUEST_LABELS =~ /pipeline:run-in-ruby3_1/'
       variables:
         <<: *default-ruby-variables
         PIPELINE_NAME: 'Ruby $RUBY_VERSION $CI_MERGE_REQUEST_EVENT_TYPE MR pipeline'
         NO_SOURCEMAPS: 'true'
-    - if: '$CI_MERGE_REQUEST_LABELS =~ /Community contribution/'
+    - if: '$CI_MERGE_REQUEST_LABELS =~ /pipeline:run-in-ruby3_2/'
       variables:
         <<: *next-ruby-variables
+        PIPELINE_NAME: 'Ruby $RUBY_VERSION $CI_MERGE_REQUEST_EVENT_TYPE MR pipeline'
+        NO_SOURCEMAPS: 'true'
+    - if: '$CI_MERGE_REQUEST_LABELS =~ /Community contribution/'
+      variables:
+        <<: *default-ruby-variables
         GITLAB_DEPENDENCY_PROXY_ADDRESS: ""
         PIPELINE_NAME: 'Ruby $RUBY_VERSION $CI_MERGE_REQUEST_EVENT_TYPE MR pipeline (community contribution)'
         NO_SOURCEMAPS: 'true'
     - <<: *if-merge-request-security-canonical-sync
       variables:
+        <<: *default-ruby-variables
         PIPELINE_NAME: '$CI_DEFAULT_BRANCH security->canonical sync'
         SKIP_MESSAGE: 'MR only contains changes from the security mirror, which have already been reviewed, tested and deployed.'
     # For (detached) merge request pipelines.
     - if: '$CI_MERGE_REQUEST_IID'
       variables:
-        <<: *next-ruby-variables
+        <<: *default-ruby-variables
         <<: *default-merge-request-slow-tests-variables
         PIPELINE_NAME: 'Ruby $RUBY_VERSION $CI_MERGE_REQUEST_EVENT_TYPE MR pipeline'
         NO_SOURCEMAPS: 'true'
@@ -93,7 +113,10 @@ workflow:
         <<: [*default-ruby-variables, *default-branch-pipeline-failure-variables]
         CRYSTALBALL: "true"
         PIPELINE_NAME: 'Scheduled Ruby $RUBY_VERSION $CI_COMMIT_BRANCH branch pipeline'
-    # Run pipelines for ruby3_2 branch
+    - if: '$CI_COMMIT_BRANCH == "ruby3_0" && $CI_PIPELINE_SOURCE == "schedule"'
+      variables:
+        <<: *old-ruby-variables
+        PIPELINE_NAME: 'Scheduled Ruby $RUBY_VERSION $CI_COMMIT_BRANCH branch pipeline'
     - if: '$CI_COMMIT_BRANCH == "ruby3_2" && $CI_PIPELINE_SOURCE == "schedule"'
       variables:
         <<: *next-ruby-variables

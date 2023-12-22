@@ -1543,10 +1543,6 @@
     - !reference [".qa:rules:package-and-test-never-run", rules]
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
-    - <<: *if-ruby3_2-branch
-      variables:
-        USE_OLD_RUBY_VERSION: 'false'
-        CACHE_EDITION: 'GITLAB_RUBY3_2'
     - <<: *if-merge-request
       changes: *dependency-patterns
       variables:
@@ -1589,9 +1585,6 @@
       changes: *setup-test-env-patterns
       allow_failure: true
     - <<: *if-ruby3_2-branch
-      variables:
-        USE_OLD_RUBY_VERSION: 'false'
-        CACHE_EDITION: 'GITLAB_RUBY3_2'
       allow_failure: true
     - <<: *if-merge-request
       changes: *dependency-patterns
@@ -1640,9 +1633,6 @@
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
     - <<: *if-ruby3_2-branch
-      variables:
-        USE_OLD_RUBY_VERSION: 'false'
-        CACHE_EDITION: 'GITLAB_RUBY3_2'
     - <<: *if-merge-request
       # Certain components trigger a rebuild of the e2e GDK image so we want to test it too
       changes: *gdk-component-patterns
@@ -2797,6 +2787,7 @@
 
 .setup:rules:verify-default-ruby:
   rules:
+    - <<: *if-merge-request-labels-run-in-ruby3_0
     - <<: *if-merge-request-labels-run-in-ruby3_2
 
 .setup:rules:verify-tests-yml:
