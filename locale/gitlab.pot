@@ -16976,9 +16976,6 @@ msgstr ""
 msgid "DeployTokens|Username (optional)"
 msgstr ""
 
-msgid "DeployTokens|Your new Deploy Token username"
-msgstr ""
-
 msgid "DeployTokens|Your new deploy token"
 msgstr ""
 
