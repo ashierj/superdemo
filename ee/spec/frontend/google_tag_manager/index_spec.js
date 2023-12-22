@@ -110,7 +110,7 @@ describe('ee/google_tag_manager/index', () => {
         {
           // id is needed so that the test selects the right element to trigger
           id: 'test-0',
-          cls: 'js-oauth-login',
+          cls: 'js-track-omni-auth',
           attributes: {
             'data-provider': 'myspace',
           },
@@ -122,7 +122,7 @@ describe('ee/google_tag_manager/index', () => {
         },
         {
           id: 'test-1',
-          cls: 'js-oauth-login',
+          cls: 'js-track-omni-auth',
           attributes: {
             'data-provider': 'gitlab',
           },

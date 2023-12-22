@@ -85,7 +85,7 @@ const trackFormSubmission = (accountType) => {
 };
 
 const trackOmniAuthSubmission = (accountType) => {
-  const links = document.querySelectorAll('.js-oauth-login');
+  const links = document.querySelectorAll('.js-track-omni-auth');
   links.forEach((link) => {
     const { provider } = link.dataset;
     link.addEventListener('click', () => {
