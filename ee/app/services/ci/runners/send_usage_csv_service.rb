@@ -21,23 +21,49 @@ module Ci
       end
 
       def execute
-        generate_csv_service = GenerateUsageCsvService.new(
+        result = process_csv
+        return result if result.error?
+
+        send_email(result)
+        log_audit_event(message: 'Sent email with runner usage CSV')
+
+        ServiceResponse.success(payload: result.payload.slice(:status))
+      end
+
+      private
+
+      def process_csv
+        GenerateUsageCsvService.new(
           current_user: @current_user,
           runner_type: @runner_type,
           from_date: @from_date,
           to_date: @to_date,
           max_project_count: @max_project_count
-        )
-        result = generate_csv_service.execute
+        ).execute
+      end
 
-        return result if result.error?
-
+      def send_email(result)
         Notify.runner_usage_by_project_csv_email(
           user: @current_user, from_date: @from_date, to_date: @to_date,
           csv_data: result.payload[:csv_data], export_status: result.payload[:status]
         ).deliver_now
+      end
 
-        ServiceResponse.success(payload: result.payload.slice(:status))
+      def log_audit_event(message:)
+        audit_context = {
+          name: 'ci_runner_usage_export',
+          author: @current_user,
+          target: ::Gitlab::Audit::NullTarget.new,
+          scope: Gitlab::Audit::InstanceScope.new,
+          message: message,
+          additional_details: {
+            runner_type: @runner_type,
+            from_date: @from_date.iso8601,
+            to_date: @to_date.iso8601
+          }
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
     end
   end

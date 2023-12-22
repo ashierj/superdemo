@@ -47,18 +47,41 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
     expect(response.payload).to eq({ status: expected_status })
   end
 
+  it 'creates audit event' do
+    expect(Gitlab::Audit::Auditor).to receive(:audit).with(
+      a_hash_including(
+        name: 'ci_runner_usage_export',
+        author: current_user,
+        target: an_instance_of(Gitlab::Audit::NullTarget),
+        scope: an_instance_of(Gitlab::Audit::InstanceScope),
+        message: 'Sent email with runner usage CSV',
+        additional_details: {
+          runner_type: :instance_type,
+          from_date: from_date.iso8601,
+          to_date: to_date.iso8601
+        }
+      )
+    )
+
+    response
+  end
+
   context 'when report fails to be generated' do
     before do
-      allow_next_instance_of(Ci::Runners::GenerateUsageCsvService) do |service|
-        allow(service).to receive(:execute).and_return(ServiceResponse.error(message: 'Generation failed'))
-      end
+      allow(ClickHouse::Client).to receive(:database_configured?).and_return(false)
     end
 
     it 'returns error from GenerateUsageCsvService' do
       expect(Notify).not_to receive(:runner_usage_by_project_csv_email)
 
       expect(response).to be_error
-      expect(response.message).to eq('Generation failed')
+      expect(response.message).to eq('ClickHouse database is not configured')
+    end
+
+    it 'does not create audit event' do
+      expect(Gitlab::Audit::Auditor).not_to receive(:audit)
+
+      response
     end
   end
 end
