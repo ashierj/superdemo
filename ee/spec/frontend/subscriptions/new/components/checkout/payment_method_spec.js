@@ -16,7 +16,6 @@ import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { stubComponent } from 'helpers/stub_component';
-import furthestAccessedStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/furthest_accessed_step.query.graphql';
 
 describe('Payment Method', () => {
   Vue.use(Vuex);
@@ -40,14 +39,8 @@ describe('Payment Method', () => {
       credit_card_expiration_year: 2009,
     });
 
-    const apolloProvider = createMockApolloProvider(STEPS);
-    apolloProvider.clients.defaultClient.cache.writeQuery({
-      query: furthestAccessedStepQuery,
-      data: { furthestAccessedStep: STEPS[2] },
-    });
-
     wrapper = mount(PaymentMethod, {
-      apolloProvider,
+      apolloProvider: createMockApolloProvider(STEPS),
       store,
       stubs: {
         Zuora: stubComponent(Zuora),

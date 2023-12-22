@@ -17,7 +17,6 @@ import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constant
 import { createMockClient } from 'helpers/mock_apollo_helper';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { logError } from '~/lib/logger';
-import furthestAccessedStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/furthest_accessed_step.query.graphql';
 
 Vue.use(VueApollo);
 jest.mock('~/lib/logger');
@@ -56,10 +55,6 @@ describe('Billing Address', () => {
     apolloProvider.clients.defaultClient.cache.writeQuery({
       query: stateQuery,
       data: merge({}, initialStateData, apolloLocalStateData),
-    });
-    apolloProvider.clients.defaultClient.cache.writeQuery({
-      query: furthestAccessedStepQuery,
-      data: { furthestAccessedStep: STEPS[1] },
     });
     apolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
       [getBillingAccountQuery, billingAccountFn],

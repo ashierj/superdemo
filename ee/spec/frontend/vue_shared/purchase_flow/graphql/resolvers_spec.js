@@ -1,7 +1,6 @@
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
 import updateStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/update_active_step.mutation.graphql';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
-import furthestAccessedStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/furthest_accessed_step.query.graphql';
 import stepListQuery from 'ee/vue_shared/purchase_flow/graphql/queries/step_list.query.graphql';
 import { STEPS } from '../mock_data';
 import { createMockApolloProvider } from '../spec_helper';
@@ -30,13 +29,6 @@ describe('ee/vue_shared/purchase_flow/graphql/resolvers', () => {
       it('stores the activeStep', async () => {
         const queryResult = await mockApolloClient.query({ query: activeStepQuery });
         expect(queryResult.data.activeStep).toMatchObject({ id: STEPS[0].id });
-      });
-    });
-
-    describe('furthestAccessedStepQuery', () => {
-      it('stores the furthestAccessedStep', async () => {
-        const queryResult = await mockApolloClient.query({ query: furthestAccessedStepQuery });
-        expect(queryResult.data.furthestAccessedStep).toMatchObject({ id: STEPS[0].id });
       });
     });
   });
@@ -91,32 +83,6 @@ describe('ee/vue_shared/purchase_flow/graphql/resolvers', () => {
         });
         const queryResult = await mockApolloClient.query({ query: activeStepQuery });
         expect(queryResult.data.activeStep).toMatchObject({ id: STEPS[1].id });
-      });
-
-      it('updates the furthest accessed step to the next', async () => {
-        const mockApollo = createMockApolloProvider(STEPS, 0);
-        mockApolloClient = mockApollo.clients.defaultClient;
-        await mockApolloClient.mutate({
-          mutation: activateNextStepMutation,
-        });
-        const queryResult = await mockApolloClient.query({ query: furthestAccessedStepQuery });
-        expect(queryResult.data.furthestAccessedStep).toMatchObject({ id: STEPS[1].id });
-      });
-
-      it('does not update the furthest accessed step when next is an earlier step', async () => {
-        const mockApollo = createMockApolloProvider(STEPS, 2);
-        mockApolloClient = mockApollo.clients.defaultClient;
-
-        await mockApolloClient.mutate({
-          mutation: updateStepMutation,
-          variables: { id: STEPS[0].id },
-        });
-        await mockApolloClient.mutate({
-          mutation: activateNextStepMutation,
-        });
-
-        const queryResult = await mockApolloClient.query({ query: furthestAccessedStepQuery });
-        expect(queryResult.data.furthestAccessedStep).toMatchObject({ id: STEPS[2].id });
       });
 
       it('throws an error when out of bounds', async () => {
