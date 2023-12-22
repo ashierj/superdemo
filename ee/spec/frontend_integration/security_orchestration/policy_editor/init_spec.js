@@ -2,7 +2,7 @@ import initPolicyEditorApp from 'ee/security_orchestration/policy_editor';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { DEFAULT_PROVIDE } from './mocks';
+import { DEFAULT_PROVIDE } from './mocks/mocks';
 
 const EMPTY_DIV = document.createElement('div');
 

@@ -10,12 +10,12 @@ import {
   actionHasType,
 } from '../lib/actions';
 import SectionLayout from '../../section_layout.vue';
-import PolicyActionApprovers from './action_approvers.vue';
+import ActionApprovers from './action_approvers.vue';
 
 export default {
   components: {
     GlAlert,
-    PolicyActionApprovers,
+    ActionApprovers,
     SectionLayout,
   },
   inject: ['namespaceId'],
@@ -137,7 +137,7 @@ export default {
     </gl-alert>
     <section-layout content-classes="gl-py-5 gl-pr-5 gl-bg-white" @remove="$emit('remove')">
       <template #content>
-        <policy-action-approvers
+        <action-approvers
           v-for="({ id, type }, i) in approverTypeTracker"
           :key="id"
           :approver-index="i"
