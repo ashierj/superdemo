@@ -256,22 +256,4 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
       it { is_expected.to eq(text) }
     end
   end
-
-  describe '#show_trial_namespace_select?' do
-    let_it_be(:have_group_namespace) { false }
-
-    before do
-      allow(helper).to receive(:any_trial_eligible_namespaces?).and_return(have_group_namespace)
-    end
-
-    subject { helper.show_trial_namespace_select? }
-
-    it { is_expected.to eq(false) }
-
-    context 'with some trial group namespaces' do
-      let_it_be(:have_group_namespace) { true }
-
-      it { is_expected.to eq(true) }
-    end
-  end
 end

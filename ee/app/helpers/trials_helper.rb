@@ -59,10 +59,6 @@ module TrialsHelper
     end
   end
 
-  def show_trial_namespace_select?
-    any_trial_eligible_namespaces?
-  end
-
   def show_tier_badge_for_new_trial?(namespace, user)
     !namespace.paid? && can?(user, :read_billing, namespace)
   end
