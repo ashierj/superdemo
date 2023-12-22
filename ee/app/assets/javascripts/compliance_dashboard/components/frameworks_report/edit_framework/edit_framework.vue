@@ -32,11 +32,17 @@ import {
 
 import createComplianceFrameworkMutation from '../../../graphql/mutations/create_compliance_framework.mutation.graphql';
 import updateComplianceFrameworkMutation from '../../../graphql/mutations/update_compliance_framework.mutation.graphql';
+import deleteComplianceFrameworkMutation from '../../../graphql/mutations/delete_compliance_framework.mutation.graphql';
+
+import DeleteModal from './components/delete_modal.vue';
+
 import { i18n } from './constants';
 
 export default {
   components: {
     ColorPicker,
+    DeleteModal,
+
     GlAlert,
     GlButton,
     GlCollapse,
@@ -55,6 +61,7 @@ export default {
       errorMessage: '',
       formData: initialiseFormData(),
       isSaving: false,
+      isDeleting: false,
     };
   },
   apollo: {
@@ -86,6 +93,20 @@ export default {
   computed: {
     isNewFramework() {
       return !this.$route.params.id;
+    },
+
+    refetchConfig() {
+      return {
+        awaitRefetchQueries: true,
+        refetchQueries: [
+          {
+            query: getComplianceFrameworkQuery,
+            variables: {
+              fullPath: this.groupPath,
+            },
+          },
+        ],
+      };
     },
 
     title() {
@@ -181,6 +202,7 @@ export default {
       this.errorMessage = userFriendlyText;
       Sentry.captureException(error);
     },
+
     onCancel() {
       this.$router.back();
     },
@@ -208,15 +230,7 @@ export default {
               params,
             },
           },
-          awaitRefetchQueries: true,
-          refetchQueries: [
-            {
-              query: getComplianceFrameworkQuery,
-              variables: {
-                fullPath: this.groupPath,
-              },
-            },
-          ],
+          ...this.refetchConfig,
         });
 
         const [error] = data?.createComplianceFramework?.errors || [];
@@ -229,6 +243,38 @@ export default {
       } catch (e) {
         this.setError(e, SAVE_ERROR);
       }
+    },
+
+    async deleteFramework() {
+      this.isDeleting = true;
+
+      try {
+        const {
+          data: { destroyComplianceFramework },
+        } = await this.$apollo.mutate({
+          mutation: deleteComplianceFrameworkMutation,
+          variables: {
+            input: {
+              id: this.graphqlId,
+            },
+          },
+          ...this.refetchConfig,
+        });
+
+        const [error] = destroyComplianceFramework.errors;
+
+        if (error) {
+          throw error;
+        }
+        this.$router.back();
+      } catch (error) {
+        this.fetchError = error;
+        Sentry.captureException(error);
+      }
+    },
+
+    onDelete() {
+      this.$refs.deleteModal.show();
     },
 
     async validatePipelineConfigurationPath(path) {
@@ -392,8 +438,25 @@ export default {
             {{ saveButtonText }}
           </gl-button>
           <gl-button data-testid="cancel-btn" @click="onCancel">{{ __('Cancel') }}</gl-button>
+          <gl-button
+            v-if="graphqlId"
+            variant="danger"
+            class="gl-ml-auto"
+            data-testid="delete-btn"
+            :loading="isDeleting"
+            @click="onDelete"
+          >
+            {{ $options.i18n.deleteButtonText }}
+          </gl-button>
         </div>
       </gl-form>
     </template>
+
+    <delete-modal
+      v-if="graphqlId"
+      ref="deleteModal"
+      :name="formData.name"
+      @delete="deleteFramework"
+    />
   </div>
 </template>
