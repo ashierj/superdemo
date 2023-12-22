@@ -71,7 +71,6 @@ export function writeInitialDataToApolloCache(apolloProvider, dataset) {
       },
       activeStep: STEPS[0],
       stepList: STEPS,
-      furthestAccessedStep: STEPS[0],
     },
   });
 }
