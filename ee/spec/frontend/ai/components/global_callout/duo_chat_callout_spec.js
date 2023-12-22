@@ -146,5 +146,10 @@ describe('DuoChatCallout', () => {
       findFirstTargetElement().click();
       expect(userCalloutDismissSpy).toHaveBeenCalledTimes(1);
     });
+
+    it('does not fail if the chat button is clicked after callout was dismissed', () => {
+      createComponent({ shouldShowCallout: false });
+      expect(() => findFirstTargetElement().click()).not.toThrow();
+    });
   });
 });
