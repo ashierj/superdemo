@@ -11,6 +11,8 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { I18N_DETAILS_INVALID_QUANTITY_MESSAGE } from 'ee/subscriptions/buy_addons_shared/constants';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
+import furthestAccessedStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/furthest_accessed_step.query.graphql';
+import { STEPS } from 'ee/subscriptions/constants';
 
 Vue.use(VueApollo);
 
@@ -25,6 +27,10 @@ describe('AddonPurchaseDetails', () => {
     mockApollo.clients.defaultClient.cache.writeQuery({
       query: stateQuery,
       data,
+    });
+    mockApollo.clients.defaultClient.cache.writeQuery({
+      query: furthestAccessedStepQuery,
+      data: { furthestAccessedStep: STEPS[2] },
     });
     return mockApollo;
   };
