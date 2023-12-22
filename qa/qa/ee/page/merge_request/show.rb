@@ -22,13 +22,13 @@ module QA
 
               view 'ee/app/assets/javascripts/vue_merge_request_widget/extensions/security_reports/mr_widget_security_reports.vue' do
                 element 'vulnerability-report-grouped'
-                element :sast_scan_report
-                element :dependency_scan_report
-                element :container_scan_report
-                element :dast_scan_report
-                element :coverage_fuzzing_report
-                element :api_fuzzing_report
-                element :secret_detection_report
+                element 'sast-scan-report'
+                element 'dependency-scan-report'
+                element 'container-scan-report'
+                element 'dast-scan-report'
+                element 'coverage-fuzzing-report'
+                element 'api-fuzzing-report'
+                element 'secret-detection-report'
               end
 
               view 'app/assets/javascripts/vue_merge_request_widget/components/widget/widget.vue' do
@@ -198,23 +198,23 @@ module QA
           end
 
           def has_sast_vulnerability_count_of?(expected)
-            find_element(:sast_scan_report).has_content?(/SAST detected #{expected}( new)?( potential)? vulnerabilit/)
+            find_element('sast-scan-report').has_content?(/SAST detected #{expected}( new)?( potential)? vulnerabilit/)
           end
 
           def has_secret_detection_vulnerability_count_of?(expected)
-            find_element(:secret_detection_report).has_content?(/Secret detection detected #{expected}( new)?( potential)? vulnerabilit/)
+            find_element('secret-detection-report').has_content?(/Secret detection detected #{expected}( new)?( potential)? vulnerabilit/)
           end
 
           def has_dependency_vulnerability_count_of?(expected)
-            find_element(:dependency_scan_report).has_content?(/Dependency scanning detected #{expected}( new)?( potential)? vulnerabilit|Dependency scanning detected .* vulnerabilities out of #{expected}/)
+            find_element('dependency-scan-report').has_content?(/Dependency scanning detected #{expected}( new)?( potential)? vulnerabilit|Dependency scanning detected .* vulnerabilities out of #{expected}/)
           end
 
           def has_container_vulnerability_count_of?(expected)
-            find_element(:container_scan_report).has_content?(/Container scanning detected #{expected}( new)?( potential)? vulnerabilit|Container scanning detected .* vulnerabilities out of #{expected}/)
+            find_element('container-scan-report').has_content?(/Container scanning detected #{expected}( new)?( potential)? vulnerabilit|Container scanning detected .* vulnerabilities out of #{expected}/)
           end
 
           def has_dast_vulnerability_count?
-            find_element(:dast_scan_report).has_content?(/DAST detected \d*( new)?( potential)? vulnerabilit/)
+            find_element('dast-scan-report').has_content?(/DAST detected \d*( new)?( potential)? vulnerabilit/)
           end
 
           def has_security_finding_dismissed_on_mr_widget?(reason)
