@@ -224,6 +224,32 @@ RSpec.describe Vulnerabilities::ManuallyCreateService, feature_category: :vulner
           expect(subject.message).to match(/confirmed_at can only be set/)
         end
       end
+
+      context "when state doesn't have timestamp" do
+        let(:params) do
+          {
+            vulnerability: {
+              name: "Test vulnerability",
+              state: state,
+              severity: "unknown",
+              confidence: "unknown",
+              identifiers: [identifier_attributes],
+              scanner: scanner_attributes
+            }
+          }
+        end
+
+        where(:state) { %w[confirmed resolved dismissed] }
+
+        with_them do
+          it 'sets the current time' do
+            freeze_time do
+              expect(subject).to be_success
+              expect(vulnerability.send("#{state}_at")).to eq(Time.zone.now)
+            end
+          end
+        end
+      end
     end
 
     context 'with invalid parameters' do
