@@ -13,7 +13,7 @@ module MemberRoles
     private
 
     def update_member_role
-      member_role.assign_attributes(params.slice(:name, :description))
+      member_role.assign_attributes(params.slice(:name, :description, *MemberRole.all_customizable_permissions.keys))
 
       if member_role.save
         ::ServiceResponse.success(payload: { member_role: member_role })

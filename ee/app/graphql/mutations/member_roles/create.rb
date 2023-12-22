@@ -38,10 +38,6 @@ module Mutations
         GraphQL::Types::Boolean,
         required: false,
         description: 'Permission to admin project access tokens.'
-      argument :permissions,
-        [Types::MemberRoles::PermissionsEnum],
-        required: false,
-        description: 'List of all customizable permissions.'
       argument :read_code,
         GraphQL::Types::Boolean,
         required: false,

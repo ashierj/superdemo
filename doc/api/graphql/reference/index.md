@@ -5429,6 +5429,7 @@ Input type: `MemberRoleUpdateInput`
 | <a id="mutationmemberroleupdatedescription"></a>`description` | [`String`](#string) | Description of the member role. |
 | <a id="mutationmemberroleupdateid"></a>`id` | [`MemberRoleID!`](#memberroleid) | ID of the member role to mutate. |
 | <a id="mutationmemberroleupdatename"></a>`name` | [`String`](#string) | Name of the member role. |
+| <a id="mutationmemberroleupdatepermissions"></a>`permissions` | [`[MemberRolePermission!]`](#memberrolepermission) | List of all customizable permissions. |
 
 #### Fields
 
