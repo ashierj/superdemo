@@ -67,6 +67,7 @@ export default {
     key="scan_execution_policy"
     :description="parsedYaml.description"
     :policy="policy"
+    :policy-scope="parsedYaml.policy_scope"
     :type="$options.i18n.scanExecution"
   >
     <template v-if="parsedYaml" #summary>

@@ -77,6 +77,7 @@ export default {
     key="scan_result_policy"
     :description="parsedYaml.description"
     :policy="policy"
+    :policy-scope="parsedYaml.policy_scope"
     :type="$options.i18n.scanResult"
   >
     <template v-if="parsedYaml" #summary>
