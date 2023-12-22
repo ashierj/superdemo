@@ -144,6 +144,10 @@ module EE
           null: true,
           description: 'Instance-level Amazon S3 configurations for audit events.',
           resolver: ::Resolvers::AuditEvents::Instance::AmazonS3ConfigurationsResolver
+        field :member_roles, ::Types::MemberRoles::MemberRoleType.connection_type,
+          null: true, description: 'Member roles available for the instance.',
+          resolver: ::Resolvers::MemberRoles::RolesResolver,
+          alpha: { milestone: '16.7' }
       end
 
       def vulnerability(id:)

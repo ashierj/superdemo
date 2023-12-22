@@ -577,6 +577,26 @@ This field returns a [connection](#connections). It accepts the
 four standard [pagination arguments](#connection-pagination-arguments):
 `before: String`, `after: String`, `first: Int`, and `last: Int`.
 
+### `Query.memberRoles`
+
+Member roles available for the instance.
+
+WARNING:
+**Introduced** in 16.7.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Returns [`MemberRoleConnection`](#memberroleconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="querymemberrolesid"></a>`id` | [`MemberRoleID`](#memberroleid) | Global ID of the member role to look up. |
+
 ### `Query.mergeRequest`
 
 Find a merge request.

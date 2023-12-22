@@ -112,6 +112,10 @@ module EE
         enable :manage_subscription
       end
 
+      rule { admin & custom_roles_allowed }.policy do
+        enable :admin_member_role
+      end
+
       rule { admin & pages_size_limit_available }.enable :update_max_pages_size
 
       rule { admin & runner_performance_insights_available }.enable :read_jobs_statistics
