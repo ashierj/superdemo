@@ -68,6 +68,7 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
       allow(group).to receive(:licensed_feature_available?).and_call_original
       allow(group).to receive(:licensed_feature_available?).with(:experimental_features).and_return(true)
       allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
+      allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
     end
 
     context 'as a sub-group' do

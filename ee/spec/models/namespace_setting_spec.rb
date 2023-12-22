@@ -482,13 +482,15 @@ RSpec.describe NamespaceSetting do
   describe '#product_analytics_settings_allowed?', :saas, feature_category: :product_analytics_data_management do
     using RSpec::Parameterized::TableSyntax
 
-    where(:check_namespace_plan, :licensed_feature, :is_root, :product_analytics_beta_optin, :result) do
-      false | false | false | false | false
-      true  | false | false | false | false
-      false | true  | false | false | false
-      false | false | true  | false | false
-      false | false | false | true  | false
-      true  | true  | true  | true  | true
+    where(:instance_enabled, :check_namespace_plan, :licensed_feature, :is_root, :product_analytics_beta_optin, :result) do
+      true  | false | false | false | false | false
+      false | false | false | false | false | false
+      false | true  | false | false | false | false
+      false | false | true  | false | false | false
+      false | false | false | true  | false | false
+      false | false | false | false | true  | false
+      false | true  | true  | true  | true  | false
+      true  | true  | true  | true  | true  | true
     end
 
     with_them do
@@ -496,6 +498,7 @@ RSpec.describe NamespaceSetting do
       subject { group.namespace_settings.product_analytics_settings_allowed? }
 
       before do
+        allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(instance_enabled)
         allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_namespace_plan)
         allow(group).to receive(:licensed_feature_available?).with(:experimental_features).and_return(licensed_feature)
         allow(group).to receive(:root?).and_return(is_root)

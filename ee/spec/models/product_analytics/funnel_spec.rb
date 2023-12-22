@@ -7,6 +7,7 @@ RSpec.describe ProductAnalytics::Funnel, feature_category: :product_analytics_da
   let_it_be(:project) { create(:project, :with_product_analytics_funnel, group: group) }
 
   before do
+    allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
     allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
     project.group.root_ancestor.namespace_settings.update!(
       experiment_features_enabled: true,

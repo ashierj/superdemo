@@ -16,6 +16,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
   let(:num_builtin_visualizations) { 15 }
 
   before do
+    allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
     allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
     project.group.root_ancestor.namespace_settings.update!(
       experiment_features_enabled: true,

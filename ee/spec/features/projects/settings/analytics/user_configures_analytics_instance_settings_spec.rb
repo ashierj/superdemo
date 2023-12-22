@@ -74,8 +74,27 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
     end
   end
 
+  context 'when product analytics is disabled on an instance' do
+    before do
+      allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(false)
+      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+      project.group.root_ancestor.namespace_settings.update!(
+        experiment_features_enabled: true,
+        product_analytics_enabled: true
+      )
+      stub_licensed_features(product_analytics: true)
+      visit project_settings_analytics_path(project)
+      project.reload
+    end
+
+    it 'does not show product analytics configuration options' do
+      expect(page).not_to have_content s_('Product analytics')
+    end
+  end
+
   context 'with valid license, toggle and feature flags' do
     before do
+      allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
       allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       project.group.root_ancestor.namespace_settings.update!(
         experiment_features_enabled: true,

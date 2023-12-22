@@ -11,6 +11,7 @@ RSpec.describe ProductAnalytics::InitializeSnowplowProductAnalyticsWorker, featu
   subject(:worker) { described_class.new.perform(project.id) }
 
   before do
+    allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
     allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
     stub_licensed_features(product_analytics: true)
     project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
@@ -96,9 +97,17 @@ RSpec.describe ProductAnalytics::InitializeSnowplowProductAnalyticsWorker, featu
     it_behaves_like 'a worker that did not make any HTTP calls'
   end
 
-  context 'when product analytics toggle is disabled' do
+  context 'when the top-level group product analytics toggle is disabled' do
     before do
       project.group.root_ancestor.namespace_settings.update!(product_analytics_enabled: false)
+    end
+
+    it_behaves_like 'a worker that did not make any HTTP calls'
+  end
+
+  context 'when the instance product analytics toggle is disabled' do
+    before do
+      allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(false)
     end
 
     it_behaves_like 'a worker that did not make any HTTP calls'

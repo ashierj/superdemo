@@ -202,6 +202,7 @@ RSpec.describe Git::BranchPushService, feature_category: :source_code_management
       end
 
       before do
+        allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
         project.update!(group: group)
         allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         project.group.root_ancestor.namespace_settings.update!(

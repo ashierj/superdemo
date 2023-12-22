@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe ProjectsHelper, feature_category: :shared do
   include ::EE::GeoHelpers
+  using RSpec::Parameterized::TableSyntax
 
   let_it_be_with_refind(:project) { create(:project) }
 
@@ -749,6 +750,29 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
       expect(helper.project_transfer_app_data(project)).to eq({
         full_path: project.full_path
       })
+    end
+  end
+
+  describe '#product_analytics_settings_allowed?' do
+    let_it_be(:user) { create(:user) }
+
+    subject { helper.product_analytics_settings_allowed?(project) }
+
+    where(:feature_enabled, :user_permission, :outcome) do
+      false | false | false
+      true  | false | false
+      false | true  | false
+      true  | true  | true
+    end
+
+    with_them do
+      before do
+        allow(project).to receive(:product_analytics_enabled?).and_return(feature_enabled)
+        allow(helper).to receive(:current_user).and_return(user)
+        allow(user).to receive(:can?).with(:modify_product_analytics_settings, project).and_return(user_permission)
+      end
+
+      it { is_expected.to eq(outcome) }
     end
   end
 end
