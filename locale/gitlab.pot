@@ -27957,6 +27957,15 @@ msgstr ""
 msgid "KubernetesDashboard|Annotations"
 msgstr ""
 
+msgid "KubernetesDashboard|Completed"
+msgstr ""
+
+msgid "KubernetesDashboard|CronJob"
+msgstr ""
+
+msgid "KubernetesDashboard|CronJobs"
+msgstr ""
+
 msgid "KubernetesDashboard|DaemonSet"
 msgstr ""
 
@@ -27973,6 +27982,12 @@ msgid "KubernetesDashboard|Deployments"
 msgstr ""
 
 msgid "KubernetesDashboard|Failed"
+msgstr ""
+
+msgid "KubernetesDashboard|Job"
+msgstr ""
+
+msgid "KubernetesDashboard|Jobs"
 msgstr ""
 
 msgid "KubernetesDashboard|Kind"
@@ -28027,6 +28042,9 @@ msgid "KubernetesDashboard|Status"
 msgstr ""
 
 msgid "KubernetesDashboard|Succeeded"
+msgstr ""
+
+msgid "KubernetesDashboard|Suspended"
 msgstr ""
 
 msgid "KubernetesDashboard|View projects"
