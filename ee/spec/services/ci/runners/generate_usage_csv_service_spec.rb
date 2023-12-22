@@ -6,7 +6,7 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
   feature_category: :fleet_visibility do
   include ClickHouseHelpers
 
-  let_it_be(:current_user) { create(:admin) }
+  let_it_be(:current_user) { build_stubbed(:admin) }
   let_it_be(:instance_runner) { create(:ci_runner, :instance, :with_runner_manager) }
   let_it_be(:group) { create(:group) }
   let_it_be(:group_runner) { create(:ci_runner, :group, groups: [group]) }
@@ -26,9 +26,9 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
   end
 
   let(:runner_type) { nil }
-  let(:from_date) { nil }
-  let(:to_date) { nil }
-  let(:max_project_count) { nil }
+  let(:from_date) { Date.new(2023, 12, 1) }
+  let(:to_date) { Date.new(2023, 12, 31) }
+  let(:max_project_count) { 50 }
   let(:response_status) { response.payload[:status] }
   let(:response_csv_lines) { response.payload[:csv_data].lines }
   let(:service) do
@@ -37,8 +37,6 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
   end
 
   let(:expected_header) { "Project ID,Project path,Build count,Total duration (minutes),Total duration\n" }
-  let(:expected_from_date) { Date.new(2023, 12, 1) }
-  let(:expected_to_date) { Date.new(2023, 12, 31) }
 
   subject(:response) { service.execute }
 
@@ -165,20 +163,18 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
     end
   end
 
-  context 'when from_date is beginning of current month' do
+  context 'when time window is current month' do
     let(:from_date) { Date.new(2024, 1, 1) }
-    let(:expected_from_date) { from_date }
-    let(:expected_to_date) { from_date.end_of_month }
+    let(:to_date) { Date.new(2024, 1, 31) }
 
     it 'exports usage data for runners which finished builds before date' do
       expect(response_status).to eq({ rows_expected: 16, rows_written: 16, truncated: false })
     end
   end
 
-  context 'when from_date is next month' do
+  context 'when time window is next month' do
     let(:from_date) { Date.new(2024, 2, 1) }
-    let(:expected_from_date) { from_date }
-    let(:expected_to_date) { from_date.end_of_month }
+    let(:to_date) { Date.new(2024, 2, 29) }
 
     it 'exports usage data for runners which finished builds before date' do
       expect(response_status).to eq({ rows_expected: 0, rows_written: 0, truncated: false })
@@ -186,9 +182,8 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
   end
 
   context 'when to_date is an hour ago, almost at the end of the year' do
+    let(:from_date) { Date.new(2023, 11, 1) }
     let(:to_date) { Date.new(2023, 12, 31) }
-    let(:expected_from_date) { Date.new(2023, 11, 1) }
-    let(:expected_to_date) { to_date }
 
     before do
       travel_to DateTime.new(2023, 12, 31, 23, 59, 59)
@@ -196,20 +191,6 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
 
     it 'exports usage data for runners which finished builds after date' do
       expect(response_status).to eq({ rows_expected: 6, rows_written: 6, truncated: false })
-    end
-  end
-
-  context 'when to_date is end of last month' do
-    let(:to_date) { Date.new(2024, 1, 31) }
-    let(:expected_from_date) { Date.new(2024, 1, 1) }
-    let(:expected_to_date) { to_date }
-
-    before do
-      travel_to DateTime.new(2024, 2, 10)
-    end
-
-    it 'exports usage data for runners which finished builds after date' do
-      expect(response_status).to eq({ rows_expected: 16, rows_written: 16, truncated: false })
     end
   end
 

@@ -6,7 +6,7 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
   feature_category: :fleet_visibility do
   include ClickHouseHelpers
 
-  let_it_be(:current_user) { create(:admin) }
+  let_it_be(:current_user) { build_stubbed(:admin) }
   let_it_be(:instance_runner) { create(:ci_runner, :instance, :with_runner_manager) }
 
   let(:from_date) { 1.month.ago }

@@ -12,7 +12,9 @@ RSpec.describe Ci::Runners::ExportUsageCsvWorker, :click_house, :enable_admin_mo
     subject(:perform) { worker.perform(current_user.id, params) }
 
     let(:current_user) { admin }
-    let(:params) { { runner_type: 1, max_project_count: 25 } }
+    let(:params) do
+      { runner_type: 1, from_date: '2023-11-01', to_date: '2023-11-30', max_project_count: 25 }
+    end
 
     before do
       stub_licensed_features(runner_performance_insights: true)
@@ -20,7 +22,9 @@ RSpec.describe Ci::Runners::ExportUsageCsvWorker, :click_house, :enable_admin_mo
 
     it 'delegates to Ci::Runners::SendUsageCsvService' do
       expect_next_instance_of(Ci::Runners::SendUsageCsvService, {
-        current_user: current_user, runner_type: params[:runner_type], max_project_count: params[:max_project_count]
+        current_user: current_user, runner_type: params[:runner_type],
+        from_date: Date.new(2023, 11, 1), to_date: Date.new(2023, 11, 30),
+        max_project_count: params[:max_project_count]
       }) do |service|
         expect(service).to receive(:execute).and_call_original
       end

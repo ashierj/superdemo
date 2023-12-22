@@ -8,24 +8,23 @@ module Ci
     class GenerateUsageCsvService
       attr_reader :project_ids, :runner_type, :from_date, :to_date
 
-      DEFAULT_PROJECT_COUNT = 1_000
       MAX_PROJECT_COUNT = 1_000
       OTHER_PROJECTS_NAME = '<Other projects>'
 
       # @param [User] current_user The user performing the reporting
-      # @param [Symbol] runner_type The type of runners to report on. Defaults to nil, reporting on all runner types
-      # @param [Date] from_date The start date of the period to examine. Defaults to start of last full month
-      # @param [Date] to_date The end date of the period to examine. Defaults to end of month
+      # @param [Symbol] runner_type The type of runners to report on, or nil to report on all types
+      # @param [Date] from_date The start date of the period to examine
+      # @param [Date] to_date The end date of the period to examine
       # @param [Integer] max_project_count The maximum number of projects in the report. All others will be folded
-      #   into an 'Other projects' entry. Defaults to 1000
-      def initialize(current_user:, runner_type: nil, from_date: nil, to_date: nil, max_project_count: nil)
+      #   into an 'Other projects' entry
+      def initialize(current_user:, runner_type:, from_date:, to_date:, max_project_count:)
         runner_type = Ci::Runner.runner_types[runner_type] if runner_type.is_a?(Symbol)
 
         @current_user = current_user
         @runner_type = runner_type
-        @from_date = from_date || Date.current.prev_month.beginning_of_month
-        @to_date = to_date || @from_date.end_of_month
-        @max_project_count = [MAX_PROJECT_COUNT, max_project_count || DEFAULT_PROJECT_COUNT].min
+        @max_project_count = [MAX_PROJECT_COUNT, max_project_count].min
+        @from_date = from_date
+        @to_date = to_date
       end
 
       def execute
