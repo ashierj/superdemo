@@ -116,6 +116,13 @@ RSpec.shared_examples 'scan detected secrets' do
   # The new commit must have a secret, so create a commit with one.
   let_it_be(:new_commit) { create_commit('.env' => 'SECRET=glpat-JUST20LETTERSANDNUMB') } # gitleaks:allow
 
+  let(:expected_tree_args) do
+    {
+      repository: repository, sha: new_commit,
+      recursive: true, rescue_not_found: false
+    }
+  end
+
   context 'with quarantine directory' do
     include_context 'quarantine directory exists'
 
@@ -205,7 +212,7 @@ RSpec.shared_examples 'scan detected secrets' do
   it 'loads tree entries of the new commit' do
     expect(::Gitlab::Git::Tree).to receive(:tree_entries)
       .once
-      .with(repository, new_commit, nil, true, true, nil)
+      .with(**expected_tree_args)
       .and_return([tree_entries, gitaly_pagination_cursor])
       .and_call_original
 
@@ -226,7 +233,7 @@ RSpec.shared_examples 'scan detected secrets' do
     it 'gracefully raises an error with existing information' do
       expect(::Gitlab::Git::Tree).to receive(:tree_entries)
         .once
-        .with(repository, new_commit, nil, true, true, nil)
+        .with(**expected_tree_args)
         .and_return([{}, gitaly_pagination_cursor])
 
       expect(secret_detection_logger).to receive(:info)
@@ -248,7 +255,7 @@ RSpec.shared_examples 'scan detected secrets' do
     it 'logs an error and continue to raise and present findings' do
       expect(::Gitlab::Git::Tree).to receive(:tree_entries)
         .once
-        .with(repository, new_commit, nil, true, true, nil)
+        .with(**expected_tree_args)
         .and_return([tree_entries, gitaly_pagination_cursor])
 
       expect(secret_detection_logger).to receive(:info)
@@ -284,7 +291,7 @@ RSpec.shared_examples 'scan detected secrets' do
     it 'loads tree entries of the new commit in subdirectories' do
       expect(::Gitlab::Git::Tree).to receive(:tree_entries)
         .once
-        .with(repository, new_commit, nil, true, true, nil)
+        .with(**expected_tree_args)
         .and_return([tree_entries, gitaly_pagination_cursor])
         .and_call_original
 
@@ -332,6 +339,10 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
   let_it_be(:new_commit) { create_commit('.env' => 'SECRET=glpat-JUST20LETTERSANDNUMB') } # gitleaks:allow
   let_it_be(:timed_out_commit) { create_commit('.test.env' => 'TOKEN=glpat-JUST20LETTERSANDNUMB') } # gitleaks:allow
   let_it_be(:failed_to_scan_commit) { create_commit('.dev.env' => 'GLPAT=glpat-JUST20LETTERSANDNUMB') } # gitleaks:allow
+
+  let(:expected_tree_args) do
+    { repository: repository, recursive: true, rescue_not_found: false }
+  end
 
   let(:changes) do
     [
@@ -496,21 +507,21 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
     end
 
     expect(::Gitlab::Git::Tree).to receive(:tree_entries)
-      .with(repository, new_commit, nil, true, true, nil)
+      .with(**expected_tree_args.merge(sha: new_commit))
       .once
       .ordered
       .and_return([tree_entries, gitaly_pagination_cursor])
       .and_call_original
 
     expect(::Gitlab::Git::Tree).to receive(:tree_entries)
-      .with(repository, timed_out_commit, nil, true, true, nil)
+      .with(**expected_tree_args.merge(sha: timed_out_commit))
       .once
       .ordered
       .and_return([[], nil])
       .and_call_original
 
     expect(::Gitlab::Git::Tree).to receive(:tree_entries)
-      .with(repository, failed_to_scan_commit, nil, true, true, nil)
+      .with(**expected_tree_args.merge(sha: failed_to_scan_commit))
       .once
       .ordered
       .and_return([[], nil])
