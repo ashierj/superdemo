@@ -58,7 +58,7 @@ During onboarding, you can specify an AWS KMS encryption key stored in your own 
 
 #### SMTP
 
-Email sent from GitLab Dedicated uses [AWS SES](https://aws.amazon.com/ses/) (Simple Email Services). The connection to AWS SES is encrypted.
+Email sent from GitLab Dedicated uses [Amazon Simple Email Service (Amazon SES)](https://aws.amazon.com/ses/). The connection to Amazon SES is encrypted.
 
 ### Compliance
 
