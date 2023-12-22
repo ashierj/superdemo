@@ -30,17 +30,22 @@ export default {
     mergeCommitsCsvExportPath: {
       type: String,
       required: false,
-      default: '',
+      default: null,
     },
     frameworksCsvExportPath: {
       type: String,
       required: false,
-      default: '',
+      default: null,
     },
     violationsCsvExportPath: {
       type: String,
       required: false,
-      default: '',
+      default: null,
+    },
+    adherencesCsvExportPath: {
+      type: String,
+      required: false,
+      default: null,
     },
   },
   data() {
@@ -59,7 +64,6 @@ export default {
           text: this.$options.i18n.violationsExportTitle,
           href: this.violationsCsvExportPath,
           extraAttrs: {
-            'data-testid': 'violations-export',
             'data-track-action': 'click_export',
             'data-track-label': 'export_all_violations',
           },
@@ -73,11 +77,23 @@ export default {
           text: this.$options.i18n.frameworksExportTitle,
           href: this.frameworksCsvExportPath,
           extraAttrs: {
-            'data-testid': 'frameworks-export',
             'data-track-action': 'click_export',
             'data-track-label': 'export_all_frameworks',
           },
           tooltipText: `${this.$options.i18n.tooltipTexts.frameworks} ${this.$options.i18n.tooltipTexts.ending}`,
+        });
+      }
+
+      if (this.adherencesCsvExportPath) {
+        items.push({
+          value: 'adherences_export',
+          text: this.$options.i18n.adherencesExportTitle,
+          href: this.adherencesCsvExportPath,
+          extraAttrs: {
+            'data-track-action': 'click_export',
+            'data-track-label': 'export_all_adherences',
+          },
+          tooltipText: `${this.$options.i18n.tooltipTexts.adherence} ${this.$options.i18n.tooltipTexts.ending}`,
         });
       }
 
@@ -87,7 +103,6 @@ export default {
           text: this.$options.i18n.custodyCommitsExportTitle,
           href: this.mergeCommitsCsvExportPath,
           extraAttrs: {
-            'data-testid': 'custody-commits-export',
             'data-track-action': 'click_export',
             'data-track-label': 'export_merge_commits',
           },
@@ -101,7 +116,6 @@ export default {
             this.exportCustodyCommitDisclosure = true;
           },
           extraAttrs: {
-            'data-testid': 'custody-commit-export',
             'data-track-action': 'click_export',
             'data-track-label': 'export_merge_commit',
           },
@@ -130,6 +144,7 @@ export default {
     defaultExportDropdownTitle: s__(
       'Compliance Center Export|Send email of the chosen report as CSV',
     ),
+    adherencesExportTitle: s__('Compliance Center Export|Export standards adherence report'),
     violationsExportTitle: s__('Compliance Center Export|Export violations report'),
     frameworksExportTitle: s__('Compliance Center Export|Export list of project frameworks'),
     custodyCommitsExportTitle: s__('Compliance Center Export|Export chain of custody report'),
@@ -141,6 +156,9 @@ export default {
     mergeCommitButtonText: s__('Compliance Center Export|Export custody report'),
     tooltipTexts: {
       violations: s__('Compliance Center Export|Export merge request violations as a CSV file.'),
+      adherence: s__(
+        'Compliance Center Export|Export contents of the standards adherence report as a CSV file.',
+      ),
       frameworks: s__('Compliance Center Export|Export list of project frameworks as a CSV file.'),
       mergeCommits: s__(
         'Compliance Center Export|Export chain of custody report as a CSV file (limited to 15MB).',
