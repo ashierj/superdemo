@@ -26,15 +26,5 @@ RSpec.describe EE::API::Entities::SamlGroupLink, feature_category: :system_acces
         expect(entity.keys).not_to include(:member_role_id)
       end
     end
-
-    context 'when the `custom_roles_for_saml_group_links` feature flag is not enabled' do
-      before do
-        stub_feature_flags(custom_roles_for_saml_group_links: false)
-      end
-
-      it 'does not expose `member_role_id`' do
-        expect(entity.keys).not_to include(:member_role_id)
-      end
-    end
   end
 end

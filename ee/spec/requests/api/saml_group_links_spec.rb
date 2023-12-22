@@ -176,17 +176,6 @@ RSpec.describe API::SamlGroupLinks, api: true, feature_category: :system_access 
               subject
               expect(json_response['member_role_id']).to eq(member_role.id)
             end
-
-            context 'when the `custom_roles_for_saml_group_links` feature flag is disabled' do
-              before do
-                stub_feature_flags(custom_roles_for_saml_group_links: false)
-              end
-
-              it 'adds the saml group link without the provided `member_role_id`' do
-                subject
-                expect(json_response.keys).not_to include(:member_role_id)
-              end
-            end
           end
         end
 

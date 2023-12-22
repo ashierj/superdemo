@@ -87,21 +87,6 @@ RSpec.describe Groups::SyncService, feature_category: :system_access do
           expect(member.member_role).to eq(nil)
         end
       end
-
-      context 'when the `custom_roles_for_saml_group_links` feature flag is not enabled' do
-        before do
-          stub_feature_flags(custom_roles_for_saml_group_links: false)
-        end
-
-        it 'adds the user to group1 without a custom role' do
-          expect(sync.payload).to include({ added: 2, removed: 0, updated: 0 })
-
-          member = group1.member(user)
-
-          expect(member.access_level).to eq(::Gitlab::Access::DEVELOPER)
-          expect(member.member_role).to eq(nil)
-        end
-      end
     end
 
     context 'when the user is already a member' do

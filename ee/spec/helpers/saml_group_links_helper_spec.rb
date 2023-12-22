@@ -34,16 +34,6 @@ RSpec.describe SamlGroupLinksHelper, feature_category: :system_access do
         expect(data).to eq(expected_standard_role_data)
       end
     end
-
-    context 'when the `custom_roles_for_saml_group_links` feature flag is disabled' do
-      before do
-        stub_feature_flags(custom_roles_for_saml_group_links: false)
-      end
-
-      it 'returns a hash with the expected standard role data' do
-        expect(data).to eq(expected_standard_role_data)
-      end
-    end
   end
 
   describe '#saml_group_link_role_name' do
@@ -66,14 +56,6 @@ RSpec.describe SamlGroupLinksHelper, feature_category: :system_access do
     context 'when custom roles are disabled' do
       before do
         stub_licensed_features(custom_roles: false)
-      end
-
-      it { is_expected.to eq(::Gitlab::Access.human_access(saml_group_link.access_level)) }
-    end
-
-    context 'when the `custom_roles_for_saml_group_links` feature flag is disabled' do
-      before do
-        stub_feature_flags(custom_roles_for_saml_group_links: false)
       end
 
       it { is_expected.to eq(::Gitlab::Access.human_access(saml_group_link.access_level)) }

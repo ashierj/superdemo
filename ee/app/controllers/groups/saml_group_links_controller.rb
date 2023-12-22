@@ -42,9 +42,7 @@ module Groups
 
     def saml_group_link_params
       allowed_params = %i[saml_group_name access_level]
-      if group.custom_roles_enabled? && ::Feature.enabled?(:custom_roles_for_saml_group_links)
-        allowed_params << :member_role_id
-      end
+      allowed_params << :member_role_id if group.custom_roles_enabled?
 
       params.require(:saml_group_link).permit(allowed_params)
     end
