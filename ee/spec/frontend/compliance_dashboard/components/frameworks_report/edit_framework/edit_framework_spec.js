@@ -3,11 +3,14 @@ import VueApollo from 'vue-apollo';
 import { GlAlert, GlLoadingIcon } from '@gitlab/ui';
 import * as Utils from 'ee/groups/settings/compliance_frameworks/utils';
 import EditFramework from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/edit_framework.vue';
+import DeleteModal from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/delete_modal.vue';
 import createComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/mutations/create_compliance_framework.mutation.graphql';
 import updateComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/mutations/update_compliance_framework.mutation.graphql';
+import deleteComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/mutations/delete_compliance_framework.mutation.graphql';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { stubComponent } from 'helpers/stub_component';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import { createComplianceFrameworksReportResponse } from '../../../mock_data';
@@ -27,8 +30,14 @@ describe('Edit Framework Form', () => {
     pipelineConfigurationEnabled: true,
   };
 
+  const showDeleteModal = jest.fn();
+  const routerBack = jest.fn();
+
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findError = () => wrapper.findComponent(GlAlert);
+  const findDeleteButton = () => wrapper.findByText('Delete framework');
+  const findDeleteModal = () => wrapper.findComponent(DeleteModal);
+
   const invalidFeedback = (input) =>
     input.closest('[role=group]').querySelector('.invalid-feedback').textContent;
 
@@ -43,10 +52,17 @@ describe('Edit Framework Form', () => {
       propsData,
       stubs: {
         ColorPicker: true,
+        DeleteModal: stubComponent(DeleteModal, {
+          template: '<div></div>',
+          methods: { show: showDeleteModal },
+        }),
       },
       mocks: {
         $route: {
           params: routeParams,
+        },
+        $router: {
+          back: routerBack,
         },
       },
     });
@@ -151,5 +167,58 @@ describe('Edit Framework Form', () => {
     await form.trigger('submit');
 
     expect(stubHandlers.find((handler) => handler[0] === mutation)[1]).toHaveBeenCalled();
+  });
+
+  describe('Delete button', () => {
+    it('does not render delete button if creating new framework', async () => {
+      wrapper = createComponent(shallowMountExtended, [], {});
+      await waitForPromises();
+
+      expect(findDeleteButton().exists()).toBe(false);
+    });
+
+    it('renders delete button if editing existing framework', async () => {
+      wrapper = createComponent();
+      await waitForPromises();
+
+      expect(findDeleteButton().exists()).toBe(true);
+    });
+
+    it('clicking delete button invokes modal', async () => {
+      wrapper = createComponent(shallowMountExtended);
+      await waitForPromises();
+
+      findDeleteButton().vm.$emit('click');
+
+      expect(showDeleteModal).toHaveBeenCalled();
+    });
+
+    it('invokes delete process and navigates back on success removal', async () => {
+      let resolveDeleteFrameworkMutation;
+      const deleteFrameworkMutationFn = jest.fn().mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolveDeleteFrameworkMutation = resolve;
+          }),
+      );
+      wrapper = createComponent(shallowMountExtended, [
+        [
+          getComplianceFrameworkQuery,
+          () => ({ ...createComplianceFrameworksReportResponse(), default: true }),
+        ],
+        [deleteComplianceFrameworkMutation, deleteFrameworkMutationFn],
+      ]);
+      await waitForPromises();
+
+      findDeleteModal().vm.$emit('delete');
+      await waitForPromises();
+
+      expect(deleteFrameworkMutationFn).toHaveBeenCalled();
+
+      resolveDeleteFrameworkMutation({ data: { destroyComplianceFramework: { errors: [] } } });
+      await waitForPromises();
+
+      expect(routerBack).toHaveBeenCalled();
+    });
   });
 });
