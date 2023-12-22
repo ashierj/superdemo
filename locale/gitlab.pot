@@ -4943,6 +4943,9 @@ msgstr ""
 msgid "Allow users to register any application to use GitLab as an OAuth provider. This setting does not affect group-level OAuth applications."
 msgstr ""
 
+msgid "Allow users with up to Guest role to create groups and personal projects"
+msgstr ""
+
 msgid "Allowed"
 msgstr ""
 
