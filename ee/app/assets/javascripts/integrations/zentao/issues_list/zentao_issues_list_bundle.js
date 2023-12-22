@@ -15,7 +15,6 @@ export default externalIssuesListFactory({
     searchInputPlaceholderText: s__('Integrations|Search ZenTao issues'),
     recentSearchesStorageKey: 'zentao_issues',
     createNewIssueText: s__('Integrations|Create new issue in ZenTao'),
-    logoContainerClass: 'logo-container',
     emptyStateNoIssueText: s__(
       'Integrations|ZenTao issues display here when you create issues in your project in ZenTao.',
     ),
