@@ -148,6 +148,7 @@ export default {
               <gl-form-input
                 :state="!isApproversErrored"
                 :value="approvalsRequired"
+                data-testid="approvals-required-input"
                 type="number"
                 class="gl-w-11! gl-mx-3"
                 :min="1"
@@ -164,6 +165,7 @@ export default {
 
         <gl-collapsible-listbox
           class="gl-mx-0 gl-md-ml-3 gl-md-mr-3"
+          data-testid="available-types"
           :items="availableTypes"
           :selected="selected"
           :toggle-text="approverTypeToggleText"
