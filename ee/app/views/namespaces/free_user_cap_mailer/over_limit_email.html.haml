@@ -5,7 +5,7 @@
   \p.spaced-lines { line-height: 1.3rem }
 
 %p.centered
-  - image = 'mailers/in_product_marketing/team-2.png'
+  - image = 'mailers/in_product_marketing/team.png'
   - attachments.inline[image] = File.read(Rails.root.join("app/assets/images", image))
   = image_tag attachments[image].url, { width: '88', style: 'width: 88px;' }
 
