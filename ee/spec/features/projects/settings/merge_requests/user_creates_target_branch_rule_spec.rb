@@ -14,7 +14,7 @@ RSpec.describe 'Project settings > Merge Requests > Target branch rules', :js, f
   end
 
   it 'creates a target branch rule' do
-    click_button 'Add target branch rule'
+    click_button 'Add branch target'
 
     fill_in 'projects_target_branch_rule_name', with: 'dev/*'
 
@@ -26,7 +26,7 @@ RSpec.describe 'Project settings > Merge Requests > Target branch rules', :js, f
 
     wait_for_requests
 
-    expect(page).to have_content('Target branch rule created.')
+    expect(page).to have_content('Branch target created.')
     expect(page).to have_content('dev/*')
     expect(page).to have_content('spooky-stuff')
   end
