@@ -7,6 +7,8 @@ module Search
 
       has_many :indexed_namespaces,
         foreign_key: :zoekt_node_id, inverse_of: :node, class_name: '::Zoekt::IndexedNamespace'
+      has_many :indices,
+        foreign_key: :zoekt_node_id, inverse_of: :node, class_name: '::Search::Zoekt::Index'
 
       validates :index_base_url, presence: true
       validates :search_base_url, presence: true

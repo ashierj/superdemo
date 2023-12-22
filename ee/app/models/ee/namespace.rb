@@ -59,6 +59,9 @@ module EE
       has_one :audit_event_http_namespace_filter, class_name: 'AuditEvents::Streaming::HTTP::NamespaceFilter'
       has_one :audit_event_http_instance_namespace_filter, class_name: 'AuditEvents::Streaming::HTTP::Instance::NamespaceFilter'
 
+      has_one :zoekt_enabled_namespace, class_name: '::Search::Zoekt::EnabledNamespace',
+        foreign_key: :root_namespace_id, inverse_of: :namespace
+
       scope :include_gitlab_subscription, -> { includes(:gitlab_subscription) }
       scope :include_gitlab_subscription_with_hosted_plan, -> { includes(gitlab_subscription: :hosted_plan) }
       scope :join_gitlab_subscription, -> { joins("LEFT OUTER JOIN gitlab_subscriptions ON gitlab_subscriptions.namespace_id=namespaces.id") }
