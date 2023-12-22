@@ -197,6 +197,7 @@ export default {
           key: 'name',
           label: __('Name'),
           thClass: 'gl-w-half',
+          sortable: true,
         },
         {
           key: 'policyType',
