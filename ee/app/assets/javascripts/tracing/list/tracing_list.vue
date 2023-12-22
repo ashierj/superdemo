@@ -144,7 +144,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="gl-px-8">
     <div v-if="loading && traces.length === 0" class="gl-py-5">
       <gl-loading-icon size="lg" />
     </div>
