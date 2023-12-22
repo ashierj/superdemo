@@ -30,7 +30,8 @@ RSpec.describe SyncSeatLinkWorker, type: :worker, feature_category: :sm_provisio
               '2020-03-12T00:00:00Z',
               License.current.data,
               15,
-              12
+              12,
+              false
             )
         end
       end
@@ -52,7 +53,8 @@ RSpec.describe SyncSeatLinkWorker, type: :worker, feature_category: :sm_provisio
                 '2020-03-12T13:00:00+13:00',
                 License.current.data,
                 15,
-                12
+                12,
+                false
               )
           end
         end
@@ -74,7 +76,8 @@ RSpec.describe SyncSeatLinkWorker, type: :worker, feature_category: :sm_provisio
                   '2020-03-11T18:00:00-06:00',
                   License.current.data,
                   15,
-                  12
+                  12,
+                  false
                 )
             end
           end

@@ -52,7 +52,7 @@ class Admin::LicensesController < Admin::ApplicationController
   def sync_seat_link
     respond_to do |format|
       format.json do
-        if Gitlab::SeatLinkData.new.sync
+        if Gitlab::SeatLinkData.new(refresh_token: true).sync
           render json: { success: true }
         else
           render json: { success: false }, status: :unprocessable_entity
