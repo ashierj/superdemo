@@ -36,3 +36,4 @@
     window.gl.mrWidgetData.aiCommitMessageEnabled = #{::Llm::GenerateCommitMessageService.new(current_user, @merge_request).valid?.to_s}
     window.gl.mrWidgetData.dismissal_descriptions = '#{dismissal_descriptions.to_json}';
     window.gl.mrWidgetData.commit_path_template = '#{commit_path_template(@project)}';
+    window.gl.mrWidgetData.can_admin_vulnerability = #{can?(current_user, :admin_vulnerability, @project)};
