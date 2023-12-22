@@ -14,6 +14,7 @@ import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_
 import Zuora from 'ee/vue_shared/purchase_flow/components/checkout/zuora.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
+import furthestAccessedStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/furthest_accessed_step.query.graphql';
 
 Vue.use(VueApollo);
 
@@ -30,6 +31,10 @@ describe('Payment Method', () => {
     apolloProvider.clients.defaultClient.cache.writeQuery({
       query: stateQuery,
       data: merge({}, initialStateData, apolloLocalState),
+    });
+    apolloProvider.clients.defaultClient.cache.writeQuery({
+      query: furthestAccessedStepQuery,
+      data: { furthestAccessedStep: STEPS[2] },
     });
 
     return mountExtended(PaymentMethod, {

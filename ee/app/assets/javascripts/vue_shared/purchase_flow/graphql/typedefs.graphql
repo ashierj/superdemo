@@ -7,6 +7,10 @@ extend type Query {
 }
 
 extend type Query {
+  furthestAccessedStep: Step
+}
+
+extend type Query {
   stepList: [Step]
 }
 

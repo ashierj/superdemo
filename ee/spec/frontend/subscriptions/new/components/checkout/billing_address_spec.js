@@ -35,8 +35,8 @@ describe('Billing Address', () => {
     fetchStates: jest.fn(),
   };
 
-  function activateNextStep() {
-    return mockApolloProvider.clients.defaultClient.mutate({
+  async function activateNextStep() {
+    await mockApolloProvider.clients.defaultClient.mutate({
       mutation: activateNextStepMutation,
     });
   }
@@ -382,7 +382,7 @@ describe('Billing Address', () => {
         ${true}              | ${null}               | ${true}
         ${false}             | ${null}               | ${true}
       `(
-        'when billingAccount exists is $billingAccountExists',
+        'when billingAccount exists is $billingAccountExists and billing account data is $billingAccountData',
         ({ billingAccountData, showSummary }) => {
           beforeEach(async () => {
             mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
@@ -419,28 +419,31 @@ describe('Billing Address', () => {
         ${true}              | ${null}
         ${false}             | ${null}
         ${false}             | ${mockBillingAccount}
-      `('when billingAccount exists is $billingAccountExists', ({ billingAccountData }) => {
-        beforeEach(async () => {
-          mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
-            [
-              getBillingAccountQuery,
-              jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-            ],
-          ]);
+      `(
+        'when billingAccount exists is $billingAccountExists and billingAccountData is $billingAccountData',
+        ({ billingAccountData }) => {
+          beforeEach(async () => {
+            mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
+              [
+                getBillingAccountQuery,
+                jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
+              ],
+            ]);
 
-          wrapper = createComponent({ store, apolloProvider: mockApolloProvider });
+            wrapper = createComponent({ store, apolloProvider: mockApolloProvider });
 
-          await waitForPromises();
+            await waitForPromises();
 
-          setupAllFormFields();
-          await activateNextStep();
-          await activateNextStep();
-        });
+            setupAllFormFields();
+            await activateNextStep();
+            await activateNextStep();
+          });
 
-        it('shows address summary', () => {
-          expect(findAddressSummary().exists()).toBe(true);
-        });
-      });
+          it('shows address summary', () => {
+            expect(findAddressSummary().exists()).toBe(true);
+          });
+        },
+      );
     });
 
     describe('without a billing account', () => {
