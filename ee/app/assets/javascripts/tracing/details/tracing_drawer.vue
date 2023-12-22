@@ -1,5 +1,5 @@
 <script>
-import { GlDrawer } from '@gitlab/ui';
+import { GlDrawer, GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
@@ -13,6 +13,7 @@ const createSectionContent = (obj) =>
 export default {
   components: {
     GlDrawer,
+    GlLink,
   },
   i18n: {
     spanDetailsTitle: s__('Tracing|Metadata'),
@@ -77,6 +78,16 @@ export default {
       return getContentWrapperHeight();
     },
   },
+  methods: {
+    isLink(value) {
+      try {
+        const parsed = new URL(value);
+        return ['http:', 'https:'].includes(parsed.protocol);
+      } catch {
+        return false;
+      }
+    },
+  },
   DRAWER_Z_INDEX,
 };
 </script>
@@ -117,7 +128,12 @@ export default {
         >
           <label data-testid="section-line-name">{{ line.name }}</label>
           <div data-testid="section-line-value" class="gl-overflow-wrap-anywhere">
-            {{ line.value }}
+            <gl-link v-if="isLink(line.value)" :href="line.value" target="_blank">
+              {{ line.value }}
+            </gl-link>
+            <template v-else>
+              {{ line.value }}
+            </template>
           </div>
         </div>
       </div>

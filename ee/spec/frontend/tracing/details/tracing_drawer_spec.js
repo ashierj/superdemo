@@ -1,4 +1,4 @@
-import { GlDrawer } from '@gitlab/ui';
+import { GlDrawer, GlLink } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import TracingDrawer from 'ee/tracing/details/tracing_drawer.vue';
@@ -121,6 +121,28 @@ describe('TracingDrawer', () => {
       expect(wrapper.findByTestId('section-span-attributes').exists()).toBe(false);
       expect(wrapper.findByTestId('section-resource-attributes').exists()).toBe(false);
     });
+  });
+
+  it('renders gl-link when a value is a link', () => {
+    const link = 'https://gitlab.com/gitlab-org/gitlab/-/pipelines/1090600528';
+    mountComponent({
+      span: {
+        ...mockSpan,
+        operation: link,
+        service: 'not-a-link',
+      },
+    });
+    const getSectionLineWrapperByName = (name) =>
+      wrapper
+        .findByTestId('section-span-details')
+        .findAll('[data-testid="section-line"]')
+        .wrappers.find((w) => w.find('[data-testid="section-line-name"]').text() === name);
+
+    expect(getSectionLineWrapperByName('service').findComponent(GlLink).exists()).toBe(false);
+
+    const operation = getSectionLineWrapperByName('operation');
+    expect(operation.findComponent(GlLink).exists()).toBe(true);
+    expect(operation.findComponent(GlLink).attributes('href')).toBe(link);
   });
 
   describe('header height', () => {
