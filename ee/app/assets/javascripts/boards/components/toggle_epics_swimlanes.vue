@@ -1,6 +1,4 @@
 <script>
-// eslint-disable-next-line no-restricted-imports
-import { mapActions } from 'vuex';
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { __ } from '~/locale';
 import Tracking from '~/tracking';
@@ -30,7 +28,6 @@ export default {
     GlCollapsibleListbox,
   },
   mixins: [trackingMixin],
-  inject: ['isApolloBoard'],
   props: {
     isSwimlanesOn: {
       type: Boolean,
@@ -46,7 +43,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['fetchEpicsSwimlanes', 'fetchLists']),
     toggleEpicSwimlanes() {
       if (this.isSwimlanesOn) {
         historyPushState(removeParams(['group_by']), window.location.href, true);
@@ -58,10 +54,6 @@ export default {
           }),
         );
         this.$emit('toggleSwimlanes', true);
-        if (!this.isApolloBoard) {
-          this.fetchEpicsSwimlanes();
-          this.fetchLists();
-        }
       }
     },
     onToggle() {

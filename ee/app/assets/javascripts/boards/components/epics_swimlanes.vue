@@ -2,8 +2,6 @@
 import { GlButton, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import VirtualList from 'vue-virtual-scroll-list';
 import Draggable from 'vuedraggable';
-// eslint-disable-next-line no-restricted-imports
-import { mapActions, mapGetters, mapState } from 'vuex';
 import BoardListHeader from 'ee_else_ce/boards/components/board_list_header.vue';
 import { isListDraggable } from '~/boards/boards_util';
 import { setError } from '~/boards/graphql/cache_updates';
@@ -38,7 +36,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  inject: ['boardType', 'disabled', 'fullPath', 'isApolloBoard'],
+  inject: ['boardType', 'disabled', 'fullPath'],
   props: {
     lists: {
       type: Array,
@@ -80,11 +78,8 @@ export default {
       variables() {
         return {
           ...this.baseVariables,
-          issueFilters: this.filtersToUse,
+          issueFilters: this.filters,
         };
-      },
-      skip() {
-        return !this.isApolloBoard;
       },
       update(data) {
         return data[this.boardType].board.epics;
@@ -98,14 +93,6 @@ export default {
     },
   },
   computed: {
-    ...mapState([
-      'epics',
-      'pageInfoByListId',
-      'filterParams',
-      'epicsSwimlanesFetchInProgress',
-      'hasMoreEpics',
-    ]),
-    ...mapGetters(['getUnassignedIssues']),
     baseVariables() {
       return {
         fullPath: this.fullPath,
@@ -114,25 +101,20 @@ export default {
         isProject: this.boardType === BoardType.project,
       };
     },
-    epicsToUse() {
-      return this.isApolloBoard ? this.rawEpics?.nodes || [] : this.epics;
-    },
-    filtersToUse() {
-      return this.isApolloBoard ? this.filters : this.filterParams;
+    epics() {
+      return this.rawEpics?.nodes || [];
     },
     pageInfo() {
       return this.rawEpics.pageInfo;
     },
     hasMoreEpicsToLoad() {
-      return this.isApolloBoard ? this.pageInfo?.hasNextPage : this.hasMoreEpics;
+      return this.pageInfo?.hasNextPage;
     },
     isLoadingMoreEpics() {
-      return this.isApolloBoard
-        ? this.isLoadingMore
-        : this.epicsSwimlanesFetchInProgress.epicLanesFetchMoreInProgress;
+      return this.isLoadingMore;
     },
     canAdminEpic() {
-      return this.epicsToUse[0]?.userPermissions?.adminEpic;
+      return this.epics[0]?.userPermissions?.adminEpic;
     },
     treeRootWrapper() {
       return this.canAdminList ? Draggable : DRAGGABLE_TAG;
@@ -151,20 +133,10 @@ export default {
       return this.canAdminList ? options : {};
     },
     hasMoreUnassignedIssues() {
-      if (this.isApolloBoard) {
-        return this.lists.some((list) => this.hasMoreUnassignedIssuables[list.id]);
-      }
-      return this.lists.some((list) => this.pageInfoByListId[list.id]?.hasNextPage);
+      return this.lists.some((list) => this.hasMoreUnassignedIssuables[list.id]);
     },
     isLoading() {
-      if (this.isApolloBoard) {
-        return this.$apollo.queries.rawEpics.loading && !this.isLoadingMoreEpics;
-      }
-      const {
-        epicLanesFetchInProgress,
-        listItemsFetchInProgress,
-      } = this.epicsSwimlanesFetchInProgress;
-      return epicLanesFetchInProgress || listItemsFetchInProgress;
+      return this.$apollo.queries.rawEpics.loading && !this.isLoadingMoreEpics;
     },
     chevronTooltip() {
       return this.isUnassignedCollapsed ? __('Expand') : __('Collapse');
@@ -179,19 +151,6 @@ export default {
       return !this.isUnassignedCollapsed && this.hasMoreUnassignedIssues;
     },
   },
-  watch: {
-    filterParams: {
-      handler() {
-        if (!this.isApolloBoard) {
-          Promise.all(this.epics.map((epic) => this.fetchIssuesForEpic(epic.id)))
-            .then(() => this.doneLoadingSwimlanesItems())
-            .catch(() => {});
-        }
-      },
-      deep: true,
-      immediate: true,
-    },
-  },
   mounted() {
     this.bufferSize = calculateSwimlanesBufferSize(this.$el.offsetTop);
   },
@@ -202,37 +161,19 @@ export default {
     eventHub.$off('open-unassigned-lane', this.openUnassignedLane);
   },
   methods: {
-    ...mapActions([
-      'fetchEpicsSwimlanes',
-      'fetchIssuesForEpic',
-      'fetchItemsForList',
-      'doneLoadingSwimlanesItems',
-    ]),
     async fetchMoreEpics() {
-      if (this.isApolloBoard) {
-        this.isLoadingMore = true;
-        await this.$apollo.queries.rawEpics.fetchMore({
-          variables: {
-            ...this.baseVariables,
-            issueFilters: this.filtersToUse,
-            after: this.pageInfo.endCursor,
-          },
-        });
-        this.isLoadingMore = false;
-      } else {
-        this.fetchEpicsSwimlanes({ fetchNext: true });
-      }
+      this.isLoadingMore = true;
+      await this.$apollo.queries.rawEpics.fetchMore({
+        variables: {
+          ...this.baseVariables,
+          issueFilters: this.filters,
+          after: this.pageInfo.endCursor,
+        },
+      });
+      this.isLoadingMore = false;
     },
     fetchMoreUnassignedIssues() {
-      if (this.isApolloBoard) {
-        this.isLoadingMoreIssues = true;
-        return;
-      }
-      this.lists.forEach((list) => {
-        if (this.pageInfoByListId[list.id]?.hasNextPage) {
-          this.fetchItemsForList({ listId: list.id, fetchNext: true, noEpicIssues: true });
-        }
-      });
+      this.isLoadingMoreIssues = true;
     },
     isListDraggable(list) {
       return isListDraggable(list);
@@ -246,14 +187,14 @@ export default {
     },
     getEpicLaneProps(index) {
       return {
-        key: this.epicsToUse[index].id,
+        key: this.epics[index].id,
         props: {
-          epic: this.epicsToUse[index],
+          epic: this.epics[index],
           lists: this.lists,
           disabled: this.disabled,
           canAdminList: this.canAdminList,
           boardId: this.boardId,
-          filterParams: this.filtersToUse,
+          filterParams: this.filters,
           highlightedLists: this.highlightedLists,
           canAdminEpic: this.canAdminEpic,
           totalIssuesCountByListId: this.totalIssuesCountByListId,
@@ -265,9 +206,6 @@ export default {
     },
     openUnassignedLane() {
       this.isUnassignedCollapsed = false;
-    },
-    unassignedIssues(listId) {
-      return this.getUnassignedIssues(listId);
     },
     updatePageInfo(pageInfo, listId) {
       this.hasMoreUnassignedIssuables = {
@@ -312,7 +250,7 @@ export default {
           <board-list-header
             :can-admin-list="canAdminList"
             :list="list"
-            :filter-params="filtersToUse"
+            :filter-params="filters"
             :is-swimlanes-header="true"
             :board-id="boardId"
             @setActiveList="$emit('setActiveList', $event)"
@@ -322,13 +260,13 @@ export default {
       </component>
       <div class="board-epics-swimlanes gl-display-table">
         <virtual-list
-          v-if="epicsToUse.length"
+          v-if="epics.length"
           :size="$options.epicLaneBaseHeight"
           :remain="bufferSize"
           :bench="bufferSize"
           :scrollelement="$refs.scrollableContainer"
           :item="$options.EpicLane"
-          :itemcount="epicsToUse.length"
+          :itemcount="epics.length"
           :itemprops="getEpicLaneProps"
         />
         <div v-if="hasMoreEpicsToLoad" class="swimlanes-button gl-pb-3 gl-pl-3 gl-sticky gl-left-0">
@@ -380,13 +318,12 @@ export default {
                 v-for="list in lists"
                 :key="`${list.id}-issues`"
                 :list="list"
-                :issues="unassignedIssues(list.id)"
                 :is-unassigned-issues-lane="true"
                 :can-admin-list="canAdminList"
                 :board-id="boardId"
-                :filter-params="filtersToUse"
+                :filter-params="filters"
                 :is-loading-more-issues="isLoadingMoreIssues"
-                :highlighted-lists-apollo="highlightedLists"
+                :highlighted-lists="highlightedLists"
                 :can-admin-epic="canAdminEpic"
                 :lists="lists"
                 :total-issues-count="totalIssuesCountByListId[list.id]"

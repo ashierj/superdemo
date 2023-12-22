@@ -853,24 +853,24 @@ export const mockTokens = (fetchLabels, fetchIterations, fetchIterationCadences)
   },
 ];
 
-export const mockEpicSwimlanesResponse = {
+export const mockEpicSwimlanesResponse = ({ hasNextPage = false, epics = mockEpics } = {}) => ({
   data: {
     group: {
       id: 'gid://gitlab/Group/114',
       board: {
         id: 'gid://gitlab/Board/1',
         epics: {
-          nodes: [mockEpics],
+          nodes: epics,
           pageInfo: {
             endCursor: null,
-            hasNextPage: false,
+            hasNextPage,
           },
         },
       },
       __typename: 'Group',
     },
   },
-};
+});
 
 export const mockUpdateListWipLimitResponse = {
   data: {

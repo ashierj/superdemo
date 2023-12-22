@@ -25,7 +25,6 @@ const apolloProvider = new VueApollo({
 
 function mountBoardApp(el) {
   const { boardId, groupId, fullPath, rootPath } = el.dataset;
-  const isApolloBoard = window.gon?.features?.apolloBoards;
 
   const rawFilterParams = queryToObject(window.location.search, { gatherArrays: true });
 
@@ -35,23 +34,6 @@ function mountBoardApp(el) {
 
   const boardType = el.dataset.parent;
 
-  if (!isApolloBoard) {
-    store.dispatch('fetchEpicBoard', {
-      fullPath,
-      boardId: fullEpicBoardId(boardId),
-    });
-
-    store.dispatch('setInitialBoardData', {
-      allowSubEpics: parseBoolean(el.dataset.subEpicsFeatureAvailable),
-      boardType,
-      disabled: parseBoolean(el.dataset.disabled) || true,
-      issuableType: TYPE_EPIC,
-      boardId,
-      fullBoardId: fullEpicBoardId(boardId),
-      fullPath,
-    });
-  }
-
   // eslint-disable-next-line no-new
   new Vue({
     el,
@@ -59,7 +41,6 @@ function mountBoardApp(el) {
     store,
     apolloProvider,
     provide: {
-      isApolloBoard,
       initialBoardId: fullEpicBoardId(boardId),
       disabled: parseBoolean(el.dataset.disabled),
       boardId,

@@ -15,9 +15,6 @@ describe('ToggleEpicsSwimlanes', () => {
       propsData: {
         isSwimlanesOn,
       },
-      provide: {
-        isApolloBoard: true,
-      },
       stubs: {
         GlCollapsibleListbox,
       },

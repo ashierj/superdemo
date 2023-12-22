@@ -20,7 +20,6 @@ describe('ee/BoardFilteredSearch', () => {
       },
       provide: {
         boardBaseUrl: 'root',
-        isApolloBoard: false,
         initialFilterParams: [],
         ...provide,
       },

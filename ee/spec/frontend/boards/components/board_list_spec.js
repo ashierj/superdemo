@@ -186,7 +186,6 @@ describe('BoardList Component', () => {
             isProjectBoard: boardType === WORKSPACE_PROJECT,
             isGroupBoard: boardType === WORKSPACE_GROUP,
             isEpicBoard,
-            isApolloBoard: true,
           },
           apolloQueryHandlers: [
             [listIssuesQuery, queryHandler],
@@ -222,7 +221,6 @@ describe('BoardList Component', () => {
             isProjectBoard: boardType === WORKSPACE_PROJECT,
             isGroupBoard: boardType === WORKSPACE_GROUP,
             isEpicBoard,
-            isApolloBoard: true,
           },
           apolloQueryHandlers: [
             [listIssuesQuery, queryHandlerFailure],
@@ -250,7 +248,6 @@ describe('BoardList Component', () => {
             isProjectBoard: false,
             isGroupBoard: true,
             isEpicBoard,
-            isApolloBoard: true,
             glFeatures: { epicColorHighlight: false },
           },
           apolloQueryHandlers,
@@ -295,7 +292,6 @@ describe('BoardList Component', () => {
             isProjectBoard: false,
             isGroupBoard: true,
             isEpicBoard,
-            isApolloBoard: true,
             glFeatures: { epicColorHighlight: false },
           },
           apolloQueryHandlers: [
@@ -330,7 +326,6 @@ describe('BoardList Component', () => {
             isProjectBoard: false,
             isGroupBoard: true,
             isEpicBoard,
-            isApolloBoard: true,
             glFeatures: { epicColorHighlight: false },
           },
           apolloQueryHandlers,
@@ -361,7 +356,6 @@ describe('BoardList Component', () => {
             isProjectBoard: false,
             isGroupBoard: true,
             isEpicBoard,
-            isApolloBoard: true,
             glFeatures: { epicColorHighlight: false },
           },
           apolloQueryHandlers: [
@@ -407,7 +401,6 @@ describe('BoardList Component', () => {
             isProjectBoard: false,
             isGroupBoard: true,
             isEpicBoard,
-            isApolloBoard: true,
             glFeatures: { epicColorHighlight: false },
           },
           apolloQueryHandlers,
@@ -448,7 +441,6 @@ describe('BoardList Component', () => {
             isProjectBoard: false,
             isGroupBoard: true,
             isEpicBoard,
-            isApolloBoard: true,
             glFeatures: { epicColorHighlight: false },
           },
           apolloQueryHandlers: [

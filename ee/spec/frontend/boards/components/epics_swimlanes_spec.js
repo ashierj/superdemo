@@ -2,8 +2,6 @@ import Vue, { nextTick } from 'vue';
 import VirtualList from 'vue-virtual-scroll-list';
 import Draggable from 'vuedraggable';
 import VueApollo from 'vue-apollo';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import * as BoardUtils from 'ee/boards/boards_util';
@@ -12,21 +10,13 @@ import EpicsSwimlanes from 'ee/boards/components/epics_swimlanes.vue';
 import IssueLaneList from 'ee/boards/components/issues_lane_list.vue';
 import SwimlanesLoadingSkeleton from 'ee/boards/components/swimlanes_loading_skeleton.vue';
 import { EPIC_LANE_BASE_HEIGHT } from 'ee/boards/constants';
-import getters from 'ee/boards/stores/getters';
 import epicsSwimlanesQuery from 'ee/boards/graphql/epics_swimlanes.query.graphql';
 import BoardListHeader from 'ee_else_ce/boards/components/board_list_header.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import * as cacheUpdates from '~/boards/graphql/cache_updates';
-import {
-  mockLists,
-  mockEpics,
-  mockIssuesByListId,
-  issues,
-  mockEpicSwimlanesResponse,
-} from '../mock_data';
+import { mockLists, mockEpics, mockEpic, mockEpicSwimlanesResponse } from '../mock_data';
 
 Vue.use(VueApollo);
-Vue.use(Vuex);
 jest.mock('ee/boards/boards_util');
 
 describe('EpicsSwimlanes', () => {
@@ -40,57 +30,33 @@ describe('EpicsSwimlanes', () => {
   const findLaneUnassignedIssues = () => wrapper.findByTestId('board-lane-unassigned-issues-title');
   const findToggleUnassignedLaneButton = () => wrapper.findByTestId('unassigned-lane-toggle');
   const findLoadMoreIssuesButton = () => wrapper.findByTestId('board-lane-load-more-issues-button');
+  const findLoadingSkeleton = () => wrapper.findComponent(SwimlanesLoadingSkeleton);
 
-  const fetchItemsForListSpy = jest.fn();
-  const fetchIssuesForEpicSpy = jest.fn();
-  const fetchEpicsSwimlanesSpy = jest.fn();
-
-  const createStore = ({
-    epicLanesFetchInProgress = false,
-    listItemsFetchInProgress = false,
-    epicLanesFetchMoreInProgress = false,
-    hasMoreEpics = false,
-  } = {}) => {
-    return new Vuex.Store({
-      state: {
-        epics: mockEpics,
-        boardItemsByListId: mockIssuesByListId,
-        boardItems: issues,
-        pageInfoByListId: {
-          'gid://gitlab/List/1': {},
-          'gid://gitlab/List/2': {},
-        },
-        epicsSwimlanesFetchInProgress: {
-          epicLanesFetchInProgress,
-          listItemsFetchInProgress,
-          epicLanesFetchMoreInProgress,
-        },
-        hasMoreEpics,
-        filterParams: {},
-      },
-      getters,
-      actions: {
-        fetchItemsForList: fetchItemsForListSpy,
-        fetchIssuesForEpic: fetchIssuesForEpicSpy,
-        fetchEpicsSwimlanes: fetchEpicsSwimlanesSpy,
-      },
-    });
-  };
-
-  const epicsSwimlanesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockEpicSwimlanesResponse);
+  const epicsSwimlanesQueryHandlerSuccess = jest
+    .fn()
+    .mockResolvedValue(mockEpicSwimlanesResponse());
   const errorMessage = 'Failed to fetch issues';
   const epicsSwimlanesQueryHandlerFailure = jest.fn().mockRejectedValue(new Error(errorMessage));
 
   const createComponent = ({
     canAdminList = false,
-    epicLanesFetchInProgress = false,
-    listItemsFetchInProgress = false,
-    hasMoreEpics = false,
     epicsSwimlanesQueryHandler = epicsSwimlanesQueryHandlerSuccess,
-    isApolloBoard = false,
   } = {}) => {
-    const store = createStore({ epicLanesFetchInProgress, listItemsFetchInProgress, hasMoreEpics });
-    mockApollo = createMockApollo([[epicsSwimlanesQuery, epicsSwimlanesQueryHandler]]);
+    mockApollo = createMockApollo(
+      [[epicsSwimlanesQuery, epicsSwimlanesQueryHandler]],
+      {},
+      {
+        typePolicies: {
+          Group: {
+            fields: {
+              board: {
+                merge: true,
+              },
+            },
+          },
+        },
+      },
+    );
     const defaultProps = {
       lists: mockLists,
       boardId: 'gid://gitlab/Board/1',
@@ -99,12 +65,10 @@ describe('EpicsSwimlanes', () => {
     wrapper = shallowMountExtended(EpicsSwimlanes, {
       propsData: { ...defaultProps, canAdminList, filters: {} },
       apolloProvider: mockApollo,
-      store,
       provide: {
         fullPath: 'gitlab-org',
         boardType: 'group',
         disabled: false,
-        isApolloBoard,
       },
     });
   };
@@ -114,15 +78,15 @@ describe('EpicsSwimlanes', () => {
     cacheUpdates.setError = jest.fn();
   });
 
-  it('calls fetchIssuesForEpic on mounted', () => {
-    createComponent();
-    expect(fetchIssuesForEpicSpy).toHaveBeenCalled();
+  afterEach(() => {
+    mockApollo = null;
   });
 
   describe('reorder lists', () => {
     describe('when canAdminList prop is true', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         createComponent({ canAdminList: true });
+        await waitForPromises();
       });
 
       it('should return Draggable reference when canAdminList prop is true', () => {
@@ -149,8 +113,9 @@ describe('EpicsSwimlanes', () => {
   });
 
   describe('template', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent();
+      await waitForPromises();
     });
 
     it('displays BoardListHeader components for lists', () => {
@@ -208,43 +173,50 @@ describe('EpicsSwimlanes', () => {
   });
 
   describe('load more epics', () => {
-    beforeEach(() => {
-      createComponent({ hasMoreEpics: true });
+    const queryLoadMoreHandler = jest.fn();
+
+    beforeEach(async () => {
+      queryLoadMoreHandler.mockResolvedValueOnce(mockEpicSwimlanesResponse({ hasNextPage: true }));
+      queryLoadMoreHandler.mockResolvedValueOnce(
+        mockEpicSwimlanesResponse({
+          epics: [
+            {
+              ...mockEpic,
+              id: 'gid://gitlab/Epic/417',
+              userPreferences: {
+                collapsed: false,
+              },
+            },
+          ],
+        }),
+      );
+      createComponent({ epicsSwimlanesQueryHandler: queryLoadMoreHandler });
+      await waitForPromises();
     });
 
-    it('displays load more epics button if there are more epics', () => {
+    it('fetches more epics on click on Load more epics button', async () => {
       expect(findLoadMoreEpicsButton().exists()).toBe(true);
-    });
-
-    it('calls fetchEpicsSwimlanes action when loading more epics', async () => {
       findLoadMoreEpicsButton().vm.$emit('click');
 
-      await nextTick();
+      await waitForPromises();
 
-      expect(fetchEpicsSwimlanesSpy).toHaveBeenCalled();
+      expect(queryLoadMoreHandler).toHaveBeenCalledTimes(2);
     });
   });
 
-  describe('Loading skeleton', () => {
-    it.each`
-      epicLanesFetchInProgress | listItemsFetchInProgress | expected
-      ${true}                  | ${true}                  | ${true}
-      ${false}                 | ${true}                  | ${true}
-      ${true}                  | ${false}                 | ${true}
-      ${false}                 | ${false}                 | ${false}
-    `(
-      'loading is $expected when epicLanesFetchInProgress is $epicLanesFetchInProgress and listItemsFetchInProgress is $listItemsFetchInProgress',
-      ({ epicLanesFetchInProgress, listItemsFetchInProgress, expected }) => {
-        createComponent({ epicLanesFetchInProgress, listItemsFetchInProgress });
+  it('displays loading skeleton while data is loading', async () => {
+    createComponent();
 
-        expect(wrapper.findComponent(SwimlanesLoadingSkeleton).exists()).toBe(expected);
-      },
-    );
+    expect(findLoadingSkeleton().exists()).toBe(true);
+
+    await waitForPromises();
+
+    expect(findLoadingSkeleton().exists()).toBe(false);
   });
 
-  describe('Apollo boards', () => {
+  describe('Queries', () => {
     beforeEach(async () => {
-      createComponent({ isApolloBoard: true, canAdminList: true });
+      createComponent({ canAdminList: true });
       await waitForPromises();
     });
 
@@ -287,7 +259,6 @@ describe('EpicsSwimlanes', () => {
 
     it('sets error when fetch epics swimlanes query fails', async () => {
       createComponent({
-        isApolloBoard: true,
         canAdminList: true,
         epicsSwimlanesQueryHandler: epicsSwimlanesQueryHandlerFailure,
       });

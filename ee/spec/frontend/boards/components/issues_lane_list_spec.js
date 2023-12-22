@@ -13,7 +13,6 @@ import BoardNewIssue from '~/boards/components/board_new_issue.vue';
 import { ListType } from '~/boards/constants';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import issueCreateMutation from '~/boards/graphql/issue_create.mutation.graphql';
-import { createStore, storeOptions } from '~/boards/stores';
 import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import issueMoveListMutation from 'ee/boards/graphql/issue_move_list.mutation.graphql';
 import { mockList, boardListQueryResponse } from 'jest/boards/mock_data';
@@ -29,7 +28,6 @@ Vue.use(VueApollo);
 
 describe('IssuesLaneList', () => {
   let wrapper;
-  let store;
   let mockApollo;
 
   const findNewIssueForm = () => wrapper.findComponent(BoardNewIssue);
@@ -47,8 +45,8 @@ describe('IssuesLaneList', () => {
     collapsed = false,
     isUnassignedIssuesLane = false,
     canAdminEpic = false,
+    highlightedLists = [],
     totalIssuesCount = 2,
-    isApolloBoard = false,
     listsIssuesQueryHandler = listIssuesQueryHandlerSuccess,
     moveIssueMutationHandler = moveIssueMutationHandlerSuccess,
     createIssueMutationHandler = createIssueMutationHandlerSuccess,
@@ -107,7 +105,6 @@ describe('IssuesLaneList', () => {
 
     wrapper = shallowMount(IssuesLaneList, {
       apolloProvider: mockApollo,
-      store,
       propsData: {
         boardId: 'gid://gitlab/Board/1',
         list: listMock,
@@ -117,12 +114,12 @@ describe('IssuesLaneList', () => {
         isUnassignedIssuesLane,
         filterParams: {},
         lists: mockLists,
+        highlightedLists,
         totalIssuesCount,
       },
       provide: {
         fullPath: 'gitlab-org',
         boardType: 'group',
-        isApolloBoard,
       },
     });
   };
@@ -140,8 +137,6 @@ describe('IssuesLaneList', () => {
 
   describe('if list is expanded', () => {
     beforeEach(() => {
-      store = createStore();
-
       createComponent();
     });
 
@@ -156,8 +151,6 @@ describe('IssuesLaneList', () => {
 
   describe('if list is collapsed', () => {
     beforeEach(() => {
-      store = createStore();
-
       createComponent({ collapsed: true });
     });
 
@@ -172,8 +165,6 @@ describe('IssuesLaneList', () => {
 
   describe('drag & drop permissions', () => {
     beforeEach(() => {
-      store = createStore();
-
       createComponent();
     });
 
@@ -207,7 +198,6 @@ describe('IssuesLaneList', () => {
       it('removes class `is-dragging` from document body', () => {
         createComponent({ canAdminEpic: true });
 
-        jest.spyOn(store, 'dispatch').mockImplementation(() => {});
         document.body.classList.add('is-dragging');
 
         wrapper.find(`[data-testid="tree-root-wrapper"]`).vm.$emit('end', {
@@ -230,15 +220,7 @@ describe('IssuesLaneList', () => {
 
     describe('highlighting', () => {
       it('scrolls to column when highlighted', async () => {
-        const options = {
-          ...storeOptions,
-          state: {
-            ...storeOptions.state(),
-            highlightedLists: [mockList.id],
-          },
-        };
-        store = createStore(options);
-        createComponent();
+        createComponent({ highlightedLists: [mockList.id] });
 
         await nextTick();
 
@@ -248,10 +230,6 @@ describe('IssuesLaneList', () => {
   });
 
   describe('max issue count warning', () => {
-    beforeEach(() => {
-      store = createStore();
-    });
-
     describe('when issue count exceeds max issue count', () => {
       it('sets background to red-100', () => {
         createComponent({ listProps: { maxIssueCount: 3 }, totalIssuesCount: 4 });
@@ -270,7 +248,7 @@ describe('IssuesLaneList', () => {
     });
   });
 
-  describe('Apollo boards', () => {
+  describe('Queries', () => {
     const endDragVariables = {
       oldIndex: 1,
       newIndex: 0,
@@ -296,7 +274,7 @@ describe('IssuesLaneList', () => {
     `(
       'fetches issues $performsQuery when isUnassignedIssuesLane is $isUnassignedIssuesLane',
       async ({ isUnassignedIssuesLane, queryCalledTimes }) => {
-        createComponent({ isUnassignedIssuesLane, isApolloBoard: true });
+        createComponent({ isUnassignedIssuesLane });
 
         await waitForPromises();
 
@@ -307,7 +285,6 @@ describe('IssuesLaneList', () => {
     it('sets error when fetching unassigned issues fails', async () => {
       createComponent({
         isUnassignedIssuesLane: true,
-        isApolloBoard: true,
         listsIssuesQueryHandler: queryHandlerFailure,
       });
 
@@ -317,7 +294,7 @@ describe('IssuesLaneList', () => {
     });
 
     it('calls moveIssue mutation on drag & drop card', async () => {
-      createComponent({ isApolloBoard: true, canAdminEpic: true });
+      createComponent({ canAdminEpic: true });
 
       await waitForPromises();
 
@@ -330,7 +307,6 @@ describe('IssuesLaneList', () => {
 
     it('sets error when moveIssue mutation fails', async () => {
       createComponent({
-        isApolloBoard: true,
         canAdminEpic: true,
         moveIssueMutationHandler: queryHandlerFailure,
       });
@@ -350,7 +326,6 @@ describe('IssuesLaneList', () => {
           id: mockList.id,
         },
         isUnassignedIssuesLane: true,
-        isApolloBoard: true,
         canAdminEpic: true,
       });
 
@@ -372,7 +347,6 @@ describe('IssuesLaneList', () => {
           id: mockList.id,
         },
         isUnassignedIssuesLane: true,
-        isApolloBoard: true,
         canAdminEpic: true,
         createIssueMutationHandler: queryHandlerFailure,
       });

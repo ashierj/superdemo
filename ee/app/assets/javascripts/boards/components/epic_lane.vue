@@ -1,7 +1,5 @@
 <script>
 import { GlButton, GlIcon, GlLink, GlLoadingIcon, GlPopover, GlTooltipDirective } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapActions, mapGetters, mapState } from 'vuex';
 import { STATUS_OPEN } from '~/issues/constants';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { __, n__, sprintf, s__ } from '~/locale';
@@ -26,7 +24,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   mixins: [timeagoMixin],
-  inject: ['fullPath', 'boardType', 'isApolloBoard'],
+  inject: ['fullPath', 'boardType'],
   props: {
     epic: {
       type: Object,
@@ -86,9 +84,6 @@ export default {
           isProject: this.boardType === BoardType.project,
         };
       },
-      skip() {
-        return !this.isApolloBoard;
-      },
       update(data) {
         return data[this.boardType]?.board.lists.nodes;
       },
@@ -101,8 +96,6 @@ export default {
     },
   },
   computed: {
-    ...mapState(['epicsFlags']),
-    ...mapGetters(['getIssuesByEpic']),
     isOpen() {
       return this.epic.state === STATUS_OPEN;
     },
@@ -113,13 +106,7 @@ export default {
       return this.isCollapsed ? 'chevron-right' : 'chevron-down';
     },
     issuesCount() {
-      if (this.isApolloBoard) {
-        return this.listsWithIssues.reduce((total, list) => total + list.issues.nodes.length, 0);
-      }
-      return this.lists.reduce(
-        (total, list) => total + this.getIssuesByEpic(list.id, this.epic.id).length,
-        0,
-      );
+      return this.listsWithIssues.reduce((total, list) => total + list.issues.nodes.length, 0);
     },
     issuesCountTooltipText() {
       return n__(`%d issue in this group`, `%d issues in this group`, this.issuesCount);
@@ -137,10 +124,7 @@ export default {
       return formatDate(this.epic.createdAt);
     },
     isLoading() {
-      return (
-        Boolean(this.epicsFlags[this.epic.id]?.isLoading) ||
-        this.$apollo.queries.listsWithIssues.loading
-      );
+      return this.$apollo.queries.listsWithIssues.loading;
     },
     shouldDisplay() {
       return this.issuesCount > 0 || this.isLoading;
@@ -152,53 +136,25 @@ export default {
       return formatListIssuesForLanes(this.listsWithIssues);
     },
   },
-  watch: {
-    'filterParams.epicId': {
-      handler(epicId) {
-        if (!this.isApolloBoard && (!epicId || epicId === this.epic.id)) {
-          this.fetchIssuesForEpic(this.epic.id);
-        }
-      },
-      deep: true,
-    },
-  },
-  mounted() {
-    if (!this.isApolloBoard) {
-      this.fetchIssuesForEpic(this.epic.id);
-    }
-  },
   methods: {
-    ...mapActions(['updateBoardEpicUserPreferences', 'fetchIssuesForEpic']),
     async toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed;
 
-      if (this.isApolloBoard) {
-        try {
-          await this.$apollo.mutate({
-            mutation: updateBoardEpicUserPreferencesMutation,
-            variables: {
-              boardId: this.boardId,
-              epicId: this.epic.id,
-              collapsed: this.isCollapsed,
-            },
-          });
-        } catch (error) {
-          setError({ error, message: __('Unable to save your preference') });
-        }
-      } else {
-        this.updateBoardEpicUserPreferences({
-          collapsed: this.isCollapsed,
-          epicId: this.epic.id,
-        }).catch(() => {
-          setError({ message: __('Unable to save your preference'), captureError: true });
+      try {
+        await this.$apollo.mutate({
+          mutation: updateBoardEpicUserPreferencesMutation,
+          variables: {
+            boardId: this.boardId,
+            epicId: this.epic.id,
+            collapsed: this.isCollapsed,
+          },
         });
+      } catch (error) {
+        setError({ error, message: __('Unable to save your preference') });
       }
     },
     getIssuesByList(listId) {
-      if (this.isApolloBoard) {
-        return this.issuesByList[listId];
-      }
-      return this.getIssuesByEpic(listId, this.epic.id);
+      return this.issuesByList[listId];
     },
   },
 };
@@ -266,7 +222,7 @@ export default {
         :can-admin-list="canAdminList"
         :board-id="boardId"
         :filter-params="filterParams"
-        :highlighted-lists-apollo="highlightedLists"
+        :highlighted-lists="highlightedLists"
         :can-admin-epic="canAdminEpic"
         :lists="lists"
         :total-issues-count="totalIssuesCountByListId[list.id]"
