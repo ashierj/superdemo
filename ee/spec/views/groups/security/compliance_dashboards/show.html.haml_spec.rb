@@ -7,6 +7,7 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
   let_it_be(:group) { build_stubbed(:group) }
   let(:framework_csv_export_path) { group_security_compliance_framework_reports_path(group, format: :csv) }
   let(:violations_csv_export_path) { group_security_compliance_violation_reports_path(group, format: :csv) }
+  let(:adherences_csv_export_path) { group_security_compliance_standards_adherence_reports_path(group, format: :csv) }
   let(:merge_commits_csv_export_path) { group_security_merge_commit_reports_path(group) }
 
   before do
@@ -76,6 +77,36 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
         render
 
         expect(rendered).to have_selector("[data-violations-csv-export-path='#{violations_csv_export_path}']")
+      end
+    end
+  end
+
+  context 'for adherences export', :aggregate_failures do
+    context 'with `compliance_standards_adherence_csv_export` ff enabled' do
+      it 'renders with the correct data attributes' do
+        render
+
+        expect(rendered).to have_selector("[data-adherences-csv-export-path='#{adherences_csv_export_path}']")
+      end
+    end
+
+    context 'with `compliance_standards_adherence_csv_export` ff disabled' do
+      before do
+        Feature.disable(:compliance_standards_adherence_csv_export)
+      end
+
+      it 'renders with the correct data attributes for excluded group' do
+        render
+
+        expect(rendered).not_to have_selector("[data-adherences-csv-export-path]")
+      end
+
+      it 'renders with the correct data attributes for included group' do
+        Feature.enable(:compliance_standards_adherence_csv_export, group)
+
+        render
+
+        expect(rendered).to have_selector("[data-adherences-csv-export-path='#{adherences_csv_export_path}']")
       end
     end
   end

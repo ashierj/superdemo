@@ -30,7 +30,7 @@ export default {
     'mergeCommitsCsvExportPath',
     'frameworksCsvExportPath',
     'violationsCsvExportPath',
-
+    'adherencesCsvExportPath',
     'complianceFrameworkReportUiEnabled',
   ],
   computed: {
@@ -95,6 +95,7 @@ export default {
           :frameworks-csv-export-path="frameworksCsvExportPath"
           :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
           :violations-csv-export-path="violationsCsvExportPath"
+          :adherences-csv-export-path="adherencesCsvExportPath"
         />
       </template>
     </report-header>

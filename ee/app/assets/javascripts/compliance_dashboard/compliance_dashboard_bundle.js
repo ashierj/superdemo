@@ -16,6 +16,7 @@ export default () => {
     mergeCommitsCsvExportPath,
     violationsCsvExportPath,
     frameworksCsvExportPath,
+    adherencesCsvExportPath,
     groupPath,
     rootAncestorPath,
     pipelineConfigurationFullPathEnabled,
@@ -48,10 +49,10 @@ export default () => {
       pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
       pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
       complianceFrameworkReportUiEnabled: parseBoolean(complianceFrameworkReportUiEnabled),
-
       mergeCommitsCsvExportPath,
       violationsCsvExportPath,
       frameworksCsvExportPath,
+      adherencesCsvExportPath,
     },
     render: (createElement) => createElement('router-view'),
   });
