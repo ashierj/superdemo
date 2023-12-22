@@ -20,7 +20,7 @@ RSpec.describe Gitlab::Email::Message::AccountValidation, feature_category: :ins
     )
     expect(message.cta_text).to eq 'Validate your account'
     expect(message.cta2_text).to eq "I'll bring my own runners"
-    expect(message.logo_path).to eq 'mailers/in_product_marketing/verify-2.png'
+    expect(message.logo_path).to eq 'mailers/in_product_marketing/verify.png'
     expect(message.unsubscribe).to include('%tag_unsubscribe_url%')
     expect(message.cta_link).to include('Validate your account')
     expect(message.cta2_link).to include('bring my own runners')

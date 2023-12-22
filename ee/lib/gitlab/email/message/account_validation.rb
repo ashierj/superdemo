@@ -48,7 +48,7 @@ module Gitlab
         end
 
         def logo_path
-          'mailers/in_product_marketing/verify-2.png'
+          'mailers/in_product_marketing/verify.png'
         end
 
         def cta_link
