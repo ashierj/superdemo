@@ -21,7 +21,8 @@ class SyncSeatLinkWorker # rubocop:disable Scalability/IdempotentWorker
       seat_link_data.timestamp.iso8601,
       seat_link_data.key,
       seat_link_data.max_users,
-      seat_link_data.billable_users_count
+      seat_link_data.billable_users_count,
+      seat_link_data.refresh_token
     )
   end
 

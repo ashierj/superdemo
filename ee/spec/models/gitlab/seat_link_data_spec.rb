@@ -126,7 +126,7 @@ RSpec.describe Gitlab::SeatLinkData do
       let(:sync_seats) { true }
 
       it 'performs the sync' do
-        expect(SyncSeatLinkWorker).to receive(:perform_async)
+        expect(SyncSeatLinkRequestWorker).to receive(:perform_async)
 
         subject.sync
       end
@@ -136,7 +136,7 @@ RSpec.describe Gitlab::SeatLinkData do
       let(:sync_seats) { false }
 
       it 'does not perform the sync' do
-        expect(SyncSeatLinkWorker).not_to receive(:perform_async)
+        expect(SyncSeatLinkRequestWorker).not_to receive(:perform_async)
 
         subject.sync
       end

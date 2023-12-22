@@ -40,11 +40,7 @@ module GitlabSubscriptions
     private
 
     def sync_service_token
-      if ::Feature.enabled?(:use_sync_service_token_worker)
-        ::Ai::SyncServiceTokenWorker.perform_async
-      else
-        ::Gitlab::SeatLinkData.new.sync
-      end
+      Gitlab::SeatLinkData.new(refresh_token: true).sync
     end
 
     def client
