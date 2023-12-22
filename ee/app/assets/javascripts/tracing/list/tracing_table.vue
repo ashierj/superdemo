@@ -1,5 +1,5 @@
 <script>
-import { GlTable, GlTruncate, GlBadge } from '@gitlab/ui';
+import { GlTable, GlBadge } from '@gitlab/ui';
 import { s__, __, sprintf, n__ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { formatTraceDuration } from '../trace_utils';
@@ -20,11 +20,13 @@ export default {
       key: 'service_name',
       label: s__('Tracing|Service'),
       tdAttr: { 'data-testid': 'trace-service' },
+      tdClass: 'gl-word-break-word',
     },
     {
       key: 'operation',
       label: s__('Tracing|Operation'),
       tdAttr: { 'data-testid': 'trace-operation' },
+      tdClass: 'gl-word-break-word',
     },
     {
       key: 'duration',
@@ -35,7 +37,6 @@ export default {
   ],
   components: {
     GlTable,
-    GlTruncate,
     GlBadge,
   },
   props: {
@@ -104,14 +105,6 @@ export default {
         <div class="gl-mt-4">
           <gl-badge variant="info">{{ matchesBadgeContent(item) }}</gl-badge>
         </div>
-      </template>
-
-      <template #cell(service_name)="{ item }">
-        <gl-truncate :text="item.service_name" with-tooltip />
-      </template>
-
-      <template #cell(operation)="{ item }">
-        <gl-truncate :text="item.operation" with-tooltip />
       </template>
 
       <template #empty>
