@@ -34,7 +34,8 @@ RSpec.describe GitlabSchema.types['Query'], feature_category: :shared do
       :instance_google_cloud_logging_configurations,
       :audit_events_instance_amazon_s3_configurations,
       :member_role,
-      :self_managed_add_on_eligible_users
+      :self_managed_add_on_eligible_users,
+      :member_roles
     ]
 
     all_expected_fields = expected_foss_fields + expected_ee_fields

@@ -6,7 +6,7 @@ module MemberRoles
   class RolesFinder
     attr_reader :current_user, :params
 
-    VALID_PARAMS = [:parent, :id].freeze
+    VALID_PARAMS = [:parent, :id, :instance_roles].freeze
 
     def initialize(current_user, params = {})
       @current_user = current_user
@@ -19,6 +19,7 @@ module MemberRoles
       items = MemberRole.all
       items = by_parent(items)
       items = by_id(items)
+      items = for_instance(items)
 
       items.ordered_by_name
     end
@@ -30,6 +31,7 @@ module MemberRoles
     end
 
     def valid_params
+      params.delete(:instance_roles) unless can_read_instance_roles?
       params.slice(*VALID_PARAMS)
     end
 
@@ -49,8 +51,21 @@ module MemberRoles
       items.by_namespace(allowed_group_ids(items))
     end
 
+    def for_instance(items)
+      return items if params[:instance_roles].blank?
+
+      items.by_namespace(nil)
+    end
+
     def root_ancestor
       params[:parent]&.root_ancestor
+    end
+
+    def can_read_instance_roles?
+      # for SaaS only group level roles are allowed
+      return false if Gitlab::Saas.feature_available?(:group_custom_roles)
+
+      Ability.allowed?(current_user, :admin_member_role)
     end
 
     def allowed_group_ids(items)
@@ -58,9 +73,7 @@ module MemberRoles
     end
 
     def allowed_read_member_role?(group)
-      return false unless Ability.allowed?(current_user, :admin_group_member, group)
-
-      group.custom_roles_enabled?
+      Ability.allowed?(current_user, :admin_member_role, group)
     end
   end
 end
