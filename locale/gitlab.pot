@@ -14983,6 +14983,12 @@ msgstr ""
 msgid "CurrentUser|Edit profile"
 msgstr ""
 
+msgid "CurrentUser|Enter Admin Mode"
+msgstr ""
+
+msgid "CurrentUser|Leave Admin Mode"
+msgstr ""
+
 msgid "CurrentUser|One of your groups is running out"
 msgstr ""
 
@@ -31749,9 +31755,6 @@ msgstr ""
 msgid "Navigation|Deploy"
 msgstr ""
 
-msgid "Navigation|Enter admin mode"
-msgstr ""
-
 msgid "Navigation|Explore"
 msgstr ""
 
@@ -31762,9 +31765,6 @@ msgid "Navigation|Frequently visited projects"
 msgstr ""
 
 msgid "Navigation|Groups you visit often will appear here."
-msgstr ""
-
-msgid "Navigation|Leave admin mode"
 msgstr ""
 
 msgid "Navigation|Manage"
