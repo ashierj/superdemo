@@ -206,7 +206,6 @@ trigger-omnibus-env:
       echo "OMNIBUS_GITLAB_CACHE_UPDATE=${OMNIBUS_GITLAB_CACHE_UPDATE:-false}" >> $BUILD_ENV
       for version_file in *_VERSION; do echo "$version_file=$(cat $version_file)" >> $BUILD_ENV; done
       echo "OMNIBUS_GITLAB_BUILD_ON_ALL_OS=${OMNIBUS_GITLAB_BUILD_ON_ALL_OS:-false}" >> $BUILD_ENV
-      echo "USE_OLD_RUBY_VERSION=${USE_OLD_RUBY_VERSION:-false}" >> $BUILD_ENV
       ruby -e 'puts "FULL_RUBY_VERSION=#{RUBY_VERSION}"' >> $BUILD_ENV
       echo "GITLAB_ASSETS_TAG=$(assets_image_tag)" >> $BUILD_ENV
       echo "EE=$([[ $FOSS_ONLY == '1' ]] && echo 'false' || echo 'true')" >> $BUILD_ENV
