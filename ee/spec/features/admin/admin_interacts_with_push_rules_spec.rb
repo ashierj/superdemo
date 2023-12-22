@@ -10,7 +10,7 @@ RSpec.describe "Admin interacts with push rules", feature_category: :source_code
   before do
     stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
     sign_in(user)
-    gitlab_enable_admin_mode_sign_in(user)
+    enable_admin_mode!(user)
   end
 
   push_rules_with_titles = {

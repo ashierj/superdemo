@@ -29,7 +29,7 @@ RSpec.describe 'Admin Geo Sites', :js, :geo, feature_category: :geo_replication 
     allow(Gitlab::Geo).to receive(:license_allows?).and_return(true)
     admin = create(:admin)
     sign_in(admin)
-    gitlab_enable_admin_mode_sign_in(admin)
+    enable_admin_mode!(admin)
   end
 
   describe 'index' do

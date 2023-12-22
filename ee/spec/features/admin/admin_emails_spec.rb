@@ -8,7 +8,7 @@ RSpec.describe 'Admin::Emails', :clean_gitlab_redis_shared_state do
   before do
     admin = create(:admin)
     sign_in(admin)
-    gitlab_enable_admin_mode_sign_in(admin)
+    enable_admin_mode!(admin)
   end
 
   context 'when `send_emails_from_admin_area` feature is not licensed', feature_category: :system_access do

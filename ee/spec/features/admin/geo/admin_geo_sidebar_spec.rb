@@ -14,7 +14,7 @@ RSpec.describe 'admin Geo Sidebar', :js, :geo, feature_category: :geo_replicatio
     stub_licensed_features(geo: true)
     stub_current_geo_node(primary_node)
     sign_in(admin)
-    gitlab_enable_admin_mode_sign_in(admin)
+    enable_admin_mode!(admin)
   end
 
   shared_examples 'active sidebar link' do |link_name|
