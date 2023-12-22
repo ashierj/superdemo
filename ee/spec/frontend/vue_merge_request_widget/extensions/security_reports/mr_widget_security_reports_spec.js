@@ -364,7 +364,7 @@ describe('MR Widget Security Reports', () => {
 
       expect(wrapper.findByText(/Weak password/).exists()).toBe(true);
       expect(wrapper.findByText(/Password leak/).exists()).toBe(true);
-      expect(wrapper.findByTestId('SAST-report-header').text()).toBe(
+      expect(wrapper.findByTestId('sast-scan-report').text()).toBe(
         'SAST detected 2 new potential vulnerabilities',
       );
     });

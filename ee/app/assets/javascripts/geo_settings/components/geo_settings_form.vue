@@ -90,7 +90,6 @@ export default {
     <section class="gl-display-flex">
       <gl-button
         data-testid="settingsSaveButton"
-        data-qa-selector="add_site_button"
         class="gl-mr-3"
         variant="confirm"
         :disabled="formHasError"

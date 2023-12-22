@@ -329,7 +329,7 @@ export default {
               findings: [...added, ...fixed],
               numberOfNewFindings: added.length,
               numberOfFixedFindings: fixed.length,
-              qaSelector: this.$options.qaSelectors[reportType],
+              testId: this.$options.testId[reportType],
             };
 
             this.$set(this.collapsedData, reportType, report);
@@ -616,14 +616,14 @@ export default {
       }),
     },
   },
-  qaSelectors: {
-    SAST: 'sast_scan_report',
-    DAST: 'dast_scan_report',
-    DEPENDENCY_SCANNING: 'dependency_scan_report',
-    SECRET_DETECTION: 'secret_detection_report',
-    CONTAINER_SCANNING: 'container_scan_report',
-    COVERAGE_FUZZING: 'coverage_fuzzing_report',
-    API_FUZZING: 'api_fuzzing_report',
+  testId: {
+    SAST: 'sast-scan-report',
+    DAST: 'dast-scan-report',
+    DEPENDENCY_SCANNING: 'dependency-scan-report',
+    SECRET_DETECTION: 'secret-detection-report',
+    CONTAINER_SCANNING: 'container-scan-report',
+    COVERAGE_FUZZING: 'coverage-fuzzing-report',
+    API_FUZZING: 'api-fuzzing-report',
   },
 };
 </script>
@@ -709,8 +709,7 @@ export default {
               :is-loading="false"
               :error="report.error"
               :scanner="report.reportTypeDescription"
-              :data-testid="`${report.reportType}-report-header`"
-              :data-qa-selector="report.qaSelector"
+              :data-testid="`${report.testId}`"
               show-at-least-hint
             />
             <summary-highlights
