@@ -15,6 +15,10 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
     create(:zoekt_indexed_namespace, node: node, namespace: indexed_namespace2)
   end
 
+  describe 'relations' do
+    it { is_expected.to have_many(:indices).inverse_of(:node) }
+  end
+
   it 'has many indexed_namespaces' do
     expect(node.indexed_namespaces.count).to eq(2)
     expect(node.indexed_namespaces.map(&:namespace)).to contain_exactly(indexed_namespace1, indexed_namespace2)
