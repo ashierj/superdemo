@@ -5,7 +5,7 @@ module Gitlab
     module Importers
       class UsersImporter
         include Loggable
-        include UserCaching
+        include UserFromMention
 
         BATCH_SIZE = 100
 
@@ -47,7 +47,7 @@ module Gitlab
             hash[cache_key] = user.email
           end
 
-          ::Gitlab::Cache::Import::Caching.write_multiple(users_hash)
+          cache_multiple(users_hash)
         end
 
         def client
