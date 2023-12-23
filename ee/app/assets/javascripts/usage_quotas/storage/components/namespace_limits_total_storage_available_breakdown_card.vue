@@ -1,5 +1,5 @@
 <script>
-import { GlIcon, GlLink, GlCard, GlSkeletonLoader } from '@gitlab/ui';
+import { GlIcon, GlLink, GlCard } from '@gitlab/ui';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
 import { sprintf, s__ } from '~/locale';
 import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
@@ -20,7 +20,7 @@ import {
 
 export default {
   name: 'NamespaceLimitsTotalStorageAvailableBreakdownCard',
-  components: { GlIcon, GlLink, GlCard, GlSkeletonLoader, NumberToHumanSize },
+  components: { GlIcon, GlLink, GlCard, NumberToHumanSize },
   inject: ['namespacePlanName', 'namespaceStorageLimit'],
   props: {
     purchasedStorage: {
@@ -53,46 +53,44 @@ export default {
 
 <template>
   <gl-card data-testid="storage-detail-card">
-    <gl-skeleton-loader v-if="loading" :height="64">
-      <rect width="140" height="30" x="5" y="0" rx="4" />
-      <rect width="240" height="10" x="5" y="40" rx="4" />
-      <rect width="340" height="10" x="5" y="54" rx="4" />
-    </gl-skeleton-loader>
-    <div v-else>
-      <div
-        class="gl-display-flex gl-justify-content-space-between gl-gap-5"
-        data-testid="storage-included-in-plan"
-      >
-        <div class="gl-w-80p">{{ planStorageDescription }}</div>
-        <number-to-human-size class="gl-white-space-nowrap" :value="namespaceStorageLimit" />
+    <div
+      class="gl-display-flex gl-justify-content-space-between gl-gap-5"
+      data-testid="storage-included-in-plan"
+    >
+      <div class="gl-w-80p">{{ planStorageDescription }}</div>
+      <div v-if="loading" class="gl-animate-skeleton-loader gl-w-8 gl-h-5 gl-rounded-base"></div>
+      <number-to-human-size v-else class="gl-white-space-nowrap" :value="namespaceStorageLimit" />
+    </div>
+    <div class="gl-display-flex gl-justify-content-space-between">
+      <div class="gl-w-80p">
+        {{ $options.i18n.STORAGE_STATISTICS_PURCHASED_STORAGE }}
+        <gl-link
+          :href="$options.i18n.PURCHASED_USAGE_HELP_LINK"
+          target="_blank"
+          class="gl-ml-2"
+          :aria-label="$options.i18n.STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE"
+        >
+          <gl-icon name="question-o" />
+        </gl-link>
       </div>
-      <div class="gl-display-flex gl-justify-content-space-between">
-        <div class="gl-w-80p">
-          {{ $options.i18n.STORAGE_STATISTICS_PURCHASED_STORAGE }}
-          <gl-link
-            :href="$options.i18n.PURCHASED_USAGE_HELP_LINK"
-            target="_blank"
-            class="gl-ml-2"
-            :aria-label="$options.i18n.STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE"
-          >
-            <gl-icon name="question-o" />
-          </gl-link>
-        </div>
-        <number-to-human-size
-          class="gl-white-space-nowrap"
-          :value="purchasedStorage"
-          data-testid="storage-purchased"
-        />
-      </div>
-      <hr />
-      <div class="gl-display-flex gl-justify-content-space-between">
-        <div class="gl-w-80p">{{ $options.i18n.STORAGE_STATISTICS_TOTAL_STORAGE }}</div>
-        <number-to-human-size
-          class="gl-white-space-nowrap"
-          :value="totalStorageAvailable"
-          data-testid="total-storage"
-        />
-      </div>
+      <div v-if="loading" class="gl-animate-skeleton-loader gl-w-8 gl-h-5 gl-rounded-base"></div>
+      <number-to-human-size
+        v-else
+        class="gl-white-space-nowrap"
+        :value="purchasedStorage"
+        data-testid="storage-purchased"
+      />
+    </div>
+    <hr />
+    <div class="gl-display-flex gl-justify-content-space-between">
+      <div class="gl-w-80p">{{ $options.i18n.STORAGE_STATISTICS_TOTAL_STORAGE }}</div>
+      <div v-if="loading" class="gl-animate-skeleton-loader gl-w-8 gl-h-5 gl-rounded-base"></div>
+      <number-to-human-size
+        v-else
+        class="gl-white-space-nowrap"
+        :value="totalStorageAvailable"
+        data-testid="total-storage"
+      />
     </div>
   </gl-card>
 </template>
