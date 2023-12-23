@@ -3,6 +3,7 @@ import { GlAlert, GlButton, GlButtonGroup } from '@gitlab/ui';
 import { cloneDeep } from 'lodash';
 import BurnupQueryIteration from 'shared_queries/burndown_chart/burnup.iteration.query.graphql';
 import BurnupQueryMilestone from 'shared_queries/burndown_chart/burnup.milestone.query.graphql';
+import SegmentedControlButtonGroup from '~/vue_shared/components/segmented_control_button_group.vue';
 import { createAlert } from '~/alert';
 import { STATUS_CLOSED, WORKSPACE_GROUP } from '~/issues/constants';
 import dateFormat from '~/lib/dateformat';
@@ -16,11 +17,15 @@ import BurnupChart from './burnup_chart.vue';
 import OpenTimeboxSummary from './open_timebox_summary.vue';
 import TimeboxSummaryCards from './timebox_summary_cards.vue';
 
+export const FILTER_BY_ISSUES = 'issues';
+export const FILTER_BY_ISSUE_WEIGHT = 'issue_weight';
+
 export default {
   components: {
     GlAlert,
     GlButton,
     GlButtonGroup,
+    SegmentedControlButtonGroup,
     BurndownChart,
     BurnupChart,
     OpenTimeboxSummary,
@@ -174,6 +179,9 @@ export default {
       }
       return this.pluckBurnupDataProperties('scopeWeight', 'completedWeight');
     },
+    filterBySelectedValue() {
+      return this.issuesSelected ? FILTER_BY_ISSUES : FILTER_BY_ISSUE_WEIGHT;
+    },
   },
   methods: {
     fetchLegacyBurndownEvents() {
@@ -290,7 +298,18 @@ export default {
 
       return acc;
     },
+    handleFilterByChanged(value) {
+      this.setIssueSelected(value === FILTER_BY_ISSUES);
+    },
   },
+  filterByOptions: [
+    { value: FILTER_BY_ISSUES, text: __('Issues'), props: { 'data-testid': 'issue-button' } },
+    {
+      value: FILTER_BY_ISSUE_WEIGHT,
+      text: __('Issue weight'),
+      props: { 'data-testid': 'weight-button' },
+    },
+  ],
 };
 </script>
 
@@ -298,27 +317,11 @@ export default {
   <div>
     <div class="burndown-header gl-display-flex gl-align-items-center gl-flex-wrap">
       <strong ref="filterLabel">{{ __('Filter by') }}</strong>
-      <gl-button-group>
-        <gl-button
-          ref="totalIssuesButton"
-          :category="issueButtonCategory"
-          variant="confirm"
-          size="small"
-          @click="setIssueSelected(true)"
-        >
-          {{ __('Issues') }}
-        </gl-button>
-        <gl-button
-          ref="totalWeightButton"
-          :category="weightButtonCategory"
-          variant="confirm"
-          size="small"
-          data-testid="weight-button"
-          @click="setIssueSelected(false)"
-        >
-          {{ __('Issue weight') }}
-        </gl-button>
-      </gl-button-group>
+      <segmented-control-button-group
+        :value="filterBySelectedValue"
+        :options="$options.filterByOptions"
+        @input="handleFilterByChanged"
+      />
 
       <gl-button-group v-if="showNewOldBurndownToggle">
         <gl-button
