@@ -1,4 +1,3 @@
-import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -6,9 +5,13 @@ import timezoneMock from 'timezone-mock';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import SegmentedControlButtonGroup from '~/vue_shared/components/segmented_control_button_group.vue';
 import BurnupQueryIteration from 'shared_queries/burndown_chart/burnup.iteration.query.graphql';
 import BurnupQueryMilestone from 'shared_queries/burndown_chart/burnup.milestone.query.graphql';
-import BurnCharts from 'ee/burndown_chart/components/burn_charts.vue';
+import BurnCharts, {
+  FILTER_BY_ISSUES,
+  FILTER_BY_ISSUE_WEIGHT,
+} from 'ee/burndown_chart/components/burn_charts.vue';
 import BurndownChart from 'ee/burndown_chart/components/burndown_chart.vue';
 import BurnupChart from 'ee/burndown_chart/components/burnup_chart.vue';
 import OpenTimeboxSummary from 'ee/burndown_chart/components/open_timebox_summary.vue';
@@ -31,12 +34,7 @@ describe('burndown_chart', () => {
   let mock;
 
   const findFilterLabel = () => wrapper.findComponent({ ref: 'filterLabel' });
-  const findIssuesButton = () => wrapper.findComponent({ ref: 'totalIssuesButton' });
-  const findWeightButton = () => wrapper.findComponent({ ref: 'totalWeightButton' });
-  const findActiveButtons = () =>
-    wrapper
-      .findAllComponents(GlButton)
-      .filter((button) => button.attributes().category === 'primary');
+  const findFilterByControl = () => wrapper.findComponent(SegmentedControlButtonGroup);
   const findBurndownChart = () => wrapper.findComponent(BurndownChart);
   const findBurnupChart = () => wrapper.findComponent(BurnupChart);
   const findOldBurndownChartButton = () => wrapper.findComponent({ ref: 'oldBurndown' });
@@ -100,25 +98,25 @@ describe('burndown_chart', () => {
   it('includes Issues and Issue weight buttons', () => {
     createComponent();
 
-    expect(findIssuesButton().text()).toBe('Issues');
-    expect(findWeightButton().text()).toBe('Issue weight');
+    expect(findFilterByControl().props('options')).toEqual([
+      { value: 'issues', text: 'Issues', props: { 'data-testid': 'issue-button' } },
+      { value: 'issue_weight', text: 'Issue weight', props: { 'data-testid': 'weight-button' } },
+    ]);
   });
 
   it('defaults to total issues', () => {
     createComponent();
 
-    expect(findActiveButtons()).toHaveLength(1);
-    expect(findActiveButtons().at(0).text()).toBe('Issues');
+    expect(findFilterByControl().props('value')).toBe(FILTER_BY_ISSUES);
     expect(findBurndownChart().props('issuesSelected')).toBe(true);
   });
 
   it('toggles Issue weight', async () => {
     createComponent();
 
-    await findWeightButton().vm.$emit('click');
+    await findFilterByControl().vm.$emit('input', FILTER_BY_ISSUE_WEIGHT);
 
-    expect(findActiveButtons()).toHaveLength(1);
-    expect(findActiveButtons().at(0).text()).toBe('Issue weight');
+    expect(findFilterByControl().props('value')).toBe(FILTER_BY_ISSUE_WEIGHT);
     expect(findBurndownChart().props('issuesSelected')).toBe(false);
   });
 
@@ -138,7 +136,7 @@ describe('burndown_chart', () => {
   it('sets weight prop of burnup chart', async () => {
     createComponent();
 
-    await findWeightButton().vm.$emit('click');
+    await findFilterByControl().vm.$emit('input', FILTER_BY_ISSUE_WEIGHT);
 
     expect(findBurnupChart().props('issuesSelected')).toBe(false);
   });
@@ -194,7 +192,7 @@ describe('burndown_chart', () => {
     });
 
     it('sets openIssueWeight based on computed burnup data', async () => {
-      await findWeightButton().vm.$emit('click');
+      await findFilterByControl().vm.$emit('input', FILTER_BY_ISSUE_WEIGHT);
       await waitForPromises();
 
       const { openIssuesWeight } = findBurndownChart().props();
