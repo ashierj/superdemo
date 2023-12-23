@@ -176,6 +176,7 @@ export default {
             <gl-sprintf :message="$options.i18n.scannerHumanizedTemplate">
               <template #scan>
                 <gl-collapsible-listbox
+                  data-testid="scan-type-selector"
                   :items="actionScannerList"
                   :header-text="$options.i18n.scannersHeaderText"
                   :selected="selectedScanner"
