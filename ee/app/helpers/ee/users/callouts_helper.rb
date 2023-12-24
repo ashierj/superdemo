@@ -37,10 +37,6 @@ module EE
         render 'shared/two_factor_auth_recovery_settings_check'
       end
 
-      def show_profile_token_expiry_notification?
-        !user_dismissed?(PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY, 1.day.ago)
-      end
-
       def show_new_user_signups_cap_reached?
         return false unless current_user&.can_admin_all_resources?
         return false if user_dismissed?(NEW_USER_SIGNUPS_CAP_REACHED)
