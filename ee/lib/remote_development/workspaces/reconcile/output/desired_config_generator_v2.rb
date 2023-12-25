@@ -8,7 +8,7 @@ module RemoteDevelopment
         # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         # noinspection RubyClassMethodNamingConvention,RubyLocalVariableNamingConvention,RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
         # rubocop:enable Layout/LineLength
-        class DesiredConfigGenerator
+        class DesiredConfigGeneratorV2
           include States
 
           # @param [RemoteDevelopment::Workspaces::Workspace] workspace
@@ -24,19 +24,11 @@ module RemoteDevelopment
             replicas = get_workspace_replicas(desired_state: workspace.desired_state)
             domain_template = get_domain_template_annotation(name: workspace.name, dns_zone: workspace.dns_zone)
             inventory_name = "#{workspace.name}-workspace-inventory"
-
-            remote_development_agent_config = workspace.agent.remote_development_agent_config
-            max_resources_per_workspace =
-              remote_development_agent_config.max_resources_per_workspace.deep_symbolize_keys
-            default_resources_per_workspace_container =
-              remote_development_agent_config.default_resources_per_workspace_container.deep_symbolize_keys
-
             labels, annotations = get_labels_and_annotations(
               agent_id: workspace.agent.id,
               domain_template: domain_template,
               owning_inventory: inventory_name,
-              workspace_id: workspace.id,
-              max_resources_per_workspace: max_resources_per_workspace
+              workspace_id: workspace.id
             )
 
             k8s_inventory_for_workspace_core = get_inventory_config_map(
@@ -46,7 +38,7 @@ module RemoteDevelopment
             )
 
             # TODO: https://gitlab.com/groups/gitlab-org/-/epics/10461 - handle error
-            k8s_resources_for_workspace_core = DevfileParser.get_all(
+            k8s_resources_for_workspace_core = DevfileParserV2.get_all(
               processed_devfile: workspace.processed_devfile,
               name: workspace.name,
               namespace: workspace.namespace,
@@ -56,7 +48,6 @@ module RemoteDevelopment
               annotations: annotations,
               env_secret_names: env_secret_names,
               file_secret_names: file_secret_names,
-              default_resources_per_workspace_container: default_resources_per_workspace_container,
               logger: logger
             )
             # If we got no resources back from the devfile parser, this indicates some error was encountered in parsing
@@ -67,6 +58,7 @@ module RemoteDevelopment
 
             desired_config.append(k8s_inventory_for_workspace_core, *k8s_resources_for_workspace_core)
 
+            remote_development_agent_config = workspace.agent.remote_development_agent_config
             if remote_development_agent_config.network_policy_enabled
               gitlab_workspaces_proxy_namespace = remote_development_agent_config.gitlab_workspaces_proxy_namespace
               network_policy = get_network_policy(
@@ -81,22 +73,10 @@ module RemoteDevelopment
             end
 
             if include_all_resources
-              unless max_resources_per_workspace.blank?
-                k8s_resource_quota = get_resource_quota(
-                  name: workspace.name,
-                  namespace: workspace.namespace,
-                  labels: labels,
-                  annotations: annotations,
-                  max_resources_per_workspace: max_resources_per_workspace
-                )
-                desired_config.append(k8s_resource_quota)
-              end
-
               k8s_resources_for_secrets = get_k8s_resources_for_secrets(
                 workspace: workspace,
                 env_secret_name: env_secret_name,
-                file_secret_name: file_secret_name,
-                max_resources_per_workspace: max_resources_per_workspace
+                file_secret_name: file_secret_name
               )
               desired_config.append(*k8s_resources_for_secrets)
             end
@@ -109,22 +89,15 @@ module RemoteDevelopment
           # @param [String] file_secret_name
           # @param [String] env_secret_name
           # @param [String] file_secret_name
-          # @param [Hash] max_resources_per_workspace
           # @return [Array<(Hash)>]
-          def self.get_k8s_resources_for_secrets(
-            workspace:,
-            env_secret_name:,
-            file_secret_name:,
-            max_resources_per_workspace:
-          )
+          def self.get_k8s_resources_for_secrets(workspace:, env_secret_name:, file_secret_name:)
             inventory_name = "#{workspace.name}-secrets-inventory"
             domain_template = get_domain_template_annotation(name: workspace.name, dns_zone: workspace.dns_zone)
             labels, annotations = get_labels_and_annotations(
               agent_id: workspace.agent.id,
               domain_template: domain_template,
               owning_inventory: inventory_name,
-              workspace_id: workspace.id,
-              max_resources_per_workspace: max_resources_per_workspace
+              workspace_id: workspace.id
             )
 
             k8s_inventory = get_inventory_config_map(
@@ -195,14 +168,12 @@ module RemoteDevelopment
           # @param [String] owning_inventory
           # @param [String] object_type
           # @param [Integer] workspace_id
-          # @param [Hash] max_resources_per_workspace
           # @return [Array<Hash, Hash>]
           def self.get_labels_and_annotations(
             agent_id:,
             domain_template:,
             owning_inventory:,
-            workspace_id:,
-            max_resources_per_workspace:
+            workspace_id:
           )
             labels = {
               'agent.gitlab.com/id' => agent_id.to_s
@@ -210,9 +181,7 @@ module RemoteDevelopment
             annotations = {
               'config.k8s.io/owning-inventory' => owning_inventory.to_s,
               'workspaces.gitlab.com/host-template' => domain_template.to_s,
-              'workspaces.gitlab.com/id' => workspace_id.to_s,
-              'workspaces.gitlab.com/max-resources-per-workspace-sha256' =>
-                Digest::SHA256.hexdigest(max_resources_per_workspace.sort.to_h.to_s)
+              'workspaces.gitlab.com/id' => workspace_id.to_s
             }
             [labels, annotations]
           end
@@ -308,39 +277,6 @@ module RemoteDevelopment
                 ingress: ingress,
                 podSelector: {},
                 policyTypes: policy_types
-              }
-            }.deep_stringify_keys.to_h
-          end
-
-          # @param [String] name
-          # @param [String] namespace
-          # @param [Hash] labels
-          # @param [Hash] annotations
-          # @param [Hash] max_resources_per_workspace
-          # @return [Hash]
-          def self.get_resource_quota(
-            name:,
-            namespace:,
-            labels:,
-            annotations:,
-            max_resources_per_workspace:
-          )
-            {
-              apiVersion: "v1",
-              kind: "ResourceQuota",
-              metadata: {
-                annotations: annotations,
-                labels: labels,
-                name: name,
-                namespace: namespace
-              },
-              spec: {
-                hard: {
-                  "limits.cpu": max_resources_per_workspace.dig(:limits, :cpu),
-                  "limits.memory": max_resources_per_workspace.dig(:limits, :memory),
-                  "requests.cpu": max_resources_per_workspace.dig(:requests, :cpu),
-                  "requests.memory": max_resources_per_workspace.dig(:requests, :memory)
-                }
               }
             }.deep_stringify_keys.to_h
           end

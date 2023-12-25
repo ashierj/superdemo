@@ -18,6 +18,7 @@ module RemoteDevelopment
           # @param [Hash] annotations
           # @param [Array<String>] env_secret_names
           # @param [Array<String>] file_secret_names
+          # @param [Hash] default_resources_per_workspace_container
           # @param [RemoteDevelopment::Logger] logger
           # @return [Array<Hash>]
           def self.get_all(
@@ -30,6 +31,7 @@ module RemoteDevelopment
             annotations:,
             env_secret_names:,
             file_secret_names:,
+            default_resources_per_workspace_container:,
             logger:
           )
             begin
@@ -56,6 +58,11 @@ module RemoteDevelopment
 
             workspace_resources = YAML.load_stream(workspace_resources_yaml)
             workspace_resources = set_security_context(workspace_resources: workspace_resources)
+            workspace_resources = patch_default_resources(
+              workspace_resources: workspace_resources,
+              default_resources_per_workspace_container:
+                default_resources_per_workspace_container.deep_stringify_keys.to_h
+            )
             inject_secrets(
               workspace_resources: workspace_resources,
               env_secret_names: env_secret_names,
@@ -102,6 +109,32 @@ module RemoteDevelopment
               # Explicitly set security context for all init containers
               pod_spec['initContainers'].each do |init_container|
                 init_container['securityContext'] = container_security_context
+              end
+            end
+            workspace_resources
+          end
+
+          # @param [Array<Hash>] workspace_resources
+          # @param [Hash] default_resources_per_workspace_container
+          # @return [Array<Hash>]
+          def self.patch_default_resources(workspace_resources:, default_resources_per_workspace_container:)
+            workspace_resources.each do |workspace_resource|
+              next unless workspace_resource.fetch('kind') == 'Deployment'
+
+              pod_spec = workspace_resource.fetch('spec').fetch('template').fetch('spec')
+
+              # the purpose of this deep_merge (and the one below) is to ensure
+              # the values from the devfile override any defaults defined at the agent
+              pod_spec.fetch('initContainers').each do |init_container|
+                init_container
+                  .fetch('resources', {})
+                  .deep_merge!(default_resources_per_workspace_container) { |_, val, _| val }
+              end
+
+              pod_spec.fetch('containers').each do |container|
+                container
+                  .fetch('resources', {})
+                  .deep_merge!(default_resources_per_workspace_container) { |_, val, _| val }
               end
             end
             workspace_resources
