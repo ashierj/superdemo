@@ -36,7 +36,7 @@ RSpec.shared_context 'for a Query.project.clusterAgent.workspaces query' do
   end
 
   before do
-    agent_project.add_maintainer(cluster_admin_user) # rubocop:disable RSpec/BeforeAllRoleAssignment -- this needs to be `before`, not `before_all`
+    agent_project.add_maintainer(cluster_admin_user)
     agent.update!(created_by_user: cluster_admin_user)
     workspace.reload # Ensure loaded workspace fixture's agent reflects updated created_by_user
   end
