@@ -7,8 +7,11 @@ components:
       gl/inject-editor: true
     container:
       image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
-      command:
+      args:
         - /projects/.gl-editor/start_server.sh
+      command:
+        - "/bin/sh"
+        - "-c"
       volumeMounts:
         - name: gl-workspace-data
           path: /projects
@@ -36,7 +39,7 @@ components:
       size: 15Gi
   - name: gl-editor-injector
     container:
-      image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:2
+      image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:4
       volumeMounts:
         - name: gl-workspace-data
           path: /projects

@@ -590,9 +590,10 @@ RSpec.shared_context 'with remote development shared fixtures' do
           spec: {
             containers: [
               {
-                command: [
+                args: [
                   "/projects/.gl-editor/start_server.sh"
                 ],
+                command: %w[/bin/sh -c],
                 env: [
                   {
                     name: "EDITOR_VOLUME_DIR",
@@ -737,7 +738,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
                     value: "/projects"
                   }
                 ],
-                image: "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:2",
+                image: "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:4",
                 imagePullPolicy: "Always",
                 name: "gl-editor-injector-gl-editor-injector-command-2",
                 resources: {
