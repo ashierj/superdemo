@@ -294,8 +294,139 @@ RSpec.shared_context 'with remote development shared fixtures' do
     }.compact
   end
 
+  def create_config_to_apply(workspace:, **args)
+    latest_config_version = ::RemoteDevelopment::Workspaces::ConfigVersion::LATEST_VERSION
+    config_version =
+      workspace.respond_to?(:config_version) ? workspace.config_version : latest_config_version
+    method_name = "create_config_to_apply_v#{config_version}"
+    send(method_name, workspace: workspace, **args)
+  end
+
   # rubocop:disable Metrics/ParameterLists, Metrics/AbcSize -- Cleanup as part of https://gitlab.com/gitlab-org/gitlab/-/issues/421687
-  def create_config_to_apply(
+  def create_config_to_apply_v3(
+    workspace:,
+    started:,
+    workspace_variables_env_var: nil,
+    workspace_variables_file: nil,
+    include_inventory: true,
+    include_network_policy: true,
+    include_all_resources: false,
+    dns_zone: 'workspaces.localdev.me',
+    egress_ip_rules: RemoteDevelopment::AgentConfig::Updater::NETWORK_POLICY_EGRESS_DEFAULT,
+    max_resources_per_workspace: {},
+    default_resources_per_workspace_container: {}
+  )
+    spec_replicas = started == true ? 1 : 0
+    host_template_annotation = get_workspace_host_template_annotation(workspace.name, dns_zone)
+    max_resources_per_workspace_sha256 = Digest::SHA256.hexdigest(
+      max_resources_per_workspace.sort.to_h.to_s
+    )
+    annotations = {
+      "config.k8s.io/owning-inventory": "#{workspace.name}-workspace-inventory",
+      "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
+      "workspaces.gitlab.com/id": workspace.id.to_s,
+      "workspaces.gitlab.com/max-resources-per-workspace-sha256":
+        max_resources_per_workspace_sha256
+    }
+    labels = {
+      "agent.gitlab.com/id": workspace.agent.id.to_s
+    }
+    secrets_annotations = {
+      "config.k8s.io/owning-inventory": "#{workspace.name}-secrets-inventory",
+      "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
+      "workspaces.gitlab.com/id": workspace.id.to_s,
+      "workspaces.gitlab.com/max-resources-per-workspace-sha256":
+        max_resources_per_workspace_sha256
+    }
+
+    workspace_inventory = workspace_inventory(
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      agent_id: workspace.agent.id
+    )
+
+    workspace_deployment = workspace_deployment(
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      labels: labels,
+      annotations: annotations,
+      spec_replicas: spec_replicas,
+      default_resources_per_workspace_container: default_resources_per_workspace_container
+    )
+
+    workspace_service = workspace_service(
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      labels: labels,
+      annotations: annotations
+    )
+
+    workspace_pvc = workspace_pvc(
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      labels: labels,
+      annotations: annotations
+    )
+
+    workspace_network_policy = workspace_network_policy(
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      labels: labels,
+      annotations: annotations,
+      egress_ip_rules: egress_ip_rules
+    )
+
+    workspace_secrets_inventory = workspace_secrets_inventory(
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      agent_id: workspace.agent.id
+    )
+
+    workspace_secret_env_var = workspace_secret_env_var(
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      labels: labels,
+      annotations: secrets_annotations,
+      workspace_variables_env_var: workspace_variables_env_var || get_workspace_variables_env_var(
+        workspace_variables: workspace.workspace_variables
+      )
+    )
+
+    workspace_secret_file = workspace_secret_file(
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      labels: labels,
+      annotations: secrets_annotations,
+      workspace_variables_file: workspace_variables_file || get_workspace_variables_file(
+        workspace_variables: workspace.workspace_variables
+      )
+    )
+
+    workspace_resource_quota = workspace_resource_quota(
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      labels: labels,
+      annotations: annotations,
+      max_resources_per_workspace: max_resources_per_workspace
+    )
+
+    resources = []
+    resources << workspace_inventory if include_inventory
+    resources << workspace_deployment
+    resources << workspace_service
+    resources << workspace_pvc
+    resources << workspace_network_policy if include_network_policy
+    resources << workspace_resource_quota if include_all_resources && !max_resources_per_workspace.blank?
+    resources << workspace_secrets_inventory if include_all_resources && include_inventory
+    resources << workspace_secret_env_var if include_all_resources
+    resources << workspace_secret_file if include_all_resources
+
+    resources.map do |resource|
+      YAML.dump(resource.deep_stringify_keys)
+    end.join
+  end
+
+  def create_config_to_apply_v2(
     workspace:,
     started:,
     workspace_variables_env_var: nil,
@@ -308,6 +439,19 @@ RSpec.shared_context 'with remote development shared fixtures' do
   )
     spec_replicas = started == true ? 1 : 0
     host_template_annotation = get_workspace_host_template_annotation(workspace.name, dns_zone)
+    annotations = {
+      "config.k8s.io/owning-inventory": "#{workspace.name}-workspace-inventory",
+      "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
+      "workspaces.gitlab.com/id": workspace.id.to_s
+    }
+    labels = {
+      "agent.gitlab.com/id": workspace.agent.id.to_s
+    }
+    secrets_annotations = {
+      "config.k8s.io/owning-inventory": "#{workspace.name}-secrets-inventory",
+      "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
+      "workspaces.gitlab.com/id": workspace.id.to_s
+    }
 
     workspace_inventory = workspace_inventory(
       workspace_name: workspace.name,
@@ -316,62 +460,57 @@ RSpec.shared_context 'with remote development shared fixtures' do
     )
 
     workspace_deployment = workspace_deployment(
-      workspace_id: workspace.id,
       workspace_name: workspace.name,
       workspace_namespace: workspace.namespace,
-      agent_id: workspace.agent.id,
+      labels: labels,
+      annotations: annotations,
       spec_replicas: spec_replicas,
-      host_template_annotation: host_template_annotation
+      default_resources_per_workspace_container: {}
     )
 
     workspace_service = workspace_service(
-      workspace_id: workspace.id,
       workspace_name: workspace.name,
       workspace_namespace: workspace.namespace,
-      agent_id: agent.id,
-      host_template_annotation: host_template_annotation
+      labels: labels,
+      annotations: annotations
     )
 
     workspace_pvc = workspace_pvc(
-      workspace_id: workspace.id,
       workspace_name: workspace.name,
       workspace_namespace: workspace.namespace,
-      agent_id: workspace.agent.id,
-      host_template_annotation: host_template_annotation
+      labels: labels,
+      annotations: annotations
     )
 
     workspace_network_policy = workspace_network_policy(
-      workspace_id: workspace.id,
       workspace_name: workspace.name,
       workspace_namespace: workspace.namespace,
-      agent_id: agent.id,
-      host_template_annotation: host_template_annotation,
+      labels: labels,
+      annotations: annotations,
       egress_ip_rules: egress_ip_rules
     )
 
     workspace_secrets_inventory = workspace_secrets_inventory(
       workspace_name: workspace.name,
       workspace_namespace: workspace.namespace,
-      agent_id: agent.id
+      agent_id: workspace.agent.id
     )
 
     workspace_secret_env_var = workspace_secret_env_var(
-      workspace_id: workspace.id,
       workspace_name: workspace.name,
       workspace_namespace: workspace.namespace,
-      agent_id: agent.id,
-      host_template_annotation: host_template_annotation,
+      labels: labels,
+      annotations: secrets_annotations,
       workspace_variables_env_var: workspace_variables_env_var || get_workspace_variables_env_var(
         workspace_variables: workspace.workspace_variables
       )
     )
 
     workspace_secret_file = workspace_secret_file(
-      workspace_id: workspace.id,
       workspace_name: workspace.name,
       workspace_namespace: workspace.namespace,
-      agent_id: agent.id,
-      host_template_annotation: host_template_annotation,
+      labels: labels,
+      annotations: secrets_annotations,
       workspace_variables_file: workspace_variables_file || get_workspace_variables_file(
         workspace_variables: workspace.workspace_variables
       )
@@ -391,80 +530,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
       YAML.dump(resource.deep_stringify_keys)
     end.join
   end
-  # rubocop:enable Metrics/AbcSize
 
-  def create_config_to_apply_prev1(
-    workspace_id:,
-    workspace_name:,
-    workspace_namespace:,
-    agent_id:,
-    started:,
-    user_name:,
-    user_email:,
-    include_inventory: true,
-    include_network_policy: true,
-    dns_zone: 'workspaces.localdev.me'
-  )
-    spec_replicas = started == true ? 1 : 0
-    host_template_annotation = get_workspace_host_template_annotation(workspace_name, dns_zone)
-    host_template_environment_variable = get_workspace_host_template_env_var(workspace_name, dns_zone)
-
-    workspace_inventory = workspace_inventory(
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
-      agent_id: agent_id
-    )
-
-    workspace_deployment = workspace_deployment_prev1(
-      workspace_id: workspace_id,
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
-      agent_id: agent_id,
-      spec_replicas: spec_replicas,
-      host_template_annotation: host_template_annotation,
-      host_template_environment_variable: host_template_environment_variable,
-      user_name: user_name,
-      user_email: user_email
-    )
-
-    workspace_service = workspace_service(
-      workspace_id: workspace_id,
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
-      agent_id: agent_id,
-      host_template_annotation: host_template_annotation
-    )
-
-    workspace_pvc = workspace_pvc(
-      workspace_id: workspace_id,
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
-      agent_id: agent_id,
-      host_template_annotation: host_template_annotation
-    )
-
-    workspace_network_policy = workspace_network_policy(
-      workspace_id: workspace_id,
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
-      agent_id: agent_id,
-      host_template_annotation: host_template_annotation,
-      egress_ip_rules: RemoteDevelopment::AgentConfig::Updater::NETWORK_POLICY_EGRESS_DEFAULT
-    )
-
-    resources = []
-    resources << workspace_inventory if include_inventory
-    resources << workspace_deployment
-    resources << workspace_service
-    resources << workspace_pvc
-    resources << workspace_network_policy if include_network_policy
-
-    resources.map do |resource|
-      YAML.dump(resource.deep_stringify_keys)
-    end.join
-  end
-
-  # rubocop:enable Metrics/ParameterLists
+  # rubocop:enable Metrics/ParameterLists, Metrics/AbcSize
 
   def workspace_inventory(
     workspace_name:,
@@ -486,51 +553,37 @@ RSpec.shared_context 'with remote development shared fixtures' do
   end
 
   def workspace_deployment(
-    workspace_id:,
     workspace_name:,
     workspace_namespace:,
-    agent_id:,
+    labels:,
+    annotations:,
     spec_replicas:,
-    host_template_annotation:
+    default_resources_per_workspace_container:
   )
     variables_file_mount_path = RemoteDevelopment::Workspaces::FileMounts::VARIABLES_FILE_DIR
     {
       apiVersion: "apps/v1",
       kind: "Deployment",
       metadata: {
-        annotations: {
-          "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
-          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
-          "workspaces.gitlab.com/id": workspace_id.to_s
-        },
+        annotations: annotations,
         creationTimestamp: nil,
-        labels: {
-          "agent.gitlab.com/id": agent_id.to_s
-        },
+        labels: labels,
         name: workspace_name.to_s,
         namespace: workspace_namespace.to_s
       },
       spec: {
         replicas: spec_replicas,
         selector: {
-          matchLabels: {
-            "agent.gitlab.com/id": agent_id.to_s
-          }
+          matchLabels: labels
         },
         strategy: {
           type: "Recreate"
         },
         template: {
           metadata: {
-            annotations: {
-              "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
-              "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
-              "workspaces.gitlab.com/id": workspace_id.to_s
-            },
+            annotations: annotations,
             creationTimestamp: nil,
-            labels: {
-              "agent.gitlab.com/id": agent_id.to_s
-            },
+            labels: labels,
             name: workspace_name.to_s,
             namespace: workspace_namespace.to_s
           },
@@ -577,7 +630,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
                     protocol: "TCP"
                   }
                 ],
-                resources: {},
+                resources: default_resources_per_workspace_container,
                 volumeMounts: [
                   {
                     mountPath: "/projects",
@@ -756,279 +809,19 @@ RSpec.shared_context 'with remote development shared fixtures' do
     }
   end
 
-  # rubocop:todo Metrics/ParameterLists -- refactor this to have fewer parameters - perhaps introduce a parameter object: https://refactoring.com/catalog/introduceParameterObject.html
-  def workspace_deployment_prev1(
-    workspace_id:,
-    workspace_name:,
-    workspace_namespace:,
-    agent_id:,
-    spec_replicas:,
-    host_template_annotation:,
-    host_template_environment_variable:,
-    user_name:,
-    user_email:
-  )
-    {
-      apiVersion: "apps/v1",
-      kind: "Deployment",
-      metadata: {
-        annotations: {
-          "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
-          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
-          "workspaces.gitlab.com/id": workspace_id.to_s
-        },
-        creationTimestamp: nil,
-        labels: {
-          "agent.gitlab.com/id": agent_id.to_s
-        },
-        name: workspace_name.to_s,
-        namespace: workspace_namespace.to_s
-      },
-      spec: {
-        replicas: spec_replicas,
-        selector: {
-          matchLabels: {
-            "agent.gitlab.com/id": agent_id.to_s
-          }
-        },
-        strategy: {
-          type: "Recreate"
-        },
-        template: {
-          metadata: {
-            annotations: {
-              "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
-              "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
-              "workspaces.gitlab.com/id": workspace_id.to_s
-            },
-            creationTimestamp: nil,
-            labels: {
-              "agent.gitlab.com/id": agent_id.to_s
-            },
-            name: workspace_name.to_s,
-            namespace: workspace_namespace.to_s
-          },
-          spec: {
-            containers: [
-              {
-                command: [
-                  "/projects/.gl-editor/start_server.sh"
-                ],
-                env: [
-                  {
-                    name: "EDITOR_VOLUME_DIR",
-                    value: "/projects/.gl-editor"
-                  },
-                  {
-                    name: "EDITOR_PORT",
-                    value: "60001"
-                  },
-                  {
-                    name: "SSH_PORT",
-                    value: "60022"
-                  },
-                  {
-                    name: "PROJECTS_ROOT",
-                    value: "/projects"
-                  },
-                  {
-                    name: "PROJECT_SOURCE",
-                    value: "/projects"
-                  },
-                  {
-                    name: "GL_WORKSPACE_DOMAIN_TEMPLATE",
-                    value: host_template_environment_variable.to_s
-                  }
-                ],
-                image: "quay.io/mloriedo/universal-developer-image:ubi8-dw-demo",
-                imagePullPolicy: "Always",
-                name: "tooling-container",
-                ports: [
-                  {
-                    containerPort: 60001,
-                    name: "editor-server",
-                    protocol: "TCP"
-                  },
-                  {
-                    containerPort: 60022,
-                    name: "ssh-server",
-                    protocol: "TCP"
-                  }
-                ],
-                resources: {},
-                volumeMounts: [
-                  {
-                    mountPath: "/projects",
-                    name: "gl-workspace-data"
-                  }
-                ],
-                securityContext: {
-                  allowPrivilegeEscalation: false,
-                  privileged: false,
-                  runAsNonRoot: true,
-                  runAsUser: 5001
-                }
-              }
-            ],
-            initContainers: [
-              {
-                args: [
-                  <<~ARGS.chomp
-                    if [ ! -d '/projects/test-project' ];
-                    then
-                      git clone --branch master #{root_url}test-group/test-project.git /projects/test-project;
-                      cd /projects/test-project;
-                      git config user.name "${GIT_AUTHOR_NAME}";
-                      git config user.email "${GIT_AUTHOR_EMAIL}";
-                    fi
-                  ARGS
-                ],
-                command: %w[/bin/sh -c],
-                env: [
-                  {
-                    name: "PROJECTS_ROOT",
-                    value: "/projects"
-                  },
-                  {
-                    name: "PROJECT_SOURCE",
-                    value: "/projects"
-                  },
-                  {
-                    name: "GIT_AUTHOR_NAME",
-                    value: user_name.to_s
-                  },
-                  {
-                    name: "GIT_AUTHOR_EMAIL",
-                    value: user_email.to_s
-                  },
-                  {
-                    name: "GL_WORKSPACE_DOMAIN_TEMPLATE",
-                    value: host_template_environment_variable.to_s
-                  }
-                ],
-                image: "alpine/git:2.36.3",
-                imagePullPolicy: "Always",
-                name: "gl-cloner-injector-gl-cloner-injector-command-1",
-                resources: {
-                  limits: {
-                    cpu: "500m",
-                    memory: "256Mi"
-                  },
-                  requests: {
-                    cpu: "100m",
-                    memory: "128Mi"
-                  }
-                },
-                volumeMounts: [
-                  {
-                    mountPath: "/projects",
-                    name: "gl-workspace-data"
-                  }
-                ],
-                securityContext: {
-                  allowPrivilegeEscalation: false,
-                  privileged: false,
-                  runAsNonRoot: true,
-                  runAsUser: 5001
-                }
-              },
-              {
-                env: [
-                  {
-                    name: "EDITOR_VOLUME_DIR",
-                    value: "/projects/.gl-editor"
-                  },
-                  {
-                    name: "EDITOR_PORT",
-                    value: "60001"
-                  },
-                  {
-                    name: "SSH_PORT",
-                    value: "60022"
-                  },
-                  {
-                    name: "PROJECTS_ROOT",
-                    value: "/projects"
-                  },
-                  {
-                    name: "PROJECT_SOURCE",
-                    value: "/projects"
-                  },
-                  {
-                    name: "GL_WORKSPACE_DOMAIN_TEMPLATE",
-                    value: host_template_environment_variable.to_s
-                  }
-                ],
-                image: "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:2",
-                imagePullPolicy: "Always",
-                name: "gl-editor-injector-gl-editor-injector-command-2",
-                resources: {
-                  limits: {
-                    cpu: "500m",
-                    memory: "256Mi"
-                  },
-                  requests: {
-                    cpu: "100m",
-                    memory: "128Mi"
-                  }
-                },
-                volumeMounts: [
-                  {
-                    mountPath: "/projects",
-                    name: "gl-workspace-data"
-                  }
-                ],
-                securityContext: {
-                  allowPrivilegeEscalation: false,
-                  privileged: false,
-                  runAsNonRoot: true,
-                  runAsUser: 5001
-                }
-              }
-            ],
-            volumes: [
-              {
-                name: "gl-workspace-data",
-                persistentVolumeClaim: {
-                  claimName: "#{workspace_name}-gl-workspace-data"
-                }
-              }
-            ],
-            securityContext: {
-              runAsNonRoot: true,
-              runAsUser: 5001,
-              fsGroup: 0,
-              fsGroupChangePolicy: "OnRootMismatch"
-            }
-          }
-        }
-      },
-      status: {}
-    }
-  end
-
-  # rubocop:enable Metrics/ParameterLists
-
   def workspace_service(
-    workspace_id:,
     workspace_name:,
     workspace_namespace:,
-    agent_id:,
-    host_template_annotation:
+    labels:,
+    annotations:
   )
     {
       apiVersion: "v1",
       kind: "Service",
       metadata: {
-        annotations: {
-          "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
-          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
-          "workspaces.gitlab.com/id": workspace_id.to_s
-        },
+        annotations: annotations,
         creationTimestamp: nil,
-        labels: {
-          "agent.gitlab.com/id": agent_id.to_s
-        },
+        labels: labels,
         name: workspace_name.to_s,
         namespace: workspace_namespace.to_s
       },
@@ -1045,9 +838,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
             targetPort: 60022
           }
         ],
-        selector: {
-          "agent.gitlab.com/id": agent_id.to_s
-        }
+        selector: labels
       },
       status: {
         loadBalancer: {}
@@ -1056,25 +847,18 @@ RSpec.shared_context 'with remote development shared fixtures' do
   end
 
   def workspace_pvc(
-    workspace_id:,
     workspace_name:,
     workspace_namespace:,
-    agent_id:,
-    host_template_annotation:
+    labels:,
+    annotations:
   )
     {
       apiVersion: "v1",
       kind: "PersistentVolumeClaim",
       metadata: {
-        annotations: {
-          "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
-          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
-          "workspaces.gitlab.com/id": workspace_id.to_s
-        },
+        annotations: annotations,
         creationTimestamp: nil,
-        labels: {
-          "agent.gitlab.com/id": agent_id.to_s
-        },
+        labels: labels,
         name: "#{workspace_name}-gl-workspace-data",
         namespace: workspace_namespace.to_s
       },
@@ -1093,11 +877,10 @@ RSpec.shared_context 'with remote development shared fixtures' do
   end
 
   def workspace_network_policy(
-    workspace_id:,
     workspace_name:,
     workspace_namespace:,
-    agent_id:,
-    host_template_annotation:,
+    labels:,
+    annotations:,
     egress_ip_rules:
   )
     egress = [
@@ -1124,14 +907,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
       apiVersion: "networking.k8s.io/v1",
       kind: "NetworkPolicy",
       metadata: {
-        annotations: {
-          "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
-          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
-          "workspaces.gitlab.com/id": workspace_id.to_s
-        },
-        labels: {
-          "agent.gitlab.com/id": agent_id.to_s
-        },
+        annotations: annotations,
+        labels: labels,
         name: workspace_name.to_s,
         namespace: workspace_namespace.to_s
       },
@@ -1161,6 +938,33 @@ RSpec.shared_context 'with remote development shared fixtures' do
     }
   end
 
+  def workspace_resource_quota(
+    workspace_name:,
+    workspace_namespace:,
+    labels:,
+    annotations:,
+    max_resources_per_workspace:
+  )
+    {
+      apiVersion: "v1",
+      kind: "ResourceQuota",
+      metadata: {
+        annotations: annotations,
+        labels: labels,
+        name: workspace_name.to_s,
+        namespace: workspace_namespace.to_s
+      },
+      spec: {
+        hard: {
+          "limits.cpu": max_resources_per_workspace.dig(:limits, :cpu),
+          "limits.memory": max_resources_per_workspace.dig(:limits, :memory),
+          "requests.cpu": max_resources_per_workspace.dig(:requests, :cpu),
+          "requests.memory": max_resources_per_workspace.dig(:requests, :memory)
+        }
+      }
+    }
+  end
+
   def workspace_secrets_inventory(
     workspace_name:,
     workspace_namespace:,
@@ -1181,11 +985,10 @@ RSpec.shared_context 'with remote development shared fixtures' do
   end
 
   def workspace_secret_env_var(
-    workspace_id:,
     workspace_name:,
     workspace_namespace:,
-    agent_id:,
-    host_template_annotation:,
+    labels:,
+    annotations:,
     workspace_variables_env_var:
   )
     git_config_count = workspace_variables_env_var.fetch('GIT_CONFIG_COUNT', '')
@@ -1205,14 +1008,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
       metadata: {
         name: "#{workspace_name}-env-var",
         namespace: workspace_namespace.to_s,
-        labels: {
-          "agent.gitlab.com/id": agent_id.to_s
-        },
-        annotations: {
-          "config.k8s.io/owning-inventory": "#{workspace_name}-secrets-inventory",
-          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
-          "workspaces.gitlab.com/id": workspace_id.to_s
-        }
+        labels: labels,
+        annotations: annotations
       },
       data: {
         GIT_CONFIG_COUNT: Base64.strict_encode64(git_config_count).to_s,
@@ -1230,11 +1027,10 @@ RSpec.shared_context 'with remote development shared fixtures' do
   end
 
   def workspace_secret_file(
-    workspace_id:,
     workspace_name:,
     workspace_namespace:,
-    agent_id:,
-    host_template_annotation:,
+    labels:,
+    annotations:,
     workspace_variables_file:
   )
     gl_git_credential_store = workspace_variables_file.fetch('gl_git_credential_store.sh', '')
@@ -1245,14 +1041,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
       metadata: {
         name: "#{workspace_name}-file",
         namespace: workspace_namespace.to_s,
-        labels: {
-          "agent.gitlab.com/id": agent_id.to_s
-        },
-        annotations: {
-          "config.k8s.io/owning-inventory": "#{workspace_name}-secrets-inventory",
-          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
-          "workspaces.gitlab.com/id": workspace_id.to_s
-        }
+        labels: labels,
+        annotations: annotations
       },
       data: {
         gl_token: Base64.strict_encode64(gl_token).to_s,

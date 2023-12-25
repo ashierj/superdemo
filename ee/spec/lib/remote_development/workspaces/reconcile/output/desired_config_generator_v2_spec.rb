@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGenerator, :freeze_time, feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGeneratorV2, :freeze_time, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
 
   describe '#generate_desired_config' do
@@ -17,10 +17,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
     let(:network_policy_enabled) { true }
     let(:gitlab_workspaces_proxy_namespace) { 'gitlab-workspaces' }
     let(:egress_ip_rules) { agent.remote_development_agent_config.network_policy_egress }
-    let(:max_resources_per_workspace) { agent.remote_development_agent_config.max_resources_per_workspace }
-    let(:default_resources_per_workspace_container) do
-      agent.remote_development_agent_config.default_resources_per_workspace_container
-    end
 
     let(:workspace) do
       create(
@@ -28,20 +24,19 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
         agent: agent,
         user: user,
         desired_state: desired_state,
-        actual_state: actual_state
+        actual_state: actual_state,
+        processed_devfile: read_devfile('example.processed-devfile-v2.yaml')
       )
     end
 
     let(:expected_config) do
       YAML.load_stream(
-        create_config_to_apply(
+        create_config_to_apply_v2(
           workspace: workspace,
           started: started,
           include_network_policy: network_policy_enabled,
           include_all_resources: include_all_resources,
-          egress_ip_rules: egress_ip_rules,
-          max_resources_per_workspace: max_resources_per_workspace,
-          default_resources_per_workspace_container: default_resources_per_workspace_container
+          egress_ip_rules: egress_ip_rules
         )
       )
     end
@@ -96,28 +91,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
       end
     end
 
-    context 'when default_resources_per_workspace_container is not empty' do
-      let(:default_resources_per_workspace_container) do
-        { limits: { cpu: "1.5", memory: "786Mi" }, requests: { cpu: "0.6", memory: "512Mi" } }
-      end
-
-      before do
-        allow(agent.remote_development_agent_config).to receive(:default_resources_per_workspace_container) {
-          default_resources_per_workspace_container
-        }
-      end
-
-      it 'returns expected config with defaults for the container resources set' do
-        workspace_resources = desired_config_generator.generate_desired_config(
-          workspace: workspace,
-          include_all_resources: include_all_resources,
-          logger: logger
-        )
-
-        expect(workspace_resources).to eq(expected_config)
-      end
-    end
-
     context 'when include_all_resources is true' do
       let(:include_all_resources) { true }
 
@@ -130,33 +103,11 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
 
         expect(workspace_resources).to eq(expected_config)
       end
-
-      context 'when max_resources_per_workspace is not empty' do
-        let(:max_resources_per_workspace) do
-          { limits: { cpu: "1.5", memory: "786Mi" }, requests: { cpu: "0.6", memory: "512Mi" } }
-        end
-
-        before do
-          allow(agent.remote_development_agent_config).to receive(:max_resources_per_workspace) {
-            max_resources_per_workspace
-          }
-        end
-
-        it 'returns expected config with resource quota' do
-          workspace_resources = desired_config_generator.generate_desired_config(
-            workspace: workspace,
-            include_all_resources: include_all_resources,
-            logger: logger
-          )
-
-          expect(workspace_resources).to eq(expected_config)
-        end
-      end
     end
 
     context 'when DevfileParser returns empty array' do
       before do
-        allow(RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser).to receive(:get_all).and_return([])
+        allow(RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParserV2).to receive(:get_all).and_return([])
       end
 
       it 'returns an empty array' do

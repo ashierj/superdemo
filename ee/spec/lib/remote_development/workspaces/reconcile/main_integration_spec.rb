@@ -18,6 +18,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
   let_it_be(:user) { create(:user) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
   let(:egress_ip_rules) { agent.remote_development_agent_config.network_policy_egress }
+  let(:max_resources_per_workspace) { agent.remote_development_agent_config.max_resources_per_workspace }
+  let(:default_resources_per_workspace_container) do
+    agent.remote_development_agent_config.default_resources_per_workspace_container
+  end
 
   let(:logger) { instance_double(::Logger) }
 
@@ -337,7 +341,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
             create_config_to_apply(
               workspace: workspace,
               started: expected_value_for_started,
-              egress_ip_rules: egress_ip_rules
+              egress_ip_rules: egress_ip_rules,
+              max_resources_per_workspace: max_resources_per_workspace,
+              default_resources_per_workspace_container: default_resources_per_workspace_container
             )
           end
 
@@ -448,7 +454,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
               create_config_to_apply(
                 workspace: workspace,
                 started: expected_value_for_started,
-                egress_ip_rules: egress_ip_rules
+                egress_ip_rules: egress_ip_rules,
+                max_resources_per_workspace: max_resources_per_workspace,
+                default_resources_per_workspace_container: default_resources_per_workspace_container
               )
             end
 
@@ -520,7 +528,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
           workspace: unprovisioned_workspace,
           started: expected_value_for_started,
           include_all_resources: true,
-          egress_ip_rules: egress_ip_rules
+          egress_ip_rules: egress_ip_rules,
+          max_resources_per_workspace: max_resources_per_workspace,
+          default_resources_per_workspace_container: default_resources_per_workspace_container
         )
       end
 

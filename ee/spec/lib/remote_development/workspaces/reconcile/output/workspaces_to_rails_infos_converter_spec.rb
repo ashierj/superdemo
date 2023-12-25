@@ -10,8 +10,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::WorkspacesToRai
   let(:actual_state) { RemoteDevelopment::Workspaces::States::STOPPED }
   let(:processed_devfile) { example_processed_devfile }
   let(:force_include_all_resources) { false }
-  let(:current_config_version) { RemoteDevelopment::Workspaces::ConfigVersion::VERSION_2 }
-  let(:previous_config_version) { RemoteDevelopment::Workspaces::ConfigVersion::VERSION_1 }
+  let(:current_config_version) { RemoteDevelopment::Workspaces::ConfigVersion::VERSION_3 }
+  let(:previous_config_version) { RemoteDevelopment::Workspaces::ConfigVersion::VERSION_2 }
   let(:workspace) do
     instance_double(
       "RemoteDevelopment::Workspace",
@@ -146,20 +146,12 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::WorkspacesToRai
     let(:config_version) { previous_config_version }
     let(:update_type) { RemoteDevelopment::Workspaces::Reconcile::UpdateTypes::FULL }
     let(:desired_state_updated_more_recently_than_last_response_to_agent) { false }
-    let(:generated_config_to_apply) do
-      [
-        {
-          some_previous_version_key: 1
-        }
-      ]
-    end
+    let(:expected_include_all_resources) { true }
 
     it "includes config_to_apply without all resources included" do
-      allow(RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGeneratorPrev1)
-        .to(receive(:generate_desired_config)) do |**args|
-        expect(args).not_to have_key(:include_all_resources)
-        generated_config_to_apply
-      end
+      allow(RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGeneratorV2)
+        .to(receive(:generate_desired_config))
+        .with(hash_including(include_all_resources: expected_include_all_resources)) { generated_config_to_apply }
 
       expect(returned_value).to eq(expected_returned_value)
     end

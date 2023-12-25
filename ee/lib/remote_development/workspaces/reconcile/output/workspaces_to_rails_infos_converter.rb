@@ -46,19 +46,24 @@ module RemoteDevelopment
 
             include_all_resources = update_type == FULL || workspace.force_include_all_resources
 
-            workspace_resources = case workspace.config_version
-                                  when ConfigVersion::VERSION_2
-                                    DesiredConfigGenerator.generate_desired_config(
-                                      workspace: workspace,
-                                      include_all_resources: include_all_resources,
-                                      logger: logger
-                                    )
-                                  else
-                                    DesiredConfigGeneratorPrev1.generate_desired_config(
-                                      workspace: workspace,
-                                      logger: logger
-                                    )
-                                  end
+            workspace_resources =
+              case workspace.config_version
+              when ConfigVersion::LATEST_VERSION
+                DesiredConfigGenerator.generate_desired_config(
+                  workspace: workspace,
+                  include_all_resources: include_all_resources,
+                  logger: logger
+                )
+              else
+                namespace = "RemoteDevelopment::Workspaces::Reconcile::Output"
+                generator_class_name = "#{namespace}::DesiredConfigGeneratorV#{workspace.config_version}"
+                generator_class = Object.const_get(generator_class_name, false)
+                generator_class.generate_desired_config(
+                  workspace: workspace,
+                  include_all_resources: include_all_resources,
+                  logger: logger
+                )
+              end
 
             desired_config_to_apply_array = workspace_resources.map do |resource|
               YAML.dump(resource.deep_stringify_keys)

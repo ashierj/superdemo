@@ -29,6 +29,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
   let(:env_var_secret_name) { "#{workspace.name}-env-var" }
   let(:file_secret_name) { "#{workspace.name}-file" }
   let(:egress_ip_rules) { RemoteDevelopment::AgentConfig::Updater::NETWORK_POLICY_EGRESS_DEFAULT }
+  let(:max_resources_per_workspace) { {} }
+  let(:default_resources_per_workspace_container) do
+    { limits: { cpu: "1.5", memory: "786Mi" }, requests: { cpu: "0.6", memory: "512Mi" } }
+  end
 
   let(:expected_workspace_resources) do
     YAML.load_stream(
@@ -41,7 +45,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
         include_network_policy: false,
         include_all_resources: false,
         dns_zone: dns_zone,
-        egress_ip_rules: egress_ip_rules
+        egress_ip_rules: egress_ip_rules,
+        default_resources_per_workspace_container: default_resources_per_workspace_container
       )
     )
   end
@@ -61,10 +66,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
       annotations: {
         'config.k8s.io/owning-inventory' => "#{workspace.name}-workspace-inventory",
         'workspaces.gitlab.com/host-template' => domain_template,
-        'workspaces.gitlab.com/id' => workspace.id
+        'workspaces.gitlab.com/id' => workspace.id,
+        'workspaces.gitlab.com/max-resources-per-workspace-sha256' =>
+          Digest::SHA256.hexdigest(max_resources_per_workspace.sort.to_h.to_s)
       },
       env_secret_names: [env_var_secret_name],
       file_secret_names: [file_secret_name],
+      default_resources_per_workspace_container: default_resources_per_workspace_container,
       logger: logger
     )
 
@@ -95,6 +103,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
         annotations: {},
         env_secret_names: [env_var_secret_name],
         file_secret_names: [file_secret_name],
+        default_resources_per_workspace_container: default_resources_per_workspace_container,
         logger: logger
       )
 
