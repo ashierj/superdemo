@@ -62,7 +62,10 @@ module QA
           'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/420973'
       end
 
-      context 'on Self-managed', :orchestrated, :ai_gateway do
+      context 'on Self-managed', :orchestrated, :ai_gateway, quarantine: {
+        type: :investigating,
+        issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/436465'
+      } do
         let(:project_path) { nil }
         let(:project_id) { nil }
 
