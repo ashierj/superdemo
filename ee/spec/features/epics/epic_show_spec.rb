@@ -21,7 +21,9 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
     MARKDOWN
   end
 
-  let_it_be(:epic) { create(:epic, group: group, title: epic_title, description: markdown, author: user) }
+  let_it_be(:ancestor_epic) { create(:epic, group: group, title: 'Ancestor epic') }
+  let_it_be(:parent_epic) { create(:epic, group: group, title: 'Parent epic', parent: ancestor_epic) }
+  let_it_be(:epic) { create(:epic, group: group, title: epic_title, description: markdown, author: user, parent: parent_epic) }
   let_it_be(:not_child) { create(:epic, group: group, title: 'not child epic', description: markdown, author: user, start_date: 50.days.ago, end_date: 10.days.ago) }
   let_it_be(:child_epic_a) { create(:epic, group: group, title: 'Child epic A', description: markdown, parent: epic, start_date: 50.days.ago, end_date: 20.days.from_now) }
   let_it_be(:child_epic_b) { create(:epic, group: group, title: 'Child epic B', description: markdown, parent: epic, start_date: 100.days.ago, end_date: 10.days.from_now, labels: [label1]) }
@@ -114,7 +116,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
         page.within('#atwho-ground-add-related-issues-form-input') do
           expect(page).not_to have_selector('#at-view-issues')
           expect(page).to have_selector('#at-view-epics', visible: true)
-          expect(page).to have_selector('.atwho-view-ul li', count: 4)
+          expect(page).to have_selector('.atwho-view-ul li', count: 5)
         end
       end
     end
@@ -365,6 +367,15 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
               expect(find('li', text: 'Green')).to have_selector('.gl-icon', visible: true)
             end
           end
+        end
+      end
+    end
+
+    describe 'Ancestor widget' do
+      it 'shows parent and ancestor epics' do
+        page.within('aside.right-sidebar [data-testid="sidebar-ancestors"]') do
+          expect(page).to have_link(ancestor_epic.title)
+          expect(page).to have_link(parent_epic.title)
         end
       end
     end
