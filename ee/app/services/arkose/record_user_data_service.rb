@@ -42,8 +42,8 @@ module Arkose
     end
 
     def store_risk_scores
-      Abuse::TrustScore.create!(user: user, score: response.global_score.to_f, source: :arkose_global_score)
-      Abuse::TrustScore.create!(user: user, score: response.custom_score.to_f, source: :arkose_custom_score)
+      Abuse::TrustScoreWorker.perform_async(user.id, :arkose_global_score, response.global_score.to_f)
+      Abuse::TrustScoreWorker.perform_async(user.id, :arkose_custom_score, response.custom_score.to_f)
     end
   end
 end
