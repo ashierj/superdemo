@@ -19354,6 +19354,27 @@ CREATE SEQUENCE ml_model_metadata_id_seq
 
 ALTER SEQUENCE ml_model_metadata_id_seq OWNED BY ml_model_metadata.id;
 
+CREATE TABLE ml_model_version_metadata (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    project_id bigint NOT NULL,
+    model_version_id bigint NOT NULL,
+    name text NOT NULL,
+    value text NOT NULL,
+    CONSTRAINT check_09a0e5cb5b CHECK ((char_length(name) <= 255)),
+    CONSTRAINT check_21c444e039 CHECK ((char_length(value) <= 5000))
+);
+
+CREATE SEQUENCE ml_model_version_metadata_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE ml_model_version_metadata_id_seq OWNED BY ml_model_version_metadata.id;
+
 CREATE TABLE ml_model_versions (
     id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -26934,6 +26955,8 @@ ALTER TABLE ONLY ml_experiments ALTER COLUMN id SET DEFAULT nextval('ml_experime
 
 ALTER TABLE ONLY ml_model_metadata ALTER COLUMN id SET DEFAULT nextval('ml_model_metadata_id_seq'::regclass);
 
+ALTER TABLE ONLY ml_model_version_metadata ALTER COLUMN id SET DEFAULT nextval('ml_model_version_metadata_id_seq'::regclass);
+
 ALTER TABLE ONLY ml_model_versions ALTER COLUMN id SET DEFAULT nextval('ml_model_versions_id_seq'::regclass);
 
 ALTER TABLE ONLY ml_models ALTER COLUMN id SET DEFAULT nextval('ml_models_id_seq'::regclass);
@@ -29234,6 +29257,9 @@ ALTER TABLE ONLY ml_experiments
 
 ALTER TABLE ONLY ml_model_metadata
     ADD CONSTRAINT ml_model_metadata_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY ml_model_version_metadata
+    ADD CONSTRAINT ml_model_version_metadata_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY ml_model_versions
     ADD CONSTRAINT ml_model_versions_pkey PRIMARY KEY (id);
@@ -33630,6 +33656,8 @@ CREATE UNIQUE INDEX index_ml_experiments_on_project_id_and_name ON ml_experiment
 
 CREATE INDEX index_ml_experiments_on_user_id ON ml_experiments USING btree (user_id);
 
+CREATE INDEX index_ml_model_version_metadata_on_project_id ON ml_model_version_metadata USING btree (project_id);
+
 CREATE INDEX index_ml_model_versions_on_package_id ON ml_model_versions USING btree (package_id);
 
 CREATE INDEX index_ml_model_versions_on_project_id ON ml_model_versions USING btree (project_id);
@@ -35463,6 +35491,8 @@ CREATE UNIQUE INDEX unique_index_ci_build_pending_states_on_partition_id_build_i
 CREATE UNIQUE INDEX unique_index_for_project_pages_unique_domain ON project_settings USING btree (pages_unique_domain) WHERE (pages_unique_domain IS NOT NULL);
 
 CREATE UNIQUE INDEX unique_index_ml_model_metadata_name ON ml_model_metadata USING btree (model_id, name);
+
+CREATE UNIQUE INDEX unique_index_ml_model_version_metadata_name ON ml_model_version_metadata USING btree (model_version_id, name);
 
 CREATE UNIQUE INDEX unique_index_on_system_note_metadata_id ON resource_link_events USING btree (system_note_metadata_id);
 
@@ -39013,6 +39043,9 @@ ALTER TABLE ONLY approval_merge_request_rules_groups
 ALTER TABLE ONLY namespace_limits
     ADD CONSTRAINT fk_rails_5b3f2bc334 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY ml_model_version_metadata
+    ADD CONSTRAINT fk_rails_5b67cc9107 FOREIGN KEY (model_version_id) REFERENCES ml_model_versions(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY protected_environment_deploy_access_levels
     ADD CONSTRAINT fk_rails_5b9f6970fe FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
@@ -39156,6 +39189,9 @@ ALTER TABLE ONLY ml_experiment_metadata
 
 ALTER TABLE ONLY error_tracking_errors
     ADD CONSTRAINT fk_rails_6b41f837ba FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY ml_model_version_metadata
+    ADD CONSTRAINT fk_rails_6b8fcb2af1 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY prometheus_alerts
     ADD CONSTRAINT fk_rails_6d9b283465 FOREIGN KEY (environment_id) REFERENCES environments(id) ON DELETE CASCADE;
