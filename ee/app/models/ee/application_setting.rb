@@ -20,45 +20,22 @@ module EE
         numericality: { greater_than_or_equal_to: 0 }
 
       validates :mirror_max_delay,
-        presence: true,
-        numericality: { allow_nil: true, only_integer: true, greater_than: :mirror_max_delay_in_minutes }
-
-      validates :mirror_max_capacity,
-        presence: true,
-        numericality: { allow_nil: true, only_integer: true, greater_than: 0 }
-
-      validates :mirror_capacity_threshold,
-        presence: true,
-        numericality: { allow_nil: true, only_integer: true, greater_than: 0 }
+        numericality: { only_integer: true, greater_than: :mirror_max_delay_in_minutes }
 
       validate :mirror_capacity_threshold_less_than
-
-      validates :repository_size_limit,
-        presence: true,
-        numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
       validates :deletion_adjourned_period,
         presence: true,
         numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 90 }
 
-      validates :search_max_shard_size_gb,
-        presence: true,
-        numericality: { only_integer: true, greater_than: 0 }
-
-      validates :search_max_docs_denominator,
-        presence: true,
-        numericality: { only_integer: true, greater_than: 0 }
-
-      validates :search_min_docs_before_rollover,
-        presence: true,
-        numericality: { only_integer: true, greater_than: 0 }
-
-      validates :elasticsearch_max_bulk_size_mb,
-        presence: true,
-        numericality: { only_integer: true, greater_than: 0 }
-
-      validates :elasticsearch_max_bulk_concurrency,
-        presence: true,
+      validates :mirror_capacity_threshold,
+        :mirror_max_capacity,
+        :elasticsearch_indexed_file_size_limit_kb,
+        :elasticsearch_max_bulk_concurrency,
+        :elasticsearch_max_bulk_size_mb,
+        :search_max_docs_denominator,
+        :search_min_docs_before_rollover,
+        :search_max_shard_size_gb,
         numericality: { only_integer: true, greater_than: 0 }
 
       validates :namespace_storage_forks_cost_factor,
@@ -82,18 +59,6 @@ module EE
         presence: true,
         numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: Elastic::ProcessBookkeepingService::SHARDS_MAX }
 
-      validates :elasticsearch_indexed_file_size_limit_kb,
-        presence: true,
-        numericality: { only_integer: true, greater_than: 0 }
-
-      validates :elasticsearch_indexed_field_length_limit,
-        presence: true,
-        numericality: { only_integer: true, greater_than_or_equal_to: 0 }
-
-      validates :elasticsearch_client_request_timeout,
-        presence: true,
-        numericality: { only_integer: true, greater_than_or_equal_to: 0 }
-
       validates :email_additional_text,
         allow_blank: true,
         length: { maximum: EMAIL_ADDITIONAL_TEXT_CHARACTER_LIMIT }
@@ -110,6 +75,7 @@ module EE
       validate :check_globally_allowed_ips
 
       validates :max_personal_access_token_lifetime,
+        :max_ssh_key_lifetime,
         allow_blank: true,
         numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 365 }
 
@@ -120,10 +86,6 @@ module EE
       validates :git_two_factor_session_expiry,
         presence: true,
         numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 10080 }
-
-      validates :max_ssh_key_lifetime,
-        allow_blank: true,
-        numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 365 }
 
       validates :max_number_of_repository_downloads,
         numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10_000 }
@@ -147,7 +109,12 @@ module EE
         exclusion: { in: [true], message: -> (object, data) { _("can't be enabled when delayed group deletion is disabled") } },
         if: ->(setting) { !setting.delayed_group_deletion? }
 
-      validates :dashboard_limit, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+      validates :dashboard_limit,
+        :repository_size_limit,
+        :elasticsearch_indexed_field_length_limit,
+        :elasticsearch_client_request_timeout,
+        numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
       validates :dashboard_limit_enabled, inclusion: { in: [true, false], message: 'must be a boolean value' }
 
       validates :cube_api_base_url,
