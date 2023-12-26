@@ -36,6 +36,20 @@ module Types
             null: true,
             description: 'Projects associated with the compliance framework.'
 
+      field :scan_execution_policies,
+            ::Types::SecurityOrchestration::ScanExecutionPolicyType.connection_type,
+            calls_gitaly: true,
+            null: true,
+            description: 'Scan Execution Policies of the compliance framework.',
+            resolver: ::Resolvers::ComplianceManagement::SecurityPolicies::ScanExecutionPolicyResolver
+
+      field :scan_result_policies,
+            ::Types::SecurityOrchestration::ScanResultPolicyType.connection_type,
+            calls_gitaly: true,
+            null: true,
+            description: 'Scan Result Policies of the compliance framework.',
+            resolver: ::Resolvers::ComplianceManagement::SecurityPolicies::ScanResultPolicyResolver
+
       def default
         object.id == object.namespace.namespace_settings.default_compliance_framework_id
       end
