@@ -96,20 +96,32 @@ export default {
       <gl-form-group
         :label="__('URL')"
         :description="s__('DependencyProxy|Base URL of the external registry.')"
+        label-for="maven-url"
       >
-        <gl-form-input v-model="prefilledForm.mavenExternalRegistryUrl" width="xl" />
+        <gl-form-input id="maven-url" v-model="prefilledForm.mavenExternalRegistryUrl" width="xl" />
       </gl-form-group>
       <gl-form-group
         :label="__('Username')"
         :description="s__('DependencyProxy|Username of the external registry.')"
+        label-for="maven-username"
       >
-        <gl-form-input v-model="prefilledForm.mavenExternalRegistryUsername" width="xl" />
+        <gl-form-input
+          id="maven-username"
+          v-model="prefilledForm.mavenExternalRegistryUsername"
+          width="xl"
+        />
       </gl-form-group>
       <gl-form-group
         :label="__('Password')"
         :description="s__('DependencyProxy|Password for your external registry.')"
+        label-for="maven-password"
       >
-        <gl-form-input v-model="mavenExternalRegistryPassword" width="xl" type="password" />
+        <gl-form-input
+          id="maven-password"
+          v-model="mavenExternalRegistryPassword"
+          width="xl"
+          type="password"
+        />
       </gl-form-group>
 
       <div class="gl-mt-6 gl-display-flex gl-align-items-center">
