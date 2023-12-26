@@ -19,21 +19,7 @@ module Resolvers
 
       def resolve(**args)
         policies = Security::ScanExecutionPoliciesFinder.new(context[:current_user], project, args).execute
-        policies.map do |policy|
-          {
-            name: policy[:name],
-            description: policy[:description],
-            edit_path: edit_path(policy, :scan_execution_policy),
-            enabled: policy[:enabled],
-            yaml: YAML.dump(policy.slice(*POLICY_YAML_ATTRIBUTES).deep_stringify_keys),
-            updated_at: policy[:config].policy_last_updated_at,
-            source: {
-              project: policy[:project],
-              namespace: policy[:namespace],
-              inherited: policy[:inherited]
-            }
-          }
-        end
+        construct_scan_execution_policies(policies)
       end
     end
   end

@@ -12,6 +12,8 @@ module EE
       lazy_resolve ::Gitlab::Graphql::Aggregations::VulnerabilityStatistics::LazyAggregate, :execute
       lazy_resolve ::Gitlab::Graphql::Aggregations::Vulnerabilities::LazyUserNotesCountAggregate, :execute
       lazy_resolve ::Gitlab::Graphql::Aggregations::SecurityOrchestrationPolicies::LazyDastProfileAggregate, :execute
+      lazy_resolve ::Gitlab::Graphql::Aggregations::SecurityOrchestrationPolicies::LazyComplianceFrameworkAggregate,
+        :execute
     end
   end
 end

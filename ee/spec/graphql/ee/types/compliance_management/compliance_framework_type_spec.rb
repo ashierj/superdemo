@@ -13,6 +13,8 @@ RSpec.describe GitlabSchema.types['ComplianceFramework'] do
     default
     pipeline_configuration_full_path
     projects
+    scan_result_policies
+    scan_execution_policies
   ]
 
   it 'has the correct fields' do
