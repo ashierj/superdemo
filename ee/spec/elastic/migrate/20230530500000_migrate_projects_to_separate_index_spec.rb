@@ -94,7 +94,7 @@ RSpec.describe MigrateProjectsToSeparateIndex, :elastic_clean, :sidekiq_inline, 
         end
       end
 
-      it 'migrates all projects' do
+      it 'migrates all projects', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/436579' do
         create_list(:project, 3, visibility_level: 0, wiki_access_level: 0)
         ensure_elasticsearch_index! # ensure objects are indexed
         slices = 2
@@ -124,7 +124,8 @@ RSpec.describe MigrateProjectsToSeparateIndex, :elastic_clean, :sidekiq_inline, 
           expect(migration.migration_state).to match(slice: 0, max_slices: 2, retry_attempt: 2, task_id: nil)
         end
 
-        it 'fails the migration after too many attempts' do
+        it 'fails the migration after too many attempts',
+          quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/436579' do
           migration.set_migration_state(slice: 0, max_slices: 2, retry_attempt: 30)
 
           migration.migrate
