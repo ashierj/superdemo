@@ -2,14 +2,17 @@
 import {
   GlAvatarLabeled,
   GlAvatarLink,
+  GlBadge,
   GlSkeletonLoader,
   GlTable,
   GlTooltipDirective,
   GlKeysetPagination,
 } from '@gitlab/ui';
-import { __, s__ } from '~/locale';
-import { thWidthPercent } from '~/lib/utils/table_utility';
+import { pick } from 'lodash';
+import { s__ } from '~/locale';
 import { ADD_ON_ERROR_DICTIONARY } from 'ee/usage_quotas/error_constants';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { addOnEligibleUserListTableFields } from 'ee/usage_quotas/code_suggestions/constants';
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import CodeSuggestionsAddonAssignment from './code_suggestions_addon_assignment.vue';
@@ -25,11 +28,13 @@ export default {
     ErrorAlert,
     GlAvatarLabeled,
     GlAvatarLink,
+    GlBadge,
     GlKeysetPagination,
     GlSkeletonLoader,
     GlTable,
     SearchAndSortBar,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     addOnPurchaseId: {
       type: String,
@@ -59,40 +64,12 @@ export default {
   },
   addOnErrorDictionary: ADD_ON_ERROR_DICTIONARY,
   avatarSize: 32,
-  tableFields: [
-    {
-      key: 'user',
-      label: __('User'),
-      // eslint-disable-next-line @gitlab/require-i18n-strings
-      thClass: `${thWidthPercent(30)} gl-pl-2!`,
-      tdClass: 'gl-vertical-align-middle! gl-pl-2!',
-    },
-    {
-      key: 'email',
-      label: __('Email'),
-      thClass: thWidthPercent(20),
-      tdClass: 'gl-vertical-align-middle!',
-    },
-    {
-      key: 'codeSuggestionsAddon',
-      label: s__('CodeSuggestions|Code Suggestions add-on'),
-      thClass: thWidthPercent(25),
-      tdClass: 'gl-vertical-align-middle!',
-    },
-    {
-      key: 'lastActivityTime',
-      label: __('Last GitLab activity'),
-      thClass: thWidthPercent(25),
-      tdClass: 'gl-vertical-align-middle!',
-    },
-  ],
   computed: {
-    tableItems() {
-      return this.users.map((node) => ({
-        ...node,
-        username: `@${node.username}`,
-        addOnAssignments: node.addOnAssignments.nodes,
-      }));
+    hasMaxRoleField() {
+      return this.tableItems?.some(({ maxRole }) => maxRole);
+    },
+    isFilteringEnabled() {
+      return this.glFeatures.enableAddOnUsersFiltering;
     },
     showPagination() {
       if (this.isLoading || !this.pageInfo) {
@@ -108,6 +85,22 @@ export default {
         return s__('Billing|Enter at least three characters to search.');
       }
       return s__('Billing|No users to display.');
+    },
+    tableFieldsConfiguration() {
+      if (this.isFilteringEnabled && this.hasMaxRoleField) {
+        return ['user', 'codeSuggestionsAddon', 'email', 'maxRole', 'lastActivityTime'];
+      }
+      return ['user', 'codeSuggestionsAddon', 'emailWide', 'lastActivityTimeWide'];
+    },
+    tableFields() {
+      return Object.values(pick(addOnEligibleUserListTableFields, this.tableFieldsConfiguration));
+    },
+    tableItems() {
+      return this.users.map((node) => ({
+        ...node,
+        username: `@${node?.username}`,
+        addOnAssignments: node?.addOnAssignments?.nodes,
+      }));
     },
   },
   methods: {
@@ -152,7 +145,7 @@ export default {
 
     <gl-table
       :items="tableItems"
-      :fields="$options.tableFields"
+      :fields="tableFields"
       :busy="isLoading"
       :show-empty="true"
       :empty-text="emptyText"
@@ -206,8 +199,12 @@ export default {
         />
       </template>
 
+      <template #cell(maxRole)="{ item }">
+        <gl-badge v-if="item.maxRole" data-testid="max-role">{{ item.maxRole }}</gl-badge>
+      </template>
+
       <template #cell(lastActivityTime)="data">
-        <span data-testid="last_activity_on">
+        <span data-testid="last-activity-on">
           {{ data.item.lastActivityOn ? data.item.lastActivityOn : __('Never') }}
         </span>
       </template>

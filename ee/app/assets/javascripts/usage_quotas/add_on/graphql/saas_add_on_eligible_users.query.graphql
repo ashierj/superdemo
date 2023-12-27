@@ -28,6 +28,7 @@ query getAddOnEligibleUsers(
         avatarUrl
         webUrl
         lastActivityOn
+        maxRole @client
         addOnAssignments(addOnPurchaseIds: $addOnPurchaseIds) {
           nodes {
             # eslint-disable-next-line @graphql-eslint/require-id-when-available

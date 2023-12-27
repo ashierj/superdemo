@@ -14,6 +14,7 @@ import {
   eligibleUsers,
   pageInfoWithNoPages,
   pageInfoWithMorePages,
+  eligibleUsersWithMaxRole,
 } from 'ee_jest/usage_quotas/code_suggestions/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { ADD_ON_ERROR_DICTIONARY } from 'ee/usage_quotas/error_constants';
@@ -27,7 +28,12 @@ describe('Add On Eligible User List', () => {
 
   const addOnPurchaseId = 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/1';
 
-  const createComponent = ({ mountFn = shallowMount, props = {}, slots = {} } = {}) => {
+  const createComponent = ({
+    enableAddOnUsersFiltering = false,
+    mountFn = shallowMount,
+    props = {},
+    slots = {},
+  } = {}) => {
     wrapper = extendedWrapper(
       mountFn(AddOnEligibleUserList, {
         propsData: {
@@ -37,6 +43,11 @@ describe('Add On Eligible User List', () => {
           isLoading: false,
           ...props,
         },
+        provide: {
+          glFeatures: {
+            enableAddOnUsersFiltering,
+          },
+        },
         slots,
       }),
     );
@@ -45,6 +56,10 @@ describe('Add On Eligible User List', () => {
   };
 
   const findTable = () => wrapper.findComponent(GlTable);
+  const findTableKeys = () =>
+    findTable()
+      .props('fields')
+      .map(({ key }) => key);
   const findAllCodeSuggestionsAddonComponents = () =>
     wrapper.findAllComponents(CodeSuggestionsAddOnAssignment);
   const findAddOnAssignmentError = () => wrapper.findByTestId('add-on-assignment-error');
@@ -71,12 +86,14 @@ describe('Add On Eligible User List', () => {
 
   const serializeTableRow = (rowWrapper) => {
     const emailWrapper = rowWrapper.find('[data-testid="email"]');
+    const maxRoleWrapper = rowWrapper.find('[data-testid="max-role"]');
 
     return {
       user: serializeUser(rowWrapper),
       email: emailWrapper.text(),
       tooltip: emailWrapper.find('span').attributes('title'),
-      lastActivityOn: rowWrapper.find('[data-testid="last_activity_on"]').text(),
+      lastActivityOn: rowWrapper.find('[data-testid="last-activity-on"]').text(),
+      maxRole: maxRoleWrapper.exists() ? maxRoleWrapper.text() : undefined,
     };
   };
 
@@ -85,8 +102,8 @@ describe('Add On Eligible User List', () => {
   };
 
   describe('renders table', () => {
-    beforeEach(async () => {
-      await createComponent({
+    beforeEach(() => {
+      return createComponent({
         mountFn: mount,
       });
     });
@@ -115,6 +132,86 @@ describe('Add On Eligible User List', () => {
       const actualUserListData = findSerializedTable(findTable());
 
       expect(actualUserListData).toEqual(expectedUserListData);
+    });
+
+    it('passes the correct fields configuration', () => {
+      expect(findTableKeys()).toEqual([
+        'user',
+        'codeSuggestionsAddon',
+        'email',
+        'lastActivityTime',
+      ]);
+    });
+
+    describe('with enableAddOnUsersFiltering enabled', () => {
+      beforeEach(() => {
+        return createComponent({ enableAddOnUsersFiltering: true });
+      });
+
+      it('passes the correct fields configuration', () => {
+        expect(findTableKeys()).toEqual([
+          'user',
+          'codeSuggestionsAddon',
+          'email',
+          'lastActivityTime',
+        ]);
+      });
+
+      describe('when eligible users have maxRole field', () => {
+        beforeEach(() => {
+          return createComponent({
+            mountFn: mount,
+            enableAddOnUsersFiltering: true,
+            props: { users: eligibleUsersWithMaxRole },
+          });
+        });
+
+        it('passes the correct fields configuration', () => {
+          expect(findTableKeys()).toEqual([
+            'user',
+            'codeSuggestionsAddon',
+            'email',
+            'maxRole',
+            'lastActivityTime',
+          ]);
+        });
+
+        it('renders the correct table data', () => {
+          const expectedUserListData = [
+            {
+              email: 'Private',
+              lastActivityOn: '2023-08-25',
+              maxRole: 'developer',
+              tooltip: 'An email address is only visible for users with public emails.',
+              user: {
+                avatarLabeled: {
+                  size: '32',
+                  src: 'path/to/img_userone',
+                  text: 'User One  @userone',
+                },
+                avatarLink: { alt: 'User One', href: 'path/to/userone' },
+              },
+            },
+            {
+              email: 'Private',
+              lastActivityOn: '2023-08-22',
+              maxRole: 'developer',
+              tooltip: 'An email address is only visible for users with public emails.',
+              user: {
+                avatarLabeled: {
+                  size: '32',
+                  src: 'path/to/img_usertwo',
+                  text: 'User Two  @usertwo',
+                },
+                avatarLink: { alt: 'User Two', href: 'path/to/usertwo' },
+              },
+            },
+          ];
+          const actualUserListData = findSerializedTable(findTable());
+
+          expect(actualUserListData).toStrictEqual(expectedUserListData);
+        });
+      });
     });
 
     describe('code suggestions addon', () => {
@@ -195,8 +292,8 @@ describe('Add On Eligible User List', () => {
 
   describe('loading state', () => {
     describe('when not loading', () => {
-      beforeEach(async () => {
-        await createComponent({
+      beforeEach(() => {
+        return createComponent({
           mountFn: mount,
         });
       });
@@ -227,8 +324,8 @@ describe('Add On Eligible User List', () => {
 
   describe('pagination', () => {
     describe('when more pages exist', () => {
-      beforeEach(async () => {
-        await createComponent({
+      beforeEach(() => {
+        return createComponent({
           props: { pageInfo: pageInfoWithMorePages },
         });
       });

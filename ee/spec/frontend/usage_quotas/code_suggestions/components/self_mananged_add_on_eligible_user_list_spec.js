@@ -68,23 +68,22 @@ describe('Add On Eligible User List', () => {
     wrapper.findByTestId('add-on-eligible-users-fetch-error');
 
   describe('add-on eligible user list', () => {
-    it('displays add-on eligible user list', async () => {
+    beforeEach(() => {
+      return createComponent();
+    });
+
+    it('displays add-on eligible user list', () => {
       const expectedProps = {
         addOnPurchaseId,
         isLoading: false,
         pageInfo: pageInfoWithMorePages,
         users: eligibleUsers,
       };
-      createComponent();
-      await waitForPromises();
 
       expect(findAddOnEligibleUserList().props()).toEqual(expectedProps);
     });
 
-    it('calls addOnEligibleUsers query with appropriate params', async () => {
-      createComponent();
-      await waitForPromises();
-
+    it('calls addOnEligibleUsers query with appropriate params', () => {
       expect(addOnEligibleUsersDataHandler).toHaveBeenCalledWith(defaultQueryVariables);
     });
 
