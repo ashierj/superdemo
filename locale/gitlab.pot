@@ -46711,9 +46711,6 @@ msgstr ""
 msgid "SortOptions|Title"
 msgstr ""
 
-msgid "SortOptions|Version"
-msgstr ""
-
 msgid "SortOptions|Weight"
 msgstr ""
 
