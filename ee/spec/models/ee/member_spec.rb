@@ -308,6 +308,61 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
     end
   end
 
+  context 'when after_update :post_update_hook' do
+    context 'for webhooks', :sidekiq_inline, :saas do
+      let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be(:group_hook) { create(:group_hook, group: group, member_events: true) }
+      let_it_be(:user) { create(:user) }
+
+      let(:group_member) { create(:group_member, :developer, group: group, expires_at: 1.day.from_now) }
+
+      it 'executes user_update_for_group event webhook when user role is updated' do
+        WebMock.stub_request(:post, group_hook.url)
+
+        group_member.update!(access_level: Gitlab::Access::MAINTAINER)
+
+        expect(WebMock).to have_requested(:post, group_hook.url).with(
+          webhook_data(group_member, 'user_update_for_group')
+        )
+      end
+
+      it 'executes user_update_for_group event webhook when user expiration date is updated' do
+        WebMock.stub_request(:post, group_hook.url)
+
+        group_member.update!(expires_at: 2.days.from_now)
+
+        expect(WebMock).to have_requested(:post, group_hook.url).with(
+          webhook_data(group_member, 'user_update_for_group')
+        )
+      end
+
+      def webhook_data(group_member, event)
+        {
+          headers: {
+            'Content-Type' => 'application/json',
+            'User-Agent' => "GitLab/#{Gitlab::VERSION}",
+            'X-Gitlab-Event' => 'Member Hook'
+          },
+          body: {
+            created_at: group_member.created_at&.xmlschema,
+            updated_at: group_member.updated_at&.xmlschema,
+            group_name: group.name,
+            group_path: group.path,
+            group_id: group.id,
+            user_username: group_member.user.username,
+            user_name: group_member.user.name,
+            user_email: group_member.user.webhook_email,
+            user_id: group_member.user.id,
+            group_access: group_member.human_access,
+            expires_at: group_member.expires_at&.xmlschema,
+            group_plan: 'ultimate',
+            event_name: event
+          }.to_json
+        }
+      end
+    end
+  end
+
   context 'check if user cap has been reached', :saas do
     let_it_be(:group, refind: true) do
       create(
