@@ -33337,7 +33337,7 @@ CREATE INDEX index_issues_on_milestone_id ON issues USING btree (milestone_id);
 
 CREATE INDEX index_issues_on_moved_to_id ON issues USING btree (moved_to_id) WHERE (moved_to_id IS NOT NULL);
 
-CREATE INDEX index_issues_on_namespace_id ON issues USING btree (namespace_id);
+CREATE UNIQUE INDEX index_issues_on_namespace_id_iid_unique ON issues USING btree (namespace_id, iid);
 
 CREATE INDEX index_issues_on_project_health_status_asc_work_item_type ON issues USING btree (project_id, health_status, id DESC, state_id, work_item_type_id);
 
