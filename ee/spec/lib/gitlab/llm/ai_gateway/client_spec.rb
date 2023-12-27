@@ -25,7 +25,8 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
       'X-Gitlab-Realm' => expected_gitlab_realm,
       'X-Gitlab-Authentication-Type' => 'oidc',
       'Authorization' => "Bearer #{expected_access_token}",
-      'Content-Type' => 'application/json'
+      'Content-Type' => 'application/json',
+      'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
     }
   end
 
