@@ -8,6 +8,7 @@ module EE
       prepended do
         rule { auditor }.policy do
           enable :read_runner
+          enable :read_builds
         end
       end
     end

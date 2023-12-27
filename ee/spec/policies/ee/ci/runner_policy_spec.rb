@@ -20,6 +20,7 @@ RSpec.describe Ci::RunnerPolicy, feature_category: :runner do
 
         it 'allows only read permissions' do
           expect_allowed :read_runner
+          expect_allowed :read_builds
           expect_disallowed :assign_runner, :update_runner, :delete_runner
         end
       end
@@ -29,6 +30,7 @@ RSpec.describe Ci::RunnerPolicy, feature_category: :runner do
 
         it 'allows only read permissions' do
           expect_allowed :read_runner
+          expect_allowed :read_builds
           expect_disallowed :assign_runner, :update_runner, :delete_runner
         end
       end
@@ -38,6 +40,7 @@ RSpec.describe Ci::RunnerPolicy, feature_category: :runner do
 
         it 'allows only read permissions' do
           expect_allowed :read_runner
+          expect_allowed :read_builds
           expect_disallowed :assign_runner, :update_runner, :delete_runner
         end
       end
