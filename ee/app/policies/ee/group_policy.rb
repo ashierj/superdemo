@@ -227,6 +227,15 @@ module EE
         ).has_ability?
       end
 
+      desc "Custom role on group that enables manage group access tokens"
+      condition(:role_enables_manage_group_access_tokens) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :manage_group_access_tokens
+        ).has_ability?
+      end
+
       rule { owner & unique_project_download_limit_enabled }.policy do
         enable :ban_group_member
       end
@@ -495,6 +504,16 @@ module EE
         enable :admin_group_member
         enable :update_group_member
         enable :destroy_group_member
+      end
+
+      rule { custom_roles_allowed & role_enables_manage_group_access_tokens & resource_access_token_feature_available }.policy do
+        enable :read_resource_access_tokens
+        enable :destroy_resource_access_tokens
+      end
+
+      rule { custom_roles_allowed & role_enables_manage_group_access_tokens & resource_access_token_creation_allowed }.policy do
+        enable :create_resource_access_tokens
+        enable :manage_resource_access_tokens
       end
 
       rule { custom_roles_allowed & owner }.policy do

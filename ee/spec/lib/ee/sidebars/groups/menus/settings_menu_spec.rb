@@ -272,5 +272,27 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
         end
       end
     end
+
+    context 'for user with `read_resource_access_tokens` custom permission', feature_category: :permissions do
+      let_it_be(:user) { create(:user) }
+      let_it_be(:role) { create(:member_role, :guest, namespace: group, manage_group_access_tokens: true) }
+      let_it_be(:member) { create(:group_member, :guest, member_role: role, user: user, group: group) }
+
+      subject { menu.renderable_items.find { |e| e.item_id == item_id } }
+
+      before do
+        stub_licensed_features(custom_roles: true)
+      end
+
+      describe 'Access Tokens menu item' do
+        let(:item_id) { :access_tokens }
+
+        it { is_expected.to be_present }
+
+        it 'does not show any other menu items' do
+          expect(menu.renderable_items.length).to equal(1)
+        end
+      end
+    end
   end
 end

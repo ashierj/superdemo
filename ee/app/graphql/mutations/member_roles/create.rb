@@ -30,6 +30,10 @@ module Mutations
       argument :group_path, GraphQL::Types::ID,
         required: ::Gitlab::Saas.feature_available?(:gitlab_saas_subscriptions),
         description: 'Group the member role to mutate is in. Required for SaaS.'
+      argument :manage_group_access_tokens,
+        GraphQL::Types::Boolean,
+        required: false,
+        description: 'Permission to admin group access tokens.'
       argument :manage_project_access_tokens,
         GraphQL::Types::Boolean,
         required: false,
