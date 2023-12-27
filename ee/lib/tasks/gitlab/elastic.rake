@@ -43,17 +43,7 @@ namespace :gitlab do
 
     desc 'GitLab | Elasticsearch | Enable Elasticsearch search'
     task enable_search_with_elasticsearch: :environment do
-      if Gitlab::CurrentSettings.elasticsearch_search?
-        puts "Setting `elasticsearch_search` was already enabled."
-      else
-        ApplicationSettings::UpdateService.new(
-          Gitlab::CurrentSettings.current_application_settings,
-          nil,
-          { elasticsearch_search: true }
-        ).execute
-
-        puts "Setting `elasticsearch_search` has been enabled."
-      end
+      tasks.execute(:enable_search_with_elasticsearch)
     end
 
     desc 'GitLab | Elasticsearch | Disable Elasticsearch search'
@@ -73,26 +63,12 @@ namespace :gitlab do
 
     desc "GitLab | Elasticsearch | Index projects in the background"
     task index_projects: :environment do
-      print "Enqueuing projects…"
-
-      count = project_id_batches do |ids|
-        ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(*Project.find(ids))
-        print "."
-      end
-
-      marker = count > 0 ? "✔" : "∅"
-      puts " #{marker} (#{count})"
+      tasks.execute(:index_projects)
     end
 
     desc "GitLab | Elasticsearch | Overall indexing status of project repository data (code, commits, and wikis)"
     task index_projects_status: :environment do
-      raise 'This task cannot be run on GitLab.com' if Gitlab.com?
-
-      projects = elastic_enabled_projects.size
-      indexed = IndexStatus.for_project(elastic_enabled_projects).size
-      percent = (indexed / projects.to_f) * 100.0
-
-      puts format("Indexing is %.2f%% complete (%d/%d projects)", percent, indexed, projects)
+      tasks.execute(:index_projects_status)
     end
 
     desc "GitLab | Elasticsearch | Index all snippets"
@@ -102,34 +78,12 @@ namespace :gitlab do
 
     desc "GitLab | Elasticsearch | Index all users"
     task index_users: :environment do
-      logger = Logger.new($stdout)
-      logger.info("Indexing users...")
-
-      User.each_batch do |users|
-        ::Elastic::ProcessInitialBookkeepingService.track!(*users)
-      end
-
-      logger.info("Indexing users... #{'done'.color(:green)}")
+      tasks.execute(:index_users)
     end
 
     desc "GitLab | Elasticsearch | Index epics"
     task index_epics: :environment do
-      raise 'This task cannot be run on GitLab.com' if Gitlab.com?
-
-      logger = Logger.new($stdout)
-      logger.info("Indexing epics...")
-
-      groups = if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
-                 ::Gitlab::CurrentSettings.elasticsearch_limited_namespaces.where(type: "Group")
-               else
-                 Group.all
-               end
-
-      groups.each_batch do |batch|
-        ::Elastic::ProcessInitialBookkeepingService.maintain_indexed_group_associations!(*batch)
-      end
-
-      logger.info("Indexing epics... #{'done'.color(:green)}")
+      tasks.execute(:index_epics)
     end
 
     desc "GitLab | Elasticsearch | Index group wikis"
@@ -341,30 +295,6 @@ namespace :gitlab do
       yield
     rescue StandardError => e
       puts "An exception occurred during the retrieval of the data: #{e.class}: #{e.message}".color(:red)
-    end
-
-    def project_id_batches
-      relation = Project.all
-
-      if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
-        relation.merge!(::Gitlab::CurrentSettings.elasticsearch_limited_projects)
-      end
-
-      count = 0
-      relation.in_batches(start: ENV['ID_FROM'], finish: ENV['ID_TO']) do |relation| # rubocop: disable Cop/InBatches
-        ids = relation.reorder(:id).pluck(:id)
-        yield ids
-
-        count += ids.size
-      end
-
-      count
-    end
-
-    def elastic_enabled_projects
-      return Project.all unless ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
-
-      ::Gitlab::CurrentSettings.elasticsearch_limited_projects
     end
 
     def trigger_cluster_reindexing
