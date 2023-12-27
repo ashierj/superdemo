@@ -241,5 +241,23 @@ module EE
 
       errors.add(:member_namespace, _("must be in same hierarchy as custom role's namespace"))
     end
+
+    override :post_update_hook
+    def post_update_hook
+      super
+
+      execute_hooks_for(:update) if saved_change_to_access_level? || saved_change_to_expires_at?
+    end
+
+    def execute_hooks_for(event)
+      return unless source.is_a?(Group)
+      return unless source.licensed_feature_available?(:group_webhooks)
+      return unless GroupHook.where(group_id: source.self_and_ancestors).exists?
+
+      run_after_commit do
+        data = ::Gitlab::HookData::GroupMemberBuilder.new(self).build(event)
+        source.execute_hooks(data, :member_hooks)
+      end
+    end
   end
 end

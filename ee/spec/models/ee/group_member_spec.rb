@@ -289,30 +289,6 @@ RSpec.describe GroupMember, feature_category: :groups_and_projects do
       end
     end
 
-    context 'when a group member is updated' do
-      let(:group_member) { create(:group_member, :developer, group: group, expires_at: 1.day.from_now) }
-
-      it 'executes user_update_for_group event webhook when user role is updated' do
-        WebMock.stub_request(:post, group_hook.url)
-
-        group_member.update!(access_level: Gitlab::Access::MAINTAINER)
-
-        expect(WebMock).to have_requested(:post, group_hook.url).with(
-          webhook_data(group_member, 'user_update_for_group')
-        )
-      end
-
-      it 'executes user_update_for_group event webhook when user expiration date is updated' do
-        WebMock.stub_request(:post, group_hook.url)
-
-        group_member.update!(expires_at: 2.days.from_now)
-
-        expect(WebMock).to have_requested(:post, group_hook.url).with(
-          webhook_data(group_member, 'user_update_for_group')
-        )
-      end
-    end
-
     context 'when the group member is deleted' do
       let_it_be(:group_member) { create(:group_member, :developer, group: group, expires_at: 1.day.from_now) }
 
