@@ -5,12 +5,21 @@ export const suggestedLabelColors = {
   '#44AD8E': 'Lime green',
 };
 
+export const mockPageInfo = () => ({
+  hasNextPage: true,
+  hasPreviousPage: false,
+  startCursor: 'start-cursor',
+  endCursor: 'end-cursor',
+  __typename: 'PageInfo',
+});
+
 export const validFetchResponse = {
   data: {
     namespace: {
       id: 'gid://gitlab/Group/1',
       name: 'Group 1',
       complianceFrameworks: {
+        pageInfo: mockPageInfo(),
         nodes: [
           {
             id: 'gid://gitlab/ComplianceManagement::Framework/1',
@@ -51,6 +60,7 @@ export const emptyFetchResponse = {
       name: 'Group 1',
       default: false,
       complianceFrameworks: {
+        pageInfo: mockPageInfo(),
         nodes: [],
         __typename: 'ComplianceFrameworkConnection',
       },
@@ -74,6 +84,7 @@ export const validFetchOneResponse = {
       id: 'gid://gitlab/Group/1',
       name: 'Group 1',
       complianceFrameworks: {
+        pageInfo: mockPageInfo(),
         nodes: [
           {
             id: 'gid://gitlab/ComplianceManagement::Framework/1',

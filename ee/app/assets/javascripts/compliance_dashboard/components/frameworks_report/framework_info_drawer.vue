@@ -45,7 +45,7 @@ export default {
       return Boolean(this.framework.default);
     },
     associatedProjectsTitle() {
-      return `${this.$options.i18n.associatedProjects} (${this.framework.associatedProjects.length})`;
+      return `${this.$options.i18n.associatedProjects} (${this.framework.projects.nodes.length})`;
     },
   },
   DRAWER_Z_INDEX,
@@ -95,7 +95,7 @@ export default {
           </gl-accordion-item>
           <gl-accordion-item :title="associatedProjectsTitle">
             <div
-              v-for="associatedProject in framework.associatedProjects"
+              v-for="associatedProject in framework.projects.nodes"
               :key="associatedProject.id"
               class="gl-m-2"
             >

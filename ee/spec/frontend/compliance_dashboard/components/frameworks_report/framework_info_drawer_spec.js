@@ -1,14 +1,14 @@
 import { GlLabel, GlLink, GlAccordionItem, GlTruncate } from '@gitlab/ui';
 import FrameworkInfoDrawer from 'ee/compliance_dashboard/components/frameworks_report/framework_info_drawer.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { createFrameworkReportFramework } from 'ee_jest/compliance_dashboard/mock_data';
+import { createFramework } from 'ee_jest/compliance_dashboard/mock_data';
 
 describe('FrameworkInfoDrawer component', () => {
   let wrapper;
 
-  const defaultFramework = createFrameworkReportFramework({ id: 1, isDefault: true });
-  const nonDefaultFramework = createFrameworkReportFramework(2);
-  const associatedProjectsCount = defaultFramework.associatedProjects.length;
+  const defaultFramework = createFramework({ id: 1, isDefault: true, projects: 3 });
+  const nonDefaultFramework = createFramework({ id: 2 });
+  const associatedProjectsCount = defaultFramework.projects.nodes.length;
 
   const findDefaultBadge = () => wrapper.findComponent(GlLabel);
   const findProjectLinks = () => wrapper.findAllComponents(GlLink);
@@ -61,11 +61,9 @@ describe('FrameworkInfoDrawer component', () => {
       it('renders the Associated Projects list', () => {
         expect(findProjectLinks().exists()).toBe(true);
         expect(findProjectLinks().wrappers).toHaveLength(3);
-        expect(findProjectLinks().at(0).text()).toContain(
-          defaultFramework.associatedProjects[0].name,
-        );
+        expect(findProjectLinks().at(0).text()).toContain(defaultFramework.projects.nodes[0].name);
         expect(findProjectLinks().at(0).attributes('href')).toBe(
-          defaultFramework.associatedProjects[0].webUrl,
+          defaultFramework.projects.nodes[0].webUrl,
         );
       });
     });
