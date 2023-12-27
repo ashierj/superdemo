@@ -20,84 +20,47 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
 
   describe 'validations' do
     describe 'mirror', feature_category: :source_code_management do
-      it { is_expected.to allow_value(100).for(:mirror_max_delay) }
+      it { is_expected.to validate_numericality_of(:mirror_max_delay).only_integer }
       it { is_expected.not_to allow_value(nil).for(:mirror_max_delay) }
       it { is_expected.not_to allow_value(0).for(:mirror_max_delay) }
-      it { is_expected.not_to allow_value(1.1).for(:mirror_max_delay) }
-      it { is_expected.not_to allow_value(-1).for(:mirror_max_delay) }
       it { is_expected.not_to allow_value((Gitlab::Mirror::MIN_DELAY - 1.minute) / 60).for(:mirror_max_delay) }
 
-      it { is_expected.to allow_value(10).for(:mirror_max_capacity) }
+      it { is_expected.to validate_numericality_of(:mirror_max_capacity).only_integer.is_greater_than(0) }
       it { is_expected.not_to allow_value(nil).for(:mirror_max_capacity) }
-      it { is_expected.not_to allow_value(0).for(:mirror_max_capacity) }
-      it { is_expected.not_to allow_value(1.1).for(:mirror_max_capacity) }
-      it { is_expected.not_to allow_value(-1).for(:mirror_max_capacity) }
 
-      it { is_expected.to allow_value(10).for(:mirror_capacity_threshold) }
+      it { is_expected.to validate_numericality_of(:mirror_capacity_threshold).only_integer.is_greater_than(0) }
       it { is_expected.not_to allow_value(nil).for(:mirror_capacity_threshold) }
-      it { is_expected.not_to allow_value(0).for(:mirror_capacity_threshold) }
-      it { is_expected.not_to allow_value(1.1).for(:mirror_capacity_threshold) }
-      it { is_expected.not_to allow_value(-1).for(:mirror_capacity_threshold) }
       it { is_expected.not_to allow_value(subject.mirror_max_capacity + 1).for(:mirror_capacity_threshold) }
       it { is_expected.to allow_value(nil).for(:custom_project_templates_group_id) }
     end
 
     describe 'elasticsearch', feature_category: :global_search do
-      it { is_expected.to allow_value(10).for(:search_max_shard_size_gb) }
-      it { is_expected.not_to allow_value(0).for(:search_max_shard_size_gb) }
+      it { is_expected.to validate_numericality_of(:search_max_shard_size_gb).only_integer.is_greater_than(0) }
       it { is_expected.not_to allow_value(nil).for(:search_max_shard_size_gb) }
-      it { is_expected.not_to allow_value(1.1).for(:search_max_shard_size_gb) }
-      it { is_expected.not_to allow_value(-1).for(:search_max_shard_size_gb) }
 
-      it { is_expected.to allow_value(10).for(:search_max_docs_denominator) }
-      it { is_expected.not_to allow_value(0).for(:search_max_docs_denominator) }
+      it { is_expected.to validate_numericality_of(:search_max_docs_denominator).only_integer.is_greater_than(0) }
       it { is_expected.not_to allow_value(nil).for(:search_max_docs_denominator) }
-      it { is_expected.not_to allow_value(1.1).for(:search_max_docs_denominator) }
-      it { is_expected.not_to allow_value(-1).for(:search_max_docs_denominator) }
 
-      it { is_expected.to allow_value(10).for(:search_min_docs_before_rollover) }
-      it { is_expected.not_to allow_value(0).for(:search_min_docs_before_rollover) }
+      it { is_expected.to validate_numericality_of(:search_min_docs_before_rollover).only_integer.is_greater_than(0) }
       it { is_expected.not_to allow_value(nil).for(:search_min_docs_before_rollover) }
-      it { is_expected.not_to allow_value(1.1).for(:search_min_docs_before_rollover) }
-      it { is_expected.not_to allow_value(-1).for(:search_min_docs_before_rollover) }
 
-      it { is_expected.to allow_value(10).for(:elasticsearch_worker_number_of_shards) }
-      it { is_expected.to allow_value(Elastic::ProcessBookkeepingService::SHARDS_MAX).for(:elasticsearch_worker_number_of_shards) }
-      it { is_expected.not_to allow_value(0).for(:elasticsearch_worker_number_of_shards) }
+      it { is_expected.to validate_numericality_of(:elasticsearch_worker_number_of_shards).only_integer.is_greater_than(0).is_less_than_or_equal_to(Elastic::ProcessBookkeepingService::SHARDS_MAX) }
       it { is_expected.not_to allow_value(nil).for(:elasticsearch_worker_number_of_shards) }
-      it { is_expected.not_to allow_value(1.1).for(:elasticsearch_worker_number_of_shards) }
-      it { is_expected.not_to allow_value(-1).for(:elasticsearch_worker_number_of_shards) }
-      it { is_expected.not_to allow_value(Elastic::ProcessBookkeepingService::SHARDS_MAX + 1).for(:elasticsearch_worker_number_of_shards) }
 
-      it { is_expected.to allow_value(10).for(:elasticsearch_indexed_file_size_limit_kb) }
-      it { is_expected.not_to allow_value(0).for(:elasticsearch_indexed_file_size_limit_kb) }
+      it { is_expected.to validate_numericality_of(:elasticsearch_indexed_file_size_limit_kb).only_integer.is_greater_than(0) }
       it { is_expected.not_to allow_value(nil).for(:elasticsearch_indexed_file_size_limit_kb) }
-      it { is_expected.not_to allow_value(1.1).for(:elasticsearch_indexed_file_size_limit_kb) }
-      it { is_expected.not_to allow_value(-1).for(:elasticsearch_indexed_file_size_limit_kb) }
 
-      it { is_expected.to allow_value(10).for(:elasticsearch_indexed_field_length_limit) }
-      it { is_expected.to allow_value(0).for(:elasticsearch_indexed_field_length_limit) }
+      it { is_expected.to validate_numericality_of(:elasticsearch_indexed_field_length_limit).only_integer.is_greater_than_or_equal_to(0) }
       it { is_expected.not_to allow_value(nil).for(:elasticsearch_indexed_field_length_limit) }
-      it { is_expected.not_to allow_value(1.1).for(:elasticsearch_indexed_field_length_limit) }
-      it { is_expected.not_to allow_value(-1).for(:elasticsearch_indexed_field_length_limit) }
 
-      it { is_expected.to allow_value(25).for(:elasticsearch_max_bulk_size_mb) }
+      it { is_expected.to validate_numericality_of(:elasticsearch_max_bulk_size_mb).only_integer.is_greater_than(0) }
       it { is_expected.not_to allow_value(nil).for(:elasticsearch_max_bulk_size_mb) }
-      it { is_expected.not_to allow_value(0).for(:elasticsearch_max_bulk_size_mb) }
-      it { is_expected.not_to allow_value(1.1).for(:elasticsearch_max_bulk_size_mb) }
-      it { is_expected.not_to allow_value(-1).for(:elasticsearch_max_bulk_size_mb) }
 
-      it { is_expected.to allow_value(2).for(:elasticsearch_max_bulk_concurrency) }
+      it { is_expected.to validate_numericality_of(:elasticsearch_max_bulk_concurrency).only_integer.is_greater_than(0) }
       it { is_expected.not_to allow_value(nil).for(:elasticsearch_max_bulk_concurrency) }
-      it { is_expected.not_to allow_value(0).for(:elasticsearch_max_bulk_concurrency) }
-      it { is_expected.not_to allow_value(1.1).for(:elasticsearch_max_bulk_concurrency) }
-      it { is_expected.not_to allow_value(-1).for(:elasticsearch_max_bulk_concurrency) }
 
-      it { is_expected.to allow_value(30).for(:elasticsearch_client_request_timeout) }
-      it { is_expected.to allow_value(0).for(:elasticsearch_client_request_timeout) }
+      it { is_expected.to validate_numericality_of(:elasticsearch_client_request_timeout).only_integer.is_greater_than_or_equal_to(0) }
       it { is_expected.not_to allow_value(nil).for(:elasticsearch_client_request_timeout) }
-      it { is_expected.not_to allow_value(1.1).for(:elasticsearch_client_request_timeout) }
-      it { is_expected.not_to allow_value(-1).for(:elasticsearch_client_request_timeout) }
 
       it { is_expected.to allow_value('').for(:elasticsearch_username) }
       it { is_expected.to allow_value('a' * 255).for(:elasticsearch_username) }
@@ -120,37 +83,17 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
     end
 
     describe 'max_personal_access_token', feature_category: :user_management do
-      it { is_expected.to allow_value(1).for(:max_personal_access_token_lifetime) }
-      it { is_expected.to allow_value(nil).for(:max_personal_access_token_lifetime) }
-      it { is_expected.to allow_value(10).for(:max_personal_access_token_lifetime) }
-      it { is_expected.to allow_value(365).for(:max_personal_access_token_lifetime) }
-      it { is_expected.not_to allow_value("value").for(:max_personal_access_token_lifetime) }
-      it { is_expected.not_to allow_value(2.5).for(:max_personal_access_token_lifetime) }
-      it { is_expected.not_to allow_value(-5).for(:max_personal_access_token_lifetime) }
-      it { is_expected.not_to allow_value(366).for(:max_personal_access_token_lifetime) }
+      it { is_expected.to validate_numericality_of(:max_personal_access_token_lifetime).only_integer.is_greater_than(0).is_less_than_or_equal_to(365).allow_nil }
     end
 
     describe 'new_user_signups', feature_category: :onboarding do
-      it { is_expected.to allow_value(nil).for(:new_user_signups_cap) }
-      it { is_expected.to allow_value(1).for(:new_user_signups_cap) }
-      it { is_expected.to allow_value(10).for(:new_user_signups_cap) }
+      it { is_expected.to validate_numericality_of(:new_user_signups_cap).only_integer.is_greater_than(0).allow_nil }
       it { is_expected.to allow_value("").for(:new_user_signups_cap) }
-      it { is_expected.not_to allow_value("value").for(:new_user_signups_cap) }
-      it { is_expected.not_to allow_value(-1).for(:new_user_signups_cap) }
-      it { is_expected.not_to allow_value(2.5).for(:new_user_signups_cap) }
     end
 
     describe 'git_two_factor', feature_category: :system_access do
-      it { is_expected.to allow_value(1).for(:git_two_factor_session_expiry) }
-      it { is_expected.to allow_value(10).for(:git_two_factor_session_expiry) }
-      it { is_expected.to allow_value(10079).for(:git_two_factor_session_expiry) }
-      it { is_expected.to allow_value(10080).for(:git_two_factor_session_expiry) }
+      it { is_expected.to validate_numericality_of(:git_two_factor_session_expiry).only_integer.is_greater_than_or_equal_to(1).is_less_than_or_equal_to(10080) }
       it { is_expected.not_to allow_value(nil).for(:git_two_factor_session_expiry) }
-      it { is_expected.not_to allow_value("value").for(:git_two_factor_session_expiry) }
-      it { is_expected.not_to allow_value(2.5).for(:git_two_factor_session_expiry) }
-      it { is_expected.not_to allow_value(-5).for(:git_two_factor_session_expiry) }
-      it { is_expected.not_to allow_value(0).for(:git_two_factor_session_expiry) }
-      it { is_expected.not_to allow_value(10081).for(:git_two_factor_session_expiry) }
 
       it { is_expected.to validate_numericality_of(:max_ssh_key_lifetime).is_greater_than(0).is_less_than_or_equal_to(365).allow_nil }
       it { is_expected.to validate_numericality_of(:deletion_adjourned_period).is_greater_than(0).is_less_than_or_equal_to(90) }
