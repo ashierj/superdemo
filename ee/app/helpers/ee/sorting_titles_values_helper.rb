@@ -25,10 +25,6 @@ module EE
       s_('SortOptions|Blocking')
     end
 
-    def sort_title_version
-      s_('SortOptions|Version')
-    end
-
     def sort_value_start_date
       'start_date_asc'
     end
