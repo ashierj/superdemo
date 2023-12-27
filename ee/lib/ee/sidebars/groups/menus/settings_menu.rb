@@ -9,7 +9,7 @@ module EE
 
           override :configure_menu_items
           def configure_menu_items
-            return false unless super
+            super
 
             if can?(context.current_user, :admin_group, context.group)
               insert_item_after(:general, roles_and_permissions_menu_item)
@@ -26,18 +26,12 @@ module EE
                 add_item(access_tokens_menu_item)
               end
 
-              if can?(context.current_user, :change_push_rules, context.group)
-                # Push Rules are the only group setting that can also be edited by maintainers.
-                # They only get the Repository settings which only show the Push Rules section for maintainers.
-                add_item(repository_menu_item)
-              end
+              # Push Rules are the only group setting that can also be edited by maintainers.
+              # They only get the Repository settings which only show the Push Rules section for maintainers.
+              add_item(repository_menu_item) if can?(context.current_user, :change_push_rules, context.group)
 
-              if can_see_billing?
-                add_item(billing_menu_item)
-              end
+              add_item(billing_menu_item) if can?(context.current_user, :read_billing, context.group)
             end
-
-            true
           end
 
           private
@@ -166,10 +160,6 @@ module EE
               active_routes: { path: 'reporting#show' },
               item_id: :reporting
             )
-          end
-
-          def can_see_billing?
-            can?(context.current_user, :read_billing, context.group)
           end
         end
       end
