@@ -93,10 +93,10 @@ RSpec.describe Boards::Epics::MoveService do
               expect { subject }.to change { epic.state }.from('opened').to('closed')
             end
 
-            it 'removes the board labels from the epic' do
+            it 'does not remove the board labels from the epic' do
               subject
 
-              expect(epic.labels).to eq([no_board_label])
+              expect(epic.labels).to eq([development, no_board_label])
             end
           end
         end
