@@ -6,6 +6,7 @@ import {
   OPERATORS_IS_NOT,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
+import DateRangeToken from '~/vue_shared/components/filtered_search_bar/tokens/daterange_token.vue';
 import { SORTING_OPTIONS } from '~/observability/constants';
 import {
   PERIOD_FILTER_TOKEN_TYPE,
@@ -68,7 +69,7 @@ export default {
           title: s__('Tracing|Time range'),
           icon: 'clock',
           type: PERIOD_FILTER_TOKEN_TYPE,
-          token: GlFilteredSearchToken,
+          token: DateRangeToken,
           operators: OPERATORS_IS,
           unique: true,
           options: [
