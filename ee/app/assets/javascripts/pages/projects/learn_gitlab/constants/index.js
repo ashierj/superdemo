@@ -137,5 +137,4 @@ export const ACTION_SECTIONS = {
 };
 
 export const INVITE_MODAL_OPEN_COOKIE = 'confetti_post_signup';
-export const ULTIMATE_TRIAL_BENEFIT_MODAL = 'ultimate_trial_benefit_modal';
 export const PROMOTE_ULTIMATE_FEATURES = 'promote_ultimate_features';
