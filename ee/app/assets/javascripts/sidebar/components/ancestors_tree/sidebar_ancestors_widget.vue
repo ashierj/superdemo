@@ -60,5 +60,10 @@ export default {
 </script>
 
 <template>
-  <ancestors :is-fetching="isLoading" :ancestors="ancestors" class="block ancestors" />
+  <ancestors
+    :is-fetching="isLoading"
+    :ancestors="ancestors"
+    class="block ancestors"
+    data-testid="sidebar-ancestors"
+  />
 </template>
