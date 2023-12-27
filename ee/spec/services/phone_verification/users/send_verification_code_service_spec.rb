@@ -275,7 +275,6 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
     context 'when verification code is sent successfully' do
       let_it_be(:risk_score) { 10 }
       let_it_be(:telesign_reference_xid) { '123' }
-      let_it_be(:user_scores) { Abuse::UserTrustScore.new(user) }
 
       let_it_be(:risk_service_response) do
         ServiceResponse.success(payload: { risk_score: risk_score })
@@ -306,10 +305,10 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         expect(record.telesign_reference_xid).to eq(telesign_reference_xid)
       end
 
-      it 'stores risk score in abuse trust scores' do
-        service.execute
+      it 'executes the abuse trust score worker' do
+        expect(Abuse::TrustScoreWorker).to receive(:perform_async).once.with(user.id, :telesign, instance_of(Float))
 
-        expect(user_scores.telesign_score).to eq(risk_score.to_f)
+        service.execute
       end
     end
 

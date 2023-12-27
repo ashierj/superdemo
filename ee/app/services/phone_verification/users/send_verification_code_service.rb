@@ -152,7 +152,7 @@ module PhoneVerification
       def store_risk_score(risk_score)
         return unless Feature.enabled?(:telesign_intelligence, type: :ops)
 
-        Abuse::TrustScore.create!(user: user, score: risk_score.to_f, source: :telesign)
+        Abuse::TrustScoreWorker.perform_async(user.id, :telesign, risk_score.to_f)
       end
     end
   end
