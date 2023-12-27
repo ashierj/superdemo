@@ -26659,13 +26659,13 @@ msgstr ""
 msgid "IssueTracker|New issue URL"
 msgstr ""
 
-msgid "IssueTracker|The URL to create an issue in the external issue tracker."
+msgid "IssueTracker|URL of the project in the external issue tracker."
 msgstr ""
 
-msgid "IssueTracker|The URL to the project in the external issue tracker."
+msgid "IssueTracker|URL to create an issue in the external issue tracker."
 msgstr ""
 
-msgid "IssueTracker|The URL to view an issue in the external issue tracker. Must contain %{colon_id}."
+msgid "IssueTracker|URL to view an issue in the external issue tracker. Must contain %{colon_id}."
 msgstr ""
 
 msgid "IssueTracker|Use Bugzilla as this project's issue tracker."
@@ -51788,6 +51788,15 @@ msgid "URL of the external Spam Check endpoint"
 msgstr ""
 
 msgid "URL of the external storage to serve the repository static objects."
+msgstr ""
+
+msgid "URL of the issue."
+msgstr ""
+
+msgid "URL of the new issue."
+msgstr ""
+
+msgid "URL of the project."
 msgstr ""
 
 msgid "URL or request ID"
