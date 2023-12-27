@@ -99,10 +99,6 @@ module EE
         ::Gitlab::CurrentSettings.current_application_settings.hashed_storage_enabled
       end
 
-      def any_project_not_in_hashed_storage?
-        ::Project.with_unmigrated_storage.exists?
-      end
-
       def show_ultimate_trial?(user, callout = ULTIMATE_TRIAL)
         return false unless user
         return false unless show_ultimate_trial_suitable_env?
