@@ -3,25 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe EE::Groups::SettingsHelper do
-  describe('#delayed_project_removal_help_text') do
-    using RSpec::Parameterized::TableSyntax
-
-    where(:admin_only, :expected) do
-      true  | 'Only administrators can delete projects.'
-      false | 'Owners and administrators can delete projects.'
-    end
-
-    with_them do
-      before do
-        stub_application_setting(default_project_deletion_protection: admin_only)
-      end
-
-      it "returns expected helper text" do
-        expect(helper.delayed_project_removal_help_text).to eq expected
-      end
-    end
-  end
-
   describe '.unique_project_download_limit_settings_data', feature_category: :insider_threat do
     let(:namespace_settings) do
       build(:namespace_settings, unique_project_download_limit: 1,
