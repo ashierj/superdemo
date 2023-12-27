@@ -13,11 +13,11 @@ module EE
           def to_data_attributes
             super.tap do |attrs|
               attrs[:aggregation] = aggregation_attributes if use_aggregated_backend?
-              attrs[:group] = group_data_attributes if group.present?
+              attrs[:group] = group_data_attributes if namespace.present?
               attrs[:projects] = group_projects(project_ids) if group.present? && project_ids.present?
               attrs[:enable_tasks_by_type_chart] = 'true' if group.present?
               attrs[:enable_customizable_stages] = 'true' if licensed?
-              attrs[:enable_projects_filter] = 'true' if group.present?
+              attrs[:enable_projects_filter] = 'true' if group.present? || namespace.is_a?(Group)
               attrs[:enable_vsd_link] = 'true' if render_value_stream_dashboard_link?
               attrs[:can_edit] = 'true' if licensed? && ::Gitlab::Analytics::CycleAnalytics.allowed_to_edit?(
                 current_user, namespace)
@@ -117,7 +117,7 @@ module EE
           end
 
           def group_data_attributes
-            return unless group
+            return unless namespace
 
             {
               id: namespace.id,

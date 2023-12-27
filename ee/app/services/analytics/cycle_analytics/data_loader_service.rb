@@ -16,7 +16,7 @@ module Analytics
       }.freeze
 
       def initialize(group:, model:, context: Analytics::CycleAnalytics::AggregationContext.new)
-        @group = group
+        @group = group # could also be a Namespaces::UserNamespace object
         @model = model
         @context = context
         @upsert_count = 0

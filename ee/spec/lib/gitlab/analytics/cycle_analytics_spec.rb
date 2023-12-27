@@ -22,6 +22,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :team_planni
       nil: nil,
       issue: create(:issue),
       project_namespace: create(:project, :private, group: group).reload.project_namespace,
+      user_namespace: create(:namespace, owner: create(:user)),
       public_project_namespace: create(:project, :public, group: group).reload.project_namespace,
       group: group
     }
@@ -46,6 +47,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :team_planni
       :project_namespace | nil | false
       :project_namespace | :cycle_analytics_for_groups | false
       :project_namespace | :cycle_analytics_for_projects | true
+      :user_namespace | nil | false
+      :user_namespace | :cycle_analytics_for_projects | true
       :public_project_namespace | nil | false
       :public_project_namespace | :cycle_analytics_for_groups | false
       :public_project_namespace | :cycle_analytics_for_projects | true
@@ -80,11 +83,11 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :team_planni
       end
 
       context 'when the parent is a user namespace' do
-        it 'returns false' do
+        it 'succeeds' do
           namespace = create(:namespace_with_plan, plan: :ultimate_plan)
           project_namespace = create(:project, namespace: namespace).reload.project_namespace
 
-          expect(described_class).not_to be_licensed(project_namespace)
+          expect(described_class).to be_licensed(project_namespace)
         end
       end
     end

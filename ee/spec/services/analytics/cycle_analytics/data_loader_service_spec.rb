@@ -6,10 +6,10 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :
   let_it_be_with_refind(:top_level_group) { create(:group) }
 
   describe 'validations' do
-    let(:group) { top_level_group }
+    let(:namespace) { top_level_group }
     let(:model) { Issue }
 
-    subject(:service_response) { described_class.new(group: group, model: model).execute }
+    subject(:service_response) { described_class.new(group: namespace, model: model).execute }
 
     context 'when wrong model is passed' do
       let(:model) { Project }
@@ -27,8 +27,56 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :
       end
     end
 
+    context 'when provided namespace is a personal project namespace' do
+      let_it_be(:user2) { create(:user) }
+      let_it_be(:project) { create(:project, :public, namespace: user2.namespace) }
+      let(:namespace) { project.project_namespace }
+
+      it 'returns a successful response' do
+        expect(service_response).not_to be_error
+        expect(service_response.payload[:reason]).to eq(:model_processed)
+      end
+    end
+
+    context 'when provided namespace is a personal namespace' do
+      let_it_be(:user2) { create(:user) }
+      let_it_be(:project) { create(:project, :public, namespace: user2.namespace) }
+
+      let_it_be(:namespace) { user2.namespace }
+
+      let_it_be(:stage1) do
+        create(:cycle_analytics_stage, {
+          namespace: namespace,
+          start_event_identifier: :merge_request_created,
+          end_event_identifier: :merge_request_merged
+        })
+      end
+
+      let_it_be(:current_time) { Time.current }
+      let_it_be(:mr) { create(:merge_request, :unique_branches, :with_merged_metrics, created_at: current_time, updated_at: current_time + 2.days, source_project: project) }
+      let_it_be(:issue) { create(:issue, project: project, created_at: current_time, closed_at: current_time + 5.minutes, weight: 5) }
+
+      before do
+        stub_licensed_features(cycle_analytics_for_projects: true)
+      end
+
+      it 'returns a successful response' do
+        service_response = described_class.new(group: namespace, model: MergeRequest).execute
+
+        expect(service_response).not_to be_error
+        expect(service_response.payload[:reason]).to eq(:model_processed)
+        expect(service_response[:context].processed_records).to eq(1)
+      end
+
+      it 'creates some aggregated data in the personal namespace project' do
+        expect do
+          described_class.new(group: namespace, model: MergeRequest).execute
+        end.to change { Analytics::CycleAnalytics::MergeRequestStageEvent.count }.by(1)
+      end
+    end
+
     context 'when sub-group is given' do
-      let(:group) { create(:group, parent: top_level_group) }
+      let(:namespace) { create(:group, parent: top_level_group) }
 
       it 'returns service error response' do
         stub_licensed_features(cycle_analytics_for_groups: true)
