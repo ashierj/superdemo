@@ -1,14 +1,11 @@
-import { GlLoadingIcon, GlTable, GlLink, GlModal } from '@gitlab/ui';
+import { GlLoadingIcon, GlSearchBoxByClick, GlTable, GlLink, GlModal } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
 
-import {
-  createComplianceFrameworksReportResponse,
-  createComplianceFrameworksReportProjectsResponse,
-} from 'ee_jest/compliance_dashboard/mock_data';
+import { createComplianceFrameworksReportResponse } from 'ee_jest/compliance_dashboard/mock_data';
 import FrameworksTable from 'ee/compliance_dashboard/components/frameworks_report/frameworks_table.vue';
 import FrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
 import FrameworkInfoDrawer from 'ee/compliance_dashboard/components/frameworks_report/framework_info_drawer.vue';
@@ -19,10 +16,9 @@ Vue.use(VueApollo);
 describe('FrameworksTable component', () => {
   let wrapper;
 
-  const frameworksResponse = createComplianceFrameworksReportResponse({ count: 2 });
-  const projectsResponse = createComplianceFrameworksReportProjectsResponse({ count: 2 });
+  const frameworksResponse = createComplianceFrameworksReportResponse({ count: 2, projects: 2 });
   const frameworks = frameworksResponse.data.namespace.complianceFrameworks.nodes;
-  const projects = projectsResponse.data.group.projects.nodes;
+  const projects = frameworks[0].projects.nodes;
   const rowCheckIndex = 0;
   const GlModalStub = stubComponent(GlModal, { methods: { show: jest.fn(), hide: jest.fn() } });
 
@@ -32,9 +28,11 @@ describe('FrameworksTable component', () => {
   const findTableRowData = (idx) => findTableRow(idx).findAll('td');
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findEmptyState = () => wrapper.findByText('No frameworks found');
-  const findTableLinks = () => wrapper.findAllComponents(GlLink);
+  const findTableLinks = (idx) => findTableRow(idx).findAllComponents(GlLink);
   const findFrameworkInfoSidebar = () => wrapper.findComponent(FrameworkInfoDrawer);
   const findNewFrameworkButton = () => wrapper.findByText('New framework');
+  const findSearchBox = () => wrapper.findComponent(GlSearchBoxByClick);
+
   const openSidebar = async () => {
     findTableRow(rowCheckIndex).trigger('click');
     await nextTick();
@@ -46,7 +44,6 @@ describe('FrameworksTable component', () => {
     return mountExtended(FrameworksTable, {
       propsData: {
         frameworks: [],
-        projects: [],
         isLoading: true,
         ...props,
       },
@@ -93,13 +90,26 @@ describe('FrameworksTable component', () => {
       newFrameworkButton.trigger('click');
       expect(routerPushMock).toHaveBeenCalledWith({ name: ROUTE_NEW_FRAMEWORK });
     });
+
+    it('emits search event when underlying search box is submitted', () => {
+      wrapper = createComponent({ isLoading: false });
+
+      findSearchBox().vm.$emit('submit', 'test');
+      expect(wrapper.emitted('search').at(-1)).toStrictEqual(['test']);
+    });
+
+    it('emits search event with empty value when underlying search box is cleared', () => {
+      wrapper = createComponent({ isLoading: false });
+
+      findSearchBox().vm.$emit('clear');
+      expect(wrapper.emitted('search').at(-1)).toStrictEqual(['']);
+    });
   });
 
   describe('when there are projects', () => {
     beforeEach(() => {
       wrapper = createComponent({
         frameworks,
-        projects,
         isLoading: false,
       });
     });
@@ -110,8 +120,8 @@ describe('FrameworksTable component', () => {
       );
       expect(frameworkName).toContain(frameworks[idx].name);
       expect(associatedProjects).toContain(projects[idx].name);
-      expect(findTableLinks().wrappers).toHaveLength(2);
-      expect(findTableLinks().wrappers.map((w) => w.attributes('href'))).toStrictEqual(
+      expect(findTableLinks(idx).wrappers).toHaveLength(2);
+      expect(findTableLinks(idx).wrappers.map((w) => w.attributes('href'))).toStrictEqual(
         projects.map((p) => p.webUrl),
       );
     });

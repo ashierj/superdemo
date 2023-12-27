@@ -62,6 +62,7 @@ describe('FrameworkSelectionBox component', () => {
 
   it('sets toggle-text to framework name when it matches selection', async () => {
     const framework = getComplianceFrameworksResponse.data.namespace.complianceFrameworks.nodes[0];
+
     createComponent({ selected: framework.id });
     await waitForPromises();
 

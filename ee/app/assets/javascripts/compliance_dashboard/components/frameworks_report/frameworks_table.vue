@@ -1,6 +1,6 @@
 <script>
 import Vue from 'vue';
-import { GlButton, GlLoadingIcon, GlTable, GlToast, GlLink } from '@gitlab/ui';
+import { GlButton, GlLoadingIcon, GlSearchBoxByClick, GlTable, GlToast, GlLink } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import FrameworkBadge from '../shared/framework_badge.vue';
 import { ROUTE_EDIT_FRAMEWORK, ROUTE_NEW_FRAMEWORK } from '../../constants';
@@ -13,6 +13,7 @@ export default {
   components: {
     GlButton,
     GlLoadingIcon,
+    GlSearchBoxByClick,
     GlTable,
     GlLink,
     FrameworkInfoDrawer,
@@ -20,10 +21,6 @@ export default {
   },
   props: {
     frameworks: {
-      type: Array,
-      required: true,
-    },
-    projects: {
       type: Array,
       required: true,
     },
@@ -38,14 +35,6 @@ export default {
     };
   },
   computed: {
-    frameworkItems() {
-      return this.frameworks.map((framework) => {
-        const associatedProjects = this.projects.filter((project) =>
-          project.complianceFrameworks.nodes.some((f) => f.id === framework.id),
-        );
-        return { ...framework, associatedProjects };
-      });
-    },
     showDrawer() {
       return this.selectedFramework !== null;
     },
@@ -99,7 +88,12 @@ export default {
 </script>
 <template>
   <section>
-    <div class="gl-p-4 gl-bg-gray-10 gl-display-flex">
+    <div class="gl-p-4 gl-bg-gray-10 gl-display-flex gl-gap-4">
+      <gl-search-box-by-click
+        class="gl-flex-grow-1"
+        @submit="$emit('search', $event)"
+        @clear="$emit('search', '')"
+      />
       <gl-button class="gl-ml-auto" variant="confirm" category="secondary" @click="newFramework">{{
         $options.i18n.newFramework
       }}</gl-button>
@@ -107,7 +101,7 @@ export default {
     <gl-table
       :fields="$options.fields"
       :busy="isLoading"
-      :items="frameworkItems"
+      :items="frameworks"
       no-local-sorting
       show-empty
       stacked="md"
@@ -117,7 +111,13 @@ export default {
       <template #cell(frameworkName)="{ item }">
         <framework-badge :framework="item" @edit="editComplianceFramework(item)" />
       </template>
-      <template #cell(associatedProjects)="{ item: { associatedProjects } }">
+      <template
+        #cell(associatedProjects)="{
+          item: {
+            projects: { nodes: associatedProjects },
+          },
+        }"
+      >
         <div
           v-for="(associatedProject, index) in associatedProjects"
           :key="associatedProject.id"

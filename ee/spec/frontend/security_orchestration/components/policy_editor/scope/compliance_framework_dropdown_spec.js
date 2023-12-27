@@ -11,7 +11,10 @@ import CreateForm from 'ee/groups/settings/compliance_frameworks/components/crea
 import SharedForm from 'ee/groups/settings/compliance_frameworks/components/shared_form.vue';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import createComplianceFrameworkMutation from 'ee/groups/settings/compliance_frameworks/graphql/queries/create_compliance_framework.mutation.graphql';
-import { validCreateResponse } from 'ee_jest/groups/settings/compliance_frameworks/mock_data';
+import {
+  validCreateResponse,
+  mockPageInfo,
+} from 'ee_jest/groups/settings/compliance_frameworks/mock_data';
 import { stubComponent } from 'helpers/stub_component';
 import waitForPromises from 'helpers/wait_for_promises';
 
@@ -83,6 +86,7 @@ describe('ComplianceFrameworkDropdown', () => {
             id: 1,
             name: 'name',
             complianceFrameworks: {
+              pageInfo: mockPageInfo(),
               nodes,
             },
           },
