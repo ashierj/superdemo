@@ -8,12 +8,14 @@ module Analytics
           return error(:invalid_model)
         end
 
-        unless group.licensed_feature_available?(:cycle_analytics_for_groups)
-          return error(:missing_license)
-        end
+        if group.is_a?(Group)
+          unless group.licensed_feature_available?(:cycle_analytics_for_groups)
+            return error(:missing_license)
+          end
 
-        unless group.root?
-          error(:requires_top_level_group)
+          unless group.root?
+            error(:requires_top_level_group)
+          end
         end
       end
 

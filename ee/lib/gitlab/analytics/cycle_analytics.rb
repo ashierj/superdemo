@@ -10,11 +10,12 @@ module Gitlab
           case subject
           when Namespaces::ProjectNamespace
             project = subject.project
-            # Only available within groups
-            project.licensed_feature_available?(:cycle_analytics_for_projects) &&
-              project.root_ancestor.group_namespace?
+            project.licensed_feature_available?(:cycle_analytics_for_projects)
           when Group
             subject.licensed_feature_available?(:cycle_analytics_for_groups)
+          when Namespaces::UserNamespace
+            # Under a personal namespace, you can only create projects so it would be the project-level version of VSA
+            subject.licensed_feature_available?(:cycle_analytics_for_projects)
           else
             false
           end
