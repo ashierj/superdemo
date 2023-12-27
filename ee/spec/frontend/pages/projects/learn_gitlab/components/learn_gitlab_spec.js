@@ -1,49 +1,30 @@
 import { GlAlert } from '@gitlab/ui';
 import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import { mount } from '@vue/test-utils';
-import Vue from 'vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import Cookies from '~/lib/utils/cookies';
 import CircularProgressBar from 'ee/vue_shared/components/circular_progress_bar/circular_progress_bar.vue';
 import LearnGitlab from 'ee/pages/projects/learn_gitlab/components/learn_gitlab.vue';
-import UltimateTrialBenefitModal from 'ee/pages/projects/learn_gitlab/components/ultimate_trial_benefit_modal.vue';
 import eventHub from '~/invite_members/event_hub';
 import { INVITE_MODAL_OPEN_COOKIE } from 'ee/pages/projects/learn_gitlab/constants';
 import { ON_CELEBRATION_TRACK_LABEL } from '~/invite_members/constants';
 import eventHubNav from '~/super_sidebar/event_hub';
-import { stubComponent } from 'helpers/stub_component';
-import {
-  testProviders,
-  testActions,
-  testSections,
-  testProject,
-  testProjectShowUltimateTrialBenefitModal,
-} from './mock_data';
-
-Vue.config.ignoredElements = ['gl-emoji'];
+import { testProviders, testActions, testSections, testProject } from './mock_data';
 
 describe('Learn GitLab', () => {
   let wrapper;
   let sidebar;
-  let showModal;
 
   const findProgressBarBlock = () => wrapper.findByTestId('progress-bar-block');
 
-  const createWrapper = ({ project = testProject } = {}) => {
+  const createWrapper = () => {
     wrapper = extendedWrapper(
       mount(LearnGitlab, {
         provide: testProviders,
         propsData: {
           actions: testActions,
           sections: testSections,
-          project,
-        },
-        stubs: {
-          UltimateTrialBenefitModal: stubComponent(UltimateTrialBenefitModal, {
-            methods: {
-              show: showModal,
-            },
-          }),
+          project: testProject,
         },
       }),
     );
@@ -51,7 +32,6 @@ describe('Learn GitLab', () => {
 
   describe('Initial rendering concerns', () => {
     beforeEach(() => {
-      showModal = jest.fn();
       createWrapper();
     });
 
@@ -81,7 +61,6 @@ describe('Learn GitLab', () => {
       async ({ breakpoint, classes }) => {
         jest.spyOn(bp, 'getBreakpointSize').mockReturnValue(breakpoint);
 
-        showModal = jest.fn();
         await createWrapper();
 
         expect(findProgressBarBlock().attributes('class')).toContain(classes);
@@ -119,30 +98,6 @@ describe('Learn GitLab', () => {
 
       expect(spy).not.toHaveBeenCalled();
       expect(cookieSpy).toHaveBeenCalledWith(INVITE_MODAL_OPEN_COOKIE);
-    });
-  });
-
-  describe('Ultimate Trial Benefit Modal', () => {
-    let cookieSpy;
-
-    beforeEach(() => {
-      cookieSpy = jest.spyOn(Cookies, 'remove');
-    });
-
-    it('calls show method when in experiment candidate with cookie set', async () => {
-      Cookies.set(INVITE_MODAL_OPEN_COOKIE, true);
-
-      await createWrapper({ project: testProjectShowUltimateTrialBenefitModal });
-
-      expect(cookieSpy).toHaveBeenCalledWith(INVITE_MODAL_OPEN_COOKIE);
-      expect(showModal).toHaveBeenCalled();
-    });
-
-    it('does not call show method in ultimate_trial_benefit_modal when in experiment candidate and cookie is not set', async () => {
-      await createWrapper({ project: testProjectShowUltimateTrialBenefitModal });
-
-      expect(cookieSpy).toHaveBeenCalledWith(INVITE_MODAL_OPEN_COOKIE);
-      expect(showModal).not.toHaveBeenCalled();
     });
   });
 

@@ -104,8 +104,3 @@ export const testSections = [
 export const testProject = {
   name: 'test-project',
 };
-
-export const testProjectShowUltimateTrialBenefitModal = {
-  name: 'test-project',
-  showUltimateTrialBenefitModal: true,
-};

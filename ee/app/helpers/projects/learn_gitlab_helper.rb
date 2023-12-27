@@ -80,7 +80,6 @@ module Projects
     def onboarding_project_data(project)
       {
         name: project.name,
-        show_ultimate_trial_benefit_modal: show_ultimate_trial_benefit_modal?(project.root_ancestor),
         promote_ultimate_features: promote_ultimate_features?(project.root_ancestor)
       }
     end
@@ -126,14 +125,6 @@ module Projects
         secure_dependency_scanning_run: project_security_configuration_path(project, anchor: 'dependency-scanning'),
         secure_dast_run: project_security_configuration_path(project, anchor: 'dast')
       }
-    end
-
-    def show_ultimate_trial_benefit_modal?(group)
-      return unless group.trial_active?
-
-      experiment(:ultimate_trial_benefit_modal, group: group) do |e|
-        e.candidate { true }
-      end.run
     end
 
     def promote_ultimate_features?(group)
