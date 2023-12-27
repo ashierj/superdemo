@@ -21,6 +21,7 @@ query getSelfManagedAddOnEligibleUsers(
       id
       username
       name
+      maxRole @client
       publicEmail
       avatarUrl
       webUrl

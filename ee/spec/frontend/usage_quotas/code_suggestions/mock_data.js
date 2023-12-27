@@ -30,17 +30,6 @@ export const purchasedAddonFuzzyData = {
   },
 };
 
-export const mockNoAddOnEligibleUsers = {
-  data: {
-    namespace: {
-      id: 'gid://gitlab/Group/176',
-      addOnEligibleUsers: {
-        nodes: [],
-      },
-    },
-  },
-};
-
 export const mockUserWithAddOnAssignment = {
   id: 'gid://gitlab/User/1',
   username: 'userone',
@@ -49,6 +38,7 @@ export const mockUserWithAddOnAssignment = {
   avatarUrl: 'path/to/img_userone',
   webUrl: 'path/to/userone',
   lastActivityOn: '2023-08-25',
+  maxRole: null,
   addOnAssignments: {
     nodes: [{ addOnPurchase: { name: 'CODE_SUGGESTIONS' } }],
     __typename: 'UserAddOnAssignmentConnection',
@@ -64,11 +54,16 @@ export const mockUserWithNoAddOnAssignment = {
   avatarUrl: 'path/to/img_usertwo',
   webUrl: 'path/to/usertwo',
   lastActivityOn: '2023-08-22',
+  maxRole: null,
   addOnAssignments: { nodes: [], __typename: 'UserAddOnAssignmentConnection' },
   __typename: 'AddOnUser',
 };
 
 export const eligibleUsers = [mockUserWithAddOnAssignment, mockUserWithNoAddOnAssignment];
+export const eligibleUsersWithMaxRole = eligibleUsers.map((user) => ({
+  ...user,
+  maxRole: 'developer',
+}));
 
 const pageInfo = {
   startCursor: 'start-cursor',
