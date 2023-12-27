@@ -3,14 +3,6 @@
 module EE
   module Groups
     module SettingsHelper
-      def delayed_project_removal_help_text
-        if ::Gitlab::CurrentSettings.default_project_deletion_protection
-          s_('DeletionSettings|Only administrators can delete projects.')
-        else
-          s_('DeletionSettings|Owners and administrators can delete projects.')
-        end
-      end
-
       def saas_user_caps_help_text(group)
         project_sharing_docs_url = help_page_path('user/group/access_and_permissions', anchor: 'prevent-a-project-from-being-shared-with-groups')
         group_sharing_docs_url = help_page_path('user/group/access_and_permissions', anchor: 'prevent-group-sharing-outside-the-group-hierarchy')
