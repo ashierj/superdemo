@@ -93,6 +93,11 @@ describe('TracingScatterChart', () => {
   it('sets the chart option correctly', () => {
     const expectedChartOption = {
       title: undefined,
+      dataZoom: [
+        {
+          type: 'slider',
+        },
+      ],
       xAxis: {
         type: 'time',
         max: rangeMax,

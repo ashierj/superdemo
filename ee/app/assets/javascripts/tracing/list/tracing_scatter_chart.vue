@@ -71,6 +71,11 @@ export default {
           : undefined;
       return {
         title,
+        dataZoom: [
+          {
+            type: 'slider',
+          },
+        ],
         xAxis: {
           type: 'time',
           max: this.rangeMax,

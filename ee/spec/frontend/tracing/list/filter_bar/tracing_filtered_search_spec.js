@@ -1,5 +1,6 @@
 import OperationToken from 'ee/tracing/list/filter_bar/operation_search_token.vue';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
+import DateRangeToken from '~/vue_shared/components/filtered_search_bar/tokens/daterange_token.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ServiceToken from 'ee/tracing/list/filter_bar/service_search_token.vue';
 import AttributeSearchToken from 'ee/tracing/list/filter_bar/attribute_search_token.vue';
@@ -58,6 +59,14 @@ describe('TracingListFilteredSearch', () => {
       findFilteredSearch().vm.$emit('onSort', 'duration_desc');
 
       expect(wrapper.emitted('sort')).toStrictEqual([['duration_desc']]);
+    });
+  });
+
+  describe('date range token', () => {
+    it('configure the date range token', () => {
+      const tokens = findFilteredSearch().props('tokens');
+      const token = tokens.find((t) => t.type === 'period');
+      expect(token.token).toBe(DateRangeToken);
     });
   });
 
