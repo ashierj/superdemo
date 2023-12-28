@@ -3,9 +3,9 @@
 module QA
   include Support::Helpers::Plan
 
-  RSpec.shared_examples 'Purchase storage' do |purchase_quantity|
+  RSpec.shared_examples 'Purchase storage' do |purchase_quantity, skip_contact: false|
     it 'adds additional storage to group namespace' do
-      Flow::Purchase.purchase_storage(quantity: purchase_quantity)
+      Flow::Purchase.purchase_storage(quantity: purchase_quantity, skip_contact: skip_contact)
 
       Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
         expected_storage = (STORAGE[:storage] * purchase_quantity).to_f
@@ -65,7 +65,7 @@ module QA
         end
       end
 
-      it_behaves_like 'Purchase storage', 20
+      it_behaves_like 'Purchase storage', 20, skip_contact: true
     end
 
     context 'with existing compute minutes packs',
@@ -82,7 +82,7 @@ module QA
         end
       end
 
-      it_behaves_like 'Purchase storage', 10
+      it_behaves_like 'Purchase storage', 10, skip_contact: true
     end
   end
 end

@@ -64,7 +64,7 @@ module QA
               expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)
             end
 
-            Flow::Purchase.upgrade_subscription(plan: PREMIUM)
+            Flow::Purchase.upgrade_subscription(plan: PREMIUM, skip_contact: true)
 
             Page::Group::Menu.perform(&:go_to_billing)
 

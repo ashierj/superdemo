@@ -58,7 +58,7 @@ module QA
             billing.wait_for_subscription(ULTIMATE[:name])
           end
 
-          Flow::Purchase.purchase_compute_minutes(quantity: purchase_quantity)
+          Flow::Purchase.purchase_compute_minutes(quantity: purchase_quantity, skip_contact: true)
 
           expect_additional_compute_minutes(expected_initial_minutes.to_s)
 
@@ -83,7 +83,7 @@ module QA
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347568' do
           expect_additional_compute_minutes(expected_initial_minutes.to_s)
 
-          Flow::Purchase.purchase_compute_minutes(quantity: purchase_quantity)
+          Flow::Purchase.purchase_compute_minutes(quantity: purchase_quantity, skip_contact: true)
 
           expect_additional_compute_minutes(expected_total_minutes.to_s)
         end
