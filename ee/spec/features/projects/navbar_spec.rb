@@ -17,6 +17,7 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
 
     stub_config(registry: { enabled: false })
     stub_feature_flags(ml_experiment_tracking: false)
+    stub_feature_flags(model_registry: false)
     stub_feature_flags(remove_monitor_metrics: false)
     insert_package_nav
     insert_infrastructure_registry_nav
@@ -178,6 +179,18 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
       stub_feature_flags(ml_experiment_tracking: true)
 
       insert_model_experiments_nav(_('Merge request analytics'))
+
+      visit project_path(project)
+    end
+
+    it_behaves_like 'verified navigation bar'
+  end
+
+  context 'when model registry is available' do
+    before do
+      stub_feature_flags(model_registry: true)
+
+      insert_model_registry_nav(_('Package Registry'))
 
       visit project_path(project)
     end
