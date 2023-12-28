@@ -14,7 +14,7 @@ The instructions on this page guide you through:
 1. Onboarding and initial setup of your GitLab Dedicated instance using [Switchboard](https://about.gitlab.com/direction/saas-platforms/switchboard/), the GitLab Dedicated portal.
 1. Configuring your GitLab Dedicated instance including enabling and updating the settings for [available functionality](../../subscriptions/gitlab_dedicated/index.md#available-features).
 
-Any functionality in the GitLab application that is not controlled by the SaaS environment can be configured by using the [Admin Panel](../../administration/admin_area.md).
+Any functionality in the GitLab application that is not controlled by the SaaS environment can be configured by using the [Admin Area](../../administration/admin_area.md).
 
 Examples of SaaS environment settings include `gitlab.rb` configurations and access to shell, Rails console, and PostgreSQL console.
 These environment settings cannot be changed by tenants.
