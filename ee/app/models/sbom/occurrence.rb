@@ -83,8 +83,12 @@ module Sbom
     end
 
     scope :filter_by_search_with_component_and_group, ->(search, component_id, group) do
-      includes(project: :namespace).where('input_file_path ILIKE ?', "%#{sanitize_sql_like(search.to_s)}%") # rubocop:disable GitlabSecurity/SqlInjection
-                                   .where(component_id: component_id, project: group.all_projects)
+      relation = includes(project: :namespace).where(component_id: component_id, project: group.all_projects)
+      if search.present?
+        relation.where('input_file_path ILIKE ?', "%#{sanitize_sql_like(search.to_s)}%") # rubocop:disable GitlabSecurity/SqlInjection -- This cop is a false positive as we are using parameterization via ?
+      else
+        relation
+      end
     end
 
     scope :with_component, -> { includes(:component) }
@@ -112,7 +116,7 @@ module Sbom
     def location
       {
         blob_path: input_file_blob_path,
-        path: source&.input_file_path,
+        path: input_file_path,
         top_level: false,
         ancestors: nil
       }
@@ -121,9 +125,9 @@ module Sbom
     private
 
     def input_file_blob_path
-      return unless source&.input_file_path.present?
+      return unless input_file_path.present?
 
-      Gitlab::Routing.url_helpers.project_blob_path(project, File.join(commit_sha, source.input_file_path))
+      Gitlab::Routing.url_helpers.project_blob_path(project, File.join(commit_sha, input_file_path))
     end
 
     def self.highest_severity_arel_nodes(direction)

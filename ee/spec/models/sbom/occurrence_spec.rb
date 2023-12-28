@@ -335,6 +335,20 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
       end
     end
 
+    context 'with no search keyword' do
+      let_it_be(:occurrence_bundler_with_no_source) do
+        create(:sbom_occurrence, source: nil, component: component, project: project)
+      end
+
+      let(:keyword) { nil }
+
+      it 'returns all relevant records' do
+        result = described_class.filter_by_search_with_component_and_group(keyword, component.id, group)
+
+        expect(result).to match_array([occurrence_npm, occurrence_bundler, occurrence_bundler_with_no_source])
+      end
+    end
+
     context 'with unrelated group' do
       let_it_be(:unrelated_group) { create(:group) }
 
@@ -472,8 +486,8 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
       it 'returns expected location data' do
         expect(location).to eq(
           {
-            blob_path: "/#{occurrence.project.full_path}/-/blob/#{occurrence.commit_sha}/#{source.input_file_path}",
-            path: source.input_file_path,
+            blob_path: "/#{occurrence.project.full_path}/-/blob/#{occurrence.commit_sha}/#{occurrence.input_file_path}",
+            path: occurrence.input_file_path,
             top_level: false,
             ancestors: nil
           }

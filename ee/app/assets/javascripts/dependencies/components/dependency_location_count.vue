@@ -52,6 +52,9 @@ export default {
       return this.loading || this.locationCount > SEARCH_MIN_THRESHOLD;
     },
   },
+  i18n: {
+    unknownPath: s__('Dependencies|Unknown path'),
+  },
   created() {
     this.search = debounce((searchTerm) => {
       this.searchTerm = searchTerm;
@@ -64,6 +67,9 @@ export default {
     },
     onShown() {
       this.search();
+    },
+    hasLocationPath(item) {
+      return item.location.blob_path && item.location.path;
     },
     async fetchData() {
       this.loading = true;
@@ -108,10 +114,18 @@ export default {
     <template #list-item="{ item }">
       <div v-if="item">
         <div class="gl-md-white-space-nowrap gl-text-blue-500">
-          <gl-link :href="item.location.blob_path" class="gl-hover-text-decoration-none">
+          <gl-link
+            v-if="hasLocationPath(item)"
+            :href="item.location.blob_path"
+            class="gl-hover-text-decoration-none"
+          >
             <gl-icon name="doc-text" />
             <gl-truncate position="start" :text="item.location.path" with-tooltip />
           </gl-link>
+          <div v-else class="gl-text-gray-500" data-testid="unknown-path">
+            <gl-icon name="error" />
+            <gl-truncate position="start" :text="$options.i18n.unknownPath" with-tooltip />
+          </div>
         </div>
         <gl-truncate :text="item.project.name" class="gl-mt-2 gl-ml-6 gl-text-gray-500" />
       </div>
