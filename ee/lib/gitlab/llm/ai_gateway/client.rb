@@ -92,7 +92,8 @@ module Gitlab
             'X-Gitlab-Realm' => gitlab_realm,
             'X-Gitlab-Authentication-Type' => 'oidc',
             'Authorization' => "Bearer #{access_token}",
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
+            'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
           }
         end
 
