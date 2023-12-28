@@ -7,22 +7,6 @@ module Mutations
 
       include Mutations::ResolvesNamespace
 
-      argument :admin_group_member,
-        GraphQL::Types::Boolean,
-        required: false,
-        description: 'Permission to admin group members.'
-      argument :admin_merge_request,
-        GraphQL::Types::Boolean,
-        required: false,
-        description: 'Permission to admin merge requests.'
-      argument :admin_vulnerability,
-        GraphQL::Types::Boolean,
-        required: false,
-        description: 'Permission to admin vulnerability.'
-      argument :archive_project,
-        GraphQL::Types::Boolean,
-        required: false,
-        description: 'Permission to archive projects.'
       argument :base_access_level,
         ::Types::MemberAccessLevelEnum,
         required: true,
@@ -30,30 +14,6 @@ module Mutations
       argument :group_path, GraphQL::Types::ID,
         required: ::Gitlab::Saas.feature_available?(:gitlab_saas_subscriptions),
         description: 'Group the member role to mutate is in. Required for SaaS.'
-      argument :manage_group_access_tokens,
-        GraphQL::Types::Boolean,
-        required: false,
-        description: 'Permission to admin group access tokens.'
-      argument :manage_project_access_tokens,
-        GraphQL::Types::Boolean,
-        required: false,
-        description: 'Permission to admin project access tokens.'
-      argument :read_code,
-        GraphQL::Types::Boolean,
-        required: false,
-        description: 'Permission to read code.'
-      argument :read_dependency,
-        GraphQL::Types::Boolean,
-        required: false,
-        description: 'Permission to read dependency.'
-      argument :read_vulnerability,
-        GraphQL::Types::Boolean,
-        required: false,
-        description: 'Permission to read vulnerability.'
-      argument :remove_project,
-        GraphQL::Types::Boolean,
-        required: false,
-        description: 'Permission to delete projects.'
 
       def resolve(args)
         group = ::Gitlab::Graphql::Lazy.force(find_object(group_path: args.delete(:group_path))) if args[:group_path]

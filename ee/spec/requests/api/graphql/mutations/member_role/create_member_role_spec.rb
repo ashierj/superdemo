@@ -9,20 +9,13 @@ RSpec.describe 'creating member role', feature_category: :system_access do
   let_it_be_with_reload(:current_user) { create(:user) }
 
   let(:name) { 'member role name' }
-  let(:permissions) do
-    values = {}
-    MemberRole.all_customizable_permissions.each do |permission, _options|
-      values[permission] = true
-    end
-
-    values
-  end
-
+  let(:permissions) { MemberRole.all_customizable_permissions.keys.map(&:to_s).map(&:upcase) }
   let(:input) do
     {
       group_path: group.path,
-      base_access_level: 'GUEST'
-    }.merge(permissions)
+      base_access_level: 'GUEST',
+      permissions: permissions
+    }
   end
 
   let(:fields) do
@@ -32,7 +25,6 @@ RSpec.describe 'creating member role', feature_category: :system_access do
         id
         name
         description
-        readVulnerability
         enabledPermissions
       }
     FIELDS
@@ -87,7 +79,6 @@ RSpec.describe 'creating member role', feature_category: :system_access do
               post_graphql_mutation(mutation, current_user: current_user)
 
               expect(graphql_errors).to be_nil
-              expect(create_member_role['memberRole']['readVulnerability']).to eq(true)
               expect(create_member_role['memberRole']['enabledPermissions'])
                 .to match_array(MemberRole.all_customizable_permissions.keys.map(&:to_s).map(&:upcase))
             end
@@ -104,14 +95,13 @@ RSpec.describe 'creating member role', feature_category: :system_access do
           end
 
           context 'with an array of permissions' do
-            let(:permissions) { { permissions: ['READ_VULNERABILITY'] } }
+            let(:permissions) { ['READ_VULNERABILITY'] }
 
             it 'returns success' do
               post_graphql_mutation(mutation, current_user: current_user)
 
               expect(graphql_errors).to be_nil
               mutation_response = create_member_role['memberRole']
-              expect(mutation_response['readVulnerability']).to eq(true)
               expect(mutation_response['enabledPermissions']).to eq(['READ_VULNERABILITY'])
             end
 
@@ -125,28 +115,8 @@ RSpec.describe 'creating member role', feature_category: :system_access do
             end
           end
 
-          context 'with an array of permissions and a specific permission' do
-            let(:permissions) do
-              {
-                read_vulnerability: false,
-                permissions: [
-                  'READ_VULNERABILITY'
-                ]
-              }
-            end
-
-            it 'returns success' do
-              post_graphql_mutation(mutation, current_user: current_user)
-
-              expect(graphql_errors).to be_nil
-              mutation_response = create_member_role['memberRole']
-              expect(mutation_response['readVulnerability']).to eq(true)
-              expect(mutation_response['enabledPermissions']).to eq(['READ_VULNERABILITY'])
-            end
-          end
-
           context 'with an unknown permission' do
-            let(:permissions) { { permissions: ['read_unknown'] } }
+            let(:permissions) { ['read_unknown'] }
 
             it 'returns an error' do
               post_graphql_mutation(mutation, current_user: current_user)
@@ -187,7 +157,7 @@ RSpec.describe 'creating member role', feature_category: :system_access do
             post_graphql_mutation(mutation, current_user: current_user)
 
             expect(graphql_errors).to be_nil
-            expect(create_member_role['memberRole']['readVulnerability']).to eq(true)
+            expect(create_member_role['memberRole']['enabledPermissions']).to include('READ_VULNERABILITY')
             expect(create_member_role['memberRole']['namespace']).to be_nil
           end
 
