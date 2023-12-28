@@ -1,28 +1,22 @@
-import { GlSprintf, GlLink } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { helpPagePath } from '~/helpers/help_page_helper';
+import HelpPageLink from '~/vue_shared/components/help_page_link/help_page_link.vue';
 import DependencyProxyUsage from 'ee/usage_quotas/storage/components/dependency_proxy_usage.vue';
 
 describe('Dependency proxy usage component', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
-  const helpPath = helpPagePath('user/packages/dependency_proxy/index');
   const defaultProps = {
     dependencyProxyTotalSize: 512,
   };
 
   const findDependencyProxySizeSection = () => wrapper.findByTestId('dependency-proxy-size');
-  const findMoreInformation = () => wrapper.findByTestId('dependency-proxy-description');
 
   const createComponent = ({ props = {} } = {}) => {
     wrapper = shallowMountExtended(DependencyProxyUsage, {
       propsData: {
         ...defaultProps,
         ...props,
-      },
-      stubs: {
-        GlSprintf,
-        GlLink,
       },
     });
   };
@@ -53,12 +47,14 @@ describe('Dependency proxy usage component', () => {
     });
   });
 
-  it('displays a more information link', () => {
-    const moreInformationComponent = findMoreInformation();
+  it('displays the description section', () => {
+    const descriptionWrapper = wrapper.findByTestId('dependency-proxy-description');
+    const moreInformationComponent = descriptionWrapper.findComponent(HelpPageLink);
 
-    expect(moreInformationComponent.text()).toBe(
+    expect(descriptionWrapper.text()).toMatchInterpolatedText(
       'Local proxy used for frequently-accessed upstream Docker images. More information',
     );
-    expect(moreInformationComponent.findComponent(GlLink).attributes('href')).toBe(helpPath);
+    expect(moreInformationComponent.text()).toBe('More information');
+    expect(moreInformationComponent.props('href')).toBe('user/packages/dependency_proxy/index');
   });
 });

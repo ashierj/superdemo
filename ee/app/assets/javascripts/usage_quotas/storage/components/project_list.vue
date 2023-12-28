@@ -3,8 +3,8 @@ import { GlTable, GlLink, GlSprintf, GlIcon } from '@gitlab/ui';
 import { __ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import { containerRegistryPopover } from '~/usage_quotas/storage/constants';
-import { helpPagePath } from '~/helpers/help_page_helper';
 import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
+import HelpPageLink from '~/vue_shared/components/help_page_link/help_page_link.vue';
 import StorageTypeHelpLink from './storage_type_help_link.vue';
 import StorageTypeWarning from './storage_type_warning.vue';
 
@@ -17,6 +17,7 @@ export default {
     GlIcon,
     ProjectAvatar,
     NumberToHumanSize,
+    HelpPageLink,
     StorageTypeHelpLink,
     StorageTypeWarning,
   },
@@ -93,9 +94,6 @@ export default {
     },
   },
   containerRegistryPopover,
-  forksCostFactorHelpLink: helpPagePath('user/usage_quotas.html', {
-    anchor: 'view-project-fork-storage-usage',
-  }),
 };
 </script>
 
@@ -160,9 +158,9 @@ export default {
               <number-to-human-size :value="project.statistics.storageSize" />
             </template>
           </gl-sprintf>
-          <gl-link :href="$options.forksCostFactorHelpLink" target="_blank">
+          <help-page-link href="user/usage_quotas#view-project-fork-storage-usage" target="_blank">
             <gl-icon name="question-o" :size="12" />
-          </gl-link>
+          </help-page-link>
         </div>
       </template>
       <template v-else>
