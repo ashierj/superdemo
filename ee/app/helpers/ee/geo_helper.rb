@@ -86,14 +86,6 @@ module EE
       end
     end
 
-    def format_project_count(projects_count, limit)
-      if projects_count >= limit
-        number_with_delimiter(limit - 1) + "+"
-      else
-        number_with_delimiter(projects_count)
-      end
-    end
-
     def replicable_types
       enabled_replicator_classes.map do |replicator_class|
         {
