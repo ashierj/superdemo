@@ -51,7 +51,7 @@ export default {
     <gl-skeleton-loader v-if="loading" />
     <gl-empty-state
       v-else-if="!failedJobs.length"
-      class="gl-mt-5 gl-mb-11 gl-lg-mx-12"
+      class="gl-mt-5 gl-lg-mx-12"
       :svg-path="$options.EMPTY_STATE_SVG_URL"
       :svg-height="72"
       :description="

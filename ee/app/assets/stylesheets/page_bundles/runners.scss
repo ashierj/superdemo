@@ -1,0 +1,32 @@
+@import 'page_bundles/mixins_and_variables_and_functions';
+
+.runners-dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: $gl-spacing-scale-4;
+
+  @media (min-width: map-get($grid-breakpoints, md)) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.runners-dashboard-failures {
+  grid-area: 2 / span 2;
+}
+
+.runners-dashboard-active-list {
+  grid-area: 2;
+}
+
+.runners-dashboard-wait-times {
+  grid-area: 3 / span 3;
+}
+
+.runner-active-list-table tr:first-child th {
+  border-top: 0;
+}
+
+.runner-active-list-table tr:last-child td {
+  border-bottom: 0;
+}

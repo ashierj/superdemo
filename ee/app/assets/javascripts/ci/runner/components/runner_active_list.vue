@@ -82,6 +82,7 @@ export default {
       :busy="loading"
       :fields="$options.fields"
       :items="activeRunners"
+      class="runner-active-list-table"
     >
       <template #table-busy>
         <gl-skeleton-loader :lines="9" />
@@ -108,12 +109,3 @@ export default {
     </p>
   </div>
 </template>
-
-<style scoped>
-table::v-deep tr:first-child th {
-  border-top: none;
-}
-table::v-deep tr:last-child td {
-  border-bottom: none;
-}
-</style>

@@ -1,8 +1,10 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import RunnerListHeader from '~/ci/runner/components/runner_list_header.vue';
-import RunnerJobFailures from '../components/runner_job_failures.vue';
+import RunnerDashboardStatusOnline from '../components/runner_dashboard_stat_online.vue';
+import RunnerDashboardStatusOffline from '../components/runner_dashboard_stat_offline.vue';
 import RunnerUsage from '../components/runner_usage.vue';
+import RunnerJobFailures from '../components/runner_job_failures.vue';
 import RunnerActiveList from '../components/runner_active_list.vue';
 import RunnerWaitTimes from '../components/runner_wait_times.vue';
 
@@ -10,8 +12,10 @@ export default {
   components: {
     GlButton,
     RunnerListHeader,
-    RunnerJobFailures,
+    RunnerDashboardStatusOnline,
+    RunnerDashboardStatusOffline,
     RunnerUsage,
+    RunnerJobFailures,
     RunnerActiveList,
     RunnerWaitTimes,
   },
@@ -45,15 +49,18 @@ export default {
       {{ s__('Runners|Use the dashboard to view performance statistics of your runner fleet.') }}
     </p>
 
-    <div class="gl-md-display-flex gl-gap-3">
-      <runner-job-failures class="gl-flex-grow-2 gl-flex-basis-0 gl-mb-3" />
-      <div class="gl-flex-grow-1 gl-flex-basis-0 gl-display-flex gl-flex-direction-column gl-mb-3">
-        <runner-usage class="gl-mb-3" />
-        <runner-active-list class="gl-flex-grow-1" />
-      </div>
-    </div>
-    <div class="gl-md-display-flex">
-      <runner-wait-times class="gl-flex-grow-1 gl-flex-basis-0 gl-mb-3" />
+    <div class="runners-dashboard-grid">
+      <!-- 1st row -->
+      <runner-dashboard-status-online />
+      <runner-dashboard-status-offline />
+      <runner-usage />
+
+      <!-- 2nd row -->
+      <runner-job-failures class="runners-dashboard-failures" />
+      <runner-active-list class="runners-dashboard-active-list" />
+
+      <!-- 3rd row -->
+      <runner-wait-times class="runners-dashboard-wait-times" />
     </div>
   </div>
 </template>
