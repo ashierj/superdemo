@@ -26,10 +26,25 @@ RSpec.describe Gitlab::Llm::Templates::SummarizeMergeRequest, feature_category: 
         .to include("+class Feature\n+  def foo\n+    puts 'bar'\n+  end\n+end")
     end
 
+    context 'when a diff contains the binary notice' do
+      let(:source_branch) { 'signed-commits' }
+
+      it 'does not contain the binary diff' do
+        mr_diff.raw_diffs.to_a[0].diff = "@@ -0,0 +1 @@hellothere\n+🌚\n"
+
+        binary_message = Gitlab::Git::Diff.binary_message('a', 'b')
+        binary_notice = binary_message
+        mr_diff.raw_diffs.to_a[1].diff = binary_notice
+
+        expect(subject.to_prompt).to include("hellothere")
+        expect(subject.to_prompt).not_to include(binary_message)
+      end
+    end
+
     context 'when a diff is not encoded with UTF-8' do
       let(:source_branch) { 'signed-commits' }
 
-      it 'does not raise any error' do
+      it 'does not raise any error and not contain the non-UTF diff' do
         mr_diff.raw_diffs.to_a[0].diff = "@@ -0,0 +1 @@hellothere\n+🌚\n"
 
         non_utf_diff = "@@ -1 +1 @@\n-This should not be in the prompt\n+#{(0..255).map(&:chr).join}\n"
