@@ -57,9 +57,9 @@ RSpec.describe ApprovalRules::FinalizeService do
         end
 
         context 'when mr is merged' do
-          let(:merge_request) { create(:merged_merge_request, source_project: project, target_project: project) }
-
           it 'does not copy project rules, and updates approval mapping with MR rules' do
+            merge_request.mark_as_merged!
+
             expect do
               subject.execute
             end.not_to change { ApprovalMergeRequestRule.count }
@@ -89,6 +89,8 @@ RSpec.describe ApprovalRules::FinalizeService do
 
           # Test for https://gitlab.com/gitlab-org/gitlab/issues/13488
           it 'gracefully merges duplicate users' do
+            merge_request.mark_as_merged!
+
             group2.add_developer(user2)
 
             expect do
@@ -132,8 +134,6 @@ RSpec.describe ApprovalRules::FinalizeService do
         end
 
         context 'when mr is merged' do
-          let(:merge_request) { create(:merged_merge_request, source_project: project, target_project: project) }
-
           let(:expected_rules) do
             {
               regular: {
@@ -172,6 +172,8 @@ RSpec.describe ApprovalRules::FinalizeService do
             expect(mr_code_owner_rule.applicable_post_merge).to eq(nil)
             expect(non_appl_report_rule.applicable_post_merge).to eq(nil)
 
+            merge_request.mark_as_merged!
+
             expect do
               subject.execute
             end.to change { ApprovalMergeRequestRule.count }.by(3)
@@ -205,6 +207,8 @@ RSpec.describe ApprovalRules::FinalizeService do
               create(:approval_merge_request_rule_source, approval_merge_request_rule: rule_2, approval_project_rule:
                      protected_rule)
 
+              merge_request.mark_as_merged!
+
               expect(Gitlab::AppLogger).to receive(:debug).with(/Failed to persist approval rule:/)
 
               expect(rule_2.applicable_post_merge).to eq(nil)
@@ -237,8 +241,6 @@ RSpec.describe ApprovalRules::FinalizeService do
         it_behaves_like 'skipping when unmerged'
 
         context 'when merged' do
-          let(:merge_request) { create(:merged_merge_request, source_project: project, target_project: project) }
-
           before do
             merge_request.approval_rules.code_owner.create!(name: 'Code Owner', rule_type: :code_owner)
           end
@@ -315,6 +317,8 @@ RSpec.describe ApprovalRules::FinalizeService do
                   expect(rules).to receive(:create!).with(hash_not_including('rule_type', 'report_type')).and_call_original
                   expect(Gitlab::AppLogger).to receive(:debug)
 
+                  merge_request.mark_as_merged!
+
                   expect do
                     subject.execute
                   end.to change { ApprovalMergeRequestRule.count }.by(1)
@@ -328,6 +332,8 @@ RSpec.describe ApprovalRules::FinalizeService do
               end
 
               it 'copies the expected rules with expected params' do
+                merge_request.mark_as_merged!
+
                 expect do
                   subject.execute
                 end.to change { ApprovalMergeRequestRule.count }.by(4)
@@ -350,6 +356,8 @@ RSpec.describe ApprovalRules::FinalizeService do
 
             context 'when copy_additional_properties_approval_rules is off' do
               it 'copies the expected rules with expected params - including non-applicable' do
+                merge_request.mark_as_merged!
+
                 stub_feature_flags(copy_additional_properties_approval_rules: false)
 
                 expected_rules[:regular][:rule_type] = 'regular'
@@ -393,6 +401,8 @@ RSpec.describe ApprovalRules::FinalizeService do
             end
 
             it 'does not create a new rule if one exists' do
+              merge_request.mark_as_merged!
+
               expect do
                 2.times { subject.execute }
               end.not_to change { ApprovalMergeRequestRule.count }
@@ -415,10 +425,10 @@ RSpec.describe ApprovalRules::FinalizeService do
         it_behaves_like 'skipping when unmerged'
 
         context 'when merged' do
-          let(:merge_request) { create(:merged_merge_request, source_project: project, target_project: project) }
-
           it 'does not copy project rules, and updates approval mapping with MR rules' do
             allow(subject).to receive(:copy_project_approval_rules)
+
+            merge_request.mark_as_merged!
 
             expect do
               subject.execute
@@ -438,6 +448,8 @@ RSpec.describe ApprovalRules::FinalizeService do
 
           # Test for https://gitlab.com/gitlab-org/gitlab/issues/13488
           it 'gracefully merges duplicate users' do
+            merge_request.mark_as_merged!
+
             group2.add_developer(user2)
 
             expect do

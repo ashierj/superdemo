@@ -261,10 +261,12 @@ RSpec.describe ApprovalWrappedRule, feature_category: :code_review_workflow do
     end
 
     context 'when merged' do
-      let(:merge_request) { create(:merged_merge_request) }
+      let(:merge_request) { create(:merge_request, source_branch: 'test') }
 
       before do
         rule.approved_approvers << approver3
+
+        merge_request.mark_as_merged!
       end
 
       it 'returns approved approvers from database' do
@@ -273,13 +275,15 @@ RSpec.describe ApprovalWrappedRule, feature_category: :code_review_workflow do
     end
 
     context 'when merged but without materialized approved_approvers' do
-      let(:merge_request) { create(:merged_merge_request) }
+      let(:merge_request) { create(:merge_request, source_branch: 'test') }
 
       before do
         create(:approval, merge_request: merge_request, user: approver1)
         create(:approval, merge_request: merge_request, user: approver2)
 
         rule.users = [approver1, approver3]
+
+        merge_request.mark_as_merged!
       end
 
       it 'returns computed approved approvers' do
@@ -352,11 +356,13 @@ RSpec.describe ApprovalWrappedRule, feature_category: :code_review_workflow do
     end
 
     context 'when merged' do
-      let(:merge_request) { create(:merged_merge_request) }
+      let(:merge_request) { create(:merge_request, source_branch: 'test') }
 
       before do
         rule.approved_approvers << approver3
         rule.users = [approver1, approver3]
+
+        merge_request.mark_as_merged!
       end
 
       it 'returns approved approvers from database' do

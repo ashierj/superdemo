@@ -174,9 +174,12 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
   end
 
   describe 'merge requests merged using approval rules' do
+    let(:merged_mr) { create(:merge_request) }
+
     before do
-      create(:approval_merge_request_rule, merge_request: create(:merge_request, :merged))
+      create(:approval_merge_request_rule, merge_request: merged_mr)
       create(:approval_merge_request_rule, merge_request: create(:merge_request))
+      merged_mr.mark_as_merged!
     end
 
     it 'counts the approval rules for merged merge requests' do

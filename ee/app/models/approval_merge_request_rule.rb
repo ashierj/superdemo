@@ -46,6 +46,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
   before_update :compare_with_project_rule
 
   validate :validate_approval_project_rule
+  validate :merge_request_not_merged, unless: proc { merge_request.blank? || Feature.disabled?(:prevent_modifications_of_mr_rules_post_merge, project, type: :gitlab_com_derisk) || merge_request.finalizing_rules.present? }
 
   enum rule_type: {
     regular: 1,
@@ -75,6 +76,12 @@ class ApprovalMergeRequestRule < ApplicationRecord
     end
   rescue ActiveRecord::RecordNotUnique
     retry
+  end
+
+  def merge_request_not_merged
+    return unless merge_request.merged?
+
+    errors.add(:merge_request, 'must not be merged')
   end
 
   def audit_add(_model)
@@ -126,7 +133,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
     # Before being merged, approved_approvers are dynamically calculated in
     #   ApprovalWrappedRule instead of being persisted.
     #
-    return unless merge_request.merged?
+    return unless merge_request.merged? && merge_request.finalizing_rules.present?
 
     approvers = ApprovalWrappedRule.wrap(merge_request, self).approved_approvers
 

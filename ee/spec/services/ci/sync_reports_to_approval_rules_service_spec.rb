@@ -77,7 +77,11 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute', feature_catego
         end
 
         context 'when MR is merged' do
-          let!(:merge_request) { create(:merge_request, :merged, source_project: project) }
+          let!(:merge_request) { create(:merge_request, source_project: project) }
+
+          before do
+            merge_request.mark_as_merged!
+          end
 
           it_behaves_like 'a successful execution'
 

@@ -77,6 +77,8 @@ module EE
 
       accepts_nested_attributes_for :approval_rules, allow_destroy: true
 
+      scope :not_merged, -> { where.not(merge_requests: { state_id: ::MergeRequest.available_states[:merged] }) }
+
       scope :order_review_time_desc, -> do
         joins(:metrics).reorder(::MergeRequest::Metrics.review_time_field.asc.nulls_last)
       end
@@ -137,6 +139,9 @@ module EE
           .reduce({}) { |acc, setting| acc.merge(setting.select { |_, value| value }.symbolize_keys) }
       end
       strong_memoize_attr :policy_approval_settings
+
+      # It allows us to finalize the approval rules of merged merge requests
+      attr_accessor :finalizing_rules
     end
 
     class_methods do
@@ -393,6 +398,12 @@ module EE
       project_rules.find_each do |project_rule|
         project_rule.apply_report_approver_rules_to(self)
       end
+    end
+
+    def finalize_rules
+      self.finalizing_rules = true
+      yield
+      self.finalizing_rules = false
     end
 
     def reset_required_approvals(approval_rules)

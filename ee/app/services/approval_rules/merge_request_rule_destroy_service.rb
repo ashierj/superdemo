@@ -9,6 +9,8 @@ module ApprovalRules
     end
 
     def action
+      return error("Merge request already merged") if @rule.merge_request.merged?
+
       @rule.destroy
 
       if @rule.destroyed?

@@ -17,7 +17,7 @@ module Security
     def execute
       return unless scanner.results_available?
 
-      merge_requests = pipeline.merge_requests_as_head_pipeline
+      merge_requests = pipeline.merge_requests_as_head_pipeline.not_merged
 
       sync_license_finding_rules(merge_requests)
     end

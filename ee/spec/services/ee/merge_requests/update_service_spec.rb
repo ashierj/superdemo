@@ -292,29 +292,60 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
 
         context 'when set to true' do
           context 'and approval_rules_attributes param is not set' do
-            before do
-              update_merge_request(reset_approval_rules_to_defaults: true)
+            context 'when MR is not merged' do
+              before do
+                update_merge_request(reset_approval_rules_to_defaults: true)
+              end
+
+              it 'deletes existing approval rules' do
+                expect(rules).to be_empty
+              end
             end
 
-            it 'deletes existing approval rules' do
-              expect(rules).to be_empty
+            context 'when MR is merged' do
+              let(:merge_request) { create(:merge_request) }
+
+              before do
+                merge_request.mark_as_merged!
+
+                update_merge_request(reset_approval_rules_to_defaults: true)
+              end
+
+              it_behaves_like 'undeletable existing approval rules'
             end
           end
 
           context 'and approval_rules_attributes param is set' do
-            before do
-              update_merge_request(
-                reset_approval_rules_to_defaults: true,
-                approval_rules_attributes: [{ name: 'New Rule', approvals_required: 1 }]
-              )
+            context 'when MR is not merged' do
+              before do
+                update_merge_request(
+                  reset_approval_rules_to_defaults: true,
+                  approval_rules_attributes: [{ name: 'New Rule', approvals_required: 1 }]
+                )
+              end
+
+              it 'deletes existing approval rules and creates new one' do
+                aggregate_failures do
+                  expect(rules.size).to eq(1)
+                  expect(rules).not_to include(existing_any_rule)
+                  expect(rules).not_to include(existing_rule)
+                end
+              end
             end
 
-            it 'deletes existing approval rules and creates new one' do
-              aggregate_failures do
-                expect(rules.size).to eq(1)
-                expect(rules).not_to include(existing_any_rule)
-                expect(rules).not_to include(existing_rule)
+            context 'when MR is merged' do
+              let(:merge_request) { create(:merge_request) }
+
+              before do
+                merge_request.mark_as_merged!
+
+                update_merge_request(
+                  reset_approval_rules_to_defaults: true,
+                  approval_rules_attributes: [{ name: 'New Rule', approvals_required: 1 }]
+                )
               end
+
+              it_behaves_like 'undeletable existing approval rules'
             end
           end
         end

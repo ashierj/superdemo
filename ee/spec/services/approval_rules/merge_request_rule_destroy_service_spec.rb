@@ -25,6 +25,17 @@ RSpec.describe ApprovalRules::MergeRequestRuleDestroyService do
     end
   end
 
+  context 'merge request is merged' do
+    let(:merge_request) { create(:merged_merge_request) }
+    let(:rule) { build(:approval_merge_request_rule, merge_request: merge_request) }
+    let(:can_edit?) { true }
+
+    it 'returns error status' do
+      expect(result[:message]).to eq('Merge request already merged')
+      expect(result[:status]).to eq(:error)
+    end
+  end
+
   context 'user can edit approval rule' do
     let(:can_edit?) { true }
 

@@ -202,7 +202,10 @@ RSpec.describe ApprovalState do
           project.update!(disable_overriding_approvers_per_merge_request: true)
         end
 
-        it 'returns true' do
+        it 'returns false' do
+          # We reload here as the project was being cached on the MR so
+          # disabling_overriding wasn't returning the correct value
+          merge_request.reload
           expect(subject.approval_rules_overwritten?).to eq(false)
         end
       end
@@ -230,9 +233,14 @@ RSpec.describe ApprovalState do
         end
 
         context 'when merge request is merged' do
-          let(:merge_request) { create(:merge_request, :merged, source_project: project, target_project: project) }
+          let(:merge_request) do
+            create(:merge_request, source_project: project, target_project: project, source_branch:
+                                      'test')
+          end
 
           it 'removes invalid rules' do
+            merge_request.mark_as_merged!
+
             expect(subject.wrapped_approval_rules.map(&:approval_rule)).not_to include(invalid_not_enough_approvers_rule)
             expect(subject.wrapped_approval_rules).to all(be_an(ApprovalWrappedRule))
             expect(subject.wrapped_approval_rules.size).to eq(2)
@@ -266,7 +274,14 @@ RSpec.describe ApprovalState do
         end
 
         context 'when merged' do
-          let(:merge_request) { create(:merge_request, :merged, source_project: project, target_project: project) }
+          let(:merge_request) do
+            create(:merge_request, source_project: project, target_project: project, source_branch:
+                                      'test')
+          end
+
+          before do
+            merge_request.mark_as_merged!
+          end
 
           it 'includes invalid rules' do
             expect(subject.wrapped_approval_rules.map(&:approval_rule)).to include(invalid_not_enough_approvers_rule)
@@ -1650,30 +1665,33 @@ RSpec.describe ApprovalState do
 
           before do
             merge_request.update!(target_branch: 'stable-1')
-            source_rule.update!(protected_branches: [protected_branch])
-            another_source_rule.update!(protected_branches: [another_protected_branch])
 
-            rule.update!(
-              approval_project_rule: another_source_rule,
-              name: another_source_rule.name,
-              approvals_required: another_source_rule.approvals_required,
-              users: another_source_rule.users,
-              groups: another_source_rule.groups
-            )
+            merge_request.finalize_rules do
+              source_rule.update!(protected_branches: [protected_branch])
+              another_source_rule.update!(protected_branches: [another_protected_branch])
 
-            another_rule.update!(
-              approval_project_rule: source_rule,
-              name: source_rule.name,
-              approvals_required: source_rule.approvals_required,
-              users: source_rule.users,
-              groups: source_rule.groups
-            )
+              another_rule.update!(
+                approval_project_rule: another_source_rule,
+                name: another_source_rule.name,
+                approvals_required: another_source_rule.approvals_required,
+                users: another_source_rule.users,
+                groups: another_source_rule.groups
+              )
+
+              rule.update!(
+                approval_project_rule: source_rule,
+                name: source_rule.name,
+                approvals_required: source_rule.approvals_required,
+                users: source_rule.users,
+                groups: source_rule.groups
+              )
+            end
           end
 
           it 'returns the rules that are applicable to the merge request target branch' do
             expect(subject.user_defined_rules.map(&:approval_rule)).to eq(
               [
-                another_rule
+                rule
               ])
           end
 
@@ -1681,7 +1699,7 @@ RSpec.describe ApprovalState do
             subject { described_class.new(merge_request, target_branch: 'v1-stable') }
 
             it 'returns the rules that are applicable to the specified target_branch' do
-              expect(subject.user_defined_rules.map(&:approval_rule)).to eq([rule])
+              expect(subject.user_defined_rules.map(&:approval_rule)).to eq([another_rule])
             end
           end
         end
@@ -1754,7 +1772,14 @@ RSpec.describe ApprovalState do
         end
 
         context 'when merge request is merged' do
-          let(:merge_request) { create(:merge_request, :merged, source_project: project, target_project: project) }
+          let(:merge_request) do
+            create(:merge_request, source_project: project, target_project: project, source_branch:
+                                      'test')
+          end
+
+          before do
+            merge_request.mark_as_merged!
+          end
 
           context 'when merge request rules exist' do
             let!(:rule) { create(:approval_merge_request_rule, merge_request: merge_request) }
