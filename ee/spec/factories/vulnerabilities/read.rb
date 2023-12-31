@@ -15,4 +15,14 @@ FactoryBot.define do
   trait :with_remediations do
     has_remediations { true }
   end
+
+  trait :with_owasp_top_10 do
+    transient do
+      owasp_top_10 { "A1:2017-Injection" }
+    end
+
+    after(:build) do |vulnerability_read, evaluator|
+      vulnerability_read.owasp_top_10 = evaluator.owasp_top_10
+    end
+  end
 end

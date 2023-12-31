@@ -49,6 +49,7 @@ module Vulnerabilities
     scope :with_report_types, -> (report_types) { where(report_type: report_types) }
     scope :with_severities, -> (severities) { where(severity: severities) }
     scope :with_states, -> (states) { where(state: states) }
+    scope :with_owasp_top_10, -> (owasp_top_10) { where(owasp_top_10: owasp_top_10) }
     scope :with_container_image, -> (images) { where(location_image: images) }
     scope :with_container_image_starting_with, -> (image) { where(arel_table[:location_image].matches("#{image}%")) }
     scope :with_cluster_agent_ids, -> (agent_ids) { where(cluster_agent_id: agent_ids) }
