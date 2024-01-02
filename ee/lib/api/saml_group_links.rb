@@ -48,9 +48,7 @@ module API
 
         unauthorized! unless can?(current_user, :admin_saml_group_links, group)
 
-        unless group.custom_roles_enabled? && ::Feature.enabled?(:custom_roles_for_saml_group_links)
-          params.delete(:member_role_id)
-        end
+        params.delete(:member_role_id) unless group.custom_roles_enabled?
 
         service = ::GroupSaml::SamlGroupLinks::CreateService.new(
           current_user: current_user,

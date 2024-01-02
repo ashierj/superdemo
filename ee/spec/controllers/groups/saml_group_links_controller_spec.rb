@@ -111,18 +111,6 @@ RSpec.describe Groups::SamlGroupLinksController, feature_category: :system_acces
               expect(group.saml_group_links.last.member_role).to eq(nil)
             end
           end
-
-          context 'when the `custom_roles_for_saml_group_links` feature flag is disabled' do
-            before do
-              stub_feature_flags(custom_roles_for_saml_group_links: false)
-            end
-
-            it 'does not set the member_role' do
-              call_action
-
-              expect(group.saml_group_links.last.member_role).to eq(nil)
-            end
-          end
         end
       end
 

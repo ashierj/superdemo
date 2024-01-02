@@ -69,7 +69,7 @@ module Groups
       group_links_by_group.each do |group, group_links|
         group_link = max_access_level_group_link(group_links)
         access_level = group_link.access_level
-        member_role_id = group_link.member_role_id if custom_roles_enabled?
+        member_role_id = group_link.member_role_id if group.custom_roles_enabled?
         existing_member = existing_member_by_group(group)
 
         next if correct_access_level?(existing_member, access_level, member_role_id) || group.last_owner?(current_user)
@@ -95,10 +95,6 @@ module Groups
 
     def correct_access_level?(member, access_level, member_role_id)
       member && member.access_level == access_level && member.member_role_id == member_role_id
-    end
-
-    def custom_roles_enabled?
-      group.custom_roles_enabled? && ::Feature.enabled?(:custom_roles_for_saml_group_links)
     end
 
     def members_to_remove
