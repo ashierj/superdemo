@@ -1250,6 +1250,7 @@
   rules:
     - <<: *if-merge-request-labels-pipeline-expedite
       when: never
+    - if: '$ENABLE_JEST == "true"'
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request-labels-frontend-and-feature-flag
     - <<: *if-default-refs
@@ -1300,6 +1301,7 @@
       when: never
     - <<: *if-fork-merge-request
       when: never
+    - if: '$ENABLE_JEST == "true"'
     - <<: *if-merge-request-labels-run-all-jest
     - <<: *if-merge-request-labels-frontend-and-feature-flag
     - <<: *if-merge-request
