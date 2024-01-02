@@ -121,7 +121,7 @@ export default {
         Sentry.captureException(error);
       },
       skip() {
-        return this.isGroupInvite;
+        return this.isGroupInvite || !this.isVisible;
       },
     },
   },
@@ -133,6 +133,7 @@ export default {
       namespaceId: parseInt(this.rootGroupId, 10),
       eligibleForSeatReconciliation: false,
       isLoading: false,
+      isVisible: false,
       actualFeedbackMessage: this.invalidFeedbackMessage,
       billableUsersDetails: null,
     };
@@ -208,6 +209,7 @@ export default {
       // don't reopen the overage modal
       this.willIncreaseOverage = false;
       this.actualFeedbackMessage = '';
+      this.isVisible = false;
 
       this.$emit('reset');
     },
@@ -345,6 +347,7 @@ export default {
     @reset="onReset"
     @submit="onSubmit"
     @cancel="onCancel"
+    @shown="isVisible = true"
     v-on="getPassthroughListeners()"
   >
     <template #[$options.OVERAGE_CONTENT_SLOT]>

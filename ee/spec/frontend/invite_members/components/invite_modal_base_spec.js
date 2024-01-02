@@ -91,6 +91,7 @@ describe('EEInviteModalBase', () => {
     props = {},
     glFeatures = {},
     queryHandler = defaultResolverMock,
+    showModal = true,
   } = {}) => {
     const mockCustomersDotClient = createMockClient([[getReconciliationStatus, queryHandler]]);
     const mockGitlabClient = createMockClient([
@@ -129,6 +130,10 @@ describe('EEInviteModalBase', () => {
         foo: (...args) => listenerSpy('foo', ...args),
       },
     });
+
+    if (showModal) {
+      wrapper.findComponent(CEInviteModalBase).vm.$emit('shown');
+    }
   };
 
   beforeEach(() => {
@@ -150,8 +155,23 @@ describe('EEInviteModalBase', () => {
   const clickBackButton = emitClickFromModal(findCancelButton);
 
   describe('fetching custom roles', () => {
+    it('fetches roles only after the modal is shown', async () => {
+      createComponent({ showModal: false });
+      await nextTick();
+
+      expect(groupMemberRolesResponse).not.toHaveBeenCalled();
+
+      findCEBase().vm.$emit('shown');
+      await nextTick();
+
+      expect(groupMemberRolesResponse).toHaveBeenCalledTimes(1);
+    });
+
     it('sets the `isLoadingRoles` while fetching', async () => {
       createComponent();
+      // Need to wait one tick for the query to start loading, because it's controlled by skip().
+      await nextTick();
+
       expect(findCEBase().props('isLoadingRoles')).toBe(true);
 
       await waitForPromises();
