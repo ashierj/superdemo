@@ -31,7 +31,7 @@ module EE
     def immediately_remove_group_message(group)
       message = _('This action will %{strongOpen}permanently remove%{strongClose} %{codeOpen}%{group}%{codeClose} %{strongOpen}immediately%{strongClose}.')
 
-      html_escape(message) % {
+      ERB::Util.html_escape(message) % {
         group: group.path,
         strongOpen: '<strong>'.html_safe,
         strongClose: '</strong>'.html_safe,

@@ -173,7 +173,7 @@ module BillingPlansHelper
     move_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: move_link_url }
 
     if current_user.owned_or_maintainers_groups.any?
-      html_escape_once(
+      ERB::Util.html_escape_once(
         s_("BillingPlans|Then %{move_link_start}move any projects%{move_link_end} you wish to use with your subscription to that group.")
       ).html_safe % {
         move_link_start: move_link_start,
@@ -183,7 +183,7 @@ module BillingPlansHelper
       create_group_link_url = new_group_path anchor: "create-group-pane"
       create_group_link_start = '<a href="%{url}">'.html_safe % { url: create_group_link_url }
 
-      html_escape_once(
+      ERB::Util.html_escape_once(
         s_("BillingPlans|You don't have any groups. You'll need to %{create_group_link_start}create one%{create_group_link_end} and %{move_link_start}move your projects to it%{move_link_end}.")
       ).html_safe % {
         create_group_link_start: create_group_link_start,

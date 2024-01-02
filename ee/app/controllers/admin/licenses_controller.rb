@@ -71,14 +71,14 @@ class Admin::LicensesController < Admin::ApplicationController
 
   def upload_license_error(cloud_license: false)
     flash[:alert] = if cloud_license
-                      html_escape(
+                      ERB::Util.html_escape(
                         _(
                           "It looks like you're attempting to activate your subscription. Use " \
                             "%{a_start}the Subscription page%{a_end} instead."
                         )
                       ) % { a_start: "<a href=\"#{admin_subscription_path}\">".html_safe, a_end: '</a>'.html_safe }
                     else
-                      html_escape(
+                      ERB::Util.html_escape(
                         _('The license you uploaded is invalid. If the issue persists, contact support at %{link}.')
                       ) % { link: '<a href="https://support.gitlab.com">https://support.gitlab.com</a>'.html_safe }
                     end

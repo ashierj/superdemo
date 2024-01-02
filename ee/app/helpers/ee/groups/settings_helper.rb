@@ -24,7 +24,7 @@ module EE
         project_sharing_docs_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: project_sharing_docs_url }
         group_sharing_docs_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: group_sharing_docs_url }
 
-        html_escape(saas_user_caps_i18n_string(group)) % { project_sharing_docs_link_start: project_sharing_docs_link_start, group_sharing_docs_link_start: group_sharing_docs_link_start, link_end: '</a>'.html_safe }
+        ERB::Util.html_escape(saas_user_caps_i18n_string(group)) % { project_sharing_docs_link_start: project_sharing_docs_link_start, group_sharing_docs_link_start: group_sharing_docs_link_start, link_end: '</a>'.html_safe }
       end
 
       def delayed_deletion_disabled
