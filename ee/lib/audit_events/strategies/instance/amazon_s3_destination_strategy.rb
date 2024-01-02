@@ -5,8 +5,6 @@ module AuditEvents
     module Instance
       class AmazonS3DestinationStrategy < BaseAmazonS3DestinationStrategy
         def streamable?
-          return false unless Feature.enabled?(:allow_streaming_instance_audit_events_to_amazon_s3)
-
           ::License.feature_available?(:external_audit_events) &&
             AuditEvents::Instance::AmazonS3Configuration.exists?
         end

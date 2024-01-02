@@ -43,7 +43,7 @@ export default {
     StreamEmptyState,
     StreamItem,
   },
-  inject: ['groupPath', 'allowStreamingInstanceAuditEventsToAmazonS3'],
+  inject: ['groupPath'],
   data() {
     return {
       externalAuditEventDestinations: null,
@@ -97,7 +97,7 @@ export default {
       return this.isInstance ? instanceAmazonS3DestinationsQuery : amazonS3DestinationsQuery;
     },
     destinationOptions() {
-      const options = [
+      return [
         {
           text: ADD_HTTP,
           action: () => {
@@ -110,18 +110,13 @@ export default {
             this.showEditor(DESTINATION_TYPE_GCP_LOGGING);
           },
         },
-      ];
-
-      if (!this.isInstance || this.allowStreamingInstanceAuditEventsToAmazonS3) {
-        options.push({
+        {
           text: ADD_AMAZON_S3,
           action: () => {
             this.showEditor(DESTINATION_TYPE_AMAZON_S3);
           },
-        });
-      }
-
-      return options;
+        },
+      ];
     },
   },
   methods: {

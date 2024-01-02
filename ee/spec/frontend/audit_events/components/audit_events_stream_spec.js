@@ -58,7 +58,6 @@ describe('AuditEventsStream', () => {
     wrapper = mountExtended(AuditEventsStream, {
       provide: {
         groupPath: providedGroupPath,
-        allowStreamingInstanceAuditEventsToAmazonS3: true,
       },
       apolloProvider: mockApollo,
       stubs: {
