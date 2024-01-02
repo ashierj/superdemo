@@ -1,0 +1,75 @@
+# frozen_string_literal: true
+
+module Search
+  module Elastic
+    module MigrationDatabaseBackfillHelper
+      DEFAULT_LIMIT_PER_ITERATION = 1_000
+
+      def migrate
+        if completed?
+          log 'Migration is completed'
+
+          return
+        end
+
+        backfill_documents
+      end
+
+      def completed?
+        maximum_id = documents_after_current_id.maximum(:id).to_i
+        documents_remaining_approximate = maximum_id - current_id
+        set_migration_state(maximum_id: maximum_id, documents_remaining_approximate: documents_remaining_approximate)
+        log 'Checking if migration is finished', maximum_id: maximum_id, current_id: current_id,
+          documents_remaining_approximate: documents_remaining_approximate
+
+        documents_after_current_id.empty?
+      end
+
+      def document_type
+        return self.class::DOCUMENT_TYPE if self.class.const_defined?(:DOCUMENT_TYPE)
+
+        raise NotImplementedError
+      end
+
+      def respect_limited_indexing?
+        raise NotImplementedError
+      end
+
+      private
+
+      def limit_per_iteration
+        DEFAULT_LIMIT_PER_ITERATION
+      end
+
+      def number_of_iteration_per_run
+        (batch_size / limit_per_iteration.to_f).ceil
+      end
+
+      def current_id
+        migration_state[:current_id].to_i
+      end
+
+      def documents_after_current_id
+        document_type.where("id > ?", current_id) # rubocop:disable CodeReuse/ActiveRecord -- we need to select only unprocessed ids
+      end
+
+      def backfill_documents
+        [].tap do |documents|
+          number_of_iteration_per_run.times do
+            documents = Array.wrap(documents_after_current_id.limit(limit_per_iteration))
+            break if documents.blank?
+
+            max_id = documents.maximum(:id).to_i
+
+            if respect_limited_indexing? && ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
+              documents.select!(&:maintaining_elasticsearch?)
+            end
+
+            ::Elastic::ProcessInitialBookkeepingService.track!(*documents)
+            set_migration_state(current_id: max_id)
+          end
+        end
+      end
+    end
+  end
+end

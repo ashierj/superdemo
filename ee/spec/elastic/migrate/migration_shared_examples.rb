@@ -468,3 +468,120 @@ RSpec.shared_examples 'a deprecated Advanced Search migration' do |version|
     end
   end
 end
+
+RSpec.shared_examples 'migration reindexes all data' do
+  let(:migration) { described_class.new(version) }
+  let(:klass) { objects.first.class }
+
+  before do
+    stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+    set_elasticsearch_migration_to(version, including: false)
+
+    # ensure objects are indexed
+    objects
+
+    ensure_elasticsearch_index!
+  end
+
+  describe 'migration_options' do
+    it 'has migration options set', :aggregate_failures do
+      expect(migration).to be_batched
+      expect(migration.throttle_delay).to eq(expected_throttle_delay)
+      expect(migration.batch_size).to eq(expected_batch_size)
+    end
+  end
+
+  describe '.migrate' do
+    subject { migration.migrate }
+
+    context 'when migration is already completed' do
+      before do
+        migration.set_migration_state(current_id: objects.map(&:id).max)
+      end
+
+      it 'does not modify data' do
+        expect(::Elastic::ProcessInitialBookkeepingService).not_to receive(:track!)
+
+        subject
+      end
+    end
+
+    context 'migration process' do
+      before do
+        stub_ee_application_setting(elasticsearch_limit_indexing?: true)
+        migration.set_migration_state(current_id: 0)
+      end
+
+      it 'respects the limiting setting' do
+        if migration.respect_limited_indexing?
+
+          allow(migration.document_type).to receive(:maintaining_elasticsearch?).and_return(false)
+          expected_count = 0
+        else
+          expected_count = objects.size
+        end
+
+        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).once.and_call_original do |*tracked_refs|
+          expect(tracked_refs.count).to eq(expected_count)
+        end
+        subject
+
+        ensure_elasticsearch_index!
+
+        expect(migration.completed?).to be_truthy
+      end
+
+      it 'updates all documents' do
+        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).once.and_call_original do |*tracked_refs|
+          expect(tracked_refs.count).to eq(objects.size)
+        end
+
+        subject
+
+        ensure_elasticsearch_index!
+
+        expect(migration.completed?).to be_truthy
+      end
+
+      it 'processes in batches', :aggregate_failures do
+        allow(migration).to receive(:batch_size).and_return(1)
+        allow(migration).to receive(:limit_per_iteration).and_return(1)
+
+        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).exactly(objects.size).times.and_call_original
+
+        # cannot use subject in spec because it is memoized
+        migration.migrate
+
+        ensure_elasticsearch_index!
+
+        migration.migrate
+
+        ensure_elasticsearch_index!
+
+        migration.migrate
+
+        ensure_elasticsearch_index!
+
+        expect(migration.completed?).to be_truthy
+      end
+    end
+  end
+
+  describe '.completed?' do
+    context 'when all data has been backfilled' do
+      before do
+        migration.set_migration_state(current_id: objects.map(&:id).max)
+      end
+
+      specify { expect(migration).to be_completed }
+    end
+
+    context 'when some data is left to be backfilled' do
+      before do
+        migration.set_migration_state(current_id: 0)
+      end
+
+      specify { expect(migration).not_to be_completed }
+    end
+  end
+end
