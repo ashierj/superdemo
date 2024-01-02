@@ -127,7 +127,6 @@ module Geo
         <<~SQL.squish
           UPDATE #{verification_state_table_name}
           SET "verification_state" = #{started_enum_value},
-            "verification_checksum" = NULL,
             "verification_started_at" = NOW()
           WHERE #{self.verification_state_model_key} IN (#{start_verification_batch_subselect(relation).to_sql})
 
@@ -237,8 +236,7 @@ module Geo
 
         <<~SQL.squish
           UPDATE #{verification_state_table_name}
-          SET "verification_state" = #{pending_enum_value},
-            "verification_checksum" = NULL
+          SET "verification_state" = #{pending_enum_value}
           WHERE #{self.verification_state_model_key} IN (#{relation.select(self.verification_state_model_key).to_sql})
         SQL
       end

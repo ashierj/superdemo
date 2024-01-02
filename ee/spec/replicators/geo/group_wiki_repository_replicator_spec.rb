@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Geo::GroupWikiRepositoryReplicator, feature_category: :geo_replication do
-  let(:model_record) { create(:group_wiki_repository, group: create(:group)) }
+  let(:model_record) { build(:group_wiki_repository, group: create(:group)) }
 
   include_examples 'a repository replicator' do
     describe '#verify' do

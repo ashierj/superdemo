@@ -318,8 +318,6 @@ module Gitlab
         return false unless Gitlab::Geo.primary?
         return unless self.class.enabled?
 
-        before_verifiable_update if respond_to?(:before_verifiable_update)
-
         publish(:updated, **updated_params)
 
         after_verifiable_update if respond_to?(:after_verifiable_update)
