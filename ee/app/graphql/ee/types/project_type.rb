@@ -304,14 +304,12 @@ module EE
         field :ci_subscriptions_projects,
           type: ::Types::Ci::Subscriptions::ProjectType.connection_type,
           method: :upstream_project_subscriptions,
-          description: 'Triggers a new pipeline in the(downstream) project when a pipeline successfully' \
-                       'completes on the upstream project.'
+          description: 'Pipeline subscriptions for the project.'
 
         field :ci_subscribed_projects,
           type: ::Types::Ci::Subscriptions::ProjectType.connection_type,
           method: :downstream_project_subscriptions,
-          description: 'Triggers a new pipeline in the downstream project when a pipeline successfully' \
-                       'completes on the(upstream) project.'
+          description: 'Pipeline subscriptions for projects subscribed to the project.'
       end
 
       def tracking_key
