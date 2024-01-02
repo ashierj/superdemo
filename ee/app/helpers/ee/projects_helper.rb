@@ -106,7 +106,7 @@ module EE
 
     def permanent_delete_message(project)
       message = _('This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} and everything this project contains. %{strongOpen}There is no going back.%{strongClose}')
-      html_escape(message) % remove_message_data(project)
+      ERB::Util.html_escape(message) % remove_message_data(project)
     end
 
     def marked_for_removal_message(project)
@@ -118,7 +118,7 @@ module EE
                   _("This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} on %{date} and everything this project contains. %{strongOpen}There is no going back.%{strongClose}")
                 end
 
-      html_escape(message) % remove_message_data(project).merge(date: date)
+      ERB::Util.html_escape(message) % remove_message_data(project).merge(date: date)
     end
 
     def permanent_deletion_date(date)

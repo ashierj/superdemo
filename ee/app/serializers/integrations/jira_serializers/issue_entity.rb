@@ -14,7 +14,7 @@ module Integrations
       end
 
       expose :title_html do |jira_issue|
-        html_escape jira_issue.summary
+        ERB::Util.html_escape jira_issue.summary
       end
 
       expose :created_at do |jira_issue|
