@@ -3,7 +3,7 @@ minio 2022-07-15T03-44-22Z
 nodejs 18.17.0
 postgres 14.9 13.12
 redis 7.0.14
-ruby 3.1.4
+ruby 3.2.2
 rust 1.73.0
 yarn 1.22.19
 vale 2.29.6
