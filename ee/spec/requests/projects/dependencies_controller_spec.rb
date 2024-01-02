@@ -11,6 +11,7 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
     let(:params) { {} }
 
     before do
+      stub_feature_flags(project_level_sbom_occurrences: false)
       project.add_developer(developer)
       project.add_guest(guest)
 
@@ -171,6 +172,28 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
             url = "https://spdx.org/licenses/BSD-4-Clause.html"
 
             expect(nokogiri['licenses']).to include({ "name" => "BSD-4-Clause", "url" => url })
+          end
+
+          context 'with FF enabled' do
+            let_it_be(:occurrence) { create(:sbom_occurrence, project: project) }
+
+            before do
+              stub_feature_flags(project_level_sbom_occurrences: true)
+              get project_dependencies_path(project, **params, format: :json)
+            end
+
+            it 'returns data based on sbom occurrences' do
+              expect(json_response['dependencies']).to match_array(hash_including('occurrence_id' => occurrence.id))
+            end
+
+            it 'avoids N+1 queries' do
+              control_count = ActiveRecord::QueryRecorder
+                .new { get project_dependencies_path(project, **params, format: :json) }.count
+              create_list(:sbom_occurrence, 2, project: project)
+
+              expect { get project_dependencies_path(project, **params, format: :json) }
+                .not_to exceed_query_limit(control_count)
+            end
           end
         end
 

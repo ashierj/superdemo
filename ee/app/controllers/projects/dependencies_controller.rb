@@ -11,6 +11,10 @@ module Projects
     urgency :low
     track_govern_activity 'dependencies', :index
 
+    before_action do
+      push_frontend_feature_flag(:project_level_sbom_occurrences, project)
+    end
+
     def index
       respond_to do |format|
         format.html do
@@ -35,7 +39,11 @@ module Projects
     def collect_dependencies
       return [] if not_able_to_collect_dependencies?
 
-      ::Security::DependencyListService.new(pipeline: pipeline, params: dependency_list_params).execute
+      if Feature.enabled?(:project_level_sbom_occurrences, project)
+        dependencies_finder.execute.with_component.with_version.with_source
+      else
+        ::Security::DependencyListService.new(pipeline: pipeline, params: dependency_list_params).execute
+      end
     end
 
     def authorize_read_dependency_list!
@@ -61,6 +69,10 @@ module Projects
 
     def serializer
       ::DependencyListSerializer.new(project: project, user: current_user).with_pagination(request, response)
+    end
+
+    def dependencies_finder
+      ::Sbom::DependenciesFinder.new(project, params: dependency_list_params)
     end
 
     def render_not_authorized
