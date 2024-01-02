@@ -31113,6 +31113,12 @@ msgstr ""
 msgid "MlModelRegistry|Candidate not linked to a CI build"
 msgstr ""
 
+msgid "MlModelRegistry|Copied MLflow tracking URL to clipboard"
+msgstr ""
+
+msgid "MlModelRegistry|Copy MLflow tracking URL"
+msgstr ""
+
 msgid "MlModelRegistry|Create a model version"
 msgstr ""
 
