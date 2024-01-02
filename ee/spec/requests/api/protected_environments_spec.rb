@@ -9,7 +9,8 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
   let_it_be(:project) { create(:project, :repository, group: group) }
 
   let(:user) { create(:user) }
-  let(:protected_environment_name) { 'production' }
+  let(:protected_environment_name) { 'foo.bar' }
+  let(:group_protected_environment_name) { 'production' }
 
   let!(:project_protected_environment) do
     create(:protected_environment, :maintainers_can_deploy, :project_level,
@@ -18,7 +19,7 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
 
   let!(:group_protected_environment) do
     create(:protected_environment, :maintainers_can_deploy, :group_level,
-           group: group, name: protected_environment_name, required_approval_count: 2)
+           group: group, name: group_protected_environment_name, required_approval_count: 2)
   end
 
   shared_examples 'requests for non-maintainers' do
@@ -289,7 +290,7 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
         deployer = create(:user)
         project.add_developer(deployer)
 
-        post api_url, params: { name: 'production', deploy_access_levels: [{ user_id: deployer.id }] }
+        post api_url, params: { name: protected_environment_name, deploy_access_levels: [{ user_id: deployer.id }] }
 
         expect(response).to have_gitlab_http_status(:conflict)
       end
@@ -374,12 +375,12 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
     end
 
     it_behaves_like 'requests for non-maintainers' do
-      let(:request) { put api_url, params: { name: 'production' } }
+      let(:request) { put api_url, params: { name: protected_environment_name } }
     end
   end
 
   describe 'DELETE /projects/:id/protected_environments/:environment' do
-    let(:route) { "/projects/#{project.id}/protected_environments/production" }
+    let(:route) { "/projects/#{project.id}/protected_environments/#{protected_environment_name}" }
     let(:request) { delete api(route, user) }
 
     context 'when authenticated as a maintainer' do
@@ -418,13 +419,13 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
         expect(json_response).to be_an Array
 
         protected_environment_names = json_response.map { |x| x['name'] }
-        expect(protected_environment_names).to match_array([protected_environment_name])
+        expect(protected_environment_names).to match_array([group_protected_environment_name])
       end
     end
   end
 
   describe 'GET /groups/:id/protected_environments/:environment' do
-    let(:requested_environment_name) { protected_environment_name }
+    let(:requested_environment_name) { group_protected_environment_name }
     let(:route) { "/groups/#{group.id}/protected_environments/#{requested_environment_name}" }
     let(:request) { get api(route, user) }
 
@@ -440,7 +441,7 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
-        expect(json_response['name']).to eq(protected_environment_name)
+        expect(json_response['name']).to eq(group_protected_environment_name)
         expect(json_response['deploy_access_levels'][0]['access_level']).to eq(::Gitlab::Access::MAINTAINER)
         expect(json_response['required_approval_count']).to eq(2)
       end
@@ -456,7 +457,7 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
-          expect(json_response['name']).to eq(protected_environment_name)
+          expect(json_response['name']).to eq(group_protected_environment_name)
           expect(json_response['deploy_access_levels'][0]['access_level']).to eq(::Gitlab::Access::MAINTAINER)
           expect(json_response['approval_rules'][0]['access_level']).to eq(::Gitlab::Access::MAINTAINER)
           expect(json_response['approval_rules'][0]['required_approvals']).to eq(3)
@@ -562,7 +563,7 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
         deployer = create(:user)
         group.add_developer(deployer)
 
-        post api_url, params: { name: 'production', deploy_access_levels: [{ user_id: deployer.id }] }
+        post api_url, params: { name: group_protected_environment_name, deploy_access_levels: [{ user_id: deployer.id }] }
 
         expect(response).to have_gitlab_http_status(:conflict)
       end
@@ -586,7 +587,7 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
     let(:maintainer_access) { Gitlab::Access::MAINTAINER }
 
     it_behaves_like 'group-level request is disallowed for maintainer' do
-      let(:request) { put api_url, params: { name: 'production' } }
+      let(:request) { put api_url, params: { name: group_protected_environment_name } }
     end
 
     context 'when authenticated as a owner' do
@@ -654,14 +655,14 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
       end
 
       it 'returns error with invalid deploy access level' do
-        put api_url, params: { name: 'production', deploy_access_levels: [{ access_level: nil }] }
+        put api_url, params: { name: group_protected_environment_name, deploy_access_levels: [{ access_level: nil }] }
 
         expect(response).to have_gitlab_http_status(:unprocessable_entity)
       end
     end
 
     it_behaves_like 'requests for non-maintainers' do
-      let(:request) { put api_url, params: { name: 'production' } }
+      let(:request) { put api_url, params: { name: group_protected_environment_name } }
     end
   end
 
