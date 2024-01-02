@@ -15,6 +15,7 @@ RSpec.describe DependencyEntity, feature_category: :dependency_management do
     before do
       allow(request).to receive(:project).and_return(project)
       allow(request).to receive(:user).and_return(user)
+      stub_feature_flags(project_level_sbom_occurrences: false)
     end
 
     context 'when all required features available' do
@@ -35,6 +36,16 @@ RSpec.describe DependencyEntity, feature_category: :dependency_management do
 
         it 'does not include component_id' do
           expect(subject.keys).not_to include(:component_id)
+        end
+
+        context 'with project_level_sbom_occurrences enabled' do
+          before do
+            stub_feature_flags(project_level_sbom_occurrences: true)
+          end
+
+          it 'includes occurrence_id and vulnerability_count' do
+            is_expected.to match(hash_including(:occurrence_id, :vulnerability_count))
+          end
         end
       end
 
@@ -124,7 +135,9 @@ RSpec.describe DependencyEntity, feature_category: :dependency_management do
             "blob_path" => sbom_occurrence.location[:blob_path],
             "path" => sbom_occurrence.location[:path],
             "top_level" => sbom_occurrence.location[:top_level]
-          }
+          },
+          "vulnerability_count" => 0,
+          "occurrence_id" => sbom_occurrence.id
         })
       end
 

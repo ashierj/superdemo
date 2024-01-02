@@ -58,10 +58,13 @@ class DependencyEntity < Grape::Entity
   end
   expose :component_id, if: ->(_) { group? }
 
+  expose :id, as: :occurrence_id, if: ->(_) { group? || project_level_sbom_occurrences_enabled? }
+  expose :vulnerability_count, if: ->(_) { group? || project_level_sbom_occurrences_enabled? }
+
   private
 
   def can_read_vulnerabilities?
-    can?(request.user, :read_security_resource, request.project)
+    can?(request.user, :read_security_resource, request.project) && !project_level_sbom_occurrences_enabled?
   end
 
   def can_read_licenses?
@@ -75,5 +78,9 @@ class DependencyEntity < Grape::Entity
 
   def group?
     group.present?
+  end
+
+  def project_level_sbom_occurrences_enabled?
+    Feature.enabled?(:project_level_sbom_occurrences, request.project)
   end
 end

@@ -15,6 +15,7 @@ RSpec.describe DependencyListSerializer do
 
   before do
     stub_licensed_features(security_dashboard: true, license_scanning: true)
+    stub_feature_flags(project_level_sbom_occurrences: false)
     project.add_developer(user)
   end
 
@@ -23,6 +24,22 @@ RSpec.describe DependencyListSerializer do
 
     it 'matches the schema' do
       is_expected.to match_schema('dependency_list', dir: 'ee')
+    end
+
+    context 'with project_level_sbom_occurrences enabled' do
+      before do
+        stub_feature_flags(project_level_sbom_occurrences: true)
+      end
+
+      it 'does not include vulnerabilities' do
+        is_expected.not_to include('vulnerabilities')
+      end
+
+      %w[occurrence_id vulnerability_count].each do |json_attribute|
+        it "includes #{json_attribute}" do
+          is_expected.to include(json_attribute)
+        end
+      end
     end
   end
 end

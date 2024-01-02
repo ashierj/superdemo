@@ -161,7 +161,9 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                     'occurrence_count' => 1,
                     'project_count' => 1,
                     "project" => { "full_path" => project.full_path, "name" => project.name },
-                    "component_id" => sbom_occurrence_npm.component_id
+                    "component_id" => sbom_occurrence_npm.component_id,
+                    "occurrence_id" => sbom_occurrence_npm.id,
+                    "vulnerability_count" => 0
                   },
                   {
                     'location' => sbom_occurrence_bundler.location.as_json,
@@ -178,7 +180,9 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                     'occurrence_count' => 1,
                     'project_count' => 1,
                     "project" => { "full_path" => project.full_path, "name" => project.name },
-                    "component_id" => sbom_occurrence_bundler.component_id
+                    "component_id" => sbom_occurrence_bundler.component_id,
+                    "occurrence_id" => sbom_occurrence_bundler.id,
+                    "vulnerability_count" => 0
                   }
                 ]
               }
