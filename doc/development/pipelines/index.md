@@ -300,6 +300,23 @@ set and get the `ee/` folder removed before the tests start running.
 
 The intent is to ensure that a change doesn't introduce a failure after `gitlab-org/gitlab` is synced to `gitlab-org/gitlab-foss`.
 
+#### As-if-FOSS cross project downstream pipeline
+
+As an alternative to the `* as-if-foss` jobs, we can also run a cross project
+FOSS pipeline exactly in the `gitlab-org/gitlab-foss` project. We trigger it
+in the following cases:
+
+- when the `pipeline:run-as-if-foss-cross-project` label is set on the merge request
+
+This is still working-in-progress to replace the `* as-if-foss` jobs. The
+goal is to simplify pipeline rules and make it more clear about the intention.
+
+##### Tokens set in the project variables
+
+- `AS_IF_FOSS_TOKEN`: This is a [GitLab FOSS](https://gitlab.com/gitlab-org/gitlab-foss)
+  project token with `developer` role and `write_repository` permission,
+  to push generated `as-if-foss/*` branch.
+
 ### As-if-JH cross project downstream pipeline
 
 #### What it is
@@ -399,7 +416,8 @@ flowchart TD
 - `ADD_JH_FILES_TOKEN`: This is a [GitLab JH mirror](https://gitlab.com/gitlab-org/gitlab-jh-mirrors/gitlab)
   project token with `read_api` permission, to be able to download JiHu files.
 - `AS_IF_JH_TOKEN`: This is a [GitLab JH validation](https://gitlab.com/gitlab-org-sandbox/gitlab-jh-validation)
-  project token with `write_repository` permission, to push generated `as-if-jh/*` branch.
+  project token with `developer` role and `write_repository` permission,
+  to push generated `as-if-jh/*` branch.
 
 ##### How we generate the as-if-JH branch
 

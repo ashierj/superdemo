@@ -71,6 +71,9 @@
 .if-merge-request-labels-as-if-foss: &if-merge-request-labels-as-if-foss
   if: '$CI_MERGE_REQUEST_LABELS =~ /pipeline:run-as-if-foss/'
 
+.if-merge-request-labels-as-if-foss-cross-project: &if-merge-request-labels-as-if-foss-cross-project
+  if: '$CI_MERGE_REQUEST_LABELS =~ /pipeline:run-as-if-foss-cross-project/'
+
 .if-merge-request-labels-as-if-jh: &if-merge-request-labels-as-if-jh
   if: '$CI_MERGE_REQUEST_LABELS =~ /pipeline:run-as-if-jh/'
 
@@ -1073,8 +1076,10 @@
 ######################
 .ci-templates:rules:shellcheck:
   rules:
-    - changes: *ci-templates-patterns
-    - changes:
+    - <<: *if-default-refs
+      changes: *ci-templates-patterns
+    - <<: *if-default-refs
+      changes:
         - scripts/lint_templates_bash.rb
 
 ######################
@@ -1227,6 +1232,7 @@
 
 .frontend:rules:compile-test-assets:
   rules:
+    - if: '$ENABLE_RSPEC == "true"'
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
       changes: *backend-patterns
@@ -1892,6 +1898,7 @@
 ###############
 .rails:rules:setup-test-env:
   rules:
+    - if: '$ENABLE_RSPEC == "true"'
     - <<: *if-default-refs
       changes: *setup-test-env-patterns
     - <<: *if-merge-request-labels-run-all-rspec
@@ -2013,6 +2020,7 @@
       when: never
     - <<: *if-merge-request-labels-pipeline-expedite
       when: never
+    - if: '$ENABLE_RSPEC_MIGRATION == "true"'
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
       changes: *core-backend-patterns
@@ -2044,6 +2052,7 @@
 
 .rails:rules:ee-and-foss-background-migration:
   rules:
+    - if: '$ENABLE_RSPEC_BACKGROUND_MIGRATION == "true"'
     - !reference [".rails:rules:ee-and-foss-migration", rules]
     - <<: *if-default-refs
       changes: *backend-patterns
@@ -2068,6 +2077,7 @@
   rules:
     - <<: *if-fork-merge-request
       when: never
+    - if: '$ENABLE_RSPEC_UNIT == "true"'
     - !reference [".rails:rules:ee-and-foss-default-rules", rules]
     - <<: *if-default-refs
       changes: *backend-patterns
@@ -2078,6 +2088,7 @@
   rules:
     - <<: *if-fork-merge-request
       when: never
+    - if: '$ENABLE_RSPEC_INTEGRATION == "true"'
     - !reference [".rails:rules:ee-and-foss-default-rules", rules]
     - <<: *if-default-refs
       changes: *backend-patterns
@@ -2086,12 +2097,14 @@
   rules:
     - <<: *if-fork-merge-request
       when: never
+    - if: '$ENABLE_RSPEC_SYSTEM == "true"'
     - !reference [".rails:rules:system-default-rules", rules]
     - <<: *if-default-refs
       changes: *code-backstage-patterns
 
 .rails:rules:ee-and-foss-fast_spec_helper:
   rules:
+    - if: '$ENABLE_RSPEC_FAST_SPEC_HELPER == "true"'
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
       changes: *backend-patterns
@@ -2871,6 +2884,7 @@
 #######################
 .test-metadata:rules:retrieve-tests-metadata:
   rules:
+    - if: '$ENABLE_RSPEC == "true"'
     - <<: *if-default-refs
       changes: *code-backstage-patterns
     - <<: *if-default-refs
@@ -2921,6 +2935,16 @@
   rules:
     - <<: *if-default-refs
       changes: *lint-metrics-yaml-patterns
+
+####################
+# as-if-foss rules #
+####################
+.as-if-foss:rules:start-as-if-foss:
+  rules:
+    - if: '$AS_IF_FOSS_TOKEN == null'
+      when: never
+    - !reference [".strict-ee-only-rules", rules]
+    - <<: *if-merge-request-labels-as-if-foss-cross-project
 
 ##################
 # as-if-jh rules #
