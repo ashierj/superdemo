@@ -38,7 +38,7 @@ module Gitlab
           # Ex: @@ -0,0 +1,58 @@\n+# frozen_string_literal: true\n+\n+module MergeRequests\n+
           #
           mr_diff.raw_diffs.to_a.map do |diff|
-            next unless diff.diff.encoding == Encoding::UTF_8
+            next if diff.diff.encoding != Encoding::UTF_8 || diff.has_binary_notice?
 
             diff_output(diff.old_path, diff.new_path, diff.diff.sub(Gitlab::Regex.git_diff_prefix, ""))
           end.join.truncate_words(750)
