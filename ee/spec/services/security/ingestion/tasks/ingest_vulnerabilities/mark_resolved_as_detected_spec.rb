@@ -19,15 +19,17 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities::MarkResolvedAs
     )
   end
 
-  let(:finding_maps) { create_list(:finding_map, 3) }
+  let(:existing_detected_finding_map) { create(:finding_map) }
+  let(:existing_resolved_finding_map) { create(:finding_map) }
+  let(:new_finding_map) { create(:finding_map) }
+
+  let(:finding_maps) { [existing_detected_finding_map, existing_resolved_finding_map, new_finding_map] }
 
   subject(:mark_resolved_as_detected) { described_class.new(pipeline, finding_maps).execute }
 
   before do
-    finding_maps.first.vulnerability_id = existing_vulnerability.id
-    finding_maps.second.vulnerability_id = resolved_vulnerability.id
-
-    finding_maps.each { |finding_map| finding_map.identifier_ids << identifier.id }
+    existing_detected_finding_map.vulnerability_id = existing_vulnerability.id
+    existing_resolved_finding_map.vulnerability_id = resolved_vulnerability.id
   end
 
   it 'changes state of resolved Vulnerabilities back to detected' do
@@ -42,6 +44,13 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities::MarkResolvedAs
     expect { mark_resolved_as_detected }.to change { ::Vulnerabilities::StateTransition.count }
       .from(0)
       .to(1)
+
     expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(resolved_vulnerability.id)
+  end
+
+  it 'marks the findings as transitioned_to_detected' do
+    expect { mark_resolved_as_detected }.to change { existing_resolved_finding_map.transitioned_to_detected }.to(true)
+                                        .and not_change { existing_detected_finding_map.transitioned_to_detected }
+                                        .and not_change { new_finding_map.transitioned_to_detected }
   end
 end
