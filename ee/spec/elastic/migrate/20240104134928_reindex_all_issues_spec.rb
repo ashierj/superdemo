@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 require_relative 'migration_shared_examples'
-require File.expand_path('ee/elastic/migrate/20231204134928_reindex_all_issues.rb')
+require File.expand_path('ee/elastic/migrate/20240104134928_reindex_all_issues.rb')
 
 RSpec.describe ReindexAllIssues, :elastic, feature_category: :global_search do
   it_behaves_like 'migration reindexes all data' do
-    let(:version) { 20231204134928 }
+    let(:version) { 20240104134928 }
     let(:objects) { create_list(:issue, 3) }
     let(:expected_throttle_delay) { 1.minute }
     let(:expected_batch_size) { 10_000 }

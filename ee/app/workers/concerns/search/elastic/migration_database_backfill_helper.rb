@@ -50,7 +50,7 @@ module Search
       end
 
       def documents_after_current_id
-        document_type.where("id > ?", current_id) # rubocop:disable CodeReuse/ActiveRecord -- we need to select only unprocessed ids
+        document_type.where("id > ?", current_id).order(:id) # rubocop:disable CodeReuse/ActiveRecord -- we need to select only unprocessed ids
       end
 
       def backfill_documents
