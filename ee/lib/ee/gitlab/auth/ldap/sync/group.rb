@@ -155,41 +155,25 @@ module EE
               # for any permission granted by an ancestor group to any DN in access_levels,
               # retrieve user DN, and access_level.
               # Ignore unapproved access requests.
-              if ::Feature.enabled?(:inherit_higher_access_levels_no_cross_join, group.root_ancestor)
-                permissions_in_ancestry = ::GroupMember.of_groups(group.ancestors).non_request
+              permissions_in_ancestry = ::GroupMember.of_groups(group.ancestors).non_request
 
-                permissions_in_ancestry.each_batch do |relation|
-                  members = relation.load
+              permissions_in_ancestry.each_batch do |relation|
+                members = relation.load
 
-                  identities = ::Identity
-                    .with_provider(provider)
-                    .iwhere(extern_uid: access_levels.keys)
-                    .for_user_ids(members.map(&:user_id))
-                    .group_by(&:user_id)
+                identities = ::Identity
+                  .with_provider(provider)
+                  .iwhere(extern_uid: access_levels.keys)
+                  .for_user_ids(members.map(&:user_id))
+                  .group_by(&:user_id)
 
-                  members.each do |member|
-                    identities_for_user = identities[member.user_id] || []
+                members.each do |member|
+                  identities_for_user = identities[member.user_id] || []
 
-                    identities_for_user.each do |identity|
-                      distinguished_name = identity.extern_uid
+                  identities_for_user.each do |identity|
+                    distinguished_name = identity.extern_uid
 
-                      access_levels.set([distinguished_name], to: member.access_level)
-                    end
+                    access_levels.set([distinguished_name], to: member.access_level)
                   end
-                end
-              else
-                # rubocop: disable CodeReuse/ActiveRecord
-                permissions_in_ancestry = ::GroupMember.of_groups(group.ancestors)
-                  .non_request
-                  .with_identity_provider(provider)
-                  .where(users: { identities: ::Identity.iwhere(extern_uid: access_levels.keys) })
-                  .select(:id, 'identities.extern_uid AS distinguished_name', :access_level, :source_id)
-                  .references(:identities)
-                  .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417455")
-                # rubocop: enable CodeReuse/ActiveRecord
-
-                permissions_in_ancestry.each do |member|
-                  access_levels.set([member.distinguished_name], to: member.access_level)
                 end
               end
             end

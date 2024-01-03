@@ -517,14 +517,6 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
 
       include_examples 'inheritance from inherit_higher_access_levels'
 
-      context 'when inherit_higher_access_levels_no_cross_join FF is disabled' do
-        before do
-          stub_feature_flags(inherit_higher_access_levels_no_cross_join: false)
-        end
-
-        include_examples 'inheritance from inherit_higher_access_levels'
-      end
-
       context 'when the extern_uid and group member DNs have different case' do
         let(:user1) { create(:user) }
         let(:user2) { create(:user) }
