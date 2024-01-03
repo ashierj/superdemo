@@ -48,12 +48,13 @@ module API
                   requires :success, type: Boolean, desc: 'Set to true if the operation is successful'
                   optional :error, type: String, desc: 'Detailed error message'
                   requires :payload, type: JSON, desc: 'Data payload for the request'
+                  optional :additional_payload, type: JSON, desc: 'Additional payload added by the Zoekt indexer'
                 end
                 post 'callback' do
                   node = ::Search::Zoekt::Node.find_by_uuid(params[:uuid])
                   log_hash = build_structured_payload(
-                    class: 'API::Internal::Search::Zoekt', node_id: node&.id,
-                    callback_name: params[:name], payload: params[:payload],
+                    class: 'API::Internal::Search::Zoekt', node_id: node&.id, callback_name: params[:name],
+                    payload: params[:payload], additional_payload: params[:additional_payload],
                     success: params[:success], error_message: params[:error]
                   )
 

@@ -116,7 +116,7 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
     let(:log_data) do
       {
         class: described_class, node_id: ::Search::Zoekt::Node.last.id, callback_name: params[:name],
-        payload: params[:payload], success: true, error_message: nil
+        payload: params[:payload], additional_payload: nil, success: true, error_message: nil
       }
     end
 
@@ -134,9 +134,12 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
 
     context 'with valid auth' do
       context 'when node is found' do
+        before do
+          allow(::Zoekt::Logger).to receive(:build).and_return(logger)
+        end
+
         context 'and parms success is true' do
           it 'logs the info and returns accepted' do
-            allow(::Zoekt::Logger).to receive(:build).and_return(logger)
             expect(logger).to receive(:info).with(log_data.as_json)
             post api(endpoint), params: params, headers: gitlab_shell_internal_api_request_header
             expect(response).to have_gitlab_http_status(:accepted)
@@ -145,10 +148,22 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
 
         context 'and params success is false' do
           it 'logs the error and returns accepted' do
-            allow(::Zoekt::Logger).to receive(:build).and_return(logger)
             expect(logger).to receive(:error).with(log_data.merge(success: false, error_message: 'Message').as_json)
             params.merge!({ success: false, error: 'Message' })
             post api(endpoint), params: params, headers: gitlab_shell_internal_api_request_header
+            expect(response).to have_gitlab_http_status(:accepted)
+          end
+        end
+
+        context 'when additional_payload sent in the params' do
+          let(:additional_payload) do
+            { repo_stats: { index_file_count: 1, size_in_bytes: 1 } }
+          end
+
+          it 'log the additional_payload attributes' do
+            expect(logger).to receive(:info).with(log_data.merge(additional_payload: additional_payload).as_json)
+            params[:additional_payload] = additional_payload
+            post api(endpoint), params: params, headers: gitlab_shell_internal_api_request_header, as: :json
             expect(response).to have_gitlab_http_status(:accepted)
           end
         end
