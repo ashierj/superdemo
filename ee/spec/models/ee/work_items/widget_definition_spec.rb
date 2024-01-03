@@ -25,7 +25,8 @@ RSpec.describe WorkItems::WidgetDefinition, feature_category: :team_planning do
         ::WorkItems::Widgets::Notifications,
         ::WorkItems::Widgets::CurrentUserTodos,
         ::WorkItems::Widgets::AwardEmoji,
-        ::WorkItems::Widgets::LinkedItems
+        ::WorkItems::Widgets::LinkedItems,
+        ::WorkItems::Widgets::Color
       )
     end
   end

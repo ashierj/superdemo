@@ -26,6 +26,8 @@ module EE
               ::Types::WorkItems::Widgets::RequirementLegacyType
             when ::WorkItems::Widgets::TestReports
               ::Types::WorkItems::Widgets::TestReportsType
+            when ::WorkItems::Widgets::Color
+              ::Types::WorkItems::Widgets::ColorType
             else
               super
             end
@@ -40,7 +42,8 @@ module EE
             ::Types::WorkItems::Widgets::HealthStatusType,
             ::Types::WorkItems::Widgets::ProgressType,
             ::Types::WorkItems::Widgets::RequirementLegacyType,
-            ::Types::WorkItems::Widgets::TestReportsType
+            ::Types::WorkItems::Widgets::TestReportsType,
+            ::Types::WorkItems::Widgets::ColorType
           ].freeze
 
           orphan_types(*ce_orphan_types, *EE_ORPHAN_TYPES)

@@ -190,6 +190,7 @@ module GitlabSubscriptions
       dast
       dependency_scanning
       dora4_analytics
+      epic_colors
       enterprise_templates
       environment_alerts
       evaluate_group_level_compliance_pipeline
