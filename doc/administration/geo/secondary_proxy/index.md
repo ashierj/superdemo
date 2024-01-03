@@ -116,7 +116,7 @@ for details.
   To use TLS certificates with Let's Encrypt, you can manually point the domain to one of the Geo sites, generate
   the certificate, then copy it to all other sites.
 
-- Using Geo secondary sites to accelerate runners is not officially supported. Support for this functionality is planned and can be tracked in [epic 9779](https://gitlab.com/groups/gitlab-org/-/epics/9779). If a replication lag occurs between the primary and secondary site, and the pipeline ref is not available on the secondary site when the job is executed, the job will fail.
+- Using Geo secondary sites to accelerate runners is experimental and is not recommended for production. It can be configured and tested by following the steps in [secondary proxy runners](runners.md). Progress toward general availability can be tracked in [epic 9779](https://gitlab.com/groups/gitlab-org/-/epics/9779).
 
 - When secondary proxying is used together with separate URLs,
   [signing in the secondary site using SAML](../replication/single_sign_on.md#saml-with-separate-url-with-proxying-enabled)
