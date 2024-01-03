@@ -34,13 +34,9 @@ module Security
 
         on_demand_configs = prepare_on_demand_policy_configuration(on_demand_scan_actions)
 
-        variables = if Feature.enabled?(:security_policies_variables_precedence, project)
-                      pipeline_variables = collect_config_variables(other_actions, pipeline_scan_configs)
-                      on_demand_variables = collect_config_variables(on_demand_scan_actions, on_demand_configs)
-                      pipeline_variables.merge(on_demand_variables)
-                    else
-                      {}
-                    end
+        pipeline_variables = collect_config_variables(other_actions, pipeline_scan_configs)
+        on_demand_variables = collect_config_variables(on_demand_scan_actions, on_demand_configs)
+        variables = pipeline_variables.merge(on_demand_variables)
 
         { pipeline_scan: pipeline_scan_configs.reduce({}, :merge),
           on_demand: on_demand_configs.reduce({}, :merge),
@@ -88,9 +84,6 @@ module Security
         return unless valid_scan_type?(action[:scan]) || custom_scan?(action)
 
         variables = scan_variables(action)
-        if ::Feature.disabled?(:security_policies_variables_precedence, project)
-          variables = variables.merge(action_variables(action))
-        end
 
         ::Security::SecurityOrchestrationPolicies::CiConfigurationService
           .new

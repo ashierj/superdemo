@@ -109,14 +109,6 @@ RSpec.describe Gitlab::Ci::Variables::Builder::ScanExecutionPolicies, feature_ca
         it { is_expected.to match_array([]) }
       end
 
-      context 'when feature flag "security_policies_variables_precedence" is disabled' do
-        before do
-          stub_feature_flags(security_policies_variables_precedence: false)
-        end
-
-        it { is_expected.to match_array([]) }
-      end
-
       context 'when job name is nil' do
         let(:job_name) { nil }
 
