@@ -74,8 +74,8 @@ RSpec.describe Ci::FinishedBuildChSyncEvent, type: :model, feature_category: :fl
 
       context 'when the first record of the partition is older than PARTITION_DURATION' do
         before do
-          described_class.create!(build_id: 1, build_finished_at: (described_class::PARTITION_DURATION + 1.day).ago)
           described_class.create!(build_id: 2, build_finished_at: 1.minute.ago)
+          described_class.create!(build_id: 1, build_finished_at: (described_class::PARTITION_DURATION + 1.day).ago)
         end
 
         it { is_expected.to eq(true) }
@@ -87,13 +87,34 @@ RSpec.describe Ci::FinishedBuildChSyncEvent, type: :model, feature_category: :fl
 
       subject(:value) { partitioning_strategy.detach_partition_if.call(active_partition) }
 
+      context 'when the partition is empty' do
+        it { is_expected.to eq(true) }
+      end
+
       context 'when the partition contains unprocessed records' do
         before do
           described_class.create!(build_id: 1, build_finished_at: 2.hours.ago, processed: true)
-          described_class.create!(build_id: 2, build_finished_at: 1.minute.ago)
+          described_class.create!(build_id: 2, build_finished_at: 10.minutes.ago)
+          described_class.create!(build_id: 3, build_finished_at: 1.minute.ago)
         end
 
         it { is_expected.to eq(false) }
+
+        context 'when almost all the records are too old' do
+          before do
+            travel(1.year - 2.minutes)
+          end
+
+          it { is_expected.to eq(false) }
+        end
+
+        context 'when all the records are too old' do
+          before do
+            travel(1.year)
+          end
+
+          it { is_expected.to eq(true) }
+        end
       end
 
       context 'when the partition contains only processed records' do
