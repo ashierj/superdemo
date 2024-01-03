@@ -19,11 +19,6 @@ module Boards
         Boards::Epics::ListService.new(board.resource_parent, current_user, board_id: board.id, id: moving_to_list.id).execute
       end
 
-      override :board_label_ids
-      def board_label_ids
-        ::Label.ids_on_epic_board(board.id)
-      end
-
       override :reposition_params
       def reposition_params(reposition_ids)
         super.merge(list_id: params[:to_list_id], board_id: board.id, board_group: parent)
