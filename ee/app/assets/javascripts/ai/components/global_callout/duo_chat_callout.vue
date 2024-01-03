@@ -43,7 +43,9 @@ export default {
   },
   methods: {
     handleButtonClick() {
-      this.$refs.popoverLink.$emit('click');
+      if (this.$refs.popoverLink) {
+        this.$refs.popoverLink.$emit('click');
+      }
     },
     stopListeningToPopover() {
       if (this.popoverTarget) {
