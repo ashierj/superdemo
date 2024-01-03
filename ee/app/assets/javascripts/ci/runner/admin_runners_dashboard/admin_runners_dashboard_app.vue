@@ -28,6 +28,10 @@ export default {
       type: String,
       required: true,
     },
+    clickhouseCiAnalyticsAvailable: {
+      type: Boolean,
+      required: true,
+    },
   },
 };
 </script>
@@ -60,7 +64,10 @@ export default {
       <runner-active-list class="runners-dashboard-active-list" />
 
       <!-- 3rd row -->
-      <runner-wait-times class="runners-dashboard-wait-times" />
+      <runner-wait-times
+        class="runners-dashboard-wait-times"
+        :clickhouse-ci-analytics-available="clickhouseCiAnalyticsAvailable"
+      />
     </div>
   </div>
 </template>

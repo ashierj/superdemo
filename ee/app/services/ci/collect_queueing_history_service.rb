@@ -14,8 +14,8 @@ module Ci
     end
 
     def execute
-      unless Feature.enabled?(:clickhouse_ci_analytics, @current_user)
-        return ServiceResponse.error(message: 'Feature clickhouse_ci_analytics not enabled')
+      unless ::ClickHouse::Client.database_configured?(:main)
+        return ServiceResponse.error(message: 'ClickHouse database is not configured')
       end
 
       return ServiceResponse.error(message: 'Not allowed') unless @current_user&.can?(:read_jobs_statistics)

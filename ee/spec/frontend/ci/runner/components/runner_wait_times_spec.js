@@ -37,21 +37,14 @@ describe('RunnerActiveList', () => {
   const getStatData = () =>
     findSingleStats().wrappers.map((w) => [w.props('title'), w.props('value')]);
 
-  const createComponent = ({
-    glFeatures = {},
-    mountFn = shallowMountExtended,
-    ...options
-  } = {}) => {
+  const createComponent = ({ mountFn = shallowMountExtended, ...options } = {}) => {
     wrapper = mountFn(RunnerWaitTimes, {
       apolloProvider: createMockApollo([
         [runnerWaitTimesQuery, runnerWaitTimesHandler],
         [runnerWaitTimeHistoryQuery, runnerWaitTimeHistoryHandler],
       ]),
-      provide: {
-        glFeatures: {
-          clickhouseCiAnalytics: true,
-          ...glFeatures,
-        },
+      propsData: {
+        clickhouseCiAnalyticsAvailable: true,
       },
       stubs: { GlSprintf },
       ...options,
@@ -158,11 +151,11 @@ describe('RunnerActiveList', () => {
     });
   });
 
-  describe('When clickhouse_ci_analytics is disabled', () => {
+  describe('When ClickHouse is not configured', () => {
     beforeEach(async () => {
       runnerWaitTimesHandler.mockResolvedValue(runnersWaitTimes);
 
-      createComponent({ glFeatures: { clickhouseCiAnalytics: false } });
+      createComponent({ propsData: { clickhouseCiAnalyticsAvailable: false } });
       await waitForPromises();
     });
 
