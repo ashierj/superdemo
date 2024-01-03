@@ -14,6 +14,11 @@ RSpec.describe AuditEvents::AmazonS3Configuration, feature_category: :audit_even
     it { is_expected.to validate_presence_of(:bucket_name) }
     it { is_expected.to validate_presence_of(:aws_region) }
     it { is_expected.to validate_presence_of(:secret_access_key) }
+    it { is_expected.to allow_value("valid-bucket-name").for(:bucket_name) }
+    it { is_expected.to allow_value("12345").for(:bucket_name) }
+    it { is_expected.not_to allow_value("bucket/logs/test").for(:bucket_name) }
+    it { is_expected.not_to allow_value("<script>").for(:access_key_xid) }
+    it { is_expected.to allow_value("RANDOM1234567890").for(:access_key_xid) }
 
     describe 'namespace_is_group' do
       let(:s3_configuration) { build(:amazon_s3_configuration, group: group) }
