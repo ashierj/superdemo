@@ -92,6 +92,11 @@ module Geo
       Geo::EventWorker.perform_async(replicable_name, EVENT_CREATED, { 'model_record_id' => model_record.id })
     end
 
+    # Schedules a verification job after a model record is created/updated
+    def after_verifiable_update
+      verify_async if should_primary_verify_after_save?
+    end
+
     # Called by Gitlab::Geo::Replicator#consume
     # Keep in mind that in_replicables_for_current_secondary? is not called here
     # This is because delete event should be handled by all the nodes
@@ -192,6 +197,18 @@ module Geo
 
     def mutable?
       !immutable?
+    end
+
+    def should_primary_verify_after_save?
+      return false unless self.class.verification_enabled?
+
+      # Optimization: If the data is immutable, then there is no need to
+      # recalculate checksum when a record is created (some models calculate
+      # checksum as part of creation) or updated. Note that reverification
+      # should still run as usual.
+      return false if immutable? && primary_checksum.present?
+
+      checksummable?
     end
   end
 end

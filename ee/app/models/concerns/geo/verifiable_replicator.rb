@@ -231,11 +231,6 @@ module Geo
       registry.verification_pending!
     end
 
-    # Schedules a verification job after a model record is created/updated
-    def after_verifiable_update
-      verify_async if should_primary_verify_after_save?
-    end
-
     def verify_async
       # Marking started prevents backfill (VerificationBatchWorker) from picking
       # this up too.
