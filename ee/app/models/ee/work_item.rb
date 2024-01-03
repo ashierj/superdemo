@@ -10,6 +10,8 @@ module EE
 
       has_one :progress, class_name: 'WorkItems::Progress', foreign_key: 'issue_id', inverse_of: :work_item
 
+      has_one :color, class_name: 'WorkItems::Color', foreign_key: 'issue_id', inverse_of: :work_item
+
       delegate :reminder_frequency, to: :progress, allow_nil: true
 
       scope :with_reminder_frequency, ->(frequency) {
@@ -41,7 +43,8 @@ module EE
         ::WorkItems::Widgets::TestReports
       ],
       issuable_health_status: ::WorkItems::Widgets::HealthStatus,
-      okrs: ::WorkItems::Widgets::Progress
+      okrs: ::WorkItems::Widgets::Progress,
+      epic_colors: ::WorkItems::Widgets::Color
     }.freeze
 
     def widgets

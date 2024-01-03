@@ -13,6 +13,7 @@ RSpec.describe ::Types::WorkItems::WidgetInterface do
       WorkItems::Widgets::Weight             | Types::WorkItems::Widgets::WeightType
       WorkItems::Widgets::HealthStatus       | Types::WorkItems::Widgets::HealthStatusType
       WorkItems::Widgets::Progress           | Types::WorkItems::Widgets::ProgressType
+      WorkItems::Widgets::Color              | Types::WorkItems::Widgets::ColorType
       WorkItems::Widgets::RequirementLegacy  | Types::WorkItems::Widgets::RequirementLegacyType
       WorkItems::Widgets::TestReports        | Types::WorkItems::Widgets::TestReportsType
     end

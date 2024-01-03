@@ -30,6 +30,7 @@ module EE
         super.merge(
           status: { requirement: :recent_test_reports },
           progress: :progress,
+          color: :color,
           test_reports: :test_reports
         )
       end

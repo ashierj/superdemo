@@ -1001,6 +1001,75 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
           end
         end
       end
+
+      describe 'color widget' do
+        let_it_be(:epic) { create(:work_item, :epic, namespace: group) }
+        let_it_be(:color) { create(:color, work_item: epic) }
+        let_it_be(:global_id) { epic.to_gid.to_s }
+
+        let(:work_item_fields) do
+          <<~GRAPHQL
+            id,
+            widgets {
+              type
+              ... on WorkItemWidgetColor {
+                color
+                textColor
+              }
+            }
+          GRAPHQL
+        end
+
+        context 'when work item epics available ' do
+          before do
+            stub_licensed_features(epic_colors: true)
+          end
+
+          it 'returns widget information' do
+            post_graphql(query, current_user: current_user)
+
+            expect(epic&.work_item_type&.base_type).to match('epic')
+            expect(work_item_data).to include(
+              'widgets' => include(
+                hash_including(
+                  'type' => 'COLOR',
+                  'color' => epic.color&.color&.to_s,
+                  'textColor' => epic.color&.text_color&.to_s
+                )
+              )
+            )
+          end
+
+          it 'avoids N+1 queries', :use_sql_query_cache do
+            post_graphql(query, current_user: current_user) # warmup
+            control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+              post_graphql(query, current_user: current_user)
+            end
+
+            create_list(:work_item, 3, namespace: group) do |item|
+              create(:color, work_item: item)
+            end
+
+            expect do
+              post_graphql(query, current_user: current_user)
+            end.to issue_same_number_of_queries_as(control_count)
+            expect_graphql_errors_to_be_empty
+          end
+        end
+
+        context 'when work item epics is unavailable' do
+          it 'returns without color' do
+            post_graphql(query, current_user: current_user)
+
+            expect(epic&.work_item_type&.base_type).to match('epic')
+            expect(work_item_data['widgets']).not_to include(
+              hash_including(
+                'type' => 'COLOR'
+              )
+            )
+          end
+        end
+      end
     end
 
     context 'when querying work item type information' do

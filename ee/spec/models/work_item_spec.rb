@@ -5,6 +5,13 @@ require 'spec_helper'
 RSpec.describe WorkItem do
   let_it_be(:reusable_project) { create(:project) }
 
+  it 'has one `color`' do
+    is_expected.to have_one(:color)
+      .class_name('WorkItems::Color')
+      .with_foreign_key('issue_id')
+      .inverse_of(:work_item)
+  end
+
   describe '#supported_quick_action_commands' do
     subject { work_item.supported_quick_action_commands }
 
@@ -164,6 +171,42 @@ RSpec.describe WorkItem do
 
         it 'omits an instance of the progress widget' do
           is_expected.not_to include(instance_of(WorkItems::Widgets::Progress))
+        end
+      end
+    end
+
+    context 'for color widget' do
+      context 'when epic color is licensed' do
+        subject { build(:work_item, *work_item_type).widgets }
+
+        before do
+          stub_licensed_features(epic_colors: true)
+        end
+
+        context 'when work item supports progress' do
+          let(:work_item_type) { [:epic] }
+
+          it 'returns an instance of the progress widget' do
+            is_expected.to include(instance_of(WorkItems::Widgets::Color))
+          end
+        end
+
+        context 'when work item does not support progress' do
+          let(:work_item_type) { :requirement }
+
+          it 'omits an instance of the progress widget' do
+            is_expected.not_to include(instance_of(WorkItems::Widgets::Color))
+          end
+        end
+      end
+
+      context 'when okrs is unlicensed' do
+        before do
+          stub_licensed_features(epic_colors: false)
+        end
+
+        it 'omits an instance of the progress widget' do
+          is_expected.not_to include(instance_of(WorkItems::Widgets::Color))
         end
       end
     end
