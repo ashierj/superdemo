@@ -129,19 +129,6 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           end
 
           it_behaves_like 'triggers policy bot comment', :license_scanning, true, requires_approval: true
-
-          context 'with feature disabled' do
-            before do
-              stub_feature_flags(scan_result_policy_license_scanning_merge_base_pipeline: false)
-            end
-
-            it 'uses the most recent security orchestration pipeline for comparison' do
-              expect(::Gitlab::LicenseScanning).to receive(:scanner_for_pipeline).with(project,
-                pipeline_without_sbom).and_return(sbom_scanner)
-
-              execute
-            end
-          end
         end
 
         context 'with merge base pipeline and SBOM report present' do

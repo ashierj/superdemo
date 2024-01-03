@@ -1410,28 +1410,12 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       let(:service_class) { ::Ci::CompareLicenseScanningReportsCollapsedService }
 
       it { is_expected.to eq(true) }
-
-      context 'with feature disabled' do
-        before do
-          stub_feature_flags(scan_result_policy_license_scanning_merge_base_pipeline: false)
-        end
-
-        it { is_expected.to eq(false) }
-      end
     end
 
     context 'when service class is Ci::CompareLicenseScanningReportsService' do
       let(:service_class) { ::Ci::CompareLicenseScanningReportsService }
 
       it { is_expected.to eq(true) }
-
-      context 'with feature disabled' do
-        before do
-          stub_feature_flags(scan_result_policy_license_scanning_merge_base_pipeline: false)
-        end
-
-        it { is_expected.to eq(false) }
-      end
     end
 
     context 'when service class is different' do
