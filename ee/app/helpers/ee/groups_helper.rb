@@ -121,6 +121,21 @@ module EE
         .merge(button_attributes: { 'data-testid': 'code_suggestions_hand_raise_lead_button' }.to_json)
     end
 
+    def code_suggestions_owner_alert_hand_raise_props(namespace)
+      hand_raise_props(
+        namespace,
+        glm_content: 'code-suggestions',
+        product_interaction: 'Requested Contact-Code Suggestions owner alert'
+      ).merge(
+        dismiss_feature_id: ::EE::Users::CalloutsHelper::CODE_SUGGESTIONS_GA_OWNER_ALERT,
+        button_text: s_('CodeSuggestionsGAAlert|Contact Sales'),
+        button_attributes: {
+          variant: 'confirm',
+          'data-testid': 'code_suggestions_owner_alert_hand_raise_lead_button'
+        }.to_json
+      )
+    end
+
     def show_code_suggestions_tab?(group)
       gitlab_saas? && code_suggestions_available?(group) && !group.has_free_or_no_subscription?
     end

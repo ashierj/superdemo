@@ -418,6 +418,37 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     end
   end
 
+  describe '#code_suggestions_owner_alert_hand_raise_props' do
+    let(:user) { build(:user, username: 'Joe', first_name: 'Joe', last_name: 'Doe', organization: 'ACME') }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(user)
+    end
+
+    it 'builds correct hash' do
+      expected_result = {
+        namespace_id: group.id,
+        user_name: 'Joe',
+        first_name: 'Joe',
+        last_name: 'Doe',
+        company_name: 'ACME',
+        glm_content: 'code-suggestions',
+        product_interaction: 'Requested Contact-Code Suggestions owner alert',
+        create_hand_raise_lead_path: '/-/subscriptions/hand_raise_leads',
+        dismiss_feature_id: ::EE::Users::CalloutsHelper::CODE_SUGGESTIONS_GA_OWNER_ALERT,
+        button_text: s_('CodeSuggestionsGAAlert|Contact Sales'),
+        button_attributes: {
+          variant: 'confirm',
+          'data-testid': 'code_suggestions_owner_alert_hand_raise_lead_button'
+        }.to_json
+      }
+
+      props = helper.code_suggestions_owner_alert_hand_raise_props(group)
+
+      expect(props).to eq(expected_result)
+    end
+  end
+
   describe '#show_code_suggestions_tab?' do
     context 'on saas' do
       before do

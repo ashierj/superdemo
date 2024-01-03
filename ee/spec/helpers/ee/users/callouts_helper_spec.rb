@@ -332,4 +332,47 @@ RSpec.describe EE::Users::CalloutsHelper do
       it { is_expected.to eq(expected_result) }
     end
   end
+
+  describe '.show_code_suggestions_ga_owner_alert?', :saas, feature_category: :code_suggestions do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group) }
+
+    where(
+      feature_flag_enabled?: [true, false],
+      owner_of_group?: [true, false],
+      group_paid?: [true, false],
+      group_trial?: [true, false],
+      group_ai_assist_ui_enabled?: [true, false],
+      group_code_suggestions_enabled?: [true, false],
+      user_dismissed_callout?: [true, false]
+    )
+
+    with_them do
+      before do
+        stub_feature_flags(code_suggestions_ga_owner_alert: feature_flag_enabled?)
+        allow(helper).to receive_message_chain(:current_user, :can?).and_return(owner_of_group?)
+        allow(group).to receive(:paid?).and_return(group_paid?)
+        allow(group).to receive(:trial?).and_return(group_trial?)
+        allow(group).to receive(:ai_assist_ui_enabled?).and_return(group_ai_assist_ui_enabled?)
+        allow(group).to receive(:code_suggestions_enabled?).and_return(group_code_suggestions_enabled?)
+        allow(helper).to receive(:user_dismissed?).and_return(user_dismissed_callout?)
+      end
+
+      let(:expected_result) do
+        feature_flag_enabled? &&
+          owner_of_group? &&
+          group_paid? &&
+          !group_trial? &&
+          group_ai_assist_ui_enabled? &&
+          !user_dismissed_callout? &&
+          group_code_suggestions_enabled?
+      end
+
+      subject { helper.show_code_suggestions_ga_owner_alert?(group) }
+
+      it { is_expected.to eq(expected_result) }
+    end
+  end
 end
