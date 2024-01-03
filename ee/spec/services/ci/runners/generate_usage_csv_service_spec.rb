@@ -15,13 +15,15 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
 
     builds = Array.new(20) do |i|
       project = create(:project, group: group)
-      create_build(instance_runner, project, starting_time + (50.minutes * i))
+      create_build(instance_runner, project, starting_time + (50.minutes * i),
+        14.minutes + i.seconds, Ci::HasStatus::COMPLETED_STATUSES[i % Ci::HasStatus::COMPLETED_STATUSES.size])
     end
 
     project = create(:project, group: group)
-    builds << create_build(group_runner, project, starting_time, 2.hours)
-    builds << create_build(instance_runner, project, starting_time, 10.minutes)
-    builds << create_build(instance_runner, create(:project, group: group), starting_time, 7.minutes)
+    builds << create_build(group_runner, project, starting_time, 2.hours, :failed)
+    builds << create_build(instance_runner, project, starting_time, 10.minutes, :failed)
+    builds << create_build(instance_runner, project, starting_time, 7.minutes)
+    builds << create_build(group_runner, project, starting_time, 3.minutes, :canceled)
     builds
   end
 
@@ -36,7 +38,9 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
       max_project_count: max_project_count)
   end
 
-  let(:expected_header) { "Project ID,Project path,Build count,Total duration (minutes),Total duration\n" }
+  let(:expected_header) do
+    "Project ID,Project path,Status,Runner type,Build count,Total duration (minutes),Total duration\n"
+  end
 
   subject(:response) { service.execute }
 
@@ -101,9 +105,9 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
     end
   end
 
-  it 'contains 23 builds in source ci_finished_builds table' do
+  it 'contains 24 builds in source ci_finished_builds table' do
     expect(ClickHouse::Client.select('SELECT count() FROM ci_finished_builds', :main))
-      .to contain_exactly({ 'count()' => 23 })
+      .to contain_exactly({ 'count()' => 24 })
   end
 
   it 'exports usage data for all runners for the last complete month', :aggregate_failures do
@@ -115,29 +119,36 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
 
     expect(response_csv_lines).to eq([
       expected_header,
-      "#{builds[21].project_id},#{builds[21].project.full_path},2,130,2 hours and 10 minutes\n",
-      "#{builds[0].project_id},#{builds[0].project.full_path},1,14,14 minutes\n",
-      "#{builds[1].project_id},#{builds[1].project.full_path},1,14,14 minutes\n",
-      "#{builds[2].project_id},#{builds[2].project.full_path},1,14,14 minutes\n",
-      "#{builds[3].project_id},#{builds[3].project.full_path},1,14,14 minutes\n",
-      "#{builds.last.project_id},#{builds.last.project.full_path},1,7,7 minutes\n"
+      "#{project_id_and_full_path(builds.last)},failed,group_type,1,120,2 hours\n",
+      "#{project_id_and_full_path(builds[3])},skipped,instance_type,1,14.05,14 minutes and 3.0 seconds\n",
+      "#{project_id_and_full_path(builds[2])},canceled,instance_type,1,14.033333333333333,14 minutes and 2.0 seconds\n",
+      "#{project_id_and_full_path(builds[1])},failed,instance_type,1,14.016666666666667,14 minutes and 1.0 second\n",
+      "#{project_id_and_full_path(builds[0])},success,instance_type,1,14,14 minutes\n",
+      "#{project_id_and_full_path(builds.last)},failed,instance_type,1,10,10 minutes\n",
+      "#{project_id_and_full_path(builds.last)},success,instance_type,1,7,7 minutes\n",
+      "#{project_id_and_full_path(builds.last)},canceled,group_type,1,3,3 minutes\n"
     ])
 
-    expect(response_status).to eq({ rows_expected: 6, rows_written: 6, truncated: false })
+    expect(response_status).to eq({ rows_expected: 8, rows_written: 8, truncated: false })
   end
 
   context "when max_project_count doesn't fit all projects" do
     let(:max_project_count) { 2 }
 
-    it 'exports usage data for the 2 top-K projects plus aggregate for other projects', :aggregate_failures do
+    it 'exports usage data for the 2 top projects plus aggregate for other projects', :aggregate_failures do
       expect(response_csv_lines).to eq([
         expected_header,
-        "#{builds[21].project_id},#{builds[21].project.full_path},2,130,2 hours and 10 minutes\n",
-        "#{builds[0].project_id},#{builds[0].project.full_path},1,14,14 minutes\n",
-        ",<Other projects>,4,49,49 minutes\n"
+        "#{project_id_and_full_path(builds.last)},failed,group_type,1,120,2 hours\n",
+        "#{project_id_and_full_path(builds[3])},skipped,instance_type,1,14.05,14 minutes and 3.0 seconds\n",
+        "#{project_id_and_full_path(builds.last)},failed,instance_type,1,10,10 minutes\n",
+        "#{project_id_and_full_path(builds.last)},success,instance_type,1,7,7 minutes\n",
+        "#{project_id_and_full_path(builds.last)},canceled,group_type,1,3,3 minutes\n",
+        ",<Other projects>,canceled,instance_type,1,14.033333333333333,14 minutes and 2.0 seconds\n",
+        ",<Other projects>,failed,instance_type,1,14.016666666666667,14 minutes and 1.0 second\n",
+        ",<Other projects>,success,instance_type,1,14,14 minutes\n"
       ])
 
-      expect(response_status).to eq({ rows_expected: 2, rows_written: 2, truncated: false })
+      expect(response_status).to eq({ rows_expected: 7, rows_written: 7, truncated: false })
     end
   end
 
@@ -147,10 +158,11 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
     it 'exports usage data for runners of specified type' do
       expect(response_csv_lines).to eq([
         expected_header,
-        "#{builds[21].project_id},#{builds[21].project.full_path},1,120,2 hours\n"
+        "#{project_id_and_full_path(builds.last)},failed,group_type,1,120,2 hours\n",
+        "#{project_id_and_full_path(builds.last)},canceled,group_type,1,3,3 minutes\n"
       ])
 
-      expect(response_status).to eq({ rows_expected: 1, rows_written: 1, truncated: false })
+      expect(response_status).to eq({ rows_expected: 2, rows_written: 2, truncated: false })
     end
   end
 
@@ -190,15 +202,15 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
     end
 
     it 'exports usage data for runners which finished builds after date' do
-      expect(response_status).to eq({ rows_expected: 6, rows_written: 6, truncated: false })
+      expect(response_status).to eq({ rows_expected: 8, rows_written: 8, truncated: false })
     end
   end
 
-  def create_build(runner, project, created_at, duration = 14.minutes)
+  def create_build(runner, project, created_at, duration = 14.minutes, status = :success)
     started_at = created_at + 6.minutes
 
     build_stubbed(:ci_build,
-      :success,
+      status,
       created_at: created_at,
       queued_at: created_at,
       started_at: started_at,
@@ -206,5 +218,9 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
       project: project,
       runner: runner,
       runner_manager: runner.runner_managers.first)
+  end
+
+  def project_id_and_full_path(build)
+    [build.project_id, build.project.full_path].join(',')
   end
 end

@@ -6,10 +6,13 @@ module Ci
     #   (based on ClickHouse's ci_used_minutes_mv view)
     #
     class GenerateUsageCsvService
+      include Gitlab::Utils::StrongMemoize
+
       attr_reader :project_ids, :runner_type, :from_date, :to_date
 
       MAX_PROJECT_COUNT = 1_000
       OTHER_PROJECTS_NAME = '<Other projects>'
+      GROUPING_COLUMNS = %w[grouped_project_id status runner_type].freeze
 
       # @param [User] current_user The user performing the reporting
       # @param [Symbol] runner_type The type of runners to report on, or nil to report on all types
@@ -64,6 +67,8 @@ module Ci
         {
           'Project ID' => 'grouped_project_id',
           'Project path' => 'project_path',
+          'Status' => 'status',
+          'Runner type' => 'runner_type',
           'Build count' => 'count_builds',
           'Total duration (minutes)' => 'total_duration_in_mins',
           'Total duration' => 'total_duration_human_readable'
@@ -73,42 +78,59 @@ module Ci
       def clickhouse_query
         # This query computes the top-used projects, and performs a union to add the aggregates
         # for the projects not in that list
+        grouping_columns = GROUPING_COLUMNS.join(', ')
         raw_query = <<~SQL.squish
           WITH top_projects AS
             (
-                SELECT
-                  project_id,
-                  countMerge(count_builds) AS count_builds,
-                  sumSimpleState(total_duration) / 60000 AS total_duration_in_mins
-                FROM ci_used_minutes_mv
-                WHERE #{where_clause}
-                GROUP BY project_id
-                ORDER BY
-                  total_duration_in_mins DESC,
-                  project_id ASC
-                LIMIT {max_project_count: UInt64}
+              SELECT project_id
+              FROM ci_used_minutes_mv
+              WHERE #{where_conditions}
+              GROUP BY project_id
+              ORDER BY sumSimpleState(total_duration) DESC
+              LIMIT {max_project_count: UInt64}
             )
-          SELECT project_id AS grouped_project_id, count_builds, total_duration_in_mins
-          FROM top_projects
-          UNION ALL
-          SELECT
-            NULL AS grouped_project_id,
-            countMerge(count_builds) AS count_builds,
-            sumSimpleState(total_duration) / 60000 AS total_duration_in_mins
+          SELECT project_id AS grouped_project_id, #{select_list}
           FROM ci_used_minutes_mv
-          WHERE #{where_clause} AND project_id NOT IN (SELECT project_id FROM top_projects)
+          WHERE #{where_conditions} AND project_id IN top_projects
+          GROUP BY #{grouping_columns}
+          ORDER BY #{order_list}
+          UNION ALL (
+            SELECT NULL AS grouped_project_id, #{select_list}
+            FROM ci_used_minutes_mv
+            WHERE #{where_conditions} AND project_id NOT IN top_projects
+            GROUP BY #{grouping_columns}
+            ORDER BY #{order_list}
+          )
         SQL
 
         ClickHouse::Client::Query.new(raw_query: raw_query, placeholders: placeholders)
       end
 
-      def where_clause
+      def select_list
+        [
+          *(GROUPING_COLUMNS - %w[grouped_project_id]),
+          'countMerge(count_builds) AS count_builds',
+          'sumSimpleState(total_duration) / 60000 AS total_duration_in_mins'
+        ].join(', ')
+      end
+      strong_memoize_attr :select_list
+
+      def where_conditions
         <<~SQL
           #{'runner_type = {runner_type: UInt8} AND' if runner_type}
           finished_at_bucket >= {from_date: DateTime('UTC', 6)} AND
           finished_at_bucket < {to_date: DateTime('UTC', 6)}
         SQL
       end
+      strong_memoize_attr :where_conditions
+
+      def order_list
+        [
+          'total_duration_in_mins DESC',
+          *GROUPING_COLUMNS.map { |column| "#{column} ASC" }
+        ].join(', ')
+      end
+      strong_memoize_attr :order_list
 
       def placeholders
         placeholders = {
@@ -134,18 +156,20 @@ module Ci
         projects = Project.inc_routes.id_in(ids).to_h { |p| [p.id, p.full_path] }
         projects[nil] = OTHER_PROJECTS_NAME
 
-        # Annotate rows with project paths and human-readable durations
+        runner_types_by_value = Ci::Runner.runner_types.to_h.invert
+        # Annotate rows with project paths, human-readable durations, etc.
         result.each do |row|
           row['project_path'] = projects[row['grouped_project_id']&.to_i]
+          row['runner_type'] = runner_types_by_value[row['runner_type']&.to_i]
           row['total_duration_human_readable'] =
             ActiveSupport::Duration.build(row['total_duration_in_mins'] * 60).inspect
         end
 
-        # Perform special treatment for <Other projects> entry (if existing), moving it to the end of the list
-        other_projects_row = result.find { |row| row['grouped_project_id'].nil? }
-        if other_projects_row
+        # Perform special treatment for any <Other projects> entries, moving them to the end of the list
+        other_projects_rows = result.select { |row| row['grouped_project_id'].nil? }
+        if other_projects_rows.any?
           result.reject! { |row| row['grouped_project_id'].nil? }
-          result << other_projects_row if other_projects_row['count_builds'] > 0
+          result += other_projects_rows.select { |row| row['count_builds'] > 0 }
         end
 
         result
