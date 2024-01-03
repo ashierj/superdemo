@@ -9,8 +9,6 @@ module MergeRequests
     idempotent!
 
     def handle_event(event)
-      return if ::Feature.disabled?(:user_approval_rules_removal)
-
       user_ids = event.data[:user_ids]
       return if user_ids.blank?
 

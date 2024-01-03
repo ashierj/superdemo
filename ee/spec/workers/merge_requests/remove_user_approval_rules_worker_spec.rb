@@ -47,17 +47,5 @@ RSpec.describe MergeRequests::RemoveUserApprovalRulesWorker, feature_category: :
         expect { consume_event(subscriber: described_class, event: authorizations_event) }.not_to raise_exception
       end
     end
-
-    context 'when the feature flag "user_approval_rules_removal" is disabled' do
-      before do
-        stub_feature_flags(user_approval_rules_removal: false)
-      end
-
-      it 'does not call ApprovalRules::UserRulesDestroyService' do
-        expect(ApprovalRules::UserRulesDestroyService).not_to receive(:new)
-
-        expect { consume_event(subscriber: described_class, event: authorizations_event) }.not_to raise_exception
-      end
-    end
   end
 end
