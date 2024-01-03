@@ -28,7 +28,7 @@ module QA
             mirror_settings.username = Runtime::User.admin_username
             mirror_settings.password = Runtime::User.admin_password
             mirror_settings.mirror_repository
-            mirror_settings.update(source_project_uri) # rubocop:disable Rails/SaveBang
+            mirror_settings.update_uri(source_project_uri)
 
             target_project.wait_for_pull_mirroring
 
