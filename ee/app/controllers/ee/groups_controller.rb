@@ -110,7 +110,7 @@ module EE
     end
 
     def security_policy_custom_ci_toggle_params
-      return [] if ::Feature.disabled?(:compliance_pipeline_in_policies)
+      return [] if ::Feature.disabled?(:compliance_pipeline_in_policies, current_group)
 
       [
         :toggle_security_policy_custom_ci,
@@ -119,7 +119,7 @@ module EE
     end
 
     def security_policies_policy_scope_toggle_params
-      return [] if ::Feature.disabled?(:security_policies_policy_scope)
+      return [] if ::Feature.disabled?(:security_policies_policy_scope, current_group)
 
       %w[toggle_security_policies_policy_scope lock_toggle_security_policies_policy_scope]
     end
