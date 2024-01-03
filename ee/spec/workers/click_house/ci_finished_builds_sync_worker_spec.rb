@@ -45,7 +45,7 @@ RSpec.describe ClickHouse::CiFinishedBuildsSyncWorker, :click_house, :freeze_tim
 
       it 'skips execution' do
         expect(worker).to receive(:log_extra_metadata_on_done)
-          .with(:result, { message: 'ClickHouse database is not configured', reason: :db_not_configured })
+          .with(:result, { message: 'Disabled: ClickHouse database is not configured.', reason: :db_not_configured })
 
         perform
       end
