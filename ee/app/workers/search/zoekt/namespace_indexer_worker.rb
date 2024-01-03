@@ -5,6 +5,8 @@ module Search
     class NamespaceIndexerWorker
       include ApplicationWorker
 
+      INDEXING_DELAY_PER_PROJECT = 10.seconds
+
       # Must be always otherwise we risk race condition where it does not think that indexing is enabled yet for the
       # namespace.
       data_consistency :always # rubocop:disable SidekiqLoadBalancing/WorkerDataConsistency
@@ -31,12 +33,11 @@ module Search
       def index_projects(namespace)
         return unless namespace.use_zoekt?
 
-        namespace.all_projects.find_in_batches do |batch|
-          ::Zoekt::IndexerWorker.bulk_perform_async_with_contexts(
-            batch,
-            arguments_proc: ->(project) { project.id },
-            context_proc: ->(project) { { project: project } }
-          )
+        delay = 0
+        namespace.all_projects.find_each do |project|
+          ::Zoekt::IndexerWorker.perform_in(delay, project.id)
+
+          delay += INDEXING_DELAY_PER_PROJECT
         end
       end
 

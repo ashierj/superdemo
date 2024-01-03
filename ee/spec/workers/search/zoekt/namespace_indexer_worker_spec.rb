@@ -13,18 +13,17 @@ RSpec.describe ::Search::Zoekt::NamespaceIndexerWorker, :zoekt, feature_category
 
   describe '#perform' do
     context 'for index operation' do
-      subject { described_class.new.perform(namespace.id, 'index') }
+      subject(:perform) { described_class.new.perform(namespace.id, 'index') }
 
       let_it_be(:projects) { create_list :project, 3, namespace: namespace }
+      let(:default_delay) { described_class::INDEXING_DELAY_PER_PROJECT }
 
       it 'indexes all projects belonging to the namespace' do
-        expect(Zoekt::IndexerWorker).to receive(:bulk_perform_async).with(a_collection_containing_exactly(
-          [projects[0].id],
-          [projects[1].id],
-          [projects[2].id]
-        ))
+        expect(Zoekt::IndexerWorker).to receive(:perform_in).with(0, projects[0].id)
+        expect(Zoekt::IndexerWorker).to receive(:perform_in).with(default_delay, projects[1].id)
+        expect(Zoekt::IndexerWorker).to receive(:perform_in).with(default_delay * 2, projects[2].id)
 
-        subject
+        perform
       end
 
       context 'when zoekt indexing is disabled' do
@@ -33,19 +32,19 @@ RSpec.describe ::Search::Zoekt::NamespaceIndexerWorker, :zoekt, feature_category
         end
 
         it 'does nothing' do
-          expect(::Zoekt::IndexerWorker).not_to receive(:bulk_perform_async)
+          expect(::Zoekt::IndexerWorker).not_to receive(:perform_in)
 
-          subject
+          perform
         end
       end
 
       context 'when zoekt indexing is not enabled for the namespace' do
-        subject { described_class.new.perform(unindexed_namespace.id, 'index') }
+        subject(:perform) { described_class.new.perform(unindexed_namespace.id, 'index') }
 
         it 'does nothing' do
-          expect(::Zoekt::IndexerWorker).not_to receive(:bulk_perform_async)
+          expect(::Zoekt::IndexerWorker).not_to receive(:perform_in)
 
-          subject
+          perform
         end
       end
     end
