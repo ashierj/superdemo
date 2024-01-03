@@ -92,10 +92,24 @@ export const branchRulesMockResponse = {
 
 export const appProvideMock = {
   projectPath: 'some/project/path',
+  branchRulesPath: 'settings/repository/branch_rules',
 };
 
 export const branchRuleProvideMock = {
   branchRulesPath: 'settings/repository/branch_rules',
+};
+
+export const createBranchRuleMockResponse = {
+  data: {
+    branchRuleCreate: {
+      errors: [],
+      branchRule: {
+        name: '*dkd',
+        __typename: 'BranchRule',
+      },
+      __typename: 'BranchRuleCreatePayload',
+    },
+  },
 };
 
 export const branchRulePropsMock = {
