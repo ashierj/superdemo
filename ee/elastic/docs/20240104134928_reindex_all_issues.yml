@@ -1,6 +1,6 @@
 ---
 name: ReindexAllIssues
-version: '20231204134928'
+version: '20240104134928'
 description: Reindex issue documents to fix https://gitlab.com/gitlab-org/gitlab/-/issues/430149
 group: group::global search
 milestone: '16.8'
