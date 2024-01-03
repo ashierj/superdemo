@@ -79,11 +79,6 @@ In Kubernetes, you can [use the same domain under `global.hosts.domain` as for t
 NOTE:
 The feature flag described in this section is planned to be deprecated and removed in a future release. Support for read-only Geo secondary sites is proposed in [issue 366810](https://gitlab.com/gitlab-org/gitlab/-/issues/366810), you can upvote and share your use cases in that issue.
 
-There are minor known issues linked in the
-["Geo secondary proxying with separate URLs" epic](https://gitlab.com/groups/gitlab-org/-/epics/6865).
-You can also add feedback in the epic about any use-cases that
-are not possible anymore with proxying enabled.
-
 If you run into issues, to disable this feature, disable the `geo_secondary_proxy_separate_urls` feature flag.
 
 1. SSH into one node running Rails on your primary Geo site and run:
