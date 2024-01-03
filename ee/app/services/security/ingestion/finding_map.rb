@@ -11,7 +11,7 @@ module Security
       FINDING_ATTRIBUTES = %i[confidence metadata_version name raw_metadata report_type severity details description message solution].freeze
 
       attr_reader :pipeline, :security_finding, :report_finding
-      attr_accessor :finding_id, :vulnerability_id, :new_record, :identifier_ids
+      attr_accessor :finding_id, :vulnerability_id, :new_record, :transitioned_to_detected, :identifier_ids
 
       delegate :uuid, :scanner_id, :severity, to: :security_finding
       delegate :scan, to: :security_finding, private: true
@@ -52,6 +52,10 @@ module Security
                         location_fingerprint: report_finding.location_fingerprint,
                         project_id: project_id
                       )
+      end
+
+      def new_or_transitioned_to_detected?
+        new_record || transitioned_to_detected
       end
     end
   end
