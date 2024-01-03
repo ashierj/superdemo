@@ -58,18 +58,6 @@ RSpec.shared_examples 'slash command tool' do
     end
   end
 
-  context 'when slash_commands_file_content is disabled' do
-    before do
-      stub_feature_flags(slash_commands_file_content: false)
-    end
-
-    it 'uses empty file content' do
-      expect(prompt_class).to receive(:prompt).with(a_hash_including(file_content: ''))
-
-      tool.execute
-    end
-  end
-
   context 'when content params are empty' do
     before do
       context.current_file[:content_above_cursor] = ''

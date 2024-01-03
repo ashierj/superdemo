@@ -31,8 +31,6 @@ module Gitlab
           end
 
           def file_content
-            return '' unless Feature.enabled?(:slash_commands_file_content, context.current_user)
-
             content = trimmed_content
             return '' unless content
 
