@@ -10,7 +10,7 @@
 - content_for :page_level_alert do
   %div{ class: [container_class, @content_class, 'gl-pt-5!'] }
     = render Pajamas::AlertComponent.new(title: s_('CodeSuggestionsGAAlert|Try GitLab Duo Code Suggestions today'),
-      alert_options: { class: 'js-code-suggestions-ga-non-owner-alert',
+      alert_options: { class: 'js-code-suggestions-ga-alert',
         data: { feature_id: ::EE::Users::CalloutsHelper::CODE_SUGGESTIONS_GA_NON_OWNER_ALERT,
                                dismiss_endpoint: callouts_path,
                                testid: 'code-suggestions-ga-non-owner-alert' } },
