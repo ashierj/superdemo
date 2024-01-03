@@ -13,12 +13,8 @@ module EE
       ::Ci::CompareMetricsReportsService => ->(_project) { true },
       ::Ci::CompareCodequalityReportsService => ->(_project) { true },
       ::Ci::CompareSecurityReportsService => ->(_project) { true },
-      ::Ci::CompareLicenseScanningReportsCollapsedService => ->(project) do
-        ::Feature.enabled?(:scan_result_policy_license_scanning_merge_base_pipeline, project)
-      end,
-      ::Ci::CompareLicenseScanningReportsService => ->(project) do
-        ::Feature.enabled?(:scan_result_policy_license_scanning_merge_base_pipeline, project)
-      end
+      ::Ci::CompareLicenseScanningReportsCollapsedService => ->(_project) { true },
+      ::Ci::CompareLicenseScanningReportsService => ->(_project) { true }
     }.freeze
 
     MAX_CHECKED_PIPELINES_FOR_SECURITY_REPORT_COMPARISON = 10

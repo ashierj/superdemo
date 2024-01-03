@@ -136,11 +136,7 @@ module Security
     end
 
     def target_branch_pipeline(merge_request)
-      if Feature.enabled?(:scan_result_policy_license_scanning_merge_base_pipeline, project)
-        merge_request.latest_comparison_pipeline_with_sbom_reports
-      else
-        merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy
-      end
+      merge_request.latest_comparison_pipeline_with_sbom_reports
     end
 
     def new_dependency_names(target_branch_report)
