@@ -10,10 +10,17 @@ RSpec.describe AuditEvents::Strategies::Instance::AmazonS3DestinationStrategy, f
   describe '#streamable?' do
     subject(:streamable?) { described_class.new(event_type, event).streamable? }
 
-    context 'when feature flag is disabled' do
+    context 'when feature is not licensed' do
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when feature is licensed' do
       before do
         stub_licensed_features(external_audit_events: true)
-        stub_feature_flags(allow_streaming_instance_audit_events_to_amazon_s3: false)
+      end
+
+      context 'when instance Amazon S3 configurations does not exist' do
+        it { is_expected.to be_falsey }
       end
 
       context 'when instance Amazon S3 configurations exists' do
@@ -21,35 +28,7 @@ RSpec.describe AuditEvents::Strategies::Instance::AmazonS3DestinationStrategy, f
           create(:instance_amazon_s3_configuration)
         end
 
-        it { is_expected.to be_falsey }
-      end
-    end
-
-    context 'when feature flag is enabled' do
-      before do
-        stub_feature_flags(allow_streaming_instance_audit_events_to_amazon_s3: true)
-      end
-
-      context 'when feature is not licensed' do
-        it { is_expected.to be_falsey }
-      end
-
-      context 'when feature is licensed' do
-        before do
-          stub_licensed_features(external_audit_events: true)
-        end
-
-        context 'when instance Amazon S3 configurations does not exist' do
-          it { is_expected.to be_falsey }
-        end
-
-        context 'when instance Amazon S3 configurations exists' do
-          before do
-            create(:instance_amazon_s3_configuration)
-          end
-
-          it { is_expected.to be_truthy }
-        end
+        it { is_expected.to be_truthy }
       end
     end
   end

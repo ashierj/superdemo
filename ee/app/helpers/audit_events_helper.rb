@@ -48,7 +48,7 @@ module AuditEventsHelper
     can?(current_user, :admin_external_audit_events, group)
   end
 
-  def audit_log_app_data(is_last_page, events, audit_event_definitions, group)
+  def audit_log_app_data(is_last_page, events, audit_event_definitions)
     {
       form_path: admin_audit_logs_path,
       events: events.to_json,
@@ -60,9 +60,7 @@ module AuditEventsHelper
         empty_state_svg_path: image_path('illustrations/cloud.svg'),
         group_path: 'instance',
         show_streams: License.feature_available?(:external_audit_events).to_s,
-        audit_event_definitions: audit_event_definitions.to_json,
-        allow_streaming_instance_audit_events_to_amazon_s3:
-        Feature.enabled?(:allow_streaming_instance_audit_events_to_amazon_s3, group).to_s
+        audit_event_definitions: audit_event_definitions.to_json
       })
     end
   end
