@@ -5,52 +5,42 @@ require 'spec_helper'
 RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_and_projects do
   include EE::GeoHelpers
 
-  let(:user) { create :user }
-  let(:opts) do
-    {
-      name: "GitLab",
-      namespace_id: user.namespace.id
-    }
-  end
+  let_it_be(:user) { create(:user) }
+  let(:current_user) { user }
+  let(:project_params) { { name: 'GitLab', namespace_id: current_user.namespace.id }.merge(extra_params) }
+  let(:extra_params) { {} }
+
+  let(:created_project) { response }
+
+  subject(:response) { described_class.new(current_user, project_params).execute }
 
   context 'with a built-in template' do
-    before do
-      opts.merge!(
-        template_name: 'rails'
-      )
-    end
+    let(:extra_params) { { template_name: 'rails' } }
 
     it 'creates a project using the template service' do
       expect(::Projects::CreateFromTemplateService).to receive_message_chain(:new, :execute)
 
-      create_project(user, opts)
+      response
     end
   end
 
   context 'with a template project ID' do
-    before do
-      opts.merge!(
-        template_project_id: 1
-      )
-    end
+    let(:extra_params) { { template_project_id: 1 } }
 
     it 'creates a project using the template service' do
       expect(::Projects::CreateFromTemplateService).to receive_message_chain(:new, :execute)
 
-      create_project(user, opts)
+      response
     end
   end
 
   context 'with import_type gitlab_custom_project_template' do
     let(:group) do
-      create(:group, project_creation_level: project_creation_level).tap do |group|
-        group.add_developer(user)
-      end
+      create(:group, project_creation_level: project_creation_level) { |g| g.add_developer(user) }
     end
 
-    let(:opts) do
+    let(:extra_params) do
       {
-        name: 'GitLab',
         namespace_id: group.id,
         import_type: 'gitlab_custom_project_template',
         import_data: {
@@ -69,10 +59,8 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
       let(:project_creation_level) { Gitlab::Access::DEVELOPER_MAINTAINER_PROJECT_ACCESS }
 
       it 'creates a project' do
-        project = create_project(user, opts)
-
-        expect(project).to be_persisted
-        expect(project.import_type).to eq('gitlab_custom_project_template')
+        expect(created_project).to be_persisted
+        expect(created_project.import_type).to eq('gitlab_custom_project_template')
       end
     end
 
@@ -80,20 +68,13 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
       let(:project_creation_level) { Gitlab::Access::MAINTAINER_PROJECT_ACCESS }
 
       it 'does not create a project' do
-        project = create_project(user, opts)
-
-        expect(project).not_to be_persisted
+        expect(created_project).not_to be_persisted
       end
     end
   end
 
   context 'with a CI/CD only project' do
-    before do
-      opts.merge!(
-        ci_cd_only: true,
-        import_url: 'http://foo.com'
-      )
-    end
+    let(:extra_params) { { ci_cd_only: true, import_url: 'http://foo.com' } }
 
     context 'when CI/CD projects feature is available' do
       before do
@@ -103,7 +84,7 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
       it 'calls the service to set up CI/CD on the project' do
         expect(CiCd::SetupProject).to receive_message_chain(:new, :execute)
 
-        create_project(user, opts)
+        response
       end
     end
 
@@ -112,78 +93,71 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
         stub_licensed_features(ci_cd_projects: false)
       end
 
-      it "doesn't call the service to set up CI/CD on the project" do
+      it 'does not call the service to set up CI/CD on the project' do
         expect(CiCd::SetupProject).not_to receive(:new)
 
-        create_project(user, opts)
+        response
       end
     end
   end
 
-  context 'repository_size_limit assignment as Bytes' do
+  context 'with repository_size_limit assignment as Bytes' do
     let_it_be(:admin_user) { create(:admin) }
 
     context 'when user is an admin and admin mode is enabled', :enable_admin_mode do
+      let(:current_user) { admin_user }
+
       context 'when the param is present' do
-        let(:opts) { { repository_size_limit: '100' } }
+        let(:extra_params) { { repository_size_limit: '100' } }
 
         it 'assign repository_size_limit as Bytes' do
-          project = create_project(admin_user, opts)
-
-          expect(project.repository_size_limit).to eql(100 * 1024 * 1024)
+          expect(created_project.repository_size_limit).to eql(100 * 1024 * 1024)
         end
       end
 
       context 'when the param is an empty string' do
-        let(:opts) { { repository_size_limit: '' } }
+        let(:extra_params) { { repository_size_limit: '' } }
 
         it 'assigns a nil value' do
-          project = create_project(admin_user, opts)
-
-          expect(project.repository_size_limit).to be_nil
+          expect(created_project.repository_size_limit).to be_nil
         end
       end
     end
 
     context 'when user is an admin and admin mode is disabled' do
-      let(:opts) { { repository_size_limit: '100' } }
+      let(:current_user) { admin_user }
+      let(:extra_params) { { repository_size_limit: '100' } }
 
       it 'assigns a nil value' do
-        project = create_project(admin_user, opts)
-
-        expect(project.repository_size_limit).to be_nil
+        expect(created_project.repository_size_limit).to be_nil
       end
     end
 
     context 'when the user is not an admin' do
-      let(:opts) { { repository_size_limit: '100' } }
+      let(:extra_params) { { repository_size_limit: '100' } }
 
       it 'does not assign repository_size_limit' do
-        project = create_project(user, opts)
-
-        expect(project.repository_size_limit).to be_nil
+        expect(created_project.repository_size_limit).to be_nil
       end
     end
   end
 
   context 'without repository mirror' do
+    let(:extra_params) { { import_url: 'http://foo.com' } }
+
     before do
       stub_licensed_features(repository_mirrors: true)
-      opts.merge!(import_url: 'http://foo.com')
     end
 
     it 'sets the mirror to false' do
-      project = create_project(user, opts)
-
-      expect(project).to be_persisted
-      expect(project.mirror).to be false
+      expect(created_project).to be_persisted
+      expect(created_project.mirror).to be false
     end
   end
 
   context 'with repository mirror' do
-    before do
-      opts.merge!(import_url: 'http://foo.com', mirror: true)
-    end
+    let(:extra_params) { { import_url: 'http://foo.com', mirror: true }.merge(more_params) }
+    let(:more_params) { {} }
 
     context 'when licensed' do
       before do
@@ -191,23 +165,17 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
       end
 
       it 'sets the correct attributes' do
-        project = create_project(user, opts)
-
-        expect(project).to be_persisted
-        expect(project.mirror).to be true
-        expect(project.mirror_user_id).to eq(user.id)
+        expect(created_project).to be_persisted
+        expect(created_project.mirror).to be true
+        expect(created_project.mirror_user_id).to eq(user.id)
       end
 
       context 'with mirror trigger builds' do
-        before do
-          opts.merge!(mirror_trigger_builds: true)
-        end
+        let(:more_params) { { mirror_trigger_builds: true } }
 
         it 'sets the mirror trigger builds' do
-          project = create_project(user, opts)
-
-          expect(project).to be_persisted
-          expect(project.mirror_trigger_builds).to be true
+          expect(created_project).to be_persisted
+          expect(created_project.mirror_trigger_builds).to be true
         end
       end
 
@@ -217,11 +185,9 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
         end
 
         context 'when not licensed on a namespace' do
-          it 'does not allow enabeling mirrors' do
-            project = create_project(user, opts)
-
-            expect(project).to be_persisted
-            expect(project.mirror).to be_falsey
+          it 'does not allow enabling mirrors' do
+            expect(created_project).to be_persisted
+            expect(created_project.mirror).to be_falsey
           end
         end
 
@@ -229,10 +195,8 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
           it 'allows enabling mirrors' do
             create(:gitlab_subscription, :ultimate, namespace: user.namespace)
 
-            project = create_project(user, opts)
-
-            expect(project).to be_persisted
-            expect(project.mirror).to be_truthy
+            expect(created_project).to be_persisted
+            expect(created_project.mirror).to be_truthy
           end
         end
       end
@@ -244,23 +208,17 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
       end
 
       it 'does not set mirror attributes' do
-        project = create_project(user, opts)
-
-        expect(project).to be_persisted
-        expect(project.mirror).to be false
-        expect(project.mirror_user_id).to be_nil
+        expect(created_project).to be_persisted
+        expect(created_project.mirror).to be false
+        expect(created_project.mirror_user_id).to be_nil
       end
 
       context 'with mirror trigger builds' do
-        before do
-          opts.merge!(mirror_trigger_builds: true)
-        end
+        let(:more_params) { { mirror_trigger_builds: true } }
 
         it 'sets the mirror trigger builds' do
-          project = create_project(user, opts)
-
-          expect(project).to be_persisted
-          expect(project.mirror_trigger_builds).to be false
+          expect(created_project).to be_persisted
+          expect(created_project.mirror_trigger_builds).to be false
         end
       end
     end
@@ -272,66 +230,59 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
     end
 
     context 'with sample' do
-      let!(:sample) { create(:push_rule_sample) }
+      let_it_be(:sample) { create(:push_rule_sample) }
 
       before do
         stub_licensed_features(push_rules: true)
       end
 
-      subject(:push_rule) { create_project(user, opts).push_rule }
-
       it 'creates push rule from sample' do
-        is_expected.to have_attributes(
-          force_push_regex: sample.force_push_regex,
-          deny_delete_tag: sample.deny_delete_tag,
-          delete_branch_regex: sample.delete_branch_regex,
-          commit_message_regex: sample.commit_message_regex
+        expect(created_project.push_rule).to(
+          have_attributes(
+            force_push_regex: sample.force_push_regex,
+            deny_delete_tag: sample.deny_delete_tag,
+            delete_branch_regex: sample.delete_branch_regex,
+            commit_message_regex: sample.commit_message_regex
+          )
         )
       end
 
       it 'creates association between project settings and push rule' do
-        project_setting = subject.project.project_setting
+        project_setting = created_project.push_rule.project.project_setting
 
-        expect(project_setting.push_rule_id).to eq(subject.id)
+        expect(project_setting.push_rule_id).to eq(created_project.push_rule.id)
       end
 
-      context 'push rules unlicensed' do
+      context 'when push rules is unlicensed' do
         before do
           stub_licensed_features(push_rules: false)
         end
 
-        subject(:push_rule) { create_project(user, opts).push_rule }
-
         it 'ignores the push rule sample' do
-          is_expected.to be_nil
+          expect(created_project.push_rule).to be_nil
         end
       end
     end
 
     context 'when there are no push rules' do
       it 'does not create push rule' do
-        expect(create_project(user, opts).push_rule).to be_nil
+        expect(created_project.push_rule).to be_nil
       end
     end
   end
 
-  context 'group push rules' do
+  context 'for group push rules' do
     before do
       stub_licensed_features(push_rules: true)
       stub_feature_flags(inherited_push_rule_for_project: false)
     end
 
-    context 'project created within a group' do
-      let(:group) { create(:group) }
-      let(:sub_group) { create(:group, parent: group) }
-      let(:opts) do
-        {
-          name: "GitLab",
-          namespace_id: group.id
-        }
-      end
+    context 'for project created within a group' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:sub_group) { create(:group, parent: group) }
+      let(:extra_params) { { namespace_id: group.id } }
 
-      before do
+      before_all do
         group.add_owner(user)
       end
 
@@ -345,60 +296,71 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
         it 'does not error if new columns are created since the last schema load' do
           PushRule.connection.execute('ALTER TABLE push_rules ADD COLUMN foobar boolean')
 
-          project = create_project(user, opts)
-
-          project_push_rule = project.push_rule
-          expect(project_push_rule).to be_persisted
+          expect(created_project.push_rule).to be_persisted
         end
 
         it 'creates push rule from group push rule' do
-          project = create_project(user, opts)
-          project_push_rule = project.push_rule
+          project_push_rule = created_project.push_rule
 
-          expect(project_push_rule).to have_attributes(
-            force_push_regex: group_push_rule.force_push_regex,
-            deny_delete_tag: group_push_rule.deny_delete_tag,
-            delete_branch_regex: group_push_rule.delete_branch_regex,
-            commit_message_regex: group_push_rule.commit_message_regex,
-            is_sample: false
+          expect(project_push_rule).to(
+            have_attributes(
+              force_push_regex: group_push_rule.force_push_regex,
+              deny_delete_tag: group_push_rule.deny_delete_tag,
+              delete_branch_regex: group_push_rule.delete_branch_regex,
+              commit_message_regex: group_push_rule.commit_message_regex,
+              is_sample: false
+            )
           )
-          expect(project.project_setting.push_rule_id).to eq(project_push_rule.id)
+          expect(created_project.project_setting.push_rule_id).to eq(project_push_rule.id)
         end
 
-        it 'within sub_group creates push rule from group push rule' do
-          project = create_project(user, opts.merge(namespace_id: sub_group.id))
-          project_push_rule = project.push_rule
+        context 'with subgroup' do
+          let(:extra_params) { { namespace_id: sub_group.id } }
 
-          expect(project_push_rule).to have_attributes(
-            force_push_regex: group_push_rule.force_push_regex,
-            deny_delete_tag: group_push_rule.deny_delete_tag,
-            delete_branch_regex: group_push_rule.delete_branch_regex,
-            commit_message_regex: group_push_rule.commit_message_regex,
-            is_sample: false
-          )
-          expect(project.project_setting.push_rule_id).to eq(project_push_rule.id)
+          it 'creates push rule from group push rule' do
+            project_push_rule = created_project.push_rule
+
+            expect(project_push_rule).to(
+              have_attributes(
+                force_push_regex: group_push_rule.force_push_regex,
+                deny_delete_tag: group_push_rule.deny_delete_tag,
+                delete_branch_regex: group_push_rule.delete_branch_regex,
+                commit_message_regex: group_push_rule.commit_message_regex,
+                is_sample: false
+              )
+            )
+            expect(created_project.project_setting.push_rule_id).to eq(project_push_rule.id)
+          end
         end
       end
 
       context 'when group does not have push rule defined' do
-        let!(:sample) { create(:push_rule_sample) }
+        let_it_be(:sample) { create(:push_rule_sample) }
 
         it 'creates push rule from sample' do
-          expect(create_project(user, opts).push_rule).to have_attributes(
-            force_push_regex: sample.force_push_regex,
-            deny_delete_tag: sample.deny_delete_tag,
-            delete_branch_regex: sample.delete_branch_regex,
-            commit_message_regex: sample.commit_message_regex
+          expect(created_project.push_rule).to(
+            have_attributes(
+              force_push_regex: sample.force_push_regex,
+              deny_delete_tag: sample.deny_delete_tag,
+              delete_branch_regex: sample.delete_branch_regex,
+              commit_message_regex: sample.commit_message_regex
+            )
           )
         end
 
-        it 'creates push rule from sample in sub-group' do
-          expect(create_project(user, opts.merge(namespace_id: sub_group.id)).push_rule).to have_attributes(
-            force_push_regex: sample.force_push_regex,
-            deny_delete_tag: sample.deny_delete_tag,
-            delete_branch_regex: sample.delete_branch_regex,
-            commit_message_regex: sample.commit_message_regex
-          )
+        context 'with subgroup' do
+          let(:extra_params) { { namespace_id: sub_group.id } }
+
+          it 'creates push rule from sample in sub-group' do
+            expect(created_project.push_rule).to(
+              have_attributes(
+                force_push_regex: sample.force_push_regex,
+                deny_delete_tag: sample.deny_delete_tag,
+                delete_branch_regex: sample.delete_branch_regex,
+                commit_message_regex: sample.commit_message_regex
+              )
+            )
+          end
         end
       end
     end
@@ -406,34 +368,32 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
 
   context 'when importing Project by repo URL' do
     context 'and check namespace plan is enabled' do
+      let(:extra_params) do
+        {
+          import_url: 'https://www.gitlab.com/gitlab-org/gitlab-foss',
+          visibility_level: Gitlab::VisibilityLevel::PRIVATE,
+          mirror: true,
+          mirror_trigger_builds: true
+        }
+      end
+
       before do
         allow_next_instance_of(EE::Project) do |instance|
           allow(instance).to receive(:add_import_job)
         end
+
         enable_namespace_license_check!
       end
 
       it 'creates the project' do
-        opts = {
-          name: 'GitLab',
-          import_url: 'https://www.gitlab.com/gitlab-org/gitlab-foss',
-          visibility_level: Gitlab::VisibilityLevel::PRIVATE,
-          namespace_id: user.namespace.id,
-          mirror: true,
-          mirror_trigger_builds: true
-        }
-
-        project = create_project(user, opts)
-
-        expect(project).to be_persisted
+        expect(created_project).to be_persisted
       end
     end
   end
 
-  context 'audit events' do
+  context 'for audit events' do
     include_examples 'audit event logging' do
-      let_it_be(:user) { create(:user) }
-      let(:operation) { create_project(user, opts) }
+      let(:operation) { response }
       let(:fail_condition!) do
         allow(Gitlab::VisibilityLevel).to receive(:allowed_for?).and_return(false)
       end
@@ -442,62 +402,61 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
 
       let(:attributes) do
         {
-           author_id: user.id,
-           entity_id: @resource.id,
-           entity_type: 'Project',
-           details: {
-             author_name: user.name,
-             target_id: @resource.id,
-             target_type: 'Project',
-             target_details: @resource.full_path,
-             custom_message: Projects::CreateService::AUDIT_EVENT_MESSAGE,
-             author_class: user.class.name
-           }
-         }
+          author_id: user.id,
+          entity_id: created_project.id,
+          entity_type: 'Project',
+          details: {
+            author_name: user.name,
+            target_id: created_project.id,
+            target_type: 'Project',
+            target_details: created_project.full_path,
+            custom_message: Projects::CreateService::AUDIT_EVENT_MESSAGE,
+            author_class: user.class.name
+          }
+        }
       end
     end
   end
 
-  context 'security policy configuration' do
+  context 'with security policy configuration' do
     context 'with security_policy_target_project_id' do
       let_it_be(:security_policy_target_project) { create(:project) }
+      let(:extra_params) { { security_policy_target_project_id: security_policy_target_project.id } }
 
       before do
-        opts[:security_policy_target_project_id] = security_policy_target_project.id
-
         stub_licensed_features(security_orchestration_policies: true)
       end
 
       it 'creates security policy configuration for the project' do
         expect(::Security::Orchestration::AssignService).to receive_message_chain(:new, :execute)
 
-        create_project(user, opts)
+        response
       end
     end
 
     context 'with security_policy_target_namespace_id' do
       let_it_be(:security_policy_target_namespace) { create(:namespace) }
+      let(:extra_params) { { security_policy_target_namespace_id: security_policy_target_namespace.id } }
 
       before do
-        opts[:security_policy_target_namespace_id] = security_policy_target_namespace.id
-
         stub_licensed_features(security_orchestration_policies: true)
       end
 
       it 'creates security policy configuration for the project' do
         expect(::Security::Orchestration::AssignService).to receive_message_chain(:new, :execute)
 
-        create_project(user, opts)
+        response
       end
     end
   end
 
-  describe 'after create actions' do
-    describe 'set_default_compliance_framework' do
+  context 'for after create actions' do
+    context 'with set_default_compliance_framework' do
       let_it_be(:admin_bot) { create(:user, :admin_bot, :admin) }
       let_it_be(:group, reload: true) { create(:group) }
       let_it_be(:framework) { create(:compliance_framework, namespace: group, name: 'GDPR') }
       let_it_be(:framework_two) { create(:compliance_framework, namespace: group, name: 'HIPAA') }
+      let(:extra_params) { { namespace_id: group.id } }
 
       context 'when default compliance framework is set at the root namespace' do
         before do
@@ -515,18 +474,14 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
             framework.id
           ).and_call_original
 
-          project = create_project(user, { name: "GitLab", namespace_id: group.id })
-
-          expect(project.compliance_management_framework.id).to eq(framework.id)
-          expect(project.compliance_management_framework.name).to eq('GDPR')
+          expect(created_project.compliance_management_framework.id).to eq(framework.id)
+          expect(created_project.compliance_management_framework.name).to eq('GDPR')
         end
 
         it 'does not set the default compliance framework for new projects when not licensed' do
           expect(::ComplianceManagement::UpdateDefaultFrameworkWorker).not_to receive(:perform_async)
 
-          project = create_project(user, { name: "GitLab", namespace_id: group.id })
-
-          expect(project.compliance_framework_setting).to eq(nil)
+          expect(created_project.compliance_framework_setting).to eq(nil)
         end
       end
 
@@ -542,9 +497,7 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
 
           expect(::ComplianceManagement::UpdateDefaultFrameworkWorker).not_to receive(:perform_async)
 
-          project = create_project(user, { name: "GitLab", namespace_id: group.id })
-
-          expect(project.compliance_framework_setting).to eq(nil)
+          expect(created_project.compliance_framework_setting).to eq(nil)
         end
       end
 
@@ -554,15 +507,14 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
 
           expect(::ComplianceManagement::UpdateDefaultFrameworkWorker).not_to receive(:perform_async)
 
-          project = create_project(user, opts)
-
-          expect(project.compliance_framework_setting).to eq(nil)
+          expect(created_project.compliance_framework_setting).to eq(nil)
         end
       end
     end
 
     describe 'run_compliance_standards_checks' do
       let_it_be(:group, reload: true) { create(:group) }
+      let(:extra_params) { { namespace_id: group.id } }
 
       context 'when project belongs to a group', :sidekiq_inline do
         before do
@@ -581,9 +533,7 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
           expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
             .to receive(:perform_async).and_call_original
 
-          project = create_project(user, { name: "GitLab", namespace_id: group.id })
-
-          expect(project.compliance_standards_adherence.count).to eq(3)
+          expect(created_project.compliance_standards_adherence.count).to eq(3)
         end
       end
 
@@ -600,16 +550,15 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
           expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
             .not_to receive(:perform_async)
 
-          project = create_project(user, opts)
-
-          expect(project.compliance_standards_adherence).to be_empty
+          expect(created_project.compliance_standards_adherence).to be_empty
         end
       end
     end
 
-    describe 'sync scan result policies from group' do
+    context 'with sync scan result policies from group' do
       let_it_be(:group, reload: true) { create(:group) }
       let_it_be(:sub_group, reload: true) { create(:group, parent: group) }
+      let(:extra_params) { { namespace_id: sub_group.id } }
 
       before do
         group.add_owner(user)
@@ -638,10 +587,8 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
         it 'invokes ProcessScanResultPolicyWorker', :sidekiq_inline do
           expect(::Security::ProcessScanResultPolicyWorker).to receive(:perform_async).twice.and_call_original
 
-          project = create_project(user, name: "GitLab", namespace_id: sub_group.id)
-
-          expect(project.approval_rules.count).to eq(2)
-          expect(project.approval_rules.map(&:security_orchestration_policy_configuration_id)).to match_array([
+          expect(created_project.approval_rules.count).to eq(2)
+          expect(created_project.approval_rules.map(&:security_orchestration_policy_configuration_id)).to match_array([
             group_configuration.id, sub_group_configuration.id
           ])
         end
@@ -651,14 +598,15 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
         it 'does not invoke ProcessScanResultPolicyWorker' do
           expect(::Security::ProcessScanResultPolicyWorker).not_to receive(:perform_async)
 
-          create_project(user, { name: "GitLab", namespace_id: sub_group.id })
+          response
         end
       end
     end
 
-    describe 'create security policy project bots', feature_category: :security_policy_management do
+    context 'with create security policy project bots', feature_category: :security_policy_management do
       let_it_be(:group, reload: true) { create(:group) }
       let_it_be(:sub_group, reload: true) { create(:group, parent: group) }
+      let(:extra_params) { { namespace_id: group.id } }
 
       before do
         group.add_owner(user)
@@ -683,34 +631,29 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
         it 'invokes OrchestrationConfigurationCreateBotWorker', :sidekiq_inline do
           expect(::Security::OrchestrationConfigurationCreateBotWorker).to receive(:perform_async).and_call_original
 
-          project = create_project(user, name: 'GitLab', namespace_id: group.id)
-
-          expect(project.security_policy_bot).to be_present
+          expect(created_project.security_policy_bot).to be_present
         end
 
         context 'when project is created in a sub-group with inherited policy' do
+          let(:extra_params) { { namespace_id: sub_group.id } }
+
           it 'invokes OrchestrationConfigurationCreateBotWorker', :sidekiq_inline do
             expect(::Security::OrchestrationConfigurationCreateBotWorker).to receive(:perform_async).and_call_original
 
-            project = create_project(user, name: 'GitLab', namespace_id: sub_group.id)
-
-            expect(project.security_policy_bot).to be_present
+            expect(created_project.security_policy_bot).to be_present
           end
         end
       end
 
       context 'when group does not have security_orchestration_policy_configuration' do
+        let(:extra_params) { { namespace_id: create(:group).id } }
+
         it 'does not invoke OrchestrationConfigurationCreateBotWorker' do
           expect(::Security::OrchestrationConfigurationCreateBotWorker).not_to receive(:perform_async)
 
-          group_without_policy = create(:group)
-          create_project(user, { name: 'GitLab', namespace_id: group_without_policy.id })
+          response
         end
       end
     end
-  end
-
-  def create_project(user, opts)
-    described_class.new(user, opts).execute
   end
 end
