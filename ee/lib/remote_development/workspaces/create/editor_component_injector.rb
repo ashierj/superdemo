@@ -28,7 +28,7 @@ module RemoteDevelopment
 
           editor_component = processed_devfile['components'].find { |c| c.dig('attributes', 'gl/inject-editor') }
           override_main_container(editor_component, volume_name, volume_path, editor_port, ssh_port) if editor_component
-          inject_editor_component(processed_devfile, volume_name, volume_path, editor_port, ssh_port)
+          inject_editor_component(processed_devfile, volume_name, volume_path)
 
           value
         end
@@ -43,6 +43,13 @@ module RemoteDevelopment
           # Open issue to support both starting the editor and running the default command:
           # https://gitlab.com/gitlab-org/gitlab/-/issues/392853
           container_args = <<~"SH".chomp
+            sshd_path=$(which sshd)
+            if [ -x "$sshd_path" ]; then
+              echo "Starting sshd on port ${GL_SSH_PORT}"
+              $sshd_path -D -p $GL_SSH_PORT &
+            else
+              echo "'sshd' not found in path. Not starting SSH server."
+            fi
             #{volume_path}/.gl-editor/start_server.sh
           SH
           component['container']['command'] = %w[/bin/sh -c]
@@ -56,15 +63,19 @@ module RemoteDevelopment
 
           component['container']['env'] += [
             {
-              'name' => 'EDITOR_VOLUME_DIR',
+              'name' => 'GL_EDITOR_VOLUME_DIR',
               'value' => "#{volume_path}/.gl-editor"
             },
             {
-              'name' => 'EDITOR_PORT',
+              'name' => 'GL_EDITOR_LOG_LEVEL',
+              'value' => 'info'
+            },
+            {
+              'name' => 'GL_EDITOR_PORT',
               'value' => editor_port.to_s
             },
             {
-              'name' => 'SSH_PORT',
+              'name' => 'GL_SSH_PORT',
               'value' => ssh_port.to_s
             }
           ]
@@ -92,10 +103,8 @@ module RemoteDevelopment
         # @param [Hash] processed_devfile
         # @param [String] volume_name
         # @param [String] volume_path
-        # @param [Integer] editor_port
-        # @param [Integer] ssh_port
-        def self.inject_editor_component(processed_devfile, volume_name, volume_path, editor_port, ssh_port)
-          processed_devfile['components'] += editor_components(volume_name, volume_path, editor_port, ssh_port)
+        def self.inject_editor_component(processed_devfile, volume_name, volume_path)
+          processed_devfile['components'] += editor_components(volume_name, volume_path)
 
           processed_devfile['commands'] = [] if processed_devfile['commands'].nil?
           processed_devfile['commands'] += [{
@@ -112,12 +121,10 @@ module RemoteDevelopment
 
         # @param [String] volume_name
         # @param [String] volume_path
-        # @param [Integer] editor_port
-        # @param [Integer] ssh_port
-        def self.editor_components(volume_name, volume_path, editor_port, ssh_port)
+        def self.editor_components(volume_name, volume_path)
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409775 - choose image based on which editor is passed.
           image_name = 'registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector'
-          image_tag = '4'
+          image_tag = '5'
 
           [
             {
@@ -127,16 +134,8 @@ module RemoteDevelopment
                 'volumeMounts' => [{ 'name' => volume_name, 'path' => volume_path }],
                 'env' => [
                   {
-                    'name' => 'EDITOR_VOLUME_DIR',
+                    'name' => 'GL_EDITOR_VOLUME_DIR',
                     'value' => "#{volume_path}/.gl-editor"
-                  },
-                  {
-                    'name' => 'EDITOR_PORT',
-                    'value' => editor_port.to_s
-                  },
-                  {
-                    'name' => 'SSH_PORT',
-                    'value' => ssh_port.to_s
                   }
                 ],
                 'memoryLimit' => '256Mi',
