@@ -27,7 +27,7 @@ module Features
     def policy_hash
       build(:scan_result_policy, name: policy_name,
         actions: [{ type: 'require_approval', approvals_required: 1,
-                    user_approvers_ids: [approver.id] }], rules: [policy_rule])
+                    role_approvers: approver_roles }], rules: [policy_rule])
     end
 
     def license_type
