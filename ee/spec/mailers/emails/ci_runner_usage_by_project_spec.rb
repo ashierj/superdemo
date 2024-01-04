@@ -16,7 +16,7 @@ RSpec.describe Emails::CiRunnerUsageByProject, feature_category: :fleet_visibili
     let(:to_date) { Date.new(2023, 11, 30) }
     let(:content_type) { 'text/csv' }
     let(:csv_data) { 'csv,separated,things' }
-    let(:export_status) { { rows_expected: 3, rows_written: 2, truncated: false } }
+    let(:export_status) { { projects_expected: 3, projects_written: 2, truncated: false } }
 
     let(:expected_filename) { "ci_runner_usage_report_2023-11-01_2023-11-30.csv" }
     let(:expected_plain_text) { 'Your CSV export of the top 2 projects has been added to this email as an attachment.' }

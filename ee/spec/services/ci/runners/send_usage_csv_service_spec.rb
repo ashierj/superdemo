@@ -37,7 +37,7 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
       expect(service).to receive(:execute).and_call_original
     end
 
-    expected_status = { rows_expected: 1, rows_written: 1, truncated: false }
+    expected_status = { projects_expected: 1, projects_written: 1, rows_expected: 1, rows_written: 1, truncated: false }
     expect(Notify).to receive(:runner_usage_by_project_csv_email)
       .with(user: current_user, from_date: from_date, to_date: to_date, csv_data: anything,
         export_status: expected_status)

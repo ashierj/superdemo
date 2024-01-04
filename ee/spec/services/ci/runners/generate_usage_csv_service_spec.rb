@@ -129,7 +129,9 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
       "#{project_id_and_full_path(builds.last)},canceled,group_type,1,3,3 minutes\n"
     ])
 
-    expect(response_status).to eq({ rows_expected: 8, rows_written: 8, truncated: false })
+    expect(response_status).to eq({
+      projects_expected: 5, projects_written: 5, rows_expected: 8, rows_written: 8, truncated: false
+    })
   end
 
   context "when max_project_count doesn't fit all projects" do
@@ -148,7 +150,9 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
         ",<Other projects>,success,instance_type,1,14,14 minutes\n"
       ])
 
-      expect(response_status).to eq({ rows_expected: 7, rows_written: 7, truncated: false })
+      expect(response_status).to eq({
+        projects_expected: max_project_count, projects_written: 2, rows_expected: 8, rows_written: 8, truncated: false
+      })
     end
   end
 
@@ -162,7 +166,9 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
         "#{project_id_and_full_path(builds.last)},canceled,group_type,1,3,3 minutes\n"
       ])
 
-      expect(response_status).to eq({ rows_expected: 2, rows_written: 2, truncated: false })
+      expect(response_status).to eq({
+        projects_expected: 1, projects_written: 1, rows_expected: 2, rows_written: 2, truncated: false
+      })
     end
   end
 
@@ -171,7 +177,9 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
 
     it 'exports usage data for runners of specified type' do
       expect(response_csv_lines).to contain_exactly(expected_header)
-      expect(response_status).to eq({ rows_expected: 0, rows_written: 0, truncated: false })
+      expect(response_status).to eq({
+        projects_expected: 50, projects_written: 0, rows_expected: 0, rows_written: 0, truncated: false
+      })
     end
   end
 
@@ -180,7 +188,9 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
     let(:to_date) { Date.new(2024, 1, 31) }
 
     it 'exports usage data for runners which finished builds before date' do
-      expect(response_status).to eq({ rows_expected: 16, rows_written: 16, truncated: false })
+      expect(response_status).to eq({
+        projects_expected: 16, projects_written: 16, rows_expected: 16, rows_written: 16, truncated: false
+      })
     end
   end
 
@@ -189,7 +199,9 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
     let(:to_date) { Date.new(2024, 2, 29) }
 
     it 'exports usage data for runners which finished builds before date' do
-      expect(response_status).to eq({ rows_expected: 0, rows_written: 0, truncated: false })
+      expect(response_status).to eq({
+        projects_expected: 50, projects_written: 0, rows_expected: 0, rows_written: 0, truncated: false
+      })
     end
   end
 
@@ -202,7 +214,9 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
     end
 
     it 'exports usage data for runners which finished builds after date' do
-      expect(response_status).to eq({ rows_expected: 8, rows_written: 8, truncated: false })
+      expect(response_status).to eq({
+        projects_expected: 5, projects_written: 5, rows_expected: 8, rows_written: 8, truncated: false
+      })
     end
   end
 

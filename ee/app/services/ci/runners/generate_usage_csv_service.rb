@@ -40,12 +40,17 @@ module Ci
         csv_data = csv_builder.render(ExportCsv::BaseService::TARGET_FILESIZE)
         export_status = csv_builder.status
 
-        others_row_created = rows.last.present? && rows.last['grouped_project_id'].nil?
-        if others_row_created
-          # Do not report <Other projects> row
-          export_status[:rows_written] = export_status[:rows_written] - 1
-          export_status[:rows_expected] = export_status[:rows_expected] - 1
-        end
+        # rubocop: disable CodeReuse/ActiveRecord -- This is an enumerable
+        # rubocop: disable Database/AvoidUsingPluckWithoutLimit -- This is an enumerable
+        export_status[:projects_written] = rows.pluck('grouped_project_id').compact.sort.uniq.count
+        # rubocop: enable Database/AvoidUsingPluckWithoutLimit
+        # rubocop: enable CodeReuse/ActiveRecord
+        export_status[:projects_expected] =
+          if export_status[:truncated] || export_status[:rows_written] == 0
+            @max_project_count
+          else
+            export_status[:projects_written]
+          end
 
         ServiceResponse.success(payload: { csv_data: csv_data, status: export_status })
       rescue StandardError => e
