@@ -1,7 +1,7 @@
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
 import { cloneDeep } from 'lodash';
-import { GlBadge, GlFormSelect, GlForm, GlFormInput, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlFormSelect, GlForm, GlFormInput, GlLink, GlSprintf } from '@gitlab/ui';
 import SearchProjectsListbox from 'ee/remote_development/components/create/search_projects_listbox.vue';
 import GetProjectDetailsQuery from 'ee/remote_development/components/common/get_project_details_query.vue';
 import WorkspaceCreate, { i18n } from 'ee/remote_development/pages/create.vue';
@@ -416,10 +416,6 @@ describe('remote_development/pages/create.vue', () => {
       createWrapper();
 
       await waitForPromises();
-    });
-
-    it('displays a beta badge', () => {
-      expect(wrapper.findComponent(GlBadge).props().variant).toBe('info');
     });
   });
 
