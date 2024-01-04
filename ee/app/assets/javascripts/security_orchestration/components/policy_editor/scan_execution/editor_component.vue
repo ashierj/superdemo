@@ -77,6 +77,7 @@ export default {
     'namespacePath',
     'namespaceType',
     'scanPolicyDocumentationPath',
+    'customCiToggleEnabled',
   ],
   props: {
     assignedPolicyProject: {
@@ -129,11 +130,14 @@ export default {
     originalName() {
       return this.existingPolicy?.name;
     },
+    showActionSection() {
+      return this.glFeatures.compliancePipelineInPolicies && this.customCiToggleEnabled;
+    },
   },
   methods: {
     addAction(action) {
       const payload =
-        this.glFeatures.compliancePipelineInPolicies && action === EXECUTE_YAML_ACTION
+        this.showActionSection && action === EXECUTE_YAML_ACTION
           ? { scanner: CUSTOM_ACTION_KEY }
           : { scanner: DEFAULT_SCANNER };
 
@@ -290,7 +294,7 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <template v-if="glFeatures.compliancePipelineInPolicies">
+        <template v-if="showActionSection">
           <action-section
             v-for="(action, index) in policy.actions"
             :key="index"
