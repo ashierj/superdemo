@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# Service to synchronize JWT Service AccessToken issued by CustomersDot application
+# Service to synchronize JWT Service AccessToken issued by CustomersDot application and Cloud Connector services data
 module Ai
-  class SyncServiceAccessTokenService
+  class SyncCloudConnectorAccessService
     include ActiveModel::Validations
 
     validate :validate_license
@@ -10,15 +10,18 @@ module Ai
     def execute
       return error_response(errors.full_messages.join(", ")) unless valid?
 
-      response = client.get_service_token(license_key)
+      response = client.get_cloud_connector_access_data(license_key)
 
       return error_response(response[:errors].join(", ")) unless response[:success]
 
-      storage_response = ServiceAccessTokensStorageService.new(response[:token], response[:expires_at]).execute
+      token_storage_response = ServiceAccessTokensStorageService.new(response[:token], response[:expires_at]).execute
 
-      return error_response(storage_response[:message]) if storage_response.error?
+      access_data = { available_services: response[:available_services] }
+      access_data_storage_response = ::CloudConnector::AccessDataStorageService.new(access_data).execute
 
-      ServiceResponse.success
+      error_responses = [token_storage_response, access_data_storage_response].filter(&:error?)
+      error_message = error_responses.filter_map { |r| r[:message] }.join(", ")
+      error_responses.blank? ? ServiceResponse.success : error_response(error_message)
     end
 
     private

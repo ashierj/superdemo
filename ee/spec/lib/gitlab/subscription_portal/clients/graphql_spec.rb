@@ -834,7 +834,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
     end
   end
 
-  describe '#get_service_token' do
+  describe '#get_cloud_connector_access_data' do
     let_it_be(:license_key) { build(:gitlab_license, :cloud).export }
     let_it_be(:token) { 'stored-token' }
     let_it_be(:expires_at) { Date.current.iso8601 }
@@ -850,26 +850,39 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
       {
         variables: { licenseKey: license_key },
         query: <<~GQL
-          query ServiceToken($licenseKey: String!) {
-            serviceToken(licenseKey: $licenseKey) {
-              token
-              expiresAt
+            query cloudConnectorAccess($licenseKey: String!) {
+              cloudConnectorAccess(licenseKey: $licenseKey) {
+                serviceToken {
+                  token
+                  expiresAt
+                }
+                availableServices {
+                  name
+                  serviceStartTime
+                }
+              }
             }
-          }
         GQL
       }
     end
 
-    subject { client.get_service_token(license_key) }
+    subject { client.get_cloud_connector_access_data(license_key) }
 
     context 'when the request is successful' do
       it 'returns the data' do
         response = {
+          success: true,
           data: {
             'data' => {
-              'serviceToken' => {
-                'token' => token,
-                'expiresAt' => expires_at
+              'cloudConnectorAccess' => {
+                'serviceToken' => {
+                  'token' => token,
+                  'expiresAt' => expires_at
+                },
+                'availableServices' => [
+                  { "name" => "code_suggestions", "serviceStartTime" => "2024-02-15T00:00:00Z" },
+                  { "name" => "duo_chat", "serviceStartTime" => nil }
+                ]
               }
             }
           }
@@ -877,13 +890,17 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
 
         expect(client).to receive(:http_post).with('graphql', headers, params).and_return(response)
 
-        expect(subject).to eq(success: true, token: token, expires_at: expires_at)
+        expect(subject).to eq(success: true, token: token, expires_at: expires_at, available_services: [
+          { "name" => "code_suggestions", "serviceStartTime" => "2024-02-15T00:00:00Z" },
+          { "name" => "duo_chat", "serviceStartTime" => nil }
+        ])
       end
     end
 
     context 'when the request is unsuccessful' do
       it 'returns a failure response and logs the error' do
         response = {
+          success: true,
           data: {
             "data" => { "serviceToken" => nil },
             "errors" => [
@@ -910,6 +927,29 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
           "path" => ["serviceToken"]
         }
         expect(subject).to eq(success: false, errors: [error])
+      end
+    end
+
+    context 'when there is a network connectivity error' do
+      let(:error_message) {  "CONNECTIVITY_ERROR" }
+
+      it 'returns a failure response and logs the error' do
+        response = {
+          success: false,
+          data: {
+            errors: error_message
+          }
+        }
+
+        expect(client).to receive(:http_post).with('graphql', headers, params).and_return(response)
+
+        expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).with(
+          a_kind_of(Gitlab::SubscriptionPortal::Client::ResponseError),
+          query: params[:query],
+          response: response[:data]
+        )
+
+        expect(subject).to eq({ success: false, errors: error_message })
       end
     end
   end
