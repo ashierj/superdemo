@@ -38,6 +38,7 @@ class ApprovalProjectRule < ApplicationRecord
   scope :report_approver_without_scan_finding, -> { report_approver.where.not(report_type: [:scan_finding, :license_scanning]) }
   scope :for_all_branches, -> { where.missing(:protected_branches).where(applies_to_all_protected_branches: false) }
   scope :for_all_protected_branches, -> { where.missing(:protected_branches).where(applies_to_all_protected_branches: true) }
+  scope :for_project, ->(project_id) { where(project_id: project_id) }
 
   alias_method :code_owner, :code_owner?
 

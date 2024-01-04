@@ -65,6 +65,13 @@ module Security
         scan_result_policies&.select { |config| config[:enabled] }&.first(LIMIT)
       end
 
+      def applicable_scan_result_policies_for_project(project)
+        strong_memoize_with(:applicable_scan_result_policies_for_project, project) do
+          policy_scope_service = ::Security::SecurityOrchestrationPolicies::PolicyScopeService.new(project: project)
+          active_scan_result_policies.select { |policy| policy_scope_service.policy_applicable?(policy) }
+        end
+      end
+
       def scan_result_policies
         policy_by_type(:scan_result_policy)
       end

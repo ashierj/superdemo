@@ -15,6 +15,8 @@ module Security
     DELAY_INTERVAL = 30.seconds.to_i
 
     def handle_event(event)
+      return if ::Feature.enabled?(:add_policy_approvers_to_rules)
+
       project = Project.find_by_id(event.data[:project_id])
       return unless project
 
