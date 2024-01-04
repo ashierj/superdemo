@@ -8,7 +8,6 @@ import {
   GlFormInput,
   GlFormSelect,
   GlFormInputGroup,
-  GlBadge,
   GlSprintf,
   GlLink,
 } from '@gitlab/ui';
@@ -32,7 +31,6 @@ import {
 export const i18n = {
   title: s__('Workspaces|New workspace'),
   subtitle: s__('Workspaces|A workspace is a virtual sandbox environment for your code in GitLab.'),
-  betaBadge: __('Beta'),
   form: {
     devfileProject: s__('Workspaces|Select project'),
     agentId: s__('Workspaces|Select cluster agent'),
@@ -64,7 +62,6 @@ const clusterAgentsHelpPath = helpPagePath('user/clusters/agent/install/index.md
 export default {
   components: {
     GlAlert,
-    GlBadge,
     GlButton,
     GlForm,
     GlFormGroup,
@@ -200,7 +197,6 @@ export default {
         <h2 ref="pageTitle" class="page-title gl-font-size-h-display">
           {{ $options.i18n.title }}
         </h2>
-        <gl-badge class="gl-ml-3 gl-mt-2" variant="info">{{ $options.i18n.betaBadge }}</gl-badge>
       </div>
       <p>
         {{ $options.i18n.subtitle }}

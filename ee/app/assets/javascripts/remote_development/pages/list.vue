@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script>
-import { GlAlert, GlBadge, GlButton, GlLink, GlSkeletonLoader } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLink, GlSkeletonLoader } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
 import { s__, __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -14,7 +14,6 @@ import { populateWorkspacesWithProjectNames } from '../services/utils';
 
 export const i18n = {
   updateWorkspaceFailedMessage: s__('Workspaces|Failed to update workspace'),
-  betaBadge: __('Beta'),
   learnMoreHelpLink: __('Learn more'),
   heading: s__('Workspaces|Workspaces'),
   newWorkspaceButton: s__('Workspaces|New workspace'),
@@ -30,7 +29,6 @@ export default {
     GlAlert,
     GlButton,
     GlLink,
-    GlBadge,
     GlSkeletonLoader,
     WorkspaceEmptyState,
     WorkspacesListPagination,
@@ -138,7 +136,6 @@ export default {
     <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between">
       <div class="gl-display-flex gl-align-items-center">
         <h2>{{ $options.i18n.heading }}</h2>
-        <gl-badge class="gl-mt-4 gl-ml-3" variant="info">{{ $options.i18n.betaBadge }}</gl-badge>
       </div>
       <div
         class="gl-display-flex gl-align-items-center gl-flex-direction-column gl-md-flex-direction-row"

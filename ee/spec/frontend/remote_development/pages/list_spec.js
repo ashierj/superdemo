@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
-import { GlAlert, GlBadge, GlButton, GlLink, GlSkeletonLoader } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLink, GlSkeletonLoader } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -218,10 +218,6 @@ describe('remote_development/pages/list.vue', () => {
     it('displays a link button that navigates to the create workspace page', () => {
       expect(findNewWorkspaceButton().attributes().to).toBe(ROUTES.new);
       expect(findNewWorkspaceButton().text()).toMatch(/New workspace/);
-    });
-
-    it('displays a beta badge', () => {
-      expect(wrapper.findComponent(GlBadge).props().variant).toBe('info');
     });
 
     it('displays a link that navigates to the workspaces help page', () => {
