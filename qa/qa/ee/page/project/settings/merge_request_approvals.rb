@@ -12,7 +12,7 @@ module QA
               super
 
               base.class_eval do
-                view 'ee/app/assets/javascripts/approvals/components/mr_edit/rule_input.vue' do
+                view 'ee/app/assets/javascripts/approvals/components/rules/rule_input.vue' do
                   element :approvals_number_field
                 end
               end
