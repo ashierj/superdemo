@@ -9,8 +9,17 @@ module QA
     describe 'Code Suggestions in Web IDE' do
       let(:project) { create(:project, :with_readme, name: 'webide-code-suggestions-project') }
       let(:file_name) { 'new_file.rb' }
-      let(:prompt_data) { 'def reverse_string' }
-      let(:prompt_regex) { /\.reverse/ }
+
+      shared_examples 'code suggestions in the Web IDE' do |testcase|
+        it 'returns a suggestion which can be accepted', testcase: testcase do
+          Page::Project::WebIDE::VSCode.perform do |ide|
+            ide.add_prompt_into_a_file(file_name, prompt_data)
+            ide.verify_prompt_appears_and_accept(prompt_regex)
+
+            expect(ide.validate_prompt(prompt_regex)).to eq true
+          end
+        end
+      end
 
       before do
         Flow::Login.sign_in
@@ -24,14 +33,21 @@ module QA
         Page::Project::WebIDE::VSCode.perform(&:wait_for_ide_to_load)
       end
 
-      it 'adds text into a file and verifies code suggestions appear',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/425756' do
-        Page::Project::WebIDE::VSCode.perform do |ide|
-          ide.add_prompt_into_a_file(file_name, prompt_data)
-          ide.verify_prompt_appears_and_accept(prompt_regex)
+      context 'when requesting code generation' do
+        let(:prompt_data) { 'def reverse_string' }
+        let(:prompt_regex) { /\.reverse/ }
 
-          expect(ide.validate_prompt(prompt_regex)).to eq true
-        end
+        it_behaves_like 'code suggestions in the Web IDE', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/425756'
+      end
+
+      context 'when requesting code completion' do
+        let(:prompt_data) { "def set_name(whitespace_name)\n    this.name = whitespace_name." }
+
+        # We check that any character is suggested after the prompt,
+        # except a new line, as code completions appear on the same line
+        let(:prompt_regex) { /whitespace_name\.[^\n]/ }
+
+        it_behaves_like 'code suggestions in the Web IDE', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/437111'
       end
     end
   end
