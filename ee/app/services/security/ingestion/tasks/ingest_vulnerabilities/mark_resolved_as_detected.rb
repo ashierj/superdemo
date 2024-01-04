@@ -8,6 +8,8 @@ module Security
           include Gitlab::Utils::StrongMemoize
 
           def execute
+            return if redetected_vulnerability_ids.blank?
+
             mark_as_resolved
 
             finding_maps
@@ -15,7 +17,6 @@ module Security
 
           private
 
-          # rubocop:disable CodeReuse/ActiveRecord
           def mark_as_resolved
             ApplicationRecord.transaction do
               create_state_transitions
@@ -27,29 +28,30 @@ module Security
 
           def redetected_vulnerability_ids
             strong_memoize(:redetected_vulnerability_ids) do
-              ::Vulnerability.resolved.where(id: finding_maps.map(&:vulnerability_id)).pluck(:id) # rubocop:disable Database/AvoidUsingPluckWithoutLimit -- `finding_maps` collection can have max 100 objects
+              ::Vulnerability.resolved.id_in(vulnerability_ids).pluck_primary_key # rubocop:disable Database/AvoidUsingPluckWithoutLimit -- `finding_maps` collection can have max 100 objects
             end
           end
 
           def update_vulnerability_records
             ::Vulnerability.resolved
-                           .where(id: redetected_vulnerability_ids)
+                           .id_in(redetected_vulnerability_ids)
                            .update_all(state: :detected)
           end
-          # rubocop:enable CodeReuse/ActiveRecord
 
           def create_state_transitions
-            redetected_vulnerability_ids.each do |vulnerability_id|
-              create_state_transition_for(vulnerability_id)
-            end
+            ::Vulnerabilities::StateTransition.bulk_insert!(state_transitions)
           end
 
-          def create_state_transition_for(vulnerability_id)
-            ::Vulnerabilities::StateTransition.create!(
-              vulnerability_id: vulnerability_id,
-              from_state: :resolved,
-              to_state: :detected
-            )
+          def state_transitions
+            redetected_vulnerability_ids.map do |vulnerability_id|
+              ::Vulnerabilities::StateTransition.new(
+                vulnerability_id: vulnerability_id,
+                from_state: :resolved,
+                to_state: :detected,
+                created_at: Time.now.utc,
+                updated_at: Time.now.utc
+              )
+            end
           end
 
           def set_transitioned_to_detected
@@ -58,6 +60,10 @@ module Security
 
           def updated_finding_maps
             finding_maps.select { |finding_map| redetected_vulnerability_ids.include?(finding_map.vulnerability_id) }
+          end
+
+          def vulnerability_ids
+            finding_maps.map(&:vulnerability_id)
           end
         end
       end
