@@ -117,7 +117,8 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           max_active_scan_execution_policies_reached: 'false',
           max_active_scan_result_policies_reached: 'false',
           max_scan_result_policies_allowed: 5,
-          max_scan_execution_policies_allowed: 5
+          max_scan_execution_policies_allowed: 5,
+          custom_ci_toggle_enabled: 'false'
         }
       end
 
@@ -171,12 +172,40 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
         end
       end
 
-      context 'when toggle_security_policies_policy_scope is enabled' do
-        before_all do
-          project.group.namespace_settings.update!(toggle_security_policies_policy_scope: true)
+      describe 'security_policies_policy_scope_toggle_enabled' do
+        it { is_expected.to match(base_data.merge(security_policies_policy_scope_toggle_enabled: 'false')) }
+
+        context 'when toggle_security_policies_policy_scope is enabled' do
+          before_all do
+            project.group.namespace_settings.update!(toggle_security_policies_policy_scope: true)
+          end
+
+          it { is_expected.to match(base_data.merge(security_policies_policy_scope_toggle_enabled: 'true')) }
         end
 
-        it { is_expected.to match(base_data.merge(security_policies_policy_scope_toggle_enabled: 'true')) }
+        context "when project's group is nil" do
+          let_it_be_with_reload(:project) { create(:project) }
+
+          it { is_expected.to match(base_data.merge(security_policies_policy_scope_toggle_enabled: 'false')) }
+        end
+      end
+
+      describe 'custom_ci_toggle_enabled' do
+        it { is_expected.to match(base_data.merge(custom_ci_toggle_enabled: 'false')) }
+
+        context 'when toggle_security_policy_custom_ci is enabled for the group' do
+          before_all do
+            project.group.namespace_settings.update!(toggle_security_policy_custom_ci: true)
+          end
+
+          it { is_expected.to match(base_data.merge(custom_ci_toggle_enabled: 'true')) }
+        end
+
+        context "when project's group is nil" do
+          let_it_be_with_reload(:project) { create(:project) }
+
+          it { is_expected.to match(base_data.merge(custom_ci_toggle_enabled: 'false')) }
+        end
       end
     end
 
@@ -210,7 +239,8 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           max_active_scan_execution_policies_reached: 'false',
           max_active_scan_result_policies_reached: 'false',
           max_scan_result_policies_allowed: 5,
-          max_scan_execution_policies_allowed: 5
+          max_scan_execution_policies_allowed: 5,
+          custom_ci_toggle_enabled: 'false'
         }
       end
 
@@ -277,6 +307,14 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
 
         it { is_expected.to match(base_data.merge(security_policies_policy_scope_toggle_enabled: 'true')) }
       end
+
+      context 'when toggle_security_policy_custom_ci is enabled' do
+        before_all do
+          namespace.namespace_settings.update!(toggle_security_policy_custom_ci: true)
+        end
+
+        it { is_expected.to match(base_data.merge(custom_ci_toggle_enabled: 'true')) }
+      end
     end
   end
 
@@ -314,7 +352,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
     end
   end
 
-  describe '#max_active_scan_execution_policies_reached' do
+  describe '#max_active_scan_execution_policies_reached?' do
     let_it_be(:policy_management_project) { create(:project, :repository) }
 
     let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [build(:scan_execution_policy)]) }
@@ -327,7 +365,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
         )
       end
 
-      subject { helper.max_active_scan_execution_policies_reached(project) }
+      subject { helper.max_active_scan_execution_policies_reached?(project) }
 
       it_behaves_like '#max_active_scan_execution_policies_reached for source'
     end
@@ -340,7 +378,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
         )
       end
 
-      subject { helper.max_active_scan_execution_policies_reached(namespace) }
+      subject { helper.max_active_scan_execution_policies_reached?(namespace) }
 
       it_behaves_like '#max_active_scan_execution_policies_reached for source'
     end
@@ -364,7 +402,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
     end
   end
 
-  describe '#max_active_scan_result_policies_reached' do
+  describe '#max_active_scan_result_policies_reached?' do
     let_it_be(:policy_management_project) { create(:project, :repository) }
 
     let(:policy_yaml) { build(:orchestration_policy_yaml, scan_result_policy: [build(:scan_result_policy)]) }
@@ -377,7 +415,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
         )
       end
 
-      subject { helper.max_active_scan_result_policies_reached(project) }
+      subject { helper.max_active_scan_result_policies_reached?(project) }
 
       it_behaves_like '#max_active_scan_result_policies_reached for source'
     end
@@ -390,7 +428,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
         )
       end
 
-      subject { helper.max_active_scan_result_policies_reached(namespace) }
+      subject { helper.max_active_scan_result_policies_reached?(namespace) }
 
       it_behaves_like '#max_active_scan_result_policies_reached for source'
     end

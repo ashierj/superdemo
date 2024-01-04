@@ -27,4 +27,5 @@ export const DEFAULT_PROVIDE = {
   parsedSoftwareLicenses: [],
   timezones: [],
   securityPoliciesPolicyScopeToggleEnabled: true,
+  customCiToggleEnabled: true,
 };

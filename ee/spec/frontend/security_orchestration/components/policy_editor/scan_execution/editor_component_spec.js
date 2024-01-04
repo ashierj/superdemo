@@ -83,6 +83,7 @@ describe('ScanExecutionPolicyEditor', () => {
         namespacePath: defaultProjectPath,
         namespaceType: NAMESPACE_TYPES.PROJECT,
         scanPolicyDocumentationPath,
+        customCiToggleEnabled: true,
         ...provide,
       },
     });
@@ -359,6 +360,7 @@ enabled: true`;
         factory({
           provide: {
             glFeatures: { compliancePipelineInPolicies: flagEnabled },
+            customCiToggleEnabled: flagEnabled,
           },
         });
 
@@ -372,6 +374,7 @@ enabled: true`;
       factory({
         provide: {
           glFeatures: { compliancePipelineInPolicies: true },
+          customCiToggleEnabled: true,
         },
       });
 

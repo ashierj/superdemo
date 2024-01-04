@@ -44,11 +44,12 @@ module EE::SecurityOrchestrationHelper
       global_group_approvers_enabled: Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled.to_json,
       root_namespace_path: container.root_ancestor&.full_path,
       timezones: timezone_data(format: :full).to_json,
-      max_active_scan_execution_policies_reached: max_active_scan_execution_policies_reached(container).to_s,
-      max_active_scan_result_policies_reached: max_active_scan_result_policies_reached(container).to_s,
+      max_active_scan_execution_policies_reached: max_active_scan_execution_policies_reached?(container).to_s,
+      max_active_scan_result_policies_reached: max_active_scan_result_policies_reached?(container).to_s,
       max_scan_result_policies_allowed: Security::ScanResultPolicy::LIMIT,
       max_scan_execution_policies_allowed: Security::ScanExecutionPolicy::POLICY_LIMIT,
-      security_policies_policy_scope_toggle_enabled: security_policies_policy_scope_toggle_enabled(container).to_s
+      security_policies_policy_scope_toggle_enabled: security_policies_policy_scope_toggle_enabled?(container).to_s,
+      custom_ci_toggle_enabled: custom_ci_toggle_enabled?(container).to_s
     }
 
     if container.is_a?(::Project)
@@ -60,7 +61,7 @@ module EE::SecurityOrchestrationHelper
     end
   end
 
-  def security_policies_policy_scope_toggle_enabled(container)
+  def security_policies_policy_scope_toggle_enabled?(container)
     if container.is_a?(::Project)
       return false unless container.group
 
@@ -70,11 +71,21 @@ module EE::SecurityOrchestrationHelper
     end
   end
 
+  def custom_ci_toggle_enabled?(container)
+    if container.is_a?(::Project)
+      return false unless container.group
+
+      container.group.namespace_settings.toggle_security_policy_custom_ci?
+    else
+      container.namespace_settings.toggle_security_policy_custom_ci?
+    end
+  end
+
   def security_policies_path(container)
     container.is_a?(::Project) ? project_security_policies_path(container) : group_security_policies_path(container)
   end
 
-  def max_active_scan_execution_policies_reached(container)
+  def max_active_scan_execution_policies_reached?(container)
     active_scan_execution_policy_count(container) >= Security::ScanExecutionPolicy::POLICY_LIMIT
   end
 
@@ -85,7 +96,7 @@ module EE::SecurityOrchestrationHelper
       &.length || 0
   end
 
-  def max_active_scan_result_policies_reached(container)
+  def max_active_scan_result_policies_reached?(container)
     active_scan_result_policy_count(container) >= Security::ScanResultPolicy::LIMIT
   end
 
