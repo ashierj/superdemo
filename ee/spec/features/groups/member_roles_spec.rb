@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Member Roles', :js, feature_category: :permissions do
+RSpec.describe 'Member Roles', :saas, :js, feature_category: :permissions do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
