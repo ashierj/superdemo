@@ -83,13 +83,6 @@ module EE
       end
     end
 
-    override :post_create_hook
-    def post_create_hook
-      super
-
-      execute_hooks_for(:create)
-    end
-
     def post_destroy_hook
       super
 

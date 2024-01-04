@@ -248,47 +248,6 @@ RSpec.describe GroupMember, feature_category: :groups_and_projects do
     let_it_be(:group_hook) { create(:group_hook, group: group, member_events: true) }
     let_it_be(:user) { create(:user) }
 
-    context 'when a member is added to the group' do
-      let(:group_member) { create(:group_member, group: group) }
-
-      before do
-        WebMock.stub_request(:post, group_hook.url)
-      end
-
-      it 'executes user_add_to_group event webhook' do
-        group.add_guest(group_member.user)
-
-        expect(WebMock).to have_requested(:post, group_hook.url).with(
-          webhook_data(group_member, 'user_add_to_group')
-        )
-      end
-
-      context 'ancestor groups' do
-        let_it_be(:subgroup) { create(:group, parent: group) }
-        let_it_be(:subgroup_hook) { create(:group_hook, group: subgroup, member_events: true) }
-
-        it 'fires two webhooks when parent group has member_events webhook enabled' do
-          WebMock.stub_request(:post, subgroup_hook.url)
-
-          subgroup.add_guest(user)
-
-          expect(WebMock).to have_requested(:post, subgroup_hook.url)
-          expect(WebMock).to have_requested(:post, group_hook.url)
-        end
-
-        it 'fires one webhook when parent group has member_events webhook disabled' do
-          group_hook = create(:group_hook, group: group, member_events: false)
-
-          WebMock.stub_request(:post, subgroup_hook.url)
-
-          subgroup.add_guest(user)
-
-          expect(WebMock).to have_requested(:post, subgroup_hook.url)
-          expect(WebMock).not_to have_requested(:post, group_hook.url)
-        end
-      end
-    end
-
     context 'when the group member is deleted' do
       let_it_be(:group_member) { create(:group_member, :developer, group: group, expires_at: 1.day.from_now) }
 

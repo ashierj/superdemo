@@ -249,6 +249,13 @@ module EE
       execute_hooks_for(:update) if saved_change_to_access_level? || saved_change_to_expires_at?
     end
 
+    override :post_create_hook
+    def post_create_hook
+      super
+
+      execute_hooks_for(:create)
+    end
+
     def execute_hooks_for(event)
       return unless source.is_a?(Group)
       return unless source.licensed_feature_available?(:group_webhooks)
