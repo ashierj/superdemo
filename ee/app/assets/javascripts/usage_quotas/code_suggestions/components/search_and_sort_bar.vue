@@ -1,12 +1,16 @@
 <script>
+import { __ } from '~/locale';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import {
   FILTERED_SEARCH_TERM,
   TOKEN_TITLE_PROJECT,
   TOKEN_TYPE_PROJECT,
   OPERATORS_IS,
+  TOKEN_TITLE_GROUP_INVITE,
+  TOKEN_TYPE_GROUP_INVITE,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
 import ProjectToken from 'ee/usage_quotas/code_suggestions/tokens/project_token.vue';
 
 export default {
@@ -38,6 +42,18 @@ export default {
           type: TOKEN_TYPE_PROJECT,
           unique: true,
         },
+        {
+          options: [
+            { value: 'true', title: __('Yes') },
+            { value: 'false', title: __('No') },
+          ],
+          icon: 'user',
+          operators: OPERATORS_IS,
+          title: TOKEN_TITLE_GROUP_INVITE,
+          token: BaseToken,
+          type: TOKEN_TYPE_GROUP_INVITE,
+          unique: true,
+        },
       ];
     },
   },
@@ -52,6 +68,8 @@ export default {
         const { type, value } = filter || {};
         if (!value?.data) return filterParams;
         switch (type) {
+          case TOKEN_TYPE_GROUP_INVITE:
+            return { ...filterParams, filterByGroupInvite: value.data };
           case TOKEN_TYPE_PROJECT:
             return { ...filterParams, filterByProjectId: value.data };
           case FILTERED_SEARCH_TERM:

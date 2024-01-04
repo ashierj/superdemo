@@ -75,9 +75,7 @@ export default {
       if (this.isLoading || !this.pageInfo) {
         return false;
       }
-
       const { hasNextPage, hasPreviousPage } = this.pageInfo;
-
       return hasNextPage || hasPreviousPage;
     },
     emptyText() {
