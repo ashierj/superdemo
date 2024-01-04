@@ -4,7 +4,7 @@ import Step from './step.vue';
 
 export default {
   component: Step,
-  title: 'ee/vue_shared/purchase_flow/Step',
+  title: 'ee/vue_shared/purchase_flow/step',
 };
 
 const Template = (_, { argTypes }) => ({
