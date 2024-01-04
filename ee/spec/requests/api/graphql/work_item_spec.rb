@@ -1070,6 +1070,201 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
           end
         end
       end
+
+      describe 'dates rolledup widget' do
+        let_it_be(:start_date) { 5.days.ago }
+        let_it_be(:due_date) { 5.days.from_now }
+
+        context 'with fixed dates' do
+          let_it_be(:epic) { create(:work_item, :epic, namespace: group) }
+
+          let(:global_id) { epic.to_gid.to_s }
+
+          let(:work_item_fields) do
+            <<~GRAPHQL
+              id
+              workItemType {
+                id
+                name
+              }
+              widgets {
+                type
+                ... on WorkItemWidgetRolledupDates {
+                  dueDate
+                  dueDateIsFixed
+                  dueDateSourcingMilestone { id }
+                  dueDateSourcingWorkItem { id }
+                  startDate
+                  startDateIsFixed
+                  startDateSourcingMilestone { id }
+                  startDateSourcingWorkItem { id }
+                }
+              }
+            GRAPHQL
+          end
+
+          before do
+            create(
+              :work_items_dates_source,
+              work_item: epic,
+              due_date: due_date,
+              due_date_sourcing_milestone: nil,
+              start_date: start_date,
+              start_date_sourcing_milestone: nil)
+          end
+
+          it 'returns widget information' do
+            post_graphql(query, current_user: current_user)
+
+            expect(work_item_data).to include(
+              'id' => epic.to_global_id.to_s,
+              'widgets' => include(
+                hash_including(
+                  'type' => 'ROLLEDUP_DATES',
+                  'dueDate' => due_date.to_date.to_s,
+                  'dueDateIsFixed' => false,
+                  'dueDateSourcingMilestone' => nil,
+                  'dueDateSourcingWorkItem' => nil,
+                  'startDate' => start_date.to_date.to_s,
+                  'startDateIsFixed' => false,
+                  'startDateSourcingMilestone' => nil,
+                  'startDateSourcingWorkItem' => nil
+                )
+              )
+            )
+          end
+        end
+
+        context 'with dates from child' do
+          let_it_be(:epic) { create(:work_item, :epic, namespace: group) }
+          let_it_be(:child_work_item) { create(:work_item, :issue, namespace: group) }
+
+          let(:global_id) { epic.to_gid.to_s }
+
+          let(:work_item_fields) do
+            <<~GRAPHQL
+              id
+              workItemType {
+                id
+                name
+              }
+              widgets {
+                type
+                ... on WorkItemWidgetRolledupDates {
+                  dueDate
+                  dueDateIsFixed
+                  dueDateSourcingMilestone { id }
+                  dueDateSourcingWorkItem { id }
+                  startDate
+                  startDateIsFixed
+                  startDateSourcingMilestone { id }
+                  startDateSourcingWorkItem { id }
+                }
+              }
+            GRAPHQL
+          end
+
+          before do
+            create(
+              :work_items_dates_source,
+              work_item: epic,
+              due_date: due_date,
+              due_date_sourcing_work_item: child_work_item,
+              start_date: start_date,
+              start_date_sourcing_work_item: child_work_item)
+          end
+
+          it 'returns widget information' do
+            post_graphql(query, current_user: current_user)
+
+            expect(work_item_data).to include(
+              'id' => epic.to_global_id.to_s,
+              'widgets' => include(
+                hash_including(
+                  'type' => 'ROLLEDUP_DATES',
+                  'dueDate' => due_date.to_date.to_s,
+                  'dueDateIsFixed' => false,
+                  'dueDateSourcingMilestone' => nil,
+                  'dueDateSourcingWorkItem' => {
+                    'id' => child_work_item.to_global_id.to_s
+                  },
+                  'startDate' => start_date.to_date.to_s,
+                  'startDateIsFixed' => false,
+                  'startDateSourcingMilestone' => nil,
+                  'startDateSourcingWorkItem' => {
+                    'id' => child_work_item.to_global_id.to_s
+                  }
+                )
+              )
+            )
+          end
+        end
+
+        context 'with dates from milestone' do
+          let_it_be(:milestone) { create(:milestone, project: project, start_date: start_date, due_date: due_date) }
+          let_it_be(:epic) { create(:work_item, :epic, namespace: group) }
+
+          let(:global_id) { epic.to_gid.to_s }
+
+          let(:work_item_fields) do
+            <<~GRAPHQL
+              id
+              workItemType {
+                id
+                name
+              }
+              widgets {
+                type
+                ... on WorkItemWidgetRolledupDates {
+                  dueDate
+                  dueDateIsFixed
+                  dueDateSourcingMilestone { id }
+                  dueDateSourcingWorkItem { id }
+                  startDate
+                  startDateIsFixed
+                  startDateSourcingMilestone { id }
+                  startDateSourcingWorkItem { id }
+                }
+              }
+            GRAPHQL
+          end
+
+          before do
+            create(
+              :work_items_dates_source,
+              work_item: epic,
+              due_date: due_date,
+              due_date_sourcing_milestone: milestone,
+              start_date: start_date,
+              start_date_sourcing_milestone: milestone)
+          end
+
+          it 'returns widget information' do
+            post_graphql(query, current_user: current_user)
+
+            expect(work_item_data).to include(
+              'id' => epic.to_global_id.to_s,
+              'widgets' => include(
+                hash_including(
+                  'type' => 'ROLLEDUP_DATES',
+                  'dueDate' => due_date.to_date.to_s,
+                  'dueDateIsFixed' => false,
+                  'dueDateSourcingMilestone' => {
+                    'id' => milestone.to_global_id.to_s
+                  },
+                  'dueDateSourcingWorkItem' => nil,
+                  'startDate' => start_date.to_date.to_s,
+                  'startDateIsFixed' => false,
+                  'startDateSourcingMilestone' => {
+                    'id' => milestone.to_global_id.to_s
+                  },
+                  'startDateSourcingWorkItem' => nil
+                )
+              )
+            )
+          end
+        end
+      end
     end
 
     context 'when querying work item type information' do
