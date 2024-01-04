@@ -254,7 +254,7 @@ module EE
 
       override :enabled_git_access_protocol_values
       def enabled_git_access_protocol_values
-        return super unless License.feature_available?(:ssh_certificates)
+        return super unless License.feature_available?(:ssh_certificates) # rubocop:disable Gitlab/LicenseAvailableUsage -- Does not have cyclical dependency as it's not used in Registration features
 
         super + ['ssh_certificates']
       end
@@ -333,7 +333,7 @@ module EE
     def elasticsearch_indexing
       return false unless elasticsearch_indexing_column_exists?
 
-      super && License.feature_available?(:elastic_search)
+      super && License.feature_available?(:elastic_search) # rubocop:disable Gitlab/LicenseAvailableUsage -- Does not have cyclical dependency
     end
     alias_method :elasticsearch_indexing?, :elasticsearch_indexing
 
@@ -347,7 +347,7 @@ module EE
     def elasticsearch_search
       return false unless elasticsearch_search_column_exists?
 
-      License.feature_available?(:elastic_search) && super
+      super && License.feature_available?(:elastic_search) # rubocop:disable Gitlab/LicenseAvailableUsage -- Does not have cyclical dependency
     end
     alias_method :elasticsearch_search?, :elasticsearch_search
 
@@ -417,7 +417,7 @@ module EE
     end
 
     def custom_project_templates_enabled?
-      License.feature_available?(:custom_project_templates)
+      License.feature_available?(:custom_project_templates) # rubocop:disable Gitlab/LicenseAvailableUsage -- Does not have cyclical dependency
     end
 
     def custom_project_templates_group_id
@@ -458,7 +458,7 @@ module EE
     override :personal_access_tokens_disabled?
     def personal_access_tokens_disabled?
       ::Gitlab::CurrentSettings.disable_personal_access_tokens &&
-        License.feature_available?(:disable_personal_access_tokens)
+        License.feature_available?(:disable_personal_access_tokens) # rubocop:disable Gitlab/LicenseAvailableUsage -- Does not have cyclical dependency as it's not used in Registration features
     end
 
     def disable_feed_token
@@ -502,7 +502,7 @@ module EE
     end
 
     def update_personal_access_tokens_lifetime
-      return unless max_personal_access_token_lifetime.present? && License.feature_available?(:personal_access_token_expiration_policy)
+      return unless max_personal_access_token_lifetime.present? && License.feature_available?(:personal_access_token_expiration_policy) # rubocop:disable Gitlab/LicenseAvailableUsage -- Does not have cyclical dependency as it's not used for Registration features
 
       ::PersonalAccessTokens::Instance::UpdateLifetimeService.new.execute
     end
