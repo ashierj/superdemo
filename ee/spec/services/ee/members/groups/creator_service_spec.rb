@@ -87,7 +87,8 @@ RSpec.describe Members::Groups::CreatorService, feature_category: :groups_and_pr
           end
 
           before do
-            member_role.update!(base_access_level: current_role)
+            member_role.base_access_level = current_role
+            member_role.save!(validate: false)
             member.update!(access_level: current_role, member_role: member_role)
           end
 

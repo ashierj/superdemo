@@ -8,7 +8,7 @@ RSpec.describe MemberRoles::UpdateService, feature_category: :system_access do
   let_it_be(:member_role) { create(:member_role, :guest, namespace: group, read_vulnerability: true) }
 
   describe '#execute' do
-    let(:params) { { name: 'new name', read_vulnerability: false } }
+    let(:params) { { name: 'new name', read_vulnerability: false, base_access_level: Gitlab::Access::DEVELOPER } }
 
     subject(:result) { described_class.new(user, params).execute(member_role) }
 
@@ -36,12 +36,14 @@ RSpec.describe MemberRoles::UpdateService, feature_category: :system_access do
           expect(result).to be_success
         end
 
-        it 'updates the provided (permitted) attribute' do
-          expect { result }.to change { member_role.reload.name }.to('new name')
+        it 'updates the provided (permitted) attributes' do
+          expect { result }
+            .to change { member_role.reload.name }.to('new name')
+            .and change { member_role.reload.read_vulnerability }.to(false)
         end
 
-        it 'does not update unpermitted attribute' do
-          expect { result }.not_to change { member_role.reload.read_vulnerability }
+        it 'does not update unpermitted attributes' do
+          expect { result }.not_to change { member_role.reload.base_access_level }
         end
       end
 

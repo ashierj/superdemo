@@ -25,7 +25,7 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
       it { is_expected.not_to validate_presence_of(:namespace) }
     end
 
-    context 'for attributes_locked_after_member_associated' do
+    context 'for base_access_level_locked' do
       before do
         member_role.base_access_level = ProjectMember::GUEST
         member_role.read_vulnerability = true
@@ -36,32 +36,23 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
         member_role.description = 'new description'
       end
 
-      context 'when assigned to member' do
-        before do
-          member_role.members << create(
-            :project_member, :guest, project: create(:project, group: member_role.namespace)
-          )
-        end
+      it 'cannot be saved when base_access_level has changes' do
+        member_role.base_access_level = ProjectMember::DEVELOPER
 
-        it 'cannot be changed when abilities change' do
-          expect(member_role).not_to be_valid
-          expect(member_role.errors.messages[:base]).to include(s_(
-            "MemberRole|cannot be changed because it is already assigned to a user. " \
-            "Please create a new Member Role instead"
-          ))
-        end
-
-        it 'can be changed when only name and description change' do
-          member_role.read_vulnerability = true
-
-          expect(member_role).to be_valid
-        end
+        expect(member_role).not_to be_valid
+        expect(member_role.errors.messages[:base_access_level]).to include(
+          s_('MemberRole|cannot be changed. Please create a new Member Role instead.')
+        )
       end
 
-      context 'when not assigned to member' do
-        it 'can be changed' do
-          expect(member_role).to be_valid
-        end
+      it 'can be changed when only name, description and permissions change' do
+        expect(member_role).to be_valid
+      end
+    end
+
+    context 'when not assigned to member' do
+      it 'can be changed' do
+        expect(member_role).to be_valid
       end
     end
 

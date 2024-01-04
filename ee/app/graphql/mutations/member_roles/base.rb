@@ -16,6 +16,10 @@ module Mutations
         GraphQL::Types::String,
         required: false,
         description: 'Name of the member role.'
+      argument :permissions,
+        [Types::MemberRoles::PermissionsEnum],
+        required: false,
+        description: 'List of all customizable permissions.'
     end
   end
 end

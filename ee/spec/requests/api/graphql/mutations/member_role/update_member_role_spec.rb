@@ -10,7 +10,9 @@ RSpec.describe 'updating member role', feature_category: :system_access do
   let_it_be(:current_user) { create(:user) }
 
   let(:name) { 'new name' }
-  let(:input) { { 'name' => name } }
+  let(:permissions) { MemberRole.all_customizable_permissions.keys.map(&:to_s).map(&:upcase) }
+
+  let(:input) { { 'name' => name, 'permissions' => permissions } }
   let(:mutation) { graphql_mutation(:memberRoleUpdate, input.merge('id' => member_role.to_global_id.to_s), fields) }
   let(:fields) do
     <<~FIELDS
@@ -19,6 +21,7 @@ RSpec.describe 'updating member role', feature_category: :system_access do
         id
         name
         description
+        enabledPermissions
       }
     FIELDS
   end
@@ -62,12 +65,15 @@ RSpec.describe 'updating member role', feature_category: :system_access do
           post_graphql_mutation(mutation, current_user: current_user)
 
           expect(graphql_errors).to be_nil
+
           expect(update_member_role['memberRole']).to include('name' => 'new name')
+          expect(update_member_role['memberRole']['enabledPermissions']).to match_array(permissions)
         end
 
         it 'updates the member role' do
           expect { post_graphql_mutation(mutation, current_user: current_user) }
             .to change { member_role.reload.name }.to('new name')
+            .and change { member_role.read_vulnerability }.to(true)
         end
       end
 

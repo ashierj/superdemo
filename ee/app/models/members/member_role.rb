@@ -25,7 +25,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   validate :belongs_to_top_level_namespace
   validate :max_count_per_group_hierarchy, on: :create
   validate :validate_namespace_locked, on: :update
-  validate :attributes_locked_after_member_associated, on: :update
+  validate :base_access_level_locked, on: :update
   validate :validate_requirements
 
   validates_associated :members
@@ -129,16 +129,12 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     end
   end
 
-  def attributes_locked_after_member_associated
-    return unless members.present?
-    return if changed_attributes.except('name', 'description').empty?
+  def base_access_level_locked
+    return unless changed_attributes.include?('base_access_level')
 
     errors.add(
-      :base,
-      s_(
-        "MemberRole|cannot be changed because it is already assigned to a user. " \
-        "Please create a new Member Role instead"
-      )
+      :base_access_level,
+      s_('MemberRole|cannot be changed. Please create a new Member Role instead.')
     )
   end
 
