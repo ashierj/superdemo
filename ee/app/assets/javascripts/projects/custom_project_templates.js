@@ -1,6 +1,7 @@
 import axios from '~/lib/utils/axios_utils';
 import eventHub from '~/projects/new/event_hub';
 import projectNew from '~/projects/project_new';
+import { sanitize } from '~/lib/dompurify';
 
 const INSTANCE_TAB_CONTENT_SELECTOR = '.js-custom-instance-project-templates-tab-content';
 const GROUP_TAB_CONTENT_SELECTOR = '.js-custom-group-project-templates-tab-content';
@@ -136,8 +137,9 @@ export default () => {
 
   const fetchHtmlForTabContent = async (content) => {
     const response = await axios.get(content.dataset.initialTemplates);
-    // eslint-disable-next-line no-param-reassign,no-unsanitized/property
-    content.innerHTML = response.data;
+    const secureContent = sanitize(response.data);
+    // eslint-disable-next-line no-param-reassign
+    content.innerHTML = secureContent;
     bindEvents();
   };
 
