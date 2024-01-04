@@ -116,18 +116,25 @@ module ClickHouse
         # to `.last` in `.each_batch` (see https://gitlab.com/gitlab-org/gitlab/-/blob/a38c93c792cc0d2536018ed464862076acb8d3d7/lib/gitlab/pagination/keyset/iterator.rb#L27)
         # doesn't mess it up and cause duplicates (see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/138066)
         build_ids = events_batch.to_a.pluck(:build_id) # rubocop: disable CodeReuse/ActiveRecord
+        projects = Ci::ProjectMirror.table_name
+        namespaces = Ci::NamespaceMirror.table_name
+        # rubocop: disable CodeReuse/ActiveRecord -- these joins are only used in this ClickHouse export
         Ci::Build.id_in(build_ids)
           .left_outer_joins(:runner, :runner_manager)
+          .joins("LEFT OUTER JOIN #{projects} ON #{projects}.project_id = #{Ci::Build.table_name}.project_id")
+          .joins("LEFT OUTER JOIN #{namespaces} ON #{namespaces}.namespace_id = #{projects}.namespace_id")
           .select(:finished_at, *finished_build_projections)
           .each { |build| records_yielder << build }
+        # rubocop: enable CodeReuse/ActiveRecord
 
         @processed_record_ids += build_ids
       end
 
       def finished_build_projections
         [
-          *BUILD_FIELD_NAMES,
+          *BUILD_FIELD_NAMES.map { |n| "#{::Ci::Build.table_name}.#{n}" },
           *BUILD_EPOCH_FIELD_NAMES.map { |n| "EXTRACT(epoch FROM #{::Ci::Build.table_name}.#{n}) AS casted_#{n}" },
+          "#{::Ci::NamespaceMirror.table_name}.traversal_ids[1] AS root_namespace_id",
           "#{::Ci::Runner.table_name}.run_untagged AS runner_run_untagged",
           "#{::Ci::Runner.table_name}.runner_type AS runner_type",
           *RUNNER_MANAGER_FIELD_NAMES.map { |n| "#{::Ci::RunnerManager.table_name}.#{n} AS runner_manager_#{n}" }
@@ -137,6 +144,7 @@ module ClickHouse
 
       BUILD_FIELD_NAMES = %i[id project_id pipeline_id status name stage runner_id].freeze
       BUILD_EPOCH_FIELD_NAMES = %i[created_at queued_at started_at finished_at].freeze
+      BUILD_COMPUTED_FIELD_NAMES = %i[root_namespace_id].freeze
       RUNNER_FIELD_NAMES = %i[run_untagged type].freeze
       RUNNER_MANAGER_FIELD_NAMES = %i[system_xid version revision platform architecture].freeze
 
@@ -144,6 +152,7 @@ module ClickHouse
         **BUILD_FIELD_NAMES.index_with { |n| n },
         **BUILD_EPOCH_FIELD_NAMES.index_with { |n| :"casted_#{n}" },
         **RUNNER_FIELD_NAMES.map { |n| :"runner_#{n}" }.index_with { |n| n },
+        **BUILD_COMPUTED_FIELD_NAMES.index_with { |n| n },
         **RUNNER_MANAGER_FIELD_NAMES.map { |n| :"runner_manager_#{n}" }.index_with { |n| n }
       }.freeze
 
