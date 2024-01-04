@@ -1,4 +1,5 @@
 <script>
+import produce from 'immer';
 import { GlLoadingIcon } from '@gitlab/ui';
 import { s__, n__, sprintf, __ } from '~/locale';
 import getGroupProjects from 'ee/security_orchestration/graphql/queries/get_group_projects.query.graphql';
@@ -20,6 +21,8 @@ export default {
     allProjectsButtonText: s__('SecurityOrchestration|Show all included projects'),
     hideProjectsButtonText: s__('SecurityOrchestration|Hide extra projects'),
     includingProjectsText: s__('SecurityOrchestration|Following projects:'),
+    showMoreProjectsLabel: s__('SecurityOrchestration|Show more projects'),
+    hideMoreProjectsLabel: s__('SecurityOrchestration|Hide extra projects'),
     allLabel: __('All'),
     projectsLabel: __('projects'),
   },
@@ -34,6 +37,9 @@ export default {
       },
       update(data) {
         return data.group?.projects?.nodes || [];
+      },
+      result({ data }) {
+        this.projectsPageInfo = data?.group?.projects?.pageInfo || {};
       },
       error() {
         this.$emit('projects-query-error');
@@ -55,7 +61,9 @@ export default {
   },
   data() {
     return {
+      page: 1,
       projects: [],
+      projectsPageInfo: {},
     };
   },
   computed: {
@@ -87,6 +95,26 @@ export default {
     },
   },
   methods: {
+    fetchNextPage() {
+      if (this.projectsPageInfo.hasNextPage) {
+        this.$apollo.queries.projects
+          .fetchMore({
+            variables: {
+              after: this.projectsPageInfo.endCursor,
+            },
+            updateQuery: (previousResult, { fetchMoreResult }) => {
+              this.page += 1;
+              return produce(fetchMoreResult, (draftData) => {
+                draftData.group.projects.nodes = [
+                  ...previousResult.group.projects.nodes,
+                  ...draftData.group.projects.nodes,
+                ];
+              });
+            },
+          })
+          .catch(() => this.$emit('projects-fetch-more-query-error'));
+      }
+    },
     renderHeader(message) {
       const projectLength = this.projects.length;
       const projectLabel = n__('project', 'projects', projectLength);
@@ -111,9 +139,14 @@ export default {
       <toggle-list
         v-if="projects.length"
         bullet-style
+        :custom-button-text="$options.i18n.showMoreProjectsLabel"
+        :custom-close-button-text="$options.i18n.hideMoreProjectsLabel"
+        :has-next-page="projectsPageInfo.hasNextPage"
         :default-button-text="customButtonText"
         :default-close-button-text="$options.i18n.hideProjectsButtonText"
         :items="projectNames"
+        :page="page"
+        @load-next-page="fetchNextPage"
       />
     </template>
   </div>
