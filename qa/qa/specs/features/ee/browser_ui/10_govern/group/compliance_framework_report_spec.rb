@@ -30,6 +30,12 @@ module QA
         end
       end
 
+      let!(:third_framework) do
+        QA::EE::Resource::ComplianceFramework.fabricate_via_api! do |framework|
+          framework.group = subgroup
+        end
+      end
+
       before do
         Flow::Login.sign_in
 
@@ -57,21 +63,47 @@ module QA
           report.click_projects_tab
 
           aggregate_failures do
-            report.project_row(top_level_project) do |project|
-              expect(project).to have_name(top_level_project.name)
-              expect(project).to have_path(top_level_project.full_path)
-              expect(project).to have_framework(default_compliance_framework.name, default: true)
-            end
+            check_compliance_framework_present(top_level_project, default_compliance_framework, true)
+            check_compliance_framework_present(subgroup_project, another_framework, false)
+            check_compliance_framework_absent(project_without_framework)
+          end
 
-            report.project_row(subgroup_project) do |project|
-              expect(project).to have_name(subgroup_project.name)
-              expect(project).to have_path(subgroup_project.full_path)
-              expect(project).to have_framework(another_framework.name, default: false)
-            end
+          report.bulk_apply_framework_to_all_projects(third_framework)
 
-            report.project_row(project_without_framework) do |project|
-              expect(project).to have_name(project_without_framework.name)
-              expect(project).to have_path(project_without_framework.full_path)
+          aggregate_failures do
+            check_compliance_framework_present(top_level_project, third_framework, false)
+            check_compliance_framework_present(subgroup_project, third_framework, false)
+            check_compliance_framework_present(project_without_framework, third_framework, false)
+          end
+
+          report.bulk_remove_framework_from_all_projects(excluded_projects: [top_level_project])
+
+          aggregate_failures do
+            check_compliance_framework_present(top_level_project, third_framework, false)
+            check_compliance_framework_absent(subgroup_project)
+            check_compliance_framework_absent(project_without_framework)
+          end
+        end
+      end
+
+      def check_compliance_framework_present(test_project, framework, default_value)
+        QA::EE::Page::Group::Compliance::Show.perform do |report|
+          aggregate_failures do
+            report.project_row(test_project) do |project|
+              expect(project).to have_name(test_project.name)
+              expect(project).to have_path(test_project.full_path)
+              expect(project).to have_framework(framework.name, default: default_value)
+            end
+          end
+        end
+      end
+
+      def check_compliance_framework_absent(test_project)
+        QA::EE::Page::Group::Compliance::Show.perform do |report|
+          aggregate_failures do
+            report.project_row(test_project) do |project|
+              expect(project).to have_name(test_project.name)
+              expect(project).to have_path(test_project.full_path)
               expect(project).not_to have_framework
             end
           end

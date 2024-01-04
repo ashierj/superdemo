@@ -143,6 +143,7 @@ export default {
       <gl-collapsible-listbox
         v-model="selectedOperation"
         class="gl-mr-2"
+        data-testid="choose-bulk-action"
         :disabled="!hasSelection"
         :toggle-text="
           selectedOperation ? selectedOperation.text : $options.i18n.dropdownActionPlaceholder
@@ -166,6 +167,7 @@ export default {
     </gl-button>
     <gl-button
       class="gl-ml-3"
+      data-testid="apply-bulk-operation-button"
       :variant="actionButtonVariant"
       :disabled="!isSelectionValid || isApplyInProgress"
       :loading="isApplyInProgress"
