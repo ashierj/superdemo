@@ -29,7 +29,7 @@ describe('ProjectsToggleList', () => {
     endCursor: null,
   };
 
-  const mockApolloHandlers = (nodes = defaultNodes, hasNextPage = false) => {
+  const mockApolloHandlers = ({ nodes = defaultNodes, hasNextPage = false } = {}) => {
     return {
       getGroupProjects: jest.fn().mockResolvedValue({
         data: {
@@ -98,7 +98,7 @@ describe('ProjectsToggleList', () => {
     describe('single project', () => {
       it('should render header for all projects when there is single project', async () => {
         createComponent({
-          handlers: mockApolloHandlers([defaultNodes[0]]),
+          handlers: mockApolloHandlers({ nodes: [defaultNodes[0]] }),
         });
 
         await waitForPromises();
@@ -174,6 +174,34 @@ describe('ProjectsToggleList', () => {
 
       await waitForPromises();
       expect(wrapper.emitted('projects-query-error')).toHaveLength(1);
+    });
+  });
+
+  describe('paginated toggle list', () => {
+    beforeEach(async () => {
+      createComponent({
+        handlers: mockApolloHandlers({ hasNextPage: true }),
+      });
+
+      await waitForPromises();
+    });
+
+    it('should load more projects', async () => {
+      expect(findToggleList().props('hasNextPage')).toBe(true);
+      expect(findToggleList().props('page')).toBe(1);
+      expect(findToggleList().props('items')).toHaveLength(2);
+
+      findToggleList().vm.$emit('load-next-page');
+      await waitForPromises();
+
+      expect(findToggleList().props('page')).toBe(2);
+      expect(findToggleList().props('items')).toHaveLength(4);
+
+      findToggleList().vm.$emit('load-next-page');
+      await waitForPromises();
+
+      expect(findToggleList().props('page')).toBe(3);
+      expect(findToggleList().props('items')).toHaveLength(6);
     });
   });
 });

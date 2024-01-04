@@ -62,7 +62,6 @@ describe('ScopeInfoRow', () => {
     ${null}
     ${{ compliance_frameworks: [] }}
     ${{ projects: { including: [] } }}
-    ${{ projects: { excluding: [] } }}
     ${{ compliance_frameworks: undefined }}
     ${{ projects: { including: undefined } }}
     ${{ projects: { excluding: undefined } }}

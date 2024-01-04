@@ -31,15 +31,28 @@ export default {
       required: false,
       default: '',
     },
+    hasNextPage: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    page: {
+      type: Number,
+      required: false,
+      default: 1,
+    },
   },
   data() {
     return {
-      visibleItemIndex: ITEMS_MAX_LIST,
+      visibleItemIndex: ITEMS_MAX_LIST * this.page,
     };
   },
   computed: {
+    currentPage() {
+      return this.hasNextPage ? this.page : 1;
+    },
     buttonText() {
-      if (this.isInitialState) {
+      if (this.isInitialState || this.hasNextPage) {
         const itemsLength = this.items.length - ITEMS_MAX_LIST;
 
         if (this.customButtonText) return this.customButtonText;
@@ -55,15 +68,19 @@ export default {
       return this.visibleItemIndex === ITEMS_MAX_LIST;
     },
     initialList() {
-      return this.items.slice(0, this.visibleItemIndex);
+      return this.items.slice(0, this.visibleItemIndex * this.currentPage);
     },
     showButton() {
-      return this.items.length > ITEMS_MAX_LIST;
+      return this.items.length > ITEMS_MAX_LIST || this.hasNextPage;
     },
   },
   methods: {
     toggleItemsLength() {
-      this.visibleItemIndex = this.isInitialState ? this.items.length : ITEMS_MAX_LIST;
+      if (this.hasNextPage) {
+        this.$emit('load-next-page');
+      } else {
+        this.visibleItemIndex = this.isInitialState ? this.items.length : ITEMS_MAX_LIST;
+      }
     },
   },
 };

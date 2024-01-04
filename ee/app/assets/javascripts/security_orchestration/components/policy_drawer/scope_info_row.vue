@@ -39,8 +39,7 @@ export default {
       return Boolean(including) && including?.length > 0;
     },
     policyScopeHasExcludingProjects() {
-      const { projects: { excluding = [] } = {} } = this.policyScope || {};
-      return Boolean(excluding) && excluding?.length > 0;
+      return Boolean(this.policyScope?.projects?.excluding);
     },
     policyHasProjects() {
       return this.policyScopeHasIncludingProjects || this.policyScopeHasExcludingProjects;
