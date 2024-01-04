@@ -95,7 +95,24 @@ module Geo
       Geo::EventWorker.perform_async(replicable_name, EVENT_UPDATED, { 'model_record_id' => model_record.id })
     end
 
-    # Called by Geo::FrameworkRepositorySyncService#execute_housekeeping
+    # Called by Gitlab::Geo::Replicator#geo_handle_after_update
+    def before_verifiable_update
+      return unless Feature.enabled?(:geo_repository_replicator_legacy_behaviour, type: :experiment)
+      return unless ::Gitlab::Geo.primary?
+      return unless self.class.verification_enabled?
+
+      # Just let verification backfill pick it up
+      model_record.verification_pending!
+    end
+
+    # Called by Gitlab::Geo::Replicator#geo_handle_after_(create|update)
+    def after_verifiable_update
+      return unless Feature.enabled?(:geo_repository_replicator_legacy_behaviour, type: :experiment)
+
+      super
+    end
+
+    # Called by Geo::FrameworkHousekeepingService#execute
     def before_housekeeping
       # no-op
     end
