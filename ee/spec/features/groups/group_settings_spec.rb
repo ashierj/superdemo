@@ -415,27 +415,42 @@ RSpec.describe 'Edit group settings', :js, feature_category: :groups_and_project
           stub_feature_flags(ai_assist_ui: true)
         end
 
-        it 'allows to save settings' do
-          visit edit_group_path(group)
-          wait_for_all_requests
+        it 'is not visible' do
+          visit edit_group_path(create(:group, parent: group))
 
           expect(page).to have_content('Permissions and group features')
-
           within(permissions_selector) do
-            checkbox = find(code_suggestion_selector)
+            expect(page).not_to have_content('Code Suggestion')
+          end
+        end
 
-            expect(checkbox).to be_checked
-
-            checkbox.set(false)
-            click_button 'Save changes'
-            wait_for_all_requests
+        context 'when purchase_code_suggestions is disabled' do
+          before do
+            stub_feature_flags(purchase_code_suggestions: false)
           end
 
-          page.refresh
-          wait_for_all_requests
+          it 'allows to save settings' do
+            visit edit_group_path(group)
+            wait_for_all_requests
 
-          within(permissions_selector) do
-            expect(find(code_suggestion_selector)).not_to be_checked
+            expect(page).to have_content('Permissions and group features')
+
+            within(permissions_selector) do
+              checkbox = find(code_suggestion_selector)
+
+              expect(checkbox).to be_checked
+
+              checkbox.set(false)
+              click_button 'Save changes'
+              wait_for_all_requests
+            end
+
+            page.refresh
+            wait_for_all_requests
+
+            within(permissions_selector) do
+              expect(find(code_suggestion_selector)).not_to be_checked
+            end
           end
         end
 
