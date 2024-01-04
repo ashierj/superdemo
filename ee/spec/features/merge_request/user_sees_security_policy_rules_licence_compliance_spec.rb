@@ -11,6 +11,7 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
   let(:policy_management_project) { create(:project, :repository, creator: user, namespace: project.namespace) }
   let_it_be(:user) { create(:user) }
   let_it_be(:approver) { create(:user) }
+  let_it_be(:approver_roles) { ['maintainer'] }
 
   before_all do
     project.add_developer(user)
@@ -70,16 +71,38 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
       end
 
       context 'when scan result policy for license scanning is violated' do
-        let(:license_type) { 'MIT' }
+        context 'when signed in as user' do
+          let(:license_type) { 'MIT' }
 
-        it 'requires approval', :aggregate_failures do
-          visit(ee_merge_request_path)
-          wait_for_requests
+          it 'requires approval', :aggregate_failures do
+            visit(ee_merge_request_path)
+            wait_for_requests
 
-          expect(page).to have_content 'Requires 1 approval from eligible users'
-          expect(page).to have_content 'Policy violation(s) detected'
-          expect(page).to have_content 'Merge blocked'
-          expect(page).not_to have_button('Merge', exact: true)
+            expect(page).to have_content 'Requires 1 approval from eligible users'
+            expect(page).to have_content 'Policy violation(s) detected'
+            expect(page).to have_content 'Merge blocked'
+            expect(page).not_to have_button('Merge', exact: true)
+          end
+        end
+
+        context 'when signed in as maintainer' do
+          before do
+            sign_in(approver)
+          end
+
+          let(:license_type) { 'MIT' }
+
+          it 'can approve and merge the MR', :aggregate_failures do
+            visit(ee_merge_request_path)
+            wait_for_requests
+
+            expect(page).to have_content 'Merge blocked'
+            expect(page).to have_button('Approve', exact: true)
+
+            click_button 'Approve'
+            wait_for_requests
+            expect(page).to have_button('Merge', exact: true)
+          end
         end
       end
     end
