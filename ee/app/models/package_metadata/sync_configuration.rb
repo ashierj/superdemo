@@ -111,3 +111,7 @@ module PackageMetadata
     end
   end
 end
+
+# Added for JiHu
+# Used in https://jihulab.com/gitlab-cn/gitlab/-/blob/main-jh/jh/app/models/jh/package_metadata/sync_configuration.rb
+PackageMetadata::SyncConfiguration::Location.prepend_mod
