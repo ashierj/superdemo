@@ -335,31 +335,6 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
           webhook_data(group_member, 'user_update_for_group')
         )
       end
-
-      def webhook_data(group_member, event)
-        {
-          headers: {
-            'Content-Type' => 'application/json',
-            'User-Agent' => "GitLab/#{Gitlab::VERSION}",
-            'X-Gitlab-Event' => 'Member Hook'
-          },
-          body: {
-            created_at: group_member.created_at&.xmlschema,
-            updated_at: group_member.updated_at&.xmlschema,
-            group_name: group.name,
-            group_path: group.path,
-            group_id: group.id,
-            user_username: group_member.user.username,
-            user_name: group_member.user.name,
-            user_email: group_member.user.webhook_email,
-            user_id: group_member.user.id,
-            group_access: group_member.human_access,
-            expires_at: group_member.expires_at&.xmlschema,
-            group_plan: 'ultimate',
-            event_name: event
-          }.to_json
-        }
-      end
     end
   end
 
@@ -481,6 +456,78 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
         expect(user.project_members.last).to be_active
       end
     end
+  end
+
+  describe 'when after_create :post_create_hook' do
+    context 'for webhooks', :sidekiq_inline, :saas do
+      let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be(:group_hook) { create(:group_hook, group: group, member_events: true) }
+      let_it_be(:user) { create(:user) }
+
+      before do
+        WebMock.stub_request(:post, group_hook.url)
+      end
+
+      it 'executes user_add_to_group event webhook' do
+        group_member = create(:group_member, group: group)
+
+        group.add_guest(group_member.user)
+
+        expect(WebMock).to have_requested(:post, group_hook.url).with(
+          webhook_data(group_member, 'user_add_to_group')
+        )
+      end
+
+      context 'for ancestor groups' do
+        let_it_be(:subgroup) { create(:group, parent: group) }
+        let_it_be(:subgroup_hook) { create(:group_hook, group: subgroup, member_events: true) }
+
+        it 'fires two webhooks when parent group has member_events webhook enabled' do
+          WebMock.stub_request(:post, subgroup_hook.url)
+
+          subgroup.add_guest(user)
+
+          expect(WebMock).to have_requested(:post, subgroup_hook.url)
+          expect(WebMock).to have_requested(:post, group_hook.url)
+        end
+
+        it 'fires one webhook when parent group has member_events webhook disabled' do
+          group_hook = create(:group_hook, group: group, member_events: false)
+
+          WebMock.stub_request(:post, subgroup_hook.url)
+
+          subgroup.add_guest(user)
+
+          expect(WebMock).to have_requested(:post, subgroup_hook.url)
+          expect(WebMock).not_to have_requested(:post, group_hook.url)
+        end
+      end
+    end
+  end
+
+  def webhook_data(group_member, event)
+    {
+      headers: {
+        'Content-Type' => 'application/json',
+        'User-Agent' => "GitLab/#{Gitlab::VERSION}",
+        'X-Gitlab-Event' => 'Member Hook'
+      },
+      body: {
+        created_at: group_member.created_at&.xmlschema,
+        updated_at: group_member.updated_at&.xmlschema,
+        group_name: group.name,
+        group_path: group.path,
+        group_id: group.id,
+        user_username: group_member.user.username,
+        user_name: group_member.user.name,
+        user_email: group_member.user.webhook_email,
+        user_id: group_member.user.id,
+        group_access: group_member.human_access,
+        expires_at: group_member.expires_at&.xmlschema,
+        group_plan: 'ultimate',
+        event_name: event
+      }.to_json
+    }
   end
 
   context 'when activating a member', :saas do
