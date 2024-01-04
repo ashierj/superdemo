@@ -16,8 +16,10 @@ module QA
       end
 
       let!(:scan_result_policy_project) do
-        EE::Resource::SecurityScanPolicyProject.fabricate_via_api! do |commit|
-          commit.full_path = project.full_path
+        Support::Retrier.retry_on_exception(sleep_interval: 2, message: "Security policy project fabrication failed") do
+          EE::Resource::SecurityScanPolicyProject.fabricate_via_api! do |commit|
+            commit.full_path = project.full_path
+          end
         end
       end
 
