@@ -45,6 +45,7 @@ module EE
             optional :merge_pipelines_enabled, type: Grape::API::Boolean, desc: 'Enable merged results pipelines.'
             optional :merge_trains_enabled, type: Grape::API::Boolean, desc: 'Enable merge trains.'
             optional :merge_trains_skip_train_allowed, type: Grape::API::Boolean, desc: 'Allow merge train merge requests to be merged without waiting for pipelines to finish.'
+            optional :ci_restrict_pipeline_cancellation_role, type: String, desc: 'Roles allowed to cancel pipelines and jobs.'
           end
         end
 
@@ -71,7 +72,8 @@ module EE
               :merge_trains_enabled,
               :merge_trains_skip_train_allowed,
               :requirements_access_level,
-              :prevent_merge_without_jira_issue
+              :prevent_merge_without_jira_issue,
+              :ci_restrict_pipeline_cancellation_role
             ]
           end
         end
@@ -90,6 +92,10 @@ module EE
 
           unless ::License.feature_available?(:jira_issue_association_enforcement)
             attrs.delete(:prevent_merge_without_jira_issue)
+          end
+
+          unless ::License.feature_available?(:ci_pipeline_cancellation_restrictions)
+            attrs.delete(:ci_restrict_pipeline_cancellation_role)
           end
         end
       end

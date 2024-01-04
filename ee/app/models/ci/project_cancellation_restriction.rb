@@ -23,8 +23,13 @@ module Ci
       @ci_settings.restrict_pipeline_cancellation_role_no_one?
     end
 
+    def role
+      return unless feature_available?
+
+      @ci_settings.restrict_pipeline_cancellation_role
+    end
+
     def feature_available?
-      return false unless @project
       return false unless @ci_settings
 
       @project.licensed_feature_available?(:ci_pipeline_cancellation_restrictions)
