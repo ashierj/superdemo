@@ -298,6 +298,7 @@ export default {
       <template #head(selected)="{ selectAllRows, clearSelected }">
         <gl-form-checkbox
           class="gl-pt-2"
+          data-testid="select-all-projects-checkbox"
           :checked="hasSelectedProjects"
           :indeterminate="hasSelectedProjects && !hasSelectedAllProjects"
           @change="hasSelectedProjects ? clearSelected() : selectAllRows()"
@@ -307,6 +308,7 @@ export default {
         <div>
           <gl-form-checkbox
             class="gl-pt-2"
+            data-testid="select-project-checkbox"
             :checked="rowSelected"
             @change="rowSelected ? unselectRow() : selectRow()"
           />

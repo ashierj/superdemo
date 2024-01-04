@@ -42,6 +42,30 @@ module QA
               wait_for_requests
             end
 
+            def bulk_apply_framework_to_all_projects(framework)
+              check_element('select-all-projects-checkbox', true)
+              click_element('choose-bulk-action')
+              click_element('listbox-item-apply')
+              find_button('Choose one framework').click
+              wait_for_requests
+              click_element("listbox-item-#{framework.gid}")
+              click_element('apply-bulk-operation-button')
+              wait_for_requests
+            end
+
+            def bulk_remove_framework_from_all_projects(excluded_projects: [])
+              check_element('select-all-projects-checkbox', true)
+              click_element('choose-bulk-action')
+              click_element('listbox-item-remove')
+
+              excluded_projects.each do |project|
+                project_row(project, &:unselect_project_row)
+              end
+
+              click_element('apply-bulk-operation-button')
+              wait_for_requests
+            end
+
             RSpec::Matchers.define :have_violation do |reason, merge_request_title|
               match do |page|
                 page.has_element?('violation-reason-content', text: reason, description: merge_request_title)
@@ -50,6 +74,12 @@ module QA
               match_when_negated do |page|
                 page.has_no_element?('violation-reason-content', text: reason, description: merge_request_title)
               end
+            end
+
+            def unselect_project_row
+              verify_project_frameworks_row_scope!
+
+              uncheck_element('select-project-checkbox', true)
             end
 
             def has_name?(name)
