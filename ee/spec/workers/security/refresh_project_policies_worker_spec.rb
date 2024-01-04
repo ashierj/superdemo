@@ -31,13 +31,9 @@ RSpec.describe ::Security::RefreshProjectPoliciesWorker, feature_category: :secu
     end
   end
 
-  context 'when skip_refresh_project_policies is enabled' do
-    before do
-      stub_feature_flags(skip_refresh_project_policies: true)
-    end
-
-    it 'does not invoke Security::ProcessScanResultPolicyWorker' do
-      expect(worker).not_to receive(:perform_async)
+  shared_examples_for 'does not invoke the worker' do
+    it 'does not invoke Security::ProcessScanResultPolicyWorker worker' do
+      expect(worker).not_to receive(:perform_in)
 
       consume_event(subscriber: described_class, event: project_member_changed_event)
     end
@@ -53,10 +49,26 @@ RSpec.describe ::Security::RefreshProjectPoliciesWorker, feature_category: :secu
       end
     end
 
-    it 'invokes Security::ProcessScanResultPolicyWorker' do
-      expect(worker).to receive(:perform_in).with(0, project.id, configuration.id)
+    it_behaves_like 'does not invoke the worker'
 
-      consume_event(subscriber: described_class, event: project_member_changed_event)
+    context 'when feature flag "add_policy_approvers_to_rules" is disabled' do
+      before do
+        stub_feature_flags(add_policy_approvers_to_rules: false)
+      end
+
+      it 'invokes Security::ProcessScanResultPolicyWorker' do
+        expect(worker).to receive(:perform_in).with(0, project.id, configuration.id)
+
+        consume_event(subscriber: described_class, event: project_member_changed_event)
+      end
+
+      context 'when skip_refresh_project_policies is enabled' do
+        before do
+          stub_feature_flags(skip_refresh_project_policies: true)
+        end
+
+        it_behaves_like 'does not invoke the worker'
+      end
     end
   end
 
@@ -77,11 +89,19 @@ RSpec.describe ::Security::RefreshProjectPoliciesWorker, feature_category: :secu
       end
     end
 
-    it 'invokes Security::ProcessScanResultPolicyWorker with incremental delay' do
-      expect(worker).to receive(:perform_in).with(0, project.id, configuration.id).ordered
-      expect(worker).to receive(:perform_in).with(30, project.id, inherited_configuration.id).ordered
+    it_behaves_like 'does not invoke the worker'
 
-      consume_event(subscriber: described_class, event: project_member_changed_event)
+    context 'when feature flag "add_policy_approvers_to_rules" is disabled' do
+      before do
+        stub_feature_flags(add_policy_approvers_to_rules: false)
+      end
+
+      it 'invokes Security::ProcessScanResultPolicyWorker with incremental delay' do
+        expect(worker).to receive(:perform_in).with(0, project.id, configuration.id).ordered
+        expect(worker).to receive(:perform_in).with(30, project.id, inherited_configuration.id).ordered
+
+        consume_event(subscriber: described_class, event: project_member_changed_event)
+      end
     end
   end
 
@@ -101,10 +121,18 @@ RSpec.describe ::Security::RefreshProjectPoliciesWorker, feature_category: :secu
       end
     end
 
-    it 'invokes Security::ProcessScanResultPolicyWorker with incremental delay' do
-      expect(worker).to receive(:perform_in).with(0, project.id, inherited_configuration.id)
+    it_behaves_like 'does not invoke the worker'
 
-      consume_event(subscriber: described_class, event: project_member_changed_event)
+    context 'when feature flag "add_policy_approvers_to_rules" is disabled' do
+      before do
+        stub_feature_flags(add_policy_approvers_to_rules: false)
+      end
+
+      it 'invokes Security::ProcessScanResultPolicyWorker with incremental delay' do
+        expect(worker).to receive(:perform_in).with(0, project.id, inherited_configuration.id)
+
+        consume_event(subscriber: described_class, event: project_member_changed_event)
+      end
     end
   end
 end

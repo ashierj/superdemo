@@ -1436,6 +1436,35 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
   end
 
+  describe '#applicable_scan_result_policies_for_project' do
+    let_it_be(:namespace_settings) do
+      create(:namespace_settings, toggle_security_policies_policy_scope: true)
+    end
+
+    let_it_be(:group) { create(:group, namespace_settings: namespace_settings) }
+    let_it_be(:project) { create(:project, :repository, group: group) }
+    let(:policy_yaml) do
+      build(:orchestration_policy_yaml, scan_result_policy: [
+        build(:scan_result_policy, name: 'Active policy'),
+        build(:scan_result_policy, name: 'Disabled policy', enabled: false),
+        build(:scan_result_policy, name: 'Not applicable policy', policy_scope: {
+          projects: {
+            excluding: [{ id: project.id }]
+          }
+        })
+      ])
+    end
+
+    subject(:applicable_policies) do
+      security_orchestration_policy_configuration.applicable_scan_result_policies_for_project(project)
+    end
+
+    it 'returns only active applicable policies' do
+      expect(applicable_policies).to be_one
+      expect(applicable_policies.first[:name]).to eq('Active policy')
+    end
+  end
+
   describe '#scan_result_policies' do
     let(:policy_yaml) { fixture_file('security_orchestration.yml', dir: 'ee') }
 

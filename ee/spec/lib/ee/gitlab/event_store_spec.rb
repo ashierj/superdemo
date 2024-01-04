@@ -20,6 +20,7 @@ RSpec.describe Gitlab::EventStore, feature_category: :shared do
         ::Members::MembersAddedEvent,
         ::ProjectAuthorizations::AuthorizationsChangedEvent,
         ::ProjectAuthorizations::AuthorizationsRemovedEvent,
+        ::ProjectAuthorizations::AuthorizationsAddedEvent,
         ::Projects::ComplianceFrameworkChangedEvent
       )
     end

@@ -109,6 +109,18 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
     end
   end
 
+  describe '.for_project' do
+    it 'returns approval rules belonging to a project' do
+      project1 = create(:project)
+      project2 = create(:project)
+
+      rule_for_project1 = create(:approval_project_rule, project: project1)
+      create(:approval_project_rule, project: project2)
+
+      expect(described_class.for_project(project1)).to contain_exactly(rule_for_project1)
+    end
+  end
+
   describe '.regular_or_any_approver scope' do
     it 'returns regular or any-approver rules' do
       any_approver_rule = create(:approval_project_rule, rule_type: :any_approver)
