@@ -20343,6 +20343,9 @@ msgstr ""
 msgid "ExternalWikiService|Link to an external wiki from the sidebar."
 msgstr ""
 
+msgid "ExternalWikiService|URL of the external wiki."
+msgstr ""
+
 msgid "ExternalWikiService|https://example.com/xxx/wiki/..."
 msgstr ""
 
