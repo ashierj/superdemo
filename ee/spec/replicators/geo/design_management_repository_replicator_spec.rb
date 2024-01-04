@@ -3,14 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Geo::DesignManagementRepositoryReplicator, feature_category: :geo_replication do
-  let(:model_record) { build(:design_management_repository, project: create(:project)) }
+  let(:model_record) { create(:design_management_repository, project: create(:project)) }
 
   include_examples 'a repository replicator' do
-    def handle_model_record_before_verification_integration_examples
-      model_record.save!
-      model_record.repository.create_if_not_exists
-    end
-
     describe '#verify' do
       context 'when design git repository does not exist' do
         it 'creates a new git repo' do

@@ -825,14 +825,7 @@ RSpec.shared_examples 'a verifiable replicator' do
 
   describe 'integration tests' do
     before do
-      if defined?(handle_model_record_before_verification_integration_examples)
-        # This method can be redefined when including
-        # these examples, to add additional steps required
-        # before running integration tests for a replicator
-        handle_model_record_before_verification_integration_examples
-      else
-        model_record.save!
-      end
+      model_record.save!
     end
 
     context 'on a primary' do
