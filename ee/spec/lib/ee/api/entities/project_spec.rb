@@ -6,6 +6,7 @@ RSpec.describe ::EE::API::Entities::Project, feature_category: :shared do
   let_it_be(:project) { create(:project) }
 
   let(:options) { {} }
+  let(:developer) { create(:user).tap { |u| project.add_developer(u) } }
 
   let(:entity) do
     ::API::Entities::Project.new(project, options)
@@ -51,7 +52,7 @@ RSpec.describe ::EE::API::Entities::Project, feature_category: :shared do
     end
 
     context 'when user permission is below maintainer' do
-      let(:current_user) { create(:user) }
+      let(:current_user) { developer }
 
       context 'when available' do
         before do

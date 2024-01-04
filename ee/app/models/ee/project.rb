@@ -339,12 +339,16 @@ module EE
 
       delegate :ci_minutes_usage, to: :shared_runners_limit_namespace
 
-      delegate :merge_pipelines_enabled, :merge_pipelines_enabled=, to: :ci_cd_settings, allow_nil: true
-      delegate :merge_trains_enabled, :merge_trains_enabled=, to: :ci_cd_settings, allow_nil: true
-      delegate :merge_trains_skip_train_allowed, :merge_trains_skip_train_allowed=, to: :ci_cd_settings, allow_nil: true
-      delegate :restrict_pipeline_cancellation_role, :restrict_pipeline_cancellation_role=, to: :ci_cd_settings, allow_nil: false
-
-      delegate :auto_rollback_enabled, :auto_rollback_enabled=, to: :ci_cd_settings, allow_nil: true
+      with_options to: :ci_cd_settings, allow_nil: true do
+        delegate :merge_pipelines_enabled, :merge_pipelines_enabled=
+        delegate :merge_trains_enabled, :merge_trains_enabled=
+        delegate :merge_trains_skip_train_allowed, :merge_trains_skip_train_allowed=
+        delegate :auto_rollback_enabled, :auto_rollback_enabled=
+        delegate :restrict_pipeline_cancellation_role, :restrict_pipeline_cancellation_role=, allow_nil: false
+        with_options prefix: :ci do
+          delegate :restrict_pipeline_cancellation_role, :restrict_pipeline_cancellation_role= # api has ci prefix
+        end
+      end
 
       delegate :requirements_access_level, to: :project_feature, allow_nil: true
       delegate :pipeline_configuration_full_path, to: :compliance_management_framework, allow_nil: true

@@ -1268,6 +1268,33 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
       end
     end
 
+    context 'when setting ci_restrict_pipeline_cancellation_role' do
+      let(:new_role) { 'maintainer' }
+      let(:project_params) { { ci_restrict_pipeline_cancellation_role: new_role } }
+
+      context 'when licence is availible' do
+        before do
+          stub_licensed_features(ci_pipeline_cancellation_restrictions: true)
+        end
+
+        it 'updates the value' do
+          expect { subject }.to change { project.reload.ci_cancellation_restriction.role }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response['ci_restrict_pipeline_cancellation_role']).to eq new_role
+        end
+      end
+
+      context 'when licence is not availible' do
+        it 'does not update the value' do
+          expect { subject }.not_to change { project.reload.ci_cancellation_restriction.role }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).not_to have_key 'ci_restrict_pipeline_cancellation_role'
+        end
+      end
+    end
+
     context 'when updating external classification' do
       before do
         enable_external_authorization_service_check
