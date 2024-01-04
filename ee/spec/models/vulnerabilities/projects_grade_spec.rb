@@ -162,9 +162,13 @@ RSpec.describe Vulnerabilities::ProjectsGrade, feature_category: :vulnerability_
       it { is_expected.to match_array(expected_projects) }
 
       it 'preloads vulnerability statistic once for whole collection' do
-        control_count = ActiveRecord::QueryRecorder.new { described_class.new(group, 1, [project_3.id]).projects.map(&:vulnerability_statistic) }.count
+        control = ActiveRecord::QueryRecorder.new do
+          described_class.new(group, 1, [project_3.id]).projects.map(&:vulnerability_statistic)
+        end
 
-        expect { described_class.new(group, 1, [project_3.id, project_4.id]).projects.map(&:vulnerability_statistic) }.not_to exceed_query_limit(control_count)
+        expect do
+          described_class.new(group, 1, [project_3.id, project_4.id]).projects.map(&:vulnerability_statistic)
+        end.not_to exceed_query_limit(control)
       end
     end
 
@@ -175,9 +179,13 @@ RSpec.describe Vulnerabilities::ProjectsGrade, feature_category: :vulnerability_
       it { is_expected.to match_array(expected_projects) }
 
       it 'preloads vulnerability statistic once for whole collection' do
-        control_count = ActiveRecord::QueryRecorder.new { described_class.new(group, 1, [project_3.id]).projects.map(&:vulnerability_statistic) }.count
+        control = ActiveRecord::QueryRecorder.new do
+          described_class.new(group, 1, [project_3.id]).projects.map(&:vulnerability_statistic)
+        end
 
-        expect { described_class.new(group, 1, [project_3.id, project_4.id]).projects.map(&:vulnerability_statistic) }.not_to exceed_query_limit(control_count)
+        expect do
+          described_class.new(group, 1, [project_3.id, project_4.id]).projects.map(&:vulnerability_statistic)
+        end.not_to exceed_query_limit(control)
       end
     end
   end

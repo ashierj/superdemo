@@ -454,12 +454,12 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
 
       context 'with failed builds' do
         it 'does not runs queries on failed builds' do
-          control_count = ActiveRecord::QueryRecorder.new { subject }.count
+          control = ActiveRecord::QueryRecorder.new { subject }
 
           create(:ee_ci_build, :failed, :dependency_scanning, pipeline: pipeline, project: project)
           create(:ee_ci_build, :failed, :license_scanning, pipeline: pipeline, project: project)
 
-          expect { subject }.not_to exceed_query_limit(control_count)
+          expect { subject }.not_to exceed_query_limit(control)
         end
       end
     end

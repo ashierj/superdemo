@@ -246,22 +246,22 @@ RSpec.describe Epics::UpdateDatesService, feature_category: :portfolio_managemen
 
           ActiveRecord::QueryRecorder.new do
             described_class.new(epics).execute
-          end.count
+          end
         end
 
         it 'does not increase query count when adding epics without milestones' do
-          control_count = setup_control_group
+          control = setup_control_group
 
           epics << create(:epic)
           epics << create(:epic)
 
           expect do
             described_class.new(epics).execute
-          end.not_to exceed_query_limit(control_count)
+          end.not_to exceed_query_limit(control)
         end
 
         it 'does not increase query count when adding epics belongs to same milestones' do
-          control_count = setup_control_group
+          control = setup_control_group
 
           epics << create(:epic)
           epics << create(:epic)
@@ -271,7 +271,7 @@ RSpec.describe Epics::UpdateDatesService, feature_category: :portfolio_managemen
 
           expect do
             described_class.new(epics).execute
-          end.not_to exceed_query_limit(control_count)
+          end.not_to exceed_query_limit(control)
         end
       end
     end

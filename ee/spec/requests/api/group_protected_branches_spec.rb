@@ -64,7 +64,7 @@ RSpec.describe API::GroupProtectedBranches, feature_category: :source_code_manag
 
     describe 'avoid N+1 sql queries' do
       it 'does not perform N+1 sql queries' do
-        control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
           get api(route, owner), params: params.merge(per_page: 100)
         end
 
@@ -72,7 +72,7 @@ RSpec.describe API::GroupProtectedBranches, feature_category: :source_code_manag
 
         expect do
           get api(route, owner), params: params.merge(per_page: 100)
-        end.not_to exceed_all_query_limit(control_count)
+        end.not_to exceed_all_query_limit(control)
       end
     end
   end

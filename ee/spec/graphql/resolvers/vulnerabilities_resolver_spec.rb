@@ -187,13 +187,13 @@ RSpec.describe Resolvers::VulnerabilitiesResolver, feature_category: :vulnerabil
         let(:params) { { project_id: [project.id, project2.id] } }
 
         it 'avoids N+1 queries' do
-          control_count = ActiveRecord::QueryRecorder.new do
+          control = ActiveRecord::QueryRecorder.new do
             resolve(described_class, obj: vulnerable, args: { project_id: [project2.id] }, ctx: { current_user: current_user })
-          end.count
+          end
 
           expect do
             subject
-          end.not_to exceed_query_limit(control_count)
+          end.not_to exceed_query_limit(control)
         end
       end
     end

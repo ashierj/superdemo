@@ -202,9 +202,11 @@ RSpec.describe 'getting a list of compliance frameworks for a root namespace', f
         post_graphql(query, current_user: current_user)
         post_graphql(multiple_namespace_query, current_user: current_user)
 
-        query_count = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user) }.count
+        control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user) }
 
-        expect { post_graphql(multiple_namespace_query, current_user: current_user) }.not_to exceed_query_limit(query_count + 2)
+        expect do
+          post_graphql(multiple_namespace_query, current_user: current_user)
+        end.not_to exceed_query_limit(control).with_threshold(2)
       end
 
       it 'responds with the expected list of compliance frameworks' do

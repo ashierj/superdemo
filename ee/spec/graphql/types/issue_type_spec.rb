@@ -35,7 +35,7 @@ RSpec.describe GitlabSchema.types['Issue'] do
         # Warm up table schema and other data (e.g. SAML providers, license)
         GitlabSchema.execute(query, context: { current_user: user })
 
-        control_count = ActiveRecord::QueryRecorder.new { GitlabSchema.execute(query, context: { current_user: user }) }.count
+        control = ActiveRecord::QueryRecorder.new { GitlabSchema.execute(query, context: { current_user: user }) }
 
         blocked_issue2 = create(:issue, project: project)
         blocking_issue2 = create(:issue, project: project)
@@ -44,7 +44,7 @@ RSpec.describe GitlabSchema.types['Issue'] do
         project2 = create(:project, :public, group: group)
         create(:issue, project: project2)
 
-        expect { GitlabSchema.execute(query, context: { current_user: user }) }.not_to exceed_query_limit(control_count)
+        expect { GitlabSchema.execute(query, context: { current_user: user }) }.not_to exceed_query_limit(control)
       end
     end
 

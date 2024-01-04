@@ -84,7 +84,7 @@ RSpec.describe 'getting approval project rules for a branch rule', feature_categ
       it 'avoids N+1 queries' do
         control = ActiveRecord::QueryRecorder.new do
           post_graphql(query, current_user: current_user, variables: variables)
-        end.count
+        end
 
         number_of_rules = 3
 

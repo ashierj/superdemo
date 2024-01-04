@@ -93,7 +93,7 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
 
         control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
           get api(url, personal_access_token: pat), params: params
-        end.count
+        end
 
         label_2 = create(:label)
         create_list(:labeled_epic, 2, group: group, labels: [label_2])
@@ -123,7 +123,7 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
 
           control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
             get api(url, personal_access_token: pat), params: params
-          end.count
+          end
 
           label_2 = create(:label)
           create_list(:labeled_epic, 4, group: group, labels: [label_2])

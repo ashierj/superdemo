@@ -12,11 +12,11 @@ RSpec.describe ProjectTeam, feature_category: :groups_and_projects do
     subject(:import) { target_project.team.import(source_project, current_user) }
 
     it 'does not cause N+1 queries when checking user types' do
-      control_count = ActiveRecord::QueryRecorder.new { target_project.team.import(source_project, current_user) }
+      control = ActiveRecord::QueryRecorder.new { target_project.team.import(source_project, current_user) }
 
       create(:user, :security_policy_bot) { |user| source_project.add_guest(user) }
 
-      expect { import }.not_to exceed_query_limit(control_count)
+      expect { import }.not_to exceed_query_limit(control)
     end
 
     context 'when a source project member is a security policy bot' do

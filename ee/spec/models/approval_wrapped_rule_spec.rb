@@ -312,11 +312,11 @@ RSpec.describe ApprovalWrappedRule, feature_category: :code_review_workflow do
       rule.users = [approver1]
 
       approved_approvers_for_rule_id(rule.id) # warm up the cache
-      control_count = ActiveRecord::QueryRecorder.new { approved_approvers_for_rule_id(rule.id) }.count
+      control = ActiveRecord::QueryRecorder.new { approved_approvers_for_rule_id(rule.id) }
 
       rule.users += [approver2, approver3]
 
-      expect { approved_approvers_for_rule_id(rule.id) }.not_to exceed_query_limit(control_count)
+      expect { approved_approvers_for_rule_id(rule.id) }.not_to exceed_query_limit(control)
     end
 
     def approved_approvers_for_rule_id(rule_id)

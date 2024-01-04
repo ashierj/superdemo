@@ -93,7 +93,7 @@ RSpec.describe Gitlab::Ci::Matching::RunnerMatcher do
 
       it 'does not generate N+1 queries when loading the quota for project' do
         project.reload
-        control_count = ActiveRecord::QueryRecorder.new do
+        control = ActiveRecord::QueryRecorder.new do
           runner_matcher.matches_quota?(build.build_matcher)
         end
 
@@ -110,7 +110,7 @@ RSpec.describe Gitlab::Ci::Matching::RunnerMatcher do
               runner_matcher.matches_quota?(matcher)
             end
           end
-        end.not_to exceed_query_limit(control_count)
+        end.not_to exceed_query_limit(control)
       end
     end
   end

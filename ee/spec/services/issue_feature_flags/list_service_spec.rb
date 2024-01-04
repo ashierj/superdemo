@@ -13,6 +13,7 @@ RSpec.describe IssueFeatureFlags::ListService, feature_category: :team_planning 
     let(:feature_flag_b) { create(:operations_feature_flag, project: project) }
     let(:feature_flag_c) { create(:operations_feature_flag, project: project) }
     let(:feature_flag_d) { create(:operations_feature_flag, project: project) }
+    let(:feature_flag_e) { create(:operations_feature_flag, project: project) }
 
     before do
       create(:feature_flag_issue, feature_flag: feature_flag_b, issue: issue)
@@ -27,9 +28,11 @@ RSpec.describe IssueFeatureFlags::ListService, feature_category: :team_planning 
       end
 
       it 'ensures no N+1 queries are made' do
-        control_count = ActiveRecord::QueryRecorder.new { described_class.new(issue, user).execute }.count
+        control = ActiveRecord::QueryRecorder.new { described_class.new(issue, user).execute }
 
-        expect { described_class.new(issue, user).execute }.not_to exceed_query_limit(control_count)
+        create(:feature_flag_issue, feature_flag: feature_flag_e, issue: issue)
+
+        expect { described_class.new(issue, user).execute }.not_to exceed_query_limit(control)
       end
 
       it 'returns related feature flags' do

@@ -209,11 +209,11 @@ RSpec.describe 'getting group information', feature_category: :groups_and_projec
         create_list(:epic, 10, group: group)
         group.reload
 
-        control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
           query_epics(1)
-        end.count
+        end
 
-        expect { query_epics(10) }.not_to exceed_all_query_limit(control_count)
+        expect { query_epics(10) }.not_to exceed_all_query_limit(control)
       end
     end
 

@@ -79,7 +79,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
 
         expect do
           get :index, params: { group_id: group.reload }
-        end.not_to exceed_all_query_limit(control.count).with_threshold(multiple_members_threshold + unresolved_n_plus_ones)
+        end.not_to exceed_all_query_limit(control).with_threshold(multiple_members_threshold + unresolved_n_plus_ones)
       end
 
       it 'avoids extra group_link database queries utilizing pre-loading' do

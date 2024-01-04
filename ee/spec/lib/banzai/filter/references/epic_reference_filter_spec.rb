@@ -305,11 +305,11 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
       # warm up
       reference_filter(markdown, context)
 
-      control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+      control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
         reference_filter(markdown, context)
-      end.count
+      end
 
-      expect(control_count).to eq 1
+      expect(control.count).to eq 1
 
       markdown = "#{epic.to_reference} #{epic.group.full_path}&9999991 #{epic.group.full_path}&9999992 &9999993 #{epic2.to_reference(group)} #{epic2.group.full_path}&9999991 something/cool&12"
 
@@ -321,11 +321,9 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
       # - 1x2 for epics in each group
       # Total = 5
       # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/330359
-      max_count = control_count + 4
-
       expect do
         reference_filter(markdown, context)
-      end.not_to exceed_all_query_limit(max_count)
+      end.not_to exceed_all_query_limit(control).with_threshold(4)
     end
   end
 

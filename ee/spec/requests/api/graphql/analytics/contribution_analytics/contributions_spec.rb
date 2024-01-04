@@ -67,10 +67,10 @@ RSpec.describe 'Group.contributions', feature_category: :value_stream_management
           # warm the query to avoid flakiness
           run_query
 
-          control_count = ActiveRecord::QueryRecorder.new { run_query }
+          control = ActiveRecord::QueryRecorder.new { run_query }
 
           create(:event, :pushed, project: project, author: create(:user), created_at: Date.parse('2022-01-05'))
-          expect { run_query }.not_to exceed_all_query_limit(control_count)
+          expect { run_query }.not_to exceed_all_query_limit(control)
         end
       end
     end

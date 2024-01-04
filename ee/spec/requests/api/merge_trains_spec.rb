@@ -44,12 +44,11 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
       end
 
       it 'does not have N+1 problem' do
-        control_count = ActiveRecord::QueryRecorder.new { subject }
+        control = ActiveRecord::QueryRecorder.new { subject }
 
         create_list(:merge_train_car, 3, target_project: project)
 
-        expect { get api("/projects/#{project.id}/merge_trains", user) }
-          .not_to exceed_query_limit(control_count)
+        expect { get api("/projects/#{project.id}/merge_trains", user) }.not_to exceed_query_limit(control)
       end
 
       context 'when sort is specified' do

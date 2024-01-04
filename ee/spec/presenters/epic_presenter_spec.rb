@@ -55,9 +55,9 @@ RSpec.describe EpicPresenter, feature_category: :portfolio_management do
       epic2 = create(:epic, group: group1, parent: epic1)
       create(:epic, group: group2, parent: epic2)
 
-      control_count = ActiveRecord::QueryRecorder.new { presenter.show_data }
+      control = ActiveRecord::QueryRecorder.new { presenter.show_data }
 
-      expect { presenter.show_data }.not_to exceed_query_limit(control_count)
+      expect { presenter.show_data }.not_to exceed_query_limit(control)
     end
 
     it 'does not include subscribed in initial data' do

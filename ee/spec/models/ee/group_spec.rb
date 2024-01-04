@@ -593,13 +593,13 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       shared_examples 'group root ancestor' do
         it 'does not exceed SQL queries count' do
           groups = described_class.where(id: private_subgroup_1)
-          control_count = ActiveRecord::QueryRecorder.new do
+          control = ActiveRecord::QueryRecorder.new do
             described_class.groups_user_can(groups, user, :read_epic, **params)
-          end.count
+          end
 
           groups = described_class.where(id: [private_subgroup_1, private_subgroup_2])
           expect { described_class.groups_user_can(groups, user, :read_epic, **params) }
-            .not_to exceed_query_limit(control_count + extra_query_count)
+            .not_to exceed_query_limit(control).with_threshold(extra_query_count)
         end
       end
 
