@@ -41,6 +41,7 @@ describe('EEInviteMembersModal', () => {
         ContentTransition,
         GlModal,
         GlSprintf,
+        GlEmoji: { template: '<div/>' },
       },
     });
   };
