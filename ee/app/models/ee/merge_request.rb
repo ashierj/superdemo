@@ -32,6 +32,11 @@ module EE
       has_many :approver_groups, as: :target, dependent: :delete_all # rubocop:disable Cop/ActiveRecordDependent
       has_many :status_check_responses, class_name: 'MergeRequests::StatusCheckResponse', inverse_of: :merge_request
       has_many :approval_rules, class_name: 'ApprovalMergeRequestRule', inverse_of: :merge_request do
+        def applicable_post_merge
+          # We will show nil (old rules) and rules that were true
+          where(applicable_post_merge: [true, nil])
+        end
+
         def applicable_to_branch(branch)
           ActiveRecord::Associations::Preloader.new(
             records: self,

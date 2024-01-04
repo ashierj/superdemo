@@ -218,16 +218,15 @@ RSpec.describe ApprovalState do
     end
 
     describe '#wrapped_approval_rules' do
-      before do
-        2.times { create_rule }
-      end
+      let!(:rule_1) { create_rule(applicable_post_merge: false) }
+      let!(:rule_2) { create_rule(applicable_post_merge: true) }
 
       it 'returns all rules in wrapper' do
         expect(subject.wrapped_approval_rules).to all(be_an(ApprovalWrappedRule))
         expect(subject.wrapped_approval_rules.size).to eq(2)
       end
 
-      context 'when use_merge_approval_rules_when_merged ff is on' do
+      context 'when use_new_rule_finalize_approach ff is on' do
         let!(:invalid_not_enough_approvers_rule) do
           create(:report_approver_rule, merge_request: merge_request, users: create_list(:user, 1), approvals_required: 2)
         end
@@ -235,15 +234,17 @@ RSpec.describe ApprovalState do
         context 'when merge request is merged' do
           let(:merge_request) do
             create(:merge_request, source_project: project, target_project: project, source_branch:
-                                      'test')
+                   'test')
           end
 
-          it 'removes invalid rules' do
+          let!(:not_approved) { create_rule(approvals_required: 1) }
+
+          it 'returns only applicable post merge, and removes invalid rules and unapproved rules' do
             merge_request.mark_as_merged!
 
-            expect(subject.wrapped_approval_rules.map(&:approval_rule)).not_to include(invalid_not_enough_approvers_rule)
+            expect(subject.wrapped_approval_rules.map(&:approval_rule)).to eq([rule_2])
             expect(subject.wrapped_approval_rules).to all(be_an(ApprovalWrappedRule))
-            expect(subject.wrapped_approval_rules.size).to eq(2)
+            expect(subject.wrapped_approval_rules.size).to eq(1)
           end
         end
 
@@ -256,13 +257,13 @@ RSpec.describe ApprovalState do
         end
       end
 
-      context 'when use_merge_approval_rules_when_merged ff is off' do
+      context 'when use_new_rule_finalize_approach ff is off' do
         let!(:invalid_not_enough_approvers_rule) do
           create(:report_approver_rule, merge_request: merge_request, users: create_list(:user, 1), approvals_required: 2)
         end
 
         before do
-          stub_feature_flags(use_merge_approval_rules_when_merged: false)
+          stub_feature_flags(use_new_rule_finalize_approach: false)
         end
 
         context 'when not merged' do
@@ -279,14 +280,16 @@ RSpec.describe ApprovalState do
                                       'test')
           end
 
+          let!(:not_approved) { create_rule(approvals_required: 1) }
+
           before do
             merge_request.mark_as_merged!
           end
 
-          it 'includes invalid rules' do
-            expect(subject.wrapped_approval_rules.map(&:approval_rule)).to include(invalid_not_enough_approvers_rule)
+          it 'includes invalid rules and not approved' do
+            expect(subject.wrapped_approval_rules.map(&:approval_rule)).to include(invalid_not_enough_approvers_rule, not_approved)
             expect(subject.wrapped_approval_rules).to all(be_an(ApprovalWrappedRule))
-            expect(subject.wrapped_approval_rules.size).to eq(3)
+            expect(subject.wrapped_approval_rules.size).to eq(4)
           end
         end
       end
@@ -1634,78 +1637,6 @@ RSpec.describe ApprovalState do
   end
 
   describe '#user_defined_rules' do
-    shared_examples 'user defined merge request rules' do
-      context 'when multiple approval rules is disabled' do
-        it 'returns the first rule' do
-          expect(subject.user_defined_rules.map(&:approval_rule)).to match_array(
-            [
-              rule
-            ])
-        end
-      end
-
-      context 'when multiple approval rules is enabled' do
-        before do
-          stub_licensed_features(multiple_approval_rules: true)
-        end
-
-        it 'returns the rules as is' do
-          expect(subject.user_defined_rules.map(&:approval_rule)).to match_array(
-            [
-              rule,
-              another_rule
-            ])
-        end
-
-        context 'and rules have source rules that are scoped by protected branches' do
-          let(:source_rule) { create(:approval_project_rule, project: project) }
-          let(:another_source_rule) { create(:approval_project_rule, project: project) }
-          let(:protected_branch) { create(:protected_branch, project: project, name: 'stable-*') }
-          let(:another_protected_branch) { create(:protected_branch, project: project, name: '*-stable') }
-
-          before do
-            merge_request.update!(target_branch: 'stable-1')
-
-            merge_request.finalize_rules do
-              source_rule.update!(protected_branches: [protected_branch])
-              another_source_rule.update!(protected_branches: [another_protected_branch])
-
-              another_rule.update!(
-                approval_project_rule: another_source_rule,
-                name: another_source_rule.name,
-                approvals_required: another_source_rule.approvals_required,
-                users: another_source_rule.users,
-                groups: another_source_rule.groups
-              )
-
-              rule.update!(
-                approval_project_rule: source_rule,
-                name: source_rule.name,
-                approvals_required: source_rule.approvals_required,
-                users: source_rule.users,
-                groups: source_rule.groups
-              )
-            end
-          end
-
-          it 'returns the rules that are applicable to the merge request target branch' do
-            expect(subject.user_defined_rules.map(&:approval_rule)).to eq(
-              [
-                rule
-              ])
-          end
-
-          context 'and target_branch is specified' do
-            subject { described_class.new(merge_request, target_branch: 'v1-stable') }
-
-            it 'returns the rules that are applicable to the specified target_branch' do
-              expect(subject.user_defined_rules.map(&:approval_rule)).to eq([another_rule])
-            end
-          end
-        end
-      end
-    end
-
     shared_examples 'project rules' do
       context 'and multiple approval rules is disabled' do
         it 'returns the first rule' do
@@ -1766,7 +1697,7 @@ RSpec.describe ApprovalState do
 
       it_behaves_like 'project rules'
 
-      context 'when use_merge_approval_rules_when_merged feature flag is on' do
+      context 'when use_new_rule_finalize_approach feature flag is on' do
         before do
           project.update!(disable_overriding_approvers_per_merge_request: true)
         end
@@ -1777,15 +1708,37 @@ RSpec.describe ApprovalState do
                                       'test')
           end
 
-          before do
-            merge_request.mark_as_merged!
-          end
-
           context 'when merge request rules exist' do
-            let!(:rule) { create(:approval_merge_request_rule, merge_request: merge_request) }
-            let!(:another_rule) { create(:approval_merge_request_rule, merge_request: merge_request) }
+            let!(:rule_1) { create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: false) }
+            let!(:rule_2) { create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: true) }
+            let!(:rule_3) { create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: true) }
 
-            it_behaves_like 'user defined merge request rules'
+            context 'when multiple approval rules is disabled' do
+              it 'returns the first post applicable rule' do
+                merge_request.mark_as_merged!
+
+                expect(subject.user_defined_rules.map(&:approval_rule)).to match_array(
+                  [
+                    rule_2
+                  ])
+              end
+            end
+
+            context 'when multiple approval rules is enabled' do
+              before do
+                stub_licensed_features(multiple_approval_rules: true)
+              end
+
+              it 'returns only the applicable_post_merge rules' do
+                merge_request.mark_as_merged!
+
+                expect(subject.user_defined_rules.map(&:approval_rule)).to match_array(
+                  [
+                    rule_2,
+                    rule_3
+                  ])
+              end
+            end
           end
 
           context 'when merge request rules do not exist' do
@@ -1798,9 +1751,9 @@ RSpec.describe ApprovalState do
         end
       end
 
-      context 'when use_merge_approval_rules_when_merged feature flag is off' do
+      context 'when use_new_rule_finalize_approach feature flag is off' do
         before do
-          stub_feature_flags(use_merge_approval_rules_when_merged: false)
+          stub_feature_flags(use_new_rule_finalize_approach: false)
         end
 
         it_behaves_like 'project rules'
@@ -1814,7 +1767,74 @@ RSpec.describe ApprovalState do
           project.update!(disable_overriding_approvers_per_merge_request: false)
         end
 
-        it_behaves_like 'user defined merge request rules'
+        context 'when multiple approval rules is disabled' do
+          it 'returns the first rule' do
+            expect(subject.user_defined_rules.map(&:approval_rule)).to match_array(
+              [
+                rule
+              ])
+          end
+        end
+
+        context 'when multiple approval rules is enabled' do
+          before do
+            stub_licensed_features(multiple_approval_rules: true)
+          end
+
+          it 'returns the rules as is' do
+            expect(subject.user_defined_rules.map(&:approval_rule)).to match_array(
+              [
+                rule,
+                another_rule
+              ])
+          end
+
+          context 'and rules have source rules that are scoped by protected branches' do
+            let(:source_rule) { create(:approval_project_rule, project: project) }
+            let(:another_source_rule) { create(:approval_project_rule, project: project) }
+            let(:protected_branch) { create(:protected_branch, project: project, name: 'stable-*') }
+            let(:another_protected_branch) { create(:protected_branch, project: project, name: '*-stable') }
+
+            before do
+              merge_request.update!(target_branch: 'stable-1')
+              source_rule.update!(protected_branches: [protected_branch])
+              another_source_rule.update!(protected_branches: [another_protected_branch])
+
+              rule.update!(
+                approval_project_rule: another_source_rule,
+                name: another_source_rule.name,
+                approvals_required: another_source_rule.approvals_required,
+                users: another_source_rule.users,
+                groups: another_source_rule.groups,
+                applicable_post_merge: true
+              )
+
+              another_rule.update!(
+                approval_project_rule: source_rule,
+                name: source_rule.name,
+                approvals_required: source_rule.approvals_required,
+                users: source_rule.users,
+                groups: source_rule.groups,
+                applicable_post_merge: true
+              )
+            end
+
+            it 'returns the rules that are applicable to the merge request target branch' do
+              expect(subject.user_defined_rules.map(&:approval_rule)).to eq(
+                [
+                  another_rule
+                ])
+            end
+
+            context 'and target_branch is specified' do
+              subject { described_class.new(merge_request, target_branch: 'v1-stable') }
+
+              it 'returns the rules that are applicable to the specified target_branch' do
+                expect(subject.user_defined_rules.map(&:approval_rule)).to eq([rule])
+              end
+            end
+          end
+        end
       end
     end
   end
