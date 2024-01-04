@@ -54011,6 +54011,9 @@ msgstr ""
 msgid "VulnerabilityExport|Detected At"
 msgstr ""
 
+msgid "VulnerabilityExport|Dismissal Reason"
+msgstr ""
+
 msgid "VulnerabilityExport|Full Path"
 msgstr ""
 
