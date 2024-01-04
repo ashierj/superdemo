@@ -20,22 +20,45 @@ module Resolvers
         max_page_size 500
         default_page_size 500
 
-        def resolve(from:, to:)
+        def resolve(from:, to:, after: nil, first: nil)
           validate_date_range!(from, to)
 
           data_collector = Gitlab::ContributionAnalytics::DataCollector.new(group: object, from: from, to: to)
-          users = data_collector.users.sort_by(&:id)
+          users = data_collector.users(**pagination_arguments(after, first))
 
-          users.map do |user|
+          result = users.map do |user|
             { user: user }.tap do |counts_per_user|
               Gitlab::ContributionAnalytics::DataCollector::EVENT_TYPES.each do |event_type|
                 counts_per_user[event_type] = data_collector.totals[event_type].fetch(user.id, 0)
               end
             end
           end
+
+          if result.any?
+            start_cursor = encode(result.first[:user].id)
+            end_cursor = encode(result.last[:user].id)
+          end
+
+          Gitlab::Graphql::ExternallyPaginatedArray.new(start_cursor, end_cursor, *result)
         end
 
         private
+
+        def encode(value)
+          Base64.strict_encode64(value.to_s) if value
+        end
+
+        def decode(value)
+          Base64.strict_decode64(value) if value
+        end
+
+        def pagination_arguments(after, first)
+          {}.tap do |hash|
+            hash[:limit] = first || self.class.default_page_size
+            decoded_value = decode(after)
+            hash[:after_id] = Integer(decoded_value) if decoded_value.present?
+          end.compact
+        end
 
         def validate_date_range!(from, to)
           if (to - from).days > MAX_RANGE

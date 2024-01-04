@@ -6,7 +6,7 @@ RSpec.describe Gitlab::ContributionAnalytics::DataFormatter, feature_category: :
   let_it_be(:group) { create(:group) }
   let_it_be(:project1) { create(:project, group: group) }
   let_it_be(:project2) { create(:project, group: group) }
-  let_it_be(:user_1) { create(:user) }
+  let_it_be_with_reload(:user_1) { create(:user) }
   let_it_be(:user_2) { create(:user) }
   let_it_be(:issue) { create(:closed_issue, project: project1) }
   let_it_be(:mr) { create(:merge_request, source_project: project2) }
@@ -45,7 +45,33 @@ RSpec.describe Gitlab::ContributionAnalytics::DataFormatter, feature_category: :
         it 'returns correct users' do
           users = described_class.new(data).users
 
-          expect(users).to match_array([user_1, user_2])
+          expect(users).to eq([user_1, user_2])
+        end
+
+        context 'when banned users are present' do
+          it 'filters them out' do
+            user_1.ban!
+
+            users = described_class.new(data).users
+
+            expect(users).to eq([user_2])
+          end
+        end
+
+        context 'when requesting users with a limit' do
+          it 'limits the users' do
+            users = described_class.new(data).users(limit: 1)
+
+            expect(users).to eq([user_1])
+          end
+
+          context 'when requesting users after a given user id' do
+            it 'returns correct users' do
+              users = described_class.new(data).users(after_id: user_1.id, limit: 1)
+
+              expect(users).to eq([user_2])
+            end
+          end
         end
       end
     end

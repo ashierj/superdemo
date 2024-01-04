@@ -150,7 +150,8 @@ module EE
           null: true,
           resolver: ::Resolvers::Analytics::ContributionAnalytics::ContributionsResolver,
           description: 'Provides the aggregated contributions by users within the group and its subgroups',
-          authorize: :read_group_contribution_analytics
+          authorize: :read_group_contribution_analytics,
+          connection_extension: ::Gitlab::Graphql::Extensions::ForwardOnlyExternallyPaginatedArrayExtension
 
         field :flow_metrics,
           ::Types::Analytics::CycleAnalytics::FlowMetrics[:group],
