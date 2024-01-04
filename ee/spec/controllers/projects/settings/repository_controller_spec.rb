@@ -144,12 +144,12 @@ RSpec.describe Projects::Settings::RepositoryController, feature_category: :sour
 
       context 'when the feature group protected branches disabled' do
         it 'does not perform N+1 sql queries' do
-          control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) { subject }
+          control = ActiveRecord::QueryRecorder.new(skip_cached: false) { subject }
 
           create_list(:protected_branch, 2, project: project)
           create_list(:protected_branch, 2, project: nil, group: group)
 
-          expect { subject }.not_to exceed_all_query_limit(control_count)
+          expect { subject }.not_to exceed_all_query_limit(control)
         end
       end
 
@@ -161,12 +161,12 @@ RSpec.describe Projects::Settings::RepositoryController, feature_category: :sour
         end
 
         it 'does not perform N+1 sql queries' do
-          control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) { subject }
+          control = ActiveRecord::QueryRecorder.new(skip_cached: false) { subject }
 
           create_list(:protected_branch, 2, project: project)
           create_list(:protected_branch, 2, project: nil, group: group)
 
-          expect { subject }.not_to exceed_all_query_limit(control_count)
+          expect { subject }.not_to exceed_all_query_limit(control)
         end
       end
     end

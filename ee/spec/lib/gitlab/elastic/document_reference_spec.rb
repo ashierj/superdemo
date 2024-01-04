@@ -261,7 +261,7 @@ RSpec.describe Gitlab::Elastic::DocumentReference, feature_category: :global_sea
         # is run for each batch
         expect do
           collection.preload_database_records.map(&:database_record)
-        end.not_to exceed_query_limit(control.count * 2)
+        end.not_to exceed_query_limit(control).with_threshold(control.count)
       end
     end
   end

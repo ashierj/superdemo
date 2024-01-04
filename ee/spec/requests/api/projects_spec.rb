@@ -77,7 +77,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
 
         expect do
           get api('/projects', admin)
-        end.not_to exceed_all_query_limit(control.count)
+        end.not_to exceed_all_query_limit(control)
       end
     end
 

@@ -68,14 +68,14 @@ RSpec.describe Projects::IssueFeatureFlagsController, feature_category: :feature
       feature_flag, _, _ = setup
       sign_in(developer)
 
-      control_count = ActiveRecord::QueryRecorder.new { get_request(project, feature_flag) }.count
+      control = ActiveRecord::QueryRecorder.new { get_request(project, feature_flag) }
 
       issue_b = create(:issue, project: project)
       issue_c = create(:issue, project: project)
       create(:feature_flag_issue, feature_flag: feature_flag, issue: issue_b)
       create(:feature_flag_issue, feature_flag: feature_flag, issue: issue_c)
 
-      expect { get_request(project, feature_flag) }.not_to exceed_query_limit(control_count)
+      expect { get_request(project, feature_flag) }.not_to exceed_query_limit(control)
     end
 
     context 'when feature flag related issues feature is unlicensed' do

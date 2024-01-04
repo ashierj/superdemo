@@ -48,12 +48,12 @@ RSpec.describe BackfillEpics, feature_category: :global_search do
     end
 
     it 'does not have N+1' do
-      control_count = ActiveRecord::QueryRecorder.new { subject.migrate }
+      control = ActiveRecord::QueryRecorder.new { subject.migrate }
 
       create(:epic, group: create(:group, parent: create(:group)))
       ensure_elasticsearch_index!
 
-      expect { subject.migrate }.not_to exceed_query_limit(control_count)
+      expect { subject.migrate }.not_to exceed_query_limit(control)
     end
 
     context 'with more than one iterations in a batch' do

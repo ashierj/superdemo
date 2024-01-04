@@ -149,16 +149,16 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
     it 'can lookahead to prevent N+1 queries' do
       create_list(:event, 10, :created, target: epic, group: group)
 
-      control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+      control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
         query_epics_with_events(1)
-      end.count
+      end
 
       events = graphql_dig_at(graphql_data, :group, :epics, :nodes, :events, :nodes)
       expect(events.count).to eq(1)
 
       expect do
         query_epics_with_events(10)
-      end.not_to exceed_all_query_limit(control_count)
+      end.not_to exceed_all_query_limit(control)
 
       data = graphql_data(fresh_response_data)
       events = graphql_dig_at(data, :group, :epics, :nodes, :events, :nodes)

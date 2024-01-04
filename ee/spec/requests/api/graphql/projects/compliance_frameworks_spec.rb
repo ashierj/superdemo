@@ -29,9 +29,9 @@ RSpec.describe 'getting compliance frameworks for a collection of projects', fea
     end
 
     it 'avoids N+1 queries', :use_sql_query_cache do
-      query_count = ActiveRecord::QueryRecorder.new(skip_cached: false) { post_graphql(query, current_user: current_user) }.count
+      control = ActiveRecord::QueryRecorder.new(skip_cached: false) { post_graphql(query, current_user: current_user) }
 
-      expect { post_graphql(single_project_query, current_user: current_user) }.not_to exceed_all_query_limit(query_count)
+      expect { post_graphql(single_project_query, current_user: current_user) }.not_to exceed_all_query_limit(control)
     end
 
     it 'contains the expected compliance framework' do

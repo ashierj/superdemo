@@ -25,7 +25,7 @@ RSpec.describe Groups::ClustersController, feature_category: :deployment_managem
     end
 
     it 'avoids N+1 database queries' do
-      control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) { go }.count
+      control = ActiveRecord::QueryRecorder.new(skip_cached: false) { go }
       deployment_count = 2
 
       create_list(:deployment, deployment_count, :success)
@@ -36,7 +36,7 @@ RSpec.describe Groups::ClustersController, feature_category: :deployment_managem
       # it also appears that `can_read_pod_logs?` in ee/app/serializers/clusters/environment_entity.rb
       # generates 3 additional queries per deployment
       leeway += deployment_count * 3
-      expect { go }.not_to exceed_all_query_limit(control_count + leeway)
+      expect { go }.not_to exceed_all_query_limit(control).with_threshold(leeway)
     end
   end
 end

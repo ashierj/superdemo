@@ -172,8 +172,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
         # Warm up table schema and other data (e.g. SAML providers, license)
         GitlabSchema.execute(sast_query, context: { current_user: user })
 
-        control_count =
-          ActiveRecord::QueryRecorder.new { run_with_clean_state(sast_query, context: { current_user: user }) }.count
+        control = ActiveRecord::QueryRecorder.new { run_with_clean_state(sast_query, context: { current_user: user }) }
 
         vulnerabilities = get_findings_from_response(subject).pluck('vulnerability').compact
         issues = get_issues_from_vulnerabilities(vulnerabilities)
@@ -189,7 +188,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
         )
 
         expect { run_with_clean_state(sast_query, context: { current_user: user }) }
-          .not_to exceed_query_limit(control_count)
+          .not_to exceed_query_limit(control)
 
         response = GitlabSchema.execute(sast_query, context: { current_user: user })
         vulnerabilities = get_findings_from_response(response).pluck('vulnerability').compact
@@ -257,8 +256,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
         # Warm up table schema and other data (e.g. SAML providers, license)
         GitlabSchema.execute(sast_query, context: { current_user: user })
 
-        control_count =
-          ActiveRecord::QueryRecorder.new { run_with_clean_state(sast_query, context: { current_user: user }) }.count
+        control = ActiveRecord::QueryRecorder.new { run_with_clean_state(sast_query, context: { current_user: user }) }
 
         findings = get_findings_from_response(subject)
         issues = get_issues_from_findings(findings)
@@ -273,7 +271,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
         )
 
         expect { run_with_clean_state(sast_query, context: { current_user: user }) }
-          .not_to exceed_query_limit(control_count)
+          .not_to exceed_query_limit(control)
 
         response = GitlabSchema.execute(sast_query, context: { current_user: user })
         findings = get_findings_from_response(response)

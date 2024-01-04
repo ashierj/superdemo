@@ -213,11 +213,11 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
       it 'returns multiple links without N + 1' do
         perform_request(user)
 
-        control_count = ActiveRecord::QueryRecorder.new { perform_request(user) }.count
+        control = ActiveRecord::QueryRecorder.new { perform_request(user) }
 
         create(:related_epic_link, source: epic, target: create(:epic, group: group))
 
-        expect { perform_request(user) }.not_to exceed_query_limit(control_count)
+        expect { perform_request(user) }.not_to exceed_query_limit(control)
         expect(response).to have_gitlab_http_status(:ok)
       end
     end
@@ -287,11 +287,11 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
       it 'returns multiple links without N + 1' do
         perform_request(user)
 
-        control_count = ActiveRecord::QueryRecorder.new { perform_request(user) }.count
+        control = ActiveRecord::QueryRecorder.new { perform_request(user) }
 
         create(:related_epic_link, source: epic, target: create(:epic, group: group))
 
-        expect { perform_request(user) }.not_to exceed_query_limit(control_count)
+        expect { perform_request(user) }.not_to exceed_query_limit(control)
         expect(response).to have_gitlab_http_status(:ok)
       end
     end

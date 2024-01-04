@@ -58,7 +58,7 @@ RSpec.describe EpicIssues::ListService, feature_category: :portfolio_management 
         create(:epic_issue, issue: new_issue1, epic: epic, relative_position: 3)
         create(:epic_issue, issue: new_issue3, epic: epic, relative_position: 5)
 
-        control_count = ActiveRecord::QueryRecorder.new { list_service.execute }.count
+        control = ActiveRecord::QueryRecorder.new { list_service.execute }
 
         new_group2 = create(:group, :private)
         new_group2.add_developer(user)
@@ -67,7 +67,7 @@ RSpec.describe EpicIssues::ListService, feature_category: :portfolio_management 
         create(:epic_issue, issue: new_issue4, epic: epic, relative_position: 6)
         create(:issue_link, source: create(:issue), target: issue2, link_type: IssueLink::TYPE_BLOCKS)
 
-        expect { list_service.execute }.not_to exceed_query_limit(control_count)
+        expect { list_service.execute }.not_to exceed_query_limit(control)
       end
 
       context 'owner can see all issues and destroy their associations' do

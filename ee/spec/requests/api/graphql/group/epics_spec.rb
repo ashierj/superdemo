@@ -218,9 +218,9 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
           # warm up
           post_graphql(query({ iids: [child_epic.iid] }), current_user: user)
 
-          control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+          control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
             post_graphql(query({ iids: [child_epic.iid] }), current_user: user)
-          end.count
+          end
 
           epics_with_parent = create_list(:epic, 3, group: group) do |epic|
             epic.update!(parent: create(:epic, group: group))
@@ -228,7 +228,7 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
 
           expect do
             post_graphql(query({ iids: epics_with_parent.pluck(:iid) }), current_user: user)
-          end.not_to exceed_query_limit(control_count)
+          end.not_to exceed_query_limit(control)
         end
       end
 

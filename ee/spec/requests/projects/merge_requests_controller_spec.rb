@@ -59,7 +59,7 @@ RSpec.describe Projects::MergeRequestsController, feature_category: :code_review
       create_list(:approval_project_rule, 5, project: project, users: [user, other_user], approvals_required: 2)
       create_list(:approval_merge_request_rule, 5, merge_request: merge_request, users: [user, other_user], approvals_required: 2)
 
-      control_count = ActiveRecord::QueryRecorder.new { get_index }.count
+      control = ActiveRecord::QueryRecorder.new { get_index }
 
       create_list(:approval, 10)
       create(:approval_project_rule, project: project, users: [user, other_user], approvals_required: 2)
@@ -67,7 +67,7 @@ RSpec.describe Projects::MergeRequestsController, feature_category: :code_review
         create(:approval_merge_request_rule, merge_request: mr, users: [user, other_user], approvals_required: 2)
       end
 
-      expect { get_index }.not_to exceed_query_limit(control_count)
+      expect { get_index }.not_to exceed_query_limit(control)
     end
   end
 

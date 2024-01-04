@@ -119,7 +119,7 @@ RSpec.describe 'Epic aggregates (count and weight)', feature_category: :portfoli
 
     shared_examples 'efficient query' do
       it 'does not result in N+1' do
-        control_count = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user) }.count
+        control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user) }
 
         query_with_multiple_epics = graphql_query_for('group', { fullPath: epic_with_issues.group.full_path }, query_graphql_field('epics', { iids: [epic_with_issues.iid, epic_without_issues.iid, parent_epic.iid] }, epic_aggregates_query))
 
@@ -128,7 +128,9 @@ RSpec.describe 'Epic aggregates (count and weight)', feature_category: :portfoli
         #   -> ee/app/policies/epic_policy.rb:4:in `block in <class:EpicPolicy>'
         # So I'll add n to this number to take this into account.
         # See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/27551#note_307716428
-        expect { post_graphql(query_with_multiple_epics, current_user: current_user) }.not_to exceed_query_limit(control_count + 2)
+        expect do
+          post_graphql(query_with_multiple_epics, current_user: current_user)
+        end.not_to exceed_query_limit(control).with_threshold(2)
       end
     end
 

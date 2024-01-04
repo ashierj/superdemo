@@ -137,14 +137,14 @@ RSpec.describe Projects::FeatureFlagIssuesController, feature_category: :feature
       feature_flag, _, _ = setup
       sign_in(developer)
 
-      control_count = ActiveRecord::QueryRecorder.new { get_request(project, feature_flag) }.count
+      control = ActiveRecord::QueryRecorder.new { get_request(project, feature_flag) }
 
       issue_b = create(:issue, project: project)
       issue_c = create(:issue, project: project)
       create(:feature_flag_issue, feature_flag: feature_flag, issue: issue_b)
       create(:feature_flag_issue, feature_flag: feature_flag, issue: issue_c)
 
-      expect { get_request(project, feature_flag) }.not_to exceed_query_limit(control_count).with_threshold(4)
+      expect { get_request(project, feature_flag) }.not_to exceed_query_limit(control).with_threshold(4)
     end
 
     it 'returns only issues readable by the user' do

@@ -121,13 +121,13 @@ RSpec.describe Admin::CredentialsController, type: :request, feature_category: :
 
               control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
                 get admin_credentials_path(filter: 'gpg_keys')
-              end.count
+              end
 
               create(:gpg_key, user: new_user, key: GpgHelpers::User2.public_key)
 
               expect do
                 get admin_credentials_path(filter: 'gpg_keys')
-              end.not_to exceed_query_limit(control + 1)
+              end.not_to exceed_query_limit(control).with_threshold(1)
             end
           end
         end

@@ -695,7 +695,7 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
 
           it 'avoids N+1 queries', :use_sql_query_cache do
             post_graphql(query, current_user: current_user) # warmup
-            control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+            control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
               post_graphql(query, current_user: current_user)
             end
 
@@ -703,7 +703,7 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
               create(:work_item_link, source: item, target: work_item, link_type: 'blocks')
             end
 
-            expect { post_graphql(query, current_user: current_user) }.to issue_same_number_of_queries_as(control_count)
+            expect { post_graphql(query, current_user: current_user) }.to issue_same_number_of_queries_as(control)
             expect_graphql_errors_to_be_empty
           end
         end

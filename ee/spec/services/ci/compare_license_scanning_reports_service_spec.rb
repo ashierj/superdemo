@@ -21,15 +21,15 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
         base_pipeline = create(:ee_ci_pipeline, project: project)
         head_pipeline = create(:ee_ci_pipeline, :with_cyclonedx_report, project: project)
 
-        control_count = ActiveRecord::QueryRecorder.new do
+        control = ActiveRecord::QueryRecorder.new do
           service.execute(base_pipeline.reload, head_pipeline.reload)
-        end.count
+        end
 
         new_head_pipeline = create(:ee_ci_pipeline, :with_cyclonedx_report, project: project)
 
         expect do
           service.execute(base_pipeline.reload, new_head_pipeline.reload)
-        end.not_to exceed_query_limit(control_count)
+        end.not_to exceed_query_limit(control)
       end
     end
 

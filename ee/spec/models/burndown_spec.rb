@@ -179,15 +179,11 @@ RSpec.describe Burndown, feature_category: :team_planning do
       travel_to(milestone.due_date) do
         create(:issue, milestone: milestone, weight: 2, project: project, author: user)
 
-        control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) do
-          subject
-        end.count
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) { subject }
 
         create_list(:issue, 3, milestone: milestone, weight: 2, project: project, author: user)
 
-        expect do
-          subject
-        end.not_to exceed_all_query_limit(control_count)
+        expect { subject }.not_to exceed_all_query_limit(control)
       end
     end
   end

@@ -119,9 +119,9 @@ RSpec.describe Gitlab::Geo::EventGapTracking, :clean_gitlab_redis_shared_state, 
       end
       create(:geo_event_log, :updated_event, id: gap_id)
 
-      control_count = ActiveRecord::QueryRecorder.new do
+      control = ActiveRecord::QueryRecorder.new do
         expect { gap_tracking.fill_gaps(&blk) }.to change { yielded.count }.by(1)
-      end.count
+      end
 
       travel_to(12.minutes.ago) do
         gap_tracking.check!(event_id_with_gap + 3)
@@ -131,7 +131,7 @@ RSpec.describe Gitlab::Geo::EventGapTracking, :clean_gitlab_redis_shared_state, 
 
       expect do
         expect { gap_tracking.fill_gaps(&blk) }.to change { yielded.count }.by(2)
-      end.not_to exceed_query_limit(control_count)
+      end.not_to exceed_query_limit(control)
     end
   end
 

@@ -78,7 +78,7 @@ RSpec.describe ScanSecurityReportSecretsWorker, feature_category: :secret_detect
       include_context 'when pipeline has revocable keys'
 
       it 'avoids N+1 queries' do
-        control_count = ActiveRecord::QueryRecorder.new { worker.perform(pipeline.id) }
+        control = ActiveRecord::QueryRecorder.new { worker.perform(pipeline.id) }
 
         3.times do
           finding = create(:vulnerabilities_finding,
@@ -90,7 +90,7 @@ RSpec.describe ScanSecurityReportSecretsWorker, feature_category: :secret_detect
           create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline)
         end
 
-        expect { worker.perform(pipeline.id) }.not_to exceed_query_limit(control_count)
+        expect { worker.perform(pipeline.id) }.not_to exceed_query_limit(control)
       end
     end
 

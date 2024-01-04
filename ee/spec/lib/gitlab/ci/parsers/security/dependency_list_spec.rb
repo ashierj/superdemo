@@ -49,7 +49,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
       let_it_be(:finding_pipeline) { create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline) }
 
       it 'does not causes N+1 query' do
-        control_count = ActiveRecord::QueryRecorder.new do
+        control = ActiveRecord::QueryRecorder.new do
           artifact.each_blob do |blob|
             parser.parse!(blob, report)
           end
@@ -65,7 +65,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
               parser.parse!(blob, report)
             end
           end
-        end.not_to exceed_query_limit(control_count)
+        end.not_to exceed_query_limit(control)
       end
 
       it 'merges vulnerability data' do

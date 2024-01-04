@@ -99,7 +99,7 @@ RSpec.describe 'Setting assignees of a merge request', feature_category: :code_r
         add_one_assignee = mutation(input.merge(assignee_usernames: usernames.take(1)), mr_a)
         add_two_assignees = mutation(input.merge(assignee_usernames: usernames.last(2)), mr_b)
 
-        baseline = ActiveRecord::QueryRecorder.new do
+        control = ActiveRecord::QueryRecorder.new do
           post_graphql_mutation(add_one_assignee, current_user: current_user)
         end
 
@@ -112,7 +112,7 @@ RSpec.describe 'Setting assignees of a merge request', feature_category: :code_r
         # On top of which, we have to do an extra authorization fetch
         expect do
           post_graphql_mutation(add_two_assignees, current_user: current_user)
-        end.not_to exceed_query_limit(baseline.count + 3)
+        end.not_to exceed_query_limit(control).with_threshold(3)
       end
     end
   end

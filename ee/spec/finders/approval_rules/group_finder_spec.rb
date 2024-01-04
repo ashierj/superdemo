@@ -62,7 +62,7 @@ RSpec.describe ApprovalRules::GroupFinder do
       it 'avoids N+1 database queries' do
         rule.reload
 
-        count = ActiveRecord::QueryRecorder.new { subject.visible_groups }.count
+        control = ActiveRecord::QueryRecorder.new { subject.visible_groups }
 
         # Clear cached association and request cache
         rule.reload
@@ -70,7 +70,7 @@ RSpec.describe ApprovalRules::GroupFinder do
 
         rule.groups << create(:group, :private, parent: private_accessible_group, name: 'private_accessible_subgroup2')
 
-        expect { described_class.new(rule, user).visible_groups }.not_to exceed_query_limit(count)
+        expect { described_class.new(rule, user).visible_groups }.not_to exceed_query_limit(control)
       end
     end
   end

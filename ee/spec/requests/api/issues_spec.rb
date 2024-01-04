@@ -364,14 +364,14 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures, feature_category: :tea
 
       get api("/groups/#{group.id}/issues", user)
 
-      control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) { get api("/groups/#{group.id}/issues", user) }
+      control = ActiveRecord::QueryRecorder.new(skip_cached: false) { get api("/groups/#{group.id}/issues", user) }
 
       subgroup_2 = create(:group, parent: group)
       subgroup_2_project = create(:project, group: subgroup_2)
 
       create(:issue, project: subgroup_2_project, epic: create(:epic, group: subgroup_2))
 
-      expect { get api("/groups/#{group.id}/issues", user) }.not_to exceed_query_limit(control_count)
+      expect { get api("/groups/#{group.id}/issues", user) }.not_to exceed_query_limit(control)
     end
 
     it 'avoids N+1 queries with iterations' do
@@ -386,14 +386,14 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures, feature_category: :tea
 
       get api("/groups/#{group.id}/issues", user)
 
-      control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) { get api("/groups/#{group.id}/issues", user) }
+      control = ActiveRecord::QueryRecorder.new(skip_cached: false) { get api("/groups/#{group.id}/issues", user) }
 
       subgroup_2 = create(:group, parent: group)
       subgroup_2_project = create(:project, group: subgroup_2)
 
       create(:issue, project: subgroup_2_project, iteration: create(:iteration, iterations_cadence: create(:iterations_cadence, group: subgroup_2)))
 
-      expect { get api("/groups/#{group.id}/issues", user) }.not_to exceed_query_limit(control_count)
+      expect { get api("/groups/#{group.id}/issues", user) }.not_to exceed_query_limit(control)
     end
   end
 

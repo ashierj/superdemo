@@ -145,7 +145,7 @@ RSpec.describe API::EpicBoards, feature_category: :portfolio_management do
 
           control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
             get api(url, personal_access_token: pat), params: params
-          end.count
+          end
 
           [testing, feature, development].each do |label|
             board = create(:epic_board, group: group, labels: [testing])
@@ -232,7 +232,7 @@ RSpec.describe API::EpicBoards, feature_category: :portfolio_management do
 
           control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
             get api(url, personal_access_token: pat), params: params
-          end.count
+          end
 
           create_list(:group_label, 3, group: group) do |label|
             create(:epic_list, epic_board: board1, label: label)

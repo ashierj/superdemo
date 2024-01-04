@@ -101,13 +101,13 @@ RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
           it 'returns multiple issues without performing N + 1' do
             perform_request
 
-            control_count = ActiveRecord::QueryRecorder.new { perform_request }.count
+            control = ActiveRecord::QueryRecorder.new { perform_request }
 
             issue = create(:issue, project: project)
             create(:epic_issue, epic: epic, issue: issue)
 
             # Existing N + 1 for calculating subscribed? field: https://gitlab.com/gitlab-org/gitlab/-/issues/325898
-            expect { perform_request }.not_to exceed_query_limit(control_count + 2)
+            expect { perform_request }.not_to exceed_query_limit(control).with_threshold(2)
           end
         end
       end

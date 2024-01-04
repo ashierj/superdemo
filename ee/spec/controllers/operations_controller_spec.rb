@@ -480,17 +480,15 @@ RSpec.describe OperationsController, feature_category: :release_orchestration do
             end
 
             context 'N+1 queries' do
-              subject { get_environments(:json) }
-
               it 'avoids N+1 database queries' do
-                control_count = ActiveRecord::QueryRecorder.new { subject }.count
+                control = ActiveRecord::QueryRecorder.new { get_environments(:json) }
 
                 projects = create_list(:project, 8) do |project|
                   project.add_developer(user)
                 end
                 user.update!(ops_dashboard_projects: projects)
 
-                expect { subject }.not_to exceed_query_limit(control_count)
+                expect { get_environments(:json) }.not_to exceed_query_limit(control)
               end
             end
           end

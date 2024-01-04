@@ -48,7 +48,7 @@ RSpec.describe Elastic::Latest::EpicInstanceProxy, feature_category: :global_sea
 
       expect do
         epic.__elasticsearch__.as_indexed_json
-      end.not_to exceed_query_limit(control.count)
+      end.not_to exceed_query_limit(control)
     end
 
     context 'with start date inherited date from child epic and due date inherited from milestone' do

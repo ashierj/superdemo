@@ -92,7 +92,7 @@ RSpec.describe Iterations::RollOverIssuesWorker, feature_category: :team_plannin
         worker.send(:automation_bot) # this will trigger the check and initiate the @automation_bot instance var
 
         representative = group1.iterations.closed.first
-        control_count = ActiveRecord::QueryRecorder.new { worker.perform(representative) }.count
+        control = ActiveRecord::QueryRecorder.new { worker.perform(representative) }
 
         # for each iteration 2 extra queries are needed:
         # - find the next open iteration
@@ -100,7 +100,7 @@ RSpec.describe Iterations::RollOverIssuesWorker, feature_category: :team_plannin
         # so we have 2 extra closed iterations compared to control count so we need 4 more queries
         iteration_ids = [group1.iterations.closed.pluck(:id) + group2.iterations.closed.pluck(:id)].flatten
 
-        expect { worker.perform(iteration_ids) }.not_to exceed_query_limit(control_count + 4)
+        expect { worker.perform(iteration_ids) }.not_to exceed_query_limit(control).with_threshold(4)
       end
 
       context 'with batches' do
