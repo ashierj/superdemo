@@ -120,7 +120,11 @@ module Security
       strong_memoize_attr :target_pipeline_security_scan_types
 
       def target_pipeline
-        merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy
+        if Feature.enabled?(:scan_result_policy_merge_base_pipeline, project)
+          merge_request.merge_base_pipeline || merge_request.base_pipeline
+        else
+          merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy
+        end
       end
       strong_memoize_attr :target_pipeline
 
