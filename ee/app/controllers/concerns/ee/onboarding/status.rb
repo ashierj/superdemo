@@ -53,7 +53,7 @@ module EE
       def oauth?
         return false unless base_stored_user_location_path.present?
 
-        base_stored_user_location_path.starts_with?(::Gitlab::Routing.url_helpers.oauth_authorization_path)
+        base_stored_user_location_path == ::Gitlab::Routing.url_helpers.oauth_authorization_path
       end
 
       def tracking_label
