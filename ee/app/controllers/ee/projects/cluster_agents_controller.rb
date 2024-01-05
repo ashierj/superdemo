@@ -9,6 +9,7 @@ module EE
         before_action do
           push_licensed_feature(:kubernetes_cluster_vulnerabilities, project)
           push_licensed_feature(:cluster_agents_ci_impersonation, project)
+          push_licensed_feature(:remote_development, project)
         end
       end
     end

@@ -66,7 +66,7 @@ export const USER_WORKSPACES_LIST_QUERY_RESULT = {
   },
 };
 
-export const USER_WORKSPACES_QUERY_EMPTY_RESULT = {
+export const USER_WORKSPACES_LIST_QUERY_EMPTY_RESULT = {
   data: {
     currentUser: {
       id: 1,
@@ -77,6 +77,71 @@ export const USER_WORKSPACES_QUERY_EMPTY_RESULT = {
           hasPreviousPage: false,
           startCursor: null,
           endCursor: null,
+        },
+      },
+    },
+  },
+};
+
+export const AGENT_WORKSPACES_LIST_QUERY_RESULT = {
+  data: {
+    project: {
+      id: 1,
+      clusterAgent: {
+        id: 1,
+        workspaces: {
+          nodes: [
+            {
+              id: 'gid://gitlab/RemoteDevelopment::Workspace/2',
+              name: 'workspace-1-1-idmi02',
+              namespace: 'gl-rd-ns-1-1-idmi02',
+              desiredState: 'Stopped',
+              actualState: 'CreationRequested',
+              url: 'https://8000-workspace-1-1-idmi02.workspaces.localdev.me?tkn=password',
+              devfileRef: 'main',
+              devfilePath: '.devfile.yaml',
+              projectId: 'gid://gitlab/Project/1',
+              createdAt: '2023-04-29T18:24:34Z',
+            },
+            {
+              id: 'gid://gitlab/RemoteDevelopment::Workspace/1',
+              name: 'workspace-1-1-rfu27q',
+              namespace: 'gl-rd-ns-1-1-rfu27q',
+              desiredState: 'Running',
+              actualState: 'Running',
+              url: 'https://8000-workspace-1-1-rfu27q.workspaces.localdev.me?tkn=password',
+              devfileRef: 'main',
+              devfilePath: '.devfile.yaml',
+              projectId: 'gid://gitlab/Project/1',
+              createdAt: '2023-05-01T18:24:34Z',
+            },
+          ],
+          pageInfo: {
+            hasNextPage: false,
+            hasPreviousPage: false,
+            startCursor: null,
+            endCursor: null,
+          },
+        },
+      },
+    },
+  },
+};
+
+export const AGENT_WORKSPACES_LIST_QUERY_EMPTY_RESULT = {
+  data: {
+    project: {
+      id: 1,
+      clusterAgent: {
+        id: 1,
+        workspaces: {
+          nodes: [],
+          pageInfo: {
+            hasNextPage: false,
+            hasPreviousPage: false,
+            startCursor: null,
+            endCursor: null,
+          },
         },
       },
     },
@@ -234,7 +299,7 @@ export const WORKSPACE_UPDATE_MUTATION_RESULT = {
   },
 };
 
-export const USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT = {
+export const WORKSPACES_PROJECT_NAMES_QUERY_RESULT = {
   data: {
     projects: {
       nodes: [

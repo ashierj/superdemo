@@ -1,4 +1,5 @@
 import { pick } from 'lodash';
+import { s__ } from '~/locale';
 
 export const DEFAULT_DEVFILE_PATH = '.devfile.yaml';
 export const DEFAULT_EDITOR = 'webide';
@@ -44,3 +45,7 @@ export const PROJECT_VISIBILITY = {
 export const EXCLUDED_WORKSPACE_AGE_IN_DAYS = 5;
 export const WORKSPACES_LIST_PAGE_SIZE = 10;
 export const WORKSPACES_DROPDOWN_GROUP_PAGE_SIZE = 20;
+
+export const I18N_LOADING_WORKSPACES_FAILED = s__(
+  'Workspaces|Unable to load current Workspaces. Please try again or contact an administrator.',
+);

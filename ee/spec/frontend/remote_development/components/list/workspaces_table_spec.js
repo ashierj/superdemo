@@ -11,7 +11,7 @@ import { populateWorkspacesWithProjectNames } from 'ee/remote_development/servic
 import { WORKSPACE_STATES, WORKSPACE_DESIRED_STATES } from 'ee/remote_development/constants';
 import {
   USER_WORKSPACES_LIST_QUERY_RESULT,
-  USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT,
+  WORKSPACES_PROJECT_NAMES_QUERY_RESULT,
 } from '../../mock_data';
 
 jest.mock('~/lib/logger');
@@ -53,7 +53,7 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
   const createWrapper = ({
     workspaces = populateWorkspacesWithProjectNames(
       USER_WORKSPACES_LIST_QUERY_RESULT.data.currentUser.workspaces.nodes,
-      USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes,
+      WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes,
     ),
   } = {}) => {
     updateWorkspaceMutationMock = jest.fn();
@@ -98,7 +98,7 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
       expect(findTableRowsAsData(wrapper)).toEqual(
         populateWorkspacesWithProjectNames(
           USER_WORKSPACES_LIST_QUERY_RESULT.data.currentUser.workspaces.nodes,
-          USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes,
+          WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes,
         ).map((x) => {
           return {
             nameText: `${x.projectName}   ${x.name}`,
