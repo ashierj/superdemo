@@ -140,6 +140,7 @@ export default {
         data-testid="edit-weight"
         category="tertiary"
         size="small"
+        class="gl-mr-2"
         @click="isEditing = true"
         >{{ __('Edit') }}</gl-button
       >
