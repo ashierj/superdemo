@@ -3,9 +3,9 @@
 = render Pajamas::CardComponent.new(card_options: { class: 'gl-mb-5' }, body_options: { class: 'gl-py-0'}) do |c|
   - c.with_header do
     = _('Credit card:')
-    - if local_assigns[:link_to_match_page] && credit_card_validation&.holder_name
+    - if local_assigns[:link_to_match_page] && credit_card_validation&.holder_name_hash
       .gl-float-right.gl-font-sm
-        = link_to card_match_admin_user_path(@user) do
+        = link_to card_match_admin_user_path(user) do
           = _('View card matches')
   - c.with_body do
     %ul.content-list
