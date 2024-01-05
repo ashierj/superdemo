@@ -182,6 +182,7 @@ client_subscription_id: 'someid' }
     before do
       allow(Gitlab::Llm::Chain::Requests::AiGateway).to receive(:new).and_return(ai_request)
       allow(context).to receive(:tools_used).and_return([Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor])
+      stub_saas_features(duo_chat_categorize_question: true)
     end
 
     context 'when resource is an issue' do
@@ -310,6 +311,38 @@ client_subscription_id: 'someid' }
 
           subject
         end
+      end
+    end
+
+    context 'with on-premises GitLab instance' do
+      before do
+        stub_saas_features(duo_chat_categorize_question: false)
+      end
+
+      it 'does not execute question categorization' do
+        expected_params = [
+          user_input: content,
+          tools: match_array(tools),
+          context: context,
+          response_handler: response_handler,
+          stream_response_handler: stream_response_handler
+        ]
+
+        allow_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor, *expected_params) do |instance|
+          allow(instance).to receive(:execute).and_return(answer)
+        end
+
+        allow(response_handler).to receive(:execute)
+        allow(::Gitlab::Llm::ResponseService).to receive(:new).with(context, { request_id: 'uuid', ai_action: :chat })
+          .and_return(response_handler)
+        allow(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
+          .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request,
+            extra_resource: extra_resource, request_id: 'uuid', current_file: current_file)
+          .and_return(context)
+
+        expect(categorize_service).not_to receive(:execute)
+
+        subject
       end
     end
   end

@@ -86,6 +86,7 @@ module Gitlab
 
         def response_post_processing
           return if Rails.env.development?
+          return unless Gitlab::Saas.feature_available?(:duo_chat_categorize_question)
 
           service_options = {
             request_id: tracking_context[:request_id],

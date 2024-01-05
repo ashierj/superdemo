@@ -19,6 +19,7 @@ module EE
           subscriptions_trials
           group_custom_roles
           gitlab_saas_subscriptions
+          duo_chat_categorize_question
         ].freeze
 
       CONFIG_FILE_ROOT = 'ee/config/saas_features'
