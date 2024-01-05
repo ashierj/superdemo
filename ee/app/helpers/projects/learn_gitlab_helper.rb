@@ -42,12 +42,6 @@ module Projects
           s_('LearnGitlab|Contact your administrator to start a free Ultimate trial.')
       end
 
-      data[:code_added] = {
-        url: CGI.unescape(ide_project_edit_path(project.full_path)),
-        completed: onboarding_completion.completed?(:code_added),
-        enabled: true
-      }
-
       data
     end
 
@@ -91,6 +85,7 @@ module Projects
         git_write: project_path(project),
         merge_request_created: project_merge_requests_path(project),
         user_added: '#',
+        code_added: CGI.unescape(ide_project_edit_path(project.full_path)),
         **deploy_section_action_urls(project)
       }
 
