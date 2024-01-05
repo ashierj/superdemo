@@ -20,11 +20,13 @@ module EE
             description: 'Vulnerability and scanned resource counts for each security scanner of the pipeline.',
             resolver: ::Resolvers::SecurityReportSummaryResolver
 
+          # rubocop:disable Layout/LineLength -- otherwise description is creating unnecessary spaces.
           field :security_report_findings,
             ::Types::PipelineSecurityReportFindingType.connection_type,
             null: true,
-            description: 'Vulnerability findings reported on the pipeline.',
+            description: 'Vulnerability findings reported on the pipeline. By default all the states except dismissed are included in the response.',
             resolver: ::Resolvers::PipelineSecurityReportFindingsResolver
+          # rubocop:enable Layout/LineLength
 
           field :security_report_finding,
             ::Types::PipelineSecurityReportFindingType,
