@@ -1,0 +1,15 @@
+# frozen_string_literal: true
+
+class <%= migration_class_name %> < Gitlab::Database::Migration[<%= Gitlab::Database::Migration.current_version %>]
+  milestone '<%= Gitlab.current_milestone %>'
+
+  enable_lock_retries!
+
+  def up
+    add_column :member_roles, :<%= ability %>, :boolean, default: false, null: false
+  end
+
+  def down
+    remove_column :member_roles, :<%= ability %>
+  end
+end

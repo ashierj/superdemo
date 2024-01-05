@@ -192,7 +192,7 @@ class CustomAbilityOptionParser
 
     def read_introduced_by_mr
       $stdout.puts
-      $stdout.puts ">> URL to GitLab merge request that added this custom ability:"
+      $stdout.puts ">> URL to GitLab merge request that added this custom ability - enter to skip:"
 
       loop do
         introduced_by_mr = Readline.readline('?> ', false)&.strip
