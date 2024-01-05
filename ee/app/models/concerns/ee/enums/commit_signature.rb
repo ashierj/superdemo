@@ -6,7 +6,7 @@ module EE
       extend ActiveSupport::Concern
 
       EE_VERIFICATION_STATUSES = {
-        verified_ca: 9
+        verified_ca: 20
       }.freeze
 
       class_methods do
