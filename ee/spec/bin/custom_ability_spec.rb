@@ -236,7 +236,7 @@ RSpec.describe 'bin/custom-ability', feature_category: :permissions do
 
           expect do
             expect(described_class.read_introduced_by_mr).to be_nil
-          end.to output(/URL to GitLab merge request that added this custom ability:/).to_stdout
+          end.to output(/URL to GitLab merge request that added this custom ability - enter to skip:/).to_stdout
         end
       end
 
@@ -249,7 +249,7 @@ RSpec.describe 'bin/custom-ability', feature_category: :permissions do
 
           expect do
             expect { described_class.read_introduced_by_mr }.to raise_error(/EOF/)
-          end.to output(/URL to GitLab merge request that added this custom ability:/)
+          end.to output(/URL to GitLab merge request that added this custom ability - enter to skip:/)
                    .to_stdout.and output(/URL needs to start with https/).to_stderr
         end
       end
