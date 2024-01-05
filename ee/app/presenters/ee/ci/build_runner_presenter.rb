@@ -10,7 +10,7 @@ module EE
           secret['vault']['server'] = vault_server(secret) if secret['vault']
           secret['azure_key_vault']['server'] = azure_key_vault_server(secret) if secret['azure_key_vault']
 
-          if ::Feature.enabled?(:ci_gcp_secret_manager, project) && (secret['gcp_secret_manager'])
+          if ::Feature.enabled?(:ci_gcp_secret_manager, project, type: :beta) && (secret['gcp_secret_manager'])
             secret['gcp_secret_manager']['server'] = gcp_secret_manager_server(secret)
           end
 
