@@ -2,7 +2,7 @@ Ruby:
   - example: |-
       # filter out users without a zipcode
       def users_with_zipcode(users)
-      <cursor>
+      {{cursor}}
       end
 
       # find users with a zipcode
@@ -12,7 +12,7 @@ Ruby:
       class User < ApplicationRecord
         has_many :addresses
       # scope for users who have addresses in California
-      <cursor>
+      {{cursor}}
 
       # scope for users who are in Arkansas
     response: |-
@@ -23,7 +23,7 @@ Ruby:
         fr: 'Accepter'
       }
       # returns the correct label for a given language, or 'Not Found' if not found
-      <cursor>
+      {{cursor}}
     response: |-
       <new_code>def accept_label(language) do
         label = LABELS[language]
@@ -32,7 +32,7 @@ Ruby:
 TypeScript:
   - example: |-
       // write a function to generate a unique UUID
-      <cursor>
+      {{cursor}}
 
       // calculate the square root of a number
     response: |-
@@ -47,7 +47,7 @@ TypeScript:
 
       // fetch the current filtered list of issues
       async function fetchData(filters) {
-      <cursor>
+      {{cursor}}
         return response.json();
       }
 
@@ -57,7 +57,7 @@ TypeScript:
   - example: |-
       // get the hotels near the user, be sure to check permission for location usage
       async function getNearbyHotels(userLocation: GeolocationCoordinates): Promise<Hotel[]> {
-        <cursor>
+        {{cursor}}
         return nearbyHotels;
       }
     response: |-
@@ -82,16 +82,16 @@ Python:
           self.visibility = 'PUBLIC' if public
 
           # is this project public?
-      <cursor>
+      {{cursor}}
 
           # print name of this project
     response: |-
       <new_code>def is_public(self):
-        self.visibility == 'PUBLIC'
+        return self.visibility == 'PUBLIC'
   - example: |-
       # get the current user's name from the session data
       def get_user(session):
-      <cursor>
+      {{cursor}}
 
       # is the current user an admin
     response: |-
@@ -110,7 +110,7 @@ Go:
         if err != nil { panic(err) }
       }
       // create an HTTP handler that fetches the current user preferences and returns them as JSON
-      <cursor>
+      {{cursor}}
 
       // function to print the current user's name
     response: |-
@@ -133,7 +133,7 @@ Go:
   - example: |-
       // filter out any non-prime numbers from the list
       func filterPrimes(list []int) []int {
-      <cursor>
+      {{cursor}}
         return primes
       }
 
@@ -153,7 +153,7 @@ Go:
 JavaScript:
   - example: |-
       // create CatsController with findAll method using nestjs
-      <cursor>
+      {{cursor}}
     response: |-
       <new_code>import { Controller, Get } from '@nestjs/common';
 
@@ -165,15 +165,15 @@ JavaScript:
         }
       }
   - example: |-
-      // create an exported weekFrom function that returns date a week from passed one 
-      <cursor>
+      // create an exported weekFrom function that returns date a week from passed one
+      {{cursor}}
     response: |-
       <new_code>import * as dateFns from 'date-fns'
 
       module.exports.weekFrom = (date) => dateFns.addDays(new Date(2017, 0, 25, 21, 28, 15), 7)
   - example: |-
       // write a function to generate a unique UUID
-      <cursor>
+      {{cursor}}
       // this function prints someone's name
     response: |-
       <new_code>function generateUUID() {
@@ -187,7 +187,7 @@ JavaScript:
 
       // fetch the current filtered list of issues
       async function fetchData(filters) {
-      <cursor>
+      {{cursor}}
         return response.json();
       }
 
@@ -207,7 +207,7 @@ JavaScript:
   - example: |-
       // get the hotels near the user, be sure to check permission for location usage
       async function getNearbyHotels(userLocation: GeolocationCoordinates): Promise<Hotel[]> {
-        <cursor>
+        {{cursor}}
         return nearbyHotels;
       }
     response: |-

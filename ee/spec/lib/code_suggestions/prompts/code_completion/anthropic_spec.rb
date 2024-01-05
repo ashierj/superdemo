@@ -54,19 +54,19 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
         model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
         prompt_version: 2,
         prompt: <<~PROMPT
-          Human: You are a coding autocomplete agent. We want to generate new Python code inside the file 'test.py'.
+          Human: You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Python code inside the file 'test.py'.
           The existing code is provided in <existing_code></existing_code> tags.
-          The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
-          In your process, first, review the existing code to understand its logic and format. Then, try to determine the most likely new code to generate at the cursor position.
+          The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
+          In your process, first, review the existing code to understand its logic and format. Then, try to determine the best code to generate at the cursor position.
           When generating the new code, please ensure the following:
           1. It is valid Python code.
           2. It matches the existing code's variable, parameter and function names.
           3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
           4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
-          Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
+          Return new code enclosed in <new_code></new_code> tags. We will then insert this at the {{cursor}} position.
           If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-          Here are a few examples of successfully generated code by other autocomplete agents:
+          Here are a few examples of successfully generated code:
 
           <examples>
 
@@ -82,7 +82,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
 
 
           <existing_code>
-            prefix<cursor>suffix
+            prefix{{cursor}}suffix
           </existing_code>
 
           Assistant: <new_code>
@@ -102,20 +102,20 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-          Human: You are a coding autocomplete agent. We want to generate new Python code inside the file 'test.py'.
+          Human: You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Python code inside the file 'test.py'.
           The existing code is provided in <existing_code></existing_code> tags.
-          The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
-          In your process, first, review the existing code to understand its logic and format. Then, try to determine the most likely new code to generate at the cursor position.
+          The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
+          In your process, first, review the existing code to understand its logic and format. Then, try to determine the best code to generate at the cursor position.
           When generating the new code, please ensure the following:
           1. It is valid Python code.
           2. It matches the existing code's variable, parameter and function names.
           3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
           4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
-          Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
+          Return new code enclosed in <new_code></new_code> tags. We will then insert this at the {{cursor}} position.
           If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
           <existing_code>
-            <cursor>suffix
+            {{cursor}}suffix
           </existing_code>
 
           Assistant: <new_code>
@@ -136,20 +136,20 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-          Human: You are a coding autocomplete agent. We want to generate new Python code inside the file 'test.py'.
+          Human: You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Python code inside the file 'test.py'.
           The existing code is provided in <existing_code></existing_code> tags.
-          The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
-          In your process, first, review the existing code to understand its logic and format. Then, try to determine the most likely new code to generate at the cursor position.
+          The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
+          In your process, first, review the existing code to understand its logic and format. Then, try to determine the best code to generate at the cursor position.
           When generating the new code, please ensure the following:
           1. It is valid Python code.
           2. It matches the existing code's variable, parameter and function names.
           3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
           4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
-          Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
+          Return new code enclosed in <new_code></new_code> tags. We will then insert this at the {{cursor}} position.
           If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
           <existing_code>
-            prefix<cursor>
+            prefix{{cursor}}
           </existing_code>
 
           Assistant: <new_code>
@@ -169,20 +169,20 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-          Human: You are a coding autocomplete agent. We want to generate new  code inside the file ''.
+          Human: You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new  code inside the file ''.
           The existing code is provided in <existing_code></existing_code> tags.
-          The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
-          In your process, first, review the existing code to understand its logic and format. Then, try to determine the most likely new code to generate at the cursor position.
+          The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
+          In your process, first, review the existing code to understand its logic and format. Then, try to determine the best code to generate at the cursor position.
           When generating the new code, please ensure the following:
           1. It is valid  code.
           2. It matches the existing code's variable, parameter and function names.
           3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
           4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
-          Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
+          Return new code enclosed in <new_code></new_code> tags. We will then insert this at the {{cursor}} position.
           If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
           <existing_code>
-            prefix<cursor>suffix
+            prefix{{cursor}}suffix
           </existing_code>
 
           Assistant: <new_code>
@@ -207,20 +207,20 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-          Human: You are a coding autocomplete agent. We want to generate new Python code inside the file 'test.py'.
+          Human: You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Python code inside the file 'test.py'.
           The existing code is provided in <existing_code></existing_code> tags.
-          The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
-          In your process, first, review the existing code to understand its logic and format. Then, try to determine the most likely new code to generate at the cursor position.
+          The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
+          In your process, first, review the existing code to understand its logic and format. Then, try to determine the best code to generate at the cursor position.
           When generating the new code, please ensure the following:
           1. It is valid Python code.
           2. It matches the existing code's variable, parameter and function names.
           3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
           4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
-          Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
+          Return new code enclosed in <new_code></new_code> tags. We will then insert this at the {{cursor}} position.
           If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
             <existing_code>
-              #{trimmed_prefix}<cursor>
+              #{trimmed_prefix}{{cursor}}
             </existing_code>
 
             Assistant: <new_code>
@@ -245,20 +245,20 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-          Human: You are a coding autocomplete agent. We want to generate new Python code inside the file 'test.py'.
+          Human: You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Python code inside the file 'test.py'.
           The existing code is provided in <existing_code></existing_code> tags.
-          The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
-          In your process, first, review the existing code to understand its logic and format. Then, try to determine the most likely new code to generate at the cursor position.
+          The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
+          In your process, first, review the existing code to understand its logic and format. Then, try to determine the best code to generate at the cursor position.
           When generating the new code, please ensure the following:
           1. It is valid Python code.
           2. It matches the existing code's variable, parameter and function names.
           3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
           4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
-          Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
+          Return new code enclosed in <new_code></new_code> tags. We will then insert this at the {{cursor}} position.
           If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
             <existing_code>
-              prefix<cursor>#{trimmed_suffix}
+              prefix{{cursor}}#{trimmed_suffix}
             </existing_code>
 
             Assistant: <new_code>

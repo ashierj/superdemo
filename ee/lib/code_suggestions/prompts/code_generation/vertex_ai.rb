@@ -51,7 +51,7 @@ module CodeSuggestions
         end
 
         def instructions
-          params[:instruction].presence || 'Generate the most likely code based on instructions.'
+          params[:instruction].presence || 'Generate the best possible code based on instructions.'
         end
       end
     end

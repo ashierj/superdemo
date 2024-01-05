@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe CodeSuggestions::Prompts::CodeGeneration::VertexAi, feature_category: :code_suggestions do
   let(:prefix) { 'prefix' }
-  let(:default_instructions) { 'Generate the most likely code based on instructions.' }
+  let(:default_instructions) { 'Generate the best possible code based on instructions.' }
   let(:instructions) { '' }
   let(:filename) { 'test.py' }
   let(:params) do
