@@ -24911,7 +24911,6 @@ CREATE TABLE vulnerabilities (
     epic_id bigint,
     project_id bigint NOT NULL,
     author_id bigint NOT NULL,
-    updated_by_id bigint,
     start_date date,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
@@ -35177,8 +35176,6 @@ CREATE INDEX index_vulnerabilities_on_project_id_and_state_and_severity ON vulne
 
 CREATE INDEX index_vulnerabilities_on_resolved_by_id ON vulnerabilities USING btree (resolved_by_id);
 
-CREATE INDEX index_vulnerabilities_on_updated_by_id ON vulnerabilities USING btree (updated_by_id);
-
 CREATE INDEX index_vulnerabilities_project_id_and_id_on_default_branch ON vulnerabilities USING btree (project_id, id) WHERE (present_on_default_branch IS TRUE);
 
 CREATE INDEX index_vulnerabilities_project_id_state_severity_default_branch ON vulnerabilities USING btree (project_id, state, severity, present_on_default_branch);
@@ -37861,9 +37858,6 @@ ALTER TABLE ONLY protected_branches
 
 ALTER TABLE ONLY scan_result_policies
     ADD CONSTRAINT fk_7aa24439f1 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY vulnerabilities
-    ADD CONSTRAINT fk_7ac31eacb9 FOREIGN KEY (updated_by_id) REFERENCES users(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY catalog_resource_versions
     ADD CONSTRAINT fk_7ad8849db4 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
