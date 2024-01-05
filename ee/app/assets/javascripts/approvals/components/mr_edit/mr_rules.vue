@@ -7,7 +7,7 @@ import { RULE_TYPE_ANY_APPROVER, RULE_TYPE_REGULAR, RULE_NAME_ANY_APPROVER } fro
 import EmptyRule from '../rules/empty_rule.vue';
 import RuleControls from '../rules/rule_controls.vue';
 import Rules from '../rules/rules.vue';
-import RuleInput from './rule_input.vue';
+import RuleInput from '../rules/rule_input.vue';
 
 let targetBranchMutationObserver;
 
