@@ -29,6 +29,11 @@ export default {
       type: String,
       required: true,
     },
+    dataExchangePayload: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
   },
   data() {
     return {
@@ -66,7 +71,11 @@ export default {
         domain: this.domain,
       });
 
+      const blob = this.dataExchangePayload;
+      const data = blob ? { data: { blob } } : {};
+
       arkoseObject.setConfig({
+        ...data,
         mode: 'inline',
         selector: `.${this.arkoseLabsContainerClass}`,
         onShown: this.onArkoseLabsIframeShown,

@@ -12,10 +12,18 @@ module EE
     end
 
     def arkose_labs_data
-      {
+      data = {
         api_key: Arkose::Settings.arkose_public_api_key,
         domain: Arkose::Settings.arkose_labs_domain
       }
+
+      if ::Feature.enabled?(:arkose_labs_signup_data_exchange)
+        use_case = Arkose::DataExchangePayload::USE_CASE_SIGN_UP
+        payload = Arkose::DataExchangePayload.new(request, use_case: use_case).build
+        data[:data_exchange_payload] = payload
+      end
+
+      data.compact
     end
 
     override :oauth_tracking_label

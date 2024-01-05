@@ -104,5 +104,9 @@
         }
       ]
     }
+  },
+  "data_exchange": {
+    "blob_decrypted": true,
+    "blob_received": true
   }
 }

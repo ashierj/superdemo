@@ -11,7 +11,7 @@ export const setupArkoseLabsForSignup = () => {
     return null;
   }
 
-  const { apiKey, domain } = el.dataset;
+  const { apiKey, domain, dataExchangePayload } = el.dataset;
 
   return new Vue({
     el,
@@ -21,6 +21,7 @@ export const setupArkoseLabsForSignup = () => {
           formSelector: FORM_SELECTOR,
           publicKey: apiKey,
           domain,
+          dataExchangePayload,
         },
       });
     },
