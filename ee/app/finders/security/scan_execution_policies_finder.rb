@@ -2,6 +2,8 @@
 
 module Security
   class ScanExecutionPoliciesFinder < ScanPolicyBaseFinder
+    extend ::Gitlab::Utils::Override
+
     def initialize(actor, object, params = {})
       super(actor, object, :scan_execution_policy, params)
     end
@@ -22,7 +24,8 @@ module Security
       end
     end
 
-    def authorized_to_read_policy_configuration?(config)
+    override :authorized_to_read_policy_configuration?
+    def authorized_to_read_policy_configuration?
       return actor.has_access_to?(project) if actor.is_a?(Clusters::Agent)
 
       super

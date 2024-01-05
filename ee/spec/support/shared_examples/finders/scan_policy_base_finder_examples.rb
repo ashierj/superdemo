@@ -5,6 +5,12 @@ require 'spec_helper'
 RSpec.shared_examples 'scan policies finder' do
   subject { described_class.new(actor, object, params).execute }
 
+  shared_examples 'when user does not have developer role in project/group' do
+    it 'returns empty collection' do
+      is_expected.to be_empty
+    end
+  end
+
   describe '#execute' do
     context 'when execute is not implemented in the subclass' do
       let(:example_class) do
@@ -40,18 +46,22 @@ RSpec.shared_examples 'scan policies finder' do
         # Project not belonging to group
         let_it_be(:object) { create(:project) }
 
-        before do
-          object.add_developer(actor)
-        end
+        it_behaves_like 'when user does not have developer role in project/group'
 
-        it 'returns policies with project' do
-          is_expected.to match_array([policy.merge(
-            {
-              config: policy_configuration,
-              project: object,
-              namespace: nil,
-              inherited: false
-            })])
+        context 'when user has developer role in the project' do
+          before do
+            object.add_developer(actor)
+          end
+
+          it 'returns policies with project' do
+            is_expected.to match_array([policy.merge(
+              {
+                config: policy_configuration,
+                project: object,
+                namespace: nil,
+                inherited: false
+              })])
+          end
         end
       end
 
@@ -69,27 +79,31 @@ RSpec.shared_examples 'scan policies finder' do
           )
         end
 
-        before do
-          group.add_developer(actor)
-        end
+        it_behaves_like 'when user does not have developer role in project/group'
 
-        context 'when relationship argument is not provided' do
-          it 'returns no policies' do
-            is_expected.to be_empty
+        context 'when user has developer role in the group' do
+          before do
+            object.add_developer(actor)
           end
-        end
 
-        context 'when relationship argument is provided as INHERITED' do
-          let(:relationship) { :inherited }
+          context 'when relationship argument is not provided' do
+            it 'returns no policies' do
+              is_expected.to be_empty
+            end
+          end
 
-          it 'returns scan policies for groups only' do
-            is_expected.to match_array([policy.merge(
-              {
-                config: group_policy_configuration,
-                project: nil,
-                namespace: group,
-                inherited: true
-              })])
+          context 'when relationship argument is provided as INHERITED' do
+            let(:relationship) { :inherited }
+
+            it 'returns scan policies for groups only' do
+              is_expected.to match_array([policy.merge(
+                {
+                  config: group_policy_configuration,
+                  project: nil,
+                  namespace: group,
+                  inherited: true
+                })])
+            end
           end
         end
       end
@@ -104,65 +118,62 @@ RSpec.shared_examples 'scan policies finder' do
           )
         end
 
-        before do
-          object.add_developer(actor)
-          group.add_developer(actor)
-        end
+        it_behaves_like 'when user does not have developer role in project/group'
 
-        context 'when relationship argument is not provided' do
-          it 'returns scan policies for project only' do
-            is_expected.to match_array([policy.merge(
-              {
-                config: policy_configuration,
-                project: object,
-                namespace: nil,
-                inherited: false
-              })])
+        context 'when user has developer role in the group' do
+          before do
+            object.add_developer(actor)
           end
-        end
 
-        context 'when relationship argument is provided as INHERITED' do
-          let(:relationship) { :inherited }
-
-          it 'returns policies defined for both project and namespace' do
-            is_expected.to match_array(
-              [
-                policy.merge(
-                  {
-                    config: policy_configuration,
-                    project: object,
-                    namespace: nil,
-                    inherited: false
-                  }),
-                policy.merge(
-                  {
-                    config: group_policy_configuration,
-                    project: nil,
-                    namespace: group,
-                    inherited: true
-                  })
-              ])
+          context 'when relationship argument is not provided' do
+            it 'returns scan policies for project only' do
+              is_expected.to match_array([policy.merge(
+                {
+                  config: policy_configuration,
+                  project: object,
+                  namespace: nil,
+                  inherited: false
+                })])
+            end
           end
-        end
 
-        context 'when relationship argument is provided as INHERITED_ONLY' do
-          let(:relationship) { :inherited_only }
+          context 'when relationship argument is provided as INHERITED' do
+            let(:relationship) { :inherited }
 
-          it 'returns policies defined for namespace only' do
-            is_expected.to match_array([policy.merge(
-              {
-                config: group_policy_configuration,
-                project: nil,
-                namespace: group,
-                inherited: true
-              })])
+            it 'returns policies defined for both project and namespace' do
+              is_expected.to match_array(
+                [
+                  policy.merge(
+                    {
+                      config: policy_configuration,
+                      project: object,
+                      namespace: nil,
+                      inherited: false
+                    }),
+                  policy.merge(
+                    {
+                      config: group_policy_configuration,
+                      project: nil,
+                      namespace: group,
+                      inherited: true
+                    })
+                ])
+            end
           end
-        end
-      end
 
-      context 'when user is unauthorized' do
-        it 'returns empty collection' do
-          is_expected.to be_empty
+          context 'when relationship argument is provided as INHERITED_ONLY' do
+            let(:relationship) { :inherited_only }
+
+            it 'returns policies defined for namespace only' do
+              is_expected.to match_array([policy.merge(
+                {
+                  config: group_policy_configuration,
+                  project: nil,
+                  namespace: group,
+                  inherited: true
+                })])
+            end
+          end
         end
       end
     end
