@@ -34035,6 +34035,9 @@ msgstr ""
 msgid "Organization|Organization avatar"
 msgstr ""
 
+msgid "Organization|Organization description (optional)"
+msgstr ""
+
 msgid "Organization|Organization name"
 msgstr ""
 
