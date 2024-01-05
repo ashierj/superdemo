@@ -171,7 +171,10 @@ module MergeTrains
 
     def on_ff_train?
       if ::Feature.enabled?(:fast_forward_merge_trains_support, target_project)
-        active? && pipeline&.sha == merge_request.merge_params.dig('train_ref', 'commit_sha')
+        commit_sha = merge_request.merge_params.dig('train_ref', 'commit_sha')
+        return false unless commit_sha.present?
+
+        active? && pipeline&.sha == commit_sha
       else
         false
       end

@@ -63,7 +63,7 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
       end
     end
 
-    context 'when pipeline for merge train succeeds', :sidekiq_might_not_need_inline do
+    context 'when pipeline for merge train succeeds', :sidekiq_inline do
       let(:project) { create(:project, :repository) }
 
       before do
