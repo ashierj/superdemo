@@ -135,7 +135,7 @@ module ClickHouse
       end
       strong_memoize_attr :finished_build_projections
 
-      BUILD_FIELD_NAMES = %i[id project_id pipeline_id status runner_id].freeze
+      BUILD_FIELD_NAMES = %i[id project_id pipeline_id status name stage runner_id].freeze
       BUILD_EPOCH_FIELD_NAMES = %i[created_at queued_at started_at finished_at].freeze
       RUNNER_FIELD_NAMES = %i[run_untagged type].freeze
       RUNNER_MANAGER_FIELD_NAMES = %i[system_xid version revision platform architecture].freeze
