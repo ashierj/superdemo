@@ -12,6 +12,17 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
 
   describe '#execute' do
     before do
+      allow(Gitlab::ApplicationRateLimiter).to receive(:throttled?)
+        .with(:phone_verification_send_code, scope: user).and_return(false)
+
+      %i[soft hard].each do |prefix|
+        rate_limit_name = "#{prefix}_phone_verification_transactions_limit".to_sym
+        allow(Gitlab::ApplicationRateLimiter)
+          .to receive(:peek).with(rate_limit_name, scope: nil).and_return(false)
+        allow(Gitlab::ApplicationRateLimiter)
+          .to receive(:throttled?).with(rate_limit_name, scope: nil).and_return(false)
+      end
+
       allow_next_instance_of(PhoneVerification::TelesignClient::RiskScoreService) do |instance|
         allow(instance).to receive(:execute).and_return(risk_service_response)
       end
@@ -19,12 +30,6 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
       allow_next_instance_of(PhoneVerification::TelesignClient::SendVerificationCodeService) do |instance|
         allow(instance).to receive(:execute).and_return(send_verification_code_response)
       end
-
-      allow(Gitlab::ApplicationRateLimiter).to receive(:throttled?)
-        .with(:phone_verification_send_code, scope: user).and_return(false)
-
-      allow(Gitlab::ApplicationRateLimiter)
-      .to receive(:throttled?).with(:soft_phone_verification_transactions_limit, scope: nil).and_return(false)
     end
 
     context 'when params are invalid' do
@@ -284,10 +289,34 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         ServiceResponse.success(payload: { telesign_reference_xid: telesign_reference_xid })
       end
 
-      it 'increments soft_phone_verification_transactions_limit rate limit count' do
+      it 'increments phone verification transactions count' do
         expect(PhoneVerification::Users::RateLimitService).to receive(:increase_daily_attempts)
 
         service.execute
+      end
+
+      context 'when limit is hit' do
+        where(:limit, :rate_limit_key) do
+          'soft' | :soft_phone_verification_transactions_limit
+          'hard' | :hard_phone_verification_transactions_limit
+        end
+
+        with_them do
+          before do
+            allow(Gitlab::ApplicationRateLimiter).to receive(:peek).with(rate_limit_key, scope: nil).and_return(true)
+          end
+
+          it 'logs the event' do
+            expect(Gitlab::AppLogger).to receive(:info).with({
+              class: described_class.name,
+              message: 'IdentityVerification::Phone',
+              event: 'Phone verification daily transaction limit exceeded',
+              exceeded_limit: rate_limit_key.to_s
+            })
+
+            service.execute
+          end
+        end
       end
 
       it 'returns a success response', :aggregate_failures do

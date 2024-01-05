@@ -14,6 +14,9 @@ feature_category: :system_access do
   before do
     stub_application_setting_enum('email_confirmation_setting', 'hard')
     stub_application_setting(require_admin_approval_after_user_signup: false)
+
+    allow(::Gitlab::ApplicationRateLimiter).to receive(:peek).and_call_original
+    allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_call_original
   end
 
   shared_examples 'it requires a valid verification_user_id' do

@@ -58,7 +58,7 @@ module Users
 
     def show_recaptcha_challenge?
       recaptcha_enabled? &&
-        PhoneVerification::Users::RateLimitService.daily_transaction_limit_exceeded?
+        PhoneVerification::Users::RateLimitService.daily_transaction_soft_limit_exceeded?
     end
 
     private

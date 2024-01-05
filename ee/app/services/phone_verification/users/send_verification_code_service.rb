@@ -139,7 +139,16 @@ module PhoneVerification
       end
 
       def success(risk_result, send_code_result)
-        PhoneVerification::Users::RateLimitService.increase_daily_attempts
+        rate_limit_service = PhoneVerification::Users::RateLimitService
+        rate_limit_service.increase_daily_attempts
+
+        if rate_limit_service.daily_transaction_soft_limit_exceeded?
+          log_limit_exceeded_event(:soft_phone_verification_transactions_limit)
+        end
+
+        if rate_limit_service.daily_transaction_hard_limit_exceeded?
+          log_limit_exceeded_event(:hard_phone_verification_transactions_limit)
+        end
 
         attrs = { telesign_reference_xid: send_code_result[:telesign_reference_xid] }
         attrs[:risk_score] = risk_result[:risk_score] if Feature.enabled?(:telesign_intelligence, type: :ops)
@@ -153,6 +162,15 @@ module PhoneVerification
         return unless Feature.enabled?(:telesign_intelligence, type: :ops)
 
         Abuse::TrustScoreWorker.perform_async(user.id, :telesign, risk_score.to_f)
+      end
+
+      def log_limit_exceeded_event(rate_limit_key)
+        ::Gitlab::AppLogger.info(
+          class: self.class.name,
+          message: 'IdentityVerification::Phone',
+          event: 'Phone verification daily transaction limit exceeded',
+          exceeded_limit: rate_limit_key.to_s
+        )
       end
     end
   end
