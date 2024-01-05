@@ -34,7 +34,8 @@ const createComponent = ({
   return mount(EpicItemContainer, {
     store,
     stubs: {
-      'epic-item': EpicItem,
+      EpicItemContainer,
+      EpicItem,
     },
     propsData: {
       presetType,

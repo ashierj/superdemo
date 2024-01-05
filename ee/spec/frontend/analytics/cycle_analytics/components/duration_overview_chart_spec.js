@@ -3,7 +3,7 @@ import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
-import { GlIcon } from '@gitlab/ui';
+import { GlIcon, GlAlert } from '@gitlab/ui';
 import DurationOverviewChart from 'ee/analytics/cycle_analytics/components/duration_overview_chart.vue';
 import NoDataAvailableState from 'ee/analytics/cycle_analytics/components/no_data_available_state.vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
@@ -79,6 +79,7 @@ describe('DurationOverviewChart', () => {
       store: fakeStore({ initialState, initialGetters, rootGetters, rootState }),
       stubs: {
         ChartSkeletonLoader: true,
+        GlAlert,
         ...stubs,
       },
     });
