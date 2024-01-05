@@ -7,6 +7,9 @@ module QA
         class List < QA::Page::Base
           view 'ee/app/assets/javascripts/remote_development/pages/list.vue' do
             element 'list-new-workspace-button'
+          end
+
+          view 'ee/app/assets/javascripts/remote_development/components/common/workspaces_list.vue' do
             element 'workspace-list-item'
           end
 

@@ -18,7 +18,7 @@ import {
   WORKSPACE_DESIRED_STATES,
 } from 'ee/remote_development/constants';
 import {
-  USER_WORKSPACES_QUERY_EMPTY_RESULT,
+  USER_WORKSPACES_LIST_QUERY_EMPTY_RESULT,
   USER_WORKSPACES_LIST_QUERY_RESULT,
   PROJECT_ID,
   PROJECT_FULL_PATH,
@@ -231,7 +231,7 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
   describe('when user does not have workspaces', () => {
     beforeEach(async () => {
       userWorkspacesListQueryHandler.mockReset();
-      userWorkspacesListQueryHandler.mockResolvedValueOnce(USER_WORKSPACES_QUERY_EMPTY_RESULT);
+      userWorkspacesListQueryHandler.mockResolvedValueOnce(USER_WORKSPACES_LIST_QUERY_EMPTY_RESULT);
 
       createWrapper();
 

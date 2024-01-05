@@ -1,39 +1,46 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script>
-import { GlButton } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
-import { s__ } from '~/locale';
 import {
-  WORKSPACES_LIST_PAGE_SIZE,
-  ROUTES,
-  WORKSPACES_LIST_POLL_INTERVAL,
   I18N_LOADING_WORKSPACES_FAILED,
-} from '../constants';
-import userWorkspacesListQuery from '../graphql/queries/user_workspaces_list.query.graphql';
-import WorkspacesList from '../components/common/workspaces_list.vue';
-import { fetchProjectNames, populateWorkspacesWithProjectNames } from '../services/utils';
+  WORKSPACES_LIST_PAGE_SIZE,
+  WORKSPACES_LIST_POLL_INTERVAL,
+} from '../../constants';
+import agentWorkspacesListQuery from '../../graphql/queries/agent_workspaces_list.query.graphql';
+import { fetchProjectNames, populateWorkspacesWithProjectNames } from '../../services/utils';
+import WorkspacesList from '../common/workspaces_list.vue';
 
 export const i18n = {
-  newWorkspaceButton: s__('Workspaces|New workspace'),
   loadingWorkspacesFailed: I18N_LOADING_WORKSPACES_FAILED,
 };
 
 export default {
   components: {
-    GlButton,
     WorkspacesList,
+  },
+  props: {
+    agentName: {
+      type: String,
+      required: true,
+    },
+    projectPath: {
+      type: String,
+      required: true,
+    },
   },
   apollo: {
     workspaces: {
-      query: userWorkspacesListQuery,
+      query: agentWorkspacesListQuery,
       pollInterval: WORKSPACES_LIST_POLL_INTERVAL,
       variables() {
         return {
+          agentName: this.agentName,
+          projectPath: this.projectPath,
           ...this.paginationVariables,
         };
       },
       update(data) {
-        return data.currentUser.workspaces?.nodes || [];
+        return data.project?.clusterAgent?.workspaces?.nodes || [];
       },
       error(err) {
         logError(err);
@@ -43,7 +50,7 @@ export default {
           this.error = i18n.loadingWorkspacesFailed;
           return;
         }
-        const workspaces = data.currentUser.workspaces.nodes;
+        const workspaces = data?.project?.clusterAgent?.workspaces?.nodes;
         const result = await fetchProjectNames(this.$apollo, workspaces);
 
         if (result.error) {
@@ -54,7 +61,7 @@ export default {
         }
 
         this.workspaces = populateWorkspacesWithProjectNames(workspaces, result.projects);
-        this.pageInfo = data.currentUser.workspaces.pageInfo;
+        this.pageInfo = data?.project?.clusterAgent?.workspaces?.pageInfo;
       },
     },
   },
@@ -76,9 +83,6 @@ export default {
     };
   },
   computed: {
-    isEmpty() {
-      return !this.workspaces.length && !this.isLoading;
-    },
     isLoading() {
       return this.$apollo.loading;
     },
@@ -87,15 +91,11 @@ export default {
     onError(error) {
       this.error = error;
     },
-    onUpdateFailed({ error }) {
-      this.error = error;
-    },
     onPaginationInput(paginationVariables) {
       this.paginationVariables = paginationVariables;
     },
   },
   i18n,
-  ROUTES,
 };
 </script>
 <template>
@@ -106,11 +106,5 @@ export default {
     :is-loading="isLoading"
     @error="onError"
     @page="onPaginationInput"
-  >
-    <template #header>
-      <gl-button variant="confirm" :to="$options.ROUTES.new" data-testid="list-new-workspace-button"
-        >{{ $options.i18n.newWorkspaceButton }}
-      </gl-button>
-    </template>
-  </workspaces-list>
+  />
 </template>
