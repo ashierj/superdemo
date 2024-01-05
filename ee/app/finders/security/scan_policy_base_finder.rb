@@ -18,8 +18,9 @@ module Security
     attr_reader :actor, :object, :policy_type, :params
 
     def fetch_scan_policies
+      return [] unless authorized_to_read_policy_configuration?
+
       fetch_policy_configurations
-        .select { |config| authorized_to_read_policy_configuration?(config) }
         .flat_map { |config| merge_project_relationship(config) }
     end
 
@@ -27,8 +28,8 @@ module Security
       @policy_configuration ||= object.security_orchestration_policy_configuration
     end
 
-    def authorized_to_read_policy_configuration?(config)
-      Ability.allowed?(actor, :read_security_orchestration_policies, config.source)
+    def authorized_to_read_policy_configuration?
+      Ability.allowed?(actor, :read_security_orchestration_policies, object)
     end
 
     def fetch_policy_configurations
