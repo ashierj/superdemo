@@ -13,8 +13,6 @@ module ComplianceManagement
     urgency :high
 
     def perform
-      return unless Feature.enabled?(:timeout_status_check_responses)
-
       ::MergeRequests::StatusCheckResponse.pending.each_batch do |batch|
         batch.timeout_eligible.update_all(status: 'failed')
       end

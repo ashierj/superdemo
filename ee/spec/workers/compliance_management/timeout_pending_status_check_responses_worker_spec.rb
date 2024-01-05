@@ -17,36 +17,19 @@ RSpec.describe ComplianceManagement::TimeoutPendingStatusCheckResponsesWorker, f
       create(:recent_retried_pending_status_check_response)
     end
 
-    context 'when feature flag `timeout_status_check_responses` is enabled' do
-      it 'sets qualified `pending` status check responses to failed' do
-        worker.perform
+    it 'sets qualified `pending` status check responses to failed' do
+      worker.perform
 
-        expect(recent_pending_status_check_response.status).to eq('pending')
-        expect(recent_retried_pending_status_check_response.status).to eq('pending')
+      expect(recent_pending_status_check_response.status).to eq('pending')
+      expect(recent_retried_pending_status_check_response.status).to eq('pending')
 
-        expect(old_pending_status_check_response.status).to eq('failed')
-        expect(old_retried_pending_status_check_response.status).to eq('failed')
-      end
-
-      it 'does not update existing `passed` or `failed` status check responses' do
-        expect(old_passed_status_check_response.status).to eq('passed')
-        expect(old_failed_status_check_response.status).to eq('failed')
-      end
+      expect(old_pending_status_check_response.status).to eq('failed')
+      expect(old_retried_pending_status_check_response.status).to eq('failed')
     end
 
-    context 'when feature flag `timeout_status_check_responses` is disabled' do
-      before do
-        stub_feature_flags(timeout_status_check_responses: false)
-      end
-
-      it 'does not update status check responses' do
-        worker.perform
-
-        expect(recent_pending_status_check_response.status).to eq('pending')
-        expect(recent_retried_pending_status_check_response.status).to eq('pending')
-        expect(old_pending_status_check_response.status).to eq('pending')
-        expect(old_retried_pending_status_check_response.status).to eq('pending')
-      end
+    it 'does not update existing `passed` or `failed` status check responses' do
+      expect(old_passed_status_check_response.status).to eq('passed')
+      expect(old_failed_status_check_response.status).to eq('failed')
     end
 
     it_behaves_like 'an idempotent worker'
