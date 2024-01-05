@@ -16,7 +16,7 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
 
   let_it_be(:build1) { create(:ci_build, :success, runner_manager: runner_manager1) }
   let_it_be(:build2) { create(:ci_build, :canceled) }
-  let_it_be(:build3) { create(:ci_build, :failed) }
+  let_it_be(:build3) { create(:ci_build, :failed, stage: 'test') }
   let_it_be(:build4) { create(:ci_build, :pending) }
 
   before_all do
@@ -237,7 +237,7 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
 
   def ci_finished_builds
     ClickHouse::Client
-      .select('SELECT * FROM ci_finished_builds', :main)
+      .select('SELECT *, date FROM ci_finished_builds', :main)
       .map(&:symbolize_keys)
   end
 
@@ -245,12 +245,15 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
     runner = build.runner
     runner_manager = build.runner_manager
 
-    a_hash_including(
+    {
       id: build.id, status: build.status, project_id: build.project_id, pipeline_id: build.pipeline_id,
       created_at: a_value_within(1.second).of(build.created_at),
       started_at: a_value_within(1.second).of(build.started_at),
       queued_at: a_value_within(1.second).of(build.queued_at),
       finished_at: a_value_within(1.second).of(build.finished_at),
+      date: build.finished_at.beginning_of_month,
+      name: build.name || '',
+      stage: build.stage || '',
       runner_id: runner&.id || 0,
       runner_type: Ci::Runner.runner_types.fetch(runner&.runner_type, 0),
       runner_run_untagged: runner&.run_untagged || false,
@@ -259,7 +262,7 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
       runner_manager_revision: runner_manager&.revision || '',
       runner_manager_platform: runner_manager&.platform || '',
       runner_manager_architecture: runner_manager&.architecture || ''
-    )
+    }
   end
 
   def contain_exactly_builds(*builds)
