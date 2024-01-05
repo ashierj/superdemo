@@ -38,16 +38,19 @@ RSpec.describe DependencyProxy::Packages::Setting, type: :model, feature_categor
 
     context 'for maven credentials' do
       where(:maven_username, :maven_password, :valid, :error_message) do
-        'user'      | 'password'   | true  | nil
-        ''          | ''           | true  | nil
-        ''          | nil          | true  | nil
-        nil         | ''           | true  | nil
-        nil         | 'password'   | false | "Maven external registry username can't be blank"
-        'user'      | nil          | false | "Maven external registry password can't be blank"
-        ''          | 'password'   | false | "Maven external registry username can't be blank"
-        'user'      | ''           | false | "Maven external registry password can't be blank"
-        ('a' * 256) | 'password'   | false | "Maven external registry username is too long (maximum is 255 characters)"
-        'user'      | ('a' * 256)  | false | "Maven external registry password is too long (maximum is 255 characters)"
+        'user'      | 'password'  | true  | nil
+        ''          | ''          | false | ["Maven external registry password can't be blank",
+                                             "Maven external registry username can't be blank"] # rubocop: disable Layout/ArrayAlignment -- readability
+        {}          | {}          | false | ["Maven external registry password can't be blank",
+                                             "Maven external registry username can't be blank"] # rubocop: disable Layout/ArrayAlignment -- readability
+        ''          | nil         | false | ["Maven external registry password can't be blank"]
+        nil         | ''          | false | ["Maven external registry username can't be blank"]
+        nil         | 'password'  | false | ["Maven external registry username can't be blank"]
+        'user'      | nil         | false | ["Maven external registry password can't be blank"]
+        ''          | 'password'  | false | ["Maven external registry username can't be blank"]
+        'user'      | ''          | false | ["Maven external registry password can't be blank"]
+        ('a' * 256) | 'password'  | false | ["Maven external registry username is too long (maximum is 255 characters)"]
+        'user'      | ('a' * 256) | false | ["Maven external registry password is too long (maximum is 255 characters)"]
       end
 
       with_them do
@@ -61,11 +64,11 @@ RSpec.describe DependencyProxy::Packages::Setting, type: :model, feature_categor
         end
 
         if params[:valid]
-          it { expect(setting).to be_valid }
+          it { expect(setting.save).to be_truthy }
         else
           it do
-            expect(setting).not_to be_valid
-            expect(setting.errors).to contain_exactly(error_message)
+            expect(setting.save).to be_falsey
+            expect(setting.errors).to contain_exactly(*error_message)
           end
         end
       end
