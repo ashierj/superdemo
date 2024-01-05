@@ -274,6 +274,14 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
             it_behaves_like 'does not update approvals_required'
           end
+
+          context 'when vulnerability_states are empty array' do
+            let(:vulnerability_states) { [] }
+
+            it_behaves_like 'new vulnerability_states', []
+
+            it_behaves_like 'does not update approvals_required'
+          end
         end
 
         context 'when there are new dismissed vulnerabilities' do
@@ -305,6 +313,14 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
             let(:vulnerability_states) { %w[new_dismissed new_needs_triage] }
 
             it_behaves_like 'new vulnerability_states', %w[new_dismissed new_needs_triage]
+
+            it_behaves_like 'does not update approvals_required'
+          end
+
+          context 'when vulnerability_states are empty array' do
+            let(:vulnerability_states) { [] }
+
+            it_behaves_like 'new vulnerability_states', []
 
             it_behaves_like 'does not update approvals_required'
           end
@@ -346,6 +362,14 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
         context 'when vulnerability_states has newly_detected' do
           let(:vulnerability_states) { %w[detected newly_detected] }
+
+          it_behaves_like 'sets approvals_required to 0'
+
+          it_behaves_like 'triggers policy bot comment', :scan_finding, false
+        end
+
+        context 'when vulnerability_states are empty array' do
+          let(:vulnerability_states) { [] }
 
           it_behaves_like 'sets approvals_required to 0'
 
