@@ -10,7 +10,6 @@ import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completio
 import testFileGeneratorMutation from 'ee/ai/graphql/test_file_generator.mutation.graphql';
 
 Vue.use(VueApollo);
-Vue.config.ignoredElements = ['copy-code'];
 
 let wrapper;
 let subscriptionHandlerMock;
@@ -26,6 +25,9 @@ function createComponent() {
     propsData: {
       resourceId: 'gid://gitlab/MergeRequest/1',
       filePath: 'index.js',
+    },
+    stubs: {
+      'copy-code': { template: '<div/>' },
     },
     apolloProvider,
   });
