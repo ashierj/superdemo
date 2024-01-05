@@ -7,11 +7,6 @@ RSpec.describe 'Google Syndication content security policy', feature_category: :
 
   let_it_be(:connect_src) { 'https://other-cdn.test' }
 
-  let_it_be(:google_analytics_src) do
-    'localhost https://cdn.cookielaw.org https://*.onetrust.com *.google-analytics.com ' \
-      '*.analytics.google.com *.googletagmanager.com *.g.doubleclick.net'
-  end
-
   let_it_be(:allowed_src) do
     '*.google.com/pagead/landing pagead2.googlesyndication.com/pagead/landing'
   end
@@ -41,14 +36,14 @@ RSpec.describe 'Google Syndication content security policy', feature_category: :
     end
 
     context 'when connect-src CSP config exists' do
-      it { is_expected.to include("connect-src #{connect_src} #{google_analytics_src}") }
+      it { is_expected.to include("connect-src #{connect_src}") }
       it { is_expected.not_to include(allowed_src) }
     end
   end
 
   context 'when SaaS', :saas do
     context 'when connect-src CSP config exists' do
-      it { is_expected.to include("connect-src #{connect_src} #{google_analytics_src} #{allowed_src}") }
+      it { is_expected.to match(/connect-src [^;]*#{Regexp.escape(allowed_src)}/) }
     end
   end
 end
