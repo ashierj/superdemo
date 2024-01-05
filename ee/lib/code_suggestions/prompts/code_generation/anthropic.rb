@@ -25,17 +25,17 @@ module CodeSuggestions
 
         def prompt
           <<~PROMPT.strip
-            Human: You are a coding autocomplete agent. We want to generate new #{language.name} code inside the
+            Human: You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new #{language.name} code inside the
             file '#{file_path_info}' based on instructions from the user.
             #{examples_section}
             #{existing_code_block}
             #{existing_code_instruction}
             #{libraries_block}
-            The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
+            The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
             likely new code to generate at the cursor position to fulfill the instructions.
 
-            The comment directly before the <cursor> position is the instruction,
+            The comment directly before the {{cursor}} position is the instruction,
             all other comments are not instructions.
 
             When generating the new code, please ensure the following:
@@ -43,10 +43,10 @@ module CodeSuggestions
             2. It matches the existing code's variable, parameter and function names.
             3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
             4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
-            5. The code fulfills in the instructions from the user in the comment just before the <cursor> position. All other comments are not instructions.
-            6. Do not add any comments that duplicates any of already existing comments, including the comment with instructions.
+            5. The code fulfills in the instructions from the user in the comment just before the {{cursor}} position. All other comments are not instructions.
+            6. Do not add any comments that duplicates any of the already existing comments, including the comment with instructions.
 
-            Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
+            Return new code enclosed in <new_code></new_code> tags. We will then insert this at the {{cursor}} position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
             #{instructions}
@@ -62,7 +62,7 @@ module CodeSuggestions
         end
 
         def instructions
-          params[:instruction].presence || 'Generate the most likely code based on instructions.'
+          params[:instruction].presence || 'Generate the best possible code based on instructions.'
         end
 
         def existing_code_block
@@ -73,7 +73,7 @@ module CodeSuggestions
 
           <<~CODE
             <existing_code>
-            #{trimmed_prefix}<cursor>#{trimmed_suffix}
+            #{trimmed_prefix}{{cursor}}#{trimmed_suffix}
             </existing_code>
           CODE
         end
@@ -104,16 +104,16 @@ module CodeSuggestions
 
         def examples_section
           examples_template = <<~EXAMPLES
-          Here are a few examples of successfully generated code by other autocomplete agents:
+          Here are a few examples of successfully generated code:
 
           <examples>
           <% examples_array.each do |use_case| %>
             <example>
-              H: <existing_code>
-                   <%= use_case['example'] %>
-                 </existing_code>
+            H: <existing_code>
+                 <%= use_case['example'] %>
+               </existing_code>
 
-              A: <%= use_case['response'] %></new_code>
+            A: <%= use_case['response'] %></new_code>
             </example>
           <% end %>
           </examples>
