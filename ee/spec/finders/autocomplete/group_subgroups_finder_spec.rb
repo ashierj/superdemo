@@ -21,6 +21,17 @@ RSpec.describe Autocomplete::GroupSubgroupsFinder do
       expect(subject).to contain_exactly(subgroup_1, subgroup_2)
     end
 
+    context 'when include_parent_descendants parameter is true' do
+      before do
+        params[:include_parent_descendants] = true
+      end
+
+      it 'returns subgroups and their descendants', :aggregate_failures do
+        expect(subject.count).to eq(3)
+        expect(subject).to contain_exactly(subgroup_1, subgroup_2, grandchild_1)
+      end
+    end
+
     context 'when the number of groups exceeds the limit' do
       before do
         stub_const("#{described_class}::LIMIT", 1)

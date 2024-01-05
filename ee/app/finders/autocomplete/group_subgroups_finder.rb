@@ -11,10 +11,19 @@ module Autocomplete
       @params = params
     end
 
+    def include_parent_descendants?
+      Gitlab::Utils.to_boolean(params[:include_parent_descendants])
+    end
+
+    def group_id
+      params[:group_id]
+    end
+
     # rubocop: disable CodeReuse/Finder
     def execute
-      group = ::Autocomplete::GroupFinder.new(current_user, nil, params).execute
-      GroupsFinder.new(current_user, parent: group).execute.limit(LIMIT)
+      group = ::Autocomplete::GroupFinder.new(current_user, nil, group_id: group_id).execute
+      GroupsFinder.new(current_user, parent: group,
+        include_parent_descendants: include_parent_descendants?).execute.limit(LIMIT)
     end
     # rubocop: enable CodeReuse/Finder
   end
