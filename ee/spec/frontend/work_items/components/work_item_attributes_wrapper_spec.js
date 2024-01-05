@@ -6,7 +6,7 @@ import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_stat
 import WorkItemHealthStatusInline from 'ee/work_items/components/work_item_health_status_inline.vue';
 import WorkItemWeight from 'ee/work_items/components/work_item_weight_with_edit.vue';
 import WorkItemWeightInline from 'ee/work_items/components/work_item_weight_inline.vue';
-import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
+import WorkItemIterationInline from 'ee/work_items/components/work_item_iteration_inline.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { workItemResponseFactory } from 'jest/work_items/mock_data';
@@ -28,7 +28,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
     .fn()
     .mockResolvedValue({ data: { workItemUpdated: null } });
 
-  const findWorkItemIteration = () => wrapper.findComponent(WorkItemIteration);
+  const findWorkItemIterationInline = () => wrapper.findComponent(WorkItemIterationInline);
   const findWorkItemWeight = () => wrapper.findComponent(WorkItemWeight);
   const findWorkItemWeightInline = () => wrapper.findComponent(WorkItemWeightInline);
   const findWorkItemProgress = () => wrapper.findComponent(WorkItemProgress);
@@ -74,18 +74,18 @@ describe('EE WorkItemAttributesWrapper component', () => {
         iterationWidgetPresent ? 'renders' : 'does not render'
       } iteration component`, async () => {
         const response = workItemResponseFactory({ iterationWidgetPresent });
-        createComponent({ workItem: response.data.workItem });
+        createComponent({ workItem: response.data.workItem, workItemsMvc2: false });
         await waitForPromises();
 
-        expect(findWorkItemIteration().exists()).toBe(exists);
+        expect(findWorkItemIterationInline().exists()).toBe(exists);
       });
     });
 
     it('emits an error event to the wrapper', async () => {
-      createComponent();
+      createComponent({ workItemsMvc2: false });
       const updateError = 'Failed to update';
 
-      findWorkItemIteration().vm.$emit('error', updateError);
+      findWorkItemIterationInline().vm.$emit('error', updateError);
       await nextTick();
 
       expect(wrapper.emitted('error')).toEqual([[updateError]]);

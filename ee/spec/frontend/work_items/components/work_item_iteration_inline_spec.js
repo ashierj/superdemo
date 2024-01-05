@@ -1,7 +1,7 @@
 import { GlCollapsibleListbox, GlFormGroup, GlListboxItem, GlSkeletonLoader } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
+import WorkItemIterationInline from 'ee/work_items/components/work_item_iteration_inline.vue';
 import projectIterationsQuery from 'ee/work_items/graphql/project_iterations.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
@@ -17,7 +17,7 @@ import {
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 
-describe('WorkItemIteration component', () => {
+describe('WorkItemIterationInline component', () => {
   Vue.use(VueApollo);
 
   let wrapper;
@@ -50,7 +50,7 @@ describe('WorkItemIteration component', () => {
     searchQueryHandler = successSearchQueryHandler,
     mutationHandler = successUpdateWorkItemMutationHandler,
   } = {}) => {
-    wrapper = shallowMountExtended(WorkItemIteration, {
+    wrapper = shallowMountExtended(WorkItemIterationInline, {
       apolloProvider: createMockApollo([
         [projectIterationsQuery, searchQueryHandler],
         [updateWorkItemMutation, mutationHandler],
