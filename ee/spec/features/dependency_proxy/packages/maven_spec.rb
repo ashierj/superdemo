@@ -143,11 +143,12 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
         end
 
         before do
-          allow(::Gitlab::Workhorse).to receive(:send_url).and_wrap_original do |original_method, *args, &block|
+          allow(::Gitlab::Workhorse)
+            .to receive(:send_url).and_wrap_original do |original_method, *args, **kwargs, &block|
             # we use `10m` that the function will add an `s` = `10ms`
             # Workhorse will parse that as a timeout of 10 milliseconds which is what we want here.
-            args.last[:timeouts] = { read: '10m' }
-            original_method.call(*args, &block)
+            kwargs[:timeouts] = { read: '10m' }
+            original_method.call(*args, **kwargs, &block)
           end
         end
 
