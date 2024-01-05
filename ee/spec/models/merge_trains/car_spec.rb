@@ -501,11 +501,27 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   describe '#on_ff_train?' do
     subject { train_car.on_ff_train? }
 
-    let_it_be(:fresh_car) { create(:merge_train_car, :fresh) }
+    let_it_be_with_reload(:fresh_car) { create(:merge_train_car, :fresh) }
     let_it_be(:merged_car) { create(:merge_train_car, :merged) }
 
     context 'when car is active' do
       let(:train_car) { fresh_car }
+
+      context 'when pipeline is nil' do
+        before do
+          train_car.update!(pipeline_id: nil)
+        end
+
+        it { is_expected.to eq(false) }
+
+        context 'when commit sha is nil' do
+          before do
+            train_car.merge_request.update!(merge_params: { 'train_ref' => { 'commit_sha' => nil } })
+          end
+
+          it { is_expected.to eq(false) }
+        end
+      end
 
       context 'when the pipeline sha is the same as the merge request sha' do
         before do
