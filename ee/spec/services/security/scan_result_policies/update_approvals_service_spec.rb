@@ -11,14 +11,17 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     let(:approvals_required) { 2 }
 
     let_it_be(:uuids) { Array.new(5) { SecureRandom.uuid } }
-    let_it_be(:merge_request) { create(:merge_request, source_branch: 'feature-branch', target_branch: 'master') }
+    let_it_be_with_refind(:merge_request) { create(:merge_request, source_branch: 'feature', target_branch: 'master') }
     let_it_be(:project) { merge_request.project }
+
     let_it_be(:pipeline) do
-      create(:ee_ci_pipeline, :success, project: project, ref: merge_request.source_branch, sha: 'feature-sha')
+      create(:ee_ci_pipeline, :success, project: project, ref: merge_request.source_branch,
+        sha: merge_request.diff_head_sha)
     end
 
     let_it_be(:target_pipeline) do
-      create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch, sha: 'target-sha')
+      create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch,
+        sha: merge_request.diff_base_sha)
     end
 
     let_it_be(:pipeline_scan) do
@@ -175,12 +178,92 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
     context 'when target pipeline is nil' do
       let_it_be(:merge_request) do
-        create(:merge_request, source_branch: 'feature-branch', target_branch: 'target-branch')
+        create(:merge_request, source_branch: 'feature', target_branch: 'target-branch')
       end
 
       it_behaves_like 'does not update approvals_required'
 
       it_behaves_like 'triggers policy bot comment', :scan_finding, true
+    end
+
+    context 'with merged results pipeline' do
+      let_it_be(:merge_base_pipeline) do
+        create(
+          :ee_ci_pipeline,
+          :success,
+          merge_request: merge_request,
+          project: project,
+          ref: merge_request.target_branch,
+          sha: Digest::SHA256.hexdigest('target commit'))
+      end
+
+      let_it_be(:merged_results_pipeline) do
+        create(:ee_ci_pipeline,
+          :success,
+          source: :merge_request_event,
+          merge_request: merge_request,
+          project: project,
+          source_sha: merge_request.diff_head_sha,
+          target_sha: merge_base_pipeline.sha,
+          ref: merge_request.merge_ref_path,
+          sha: Digest::SHA256.hexdigest('merge commit'))
+      end
+
+      let_it_be(:merge_base_pipeline_scan) do
+        create(:security_scan, :succeeded, project: project, pipeline: merge_base_pipeline,
+          scan_type: 'dependency_scanning')
+      end
+
+      let!(:merge_base_pipeline_finding) do
+        create(:security_finding, scan: merge_base_pipeline_scan, severity: 'high', uuid: existing_uuid)
+      end
+
+      let(:vulnerability_states) { %w[newly_detected] }
+      let(:vulnerabilities_allowed) { uuids.count - 1 }
+      let(:existing_uuid) { uuids.first }
+
+      before do
+        merge_request.update_head_pipeline
+      end
+
+      context 'when there are no violated approval rules' do
+        it_behaves_like 'sets approvals_required to 0'
+
+        it_behaves_like 'triggers policy bot comment', :scan_finding, false
+      end
+
+      context 'when there are violated approval rules' do
+        let(:existing_uuid) { SecureRandom.uuid }
+
+        it_behaves_like 'does not update approvals_required'
+
+        it_behaves_like 'triggers policy bot comment', :scan_finding, true
+      end
+
+      context 'with feature disabled' do
+        before do
+          stub_feature_flags(scan_result_policy_merge_base_pipeline: false)
+        end
+
+        context 'when most recent security orchestration pipeline lacks SBOM' do
+          let_it_be(:pipeline_without_sbom) do
+            create(
+              :ee_ci_pipeline,
+              :success,
+              source: :security_orchestration_policy,
+              project: project,
+              merge_requests_as_head_pipeline: [merge_request],
+              ref: merge_request.target_branch,
+              sha: merge_request.diff_base_sha)
+          end
+
+          let(:existing_uuid) { SecureRandom.uuid }
+
+          it_behaves_like 'sets approvals_required to 0'
+
+          it_behaves_like 'triggers policy bot comment', :scan_finding, false
+        end
+      end
     end
 
     context 'when the number of findings in current pipeline exceed the allowed limit' do
@@ -393,7 +476,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
       context 'when target pipeline is nil' do
         let_it_be(:merge_request) do
-          create(:merge_request, source_branch: 'feature-branch', target_branch: 'target-branch')
+          create(:merge_request, source_branch: 'feature', target_branch: 'target-branch')
         end
 
         it_behaves_like 'does not update approvals_required'

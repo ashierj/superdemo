@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService, feature_category: :security_policy_management do
   let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:merge_request) { create(:merge_request, source_project: project) }
+  let_it_be_with_refind(:merge_request) { create(:merge_request, source_project: project) }
 
   let_it_be(:target_pipeline) { create(:ee_ci_pipeline, project: project, ref: merge_request.target_branch) }
   let_it_be(:pipeline) do
@@ -16,22 +16,49 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
     )
   end
 
-  shared_examples 'calls UpdateApprovalsService' do
+  shared_examples 'updates approvals' do
     it do
-      expect(Security::ScanResultPolicies::UpdateApprovalsService).to receive(:new).with(
-        merge_request: merge_request,
-        pipeline: pipeline
+      expect(Security::ScanResultPolicies::SyncMergeRequestApprovalsWorker).to receive(:perform_async).with(
+        pipeline.id,
+        merge_request.id
       ).and_call_original
 
       execute
     end
+
+    context 'with feature disabled' do
+      before do
+        stub_feature_flags(scan_result_policy_merge_base_pipeline: false)
+      end
+
+      it do
+        expect(Security::ScanResultPolicies::UpdateApprovalsService).to receive(:new).with(
+          merge_request: merge_request,
+          pipeline: pipeline
+        ).and_call_original
+
+        execute
+      end
+    end
   end
 
-  shared_examples 'does not call UpdateApprovalsService' do
+  shared_examples 'does not update approvals' do
     it do
-      expect(Security::ScanResultPolicies::UpdateApprovalsService).not_to receive(:new)
+      expect(Security::ScanResultPolicies::SyncMergeRequestApprovalsWorker).not_to receive(:perform_async)
 
       execute
+    end
+
+    context 'with feature disabled' do
+      before do
+        stub_feature_flags(scan_result_policy_merge_base_pipeline: false)
+      end
+
+      it do
+        expect(Security::ScanResultPolicies::UpdateApprovalsService).not_to receive(:new)
+
+        execute
+      end
     end
   end
 
@@ -39,13 +66,13 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
     subject(:execute) { described_class.new(pipeline).execute }
 
     context 'when pipeline_findings is empty' do
-      it_behaves_like 'does not call UpdateApprovalsService'
+      it_behaves_like 'does not update approvals'
     end
 
     context 'when pipeline is not complete' do
       let_it_be(:pipeline) { create(:ee_ci_pipeline, :running, project: project) }
 
-      it_behaves_like 'does not call UpdateApprovalsService'
+      it_behaves_like 'does not update approvals'
     end
 
     context 'when pipeline_findings is not empty' do
@@ -54,14 +81,14 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
         create(:security_finding, scan: pipeline_scan, severity: 'high')
       end
 
-      it_behaves_like 'calls UpdateApprovalsService'
+      it_behaves_like 'updates approvals'
 
       context 'when merge_request is closed' do
         before do
           merge_request.update!(state_id: MergeRequest.available_states[:closed])
         end
 
-        it_behaves_like 'does not call UpdateApprovalsService'
+        it_behaves_like 'does not update approvals'
       end
 
       context 'when pipeline is not latest' do
@@ -69,7 +96,40 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
           create(:ee_ci_pipeline, project: project, ref: merge_request.source_branch)
         end
 
-        it_behaves_like 'does not call UpdateApprovalsService'
+        it_behaves_like 'does not update approvals'
+      end
+
+      context 'with merge request targeting pipeline ref' do
+        let_it_be(:other_merge_request) do
+          create(
+            :merge_request,
+            source_project: project,
+            target_branch: merge_request.source_branch,
+            source_branch: "feature")
+        end
+
+        let_it_be(:other_pipeline) do
+          create(
+            :ee_ci_pipeline,
+            project: project,
+            ref: other_merge_request.source_branch,
+            sha: project.commit(other_merge_request.source_branch).sha,
+            merge_requests_as_head_pipeline: [other_merge_request])
+        end
+
+        it 'updates approvals for merge requests targeting the source branch' do
+          expect(Security::ScanResultPolicies::SyncMergeRequestApprovalsWorker).to receive(:perform_async).with(
+            pipeline.id,
+            merge_request.id
+          ).and_call_original.ordered
+
+          expect(Security::ScanResultPolicies::SyncMergeRequestApprovalsWorker).to receive(:perform_async).with(
+            other_pipeline.id,
+            other_merge_request.id
+          ).and_call_original.ordered
+
+          execute
+        end
       end
     end
   end
