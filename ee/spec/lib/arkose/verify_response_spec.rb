@@ -149,14 +149,16 @@ RSpec.describe Arkose::VerifyResponse, feature_category: :instance_resiliency do
       end
 
       where(:method, :expected_value) do
-        :custom_score         | "100"
-        :global_score         | "15"
-        :risk_band            | "High"
-        :session_id           | "22612c147bb418c8.2570749403"
-        :risk_category        | "BOT-STD"
-        :global_telltale_list | lazy { global_telltale_list }
-        :custom_telltale_list | lazy { custom_telltale_list }
-        :device_id            | "gaFCZkxoGZYW6"
+        :custom_score                  | "100"
+        :global_score                  | "15"
+        :risk_band                     | "High"
+        :session_id                    | "22612c147bb418c8.2570749403"
+        :risk_category                 | "BOT-STD"
+        :global_telltale_list          | lazy { global_telltale_list }
+        :custom_telltale_list          | lazy { custom_telltale_list }
+        :device_id                     | "gaFCZkxoGZYW6"
+        :data_exchange_blob_received?  | true
+        :data_exchange_blob_decrypted? | true
       end
 
       with_them do

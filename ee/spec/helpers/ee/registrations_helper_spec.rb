@@ -21,14 +21,42 @@ RSpec.describe EE::RegistrationsHelper, feature_category: :user_management do
   end
 
   describe '#arkose_labs_data' do
+    let(:request_double) { instance_double(ActionDispatch::Request) }
+    let(:data_exchange_payload) { 'data_exchange_payload' }
+
     before do
+      allow(helper).to receive(:request).and_return(request_double)
+
       allow(::Arkose::Settings).to receive(:arkose_public_api_key).and_return('api-key')
       allow(::Arkose::Settings).to receive(:arkose_labs_domain).and_return('domain')
+
+      init_params = [request_double, { use_case: Arkose::DataExchangePayload::USE_CASE_SIGN_UP }]
+      allow_next_instance_of(::Arkose::DataExchangePayload, *init_params) do |instance|
+        allow(instance).to receive(:build).and_return(data_exchange_payload)
+      end
     end
 
     subject(:data) { helper.arkose_labs_data }
 
-    it { is_expected.to eq({ api_key: 'api-key', domain: 'domain' }) }
+    it { is_expected.to eq({ api_key: 'api-key', domain: 'domain', data_exchange_payload: data_exchange_payload }) }
+
+    context 'when arkose_labs_signup_data_exchange feature flag is disabled' do
+      before do
+        stub_feature_flags(arkose_labs_signup_data_exchange: false)
+      end
+
+      it 'does not include data exchange payload' do
+        expect(data.keys).not_to include(:data_exchange_payload)
+      end
+    end
+
+    context 'when data exchange payload is nil' do
+      let(:data_exchange_payload) { nil }
+
+      it 'does not include data exchange payload' do
+        expect(data.keys).not_to include(:data_exchange_payload)
+      end
+    end
   end
 
   describe '#register_omniauth_params' do

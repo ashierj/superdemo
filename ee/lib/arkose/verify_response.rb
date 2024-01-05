@@ -73,5 +73,13 @@ module Arkose
     def custom_telltale_list
       response&.dig('session_risk', 'custom', 'telltales') || 'Unavailable'
     end
+
+    def data_exchange_blob_received?
+      response&.dig('data_exchange', 'blob_received') || false
+    end
+
+    def data_exchange_blob_decrypted?
+      response&.dig('data_exchange', 'blob_decrypted') || false
+    end
   end
 end

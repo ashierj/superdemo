@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Arkose::Logger do
+RSpec.describe Arkose::Logger, feature_category: :instance_resiliency do
   let(:user) { build_stubbed(:user) }
   let(:session_token) { '22612c147bb418c8.2570749403' }
 
@@ -27,7 +27,9 @@ RSpec.describe Arkose::Logger do
         'arkose.custom_score': '0',
         'arkose.custom_telltale_list': [],
         'arkose.risk_band': 'Low',
-        'arkose.risk_category': 'NO-THREAT'
+        'arkose.risk_category': 'NO-THREAT',
+        'arkose.data_exchange_blob_received': false,
+        'arkose.data_exchange_blob_decrypted': false
       }.compact
     end
 

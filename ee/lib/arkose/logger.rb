@@ -54,7 +54,9 @@ module Arkose
         'arkose.custom_score': response.custom_score,
         'arkose.custom_telltale_list': response.custom_telltale_list,
         'arkose.risk_band': response.risk_band,
-        'arkose.risk_category': response.risk_category
+        'arkose.risk_category': response.risk_category,
+        'arkose.data_exchange_blob_received': response.data_exchange_blob_received?,
+        'arkose.data_exchange_blob_decrypted': response.data_exchange_blob_decrypted?
       }
     end
   end

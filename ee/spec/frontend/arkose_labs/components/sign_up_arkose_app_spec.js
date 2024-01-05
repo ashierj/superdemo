@@ -39,12 +39,13 @@ describe('SignUpArkoseApp', () => {
     await nextTick();
   };
 
-  const createComponent = () => {
+  const createComponent = ({ props } = { props: {} }) => {
     wrapper = mountExtended(SignUpArkoseApp, {
       propsData: {
         publicKey: MOCK_PUBLIC_KEY,
         domain: MOCK_DOMAIN,
         formSelector: 'dummy',
+        ...props,
       },
     });
   };
@@ -168,6 +169,38 @@ describe('SignUpArkoseApp', () => {
 
         expect(mockSubmitEvent.preventDefault).not.toHaveBeenCalled();
         expect(mockSubmitEvent.stopPropagation).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('Data Exchange payload', () => {
+      const setConfig = jest.fn();
+
+      beforeEach(() => {
+        initArkoseLabsScript.mockImplementation(() => ({ setConfig }));
+      });
+
+      describe('when payload is present', () => {
+        it('is included in the configuration object', async () => {
+          createComponent({ props: { dataExchangePayload: 'payload' } });
+
+          await nextTick();
+
+          expect(setConfig).toHaveBeenCalledWith(
+            expect.objectContaining({ data: { blob: 'payload' } }),
+          );
+        });
+      });
+
+      describe('when payload is not present', () => {
+        it('does not include data object in the configuration object', async () => {
+          createComponent();
+
+          await nextTick();
+
+          const configObject = setConfig.mock.calls[0][0];
+
+          expect(configObject).not.toHaveProperty('data');
+        });
       });
     });
   });
