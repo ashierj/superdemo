@@ -113,8 +113,6 @@ module EE
       end
 
       def create_pending_status_check_responses
-        return unless ::Feature.enabled?(:pending_status_check_responses)
-
         ::ComplianceManagement::PendingStatusCheckWorker.perform_async(id, project.id, diff_head_sha)
       end
 

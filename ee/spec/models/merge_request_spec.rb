@@ -1972,24 +1972,10 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
           stub_licensed_features(external_status_checks: true)
         end
 
-        context 'when feature `pending_status_check_responses` is enabled' do
-          it 'creates `pending` status check responses' do
-            expect(ComplianceManagement::PendingStatusCheckWorker).to receive(:perform_async).and_call_original
+        it 'creates `pending` status check responses' do
+          expect(ComplianceManagement::PendingStatusCheckWorker).to receive(:perform_async).and_call_original
 
-            create_merge_request
-          end
-        end
-
-        context 'when feature `pending_status_check_responses` is disabled' do
-          before do
-            Feature.disable(:pending_status_check_responses)
-          end
-
-          it 'does not create status check responses' do
-            expect(ComplianceManagement::PendingStatusCheckWorker).not_to receive(:perform_async)
-
-            create_merge_request
-          end
+          create_merge_request
         end
       end
 
