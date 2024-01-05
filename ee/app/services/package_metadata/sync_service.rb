@@ -87,3 +87,7 @@ module PackageMetadata
     end
   end
 end
+
+# Added for JiHu
+# Used in https://jihulab.com/gitlab-cn/gitlab/-/blob/main-jh/jh/app/services/jh/package_metadata/sync_service.rb
+PackageMetadata::SyncService.prepend_mod
