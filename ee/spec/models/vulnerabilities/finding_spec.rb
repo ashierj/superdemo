@@ -402,6 +402,42 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
       end
     end
 
+    describe '.with_false_positive' do
+      let_it_be(:finding) { create(:vulnerabilities_finding) }
+      let_it_be(:finding_with_fp) { create(:vulnerabilities_finding, vulnerability_flags: [create(:vulnerabilities_flag)]) }
+
+      context 'when false_positive is true' do
+        it 'returns findings with false positive' do
+          expect(described_class.with_false_positive(true)).to contain_exactly(finding_with_fp)
+        end
+      end
+
+      context 'when false_positive is false' do
+        it 'returns findings without false positive' do
+          expect(described_class.with_false_positive(false)).to include(finding)
+        end
+      end
+    end
+
+    describe '.with_fix_available' do
+      let_it_be(:finding) { create(:vulnerabilities_finding) }
+      let_it_be(:finding_with_remediation) { create(:vulnerabilities_finding) }
+      let_it_be(:finding_with_solution) { create(:vulnerabilities_finding, solution: 'test fix') }
+      let_it_be(:remediation) { create(:vulnerabilities_remediation, findings: [finding_with_remediation]) }
+
+      context 'when fix_available is true' do
+        it 'returns findings with fix' do
+          expect(described_class.with_fix_available(true)).to contain_exactly(finding_with_remediation, finding_with_solution)
+        end
+      end
+
+      context 'when fix_available is false' do
+        it 'returns findings without fix' do
+          expect(described_class.with_fix_available(false)).to include(finding)
+        end
+      end
+    end
+
     describe '#false_positive?' do
       let_it_be(:finding) { create(:vulnerabilities_finding) }
       let_it_be(:finding_with_fp) { create(:vulnerabilities_finding, vulnerability_flags: [create(:vulnerabilities_flag)]) }
