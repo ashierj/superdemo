@@ -47,14 +47,14 @@ RSpec.describe 'Query.ciQueueingHistory', :click_house, feature_category: :fleet
     stub_licensed_features(runner_performance_insights: licensed_feature_available)
   end
 
-  context "when feature flag is disabled" do
+  context "when ClickHouse database is not configured" do
     before do
-      stub_feature_flags(clickhouse_ci_analytics: false)
+      allow(ClickHouse::Client).to receive(:database_configured?).and_return(false)
     end
 
     it 'returns error' do
       execute_query
-      expect_graphql_errors_to_include('Feature clickhouse_ci_analytics not enabled')
+      expect_graphql_errors_to_include('ClickHouse database is not configured')
     end
   end
 

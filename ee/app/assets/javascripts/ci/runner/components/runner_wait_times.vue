@@ -57,19 +57,19 @@ export default {
         return ciQueueingHistory?.timeSeries;
       },
       error(error) {
-        if (error.message.includes('Feature clickhouse_ci_analytics not enabled')) {
-          // Ignore error and display empty chart when `clickhouse_ci_analytics` is not enabled
-          // TODO Remove this check when https://gitlab.com/gitlab-org/gitlab/-/issues/424498 is
-          // rolled out.
-          return;
-        }
         this.handlerError(error);
       },
     },
   },
+  props: {
+    clickhouseCiAnalyticsAvailable: {
+      type: Boolean,
+      required: true,
+    },
+  },
   computed: {
     isHistoryFeatureEnabled() {
-      return this.glFeatures?.clickhouseCiAnalytics;
+      return this.clickhouseCiAnalyticsAvailable;
     },
     waitTimesLoading() {
       return this.$apollo.queries.waitTimes.loading;

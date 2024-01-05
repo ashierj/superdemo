@@ -34,14 +34,14 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
 
   subject(:result) { service.execute }
 
-  context "when feature flag is disabled" do
+  context "when ClickHouse database is not configured" do
     before do
-      stub_feature_flags(clickhouse_ci_analytics: false)
+      allow(ClickHouse::Client).to receive(:database_configured?).and_return(false)
     end
 
     it 'returns error' do
       expect(result.error?).to eq(true)
-      expect(result.errors).to contain_exactly('Feature clickhouse_ci_analytics not enabled')
+      expect(result.errors).to contain_exactly('ClickHouse database is not configured')
     end
   end
 

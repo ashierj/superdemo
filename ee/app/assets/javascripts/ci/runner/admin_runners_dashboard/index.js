@@ -10,7 +10,7 @@ Vue.use(GlToast);
 export const initAdminRunnersDashboard = (selector = '#js-admin-runners-dashboard') => {
   const el = document.querySelector(selector);
 
-  const { adminRunnersPath, newRunnerPath } = el.dataset;
+  const { adminRunnersPath, newRunnerPath, clickhouseCiAnalyticsAvailable } = el.dataset;
 
   const apolloProvider = new VueApollo({
     defaultClient: createDefaultClient(),
@@ -24,6 +24,7 @@ export const initAdminRunnersDashboard = (selector = '#js-admin-runners-dashboar
         props: {
           adminRunnersPath,
           newRunnerPath,
+          clickhouseCiAnalyticsAvailable,
         },
       });
     },
