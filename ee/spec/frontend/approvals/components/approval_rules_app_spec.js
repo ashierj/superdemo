@@ -3,7 +3,7 @@ import Vue, { nextTick } from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import App from 'ee/approvals/components/app.vue';
+import ApprovalRulesApp from 'ee/approvals/components/approval_rules_app.vue';
 import ModalRuleCreate from 'ee/approvals/components/rule_modal/create_rule.vue';
 import ModalRuleRemove from 'ee/approvals/components/rule_modal/remove_rule.vue';
 import { createStoreOptions } from 'ee/approvals/stores';
@@ -24,7 +24,7 @@ describe('EE Approvals App', () => {
 
   const targetBranchName = 'development';
   const factory = () => {
-    wrapper = shallowMountExtended(App, {
+    wrapper = shallowMountExtended(ApprovalRulesApp, {
       slots,
       store: new Vuex.Store(store),
       stubs: {
