@@ -60,7 +60,8 @@ module IdentityVerifiable
   def required_identity_verification_methods
     return identity_verification_exempt_methods if exempt_from_identity_verification?
     return phone_number_exempt_methods if exempt_from_phone_number_verification?
-    return assumed_high_risk_user_methods if high_risk_or_assumed_high_risk?
+    return assumed_high_risk_user_methods if assumed_high_risk?
+    return assumed_high_risk_user_methods if affected_by_phone_verifications_limit?
 
     risk_band_based_methods
   end
@@ -207,14 +208,16 @@ module IdentityVerifiable
     arkose_risk_band == Arkose::VerifyResponse::RISK_BAND_HIGH.downcase
   end
 
-  def high_risk_or_assumed_high_risk?
+  def affected_by_phone_verifications_limit?
+    # All users will be required to verify 1. email 2. credit card
+    return true if PhoneVerification::Users::RateLimitService.daily_transaction_hard_limit_exceeded?
+
     # Actual high risk users will be subject to the same order of required steps
     # as users assumed high risk when the daily phone verification transaction
     # limit is exceeded until it is reset
-    daily_limit_exceeded = PhoneVerification::Users::RateLimitService.daily_transaction_limit_exceeded?
-    high_risk = daily_limit_exceeded && arkose_high_risk?
+    return arkose_high_risk? if PhoneVerification::Users::RateLimitService.daily_transaction_soft_limit_exceeded?
 
-    high_risk || assumed_high_risk?
+    false
   end
 
   def assumed_high_risk_user_methods
@@ -251,6 +254,7 @@ module IdentityVerifiable
 
   def phone_number_verification_enabled?
     return false unless is_a?(User)
+    return false if PhoneVerification::Users::RateLimitService.daily_transaction_hard_limit_exceeded?
 
     Feature.enabled?(:identity_verification_phone_number, self)
   end

@@ -277,7 +277,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
       end
     end
 
-    context 'when phone verification daily transaction limit has been exceeded' do
+    context 'when phone verifications soft limit has been exceeded' do
       where(:risk_band, :result) do
         'High'   | %w[email credit_card phone]
         'Medium' | %w[email phone]
@@ -288,11 +288,34 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
       with_them do
         before do
           allow(PhoneVerification::Users::RateLimitService)
-            .to receive(:daily_transaction_limit_exceeded?).and_return(true)
-
+            .to receive(:daily_transaction_soft_limit_exceeded?).and_return(true)
+          allow(PhoneVerification::Users::RateLimitService)
+            .to receive(:daily_transaction_hard_limit_exceeded?).and_return(false)
           add_user_risk_band(risk_band) if risk_band
         end
 
+        it { is_expected.to eq(result) }
+      end
+    end
+
+    context 'when phone verifications hard limit has been exceeded' do
+      before do
+        allow(PhoneVerification::Users::RateLimitService)
+          .to receive(:daily_transaction_soft_limit_exceeded?).and_return(true)
+        allow(PhoneVerification::Users::RateLimitService)
+          .to receive(:daily_transaction_hard_limit_exceeded?).and_return(true)
+
+        add_user_risk_band(risk_band) if risk_band
+      end
+
+      where(:risk_band, :result) do
+        'High'   | %w[email credit_card]
+        'Medium' | %w[email credit_card]
+        'Low'    | %w[email credit_card]
+        nil      | %w[email credit_card]
+      end
+
+      with_them do
         it { is_expected.to eq(result) }
       end
     end

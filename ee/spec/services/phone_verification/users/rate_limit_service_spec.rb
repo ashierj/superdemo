@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe PhoneVerification::Users::RateLimitService, feature_category: :system_access do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:user) { build(:user) }
 
   describe '.verification_attempts_limit_exceeded?' do
@@ -65,60 +67,92 @@ RSpec.describe PhoneVerification::Users::RateLimitService, feature_category: :sy
     end
   end
 
-  describe '.daily_transaction_limit_exceeded?' do
-    subject(:result) { described_class.daily_transaction_limit_exceeded? }
-
-    before do
-      allow(Gitlab::ApplicationRateLimiter)
-        .to receive(:peek)
-        .with(:soft_phone_verification_transactions_limit, scope: nil)
-        .and_return(exceeded)
-    end
-
-    context 'when limit has been exceeded' do
-      let(:exceeded) { true }
-
-      it { is_expected.to eq true }
-    end
-
-    context 'when limit has not been exceeded' do
-      let(:exceeded) { false }
-
-      it { is_expected.to eq false }
-    end
-
-    context 'when soft_limit_daily_phone_verifications is disabled' do
-      let(:exceeded) { true }
-
+  describe 'daily transactions limit exceeded checks' do
+    shared_examples 'it returns the correct result' do |rate_limit_name, feature_flag_name|
       before do
-        stub_feature_flags(soft_limit_daily_phone_verifications: false)
+        allow(Gitlab::ApplicationRateLimiter)
+          .to receive(:peek).with(rate_limit_name, scope: nil).and_return(exceeded)
       end
 
-      it 'returns false' do
-        expect(Gitlab::ApplicationRateLimiter).not_to receive(:peek)
-        expect(result).to eq false
+      context 'when limit has been exceeded' do
+        let(:exceeded) { true }
+
+        it { is_expected.to eq true }
       end
+
+      context 'when limit has not been exceeded' do
+        let(:exceeded) { false }
+
+        it { is_expected.to eq false }
+      end
+
+      context "when #{feature_flag_name} is disabled" do
+        let(:exceeded) { true }
+
+        before do
+          stub_feature_flags(feature_flag_name => false)
+        end
+
+        it 'returns false', :aggregate_failures do
+          expect(Gitlab::ApplicationRateLimiter).not_to receive(:peek)
+          expect(result).to eq false
+        end
+      end
+    end
+
+    describe '.daily_transaction_soft_limit_exceeded?' do
+      subject(:result) { described_class.daily_transaction_soft_limit_exceeded? }
+
+      it_behaves_like 'it returns the correct result',
+        :soft_phone_verification_transactions_limit,
+        :soft_limit_daily_phone_verifications
+    end
+
+    describe '.daily_transaction_hard_limit_exceeded?' do
+      subject(:result) { described_class.daily_transaction_hard_limit_exceeded? }
+
+      it_behaves_like 'it returns the correct result',
+        :hard_phone_verification_transactions_limit,
+        :hard_limit_daily_phone_verifications
     end
   end
 
   describe '.increase_daily_attempts' do
-    subject(:increase_attempts) { described_class.increase_daily_attempts }
-
-    it 'calls throttled?' do
-      expect(::Gitlab::ApplicationRateLimiter)
-        .to receive(:throttled?)
-        .with(:soft_phone_verification_transactions_limit, scope: nil)
-
-      increase_attempts
+    where(:soft_rate_limit_enabled, :hard_rate_limit_enabled) do
+      false | false
+      true  | false
+      false | true
+      true  | true
     end
 
-    context 'when soft_limit_daily_phone_verifications is disabled' do
+    with_them do
+      subject(:increase_attempts) { described_class.increase_daily_attempts }
+
       before do
-        stub_feature_flags(soft_limit_daily_phone_verifications: false)
+        stub_feature_flags(soft_limit_daily_phone_verifications: soft_rate_limit_enabled)
+        stub_feature_flags(hard_limit_daily_phone_verifications: hard_rate_limit_enabled)
       end
 
-      it 'does not call throttled?' do
-        expect(Gitlab::ApplicationRateLimiter).not_to receive(:throttled?)
+      def expect_throttled_called(key)
+        expect(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).with(key, scope: nil)
+      end
+
+      def expect_throttled_not_called(key)
+        expect(::Gitlab::ApplicationRateLimiter).not_to receive(:throttled?).with(key, scope: nil)
+      end
+
+      it 'calls throttled? with the correct keys' do
+        if soft_rate_limit_enabled
+          expect_throttled_called(:soft_phone_verification_transactions_limit)
+        else
+          expect_throttled_not_called(:soft_phone_verification_transactions_limit)
+        end
+
+        if hard_rate_limit_enabled
+          expect_throttled_called(:hard_phone_verification_transactions_limit)
+        else
+          expect_throttled_not_called(:hard_phone_verification_transactions_limit)
+        end
 
         increase_attempts
       end
@@ -131,7 +165,7 @@ RSpec.describe PhoneVerification::Users::RateLimitService, feature_category: :sy
     subject(:call_method) { described_class.assume_user_high_risk_if_daily_limit_exceeded!(user) }
 
     before do
-      allow(described_class).to receive(:daily_transaction_limit_exceeded?).and_return(limit_exceeded)
+      allow(described_class).to receive(:daily_transaction_soft_limit_exceeded?).and_return(limit_exceeded)
     end
 
     it 'calls assume_high_risk on the user' do

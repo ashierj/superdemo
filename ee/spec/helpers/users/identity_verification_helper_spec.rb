@@ -158,7 +158,7 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
         allow(Gitlab::Recaptcha).to receive(:enabled?).and_return(recaptcha_enabled)
 
         allow(PhoneVerification::Users::RateLimitService)
-          .to receive(:daily_transaction_limit_exceeded?).and_return(daily_limit_reached)
+          .to receive(:daily_transaction_soft_limit_exceeded?).and_return(daily_limit_reached)
       end
 
       context 'when reCAPTCHA is not enabled' do
