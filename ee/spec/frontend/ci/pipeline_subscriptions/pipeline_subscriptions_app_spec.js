@@ -6,6 +6,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import PipelineSubscriptionsApp from 'ee/ci/pipeline_subscriptions/pipeline_subscriptions_app.vue';
+import PipelineSubscriptionsTable from 'ee/ci/pipeline_subscriptions/components/pipeline_subscriptions_table.vue';
 import getUpstreamSubscriptions from 'ee/ci/pipeline_subscriptions/graphql/queries/get_upstream_subscriptions.query.graphql';
 import getDownstreamSubscriptions from 'ee/ci/pipeline_subscriptions/graphql/queries/get_downstream_subscriptions.query.graphql';
 
@@ -23,6 +24,7 @@ describe('Pipeline subscriptions app', () => {
   const failedHandler = jest.fn().mockRejectedValue(new Error('GraphQL error'));
 
   const findLoadingIcons = () => wrapper.findAllComponents(GlLoadingIcon);
+  const findTables = () => wrapper.findAllComponents(PipelineSubscriptionsTable);
 
   const defaultHandlers = [
     [getUpstreamSubscriptions, upstreamHanlder],
@@ -63,8 +65,33 @@ describe('Pipeline subscriptions app', () => {
       expect(findLoadingIcons()).toHaveLength(0);
     });
 
-    // TODO: when subscriptions table is built ensure they
-    // render correctly in this spec for upstream/downstream
+    it('shows upstream/downstream pipeline subscription tables', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findTables()).toHaveLength(2);
+    });
+
+    it('formats subscription data for table', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      const {
+        id,
+        upstreamProject,
+      } = mockUpstreamSubscriptions.data.project.ciSubscriptionsProjects.nodes[0];
+
+      const expectedFormat = [
+        {
+          id,
+          project: upstreamProject,
+        },
+      ];
+
+      expect(findTables().at(0).props('subscriptions')).toEqual(expectedFormat);
+    });
   });
 
   describe('failures', () => {
