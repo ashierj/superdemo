@@ -7,9 +7,16 @@ RSpec.describe "GraphQL Pipeline Subscriptions", '(JavaScript fixtures)', type: 
   include GraphqlHelpers
   include JavaScriptFixturesHelpers
 
-  let_it_be(:upstream_project) { create(:project, :public, :repository) }
-  let_it_be(:project) { create(:project, :public, :repository, upstream_projects: [upstream_project]) }
-  let_it_be(:downstream_project) { create(:project, :public, :repository, upstream_projects: [project]) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:upstream_project) { create(:project, :public, :repository, namespace: group) }
+  let_it_be(:project) do
+    create(:project, :public, :repository, upstream_projects: [upstream_project], namespace: group)
+  end
+
+  let_it_be(:downstream_project) do
+    create(:project, :public, :repository, upstream_projects: [project], namespace: group)
+  end
+
   let_it_be(:user) { create(:user) }
 
   let(:upstream_query_path) { 'ci/pipeline_subscriptions/graphql/queries/get_upstream_subscriptions.query.graphql' }

@@ -4,6 +4,7 @@ import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import GetUpstreamSubscriptions from './graphql/queries/get_upstream_subscriptions.query.graphql';
 import GetDownstreamSubscriptions from './graphql/queries/get_downstream_subscriptions.query.graphql';
+import PipelineSubscriptionsTable from './components/pipeline_subscriptions_table.vue';
 
 export default {
   name: 'PipelineSubscriptionsApp',
@@ -14,9 +15,18 @@ export default {
     downstreamFetchError: s__(
       'PipelineSubscriptions|An error occurred while fetching downstream pipeline subscriptions.',
     ),
+    upstreamTitle: s__('PipelineSubscriptions|Subscriptions'),
+    downstreamTitle: s__('PipelineSubscriptions|Subscribed to this project'),
+    upstreamEmptyText: s__(
+      'PipelineSubscriptions|This project is not subscribed to any project pipelines.',
+    ),
+    downstreamEmptyText: s__(
+      'PipelineSubscriptions|No project subscribes to the pipelines in this project.',
+    ),
   },
   components: {
     GlLoadingIcon,
+    PipelineSubscriptionsTable,
   },
   inject: {
     projectPath: {
@@ -34,7 +44,12 @@ export default {
       update({ project: { ciSubscriptionsProjects } }) {
         return {
           count: ciSubscriptionsProjects.count,
-          nodes: ciSubscriptionsProjects.nodes,
+          nodes: ciSubscriptionsProjects.nodes.map((subscription) => {
+            return {
+              id: subscription.id,
+              project: subscription.upstreamProject,
+            };
+          }),
         };
       },
       error() {
@@ -51,7 +66,12 @@ export default {
       update({ project: { ciSubscribedProjects } }) {
         return {
           count: ciSubscribedProjects.count,
-          nodes: ciSubscribedProjects.nodes,
+          nodes: ciSubscribedProjects.nodes.map((subscription) => {
+            return {
+              id: subscription.id,
+              project: subscription.downstreamProject,
+            };
+          }),
         };
       },
       error() {
@@ -85,17 +105,22 @@ export default {
 <template>
   <div>
     <gl-loading-icon v-if="upstreamSubscriptionsLoading" />
-    <ul v-else>
-      <li v-for="subscription in upstreamSubscriptions.nodes" :key="subscription.id">
-        {{ subscription.upstreamProject.name }}
-      </li>
-    </ul>
+    <pipeline-subscriptions-table
+      v-else
+      :count="upstreamSubscriptions.count"
+      :subscriptions="upstreamSubscriptions.nodes"
+      :title="$options.i18n.upstreamTitle"
+      :empty-text="$options.i18n.upstreamEmptyText"
+      show-actions
+    />
 
     <gl-loading-icon v-if="downstreamSubscriptionsLoading" />
-    <ul v-else>
-      <li v-for="subscription in downstreamSubscriptions.nodes" :key="subscription.id">
-        {{ subscription.downstreamProject.name }}
-      </li>
-    </ul>
+    <pipeline-subscriptions-table
+      v-else
+      :count="downstreamSubscriptions.count"
+      :subscriptions="downstreamSubscriptions.nodes"
+      :title="$options.i18n.downstreamTitle"
+      :empty-text="$options.i18n.downstreamEmptyText"
+    />
   </div>
 </template>

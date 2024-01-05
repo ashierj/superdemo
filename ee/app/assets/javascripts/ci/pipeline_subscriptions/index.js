@@ -20,6 +20,7 @@ export default () => {
 
   return new Vue({
     el,
+    name: 'PipelineSubscriptionsRoot',
     apolloProvider,
     provide: {
       projectPath,
