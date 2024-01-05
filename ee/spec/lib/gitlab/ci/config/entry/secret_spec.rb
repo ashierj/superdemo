@@ -153,6 +153,64 @@ RSpec.describe Gitlab::Ci::Config::Entry::Secret do
           end
         end
       end
+
+      context 'for GCP Secrets Manager' do
+        context 'when `token` is defined' do
+          let(:config) do
+            {
+              gcp_secret_manager: {
+                name: 'name',
+                version: '1'
+              },
+              token: '$TEST_ID_TOKEN'
+            }
+          end
+
+          describe '#value' do
+            it 'returns secret configuration' do
+              expected_result = {
+                gcp_secret_manager: {
+                  name: 'name',
+                  version: '1'
+                },
+                token: '$TEST_ID_TOKEN'
+              }
+
+              expect(entry.value).to eq(expected_result)
+            end
+          end
+
+          describe '#valid?' do
+            it 'is valid' do
+              expect(entry).to be_valid
+            end
+          end
+        end
+
+        context 'when `token` is not defined' do
+          let(:config) do
+            {
+              gcp_secret_manager: {
+                name: 'name',
+                version: '1'
+              }
+            }
+          end
+
+          describe '#valid?' do
+            it 'is not valid' do
+              expect(entry).not_to be_valid
+            end
+          end
+
+          describe '#errors' do
+            it 'reports error' do
+              expect(entry.errors)
+                .to include 'secret token is required with gcp secrets manager'
+            end
+          end
+        end
+      end
     end
   end
 
@@ -172,16 +230,19 @@ RSpec.describe Gitlab::Ci::Config::Entry::Secret do
 
         it 'reports error' do
           expect(entry.errors)
-            .to include 'secret config must use exactly one of these keys: vault, azure_key_vault'
+            .to include 'secret config must use exactly one of these keys: vault, azure_key_vault, gcp_secret_manager'
         end
       end
 
-      context 'when have both vault and azure_key_vault' do
-        let(:config) { { vault: {}, azure_key_vault: {} } }
+      Gitlab::Ci::Config::Entry::Secret::SUPPORTED_PROVIDERS.permutation(2).each do |permutation|
+        context "when there are multiple entries #{permutation}" do
+          let(:config) { permutation.index_with({}) }
 
-        it 'reports error' do
-          expect(entry.errors)
-            .to include 'secret config must use exactly one of these keys: vault, azure_key_vault'
+          it 'reports error' do
+            expect(entry.errors)
+              .to include "secret config must use exactly one of these keys: " \
+                          "#{Gitlab::Ci::Config::Entry::Secret::SUPPORTED_PROVIDERS.join(', ')}"
+          end
         end
       end
     end

@@ -11,22 +11,29 @@ module Gitlab
           include ::Gitlab::Config::Entry::Configurable
           include ::Gitlab::Config::Entry::Attributable
 
-          ALLOWED_KEYS = %i[vault file azure_key_vault token].freeze
+          ALLOWED_KEYS = %i[vault file azure_key_vault gcp_secret_manager token].freeze
+          SUPPORTED_PROVIDERS = %i[vault azure_key_vault gcp_secret_manager].freeze
 
           attributes ALLOWED_KEYS
 
           entry :vault, Entry::Vault::Secret, description: 'Vault secrets engine configuration'
           entry :file, ::Gitlab::Config::Entry::Boolean, description: 'Should the created variable be of file type'
           entry :azure_key_vault, Entry::AzureKeyVault::Secret, description: 'Azure Key Vault configuration'
+          entry :gcp_secret_manager, Entry::GcpSecretManager::Secret, description: 'GCP Secrets Manager configuration'
 
           validations do
-            validates :config, allowed_keys: ALLOWED_KEYS, only_one_of_keys: %i[vault azure_key_vault]
+            validates :config, allowed_keys: ALLOWED_KEYS, only_one_of_keys: SUPPORTED_PROVIDERS
             validates :token, type: String, allow_nil: true
+            validates :token, presence: {
+              if: ->(node) { node.config[:gcp_secret_manager].present? },
+              message: 'is required with gcp secrets manager'
+            }
           end
 
           def value
             {
               vault: vault_value,
+              gcp_secret_manager: gcp_secret_manager_value,
               azure_key_vault: azure_key_vault_value,
               file: file_value,
               token: token
