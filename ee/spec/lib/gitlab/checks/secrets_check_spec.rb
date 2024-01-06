@@ -2,21 +2,17 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Gitlab::Checks::PushRules::SecretsCheck, feature_category: :secret_detection do
+RSpec.describe Gitlab::Checks::SecretsCheck, feature_category: :secret_detection do
   include_context 'secrets check context'
 
-  let_it_be(:push_rule) { create(:push_rule) }
-
   describe '#validate!' do
-    it_behaves_like 'check ignored when push rule unlicensed'
-
     context 'when application settings is disabled' do
       before do
         Gitlab::CurrentSettings.update!(pre_receive_secret_detection_enabled: false)
       end
 
       it 'skips the check' do
-        expect(subject.validate!).to be_nil
+        expect(secrets_check.validate!).to be_nil
       end
     end
 
@@ -25,8 +21,6 @@ RSpec.describe EE::Gitlab::Checks::PushRules::SecretsCheck, feature_category: :s
         Gitlab::CurrentSettings.update!(pre_receive_secret_detection_enabled: true)
       end
 
-      it_behaves_like 'use predefined push rules'
-
       context 'when instance is dedicated' do
         before do
           Gitlab::CurrentSettings.update!(gitlab_dedicated_instance: true)
@@ -34,7 +28,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::SecretsCheck, feature_category: :s
 
         context 'when license is not ultimate' do
           it 'skips the check' do
-            expect(subject.validate!).to be_nil
+            expect(secrets_check.validate!).to be_nil
           end
         end
 
@@ -61,7 +55,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::SecretsCheck, feature_category: :s
 
         context 'when license is not ultimate' do
           it 'skips the check' do
-            expect(subject.validate!).to be_nil
+            expect(secrets_check.validate!).to be_nil
           end
         end
 
@@ -86,7 +80,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::SecretsCheck, feature_category: :s
           end
 
           it 'skips the check' do
-            expect(subject.validate!).to be_nil
+            expect(secrets_check.validate!).to be_nil
           end
         end
       end
