@@ -4,10 +4,13 @@ module RemoteDevelopment
   # noinspection RailsParamDefResolve, RubyResolve - likely due to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31540
   # noinspection RubyConstantNamingConvention,RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   class Workspace < ApplicationRecord
+    include IgnorableColumns
     include Sortable
     include RemoteDevelopment::Workspaces::States
 
     MAX_HOURS_BEFORE_TERMINATION_LIMIT = 120
+
+    ignore_column :url_domain, remove_with: '16.9', remove_after: '2019-01-19'
 
     belongs_to :user, inverse_of: :workspaces
     belongs_to :project, inverse_of: :workspaces
