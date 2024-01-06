@@ -13,7 +13,7 @@ RSpec.shared_examples 'scan passed' do
     it 'lists all blobs of a repository' do
       expect(repository).to receive(:list_all_blobs)
         .with(
-          bytes_limit: EE::Gitlab::Checks::PushRules::SecretsCheck::BLOB_BYTES_LIMIT + 1,
+          bytes_limit: Gitlab::Checks::SecretsCheck::BLOB_BYTES_LIMIT + 1,
           dynamic_timeout: kind_of(Float),
           ignore_alternate_object_directories: true
         )
@@ -53,7 +53,7 @@ RSpec.shared_examples 'scan passed' do
       expect(repository).to receive(:list_blobs)
         .with(
           ['--not', '--all', '--not'] + changes.pluck(:newrev),
-          bytes_limit: EE::Gitlab::Checks::PushRules::SecretsCheck::BLOB_BYTES_LIMIT + 1,
+          bytes_limit: Gitlab::Checks::SecretsCheck::BLOB_BYTES_LIMIT + 1,
           dynamic_timeout: kind_of(Float)
         )
         .once
@@ -129,7 +129,7 @@ RSpec.shared_examples 'scan detected secrets' do
     it 'lists all blobs of a repository' do
       expect(repository).to receive(:list_all_blobs)
         .with(
-          bytes_limit: EE::Gitlab::Checks::PushRules::SecretsCheck::BLOB_BYTES_LIMIT + 1,
+          bytes_limit: Gitlab::Checks::SecretsCheck::BLOB_BYTES_LIMIT + 1,
           dynamic_timeout: kind_of(Float),
           ignore_alternate_object_directories: true
         )
@@ -169,7 +169,7 @@ RSpec.shared_examples 'scan detected secrets' do
       expect(repository).to receive(:list_blobs)
         .with(
           ['--not', '--all', '--not'] + changes.pluck(:newrev),
-          bytes_limit: EE::Gitlab::Checks::PushRules::SecretsCheck::BLOB_BYTES_LIMIT + 1,
+          bytes_limit: Gitlab::Checks::SecretsCheck::BLOB_BYTES_LIMIT + 1,
           dynamic_timeout: kind_of(Float)
         )
         .once
@@ -374,7 +374,7 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
     it 'lists all blobs of a repository' do
       expect(repository).to receive(:list_all_blobs)
         .with(
-          bytes_limit: EE::Gitlab::Checks::PushRules::SecretsCheck::BLOB_BYTES_LIMIT + 1,
+          bytes_limit: Gitlab::Checks::SecretsCheck::BLOB_BYTES_LIMIT + 1,
           dynamic_timeout: kind_of(Float),
           ignore_alternate_object_directories: true
         )
@@ -436,7 +436,7 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
       expect(repository).to receive(:list_blobs)
         .with(
           ['--not', '--all', '--not'] + changes.pluck(:newrev),
-          bytes_limit: EE::Gitlab::Checks::PushRules::SecretsCheck::BLOB_BYTES_LIMIT + 1,
+          bytes_limit: Gitlab::Checks::SecretsCheck::BLOB_BYTES_LIMIT + 1,
           dynamic_timeout: kind_of(Float)
         )
         .once

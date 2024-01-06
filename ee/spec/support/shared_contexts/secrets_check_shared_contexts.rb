@@ -7,7 +7,7 @@ RSpec.shared_context 'secrets check context' do
 
   # Project is created with an empty repository, so
   # we create an initial commit to have a blob committed.
-  let_it_be(:project) { create(:project, :empty_repo, push_rule: push_rule) }
+  let_it_be(:project) { create(:project, :empty_repo) }
   let_it_be(:repository) { project.repository }
   let_it_be(:initial_commit) do
     # An initial commit to use as the oldrev in `changes` object below.
