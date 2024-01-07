@@ -106,7 +106,7 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
   end
 
   it 'contains 24 builds in source ci_finished_builds table' do
-    expect(ClickHouse::Client.select('SELECT count() FROM ci_finished_builds', :main))
+    expect(ClickHouse::Client.select('SELECT count() FROM ci_finished_builds FINAL', :main))
       .to contain_exactly({ 'count()' => 24 })
   end
 

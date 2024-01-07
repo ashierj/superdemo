@@ -232,7 +232,7 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
   end
 
   def ci_finished_builds_row_count
-    ClickHouse::Client.select('SELECT COUNT(*) AS count FROM ci_finished_builds', :main).first['count']
+    ClickHouse::Client.select('SELECT COUNT(*) AS count FROM ci_finished_builds FINAL', :main).first['count']
   end
 
   def ci_finished_builds
