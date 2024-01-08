@@ -2106,6 +2106,9 @@ msgstr ""
 msgid "API Help"
 msgstr ""
 
+msgid "API authentication token from Campfire. To get the token, sign in to Campfire and select **My info**."
+msgstr ""
+
 msgid "API key"
 msgstr ""
 
@@ -9554,16 +9557,16 @@ msgstr ""
 msgid "Campfire token"
 msgstr ""
 
+msgid "CampfireService|%{code_open}.campfirenow.com%{code_close} subdomain."
+msgstr ""
+
 msgid "CampfireService|API authentication token from Campfire."
 msgstr ""
 
-msgid "CampfireService|From the end of the room URL."
+msgid "CampfireService|ID portion of the Campfire room URL."
 msgstr ""
 
 msgid "CampfireService|Send notifications about push events to Campfire chat rooms. %{docs_link}"
-msgstr ""
-
-msgid "CampfireService|The %{code_open}.campfirenow.com%{code_close} subdomain."
 msgstr ""
 
 msgid "Can be manually deployed to"
@@ -24537,6 +24540,9 @@ msgid "I'm sorry, I was not able to find any documentation to answer your questi
 msgstr ""
 
 msgid "ID"
+msgstr ""
+
+msgid "ID portion of the Campfire room URL."
 msgstr ""
 
 msgid "ID:"
@@ -57132,6 +57138,9 @@ msgid "[Redacted]"
 msgstr ""
 
 msgid "[Supports GitLab-flavored markdown, including quick actions]"
+msgstr ""
+
+msgid "`.campfirenow.com` subdomain when you're signed in."
 msgstr ""
 
 msgid "`end_time` should not exceed one month after `start_time`"
