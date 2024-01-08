@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GoogleCloud::EnableVisionAiService, feature_category: :deployment_management do
+RSpec.describe CloudSeed::GoogleCloud::EnableVisionAiService, feature_category: :deployment_management do
   describe 'when a project does not have any gcp projects' do
     let_it_be(:project) { create(:project) }
 
