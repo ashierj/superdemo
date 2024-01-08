@@ -20102,7 +20102,8 @@ CREATE TABLE organization_users (
     organization_id bigint NOT NULL,
     user_id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    access_level smallint DEFAULT 10 NOT NULL
 );
 
 CREATE SEQUENCE organization_users_id_seq
