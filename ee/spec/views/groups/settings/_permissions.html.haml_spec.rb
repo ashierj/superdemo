@@ -21,18 +21,37 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
       expect(rendered).not_to have_content('What are code suggestions?')
     end
 
-    it 'renders the ai assist settings' do
-      allow(view).to receive(:ai_assist_ui_enabled?).and_return(true)
+    context 'with ai assist enabled' do
+      before do
+        allow(view).to receive(:ai_assist_ui_enabled?).and_return(true)
+      end
 
-      render
+      it 'renders nothing' do
+        allow(view).to receive(:ai_assist_ui_enabled?).and_return(false)
 
-      expect(rendered).to render_template('groups/settings/_code_suggestions')
-      field_text = s_('CodeSuggestions|Projects in this group can use Code Suggestions')
-      expect(rendered).to have_content(field_text)
-      beta_link = help_page_path('user/project/repository/code_suggestions/index')
-      expect(rendered).to have_link('What are code suggestions?', href: beta_link)
-      test_link = 'https://about.gitlab.com/handbook/legal/testing-agreement/'
-      expect(rendered).to have_link('Testing Terms of Use', href: test_link)
+        render
+
+        expect(rendered).to render_template('groups/settings/_code_suggestions')
+        expect(rendered).not_to have_content('What are code suggestions?')
+      end
+
+      context 'with purchase_code_suggestions disabled' do
+        before do
+          stub_feature_flags(purchase_code_suggestions: false)
+        end
+
+        it 'renders the ai assist settings' do
+          render
+
+          expect(rendered).to render_template('groups/settings/_code_suggestions')
+          field_text = s_('CodeSuggestions|Projects in this group can use Code Suggestions')
+          expect(rendered).to have_content(field_text)
+          beta_link = help_page_path('user/project/repository/code_suggestions/index')
+          expect(rendered).to have_link('What are code suggestions?', href: beta_link)
+          test_link = 'https://about.gitlab.com/handbook/legal/testing-agreement/'
+          expect(rendered).to have_link('Testing Terms of Use', href: test_link)
+        end
+      end
     end
   end
 
