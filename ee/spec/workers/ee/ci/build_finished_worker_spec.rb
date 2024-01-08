@@ -170,58 +170,40 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
       end
     end
 
-    describe 'finished builds sync event' do
+    it 'saves job on Ci::FinishedBuildChSyncEvent by default' do
+      expect { perform }.to change { Ci::FinishedBuildChSyncEvent.all }
+        .from([])
+        .to([an_object_having_attributes(build_id: build.id, build_finished_at: build.finished_at)])
+    end
+
+    it 'ignores duplicate calls for same build' do
+      described_class.new.perform(build.id)
+      Ci::FinishedBuildChSyncEvent.pending.first.update!(processed: true)
+
+      perform
+
+      expect(Ci::FinishedBuildChSyncEvent.all).to contain_exactly(
+        an_object_having_attributes(build_id: build.id, build_finished_at: build.finished_at, processed: true)
+      )
+    end
+
+    context 'when build is not Ci::Build' do
+      let(:build) do
+        create(:ci_bridge, :success, finished_at: 1.hour.ago)
+      end
+
+      it 'does not save job on Ci::FinishedBuildChSyncEvent by default' do
+        expect { perform }.not_to change { Ci::FinishedBuildChSyncEvent.count }
+      end
+    end
+
+    context 'when ci_data_ingestion_to_click_house FF is disabled' do
       before do
-        stub_licensed_features(runner_performance_insights: runner_performance_insights)
+        stub_feature_flags(ci_data_ingestion_to_click_house: false)
       end
 
-      context 'when feature is not available' do
-        let(:runner_performance_insights) { false }
-
-        it 'does not save job on Ci::FinishedBuildChSyncEvent by default' do
-          expect { perform }.not_to change { Ci::FinishedBuildChSyncEvent.count }
-        end
-      end
-
-      context 'when feature is available' do
-        let(:runner_performance_insights) { true }
-
-        it 'saves job on Ci::FinishedBuildChSyncEvent by default' do
-          expect { perform }.to change { Ci::FinishedBuildChSyncEvent.all }
-            .from([])
-            .to([an_object_having_attributes(build_id: build.id, build_finished_at: build.finished_at)])
-        end
-
-        it 'ignores duplicate calls for same build' do
-          described_class.new.perform(build.id)
-          Ci::FinishedBuildChSyncEvent.pending.first.update!(processed: true)
-
-          perform
-
-          expect(Ci::FinishedBuildChSyncEvent.all).to contain_exactly(
-            an_object_having_attributes(build_id: build.id, build_finished_at: build.finished_at, processed: true)
-          )
-        end
-
-        context 'when build is not Ci::Build' do
-          let(:build) do
-            create(:ci_bridge, :success, finished_at: 1.hour.ago)
-          end
-
-          it 'does not save job on Ci::FinishedBuildChSyncEvent by default' do
-            expect { perform }.not_to change { Ci::FinishedBuildChSyncEvent.count }
-          end
-        end
-
-        context 'when ci_data_ingestion_to_click_house FF is disabled' do
-          before do
-            stub_feature_flags(ci_data_ingestion_to_click_house: false)
-          end
-
-          it 'does not save job on Ci::FinishedBuildChSyncEvent by default' do
-            expect { perform }.not_to change { Ci::FinishedBuildChSyncEvent.count }
-          end
-        end
+      it 'does not save job on Ci::FinishedBuildChSyncEvent by default' do
+        expect { perform }.not_to change { Ci::FinishedBuildChSyncEvent.count }
       end
     end
   end
