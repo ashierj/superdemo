@@ -848,6 +848,7 @@ timelogs:
 - merge_request
 - user
 - note
+- timelog_category
 push_event_payload:
 - event
 issue_assignees:
@@ -1081,3 +1082,8 @@ approval_project_rules_users:
 approval_project_rules_protected_branches:
   - protected_branch
   - approval_project_rule
+timelog_category:
+  - name
+  - description
+  - billable
+  - billing_rate
