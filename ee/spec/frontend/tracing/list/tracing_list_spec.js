@@ -12,6 +12,7 @@ import * as urlUtility from '~/lib/utils/url_utility';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { createMockClient } from 'helpers/mock_observability_client';
+import * as commonUtils from '~/lib/utils/common_utils';
 
 jest.mock('~/alert');
 
@@ -504,6 +505,16 @@ describe('TracingList', () => {
       const chart = findScatterChart();
       expect(chart.exists()).toBe(true);
       expect(chart.props('traces')).toEqual(mockResponse.traces);
+    });
+
+    it('sets the chart height to 30% of the container height', async () => {
+      jest.spyOn(commonUtils, 'contentTop').mockReturnValue(100);
+      window.innerHeight = 1000;
+
+      await mountComponent();
+
+      const chart = findScatterChart();
+      expect(chart.props('height')).toBe(270);
     });
 
     it('goes to the trace details page on item selection', () => {
