@@ -35,6 +35,10 @@
     background-color: transparent;
   }
 
+  th[align] *, td[align] * {
+    text-align: inherit;
+  }
+
   td,
   th,
   li,

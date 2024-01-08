@@ -1080,6 +1080,38 @@ _An elephant at sunset_
     );
   });
 
+  it('correctly serializes a table with inline content with alignment', () => {
+    expect(
+      serialize(
+        table(
+          // each table cell must contain at least one paragraph
+          tableRow(
+            tableHeader({ align: 'center' }, paragraph('header')),
+            tableHeader({ align: 'right' }, paragraph('header')),
+            tableHeader({ align: 'left' }, paragraph('header')),
+          ),
+          tableRow(
+            tableCell(paragraph('cell')),
+            tableCell(paragraph('cell')),
+            tableCell(paragraph('cell')),
+          ),
+          tableRow(
+            tableCell(paragraph('cell')),
+            tableCell(paragraph('cell')),
+            tableCell(paragraph('cell')),
+          ),
+        ),
+      ).trim(),
+    ).toBe(
+      `
+| header | header | header |
+|:------:|-------:|--------|
+| cell | cell | cell |
+| cell | cell | cell |
+    `.trim(),
+    );
+  });
+
   it('correctly serializes a table with a pipe in a cell', () => {
     expect(
       serialize(
