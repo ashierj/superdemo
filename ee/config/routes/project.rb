@@ -15,6 +15,8 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
       # Begin of the /-/ scope.
       # Use this scope for all new project routes.
       scope '-' do
+        draw :google_cloud_platform
+
         namespace :requirements_management do
           resources :requirements, only: [:index] do
             collection do

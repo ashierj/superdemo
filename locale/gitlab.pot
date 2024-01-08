@@ -22924,6 +22924,9 @@ msgstr ""
 msgid "Go to your snippets"
 msgstr ""
 
+msgid "Google Artifact Registry"
+msgstr ""
+
 msgid "Google Cloud"
 msgstr ""
 

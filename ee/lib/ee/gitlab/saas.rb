@@ -20,6 +20,7 @@ module EE
           group_custom_roles
           gitlab_saas_subscriptions
           duo_chat_categorize_question
+          google_artifact_registry
         ].freeze
 
       CONFIG_FILE_ROOT = 'ee/config/saas_features'

@@ -1,0 +1,8 @@
+---
+name: gcp_artifact_registry
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/140086
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/435673
+milestone: '16.8'
+type: development
+group: group::container registry
+default_enabled: false
