@@ -55846,7 +55846,7 @@ msgstr ""
 msgid "Workspaces|To create a workspace, add a devfile to this project. A devfile is a configuration file for your workspace."
 msgstr ""
 
-msgid "Workspaces|Unable to load current Workspaces. Please try again or contact an administrator."
+msgid "Workspaces|Unable to load current workspaces. Please try again or contact an administrator."
 msgstr ""
 
 msgid "Workspaces|Unknown state"
