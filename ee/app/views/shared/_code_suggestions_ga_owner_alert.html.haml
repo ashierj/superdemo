@@ -14,8 +14,8 @@
       - c.with_illustration do
         = image_tag image_path('illustrations/tanuki_ai_logo.svg'), alt: 'Tanuki AI Logo', class: 'gl-p-3 gl-rounded-lg bg-code-suggestions rounded-bottom-right-9'
       - c.with_title do
-        = s_('CodeSuggestionsGAAlert|GitLab Duo Code Suggestions free access is ending soon')
+        = s_('CodeSuggestionsGAAlert|Code Suggestions is now part of Duo Pro. Free access is ending soon.')
       - c.with_primary_action do
         .js-hand-raise-lead-button{ data: code_suggestions_owner_alert_hand_raise_props(root_namespace) }
 
-      %p= s_('CodeSuggestionsGAAlert|Continue accelerating your development with Code Suggestions. Starting February 15, 2024, a paid subscription will be required for access. Upgrade now to lock in the introductory price of $9 per user.')
+      %p= s_('CodeSuggestionsGAAlert|Continue accelerating your development with GitLab Duo Pro. Starting %{ga_date}, Code Suggestions will be part of Duo Pro, and a paid subscription will be required for access. Upgrade before %{promo_price_end_date} to lock in the introductory price of $9 per user. After this date, the price increases to $19 per user.') % {ga_date: l('2024-02-15'.to_date, format: :long), promo_price_end_date: l('2024-02-01'.to_date, format: :long)}
