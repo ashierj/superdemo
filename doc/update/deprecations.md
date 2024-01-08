@@ -595,6 +595,20 @@ are deprecated and will be removed from the GraphQL API. For installation instru
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### GitLab Runner provenance metadata SLSA v0.2 statement
+
+<div class="deprecation-notes">
+- Announced in GitLab <span class="milestone">16.8</span>
+- Removal in GitLab <span class="milestone">17.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/36869).
+</div>
+
+Runners generate provenance metadata and currently defaults to generating statements that adhere to SLSA v0.2. Because SLSA v1.0 has been released and is now supported by GitLab, the v0.2 statement is now deprecated and removal is planned in GitLab 17.0. The SLSA v1.0 statement is planned to become the new default statement format in GitLab 17.0.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### GraphQL deprecation of `dependencyProxyTotalSizeInBytes` field
 
 <div class="deprecation-notes">
