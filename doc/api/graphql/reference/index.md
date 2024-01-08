@@ -6261,7 +6261,7 @@ Input type: `ProjectCiCdSettingsUpdateInput`
 | <a id="mutationprojectcicdsettingsupdateinboundjobtokenscopeenabled"></a>`inboundJobTokenScopeEnabled` | [`Boolean`](#boolean) | Indicates CI/CD job tokens generated in other projects have restricted access to this project. |
 | <a id="mutationprojectcicdsettingsupdatejobtokenscopeenabled"></a>`jobTokenScopeEnabled` **{warning-solid}** | [`Boolean`](#boolean) | **Deprecated:** Outbound job token scope is being removed. This field can now only be set to false. Deprecated in 16.0. |
 | <a id="mutationprojectcicdsettingsupdatekeeplatestartifact"></a>`keepLatestArtifact` | [`Boolean`](#boolean) | Indicates if the latest artifact should be kept for the project. |
-| <a id="mutationprojectcicdsettingsupdatemergepipelinesenabled"></a>`mergePipelinesEnabled` | [`Boolean`](#boolean) | Indicates if merge pipelines are enabled for the project. |
+| <a id="mutationprojectcicdsettingsupdatemergepipelinesenabled"></a>`mergePipelinesEnabled` | [`Boolean`](#boolean) | Indicates if merged results pipelines are enabled for the project. |
 | <a id="mutationprojectcicdsettingsupdatemergetrainsenabled"></a>`mergeTrainsEnabled` | [`Boolean`](#boolean) | Indicates if merge trains are enabled for the project. |
 | <a id="mutationprojectcicdsettingsupdatemergetrainsskiptrainallowed"></a>`mergeTrainsSkipTrainAllowed` | [`Boolean`](#boolean) | Indicates whether an option is allowed to merge without refreshing the merge train. Ignored unless the `merge_trains_skip_train` feature flag is also enabled. |
 
@@ -25853,7 +25853,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectcicdsettinginboundjobtokenscopeenabled"></a>`inboundJobTokenScopeEnabled` | [`Boolean`](#boolean) | Indicates CI/CD job tokens generated in other projects have restricted access to this project. |
 | <a id="projectcicdsettingjobtokenscopeenabled"></a>`jobTokenScopeEnabled` | [`Boolean`](#boolean) | Indicates CI/CD job tokens generated in this project have restricted access to other projects. |
 | <a id="projectcicdsettingkeeplatestartifact"></a>`keepLatestArtifact` | [`Boolean`](#boolean) | Whether to keep the latest builds artifacts. |
-| <a id="projectcicdsettingmergepipelinesenabled"></a>`mergePipelinesEnabled` | [`Boolean`](#boolean) | Whether merge pipelines are enabled. |
+| <a id="projectcicdsettingmergepipelinesenabled"></a>`mergePipelinesEnabled` | [`Boolean`](#boolean) | Whether merged results pipelines are enabled. |
 | <a id="projectcicdsettingmergetrainsenabled"></a>`mergeTrainsEnabled` | [`Boolean`](#boolean) | Whether merge trains are enabled. |
 | <a id="projectcicdsettingmergetrainsskiptrainallowed"></a>`mergeTrainsSkipTrainAllowed` | [`Boolean!`](#boolean) | Whether merge immediately is allowed for merge trains. |
 | <a id="projectcicdsettingproject"></a>`project` | [`Project`](#project) | Project the CI/CD settings belong to. |

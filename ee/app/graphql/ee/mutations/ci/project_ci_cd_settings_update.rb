@@ -10,7 +10,7 @@ module EE
         prepended do
           argument :merge_pipelines_enabled, GraphQL::Types::Boolean,
             required: false,
-            description: 'Indicates if merge pipelines are enabled for the project.'
+            description: 'Indicates if merged results pipelines are enabled for the project.'
 
           argument :merge_trains_enabled, GraphQL::Types::Boolean,
             required: false,
