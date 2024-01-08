@@ -3,7 +3,7 @@
 module Elastic
   module Latest
     class EpicInstanceProxy < ApplicationInstanceProxy
-      SCHEMA_VERSION = 23_10
+      SCHEMA_VERSION = 24_01
 
       def as_indexed_json(_options = {})
         data = {}
