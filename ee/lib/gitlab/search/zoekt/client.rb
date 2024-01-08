@@ -16,11 +16,13 @@ module Gitlab
           delegate :search, :index, :delete, :truncate, to: :instance
         end
 
-        def search(query, num:, project_ids:, node_id:)
+        def search(query, num:, project_ids:, node_id:, search_mode:)
           start = Time.current
 
+          q = format_query(query, search_mode: search_mode)
+
           payload = {
-            Q: query,
+            Q: q,
             Opts: {
               TotalMaxMatchCount: num,
               NumContextLines: 1
@@ -243,6 +245,17 @@ module Gitlab
 
         def log_error(message, payload = {})
           logger.error(build_structured_payload(**payload.merge(message: message)))
+        end
+
+        def format_query(query, search_mode:)
+          case search_mode.to_sym
+          when :exact
+            "\"#{query}\""
+          when :regex
+            query
+          else
+            raise ArgumentError, 'Not a valid search_mode'
+          end
         end
       end
     end

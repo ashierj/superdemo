@@ -47,7 +47,8 @@ module Search
         node_id: zoekt_node_id,
         order_by: params[:order_by],
         sort: params[:sort],
-        filters: { language: params[:language] }
+        filters: { language: params[:language] },
+        modes: { regex: params[:regex] }
       )
     end
   end

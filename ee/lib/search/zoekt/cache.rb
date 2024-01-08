@@ -6,15 +6,16 @@ module Search
       MAX_PAGES = 10
       EXPIRES_IN = 5.minutes
 
-      attr_reader :current_user, :query, :project_ids, :per_page, :current_page, :max_per_page
+      attr_reader :current_user, :query, :project_ids, :per_page, :current_page, :max_per_page, :search_mode
 
-      def initialize(query, current_user:, project_ids:, per_page:, page:, max_per_page:)
+      def initialize(query, current_user:, project_ids:, per_page:, page:, max_per_page:, search_mode:)
         @query = query
         @current_user = current_user
         @project_ids = project_ids
         @per_page = per_page
         @current_page = page
         @max_per_page = max_per_page
+        @search_mode = search_mode
       end
 
       def enabled?
@@ -60,7 +61,7 @@ module Search
       end
 
       def search_fingerprint
-        OpenSSL::Digest.hexdigest('SHA256', "#{query}-#{project_ids.sort.join(',')}")
+        OpenSSL::Digest.hexdigest('SHA256', "#{query}-#{project_ids.sort.join(',')}-#{search_mode}")
       end
 
       def read_cache

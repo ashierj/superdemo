@@ -136,8 +136,9 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     let(:query) { 'use.*egex' }
     let(:node) { ::Search::Zoekt::Node.last }
     let(:node_id) { node.id }
+    let(:search_mode) { 'regex' }
 
-    subject { client.search(query, num: 10, project_ids: project_ids, node_id: node_id) }
+    subject { client.search(query, num: 10, project_ids: project_ids, node_id: node_id, search_mode: search_mode) }
 
     before do
       zoekt_ensure_project_indexed!(project_1)
@@ -168,6 +169,38 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
 
       it 'raises an error if somehow :any is sent as project_ids' do
         expect { subject }.to raise_error('Global search is not supported')
+      end
+    end
+
+    context 'when search_mode is regex' do
+      let(:query) { 'lots code do a' }
+
+      it 'performs regex search and result is not empty' do
+        expect(subject[:Result][:Files]).not_to be_nil
+      end
+    end
+
+    context 'when search_mode is exact' do
+      let(:query) { 'lots code do a' }
+      let(:search_mode) { 'exact' }
+
+      it 'performs exact search and result is empty' do
+        expect(subject[:Result][:Files]).to be_nil
+      end
+    end
+
+    context 'when search_mode is neither exact nor regex' do
+      let(:search_mode) { 'dummy' }
+
+      it 'raises an error' do
+        expect { subject }.to raise_error(ArgumentError, 'Not a valid search_mode')
+      end
+    end
+
+    context 'when search_mode is not passed' do
+      it 'raises an error' do
+        expect { client.search(query, num: 10, project_ids: project_ids, node_id: node_id) }.to raise_error(
+          ArgumentError, 'missing keyword: :search_mode')
       end
     end
 
@@ -217,12 +250,14 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     subject { client.index(project_1, node_id) }
 
     it 'indexes the project to make it searchable' do
-      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node_id)
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node_id,
+        search_mode: :regex)
       expect(search_results[:Result][:Files].to_a.size).to eq(0)
 
       client.index(project_1, node_id)
 
-      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node_id)
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node_id,
+        search_mode: :regex)
       expect(search_results[:Result][:Files].to_a.size).to be > 0
     end
 
@@ -294,13 +329,13 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
 
       it 'removes project data from the Zoekt node' do
         search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id],
-          node_id: node_id)
+          node_id: node_id, search_mode: :regex)
         expect(search_results[:Result][:Files].to_a.size).to eq(2)
 
         subject
 
         search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id],
-          node_id: node_id)
+          node_id: node_id, search_mode: :regex)
         expect(search_results[:Result][:Files].to_a).to be_empty
       end
     end
@@ -341,15 +376,19 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     end
 
     it 'removes all data from the Zoekt nodes' do
-      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node.id)
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node.id,
+        search_mode: :regex)
       expect(search_results[:Result][:Files].to_a.size).to be > 0
-      search_results = client.search('use.*egex', num: 10, project_ids: [project_2.id], node_id: node.id)
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_2.id], node_id: node.id,
+        search_mode: :regex)
       expect(search_results[:Result][:Files].to_a.size).to be > 0
 
       client.truncate
-      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node.id)
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node.id,
+        search_mode: :regex)
       expect(search_results[:Result][:Files].to_a.size).to eq(0)
-      search_results = client.search('use.*egex', num: 10, project_ids: [project_2.id], node_id: node.id)
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_2.id], node_id: node.id,
+        search_mode: :regex)
       expect(search_results[:Result][:Files].to_a.size).to eq(0)
     end
 

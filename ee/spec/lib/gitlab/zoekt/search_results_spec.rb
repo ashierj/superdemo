@@ -39,7 +39,8 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
         page: 1,
         per_page: described_class::DEFAULT_PER_PAGE,
         project_ids: limit_project_ids,
-        max_per_page: described_class::DEFAULT_PER_PAGE * 2
+        max_per_page: described_class::DEFAULT_PER_PAGE * 2,
+        search_mode: :exact
       ).and_call_original
 
       results.objects('blobs')
@@ -99,6 +100,77 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
       results = described_class.new(user, 'asdfg', limit_project_ids, node_id: node_id)
 
       expect(results.blobs_count).to eq 0
+    end
+
+    using RSpec::Parameterized::TableSyntax
+
+    where(:param_regex_mode, :feature_flag_zoekt_exact_search, :search_mode_sent_to_client) do
+      nil     | true  | :exact
+      true    | true  | :regex
+      false   | true  | :exact
+      'true'  | true  | :regex
+      'false' | true  | :exact
+      nil     | false | :regex
+      true    | false | :regex
+      false   | false | :regex
+      'true'  | false | :regex
+      'false' | false | :regex
+    end
+
+    with_them do
+      it 'calls search on Gitlab::Search::Zoekt::Client with correct parameters' do
+        stub_feature_flags(zoekt_exact_search: feature_flag_zoekt_exact_search)
+        expect(Gitlab::Search::Zoekt::Client).to receive(:search).with(
+          query,
+          num: described_class::ZOEKT_COUNT_LIMIT,
+          project_ids: limit_project_ids,
+          node_id: node_id,
+          search_mode: search_mode_sent_to_client
+        ).and_call_original
+        described_class.new(user, query, limit_project_ids, node_id: node_id,
+                            modes: { regex: param_regex_mode }).objects('blobs')
+      end
+    end
+
+    context 'when modes is not passed' do
+      context 'and feature flag zoekt_exact_search is disabled' do
+        before do
+          stub_feature_flags(zoekt_exact_search: false)
+        end
+
+        it 'calls search on Gitlab::Search::Zoekt::Client with correct parameters' do
+          expect(Gitlab::Search::Zoekt::Client).to receive(:search).with(
+            query,
+            num: described_class::ZOEKT_COUNT_LIMIT,
+            project_ids: limit_project_ids,
+            node_id: node_id,
+            search_mode: :regex
+          ).and_call_original
+          described_class.new(user, query, limit_project_ids, node_id: node_id).objects('blobs')
+        end
+      end
+
+      it 'calls search on Gitlab::Search::Zoekt::Client with correct parameters' do
+        expect(Gitlab::Search::Zoekt::Client).to receive(:search).with(
+          query,
+          num: described_class::ZOEKT_COUNT_LIMIT,
+          project_ids: limit_project_ids,
+          node_id: node_id,
+          search_mode: :exact
+        ).and_call_original
+        described_class.new(user, query, limit_project_ids, node_id: node_id).objects('blobs')
+      end
+    end
+
+    it 'calls search on Gitlab::Search::Zoekt::Client with correct parameters' do
+      expect(Gitlab::Search::Zoekt::Client).to receive(:search).with(
+        query,
+        num: described_class::ZOEKT_COUNT_LIMIT,
+        project_ids: limit_project_ids,
+        node_id: node_id,
+        search_mode: :exact
+      ).and_call_original
+      described_class.new(user, query, limit_project_ids, node_id: node_id).objects('blobs')
     end
 
     it 'returns zero when error is raised by client' do
@@ -179,7 +251,8 @@ branch_name: 'master')
       it 'finds all examples' do
         examples.each do |search_term, file_content|
           file_name = Digest::SHA256.hexdigest(file_content)
-          search_results_instance = described_class.new(user, search_term, limit_project_ids, node_id: node_id)
+          search_results_instance = described_class.new(user, search_term, limit_project_ids, node_id: node_id,
+                                                        modes: { regex: true })
           results = search_results_instance.objects('blobs').map(&:path)
           expect(results).to include(file_name)
         end
