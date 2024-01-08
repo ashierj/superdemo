@@ -160,29 +160,40 @@ module Elastic
       current_task.subtasks.each do |subtask|
         subtask.slices.started.each do |slice|
           # Get task status
-          task_status = elastic_helper.task_status(task_id: slice.elastic_task)
+          task_status = ::Search::Elastic::TaskStatus.new(task_id: slice.elastic_task)
 
           # Check if task is complete
-          slices_in_progress += 1 unless task_status['completed']
+          slices_in_progress += 1 unless task_status.completed?
 
           # Check for reindexing error
-          reindexing_error = task_status.dig('error', 'type')
-          task_failures = task_status.dig('response', 'failures')
-
-          if reindexing_error || task_failures.present?
+          if task_status.error?
             slices_failed += 1
 
-            retry_or_abort_after_limit(subtask, slice, 'Task failed', { task_id: slice.elastic_task, elasticsearch_error_type: reindexing_error, elasticsearch_failures: task_failures, slice: slice.elastic_slice })
+            logged_arguments = {
+              task_id: slice.elastic_task,
+              elasticsearch_error_type: task_status.error_type,
+              elasticsearch_failures: task_status.failures,
+              slice: slice.elastic_slice
+            }
+
+            retry_or_abort_after_limit(subtask, slice, 'Task failed', **logged_arguments)
             slices_in_progress += 1
 
             next
           end
 
           # Check totals match if task complete
-          response = task_status['response']
-          next unless task_status['completed'] && response['total'] != (response['created'] + response['updated'] + response['deleted'])
+          next unless task_status.completed? && !task_status.totals_match?
 
-          retry_or_abort_after_limit(subtask, slice, 'Task totals not equal', { task_id: slice.elastic_task, slice: slice.elastic_slice, total_count: response['total'], created_count: response['created'], updated_count: response['updated'], deleted_count: response['created'] })
+          logged_arguments = {
+            task_id: slice.elastic_task,
+            slice: slice.elastic_slice,
+            total_count: task_status.counts[:total],
+            created_count: task_status.counts[:created],
+            updated_count: task_status.counts[:updated],
+            deleted_count: task_status.counts[:deleted]
+          }
+          retry_or_abort_after_limit(subtask, slice, 'Task totals not equal', **logged_arguments)
 
           slices_in_progress += 1
           totals_do_not_match += 1

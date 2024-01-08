@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_shared_state, feature_category: :global_search do
+RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_shared_state,
+  feature_category: :global_search do
   subject(:cluster_reindexing_service) { described_class.new }
 
   let(:helper) { Gitlab::Elastic::Helper.new }
@@ -11,7 +12,7 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
     allow(Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
   end
 
-  context 'state: initial' do
+  context 'for state: initial' do
     let(:task) { create(:elastic_reindexing_task, state: :initial) }
 
     it 'aborts if the main index does not use aliases' do
@@ -65,7 +66,7 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
     end
   end
 
-  context 'state: indexing_paused' do
+  context 'for state: indexing_paused' do
     let(:issues_alias) { Issue.__elasticsearch__.index_name }
     let(:issues_old_index_name) { "#{issues_alias}-1" }
     let(:issues_new_index_name) { "#{issues_alias}-reindex" }
@@ -125,7 +126,7 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
         allow(helper).to receive(:target_index_names) { |options| { "#{options[:target]}-1" => true } }
       end
 
-      context 'targets set to issue and repository' do
+      context 'when targets set to issue and repository' do
         let(:targets) { %w[Issue Repository] }
 
         it 'creates multiple indices' do
@@ -150,7 +151,7 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
         end
       end
 
-      context 'targets do not include repository' do
+      context 'when targets do not include repository' do
         let(:targets) { %w[Issue] }
 
         it 'does not create the main index' do
@@ -170,7 +171,7 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
     end
   end
 
-  context 'state: reindexing' do
+  context 'for state: reindexing' do
     let!(:task) { create(:elastic_reindexing_task, state: :reindexing, max_slices_running: 1) }
     let!(:subtask) { create(:elastic_reindexing_subtask, elastic_reindexing_task: task, documents_count: 10) }
     let!(:slices) { [slice_1, slice_2, slice_3] }
@@ -187,18 +188,24 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
     end
 
     before do
-      allow(helper).to receive(:task_status).and_return({ 'completed' => true, 'response' => { 'total' => 20, 'created' => 20, 'updated' => 0, 'deleted' => 0 } })
+      allow(helper).to receive(:task_status).and_return(
+        {
+          'completed' => true,
+          'response' => { 'total' => 20, 'created' => 20, 'updated' => 0, 'deleted' => 0 }
+        }
+      )
       allow(helper).to receive(:refresh_index).and_return(true)
       allow(helper).to receive(:reindex).and_return('task_1', 'task_2', 'task_3', 'task_4', 'task_5', 'task_6')
     end
 
-    context 'errors are raised' do
-      context 'documents count' do
+    context 'when errors are raised' do
+      context 'when documents count does not match' do
         before do
-          allow(helper).to receive(:documents_count).with(index_name: anything).and_return(subtask.reload.documents_count * 2)
+          allow(helper).to receive(:documents_count)
+            .with(index_name: anything).and_return(subtask.reload.documents_count * 2)
         end
 
-        it 'errors if documents count is different' do
+        it 'changes task state to failure' do
           # kick off reindexing for each slice
           slices.count.times do
             cluster_reindexing_service.execute
@@ -209,7 +216,7 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
         end
       end
 
-      context 'reindexing slice failed' do
+      context 'when reindexing slice failed' do
         let(:failure_response) { { 'completed' => true, 'error' => { 'type' => 'search_phase_execution_exception' } } }
 
         before do
@@ -222,12 +229,13 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
           it 'errors and changes task state from reindexing to failed' do
             stub_const("#{described_class}::REINDEX_MAX_RETRY_LIMIT", 0)
 
-            expect { cluster_reindexing_service.execute }.to change { task.reload.state }.from('reindexing').to('failure')
+            expect { cluster_reindexing_service.execute }.to change { task.reload.state }
+              .from('reindexing').to('failure')
             expect(task.reload.error_message).to match(/Task failed. Retry limit reached. Aborting reindexing/)
           end
         end
 
-        context 'before retry limit reached' do
+        context 'when the retry limit has not been reached' do
           it 'increases retry_attempt and tries the slice again' do
             expect { cluster_reindexing_service.execute }.to change { slices.first.reload.retry_attempt }.by(1).and change { slices.first.reload.elastic_task }
             expect(task.reload.state).to eq('reindexing')
@@ -283,28 +291,38 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
         end
       end
 
-      context 'slice totals do not match' do
+      context 'when slice totals do not match' do
         before do
           cluster_reindexing_service.execute # run once to kick off reindexing for slices
 
-          allow(helper).to receive(:task_status).and_return({ 'completed' => true, 'response' => { 'total' => 20, 'created' => 10, 'updated' => 0, 'deleted' => 0 } })
+          allow(helper).to receive(:task_status).and_return(
+            {
+              'completed' => true,
+              'response' => { 'total' => 20, 'created' => 10, 'updated' => 0, 'deleted' => 0 }
+            }
+          )
         end
 
         context 'when retry limit is reached on a slice' do
           it 'errors and changes task state from reindexing to failed' do
             stub_const("#{described_class}::REINDEX_MAX_RETRY_LIMIT", 0)
 
-            expect { cluster_reindexing_service.execute }.to change { task.reload.state }.from('reindexing').to('failure')
-            expect(task.reload.error_message).to match(/Task totals not equal. Retry limit reached. Aborting reindexing/)
+            expect { cluster_reindexing_service.execute }
+              .to change { task.reload.state }.from('reindexing').to('failure')
+            expect(task.reload.error_message)
+              .to match(/Task totals not equal. Retry limit reached. Aborting reindexing/)
           end
         end
 
-        context 'before retry limit reached' do
+        context 'when retry limit has not been reached' do
           it 'increases retry_attempt and reindexes the slice again' do
-            expect { cluster_reindexing_service.execute }.to change { slices.first.reload.retry_attempt }.by(1).and change { slices.first.reload.elastic_task }
+            expect { cluster_reindexing_service.execute }
+              .to change { slices.first.reload.retry_attempt }.by(1).and change { slices.first.reload.elastic_task }
             expect(task.reload.state).to eq('reindexing')
             # once for initial reindex, once for retry
-            expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: 3, slice: 0).twice
+            expect(helper)
+              .to have_received(:reindex)
+              .with(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: 3, slice: 0).twice
           end
         end
       end
@@ -324,7 +342,7 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
       end
     end
 
-    context 'slice batching' do
+    context 'for slice batching' do
       it 'kicks off the next set of slices if the current slice is finished', :aggregate_failures do
         expect { cluster_reindexing_service.execute }.to change { slice_1.reload.elastic_task }
         expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: 3, slice: 0)
@@ -337,7 +355,7 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
       end
     end
 
-    context 'task finishes correctly' do
+    context 'when task finishes successfully' do
       using RSpec::Parameterized::TableSyntax
 
       where(:refresh_interval, :current_settings) do
