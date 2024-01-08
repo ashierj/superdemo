@@ -78,38 +78,43 @@ export const initializeFormData = ({ fields, errors }) => {
 };
 
 /**
+ * Returns a clean string for comparison, converted lower case with whitespace trimmed
+ * @param {String} str the string to be cleaned
+ * @returns {String}
+ */
+export const cleanStageName = (str = '') => str?.trim().toLowerCase();
+
+/**
  * Validates the form fields for the custom stages form
  * Any errors will be returned in a object where the key is
  * the name of the field.g
  *
- * @param {Object} fields key value pair of form field values
- * @param {Object} defaultStageNames array of default value stream names
+ * @param {Object} currentStage the current stage to be validated
+ * @param {Object} allStageNames array of the existing value stream stage names
  * @returns {Object} key value pair of form fields with an array of errors
  */
-export const validateStage = (fields, defaultStageNames = []) => {
+export const validateStage = (currentStage, allStageNames = []) => {
   const newErrors = {};
 
-  if (fields?.name) {
-    if (fields.name.length > NAME_MAX_LENGTH) {
+  if (currentStage?.name) {
+    if (currentStage.name.length > NAME_MAX_LENGTH) {
       newErrors.name = [ERRORS.MAX_LENGTH];
     }
 
-    const formattedStageName = fields.name.toLowerCase();
+    const formattedStageName = cleanStageName(currentStage.name);
 
-    if (
-      fields?.custom &&
-      defaultStageNames.some(
-        (defaultStageName) => defaultStageName.toLowerCase() === formattedStageName,
-      )
-    ) {
+    const matches = allStageNames.filter((stageName) => {
+      return cleanStageName(stageName) === formattedStageName;
+    });
+    if (matches.length > 1) {
       newErrors.name = [ERRORS.STAGE_NAME_EXISTS];
     }
   } else {
     newErrors.name = [ERRORS.STAGE_NAME_MIN_LENGTH];
   }
 
-  if (fields?.startEventIdentifier) {
-    if (!fields?.endEventIdentifier) {
+  if (currentStage?.startEventIdentifier) {
+    if (!currentStage?.endEventIdentifier) {
       newErrors.endEventIdentifier = [ERRORS.END_EVENT_REQUIRED];
     }
   } else {

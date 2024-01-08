@@ -121,6 +121,9 @@ describe('ValueStreamFormContent', () => {
     wrapper.findByTestId('create-value-stream-name').findComponent(GlFormInput);
   const findSubmitErrorAlert = () => wrapper.findComponent(GlAlert);
 
+  const fillStageNameAtIndex = (name, index) =>
+    findCustomStages().at(index).findComponent(GlFormInput).vm.$emit('input', name);
+
   const clickSubmit = () => findModal().vm.$emit('primary', mockEvent);
   const clickAddStage = () => findModal().vm.$emit('secondary', mockEvent);
   const clickRestoreStageAtIndex = (index) => findRestoreStageButton(index).vm.$emit('click');
@@ -223,6 +226,20 @@ describe('ValueStreamFormContent', () => {
         expect(findCustomStages()).toHaveLength(1);
       });
 
+      it('each stage has a transition key', () => {
+        expectStageTransitionKeys(wrapper.vm.stages);
+      });
+    });
+
+    describe('field validation', () => {
+      beforeEach(() => {
+        wrapper = createComponent({
+          stubs: {
+            CustomStageFields,
+          },
+        });
+      });
+
       it('validates existing fields when clicked', async () => {
         const fieldTestId = 'create-value-stream-name';
         expect(findFieldErrors(fieldTestId)).toBeUndefined();
@@ -232,8 +249,17 @@ describe('ValueStreamFormContent', () => {
         expectFieldError(fieldTestId, 'Name is required');
       });
 
-      it('each stage has a transition key', () => {
-        expectStageTransitionKeys(wrapper.vm.stages);
+      it('does not allow duplicate stage names', async () => {
+        const [firstDefaultStage] = defaultStageConfig;
+        await findNameInput().vm.$emit('input', streamName);
+
+        await clickAddStage();
+        await fillStageNameAtIndex(firstDefaultStage.name, 0);
+
+        // Trigger the field validation
+        await clickAddStage();
+
+        expectFieldError('custom-stage-name-3', 'Stage name already exists');
       });
     });
 
