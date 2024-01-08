@@ -47,5 +47,5 @@ export const WORKSPACES_LIST_PAGE_SIZE = 10;
 export const WORKSPACES_DROPDOWN_GROUP_PAGE_SIZE = 20;
 
 export const I18N_LOADING_WORKSPACES_FAILED = s__(
-  'Workspaces|Unable to load current Workspaces. Please try again or contact an administrator.',
+  'Workspaces|Unable to load current workspaces. Please try again or contact an administrator.',
 );

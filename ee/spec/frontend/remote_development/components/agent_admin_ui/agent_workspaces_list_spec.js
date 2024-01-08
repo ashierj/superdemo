@@ -208,7 +208,7 @@ describe('remote_development/components/agent_admin_ui/agent_workspaces_list.vue
 
     it('shows alert', () => {
       expect(findAlert().text()).toBe(
-        'Unable to load current Workspaces. Please try again or contact an administrator.',
+        'Unable to load current workspaces. Please try again or contact an administrator.',
       );
     });
 

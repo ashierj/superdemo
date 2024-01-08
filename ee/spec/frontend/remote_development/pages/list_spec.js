@@ -196,7 +196,7 @@ describe('remote_development/pages/list.vue', () => {
 
     it('shows alert', () => {
       expect(findAlert().text()).toBe(
-        'Unable to load current Workspaces. Please try again or contact an administrator.',
+        'Unable to load current workspaces. Please try again or contact an administrator.',
       );
     });
 
