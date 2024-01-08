@@ -3,7 +3,7 @@
 class ReindexAllIssues < Elastic::Migration
   include ::Search::Elastic::MigrationDatabaseBackfillHelper
 
-  batch_size 10_000
+  batch_size 50_000
   batched!
   throttle_delay 1.minute
   retry_on_failure
