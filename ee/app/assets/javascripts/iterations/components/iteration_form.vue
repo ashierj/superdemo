@@ -6,7 +6,7 @@ import { dayAfter, formatDate, parsePikadayDate } from '~/lib/utils/datetime_uti
 import { TYPENAME_ITERATION, TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
-import MarkdownField from '~/vue_shared/components/markdown/field.vue';
+import MarkdownEditor from '~/vue_shared/components/markdown/markdown_editor.vue';
 import readIteration from '../queries/iteration.query.graphql';
 import createIteration from '../queries/iteration_create.mutation.graphql';
 import readCadence from '../queries/iteration_cadence.query.graphql';
@@ -41,7 +41,7 @@ export default {
     GlForm,
     GlFormInput,
     GlFormGroup,
-    MarkdownField,
+    MarkdownEditor,
   },
   apollo: {
     group: {
@@ -89,6 +89,13 @@ export default {
       startDate: null,
       dueDate: null,
       automatic: null,
+      formFieldProps: {
+        id: 'iteration-description',
+        name: 'iteration-description',
+        'aria-label': this.$options.i18n.form.description,
+        'data-testid': 'iteration-description-field',
+        class: 'note-textarea js-gfm-input js-autosize markdown-area',
+      },
     };
   },
   computed: {
@@ -134,6 +141,9 @@ export default {
       return this.automatic
         ? baseVariables
         : { ...baseVariables, title: this.title, ...this.formattedDates };
+    },
+    autocompleteDataSources() {
+      return gl.GfmAutoComplete?.dataSources;
     },
   },
   async mounted() {
@@ -320,29 +330,14 @@ export default {
         />
       </gl-form-group>
       <gl-form-group :label="$options.i18n.form.description" label-for="iteration-description">
-        <markdown-field
-          :markdown-preview-path="previewMarkdownPath"
-          :can-attach-file="false"
-          :enable-autocomplete="true"
-          label="Description"
-          :textarea-value="description"
+        <markdown-editor
+          v-model="description"
+          :render-markdown-path="previewMarkdownPath"
           markdown-docs-path="/help/user/markdown"
-          :add-spacing-classes="false"
-          class="md-area"
-        >
-          <template #textarea>
-            <textarea
-              id="iteration-description"
-              v-model="description"
-              class="note-textarea js-gfm-input js-autosize markdown-area"
-              dir="auto"
-              data-supports-quick-actions="false"
-              :aria-label="$options.i18n.form.description"
-              data-testid="iteration-description-field"
-            >
-            </textarea>
-          </template>
-        </markdown-field>
+          :form-field-props="formFieldProps"
+          enable-autocomplete
+          :autocomplete-data-sources="autocompleteDataSources"
+        />
       </gl-form-group>
     </gl-form>
     <div class="form-actions d-flex">
