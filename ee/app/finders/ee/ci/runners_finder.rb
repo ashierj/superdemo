@@ -12,13 +12,13 @@ module EE
         super + ['most_active_desc']
       end
 
-      override :sort!
-      def sort!
+      override :sort
+      def sort(items)
         if sort_key == 'most_active_desc' && (project || group)
           raise ArgumentError, 'most_active_desc can only be used on instance runners'
         end
 
-        super
+        super(items)
       end
     end
   end
