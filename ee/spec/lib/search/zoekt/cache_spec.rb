@@ -3,7 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe Search::Zoekt::Cache, :clean_gitlab_redis_cache, feature_category: :global_search do
-  let(:default_options) { { per_page: 20, max_per_page: 40 } }
+  let(:default_options) do
+    { per_page: 20, max_per_page: 40, search_mode: :regex }
+  end
+
   let(:query) { 'foo' }
   let_it_be(:user1) { build(:user, id: 1) }
   let(:page) { 1 }

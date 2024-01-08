@@ -9,20 +9,21 @@ module Gitlab
       ZOEKT_COUNT_LIMIT = 5_000
       DEFAULT_PER_PAGE = Gitlab::SearchResults::DEFAULT_PER_PAGE
 
-      attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters, :error
+      attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters, :error, :modes
 
       # Limit search results by passed projects
       # It allows us to search only for projects user has access to
       attr_reader :limit_project_ids, :node_id
 
-      def initialize(current_user, query, limit_project_ids = nil, node_id:, order_by: nil, sort: nil, filters: {})
+      def initialize(current_user, query, project_ids = nil, node_id:, order_by: nil, sort: nil, filters: {}, modes: {})
         @current_user = current_user
         @query = query
-        @limit_project_ids = limit_project_ids
+        @limit_project_ids = project_ids
         @node_id = node_id
         @order_by = order_by
         @sort = sort
         @filters = filters
+        @modes = modes
       end
 
       def objects(_scope, page: 1, per_page: DEFAULT_PER_PAGE, preload_method: nil)
@@ -135,7 +136,8 @@ module Gitlab
           query,
           num: ZOEKT_COUNT_LIMIT,
           project_ids: options[:project_ids],
-          node_id: options[:node_id]
+          node_id: options[:node_id],
+          search_mode: search_mode
         )
 
         if response[:Error]
@@ -194,7 +196,8 @@ module Gitlab
           page: page,
           per_page: per_page,
           project_ids: options[:project_ids],
-          max_per_page: DEFAULT_PER_PAGE * 2
+          max_per_page: DEFAULT_PER_PAGE * 2,
+          search_mode: search_mode
         )
 
         search_results, total_count = zoekt_cache.fetch do |page_limit|
@@ -236,6 +239,14 @@ module Gitlab
         items.compact!
 
         [items, total_count]
+      end
+
+      def search_mode
+        Gitlab::Utils.to_boolean(modes[:regex]) ? :regex : default_search_mode
+      end
+
+      def default_search_mode
+        Feature.enabled?(:zoekt_exact_search, type: :wip) ? :exact : :regex
       end
     end
   end

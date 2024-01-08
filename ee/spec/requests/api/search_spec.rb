@@ -479,6 +479,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
 
         it_behaves_like 'response is correct', schema: 'public_api/v4/blobs', size: 3 do
           before do
+            stub_feature_flags(zoekt_exact_search: false) # We will decide for APIs later during rolling out
             get api(endpoint, user), params: { scope: 'blobs', search: 'file:README' }
           end
         end
