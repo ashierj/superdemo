@@ -11995,9 +11995,6 @@ msgstr ""
 msgid "Code Review Analytics displays a table of open merge requests considered to be in code review. There are currently no merge requests in review for this project and/or filters."
 msgstr ""
 
-msgid "Code Suggestions"
-msgstr ""
-
 msgid "Code Suggestions add-on status"
 msgstr ""
 
@@ -12113,6 +12110,9 @@ msgid "CodeSuggestions|Introducing the Code Suggestions add-on"
 msgstr ""
 
 msgid "CodeSuggestions|Introducing the Code&nbsp;Suggestions add&#8209;on"
+msgstr ""
+
+msgid "CodeSuggestions|Manage seat assignments for Code Suggestions across your instance."
 msgstr ""
 
 msgid "CodeSuggestions|Projects in this group can use Code Suggestions"
