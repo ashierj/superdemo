@@ -120,11 +120,16 @@ RSpec.describe 'Updating the dependency proxy packages settings', :aggregate_fai
       context 'with blank values' do
         let(:params) { super().merge(maven_external_registry_username: nil, maven_external_registry_password: '') }
 
-        it 'returns an error' do
+        it 'nullifies blank values' do
           subject
 
           expect(response).to have_gitlab_http_status(:success)
-          expect(graphql_errors(mutation_response).first).to eq("Maven external registry username can't be blank")
+          expect(settings_response['mavenExternalRegistryUsername']).to eq(nil)
+          expect(settings_response['mavenExternalRegistryPassword']).to eq(nil)
+
+          created_settings = project.dependency_proxy_packages_setting.reload
+          expect(created_settings.maven_external_registry_username).to eq(nil)
+          expect(created_settings.maven_external_registry_password).to eq(nil)
         end
       end
 
