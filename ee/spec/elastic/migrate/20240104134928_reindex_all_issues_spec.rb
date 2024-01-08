@@ -9,6 +9,6 @@ RSpec.describe ReindexAllIssues, :elastic, feature_category: :global_search do
     let(:version) { 20240104134928 }
     let(:objects) { create_list(:issue, 3) }
     let(:expected_throttle_delay) { 1.minute }
-    let(:expected_batch_size) { 10_000 }
+    let(:expected_batch_size) { 50_000 }
   end
 end
