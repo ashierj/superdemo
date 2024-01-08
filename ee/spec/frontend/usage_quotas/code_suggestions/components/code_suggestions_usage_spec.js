@@ -1,6 +1,6 @@
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import addOnPurchaseQuery from 'ee/usage_quotas/add_on/graphql/get_add_on_purchase.query.graphql';
 import CodeSuggestionsIntro from 'ee/usage_quotas/code_suggestions/components/code_suggestions_intro.vue';
@@ -33,12 +33,14 @@ describe('Code Suggestions Usage', () => {
   const findCodeSuggestionsIntro = () => wrapper.findComponent(CodeSuggestionsIntro);
   const findCodeSuggestionsInfo = () => wrapper.findComponent(CodeSuggestionsInfo);
   const findCodeSuggestionsStatistics = () => wrapper.findComponent(CodeSuggestionsStatisticsCard);
+  const findCodeSuggestionsSubtitle = () => wrapper.findByTestId('code-suggestions-subtitle');
+  const findCodeSuggestionsTitle = () => wrapper.findByTestId('code-suggestions-title');
   const findSaasAddOnEligibleUserList = () => wrapper.findComponent(SaasAddOnEligibleUserList);
   const findSelfManagedAddOnEligibleUserList = () =>
     wrapper.findComponent(SelfManagedAddOnEligibleUserList);
 
   const createComponent = ({ handler, provideProps } = {}) => {
-    wrapper = shallowMount(CodeSuggestionsUsage, {
+    wrapper = shallowMountExtended(CodeSuggestionsUsage, {
       provide: {
         isSaaS: true,
         ...provideProps,
@@ -84,6 +86,14 @@ describe('Code Suggestions Usage', () => {
     it('renders code suggestions intro', () => {
       expect(findCodeSuggestionsIntro().exists()).toBe(true);
     });
+
+    it('does not render code suggestions title', () => {
+      expect(findCodeSuggestionsTitle().exists()).toBe(false);
+    });
+
+    it('does not render code suggestions subtitle', () => {
+      expect(findCodeSuggestionsSubtitle().exists()).toBe(false);
+    });
   });
 
   describe('with code suggestions data', () => {
@@ -93,6 +103,16 @@ describe('Code Suggestions Usage', () => {
 
     it('does not render code suggestions intro', () => {
       expect(findCodeSuggestionsIntro().exists()).toBe(false);
+    });
+
+    it('renders code suggestions title', () => {
+      expect(findCodeSuggestionsTitle().text()).toBe('Code Suggestions');
+    });
+
+    it('renders code suggestions subtitle', () => {
+      expect(findCodeSuggestionsSubtitle().text()).toBe(
+        'Manage seat assignments for Code Suggestions across your instance.',
+      );
     });
 
     it('renders code suggestions statistics card', () => {

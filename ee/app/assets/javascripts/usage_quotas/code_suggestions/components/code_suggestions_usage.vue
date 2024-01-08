@@ -101,6 +101,18 @@ export default {
     </section>
     <template v-else>
       <section v-if="hasCodeSuggestions">
+        <h1 data-testid="code-suggestions-title" class="page-title gl-font-size-h-display">
+          {{ s__('CodeSuggestions|Code Suggestions') }}
+        </h1>
+
+        <p data-testid="code-suggestions-subtitle">
+          {{
+            s__(
+              'CodeSuggestions|Manage seat assignments for Code Suggestions across your instance.',
+            )
+          }}
+        </p>
+
         <section
           class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5 gl-bg-gray-10 gl-p-5"
         >
