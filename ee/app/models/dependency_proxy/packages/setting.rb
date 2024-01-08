@@ -20,11 +20,13 @@ module DependencyProxy
         encode: false,
         encode_iv: false
 
+      before_validation :nullify_credentials_values
+
       validates :project, presence: true
       validates :maven_external_registry_url, addressable_url: true, if: :maven_external_registry_url?
 
-      validates :maven_external_registry_username, presence: true, unless: -> { maven_external_registry_password.nil? }
-      validates :maven_external_registry_password, presence: true, unless: -> { maven_external_registry_username.nil? }
+      validates :maven_external_registry_username, presence: true, if: :maven_external_registry_password?
+      validates :maven_external_registry_password, presence: true, if: :maven_external_registry_username?
       validates :maven_external_registry_url,
         :maven_external_registry_username,
         :maven_external_registry_password,
@@ -33,6 +35,13 @@ module DependencyProxy
       validates_with AnyFieldValidator, fields: %w[maven_external_registry_url]
 
       scope :enabled, -> { where(enabled: true) }
+
+      private
+
+      def nullify_credentials_values
+        self.maven_external_registry_username = nil if maven_external_registry_username.blank?
+        self.maven_external_registry_password = nil if maven_external_registry_password.blank?
+      end
     end
   end
 end
