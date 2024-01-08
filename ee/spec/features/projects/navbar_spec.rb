@@ -133,7 +133,35 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
 
   context 'when container registry is available' do
     before do
+      stub_config(registry: { enabled: true })
+
+      insert_container_nav
+
+      visit project_path(project)
+    end
+
+    it_behaves_like 'verified navigation bar'
+  end
+
+  context 'when google artifact registry is available' do
+    before do
+      stub_config(registry: { enabled: true })
+      stub_saas_features(google_artifact_registry: true)
+
+      insert_container_nav
+      insert_google_artifact_registry_nav
+
+      visit project_path(project)
+    end
+
+    it_behaves_like 'verified navigation bar'
+  end
+
+  context 'when google artifact registry is unavailable' do
+    before do
       stub_config(packages: { enabled: true }, registry: { enabled: true })
+      stub_feature_flags(gcp_artifact_registry: false)
+      stub_saas_features(google_artifact_registry: false)
 
       insert_container_nav
 
