@@ -25200,7 +25200,6 @@ ALTER SEQUENCE vs_code_settings_id_seq OWNED BY vs_code_settings.id;
 
 CREATE TABLE vulnerabilities (
     id bigint NOT NULL,
-    milestone_id bigint,
     epic_id bigint,
     project_id bigint NOT NULL,
     author_id bigint NOT NULL,
@@ -35687,8 +35686,6 @@ CREATE INDEX index_vulnerabilities_on_epic_id ON vulnerabilities USING btree (ep
 
 CREATE INDEX index_vulnerabilities_on_finding_id ON vulnerabilities USING btree (finding_id);
 
-CREATE INDEX index_vulnerabilities_on_milestone_id ON vulnerabilities USING btree (milestone_id);
-
 CREATE INDEX index_vulnerabilities_on_project_id_and_id ON vulnerabilities USING btree (project_id, id);
 
 CREATE INDEX index_vulnerabilities_on_project_id_and_state_and_severity ON vulnerabilities USING btree (project_id, state, severity);
@@ -38055,9 +38052,6 @@ ALTER TABLE ONLY project_pages_metadata
 
 ALTER TABLE ONLY group_deletion_schedules
     ADD CONSTRAINT fk_11e3ebfcdd FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY vulnerabilities
-    ADD CONSTRAINT fk_131d289c65 FOREIGN KEY (milestone_id) REFERENCES milestones(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY approval_group_rules
     ADD CONSTRAINT fk_1485c451e3 FOREIGN KEY (scan_result_policy_id) REFERENCES scan_result_policies(id) ON DELETE CASCADE;
