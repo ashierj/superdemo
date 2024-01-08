@@ -84,11 +84,11 @@ RSpec.describe 'Code suggestions GA notify owner alert', :saas, :js, feature_cat
   end
 
   def expect_banner_to_be_present
-    expect(page).to have_text 'GitLab Duo Code Suggestions free access is ending soon'
+    expect(page).to have_text 'Code Suggestions is now part of Duo Pro. Free access is ending soon.'
   end
 
   def expect_banner_to_be_absent
-    expect(page).not_to have_text 'GitLab Duo Code Suggestions free access is ending soon'
+    expect(page).not_to have_text 'Code Suggestions is now part of Duo Pro. Free access is ending soon.'
   end
 
   def expect_contact_sales_form_to_be_present
