@@ -370,43 +370,6 @@ export const mockIssue4 = {
   epic: null,
 };
 
-export const mockListWithIteration = {
-  id: 'gid://gitlab/List/1',
-  title: 'Backlog',
-  position: null,
-  listType: 'backlog',
-  collapsed: false,
-  label: null,
-  maxIssueCount: 0,
-  assignee: null,
-  milestone: null,
-  preset: true,
-  iteration: {
-    id: 'gid://gitlab/Iteration/1',
-    title: null,
-    iterationCadence: mockIterationCadence,
-    startDate: '2021-10-05',
-    dueDate: '2021-10-10',
-    __typename: 'Iteration',
-  },
-};
-
-export const mockIssueInListWithIteration = {
-  id: 'gid://gitlab/Issue/438',
-  iid: 29,
-  title: 'Issue 5',
-  referencePath: '#29',
-  dueDate: null,
-  timeEstimate: 0,
-  weight: null,
-  confidential: false,
-  path: '/gitlab-org/gitlab-test/-/issues/28',
-  assignees: mockAssignees,
-  labels,
-  epic: null,
-  list: mockListWithIteration,
-};
-
 export const mockIssues = [mockIssue, mockIssue2];
 
 export const mockGroupIssuesResponse = (listId = 'gid://gitlab/List/1', issues = [rawIssue]) => ({
@@ -521,22 +484,6 @@ export const mockEpic = {
   descendantWeightSum: {
     openedIssues: 0,
     closedIssues: 0,
-  },
-  issues: [mockIssue],
-  labels: [],
-};
-
-export const mockFormattedBoardEpic = {
-  id: 'gid://gitlab/Epic/41',
-  iid: '1',
-  title: 'Epic title',
-  referencePath: 'gitlab-org/gitlab-subgroup&41',
-  state: 'opened',
-  webUrl: '/groups/gitlab-org/-/epics/1',
-  group: { fullPath: 'gitlab-org' },
-  descendantCounts: {
-    openedIssues: 3,
-    closedIssues: 2,
   },
   issues: [mockIssue],
   labels: [],
@@ -672,11 +619,6 @@ export const mockGroupEpicsResponse = {
   },
 };
 
-export const mockIssuesByListId = {
-  'gid://gitlab/List/1': [mockIssue.id, mockIssue3.id, mockIssue4.id],
-  'gid://gitlab/List/2': mockIssues.map(({ id }) => id),
-};
-
 export const issues = {
   [mockIssue.id]: mockIssue,
   [mockIssue2.id]: mockIssue2,
@@ -707,8 +649,6 @@ export const mockGroup2 = {
   fullName: 'Gitlab Org / Database',
   fullPath: 'gitlab-org/database',
 };
-
-export const mockSubGroups = [mockGroup0, mockGroup1, mockGroup2];
 
 export const mockGroupsResponse = (subGroups = [mockGroup1, mockGroup2]) => ({
   data: {

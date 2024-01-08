@@ -3,8 +3,6 @@ import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 
 import VueApollo from 'vue-apollo';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import LabelsSelect from 'ee/boards/components/labels_select.vue';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -26,12 +24,10 @@ import DropdownValue from '~/sidebar/components/labels/labels_select_widget/drop
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
 Vue.use(VueApollo);
-Vue.use(Vuex);
 
 describe('Labels select component', () => {
   let wrapper;
   let fakeApollo;
-  let store;
 
   const selectedText = () => wrapper.find('[data-testid="selected-labels"]').text();
   const findEditButton = () => wrapper.findComponent(GlButton);
@@ -48,14 +44,6 @@ describe('Labels select component', () => {
     await waitForPromises();
   }
 
-  const createStore = () => {
-    store = new Vuex.Store({
-      actions: {
-        setError: jest.fn(),
-      },
-    });
-  };
-
   const createComponent = ({
     props = {},
     isGroupBoard = false,
@@ -68,7 +56,6 @@ describe('Labels select component', () => {
       [searchGroupLabels, groupLabelsQueryHandler],
     ]);
     wrapper = shallowMount(LabelsSelect, {
-      store,
       apolloProvider: fakeApollo,
       propsData: {
         board: boardObj,
@@ -93,13 +80,11 @@ describe('Labels select component', () => {
 
   beforeEach(() => {
     cacheUpdates.setError = jest.fn();
-    createStore();
     createComponent({ isProjectBoard: true });
   });
 
   afterEach(() => {
     fakeApollo = null;
-    store = null;
   });
 
   describe('when not editing', () => {
@@ -150,7 +135,6 @@ describe('Labels select component', () => {
     ${BoardType.group}   | ${groupLabelsQueryHandlerSuccess}   | ${projectLabelsQueryHandlerSuccess}
     ${BoardType.project} | ${projectLabelsQueryHandlerSuccess} | ${groupLabelsQueryHandlerSuccess}
   `('fetches $boardType labels', async ({ boardType, queryHandler, notCalledHandler }) => {
-    createStore();
     createComponent({
       isGroupBoard: boardType === BoardType.group,
       isProjectBoard: boardType === BoardType.project,
@@ -166,7 +150,6 @@ describe('Labels select component', () => {
     ${BoardType.group}
     ${BoardType.project}
   `('sets error when fetching $boardType labels fails', async ({ boardType }) => {
-    createStore();
     createComponent({
       isGroupBoard: boardType === BoardType.group,
       isProjectBoard: boardType === BoardType.project,

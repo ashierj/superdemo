@@ -116,9 +116,8 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
       end
     end
 
-    context 'Apollo boards' do
+    context 'Moving epics' do
       before do
-        stub_feature_flags(apollo_boards: true)
         visit_epic_boards_page
       end
 

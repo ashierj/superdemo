@@ -3,8 +3,6 @@ import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 
 import VueApollo from 'vue-apollo';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import MilestoneSelect from 'ee/boards/components/milestone_select.vue';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -20,18 +18,15 @@ import {
 
 import { BoardType } from '~/boards/constants';
 import * as cacheUpdates from '~/boards/graphql/cache_updates';
-import defaultStore from '~/boards/stores';
 import groupMilestonesQuery from '~/sidebar/queries/group_milestones.query.graphql';
 import projectMilestonesQuery from '~/sidebar/queries/project_milestones.query.graphql';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
 Vue.use(VueApollo);
-Vue.use(Vuex);
 
 describe('Milestone select component', () => {
   let wrapper;
   let fakeApollo;
-  let store;
 
   const selectedText = () => wrapper.find('[data-testid="selected-milestone"]').text();
   const findEditButton = () => wrapper.findComponent(GlButton);
@@ -43,14 +38,6 @@ describe('Milestone select component', () => {
     .mockResolvedValue(mockGroupMilestonesResponse);
   const errorMessage = 'Failed to fetch milestones';
   const milestonesQueryHandlerFailure = jest.fn().mockRejectedValue(new Error(errorMessage));
-
-  const createStore = () => {
-    store = new Vuex.Store({
-      actions: {
-        ...defaultStore.actions,
-      },
-    });
-  };
 
   const createComponent = ({
     props = {},
@@ -64,7 +51,6 @@ describe('Milestone select component', () => {
       [groupMilestonesQuery, groupMilestonesQueryHandler],
     ]);
     wrapper = shallowMount(MilestoneSelect, {
-      store,
       apolloProvider: fakeApollo,
       propsData: {
         board: boardObj,
@@ -88,13 +74,11 @@ describe('Milestone select component', () => {
 
   beforeEach(() => {
     cacheUpdates.setError = jest.fn();
-    createStore();
     createComponent({ isProjectBoard: true });
   });
 
   afterEach(() => {
     fakeApollo = null;
-    store = null;
   });
 
   describe('when not editing', () => {
@@ -147,7 +131,6 @@ describe('Milestone select component', () => {
     ${BoardType.group}   | ${groupMilestonesQueryHandlerSuccess} | ${milestonesQueryHandlerSuccess}
     ${BoardType.project} | ${milestonesQueryHandlerSuccess}      | ${groupMilestonesQueryHandlerSuccess}
   `('fetches $boardType milestones', async ({ boardType, queryHandler, notCalledHandler }) => {
-    createStore();
     createComponent({
       isProjectBoard: boardType === BoardType.project,
       isGroupBoard: boardType === BoardType.group,
@@ -165,7 +148,6 @@ describe('Milestone select component', () => {
     ${BoardType.group}
     ${BoardType.project}
   `('set error when fetching $boardType milestones fails', async ({ boardType }) => {
-    createStore();
     createComponent({
       isProjectBoard: boardType === BoardType.project,
       isGroupBoard: boardType === BoardType.group,

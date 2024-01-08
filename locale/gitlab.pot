@@ -8345,12 +8345,6 @@ msgstr[1] ""
 msgid "Boards|An error occurred while creating the %{issuableType}. Please try again."
 msgstr ""
 
-msgid "Boards|An error occurred while creating the epic. Please try again."
-msgstr ""
-
-msgid "Boards|An error occurred while creating the issue. Please try again."
-msgstr ""
-
 msgid "Boards|An error occurred while creating the list. Please try again."
 msgstr ""
 
@@ -8369,9 +8363,6 @@ msgstr ""
 msgid "Boards|An error occurred while fetching boards. Please try again."
 msgstr ""
 
-msgid "Boards|An error occurred while fetching child groups. Please try again."
-msgstr ""
-
 msgid "Boards|An error occurred while fetching epics. Please try again."
 msgstr ""
 
@@ -8381,16 +8372,10 @@ msgstr ""
 msgid "Boards|An error occurred while fetching groups. Please try again."
 msgstr ""
 
-msgid "Boards|An error occurred while fetching issues. Please reload the page."
-msgstr ""
-
 msgid "Boards|An error occurred while fetching issues. Please try again."
 msgstr ""
 
 msgid "Boards|An error occurred while fetching iterations. Please try again."
-msgstr ""
-
-msgid "Boards|An error occurred while fetching labels. Please reload the page."
 msgstr ""
 
 msgid "Boards|An error occurred while fetching labels. Please try again."
@@ -8405,19 +8390,7 @@ msgstr ""
 msgid "Boards|An error occurred while fetching recent boards. Please try again."
 msgstr ""
 
-msgid "Boards|An error occurred while fetching the board epics. Please reload the page."
-msgstr ""
-
-msgid "Boards|An error occurred while fetching the board issues. Please reload the page."
-msgstr ""
-
 msgid "Boards|An error occurred while fetching the board lists. Please reload the page."
-msgstr ""
-
-msgid "Boards|An error occurred while fetching the board swimlanes. Please reload the page."
-msgstr ""
-
-msgid "Boards|An error occurred while fetching the board. Please reload the page."
 msgstr ""
 
 msgid "Boards|An error occurred while fetching unassigned issues. Please try again."
@@ -8426,13 +8399,7 @@ msgstr ""
 msgid "Boards|An error occurred while fetching users. Please try again."
 msgstr ""
 
-msgid "Boards|An error occurred while generating lists. Please reload the page."
-msgstr ""
-
 msgid "Boards|An error occurred while moving the %{issuableType}. Please try again."
-msgstr ""
-
-msgid "Boards|An error occurred while moving the epic. Please try again."
 msgstr ""
 
 msgid "Boards|An error occurred while moving the issue. Please try again."
@@ -8441,13 +8408,7 @@ msgstr ""
 msgid "Boards|An error occurred while moving the list. Please try again."
 msgstr ""
 
-msgid "Boards|An error occurred while removing the list. Please try again."
-msgstr ""
-
 msgid "Boards|An error occurred while selecting the card. Please try again."
-msgstr ""
-
-msgid "Boards|An error occurred while updating the board list. Please try again."
 msgstr ""
 
 msgid "Boards|An error occurred while updating the list. Please try again."
@@ -20556,9 +20517,6 @@ msgstr ""
 msgid "Failed to load Roadmap"
 msgstr ""
 
-msgid "Failed to load assignees."
-msgstr ""
-
 msgid "Failed to load assignees. Please try again."
 msgstr ""
 
@@ -20586,16 +20544,7 @@ msgstr ""
 msgid "Failed to load groups."
 msgstr ""
 
-msgid "Failed to load iteration cadences."
-msgstr ""
-
-msgid "Failed to load iterations."
-msgstr ""
-
 msgid "Failed to load labels. Please try again."
-msgstr ""
-
-msgid "Failed to load milestones."
 msgstr ""
 
 msgid "Failed to load milestones. Please try again."
