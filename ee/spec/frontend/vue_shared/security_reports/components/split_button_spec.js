@@ -53,13 +53,11 @@ describe('Split Button', () => {
     expect(findListbox().attributes('disabled')).toBe('true');
   });
 
-  it('renders a loading icon in button and disables listbox when loading prop is true', () => {
-    const { buttons } = defaultProps;
+  it('renders loading button and disable the listbox if loading prop is true', () => {
+    createComponent({ loading: true });
 
-    createComponent({ buttons: [...buttons].map((b) => ({ ...b, loading: true })) });
-
-    expect(findButton().props('loading')).toBe(true);
-    expect(findListbox().props('disabled')).toBe(true);
+    expect(findButton().attributes('loading')).toBe('true');
+    expect(findListbox().attributes('disabled')).toBe('true');
   });
 
   describe('selected button', () => {

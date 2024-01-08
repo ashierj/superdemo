@@ -331,6 +331,7 @@ export default {
           v-if="actionButtons.length > 1"
           :buttons="actionButtons"
           :disabled="isProcessingAction"
+          :loading="isProcessingAction"
           @createMergeRequest="createMergeRequest"
           @downloadPatch="downloadPatch"
           @startSubscription="startSubscription"
