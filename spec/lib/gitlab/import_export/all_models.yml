@@ -588,6 +588,7 @@ project:
 - hangouts_chat_integration
 - unify_circuit_integration
 - buildkite_integration
+- diffblue_cover_integration
 - bamboo_integration
 - teamcity_integration
 - pushover_integration
