@@ -201,7 +201,7 @@ module EE
 
       with_scope :subject
       condition(:agent_registry_enabled) do
-        ::Feature.enabled?(:agent_registry, @subject)
+        ::Feature.enabled?(:agent_registry, @subject) && @subject.licensed_feature_available?(:ai_agents)
       end
 
       condition(:user_banned_from_namespace) do
