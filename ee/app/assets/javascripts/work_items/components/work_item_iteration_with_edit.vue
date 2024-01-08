@@ -62,6 +62,7 @@ export default {
       selectedIterationId: this.iteration?.id,
       updateInProgress: false,
       iterations: [],
+      localIteration: this.iteration,
     };
   },
   computed: {
@@ -73,10 +74,10 @@ export default {
       };
     },
     iterationPeriod() {
-      return this.iteration?.period || getIterationPeriod(this.iteration);
+      return this.localIteration?.period || getIterationPeriod(this.localIteration);
     },
     iterationTitle() {
-      return this.iteration?.title || this.iterationPeriod;
+      return this.localIteration?.title || this.iterationPeriod;
     },
     listboxItems() {
       return groupOptionsByIterationCadences(this.iterations);
@@ -88,12 +89,12 @@ export default {
       return this.canUpdate ? this.$options.i18n.iterationPlaceholder : this.$options.i18n.none;
     },
     dropdownText() {
-      return this.iteration?.id ? this.iterationTitle : this.noIterationDefaultText;
+      return this.localIteration?.id ? this.iterationTitle : this.noIterationDefaultText;
     },
     selectedIteration() {
       return !isEmpty(this.iterations)
         ? this.iterations.find(({ id }) => id === this.selectedIterationId)
-        : this.iteration;
+        : this.localIteration;
     },
     selectedIterationCadenceName() {
       return this.selectedIteration?.iterationCadence?.title;
@@ -136,6 +137,12 @@ export default {
         return;
       }
 
+      this.localIteration = selectedIterationId
+        ? this.iterations.find(({ id }) => id === selectedIterationId)
+        : null;
+      this.selectedIterationId = selectedIterationId;
+      this.track('update_iteration');
+
       this.updateInProgress = true;
       try {
         const {
@@ -160,6 +167,7 @@ export default {
       } catch (error) {
         const msg = sprintfWorkItem(I18N_WORK_ITEM_ERROR_UPDATING, this.workItemType);
         this.$emit('error', msg);
+        this.localIteration = this.iteration;
         Sentry.captureException(error);
       } finally {
         this.updateInProgress = false;
@@ -180,7 +188,7 @@ export default {
     dropdown-name="iteration"
     :loading="isLoadingIterations"
     :list-items="listboxItems"
-    :item-value="iteration"
+    :item-value="localIteration"
     :update-in-progress="updateInProgress"
     :toggle-dropdown-text="dropdownText"
     :header-text="__('Select iteration')"
@@ -200,11 +208,11 @@ export default {
       <div class="gl-text-gray-500 gl-mr-2">
         {{ selectedIterationCadenceName }}
       </div>
-      <gl-link class="gl-text-gray-900!" :href="iteration.webUrl">
+      <gl-link class="gl-text-gray-900!" :href="localIteration.webUrl">
         <div>
           {{ iterationPeriod }}
         </div>
-        <iteration-title v-if="iteration.title" :title="iteration.title" />
+        <iteration-title v-if="localIteration.title" :title="localIteration.title" />
       </gl-link>
     </template>
   </work-item-sidebar-dropdown-widget-with-edit>
