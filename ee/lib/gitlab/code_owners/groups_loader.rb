@@ -23,11 +23,11 @@ module Gitlab
         return Group.none if extractor.names.empty?
 
         relations = [
-          project.invited_groups.where_full_path_in(extractor.names, use_includes: false)
+          project.invited_groups.where_full_path_in(extractor.names, preload_routes: false)
         ]
         # Include the projects ancestor group(s) if they are listed as owners
         if project.group
-          relations << project.group.self_and_ancestors.where_full_path_in(extractor.names, use_includes: false)
+          relations << project.group.self_and_ancestors.where_full_path_in(extractor.names, preload_routes: false)
         end
 
         Group.from_union(relations).with_route.with_users

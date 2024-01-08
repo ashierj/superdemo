@@ -38,7 +38,7 @@ module Gitlab
 
         def finder_projects_paths
           Project.where_full_path_in(
-            finder_projects_options[:paths], use_includes: false
+            finder_projects_options[:paths], preload_routes: false
           ).select(:id)
         end
 
