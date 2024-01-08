@@ -231,11 +231,6 @@ module Geo
       registry.verification_pending!
     end
 
-    # Schedules a verification job after a model record is created/updated
-    def after_verifiable_update
-      verify_async if should_primary_verify_after_save?
-    end
-
     def verify_async
       # Marking started prevents backfill (VerificationBatchWorker) from picking
       # this up too.
@@ -337,18 +332,6 @@ module Geo
     end
 
     private
-
-    def should_primary_verify_after_save?
-      return false unless self.class.verification_enabled?
-
-      # Optimization: If the data is immutable, then there is no need to
-      # recalculate checksum when a record is created (some models calculate
-      # checksum as part of creation) or updated. Note that reverification
-      # should still run as usual.
-      return false if immutable? && primary_checksum.present?
-
-      checksummable?
-    end
 
     # Return whether the replicable is capable of checksumming itself
     #

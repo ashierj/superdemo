@@ -97,19 +97,13 @@ module Geo
 
     # Called by Gitlab::Geo::Replicator#geo_handle_after_update
     def before_verifiable_update
-      return unless Feature.enabled?(:geo_repository_replicator_legacy_behaviour, type: :experiment)
       return unless ::Gitlab::Geo.primary?
       return unless self.class.verification_enabled?
 
-      # Just let verification backfill pick it up
+      # Just let verification backfill pick it up.
+      #
+      # See issue: https://gitlab.com/gitlab-org/gitlab/-/issues/427493
       model_record.verification_pending!
-    end
-
-    # Called by Gitlab::Geo::Replicator#geo_handle_after_(create|update)
-    def after_verifiable_update
-      return unless Feature.enabled?(:geo_repository_replicator_legacy_behaviour, type: :experiment)
-
-      super
     end
 
     # Called by Geo::FrameworkHousekeepingService#execute

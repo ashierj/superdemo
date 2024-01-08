@@ -52,12 +52,6 @@ RSpec.shared_examples 'a repository replicator' do
       replicator.geo_handle_after_update
     end
 
-    it 'calls #after_verifiable_update' do
-      expect(replicator).to receive(:after_verifiable_update)
-
-      replicator.geo_handle_after_update
-    end
-
     context 'when replication feature flag is disabled' do
       before do
         stub_feature_flags(replicator.replication_enabled_feature_key => false)
@@ -65,12 +59,6 @@ RSpec.shared_examples 'a repository replicator' do
 
       it 'does not call #before_verifiable_update' do
         expect(replicator).not_to receive(:before_verifiable_update)
-
-        replicator.geo_handle_after_update
-      end
-
-      it 'does not call #after_verifiable_update' do
-        expect(replicator).not_to receive(:after_verifiable_update)
 
         replicator.geo_handle_after_update
       end
@@ -106,12 +94,6 @@ RSpec.shared_examples 'a repository replicator' do
       replicator.geo_handle_after_create
     end
 
-    it 'calls #after_verifiable_update' do
-      expect(replicator).to receive(:after_verifiable_update)
-
-      replicator.geo_handle_after_create
-    end
-
     context 'when replication feature flag is disabled' do
       before do
         stub_feature_flags(replicator.replication_enabled_feature_key => false)
@@ -119,12 +101,6 @@ RSpec.shared_examples 'a repository replicator' do
 
       it 'does not call #before_verifiable_update' do
         expect(replicator).not_to receive(:before_verifiable_update)
-
-        replicator.geo_handle_after_create
-      end
-
-      it 'does not call #after_verifiable_update' do
-        expect(replicator).not_to receive(:after_verifiable_update)
 
         replicator.geo_handle_after_create
       end
