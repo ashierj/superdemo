@@ -25,7 +25,11 @@ RSpec.describe 'creating member role', feature_category: :system_access do
         id
         name
         description
-        enabledPermissions
+        enabledPermissions {
+          nodes {
+            value
+          }
+        }
       }
     FIELDS
   end
@@ -79,7 +83,7 @@ RSpec.describe 'creating member role', feature_category: :system_access do
               post_graphql_mutation(mutation, current_user: current_user)
 
               expect(graphql_errors).to be_nil
-              expect(create_member_role['memberRole']['enabledPermissions'])
+              expect(create_member_role['memberRole']['enabledPermissions']['nodes'].flat_map(&:values))
                 .to match_array(MemberRole.all_customizable_permissions.keys.map(&:to_s).map(&:upcase))
             end
 
@@ -102,7 +106,7 @@ RSpec.describe 'creating member role', feature_category: :system_access do
 
               expect(graphql_errors).to be_nil
               mutation_response = create_member_role['memberRole']
-              expect(mutation_response['enabledPermissions']).to eq(['READ_VULNERABILITY'])
+              expect(mutation_response['enabledPermissions']['nodes'].flat_map(&:values)).to eq(['READ_VULNERABILITY'])
             end
 
             it 'creates a member role with the specified permissions' do
@@ -157,7 +161,8 @@ RSpec.describe 'creating member role', feature_category: :system_access do
             post_graphql_mutation(mutation, current_user: current_user)
 
             expect(graphql_errors).to be_nil
-            expect(create_member_role['memberRole']['enabledPermissions']).to include('READ_VULNERABILITY')
+            expect(create_member_role['memberRole']['enabledPermissions']['nodes'].flat_map(&:values))
+              .to include('READ_VULNERABILITY')
             expect(create_member_role['memberRole']['namespace']).to be_nil
           end
 

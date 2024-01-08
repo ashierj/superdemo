@@ -4,7 +4,6 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_MEMBER_ROLE } from '~/graphql_shared/constants';
 import { s__ } from '~/locale';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import availableMemberRolePermissions from '../../graphql/queries/available_member_role_permissions.query.graphql';
 import enabledMemberRolePermissions from '../../graphql/queries/enabled_member_role_permissions.query.graphql';
 
 export default {
@@ -23,7 +22,6 @@ export default {
   },
   data() {
     return {
-      availablePermissions: [],
       enabledPermissions: [],
       permissions: this.customPermissions,
     };
@@ -37,20 +35,12 @@ export default {
         }),
         update: (data) => data.memberRole.enabledPermissions,
         result: () => {
-          this.permissions = this.availablePermissions.filter(({ value }) =>
-            this.enabledPermissions.includes(value.toUpperCase()),
-          );
+          this.permissions = this.enabledPermissions.nodes;
         },
         error: (error) => {
           Sentry.captureException(error);
         },
       });
-    },
-  },
-  apollo: {
-    availablePermissions: {
-      query: availableMemberRolePermissions,
-      update: ({ memberRolePermissions }) => memberRolePermissions.nodes,
     },
   },
   i18n: {

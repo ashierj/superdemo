@@ -4,7 +4,6 @@ import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import CustomPermissions from 'ee/members/components/table/custom_permissions.vue';
-import availableMemberRolePermissions from 'ee/members/graphql/queries/available_member_role_permissions.query.graphql';
 import enabledMemberRolePermissions from 'ee/members/graphql/queries/enabled_member_role_permissions.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
@@ -19,36 +18,24 @@ describe('CustomPermissions', () => {
   let wrapper;
 
   const customPermissions = [{ name: 'Read code' }, { name: 'Read vulnerability' }];
-  const availableMemberRoleResponse = jest.fn().mockResolvedValue({
-    data: {
-      memberRolePermissions: {
-        nodes: [
-          {
-            name: 'Admin group member',
-            value: 'admin_group_member',
-          },
-          {
-            name: 'Admin merge request',
-            value: 'admin_merge_request',
-          },
-        ],
-      },
-    },
-  });
   const enabledMemberRoleResponse = jest.fn().mockResolvedValue({
     data: {
       memberRole: {
         id: 'gid://gitlab/MemberRole/400',
-        enabledPermissions: ['ADMIN_MERGE_REQUEST'],
+        enabledPermissions: {
+          nodes: [
+            {
+              name: 'Admin merge request',
+              value: 'ADMIN_MERGE_REQUEST',
+            },
+          ],
+        },
       },
     },
   });
 
   const createComponent = ({ mockedResponse = enabledMemberRoleResponse } = {}) => {
-    const apolloProvider = createMockApollo([
-      [availableMemberRolePermissions, availableMemberRoleResponse],
-      [enabledMemberRolePermissions, mockedResponse],
-    ]);
+    const apolloProvider = createMockApollo([[enabledMemberRolePermissions, mockedResponse]]);
 
     wrapper = shallowMountExtended(CustomPermissions, {
       apolloProvider,
@@ -65,10 +52,6 @@ describe('CustomPermissions', () => {
     beforeEach(() => {
       createComponent();
       waitForPromises();
-    });
-
-    it('queries available member role permissions', () => {
-      expect(availableMemberRoleResponse).toHaveBeenCalled();
     });
 
     it('shows a title', () => {

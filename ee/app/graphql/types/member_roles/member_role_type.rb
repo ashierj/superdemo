@@ -30,7 +30,7 @@ module Types
         description: 'Base access level for the custom role.'
 
       field :enabled_permissions,
-        [Types::MemberRoles::PermissionsEnum],
+        ::Types::MemberRoles::CustomizablePermissionType.connection_type,
         null: true,
         alpha: { milestone: '16.5' },
         description: 'Array of all permissions enabled for the custom role.'
