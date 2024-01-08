@@ -197,11 +197,6 @@ msgid_plural "%d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%d comment on this commit"
-msgid_plural "%d comments on this commit"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "%d commenter"
 msgid_plural "%d commenters"
 msgstr[0] ""
