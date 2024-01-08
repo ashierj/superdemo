@@ -678,10 +678,6 @@ Support for additional languages, dependency managers, and dependency files are 
 | ------------------- | --------- | --------------- | ---------- | ----- |
 | [Poetry](https://python-poetry.org/) | Python | `pyproject.toml` | [Gemnasium](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium) | [GitLab#32774](https://gitlab.com/gitlab-org/gitlab/-/issues/32774) |
 
-## Contribute your scanner
-
-The [Security Scanner Integration](../../../development/integrations/secure.md) documentation explains how to integrate other security scanners into GitLab.
-
 ## Configuration
 
 Enable the dependency scanning analyzer to ensure it scans your application's dependencies for known
