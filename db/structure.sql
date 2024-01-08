@@ -12083,6 +12083,7 @@ CREATE TABLE application_settings (
     session_expire_delay integer DEFAULT 10080 NOT NULL,
     import_sources text,
     help_page_text text,
+    require_admin_two_factor_authentication boolean DEFAULT false NOT NULL,
     shared_runners_enabled boolean DEFAULT true NOT NULL,
     max_artifacts_size integer DEFAULT 100 NOT NULL,
     runners_registration_token character varying,
