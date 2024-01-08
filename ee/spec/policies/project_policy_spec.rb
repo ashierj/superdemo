@@ -3286,4 +3286,56 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it { is_expected.to be_allowed(:read_observability_metrics) }
     end
   end
+
+  describe 'read_ai_agents' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:feature_flag_enabled, :current_user, :allowed) do
+      true  | ref(:owner)      | true
+      true  | ref(:reporter)   | true
+      true  | ref(:guest)      | true
+      true  | ref(:non_member) | true
+      false | ref(:owner)      | false
+      false | ref(:reporter)   | false
+      false | ref(:guest)      | false
+      false | ref(:non_member) | false
+    end
+    with_them do
+      before do
+        stub_feature_flags(agent_registry: feature_flag_enabled)
+      end
+
+      if params[:allowed]
+        it { expect_allowed(:read_ai_agents) }
+      else
+        it { expect_disallowed(:read_ai_agents) }
+      end
+    end
+  end
+
+  describe 'write_ai_agents' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:feature_flag_enabled, :current_user, :allowed) do
+      true  | ref(:owner)      | true
+      true  | ref(:reporter)   | true
+      true  | ref(:guest)      | false
+      true  | ref(:non_member) | false
+      false | ref(:owner)      | false
+      false | ref(:reporter)   | false
+      false | ref(:guest)      | false
+      false | ref(:non_member) | false
+    end
+    with_them do
+      before do
+        stub_feature_flags(agent_registry: feature_flag_enabled)
+      end
+
+      if params[:allowed]
+        it { expect_allowed(:write_ai_agents) }
+      else
+        it { expect_disallowed(:write_ai_agents) }
+      end
+    end
+  end
 end

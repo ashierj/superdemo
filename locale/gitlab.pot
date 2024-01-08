@@ -1927,6 +1927,12 @@ msgstr ""
 msgid "AI-generated summary"
 msgstr ""
 
+msgid "AIAgents|AI Agents"
+msgstr ""
+
+msgid "AIAgents|Create agent"
+msgstr ""
+
 msgid "AIPoweredSM|AI-powered features"
 msgstr ""
 

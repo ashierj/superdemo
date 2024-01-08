@@ -199,6 +199,11 @@ module EE
         @subject.feature_available?(:cycle_analytics_for_projects)
       end
 
+      with_scope :subject
+      condition(:agent_registry_enabled) do
+        ::Feature.enabled?(:agent_registry, @subject)
+      end
+
       condition(:user_banned_from_namespace) do
         next unless @user.is_a?(User)
         next if @user.can_admin_all_resources?
@@ -839,6 +844,14 @@ module EE
       end
 
       rule { guest | admin }.enable :read_limit_alert
+
+      rule { agent_registry_enabled }.policy do
+        enable :read_ai_agents
+      end
+
+      rule { can?(:reporter_access) & agent_registry_enabled }.policy do
+        enable :write_ai_agents
+      end
     end
 
     override :lookup_access_level!

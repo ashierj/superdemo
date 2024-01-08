@@ -1,0 +1,5 @@
+- breadcrumb_title s_('AIAgents|AI Agents')
+- page_title s_('AIAgents|AI Agents')
+- view_model = Gitlab::Json.generate({ projectPath: @project.full_path })
+
+#js-mount-index-ml-agents{ data: { view_model: view_model } }
