@@ -28,6 +28,7 @@ import CustomStageFields from './create_value_stream_form/custom_stage_fields.vu
 import DefaultStageFields from './create_value_stream_form/default_stage_fields.vue';
 import {
   validateValueStreamName,
+  cleanStageName,
   validateStage,
   formatStageDataForSubmission,
   hasDirtyStage,
@@ -172,8 +173,8 @@ export default {
     canRestore() {
       return this.hiddenStages.length || this.isDirtyEditing;
     },
-    defaultValueStreamNames() {
-      return this.defaultStageConfig.map(({ name }) => name);
+    currentValueStreamStageNames() {
+      return this.stages.map(({ name }) => cleanStageName(name));
     },
   },
   created() {
@@ -233,7 +234,7 @@ export default {
       return current.trim().toLowerCase() !== original.trim().toLowerCase();
     },
     validateStages() {
-      return this.stages.map((stage) => validateStage(stage, this.defaultValueStreamNames));
+      return this.stages.map((stage) => validateStage(stage, this.currentValueStreamStageNames));
     },
     validate() {
       const { name } = this;

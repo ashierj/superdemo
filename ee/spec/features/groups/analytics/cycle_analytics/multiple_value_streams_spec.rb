@@ -90,6 +90,26 @@ RSpec.describe 'Multiple value streams', :js, feature_category: :value_stream_ma
       expect(page).to have_text(_("'%{name}' Value Stream created") % { name: custom_value_stream_name })
       expect(path_nav_elem).to have_text("Cool custom stage - name")
     end
+
+    it 'does not allow duplicate stage names' do
+      add_custom_stage_to_form
+      fill_in_custom_stage_fields "Stage 1"
+
+      add_custom_stage_to_form
+      fill_in_custom_stage_fields "Stage 1"
+
+      save_value_stream(custom_value_stream_name)
+
+      expect(page).to have_text _("Stage name already exists")
+
+      # Remove the duplicate stage and add a new one
+      click_action_button('remove', 7)
+      add_custom_stage_to_form
+      fill_in_custom_stage_fields "Stage 2"
+      save_value_stream(custom_value_stream_name)
+
+      expect(page).to have_text(_("'%{name}' Value Stream created") % { name: custom_value_stream_name })
+    end
   end
 
   shared_examples 'update a value stream' do |custom_value_stream_name, with_aggregation|
@@ -179,6 +199,21 @@ RSpec.describe 'Multiple value streams', :js, feature_category: :value_stream_ma
 
         expect(page).to have_text(_("'%{name}' Value Stream saved") % { name: custom_value_stream_name })
         expect(path_nav_elem).to have_text("Test")
+      end
+
+      it 'does not allow duplicate stage names' do
+        add_custom_stage_to_form
+        fill_in_custom_stage_fields "Staging"
+
+        click_save_value_stream_button
+
+        expect(page).to have_text _("Stage name already exists")
+
+        fill_in_custom_stage_fields " Staging "
+
+        click_save_value_stream_button
+
+        expect(page).to have_text _("Stage name already exists")
       end
     end
   end

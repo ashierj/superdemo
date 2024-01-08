@@ -10,6 +10,7 @@ import {
   hasDirtyStage,
   formatStageDataForSubmission,
   generateInitialStageData,
+  cleanStageName,
 } from 'ee/analytics/cycle_analytics/components/create_value_stream_form/utils';
 import { emptyErrorsState, emptyState, formInitialData } from './mock_data';
 
@@ -84,8 +85,16 @@ describe('initializeFormData', () => {
   });
 });
 
-const expectFieldError = ({ error, field, result }) =>
-  expect(result).toMatchObject({ [field]: [error] });
+describe('cleanStageName', () => {
+  it.each`
+    value       | result
+    ${'Issue'}  | ${'issue'}
+    ${' Code '} | ${'code'}
+    ${'PlAn '}  | ${'plan'}
+  `('returns `$result` when given `$value`', ({ result, value }) => {
+    expect(cleanStageName(value)).toBe(result);
+  });
+});
 
 describe('validateStage', () => {
   const defaultFields = {
@@ -95,22 +104,37 @@ describe('validateStage', () => {
     custom: true,
   };
 
-  const defaultStageNames = ['issue', 'Plan', 'code', 'Test'];
+  const expectFieldError = ({ error, field, result }) =>
+    expect(result).toMatchObject({ [field]: [error] });
 
-  it.each`
-    field                   | value                              | error                          | msg
-    ${'name'}               | ${'a'.repeat(NAME_MAX_LENGTH + 1)} | ${ERRORS.MAX_LENGTH}           | ${'is too long'}
-    ${'name'}               | ${'issue'}                         | ${ERRORS.STAGE_NAME_EXISTS}    | ${'is a lowercase default name'}
-    ${'name'}               | ${'Issue'}                         | ${ERRORS.STAGE_NAME_EXISTS}    | ${'is a capitalized default name'}
-    ${'endEventIdentifier'} | ${''}                              | ${ERRORS.START_EVENT_REQUIRED} | ${'has no corresponding start event'}
-  `('returns "$error" if $field $msg', ({ field, value, error }) => {
-    const result = validateStage({ ...defaultFields, [field]: value }, defaultStageNames);
-    expectFieldError({ result, error, field });
+  describe('name field', () => {
+    const currentStageNames = ['issue', 'Plan', 'code', 'Test'];
+
+    it.each`
+      value                              | error                       | msg
+      ${'a'.repeat(NAME_MAX_LENGTH + 1)} | ${ERRORS.MAX_LENGTH}        | ${'is too long'}
+      ${'issue'}                         | ${ERRORS.STAGE_NAME_EXISTS} | ${'is a lowercase default name'}
+      ${'Issue'}                         | ${ERRORS.STAGE_NAME_EXISTS} | ${'is a capitalized default name'}
+      ${' Code '}                        | ${ERRORS.STAGE_NAME_EXISTS} | ${'has whitespace'}
+    `('returns "$error" if name field $msg', ({ value, error }) => {
+      const result = validateStage(
+        { ...defaultFields, name: value },
+        currentStageNames.concat(cleanStageName(value)),
+      );
+      expectFieldError({ result, error, field: 'name' });
+    });
   });
 
-  it(`returns "${ERRORS.END_EVENT_REQUIRED}" with a start event and no end event set`, () => {
-    const result = validateStage({ ...defaultFields, startEventIdentifier: 'start-event' });
-    expectFieldError({ result, error: ERRORS.END_EVENT_REQUIRED, field: 'endEventIdentifier' });
+  describe('event fields', () => {
+    it(`returns "${ERRORS.START_EVENT_REQUIRED}" with a end event set, but no start event`, () => {
+      const result = validateStage({ ...defaultFields, endEventIdentifier: 'end-event' });
+      expectFieldError({ result, error: ERRORS.START_EVENT_REQUIRED, field: 'endEventIdentifier' });
+    });
+
+    it(`returns "${ERRORS.END_EVENT_REQUIRED}" with a start event and no end event set`, () => {
+      const result = validateStage({ ...defaultFields, startEventIdentifier: 'start-event' });
+      expectFieldError({ result, error: ERRORS.END_EVENT_REQUIRED, field: 'endEventIdentifier' });
+    });
   });
 });
 
