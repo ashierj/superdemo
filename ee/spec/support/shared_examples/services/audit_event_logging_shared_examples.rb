@@ -22,7 +22,7 @@ RSpec.shared_examples 'audit event logging' do
       end
 
       it 'logs the audit event info' do
-        @resource = operation
+        operation
 
         expect(AuditEvent.last).to have_attributes(attributes)
       end
