@@ -40,7 +40,7 @@ RSpec.describe ClickHouse::CiFinishedBuildsSyncWorker, :click_house, :freeze_tim
 
     context 'when an error is reported from service' do
       before do
-        allow(ClickHouse::Client).to receive(:database_configured?).and_return(false)
+        allow(Gitlab::ClickHouse).to receive(:configured?).and_return(false)
       end
 
       it 'skips execution' do

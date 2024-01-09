@@ -43,7 +43,7 @@ RSpec.describe ClickHouse::CiFinishedBuildsSyncCronWorker, :click_house, :freeze
 
   context 'when clickhouse database is not available' do
     before do
-      allow(::ClickHouse::Client).to receive(:database_configured?).with(:main).and_return(false)
+      allow(Gitlab::ClickHouse).to receive(:configured?).and_return(false)
     end
 
     it 'does nothing' do

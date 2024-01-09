@@ -30,7 +30,7 @@ module EE
       end
 
       condition(:clickhouse_main_database_available) do
-        ClickHouse::Client.database_configured?(:main)
+        ::Gitlab::ClickHouse.configured?
       end
 
       condition(:instance_devops_adoption_available) do
