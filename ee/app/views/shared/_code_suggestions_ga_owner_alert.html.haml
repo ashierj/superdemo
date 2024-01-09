@@ -2,7 +2,7 @@
 - return unless show_code_suggestions_ga_owner_alert?(root_namespace)
 
 - content_for :page_level_alert do
-  %div{ class: [container_class, @content_class, 'gl-pt-5!'] }
+  %div{ class: [container_class, @content_class, 'gl-pt-5!'], data: { track_action: 'render', track_label: 'cs_group_owner_alert' } }
     = render Pajamas::BannerComponent.new(close_options: { class: 'js-close-callout',
         data: { testid: 'hide-code-suggestions-ga-owner-alert' },
         'aria-label' => s_('CodeSuggestionsGAAlert|Dismiss Code Suggestions banner') },

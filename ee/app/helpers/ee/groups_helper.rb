@@ -132,7 +132,9 @@ module EE
         button_attributes: {
           variant: 'confirm',
           'data-testid': 'code_suggestions_owner_alert_hand_raise_lead_button'
-        }.to_json
+        }.to_json,
+        track_action: 'click_button',
+        track_label: 'cs_group_owner_alert'
       )
     end
 
