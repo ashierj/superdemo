@@ -129,7 +129,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
           create(:project, :with_ci_minutes, amount_used: 300, namespace: subgroup, shared_runners_enabled: true)
         end
 
-        it 'shows projects inside the subgroup' do
+        it 'shows projects inside the subgroup', quarantine: "https://gitlab.com/gitlab-org/gitlab/-/issues/437680" do
           visit_usage_quotas_page
 
           expect(page).to have_content(project.full_name)
@@ -205,7 +205,8 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
       visit_usage_quotas_page('pipelines-quota-tab')
     end
 
-    it 'sorts projects list by compute used in descending order' do
+    it 'sorts projects list by compute used in descending order',
+      quarantine: "https://gitlab.com/gitlab-org/gitlab/-/issues/437680" do
       within_testid('pipelines-quota-tab-project-table') do
         expect(page).to have_content("Project")
         expect(page).to have_content("Shared runner duration")
@@ -224,7 +225,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     end
   end
 
-  context 'with pagination' do
+  context 'with pagination', quarantine: "https://gitlab.com/gitlab-org/gitlab/-/issues/437680" do
     include_context 'when user is allowed to see usage quotas'
 
     let(:per_page) { 1 }
