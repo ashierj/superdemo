@@ -200,10 +200,30 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
       regular_rule = create(:approval_project_rule)
       create(:approval_project_rule, :license_scanning)
       create(:approval_project_rule, :scan_finding)
+      create(:approval_project_rule, :any_merge_request)
 
       expect(described_class.not_from_scan_result_policy).to(
         contain_exactly(any_approver_rule, regular_rule)
       )
+    end
+  end
+
+  describe '.report_approver_without_scan_finding' do
+    subject { described_class.report_approver_without_scan_finding }
+
+    let_it_be(:regular_rule) { create(:approval_project_rule) }
+    let_it_be(:code_owner_rule) { create(:code_owner_rule) }
+    let_it_be(:any_approver_rule) { create(:any_approver_rule) }
+    let_it_be(:code_coverage_rule) { create(:approval_project_rule, :code_coverage) }
+    let_it_be(:license_scanning_rule) { create(:approval_project_rule, :license_scanning) }
+    let_it_be(:scan_finding_rule) { create(:approval_project_rule, :scan_finding) }
+    let_it_be(:any_merge_request_rule) { create(:approval_project_rule, :any_merge_request) }
+
+    it { is_expected.to include(code_coverage_rule) }
+
+    it do
+      is_expected.not_to include(regular_rule, code_owner_rule, any_approver_rule, scan_finding_rule,
+        license_scanning_rule, any_merge_request_rule)
     end
   end
 

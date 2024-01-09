@@ -6,6 +6,10 @@ module EE
 
     prepended do
       has_and_belongs_to_many :approval_project_rules
+      # NOTE: This is used to prevent N+1 queries in BranchRulesResolver
+      has_and_belongs_to_many :approval_project_rules_with_unique_policies,
+        ->(protected_branch) { with_unique_policies_for_protected_branch(protected_branch) },
+        class_name: 'ApprovalProjectRule'
       has_and_belongs_to_many :external_status_checks, class_name: '::MergeRequests::ExternalStatusCheck'
 
       has_many :required_code_owners_sections, class_name: "ProtectedBranch::RequiredCodeOwnersSection"
