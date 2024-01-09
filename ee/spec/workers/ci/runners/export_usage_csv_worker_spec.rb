@@ -34,7 +34,7 @@ RSpec.describe Ci::Runners::ExportUsageCsvWorker, :click_house, :enable_admin_mo
       expect(worker.logging_extras).to eq({
         "extra.ci_runners_export_usage_csv_worker.status" => :success,
         "extra.ci_runners_export_usage_csv_worker.csv_status" => {
-          rows_expected: 0, rows_written: 0, truncated: false
+          projects_expected: 25, projects_written: 0, rows_expected: 0, rows_written: 0, truncated: false
         }
       })
     end
