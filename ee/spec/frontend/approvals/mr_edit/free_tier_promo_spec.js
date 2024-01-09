@@ -9,7 +9,7 @@ import {
   MR_APPROVALS_PROMO_TRACKING_EVENTS,
   MR_APPROVALS_PROMO_DISMISSED,
 } from 'ee/approvals/constants';
-import FreeTierPromo from 'ee/approvals/components/mr_edit/free_tier_promo.vue';
+import FreeTierPromo from 'ee/approvals/mr_edit/free_tier_promo.vue';
 
 const EXPANDED_ICON = 'chevron-down';
 const COLLAPSED_ICON = 'chevron-right';

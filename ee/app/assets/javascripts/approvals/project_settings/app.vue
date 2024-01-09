@@ -1,7 +1,7 @@
 <script>
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import ApprovalRulesApp from '../approval_rules_app.vue';
-import ScanResultPolicies from '../security_orchestration/scan_result_policies.vue';
+import ApprovalRulesApp from 'ee/approvals/components/approval_rules_app.vue';
+import ScanResultPolicies from 'ee/approvals/components/security_orchestration/scan_result_policies.vue';
 import ProjectApprovalSettings from './project_approval_settings.vue';
 import ProjectRules from './project_rules.vue';
 

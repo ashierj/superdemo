@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import FreeTierPromo from './components/mr_edit/free_tier_promo.vue';
+import FreeTierPromo from './free_tier_promo.vue';
 
 export default function mountApprovalPromo(el) {
   if (!el) {

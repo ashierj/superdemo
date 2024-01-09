@@ -2,7 +2,7 @@ import '~/pages/projects/settings/merge_requests';
 import Vue from 'vue';
 import { __ } from '~/locale';
 import RefSelector from '~/ref/components/ref_selector.vue';
-import mountApprovals from 'ee/approvals/mount_project_settings';
+import mountApprovals from 'ee/approvals/project_settings/mount_project_settings';
 import { initMergeOptionSettings } from 'ee/pages/projects/edit/merge_options';
 import { initMergeRequestMergeChecksApp } from 'ee/merge_checks';
 import mountStatusChecks from 'ee/status_checks/mount';

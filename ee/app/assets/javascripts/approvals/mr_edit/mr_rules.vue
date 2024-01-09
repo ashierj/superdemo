@@ -3,11 +3,15 @@
 import { mapState, mapActions } from 'vuex';
 import { __ } from '~/locale';
 import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list.vue';
-import { RULE_TYPE_ANY_APPROVER, RULE_TYPE_REGULAR, RULE_NAME_ANY_APPROVER } from '../../constants';
-import EmptyRule from '../rules/empty_rule.vue';
-import RuleControls from '../rules/rule_controls.vue';
-import Rules from '../rules/rules.vue';
-import RuleInput from '../rules/rule_input.vue';
+import {
+  RULE_TYPE_ANY_APPROVER,
+  RULE_TYPE_REGULAR,
+  RULE_NAME_ANY_APPROVER,
+} from 'ee/approvals/constants';
+import EmptyRule from 'ee/approvals/components/rules/empty_rule.vue';
+import RuleControls from 'ee/approvals/components/rules/rule_controls.vue';
+import Rules from 'ee/approvals/components/rules/rules.vue';
+import RuleInput from 'ee/approvals/components/rules/rule_input.vue';
 
 let targetBranchMutationObserver;
 

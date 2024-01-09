@@ -6,7 +6,7 @@ import {
   MR_APPROVALS_PROMO_DISMISSED,
   MR_APPROVALS_PROMO_I18N,
   MR_APPROVALS_PROMO_TRACKING_EVENTS,
-} from '../../constants';
+} from 'ee/approvals/constants';
 
 const trackingMixin = Tracking.mixin({});
 
