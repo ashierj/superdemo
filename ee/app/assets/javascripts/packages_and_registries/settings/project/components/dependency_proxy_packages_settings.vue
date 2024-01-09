@@ -1,5 +1,5 @@
 <script>
-import { GlAlert } from '@gitlab/ui';
+import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import SettingsBlock from '~/packages_and_registries/shared/components/settings_block.vue';
 import getDependencyProxyPackagesSettings from 'ee_component/packages_and_registries/settings/project/graphql/queries/get_dependency_proxy_packages_settings.query.graphql';
@@ -10,6 +10,7 @@ export default {
   components: {
     DependencyProxyPackagesSettingsForm,
     GlAlert,
+    GlSkeletonLoader,
     SettingsBlock,
   },
   inject: {
@@ -38,11 +39,16 @@ export default {
       fetchSettingsError: false,
     };
   },
+  computed: {
+    isLoading() {
+      return this.$apollo.queries.dependencyProxyPackagesSettings.loading;
+    },
+  },
 };
 </script>
 
 <template>
-  <settings-block>
+  <settings-block data-testid="dependency-proxy-settings">
     <template #title>
       <span data-testid="title">{{ s__('DependencyProxy|Dependency Proxy') }}</span></template
     >
@@ -61,11 +67,8 @@ export default {
           s__('DependencyProxy|Something went wrong while fetching the dependency proxy settings.')
         }}
       </gl-alert>
-      <dependency-proxy-packages-settings-form
-        v-else
-        v-model="dependencyProxyPackagesSettings"
-        :is-loading="$apollo.queries.dependencyProxyPackagesSettings.loading"
-      />
+      <gl-skeleton-loader v-else-if="isLoading" />
+      <dependency-proxy-packages-settings-form v-else :data="dependencyProxyPackagesSettings" />
     </template>
   </settings-block>
 </template>

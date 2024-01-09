@@ -1,18 +1,16 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlSkeletonLoader, GlToggle } from '@gitlab/ui';
+import { GlAlert, GlButton, GlToggle } from '@gitlab/ui';
 import Tracking from '~/tracking';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import DependencyProxyPackagesSettingsForm from 'ee_component/packages_and_registries/settings/project/components/dependency_proxy_packages_settings_form.vue';
 import updateDependencyProxyPackagesSettings from 'ee_component/packages_and_registries/settings/project/graphql/mutations/update_dependency_proxy_packages_settings.mutation.graphql';
-import dependencyProxyPackagesSettingsQuery from 'ee_component/packages_and_registries/settings/project/graphql/queries/get_dependency_proxy_packages_settings.query.graphql';
 import MavenForm from 'ee_component/packages_and_registries/settings/project/components/maven_form.vue';
 import {
   dependencyProxyPackagesSettingsData,
-  dependencyProxyPackagesSettingsPayload,
-  dependencyProxyPackagesToggleSettingMutationMock,
+  dependencyProxyPackagesSettingMutationMock,
   mutationErrorMock,
 } from '../mock_data';
 
@@ -21,18 +19,18 @@ Vue.use(VueApollo);
 describe('Dependency proxy packages settings form', () => {
   let wrapper;
   let apolloProvider;
-  let updateToggleSettingsMutationResolver;
+  let updateSettingsMutationResolver;
   let show;
 
-  const {
-    data: {
-      project: { dependencyProxyPackagesSetting },
-    },
-  } = dependencyProxyPackagesSettingsPayload();
-
   const defaultProps = {
-    value: { ...dependencyProxyPackagesSetting },
+    data: { ...dependencyProxyPackagesSettingsData },
   };
+
+  const {
+    enabled,
+    mavenExternalRegistryUrl,
+    mavenExternalRegistryUsername,
+  } = dependencyProxyPackagesSettingsData;
 
   const defaultProvidedValues = {
     projectPath: 'path',
@@ -42,9 +40,11 @@ describe('Dependency proxy packages settings form', () => {
     label: 'dependendency_proxy_packages_settings',
   };
 
+  const findAlert = () => wrapper.findComponent(GlAlert);
   const findEnableProxyToggle = () => wrapper.findComponent(GlToggle);
-  const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
+  const findForm = () => wrapper.find('form');
   const findMavenForm = () => wrapper.findComponent(MavenForm);
+  const findSubmitButton = () => wrapper.findComponent(GlButton);
 
   const mountComponent = ({ props = defaultProps } = {}) => {
     wrapper = shallowMountExtended(DependencyProxyPackagesSettingsForm, {
@@ -61,7 +61,7 @@ describe('Dependency proxy packages settings form', () => {
 
   const mountComponentWithApollo = ({ props = defaultProps } = {}) => {
     const requestHandlers = [
-      [updateDependencyProxyPackagesSettings, updateToggleSettingsMutationResolver],
+      [updateDependencyProxyPackagesSettings, updateSettingsMutationResolver],
     ];
 
     apolloProvider = createMockApollo(requestHandlers);
@@ -72,169 +72,198 @@ describe('Dependency proxy packages settings form', () => {
     });
   };
 
-  describe('fields', () => {
-    it('are hidden when isLoading is set to true', () => {
-      mountComponent({
-        props: {
-          ...defaultProps,
-          isLoading: true,
-        },
-      });
-
-      expect(findEnableProxyToggle().exists()).toBe(false);
-      expect(findMavenForm().exists()).toBe(false);
-      expect(findLoader().exists()).toBe(true);
+  describe('form', () => {
+    beforeEach(() => {
+      mountComponent();
     });
 
-    it('are visible when isLoading is set to false', () => {
-      const {
-        enabled,
+    it('renders the fields', () => {
+      expect(findEnableProxyToggle().props()).toMatchObject({
+        label: 'Enable Dependency Proxy',
+        value: enabled,
+      });
+      expect(findMavenForm().props('value')).toStrictEqual({
         mavenExternalRegistryUrl,
         mavenExternalRegistryUsername,
-      } = dependencyProxyPackagesSetting;
+        mavenExternalRegistryPassword: null,
+      });
+    });
 
-      mountComponent();
+    it('renders submit button', () => {
+      expect(findSubmitButton().text()).toBe('Save changes');
+      expect(findSubmitButton().attributes('disabled')).toBeUndefined();
+      expect(findSubmitButton().props('loading')).toBe(false);
+    });
 
-      expect(findLoader().exists()).toBe(false);
-      expect(findEnableProxyToggle().props('value')).toBe(enabled);
-      expect(findMavenForm().props('data')).toStrictEqual({
-        mavenExternalRegistryUrl,
-        mavenExternalRegistryUsername,
+    it('does not show an alert', () => {
+      expect(findAlert().exists()).toBe(false);
+    });
+
+    describe('when proxy toggle', () => {
+      it('is disabled', () => {
+        mountComponent({
+          props: {
+            data: {
+              ...defaultProps.data,
+              enabled: false,
+            },
+          },
+        });
+
+        expect(findEnableProxyToggle().props('value')).toBe(false);
       });
     });
   });
 
-  describe('enable proxy toggle', () => {
-    it('when enabled', () => {
-      mountComponent();
+  describe('mutation', () => {
+    beforeEach(() => {
+      updateSettingsMutationResolver = jest
+        .fn()
+        .mockResolvedValue(dependencyProxyPackagesSettingMutationMock());
+      show = jest.fn();
+      jest.spyOn(Tracking, 'event');
+    });
 
-      expect(findEnableProxyToggle().props()).toMatchObject({
-        label: 'Enable Dependency Proxy',
-        value: true,
+    it('tracks the submit event', () => {
+      mountComponentWithApollo();
+
+      findForm().trigger('submit');
+
+      expect(Tracking.event).toHaveBeenCalledWith(
+        undefined,
+        'submit_dependency_proxy_packages_settings',
+        trackingPayload,
+      );
+    });
+
+    it('sets submit button loading & disabled prop', async () => {
+      mountComponentWithApollo();
+
+      findForm().trigger('submit');
+
+      await nextTick();
+
+      expect(findSubmitButton().props()).toMatchObject({
+        loading: true,
+        disabled: true,
       });
     });
 
-    it('when disabled', () => {
-      mountComponent({
-        props: {
-          value: {
-            ...defaultProps.value,
-            enabled: false,
-          },
-        },
+    it('is called with the right arguments', () => {
+      mountComponentWithApollo();
+
+      apolloProvider.defaultClient.mutate = jest
+        .fn()
+        .mockResolvedValue(dependencyProxyPackagesSettingMutationMock());
+
+      findMavenForm().vm.$emit('input', {
+        mavenExternalRegistryUrl,
+        mavenExternalRegistryUsername,
+        mavenExternalRegistryPassword: 'password',
       });
 
-      expect(findEnableProxyToggle().props('value')).toBe(false);
-    });
+      findForm().trigger('submit');
 
-    describe('mutation', () => {
-      beforeEach(() => {
-        show = jest.fn();
-        jest.spyOn(Tracking, 'event');
-      });
-
-      const fillApolloCache = () => {
-        apolloProvider.defaultClient.cache.writeQuery({
-          query: dependencyProxyPackagesSettingsQuery,
+      expect(apolloProvider.defaultClient.mutate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mutation: updateDependencyProxyPackagesSettings,
           variables: {
-            projectPath: defaultProvidedValues.projectPath,
+            input: {
+              projectPath: defaultProvidedValues.projectPath,
+              enabled,
+              mavenExternalRegistryUrl,
+              mavenExternalRegistryUsername,
+              mavenExternalRegistryPassword: 'password',
+            },
           },
-          ...dependencyProxyPackagesSettingsPayload(),
-        });
-      };
+        }),
+      );
+    });
 
-      describe('success state', () => {
-        beforeEach(() => {
-          updateToggleSettingsMutationResolver = jest
-            .fn()
-            .mockResolvedValue(dependencyProxyPackagesToggleSettingMutationMock());
-        });
+    describe('success state', () => {
+      it('shows a toast with success message', async () => {
+        mountComponentWithApollo();
 
-        it('shows a toast with success message', async () => {
-          mountComponentWithApollo();
+        findForm().trigger('submit');
 
-          fillApolloCache();
-          findEnableProxyToggle().vm.$emit('change', false);
+        await waitForPromises();
 
-          await waitForPromises();
-
-          expect(show).toHaveBeenCalledWith('Settings saved successfully.');
-        });
-
-        it('has an optimistic response', () => {
-          mountComponentWithApollo();
-
-          fillApolloCache();
-
-          apolloProvider.defaultClient.mutate = jest
-            .fn()
-            .mockResolvedValue(dependencyProxyPackagesToggleSettingMutationMock());
-
-          expect(findEnableProxyToggle().props('value')).toBe(true);
-
-          findEnableProxyToggle().vm.$emit('change', false);
-
-          expect(apolloProvider.defaultClient.mutate).toHaveBeenCalledWith(
-            expect.objectContaining({
-              optimisticResponse: {
-                __typename: 'Mutation',
-                updateDependencyProxyPackagesSettings: {
-                  __typename: 'UpdateDependencyProxyPackagesSettingsPayload',
-                  errors: [],
-                  dependencyProxyPackagesSetting: {
-                    ...dependencyProxyPackagesSettingsData,
-                    enabled: false,
-                  },
-                },
-              },
-            }),
-          );
-        });
-
-        it('tracks the toggle event', () => {
-          mountComponentWithApollo();
-
-          fillApolloCache();
-          findEnableProxyToggle().vm.$emit('change', false);
-
-          expect(Tracking.event).toHaveBeenCalledWith(
-            undefined,
-            'toggle_dependency_proxy_packages_settings',
-            trackingPayload,
-          );
+        expect(show).toHaveBeenCalledWith('Settings saved successfully.');
+        expect(findSubmitButton().props()).toMatchObject({
+          loading: false,
+          disabled: false,
         });
       });
 
-      describe('errors', () => {
-        it('mutation payload with root level errors', async () => {
-          updateToggleSettingsMutationResolver = jest.fn().mockResolvedValue(mutationErrorMock);
+      it('password field is reset', async () => {
+        mountComponentWithApollo();
 
-          mountComponentWithApollo();
-
-          fillApolloCache();
-
-          findEnableProxyToggle().vm.$emit('change', false);
-
-          await waitForPromises();
-
-          expect(show).toHaveBeenCalledWith('An error occurred while saving the settings.');
+        findMavenForm().vm.$emit('input', {
+          mavenExternalRegistryUrl,
+          mavenExternalRegistryUsername,
+          mavenExternalRegistryPassword: 'password',
         });
 
-        it.each`
-          type         | mutationResolverMock
-          ${'local'}   | ${jest.fn().mockResolvedValue(dependencyProxyPackagesToggleSettingMutationMock({ errors: ['foo'] }))}
-          ${'network'} | ${jest.fn().mockRejectedValue()}
-        `('mutation payload with $type error', async ({ mutationResolverMock }) => {
-          updateToggleSettingsMutationResolver = mutationResolverMock;
-          mountComponentWithApollo();
+        findForm().trigger('submit');
 
-          fillApolloCache();
-          findEnableProxyToggle().vm.$emit('change', false);
+        await waitForPromises();
 
-          await waitForPromises();
-
-          expect(show).toHaveBeenCalledWith('An error occurred while saving the settings.');
+        expect(findMavenForm().props('value')).toMatchObject({
+          mavenExternalRegistryPassword: null,
         });
+      });
+    });
+
+    describe('errors', () => {
+      it('shows alert with message', async () => {
+        updateSettingsMutationResolver = jest.fn().mockResolvedValue(mutationErrorMock);
+
+        mountComponentWithApollo();
+
+        findForm().trigger('submit');
+
+        await waitForPromises();
+
+        expect(findAlert().text()).toBe('Error: Some error');
+        expect(findAlert().props('variant')).toBe('danger');
+        expect(findAlert().props('dismissible')).toBe(true);
+        expect(show).not.toHaveBeenCalled();
+
+        expect(findSubmitButton().props()).toMatchObject({
+          loading: false,
+          disabled: false,
+        });
+      });
+
+      it('does not reset the password field', async () => {
+        updateSettingsMutationResolver = jest.fn().mockResolvedValue(mutationErrorMock);
+        mountComponentWithApollo();
+
+        findMavenForm().vm.$emit('input', {
+          mavenExternalRegistryUrl,
+          mavenExternalRegistryUsername,
+          mavenExternalRegistryPassword: 'password',
+        });
+        findForm().trigger('submit');
+
+        await waitForPromises();
+
+        expect(findMavenForm().props('value')).toMatchObject({
+          mavenExternalRegistryPassword: 'password',
+        });
+      });
+
+      it('mutation payload with network error', async () => {
+        updateSettingsMutationResolver = jest.fn().mockRejectedValue();
+        mountComponentWithApollo();
+
+        findForm().trigger('submit');
+
+        await waitForPromises();
+
+        expect(findAlert().text()).toBe('Error');
+        expect(findAlert().props('variant')).toBe('danger');
+        expect(show).not.toHaveBeenCalled();
       });
     });
   });

@@ -27,5 +27,67 @@ RSpec.describe 'Project > Settings > Packages and registries > Dependency proxy 
                                   .skipping :'heading-order'
       # rubocop:enable Capybara/TestidFinders
     end
+
+    it 'shows available section' do
+      visit_page
+
+      within_testid('dependency-proxy-settings') do
+        expect(page).to have_text 'Dependency Proxy'
+      end
+    end
+
+    it 'allows toggling dependency proxy & adding maven URL' do
+      visit_page
+
+      within_testid('dependency-proxy-settings') do
+        click_button class: 'gl-toggle'
+        fill_in('URL', with: 'http://example.com')
+        click_button 'Save changes'
+      end
+
+      expect(page).to have_content('Settings saved successfully.')
+    end
+
+    it 'allows filling complete form' do
+      visit_page
+
+      within_testid('dependency-proxy-settings') do
+        click_button class: 'gl-toggle'
+        fill_in('URL', with: 'http://example.com')
+        fill_in('Username', with: 'username')
+        fill_in('Password', with: 'password')
+        click_button 'Save changes'
+      end
+
+      expect(page).to have_content('Settings saved successfully.')
+    end
+
+    it 'shows an error when username is supplied without password' do
+      visit_page
+
+      within_testid('dependency-proxy-settings') do
+        fill_in('Username', with: 'user1')
+        click_button 'Save changes'
+      end
+
+      expect(page).to have_content("Maven external registry password can't be blank")
+    end
+
+    context 'with existing settings' do
+      let_it_be_with_reload(:dependency_proxy_setting) do
+        create(:dependency_proxy_packages_setting, :maven, project: project)
+      end
+
+      it 'allows clearing username' do
+        visit_page
+
+        within_testid('dependency-proxy-settings') do
+          fill_in('Username', with: '')
+          click_button 'Save changes'
+        end
+
+        expect(page).to have_content('Settings saved successfully.')
+      end
+    end
   end
 end
