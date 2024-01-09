@@ -377,7 +377,7 @@ RSpec.describe IssuesFinder do
     end
   end
 
-  describe '#with_confidentiality_access_check' do
+  describe 'confidentiality access check' do
     let_it_be(:guest) { create(:user) }
 
     let_it_be(:authorized_user) { create(:user) }
@@ -393,7 +393,7 @@ RSpec.describe IssuesFinder do
       context 'for an auditor' do
         let(:auditor_user) { create(:user, :auditor) }
 
-        subject { described_class.new(auditor_user, params).with_confidentiality_access_check }
+        subject { described_class.new(auditor_user, params).execute }
 
         it 'returns all issues' do
           expect(subject).to include(public_issue, confidential_issue, hidden_issue)
@@ -407,7 +407,7 @@ RSpec.describe IssuesFinder do
       context 'for an auditor' do
         let(:auditor_user) { create(:user, :auditor) }
 
-        subject { described_class.new(auditor_user, params).with_confidentiality_access_check }
+        subject { described_class.new(auditor_user, params).execute }
 
         it 'returns all issues' do
           expect(subject).to include(public_issue, confidential_issue, hidden_issue)
