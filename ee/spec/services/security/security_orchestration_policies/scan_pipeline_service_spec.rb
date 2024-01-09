@@ -222,6 +222,37 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
 
           it { is_expected.to eq({ pipeline_scan: {}, on_demand: {}, variables: {} }) }
         end
+
+        context 'with external CI file' do
+          let(:external_project) do
+            create(
+              :project,
+              :custom_repo,
+              :public,
+              files: {
+                'ci-file.yaml' => ci_configuration.to_s
+              }
+            )
+          end
+
+          let(:actions) do
+            [
+              {
+                scan: 'custom',
+                ci_configuration_path: {
+                  project: external_project.full_path,
+                  file: 'ci-file.yaml',
+                  ref: 'master'
+                },
+                variables: {
+                  'CUSTOM_VARIABLE' => 'test'
+                }
+              }
+            ]
+          end
+
+          it { is_expected.to eq({ pipeline_scan: { image: "busybox:latest", custom: { stage: "build", script: ["echo \"Defined in security policy\""] } }, on_demand: {}, variables: { custom: { 'CUSTOM_VARIABLE' => 'test' } } }) }
+        end
       end
     end
   end
