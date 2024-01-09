@@ -56317,10 +56317,10 @@ msgstr ""
 msgid "You do not belong to any projects yet."
 msgstr ""
 
-msgid "You do not have access to AI features."
+msgid "You do not have access to any projects for creating incidents."
 msgstr ""
 
-msgid "You do not have access to any projects for creating incidents."
+msgid "You do not have access to chat feature."
 msgstr ""
 
 msgid "You do not have any subscriptions yet"

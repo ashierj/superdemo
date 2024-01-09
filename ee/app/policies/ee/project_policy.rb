@@ -344,6 +344,24 @@ module EE
         project.ci_cancellation_restriction.no_one_allowed?
       end
 
+      condition(:chat_allowed_for_parent_group, scope: :subject) do
+        next true unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
+
+        ::Gitlab::Llm::StageCheck.available?(@subject.parent, :chat)
+      end
+
+      condition(:chat_available_for_user, scope: :global) do
+        Ability.allowed?(@user, :access_duo_chat)
+      end
+
+      condition(:membership_for_chat, scope: :global) do
+        unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
+          next Ability.allowed?(@user, :read_project, @subject)
+        end
+
+        team_member?
+      end
+
       rule { visual_review_bot }.policy do
         prevent :read_note
         enable :create_note
@@ -852,6 +870,8 @@ module EE
       rule { can?(:reporter_access) & agent_registry_enabled }.policy do
         enable :write_ai_agents
       end
+
+      rule { membership_for_chat & chat_allowed_for_parent_group & chat_available_for_user }.enable :access_duo_chat
     end
 
     override :lookup_access_level!

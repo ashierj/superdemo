@@ -6,8 +6,8 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
   subject(:reader) { described_class.new(context: context, options: options, stream_response_handler: nil) }
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
-  let_it_be(:project) { create(:project, group: group, name: "My sweet project with robots in it") }
+  let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+  let_it_be_with_reload(:project) { create(:project, group: group, name: "My sweet project with robots in it") }
   let_it_be(:issue) do
     create(:issue, project: project, title: "AI should be included at birthdays", description: description_content)
   end
@@ -34,7 +34,6 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
     allow(reader).to receive(:provider_prompt_class)
       .and_return(::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic)
     stub_const("::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic::MAX_CHARACTERS", 4)
-    allow(Gitlab::Llm::StageCheck).to receive(:available?).with(project, :chat).and_return(true)
   end
 
   describe '#name' do
@@ -58,8 +57,14 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
 
   describe '#execute' do
     before do
+      allow(Gitlab).to receive(:org_or_com?).and_return(true)
       stub_ee_application_setting(should_check_namespace_plan: true)
-      stub_licensed_features(experimental_features: true, ai_features: true)
+      allow(group.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+      stub_licensed_features(
+        ai_features: true,
+        epics: true,
+        experimental_features: true
+      )
       group.namespace_settings.update!(experiment_features_enabled: true)
     end
 

@@ -78,9 +78,9 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
     end
   end
 
-  context 'when ai_global_switch feature flag is disabled' do
+  context 'when ai_duo_chat_switch feature flag is disabled' do
     before do
-      stub_feature_flags(ai_global_switch: false)
+      stub_feature_flags(ai_duo_chat_switch: false)
     end
 
     it 'returns nil' do

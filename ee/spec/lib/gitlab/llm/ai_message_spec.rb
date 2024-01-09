@@ -187,4 +187,10 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
       expect(m1).not_to eq(m2)
     end
   end
+
+  describe "#chat?" do
+    it 'returns true for chat message' do
+      expect(subject).not_to be_chat
+    end
+  end
 end

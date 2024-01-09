@@ -77,4 +77,10 @@ RSpec.describe Gitlab::Llm::ChatMessage, feature_category: :duo_chat do
       end
     end
   end
+
+  describe "#chat?" do
+    it 'returns true for chat message' do
+      expect(subject).to be_chat
+    end
+  end
 end

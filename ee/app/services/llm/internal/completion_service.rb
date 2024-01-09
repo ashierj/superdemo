@@ -15,7 +15,7 @@ module Llm
       end
 
       def execute
-        return unless Feature.enabled?(:ai_global_switch, type: :ops)
+        return unless ai_action_enabled?(prompt_message)
 
         with_tracking(prompt_message.ai_action) do
           break unless resource_authorized?(prompt_message)
@@ -92,6 +92,14 @@ module Llm
           labels: labels,
           success: duration <= MAX_RUN_TIME
         )
+      end
+
+      def ai_action_enabled?(prompt_message)
+        if prompt_message.chat?
+          Feature.enabled?(:ai_duo_chat_switch, type: :ops)
+        else
+          Feature.enabled?(:ai_global_switch, type: :ops)
+        end
       end
 
       def logger

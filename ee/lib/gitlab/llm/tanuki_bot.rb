@@ -12,15 +12,11 @@ module Gitlab
       MODEL = 'claude-instant-1.1'
 
       def self.enabled_for?(user:, container: nil)
-        return false unless Feature.enabled?(:ai_global_switch, type: :ops)
+        return false unless Feature.enabled?(:ai_duo_chat_switch, type: :ops)
 
         return false unless user
 
-        if container
-          container.member?(user) && Gitlab::Llm::StageCheck.available?(container.resource_parent, :chat)
-        else
-          user.any_group_with_ai_available?
-        end
+        container ? user.can?(:access_duo_chat, container) : user.can?(:access_duo_chat)
       end
 
       def self.show_breadcrumbs_entry_point?(user:, container: nil)

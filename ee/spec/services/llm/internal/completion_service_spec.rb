@@ -114,6 +114,20 @@ RSpec.describe Llm::Internal::CompletionService, :saas, feature_category: :ai_ab
 
         it_behaves_like 'performs successfully'
       end
+
+      context 'when it is chat request' do
+        let_it_be(:resource) { nil }
+        let(:ai_action_name) { :chat }
+        let(:prompt_message) do
+          build(:ai_chat_message, user: user, resource: resource, ai_action: ai_action_name, request_id: 'uuid')
+        end
+
+        before do
+          stub_feature_flags(ai_duo_chat_switch: true, ai_global_switch: false)
+        end
+
+        it_behaves_like 'performs successfully'
+      end
     end
 
     context 'with service failure' do

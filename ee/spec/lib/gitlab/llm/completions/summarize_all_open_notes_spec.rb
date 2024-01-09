@@ -66,7 +66,7 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
     let(:options) { {} }
 
     let_it_be(:user) { create(:user) }
-    let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:project) { create(:project, group: group) }
 
     before_all do
@@ -75,15 +75,17 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
     end
 
     before do
-      stub_application_setting(check_namespace_plan: true)
-      stub_licensed_features(summarize_notes: true, ai_features: true, epics: true, experimental_features: true)
-
-      group.namespace_settings.update!(
-        experiment_features_enabled: true
+      allow(Gitlab).to receive(:org_or_com?).and_return(true)
+      stub_ee_application_setting(should_check_namespace_plan: true)
+      allow(group.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+      stub_licensed_features(
+        summarize_notes: true,
+        ai_features: true,
+        epics: true,
+        experimental_features: true
       )
-      project.root_ancestor.update!(
-        experiment_features_enabled: true
-      )
+      group.namespace_settings.update!(experiment_features_enabled: true)
+      project.reload
     end
 
     context 'with invalid params' do

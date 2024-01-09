@@ -625,6 +625,57 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     end
   end
 
+  describe 'access_duo_chat' do
+    let(:policy) { :access_duo_chat }
+
+    let_it_be_with_reload(:current_user) { create(:user) }
+
+    context 'when on .org or .com', :saas do
+      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+
+      context 'when user is member of a group' do
+        before do
+          group.add_developer(current_user)
+        end
+
+        context 'when group has AI licensing and settings' do
+          include_context 'with ai features enabled for group'
+
+          it { is_expected.to be_allowed(:access_duo_chat) }
+        end
+
+        context 'when group has not AI licensing and settings' do
+          include_context 'with experiment features disabled for group'
+
+          it { is_expected.to be_disallowed(:access_duo_chat) }
+        end
+      end
+
+      context 'when user is not a member of a group' do
+        it { is_expected.to be_disallowed(:access_duo_chat) }
+      end
+    end
+
+    context 'when not on .org or .com' do
+      where(:licensed, :instance_level_ai_beta_features_enabled, :cs_matcher) do
+        true  | false | be_disallowed(policy)
+        true  | true  | be_allowed(policy)
+        false | false | be_disallowed(policy)
+        false | true  | be_disallowed(policy)
+      end
+
+      with_them do
+        before do
+          allow(::Gitlab).to receive(:org_or_com?).and_return(false)
+          stub_ee_application_setting(instance_level_ai_beta_features_enabled: instance_level_ai_beta_features_enabled)
+          stub_licensed_features(ai_chat: licensed)
+        end
+
+        it { is_expected.to cs_matcher }
+      end
+    end
+  end
+
   describe 'git access' do
     context 'security policy bot' do
       let(:current_user) { security_policy_bot }
