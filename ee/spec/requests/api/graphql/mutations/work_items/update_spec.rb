@@ -333,6 +333,90 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
     end
   end
 
+  context 'with color widget input' do
+    let(:new_color) { '#346465' }
+    let(:input) do
+      { 'colorWidget' => { 'color' => new_color } }
+    end
+
+    let_it_be_with_refind(:work_item) { create(:work_item, :epic, namespace: group) }
+
+    let(:fields) do
+      <<~FIELDS
+        workItem {
+          widgets {
+            type
+            ... on WorkItemWidgetColor {
+              color
+            }
+          }
+        }
+        errors
+      FIELDS
+    end
+
+    def work_item_color
+      work_item.color&.color
+    end
+
+    context 'when epic_colors is unlicensed' do
+      let(:current_user) { reporter }
+
+      before do
+        stub_licensed_features(epic_colors: false)
+      end
+
+      it_behaves_like 'work item is not updated' do
+        let(:current_user) { guest }
+        let(:work_item_change) { -> { work_item_color } }
+      end
+    end
+
+    context 'when epic_colors is licensed' do
+      before do
+        stub_licensed_features(epic_colors: true)
+      end
+
+      context 'when the user has permission to admin a work item' do
+        let(:current_user) { reporter }
+
+        it 'updates the color widget' do
+          expect do
+            post_graphql_mutation(mutation, current_user: current_user)
+            work_item.reload
+          end.to change { work_item_color }.from(nil).to(::Gitlab::Color.of(new_color))
+
+          expect(response).to have_gitlab_http_status(:success)
+          expect(mutation_response['workItem']['widgets']).to include(
+            {
+              'color' => new_color,
+              'type' => 'COLOR'
+            }
+          )
+        end
+      end
+
+      context 'when the user does not have permission to update the work item' do
+        let(:current_user) { guest }
+
+        it_behaves_like 'work item is not updated' do
+          let(:work_item_change) { -> { work_item_color } }
+        end
+
+        context 'when a base attribute is present' do
+          before do
+            input.merge!('title' => 'new title')
+          end
+
+          it_behaves_like 'a mutation that returns top-level errors', errors: [
+            'The resource that you are attempting to access does not exist or you don\'t have permission to ' \
+            'perform this action'
+          ]
+        end
+      end
+    end
+  end
+
   context 'with status widget input' do
     let(:new_status) { 'FAILED' }
     let(:input) { { 'statusWidget' => { 'status' => new_status } } }

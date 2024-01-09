@@ -26,6 +26,10 @@ module EE
           argument :health_status_widget, ::Types::WorkItems::Widgets::HealthStatusInputType,
                    required: false,
                    description: 'Input for health status widget.'
+
+          argument :color_widget, ::Types::WorkItems::Widgets::ColorInputType,
+                   required: false,
+                   description: 'Input for color widget.'
         end
       end
     end

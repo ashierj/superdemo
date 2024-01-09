@@ -37,13 +37,28 @@ module EE
       def change_progress_note
         progress = noteable.progress&.progress
 
-        body = if noteable.progress.destroyed?
+        body = if noteable.progress&.destroyed?
                  "removed the progress **#{progress}**"
                else
                  "changed progress to **#{progress}**"
                end
 
         create_note(NoteSummary.new(noteable, project, author, body, action: 'progress'))
+      end
+
+      # Called when the color of a WorkItem is changed
+      #
+      # Example Note text:
+      #
+      #   "changed color to '#345678'"
+      #
+      # Returns the created Note object
+      def change_color_note
+        color = noteable.color&.color
+
+        body = noteable.color&.destroyed? ? "removed the color `#{color}`" : "changed color to `#{color}`"
+
+        create_note(NoteSummary.new(noteable, project, author, body, action: 'color'))
       end
 
       # Called when the reminder_frequency of a WorkItemProgress is changed
