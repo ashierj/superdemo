@@ -59,10 +59,15 @@ module EE
         ::License.feature_available?(:code_suggestions)
       end
 
-      condition(:code_suggestions_enabled_by_instance) do
+      condition(:code_suggestions_enabled_for_user) do
         next true if ::Gitlab.org_or_com?
 
-        ::Gitlab::CurrentSettings.instance_level_code_suggestions_enabled
+        if ::CodeSuggestions::SelfManaged::SERVICE_START_DATE.past?
+          @user.code_suggestions_add_on_available?
+        else # Before service start date
+          # TODO: Remove this else branch after the service start date
+          ::Gitlab::CurrentSettings.instance_level_code_suggestions_enabled
+        end
       end
 
       condition(:code_suggestions_enabled_by_user) do
@@ -151,7 +156,7 @@ module EE
         enable :admin_instance_external_audit_events
       end
 
-      rule { code_suggestions_licensed & code_suggestions_enabled_by_user & code_suggestions_enabled_by_instance }
+      rule { code_suggestions_licensed & code_suggestions_enabled_by_user & code_suggestions_enabled_for_user }
         .enable :access_code_suggestions
       rule { code_suggestions_disabled_by_group }.prevent :access_code_suggestions
 

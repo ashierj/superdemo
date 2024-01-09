@@ -608,7 +608,9 @@ module EE
     end
 
     def code_suggestions_add_on_available?
-      code_suggestions_add_on_available_namespace_ids.any?
+      return code_suggestions_add_on_available_namespace_ids.any? if gitlab_saas?
+
+      GitlabSubscriptions::UserAddOnAssignment.by_user(self).any?
     end
 
     def eligible_for_self_managed_code_suggestions?
