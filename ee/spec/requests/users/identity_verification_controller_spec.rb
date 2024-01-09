@@ -638,7 +638,7 @@ feature_category: :system_access do
   describe 'POST send_phone_verification_code' do
     let_it_be(:unconfirmed_user) { create(:user, :medium_risk) }
     let_it_be(:user) { unconfirmed_user }
-    let_it_be(:service_response) { ServiceResponse.success }
+    let_it_be(:service_response) { ServiceResponse.success(payload: { container: 'contents' }) }
     let_it_be(:params) do
       { identity_verification: { country: 'US', international_dial_code: '1', phone_number: '555' } }
     end
@@ -663,7 +663,8 @@ feature_category: :system_access do
       it 'responds with status 200 OK' do
         do_request
 
-        expect(response.body).to eq({ status: :success }.to_json)
+        expected_json = { status: :success }.merge(service_response.payload).to_json
+        expect(response.body).to eq(expected_json)
       end
 
       it_behaves_like 'logs and tracks the event', :phone, :sent_phone_verification_code

@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import GlCountdown from '~/vue_shared/components/gl_countdown.vue';
 import { sprintf } from '~/locale';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -44,7 +45,9 @@ describe('Verify phone verification code input component', () => {
   const findResendCodeButton = () => wrapper.findByText('Send a new code');
   const resendCode = () => findResendCodeButton().vm.$emit('click');
 
-  const createComponent = (props = {}) => {
+  const findCountdown = () => wrapper.findComponent(GlCountdown);
+
+  const createComponent = ({ props } = { props: {} }) => {
     wrapper = shallowMountExtended(VerifyPhoneVerificationCode, {
       propsData: {
         latestPhoneNumber: {
@@ -52,6 +55,8 @@ describe('Verify phone verification code input component', () => {
           internationalDialCode: INTERNATIONAL_DIAL_CODE,
           number: NUMBER,
         },
+        sendCodeAllowed: true,
+        sendCodeAllowedAfter: '2000-01-01T00:00:00Z',
         ...props,
       },
       provide: {
@@ -140,11 +145,49 @@ describe('Verify phone verification code input component', () => {
   });
 
   describe('Re-sending code', () => {
-    describe('when request is successful', () => {
-      beforeEach(() => {
-        axiosMock.onPost(SEND_CODE_PATH).reply(HTTP_STATUS_OK, { success: true });
+    describe('when send is allowed', () => {
+      it('does not render "Send a new code in" text and a GlCountdown', () => {
+        expect(wrapper.findByText(/Send a new code in/).exists()).toBe(false);
+        expect(findCountdown().exists()).toBe(false);
+      });
+    });
 
-        createComponent({ additionalRequestParams: { captcha_token: '1234' } });
+    describe('when send is not allowed', () => {
+      beforeEach(() => {
+        jest
+          .spyOn(Date, 'now')
+          .mockImplementation(() => new Date('2000-01-01T00:00:00Z').getTime());
+
+        createComponent({
+          props: { sendCodeAllowed: false, sendCodeAllowedAfter: '2000-01-01T01:02:03Z' },
+        });
+      });
+
+      it('renders the correct text and GlCountdown', () => {
+        expect(wrapper.findByText(/Send a new code in/).exists()).toBe(true);
+        expect(findCountdown().exists()).toBe(true);
+      });
+
+      it('does not render the resend code link', () => {
+        expect(wrapper.findByTestId('resend-code-link').exists()).toBe(false);
+      });
+
+      describe('when GlCountdown emits a "timer-expired" event', () => {
+        it('emits re-emits the event', () => {
+          findCountdown().vm.$emit('timer-expired');
+
+          expect(wrapper.emitted('timer-expired')).toStrictEqual([[]]);
+        });
+      });
+    });
+
+    describe('when request is successful', () => {
+      const data = { success: true, send_allowed_after: '2000-01-01T01:02:03Z' };
+
+      beforeEach(() => {
+        axiosMock.onPost(SEND_CODE_PATH).reply(HTTP_STATUS_OK, data);
+
+        createComponent({ props: { additionalRequestParams: { captcha_token: '1234' } } });
 
         resendCode();
         return waitForPromises();
@@ -163,6 +206,10 @@ describe('Verify phone verification code input component', () => {
             captcha_token: '1234',
           }),
         );
+      });
+
+      it('emits `resent` event with the correct data', () => {
+        expect(wrapper.emitted('resent')).toStrictEqual([[data.send_allowed_after]]);
       });
 
       it('renders success message', () => {
@@ -204,7 +251,7 @@ describe('Verify phone verification code input component', () => {
       beforeEach(() => {
         axiosMock.onPost(VERIFY_CODE_PATH).reply(HTTP_STATUS_OK, { success: true });
 
-        createComponent({ additionalRequestParams: { captcha_token: '1234' } });
+        createComponent({ props: { additionalRequestParams: { captcha_token: '1234' } } });
 
         enterCode('123');
         submitForm();
@@ -279,7 +326,9 @@ describe('Verify phone verification code input component', () => {
       describe('when disableSubmitButton is true', () => {
         beforeEach(() => {
           createComponent({
-            disableSubmitButton: true,
+            props: {
+              disableSubmitButton: true,
+            },
           });
 
           enterCode('000');
@@ -290,6 +339,26 @@ describe('Verify phone verification code input component', () => {
           expect(findVerifyCodeButton().attributes('disabled')).toBe('true');
           expect(findGoBackLink().exists()).toBe(false);
           expect(findResendCodeButton().exists()).toBe(false);
+        });
+      });
+
+      describe('when arkose challenge is shown and solved', () => {
+        beforeEach(() => {
+          createComponent({
+            props: {
+              arkoseChallengeShown: true,
+              arkoseChallengeSolved: true,
+            },
+          });
+
+          enterCode('000');
+          return waitForPromises();
+        });
+
+        it('should enable the verify, go back and resend buttons', () => {
+          expect(findVerifyCodeButton().attributes('disabled')).toBe(undefined);
+          expect(findGoBackLink().exists()).toBe(true);
+          expect(findResendCodeButton().exists()).toBe(true);
         });
       });
     });

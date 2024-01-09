@@ -24692,6 +24692,9 @@ msgstr ""
 msgid "IdentityVerification|Didn't receive a code? %{codeLinkStart}Send a new code%{codeLinkEnd} or %{phoneLinkStart}enter a new phone number%{phoneLinkEnd}"
 msgstr ""
 
+msgid "IdentityVerification|Didn't receive a code? Send a new code in %{timer} or %{phoneLinkStart}enter a new phone number%{phoneLinkEnd}"
+msgstr ""
+
 msgid "IdentityVerification|Email update is only offered once."
 msgstr ""
 
@@ -24759,6 +24762,9 @@ msgid "IdentityVerification|Send a new code"
 msgstr ""
 
 msgid "IdentityVerification|Send code"
+msgstr ""
+
+msgid "IdentityVerification|Send code in %{timer}"
 msgstr ""
 
 msgid "IdentityVerification|Something went wrong. Please try again."

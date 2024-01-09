@@ -1,4 +1,4 @@
-import { GlForm, GlButton, GlFormInput, GlInputGroupText } from '@gitlab/ui';
+import { GlForm, GlFormInput, GlInputGroupText } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import axios from 'axios';
@@ -13,6 +13,7 @@ import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.gra
 import countriesResolver from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 
 import InternationalPhoneInput from 'ee/users/identity_verification/components/international_phone_input.vue';
+import GlCountdown from '~/vue_shared/components/gl_countdown.vue';
 
 import {
   I18N_PHONE_NUMBER_LENGTH_ERROR,
@@ -40,6 +41,7 @@ describe('International Phone input component', () => {
   const findPhoneNumberFormGroup = () => wrapper.findByTestId('phone-number-form-group');
   const findPhoneNumberInput = () => wrapper.findComponent(GlFormInput);
   const findInternationalDialCode = () => wrapper.findComponent(GlInputGroupText);
+  const findCountdown = () => wrapper.findComponent(GlCountdown);
 
   const countryText = (country) =>
     `${country.flag} ${country.name} (+${country.internationalDialCode})`;
@@ -47,7 +49,7 @@ describe('International Phone input component', () => {
   const enterPhoneNumber = (value) => findPhoneNumberInput().vm.$emit('input', value);
   const submitForm = () => findForm().vm.$emit('submit', { preventDefault: jest.fn() });
 
-  const findSubmitButton = () => wrapper.findComponent(GlButton);
+  const findSubmitButton = () => wrapper.findByTestId('submit-btn');
 
   const createMockApolloProvider = () => {
     const mockResolvers = { countriesResolver };
@@ -60,17 +62,22 @@ describe('International Phone input component', () => {
     return mockApollo;
   };
 
-  const createComponent = (provide = {}, props = {}, mountFn = shallowMountExtended) => {
+  const createComponent = (
+    { provide, props } = { provide: {}, props: {} },
+    mountFn = shallowMountExtended,
+  ) => {
     wrapper = mountFn(InternationalPhoneInput, {
       apolloProvider: createMockApolloProvider(),
+      propsData: {
+        sendCodeAllowed: true,
+        sendCodeAllowedAfter: '2000-01-01T00:00:00Z',
+        ...props,
+      },
       provide: {
         phoneNumber: {
           sendCodePath: SEND_CODE_PATH,
           ...provide,
         },
-      },
-      propsData: {
-        ...props,
       },
     });
   };
@@ -121,7 +128,7 @@ describe('International Phone input component', () => {
     });
 
     it('should render international dial code', () => {
-      createComponent({}, {}, mountExtended);
+      createComponent({}, mountExtended);
 
       expect(findInternationalDialCode().text()).toBe(`+${mockCountry1.internationalDialCode}`);
     });
@@ -141,7 +148,7 @@ describe('International Phone input component', () => {
     });
 
     it('updates country field with the name of selected country', async () => {
-      createComponent({}, {}, mountExtended);
+      createComponent({}, mountExtended);
 
       findCountrySelect().vm.$emit('select', 'AU');
       await nextTick();
@@ -151,7 +158,7 @@ describe('International Phone input component', () => {
     });
 
     it('should render injected value', () => {
-      createComponent({ country: 'AU' });
+      createComponent({ provide: { country: 'AU' } });
 
       expect(findCountrySelect().attributes('selected')).toBe('AU');
       expect(findCountrySelect().props('toggleText')).toBe(countryText(mockCountry2));
@@ -200,17 +207,63 @@ describe('International Phone input component', () => {
 
     it('should render injected value', () => {
       const number = '555';
-      createComponent({ number });
+      createComponent({ provide: { number } });
       expect(findPhoneNumberInput().attributes('value')).toBe(number);
+    });
+  });
+
+  describe('Submit button', () => {
+    describe('when send is allowed', () => {
+      it('does not render "Send code in" text and a GlCountdown', () => {
+        createComponent({}, mountExtended);
+
+        expect(wrapper.findByText(/Send code in/).exists()).toBe(false);
+        expect(findCountdown().exists()).toBe(false);
+      });
+    });
+
+    describe('when send is not allowed', () => {
+      beforeEach(() => {
+        jest
+          .spyOn(Date, 'now')
+          .mockImplementation(() => new Date('2000-01-01T00:00:00Z').getTime());
+
+        createComponent(
+          { props: { sendCodeAllowed: false, sendCodeAllowedAfter: '2000-01-01T01:02:03Z' } },
+          mountExtended,
+        );
+      });
+
+      it('renders the correct text and GlCountdown', () => {
+        expect(wrapper.findByText(/Send code in/).exists()).toBe(true);
+        expect(findCountdown().exists()).toBe(true);
+      });
+
+      it('is disabled', async () => {
+        enterPhoneNumber('1800134678');
+        await nextTick();
+
+        expect(findSubmitButton().attributes('disabled')).not.toBeUndefined();
+      });
+
+      describe('when GlCountdown emits a "timer-expired" event', () => {
+        it('emits re-emits the event', () => {
+          findCountdown().vm.$emit('timer-expired');
+
+          expect(wrapper.emitted('timer-expired')).toStrictEqual([[]]);
+        });
+      });
     });
   });
 
   describe('Sending verification code', () => {
     describe('when request is successful', () => {
-      beforeEach(() => {
-        axiosMock.onPost(SEND_CODE_PATH).reply(HTTP_STATUS_OK, { success: true });
+      const data = { success: true, send_allowed_after: '2000-01-01T01:02:03Z' };
 
-        createComponent({}, { additionalRequestParams: { captcha_token: '1234' } });
+      beforeEach(() => {
+        axiosMock.onPost(SEND_CODE_PATH).reply(HTTP_STATUS_OK, data);
+
+        createComponent({ props: { additionalRequestParams: { captcha_token: '1234' } } });
 
         enterPhoneNumber('555');
         submitForm();
@@ -232,14 +285,16 @@ describe('International Phone input component', () => {
         );
       });
 
-      it('emits next event with user entered phone number', () => {
-        expect(wrapper.emitted('next')).toHaveLength(1);
-        expect(wrapper.emitted('next')[0]).toEqual([
-          {
-            country: 'US',
-            internationalDialCode: '1',
-            number: '555',
-          },
+      it('emits next event with the correct payload', () => {
+        expect(wrapper.emitted('next')).toStrictEqual([
+          [
+            {
+              country: 'US',
+              internationalDialCode: '1',
+              number: '555',
+              sendAllowedAfter: data.send_allowed_after,
+            },
+          ],
         ]);
       });
     });
@@ -324,7 +379,9 @@ describe('International Phone input component', () => {
     describe('Captcha', () => {
       describe('when disableSubmitButton is true', () => {
         beforeEach(() => {
-          createComponent({}, { disableSubmitButton: true });
+          createComponent({
+            props: { disableSubmitButton: true },
+          });
 
           enterPhoneNumber('555');
           return waitForPromises();

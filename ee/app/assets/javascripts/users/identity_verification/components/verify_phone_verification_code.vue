@@ -1,5 +1,6 @@
 <script>
 import { GlForm, GlFormGroup, GlFormInput, GlIcon, GlSprintf, GlLink, GlButton } from '@gitlab/ui';
+import GlCountdown from '~/vue_shared/components/gl_countdown.vue';
 import { s__, sprintf } from '~/locale';
 
 import { createAlert, VARIANT_SUCCESS } from '~/alert';
@@ -17,12 +18,16 @@ export default {
     GlSprintf,
     GlLink,
     GlButton,
+    GlCountdown,
   },
   i18n: {
     verificationCode: s__('IdentityVerification|Verification code'),
     description: s__("IdentityVerification|We've sent a verification code to +%{phoneNumber}"),
     noCode: s__(
       "IdentityVerification|Didn't receive a code? %{codeLinkStart}Send a new code%{codeLinkEnd} or %{phoneLinkStart}enter a new phone number%{phoneLinkEnd}",
+    ),
+    resendCodeIn: s__(
+      "IdentityVerification|Didn't receive a code? Send a new code in %{timer} or %{phoneLinkStart}enter a new phone number%{phoneLinkEnd}",
     ),
     resendSuccess: s__('IdentityVerification|We sent a new code to +%{phoneNumber}'),
     verifyButton: s__('IdentityVerification|Verify phone number'),
@@ -43,6 +48,15 @@ export default {
       type: Object,
       required: false,
       default: () => {},
+    },
+    sendCodeAllowed: {
+      type: Boolean,
+      required: true,
+    },
+    sendCodeAllowedAfter: {
+      type: String,
+      required: false,
+      default: '',
     },
   },
   data() {
@@ -110,8 +124,9 @@ export default {
           this.isLoading = false;
         });
     },
-    handleResendCodeResponse() {
+    handleResendCodeResponse({ data }) {
       this.$emit('verification-attempt');
+      this.$emit('resent', data?.send_allowed_after);
 
       this.alert = createAlert({
         message: sprintf(this.$options.i18n.resendSuccess, {
@@ -142,6 +157,9 @@ export default {
     resetForm() {
       this.form.fields.verificationCode = { value: '', state: null, feedback: '' };
     },
+    onTimerExpired() {
+      this.$emit('timer-expired');
+    },
   },
 };
 </script>
@@ -171,9 +189,17 @@ export default {
 
     <div v-if="!disableSubmitButton" class="gl-font-sm gl-text-secondary">
       <gl-icon name="information-o" :size="12" class="gl-mt-2" />
-      <gl-sprintf :message="$options.i18n.noCode">
+      <gl-sprintf v-if="sendCodeAllowed" :message="$options.i18n.noCode">
         <template #codeLink="{ content }">
-          <gl-link @click="resendCode">{{ content }}</gl-link>
+          <gl-link data-testid="resend-code-link" @click="resendCode">{{ content }}</gl-link>
+        </template>
+        <template #phoneLink="{ content }">
+          <gl-link @click="goBack">{{ content }}</gl-link>
+        </template>
+      </gl-sprintf>
+      <gl-sprintf v-else :message="$options.i18n.resendCodeIn">
+        <template #timer>
+          <gl-countdown :end-date-string="sendCodeAllowedAfter" @timer-expired="onTimerExpired" />
         </template>
         <template #phoneLink="{ content }">
           <gl-link @click="goBack">{{ content }}</gl-link>

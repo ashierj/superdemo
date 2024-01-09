@@ -30,7 +30,13 @@ module PhoneVerification
           return error_related_to_banned_user
         end
 
-        return error_rate_limited if rate_limited?
+        if rate_limited?
+          reset_sms_send_data
+          return error_rate_limited
+        end
+
+        return error_send_not_allowed unless send_allowed?
+        return error_high_risk_number if related_to_banned_user?
 
         risk_result = ::PhoneVerification::TelesignClient::RiskScoreService.new(
           phone_number: phone_number,
@@ -84,6 +90,12 @@ module PhoneVerification
         )
       end
 
+      def reset_sms_send_data
+        return unless Feature.enabled?(:sms_send_wait_time, user)
+
+        record.update!(sms_send_count: 0, sms_sent_at: nil)
+      end
+
       def error_rate_limited
         interval_in_seconds = ::Gitlab::ApplicationRateLimiter.rate_limits[:phone_verification_send_code][:interval]
         interval = distance_of_time_in_words(interval_in_seconds)
@@ -112,6 +124,15 @@ module PhoneVerification
           message: message,
           reason: :related_to_banned_user
         )
+      end
+
+      def send_allowed?
+        sms_send_allowed_after = @record.sms_send_allowed_after
+        sms_send_allowed_after ? (Time.current > sms_send_allowed_after) : true
+      end
+
+      def error_send_not_allowed
+        ServiceResponse.error(message: 'Sending not allowed at this time', reason: :send_not_allowed)
       end
 
       def error_downstream_service(result)
@@ -151,11 +172,19 @@ module PhoneVerification
         end
 
         attrs = { telesign_reference_xid: send_code_result[:telesign_reference_xid] }
+
+        if Feature.enabled?(:sms_send_wait_time, user)
+          attrs.merge!({
+            sms_sent_at: Time.current,
+            sms_send_count: record.sms_send_count + 1
+          })
+        end
+
         attrs[:risk_score] = risk_result[:risk_score] if Feature.enabled?(:telesign_intelligence, type: :ops)
 
         record.update!(attrs)
 
-        ServiceResponse.success
+        ServiceResponse.success(payload: { send_allowed_after: record.sms_send_allowed_after })
       end
 
       def store_risk_score(risk_score)

@@ -72,7 +72,7 @@ module Users
     end
 
     def phone_number_verification_data(user)
-      paths = {
+      data = {
         send_code_path: send_phone_verification_code_identity_verification_path,
         verify_code_path: verify_phone_verification_code_identity_verification_path,
         enable_arkose_challenge: enable_arkose_challenge?(:phone).to_s,
@@ -80,14 +80,15 @@ module Users
         show_recaptcha_challenge: show_recaptcha_challenge?.to_s
       }
 
-      phone_number_validation = user.phone_number_validation
-      return paths unless phone_number_validation.present?
+      record = user.phone_number_validation
+      return data unless record
 
-      paths.merge(
+      data.merge(
         {
-          country: phone_number_validation.country,
-          international_dial_code: phone_number_validation.international_dial_code,
-          number: phone_number_validation.phone_number
+          country: record.country,
+          international_dial_code: record.international_dial_code,
+          number: record.phone_number,
+          send_allowed_after: record.sms_send_allowed_after
         }
       )
     end

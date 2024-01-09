@@ -39,13 +39,14 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
     end
 
     context 'when phone number for user exists' do
-      let_it_be(:phone_number_validation) { create(:phone_number_validation, user: user) }
+      let_it_be(:record) { create(:phone_number_validation, user: user) }
 
       it 'returns the expected data' do
         phone_number_data = expected_data[:phone_number].merge({
-          country: phone_number_validation.country,
-          international_dial_code: phone_number_validation.international_dial_code,
-          number: phone_number_validation.phone_number
+          country: record.country,
+          international_dial_code: record.international_dial_code,
+          number: record.phone_number,
+          send_allowed_after: record.sms_send_allowed_after
         })
 
         expect(data[:data]).to eq(expected_data.merge({ phone_number: phone_number_data }).to_json)
