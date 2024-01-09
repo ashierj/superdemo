@@ -38,6 +38,7 @@ module EE
       def prepare_diff_summary
         return unless ::Feature.enabled?(:summarize_diff_automatically, project)
         return if merge_head?
+        return if empty?
 
         Llm::SummarizeMergeRequestService
           .new(

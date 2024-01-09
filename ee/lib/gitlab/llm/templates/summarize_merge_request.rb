@@ -4,12 +4,16 @@ module Gitlab
   module Llm
     module Templates
       class SummarizeMergeRequest
+        include Gitlab::Utils::StrongMemoize
+
         def initialize(merge_request, mr_diff)
           @merge_request = merge_request
           @mr_diff = mr_diff
         end
 
         def to_prompt
+          return if extracted_diff.blank?
+
           <<~PROMPT
             You are a code assistant, developed to help summarize code in non-technical terms.
 
@@ -43,6 +47,7 @@ module Gitlab
             diff_output(diff.old_path, diff.new_path, diff.diff.sub(Gitlab::Regex.git_diff_prefix, ""))
           end.join.truncate_words(750)
         end
+        strong_memoize_attr :extracted_diff
 
         def diff_output(old_path, new_path, diff)
           <<~DIFF
@@ -50,10 +55,6 @@ module Gitlab
             +++ #{new_path}
             #{diff}
           DIFF
-        end
-
-        def title
-          @title ||= merge_request.title
         end
       end
     end

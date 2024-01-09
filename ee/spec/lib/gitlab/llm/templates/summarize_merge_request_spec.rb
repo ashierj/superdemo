@@ -55,5 +55,15 @@ RSpec.describe Gitlab::Llm::Templates::SummarizeMergeRequest, feature_category: 
         expect(subject.to_prompt).not_to include("This should not be in the prompt")
       end
     end
+
+    context 'when extracted diff is blank' do
+      before do
+        allow(mr_diff).to receive(:raw_diffs).and_return([])
+      end
+
+      it 'returns nil' do
+        expect(subject.to_prompt).to be_nil
+      end
+    end
   end
 end

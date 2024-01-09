@@ -72,7 +72,15 @@ RSpec.describe MergeRequestDiff, feature_category: :geo_replication do
 
   describe 'prepare_diff_summary' do
     let_it_be(:merge_request) { create(:merge_request, :skip_diff_creation, target_project: project, source_project: project) }
-    let(:diff_with_commits) { create(:merge_request_diff, merge_request: merge_request) }
+
+    let(:diff_with_commits) do
+      create(
+        :merge_request_diff,
+        merge_request: merge_request,
+        start_commit_sha: merge_request.target_branch_sha,
+        head_commit_sha: merge_request.source_branch_sha
+      )
+    end
 
     before do
       stub_licensed_features(summarize_mr_changes: true)
@@ -89,6 +97,14 @@ RSpec.describe MergeRequestDiff, feature_category: :geo_replication do
       end
 
       diff_with_commits
+    end
+
+    context 'when diff is empty' do
+      it 'does not execute Llm::SummarizeMergeRequestService' do
+        expect(Llm::SummarizeMergeRequestService).not_to receive(:new)
+
+        create(:merge_request_diff, merge_request: merge_request, state: :empty)
+      end
     end
 
     context 'when summarize_diff_automatically feature flag is off' do

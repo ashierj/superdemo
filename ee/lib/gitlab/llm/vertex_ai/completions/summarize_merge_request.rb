@@ -11,7 +11,11 @@ module Gitlab
 
             return unless mr_diff.present?
 
-            response = response_for(user, merge_request, mr_diff)
+            prompt = generate_prompt(merge_request, mr_diff)
+
+            return unless prompt.present?
+
+            response = response_for(user, prompt)
             response_modifier = ::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions.new(response)
 
             store_response(response_modifier, mr_diff)
@@ -24,13 +28,15 @@ module Gitlab
             resource
           end
 
-          def response_for(user, merge_request, mr_diff)
-            template = ai_prompt_class.new(merge_request, mr_diff)
+          def generate_prompt(merge_request, mr_diff)
+            ai_prompt_class.new(merge_request, mr_diff).to_prompt
+          end
 
+          def response_for(user, prompt)
             ::Gitlab::Llm::VertexAi::Client
               .new(user, tracking_context: tracking_context)
               .text(
-                content: template.to_prompt,
+                content: prompt,
                 parameters: ::Gitlab::Llm::VertexAi::Configuration.payload_parameters(temperature: 0)
               )
           end
