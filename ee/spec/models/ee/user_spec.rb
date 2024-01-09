@@ -3048,16 +3048,43 @@ RSpec.describe User, feature_category: :system_access do
   describe '#code_suggestions_add_on_available?' do
     subject { user.code_suggestions_add_on_available? }
 
-    it 'returns true when the user belongs to a namespace with add on subscription' do
-      allow(user).to receive(:code_suggestions_add_on_available_namespace_ids).and_return([1])
+    context 'on saas', :saas do
+      it 'returns true when the user belongs to a namespace with an add-on subscription' do
+        allow(user).to receive(:code_suggestions_add_on_available_namespace_ids).and_return([1])
 
-      is_expected.to eq(true)
+        is_expected.to eq(true)
+      end
+
+      it 'returns false when the user does not belong to a namespace with add-on subscription' do
+        allow(user).to receive(:code_suggestions_add_on_available_namespace_ids).and_return([])
+
+        is_expected.to eq(false)
+      end
     end
 
-    it 'returns false when the user does not belong to a namespace with add on subscription' do
-      allow(user).to receive(:code_suggestions_add_on_available_namespace_ids).and_return([])
+    context 'on self-managed' do
+      let(:user) { create(:user) }
+      let_it_be(:code_suggestions) { create(:gitlab_subscription_add_on) }
 
-      is_expected.to eq(false)
+      let_it_be(:add_on_purchase) do
+        create(:gitlab_subscription_add_on_purchase, namespace: nil, add_on: code_suggestions)
+      end
+
+      context "when the user is assigned" do
+        before do
+          create(:gitlab_subscription_user_add_on_assignment, user: user, add_on_purchase: add_on_purchase)
+        end
+
+        it 'return true' do
+          expect(user.code_suggestions_add_on_available?).to be_truthy
+        end
+      end
+
+      context "when the user is not assigned" do
+        it 'return false' do
+          expect(user.code_suggestions_add_on_available?).to be_falsey
+        end
+      end
     end
   end
 

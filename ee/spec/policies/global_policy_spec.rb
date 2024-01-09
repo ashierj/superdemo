@@ -602,25 +602,67 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     end
 
     context 'when not on .org or .com' do
-      where(:licensed, :instance_level_code_suggestions_enabled, :cs_matcher) do
-        true  | false | be_disallowed(:access_code_suggestions)
-        true  | true  | be_allowed(:access_code_suggestions)
-        true  | false | be_disallowed(:access_code_suggestions)
-        true  | true  | be_allowed(:access_code_suggestions)
-        false | false | be_disallowed(:access_code_suggestions)
-        false | true  | be_disallowed(:access_code_suggestions)
-        false | false | be_disallowed(:access_code_suggestions)
-        false | true  | be_disallowed(:access_code_suggestions)
-      end
-
-      with_them do
-        before do
-          allow(::Gitlab).to receive(:org_or_com?).and_return(false)
-          stub_ee_application_setting(instance_level_code_suggestions_enabled: instance_level_code_suggestions_enabled)
-          stub_licensed_features(code_suggestions: licensed)
+      context 'when it is before the code suggestions service start date' do
+        # TODO: When CS service start date has passed, we can remove this
+        around do |example|
+          travel_to(::CodeSuggestions::SelfManaged::SERVICE_START_DATE - 1.second) do
+            example.run
+          end
         end
 
-        it { is_expected.to cs_matcher }
+        # :cs_seat_assigned should be ignored by the code here
+        where(:licensed, :instance_level_code_suggestions_enabled, :cs_seat_assigned, :cs_matcher) do
+          true  | false | true  | be_disallowed(:access_code_suggestions)
+          true  | false | false | be_disallowed(:access_code_suggestions)
+          true  | true  | true  | be_allowed(:access_code_suggestions)
+          true  | true  | false | be_allowed(:access_code_suggestions)
+          false | false | true  | be_disallowed(:access_code_suggestions)
+          false | false | false | be_disallowed(:access_code_suggestions)
+          false | true  | true  | be_disallowed(:access_code_suggestions)
+          false | true  | false | be_disallowed(:access_code_suggestions)
+        end
+
+        with_them do
+          before do
+            allow(::Gitlab).to receive(:org_or_com?).and_return(false)
+            stub_ee_application_setting(
+              instance_level_code_suggestions_enabled: instance_level_code_suggestions_enabled
+            )
+            stub_licensed_features(code_suggestions: licensed)
+          end
+
+          it { is_expected.to cs_matcher }
+        end
+      end
+
+      context 'when it is past the code suggestions service start date' do
+        around do |example|
+          travel_to(::CodeSuggestions::SelfManaged::SERVICE_START_DATE + 1.second) do
+            example.run
+          end
+        end
+
+        # :instance_level_code_suggestions_enabled should be ignored by the code here
+        where(:licensed, :instance_level_code_suggestions_enabled, :cs_seat_assigned, :cs_matcher) do
+          true  | false | true  | be_allowed(:access_code_suggestions)
+          true  | false | false | be_disallowed(:access_code_suggestions)
+          true  | true  | true  | be_allowed(:access_code_suggestions)
+          true  | true  | false | be_disallowed(:access_code_suggestions)
+          false | false | true  | be_disallowed(:access_code_suggestions)
+          false | false | false | be_disallowed(:access_code_suggestions)
+          false | true  | true  | be_disallowed(:access_code_suggestions)
+          false | true  | false | be_disallowed(:access_code_suggestions)
+        end
+
+        with_them do
+          before do
+            allow(::Gitlab).to receive(:org_or_com?).and_return(false)
+            stub_licensed_features(code_suggestions: licensed)
+            allow(current_user).to receive(:code_suggestions_add_on_available?).and_return(cs_seat_assigned)
+          end
+
+          it { is_expected.to cs_matcher }
+        end
       end
     end
   end
