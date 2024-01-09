@@ -79,7 +79,6 @@ module GitlabSubscriptions
       blocking_merge_requests
       board_assignee_lists
       board_milestone_lists
-      ci_namespace_catalog
       ci_secrets_management
       ci_pipeline_cancellation_restrictions
       cluster_agents_ci_impersonation

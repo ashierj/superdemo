@@ -10484,9 +10484,6 @@ msgstr ""
 msgid "CiCatalog|Remove project from the CI/CD Catalog?"
 msgstr ""
 
-msgid "CiCatalog|Repositories of pipeline components available in this namespace."
-msgstr ""
-
 msgid "CiCatalog|Search must be at least 3 characters"
 msgstr ""
 
@@ -35663,9 +35660,6 @@ msgid "Pipelines|By revoking a trigger you will break any processes making use o
 msgstr ""
 
 msgid "Pipelines|CI lint"
-msgstr ""
-
-msgid "Pipelines|CI/CD Catalog"
 msgstr ""
 
 msgid "Pipelines|Child pipeline (%{linkStart}parent%{linkEnd})"
