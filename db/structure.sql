@@ -25201,7 +25201,6 @@ ALTER SEQUENCE vs_code_settings_id_seq OWNED BY vs_code_settings.id;
 
 CREATE TABLE vulnerabilities (
     id bigint NOT NULL,
-    epic_id bigint,
     project_id bigint NOT NULL,
     author_id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -35685,8 +35684,6 @@ CREATE INDEX index_vulnerabilities_on_detected_at_and_id ON vulnerabilities USIN
 
 CREATE INDEX index_vulnerabilities_on_dismissed_by_id ON vulnerabilities USING btree (dismissed_by_id);
 
-CREATE INDEX index_vulnerabilities_on_epic_id ON vulnerabilities USING btree (epic_id);
-
 CREATE INDEX index_vulnerabilities_on_finding_id ON vulnerabilities USING btree (finding_id);
 
 CREATE INDEX index_vulnerabilities_on_project_id_and_id ON vulnerabilities USING btree (project_id, id);
@@ -38097,9 +38094,6 @@ ALTER TABLE ONLY project_statistics
 
 ALTER TABLE ONLY agent_project_authorizations
     ADD CONSTRAINT fk_1d30bb4987 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY vulnerabilities
-    ADD CONSTRAINT fk_1d37cddf91 FOREIGN KEY (epic_id) REFERENCES epics(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY boards
     ADD CONSTRAINT fk_1e9a074a35 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
