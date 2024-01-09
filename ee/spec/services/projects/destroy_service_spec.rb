@@ -14,7 +14,7 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
   let!(:wiki_path) { project.wiki.disk_path }
   let!(:storage_name) { project.repository_storage }
 
-  subject { described_class.new(project, user, {}) }
+  subject(:project_destroy_service) { described_class.new(project, user, {}) }
 
   before do
     stub_container_registry_config(enabled: true)
@@ -47,10 +47,10 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
     it 'calls replicator to update Geo', :aggregate_failures do
       # Run Sidekiq immediately to check that renamed repository will be removed
       Sidekiq::Testing.inline! do
-        expect(subject).to receive(:log_destroy_events).and_call_original
+        expect(project_destroy_service).to receive(:log_destroy_events).and_call_original
         expect(project).to receive(:geo_handle_after_destroy)
 
-        subject.execute
+        project_destroy_service.execute
       end
     end
 
@@ -58,10 +58,10 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
       allow(project).to receive(:destroy!).and_raise(StandardError.new('Other error message'))
 
       Sidekiq::Testing.inline! do
-        expect(subject).to receive(:log_destroy_event).and_call_original
+        expect(project_destroy_service).to receive(:log_destroy_event).and_call_original
         expect_next_instance_of(Geo::ProjectRepositoryReplicator).never
 
-        subject.execute
+        project_destroy_service.execute
       end
     end
 
@@ -69,10 +69,10 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
       it 'does not call replicator to update Geo', :aggregate_failures do
         # Run Sidekiq immediately to check that renamed repository will be removed
         Sidekiq::Testing.inline! do
-          expect(subject).to receive(:log_destroy_events).and_call_original
+          expect(project_destroy_service).to receive(:log_destroy_events).and_call_original
           expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
 
-          subject.execute
+          project_destroy_service.execute
         end
       end
     end
@@ -85,10 +85,10 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
       it 'calls replicator to update Geo', :aggregate_failures do
         # Run Sidekiq immediately to check that renamed repository will be removed
         Sidekiq::Testing.inline! do
-          expect(subject).to receive(:log_destroy_events).and_call_original
+          expect(project_destroy_service).to receive(:log_destroy_events).and_call_original
           expect(project.wiki_repository.replicator).to receive(:geo_handle_after_destroy)
 
-          subject.execute
+          project_destroy_service.execute
         end
       end
 
@@ -96,17 +96,17 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
         allow(project).to receive(:destroy!).and_raise(StandardError.new('Other error message'))
 
         Sidekiq::Testing.inline! do
-          expect(subject).to receive(:log_destroy_event).and_call_original
+          expect(project_destroy_service).to receive(:log_destroy_event).and_call_original
           expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
 
-          subject.execute
+          project_destroy_service.execute
         end
       end
 
       it 'logs an event to the Geo event log' do
         Sidekiq::Testing.inline! do
-          expect(subject).to receive(:log_destroy_events).and_call_original
-          expect { subject.execute }.to change {
+          expect(project_destroy_service).to receive(:log_destroy_events).and_call_original
+          expect { project_destroy_service.execute }.to change {
             Geo::Event.where(replicable_name: :project_wiki_repository, event_name: :deleted).count
           }.by(1)
 
@@ -123,8 +123,8 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
         stub_feature_flags(geo_project_wiki_repository_replication: false)
 
         Sidekiq::Testing.inline! do
-          expect(subject).to receive(:log_destroy_events).and_call_original
-          expect { subject.execute }.not_to change {
+          expect(project_destroy_service).to receive(:log_destroy_events).and_call_original
+          expect { project_destroy_service.execute }.not_to change {
             Geo::Event.where(replicable_name: :project_wiki_repository, event_name: :deleted).count
           }
         end
@@ -139,10 +139,10 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
       it 'calls replicator to update Geo', :sidekiq_inline do
         # Run Sidekiq immediately to check that renamed repository will be removed
         Sidekiq::Testing.inline! do
-          expect(subject).to receive(:log_destroy_events).and_call_original
+          expect(project_destroy_service).to receive(:log_destroy_events).and_call_original
           expect(project.design_management_repository.replicator).to receive(:geo_handle_after_destroy)
 
-          subject.execute
+          project_destroy_service.execute
         end
       end
 
@@ -150,18 +150,18 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
         allow(project).to receive(:destroy!).and_raise(StandardError.new('Other error message'))
 
         Sidekiq::Testing.inline! do
-          expect(subject).to receive(:log_destroy_event).and_call_original
+          expect(project_destroy_service).to receive(:log_destroy_event).and_call_original
           expect_next_instance_of(Geo::DesignManagementRepositoryReplicator).never
 
-          subject.execute
+          project_destroy_service.execute
         end
       end
 
       it 'logs an event to the Geo event log' do
         # Run Sidekiq immediately to check that renamed repository will be removed
         Sidekiq::Testing.inline! do
-          expect(subject).to receive(:log_destroy_events).and_call_original
-          expect { subject.execute }.to change {
+          expect(project_destroy_service).to receive(:log_destroy_events).and_call_original
+          expect { project_destroy_service.execute }.to change {
             Geo::Event.where(replicable_name: :design_management_repository, event_name: :deleted).count
           }.by(1)
 
@@ -179,7 +179,7 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
   context 'audit events' do
     context 'when the project belongs to a user namespace' do
       include_examples 'audit event logging' do
-        let(:operation) { subject.execute }
+        let(:operation) { project_destroy_service.execute }
 
         let(:fail_condition!) do
           expect(project).to receive(:destroy!).and_raise(StandardError.new('Other error message'))
@@ -210,14 +210,12 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
       let(:group) { create :group }
       let(:project) { create :project, namespace: group }
 
-      subject { described_class.new(project, user, {}).execute }
-
       before do
         group.add_owner(user)
       end
 
       include_examples 'audit event logging' do
-        let(:operation) { subject }
+        let(:operation) { project_destroy_service.execute }
 
         let(:fail_condition!) do
           expect(project).to receive(:destroy!).and_raise(StandardError.new('Other error message'))
@@ -249,8 +247,6 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
     let(:group) { create :group }
     let(:project) { create :project, namespace: group }
 
-    subject { described_class.new(project, user, {}).execute }
-
     before do
       group.add_owner(user)
       stub_licensed_features(external_audit_events: true)
@@ -263,7 +259,7 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
         nil,
         a_string_including("root_group_entity_id\":#{group.id}"))
 
-      subject
+      project_destroy_service.execute
     end
   end
 
@@ -274,8 +270,8 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
     end
 
     it 'logs an audit event' do
-      expect(subject).to receive(:log_destroy_event).and_call_original
-      expect { subject.execute }.to change(AuditEvent, :count)
+      expect(project_destroy_service).to receive(:log_destroy_event).and_call_original
+      expect { project_destroy_service.execute }.to change(AuditEvent, :count)
     end
   end
 
@@ -283,7 +279,7 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
     let!(:project_namespace) { project.project_namespace }
 
     it 'destroys the associated ProjectNamespace also' do
-      subject.execute
+      project_destroy_service.execute
 
       expect { project_namespace.reload }.to raise_error(ActiveRecord::RecordNotFound)
       expect { project.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -313,7 +309,22 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
         expect(ids.flatten).to match_array([epic_issue1.epic_id, epic_issue2.epic_id, epic_issue3.epic_id])
       end.once
 
-      subject.execute
+      project_destroy_service.execute
+    end
+  end
+
+  context 'when project has associated project access tokens' do
+    let_it_be(:bot) { create(:user, :project_bot) }
+    let_it_be(:token) { create(:personal_access_token, user: bot) }
+
+    before do
+      project.add_maintainer(bot)
+    end
+
+    it 'creates a ghost user migration entry and deletes user on execution' do
+      expect { project_destroy_service.execute }.to change {
+        Users::GhostUserMigration.count
+      }.by(1)
     end
   end
 
@@ -325,7 +336,7 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
 
     it 'destroys the associations marked as `dependent: :destroy`, in batches' do
       query_recorder = ActiveRecord::QueryRecorder.new do
-        subject.execute
+        project_destroy_service.execute
       end
 
       expect(project.vulnerabilities).to be_empty
