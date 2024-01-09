@@ -201,6 +201,14 @@ describe('CustomizableDashboard', () => {
         handle: GRIDSTACK_CSS_HANDLE,
         cellHeight: GRIDSTACK_CELL_HEIGHT,
         minRow: GRIDSTACK_MIN_ROW,
+        columnOpts: {
+          breakpoints: [
+            {
+              c: 1,
+              w: 768,
+            },
+          ],
+        },
       });
     });
 

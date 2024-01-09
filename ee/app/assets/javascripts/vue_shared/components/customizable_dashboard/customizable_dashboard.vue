@@ -1,6 +1,7 @@
 <script>
 import { GridStack } from 'gridstack';
 import { GlButton, GlFormInput, GlFormGroup, GlLink, GlIcon, GlSprintf } from '@gitlab/ui';
+import { breakpoints } from '@gitlab/ui/dist/utils';
 import { isEqual } from 'lodash';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
@@ -273,6 +274,7 @@ export default {
           handle: GRIDSTACK_CSS_HANDLE,
           cellHeight: GRIDSTACK_CELL_HEIGHT,
           minRow: GRIDSTACK_MIN_ROW,
+          columnOpts: { breakpoints: [{ w: breakpoints.md, c: 1 }] },
           alwaysShowResizeHandle: true,
           animate: false,
         });
