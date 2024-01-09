@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe Admin::AbuseReportDetailsEntity, feature_category: :insider_threat do
   include Gitlab::Routing
 
-  let_it_be(:report) { create(:abuse_report) }
-  let_it_be(:user) { report.user }
+  let_it_be(:user) { create(:user, :with_namespace) }
+  let_it_be(:report) { create(:abuse_report, user: user) }
 
   let(:entity) do
     described_class.new(report)
@@ -69,6 +69,17 @@ RSpec.describe Admin::AbuseReportDetailsEntity, feature_category: :insider_threa
           phone_matches_link: phone_match_admin_user_path(user)
         })
       end
+    end
+  end
+
+  describe 'user\'s plan', :saas do
+    before do
+      stub_ee_application_setting(should_check_namespace_plan: true)
+      create(:gitlab_subscription, :bronze, namespace: user.namespace)
+    end
+
+    it 'is included' do
+      expect(entity_hash[:user][:plan]).to eq('Bronze')
     end
   end
 end
