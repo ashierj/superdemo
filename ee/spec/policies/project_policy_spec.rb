@@ -2853,42 +2853,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
-  describe 'read_namespace_catalog' do
-    let(:current_user) { owner }
-
-    context 'when the ci_namespace_catalog licensed feature is unavailable' do
-      before do
-        stub_licensed_features(ci_namespace_catalog: false)
-      end
-
-      it { is_expected.to be_disallowed(:read_namespace_catalog) }
-    end
-
-    context 'when ci_namespace_catalog is available' do
-      using RSpec::Parameterized::TableSyntax
-
-      let(:current_user) { public_send(role) }
-
-      where(:role, :allowed) do
-        :owner      | true
-        :maintainer | true
-        :developer  | true
-        :reporter   | false
-        :guest      | false
-      end
-
-      before do
-        stub_licensed_features(ci_namespace_catalog: true)
-      end
-
-      with_them do
-        it do
-          expect(subject.can?(:read_namespace_catalog)).to be(allowed)
-        end
-      end
-    end
-  end
-
   describe 'read_project_runners' do
     context 'with auditor' do
       let(:current_user) { auditor }

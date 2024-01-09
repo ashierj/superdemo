@@ -893,10 +893,5 @@ module EE
 
       super
     end
-
-    override :namespace_catalog_available?
-    def namespace_catalog_available?
-      project.licensed_feature_available?(:ci_namespace_catalog)
-    end
   end
 end
