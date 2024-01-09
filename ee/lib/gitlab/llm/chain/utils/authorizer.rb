@@ -12,6 +12,8 @@ module Gitlab
           end
 
           def self.context(context:)
+            return Response.new(allowed: false, message: no_access_message) unless context.current_user
+
             if context.resource && context.container
               authorization_container = container(container: context.container, user: context.current_user)
               if authorization_container.allowed?
@@ -33,10 +35,14 @@ module Gitlab
           end
 
           def self.container(container:, user:)
-            return Response.new(allowed: false, message: not_found_message) unless container.member?(user)
+            return user(user: user) unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
 
-            allowed = Gitlab::Llm::StageCheck.available?(container, :chat)
-            message = s_("This feature is only allowed in groups that enable this feature.") unless allowed
+            allowed = user.can?(:access_duo_chat, container)
+            message = if !allowed && container.member?(user)
+                        no_ai_message
+                      elsif !allowed
+                        not_found_message
+                      end
 
             Response.new(allowed: allowed, message: message)
           end
@@ -61,8 +67,8 @@ module Gitlab
           end
 
           def self.user(user:)
-            allowed = user.any_group_with_ai_available?
-            message = s_("You do not have access to AI features.") unless allowed
+            allowed = user.can?(:access_duo_chat)
+            message = no_access_message unless allowed
             Response.new(allowed: allowed, message: message)
           end
 
@@ -74,6 +80,14 @@ module Gitlab
 
           def self.not_found_message
             s_("I am sorry, I am unable to find what you are looking for.")
+          end
+
+          def self.no_access_message
+            s_("You do not have access to chat feature.")
+          end
+
+          def self.no_ai_message
+            s_("This feature is only allowed in groups that enable this feature.")
           end
         end
       end

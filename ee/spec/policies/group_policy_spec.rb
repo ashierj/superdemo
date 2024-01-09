@@ -2865,6 +2865,86 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
   end
 
+  describe 'access_duo_chat' do
+    let_it_be(:current_user) { create(:user) }
+
+    subject { described_class.new(current_user, group) }
+
+    context 'when on SaaS instance', :saas do
+      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+
+      context 'when container is a group with AI enabled' do
+        include_context 'with ai features enabled for group'
+
+        context 'when user is a member of the group' do
+          before do
+            group.add_guest(current_user)
+          end
+
+          it { is_expected.to be_allowed(:access_duo_chat) }
+
+          context 'when the group does not have an Ultimate SaaS license' do
+            let_it_be(:group) { create(:group) }
+
+            it { is_expected.to be_disallowed(:access_duo_chat) }
+          end
+        end
+
+        context 'when the user has AI enabled via another group' do
+          it 'is disallowed' do
+            allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
+
+            is_expected.to be_disallowed(:access_duo_chat)
+          end
+        end
+      end
+
+      context 'when group has not AI enabled' do
+        context 'when user has AI enabled' do
+          before do
+            allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
+          end
+
+          context 'when container is a group' do
+            include_context 'with experiment features disabled for group'
+
+            it 'returns false' do
+              allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
+
+              is_expected.to be_disallowed(:access_duo_chat)
+            end
+          end
+        end
+      end
+    end
+
+    context 'for self-managed' do
+      using RSpec::Parameterized::TableSyntax
+
+      let_it_be_with_reload(:group) { create(:group) }
+      let(:policy) { :access_duo_chat }
+
+      context 'when not on .org or .com' do
+        where(:licensed, :instance_level_ai_beta_features_enabled, :cs_matcher) do
+          true  | false | be_disallowed(policy)
+          true  | true  | be_allowed(policy)
+          false | false | be_disallowed(policy)
+          false | true  | be_disallowed(policy)
+        end
+
+        with_them do
+          before do
+            allow(::Gitlab).to receive(:org_or_com?).and_return(false)
+            stub_ee_application_setting(instance_level_ai_beta_features_enabled: instance_level_ai_beta_features_enabled)
+            stub_licensed_features(ai_chat: licensed)
+          end
+
+          it { is_expected.to cs_matcher }
+        end
+      end
+    end
+  end
+
   context 'custom role' do
     let_it_be(:guest) { create(:user) }
     let_it_be(:parent_group) { create(:group) }

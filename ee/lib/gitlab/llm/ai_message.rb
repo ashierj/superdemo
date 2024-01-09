@@ -77,6 +77,10 @@ module Gitlab
         content.split(' ', 2)
       end
 
+      def chat?
+        false
+      end
+
       def ==(other)
         super || (
           self.class == other.class &&

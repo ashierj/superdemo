@@ -55,7 +55,7 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
 
       post_graphql_mutation(mutation, current_user: current_user)
 
-      expect(fresh_response_data['errors'][0]['message']).to eq("`ai_global_switch` feature flag is disabled.")
+      expect(fresh_response_data['errors'][0]['message']).to eq("required feature flag is disabled.")
     end
   end
 

@@ -17,5 +17,13 @@ module Llm
     def content(_action_name)
       options[:content]
     end
+
+    def ai_integration_enabled?
+      ::Feature.enabled?(:ai_duo_chat_switch, type: :ops)
+    end
+
+    def user_can_send_to_ai?
+      user.can?(:access_duo_chat)
+    end
   end
 end

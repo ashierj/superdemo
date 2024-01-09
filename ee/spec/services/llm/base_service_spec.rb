@@ -2,11 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::BaseService, :saas, feature_category: :ai_abstraction_layer do
-  let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:resource) { create(:issue, project: project) }
+
   let(:options) { {} }
 
   subject { described_class.new(user, resource, options) }
@@ -52,52 +50,66 @@ RSpec.describe Llm::BaseService, :saas, feature_category: :ai_abstraction_layer 
     end
   end
 
-  context 'when user has no access' do
-    it_behaves_like 'returns an error'
+  context 'for SaaS instance', :saas do
+    let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:resource) { create(:issue, project: project) }
+
+    context 'when user has no access' do
+      it_behaves_like 'returns an error'
+    end
+
+    context 'when user has access' do
+      before do
+        project.add_developer(user)
+        group.add_developer(user)
+      end
+
+      context 'when ai_global_switch feature flag is not enabled' do
+        before do
+          stub_feature_flags(ai_global_switch: false)
+        end
+
+        it_behaves_like 'returns an error'
+      end
+
+      context 'when experimental features are disabled for the group' do
+        include_context 'with experiment features disabled for group'
+
+        it_behaves_like 'returns an error'
+      end
+
+      context 'when ai features are enabled' do
+        include_context 'with ai features enabled for group'
+
+        it_behaves_like 'raises a NotImplementedError'
+
+        context 'when resource is an issue' do
+          let_it_be(:resource) { create(:issue, project: project) }
+
+          it_behaves_like 'success when implemented'
+        end
+
+        context 'when resource is a user' do
+          let_it_be(:resource) { user }
+
+          it_behaves_like 'success when implemented'
+        end
+
+        context 'when resource is nil' do
+          let_it_be(:resource) { nil }
+
+          it_behaves_like 'success when implemented'
+        end
+      end
+    end
   end
 
-  context 'when user has access' do
-    before do
-      project.add_developer(user)
-      group.add_developer(user)
-    end
+  context 'for self-managed instance' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:resource) { create(:issue, project: project) }
 
-    context 'when ai_global_switch feature flag is not enabled' do
-      before do
-        stub_feature_flags(ai_global_switch: false)
-      end
-
-      it_behaves_like 'returns an error'
-    end
-
-    context 'when experimental features are disabled for the group' do
-      include_context 'with experiment features disabled for group'
-
-      it_behaves_like 'returns an error'
-    end
-
-    context 'when ai features are enabled' do
-      include_context 'with ai features enabled for group'
-
-      it_behaves_like 'raises a NotImplementedError'
-
-      context 'when resource is an issue' do
-        let_it_be(:resource) { create(:issue, project: project) }
-
-        it_behaves_like 'success when implemented'
-      end
-
-      context 'when resource is a user' do
-        let_it_be(:resource) { user }
-
-        it_behaves_like 'success when implemented'
-      end
-
-      context 'when resource is nil' do
-        let_it_be(:resource) { nil }
-
-        it_behaves_like 'success when implemented'
-      end
-    end
+    it_behaves_like 'returns an error'
   end
 end

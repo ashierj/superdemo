@@ -28,6 +28,10 @@ module Gitlab
       def question?
         user? && !conversation_reset? && !clean_history?
       end
+
+      def chat?
+        true
+      end
     end
   end
 end

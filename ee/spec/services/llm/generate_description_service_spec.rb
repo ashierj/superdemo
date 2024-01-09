@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning do
+RSpec.describe Llm::GenerateDescriptionService, :saas, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, :public) }
+  let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:resource) { create(:issue, project: project) }
 
@@ -14,6 +14,8 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
   let(:generate_description_license_enabled) { true }
 
   describe '#perform' do
+    include_context 'with ai features enabled for group'
+
     before do
       stub_licensed_features(generate_description: true)
       group.add_guest(user)

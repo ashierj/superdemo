@@ -39,6 +39,24 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
       mutation.resolve(**input)
     end
 
+    shared_examples_for 'an AI action when feature flag disabled' do
+      context 'when the user can perform AI action' do
+        before do
+          resource.project.add_developer(user)
+        end
+
+        context 'when feature flag is disabled' do
+          before do
+            stub_feature_flags(ai_global_switch: false)
+          end
+
+          it 'raises error' do
+            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+          end
+        end
+      end
+    end
+
     shared_examples_for 'an AI action' do
       context 'when resource_id is not for an Ai::Model' do
         let(:resource_id) { "gid://gitlab/Note/#{resource.id}" }
@@ -83,6 +101,10 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
               .to receive(:allowed?)
               .with(user, "read_#{resource.to_ability_name}", resource)
               .and_return(true)
+
+          allow(Ability)
+            .to receive(:allowed?)
+            .and_call_original
         end
 
         context 'when the user is not a member' do
@@ -103,16 +125,6 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
       context 'when the user can perform AI action' do
         before do
           resource.project.add_developer(user)
-        end
-
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(ai_global_switch: false)
-          end
-
-          it 'raises error' do
-            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-          end
         end
 
         it 'calls Llm::ExecuteMethodService' do
@@ -190,6 +202,22 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
         let(:expected_method) { :chat }
         let(:expected_options) { { referer_url: "foobar", user_agent: "user-agent" } }
       end
+
+      context 'when the user can perform AI action' do
+        before do
+          resource.project.add_developer(user)
+        end
+
+        context 'when feature flag is disabled' do
+          before do
+            stub_feature_flags(ai_duo_chat_switch: false)
+          end
+
+          it 'raises error' do
+            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+          end
+        end
+      end
     end
 
     context 'when summarize_comments input is set' do
@@ -198,6 +226,7 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
       let(:expected_options) { { user_agent: "user-agent" } }
 
       it_behaves_like 'an AI action'
+      it_behaves_like 'an AI action when feature flag disabled'
     end
 
     context 'when client_subscription_id input is set' do
@@ -206,9 +235,10 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
       let(:expected_options) { { client_subscription_id: 'id', user_agent: 'user-agent' } }
 
       it_behaves_like 'an AI action'
+      it_behaves_like 'an AI action when feature flag disabled'
     end
 
-    context 'when explain_vulnerability input is set' do
+    context 'when explain_vulnerability input is set', :saas do
       before do
         allow(Ability)
             .to receive(:allowed?)
@@ -225,6 +255,7 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
       let(:expected_options) { { include_source_code: true, user_agent: 'user-agent' } }
 
       it_behaves_like 'an AI action'
+      it_behaves_like 'an AI action when feature flag disabled'
     end
   end
 end

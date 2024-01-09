@@ -84,6 +84,25 @@ module EE
         @user.code_suggestions_disabled_by_group?
       end
 
+      condition(:duo_chat_enabled_by_instance) do
+        next true if ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
+
+        ::Gitlab::CurrentSettings.instance_level_ai_beta_features_enabled?
+      end
+
+      condition(:duo_chat_licensed) do
+        next true if ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
+
+        ::License.feature_available?(:ai_chat)
+      end
+
+      condition(:user_allowed_to_use_chat) do
+        next false unless @user
+        next true unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
+
+        user.any_group_with_ai_available?
+      end
+
       condition(:user_belongs_to_paid_namespace) do
         next false unless @user
 
@@ -159,6 +178,8 @@ module EE
       rule { code_suggestions_licensed & code_suggestions_enabled_by_user & code_suggestions_enabled_for_user }
         .enable :access_code_suggestions
       rule { code_suggestions_disabled_by_group }.prevent :access_code_suggestions
+
+      rule { duo_chat_licensed & duo_chat_enabled_by_instance & user_allowed_to_use_chat }.enable :access_duo_chat
 
       rule { runner_upgrade_management_available | user_belongs_to_paid_namespace }.enable :read_runner_upgrade_status
 

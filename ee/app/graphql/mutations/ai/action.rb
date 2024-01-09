@@ -29,10 +29,12 @@ module Mutations
       end
 
       def resolve(**attributes)
-        check_feature_flag_enabled!
         verify_rate_limit!
 
         resource_id, method, options = extract_method_params!(attributes)
+
+        check_feature_flag_enabled!(method)
+
         resource = resource_id&.then { |id| authorized_find!(id: id) }
 
         options[:referer_url] = context[:request].headers["Referer"] if method == :chat
@@ -49,10 +51,13 @@ module Mutations
 
       private
 
-      def check_feature_flag_enabled!
-        return if Feature.enabled?(:ai_global_switch, type: :ops)
+      def check_feature_flag_enabled!(method)
+        is_chat = method.eql?(:chat)
 
-        raise Gitlab::Graphql::Errors::ResourceNotAvailable, '`ai_global_switch` feature flag is disabled.'
+        return if Feature.enabled?(:ai_duo_chat_switch, type: :ops) && is_chat
+        return if Feature.enabled?(:ai_global_switch, type: :ops) && !is_chat
+
+        raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'required feature flag is disabled.'
       end
 
       def verify_rate_limit!

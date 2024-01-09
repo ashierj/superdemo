@@ -257,6 +257,22 @@ module EE
           can?(:developer_access)
       end
 
+      condition(:chat_allowed_for_group, scope: :subject) do
+        next true unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
+
+        ::Gitlab::Llm::StageCheck.available?(@subject, :chat)
+      end
+
+      condition(:chat_available_for_user, scope: :global) do
+        Ability.allowed?(@user, :access_duo_chat)
+      end
+
+      condition(:membership_for_chat) do
+        next Ability.allowed?(@user, :read_group, @subject) unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
+
+        @subject.member?(@user)
+      end
+
       rule { user_banned_from_namespace }.prevent_all
 
       rule { public_group | logged_in_viewable }.policy do
@@ -639,6 +655,8 @@ module EE
       end
 
       rule { guest }.enable :read_limit_alert
+
+      rule { membership_for_chat & chat_allowed_for_group & chat_available_for_user }.enable :access_duo_chat
     end
 
     override :lookup_access_level!

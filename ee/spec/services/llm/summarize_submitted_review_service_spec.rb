@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::SummarizeSubmittedReviewService, feature_category: :code_review_workflow do
+RSpec.describe Llm::SummarizeSubmittedReviewService, :saas, feature_category: :code_review_workflow do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, :public) }
+  let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:resource) { create(:merge_request, source_project: project, target_project: project, author: user) }
 
@@ -13,6 +13,8 @@ RSpec.describe Llm::SummarizeSubmittedReviewService, feature_category: :code_rev
   let(:options) { {} }
 
   describe '#perform' do
+    include_context 'with ai features enabled for group'
+
     let(:action_name) { :summarize_submitted_review }
     let(:content) { 'Summarize submitted review' }
 

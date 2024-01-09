@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_layer do
+RSpec.describe Llm::GenerateSummaryService, :saas, feature_category: :ai_abstraction_layer do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, :public) }
+  let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
   let_it_be(:project) { create(:project, :public, group: group) }
 
   let(:options) { {} }
@@ -13,6 +13,8 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
   let(:current_user) { user }
 
   describe '#perform' do
+    include_context 'with ai features enabled for group'
+
     before do
       group.add_guest(user)
 
