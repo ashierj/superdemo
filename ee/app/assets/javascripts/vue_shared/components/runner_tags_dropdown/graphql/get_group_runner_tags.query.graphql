@@ -1,7 +1,7 @@
 query getGroupRunnerTags($fullPath: ID!) {
   group(fullPath: $fullPath) {
     id
-    runners {
+    runners(membership: ALL_AVAILABLE) {
       nodes {
         id
         tagList
