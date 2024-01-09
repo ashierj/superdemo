@@ -272,7 +272,7 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
   end
 
   describe 'GET #validate_payment_method' do
-    let(:params) { { id: 'foo', gitlab_user_id: 'user-id' } }
+    let(:params) { { id: 'foo' } }
 
     subject do
       post :validate_payment_method, params: params, as: :json
@@ -285,9 +285,10 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
     context 'with authorized user' do
       before do
         sign_in(user)
+
         expect(Gitlab::SubscriptionPortal::Client)
           .to receive(:validate_payment_method)
-          .with(params[:id], { gitlab_user_id: params[:gitlab_user_id] })
+          .with(params[:id], { gitlab_user_id: user.id })
           .and_return({ success: true })
       end
 

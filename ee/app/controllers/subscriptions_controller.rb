@@ -76,7 +76,10 @@ class SubscriptionsController < ApplicationController
   end
 
   def validate_payment_method
-    response = client.validate_payment_method(params[:id], validate_payment_method_params)
+    user_id = identity_verification_request? ? identity_verification_user.id : current_user.id
+
+    response = client.validate_payment_method(params[:id], { gitlab_user_id: user_id })
+
     render json: response
   end
 
@@ -149,10 +152,6 @@ class SubscriptionsController < ApplicationController
           .merge(params.permit(:active_subscription))
   end
 
-  def validate_payment_method_params
-    { gitlab_user_id: params[:gitlab_user_id] }
-  end
-
   def find_group(plan_id:)
     selected_group = current_user.owned_groups.top_most.find(params[:selected_group])
 
@@ -218,8 +217,13 @@ class SubscriptionsController < ApplicationController
     # true only for actions used to verify a user's credit card
     return false unless %w[payment_form validate_payment_method].include?(action_name)
 
-    user = User.find_by_id(session[:verification_user_id])
-    user.present? && !user.credit_card_verified?
+    identity_verification_user.present? && !identity_verification_user.credit_card_verified?
+  end
+
+  def identity_verification_user
+    strong_memoize(:identity_verification_user) do
+      User.find_by_id(session[:verification_user_id])
+    end
   end
 end
 
