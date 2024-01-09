@@ -1,9 +1,11 @@
+#import "../fragments/dependency_proxy_packages_settings.fragment.graphql"
+
 mutation updateDependencyProxyPackagesSettings(
   $input: UpdateDependencyProxyPackagesSettingsInput!
 ) {
   updateDependencyProxyPackagesSettings(input: $input) {
     dependencyProxyPackagesSetting {
-      enabled
+      ...DependencyProxyPackagesSettingFields
     }
     errors
   }

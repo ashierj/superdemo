@@ -1,97 +1,83 @@
 <script>
-import { GlSkeletonLoader, GlToggle } from '@gitlab/ui';
+import { GlAlert, GlButton, GlToggle } from '@gitlab/ui';
 import { __ } from '~/locale';
 import Tracking from '~/tracking';
 import MavenForm from 'ee_component/packages_and_registries/settings/project/components/maven_form.vue';
 import updateDependencyProxyPackagesSettings from 'ee_component/packages_and_registries/settings/project/graphql/mutations/update_dependency_proxy_packages_settings.mutation.graphql';
-import { cacheUpdateDependencyProxyPackagesSettings } from 'ee_component/packages_and_registries/settings/project/graphql/utils/cache_update';
 
 export default {
   name: 'DependencyProxyPackagesSettingsForm',
   components: {
-    GlSkeletonLoader,
+    GlAlert,
+    GlButton,
     GlToggle,
     MavenForm,
   },
   mixins: [Tracking.mixin()],
   inject: ['projectPath'],
   props: {
-    value: {
+    data: {
       type: Object,
       required: true,
-    },
-    isLoading: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
   },
   data() {
     return {
+      alertMessage: '',
       tracking: {
         label: 'dependendency_proxy_packages_settings',
+      },
+      updateInProgress: false,
+      enabled: this.data.enabled,
+      mavenFormData: {
+        mavenExternalRegistryUrl: this.data.mavenExternalRegistryUrl,
+        mavenExternalRegistryUsername: this.data.mavenExternalRegistryUsername,
+        mavenExternalRegistryPassword: null,
       },
     };
   },
   computed: {
-    mavenFormData() {
-      const { mavenExternalRegistryUrl, mavenExternalRegistryUsername } = this.value;
+    mutationVariables() {
       return {
-        mavenExternalRegistryUrl,
-        mavenExternalRegistryUsername,
+        projectPath: this.projectPath,
+        enabled: this.enabled,
+        mavenExternalRegistryUrl: this.mavenFormData.mavenExternalRegistryUrl,
+        mavenExternalRegistryUsername: this.mavenFormData.mavenExternalRegistryUsername,
+        mavenExternalRegistryPassword: this.mavenFormData.mavenExternalRegistryPassword,
       };
     },
-    enabled: {
-      get() {
-        return this.value.enabled;
-      },
-      set(enabled) {
-        this.updateSettings({ enabled });
-      },
+    showAlert() {
+      return this.alertMessage;
     },
   },
   methods: {
-    mutationVariables(payload) {
-      return {
-        input: {
-          projectPath: this.projectPath,
-          ...payload,
-        },
-      };
+    setAlertMessage(message) {
+      this.alertMessage = message;
     },
-    optimisticResponse({ enabled }) {
-      return {
-        // eslint-disable-next-line @gitlab/require-i18n-strings
-        __typename: 'Mutation',
-        updateDependencyProxyPackagesSettings: {
-          __typename: 'UpdateDependencyProxyPackagesSettingsPayload',
-          errors: [],
-          dependencyProxyPackagesSetting: {
-            ...this.value,
-            enabled,
-          },
-        },
-      };
-    },
-    async updateSettings({ enabled }) {
-      this.track('toggle_dependency_proxy_packages_settings');
+    async submit() {
+      this.track('submit_dependency_proxy_packages_settings');
+      this.updateInProgress = true;
+      this.alertMessage = '';
       await this.$apollo
         .mutate({
           mutation: updateDependencyProxyPackagesSettings,
-          variables: this.mutationVariables({ enabled }),
-          update: cacheUpdateDependencyProxyPackagesSettings(this.projectPath),
-          optimisticResponse: this.optimisticResponse({ enabled }),
+          variables: {
+            input: this.mutationVariables,
+          },
         })
         .then(({ data }) => {
           const [errorMessage] = data?.updateDependencyProxyPackagesSettings?.errors ?? [];
           if (errorMessage) {
             throw errorMessage;
-          } else {
-            this.$toast.show(__('Settings saved successfully.'));
           }
+          this.mavenFormData.mavenExternalRegistryPassword = null;
+          this.$toast.show(__('Settings saved successfully.'));
         })
-        .catch(() => {
-          this.$toast.show(__('An error occurred while saving the settings.'));
+        .catch((errorMessage) => {
+          this.setAlertMessage(errorMessage);
+        })
+        .finally(() => {
+          this.updateInProgress = false;
         });
     },
   },
@@ -99,9 +85,29 @@ export default {
 </script>
 
 <template>
-  <gl-skeleton-loader v-if="isLoading" />
-  <div v-else>
+  <form @submit.prevent="submit">
+    <gl-alert
+      v-if="showAlert"
+      variant="danger"
+      class="gl-my-4"
+      dismissible
+      @dismiss="setAlertMessage('')"
+    >
+      {{ alertMessage }}
+    </gl-alert>
     <gl-toggle v-model="enabled" :label="s__('DependencyProxy|Enable Dependency Proxy')" />
-    <maven-form :data="mavenFormData" />
-  </div>
+    <maven-form v-model="mavenFormData" />
+    <div class="gl-mt-6 gl-display-flex gl-align-items-center">
+      <gl-button
+        type="submit"
+        :disabled="updateInProgress"
+        :loading="updateInProgress"
+        category="primary"
+        variant="confirm"
+        class="js-no-auto-disable gl-mr-4"
+      >
+        {{ __('Save changes') }}
+      </gl-button>
+    </div>
+  </form>
 </template>

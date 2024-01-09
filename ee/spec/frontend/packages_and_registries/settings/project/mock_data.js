@@ -17,26 +17,11 @@ export const dependencyProxyPackagesSettingsPayload = (override) => ({
   },
 });
 
-export const dependencyProxyPackagesToggleSettingMutationMock = (override) => ({
+export const dependencyProxyPackagesSettingMutationMock = (override) => ({
   data: {
     updateDependencyProxyPackagesSettings: {
       dependencyProxyPackagesSetting: {
-        __typename: 'DependencyProxyPackagesSetting',
-        enabled: true,
-      },
-      errors: [],
-      ...override,
-    },
-  },
-});
-
-export const dependencyProxyMavenPackagesSettingMutationMock = (override) => ({
-  data: {
-    updateDependencyProxyPackagesSettings: {
-      dependencyProxyPackagesSetting: {
-        __typename: 'DependencyProxyPackagesSetting',
-        mavenExternalRegistryUrl: 'https://test.dev',
-        mavenExternalRegistryUsername: 'user1',
+        ...dependencyProxyPackagesSettingsData,
       },
       errors: [],
       ...override,

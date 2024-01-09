@@ -1,4 +1,4 @@
-import { GlAlert } from '@gitlab/ui';
+import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -26,6 +26,7 @@ describe('Dependency proxy packages project settings', () => {
 
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findFormComponent = () => wrapper.findComponent(DependencyProxyPackagesSettingsForm);
+  const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findTitle = () => wrapper.findByTestId('title');
   const findDescription = () => wrapper.findByTestId('description');
   const findSettingsBlock = () => wrapper.findComponent(SettingsBlock);
@@ -66,6 +67,7 @@ describe('Dependency proxy packages project settings', () => {
     expect(findDescription().text()).toBe(
       'Enable the Dependency Proxy for packages, and configure connection settings for external registries.',
     );
+    expect(findLoader().exists()).toBe(true);
   });
 
   it('renders the setting form', async () => {
@@ -74,8 +76,8 @@ describe('Dependency proxy packages project settings', () => {
     });
     await waitForPromises();
 
-    expect(findFormComponent().exists()).toBe(true);
-    expect(findFormComponent().props('value')).toEqual(dependencyProxyPackagesSettingsData);
+    expect(findLoader().exists()).toBe(false);
+    expect(findFormComponent().props('data')).toEqual(dependencyProxyPackagesSettingsData);
   });
 
   describe('fetchSettingsError', () => {
