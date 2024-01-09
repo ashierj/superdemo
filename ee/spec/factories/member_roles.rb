@@ -18,6 +18,10 @@ FactoryBot.define do
       read_vulnerability { true }
     end
 
+    trait :admin_terraform_state do
+      admin_terraform_state { true }
+    end
+
     # this trait can be used only for self-managed
     trait(:instance) { namespace { nil } }
   end

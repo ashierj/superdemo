@@ -2700,6 +2700,13 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
     end
 
+    context 'for a member role with admin_terraform_state true' do
+      let(:member_role_abilities) { { admin_terraform_state: true } }
+      let(:allowed_abilities) { [:read_terraform_state, :admin_terraform_state] }
+
+      it_behaves_like 'custom roles abilities'
+    end
+
     context 'for a member role with admin_vulnerability true' do
       let(:member_role_abilities) { { read_vulnerability: true, admin_vulnerability: true } }
       let(:allowed_abilities) do
