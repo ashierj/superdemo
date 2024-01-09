@@ -257,6 +257,15 @@ module EE
         ).has_ability?
       end
 
+      desc "Custom role on project that enables admin terraform state"
+      condition(:role_enables_admin_terraform_state) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :admin_terraform_state
+        ).has_ability?
+      end
+
       desc "Custom role on project that enables admin vulnerability"
       condition(:role_enables_admin_vulnerability) do
         ::Auth::MemberRoleAbilityLoader.new(
@@ -767,6 +776,11 @@ module EE
         enable :read_merge_request
         enable :admin_merge_request
         enable :download_code # required to negate https://gitlab.com/gitlab-org/gitlab/-/blob/3061d30d9b3d6d4c4dd5abe68bc1e4a8a93c7966/app/policies/project_policy.rb#L603-607
+      end
+
+      rule { custom_roles_allowed & role_enables_admin_terraform_state }.policy do
+        enable :read_terraform_state
+        enable :admin_terraform_state
       end
 
       rule { custom_roles_allowed & role_enables_admin_vulnerability }.policy do

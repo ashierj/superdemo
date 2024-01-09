@@ -1,0 +1,10 @@
+---
+name: admin_terraform_state
+description: Allows to admin terraform state
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/421789
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/140759
+feature_category: infrastructure_as_code
+milestone: '16.8'
+group_ability: false
+project_ability: true
+requirement: ''

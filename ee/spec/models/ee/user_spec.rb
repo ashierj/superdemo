@@ -1222,6 +1222,7 @@ RSpec.describe User, feature_category: :system_access do
              OR "members"."access_level" = 10
              AND \(admin_group_member = true
              OR admin_merge_request = true
+             OR admin_terraform_state = true
              OR admin_vulnerability = true
              OR archive_project = true
              OR manage_group_access_tokens = true

@@ -19,6 +19,7 @@ RSpec.describe EE::API::Entities::MemberRole, feature_category: :permissions do
       expect(subject[:base_access_level]).to eq member_role.base_access_level
       expect(subject[:read_code]).to eq member_role.read_code
       expect(subject[:read_vulnerability]).to eq member_role.read_vulnerability
+      expect(subject[:admin_terraform_state]).to eq member_role.admin_terraform_state
       expect(subject[:admin_vulnerability]).to eq member_role.admin_vulnerability
       expect(subject[:manage_group_access_tokens]).to eq member_role.manage_group_access_tokens
       expect(subject[:manage_project_access_tokens]).to eq member_role.manage_project_access_tokens
