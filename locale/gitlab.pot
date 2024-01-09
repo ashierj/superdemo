@@ -16718,6 +16718,9 @@ msgstr ""
 msgid "Dependencies|Toggle vulnerability list"
 msgstr ""
 
+msgid "Dependencies|Unknown path"
+msgstr ""
+
 msgid "Dependencies|Unsupported file(s) detected"
 msgstr ""
 
