@@ -11,6 +11,7 @@ describe('remote_development/components/list/empty_state.vue', () => {
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   const createComponent = () => {
+    // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     wrapper = shallowMount(EmptyState, {
       provide: {
         emptyStateSvgPath: SVG_PATH,

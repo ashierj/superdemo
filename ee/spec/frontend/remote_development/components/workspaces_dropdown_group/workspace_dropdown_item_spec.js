@@ -13,6 +13,7 @@ describe('remote_development/components/workspaces_dropdown_group/workspace_drop
   let trackingSpy;
 
   const createWrapper = () => {
+    // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     wrapper = shallowMountExtended(WorkspaceDropdownItem, {
       propsData: {
         workspace: WORKSPACE,

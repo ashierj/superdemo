@@ -4,7 +4,6 @@ module RemoteDevelopment
   module Workspaces
     module Reconcile
       module Input
-        # noinspection RubyClassMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
         class ParamsValidator
           include Messages
           include UpdateTypes

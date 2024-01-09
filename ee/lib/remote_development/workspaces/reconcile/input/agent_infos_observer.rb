@@ -4,7 +4,6 @@ module RemoteDevelopment
   module Workspaces
     module Reconcile
       module Input
-        # noinspection RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
         class AgentInfosObserver
           NORMAL = "normal"
           ABNORMAL = "abnormal"

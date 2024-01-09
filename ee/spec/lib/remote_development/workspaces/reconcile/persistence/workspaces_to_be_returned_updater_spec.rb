@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::WorkspacesToBeReturnedUpdater, feature_category: :remote_development do
   let_it_be(:user) { create(:user) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
@@ -39,7 +40,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     )
   end
 
-  # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
   let(:workspaces_to_be_returned) { [workspace1, workspace2, workspace3] }
 
   let(:value) do
@@ -53,7 +53,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     described_class.update(value) # rubocop:disable Rails/SaveBang -- This is not an ActiveRecord method
   end
 
-  # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
   before do
     workspace1.update_attribute(:responded_to_agent_at, 2.hours.ago)
     workspace2.update_attribute(:responded_to_agent_at, 2.hours.ago)
@@ -62,7 +61,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
   end
 
   context "with fixture sanity checks" do
-    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
     it "has the expected fixtures" do
       expect(workspace1.responded_to_agent_at).to be < 1.hour.ago
       expect(workspace2.responded_to_agent_at).to be < 1.hour.ago
@@ -70,7 +68,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
   end
 
   context "for update_type FULL" do
-    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
     it "updates all workspaces", :unlimited_max_formatted_output_length do
       returned_value
       expect(workspace1.reload.responded_to_agent_at).to be > 1.minute.ago
@@ -78,7 +75,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       expect(workspace3.reload.responded_to_agent_at).to be > 1.minute.ago
     end
 
-    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
     it "preserves existing value entries" do
       returned_value
       expect(returned_value).to eq(value.merge(workspaces_to_be_returned: [workspace1.reload, workspace2.reload,

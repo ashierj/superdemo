@@ -57,6 +57,7 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
     ),
   } = {}) => {
     updateWorkspaceMutationMock = jest.fn();
+    // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     wrapper = mount(WorkspacesTable, {
       provide: {
         emptyStateSvgPath: SVG_PATH,

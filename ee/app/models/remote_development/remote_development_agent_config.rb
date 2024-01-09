@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module RemoteDevelopment
-  # noinspection RailsParamDefResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31540
   class RemoteDevelopmentAgentConfig < ApplicationRecord
     # NOTE: See the following comment for the reasoning behind the `RemoteDevelopment` prefix of this table/model:
     #       https://gitlab.com/gitlab-org/gitlab/-/issues/410045#note_1385602915
@@ -13,6 +12,7 @@ module RemoteDevelopment
     belongs_to :agent,
       class_name: 'Clusters::Agent', foreign_key: 'cluster_agent_id', inverse_of: :remote_development_agent_config
 
+    # noinspection RailsParamDefResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     has_many :workspaces, through: :agent, source: :workspaces
 
     validates :agent, presence: true
@@ -31,7 +31,7 @@ module RemoteDevelopment
     validates :workspaces_quota, numericality: { only_integer: true, greater_than_or_equal_to: -1 }
     validates :workspaces_per_user_quota, numericality: { only_integer: true, greater_than_or_equal_to: -1 }
 
-    # noinspection RubyResolve - likely due to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31540
+    # noinspection RubyResolve - likely due to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-25400
     before_validation :prevent_dns_zone_update, if: ->(record) { record.persisted? && record.dns_zone_changed? }
 
     private

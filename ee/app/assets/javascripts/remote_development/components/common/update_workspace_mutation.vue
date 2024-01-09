@@ -13,6 +13,7 @@ export default {
   methods: {
     async update(id, state = {}) {
       try {
+        // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
         const { data } = await this.$apollo.mutate({
           mutation: workspaceUpdateMutation,
           variables: {

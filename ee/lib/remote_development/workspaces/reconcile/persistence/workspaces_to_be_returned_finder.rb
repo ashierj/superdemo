@@ -4,9 +4,6 @@ module RemoteDevelopment
   module Workspaces
     module Reconcile
       module Persistence
-        # rubocop:disable Layout/LineLength -- we want the following noinspection comments to remain on a single line
-        # noinspection RubyLocalVariableNamingConvention,RubyClassMethodNamingConvention,RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
-        # rubocop:enable Layout/LineLength
         class WorkspacesToBeReturnedFinder
           include UpdateTypes
 

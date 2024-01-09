@@ -51,6 +51,7 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
   const createWrapper = ({ propsData = {}, glFeatures = { remoteDevelopment: true } } = {}) => {
     updateWorkspaceMutationMock = jest.fn();
 
+    // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     wrapper = shallowMountExtended(WorkspacesDropdownGroup, {
       apolloProvider: mockApollo,
       provide: {

@@ -4,7 +4,6 @@ module RemoteDevelopment
   module Workspaces
     module Reconcile
       module Persistence
-        # noinspection RubyLocalVariableNamingConvention,RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
         class OrphanedWorkspacesObserver
           # @param [Hash] value
           # @return [Hash]

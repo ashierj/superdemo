@@ -64,7 +64,6 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PostFlattenDevfileValida
         is_expected.to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreatePostFlattenDevfileValidationFailed)
           message.context => { details: String => error_details }
-          # noinspection RubyResolve
           expect(error_details).to eq(error_str)
         end
       end
@@ -96,7 +95,6 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PostFlattenDevfileValida
         is_expected.to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreatePostFlattenDevfileValidationFailed)
           message.context => { details: String => error_details }
-          # noinspection RubyResolve
           expect(error_details).to eq(error_str)
         end
       end

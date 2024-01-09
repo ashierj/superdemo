@@ -23,8 +23,10 @@ describe('WorkspacesBreadcrumbs', () => {
   const findBreadcrumbs = () => wrapper.findComponent(GlBreadcrumb);
 
   const createWrapper = () => {
+    // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     router = createRouter(base);
 
+    // noinspection JSValidateTypes - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     wrapper = shallowMount(WorkspacesBreadcrumbs, { router });
   };
 

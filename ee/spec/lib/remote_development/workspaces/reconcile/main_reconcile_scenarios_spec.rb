@@ -146,13 +146,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update S
   # rubocop:enable Layout/LineLength, Style/TrailingCommaInArrayLiteral
 
   with_them do
-    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
-    # noinspection RubyInstanceMethodNamingConvention,RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
     it 'behaves as expected' do
       expect(logger).not_to receive(:warn)
       expect(logger).not_to receive(:error)
 
-      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
       expected_db_expectations_length =
         (initial_db_state ? 1 : 0) + (user_desired_state_update ? 1 : 0) + agent_actual_state_updates.length
       expect(db_expectations.length).to eq(expected_db_expectations_length)
@@ -162,7 +159,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update S
       initial_resource_version = '1'
 
       # Handle initial db state, if necessary
-      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
       if initial_db_state
         workspace = create(
           :workspace,
@@ -182,7 +178,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update S
       # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
       if user_desired_state_update
         if workspace
-          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
           workspace.update!(desired_state: user_desired_state_update.to_s.camelize)
         else
           workspace = create(:workspace, :unprovisioned, agent: agent)
@@ -197,8 +192,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update S
       raise 'Must have workspace by now, either from initial_db_state or user_desired_state_update' unless workspace
 
       # Handle agent updates
-      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
-      # noinspection RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
       agent_actual_state_updates.each_with_index do |actual_state_update_fixture_args, response_expectations_index|
         update_type = RemoteDevelopment::Workspaces::Reconcile::UpdateTypes::PARTIAL
         deployment_resource_version_from_agent ||= initial_resource_version

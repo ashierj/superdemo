@@ -93,6 +93,7 @@ describe('remote_development/pages/create.vue', () => {
   };
 
   const createWrapper = () => {
+    // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     wrapper = shallowMountExtended(WorkspaceCreate, {
       apolloProvider: mockApollo,
       stubs: {

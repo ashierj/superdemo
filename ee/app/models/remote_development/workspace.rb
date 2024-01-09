@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 module RemoteDevelopment
-  # noinspection RailsParamDefResolve, RubyResolve - likely due to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31540
-  # noinspection RubyConstantNamingConvention,RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   class Workspace < ApplicationRecord
     include IgnorableColumns
     include Sortable
+    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     include RemoteDevelopment::Workspaces::States
 
     MAX_HOURS_BEFORE_TERMINATION_LIMIT = 120
@@ -17,6 +16,7 @@ module RemoteDevelopment
     belongs_to :agent, class_name: 'Clusters::Agent', foreign_key: 'cluster_agent_id', inverse_of: :workspaces
     belongs_to :personal_access_token, inverse_of: :workspace
 
+    # noinspection RailsParamDefResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     has_one :remote_development_agent_config, through: :agent, source: :remote_development_agent_config
     has_many :workspace_variables, class_name: 'RemoteDevelopment::WorkspaceVariable', inverse_of: :workspace
 
@@ -41,7 +41,6 @@ module RemoteDevelopment
     validate :enforce_permanent_termination
 
     scope :with_desired_state_updated_more_recently_than_last_response_to_agent, -> do
-      # noinspection SqlResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       where('desired_state_updated_at >= responded_to_agent_at').or(where(responded_to_agent_at: nil))
     end
 
@@ -57,6 +56,7 @@ module RemoteDevelopment
       )
     end
 
+    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-32287
     before_save :touch_desired_state_updated_at, if: ->(workspace) do
       workspace.new_record? || workspace.desired_state_changed?
     end
@@ -92,6 +92,7 @@ module RemoteDevelopment
     end
 
     def touch_desired_state_updated_at
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       self.desired_state_updated_at = Time.current.utc
     end
   end

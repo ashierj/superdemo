@@ -50,6 +50,7 @@ describe('remote_development/components/create/get_project_details_query', () =>
       [getGroupClusterAgentsQuery, getGroupClusterAgentsQueryHandler],
     ]);
 
+    // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     wrapper = shallowMountExtended(GetProjectDetailsQuery, {
       apolloProvider,
       propsData: {

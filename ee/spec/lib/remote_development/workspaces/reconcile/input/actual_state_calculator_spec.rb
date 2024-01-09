@@ -57,7 +57,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
             workspace_variables_env_var: {},
             workspace_variables_file: {}
           )
-          workspace_agent_info_hash.fetch(:latest_k8s_deployment_info)
+          workspace_agent_info_hash.fetch(:latest_k8s_deployment_info).to_h
         end
 
         it 'calculates correct actual state' do
@@ -273,7 +273,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
                 - reason: test
                   type: test
             WORKSPACE_STATUS_YAML
-          ).deep_symbolize_keys
+          ).deep_symbolize_keys.to_h
         end
 
         it 'returns the expected actual state' do
