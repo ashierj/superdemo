@@ -100,6 +100,10 @@ FactoryBot.define do
       ai_action { :categorize_question }
     end
 
+    trait :assistant do
+      role { 'assistant' }
+    end
+
     skip_create
 
     factory :ai_chat_message, class: 'Gitlab::Llm::ChatMessage' do
