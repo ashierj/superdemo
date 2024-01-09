@@ -52,7 +52,7 @@ module Security
       def collect_config_variables(actions, configs)
         actions.zip(configs).each_with_object({}) do |(action, config), hash|
           variables = action_variables(action)
-          jobs = custom_scan?(action) ? Gitlab::Ci::Config.new(action[:ci_configuration]).jobs : config
+          jobs = custom_scan?(action) ? Gitlab::Ci::Config.new(config.to_yaml).jobs : config
 
           jobs.each_key do |key|
             hash[key] = variables
