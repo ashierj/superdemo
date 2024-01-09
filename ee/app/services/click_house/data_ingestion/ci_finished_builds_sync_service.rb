@@ -116,16 +116,11 @@ module ClickHouse
         # to `.last` in `.each_batch` (see https://gitlab.com/gitlab-org/gitlab/-/blob/a38c93c792cc0d2536018ed464862076acb8d3d7/lib/gitlab/pagination/keyset/iterator.rb#L27)
         # doesn't mess it up and cause duplicates (see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/138066)
         build_ids = events_batch.to_a.pluck(:build_id) # rubocop: disable CodeReuse/ActiveRecord
-        projects = Ci::ProjectMirror.table_name
-        namespaces = Ci::NamespaceMirror.table_name
-        # rubocop: disable CodeReuse/ActiveRecord -- these joins are only used in this ClickHouse export
+
         Ci::Build.id_in(build_ids)
-          .left_outer_joins(:runner, :runner_manager)
-          .joins("LEFT OUTER JOIN #{projects} ON #{projects}.project_id = #{Ci::Build.table_name}.project_id")
-          .joins("LEFT OUTER JOIN #{namespaces} ON #{namespaces}.namespace_id = #{projects}.namespace_id")
+          .left_outer_joins(:runner, :runner_manager, project_mirror: :namespace_mirror)
           .select(:finished_at, *finished_build_projections)
           .each { |build| records_yielder << build }
-        # rubocop: enable CodeReuse/ActiveRecord
 
         @processed_record_ids += build_ids
       end
