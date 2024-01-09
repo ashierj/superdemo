@@ -183,29 +183,29 @@ RSpec.describe WorkItem do
           stub_licensed_features(epic_colors: true)
         end
 
-        context 'when work item supports progress' do
+        context 'when work item supports color' do
           let(:work_item_type) { [:epic] }
 
-          it 'returns an instance of the progress widget' do
+          it 'returns an instance of the color widget' do
             is_expected.to include(instance_of(WorkItems::Widgets::Color))
           end
         end
 
-        context 'when work item does not support progress' do
+        context 'when work item does not support color' do
           let(:work_item_type) { :requirement }
 
-          it 'omits an instance of the progress widget' do
+          it 'omits an instance of the color widget' do
             is_expected.not_to include(instance_of(WorkItems::Widgets::Color))
           end
         end
       end
 
-      context 'when okrs is unlicensed' do
+      context 'when epic_colors is unlicensed' do
         before do
           stub_licensed_features(epic_colors: false)
         end
 
-        it 'omits an instance of the progress widget' do
+        it 'omits an instance of the color widget' do
           is_expected.not_to include(instance_of(WorkItems::Widgets::Color))
         end
       end
