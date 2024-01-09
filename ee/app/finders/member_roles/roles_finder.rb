@@ -63,7 +63,7 @@ module MemberRoles
 
     def can_read_instance_roles?
       # for SaaS only group level roles are allowed
-      return false if Gitlab::Saas.feature_available?(:group_custom_roles)
+      return false if saas?
 
       Ability.allowed?(current_user, :admin_member_role)
     end
@@ -73,7 +73,14 @@ module MemberRoles
     end
 
     def allowed_read_member_role?(group)
-      Ability.allowed?(current_user, :admin_member_role, group)
+      return Ability.allowed?(current_user, :admin_member_role, group) if group
+      return false if saas? # roles without group are not allowed for SaaS
+
+      Ability.allowed?(current_user, :admin_member_role)
+    end
+
+    def saas?
+      Gitlab::Saas.feature_available?(:group_custom_roles)
     end
   end
 end

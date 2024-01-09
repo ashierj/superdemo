@@ -61,7 +61,7 @@ RSpec.describe MemberRoles::RolesFinder, feature_category: :system_access do
         let(:params) { {} }
 
         it 'raises an error' do
-          expect { find_member_roles }.to raise_error { ArgumentError }
+          expect { find_member_roles }.to raise_error(ArgumentError)
         end
       end
 
@@ -106,15 +106,51 @@ RSpec.describe MemberRoles::RolesFinder, feature_category: :system_access do
       context 'when requesting roles for the whole instance' do
         let(:params) { { instance_roles: true } }
 
-        it 'raises an error' do
-          expect { find_member_roles }.to raise_error { ArgumentError }
+        context 'when a user does not have permissions' do
+          it 'raises an error' do
+            expect { find_member_roles }.to raise_error(ArgumentError)
+          end
         end
 
         context 'when a user is an instance admin', :enable_admin_mode do
           let(:current_user) { admin }
 
-          it 'returns instance member roles for instance admin' do
-            expect(find_member_roles).to eq([member_role_instance])
+          context 'when on self-managed' do
+            it 'returns instance member roles for instance admin' do
+              expect(find_member_roles).to eq([member_role_instance])
+            end
+          end
+
+          context 'when on SaaS', :saas do
+            it 'returns an error' do
+              expect { find_member_roles }.to raise_error(ArgumentError)
+            end
+          end
+        end
+      end
+
+      context 'when requesting an instance roles by id' do
+        let(:params) { { id: member_role_instance.id } }
+
+        context 'when a user does not have permissions' do
+          it 'returns an empty array' do
+            expect(find_member_roles).to be_empty
+          end
+        end
+
+        context 'when a user is an instance admin', :enable_admin_mode do
+          let(:current_user) { admin }
+
+          context 'when on self-managed' do
+            it 'returns instance member roles for instance admin' do
+              expect(find_member_roles).to eq([member_role_instance])
+            end
+          end
+
+          context 'when on SaaS', :saas do
+            it 'returns an empty array' do
+              expect(find_member_roles).to be_empty
+            end
           end
         end
       end
