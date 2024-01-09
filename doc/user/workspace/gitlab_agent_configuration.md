@@ -150,10 +150,12 @@ In this example, traffic from the workspace is allowed if:
 
 Use this setting to define the default [requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits)
 for CPU and memory per workspace container.
-Any resources you've defined in your [devfile](index.md#devfile) override this setting.
+Any resources you define in your [devfile](index.md#devfile) override this setting.
 
 For `default_resources_per_workspace_container`, `requests` and `limits` are required.
 For more information about possible CPU and memory values, see [Resource units in Kubernetes](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-units-in-kubernetes).
+
+When you change any of these values, existing workspaces restart immediately for the changes to take effect.
 
 **Example configuration:**
 
@@ -181,7 +183,8 @@ For more information about possible CPU and memory values, see:
 - [Resource units in Kubernetes](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-units-in-kubernetes)
 - [Resource quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/)
 
-Workspaces fail when they exceed those limits.
+When you change any of these values, existing workspaces restart immediately for the changes to take effect.
+Workspaces fail when they exceed the values you set for `requests` and `limits`.
 
 **Example configuration:**
 
