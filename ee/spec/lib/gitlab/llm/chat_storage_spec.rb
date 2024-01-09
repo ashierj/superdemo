@@ -108,40 +108,60 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
   end
 
   describe '#last_conversation' do
+    before do
+      subject.add(build(:ai_chat_message, payload.merge(content: 'msg1', role: 'user', request_id: '1')))
+      subject.add(build(:ai_chat_message, payload.merge(content: 'msg2', role: 'user', request_id: '3')))
+    end
+
+    it 'returns from current history' do
+      expect(described_class).to receive(:last_conversation).and_call_original
+      expect(subject.last_conversation.map(&:content)).to eq(%w[msg1 msg2])
+    end
+  end
+
+  describe '.last_conversation' do
+    let(:result) { described_class.last_conversation(messages).map(&:content) }
+
     context 'when there is no /reset message' do
-      before do
-        subject.add(build(:ai_chat_message, payload.merge(content: 'msg1', role: 'user', request_id: '1')))
-        subject.add(build(:ai_chat_message, payload.merge(content: 'msg2', role: 'user', request_id: '3')))
+      let(:messages) do
+        [
+          build(:ai_chat_message, payload.merge(content: 'msg1', role: 'user', request_id: '1')),
+          build(:ai_chat_message, payload.merge(content: 'msg2', role: 'user', request_id: '3'))
+        ]
       end
 
       it 'returns all records for this user' do
-        expect(subject.last_conversation.map(&:content)).to eq(%w[msg1 msg2])
+        expect(result).to eq(%w[msg1 msg2])
       end
     end
 
     context 'when there is /reset message' do
-      before do
-        subject.add(build(:ai_chat_message, payload.merge(content: 'msg1', role: 'user', request_id: '1')))
-        subject.add(build(:ai_chat_message, payload.merge(content: '/reset', role: 'user', request_id: '3')))
-        subject.add(build(:ai_chat_message, payload.merge(content: 'msg3', role: 'user', request_id: '3')))
-        subject.add(build(:ai_chat_message, payload.merge(content: '/reset', role: 'user', request_id: '3')))
-        subject.add(build(:ai_chat_message, payload.merge(content: 'msg5', role: 'user', request_id: '3')))
-        subject.add(build(:ai_chat_message, payload.merge(content: 'msg6', role: 'user', request_id: '3')))
+      let(:messages) do
+        [
+          build(:ai_chat_message, payload.merge(content: 'msg1', role: 'user', request_id: '1')),
+          build(:ai_chat_message, payload.merge(content: '/reset', role: 'user', request_id: '3')),
+          build(:ai_chat_message, payload.merge(content: 'msg3', role: 'user', request_id: '3')),
+          build(:ai_chat_message, payload.merge(content: '/reset', role: 'user', request_id: '3')),
+          build(:ai_chat_message, payload.merge(content: 'msg5', role: 'user', request_id: '3')),
+          build(:ai_chat_message, payload.merge(content: 'msg6', role: 'user', request_id: '3'))
+        ]
       end
 
       it 'returns all records for this user since last /reset message' do
-        expect(subject.last_conversation.map(&:content)).to eq(%w[msg5 msg6])
+        expect(result).to eq(%w[msg5 msg6])
       end
     end
 
     context 'when there is /reset message as the last message' do
-      before do
-        subject.add(build(:ai_chat_message, payload.merge(content: 'msg1', role: 'user', request_id: '1')))
-        subject.add(build(:ai_chat_message, payload.merge(content: '/reset', role: 'user', request_id: '3')))
+      let(:messages) do
+        [
+          build(:ai_chat_message, payload.merge(content: 'msg1', role: 'user', request_id: '1')),
+          build(:ai_chat_message, payload.merge(content: '/reset', role: 'user', request_id: '3'))
+        ]
       end
 
       it 'returns all records for this user since last /reset message' do
-        expect(subject.last_conversation.map(&:content)).to be_empty
+        expect(result).to be_empty
       end
     end
   end

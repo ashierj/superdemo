@@ -21,8 +21,11 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::CategorizeQuestion, feature_
       build(:ai_message, :categorize_question, user: user, resource: user, request_id: 'uuid')
     end
 
-    let(:message_id) { '<message_id>' }
-    let(:options) { { question: 'What is the pipeline?', message_id: message_id } }
+    let(:chat_message) { build(:ai_chat_message, content: 'What is the pipeline?') }
+    let(:messages) { [chat_message] }
+
+    let(:options) { { question: chat_message.content, message_id: chat_message.id } }
+
     let(:template_class) { ::Gitlab::Llm::Templates::CategorizeQuestion }
     let(:prompt) { '<prompt>' }
 
@@ -36,6 +39,9 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::CategorizeQuestion, feature_
       end
       allow_next_instance_of(::Gitlab::Llm::Anthropic::Client) do |ai_client|
         allow(ai_client).to receive(:complete).with(prompt: prompt).and_return(response)
+      end
+      allow_next_instance_of(::Gitlab::Llm::ChatStorage, user) do |storage|
+        allow(storage).to receive(:messages_up_to).with(chat_message.id).and_return(messages)
       end
     end
 
@@ -54,7 +60,13 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::CategorizeQuestion, feature_
               'detailed_category' => "Summarize issue",
               'category' => 'Summarize something',
               'contains_code' => true,
-              "is_related_to_gitlab" => true,
+              'is_related_to_gitlab' => true,
+              'number_of_conversations' => 1,
+              'number_of_questions_in_conversation' => 1,
+              'length_of_questions_in_conversation' => 21,
+              'length_of_questions' => 21,
+              'first_question_after_reset' => false,
+              'time_since_beginning_of_conversation' => 0,
               'language' => 'en'
             }
           }]

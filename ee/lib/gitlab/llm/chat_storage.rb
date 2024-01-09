@@ -46,12 +46,15 @@ module Gitlab
       end
 
       def last_conversation
-        all = messages
-        idx = all.rindex(&:conversation_reset?)
-        return all unless idx
-        return [] unless idx + 1 < all.size
+        self.class.last_conversation(messages)
+      end
 
-        all[idx + 1..]
+      def self.last_conversation(messages)
+        idx = messages.rindex(&:conversation_reset?)
+        return messages unless idx
+        return [] unless idx + 1 < messages.size
+
+        messages[idx + 1..]
       end
 
       def messages_up_to(message_id)

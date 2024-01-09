@@ -5,7 +5,7 @@ module Gitlab
     module Anthropic
       module Completions
         class CategorizeQuestion < Gitlab::Llm::Completions::Base
-          SCHEMA_URL = 'iglu:com.gitlab/ai_question_category/jsonschema/1-1-0'
+          SCHEMA_URL = 'iglu:com.gitlab/ai_question_category/jsonschema/1-2-0'
 
           private_class_method def self.load_xml(filename)
             File.read(File.join(File.dirname(__FILE__), '..', '..', 'fixtures', filename)).tr("\n", '')
@@ -28,7 +28,7 @@ module Gitlab
             @messages = @storage.messages_up_to(options[:message_id])
             @logger = Gitlab::Llm::Logger.build
 
-            if track(user, attributes_from_llm)
+            if track(user, attributes)
               ResponseModifiers::CategorizeQuestion.new(nil)
             else
               ResponseModifiers::CategorizeQuestion.new(error: 'Event not tracked')
@@ -45,6 +45,12 @@ module Gitlab
             )&.dig("completion").to_s.strip
           end
 
+          def attributes
+            attributes_from_llm.merge(
+              Gitlab::Llm::ChatMessageAnalyzer.new(messages).execute
+            )
+          end
+
           def attributes_from_llm
             template = ai_prompt_class.new(messages, options)
             data = Gitlab::Json.parse(request(template)) || {}
@@ -53,7 +59,7 @@ module Gitlab
             labels = data.delete('labels')
             labels&.each { |label| data[label] = true }
 
-            data
+            data.slice(*PERMITTED_KEYS)
           rescue JSON::ParserError
             error_message = "JSON has an invalid format."
             @logger.error(message: "Error", class: self.class.to_s, error: error_message)
@@ -69,7 +75,7 @@ module Gitlab
               return false
             end
 
-            context = SnowplowTracker::SelfDescribingJson.new(SCHEMA_URL, attributes.slice(*PERMITTED_KEYS))
+            context = SnowplowTracker::SelfDescribingJson.new(SCHEMA_URL, attributes)
 
             Gitlab::Tracking.event(
               self.class.to_s,
