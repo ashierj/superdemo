@@ -5,14 +5,14 @@ import RuleName from 'ee/approvals/components/rules/rule_name.vue';
 import { n__, sprintf } from '~/locale';
 import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { RULE_TYPE_ANY_APPROVER, RULE_TYPE_REGULAR } from '../../constants';
+import { RULE_TYPE_ANY_APPROVER, RULE_TYPE_REGULAR } from 'ee/approvals/constants';
 
-import EmptyRule from '../rules/empty_rule.vue';
-import RuleInput from '../rules/rule_input.vue';
-import RuleBranches from '../rules/rule_branches.vue';
-import RuleControls from '../rules/rule_controls.vue';
-import Rules from '../rules/rules.vue';
-import UnconfiguredSecurityRules from '../security_configuration/unconfigured_security_rules.vue';
+import EmptyRule from 'ee/approvals/components/rules/empty_rule.vue';
+import RuleInput from 'ee/approvals/components/rules/rule_input.vue';
+import RuleBranches from 'ee/approvals/components/rules/rule_branches.vue';
+import RuleControls from 'ee/approvals/components/rules/rule_controls.vue';
+import Rules from 'ee/approvals/components/rules/rules.vue';
+import UnconfiguredSecurityRules from 'ee/approvals/components/security_configuration/unconfigured_security_rules.vue';
 
 export default {
   components: {

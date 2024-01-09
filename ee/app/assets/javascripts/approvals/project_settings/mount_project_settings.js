@@ -1,12 +1,12 @@
 import Vue from 'vue';
 import { GlToast } from '@gitlab/ui';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import ProjectSettingsApp from './components/project_settings/app.vue';
-import { mergeRequestApprovalSettingsMappers } from './mappers';
-import createStore from './stores';
-import approvalSettingsModule from './stores/modules/approval_settings';
-import projectSettingsModule from './stores/modules/project_settings';
-import securityOrchestrationModule from './stores/modules/security_orchestration';
+import { mergeRequestApprovalSettingsMappers } from '../mappers';
+import createStore from '../stores';
+import approvalSettingsModule from '../stores/modules/approval_settings';
+import projectSettingsModule from '../stores/modules/project_settings';
+import securityOrchestrationModule from '../stores/modules/security_orchestration';
+import ProjectSettingsApp from './app.vue';
 
 export default function mountProjectSettingsApprovals(el) {
   if (!el) {

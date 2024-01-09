@@ -16,7 +16,7 @@ import projectSettingsModule from 'ee/approvals/stores/modules/project_settings/
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { sprintf } from '~/locale';
-import { createGroupApprovalsPayload, createGroupApprovalsState } from '../mocks';
+import { createGroupApprovalsPayload, createGroupApprovalsState } from '../../mocks';
 
 Vue.use(Vuex);
 

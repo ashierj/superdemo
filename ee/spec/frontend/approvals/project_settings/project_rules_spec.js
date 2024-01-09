@@ -3,14 +3,14 @@ import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import RuleInput from 'ee/approvals/components/rules/rule_input.vue';
-import ProjectRules from 'ee/approvals/components/project_settings/project_rules.vue';
+import ProjectRules from 'ee/approvals/project_settings/project_rules.vue';
 import RuleName from 'ee/approvals/components/rules/rule_name.vue';
 import Rules from 'ee/approvals/components/rules/rules.vue';
 import UnconfiguredSecurityRules from 'ee/approvals/components/security_configuration/unconfigured_security_rules.vue';
 import { createStoreOptions } from 'ee/approvals/stores';
 import projectSettingsModule from 'ee/approvals/stores/modules/project_settings';
 import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list.vue';
-import { createProjectRules } from '../../mocks';
+import { createProjectRules } from '../mocks';
 
 const TEST_RULES = createProjectRules();
 

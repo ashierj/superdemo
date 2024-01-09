@@ -48,7 +48,7 @@ if (mergeRequestApprovalSetting) {
   (async () => {
     try {
       const { mountGroupApprovalSettings } = await import(
-        /* webpackChunkName: 'mountGroupApprovalSettings' */ 'ee/approvals/mount_group_settings'
+        /* webpackChunkName: 'mountGroupApprovalSettings' */ 'ee/approvals/group_settings/mount_group_settings'
       );
       mountGroupApprovalSettings(mergeRequestApprovalSetting);
     } catch (error) {

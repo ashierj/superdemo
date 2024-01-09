@@ -6,7 +6,7 @@ import SafeHtml from '~/vue_shared/directives/safe_html';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { __, n__, sprintf, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import ApprovalRulesApp from '../approval_rules_app.vue';
+import ApprovalRulesApp from 'ee/approvals/components/approval_rules_app.vue';
 import MrRules from './mr_rules.vue';
 import MrRulesHiddenInputs from './mr_rules_hidden_inputs.vue';
 
