@@ -3020,7 +3020,6 @@ RSpec/NamedSubject:
     - 'spec/serializers/accessibility_error_entity_spec.rb'
     - 'spec/serializers/accessibility_reports_comparer_entity_spec.rb'
     - 'spec/serializers/accessibility_reports_comparer_serializer_spec.rb'
-    - 'spec/serializers/activity_pub/activity_streams_serializer_spec.rb'
     - 'spec/serializers/activity_pub/project_entity_spec.rb'
     - 'spec/serializers/activity_pub/release_entity_spec.rb'
     - 'spec/serializers/activity_pub/releases_actor_entity_spec.rb'
