@@ -10,10 +10,12 @@ import {
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
 import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
+import SearchAndSortBar from 'ee/usage_quotas/code_suggestions/components/search_and_sort_bar.vue';
 
 export default {
   name: 'SelfManagedAddOnEligibleUserList',
   components: {
+    SearchAndSortBar,
     ErrorAlert,
     AddOnEligibleUserList,
   },
@@ -109,10 +111,13 @@ export default {
     :users="addOnEligibleUsers"
     :is-loading="$apollo.loading"
     :page-info="pageInfo"
+    :search="filterOptions.search"
     @next="handleNext"
     @prev="handlePrev"
-    @filter="handleFilter"
   >
+    <template #search-and-sort-bar>
+      <search-and-sort-bar @onFilter="handleFilter" />
+    </template>
     <template #error-alert>
       <error-alert
         v-if="addOnEligibleUsersFetchError"

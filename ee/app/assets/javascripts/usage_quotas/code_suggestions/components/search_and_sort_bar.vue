@@ -20,6 +20,13 @@ export default {
   },
   mixins: [glFeatureFlagMixin()],
   inject: { fullPath: { default: '' } },
+  props: {
+    sortOptions: {
+      type: Array,
+      default: () => [],
+      required: false,
+    },
+  },
   data() {
     return {
       search: undefined,
@@ -61,6 +68,9 @@ export default {
     handleFilter(filterOptions) {
       this.$emit('onFilter', this.getFilterParams(filterOptions));
     },
+    handleSort(sortValue) {
+      this.$emit('onSort', sortValue);
+    },
     getFilterParams(filters = []) {
       let searchTerm = '';
 
@@ -91,7 +101,9 @@ export default {
       :namespace="fullPath"
       :tokens="tokens"
       :search-input-placeholder="__('Filter users')"
+      :sort-options="sortOptions"
       @onFilter="handleFilter"
+      @onSort="handleSort"
     />
   </div>
 </template>

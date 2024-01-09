@@ -2,12 +2,10 @@ import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import createMockApollo from 'helpers/mock_apollo_helper';
+import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/self_managed_add_on_eligible_users.query.graphql';
 import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
 import SelfManagedAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/self_managed_add_on_eligible_user_list.vue';
-import waitForPromises from 'helpers/wait_for_promises';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/self_managed_add_on_eligible_users.query.graphql';
+import SearchAndSortBar from 'ee/usage_quotas/code_suggestions/components/search_and_sort_bar.vue';
 import {
   ADD_ON_ELIGIBLE_USERS_FETCH_ERROR_CODE,
   ADD_ON_ERROR_DICTIONARY,
@@ -16,6 +14,9 @@ import {
   eligibleUsers,
   pageInfoWithMorePages,
 } from 'ee_jest/usage_quotas/code_suggestions/mock_data';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 
 Vue.use(VueApollo);
 
@@ -66,6 +67,7 @@ describe('Add On Eligible User List', () => {
   const findAddOnEligibleUserList = () => wrapper.findComponent(AddOnEligibleUserList);
   const findAddOnEligibleUsersFetchError = () =>
     wrapper.findByTestId('add-on-eligible-users-fetch-error');
+  const findSearchAndSortBar = () => wrapper.findComponent(SearchAndSortBar);
 
   describe('add-on eligible user list', () => {
     beforeEach(() => {
@@ -77,6 +79,7 @@ describe('Add On Eligible User List', () => {
         addOnPurchaseId,
         isLoading: false,
         pageInfo: pageInfoWithMorePages,
+        search: '',
         users: eligibleUsers,
       };
 
@@ -97,6 +100,7 @@ describe('Add On Eligible User List', () => {
           addOnPurchaseId,
           isLoading: false,
           pageInfo: undefined,
+          search: '',
           users: [],
         };
 
@@ -178,7 +182,7 @@ describe('Add On Eligible User List', () => {
     });
 
     it('fetches users list matching the search term', async () => {
-      findAddOnEligibleUserList().vm.$emit('filter', filterOptions);
+      findSearchAndSortBar().vm.$emit('onFilter', filterOptions);
       await waitForPromises();
 
       expect(addOnEligibleUsersDataHandler).toHaveBeenCalledWith({

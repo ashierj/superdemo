@@ -17,8 +17,13 @@ describe('SearchAndSortBar', () => {
 
   const fullPath = 'namespace/full-path';
 
-  const createComponent = ({ enableAddOnUsersFiltering = false, provideProps = {} } = {}) => {
+  const createComponent = ({
+    enableAddOnUsersFiltering = false,
+    props = {},
+    provideProps = {},
+  } = {}) => {
     wrapper = shallowMount(SearchAndSortBar, {
+      propsData: props,
       provide: {
         ...provideProps,
         glFeatures: {
@@ -37,6 +42,21 @@ describe('SearchAndSortBar', () => {
       expect(findFilteredSearchBar().props()).toMatchObject({
         namespace: '',
         searchInputPlaceholder: 'Filter users',
+        sortOptions: [],
+      });
+    });
+
+    describe('with sort options', () => {
+      const options = ['option 1', 'option 2'];
+
+      it('renders search and sort bar with default params', () => {
+        createComponent({ props: { sortOptions: options } });
+
+        expect(findFilteredSearchBar().props()).toMatchObject({
+          namespace: '',
+          searchInputPlaceholder: 'Filter users',
+          sortOptions: options,
+        });
       });
     });
 
@@ -201,6 +221,16 @@ describe('SearchAndSortBar', () => {
           search: searchTerm,
           filterByProjectId: projectId,
         });
+      });
+    });
+
+    describe('when sorting', () => {
+      it('emits the sort event with the correct value', () => {
+        const sort = 'sort_value_desc';
+        createComponent();
+        findFilteredSearchBar().vm.$emit('onSort', sort);
+
+        expect(wrapper.emitted('onSort')[0][0]).toStrictEqual(sort);
       });
     });
   });

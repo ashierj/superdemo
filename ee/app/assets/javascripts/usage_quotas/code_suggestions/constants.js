@@ -50,3 +50,22 @@ export const addOnEligibleUserListTableFields = {
     tdClass: 'gl-vertical-align-middle! gl-pl-2!',
   },
 };
+
+export const SORT_OPTIONS = [
+  {
+    id: 10,
+    title: __('Last activity'),
+    sortDirection: {
+      descending: 'LAST_ACTIVITY_ON_DESC',
+      ascending: 'LAST_ACTIVITY_ON_ASC',
+    },
+  },
+  {
+    id: 20,
+    title: __('Name'),
+    sortDirection: {
+      descending: 'NAME_DESC',
+      ascending: 'NAME_ASC',
+    },
+  },
+];
