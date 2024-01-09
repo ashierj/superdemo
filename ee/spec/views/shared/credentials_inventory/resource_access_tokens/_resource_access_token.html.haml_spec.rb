@@ -207,4 +207,26 @@ RSpec.describe('shared/credentials_inventory/resource_access_tokens/_resource_ac
       end
     end
   end
+
+  context 'when resource access token does not belong to a group or project' do
+    let_it_be(:project_bot) { create(:user, :project_bot, created_by_id: user.id) }
+    let_it_be(:resource_access_token) do
+      create(:personal_access_token, user: project_bot, scopes: %w[read_repository api])
+    end
+
+    before do
+      allow(view).to receive(:user_detail_path).and_return('abcd')
+
+      render 'shared/credentials_inventory/resource_access_tokens/resource_access_token',
+        resource_access_token: resource_access_token
+    end
+
+    it 'shows the token name' do
+      expect(rendered).to have_text(resource_access_token.name)
+    end
+
+    it 'shows that the group or project is deleted' do
+      expect(rendered).to have_text('Deleted')
+    end
+  end
 end
