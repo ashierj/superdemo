@@ -32,6 +32,16 @@ module ApprovalRules
       else
         new_copy_project_rules
       end
+
+      update_code_owner_rules
+    end
+
+    def update_code_owner_rules
+      wrapped_rules = merge_request.approval_rules.code_owner.map do |rule|
+        ApprovalWrappedRule.wrap(merge_request, rule)
+      end
+
+      wrapped_rules.each(&:finalize!)
     end
 
     def old_handling_of_rules

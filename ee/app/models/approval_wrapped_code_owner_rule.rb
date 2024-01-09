@@ -4,13 +4,15 @@
 class ApprovalWrappedCodeOwnerRule < ApprovalWrappedRule
   MIN_CODE_OWNER_APPROVALS = 1
 
-  def approvals_required
-    strong_memoize(:code_owner_approvals_required) do
-      next 0 unless branch_requires_code_owner_approval? && approvers.any?
-      next MIN_CODE_OWNER_APPROVALS if approval_rule.approvals_required < MIN_CODE_OWNER_APPROVALS
+  def finalize!
+    approval_rule.update!(approvals_required: approvals_required_pre_merge)
+  end
 
-      approval_rule.approvals_required
-    end
+  def approvals_required
+    return approval_rule.approvals_required if Feature.enabled?(:use_new_rule_finalize_approach,
+      merge_request.project) && merge_request.merged?
+
+    approvals_required_pre_merge
   end
 
   def branch_requires_code_owner_approval?
@@ -21,6 +23,15 @@ class ApprovalWrappedCodeOwnerRule < ApprovalWrappedRule
   end
 
   private
+
+  def approvals_required_pre_merge
+    strong_memoize(:approvals_required_pre_merge) do
+      next 0 unless branch_requires_code_owner_approval? && approvers.any?
+      next MIN_CODE_OWNER_APPROVALS if approval_rule.approvals_required < MIN_CODE_OWNER_APPROVALS
+
+      approval_rule.approvals_required
+    end
+  end
 
   def section_optional?
     Gitlab::CodeOwners.optional_section?(project, merge_request.target_branch_ref, section)

@@ -59,6 +59,16 @@ RSpec.describe ApprovalRules::FinalizeService do
         end
 
         context 'when mr is merged' do
+          context 'when the code owner rule is required' do
+            let!(:mr_code_owner_rule) { create(:code_owner_rule, merge_request: merge_request, approvals_required: 5) }
+
+            it 'updates the approvals_required accordingly' do
+              merge_request.mark_as_merged!
+
+              expect { subject.execute }.to change { mr_code_owner_rule.reload.approvals_required }.from(5).to(0)
+            end
+          end
+
           it 'does not copy project rules, and updates approval mapping with MR rules' do
             merge_request.mark_as_merged!
 
@@ -113,7 +123,7 @@ RSpec.describe ApprovalRules::FinalizeService do
         let(:protected_rule) { create(:approval_project_rule, project: project, name: 'other_branch', approvals_required: 32) }
         let!(:reporter_rule) { create(:approval_project_rule, :license_scanning, project: project, name: 'reporter_branch', approvals_required: 21) }
 
-        let!(:mr_code_owner_rule) { merge_request.approval_rules.code_owner.create!(name: 'Code Owner', rule_type: :code_owner) }
+        let!(:mr_code_owner_rule) { create(:code_owner_rule, merge_request: merge_request) }
         let!(:non_appl_report_rule) do
           rule = create(:report_approver_rule, :license_scanning, merge_request: merge_request, name: 'not applicable', approvals_required: 2)
 
@@ -174,6 +184,16 @@ RSpec.describe ApprovalRules::FinalizeService do
             }
           end
 
+          context 'when the code owner rule is required' do
+            let!(:mr_code_owner_rule) { create(:code_owner_rule, merge_request: merge_request, approvals_required: 5) }
+
+            it 'updates the approvals_required accordingly' do
+              merge_request.mark_as_merged!
+
+              expect { subject.execute }.to change { mr_code_owner_rule.reload.approvals_required }.from(5).to(0)
+            end
+          end
+
           it 'copies the expected rules with expected params' do
             expect(mr_code_owner_rule.applicable_post_merge).to eq(nil)
             expect(non_appl_report_rule.applicable_post_merge).to eq(nil)
@@ -185,6 +205,7 @@ RSpec.describe ApprovalRules::FinalizeService do
             end.to change { ApprovalMergeRequestRule.count }.by(3)
 
             expect(mr_code_owner_rule.reload.applicable_post_merge).to eq(true)
+            expect(mr_code_owner_rule.approvals_required).to eq(0)
             expect(non_appl_report_rule.reload.applicable_post_merge).to eq(false)
             expect(merge_request.approval_rules.size).to eq(5)
 
