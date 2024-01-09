@@ -46,7 +46,10 @@ module MergeRequests
       code_owner_rules = approved_code_owner_rules(merge_request)
       return if code_owner_rules.empty?
 
-      rule_names = ::Gitlab::CodeOwners.entries_since_merge_request_commit(merge_request).map(&:pattern)
+      previous_diff_head_sha = merge_request.previous_diff&.head_commit_sha
+
+      rule_names = ::Gitlab::CodeOwners.entries_since_merge_request_commit(merge_request,
+        sha: previous_diff_head_sha).map(&:pattern)
       match_ids = code_owner_rules.flat_map do |rule|
         next unless rule_names.include?(rule.name)
 
@@ -55,7 +58,6 @@ module MergeRequests
 
       # In case there is still a temporary flag on the MR
       merge_request.approval_state.expire_unapproved_key!
-
       approvals = merge_request.approvals.where(user_id: match_ids) # rubocop:disable CodeReuse/ActiveRecord
       approvals = filter_approvals(approvals, patch_id_sha) if patch_id_sha.present?
       approvals.delete_all
