@@ -18,7 +18,6 @@ import {
 } from 'ee_jest/usage_quotas/code_suggestions/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { ADD_ON_ERROR_DICTIONARY } from 'ee/usage_quotas/error_constants';
-import SearchAndSortBar from 'ee/usage_quotas/code_suggestions/components/search_and_sort_bar.vue';
 import { scrollToElement } from '~/lib/utils/common_utils';
 
 jest.mock('~/lib/utils/common_utils');
@@ -65,7 +64,6 @@ describe('Add On Eligible User List', () => {
   const findAddOnAssignmentError = () => wrapper.findByTestId('add-on-assignment-error');
   const findPagination = () => wrapper.findComponent(GlKeysetPagination);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
-  const findSearchAndSortBar = () => wrapper.findComponent(SearchAndSortBar);
 
   const serializeUser = (rowWrapper) => {
     const avatarLink = rowWrapper.findComponent(GlAvatarLink);
@@ -253,6 +251,20 @@ describe('Add On Eligible User List', () => {
         });
       });
 
+      describe('search and sort bar slot', () => {
+        it('should render error slot when provided', () => {
+          const slotContent = 'search and sort bar content';
+          createComponent({
+            mountFn: mount,
+            slots: {
+              'search-and-sort-bar': slotContent,
+            },
+          });
+
+          expect(wrapper.text()).toContain(slotContent);
+        });
+      });
+
       describe('when there is an error while assigning addon', () => {
         const addOnAssignmentError = 'NO_SEATS_AVAILABLE';
         beforeEach(async () => {
@@ -374,19 +386,10 @@ describe('Add On Eligible User List', () => {
   });
 
   describe('search', () => {
-    beforeEach(async () => {
-      await createComponent();
-    });
-
-    it('renders search bar', () => {
-      expect(findSearchAndSortBar().exists()).toBe(true);
-    });
-
-    it('shows appropriate empty text when search term is insufficient', async () => {
+    it('shows appropriate empty text when search term is insufficient', () => {
       const searchString = 'se';
 
-      findSearchAndSortBar().vm.$emit('onFilter', { search: searchString });
-      await waitForPromises();
+      createComponent({ props: { search: searchString } });
 
       expect(findTable().attributes()).toMatchObject({
         'empty-text': 'Enter at least three characters to search.',
@@ -394,13 +397,12 @@ describe('Add On Eligible User List', () => {
       });
     });
 
-    it('triggers a call to addOnEligibleUsers with appropriate params on filter', async () => {
+    it('triggers a call to addOnEligibleUsers with appropriate params on filter', () => {
       const searchString = 'search string';
 
-      findSearchAndSortBar().vm.$emit('onFilter', { search: searchString });
-      await waitForPromises();
+      createComponent({ props: { search: searchString } });
 
-      expect(wrapper.emitted('filter')).toEqual([[{ search: searchString }]]);
+      expect(findTable().attributes('empty-text')).toBe('No users to display.');
     });
   });
 });

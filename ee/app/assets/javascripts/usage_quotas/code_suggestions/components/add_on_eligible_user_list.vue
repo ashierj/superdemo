@@ -15,8 +15,7 @@ import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { addOnEligibleUserListTableFields } from 'ee/usage_quotas/code_suggestions/constants';
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import { scrollToElement } from '~/lib/utils/common_utils';
-import CodeSuggestionsAddonAssignment from './code_suggestions_addon_assignment.vue';
-import SearchAndSortBar from './search_and_sort_bar.vue';
+import CodeSuggestionsAddonAssignment from 'ee/usage_quotas/code_suggestions/components/code_suggestions_addon_assignment.vue';
 
 export default {
   name: 'AddOnEligibleUserList',
@@ -32,7 +31,6 @@ export default {
     GlKeysetPagination,
     GlSkeletonLoader,
     GlTable,
-    SearchAndSortBar,
   },
   mixins: [glFeatureFlagMixin()],
   props: {
@@ -55,11 +53,15 @@ export default {
       required: false,
       default: () => {},
     },
+    search: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {
       addOnAssignmentError: undefined,
-      filterOptions: {},
     };
   },
   addOnErrorDictionary: ADD_ON_ERROR_DICTIONARY,
@@ -79,7 +81,7 @@ export default {
       return hasNextPage || hasPreviousPage;
     },
     emptyText() {
-      if (this.filterOptions?.search?.length < 3) {
+      if (this.search?.length < 3) {
         return s__('Billing|Enter at least three characters to search.');
       }
       return s__('Billing|No users to display.');
@@ -108,10 +110,6 @@ export default {
     prevPage() {
       this.$emit('prev', this.pageInfo.startCursor);
     },
-    onFilter(filterOptions) {
-      this.$emit('filter', filterOptions);
-      this.filterOptions = filterOptions;
-    },
     handleAddOnAssignmentError(errorCode) {
       this.addOnAssignmentError = errorCode;
       this.scrollToTop();
@@ -128,8 +126,7 @@ export default {
 
 <template>
   <section>
-    <search-and-sort-bar @onFilter="onFilter" />
-
+    <slot name="search-and-sort-bar"> </slot>
     <slot name="error-alert"></slot>
 
     <error-alert

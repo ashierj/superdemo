@@ -1,7 +1,8 @@
 <script>
-import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import { fetchPolicies } from '~/lib/graphql';
 import { DEFAULT_PER_PAGE } from '~/api';
+import { fetchPolicies } from '~/lib/graphql';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/saas_add_on_eligible_users.query.graphql';
 import {
   ADD_ON_ELIGIBLE_USERS_FETCH_ERROR_CODE,
@@ -9,14 +10,17 @@ import {
 } from 'ee/usage_quotas/error_constants';
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
-import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
+import { ADD_ON_CODE_SUGGESTIONS, SORT_OPTIONS } from 'ee/usage_quotas/code_suggestions/constants';
+import SearchAndSortBar from 'ee/usage_quotas/code_suggestions/components/search_and_sort_bar.vue';
 
 export default {
   name: 'SaasAddOnEligibleUserList',
   components: {
+    SearchAndSortBar,
     ErrorAlert,
     AddOnEligibleUserList,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: ['fullPath'],
   props: {
     addOnPurchaseId: {
@@ -38,6 +42,7 @@ export default {
         before: null,
       },
       filterOptions: {},
+      sort: null,
     };
   },
   apollo: {
@@ -58,11 +63,20 @@ export default {
     },
   },
   computed: {
+    isFilteringEnabled() {
+      return this.glFeatures.enableAddOnUsersFiltering;
+    },
+    sortOptions() {
+      if (!this.isFilteringEnabled) return [];
+
+      return SORT_OPTIONS;
+    },
     queryVariables() {
       return {
         fullPath: this.fullPath,
         addOnType: ADD_ON_CODE_SUGGESTIONS,
         addOnPurchaseIds: [this.addOnPurchaseId],
+        sort: this.sort,
         ...this.filterOptions,
         ...this.pagination,
       };
@@ -101,6 +115,9 @@ export default {
       };
       this.filterOptions = filterOptions;
     },
+    handleSort(sort) {
+      this.sort = sort;
+    },
   },
 };
 </script>
@@ -111,10 +128,17 @@ export default {
     :users="addOnEligibleUsers"
     :is-loading="$apollo.loading"
     :page-info="pageInfo"
+    :search="filterOptions.search"
     @next="handleNext"
     @prev="handlePrev"
-    @filter="handleFilter"
   >
+    <template #search-and-sort-bar>
+      <search-and-sort-bar
+        :sort-options="sortOptions"
+        @onFilter="handleFilter"
+        @onSort="handleSort"
+      />
+    </template>
     <template #error-alert>
       <error-alert
         v-if="addOnEligibleUsersFetchError"
