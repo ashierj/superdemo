@@ -28,8 +28,12 @@ class Groups::AuditEventsController < Groups::ApplicationController
     @events = AuditEventSerializer.new.represent(events)
     @audit_event_definitions = Gitlab::Audit::Type::Definition.names_with_category
 
-    @all_projects = group.all_projects_except_soft_deleted.map do |project|
-      { value: project.full_path, text: project.name, type: "Projects" }
+    @all_projects = []
+    group.all_projects_except_soft_deleted.each_batch do |projects|
+      projects_json = projects.map do |project|
+        { value: project.full_path, text: project.name, type: "Projects" }
+      end
+      @all_projects.concat(projects_json)
     end
 
     @all_groups = group.descendants.map do |group|
