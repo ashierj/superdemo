@@ -46,11 +46,25 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
     end
 
     context 'when user has reached max verification attempts' do
-      let(:record) { create(:phone_number_validation, user: user) }
+      let_it_be(:record) { create(:phone_number_validation, sms_send_count: 1, sms_sent_at: Time.current, user: user) }
 
       before do
         allow(Gitlab::ApplicationRateLimiter).to receive(:throttled?)
         .with(:phone_verification_send_code, scope: user).and_return(true)
+      end
+
+      it 'resets sms_send_count and sms_sent_at' do
+        expect { service.execute }.to change { [record.reload.sms_send_count, record.reload.sms_sent_at] }.to([0, nil])
+      end
+
+      context 'when sms_send_wait_time feature flag is disabled' do
+        before do
+          stub_feature_flags(sms_send_wait_time: false)
+        end
+
+        it 'does not reset sms_send_count and sms_sent_at' do
+          expect { service.execute }.not_to change { [record.reload.sms_send_count, record.reload.sms_sent_at] }
+        end
       end
 
       it 'returns an error', :aggregate_failures do
@@ -277,6 +291,15 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
       end
     end
 
+    shared_examples 'it returns a success response' do
+      it 'returns a success response', :aggregate_failures do
+        response = service.execute
+
+        expect(response).to be_a(ServiceResponse)
+        expect(response).to be_success
+      end
+    end
+
     context 'when verification code is sent successfully' do
       let_it_be(:risk_score) { 10 }
       let_it_be(:telesign_reference_xid) { '123' }
@@ -319,14 +342,9 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         end
       end
 
-      it 'returns a success response', :aggregate_failures do
-        response = service.execute
+      it_behaves_like 'it returns a success response'
 
-        expect(response).to be_a(ServiceResponse)
-        expect(response).to be_success
-      end
-
-      it 'saves the risk score, telesign_reference_xid and increases verification attempts', :aggregate_failures do
+      it 'saves the risk score and telesign_reference_xid', :aggregate_failures do
         service.execute
         record = user.phone_number_validation
 
@@ -338,6 +356,63 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         expect(Abuse::TrustScoreWorker).to receive(:perform_async).once.with(user.id, :telesign, instance_of(Float))
 
         service.execute
+      end
+
+      it 'updates sms_send_count and sms_sent_at', :freeze_time do
+        service.execute
+        record = user.phone_number_validation
+        expect(record.sms_send_count).to eq(1)
+        expect(record.sms_sent_at).to eq(Time.current)
+      end
+
+      context 'when sms_send_wait_time feature flag is disabled' do
+        before do
+          stub_feature_flags(sms_send_wait_time: false)
+        end
+
+        it 'does not update sms_send_count and sms_sent_at', :freeze_time, :aggregate_failures do
+          service.execute
+          record = user.phone_number_validation
+          expect(record.sms_send_count).to eq(0)
+          expect(record.sms_sent_at).to be_nil
+        end
+      end
+
+      context 'when send is allowed', :freeze_time do
+        let_it_be(:record) do
+          create(:phone_number_validation, user: user, sms_send_count: 1, sms_sent_at: Time.current)
+        end
+
+        let!(:old_sms_sent_at) { record.sms_sent_at }
+
+        before do
+          travel_to(5.minutes.from_now)
+        end
+
+        it_behaves_like 'it returns a success response'
+
+        it 'increments sms_send_count and sets sms_sent_at' do
+          old_values = [1, old_sms_sent_at.to_i]
+          new_values = [2, (old_sms_sent_at + 5.minutes).to_i]
+
+          expect { service.execute }.to change { [record.reload.sms_send_count, record.reload.sms_sent_at.to_i] }
+            .from(old_values).to(new_values)
+        end
+      end
+
+      context 'when send is not allowed', :freeze_time do
+        let_it_be(:record) do
+          create(:phone_number_validation, user: user, sms_send_count: 1, sms_sent_at: Time.current)
+        end
+
+        it 'returns an error', :aggregate_failures do
+          response = service.execute
+
+          expect(response).to be_a(ServiceResponse)
+          expect(response).to be_error
+          expect(response.message).to eq('Sending not allowed at this time')
+          expect(response.reason).to eq(:send_not_allowed)
+        end
       end
     end
 
@@ -354,12 +429,7 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         stub_feature_flags(telesign_intelligence: false)
       end
 
-      it 'returns a success response', :aggregate_failures do
-        response = service.execute
-
-        expect(response).to be_a(ServiceResponse)
-        expect(response).to be_success
-      end
+      it_behaves_like 'it returns a success response'
 
       it 'does not save the risk_score' do
         service.execute

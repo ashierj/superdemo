@@ -8,7 +8,10 @@ import {
   GlFormInput,
   GlIcon,
   GlButton,
+  GlSprintf,
 } from '@gitlab/ui';
+import GlCountdown from '~/vue_shared/components/gl_countdown.vue';
+
 import { createAlert } from '~/alert';
 import { s__, n__ } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
@@ -32,6 +35,8 @@ export default {
     GlFormInput,
     GlIcon,
     GlButton,
+    GlSprintf,
+    GlCountdown,
   },
   inject: {
     phoneNumber: {
@@ -52,6 +57,15 @@ export default {
       required: false,
       default: () => {},
     },
+    sendCodeAllowed: {
+      type: Boolean,
+      required: true,
+    },
+    sendCodeAllowedAfter: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   i18n: {
     phoneNumber: s__('IdentityVerification|Phone number'),
@@ -62,6 +76,7 @@ export default {
     ),
     success: s__("IdentityVerification|We've sent a verification code to +%{phoneNumber}"),
     sendCode: s__('IdentityVerification|Send code'),
+    sendCodeIn: s__('IdentityVerification|Send code in %{timer}'),
     I18N_GENERIC_ERROR,
   },
   data() {
@@ -119,7 +134,10 @@ export default {
     },
     isSubmitButtonDisabled() {
       return (
-        this.disableSubmitButton || this.relatedToBannedUser || !this.form.fields.phoneNumber.state
+        this.disableSubmitButton ||
+        this.relatedToBannedUser ||
+        !this.form.fields.phoneNumber.state ||
+        !this.sendCodeAllowed
       );
     },
     countryDropdownToggleText() {
@@ -163,7 +181,7 @@ export default {
           this.isLoading = false;
         });
     },
-    handleSendCodeResponse() {
+    handleSendCodeResponse({ data }) {
       const { countryId, internationalDialCode, inputPhoneNumber } = this;
 
       this.$emit('verification-attempt');
@@ -172,10 +190,12 @@ export default {
         country: countryId,
         internationalDialCode,
         number: inputPhoneNumber,
+        sendAllowedAfter: data.send_allowed_after,
       });
     },
     handleError(error) {
       const reason = error.response?.data?.reason;
+
       if (reason === UNKNOWN_TELESIGN_ERROR) {
         this.$emit('skip-verification');
         return;
@@ -193,6 +213,9 @@ export default {
     },
     onCountriesSearch(searchTerm) {
       this.countriesSearchTerm = searchTerm.trim().toLowerCase();
+    },
+    onTimerExpired() {
+      this.$emit('timer-expired');
     },
   },
   apollo: {
@@ -279,10 +302,16 @@ export default {
       type="submit"
       block
       class="gl-mt-5"
+      data-testid="submit-btn"
       :disabled="isSubmitButtonDisabled"
       :loading="isLoading"
     >
-      {{ $options.i18n.sendCode }}
+      <template v-if="sendCodeAllowed">{{ $options.i18n.sendCode }}</template>
+      <gl-sprintf v-else :message="$options.i18n.sendCodeIn">
+        <template #timer>
+          <gl-countdown :end-date-string="sendCodeAllowedAfter" @timer-expired="onTimerExpired" />
+        </template>
+      </gl-sprintf>
     </gl-button>
   </gl-form>
 </template>

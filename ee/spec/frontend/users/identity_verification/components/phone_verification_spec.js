@@ -5,6 +5,11 @@ import PhoneVerification from 'ee/users/identity_verification/components/phone_v
 import InternationalPhoneInput from 'ee/users/identity_verification/components/international_phone_input.vue';
 import VerifyPhoneVerificationCode from 'ee/users/identity_verification/components/verify_phone_verification_code.vue';
 import Captcha from 'ee/users/identity_verification/components/identity_verification_captcha.vue';
+import { calculateRemainingMilliseconds } from '~/lib/utils/datetime_utility';
+
+jest.mock('~/lib/utils/datetime_utility', () => ({
+  calculateRemainingMilliseconds: jest.fn(),
+}));
 
 describe('Phone Verification component', () => {
   let wrapper;
@@ -38,23 +43,90 @@ describe('Phone Verification component', () => {
   };
 
   beforeEach(() => {
+    calculateRemainingMilliseconds.mockReturnValue(1000);
+
     createComponent();
   });
 
   describe('When component loads', () => {
-    it('should display InternationalPhoneInput component', () => {
-      expect(findInternationalPhoneInput().exists()).toBe(true);
+    const expectedProps = {
+      sendCodeAllowed: true,
+      sendCodeAllowedAfter: null,
+    };
+
+    it('renders InternationalPhoneInput component with the correct props', () => {
+      const component = findInternationalPhoneInput();
+      expect(component.exists()).toBe(true);
+      expect(component.props()).toMatchObject(expectedProps);
     });
 
-    it('should hide VerifyPhoneVerificationCode component', () => {
+    it('does not render VerifyPhoneVerificationCode component', () => {
       expect(findVerifyCodeInput().exists()).toBe(false);
+    });
+
+    describe('rendered InternationalPhoneInput component', () => {
+      const expectCorrectProps = (expected) => {
+        it('has the correct props', () => {
+          expect(findInternationalPhoneInput().props()).toMatchObject(expected);
+        });
+      };
+
+      describe('when sendAllowedAfter is a valid timestamp in the future', () => {
+        beforeEach(() => {
+          createComponent({ phoneNumber: { sendAllowedAfter: '2000-01-01T01:02:03Z' } });
+        });
+
+        expectCorrectProps({
+          sendCodeAllowed: false,
+          sendCodeAllowedAfter: '2000-01-01T01:02:03Z',
+        });
+
+        describe('when InternationalPhoneInput emits a `timer-expired` event', () => {
+          beforeEach(async () => {
+            findInternationalPhoneInput().vm.$emit('timer-expired');
+            await nextTick();
+          });
+
+          expectCorrectProps(expectedProps);
+        });
+      });
+
+      describe('when sendAllowedAfter is a valid timestamp in the past', () => {
+        beforeEach(() => {
+          calculateRemainingMilliseconds.mockReturnValue(0);
+          createComponent({ phoneNumber: { sendAllowedAfter: '2000-01-01T01:02:03Z' } });
+        });
+
+        expectCorrectProps({
+          sendCodeAllowed: true,
+          sendCodeAllowedAfter: '2000-01-01T01:02:03Z',
+        });
+      });
+
+      describe('when sendAllowedAfter is not a valid timestamp', () => {
+        beforeEach(() => {
+          createComponent({ phoneNumber: { sendAllowedAfter: 'not-a-date' } });
+        });
+
+        expectCorrectProps(expectedProps);
+      });
     });
   });
 
   describe('On next', () => {
-    beforeEach(() => {
-      findInternationalPhoneInput().vm.$emit('next', PHONE_NUMBER);
-      return nextTick();
+    beforeEach(async () => {
+      await findInternationalPhoneInput().vm.$emit('next', {
+        ...PHONE_NUMBER,
+        sendAllowedAfter: '2000-01-01T01:02:03Z',
+      });
+    });
+
+    it('updates sendCodeAllowed and sendCodeAllowedAfter props of VerifyPhoneVerificationCode', () => {
+      const expectedProps = {
+        sendCodeAllowed: false,
+        sendCodeAllowedAfter: '2000-01-01T01:02:03Z',
+      };
+      expect(findVerifyCodeInput().props()).toMatchObject(expectedProps);
     });
 
     it('should hide InternationalPhoneInput component', () => {
@@ -64,6 +136,34 @@ describe('Phone Verification component', () => {
     it('should display VerifyPhoneVerificationCode component', () => {
       expect(findVerifyCodeInput().exists()).toBe(true);
       expect(findVerifyCodeInput().props()).toMatchObject({ latestPhoneNumber: PHONE_NUMBER });
+    });
+
+    describe('when VerifyPhoneVerificationCode emits a `timer-expired` event', () => {
+      beforeEach(async () => {
+        findVerifyCodeInput().vm.$emit('timer-expired');
+        await nextTick();
+      });
+
+      it('has the correct props', () => {
+        expect(findVerifyCodeInput().props()).toMatchObject({
+          sendCodeAllowed: true,
+          sendCodeAllowedAfter: null,
+        });
+      });
+    });
+
+    describe('when VerifyPhoneVerificationCode emits a `resent` event', () => {
+      beforeEach(async () => {
+        findVerifyCodeInput().vm.$emit('resent', '2001-12-31:00:00Z');
+        await nextTick();
+      });
+
+      it('has the correct props', () => {
+        expect(findVerifyCodeInput().props()).toMatchObject({
+          sendCodeAllowed: false,
+          sendCodeAllowedAfter: '2001-12-31:00:00Z',
+        });
+      });
     });
 
     describe('On back', () => {

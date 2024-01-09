@@ -93,7 +93,8 @@ module Users
       end
 
       log_event(:phone, :sent_phone_verification_code)
-      render json: { status: :success }
+
+      render json: { status: :success }.merge(result.payload)
     end
 
     def verify_phone_verification_code
