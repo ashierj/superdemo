@@ -18723,6 +18723,7 @@ Check permissions for the current user on an epic.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="epicpermissionsadminepic"></a>`adminEpic` | [`Boolean!`](#boolean) | If `true`, the user can perform `admin_epic` on this resource. |
+| <a id="epicpermissionsadminepicrelation"></a>`adminEpicRelation` | [`Boolean!`](#boolean) | If `true`, the user can perform `admin_epic_relation` on this resource. |
 | <a id="epicpermissionsawardemoji"></a>`awardEmoji` | [`Boolean!`](#boolean) | If `true`, the user can perform `award_emoji` on this resource. |
 | <a id="epicpermissionscreateepic"></a>`createEpic` | [`Boolean!`](#boolean) | If `true`, the user can perform `create_epic` on this resource. |
 | <a id="epicpermissionscreatenote"></a>`createNote` | [`Boolean!`](#boolean) | If `true`, the user can perform `create_note` on this resource. |
@@ -21126,6 +21127,7 @@ Check permissions for the current user on a issue.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="issuepermissionsadminissue"></a>`adminIssue` | [`Boolean!`](#boolean) | If `true`, the user can perform `admin_issue` on this resource. |
+| <a id="issuepermissionsadminissuerelation"></a>`adminIssueRelation` | [`Boolean!`](#boolean) | If `true`, the user can perform `admin_issue_relation` on this resource. |
 | <a id="issuepermissionscreatedesign"></a>`createDesign` | [`Boolean!`](#boolean) | If `true`, the user can perform `create_design` on this resource. |
 | <a id="issuepermissionscreatenote"></a>`createNote` | [`Boolean!`](#boolean) | If `true`, the user can perform `create_note` on this resource. |
 | <a id="issuepermissionsdestroydesign"></a>`destroyDesign` | [`Boolean!`](#boolean) | If `true`, the user can perform `destroy_design` on this resource. |
