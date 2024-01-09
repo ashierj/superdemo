@@ -32,7 +32,7 @@ module EE
         override :preloads
         def preloads
           super.merge(
-            approval_rules: { approval_project_rules: [:users, :group_users] },
+            approval_rules: { approval_project_rules_with_unique_policies: [:users, :group_users] },
             external_status_checks: :external_status_checks
           )
         end

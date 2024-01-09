@@ -3573,18 +3573,20 @@ RSpec.describe Project, feature_category: :groups_and_projects do
   end
 
   describe '#ci_cancellation_restriction' do
-    it 'returns the initalized cancellation restrication object' do
+    it 'returns the initialized cancellation restriction object' do
       expect(project.ci_cancellation_restriction.class).to be Ci::ProjectCancellationRestriction
       expect(project.ci_cancellation_restriction).to respond_to(:feature_available?)
     end
   end
 
   describe '#visible_approval_rules' do
-    let(:scan_finding_rule) { create(:approval_project_rule, :scan_finding, project: project) }
+    let!(:scan_finding_rule) { create(:approval_project_rule, :scan_finding, project: project) }
+    let!(:license_scanning_rule) { create(:approval_project_rule, :license_scanning, project: project) }
+    let!(:any_merge_request_rule) { create(:approval_project_rule, :any_merge_request, project: project) }
 
     subject { project.visible_approval_rules }
 
-    it { is_expected.not_to include(scan_finding_rule) }
+    it { is_expected.not_to include(scan_finding_rule, license_scanning_rule, any_merge_request_rule) }
   end
 
   describe '#all_security_orchestration_policy_configurations' do

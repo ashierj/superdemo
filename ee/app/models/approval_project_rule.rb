@@ -34,11 +34,18 @@ class ApprovalProjectRule < ApplicationRecord
 
   attribute :severity_levels, default: DEFAULT_SEVERITIES
 
-  scope :not_from_scan_result_policy, -> { where(report_type: nil).or(where.not(report_type: [:scan_finding, :license_scanning])) }
-  scope :report_approver_without_scan_finding, -> { report_approver.where.not(report_type: [:scan_finding, :license_scanning]) }
+  scope :not_from_scan_result_policy, -> { where(report_type: nil).or(where.not(report_type: [:scan_finding, :license_scanning, :any_merge_request])) }
+  scope :report_approver_without_scan_finding, -> { report_approver.where.not(report_type: [:scan_finding, :license_scanning, :any_merge_request]) }
   scope :for_all_branches, -> { where.missing(:protected_branches).where(applies_to_all_protected_branches: false) }
   scope :for_all_protected_branches, -> { where.missing(:protected_branches).where(applies_to_all_protected_branches: true) }
   scope :for_project, ->(project_id) { where(project_id: project_id) }
+  scope :with_unique_policies_for_protected_branch, ->(protected_branch) {
+    where(security_orchestration_policy_configuration_id: nil)
+      .or(where(id: joins(:protected_branches)
+                      .where(protected_branches: protected_branch)
+                      .group(:security_orchestration_policy_configuration_id, :orchestration_policy_idx)
+                      .select(arel_table[:id].minimum.as('id'))))
+  }
 
   alias_method :code_owner, :code_owner?
 
