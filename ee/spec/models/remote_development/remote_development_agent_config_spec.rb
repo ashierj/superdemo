@@ -4,7 +4,6 @@ require 'spec_helper'
 
 # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category: :remote_development do
-  # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
   let_it_be_with_reload(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
   let(:default_default_resources_per_workspace_container) { {} }
   let(:default_max_resources_per_workspace) { {} }

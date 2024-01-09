@@ -116,6 +116,9 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, feature_category: :remote_d
   end
 
   context 'when an invalid Result is returned' do
+    # TODO: The following 'noinspection RailsParamDefResolve' is not finding the factory. We need to open a bug against
+    #       JetBrains and track at
+    #       https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
     # noinspection RailsParamDefResolve
     let(:agent_config) { build_stubbed(:agent_config) }
 

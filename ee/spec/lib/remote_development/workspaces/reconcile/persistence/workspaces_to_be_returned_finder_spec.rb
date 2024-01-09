@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::WorkspacesToBeReturnedFinder, feature_category: :remote_development do
   let_it_be(:user) { create(:user) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
@@ -67,7 +68,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     )
   end
 
-  # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
   let(:workspaces_from_agent_infos) { [workspace_from_agent_info] }
 
   let(:value) do
@@ -82,7 +82,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     described_class.find(value)
   end
 
-  # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
   before do
     agent.reload
 
@@ -122,7 +121,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
   context "with fixture sanity checks" do
     let(:update_type) { RemoteDevelopment::Workspaces::Reconcile::UpdateTypes::FULL }
 
-    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
     it "has the expected fixtures" do
       expect(workspace_only_returned_by_full_update.desired_state_updated_at)
         .to be < workspace_only_returned_by_full_update.responded_to_agent_at
@@ -138,7 +136,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
   context "for update_type FULL" do
     let(:update_type) { RemoteDevelopment::Workspaces::Reconcile::UpdateTypes::FULL }
 
-    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
     let(:expected_workspaces_to_be_returned) do
       [
         # Includes ALL workspaces including workspace_only_returned_by_full_update
@@ -168,7 +165,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
   context "for update_type PARTIAL" do
     let(:update_type) { RemoteDevelopment::Workspaces::Reconcile::UpdateTypes::PARTIAL }
 
-    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
     let(:expected_workspaces_to_be_returned) do
       [
         # Does NOT include workspace_only_returned_by_full_update

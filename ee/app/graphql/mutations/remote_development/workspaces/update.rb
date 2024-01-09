@@ -32,6 +32,8 @@ module Mutations
 
           workspace = authorized_find!(id: id)
 
+          # noinspection RubyNilAnalysis - This is because the superclass #current_user uses #[], which can return nil
+          # TODO: Change the superclass to use context.fetch(:current_user) instead of context[:current_user]
           track_usage_event(:users_updating_workspaces, current_user.id)
 
           service = ::RemoteDevelopment::Workspaces::UpdateService.new(current_user: current_user)

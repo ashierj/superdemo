@@ -35,6 +35,8 @@ module Resolvers
           raise_resource_not_available_error! "'remote_development' licensed feature is not available"
         end
 
+        # noinspection RubyNilAnalysis - This is because the superclass #current_user uses #[], which can return nil
+        # TODO: Change the superclass to use context.fetch(:current_user) instead of context[:current_user]
         ::RemoteDevelopment::WorkspacesFinder.execute(
           current_user: current_user,
           user_ids: [current_user.id],

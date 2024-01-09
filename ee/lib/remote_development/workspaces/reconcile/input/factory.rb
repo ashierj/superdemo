@@ -7,7 +7,6 @@ module RemoteDevelopment
         class Factory
           # @param [Hash] agent_info_hash_from_params
           # @return [RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfo]
-          # noinspection RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
           def self.build(agent_info_hash_from_params:)
             # Hash#[] instead of Hash#fetch or destructuring is used, since the field may not be present
             latest_k8s_deployment_info = agent_info_hash_from_params[:latest_k8s_deployment_info]

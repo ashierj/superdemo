@@ -3,6 +3,7 @@
 module RemoteDevelopment
   module Workspaces
     module Create
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       class WorkspaceCreator
         include States
         include Messages
@@ -34,11 +35,8 @@ module RemoteDevelopment
           workspace.name = workspace_name
           workspace.namespace = workspace_namespace
           workspace.personal_access_token = personal_access_token
-          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           workspace.devfile = devfile_yaml
-          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           workspace.processed_devfile = YAML.dump(processed_devfile.deep_stringify_keys)
-          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           workspace.actual_state = CREATION_REQUESTED
           workspace.config_version = RemoteDevelopment::Workspaces::ConfigVersion::LATEST_VERSION
           workspace.url = URI::HTTPS.build({

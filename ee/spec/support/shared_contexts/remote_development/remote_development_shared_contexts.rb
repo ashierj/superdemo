@@ -274,8 +274,6 @@ RSpec.shared_context 'with remote development shared fixtures' do
   # rubocop:enable Metrics/ParameterLists
   # rubocop:enable Metrics/CyclomaticComplexity
   # rubocop:enable Metrics/PerceivedComplexity
-
-  # noinspection RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   def create_workspace_rails_info(
     name:,
     namespace:,
@@ -1069,12 +1067,10 @@ RSpec.shared_context 'with remote development shared fixtures' do
     end
   end
 
-  # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   def get_workspace_host_template_annotation(workspace_name, dns_zone)
     "{{.port}}-#{workspace_name}.#{dns_zone}"
   end
 
-  # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   def get_workspace_host_template_env_var(workspace_name, dns_zone)
     "${PORT}-#{workspace_name}.#{dns_zone}"
   end

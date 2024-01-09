@@ -3,7 +3,6 @@
 module RemoteDevelopment
   module Workspaces
     module Create
-      # noinspection RubyResolve - Rubymine isn't detecting ActiveRecord db field properties of workspace
       class Creator
         include Messages
 

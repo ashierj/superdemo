@@ -45,6 +45,7 @@ describe('remote_development/pages/list.vue', () => {
     ]);
   };
   const createWrapper = () => {
+    // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     wrapper = mount(List, {
       apolloProvider: mockApollo,
       provide: {

@@ -144,6 +144,7 @@ export default {
       try {
         this.isCreatingWorkspace = true;
 
+        // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
         const result = await this.$apollo.mutate({
           mutation: workspaceCreateMutation,
           variables: {
@@ -175,6 +176,7 @@ export default {
           return;
         }
 
+        // noinspection ES6MissingAwait - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
         this.$router.push(ROUTES.index);
       } catch (error) {
         logError(error);

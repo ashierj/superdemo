@@ -66,6 +66,8 @@ module Resolvers
       private
 
       def can_read_all_workspaces?
+        # noinspection RubyNilAnalysis - This is because the superclass #current_user uses #[], which can return nil
+        # TODO: Change the superclass to use context.fetch(:current_user) instead of context[:current_user]
         current_user.can?(:read_all_workspaces)
       end
     end

@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :remote_development do
   include ResultMatchers
 

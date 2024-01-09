@@ -63,6 +63,7 @@ module Mutations
 
           agent = authorized_find!(id: cluster_agent_id)
 
+          # noinspection RubyNilAnalysis
           track_usage_event(:users_creating_workspaces, current_user.id)
 
           service = ::RemoteDevelopment::Workspaces::CreateService.new(current_user: current_user)

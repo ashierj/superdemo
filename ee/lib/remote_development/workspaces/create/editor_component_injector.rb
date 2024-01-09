@@ -38,6 +38,7 @@ module RemoteDevelopment
         # @param [String] volume_path
         # @param [Integer] editor_port
         # @param [Integer] ssh_port
+        # @return [Hash]
         def self.override_main_container(component, volume_name, volume_path, editor_port, ssh_port)
           # This overrides the main container's command
           # Open issue to support both starting the editor and running the default command:
@@ -103,6 +104,7 @@ module RemoteDevelopment
         # @param [Hash] processed_devfile
         # @param [String] volume_name
         # @param [String] volume_path
+        # @return [Array]
         def self.inject_editor_component(processed_devfile, volume_name, volume_path)
           processed_devfile['components'] += editor_components(volume_name, volume_path)
 
@@ -121,6 +123,7 @@ module RemoteDevelopment
 
         # @param [String] volume_name
         # @param [String] volume_path
+        # @return [Array]
         def self.editor_components(volume_name, volume_path)
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409775 - choose image based on which editor is passed.
           image_name = 'registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector'

@@ -25,6 +25,7 @@ describe('remote_development/router/index.js', () => {
   let wrapper;
 
   beforeEach(() => {
+    // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     router = createRouter(ROUTES.index);
   });
 
@@ -35,6 +36,7 @@ describe('remote_development/router/index.js', () => {
   const mountApp = async (route = ROUTES.index) => {
     await router.push(route);
 
+    // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     wrapper = mountExtended(App, {
       router,
       apolloProvider: createMockApollo([

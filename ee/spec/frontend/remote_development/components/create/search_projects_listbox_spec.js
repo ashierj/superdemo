@@ -38,6 +38,7 @@ describe('remote_development/components/create/search_projects_listbox', () => {
     visibility,
     membership,
   } = {}) => {
+    // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     wrapper = mountFn(SelectProjectListbox, {
       apolloProvider: mockApollo,
       propsData: {
@@ -151,6 +152,7 @@ describe('remote_development/components/create/search_projects_listbox', () => {
     const selectedProject = SEARCH_PROJECTS_QUERY_RESULT.data.projects.nodes[0];
 
     beforeEach(async () => {
+      // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
       buildWrapper({ value: selectedProject });
 
       await waitForPromises();
