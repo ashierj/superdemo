@@ -174,9 +174,7 @@ class IssuesFinder < IssuableFinder
   end
 
   def include_namespace_level_work_items?
-    params.group? &&
-      Array(params[:issue_types]).map(&:to_s).include?('epic') &&
-      Feature.enabled?(:namespace_level_work_items, params.group)
+    params.group? && Feature.enabled?(:namespace_level_work_items, params.group)
   end
 end
 

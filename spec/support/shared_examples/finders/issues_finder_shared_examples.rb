@@ -6,6 +6,10 @@ RSpec.shared_examples 'issues or work items finder' do |factory, execute_context
   describe '#execute' do
     include_context execute_context
 
+    before do
+      stub_feature_flags(namespace_level_work_items: false)
+    end
+
     context 'scope: all' do
       let(:scope) { 'all' }
 
@@ -21,14 +25,6 @@ RSpec.shared_examples 'issues or work items finder' do |factory, execute_context
 
           it 'returns no items' do
             expect(items).to be_empty
-          end
-
-          context 'when there are group-level work items' do
-            let!(:group_work_item) { create(:work_item, namespace: create(:group)) }
-
-            it 'returns no items' do
-              expect(items).to be_empty
-            end
           end
         end
 
@@ -271,19 +267,25 @@ RSpec.shared_examples 'issues or work items finder' do |factory, execute_context
         end
 
         context 'when querying group-level items' do
-          let(:params) { { group_id: group.id, issue_types: %w[issue epic] } }
+          let(:params) { { group_id: group.id } }
 
-          it 'includes group-level items' do
-            expect(items).to contain_exactly(item1, item5, group_level_item)
-          end
-
-          context 'when user has access to confidential items' do
+          context 'when namespace_level_work_items is enabled' do
             before do
-              group.add_reporter(user)
+              stub_feature_flags(namespace_level_work_items: true)
             end
 
-            it 'includes confidential group-level items' do
-              expect(items).to contain_exactly(item1, item5, group_level_item, group_level_confidential_item)
+            it 'includes group-level items' do
+              expect(items).to contain_exactly(item1, item5, group_level_item)
+            end
+
+            context 'when user has access to confidential items' do
+              before do
+                group.add_reporter(user)
+              end
+
+              it 'includes confidential group-level items' do
+                expect(items).to contain_exactly(item1, item5, group_level_item, group_level_confidential_item)
+              end
             end
           end
 

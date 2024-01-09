@@ -40,6 +40,10 @@ RSpec.describe 'getting an issue list for a group', feature_category: :team_plan
     )
   end
 
+  before do
+    stub_feature_flags(namespace_level_work_items: false)
+  end
+
   it_behaves_like 'a working graphql query' do
     before do
       post_graphql(query, current_user: current_user)
@@ -145,6 +149,10 @@ RSpec.describe 'getting an issue list for a group', feature_category: :team_plan
   end
 
   context 'when querying epic types' do
+    before do
+      stub_feature_flags(namespace_level_work_items: true)
+    end
+
     let(:query) do
       graphql_query_for(
         'group',
