@@ -5,8 +5,9 @@ require 'spec_helper'
 RSpec.describe ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsService,
   feature_category: :compliance_management do
   let_it_be_with_reload(:project) { create(:project, :in_group) }
+  let(:params) { {} }
 
-  let(:service) { described_class.new(project: project) }
+  let(:service) { described_class.new(project: project, params: params) }
 
   describe '#execute' do
     context 'when project belongs to user namespace' do
@@ -137,6 +138,49 @@ RSpec.describe ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsServi
 
           expect(response.status).to eq(:error)
           expect(response.message).to eq("Standard can't be blank")
+        end
+      end
+
+      context 'when track progress param is set' do
+        let(:params) { { 'track_progress' => true } }
+
+        it 'updates progress via StandardsAdherenceChecksTracker' do
+          expect_next_instance_of(::ComplianceManagement::StandardsAdherenceChecksTracker,
+            project.root_namespace.id) do |tracker|
+            expect(tracker).to receive(:update_progress).and_call_original
+          end
+
+          response = service.execute
+
+          expect(response.status).to eq(:success)
+          expect(project.compliance_standards_adherence.last)
+            .to have_attributes(
+              project_id: project.id,
+              namespace_id: project.namespace_id,
+              status: 'fail',
+              check_name: 'at_least_two_approvals',
+              standard: 'gitlab'
+            )
+        end
+      end
+
+      context 'when track progress param is not set' do
+        let(:params) { { 'track_progress' => false } }
+
+        it 'does not update progress via StandardsAdherenceChecksTracker' do
+          expect(::ComplianceManagement::StandardsAdherenceChecksTracker).not_to receive(:new)
+
+          response = service.execute
+
+          expect(response.status).to eq(:success)
+          expect(project.compliance_standards_adherence.last)
+            .to have_attributes(
+              project_id: project.id,
+              namespace_id: project.namespace_id,
+              status: 'fail',
+              check_name: 'at_least_two_approvals',
+              standard: 'gitlab'
+            )
         end
       end
     end

@@ -1137,6 +1137,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: compliance_management_standards_refresh
+  :worker_name: ComplianceManagement::Standards::RefreshWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: compliance_management_update_default_framework
   :worker_name: ComplianceManagement::UpdateDefaultFrameworkWorker
   :feature_category: :compliance_management
