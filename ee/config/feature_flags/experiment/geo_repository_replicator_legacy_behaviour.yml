@@ -1,9 +1,0 @@
----
-name: geo_repository_replicator_legacy_behaviour
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/427493
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/140904
-rollout_issue_url: https://gitlab.com/gitlab-com/gl-infra/production/-/issues/17350
-milestone: '16.8'
-group: group::geo
-type: experiment
-default_enabled: false
