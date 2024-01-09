@@ -25,7 +25,7 @@ module Mutations
           default_value: DEFAULT_PROJECT_COUNT,
           description:
             "Maximum number of projects to return. All other runner usage will be attributed " \
-            "to a '<Other projects>' entry. Defaults to #{DEFAULT_PROJECT_COUNT} projects."
+            "to an `<Other projects>` entry. Defaults to #{DEFAULT_PROJECT_COUNT} projects."
 
         def ready?(**args)
           raise_resource_not_available_error! unless Ability.allowed?(current_user, :read_runner_usage)
