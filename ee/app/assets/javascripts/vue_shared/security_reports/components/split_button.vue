@@ -21,6 +21,11 @@ export default {
       required: false,
       default: false,
     },
+    loading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -59,7 +64,7 @@ export default {
       variant="confirm"
       :href="selectedButton.href"
       :icon="selectedButton.icon"
-      :loading="selectedButton.loading"
+      :loading="loading"
       @click="handleClick"
     >
       {{ selectedButton.name }}
@@ -74,7 +79,7 @@ export default {
       variant="confirm"
       text-sr-only
       :toggle-text="$options.i18n.changeAction"
-      :disabled="disabled || selectedButton.loading"
+      :disabled="disabled || loading"
       :items="items"
     >
       <template #list-item="{ item }">
