@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Plan', :reliable, product_group: :product_planning do
+  RSpec.describe 'Plan', product_group: :product_planning,
+    quarantine: {
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/436698',
+      type: :investigating
+    } do
     describe 'Epics roadmap' do
       include Support::Dates
 
