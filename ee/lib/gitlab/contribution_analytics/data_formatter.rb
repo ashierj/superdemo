@@ -10,11 +10,24 @@ module Gitlab
       end
 
       # rubocop: disable CodeReuse/ActiveRecord
-      def users
-        @users ||= User
-          .select(:id, :name, :username)
-          .where(id: total_events_by_author_count.keys)
-          .reorder(:id)
+      def users(limit: 500, after_id: nil)
+        author_ids = total_events_by_author_count.keys.sort
+        author_ids = author_ids.drop_while { |id| id <= after_id } if after_id
+
+        all_records = []
+        author_ids.each_slice(limit) do |_ids|
+          records = User
+            .active
+            .select(:id, :name, :username)
+            .where(id: author_ids)
+            .reorder(:id)
+            .to_a
+
+          all_records.concat(records)
+          break if all_records.size >= limit
+        end
+
+        all_records.take(limit)
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
