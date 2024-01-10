@@ -13,6 +13,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  inject: ['summarizeClientSubscriptionId'],
   props: {
     resourceGlobalId: {
       type: String,
@@ -51,7 +52,12 @@ export default {
       this.$apollo
         .mutate({
           mutation: aiActionMutation,
-          variables: { input: { summarizeComments: { resourceId: this.resourceGlobalId } } },
+          variables: {
+            input: {
+              summarizeComments: { resourceId: this.resourceGlobalId },
+              clientSubscriptionId: this.summarizeClientSubscriptionId,
+            },
+          },
         })
         .then(({ data: { aiAction } }) => {
           const errors = aiAction?.errors || [];

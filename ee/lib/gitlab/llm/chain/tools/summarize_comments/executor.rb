@@ -49,7 +49,7 @@ module Gitlab
               )
             ].freeze
 
-            def perform
+            def perform(&block)
               return wrong_resource unless resource.is_a?(::Noteable)
 
               notes = NotesFinder.new(context.current_user, target: resource).execute.by_humans
@@ -59,7 +59,11 @@ module Gitlab
                           options[:notes_content] = notes_content
                           options[:num] = Random.rand(100..999)
 
-                          build_answer(resource, request)
+                          if options[:raw_ai_response]
+                            request(&block)
+                          else
+                            build_answer(resource, request)
+                          end
                         else
                           "#{resource_name} ##{resource.iid} has no comments to be summarized."
                         end
@@ -102,8 +106,6 @@ module Gitlab
             end
 
             def build_answer(resource, ai_response)
-              return ai_response if options[:raw_ai_response]
-
               [
                 "Here is the summary for #{resource_name} ##{resource.iid} comments:",
                 ai_response.to_s

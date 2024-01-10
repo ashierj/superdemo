@@ -5,8 +5,19 @@ require 'spec_helper'
 RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category: :duo_chat do
   let(:template_class) { nil }
   let(:ai_response) { "some ai response text" }
+  let(:client_subscription_id) { nil }
+  let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
   let(:prompt_message) do
-    build(:ai_message, :summarize_comments, user: user, resource: issuable, request_id: 'uuid')
+    build(
+      :ai_message, :summarize_comments, user: user, resource: issuable, request_id: 'uuid',
+      client_subscription_id: client_subscription_id
+    )
+  end
+
+  let(:context) do
+    Gitlab::Llm::Chain::GitlabContext.new(
+      current_user: user, container: issuable.resource_parent, resource: issuable, ai_request: ai_request_double
+    )
   end
 
   RSpec.shared_examples 'performs completion' do
@@ -30,6 +41,40 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
       expect(response_service).to receive(:execute)
 
       summarize_comments
+    end
+
+    context 'with streamed response' do
+      let(:client_subscription_id) { 'someid' }
+      let(:answer) { ::Gitlab::Llm::Chain::Answer.final_answer(context: context, content: "ai response") }
+
+      it 'calls the stream response service with the chunks' do
+        allow(GraphqlTriggers).to receive(:ai_completion_response)
+        expect(Gitlab::Llm::Chain::GitlabContext).to receive(:new).and_return(context)
+
+        expect_next_instance_of(Gitlab::Llm::Chain::Tools::SummarizeComments::Executor) do |instance|
+          expect(instance).to receive(:execute).and_yield("ai").and_yield("").and_yield(" response").and_return(answer)
+        end
+
+        summarize_comments
+
+        expect(GraphqlTriggers).to have_received(:ai_completion_response).with(
+          an_object_having_attributes(
+            role: ::Gitlab::Llm::AiMessage::ROLE_ASSISTANT,
+            request_id: 'uuid',
+            user: user,
+            content: 'ai',
+            chunk_id: 1
+          ))
+
+        expect(GraphqlTriggers).to have_received(:ai_completion_response).with(
+          an_object_having_attributes(
+            role: ::Gitlab::Llm::AiMessage::ROLE_ASSISTANT,
+            request_id: 'uuid',
+            user: user,
+            content: ' response',
+            chunk_id: 2
+          ))
+      end
     end
   end
 

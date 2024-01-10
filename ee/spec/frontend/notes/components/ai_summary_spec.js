@@ -6,7 +6,6 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import AiSummary from 'ee/notes/components/ai_summary.vue';
 import { createAlert } from '~/alert';
-import { getMarkdown } from '~/rest_api';
 import waitForPromises from 'helpers/wait_for_promises';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import { i18n } from 'ee/ai/constants';
@@ -26,6 +25,7 @@ describe('AiSummary component', () => {
   let wrapper;
   let aiResponseSubscriptionHandler;
   const resourceGlobalId = 'gid://gitlab/Issue/1';
+  const clientSubscriptionId = 'someId';
   const userId = 99;
   const LONGER_THAN_MAX_REQUEST_TIMEOUT = 1000 * 20; // 20 seconds
 
@@ -51,6 +51,7 @@ describe('AiSummary component', () => {
       apolloProvider: mockApollo,
       provide: {
         resourceGlobalId,
+        summarizeClientSubscriptionId: clientSubscriptionId,
       },
       mocks,
       propsData: props,
@@ -76,58 +77,193 @@ describe('AiSummary component', () => {
   });
 
   describe('loaded', () => {
-    beforeEach(async () => {
-      getMarkdown.mockResolvedValueOnce({ data: { html: 'yes' } });
-      createWrapper();
-      await waitForPromises();
-
-      aiResponseSubscriptionHandler.next({
-        data: {
-          aiCompletionResponse: {
-            content: '**yay**',
-          },
-        },
+    describe('when receiving chunks', () => {
+      beforeEach(() => {
+        createWrapper({ aiLoading: false });
       });
 
-      wrapper.setProps({ aiLoading: false });
+      it('renders content correctly when received in order', async () => {
+        aiResponseSubscriptionHandler.next({
+          data: {
+            aiCompletionResponse: {
+              content: 'Hello',
+              chunkId: 1,
+            },
+          },
+        });
+
+        await waitForPromises();
+        expect(wrapper.text()).toContain('Hello');
+
+        aiResponseSubscriptionHandler.next({
+          data: {
+            aiCompletionResponse: {
+              content: ' World',
+              chunkId: 2,
+            },
+          },
+        });
+
+        await waitForPromises();
+        expect(wrapper.text()).toContain('Hello World');
+      });
+
+      it('renders content correctly when received out of order', async () => {
+        aiResponseSubscriptionHandler.next({
+          data: {
+            aiCompletionResponse: {
+              content: ' World',
+              chunkId: 2,
+            },
+          },
+        });
+
+        await nextTick();
+        expect(wrapper.text()).not.toContain('World');
+
+        aiResponseSubscriptionHandler.next({
+          data: {
+            aiCompletionResponse: {
+              content: 'Hello',
+              chunkId: 1,
+            },
+          },
+        });
+
+        await nextTick();
+        expect(wrapper.text()).toContain('Hello World');
+      });
+
+      it('renders content correctly when full message after chunk', async () => {
+        aiResponseSubscriptionHandler.next({
+          data: {
+            aiCompletionResponse: {
+              content: '**Hello',
+              chunkId: 1,
+            },
+          },
+        });
+
+        await nextTick();
+        expect(wrapper.text()).toContain('Hello');
+
+        aiResponseSubscriptionHandler.next({
+          data: {
+            aiCompletionResponse: {
+              content: '**Hello World**',
+              contentHtml: '<strong>Hello World</strong>',
+            },
+          },
+        });
+
+        await nextTick();
+        expect(wrapper.text()).toContain('Hello World');
+      });
     });
 
-    it('does not timeout once it has received a successful response', async () => {
-      await waitForPromises();
-      jest.advanceTimersByTime(LONGER_THAN_MAX_REQUEST_TIMEOUT);
+    describe('when subscription returns an error', () => {
+      beforeEach(() => {
+        createWrapper({ aiLoading: false });
 
-      expect(createAlert).not.toHaveBeenCalled();
+        aiResponseSubscriptionHandler.next({
+          data: {
+            aiCompletionResponse: {
+              content: '**yay**',
+              contentHtml: '<strong>yay</strong>',
+              errors: ['Some error'],
+            },
+          },
+        });
+      });
+
+      it('stops rendering and shows error message', () => {
+        expect(wrapper.emitted('set-ai-loading')).toStrictEqual([[false]]);
+        expect(wrapper.text()).toBe('');
+        expect(createAlert).toHaveBeenCalledWith({
+          captureError: true,
+          message: 'Some error',
+          error: { message: 'Some error' },
+        });
+      });
     });
 
-    it('shows "AI-generated summary"', () => {
-      expect(findIcon('tanuki-ai').exists()).toBe(true);
-      expect(findBadge().text()).toBe(i18n.EXPERIMENT_BADGE);
-      expect(wrapper.text()).toContain('AI-generated summary');
-    });
+    describe('renders correctly', () => {
+      beforeEach(() => {
+        createWrapper();
 
-    it('shows the response in a markdown block', () => {
-      expect(findMarkdownRef().text()).toContain('yes');
-    });
+        aiResponseSubscriptionHandler.next({
+          data: {
+            aiCompletionResponse: {
+              content: '**yay**',
+              contentHtml: '<strong>yay</strong>',
+            },
+          },
+        });
 
-    it('shows "Only visible to you"', () => {
-      expect(findIcon('eye-slash').exists()).toBe(true);
-      expect(wrapper.text()).toContain('Only visible to you');
-    });
+        wrapper.setProps({ aiLoading: false });
+      });
 
-    it('can copy summary text to clipboard', () => {
-      expect(findCopyButton().attributes('data-clipboard-text')).toBe('**yay**');
+      it('does not timeout once it has received a successful response', async () => {
+        await waitForPromises();
+        jest.advanceTimersByTime(LONGER_THAN_MAX_REQUEST_TIMEOUT);
 
-      findCopyButton().vm.$emit('action');
+        expect(createAlert).not.toHaveBeenCalled();
+      });
 
-      expect(showToast).toHaveBeenCalledWith('Copied');
-    });
+      it('shows "AI-generated summary"', () => {
+        expect(findIcon('tanuki-ai').exists()).toBe(true);
+        expect(findBadge().text()).toBe(i18n.EXPERIMENT_BADGE);
+        expect(wrapper.text()).toContain('AI-generated summary');
+      });
 
-    it('can remove summary from button', async () => {
-      findRemoveButton().vm.$emit('action');
+      it('shows the response in a markdown block', () => {
+        expect(findMarkdownRef().text()).toContain('yay');
+      });
 
-      await nextTick();
+      it('shows "Only visible to you"', () => {
+        expect(findIcon('eye-slash').exists()).toBe(true);
+        expect(wrapper.text()).toContain('Only visible to you');
+      });
 
-      expect(wrapper.text()).toBe('');
+      it('can copy summary text to clipboard', () => {
+        expect(findCopyButton().attributes('data-clipboard-text')).toBe('**yay**');
+
+        findCopyButton().vm.$emit('action');
+
+        expect(showToast).toHaveBeenCalledWith('Copied');
+      });
+
+      it('can remove summary from button', async () => {
+        findRemoveButton().vm.$emit('action');
+
+        await nextTick();
+
+        expect(wrapper.text()).toBe('');
+      });
+
+      it('resets content when loading again', async () => {
+        expect(wrapper.emitted('set-ai-loading')).toStrictEqual([[false]]);
+        expect(findMarkdownRef().text()).toContain('yay');
+
+        wrapper.setProps({ aiLoading: true });
+        await nextTick();
+
+        aiResponseSubscriptionHandler.next({
+          data: {
+            aiCompletionResponse: {
+              content: 'new content',
+              contentHtml: '<strong>new content</strong>',
+            },
+          },
+        });
+
+        expect(wrapper.emitted('set-ai-loading')).toStrictEqual([[false], [false]]);
+
+        wrapper.setProps({ aiLoading: false });
+        await nextTick();
+
+        expect(findMarkdownRef().text()).toContain('new content');
+      });
     });
   });
 });

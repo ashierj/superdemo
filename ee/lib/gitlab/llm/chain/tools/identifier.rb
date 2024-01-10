@@ -16,7 +16,7 @@ module Gitlab
             @retries = 0
           end
 
-          def perform
+          def perform(&_block)
             MAX_RETRIES.times do
               json = extract_json(request)
               resource = identify_resource(json[:ResourceIdentifierType], json[:ResourceIdentifier])

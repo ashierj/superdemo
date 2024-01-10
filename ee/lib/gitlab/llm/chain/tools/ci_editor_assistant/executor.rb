@@ -48,7 +48,7 @@ module Gitlab
               Utils::Prompt.as_user("Question: %<input>s")
             ].freeze
 
-            def perform
+            def perform(&_block)
               Answer.new(status: :ok, context: context, content: request, tool: nil)
             rescue StandardError
               Answer.error_answer(context: context, content: _("Unexpected error"))

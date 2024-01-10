@@ -32,6 +32,18 @@ module Gitlab
             action: prompt_message.ai_action
           }
         end
+
+        def send_chunk(context, chunk)
+          GraphqlTriggers.ai_completion_response(AiMessage.new({
+            user: user,
+            content: chunk[:content],
+            chunk_id: chunk[:id],
+            request_id: prompt_message.request_id,
+            role: AiMessage::ROLE_ASSISTANT,
+            client_subscription_id: response_options[:client_subscription_id],
+            context: context
+          }))
+        end
       end
     end
   end
