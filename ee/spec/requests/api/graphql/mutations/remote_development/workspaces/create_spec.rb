@@ -11,9 +11,10 @@ RSpec.describe 'Creating a workspace', feature_category: :remote_development do
     create(:project, :public, :in_group, :repository).tap { |project| project.add_developer(user) }
   end
 
-  let_it_be(:agent) do
-    create(:ee_cluster_agent,
-      :with_remote_development_agent_config).tap { |agent| agent.project.add_developer(user) }
+  let_it_be(:agent, reload: true) do
+    create(:ee_cluster_agent, :with_remote_development_agent_config, project: project).tap do |agent|
+      agent.project.add_developer(user)
+    end
   end
 
   let(:desired_state) { RemoteDevelopment::Workspaces::States::RUNNING }
@@ -76,6 +77,20 @@ RSpec.describe 'Creating a workspace', feature_category: :remote_development do
 
     # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     expect(mutation_response.fetch('workspace')['name']).to eq(created_workspace['name'])
+  end
+
+  context 'when workspace project and agent project are not in the same root namespace' do
+    let_it_be(:agent_project_in_different_root_namespace, reload: true) do
+      create(:project, :public, :in_group).tap { |project| project.add_developer(user) }
+    end
+
+    before do
+      agent.update!(project: agent_project_in_different_root_namespace)
+    end
+
+    it_behaves_like 'a mutation that returns top-level errors' do
+      let(:match_errors) { include(/Workspace's project and agent's project must both be under the same.*namespace./) }
+    end
   end
 
   context 'when there are service errors' do
