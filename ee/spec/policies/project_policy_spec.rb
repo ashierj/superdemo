@@ -3261,19 +3261,28 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   describe 'read_ai_agents' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:feature_flag_enabled, :current_user, :allowed) do
-      true  | ref(:owner)      | true
-      true  | ref(:reporter)   | true
-      true  | ref(:guest)      | true
-      true  | ref(:non_member) | true
-      false | ref(:owner)      | false
-      false | ref(:reporter)   | false
-      false | ref(:guest)      | false
-      false | ref(:non_member) | false
+    where(:feature_flag_enabled, :licensed_feature, :current_user, :allowed) do
+      true  | true  | ref(:owner)      | true
+      true  | true  | ref(:reporter)   | true
+      true  | true  | ref(:guest)      | true
+      true  | true  | ref(:non_member) | true
+      true  | false | ref(:owner)      | false
+      true  | false | ref(:reporter)   | false
+      true  | false | ref(:guest)      | false
+      true  | false | ref(:non_member) | false
+      false | true  | ref(:owner)      | false
+      false | true  | ref(:reporter)   | false
+      false | true  | ref(:guest)      | false
+      false | true  | ref(:non_member) | false
+      false | false | ref(:owner)      | false
+      false | false | ref(:reporter)   | false
+      false | false | ref(:guest)      | false
+      false | false | ref(:non_member) | false
     end
     with_them do
       before do
         stub_feature_flags(agent_registry: feature_flag_enabled)
+        stub_licensed_features(ai_agents: licensed_feature)
       end
 
       if params[:allowed]
@@ -3287,19 +3296,28 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   describe 'write_ai_agents' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:feature_flag_enabled, :current_user, :allowed) do
-      true  | ref(:owner)      | true
-      true  | ref(:reporter)   | true
-      true  | ref(:guest)      | false
-      true  | ref(:non_member) | false
-      false | ref(:owner)      | false
-      false | ref(:reporter)   | false
-      false | ref(:guest)      | false
-      false | ref(:non_member) | false
+    where(:feature_flag_enabled, :licensed_feature, :current_user, :allowed) do
+      true  | true  | ref(:owner)      | true
+      true  | true  | ref(:reporter)   | true
+      true  | true  | ref(:guest)      | false
+      true  | true  | ref(:non_member) | false
+      true  | false | ref(:owner)      | false
+      true  | false | ref(:reporter)   | false
+      true  | false | ref(:guest)      | false
+      true  | false | ref(:non_member) | false
+      false | true  | ref(:owner)      | false
+      false | true  | ref(:reporter)   | false
+      false | true  | ref(:guest)      | false
+      false | true  | ref(:non_member) | false
+      false | false | ref(:owner)      | false
+      false | false | ref(:reporter)   | false
+      false | false | ref(:guest)      | false
+      false | false | ref(:non_member) | false
     end
     with_them do
       before do
         stub_feature_flags(agent_registry: feature_flag_enabled)
+        stub_licensed_features(ai_agents: licensed_feature)
       end
 
       if params[:allowed]
