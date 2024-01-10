@@ -22,6 +22,7 @@ query projectVulnerabilities(
   $vetEnabled: Boolean = false
   $clusterAgentId: [ClustersAgentID!]
   $image: [String!]
+  $owaspTopTen: [VulnerabilityOwaspTop10!]
 ) {
   project(fullPath: $fullPath) {
     id
@@ -42,6 +43,7 @@ query projectVulnerabilities(
       hasMergeRequest: $hasMergeRequest
       hasRemediations: $hasRemediations
       clusterAgentId: $clusterAgentId
+      owaspTopTen: $owaspTopTen
       image: $image
     ) {
       nodes {
