@@ -24002,6 +24002,9 @@ msgstr ""
 msgid "Groups|You're creating a new top-level group"
 msgstr ""
 
+msgid "Groups|Your group name must not contain a period if you intend to use SCIM integration, as it can lead to errors."
+msgstr ""
+
 msgid "Guest"
 msgstr ""
 
