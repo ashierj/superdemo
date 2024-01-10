@@ -8,6 +8,12 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let_it_be(:embeddings) { create_list(:vertex_gitlab_documentation, 2) }
 
     let(:empty_response_message) { "I'm sorry, I was not able to find any documentation to answer your question." }
+    let(:unsupported_response_message) do
+      "It seems your question relates to GitLab documentation. " \
+        "Unfortunately, this feature is not yet available in this GitLab instance. " \
+        "Your feedback is welcome."
+    end
+
     let(:question) { 'A question' }
     let(:answer) { 'The answer.' }
     let(:logger) { instance_double('Gitlab::Llm::Logger') }
@@ -331,6 +337,16 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
               allow(anthropic_client).to receive(:stream).once.and_yield({ "error" => { "message" => "some error" } })
 
               execute
+            end
+
+            context 'when embedding database does not exist' do
+              before do
+                allow(Embedding::Vertex::GitlabDocumentation).to receive(:table_exists?).and_return(false)
+              end
+
+              it 'returns an unsupported_response response message' do
+                expect(execute.response_body).to eq(unsupported_response_message)
+              end
             end
           end
         end

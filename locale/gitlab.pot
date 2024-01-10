@@ -26928,6 +26928,9 @@ msgstr ""
 msgid "It seems that there is currently no available data for code coverage"
 msgstr ""
 
+msgid "It seems your question relates to GitLab documentation. Unfortunately, this feature is not yet available in this GitLab instance. Your feedback is welcome."
+msgstr ""
+
 msgid "It's you"
 msgstr ""
 

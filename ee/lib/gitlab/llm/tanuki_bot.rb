@@ -37,6 +37,12 @@ module Gitlab
         return empty_response unless question.present?
         return empty_response unless self.class.enabled_for?(user: current_user)
 
+        unless ::Embedding::Vertex::GitlabDocumentation.table_exists?
+          logger.info_or_debug(current_user, message: "Embeddings database does not exist")
+
+          return unsupported_response
+        end
+
         unless ::Embedding::Vertex::GitlabDocumentation.any?
           logger.info_or_debug(current_user, message: "Need to query docs but no embeddings are found")
 
@@ -114,6 +120,14 @@ module Gitlab
       def empty_response
         Gitlab::Llm::ResponseModifiers::EmptyResponseModifier.new(
           _("I'm sorry, I was not able to find any documentation to answer your question.")
+        )
+      end
+
+      def unsupported_response
+        Gitlab::Llm::ResponseModifiers::EmptyResponseModifier.new(
+          _("It seems your question relates to GitLab documentation. " \
+            "Unfortunately, this feature is not yet available in this GitLab instance. " \
+            "Your feedback is welcome.")
         )
       end
     end
