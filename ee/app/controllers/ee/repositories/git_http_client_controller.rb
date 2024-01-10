@@ -208,12 +208,8 @@ module EE
 
         # Returns false if any of the objects in the batch request are not synced to the secondary
         def batch_out_of_date?
-          if ::Feature.enabled?(:geo_proxy_lfs_batch_requests)
-            requested_oids = objects.pluck(:oid) # rubocop:disable CodeReuse/ActiveRecord
-            return !::Geo::LfsObjectRegistry.oids_synced?(requested_oids)
-          end
-
-          ::Geo::ProjectRepositoryRegistry.repository_out_of_date?(project.id)
+          requested_oids = objects.pluck(:oid) # rubocop:disable CodeReuse/ActiveRecord
+          !::Geo::LfsObjectRegistry.oids_synced?(requested_oids)
         end
 
         def wanted_version
