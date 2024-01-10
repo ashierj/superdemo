@@ -200,7 +200,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
       visit group_epic_path(group, epic)
     end
 
-    it_behaves_like 'page meta description', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nos commodius agimus. Ex rebus enim timiditas, non ex vocabulis nascitur. Ita prorsus, inquam; Duo...'
+    it_behaves_like 'page meta description', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nos commodius agimus. Ex rebus enim timiditas, non ex vocabulis nascitur. Ita...'
 
     it 'shows epic type, status, date and author in header' do
       within('.detail-page-header-body') do
