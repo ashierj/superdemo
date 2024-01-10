@@ -20,6 +20,10 @@ export default {
       type: String,
       required: true,
     },
+    createAgentPath: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -42,7 +46,7 @@ export default {
         </div>
       </template>
       <template #right-actions>
-        <gl-button href="">{{ s__('AIAgents|Create agent') }}</gl-button>
+        <gl-button :href="createAgentPath">{{ s__('AIAgents|Create agent') }}</gl-button>
       </template>
     </title-area>
   </div>

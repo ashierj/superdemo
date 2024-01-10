@@ -6,14 +6,16 @@ import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 let wrapper;
 
 const createWrapper = () => {
-  wrapper = shallowMountExtended(ListAgents, { propsData: { projectPath: 'path/to/project' } });
+  wrapper = shallowMountExtended(ListAgents, {
+    propsData: { projectPath: 'path/to/project', createAgentPath: 'path/to/create' },
+  });
 };
 
 const findTitleArea = () => wrapper.findComponent(TitleArea);
 const findCreateButton = () => findTitleArea().findComponent(GlButton);
 const findBadge = () => wrapper.findComponent(GlBadge);
 
-describe('ee/ml/model_registry/apps/list_agents', () => {
+describe('ee/ml/ai_agents/apps/list_agents', () => {
   beforeEach(() => createWrapper());
 
   it('shows the title', () => {
@@ -25,6 +27,6 @@ describe('ee/ml/model_registry/apps/list_agents', () => {
   });
 
   it('shows create agent button', () => {
-    expect(findCreateButton().exists()).toBe(true);
+    expect(findCreateButton().attributes().href).toBe('path/to/create');
   });
 });
