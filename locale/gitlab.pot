@@ -20493,6 +20493,9 @@ msgstr ""
 msgid "Failed to create a to-do item for the design."
 msgstr ""
 
+msgid "Failed to create branch target"
+msgstr ""
+
 msgid "Failed to create framework"
 msgstr ""
 
@@ -20506,9 +20509,6 @@ msgid "Failed to create repository"
 msgstr ""
 
 msgid "Failed to create resources"
-msgstr ""
-
-msgid "Failed to create target branch rule"
 msgstr ""
 
 msgid "Failed to create wiki"
@@ -56442,7 +56442,7 @@ msgstr ""
 msgid "You have insufficient permissions to create a Todo for this alert"
 msgstr ""
 
-msgid "You have insufficient permissions to create a target branch rule"
+msgid "You have insufficient permissions to create a branch target"
 msgstr ""
 
 msgid "You have insufficient permissions to create an HTTP integration for this project"
