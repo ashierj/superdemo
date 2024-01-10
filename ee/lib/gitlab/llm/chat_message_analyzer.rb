@@ -17,6 +17,7 @@ module Gitlab
         analyze_current_message!
         analyze_previous_question!
         analyze_is_first_question_after_reset!
+        analyze_url!
 
         attributes
       end
@@ -56,6 +57,33 @@ module Gitlab
           messages[-2].conversation_reset? &&
           !current_message.conversation_reset?
         )
+      end
+
+      def analyze_url!
+        urls = URI.extract(current_message.content, %w[http https])
+
+        attributes["contains_link"] = true if urls.present?
+
+        urls.select! do |url|
+          url.start_with?(Gitlab.config.gitlab.base_url)
+        end
+
+        urls.each do |url|
+          route = Rails.application.routes.recognize_path(url)
+
+          next unless route[:action] == 'show'
+
+          case route[:controller]
+          when 'projects/issues'
+            attributes["contains_link_to_issue"] = true
+          when 'groups/epics'
+            attributes["contains_link_to_epic"] = true
+          when 'projects/pipelines'
+            attributes["contains_link_to_pipeline"] = true
+          when 'projects/blob'
+            attributes["contains_link_to_code"] = true
+          end
+        end
       end
     end
   end
