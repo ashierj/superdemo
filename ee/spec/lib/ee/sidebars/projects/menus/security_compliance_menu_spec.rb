@@ -167,6 +167,32 @@ RSpec.describe Sidebars::Projects::Menus::SecurityComplianceMenu, feature_catego
 
         it { is_expected.to be_nil }
       end
+
+      context 'when FIPS mode is enabled' do
+        let(:user) { project.first_owner }
+
+        before do
+          allow(::Gitlab::FIPS).to receive(:enabled?).and_return(true)
+          allow(Ability).to receive(:allowed?).and_call_original
+          allow(Ability).to receive(:allowed?).with(user, :read_on_demand_dast_scan, project).and_return(true)
+        end
+
+        context 'when browser based on demand scan feature is enabled' do
+          before do
+            stub_feature_flags(dast_ods_browser_based_scanner: true)
+          end
+
+          it { is_expected.not_to be_nil }
+        end
+
+        context 'when browser based on demand scan feature is disabled' do
+          before do
+            stub_feature_flags(dast_ods_browser_based_scanner: false)
+          end
+
+          it { is_expected.to be_nil }
+        end
+      end
     end
 
     describe 'Dependency List' do

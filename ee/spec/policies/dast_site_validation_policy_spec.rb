@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe DastSiteValidationPolicy do
+RSpec.describe DastSiteValidationPolicy, feature_category: :dynamic_application_security_testing do
   it_behaves_like 'a dast on-demand scan policy' do
     let_it_be(:record) { create(:dast_site_validation, dast_site_token: create(:dast_site_token, project: project)) }
   end

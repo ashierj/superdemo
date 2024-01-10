@@ -206,7 +206,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
             {
               stage: 'dast',
               image: {
-                name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION'
+                name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION$DAST_IMAGE_SUFFIX'
               },
               variables: {
                 DAST_VERSION: 4,
@@ -223,7 +223,11 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
               dast_configuration: {
                 site_profile: dast_site_profile.name,
                 scanner_profile: dast_scanner_profile.name
-              }
+              },
+              rules: [
+                { if: '$CI_GITLAB_FIPS_MODE == "true"', variables: { DAST_IMAGE_SUFFIX: "-fips" } },
+                { if: '$CI_GITLAB_FIPS_MODE != "true"', variables: { DAST_IMAGE_SUFFIX: "" } }
+              ]
             }
           end
         end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Gitlab::Security::ScanConfiguration do
+RSpec.describe ::Gitlab::Security::ScanConfiguration, feature_category: :dynamic_application_security_testing do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:project) { create(:project, :repository) }
@@ -180,24 +180,41 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
     subject { scan.on_demand_available? }
 
     context 'with type dast' do
-      let(:configured) { true }
-      let(:available) { true }
-      let(:type) { :dast }
+      context 'when feature is available' do
+        using RSpec::Parameterized::TableSyntax
+        let(:type) { :dast }
 
-      context 'when FIPS mode is enabled' do
-        it do
-          expect(::Gitlab::FIPS).to receive(:enabled?).and_return(true)
+        before do
+          stub_licensed_features(security_on_demand_scans: true)
+        end
 
-          is_expected.to be_falsy
+        where(:fips, :browser_based_ff, :on_demand_available) do
+          false | true | true
+          false | false | true
+          true | true | true
+          true | false | false
+        end
+
+        with_them do
+          it do
+            expect(::Gitlab::FIPS).to receive(:enabled?).and_return(fips)
+            stub_feature_flags(dast_ods_browser_based_scanner: browser_based_ff)
+
+            is_expected.to eq(on_demand_available)
+          end
         end
       end
 
-      context 'when FIPS mode is disabled' do
-        it do
-          expect(::Gitlab::FIPS).to receive(:enabled?).and_return(false)
+      context 'when feature is not available' do
+        let(:configured) { true }
+        let(:available) { false }
+        let(:type) { :dast }
 
-          is_expected.to be_truthy
+        before do
+          stub_licensed_features(security_on_demand_scans: false)
         end
+
+        it { is_expected.to be_falsy }
       end
     end
 

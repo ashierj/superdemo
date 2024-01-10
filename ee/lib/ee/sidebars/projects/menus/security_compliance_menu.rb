@@ -116,7 +116,7 @@ module EE
           end
 
           def on_demand_scans_menu_item
-            if ::Gitlab::FIPS.enabled?
+            unless context.project.on_demand_dast_available?
               return ::Sidebars::NilMenuItem.new(item_id: :on_demand_scans)
             end
 

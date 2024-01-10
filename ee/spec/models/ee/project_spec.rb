@@ -4355,4 +4355,37 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       it { is_expected.to eq(false) }
     end
   end
+
+  describe '#on_demand_dast_available?' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:project) { create(:project) }
+
+    subject(:on_demand_dast_available?) { project.on_demand_dast_available? }
+
+    where(:feature_available, :fips, :browser_based_ff, :on_demand_available) do
+      false | false | true | false
+      false | false | false | false
+      false | true | true | false
+      false | true | false | false
+      true | false | true | true
+      true | false | false | true
+      true | true | true | true
+      true | true | false | false
+    end
+    with_them do
+      context "when feature is #{params[:feature_available] ? 'allowed' : 'disallowed'}" do
+        before do
+          stub_licensed_features(security_on_demand_scans: feature_available)
+        end
+
+        it do
+          allow(::Gitlab::FIPS).to receive(:enabled?).and_return(fips)
+          stub_feature_flags(dast_ods_browser_based_scanner: browser_based_ff)
+
+          is_expected.to eq(on_demand_available)
+        end
+      end
+    end
+  end
 end

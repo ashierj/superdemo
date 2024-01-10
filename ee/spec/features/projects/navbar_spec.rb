@@ -97,27 +97,51 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
     it_behaves_like 'verified navigation bar'
 
     context 'when FIPS mode is enabled' do
-      let(:secure_nav_item) do
-        {
-          nav_item: _('Secure'),
-          nav_sub_items: [
+      let(:nav_sub_items) do
+        [
+          _('Security dashboard'),
+          _('Vulnerability report'),
+          _('Audit events'),
+          _('On-demand scans'),
+          _('Security configuration')
+        ]
+      end
+
+      let(:secure_nav_item) { { nav_item: _('Secure'), nav_sub_items: nav_sub_items } }
+
+      before do
+        allow(::Gitlab::FIPS).to receive(:enabled?).and_return(true)
+        stub_licensed_features(security_dashboard: true, security_on_demand_scans: true)
+      end
+
+      context 'when browser based on demand scan feature flag is enabled' do
+        before do
+          stub_feature_flags(dast_ods_browser_based_scanner: true)
+
+          visit project_path(project)
+        end
+
+        it_behaves_like 'verified navigation bar'
+      end
+
+      context 'when browser based on demand scan feature flag is disabled' do
+        let(:nav_sub_items) do
+          [
             _('Security dashboard'),
             _('Vulnerability report'),
             _('Audit events'),
             _('Security configuration')
           ]
-        }
+        end
+
+        before do
+          stub_feature_flags(dast_ods_browser_based_scanner: false)
+
+          visit project_path(project)
+        end
+
+        it_behaves_like 'verified navigation bar'
       end
-
-      before do
-        # When the Javascript driver is enabled ::Gitlab::FIPS.enabled? is called a 4th time
-        allow(::Gitlab::FIPS).to receive(:enabled?).exactly(4).times.and_return(true)
-        stub_licensed_features(security_dashboard: true, security_on_demand_scans: true)
-
-        visit project_path(project)
-      end
-
-      it_behaves_like 'verified navigation bar'
     end
   end
 

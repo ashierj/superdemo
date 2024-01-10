@@ -61,7 +61,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConf
         'dast-on-demand-0': {
           stage: 'dast',
           tags: ['runner-tag'],
-          image: { name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION' },
+          image: { name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION$DAST_IMAGE_SUFFIX' },
           variables: {
             DAST_VERSION: 4,
             SECURE_ANALYZERS_PREFIX: '$CI_TEMPLATE_REGISTRY_HOST/security-products',
@@ -70,7 +70,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConf
           allow_failure: true,
           script: ['/analyze'],
           artifacts: { reports: { dast: 'gl-dast-report.json' } },
-          dast_configuration: { site_profile: site_profile.name, scanner_profile: scanner_profile.name }
+          dast_configuration: { site_profile: site_profile.name, scanner_profile: scanner_profile.name },
+          rules: [
+            { if: '$CI_GITLAB_FIPS_MODE == "true"', variables: { DAST_IMAGE_SUFFIX: "-fips" } },
+            { if: '$CI_GITLAB_FIPS_MODE != "true"', variables: { DAST_IMAGE_SUFFIX: "" } }
+          ]
         },
         'dast-on-demand-1': {
           script: 'echo "Error during On-Demand Scan execution: Dast site profile was not provided" && false',

@@ -1219,6 +1219,13 @@ module EE
       feature_available?(:multiple_merge_request_reviewers)
     end
 
+    override :on_demand_dast_available?
+    def on_demand_dast_available?
+      return super unless feature_available?(:security_on_demand_scans)
+
+      ::Gitlab::FIPS.enabled? ? ::Feature.enabled?(:dast_ods_browser_based_scanner, self) : true
+    end
+
     private
 
     def latest_ingested_sbom_pipeline_id_redis_key
