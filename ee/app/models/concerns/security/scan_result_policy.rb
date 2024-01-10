@@ -31,7 +31,7 @@ module Security
         inverse_of: :security_orchestration_policy_configuration
 
       def delete_scan_finding_rules
-        delete_in_batches(approval_merge_request_rules)
+        delete_in_batches(approval_merge_request_rules.for_unmerged_merge_requests)
         delete_in_batches(approval_project_rules)
       end
 
@@ -41,7 +41,9 @@ module Security
 
       def delete_scan_finding_rules_for_project(project_id)
         delete_in_batches(approval_project_rules.where(project_id: project_id))
-        delete_in_batches(approval_merge_request_rules.for_merge_request_project(project_id))
+        delete_in_batches(approval_merge_request_rules
+                            .for_unmerged_merge_requests
+                            .for_merge_request_project(project_id))
       end
 
       def delete_software_license_policies(project)

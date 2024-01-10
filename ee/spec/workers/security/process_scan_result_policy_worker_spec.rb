@@ -301,5 +301,43 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
         worker.perform(configuration.project_id, 'invalid_id')
       end
     end
+
+    context 'with approval rules for merged MRs' do
+      let_it_be(:project) { configuration.project }
+      let_it_be_with_reload(:merge_request_to_be_merged) do
+        create(:merge_request,
+          target_project: project,
+          source_project: project,
+          source_branch: 'feature-1')
+      end
+
+      let_it_be(:scan_result_policy_read) do
+        create(:scan_result_policy_read, project: project, security_orchestration_policy_configuration: configuration)
+      end
+
+      let_it_be_with_reload(:approval_merge_request_rule) do
+        create(:report_approver_rule,
+          :scan_finding,
+          merge_request: merge_request_to_be_merged,
+          security_orchestration_policy_configuration_id: configuration.id,
+          scan_result_policy_read: scan_result_policy_read)
+      end
+
+      before do
+        merge_request_to_be_merged.mark_as_merged!
+      end
+
+      it 'does not delete approval merge request rules for merged MRs' do
+        worker.perform(configuration.project_id, configuration.id)
+
+        expect(ApprovalMergeRequestRule.find(approval_merge_request_rule.id)).not_to be_nil
+      end
+
+      it 'nullifies scan_result_policy_id in approval merge request rules for merged MRs' do
+        worker.perform(configuration.project_id, configuration.id)
+
+        expect(ApprovalMergeRequestRule.find(approval_merge_request_rule.id).scan_result_policy_id).to be_nil
+      end
+    end
   end
 end

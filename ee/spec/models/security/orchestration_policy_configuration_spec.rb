@@ -34,6 +34,33 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
   end
 
+  shared_examples 'does not deletes merge request approval rules of merged MR' do
+    context 'with approval rules for merged MRs' do
+      let(:merge_request_to_be_merged) do
+        create(:merge_request,
+          target_project: project,
+          source_project: project,
+          source_branch: 'feature-1')
+      end
+
+      let!(:approval_merge_rule_merged_mr) do
+        create(:report_approver_rule,
+          :scan_finding,
+          merge_request: merge_request_to_be_merged,
+          security_orchestration_policy_configuration_id: security_orchestration_policy_configuration_id)
+      end
+
+      before do
+        merge_request_to_be_merged.mark_as_merged!
+      end
+
+      it 'does not deletes merge request approval rules of merged MRs' do
+        subject
+        expect(ApprovalMergeRequestRule.find(approval_merge_rule_merged_mr.id)).to be_present
+      end
+    end
+  end
+
   describe 'associations' do
     it { is_expected.to belong_to(:project).inverse_of(:security_orchestration_policy_configuration) }
     it { is_expected.to belong_to(:namespace).inverse_of(:security_orchestration_policy_configuration) }
@@ -1576,6 +1603,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       it 'deletes merge request approval rules' do
         expect { delete_scan_finding_rules }.to change(ApprovalMergeRequestRule, :count).from(1).to(0)
       end
+
+      it_behaves_like 'does not deletes merge request approval rules of merged MR'
     end
 
     context 'when associated to a project' do
@@ -1640,6 +1669,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       it 'does not delete unrelated merge request approval rules' do
         expect { delete_scan_finding_rules_for_project }.to change(ApprovalMergeRequestRule, :count).from(2).to(1)
       end
+
+      it_behaves_like 'does not deletes merge request approval rules of merged MR'
     end
   end
 
