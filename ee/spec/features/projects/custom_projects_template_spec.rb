@@ -4,9 +4,9 @@ require 'spec_helper'
 
 RSpec.describe 'Project', feature_category: :groups_and_projects do
   describe 'Custom instance-level projects templates' do
-    let(:user) { create(:user) }
-    let(:group) { create(:group) }
-    let!(:projects) { create_list(:project, 3, :public, :metrics_dashboard_enabled, namespace: group) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:projects) { create_list(:project, 3, :public, :metrics_dashboard_enabled, namespace: group) }
 
     before do
       stub_ee_application_setting(custom_project_templates_group_id: group.id)
@@ -37,6 +37,13 @@ RSpec.describe 'Project', feature_category: :groups_and_projects do
         page.within '.project-template .custom-instance-project-templates-tab span.badge' do
           expect(page).to have_content '3'
         end
+      end
+
+      it 'renders a Preview link for instance templates', :js do
+        click_link 'Create from template'
+        click_link 'Instance'
+
+        expect(page).to have_link('Preview', href: "/#{projects.first.full_path}")
       end
 
       it 'allows creation from custom project template', :js, :sidekiq_inline do

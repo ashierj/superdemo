@@ -12,7 +12,8 @@ module EE
         .to receive_messages(to_settings(messages))
 
       # Ensure that we don't use the Markdown cache when stubbing these values
-      allow_any_instance_of(EE::ApplicationSetting).to receive(:cached_html_up_to_date?).and_return(false)
+      allow(::Gitlab::CurrentSettings.current_application_settings)
+        .to receive(:cached_html_up_to_date?).and_return(false)
     end
 
     def stub_application_setting_on_object(object, messages)
