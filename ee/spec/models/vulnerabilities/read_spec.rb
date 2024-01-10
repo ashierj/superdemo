@@ -338,6 +338,24 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     end
   end
 
+  describe '.with_owasp_top_10' do
+    let_it_be(:owasp_top_10_value) { 'A1:2021-Broken Access Control' }
+
+    subject(:with_owasp_top_10) { described_class.with_owasp_top_10(owasp_top_10_value) }
+
+    context 'when owasp_top_10 record exists' do
+      let_it_be(:vuln_read_with_owasp_top_10) { create(:vulnerability_read, owasp_top_10: owasp_top_10_value) }
+
+      it { expect(with_owasp_top_10).to contain_exactly(vuln_read_with_owasp_top_10) }
+    end
+
+    context 'without owasp_top_10' do
+      let_it_be(:vuln_read_without_owasp_top_10) { create(:vulnerability_read) }
+
+      it { expect(with_owasp_top_10).to be_empty }
+    end
+  end
+
   describe '.with_scanner_external_ids' do
     let!(:vulnerability_1) { create(:vulnerability, :with_finding) }
     let!(:vulnerability_2) { create(:vulnerability, :with_finding) }

@@ -23,6 +23,10 @@ module Resolvers
              required: false,
              description: 'Filter vulnerabilities by state.'
 
+    argument :owasp_top_10, [Types::VulnerabilityOwaspTop10Enum],
+             required: false,
+             description: 'Filter vulnerabilities by OWASP Top 10 category.'
+
     argument :scanner, [GraphQL::Types::String],
              required: false,
              description: 'Filter vulnerabilities by VulnerabilityScanner.externalId.'
