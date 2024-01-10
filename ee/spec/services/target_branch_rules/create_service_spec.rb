@@ -18,7 +18,7 @@ RSpec.describe TargetBranchRules::CreateService, feature_category: :code_review_
       response = service.execute
 
       expect(response[:status]).to eq(:error)
-      expect(response[:message]).to eq(_('You have insufficient permissions to create a target branch rule'))
+      expect(response[:message]).to eq(_('You have insufficient permissions to create a branch target'))
     end
   end
 
@@ -27,7 +27,7 @@ RSpec.describe TargetBranchRules::CreateService, feature_category: :code_review_
       response = service.execute
 
       expect(response[:status]).to eq(:error)
-      expect(response[:message]).to eq(_('You have insufficient permissions to create a target branch rule'))
+      expect(response[:message]).to eq(_('You have insufficient permissions to create a branch target'))
     end
   end
 

@@ -8,7 +8,7 @@ module TargetBranchRules
       if target_branch_rule.save
         success(payload: { target_branch_rule: target_branch_rule })
       else
-        error(target_branch_rule&.errors&.full_messages || _('Failed to create target branch rule'))
+        error(target_branch_rule&.errors&.full_messages || _('Failed to create branch target'))
       end
     end
 
@@ -19,7 +19,7 @@ module TargetBranchRules
     end
 
     def error_no_permissions
-      error(_('You have insufficient permissions to create a target branch rule'))
+      error(_('You have insufficient permissions to create a branch target'))
     end
 
     def target_branch_rule
