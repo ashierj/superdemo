@@ -194,31 +194,31 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
   end
 
   def within_dast_card
-    within '[data-testid="security-testing-card"]:nth-of-type(3)' do
-      yield
-    end
-  end
-
-  def within_dependency_scanning_card
     within '[data-testid="security-testing-card"]:nth-of-type(4)' do
       yield
     end
   end
 
-  def within_container_scanning_card
+  def within_dependency_scanning_card
     within '[data-testid="security-testing-card"]:nth-of-type(5)' do
       yield
     end
   end
 
-  def within_secret_detection_card
+  def within_container_scanning_card
     within '[data-testid="security-testing-card"]:nth-of-type(6)' do
       yield
     end
   end
 
-  def within_api_fuzzing_card
+  def within_secret_detection_card
     within '[data-testid="security-testing-card"]:nth-of-type(7)' do
+      yield
+    end
+  end
+
+  def within_api_fuzzing_card
+    within '[data-testid="security-testing-card"]:nth-of-type(9)' do
       yield
     end
   end
@@ -230,7 +230,7 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
   end
 
   def within_breach_and_attack_simulation_card
-    within '[data-testid="security-testing-card"]:nth-of-type(9)' do
+    within '[data-testid="security-testing-card"]:nth-of-type(3)' do
       yield
     end
   end
