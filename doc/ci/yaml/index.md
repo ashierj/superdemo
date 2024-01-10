@@ -2468,7 +2468,8 @@ image:
 
 #### `image:docker`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27919) in GitLab 16.7. Requires GitLab Runner 16.7 or later.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27919) in GitLab 16.7. Requires GitLab Runner 16.7 or later.
+> - `user` input option [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/137907) in GitLab 16.8.
 
 Use `image:docker` to pass options to the Docker executor of a GitLab Runner.
 
@@ -2481,6 +2482,7 @@ A hash of options for the Docker executor, which can include:
 
 - `platform`: Selects the architecture of the image to pull. When not specified,
     the default is the same platform as the host runner.
+- `user`: Specify the username or UID to use when running the container.
 
 **Example of `image:docker`**:
 
@@ -2491,11 +2493,13 @@ arm-sql-job:
     name: super/sql:experimental
     docker:
       platform: arm64/v8
+      user: dave
 ```
 
 **Additional details**:
 
 - `image:docker:platform` maps to the [`docker pull --platform` option](https://docs.docker.com/engine/reference/commandline/pull/#options).
+- `image:docker:user` maps to the [`docker run --user` option](https://docs.docker.com/engine/reference/commandline/run/#options).
 
 #### `image:pull_policy`
 
@@ -4350,7 +4354,8 @@ In this example, GitLab launches two containers for the job:
 
 #### `services:docker`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27919) in GitLab 16.7. Requires GitLab Runner 16.7 or later.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27919) in GitLab 16.7. Requires GitLab Runner 16.7 or later.
+> - `user` input option [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/137907) in GitLab 16.8.
 
 Use `services:docker` to pass options to the Docker executor of a GitLab Runner.
 
@@ -4363,6 +4368,7 @@ A hash of options for the Docker executor, which can include:
 
 - `platform`: Selects the architecture of the image to pull. When not specified,
     the default is the same platform as the host runner.
+- `user`: Specify the username or UID to use when running the container.
 
 **Example of `services:docker`**:
 
@@ -4374,11 +4380,13 @@ arm-sql-job:
     - name: super/sql:experimental
       docker:
         platform: arm64/v8
+        user: dave
 ```
 
 **Additional details**:
 
 - `services:docker:platform` maps to the [`docker pull --platform` option](https://docs.docker.com/engine/reference/commandline/pull/#options).
+- `services:docker:user` maps to the [`docker run --user` option](https://docs.docker.com/engine/reference/commandline/run/#options).
 
 #### `services:pull_policy`
 
