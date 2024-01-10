@@ -56,9 +56,6 @@ module EE
         :onboarding_step_url=,
         to: :user_detail, allow_nil: true
 
-      delegate :code_suggestions_enabled?, :code_suggestions, :code_suggestions=,
-        to: :namespace
-
       delegate :enabled_zoekt?, :enabled_zoekt, :enabled_zoekt=,
         to: :user_preference
 
