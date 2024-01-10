@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AppSec::Dast::Scans::CreateService do
+RSpec.describe AppSec::Dast::Scans::CreateService, feature_category: :dynamic_application_security_testing do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:user) { create(:user) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }

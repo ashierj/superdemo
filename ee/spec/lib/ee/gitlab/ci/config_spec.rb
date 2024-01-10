@@ -99,7 +99,7 @@ RSpec.describe Gitlab::Ci::Config, feature_category: :pipeline_composition do
               },
               'dast-on-demand-0': {
                 stage: 'dast',
-                image: { name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION' },
+                image: { name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION$DAST_IMAGE_SUFFIX' },
                 variables: {
                   DAST_VERSION: 4,
                   SECURE_ANALYZERS_PREFIX: '$CI_TEMPLATE_REGISTRY_HOST/security-products',
@@ -111,7 +111,11 @@ RSpec.describe Gitlab::Ci::Config, feature_category: :pipeline_composition do
                 dast_configuration: {
                   site_profile: dast_site_profile.name,
                   scanner_profile: dast_scanner_profile.name
-                }
+                },
+                rules: [
+                  { if: '$CI_GITLAB_FIPS_MODE == "true"', variables: { DAST_IMAGE_SUFFIX: "-fips" } },
+                  { if: '$CI_GITLAB_FIPS_MODE != "true"', variables: { DAST_IMAGE_SUFFIX: "" } }
+                ]
               }
             }
           end

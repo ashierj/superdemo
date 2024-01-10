@@ -89,7 +89,7 @@ RSpec.describe AppSec::Dast::Scans::RunService, feature_category: :dynamic_appli
 
         expected_options = {
           image: {
-            name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION'
+            name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION$DAST_IMAGE_SUFFIX'
           },
           script: [
             '/analyze'

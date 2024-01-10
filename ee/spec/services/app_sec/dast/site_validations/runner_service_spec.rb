@@ -61,6 +61,28 @@ RSpec.describe AppSec::Dast::SiteValidations::RunnerService do
         expect(build.variables.to_hash).to include(expected_variables)
       end
 
+      context 'when FIPS mode is enabled' do
+        it 'adds the correct image suffix' do
+          allow(::Gitlab::FIPS).to receive(:enabled?).and_return(true)
+          subject
+
+          build = Ci::Pipeline.last.builds.find_by(name: 'validation')
+
+          expect(build.variables.to_hash).to include({ DAST_IMAGE_SUFFIX: "-fips" })
+        end
+      end
+
+      context 'when FIPS mode is disabled' do
+        it 'adds the correct image suffix' do
+          allow(::Gitlab::FIPS).to receive(:enabled?).and_return(false)
+          subject
+
+          build = Ci::Pipeline.last.builds.find_by(name: 'validation')
+
+          expect(build.variables.to_hash).to include({ DAST_IMAGE_SUFFIX: "" })
+        end
+      end
+
       context 'when pipeline creation fails' do
         before do
           allow_next_instance_of(Ci::Pipeline) do |instance|

@@ -110,8 +110,7 @@ module EE
 
       with_scope :subject
       condition(:on_demand_scans_enabled) do
-        @subject.feature_available?(:security_on_demand_scans) &&
-          !::Gitlab::FIPS.enabled?
+        @subject.on_demand_dast_available?
       end
 
       with_scope :subject

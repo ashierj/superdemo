@@ -5,13 +5,13 @@ module Projects
     include SecurityAndCompliancePermissions
     include API::Helpers::GraphqlHelpers
 
-    before_action :check_fips_mode
+    before_action :check_on_demand_dast_available
     before_action :authorize_read_on_demand_dast_scan!, only: :index
     before_action :authorize_create_on_demand_dast_scan!, only: [:new]
     before_action :authorize_edit_on_demand_dast_scan!, only: [:edit]
     before_action do
       push_frontend_feature_flag(:dast_pre_scan_verification, @project)
-      push_frontend_feature_flag(:dast_ods_browser_based_scanner)
+      push_frontend_feature_flag(:dast_ods_browser_based_scanner, @project)
     end
 
     feature_category :dynamic_application_security_testing
@@ -62,8 +62,8 @@ module Projects
 
     private
 
-    def check_fips_mode
-      render_404 if ::Gitlab::FIPS.enabled?
+    def check_on_demand_dast_available
+      render_404 unless project.on_demand_dast_available?
     end
   end
 end

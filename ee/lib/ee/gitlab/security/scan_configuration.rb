@@ -23,7 +23,7 @@ module EE
 
         override :on_demand_available?
         def on_demand_available?
-          type == :dast && !::Gitlab::FIPS.enabled?
+          type == :dast && project.on_demand_dast_available?
         end
 
         private
