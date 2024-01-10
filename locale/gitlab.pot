@@ -37260,7 +37260,7 @@ msgstr ""
 msgid "Profile failed to delete"
 msgstr ""
 
-msgid "Profile image guideline"
+msgid "Profile image guidelines"
 msgstr ""
 
 msgid "Profile page:"
@@ -49831,6 +49831,9 @@ msgid "These examples show common methods of triggering a pipeline with a pipeli
 msgstr ""
 
 msgid "These existing issues have a similar title. It might be better to comment there instead of creating another similar issue."
+msgstr ""
+
+msgid "These guidelines for public avatars are displayed on the user settings page."
 msgstr ""
 
 msgid "These runners are shared across projects in this group."
