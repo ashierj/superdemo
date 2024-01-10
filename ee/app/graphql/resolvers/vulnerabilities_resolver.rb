@@ -23,8 +23,9 @@ module Resolvers
              required: false,
              description: 'Filter vulnerabilities by state.'
 
-    argument :owasp_top_10, [Types::VulnerabilityOwaspTop10Enum],
+    argument :owasp_top_ten, [Types::VulnerabilityOwaspTop10Enum],
              required: false,
+             as: :owasp_top_10,
              description: 'Filter vulnerabilities by OWASP Top 10 category.'
 
     argument :scanner, [GraphQL::Types::String],
