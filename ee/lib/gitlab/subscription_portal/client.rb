@@ -50,7 +50,7 @@ module Gitlab
             errors = "HTTP status code: #{http_response.code}"
             log_error(http_response, errors)
             { success: false, data: { errors: errors } }
-          end
+          end.with_indifferent_access
         end
 
         def log_error(response, errors)
