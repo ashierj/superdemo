@@ -20562,7 +20562,8 @@
           {
             "type": "taskItem",
             "attrs": {
-              "checked": false
+              "checked": false,
+              "inapplicable": false
             },
             "content": [
               {
@@ -20596,7 +20597,8 @@
           {
             "type": "taskItem",
             "attrs": {
-              "checked": true
+              "checked": true,
+              "inapplicable": false
             },
             "content": [
               {
@@ -21270,7 +21272,8 @@
           {
             "type": "taskItem",
             "attrs": {
-              "checked": true
+              "checked": true,
+              "inapplicable": false
             },
             "content": [
               {
@@ -21292,7 +21295,8 @@
           {
             "type": "taskItem",
             "attrs": {
-              "checked": true
+              "checked": true,
+              "inapplicable": false
             },
             "content": [
               {
@@ -21314,7 +21318,8 @@
           {
             "type": "taskItem",
             "attrs": {
-              "checked": true
+              "checked": true,
+              "inapplicable": false
             },
             "content": [
               {
@@ -23006,7 +23011,8 @@
           {
             "type": "taskItem",
             "attrs": {
-              "checked": true
+              "checked": true,
+              "inapplicable": false
             },
             "content": [
               {
@@ -23023,7 +23029,8 @@
           {
             "type": "taskItem",
             "attrs": {
-              "checked": true
+              "checked": true,
+              "inapplicable": false
             },
             "content": [
               {
@@ -23040,7 +23047,8 @@
           {
             "type": "taskItem",
             "attrs": {
-              "checked": false
+              "checked": false,
+              "inapplicable": false
             },
             "content": [
               {
@@ -23913,7 +23921,8 @@
           {
             "type": "taskItem",
             "attrs": {
-              "checked": false
+              "checked": false,
+              "inapplicable": false
             },
             "content": [
               {
@@ -23930,7 +23939,8 @@
           {
             "type": "taskItem",
             "attrs": {
-              "checked": true
+              "checked": true,
+              "inapplicable": false
             },
             "content": [
               {

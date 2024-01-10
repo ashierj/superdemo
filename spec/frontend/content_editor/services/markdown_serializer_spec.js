@@ -660,6 +660,24 @@ var a = 0;
     );
   });
 
+  it('correctly serializes a task list with inapplicable items', () => {
+    expect(
+      serialize(
+        taskList(
+          taskItem({ checked: true }, paragraph('list item 1')),
+          taskItem({ checked: true, inapplicable: true }, paragraph('list item 2')),
+          taskItem(paragraph('list item 3')),
+        ),
+      ),
+    ).toBe(
+      `
+* [x] list item 1
+* [~] list item 2
+* [ ] list item 3
+    `.trim(),
+    );
+  });
+
   it('correctly serializes bullet task list with different bullet styles', () => {
     expect(
       serialize(
