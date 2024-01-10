@@ -21,7 +21,7 @@ RSpec.describe ::Search::ProjectIndexIntegrityWorker, feature_category: :global_
         let(:job_args) { [project.id] }
 
         it 'executes the index repair service for the project' do
-          expect(::Search::IndexRepairService).to receive(:execute).with(project).and_call_original
+          expect(::Search::IndexRepairService).to receive(:execute).with(project, params: {}).and_call_original
 
           worker.perform(project.id)
         end

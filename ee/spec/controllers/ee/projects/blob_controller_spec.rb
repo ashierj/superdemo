@@ -19,6 +19,50 @@ RSpec.describe Projects::BlobController, feature_category: :source_code_manageme
     end
   end
 
+  describe 'show' do
+    let(:id) { 'master/invalid-path.rb' }
+    let(:params) { { namespace_id: project.namespace, project_id: project, id: id } }
+
+    context 'when an exception is raised while parsing URI' do
+      before do
+        @request.env['HTTP_REFERER'] = "invalid url" # rubocop:disable RSpec/InstanceVariable -- We need to test referer
+      end
+
+      it 'does not call ProjectIndexIntegrityWorker' do
+        expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_async)
+        get(:show, params: params)
+      end
+    end
+
+    context 'when a valid blob is requested' do
+      let(:id) { 'master/README.md' }
+
+      it 'does not call ProjectIndexIntegrityWorker' do
+        expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_async)
+        get(:show, params: params)
+      end
+    end
+
+    context 'when a request is not coming from a search page' do
+      it 'does not call ProjectIndexIntegrityWorker' do
+        expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_async)
+        get(:show, params: params)
+      end
+    end
+
+    context 'when a request is coming from a search page' do
+      before do
+        @request.env['HTTP_REFERER'] = "#{@request.url}#{search_path}?scope=blobs" # rubocop:disable RSpec/InstanceVariable -- We need to test referer
+      end
+
+      it 'calls ProjectIndexIntegrityWorker' do
+        expect(::Search::ProjectIndexIntegrityWorker).to receive(:perform_async).with(project.id,
+          { force_repair_blobs: true }).once
+        get(:show, params: params)
+      end
+    end
+  end
+
   describe 'POST create' do
     let(:user) { create(:user) }
     let(:default_params) do

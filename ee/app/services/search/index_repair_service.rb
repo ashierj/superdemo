@@ -6,8 +6,8 @@ module Search
 
     DELAY_INTERVAL = 5.minutes
 
-    def self.execute(project)
-      new(project: project).execute
+    def self.execute(project, params: {})
+      new(project: project, params: params).execute
     end
 
     def execute
@@ -51,6 +51,7 @@ module Search
 
     def repair_index_for_blobs
       ElasticCommitIndexerWorker.perform_in(rand(DELAY_INTERVAL), project.id, false, { force: true })
+      ElasticWikiIndexerWorker.perform_in(rand(DELAY_INTERVAL), project.id, project.class.name, { force: true })
     end
 
     def blobs_missing?
@@ -85,6 +86,7 @@ module Search
 
     def should_repair_index_for_blobs?
       return false if ::Gitlab::Geo.secondary?
+      return true if params[:force_repair_blobs]
       return false unless blobs_missing?
       return true if project.index_status.blank?
 
