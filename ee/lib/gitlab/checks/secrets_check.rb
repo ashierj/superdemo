@@ -20,6 +20,7 @@ module Gitlab
                                "in one of the commit messages for your changes.",
         found_secrets: 'Secret detection scan completed with one or more findings.',
         found_secrets_post_message: "\n\nPlease remove the identified secrets in your commits and try again.",
+        found_secrets_docs_link: "\nFor help with this, please refer to our documentation: %{path}",
         found_secrets_with_errors: 'Secret detection scan completed with one or more findings ' \
                                    'but some errors occured during the scan.',
         finding_message_occurrence: "\n\nSecret leaked in commit: %{sha}" \
@@ -30,6 +31,7 @@ module Gitlab
 
       BLOB_BYTES_LIMIT = 1.megabyte # Limit is 1MiB to start with.
       SPECIAL_COMMIT_FLAG = /\[skip secret detection\]/i
+      DOCUMENTATION_PATH = 'user/application_security/secret_detection/pre_receive.html#resolve-a-blocked-push'
 
       def validate!
         # Return early and not perform the check if:
@@ -185,6 +187,11 @@ module Gitlab
 
         message += LOG_MESSAGES[:skip_secret_detection]
         message += LOG_MESSAGES[:found_secrets_post_message]
+        message += format(
+          LOG_MESSAGES[:found_secrets_docs_link],
+          { path: Rails.application.routes.url_helpers.help_page_url(DOCUMENTATION_PATH) }
+        )
+
         message
       end
 
@@ -204,6 +211,11 @@ module Gitlab
 
         message += LOG_MESSAGES[:skip_secret_detection]
         message += LOG_MESSAGES[:found_secrets_post_message]
+        message += format(
+          LOG_MESSAGES[:found_secrets_docs_link],
+          { path: Rails.application.routes.url_helpers.help_page_url(DOCUMENTATION_PATH) }
+        )
+
         message
       end
 
