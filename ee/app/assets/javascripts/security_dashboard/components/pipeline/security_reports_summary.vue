@@ -125,7 +125,7 @@ export default {
 
 <template>
   <gl-card
-    body-class="gl-py-0"
+    body-class="gl-py-0 gl-pr-4"
     :header-class="`gl-display-flex gl-align-items-center gl-justify-content-space-between gl-py-4 gl-pr-4 ${
       isVisible ? 'gl-border-b-1' : 'gl-border-b-0 gl-rounded-base'
     }`"
@@ -138,19 +138,22 @@ export default {
         </gl-button>
       </div>
     </template>
-    <template v-if="isVisible">
-      <div
-        v-for="[scanType, scanSummary] in formattedSummary"
-        :key="scanType"
-        class="gl-display-flex gl-flex-wrap gl-align-items-center gl-gap-3 gl-my-3"
-      >
-        <div class="gl-flex-grow-1 gl-flex-basis-0">
+    <div
+      v-if="isVisible"
+      class="gl-display-grid scan-reports-summary-grid gl-align-items-center gl-row-gap-2 gl-my-3"
+    >
+      <template v-for="[scanType, scanSummary] in formattedSummary">
+        <div :key="scanType" class="gl-line-height-24">
           {{ scanType }}
         </div>
-        <div class="gl-flex-grow-1 gl-flex-basis-0">
+        <div :key="`${scanType}-count`" class="gl-line-height-24">
           <gl-sprintf :message="$options.i18n.vulnerabilities(scanSummary.vulnerabilitiesCount)" />
         </div>
-        <div :data-testid="`artifact-download-${normalizeScanType(scanType)}`">
+        <div
+          :key="`${scanType}-download`"
+          class="gl-text-right"
+          :data-testid="`artifact-download-${normalizeScanType(scanType)}`"
+        >
           <template v-if="scanSummary.scannedResourcesCount !== undefined">
             <gl-button
               v-if="hasScannedResources(scanSummary)"
@@ -190,7 +193,7 @@ export default {
             :artifacts="findArtifacts(scanType)"
           />
         </div>
-      </div>
-    </template>
+      </template>
+    </div>
   </gl-card>
 </template>
