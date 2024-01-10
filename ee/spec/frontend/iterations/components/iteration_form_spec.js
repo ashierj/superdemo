@@ -212,6 +212,10 @@ describe('Iteration Form', () => {
         });
       });
     });
+
+    it('shows a button to switch to rich text editor', () => {
+      expect(wrapper.text()).toContain('Switch to rich text editing');
+    });
   });
 
   describe('Edit iteration for manual cadence', () => {
@@ -311,6 +315,12 @@ describe('Iteration Form', () => {
           description: iteration.description,
         },
       });
+    });
+
+    it('shows a button to switch to rich text editor', () => {
+      createComponent();
+
+      expect(wrapper.text()).toContain('Switch to rich text editing');
     });
   });
 });
