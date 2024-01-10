@@ -411,7 +411,7 @@ describe('AnalyticsDashboard', () => {
 
         it(`tracks the "${EVENT_LABEL_EDITED_DASHBOARD}" event`, () => {
           expect(trackingSpy).toHaveBeenCalledWith(
-            expect.any(String),
+            undefined,
             EVENT_LABEL_EDITED_DASHBOARD,
             expect.any(Object),
           );
@@ -540,7 +540,7 @@ describe('AnalyticsDashboard', () => {
 
       it(`tracks the "${EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD}" event`, () => {
         expect(trackingSpy).toHaveBeenCalledWith(
-          expect.any(String),
+          undefined,
           EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
           expect.any(Object),
         );
@@ -569,7 +569,7 @@ describe('AnalyticsDashboard', () => {
 
       it(`tracks the "${EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD}" event`, () => {
         expect(trackingSpy).toHaveBeenCalledWith(
-          expect.any(String),
+          undefined,
           EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
           expect.any(Object),
         );
@@ -594,7 +594,7 @@ describe('AnalyticsDashboard', () => {
 
         it(`tracks the "${EVENT_LABEL_CREATED_DASHBOARD}" event`, () => {
           expect(trackingSpy).toHaveBeenCalledWith(
-            expect.any(String),
+            undefined,
             EVENT_LABEL_CREATED_DASHBOARD,
             expect.any(Object),
           );

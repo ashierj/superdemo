@@ -359,7 +359,7 @@ describe('CustomizableDashboard', () => {
 
     it(`tracks the "${EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER}" event`, () => {
       expect(trackingSpy).toHaveBeenCalledWith(
-        expect.any(String),
+        undefined,
         EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
         expect.any(Object),
       );
@@ -672,7 +672,7 @@ describe('CustomizableDashboard', () => {
         await findAnonUsersFilter().vm.$emit('change', true);
 
         expect(trackingSpy).toHaveBeenCalledWith(
-          expect.any(String),
+          undefined,
           EVENT_LABEL_EXCLUDE_ANONYMISED_USERS,
           expect.any(Object),
         );
@@ -700,7 +700,7 @@ describe('CustomizableDashboard', () => {
 
     it(`tracks the "${EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER}" event`, () => {
       expect(trackingSpy).toHaveBeenCalledWith(
-        expect.any(String),
+        undefined,
         EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
         expect.any(Object),
       );

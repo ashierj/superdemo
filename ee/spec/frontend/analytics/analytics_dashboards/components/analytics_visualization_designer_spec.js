@@ -158,7 +158,7 @@ describe('AnalyticsVisualizationDesigner', () => {
 
     it(`tracks the "${EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER}" event`, () => {
       expect(trackingSpy).toHaveBeenCalledWith(
-        expect.any(String),
+        undefined,
         EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER,
         expect.any(Object),
       );
@@ -308,7 +308,7 @@ describe('AnalyticsVisualizationDesigner', () => {
 
         it(`tracks the "${EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION}" event`, () => {
           expect(trackingSpy).toHaveBeenCalledWith(
-            expect.any(String),
+            undefined,
             EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION,
             expect.any(Object),
           );
