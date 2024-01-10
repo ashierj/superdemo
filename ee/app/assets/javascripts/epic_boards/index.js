@@ -4,7 +4,6 @@ import VueApollo from 'vue-apollo';
 import { fullEpicBoardId } from 'ee_component/boards/boards_util';
 
 import BoardApp from '~/boards/components/board_app.vue';
-import store from '~/boards/stores';
 
 import '~/boards/filters/due_date_filters';
 import {
@@ -38,7 +37,6 @@ function mountBoardApp(el) {
   new Vue({
     el,
     name: 'BoardRoot',
-    store,
     apolloProvider,
     provide: {
       initialBoardId: fullEpicBoardId(boardId),

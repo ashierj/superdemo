@@ -1,26 +1,15 @@
 import { mount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
+import { nextTick } from 'vue';
 import BoardScope from 'ee/boards/components/board_scope.vue';
 import BoardLabelsSelect from 'ee/boards/components/labels_select.vue';
 
 import { mockLabel1 } from 'jest/boards/mock_data';
 
-Vue.use(Vuex);
-
 describe('BoardScope', () => {
   let wrapper;
-  let store;
-
-  const createStore = () => {
-    return new Vuex.Store();
-  };
 
   function mountComponent({ isIssueBoard = true } = []) {
-    store = createStore();
     wrapper = mount(BoardScope, {
-      store,
       provide: {
         isIssueBoard,
       },

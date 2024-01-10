@@ -8,7 +8,6 @@ class Groups::EpicBoardsController < Groups::ApplicationController
 
   before_action do
     push_frontend_feature_flag(:epic_color_highlight, group)
-    push_frontend_feature_flag(:apollo_boards, group)
     push_frontend_feature_flag(:display_work_item_epic_issue_sidebar, group)
   end
 

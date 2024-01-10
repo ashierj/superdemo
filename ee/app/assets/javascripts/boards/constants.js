@@ -142,15 +142,6 @@ export const WeightIDs = {
   ANY: -1,
 };
 
-export const ErrorMessages = {
-  fetchIssueError: s__(
-    'Boards|An error occurred while fetching the board issues. Please reload the page.',
-  ),
-  fetchEpicsError: s__(
-    'Boards|An error occurred while fetching the board epics. Please reload the page.',
-  ),
-};
-
 export const listsQuery = {
   [TYPE_ISSUE]: {
     query: boardListsQuery,

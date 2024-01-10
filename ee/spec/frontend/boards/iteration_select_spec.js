@@ -2,8 +2,6 @@ import { GlButton, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 
 import VueApollo from 'vue-apollo';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import IterationSelect from 'ee/boards/components/iteration_select.vue';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -21,7 +19,6 @@ import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dro
 import { mockIterationsResponse, mockIterations, mockIterationCadence } from './mock_data';
 
 Vue.use(VueApollo);
-Vue.use(Vuex);
 
 describe('Iteration select component', () => {
   let wrapper;
@@ -49,22 +46,12 @@ describe('Iteration select component', () => {
   const errorMessage = 'Failed to fetch iterations';
   const iterationsQueryHandlerFailure = jest.fn().mockRejectedValue(new Error(errorMessage));
 
-  const createStore = () => {
-    return new Vuex.Store({
-      actions: {
-        setError: jest.fn(),
-      },
-    });
-  };
-
   const createComponent = ({
     props = {},
     iterationsQueryHandler = iterationsQueryHandlerSuccess,
   } = {}) => {
-    const store = createStore();
     fakeApollo = createMockApollo([[searchIterationQuery, iterationsQueryHandler]]);
     wrapper = shallowMountExtended(IterationSelect, {
-      store,
       apolloProvider: fakeApollo,
       propsData: {
         board: boardObj,
