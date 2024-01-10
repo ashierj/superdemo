@@ -266,6 +266,19 @@ export const TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE = {
   },
 };
 
+export const createDashboardGraphqlSuccessResponse = (dashboardNodes) => ({
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      customizableDashboards: {
+        nodes: [dashboardNodes],
+        __typename: 'CustomizableDashboardConnection',
+      },
+      __typename: 'Project',
+    },
+  },
+});
+
 export const mockResultSet = {
   seriesNames: () => [
     {
