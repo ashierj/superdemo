@@ -81,6 +81,14 @@ RSpec.shared_context 'secrets check context' do
 
   before do
     allow(::Gitlab::SecretDetectionLogger).to receive(:build).and_return(secret_detection_logger)
+
+    # This fixes a regression when testing locally because scanning in subprocess using the
+    # parallel gem calls `Kernel.at_exit` hook in gitaly_setup.rb when a subprocess is killed
+    # which in turns kills gitaly/praefect processes midway through the test suite, resulting in
+    # connection refused errors because the processes are no longer around.
+    #
+    # Instead, we set `RUN_IN_SUBPROCESS` to false so that we don't scan in sub-processes at all in tests.
+    stub_const('Gitlab::SecretDetection::Scan::RUN_IN_SUBPROCESS', false)
   end
 
   before_all do
