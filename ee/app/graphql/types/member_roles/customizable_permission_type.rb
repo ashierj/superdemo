@@ -21,10 +21,10 @@ module Types
         null: false,
         description: 'Localized name of the permission.'
 
-      field :requirement,
-        type: Types::MemberRoles::PermissionsEnum,
+      field :requirements,
+        type: [Types::MemberRoles::PermissionsEnum],
         null: true,
-        description: 'Requirement of the permission.'
+        description: 'Requirements of the permission.'
 
       field :value,
         type: Types::MemberRoles::PermissionsEnum,
@@ -48,8 +48,8 @@ module Types
         _(object.to_s.humanize)
       end
 
-      def requirement
-        permission[:requirement].presence&.to_sym
+      def requirements
+        permission[:requirements].presence&.map(&:to_sym)
       end
 
       def permission

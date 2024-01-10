@@ -17235,7 +17235,7 @@ Represents a product analytics dashboard visualization.
 | <a id="customizablepermissionavailablefor"></a>`availableFor` | [`[String!]!`](#string) | Objects the permission is available for. |
 | <a id="customizablepermissiondescription"></a>`description` | [`String`](#string) | Description of the permission. |
 | <a id="customizablepermissionname"></a>`name` | [`String!`](#string) | Localized name of the permission. |
-| <a id="customizablepermissionrequirement"></a>`requirement` | [`MemberRolePermission`](#memberrolepermission) | Requirement of the permission. |
+| <a id="customizablepermissionrequirements"></a>`requirements` | [`[MemberRolePermission!]`](#memberrolepermission) | Requirements of the permission. |
 | <a id="customizablepermissionvalue"></a>`value` | [`MemberRolePermission!`](#memberrolepermission) | Value of the permission. |
 
 ### `DastPreScanVerification`

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Preloaders::UserMemberRolesInGroupsPreloader, feature_category: :system_access do
+RSpec.describe Preloaders::UserMemberRolesInGroupsPreloader, feature_category: :permissions do
   let_it_be(:user) { create(:user) }
   let_it_be(:root_group) { create(:group, :private) }
   let_it_be(:group) { create(:group, :private, parent: root_group) }
@@ -12,22 +12,24 @@ RSpec.describe Preloaders::UserMemberRolesInGroupsPreloader, feature_category: :
 
   subject(:result) { described_class.new(groups: group_list, user: user).execute }
 
-  def ability_requirement(ability)
+  def ability_requirements(ability)
     ability_definition = MemberRole.all_customizable_permissions[ability]
-    ability_definition[:requirement]&.to_sym
+    ability_definition[:requirements]&.map(&:to_sym) || []
   end
 
   def create_member_role(ability, member)
     create(:member_role, :guest, namespace: root_group).tap do |record|
       record[ability] = true
-      record[ability_requirement(ability)] = true if ability_requirement(ability)
+      ability_requirements(ability).each do |requirement|
+        record[requirement] = true
+      end
       record.save!
       record.members << member
     end
   end
 
   shared_examples 'custom roles' do |ability|
-    let(:expected_abilities) { [ability, ability_requirement(ability)].compact }
+    let(:expected_abilities) { [ability, *ability_requirements(ability)].compact }
 
     context 'when custom_roles license is not enabled on group root ancestor' do
       it 'returns group id with nil ability value' do
@@ -115,6 +117,7 @@ RSpec.describe Preloaders::UserMemberRolesInGroupsPreloader, feature_category: :
     end
   end
 
-  it_behaves_like 'custom roles', :read_vulnerability
-  it_behaves_like 'custom roles', :admin_vulnerability
+  MemberRole.all_customizable_group_permissions.each do |ability|
+    it_behaves_like 'custom roles', ability
+  end
 end

@@ -11,7 +11,7 @@ RSpec.describe 'Query.member_role_permissions', feature_category: :permissions d
         availableFor
         description
         name
-        requirement
+        requirements
         value
       }
     QUERY
@@ -47,7 +47,7 @@ RSpec.describe 'Query.member_role_permissions', feature_category: :permissions d
         },
         admin_ability_two: {
           description: 'Allows admin access to do something else.',
-          requirement: :read_ability_two,
+          requirements: [:read_ability_two],
           group_ability: true
         },
         read_ability_two: {
@@ -74,11 +74,11 @@ RSpec.describe 'Query.member_role_permissions', feature_category: :permissions d
   it 'returns all customizable ablities' do
     expected_result = [
       { 'availableFor' => ['project'], 'description' => 'Allows admin access to do something.',
-        'name' => 'Admin ability one', 'requirement' => nil, 'value' => 'ADMIN_ABILITY_ONE' },
+        'name' => 'Admin ability one', 'requirements' => nil, 'value' => 'ADMIN_ABILITY_ONE' },
       { 'availableFor' => %w[project group], 'description' => 'Allows read access to do something else.',
-        'name' => 'Read ability two', 'requirement' => nil, 'value' => 'READ_ABILITY_TWO' },
+        'name' => 'Read ability two', 'requirements' => nil, 'value' => 'READ_ABILITY_TWO' },
       { 'availableFor' => ['group'], 'description' => "Allows admin access to do something else.",
-        'requirement' => 'READ_ABILITY_TWO', 'name' => 'Admin ability two', 'value' => 'ADMIN_ABILITY_TWO' }
+        'requirements' => ['READ_ABILITY_TWO'], 'name' => 'Admin ability two', 'value' => 'ADMIN_ABILITY_TWO' }
     ]
 
     expect(subject).to match_array(expected_result)

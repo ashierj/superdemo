@@ -12,7 +12,7 @@ module Gitlab
         milestone
         group_ability
         project_ability
-        requirement
+        requirements
         skip_seat_consumption
       ].freeze
     end
