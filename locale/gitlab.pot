@@ -38900,6 +38900,11 @@ msgstr ""
 msgid "Projects with write access"
 msgstr ""
 
+msgid "ProjectsNew|%d group or namespace found"
+msgid_plural "ProjectsNew|%d groups or namespaces found"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "ProjectsNew|Allows you to immediately clone this project’s repository. Skip this if you plan to push up an existing repository."
 msgstr ""
 

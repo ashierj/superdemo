@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
+  include ListboxHelpers
+
   let(:user) { create(:admin) }
   let(:premium_plan) { create(:license, plan: License::PREMIUM_PLAN) }
 
@@ -24,7 +26,7 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
       fill_in(:project_name, with: 'Project with premium license')
 
       click_on 'Pick a group or namespace'
-      click_on user.username
+      select_listbox_item user.username
 
       page.within('#content-body') do
         click_button('Create project')
@@ -180,7 +182,7 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
           wait_for_requests
 
           click_on 'Pick a group or namespace'
-          click_on user.username
+          select_listbox_item user.username
 
           fill_in 'project_name', with: 'import-project-with-features1'
           fill_in 'project_path', with: 'import-project-with-features1'
@@ -208,7 +210,7 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
           fill_in 'project_name', with: 'CI CD Project1'
           fill_in 'project_path', with: 'ci-cd-project1'
           click_on 'Pick a group or namespace'
-          click_on user.username
+          select_listbox_item user.username
           choose 'project_visibility_level_20'
           click_button 'Create project'
 
@@ -306,7 +308,7 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
           context 'namespace selector' do
             it "only shows the template's group hierarchy options" do
               page.within('#create-from-template-pane') do
-                elements = find_all('.gl-dropdown-item-text-wrapper').map { |e| e['innerText'] }
+                elements = find_all('.gl-new-dropdown-item-content').map { |e| e['innerText'] }
                 expect(elements).to contain_exactly(group1.full_path, subgroup1.full_path, subsubgroup1.full_path)
               end
             end
@@ -334,7 +336,7 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
 
           it 'list the appropriate groups' do
             page.within('#create-from-template-pane') do
-              elements = find_all('.gl-dropdown-item-text-wrapper').map { |e| e['innerText'] }
+              elements = find_all('.gl-new-dropdown-item-content').map { |e| e['innerText'] }
               expect(elements).to contain_exactly(group1.full_path, subgroup1.full_path, subsubgroup1.full_path)
             end
           end
