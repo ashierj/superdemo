@@ -6,6 +6,12 @@ module Gitlab
       class StreamedDocumentationAnswer < StreamedAnswer
         CONTENT_ID_FIELD = Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot::CONTENT_ID_FIELD
 
+        def initialize
+          @full_message = ''
+
+          super
+        end
+
         def next_chunk(content)
           @full_message += content
 
@@ -16,6 +22,8 @@ module Gitlab
         end
 
         private
+
+        attr_accessor :full_message
 
         # Once `CONTENT_ID_FIELD` appears, the answer contains the IDs to the sources of the embeddings.
         # We do not want to send this as part of the streamed answer. We also don't parse the IDs as the client

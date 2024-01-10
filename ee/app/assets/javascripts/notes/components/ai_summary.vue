@@ -9,15 +9,16 @@ import {
 } from '@gitlab/ui';
 import { fetchPolicies } from '~/lib/graphql';
 import { __ } from '~/locale';
+import { renderMarkdown } from '~/notes/utils';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { createAlert } from '~/alert';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import SafeHtml from '~/vue_shared/directives/safe_html';
-import { getMarkdown } from '~/rest_api';
 import { TYPENAME_USER } from '~/graphql_shared/constants';
 import { MAX_REQUEST_TIMEOUT } from 'ee/notes/constants';
 import { renderGFM } from '~/behaviors/markdown/render_gfm';
 import Tracking from '~/tracking';
+import { concatStreamedChunks } from 'ee/ai/utils';
 
 export default {
   components: {
@@ -31,9 +32,7 @@ export default {
   directives: { SafeHtml },
   mixins: [Tracking.mixin()],
   trackingLabel: 'ai_discussion_summary',
-  inject: {
-    resourceGlobalId: { default: null },
-  },
+  inject: ['resourceGlobalId', 'summarizeClientSubscriptionId'],
   props: {
     aiLoading: {
       type: Boolean,
@@ -54,8 +53,20 @@ export default {
       return {
         userId: gon.current_user_id && convertToGraphQLId(TYPENAME_USER, gon.current_user_id),
         resourceId: this.resourceGlobalId,
+        clientSubscriptionId: this.summarizeClientSubscriptionId,
       };
     },
+  },
+  watch: {
+    aiLoading(isLoading) {
+      if (isLoading) {
+        this.markdown = null;
+        this.summaryChunks = [];
+      }
+    },
+  },
+  beforeCreate() {
+    this.summaryChunks = [];
   },
   mounted() {
     this.timeout = window.setTimeout(this.handleError, MAX_REQUEST_TIMEOUT);
@@ -75,32 +86,35 @@ export default {
         variables() {
           return this.subscriptionVariables;
         },
-        skip() {
-          return !this.aiLoading;
-        },
         error(error) {
           this.handleError(error);
         },
         async result({ data }) {
-          if (data?.aiCompletionResponse?.error) {
-            this.handleError();
+          if (!data?.aiCompletionResponse) {
             return;
           }
 
-          if (data?.aiCompletionResponse?.content) {
-            clearTimeout(this.timeout);
-            const markdownResponse = await getMarkdown({
-              text: data.aiCompletionResponse.content,
-              gfm: true,
-            });
-            this.markdown = markdownResponse.data.html;
-            this.textForClipboard = data.aiCompletionResponse.content;
-
-            this.$nextTick(() => {
-              this.$emit('set-ai-loading', false);
-              renderGFM(this.$refs.markdown);
-            });
+          if (data?.aiCompletionResponse?.errors?.length >= 1) {
+            this.handleError({ message: data.aiCompletionResponse.errors[0] });
+            return;
           }
+
+          clearTimeout(this.timeout);
+          if (this.aiLoading) {
+            this.$emit('set-ai-loading', false);
+          }
+
+          if (data.aiCompletionResponse.chunkId) {
+            this.summaryChunks[data.aiCompletionResponse.chunkId - 1] =
+              data.aiCompletionResponse.content;
+
+            this.markdown = renderMarkdown(concatStreamedChunks(this.summaryChunks));
+          } else {
+            this.markdown = data.aiCompletionResponse.contentHtml;
+            this.textForClipboard = data.aiCompletionResponse.content;
+          }
+          await this.$nextTick();
+          renderGFM(this.$refs.markdown);
         },
       },
     },

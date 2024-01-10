@@ -16,6 +16,7 @@ describe('AiSummarizeNotes component', () => {
   let wrapper;
   let aiActionMutationHandler;
   const resourceGlobalId = 'gid://gitlab/Issue/1';
+  const clientSubscriptionId = 'someId';
   const LONGER_THAN_MAX_REQUEST_TIMEOUT = 1000 * 20; // 20 seconds
 
   const findButton = () => wrapper.findComponent(GlButton);
@@ -26,6 +27,9 @@ describe('AiSummarizeNotes component', () => {
 
     wrapper = mountExtended(AiSummaryNotes, {
       apolloProvider: mockApollo,
+      provide: {
+        summarizeClientSubscriptionId: clientSubscriptionId,
+      },
       propsData: {
         resourceGlobalId,
         ...props,
@@ -54,7 +58,10 @@ describe('AiSummarizeNotes component', () => {
 
       it('calls the aiActionMutation', () => {
         expect(aiActionMutationHandler).toHaveBeenCalledWith({
-          input: { summarizeComments: { resourceId: 'gid://gitlab/Issue/1' } },
+          input: {
+            summarizeComments: { resourceId: 'gid://gitlab/Issue/1' },
+            clientSubscriptionId,
+          },
         });
       });
 

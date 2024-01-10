@@ -80,7 +80,7 @@ module Gitlab
             private
 
             def execute_streamed_request
-              streamed_answer = StreamedAnswer.new
+              streamed_answer = StreamedZeroShotAnswer.new
 
               request do |content|
                 next unless stream_response_handler

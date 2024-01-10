@@ -24,7 +24,7 @@ module Gitlab
                 the job.
               PROMPT
 
-            def perform
+            def perform(&_block)
               # We can't reuse the injected client here but need to call TanukiBot as it uses the
               # embedding database and calls the VertexAI text embeddings API endpoint internally.
               logger.info(message: "Calling TanukiBot", class: self.class.to_s)

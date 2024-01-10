@@ -92,6 +92,22 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
             response = "Here is the summary for Issue #1 comments:"
             expect(tool.execute.content).to include(response)
           end
+
+          context 'with raw_ai_response: true' do
+            let(:input_variables) { { input: "user input", suggestions: "", raw_ai_response: true } }
+
+            it 'calls given block with chunks' do
+              expect(tool).to receive(:request).and_yield("some").and_yield(" response")
+
+              expect { |b| tool.execute(&b) }.to yield_successive_args("some", " response")
+            end
+
+            it 'returns content when no block is given' do
+              expect(tool).to receive(:request).and_return('some response')
+
+              expect(tool.execute.content).to eq('some response')
+            end
+          end
         end
       end
     end

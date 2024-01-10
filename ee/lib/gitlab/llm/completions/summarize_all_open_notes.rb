@@ -15,9 +15,16 @@ module Gitlab
             ai_request: ai_provider_request(user)
           )
 
+          streamed_answer = Gitlab::Llm::Chain::StreamedAnswer.new
+
           answer = ::Gitlab::Llm::Chain::Tools::SummarizeComments::Executor.new(
             context: context, options: { raw_ai_response: true }
-          ).execute
+          ).execute do |content|
+            chunk = streamed_answer.next_chunk(content)
+            next unless chunk
+
+            send_chunk(context, chunk)
+          end
           response_modifier = Gitlab::Llm::ResponseModifiers::ToolAnswer.new({ content: answer.content }.to_json)
 
           ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(

@@ -32,11 +32,11 @@ module Gitlab
             @command = command
           end
 
-          def execute
+          def execute(&block)
             return already_used_answer if already_used?
             return not_found unless authorize
 
-            perform
+            perform(&block)
           end
 
           def authorize

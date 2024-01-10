@@ -12,38 +12,11 @@ RSpec.describe Gitlab::Llm::Chain::StreamedAnswer, feature_category: :duo_chat d
       end
     end
 
-    context 'when stream does not contain the final answer' do
-      it 'returns nil' do
-        expect(streamed_answer.next_chunk("Some")).to be_nil
-        expect(streamed_answer.next_chunk("Content")).to be_nil
-      end
-    end
-
-    context 'when receiving thoughts and actions' do
-      it 'only returns the final answer', :aggregate_failures do
-        expect(streamed_answer.next_chunk("Thought: thought\n")).to be_nil
-        expect(streamed_answer.next_chunk("Action: IssueIdentifier\n")).to be_nil
-        expect(streamed_answer.next_chunk("Final Answer: Hello")).to eq({ id: 1, content: "Hello" })
-      end
-    end
-
-    context 'when receiving a final answer split up in multiple tokens', :aggregate_failures do
-      it 'returns the final answer once it is ready', :aggregate_failures do
-        expect(streamed_answer.next_chunk("Final Answer")).to be_nil
-        expect(streamed_answer.next_chunk(": ")).to be_nil
-        expect(streamed_answer.next_chunk("Hello")).to eq({ id: 1, content: "Hello" })
-        expect(streamed_answer.next_chunk(" ")).to eq({ id: 2, content: " " })
-      end
-    end
-
-    context 'when receiving empty chunks', :aggregate_failures do
-      it 'skips them', :aggregate_failures do
-        expect(streamed_answer.next_chunk("Final Answer:")).to be_nil
-        expect(streamed_answer.next_chunk("")).to be_nil
-        expect(streamed_answer.next_chunk("Hello")).to eq({ id: 1, content: "Hello" })
-        expect(streamed_answer.next_chunk(" ")).to eq({ id: 2, content: " " })
-        expect(streamed_answer.next_chunk("")).to be_nil
-        expect(streamed_answer.next_chunk("World")).to eq({ id: 3, content: "World" })
+    context 'when stream contains a chunk' do
+      it 'returns content with incremental chunk ids' do
+        expect(streamed_answer.next_chunk("Hello")).to eq({ content: "Hello", id: 1 })
+        expect(streamed_answer.next_chunk(" ")).to eq({ content: " ", id: 2 })
+        expect(streamed_answer.next_chunk("World")).to eq({ content: "World", id: 3 })
       end
     end
   end
