@@ -2,44 +2,112 @@
 
 require 'spec_helper'
 
-RSpec.describe Autocomplete::ProjectInvitedGroupsFinder do
+RSpec.describe Autocomplete::ProjectInvitedGroupsFinder, feature_category: :groups_and_projects do
   describe '#execute' do
+    let_it_be(:maintainer_user) { create(:user) }
+    let_it_be(:guest_user) { create(:user) }
     let_it_be(:user) { create(:user) }
-    let_it_be(:project) { create(:project, :private) }
+    let_it_be(:project) { create(:project, :public) }
+    let_it_be(:private_project) { create(:project, :private) }
     let_it_be(:public_group) { create(:group, :public) }
-    let_it_be(:authorized_private_group) { create(:group, :private) }
-    let_it_be(:unauthorized_private_group) { create(:group, :private) }
+    let_it_be(:private_group_with_membership) { create(:group, :private) }
+    let_it_be(:private_group_without_membership) { create(:group, :private) }
     let_it_be(:non_invited_group) { create(:group, :public) }
+    let(:current_user) { user }
 
     before_all do
-      authorized_private_group.add_guest(user)
-      project.invited_groups = [authorized_private_group, unauthorized_private_group, public_group]
-    end
-
-    it 'raises ActiveRecord::RecordNotFound if the project does not exist' do
-      finder = described_class.new(user, project_id: non_existing_record_id)
-
-      expect { finder.execute }.to raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it 'raises ActiveRecord::RecordNotFound if the user is not authorized to see the project' do
-      finder = described_class.new(user, project_id: project.id)
-
-      expect { finder.execute }.to raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it 'returns an empty relation without a project ID' do
-      expect(described_class.new(user).execute).to be_empty
-    end
-
-    context 'with a project the user is authorized to see' do
-      before_all do
-        project.add_guest(user)
+      [maintainer_user, user, guest_user].each do |u|
+        private_group_with_membership.add_guest(u)
       end
 
+      [project, private_project].each do |p|
+        p.add_maintainer(maintainer_user)
+        p.add_guest(guest_user)
+        p.invited_groups = [private_group_with_membership, private_group_without_membership, public_group]
+      end
+    end
+
+    subject(:finder) { described_class.new(current_user, params) }
+
+    context 'when the project does not exist' do
+      let(:params) { { project_id: non_existing_record_id } }
+
+      it 'raises ActiveRecord::RecordNotFound' do
+        expect { finder.execute }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when the user is not authorized to see the project' do
+      let(:params) { { project_id: private_project.id } }
+
+      it 'raises ActiveRecord::RecordNotFound' do
+        expect { finder.execute }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when a project id is not provided' do
+      let(:params) { {} }
+
+      it 'returns an empty relation' do
+        expect(described_class.new(user).execute).to be_empty
+      end
+    end
+
+    context 'when the user is not a member of the project' do
+      let(:params) { { project_id: project.id } }
+
       it 'returns groups invited to the project that the user can see' do
-        expect(described_class.new(user, project_id: project.id).execute)
-          .to contain_exactly(authorized_private_group, public_group)
+        expect(finder.execute).to contain_exactly(public_group, private_group_with_membership)
+      end
+    end
+
+    context 'when the user is member with insufficient access to the project' do
+      let(:current) { guest_user }
+      let(:params) { { project_id: project.id } }
+
+      it 'returns groups invited to the project that the user can see' do
+        expect(finder.execute).to contain_exactly(public_group, private_group_with_membership)
+      end
+    end
+
+    shared_examples_for 'private group visibility through project membership' do
+      it 'returns groups invited to the project that the user can see' do
+        expect(finder.execute).to contain_exactly(public_group, private_group_with_membership)
+      end
+
+      context 'and the with_project_access param is present' do
+        subject(:finder) { described_class.new(current_user, params.merge(with_project_access: true)) }
+
+        it 'returns all invited groups' do
+          expect(finder.execute).to contain_exactly(
+            private_group_with_membership,
+            private_group_without_membership,
+            public_group
+          )
+        end
+      end
+
+      context 'and the allow_members_to_see_invited_groups_in_access_dropdowns feature flag is disabled' do
+        before do
+          stub_feature_flags(allow_members_to_see_invited_groups_in_access_dropdowns: false)
+        end
+
+        it 'returns groups invited to the project that the user can see' do
+          expect(finder.execute).to contain_exactly(public_group, private_group_with_membership)
+        end
+      end
+    end
+
+    context 'and the user is a maintainer of the project' do
+      let(:current_user) { maintainer_user }
+      let(:params) { { project_id: project.id } }
+
+      it_behaves_like 'private group visibility through project membership'
+
+      context 'when the project is private' do
+        let(:params) { { project_id: private_project.id } }
+
+        it_behaves_like 'private group visibility through project membership'
       end
     end
   end

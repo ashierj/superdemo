@@ -31,10 +31,23 @@ module Autocomplete
     def invited_groups(project)
       invited_groups = project.invited_groups
 
+      return invited_groups if with_project_access?(project)
+
       Group.from_union([
                          invited_groups.public_to_user(current_user),
                          invited_groups.for_authorized_group_members(current_user)
                        ])
+    end
+
+    def with_project_access?(project)
+      return false unless params[:with_project_access].present?
+
+      return false unless Feature.enabled?(:allow_members_to_see_invited_groups_in_access_dropdowns,
+        project,
+        type: :gitlab_com_derisk
+      )
+
+      project.member?(current_user, Gitlab::Access::MAINTAINER)
     end
   end
 end
