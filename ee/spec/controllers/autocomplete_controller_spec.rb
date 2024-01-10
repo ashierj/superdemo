@@ -101,48 +101,31 @@ RSpec.describe AutocompleteController do
   end
 
   context 'groups', feature_category: :groups_and_projects do
-    let_it_be(:public_group) { create(:group, :public) }
-    let_it_be(:authorized_private_group) { create(:group, :private) }
-    let_it_be(:unauthorized_private_group) { create(:group, :private) }
-    let_it_be(:non_invited_group) { create(:group, :public) }
-
-    before_all do
-      authorized_private_group.add_guest(user)
-      project.invited_groups = [public_group, authorized_private_group, unauthorized_private_group]
+    before do
+      sign_in(user)
     end
 
-    context "while fetching all groups belonging to a project" do
-      before do
-        sign_in(user)
-        get(:project_groups, params: { project_id: project.id })
+    it 'responds with the results from Autocomplete::ProjectInvitedGroupsFinder' do
+      stubbed_results = build_list(:group, 2)
+      allow_next_instance_of(Autocomplete::ProjectInvitedGroupsFinder) do |finder|
+        allow(finder).to receive(:execute).and_return(stubbed_results)
       end
 
-      it 'returns groups invited to the project that the user can see' do
-        expect(json_response).to contain_exactly(
-          a_hash_including("id" => authorized_private_group.id),
-          a_hash_including("id" => public_group.id)
-        )
-      end
+      get(:project_groups, params: { project_id: project.id })
+
+      expect(json_response).to match_array(stubbed_results.map { |group| a_hash_including("id" => group.id) })
     end
 
     context "while fetching all groups belonging to a project the current user cannot access" do
-      let(:user2) { create(:user) }
+      it 'responds with not found' do
+        allow_next_instance_of(Autocomplete::ProjectInvitedGroupsFinder) do |finder|
+          allow(finder).to receive(:execute).and_raise(ActiveRecord::RecordNotFound)
+        end
 
-      before do
-        sign_in(user2)
         get(:project_groups, params: { project_id: project.id })
+
+        expect(response).to be_not_found
       end
-
-      it { expect(response).to be_not_found }
-    end
-
-    context "while fetching all groups belonging to an invalid project ID" do
-      before do
-        sign_in(user)
-        get(:project_groups, params: { project_id: non_existing_record_id })
-      end
-
-      it { expect(response).to be_not_found }
     end
   end
 
