@@ -133,6 +133,19 @@ RSpec.shared_context 'secret detection error and log messages context' do
   let(:secrets_not_found) { 'Secret detection scan completed with no findings.' }
   let(:found_secrets) { 'Secret detection scan completed with one or more findings.' }
   let(:found_secrets_post_message) { "\n\nPlease remove the identified secrets in your commits and try again." }
+  let(:found_secrets_docs_link) do
+    message = "\nFor help with this, please refer to our documentation: %{path}"
+
+    format(
+      message,
+      {
+        path: Rails.application.routes.url_helpers.help_page_url(
+          Gitlab::Checks::SecretsCheck::DOCUMENTATION_PATH
+        )
+      }
+    )
+  end
+
   let(:found_secrets_with_errors) do
     'Secret detection scan completed with one or more findings but some errors occured during the scan.'
   end

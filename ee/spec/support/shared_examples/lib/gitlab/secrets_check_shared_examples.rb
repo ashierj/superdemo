@@ -206,6 +206,7 @@ RSpec.shared_examples 'scan detected secrets' do
       expect(error.message).to include(found_message_occurrence)
       expect(error.message).to include(skip_secret_detection)
       expect(error.message).to include(found_secrets_post_message)
+      expect(error.message).to include(found_secrets_docs_link)
     end
   end
 
@@ -226,6 +227,7 @@ RSpec.shared_examples 'scan detected secrets' do
       expect(error.message).to include(found_message_occurrence)
       expect(error.message).to include(skip_secret_detection)
       expect(error.message).to include(found_secrets_post_message)
+      expect(error.message).to include(found_secrets_docs_link)
     end
   end
 
@@ -245,6 +247,7 @@ RSpec.shared_examples 'scan detected secrets' do
         expect(error.message).to include(found_secrets)
         expect(error.message).to include(found_message)
         expect(error.message).to include(found_secrets_post_message)
+        expect(error.message).to include(found_secrets_docs_link)
       end
     end
   end
@@ -305,6 +308,7 @@ RSpec.shared_examples 'scan detected secrets' do
         expect(error.message).to include(found_message_occurrence)
         expect(error.message).to include(skip_secret_detection)
         expect(error.message).to include(found_secrets_post_message)
+        expect(error.message).to include(found_secrets_docs_link)
       end
     end
   end
@@ -492,6 +496,7 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
       expect(error.message).to include(failed_to_scan_regex_error)
       expect(error.message).to include(skip_secret_detection)
       expect(error.message).to include(found_secrets_post_message)
+      expect(error.message).to include(found_secrets_docs_link)
     end
   end
 
@@ -539,6 +544,7 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
       expect(error.message).to include(failed_to_scan_regex_error)
       expect(error.message).to include(skip_secret_detection)
       expect(error.message).to include(found_secrets_post_message)
+      expect(error.message).to include(found_secrets_docs_link)
     end
   end
 end
