@@ -18,9 +18,9 @@ export default {
   i18n: {
     contactSales: __('Contact sales'),
     description: s__(
-      `CodeSuggestions|Enhance your coding experience with intelligent recommendations. %{linkStart}Code Suggestions%{linkEnd} uses generative AI to suggest code while you're developing.`,
+      `CodeSuggestions|Enhance your coding experience with intelligent recommendations. %{linkStart}Duo Pro%{linkEnd} offers features that use generative AI to suggest code.`,
     ),
-    title: s__('CodeSuggestions|Introducing the Code&nbsp;Suggestions add&#8209;on'),
+    title: s__('CodeSuggestions|Introducing Duo Pro'),
   },
   directives: {
     SafeHtml,

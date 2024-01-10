@@ -11,7 +11,7 @@ module Sidebars
 
         override :title
         def title
-          s_('Admin|Code Suggestions')
+          s_('Admin|Duo Pro')
         end
 
         override :sprite_icon
