@@ -208,7 +208,7 @@ module EE
 
         # Returns false if any of the objects in the batch request are not synced to the secondary
         def batch_out_of_date?
-          requested_oids = objects.pluck(:oid) # rubocop:disable CodeReuse/ActiveRecord
+          requested_oids = objects.pluck(:oid) # rubocop:disable CodeReuse/ActiveRecord -- objects is not a type of ActiveRecord
           !::Geo::LfsObjectRegistry.oids_synced?(requested_oids)
         end
 
