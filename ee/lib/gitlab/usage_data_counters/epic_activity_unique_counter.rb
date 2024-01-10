@@ -7,9 +7,6 @@ module Gitlab
       # on epic event names, because they are persisted at the same
       # slot of issue events to allow data aggregation.
       # More information in: https://gitlab.com/gitlab-org/gitlab/-/issues/322405
-      EPIC_CATEGORY = 'epics_action'
-      EPIC_ACTION = 'perform_epics_action'
-      EPIC_LABEL = 'redis_hll_counters.epics_usage.epics_usage_total_unique_counts_monthly'
 
       EPIC_CREATED = 'g_project_management_epic_created'
       EPIC_DESCRIPTION_CHANGED = 'g_project_management_users_updating_epic_descriptions'
@@ -193,27 +190,6 @@ module Gitlab
             event_name,
             user: author,
             namespace: namespace
-          )
-        end
-
-        def track_unique_action(action, author)
-          return unless Feature.enabled?(:track_epics_activity)
-          return unless author
-
-          Gitlab::UsageDataCounters::HLLRedisCounter.track_event(action, values: author.id)
-        end
-
-        def track_snowplow_action(event_name, author, namespace)
-          return unless author
-
-          Gitlab::Tracking.event(
-            EPIC_CATEGORY,
-            EPIC_ACTION,
-            label: EPIC_LABEL,
-            property: event_name,
-            namespace: namespace,
-            user: author,
-            context: [Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: event_name).to_context]
           )
         end
       end
