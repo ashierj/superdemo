@@ -330,14 +330,6 @@ RSpec.describe Ci::BuildRunnerPresenter, feature_category: :secrets_management d
             expect(jwt).to eq('$GCP_SM_ID_TOKEN')
           end
         end
-
-        context 'when feature flag ci_gcp_secret_manager is disabled' do
-          before do
-            stub_feature_flags(ci_gcp_secret_manager: false)
-          end
-
-          it { expect(gcp_secret_manager_server).to be_nil }
-        end
       end
     end
   end
