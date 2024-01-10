@@ -1,8 +1,8 @@
 import { within } from '@testing-library/dom';
-import { mount } from '@vue/test-utils';
+import { GlCollapse } from '@gitlab/ui';
 import ReportSection from 'ee/vulnerabilities/components/generic_report/report_section.vue';
 import { REPORT_TYPES } from 'ee/vulnerabilities/components/generic_report/types/constants';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 const TEST_DATA = {
   supportedTypes: {
@@ -13,13 +13,13 @@ const TEST_DATA = {
     },
     table: {
       name: 'table',
-      type: REPORT_TYPES.table,
+      type: REPORT_TYPES.reportTable,
       header: [],
       rows: [],
     },
     code: {
       name: 'code',
-      type: REPORT_TYPES.code,
+      type: REPORT_TYPES.codeCell,
       value: '<h1>Foo</h1>',
     },
   },
@@ -34,18 +34,18 @@ const TEST_DATA = {
 describe('ee/vulnerabilities/components/generic_report/report_section.vue', () => {
   let wrapper;
 
-  const createWrapper = (options) =>
-    extendedWrapper(
-      mount(ReportSection, {
-        propsData: {
-          details: { ...TEST_DATA.supportedTypes, ...TEST_DATA.unsupportedTypes },
-        },
-        ...options,
-      }),
-    );
+  const createWrapper = (options) => {
+    wrapper = shallowMountExtended(ReportSection, {
+      propsData: {
+        details: { ...TEST_DATA.supportedTypes, ...TEST_DATA.unsupportedTypes },
+      },
+      ...options,
+    });
+  };
 
   const withinWrapper = () => within(wrapper.element);
   const findHeader = () => wrapper.find('header');
+  const findCollapse = () => wrapper.findComponent(GlCollapse);
   const findHeading = () =>
     withinWrapper().getByRole('heading', {
       name: /evidence/i,
@@ -58,7 +58,7 @@ describe('ee/vulnerabilities/components/generic_report/report_section.vue', () =
 
   describe('with supported report types', () => {
     beforeEach(() => {
-      wrapper = createWrapper();
+      createWrapper();
     });
 
     describe('reports section', () => {
@@ -67,11 +67,11 @@ describe('ee/vulnerabilities/components/generic_report/report_section.vue', () =
       });
 
       it('collapses when the header is clicked', async () => {
-        expect(findReportsSection().isVisible()).toBe(true);
+        expect(findCollapse().props('visible')).toBe(true);
 
         await findHeader().trigger('click');
 
-        expect(findReportsSection().isVisible()).toBe(false);
+        expect(findCollapse().props('visible')).toBe(false);
       });
     });
 
@@ -104,7 +104,7 @@ describe('ee/vulnerabilities/components/generic_report/report_section.vue', () =
 
   describe('with unsupported report types', () => {
     it('only renders valid report types', () => {
-      wrapper = createWrapper({
+      createWrapper({
         propsData: {
           details: {
             ...TEST_DATA.supportedTypes,
@@ -117,7 +117,7 @@ describe('ee/vulnerabilities/components/generic_report/report_section.vue', () =
     });
 
     it('does not render the section if the details only contain non-supported types', () => {
-      wrapper = createWrapper({
+      createWrapper({
         propsData: {
           details: {
             ...TEST_DATA.unsupportedTypes,

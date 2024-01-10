@@ -6,7 +6,7 @@ import Table from 'ee/vulnerabilities/components/generic_report/types/table.vue'
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 const TEST_DATA = {
-  header: [{ key: 'column_1', type: REPORT_TYPES.text, value: 'foo ' }],
+  header: [{ key: 'column_1', type: REPORT_TYPES.componentText, value: 'foo ' }],
   rows: [
     {
       column_1: { type: REPORT_TYPES.url, href: 'bar' },
