@@ -23,7 +23,6 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { mockTracking } from 'helpers/tracking_helper';
 import DevopsScore from '~/analytics/devops_reports/components/devops_score.vue';
 import API from '~/api';
-import { GITLAB_INTERNAL_EVENT_CATEGORY } from '~/tracking/constants';
 import { groupNodes, devopsAdoptionNamespaceData } from '../mock_data';
 
 jest.mock('ee/analytics/devops_reports/devops_adoption/utils/cache_updates', () => ({
@@ -376,7 +375,7 @@ describe('DevopsAdoptionApp', () => {
           wrapper.findByTestId(testId).vm.$emit('click');
 
           expect(API.trackInternalEvent).toHaveBeenCalledWith(event);
-          expect(trackingSpy).toHaveBeenCalledWith(GITLAB_INTERNAL_EVENT_CATEGORY, event, {
+          expect(trackingSpy).toHaveBeenCalledWith(undefined, event, {
             context: {
               schema: 'iglu:com.gitlab/gitlab_service_ping/jsonschema/1-0-1',
               data: {

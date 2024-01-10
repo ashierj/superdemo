@@ -52,7 +52,7 @@ describe('Insights page component', () => {
   };
 
   const expectTrackingAction = (action) =>
-    expect(trackingSpy).toHaveBeenCalledWith(expect.any(String), action, expect.any(Object));
+    expect(trackingSpy).toHaveBeenCalledWith(undefined, action, expect.any(Object));
 
   const findInsightsChartData = () => wrapper.findComponent(InsightsChart);
 

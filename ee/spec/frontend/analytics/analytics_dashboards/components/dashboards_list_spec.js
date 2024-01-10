@@ -116,7 +116,7 @@ describe('DashboardsList', () => {
 
     it('should track the dashboard list has been viewed', () => {
       expect(trackingSpy).toHaveBeenCalledWith(
-        expect.any(String),
+        undefined,
         'user_viewed_dashboard_list',
         expect.any(Object),
       );
@@ -348,7 +348,7 @@ describe('DashboardsList', () => {
           await nextTick();
 
           expect(trackingSpy).toHaveBeenCalledWith(
-            expect.any(String),
+            undefined,
             'user_visited_dashboard',
             expect.any(Object),
           );

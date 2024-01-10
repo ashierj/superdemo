@@ -75,7 +75,7 @@ describe('Comparison table', () => {
 
         it(`should track the '${trackingMetricClickedAction}' event`, () => {
           expect(trackingSpy).toHaveBeenCalledWith(
-            expect.any(String),
+            undefined,
             trackingMetricClickedAction,
             expect.any(Object),
           );
@@ -83,7 +83,7 @@ describe('Comparison table', () => {
 
         it(`should track the '${trackingMetricIdentifierClickedAction}' event`, () => {
           expect(trackingSpy).toHaveBeenCalledWith(
-            expect.any(String),
+            undefined,
             trackingMetricIdentifierClickedAction,
             expect.any(Object),
           );

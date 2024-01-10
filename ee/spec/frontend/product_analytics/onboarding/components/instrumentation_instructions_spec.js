@@ -55,7 +55,7 @@ describe('ProductAnalyticsInstrumentationInstructions', () => {
       createWrapper();
 
       expect(trackingSpy).toHaveBeenCalledWith(
-        expect.any(String),
+        undefined,
         'user_viewed_instrumentation_directions',
         expect.any(Object),
       );
