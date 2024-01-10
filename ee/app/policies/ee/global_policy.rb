@@ -70,13 +70,6 @@ module EE
         end
       end
 
-      condition(:code_suggestions_enabled_by_user) do
-        next true unless ::Gitlab.org_or_com?
-        next true if ::Feature.enabled?(:code_suggestions_used_by_default, @user)
-
-        @user&.code_suggestions_enabled?
-      end
-
       condition(:code_suggestions_disabled_by_group) do
         next false unless ::Gitlab.org_or_com?
         next false unless @user
@@ -175,7 +168,7 @@ module EE
         enable :admin_instance_external_audit_events
       end
 
-      rule { code_suggestions_licensed & code_suggestions_enabled_by_user & code_suggestions_enabled_for_user }
+      rule { code_suggestions_licensed & code_suggestions_enabled_for_user }
         .enable :access_code_suggestions
       rule { code_suggestions_disabled_by_group }.prevent :access_code_suggestions
 

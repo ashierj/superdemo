@@ -58,35 +58,6 @@ RSpec.describe Profiles::PreferencesController, feature_category: :user_profile 
       end
     end
 
-    context 'when updating code suggestions setting', :saas do
-      let(:user_on_com) { create(:user) }
-
-      before do
-        stub_ee_application_setting(should_check_namespace_plan: true)
-        sign_in(user_on_com)
-      end
-
-      it 'updates the attribute' do
-        patch :update, params: { user: { code_suggestions: true, format: :json } }
-
-        expect(user_on_com.reload.code_suggestions).to eq(true)
-      end
-
-      context 'when the feature flags are disabled' do
-        before do
-          stub_feature_flags(ai_assist_ui: false, ai_assist_flag: false)
-        end
-
-        it 'does not update attributes' do
-          expect do
-            patch :update, params: { user: { code_suggestions: true, format: :json } }
-          end.not_to change {
-            user_on_com.reload.code_suggestions
-          }
-        end
-      end
-    end
-
     context 'on zoekt indexed namespaces', feature_category: :global_search do
       context 'when user is not a member of any zoekt indexed namespaces' do
         before do
