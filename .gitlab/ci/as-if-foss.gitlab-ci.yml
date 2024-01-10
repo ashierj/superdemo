@@ -35,15 +35,16 @@ prepare-as-if-foss-branch:
 prepare-as-if-foss-env:
   extends:
     - .as-if-foss:rules:start-as-if-foss
+    - .fast-no-clone-job
   stage: prepare
   needs: []
   variables:
     BUILD_ENV: build.env
-  before_script:
-    - source scripts/utils.sh
-    - install_gitlab_gem
+    FILES_TO_DOWNLOAD: >
+      scripts/setup/generate-as-if-foss-env.rb
   script:
-    - scripts/setup/generate-as-if-foss-env.rb | tee $BUILD_ENV
+    - install_gitlab_gem
+    - ruby scripts/setup/generate-as-if-foss-env.rb | tee "${BUILD_ENV}"
   artifacts:
     expire_in: 3 days
     reports:
