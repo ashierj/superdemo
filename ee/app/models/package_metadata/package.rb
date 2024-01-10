@@ -87,11 +87,13 @@ module PackageMetadata
     end
 
     def version_in_default_licenses_range?(input_version)
-      interval = VersionParser.parse("=#{input_version}")
+      # Remove 'v' from version string(if present) before comparison.
+      interval = VersionParser.parse("=#{input_version.delete_prefix('v')}")
 
       range = VersionRange.new
-      range.add(VersionParser.parse("<#{lowest_version}")) if lowest_version
-      range.add(VersionParser.parse(">#{highest_version}")) if highest_version
+      range.add(VersionParser.parse("<#{lowest_version.delete_prefix('v')}")) if lowest_version
+
+      range.add(VersionParser.parse(">#{highest_version.delete_prefix('v')}")) if highest_version
 
       !range.overlaps_with?(interval)
       # semver_dialects may throw on parse errors

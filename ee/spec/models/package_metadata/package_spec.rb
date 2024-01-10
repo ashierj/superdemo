@@ -15,7 +15,7 @@ RSpec.describe PackageMetadata::Package, type: :model, feature_category: :softwa
       let(:highest) { '0.0.3' }
       let(:lowest) { '0.0.1' }
       let(:first_other_license) { [2, 4] }
-      let(:other) { [[first_other_license, ['v0.0.3', 'v0.0.4']], [[3], ['v0.0.5']]] }
+      let(:other) { [[first_other_license, ['v0.0.4', 'v0.0.5']], [[3], ['v0.0.6']]] }
 
       context 'and the input version' do
         where(:test_case_name, :highest_version, :lowest_version, :input_version, :expected_license_ids) do
@@ -44,6 +44,13 @@ RSpec.describe PackageMetadata::Package, type: :model, feature_category: :softwa
           subject(:license_ids) { package.license_ids_for(version: input_version) }
 
           specify { expect(license_ids).to eq(expected_license_ids) }
+
+          context 'when prefix `v` is present in input_version' do
+            # Regex (/\A(?![v])/i, 'v') appends v if not present
+            subject(:license_ids) { package.license_ids_for(version: input_version.sub(/\A(?![v])/i, 'v')) }
+
+            specify { expect(license_ids).to eq(expected_license_ids) }
+          end
         end
       end
 

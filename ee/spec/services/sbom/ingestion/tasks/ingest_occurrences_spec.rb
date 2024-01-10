@@ -40,7 +40,6 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
 
       it 'sets the correct attributes for the occurrence' do
         ingest_occurrences
-
         expect(ingested_occurrence.attributes).to include(
           'project_id' => pipeline.project.id,
           'pipeline_id' => pipeline.id,
