@@ -3,6 +3,7 @@ fragment SecurityDashboardNote on Note {
   system
   body
   bodyHtml
+  createdAt
   updatedAt
   systemNoteIconName
   userPermissions {

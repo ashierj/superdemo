@@ -10,7 +10,8 @@ describe('History Entry', () => {
     id: 1,
     body: 'changed vulnerability status to dismissed',
     systemNoteIconName: 'cancel',
-    updatedAt: new Date().toISOString(),
+    createdAt: '2021-08-25T16:19:10Z',
+    updatedAt: '2021-08-25T16:21:18Z',
     author: {
       name: 'author name',
       username: 'author username',
@@ -47,7 +48,7 @@ describe('History Entry', () => {
     expect(eventItem().props()).toMatchObject({
       id: systemNote.id,
       author: systemNote.author,
-      createdAt: systemNote.updatedAt,
+      createdAt: systemNote.createdAt,
       iconName: systemNote.systemNoteIconName,
     });
   });

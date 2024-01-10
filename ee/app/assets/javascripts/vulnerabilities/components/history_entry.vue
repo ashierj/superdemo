@@ -32,7 +32,7 @@ export default {
     <event-item
       :id="systemNote.id"
       :author="systemNote.author"
-      :created-at="systemNote.updatedAt"
+      :created-at="systemNote.createdAt"
       :icon-name="systemNote.systemNoteIconName"
       icon-class="timeline-icon m-0"
       class="m-3"
