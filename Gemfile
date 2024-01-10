@@ -367,7 +367,7 @@ gem 'gitlab-http', path: 'gems/gitlab-http' # rubocop:todo Gemfile/MissingFeatur
 
 gem 'premailer-rails', '~> 1.10.3' # rubocop:todo Gemfile/MissingFeatureCategory
 
-gem 'gitlab-labkit', '~> 0.34.0' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'gitlab-labkit', '~> 0.35.0' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'thrift', '>= 0.16.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # I18n
