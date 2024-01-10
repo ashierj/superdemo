@@ -11,7 +11,7 @@ import {
 import { fetchYamlConfig } from '../../yaml_utils';
 import DoraVisualization from '../../components/dora_visualization.vue';
 import DoraPerformersScore from '../../components/dora_performers_score.vue';
-import FeedbackBanner from '../../components/feedback_banner.vue';
+import FeedbackBanner from '../../components/value_stream_feedback_banner.vue';
 
 const pathsToPanels = (paths) =>
   paths.map(({ namespace, isProject = false }) => ({ data: { namespace }, isProject }));

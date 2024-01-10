@@ -15,7 +15,8 @@ import getCustomizableDashboardQuery from 'ee/analytics/analytics_dashboards/gra
 import getAvailableVisualizations from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_customizable_visualizations.query.graphql';
 import AnalyticsDashboard from 'ee/analytics/analytics_dashboards/components/analytics_dashboard.vue';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
-import FeedbackBanner from 'ee/analytics/dashboards/components/feedback_banner.vue';
+import ProductAnalyticsFeedbackBanner from 'ee/analytics/dashboards/components/product_analytics_feedback_banner.vue';
+import ValueStreamFeedbackBanner from 'ee/analytics/dashboards/components/value_stream_feedback_banner.vue';
 import {
   buildDefaultDashboardFilters,
   updateApolloCache,
@@ -42,6 +43,8 @@ import {
   TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE,
+  createDashboardGraphqlSuccessResponse,
+  getGraphQLDashboard,
 } from '../mock_data';
 
 jest.mock('~/sentry/sentry_browser_wrapper');
@@ -76,7 +79,9 @@ describe('AnalyticsDashboard', () => {
   const findDashboard = () => wrapper.findComponent(CustomizableDashboard);
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
-  const findFeedbackBanner = () => wrapper.findComponent(FeedbackBanner);
+  const findProductAnalyticsFeedbackBanner = () =>
+    wrapper.findComponent(ProductAnalyticsFeedbackBanner);
+  const findValueStreamFeedbackBanner = () => wrapper.findComponent(ValueStreamFeedbackBanner);
 
   const mockSaveDashboardImplementation = async (responseCallback, dashboardToSave = dashboard) => {
     saveCustomDashboard.mockImplementation(responseCallback);
@@ -168,6 +173,17 @@ describe('AnalyticsDashboard', () => {
     });
   };
 
+  const setupDashboard = (dashboardResponse, slug = '') => {
+    mockDashboardResponse(dashboardResponse);
+    mockAvailableVisualizationsResponse(TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE);
+
+    createWrapper({
+      routeSlug: slug || dashboardResponse.data.project.customizableDashboards.nodes[0]?.slug,
+    });
+
+    return waitForPromises();
+  };
+
   describe('when mounted', () => {
     beforeEach(() => {
       mockDashboardResponse(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
@@ -239,10 +255,11 @@ describe('AnalyticsDashboard', () => {
       return waitForPromises();
     });
 
-    it('does not render the dashboard, loader or feedback banner', () => {
+    it('does not render the dashboard, loader or feedback banners', () => {
       expect(findDashboard().exists()).toBe(false);
       expect(findLoader().exists()).toBe(false);
-      expect(findFeedbackBanner().exists()).toBe(false);
+      expect(findProductAnalyticsFeedbackBanner().exists()).toBe(false);
+      expect(findValueStreamFeedbackBanner().exists()).toBe(false);
       expect(breadcrumbState.updateName).toHaveBeenCalledWith('');
     });
 
@@ -287,17 +304,6 @@ describe('AnalyticsDashboard', () => {
   });
 
   describe('available visualizations', () => {
-    const setupDashboard = (dashboardResponse, slug = '') => {
-      mockDashboardResponse(dashboardResponse);
-      mockAvailableVisualizationsResponse(TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE);
-
-      createWrapper({
-        routeSlug: slug || dashboardResponse.data.project.customizableDashboards.nodes[0]?.slug,
-      });
-
-      return waitForPromises();
-    };
-
     it('fetches the available visualizations when a custom dashboard is loaded', async () => {
       await setupDashboard(TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
 
@@ -601,29 +607,54 @@ describe('AnalyticsDashboard', () => {
         });
       });
     });
+  });
 
-    describe('with a value stream dashboard', () => {
-      beforeEach(async () => {
-        mockDashboardResponse(TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+  describe('with a built-in product analytics dashboards dashboard', () => {
+    it.each`
+      slug           | userDefined | showsBanner
+      ${'audience'}  | ${false}    | ${true}
+      ${'behaviour'} | ${false}    | ${true}
+      ${'vsd'}       | ${false}    | ${false}
+      ${'audience'}  | ${true}     | ${false}
+    `(
+      'when the dashboard slug is "$slug" and userDefined is $userDefined then the banner is $showsBanner',
+      async ({ slug, userDefined, showsBanner }) => {
+        setupDashboard(
+          createDashboardGraphqlSuccessResponse(getGraphQLDashboard({ slug, userDefined })),
+        );
 
-        createWrapper();
         await waitForPromises();
-      });
 
-      it('renders the dashboard correctly', () => {
-        expect(findDashboard().props()).toMatchObject({
-          initialDashboard: {
-            ...getFirstParsedDashboard(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE),
-            title: 'Value Streams Dashboard',
-            slug: 'value_streams_dashboard',
-          },
-          showDateRangeFilter: false,
-        });
-      });
+        expect(findProductAnalyticsFeedbackBanner().exists()).toBe(showsBanner);
+      },
+    );
+  });
 
-      it('renders the feedback banner', () => {
-        expect(findFeedbackBanner().exists()).toBe(true);
+  describe('with a value stream dashboard', () => {
+    beforeEach(async () => {
+      mockDashboardResponse(TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+
+      createWrapper();
+      await waitForPromises();
+    });
+
+    it('renders the dashboard correctly', () => {
+      expect(findDashboard().props()).toMatchObject({
+        initialDashboard: {
+          ...getFirstParsedDashboard(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE),
+          title: 'Value Streams Dashboard',
+          slug: 'value_streams_dashboard',
+        },
+        showDateRangeFilter: false,
       });
+    });
+
+    it('renders the value stream feedback banner', () => {
+      expect(findValueStreamFeedbackBanner().exists()).toBe(true);
+    });
+
+    it('does not render the product analytics feedback banner', () => {
+      expect(findProductAnalyticsFeedbackBanner().exists()).toBe(false);
     });
   });
 

@@ -7,14 +7,18 @@ import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { InternalEvents } from '~/tracking';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
-import FeedbackBanner from 'ee/analytics/dashboards/components/feedback_banner.vue';
+import ProductAnalyticsFeedbackBanner from 'ee/analytics/dashboards/components/product_analytics_feedback_banner.vue';
+import ValueStreamFeedbackBanner from 'ee/analytics/dashboards/components/value_stream_feedback_banner.vue';
 import {
   buildDefaultDashboardFilters,
   getDashboardConfig,
   updateApolloCache,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
-import { BUILT_IN_VALUE_STREAM_DASHBOARD } from 'ee/analytics/dashboards/constants';
+import {
+  BUILT_IN_PRODUCT_ANALYTICS_DASHBOARDS,
+  BUILT_IN_VALUE_STREAM_DASHBOARD,
+} from 'ee/analytics/dashboards/constants';
 import { hydrateLegacyYamlConfiguration } from 'ee/analytics/dashboards/yaml_utils';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
@@ -33,7 +37,8 @@ export default {
   name: 'AnalyticsDashboard',
   components: {
     CustomizableDashboard,
-    FeedbackBanner,
+    ProductAnalyticsFeedbackBanner,
+    ValueStreamFeedbackBanner,
     GlEmptyState,
     GlSkeletonLoader,
   },
@@ -103,8 +108,14 @@ export default {
     currentDashboard() {
       return this.vsdYamlDashboard || this.initialDashboard;
     },
-    currentDashboardIsVsd() {
+    showValueStreamFeedbackBanner() {
       return this.currentDashboard?.slug === BUILT_IN_VALUE_STREAM_DASHBOARD;
+    },
+    showProductAnalyticsFeedbackBanner() {
+      return (
+        !this.currentDashboard?.userDefined &&
+        BUILT_IN_PRODUCT_ANALYTICS_DASHBOARDS.includes(this.currentDashboard?.slug)
+      );
     },
     showDashboardFilters() {
       return !HIDE_DASHBOARD_FILTERS.includes(this.currentDashboard?.slug);
@@ -313,7 +324,8 @@ export default {
 <template>
   <div>
     <template v-if="currentDashboard">
-      <feedback-banner v-if="currentDashboardIsVsd" />
+      <value-stream-feedback-banner v-if="showValueStreamFeedbackBanner" />
+      <product-analytics-feedback-banner v-if="showProductAnalyticsFeedbackBanner" />
       <customizable-dashboard
         ref="dashboard"
         :initial-dashboard="currentDashboard"

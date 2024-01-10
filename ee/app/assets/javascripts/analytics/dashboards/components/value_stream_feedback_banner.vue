@@ -4,7 +4,7 @@ import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser
 import { ALERT_TEXT, DASHBOARD_SURVEY_LINK } from '../constants';
 
 export default {
-  name: 'FeedbackBanner',
+  name: 'ValueStreamFeedbackBanner',
   components: {
     GlAlert,
     GlLink,

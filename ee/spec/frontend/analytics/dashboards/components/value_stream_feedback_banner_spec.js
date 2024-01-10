@@ -1,16 +1,16 @@
 import { GlAlert, GlLink, GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import FeedbackBanner from 'ee/analytics/dashboards/components/feedback_banner.vue';
+import ValueStreamFeedbackBanner from 'ee/analytics/dashboards/components/value_stream_feedback_banner.vue';
 import { makeMockUserCalloutDismisser } from 'helpers/mock_user_callout_dismisser';
 import { DASHBOARD_SURVEY_LINK } from 'ee/analytics/dashboards/constants';
 
-describe('Feedback banner', () => {
+describe('Value Stream Feedback Banner', () => {
   let wrapper;
   let userCalloutDismissSpy;
 
   const createWrapper = (shouldShowCallout = true) => {
     userCalloutDismissSpy = jest.fn();
-    wrapper = shallowMountExtended(FeedbackBanner, {
+    wrapper = shallowMountExtended(ValueStreamFeedbackBanner, {
       stubs: {
         GlSprintf,
         UserCalloutDismisser: makeMockUserCalloutDismisser({

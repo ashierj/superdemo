@@ -10,7 +10,7 @@ import * as yamlConfigUtils from 'ee/analytics/dashboards/yaml_utils';
 import Component from 'ee/analytics/dashboards/value_streams_dashboard/components/app.vue';
 import DoraVisualization from 'ee/analytics/dashboards/components/dora_visualization.vue';
 import DoraPerformersScore from 'ee/analytics/dashboards/components/dora_performers_score.vue';
-import FeedbackBanner from 'ee/analytics/dashboards/components/feedback_banner.vue';
+import FeedbackBanner from 'ee/analytics/dashboards/components/value_stream_feedback_banner.vue';
 
 describe('Executive dashboard app', () => {
   let wrapper;

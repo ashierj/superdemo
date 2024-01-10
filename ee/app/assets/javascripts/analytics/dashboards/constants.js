@@ -267,5 +267,12 @@ export const DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE = [GREEN_400, ORANGE_400,
 // the slug name for a dashboard must match the URL path that is used
 export const BUILT_IN_VALUE_STREAM_DASHBOARD = 'value_streams_dashboard';
 
+export const BUILT_IN_PRODUCT_ANALYTICS_DASHBOARDS = ['behaviour', 'audience'];
+
 export const VISUALIZATION_USAGE_OVERVIEW = 'usage_overview';
 export const VISUALIZATION_USAGE_TITLE = s__('Analytics|Usage overview for %{namespaceName} group');
+
+export const PRODUCT_ANALYTICS_DASHBOARD_FEEDBACK_CALLOUT_ID =
+  'product_analytics_dashboard_feedback';
+export const PRODUCT_ANALYTICS_DASHBOARD_SURVEY_LINK =
+  'https://gitlab.fra1.qualtrics.com/jfe/form/SV_4G9Mp4aDd1o8kpo';
