@@ -301,7 +301,7 @@ RSpec.describe Resolvers::VulnerabilitiesResolver, feature_category: :vulnerabil
     end
 
     context 'when owasp_top_10 is given' do
-      let(:params) { { owasp_top_10: ['A1:2017-Injection', 'A1:2021-Broken Access Control'] } }
+      let(:params) { { owasp_top_ten: ['A1:2017-Injection', 'A1:2021-Broken Access Control'] } }
 
       let_it_be(:vuln_read_with_owasp_top_10_first) do
         create(:vulnerability_read, :with_owasp_top_10,
