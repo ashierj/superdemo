@@ -564,6 +564,56 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
 
         expect(approval_rule.severity_levels).to be_empty
       end
+
+      it 'calls SoftwareLicensePolicies::BulkCreateScanResultPolicyService' do
+        expect(SoftwareLicensePolicies::BulkCreateScanResultPolicyService).to receive(:new).with(
+          project,
+          [
+            {
+              name: 'BSD',
+              approval_status: 'denied',
+              scan_result_policy_read: anything
+            },
+            {
+              name: 'MIT',
+              approval_status: 'denied',
+              scan_result_policy_read: anything
+            }
+          ]
+        ).and_call_original
+
+        subject
+      end
+
+      context 'with bulk_create_scan_result_policies feature flag disabled' do
+        before do
+          stub_feature_flags(bulk_create_scan_result_policies: false)
+        end
+
+        it 'calls SoftwareLicensePolicies::CreateService' do
+          expect(SoftwareLicensePolicies::CreateService).to receive(:new).with(
+            project,
+            anything,
+            {
+              name: 'BSD',
+              approval_status: 'denied',
+              scan_result_policy_read: anything
+            }
+          ).and_call_original
+
+          expect(SoftwareLicensePolicies::CreateService).to receive(:new).with(
+            project,
+            anything,
+            {
+              name: 'MIT',
+              approval_status: 'denied',
+              scan_result_policy_read: anything
+            }
+          ).and_call_original
+
+          subject
+        end
+      end
     end
 
     context 'with any_merge_request rule_type' do
