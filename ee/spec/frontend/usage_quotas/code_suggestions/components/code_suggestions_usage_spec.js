@@ -17,7 +17,7 @@ Vue.use(VueApollo);
 
 jest.mock('~/sentry/sentry_browser_wrapper');
 
-describe('Code Suggestions Usage', () => {
+describe('Duo Pro Usage', () => {
   let wrapper;
 
   const error = new Error('Something went wrong');
@@ -106,12 +106,12 @@ describe('Code Suggestions Usage', () => {
     });
 
     it('renders code suggestions title', () => {
-      expect(findCodeSuggestionsTitle().text()).toBe('Code Suggestions');
+      expect(findCodeSuggestionsTitle().text()).toBe('Duo Pro');
     });
 
     it('renders code suggestions subtitle', () => {
       expect(findCodeSuggestionsSubtitle().text()).toBe(
-        'Manage seat assignments for Code Suggestions across your instance.',
+        'Manage seat assignments for Duo Pro across your instance.',
       );
     });
 

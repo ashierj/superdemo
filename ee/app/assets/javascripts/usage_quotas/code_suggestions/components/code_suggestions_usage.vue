@@ -102,15 +102,11 @@ export default {
     <template v-else>
       <section v-if="hasCodeSuggestions">
         <h1 data-testid="code-suggestions-title" class="page-title gl-font-size-h-display">
-          {{ s__('CodeSuggestions|Code Suggestions') }}
+          {{ s__('CodeSuggestions|Duo Pro') }}
         </h1>
 
         <p data-testid="code-suggestions-subtitle">
-          {{
-            s__(
-              'CodeSuggestions|Manage seat assignments for Code Suggestions across your instance.',
-            )
-          }}
+          {{ s__('CodeSuggestions|Manage seat assignments for Duo Pro across your instance.') }}
         </p>
 
         <section

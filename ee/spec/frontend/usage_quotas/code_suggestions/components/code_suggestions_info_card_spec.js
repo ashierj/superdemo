@@ -47,6 +47,6 @@ describe('CodeSuggestionsInfoCard', () => {
   });
 
   it('renders the title text', () => {
-    expect(findCodeSuggestionsInfoTitle().text()).toBe('Code Suggestions add-on');
+    expect(findCodeSuggestionsInfoTitle().text()).toBe('Duo Pro add-on');
   });
 });
