@@ -12,7 +12,7 @@ module Search
     idempotent!
     urgency :throttled
 
-    def perform(project_id)
+    def perform(project_id, options = {})
       return if project_id.blank?
 
       project = Project.find_by_id(project_id)
@@ -22,7 +22,7 @@ module Search
         return
       end
 
-      ::Search::IndexRepairService.execute(project)
+      ::Search::IndexRepairService.execute(project, params: options.with_indifferent_access)
     end
 
     def logger
