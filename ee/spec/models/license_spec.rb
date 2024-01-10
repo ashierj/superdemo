@@ -544,6 +544,29 @@ RSpec.describe License, feature_category: :sm_provisioning do
         end
 
         it { is_expected.not_to be_valid }
+
+        context 'when the license is an online cloud license' do
+          before do
+            gl_license.cloud_licensing_enabled = true
+            gl_license.offline_cloud_licensing_enabled = false
+          end
+
+          context 'when the license is generated_from_cancellation' do
+            before do
+              gl_license.generated_from_cancellation = true
+            end
+
+            it { is_expected.to be_valid }
+          end
+
+          context 'when the license is not generated_from_cancellation' do
+            before do
+              gl_license.generated_from_cancellation = false
+            end
+
+            it { is_expected.not_to be_valid }
+          end
+        end
       end
 
       context 'when the license has yet to expire' do
@@ -673,6 +696,55 @@ RSpec.describe License, feature_category: :sm_provisioning do
         let!(:current_license) { create_list(:license, 2).last }
         let(:expired_gl_license) do
           create(:gitlab_license, starts_at: Date.current - 1.month, expires_at: Date.yesterday)
+        end
+
+        context 'when the most recent valid started but not expired license matches the subscription name of a generated_from_cancellation license' do
+          let!(:current_license) { create(:license, cloud: true, data: active_gl_license.export) }
+          let(:active_gl_license) do
+            build(
+              :gitlab_license,
+              starts_at: Date.current - 1.month,
+              cloud_licensing_enabled: true,
+              restrictions: { subscription_name: "SUB-001" }
+            )
+          end
+
+          let(:outdated_active_gl_license) do
+            build(
+              :gitlab_license,
+              starts_at: Date.current - 1.month,
+              cloud_licensing_enabled: true,
+              restrictions: { subscription_name: "SUB-002" }
+            )
+          end
+
+          let(:generated_from_cancellation_gl_license) do
+            build(
+              :gitlab_license,
+              starts_at: Date.current - 1.month,
+              expires_at: Date.yesterday,
+              cloud_licensing_enabled: true,
+              generated_from_cancellation: true,
+              restrictions: { subscription_name: "SUB-002" }
+            )
+          end
+
+          it 'returns the most recent valid and started but not expired license from a different subscription name' do
+            create(:license, cloud: true, data: outdated_active_gl_license.export)
+            create(:license, cloud: true, data: generated_from_cancellation_gl_license.export)
+
+            expect(described_class.current).to eq(current_license)
+          end
+
+          context 'when all licenses match the subscription name of a generated_from_cancellation license', :without_license do
+            let!(:current_license) { create(:license, cloud: true, data: outdated_active_gl_license.export) }
+
+            it 'returns the most recent valid started expired license' do
+              generated_from_cancellation_license = create(:license, cloud: true, data: generated_from_cancellation_gl_license.export)
+
+              expect(described_class.current).to eq(generated_from_cancellation_license)
+            end
+          end
         end
 
         context 'when the last uploaded license is expired' do
@@ -1136,6 +1208,15 @@ RSpec.describe License, feature_category: :sm_provisioning do
       license = build(:license, data: gl_license.export)
 
       expect(license.subscription_id).to eq("1111")
+    end
+  end
+
+  describe '#subscription_name' do
+    it 'returns the subscription_name from the license restrictions' do
+      gl_license = build(:gitlab_license, restrictions: { subscription_name: 'SUB-001' })
+      license = build(:license, data: gl_license.export)
+
+      expect(license.subscription_name).to eq('SUB-001')
     end
   end
 
@@ -1723,6 +1804,71 @@ RSpec.describe License, feature_category: :sm_provisioning do
     end
 
     context 'when the license has cloud licensing and offline cloud licensing disabled' do
+      let(:gl_license) { build(:gitlab_license) }
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe '#valid_started?' do
+    subject { license.valid_started? }
+
+    let(:valid) { false }
+    let(:started) { false }
+
+    before do
+      allow(license).to receive_messages(valid?: valid, started?: started)
+    end
+
+    context 'when license is invalid' do
+      it { is_expected.to be false }
+    end
+
+    context 'when license is valid' do
+      let(:valid) { true }
+
+      context 'when license has not started yet' do
+        it { is_expected.to be false }
+      end
+
+      context 'when license has started' do
+        let(:started) { true }
+
+        it { is_expected.to be true }
+      end
+    end
+  end
+
+  describe '#subscription_cancelled?' do
+    subject { license.subscription_cancelled? }
+
+    context 'when license is an online cloud license' do
+      let(:gl_license) { build(:gitlab_license, :cloud, :offline_disabled) }
+
+      context 'when license is generated_from_cancellation' do
+        before do
+          gl_license.generated_from_cancellation = true
+        end
+
+        it { is_expected.to be true }
+      end
+
+      context 'when license is not generated_from_cancellation' do
+        before do
+          gl_license.generated_from_cancellation = false
+        end
+
+        it { is_expected.to be false }
+      end
+    end
+
+    context 'when license is an offline cloud license' do
+      let(:gl_license) { build(:gitlab_license, :cloud, :offline_enabled) }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when license is not a cloud license' do
       let(:gl_license) { build(:gitlab_license) }
 
       it { is_expected.to be false }

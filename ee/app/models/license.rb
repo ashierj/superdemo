@@ -36,7 +36,11 @@ class License < MainClusterwide::ApplicationRecord
   validate :check_users_limit, if: :new_record?, unless: [:validate_with_trueup?, :reconciliation_completed?]
   validate :check_trueup, unless: :reconciliation_completed?, if: [:new_record?, :validate_with_trueup?]
   validate :check_restricted_user_count, if: [:new_record?, :reconciliation_completed?]
-  validate :not_expired, if: :new_record?
+
+  # When an online cloud license subscription is cancelled, the license_key received from the seat link sync
+  # is an expired license but we still want to be able to create it to reflect that the license is not active anymore.
+  # That is why we skip the validation on this specific case.
+  validate :not_expired, if: :new_record?, unless: :subscription_cancelled?
 
   before_validation :reset_license, if: :data_changed?
 
@@ -83,8 +87,16 @@ class License < MainClusterwide::ApplicationRecord
       return unless self.table_exists?
 
       last_hundred = self.last_hundred
-      last_hundred.find { |license| license.valid? && license.started? && !license.expired? } ||
-        last_hundred.find { |license| license.valid? && license.started? }
+
+      # Gather the names of existing online cloud licenses that are `generated_from_cancellation=true` here
+      # to make sure we don't fall back to an outdated active version of a license that belongs to
+      # a cancelled subscription.
+      cancelled_subscription_names = last_hundred.filter_map do |license|
+        license.subscription_name if license.subscription_cancelled?
+      end
+
+      last_hundred.find { |license| license.valid_started? && !license.expired? && cancelled_subscription_names.exclude?(license.subscription_name) } ||
+        last_hundred.find(&:valid_started?)
     end
 
     def future_dated
@@ -129,6 +141,10 @@ class License < MainClusterwide::ApplicationRecord
     def load_future_dated
       self.last_hundred.find { |license| license.valid? && license.future_dated? }
     end
+  end
+
+  def valid_started?
+    valid? && started?
   end
 
   def offline_cloud_license?
@@ -223,6 +239,10 @@ class License < MainClusterwide::ApplicationRecord
   # License zuora_subscription_id
   def subscription_id
     restricted_attr(:subscription_id)
+  end
+
+  def subscription_name
+    restricted_attr(:subscription_name)
   end
 
   def reconciliation_completed?
@@ -347,6 +367,10 @@ class License < MainClusterwide::ApplicationRecord
 
   def online_cloud_license?
     cloud_license? && !license&.offline_cloud_licensing?
+  end
+
+  def subscription_cancelled?
+    online_cloud_license? && license&.generated_from_cancellation?
   end
 
   def current?
