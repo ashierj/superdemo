@@ -40,16 +40,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
         expect(on_demand_config.keys).to eq(on_demand_jobs)
         expect(variables_config).to match a_hash_including(variables)
       end
-
-      context 'when "security_policies_variables_precedence" is disabled' do
-        before do
-          stub_feature_flags(security_policies_variables_precedence: false)
-        end
-
-        it 'returns variables as an empty hash' do
-          expect(variables_config).to eq({})
-        end
-      end
     end
 
     context 'when there is an invalid action' do
@@ -76,30 +66,13 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
 
       it_behaves_like 'creates scan jobs', pipeline_scan_job_templates: %w[Jobs/SAST], variables: { 'sast-0': { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' } }
 
-      context 'when feature flag "security_policies_variables_precedence" is enabled' do
-        it 'does not pass variables from the action into configuration service' do
-          expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
-            expect(ci_configuration_service).to receive(:execute).once
-                                                                 .with(actions.first, {}, context, 0).and_call_original
-          end
-
-          subject
-        end
-      end
-
-      context 'when feature flag "security_policies_variables_precedence" is disabled' do
-        before do
-          stub_feature_flags(security_policies_variables_precedence: false)
+      it 'does not pass variables from the action into configuration service' do
+        expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
+          expect(ci_configuration_service).to receive(:execute).once
+                                                               .with(actions.first, {}, context, 0).and_call_original
         end
 
-        it 'parses variables from the action and applies them in configuration service' do
-          expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
-            expect(ci_configuration_service).to receive(:execute).once
-                                                                 .with(actions.first, { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' }, context, 0).and_call_original
-          end
-
-          subject
-        end
+        subject
       end
     end
 
@@ -109,30 +82,13 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
       context 'when SECRET_DETECTION_HISTORIC_SCAN is provided when initializing the service' do
         let(:service) { described_class.new(context, base_variables: { secret_detection: { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' } }) }
 
-        context 'when feature flag "security_policies_variables_precedence" is enabled' do
-          it 'ignores action variables and sets base_variables' do
-            expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
-              expect(ci_configuration_service).to receive(:execute).once
-                                                                   .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }, context, 0).and_call_original
-            end
-
-            subject
-          end
-        end
-
-        context 'when feature flag "security_policies_variables_precedence" is disabled' do
-          before do
-            stub_feature_flags(security_policies_variables_precedence: false)
+        it 'ignores action variables and sets base_variables' do
+          expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
+            expect(ci_configuration_service).to receive(:execute).once
+                                                                 .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }, context, 0).and_call_original
           end
 
-          it 'ignores variables from base_variables and set the value defined in actions' do
-            expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
-              expect(ci_configuration_service).to receive(:execute).once
-                                                                   .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' }, context, 0).and_call_original
-            end
-
-            subject
-          end
+          subject
         end
       end
     end

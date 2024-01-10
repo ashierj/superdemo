@@ -28,7 +28,7 @@ module EE
             private
 
             def enforce_scan_execution_policies_variables?(job)
-              return false if ::Feature.disabled?(:security_policies_variables_precedence, project) || job.name.blank?
+              return false if job.name.blank?
 
               project.licensed_feature_available?(:security_orchestration_policies)
             end
