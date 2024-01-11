@@ -1,0 +1,6 @@
+query getDoraPerformersGroup($fullPath: ID!) {
+  group(fullPath: $fullPath) {
+    id
+    name
+  }
+}

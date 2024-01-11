@@ -2,6 +2,7 @@
 import { isEmpty } from 'lodash';
 import { GlLink, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   DASHBOARD_TITLE,
   DASHBOARD_DESCRIPTION,
@@ -10,7 +11,7 @@ import {
 } from '../../constants';
 import { fetchYamlConfig } from '../../yaml_utils';
 import DoraVisualization from '../../components/dora_visualization.vue';
-import DoraPerformersScore from '../../components/dora_performers_score.vue';
+import DoraPerformersScoreCard from '../../components/dora_performers_score_card.vue';
 import FeedbackBanner from '../../components/value_stream_feedback_banner.vue';
 
 const pathsToPanels = (paths) =>
@@ -23,9 +24,10 @@ export default {
     GlLink,
     GlSkeletonLoader,
     DoraVisualization,
-    DoraPerformersScore,
+    DoraPerformersScoreCard,
     FeedbackBanner,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     fullPath: {
       type: String,
@@ -59,6 +61,9 @@ export default {
     },
     isDefaultDescription() {
       return this.dashboardDescription === DASHBOARD_DESCRIPTION;
+    },
+    showDoraPerformersScoreCard() {
+      return this.glFeatures?.doraPerformersScorePanel;
     },
     defaultPanels() {
       return pathsToPanels([{ namespace: this.fullPath }]);
@@ -126,12 +131,14 @@ export default {
         :data="data"
       />
 
-      <dora-performers-score
-        v-for="({ data }, index) in groupPanels"
-        :key="`dora-performers-score-panel-${index}`"
-        :data="data"
-        class="gl-mt-5"
-      />
+      <template v-if="showDoraPerformersScoreCard">
+        <dora-performers-score-card
+          v-for="({ data }, index) in groupPanels"
+          :key="`dora-performers-score-card-${index}`"
+          :data="data"
+          class="gl-mt-5"
+        />
+      </template>
     </div>
   </div>
 </template>

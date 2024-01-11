@@ -9,7 +9,7 @@ import {
 import * as yamlConfigUtils from 'ee/analytics/dashboards/yaml_utils';
 import Component from 'ee/analytics/dashboards/value_streams_dashboard/components/app.vue';
 import DoraVisualization from 'ee/analytics/dashboards/components/dora_visualization.vue';
-import DoraPerformersScore from 'ee/analytics/dashboards/components/dora_performers_score.vue';
+import DoraPerformersScoreCard from 'ee/analytics/dashboards/components/dora_performers_score_card.vue';
 import FeedbackBanner from 'ee/analytics/dashboards/components/value_stream_feedback_banner.vue';
 
 describe('Executive dashboard app', () => {
@@ -17,12 +17,16 @@ describe('Executive dashboard app', () => {
   const fullPath = 'groupFullPath';
   const testPaths = ['group', 'group/a', 'group/b', 'group/c', 'group/d', 'group/e'];
   const testPanels = testPaths.map((namespace) => ({ data: { namespace } }));
+  const defaultGlFeatures = { doraPerformersScorePanel: true };
 
-  const createWrapper = async ({ props = {} } = {}) => {
+  const createWrapper = async ({ props = {}, glFeatures = defaultGlFeatures } = {}) => {
     wrapper = shallowMountExtended(Component, {
       propsData: {
         fullPath,
         ...props,
+      },
+      provide: {
+        glFeatures,
       },
     });
 
@@ -34,7 +38,7 @@ describe('Executive dashboard app', () => {
   const findTitle = () => wrapper.findByTestId('dashboard-title');
   const findDescription = () => wrapper.findByTestId('dashboard-description');
   const findDoraVisualizations = () => wrapper.findAllComponents(DoraVisualization);
-  const findDoraPerformersScorePanels = () => wrapper.findAllComponents(DoraPerformersScore);
+  const findDoraPerformersScoreCards = () => wrapper.findAllComponents(DoraPerformersScoreCard);
 
   it('shows a loading skeleton when fetching the YAML config', () => {
     createWrapper();
@@ -67,6 +71,21 @@ describe('Executive dashboard app', () => {
       expect(chart.props()).toMatchObject({ data: { namespace: fullPath } });
     });
 
+    it('renders dora performers card for the group fullPath', async () => {
+      await createWrapper();
+      const cards = findDoraPerformersScoreCards();
+      expect(cards.length).toBe(1);
+
+      const [card] = cards.wrappers;
+      expect(card.props()).toMatchObject({ data: { namespace: fullPath } });
+    });
+
+    it('does not render dora performers card when the feature is disabled', async () => {
+      await createWrapper({ glFeatures: { doraPerformersScorePanel: false } });
+      const cards = findDoraPerformersScoreCards();
+      expect(cards.length).toBe(0);
+    });
+
     it('queryPaths are shown in addition to the group visualization', async () => {
       const queryPaths = [
         { namespace: 'group/one', isProject: false },
@@ -95,11 +114,11 @@ describe('Executive dashboard app', () => {
 
       await createWrapper({ props: { queryPaths } });
 
-      const panels = findDoraPerformersScorePanels();
-      expect(panels).toHaveLength(groupQueryPaths.length + 1);
+      const cards = findDoraPerformersScoreCards();
+      expect(cards).toHaveLength(groupQueryPaths.length + 1);
 
       [groupFullPath, ...groupQueryPaths].forEach(({ namespace }, index) => {
-        expect(panels.wrappers[index].props()).toMatchObject({ data: { namespace } });
+        expect(cards.wrappers[index].props()).toMatchObject({ data: { namespace } });
       });
     });
   });
