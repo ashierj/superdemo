@@ -9,6 +9,7 @@ import {
 } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapGetters, mapState } from 'vuex';
+import { ISSUABLE_EDIT_DESCRIPTION } from '~/behaviors/shortcuts/keybindings';
 import { TYPE_EPIC } from '~/issues/constants';
 import DeleteIssueModal from '~/issues/show/components/delete_issue_modal.vue';
 import issuesEventHub from '~/issues/show/event_hub';
@@ -152,6 +153,12 @@ export default {
     authorId() {
       return this.author?.id;
     },
+    editShortcutKey() {
+      return ISSUABLE_EDIT_DESCRIPTION.defaultKeys[0];
+    },
+    editTooltip() {
+      return `${this.$options.i18n.editTitleAndDescription} <kbd class="glat gl-ml-1" aria-hidden=true>${this.editShortcutKey}</kbd>`;
+    },
   },
   methods: {
     ...mapActions(['toggleEpicStatus']),
@@ -224,8 +231,10 @@ export default {
 
     <gl-button
       v-if="canUpdate"
-      :title="$options.i18n.editTitleAndDescription"
+      v-gl-tooltip.viewport.html
+      :title="editTooltip"
       :aria-label="$options.i18n.editTitleAndDescription"
+      :aria-keyshortcuts="editShortcutKey"
       category="secondary"
       class="js-issuable-edit gl-display-none gl-md-display-block"
       @click="editEpic"
