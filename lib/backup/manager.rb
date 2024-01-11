@@ -158,8 +158,8 @@ module Backup
       read_backup_information
       verify_backup_version
 
-      definitions.each_key do |task_name|
-        if !skipped?(task_name) && enabled_task?(task_name)
+      definitions.each do |task_name, definition|
+        if !skipped?(task_name) && definition.enabled?
           run_restore_task(task_name)
         end
       end
@@ -401,10 +401,6 @@ module Backup
       options.skippable_tasks[item]
     end
 
-    def enabled_task?(task_name)
-      definitions[task_name].enabled?
-    end
-
     def backup_file?(file)
       file.match(/^(\d{10})(?:_\d{4}_\d{2}_\d{2}(_\d+\.\d+\.\d+((-|\.)(pre|rc\d))?(-ee)?)?)?_gitlab_backup\.tar$/)
     end
@@ -431,7 +427,7 @@ module Backup
 
     def backup_contents
       [MANIFEST_NAME] + definitions.reject do |name, definition|
-        skipped?(name) || !enabled_task?(name) ||
+        skipped?(name) || !definition.enabled? ||
           (definition.destination_optional && !File.exist?(File.join(backup_path, definition.destination_path)))
       end.values.map(&:destination_path)
     end
