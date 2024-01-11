@@ -112,7 +112,6 @@ export const emailNotVisibleTooltipText = s__(
   'Billing|An email address is only visible for users with public emails.',
 );
 export const filterUsersPlaceholder = __('Filter users');
-export const pendingMembersAlertButtonText = s__('Billing|View pending approvals');
 export const seatsInSubscriptionTextForFreePlan = s__('Billings|Free seats used');
 export const seatsInSubscriptionText = s__('Billings|Seats in use / Seats in subscription');
 export const seatsAvailableText = s__('Billings|Seats in use / Seats available');

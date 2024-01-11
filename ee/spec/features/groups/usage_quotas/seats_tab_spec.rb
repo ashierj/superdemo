@@ -320,7 +320,6 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
       it 'shows active users' do
         expect(page.text).not_to include(*awaiting_user_names)
         expect(page.text).to include(*active_user_names)
-        expect(page).to have_content("You have 3 pending members")
         expect(page).to have_content("4 / 10 Seats in use / Seats in subscription")
       end
     end
@@ -352,7 +351,6 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
       it 'shows active users' do
         expect(page.text).not_to include(*awaiting_user_names)
         expect(page.text).to include(*active_user_names)
-        expect(page).to have_content("You have 3 pending members")
         expect(page).to have_content("4 / Unlimited Seats in use / Seats in subscription")
       end
     end
