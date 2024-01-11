@@ -1983,14 +1983,17 @@ RSpec.describe User, feature_category: :system_access do
     let_it_be(:indexed_parent_namespace) { create(:group) }
     let_it_be(:unindexed_namespace) { create(:namespace) }
     let_it_be(:node) { create(:zoekt_node, index_base_url: 'http://example.com:1234/', search_base_url: 'http://example.com:4567/') }
-    let_it_be(:zoekt_indexed_namespace) { create(:zoekt_indexed_namespace, node: node, namespace: indexed_parent_namespace) }
+    let_it_be(:zoekt_enabled_namespace) { create(:zoekt_enabled_namespace, namespace: indexed_parent_namespace) }
+    let_it_be(:zoekt_index) do
+      create(:zoekt_index, :ready, zoekt_enabled_namespace: zoekt_enabled_namespace, node: node)
+    end
 
     let(:user) { create(:user, namespace: create(:user_namespace)) }
 
     describe '#zoekt_indexed_namespaces' do
       it 'returns zoekt indexed namespaces for user' do
         indexed_parent_namespace.add_maintainer(user)
-        expect(user.zoekt_indexed_namespaces).to match_array([zoekt_indexed_namespace])
+        expect(user.zoekt_indexed_namespaces).to match_array([zoekt_enabled_namespace])
       end
 
       it 'returns empty array if there are user is not have access of reporter or above' do
@@ -2000,7 +2003,7 @@ RSpec.describe User, feature_category: :system_access do
 
     describe '#has_zoekt_indexed_namespace?' do
       it 'returns true if there are zoekt_indexed_namespaces' do
-        allow(user).to receive(:zoekt_indexed_namespaces).and_return([zoekt_indexed_namespace])
+        allow(user).to receive(:zoekt_indexed_namespaces).and_return([zoekt_enabled_namespace])
         expect(user).to be_has_zoekt_indexed_namespace
 
         allow(user).to receive(:zoekt_indexed_namespaces).and_return([])

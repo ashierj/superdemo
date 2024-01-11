@@ -364,13 +364,13 @@ module EE
     end
 
     # Returns true if the user is a Reporter or higher on any namespace
-    # that is associated as a Zoekt::IndexedNamespace
+    # that is associated as a Zoekt::EnabledNamespace
     def has_zoekt_indexed_namespace?
       zoekt_indexed_namespaces.any?
     end
 
     def zoekt_indexed_namespaces
-      ::Zoekt::IndexedNamespace.where(
+      ::Search::Zoekt::EnabledNamespace.where(
         namespace: ::Namespace
           .from("(#{namespace_union_for_reporter_developer_maintainer_owned}) #{::Namespace.table_name}")
       )

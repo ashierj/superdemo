@@ -7,9 +7,14 @@ module API
         class IndexedNamespace < Grape::Entity
           expose :id, documentation: { type: :int, example: 1234 }
           # TODO: migrate away from using shard_id https://gitlab.com/gitlab-org/gitlab/-/issues/429236
-          expose :zoekt_node_id, documentation: { type: :int, example: 1234 }, as: :zoekt_shard_id
-          expose :zoekt_node_id, documentation: { type: :int, example: 1234 }
-          expose :namespace_id, documentation: { type: :int, example: 1234 }
+          # `zoekt_shard_id` is deprecated use `zoekt_node_id`
+          expose :zoekt_shard_id, documentation: { type: :int, example: 1234 } do |_, options|
+            options[:zoekt_node_id]
+          end
+          expose :zoekt_node_id, documentation: { type: :int, example: 1234 } do |_, options|
+            options[:zoekt_node_id]
+          end
+          expose :root_namespace_id, documentation: { type: :int, example: 1234 }, as: :namespace_id
         end
 
         class Node < Grape::Entity

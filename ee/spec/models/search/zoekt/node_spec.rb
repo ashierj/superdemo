@@ -13,25 +13,21 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
   before do
     create(:zoekt_indexed_namespace, node: node, namespace: indexed_namespace1)
     create(:zoekt_indexed_namespace, node: node, namespace: indexed_namespace2)
+
+    enabled_namespace1 = create(:zoekt_enabled_namespace, namespace: indexed_namespace1)
+    create(:zoekt_index, :ready, node: node, zoekt_enabled_namespace: enabled_namespace1)
+    enabled_namespace2 = create(:zoekt_enabled_namespace, namespace: indexed_namespace2)
+    create(:zoekt_index, :ready, node: node, zoekt_enabled_namespace: enabled_namespace2)
   end
 
   describe 'relations' do
     it { is_expected.to have_many(:indices).inverse_of(:node) }
+    it { is_expected.to have_many(:enabled_namespaces).through(:indices) }
   end
 
   it 'has many indexed_namespaces' do
     expect(node.indexed_namespaces.count).to eq(2)
     expect(node.indexed_namespaces.map(&:namespace)).to contain_exactly(indexed_namespace1, indexed_namespace2)
-  end
-
-  describe '.for_namespace' do
-    it 'returns associated node' do
-      expect(described_class.for_namespace(indexed_namespace1.id)).to contain_exactly(node)
-    end
-
-    it 'returns empty active record relation when no node is associated' do
-      expect(described_class.for_namespace(unindexed_namespace.id)).to be_empty
-    end
   end
 
   describe '.find_or_initialize_by_task_request', :freeze_time do

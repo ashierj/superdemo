@@ -9,6 +9,8 @@ module Search
         foreign_key: :zoekt_node_id, inverse_of: :node, class_name: '::Zoekt::IndexedNamespace'
       has_many :indices,
         foreign_key: :zoekt_node_id, inverse_of: :node, class_name: '::Search::Zoekt::Index'
+      has_many :enabled_namespaces,
+        through: :indices, source: :zoekt_enabled_namespace, class_name: '::Search::Zoekt::EnabledNamespace'
 
       validates :index_base_url, presence: true
       validates :search_base_url, presence: true
@@ -19,10 +21,6 @@ module Search
       validates :metadata, json_schema: { filename: 'zoekt_node_metadata' }
 
       attribute :metadata, :ind_jsonb # for indifferent access
-
-      scope :for_namespace, ->(namespace_id) {
-        joins(:indexed_namespaces).where(indexed_namespaces: { namespace_id: namespace_id })
-      }
 
       def self.find_or_initialize_by_task_request(params)
         params = params.with_indifferent_access
