@@ -251,13 +251,6 @@ module EE
           search_min_docs_before_rollover: 50
         )
       end
-
-      override :enabled_git_access_protocol_values
-      def enabled_git_access_protocol_values
-        return super unless License.feature_available?(:ssh_certificates) # rubocop:disable Gitlab/LicenseAvailableUsage -- Does not have cyclical dependency as it's not used in Registration features
-
-        super + ['ssh_certificates']
-      end
     end
 
     def elasticsearch_namespace_ids
