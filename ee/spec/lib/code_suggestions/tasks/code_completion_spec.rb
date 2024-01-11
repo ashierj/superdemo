@@ -51,19 +51,4 @@ RSpec.describe CodeSuggestions::Tasks::CodeCompletion, feature_category: :code_s
       let(:body) { unsafe_params.merge(request_params).merge(expected_current_file) }
     end
   end
-
-  context 'when using Anthropic' do
-    let(:model_family) { CodeSuggestions::TaskFactory::ANTHROPIC }
-    let(:request_params) { { prompt_version: 10, prompt: 'foo' } }
-
-    before do
-      allow_next_instance_of(CodeSuggestions::Prompts::CodeCompletion::Anthropic) do |prompt|
-        allow(prompt).to receive(:request_params).and_return(request_params)
-      end
-    end
-
-    it_behaves_like 'code suggestion task' do
-      let(:body) { unsafe_params.merge(request_params).merge(expected_current_file) }
-    end
-  end
 end

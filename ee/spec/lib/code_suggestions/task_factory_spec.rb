@@ -22,14 +22,6 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
 
     subject(:get_task) { described_class.new(current_user, params: params).task }
 
-    shared_examples 'correct task initializer' do
-      it 'creates task with model family param' do
-        expect(expected_class).to receive(:new).with(**expected_params)
-
-        get_task
-      end
-    end
-
     it 'calls instructions extractor with expected params' do
       expect(CodeSuggestions::InstructionsExtractor)
         .to receive(:new)
@@ -37,27 +29,6 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
         .and_call_original
 
       get_task
-    end
-
-    context 'when code completion' do
-      let(:expected_class) { ::CodeSuggestions::Tasks::CodeCompletion }
-      let(:expected_family) { described_class::VERTEX_AI }
-      let(:expected_params) do
-        {
-          params: params.merge(code_completion_model_family: expected_family),
-          unsafe_passthrough_params: {}
-        }
-      end
-
-      before do
-        allow_next_instance_of(CodeSuggestions::InstructionsExtractor) do |instance|
-          allow(instance).to receive(:extract).and_return({})
-        end
-      end
-
-      it_behaves_like 'correct task initializer' do
-        let(:expected_family) { described_class::VERTEX_AI }
-      end
     end
 
     context 'when code generation' do
@@ -83,10 +54,6 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
             .to receive(:extract)
             .and_return({ instruction: 'instruction', prefix: 'trimmed prefix' })
         end
-      end
-
-      it_behaves_like 'correct task initializer' do
-        let(:expected_family) { described_class::ANTHROPIC }
       end
 
       context 'with project' do
@@ -116,10 +83,6 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
                                           current_user: current_user,
                                           params: { full_paths: [expected_project.full_path] }
                                         )
-        end
-
-        it_behaves_like 'correct task initializer' do
-          let(:expected_family) { described_class::ANTHROPIC }
         end
       end
     end

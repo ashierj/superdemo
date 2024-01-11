@@ -25,7 +25,7 @@ module CodeSuggestions
 
       if instructions.empty?
         return CodeSuggestions::Tasks::CodeCompletion.new(
-          params: code_completion_params,
+          params: params,
           unsafe_passthrough_params: unsafe_passthrough_params
         )
       end
@@ -45,15 +45,10 @@ module CodeSuggestions
     end
     strong_memoize_attr(:language)
 
-    def code_completion_params
-      params.merge(code_completion_model_family: VERTEX_AI)
-    end
-
     def code_generation_params(instructions)
       params.merge(
         prefix: instructions[:prefix],
         instruction: instructions[:instruction],
-        code_generation_model_family: ANTHROPIC,
         project: project,
         model_name: Feature.enabled?(:code_suggestions_claude21, current_user) ? ANTHROPIC_MODEL : nil
       )
