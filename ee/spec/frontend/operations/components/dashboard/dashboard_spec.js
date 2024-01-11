@@ -38,7 +38,7 @@ describe('dashboard component', () => {
         operationsDashboardHelpPath,
       },
       state,
-      stubs: { GlModal: true },
+      stubs: { GlModal: true, GlLink: true },
     });
 
   const findModal = () => wrapper.findComponent(GlModal);

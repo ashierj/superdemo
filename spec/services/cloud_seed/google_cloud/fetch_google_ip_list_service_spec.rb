@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GoogleCloud::FetchGoogleIpListService, :use_clean_rails_memory_store_caching,
+RSpec.describe CloudSeed::GoogleCloud::FetchGoogleIpListService, :use_clean_rails_memory_store_caching,
   :clean_gitlab_redis_rate_limiting, feature_category: :build_artifacts do
   include StubRequests
 
