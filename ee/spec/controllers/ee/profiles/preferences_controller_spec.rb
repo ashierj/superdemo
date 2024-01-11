@@ -58,10 +58,10 @@ RSpec.describe Profiles::PreferencesController, feature_category: :user_profile 
       end
     end
 
-    context 'on zoekt indexed namespaces', feature_category: :global_search do
-      context 'when user is not a member of any zoekt indexed namespaces' do
+    context 'on zoekt enabled namespaces', feature_category: :global_search do
+      context 'when user is not a member of any zoekt enabled namespaces' do
         before do
-          allow(::Zoekt::IndexedNamespace).to receive(:where).and_return([])
+          allow(::Search::Zoekt::EnabledNamespace).to receive(:where).and_return([])
         end
 
         it 'does not update enabled_zoekt preference of user' do
@@ -74,9 +74,9 @@ RSpec.describe Profiles::PreferencesController, feature_category: :user_profile 
         end
       end
 
-      context 'when user is a member of a zoekt indexed namespace' do
+      context 'when user is a member of a zoekt enabled namespace' do
         before do
-          allow(::Zoekt::IndexedNamespace).to receive(:where).and_return([::Zoekt::IndexedNamespace.new])
+          allow(::Search::Zoekt::EnabledNamespace).to receive(:where).and_return([build(:zoekt_enabled_namespace)])
         end
 
         it 'updates enabled_zoekt preference of user' do

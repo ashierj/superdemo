@@ -3,10 +3,14 @@
 require 'spec_helper'
 
 RSpec.describe ::Search::Zoekt::DeleteProjectWorker, feature_category: :global_search do
-  let_it_be(:zoekt_indexed_namespace) { create(:zoekt_indexed_namespace) }
-  let_it_be(:zoekt_node) { zoekt_indexed_namespace.node }
+  let_it_be(:enabled_namespace) { create(:zoekt_enabled_namespace) }
+  let_it_be(:zoekt_node) do
+    index = create(:zoekt_index, zoekt_enabled_namespace: enabled_namespace,
+      namespace_id: enabled_namespace.root_namespace_id)
+    index.node
+  end
 
-  let(:root_namespace_id) { zoekt_indexed_namespace.namespace_id }
+  let(:root_namespace_id) { enabled_namespace.root_namespace_id }
   let(:project_id) { 128 }
 
   describe '#perform' do

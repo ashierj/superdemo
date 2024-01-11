@@ -19,6 +19,20 @@ module Search
         ready: 10
       }
 
+      scope :for_node, ->(node) do
+        where(node: node)
+      end
+
+      scope :for_root_namespace_id, ->(root_namespace_id) do
+        where(namespace_id: root_namespace_id)
+      end
+
+      scope :for_root_namespace_id_with_search_enabled, ->(root_namespace_id) do
+        for_root_namespace_id(root_namespace_id)
+          .joins(:zoekt_enabled_namespace)
+          .where(zoekt_enabled_namespace: { search: true })
+      end
+
       private
 
       def zoekt_enabled_root_namespace_matches_namespace_id

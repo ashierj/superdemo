@@ -25,7 +25,12 @@ module Zoekt
     module_function :zoekt_truncate_index!
 
     def zoekt_ensure_namespace_indexed!(namespace)
-      ::Zoekt::IndexedNamespace.find_or_create_by!(node: zoekt_node, namespace: namespace.root_ancestor)
+      root_namespace = namespace.root_ancestor
+      zoekt_enabled_namespace = ::Search::Zoekt::EnabledNamespace.find_or_create_by!(namespace: root_namespace)
+      index = ::Search::Zoekt::Index.find_or_create_by!(zoekt_enabled_namespace: zoekt_enabled_namespace,
+        node: zoekt_node,
+        namespace_id: root_namespace.id)
+      index.update!(state: :ready)
     end
 
     def zoekt_ensure_project_indexed!(project)

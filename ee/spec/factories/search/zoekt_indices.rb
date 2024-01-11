@@ -6,4 +6,8 @@ FactoryBot.define do
     node { association(:zoekt_node) }
     namespace_id { zoekt_enabled_namespace.root_namespace_id }
   end
+
+  trait :ready do
+    state { ::Search::Zoekt::Index.state_value(:ready) }
+  end
 end
