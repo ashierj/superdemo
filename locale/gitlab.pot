@@ -12286,6 +12286,12 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
+msgid "Comment & close %{workItemType}"
+msgstr ""
+
+msgid "Comment & reopen %{workItemType}"
+msgstr ""
+
 msgid "Comment '%{label}' position"
 msgstr ""
 
