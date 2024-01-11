@@ -48,6 +48,7 @@ describe('RelatedItemsTree', () => {
         store,
         stubs: {
           'tree-root': TreeRoot,
+          'tree-item': TreeItem,
         },
         propsData: {
           parentItem,
