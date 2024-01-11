@@ -85,6 +85,7 @@ module QA
         }
 
         runner.remove_via_api!
+        project.remove_via_api! # This is important to have here to revert the namespace back to full-access mode
       end
 
       context 'when namespace storage usage hits the limit' do
