@@ -15,11 +15,11 @@ module Gitlab
         author_ids = author_ids.drop_while { |id| id <= after_id } if after_id
 
         all_records = []
-        author_ids.each_slice(limit) do |_ids|
+        author_ids.each_slice(limit) do |ids|
           records = User
             .active
             .select(:id, :name, :username)
-            .where(id: author_ids)
+            .where(id: ids)
             .reorder(:id)
             .to_a
 
