@@ -1,6 +1,5 @@
 export default ({ namespaceId = null, namespaceName = null, userCapSet = false } = {}) => ({
   isLoading: false,
-  hasError: false,
   alertMessage: '',
   alertVariant: '',
   namespaceId,
