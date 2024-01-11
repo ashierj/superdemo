@@ -665,10 +665,6 @@ module EE
         ::Feature.enabled?(:dependency_scanning_on_advisory_ingestion)
       end
 
-      condition(:manage_project_access_tokens_custom_roles_enabled) do
-        ::Feature.enabled?(:manage_project_access_tokens, @subject.root_ancestor)
-      end
-
       desc "Custom role on project that enables manage project access tokens"
       condition(:role_enables_manage_project_access_tokens) do
         ::Auth::MemberRoleAbilityLoader.new(
@@ -819,7 +815,7 @@ module EE
         enable :create_resource_access_tokens
       end
 
-      rule { role_enables_manage_project_access_tokens & resource_access_token_feature_available & resource_access_token_creation_allowed & manage_project_access_tokens_custom_roles_enabled }.policy do
+      rule { role_enables_manage_project_access_tokens & resource_access_token_feature_available & resource_access_token_creation_allowed }.policy do
         enable :read_resource_access_tokens
         enable :create_resource_access_tokens
         enable :destroy_resource_access_tokens

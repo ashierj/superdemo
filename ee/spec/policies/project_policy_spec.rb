@@ -2766,23 +2766,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       let(:member_role_abilities) { { manage_project_access_tokens: true } }
       let(:allowed_abilities) { [:manage_resource_access_tokens] }
 
-      context 'with manage_project_access_tokens FF enabled' do
-        before do
-          stub_feature_flags(manage_project_access_tokens: [project.group])
-        end
-
-        it_behaves_like 'custom roles abilities'
-      end
-
-      context 'with manage_project_access_tokens FF disabled' do
-        before do
-          stub_feature_flags(manage_project_access_tokens: false)
-        end
-
-        let(:disallowed_abilities) { [:manage_resource_access_tokens] }
-
-        it { is_expected.to be_disallowed(*disallowed_abilities) }
-      end
+      it_behaves_like 'custom roles abilities'
     end
 
     context 'for a member role with archive_project true' do

@@ -25,18 +25,12 @@ const DEFAULT_PERMISSIONS = [
 describe('CreateMemberRole', () => {
   let wrapper;
 
-  const createComponent = ({
-    availablePermissions = DEFAULT_PERMISSIONS,
-    manageProjectAccessTokens = false,
-    archiveProjects = false,
-    stubs = {},
-  } = {}) => {
+  const createComponent = ({ availablePermissions = DEFAULT_PERMISSIONS, stubs = {} } = {}) => {
     wrapper = mountExtended(CreateMemberRole, {
       propsData: {
         groupId: '4',
         availablePermissions,
       },
-      provide: { glFeatures: { manageProjectAccessTokens, archiveProjects } },
       stubs,
     });
   };
@@ -79,26 +73,19 @@ describe('CreateMemberRole', () => {
     });
   });
 
-  describe('manageProjectAccessTokens feature flag', () => {
+  it('shows the manage project access token permission', () => {
     const permission = {
       name: 'Manage tokens',
       description: 'Manage tokens description',
       value: 'MANAGE_PROJECT_ACCESS_TOKENS',
     };
 
-    it('does not show the manage project access token permission when the feature flag is off', () => {
-      createComponent({ manageProjectAccessTokens: false, availablePermissions: [permission] });
+    createComponent({ manageProjectAccessTokens: true, availablePermissions: [permission] });
 
-      expect(findCheckboxes()).toHaveLength(0);
-    });
+    const checkbox = findCheckboxes().at(0);
 
-    it('shows the manage project access token permission when the feature flag is on', () => {
-      createComponent({ manageProjectAccessTokens: true, availablePermissions: [permission] });
-      const checkbox = findCheckboxes().at(0);
-
-      expect(checkbox.text()).toContain('Manage tokens');
-      expect(checkbox.text()).toContain('Manage tokens description');
-    });
+    expect(checkbox.text()).toContain('Manage tokens');
+    expect(checkbox.text()).toContain('Manage tokens description');
   });
 
   it('emits cancel event', () => {
