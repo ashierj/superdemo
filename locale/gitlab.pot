@@ -14007,6 +14007,9 @@ msgstr ""
 msgid "Converts work item to %{type}. Widgets not supported in new type are removed."
 msgstr ""
 
+msgid "Cookie Preferences"
+msgstr ""
+
 msgid "Cookie domain"
 msgstr ""
 
