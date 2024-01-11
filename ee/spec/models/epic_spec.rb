@@ -315,7 +315,7 @@ RSpec.describe Epic, feature_category: :portfolio_management do
       let(:instance) { build(:epic) }
       let(:scope) { :group }
       let(:scope_attrs) { { namespace: instance.group } }
-      let(:usage) { :epics }
+      let(:usage) { :issues }
     end
   end
 

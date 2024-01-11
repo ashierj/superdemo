@@ -396,6 +396,13 @@ module EE
           epics.select { |epic| epic.readable_by?(user) }
         end
       end
+
+      # Note: overwrite the `epics` internal id usage to lookup the group level `issues` usage
+      # this would help us to have epics iids in sync with group level work items and have a smooth iid
+      # transition from legacy epics to work item epics
+      def internal_id_scope_usage
+        :issues
+      end
     end
 
     def text_color
