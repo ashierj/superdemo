@@ -9,6 +9,7 @@ module Security
       def execute
         return error(s_('User does not have permission to create a Security Policy project.')) unless can_create_projects_in_container?
         return error(s_('Security Policy project already exists.')) if container.security_orchestration_policy_configuration.present?
+        return error(s_('Security Policy project already exists, but is not linked.')) if unlinked_project_exists?
 
         policy_project = ::Projects::CreateService.new(current_user, create_project_params).execute
 
@@ -25,6 +26,12 @@ module Security
       end
 
       private
+
+      delegate :id, :projects, to: :namespace, prefix: true
+
+      def unlinked_project_exists?
+        namespace_projects.with_name(create_project_params[:name]).exists?
+      end
 
       def add_members(policy_project)
         members_to_add = developers_and_maintainers - policy_project.team.members
@@ -61,12 +68,10 @@ module Security
         end
       end
 
-      def namespace_id
-        if project_container?
-          container.namespace_id
-        elsif namespace_container?
-          container.id
-        end
+      def namespace
+        return container if namespace_container?
+
+        container.namespace
       end
 
       def readme_template
@@ -92,7 +97,7 @@ module Security
       end
 
       def can_create_projects_in_container?
-        current_user.can?(:create_projects, project_container? ? container.namespace : container)
+        current_user.can?(:create_projects, namespace)
       end
     end
   end
