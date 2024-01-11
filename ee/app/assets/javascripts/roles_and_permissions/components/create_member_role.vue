@@ -11,7 +11,6 @@ import {
 } from '@gitlab/ui';
 import { createMemberRole } from 'ee/rest_api';
 import { createAlert } from '~/alert';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { s__ } from '~/locale';
 import { ACCESS_LEVEL_GUEST_INTEGER, ACCESS_LEVEL_LABELS } from '~/access_level/constants';
 
@@ -31,7 +30,6 @@ export default {
     GlFormSelect,
     GlFormTextarea,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     groupId: {
       type: String,
@@ -53,18 +51,6 @@ export default {
       permissions: [],
       permissionsValid: true,
     };
-  },
-  computed: {
-    selectablePermissions() {
-      return this.availablePermissions.filter(({ value }) => {
-        switch (value) {
-          case 'MANAGE_PROJECT_ACCESS_TOKENS':
-            return this.glFeatures.manageProjectAccessTokens;
-          default:
-            return true;
-        }
-      });
-    },
   },
   methods: {
     validateFields() {
@@ -149,7 +135,7 @@ export default {
     <gl-form-group :label="s__('MemberRole|Permissions')">
       <gl-form-checkbox-group v-model="permissions" :state="permissionsValid ? null : false">
         <gl-form-checkbox
-          v-for="permission in selectablePermissions"
+          v-for="permission in availablePermissions"
           :key="permission.value"
           :value="permission.value"
           :data-testid="permission.value"
