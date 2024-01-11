@@ -179,6 +179,7 @@ export default {
             :access-level="$options.ACCESS_LEVELS.DEPLOY"
             :disabled="disabled"
             :items="deployers"
+            groups-with-project-access
             @select="updateDeployers"
           />
         </gl-form-group>
