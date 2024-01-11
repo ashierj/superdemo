@@ -43,7 +43,7 @@ RSpec.describe ProtectedBranches::DestroyService, feature_category: :compliance_
       before do
         stub_licensed_features(security_orchestration_policies: false)
         allow(project).to receive(:all_security_orchestration_policy_configurations)
-          .and_return([security_orchestration_policy_configuration])
+                            .and_return([security_orchestration_policy_configuration])
       end
 
       it 'does not sync scan_finding_approval_rules' do
@@ -58,7 +58,7 @@ RSpec.describe ProtectedBranches::DestroyService, feature_category: :compliance_
       before do
         stub_licensed_features(security_orchestration_policies: true)
         allow(project).to receive(:all_security_orchestration_policy_configurations)
-          .and_return([security_orchestration_policy_configuration])
+                            .and_return([security_orchestration_policy_configuration])
       end
 
       it 'syncs scan_finding_approval_rules' do
@@ -83,6 +83,48 @@ RSpec.describe ProtectedBranches::DestroyService, feature_category: :compliance_
 
           it 'blocks unprotecting branches' do
             expect { service.execute(protected_branch) }.to raise_error(Gitlab::Access::AccessDeniedError)
+          end
+        end
+      end
+
+      context 'with group-level protected branch' do
+        let(:group) { create(:group) }
+        let(:protected_branch) { create(:protected_branch, project_id: nil, namespace_id: group.id, name: 'master') }
+
+        subject(:service) { described_class.new(group, user) }
+
+        include_context 'with scan result policy' do
+          let(:security_orchestration_policy_configuration) do
+            create(
+              :security_orchestration_policy_configuration,
+              :namespace,
+              security_policy_management_project: policy_project,
+              namespace: group)
+          end
+
+          let(:policy_configuration) { security_orchestration_policy_configuration }
+          let(:user) { create(:user) }
+          let(:branch_name) { protected_branch.name }
+          let(:scan_result_policies) do
+            [build(:scan_result_policy, approval_settings: { block_group_branch_modification: true })]
+          end
+
+          before do
+            group.add_owner(user)
+          end
+
+          it 'blocks unprotecting branches' do
+            expect { service.execute(protected_branch) }.to raise_error(Gitlab::Access::AccessDeniedError)
+          end
+
+          context 'with feature disabled' do
+            before do
+              stub_feature_flags(scan_result_policy_block_group_branch_modification: false)
+            end
+
+            it 'does not block unprotecting branches' do
+              expect { service.execute(protected_branch) }.not_to raise_error
+            end
           end
         end
       end

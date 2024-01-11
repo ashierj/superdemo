@@ -876,6 +876,30 @@
               },
               "prevent_pushing_and_force_pushing": {
                 "type": "boolean"
+              },
+              "block_group_branch_modification": {
+                "oneOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean"
+                      },
+                      "exceptions": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "enabled"
+                    ]
+                  }
+                ]
               }
             }
           }

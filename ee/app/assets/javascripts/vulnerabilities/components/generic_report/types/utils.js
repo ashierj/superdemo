@@ -31,7 +31,7 @@ export const isOfTypeList = isOfType(REPORT_TYPES.list);
  * @param {{ type: string } } reportItem
  * @returns boolean
  */
-const isOfTypeTable = isOfType(REPORT_TYPES.table);
+const isOfTypeTable = isOfType(REPORT_TYPES.reportTable);
 
 /**
  * Check if the given report is of type named-list
