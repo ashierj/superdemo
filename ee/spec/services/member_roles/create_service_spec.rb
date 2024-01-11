@@ -33,6 +33,10 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
       it 'does not create the member role' do
         expect { create_member_role }.not_to change { MemberRole.count }
       end
+
+      it 'does not log an audit event' do
+        expect { create_member_role }.not_to change { AuditEvent.count }
+      end
     end
 
     shared_examples 'member role creation' do
@@ -66,9 +70,13 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
               details: {
                 author_name: user.name,
                 target_id: operation.id,
-                target_type: 'MemberRole',
-                target_details: 'admin_merge_request, read_vulnerability',
-                custom_message: "Member role #{operation.name} was created",
+                target_type: operation.class.name,
+                target_details: {
+                  name: operation.name,
+                  description: operation.description,
+                  abilities: operation.enabled_permissions.join(', ')
+                }.to_s,
+                custom_message: 'Member role was created',
                 author_class: user.class.name
               }
             }
