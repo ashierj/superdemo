@@ -14,6 +14,10 @@ module Projects
 
       def new; end
 
+      def show
+        @agent_id = params[:agent_id]
+      end
+
       private
 
       def authorize_read_ai_agents!
