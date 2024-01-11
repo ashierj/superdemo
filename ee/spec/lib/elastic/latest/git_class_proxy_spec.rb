@@ -56,6 +56,7 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
             project_ids: [project.id],
             group_ids: [project.namespace.id],
             public_and_internal_projects: false,
+            search_scope: "group",
             order_by: nil,
             sort: nil
           }
@@ -76,22 +77,113 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
           end
         end
 
-        context 'when performing a project search' do
-          let(:search_options) do
-            {
-              current_user: user,
-              project_ids: [project.id],
-              public_and_internal_projects: false,
-              order_by: nil,
-              sort: nil,
-              repository_id: project.id
-            }
+        context 'when the project is private' do
+          let_it_be_with_reload(:project) { create(:project, :private, :repository, :in_group) }
+
+          subject(:search_results) do
+            included_class
+              .new(project.repository.class)
+              .elastic_search('Mailer.deliver', type: 'blob', options: search_options)
           end
 
-          it 'uses the correct elasticsearch query' do
-            subject.elastic_search('*', type: 'blob', options: search_options)
-            assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
-              'blob:match:search_terms', 'blob:related:repositories')
+          context 'when the user is not authorized' do
+            it 'returns no search results' do
+              expect(search_results[:blobs][:results]).to be_empty
+            end
+          end
+
+          context 'when the user is a member' do
+            where(:role, :expected_count) do
+              [
+                [:guest, 0],
+                [:reporter, 1],
+                [:developer, 1],
+                [:maintainer, 1],
+                [:owner, 1]
+              ]
+            end
+
+            with_them do
+              before do
+                project.add_member(user, role)
+              end
+
+              it { expect(search_results[:blobs][:results].count).to eq(expected_count) }
+            end
+          end
+
+          context 'with the `read_code` permission on a custom role' do
+            let_it_be(:role) { create(:member_role, :guest, :read_code, namespace: project.group) }
+            let_it_be(:member) { create(:group_member, :guest, member_role: role, user: user, source: project.group) }
+
+            before do
+              stub_licensed_features(custom_roles: true)
+            end
+
+            it 'returns matching search results' do
+              expect(search_results[:blobs][:results].count).to eq(1)
+              expect(search_results[:blobs][:results][0][:_source][:blob][:path]).to eq(
+                'files/markdown/ruby-style-guide.md'
+              )
+            end
+
+            context 'when the `search_filter_by_ability` feature flag is disabled' do
+              before do
+                stub_feature_flags(search_filter_by_ability: false)
+              end
+
+              it 'returns no search results' do
+                expect(search_results[:blobs][:results]).to be_empty
+              end
+            end
+          end
+        end
+      end
+
+      context 'when performing a project search' do
+        let(:search_options) do
+          {
+            current_user: user,
+            project_ids: [project.id],
+            public_and_internal_projects: false,
+            order_by: nil,
+            sort: nil,
+            repository_id: project.id
+          }
+        end
+
+        it 'uses the correct elasticsearch query' do
+          subject.elastic_search('*', type: 'blob', options: search_options)
+          assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
+            'blob:match:search_terms', 'blob:related:repositories')
+        end
+
+        context 'with the `read_code` permission on a custom role' do
+          let_it_be(:project) { create(:project, :private, :repository, :in_group) }
+          let_it_be(:role) { create(:member_role, :guest, :read_code, namespace: project.group) }
+          let_it_be(:member) { create(:project_member, :guest, member_role: role, user: user, source: project) }
+
+          before do
+            stub_licensed_features(custom_roles: true)
+          end
+
+          it 'returns matching search results' do
+            search_results = subject.elastic_search('Mailer.deliver', type: 'blob', options: search_options)
+
+            expect(search_results[:blobs][:results].count).to eq(1)
+            expect(search_results[:blobs][:results][0][:_source][:blob][:path]).to eq(
+              'files/markdown/ruby-style-guide.md'
+            )
+          end
+        end
+
+        context 'when the user is not authorized' do
+          let_it_be(:project) { create(:project, :private, :repository, :in_group) }
+
+          it 'returns no search results' do
+            search_results = subject.elastic_search('Mailer.deliver', type: 'blob', options: search_options)
+
+            expect(search_results[:blobs][:results]).to be_empty
           end
         end
       end
