@@ -11,7 +11,7 @@ describe('TracingHeader', () => {
           service_name: 'Service',
           operation: 'Operation',
           timestamp: 1692021937219,
-          duration_nano: 1000000,
+          duration_nano: 1000000000,
           total_spans: 10,
         },
       },
@@ -30,7 +30,7 @@ describe('TracingHeader', () => {
 
   it('renders the correct trace duration', () => {
     expect(wrapper.findByTestId('trace-duration-card').text()).toMatchInterpolatedText(
-      'Duration 1.00 ms',
+      'Duration 1s',
     );
   });
 
