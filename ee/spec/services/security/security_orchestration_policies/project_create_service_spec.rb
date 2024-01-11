@@ -45,6 +45,19 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService, fe
         expect(policy_project.container_registry_access_level).to eq(ProjectFeature::DISABLED)
         expect(policy_project.repository.readme.data).to eq(expected_readme_data)
       end
+
+      context 'when there is already a security policy project created in this namespace' do
+        before do
+          create(:project, namespace: project.namespace, name: "#{project.name} - Security policy project")
+        end
+
+        it 'returns error' do
+          response = service.execute
+
+          expect(response[:status]).to eq(:error)
+          expect(response[:message]).to eq('Security Policy project already exists, but is not linked.')
+        end
+      end
     end
 
     context 'when security_orchestration_policies_configuration does not exist for namespace' do
