@@ -1,5 +1,8 @@
 - page_title _('SAML single sign-on for %{group_name}') % { group_name: @group_name }
 
+- content_for :page_specific_javascripts do
+  = render "layouts/one_trust"
+
 - if @auto_redirect_to_provider
   = gl_loading_icon(size: 'lg')
   .gl-text-center.gl-mt-7

@@ -6,4 +6,7 @@
     .gl-display-flex.gl-gap-5.gl-flex-wrap
       = link_to _("Terms"), terms_path, target: '_blank', rel: 'noopener noreferrer'
       = link_to _("Privacy"), privacy_link, target: '_blank', rel: 'noopener noreferrer'
+    - if one_trust_enabled?
+      = render Pajamas::ButtonComponent.new(category: :tertiary, size: :small, button_options: { class: 'ot-sdk-show-settings' }) do
+        = _("Cookie Preferences")
     = render 'devise/shared/language_switcher'
