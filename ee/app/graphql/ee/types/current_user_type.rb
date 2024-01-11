@@ -16,6 +16,11 @@ module EE
           resolver: ::Resolvers::Ai::UserChatAccessResolver,
           alpha: { milestone: '16.8' },
           description: 'User access to AI chat feature.'
+
+        field :duo_code_suggestions_available, ::GraphQL::Types::Boolean,
+          resolver: ::Resolvers::Ai::CodeSuggestionsAccessResolver,
+          alpha: { milestone: '16.8' },
+          description: 'User access to code suggestions feature.'
       end
     end
   end
