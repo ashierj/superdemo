@@ -125,7 +125,6 @@ module EE
           resolver: ::Resolvers::AuditEvents::Instance::GoogleCloudLoggingConfigurationsResolver
         field :member_role_permissions,
           ::Types::MemberRoles::CustomizablePermissionType.connection_type,
-          resolver: ::Resolvers::MemberRoles::PermissionListResolver,
           null: true,
           description: 'List of all customizable permissions.',
           alpha: { milestone: '16.4' }
@@ -179,6 +178,10 @@ module EE
         else
           ::Ci::Minutes::NamespaceMonthlyUsage.for_namespace(root_namespace)
         end
+      end
+
+      def member_role_permissions
+        MemberRole.all_customizable_permissions.keys
       end
 
       private

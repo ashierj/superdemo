@@ -16,7 +16,7 @@
           = count
     .gl-new-card-actions
       - if is_upstream_mode
-        = render Pajamas::ButtonComponent.new(size: :small, button_options: { class: "js-toggle-button js-toggle-content #{hide_class}", data: { qa_selector: "add_new_subscription" } }) do
+        = render Pajamas::ButtonComponent.new(size: :small, button_options: { class: "js-toggle-button js-toggle-content #{hide_class}", data: { testid: "add-new-subscription" } }) do
           = _('Add new')
   - c.with_body do
     - if is_upstream_mode
@@ -29,9 +29,9 @@
               = f.label :upstream_project_path do
                 = _("Project path")
                 = link_to sprite_icon('question-o'), help_page_path('ci/pipelines/index', anchor: 'trigger-a-pipeline-when-an-upstream-project-is-rebuilt'), target: '_blank', rel: 'noopener noreferrer'
-              = f.text_field :upstream_project_path, class: "form-control", data: { qa_selector: "upstream_project_path_field" }
+              = f.text_field :upstream_project_path, class: "form-control", data: { testid: "upstream-project-path-field" }
             .gl-mt-3
-              = render Pajamas::ButtonComponent.new(variant: :confirm, type: :submit, button_options: { data: { qa_selector: "subscribe_button" } }) do
+              = render Pajamas::ButtonComponent.new(variant: :confirm, type: :submit, button_options: { data: { testid: "subscribe-button" } }) do
                 = _('Subscribe')
               = render Pajamas::ButtonComponent.new(button_options: { type: 'reset', class: 'gl-ml-3 js-toggle-button' }) do
                 = _('Cancel')

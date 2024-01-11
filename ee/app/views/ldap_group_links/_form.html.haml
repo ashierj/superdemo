@@ -13,18 +13,18 @@
             = f.label :cn, s_("LDAP|Sync method")
           %fieldset.col-sm-10
             .gl-form-radio.custom-control.custom-radio
-              = radio_button_tag :sync_method, :group, true, class: 'custom-control-input', data: { qa_selector: 'ldap_sync_group_radio' }
+              = radio_button_tag :sync_method, :group, true, class: 'custom-control-input', data: { testid: 'ldap-sync-group-radio' }
               = label_tag :sync_method_group, class: 'custom-control-label' do
                 = s_("LDAP|LDAP group cn")
             .gl-form-radio.custom-control.custom-radio
-              = radio_button_tag :sync_method, :filter, false, class: 'custom-control-input', data: { qa_selector: 'ldap_sync_user_filter_radio' }
+              = radio_button_tag :sync_method, :filter, false, class: 'custom-control-input', data: { testid: 'ldap-sync-user-filter-radio' }
               = label_tag :sync_method_filter, class: 'custom-control-label' do
                 = s_("LDAP|LDAP user filter")
 
       .form-group.row.cn-link
         .col-sm-2.col-form-label
           = f.label :cn, s_("LDAP|LDAP group cn")
-        .col-sm-10{ data: { qa_selector: 'ldap_group_field' } }
+        .col-sm-10{ data: { testid: 'ldap-group-field' } }
           #js-ldap-groups-select
           .form-text.text-muted
             Synchronize #{group.name}'s members with this LDAP group.
@@ -36,7 +36,7 @@
           .col-sm-2.col-form-label
             = f.label :filter, s_("LDAP|LDAP user filter")
           .col-sm-10
-            = f.text_field :filter, placeholder: 'Ex. (&(objectCategory=person)(objectClass=developer))', class: 'form-control xxlarge input-mn-300', data: { qa_selector: 'ldap_user_filter_field' }
+            = f.text_field :filter, placeholder: 'Ex. (&(objectCategory=person)(objectClass=developer))', class: 'form-control xxlarge input-mn-300', data: { testid: 'ldap-user-filter-field' }
             .form-text.text-muted
               - ldap_link = link_to 'LDAP Search Filter Syntax', 'https://msdn.microsoft.com/en-us/library/aa746475(v=vs.85).aspx'
               This query must use valid #{ldap_link}. Synchronize #{group.name}'s members with this LDAP user filter.
@@ -54,4 +54,4 @@
             You can manage permission levels for individual group members in the Members tab.
 
     .form-actions.gl-mb-5
-      = f.submit s_("LDAP|Add synchronization"), pajamas_button: true, data: { qa_selector: 'add_sync_button' }
+      = f.submit s_("LDAP|Add synchronization"), pajamas_button: true, data: { testid: 'add-sync-button' }

@@ -21,7 +21,11 @@ RSpec.describe 'updating member role', feature_category: :system_access do
         id
         name
         description
-        enabledPermissions
+        enabledPermissions {
+          nodes {
+            value
+          }
+        }
       }
     FIELDS
   end
@@ -67,7 +71,9 @@ RSpec.describe 'updating member role', feature_category: :system_access do
           expect(graphql_errors).to be_nil
 
           expect(update_member_role['memberRole']).to include('name' => 'new name')
-          expect(update_member_role['memberRole']['enabledPermissions']).to match_array(permissions)
+
+          expect(update_member_role['memberRole']['enabledPermissions']['nodes'].flat_map(&:values))
+            .to match_array(permissions)
         end
 
         it 'updates the member role' do

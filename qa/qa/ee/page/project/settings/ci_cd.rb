@@ -15,13 +15,13 @@ module QA
                 include Page::Component::SecureReport
 
                 view 'ee/app/views/projects/settings/ci_cd/_pipeline_subscriptions.html.haml' do
-                  element :pipeline_subscriptions_setting_content
+                  element 'pipeline-subscriptions-setting-content'
                 end
               end
             end
 
             def expand_pipeline_subscriptions(&block)
-              expand_content(:pipeline_subscriptions_setting_content) do
+              expand_content('pipeline-subscriptions-setting-content') do
                 Settings::PipelineSubscriptions.perform(&block)
               end
             end
