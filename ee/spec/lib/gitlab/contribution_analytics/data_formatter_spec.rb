@@ -8,6 +8,7 @@ RSpec.describe Gitlab::ContributionAnalytics::DataFormatter, feature_category: :
   let_it_be(:project2) { create(:project, group: group) }
   let_it_be_with_reload(:user_1) { create(:user) }
   let_it_be(:user_2) { create(:user) }
+  let_it_be(:user_3) { create(:user) }
   let_it_be(:issue) { create(:closed_issue, project: project1) }
   let_it_be(:mr) { create(:merge_request, source_project: project2) }
 
@@ -22,6 +23,7 @@ RSpec.describe Gitlab::ContributionAnalytics::DataFormatter, feature_category: :
     create(:event, :closed, project: project2, target: mr, author: user_1)
     create(:event, :pushed, project: project1, target: nil, author: user_1)
     create(:event, :pushed, project: project1, target: nil, author: user_2)
+    create(:event, :pushed, project: project1, target: nil, author: user_3)
   end
 
   shared_examples 'correct collection of data' do
@@ -36,8 +38,8 @@ RSpec.describe Gitlab::ContributionAnalytics::DataFormatter, feature_category: :
           merge_requests_merged: {},
           merge_requests_approved: { user_1.id => 1 },
           merge_requests_closed: { user_1.id => 1 },
-          push: { user_1.id => 1, user_2.id => 1 },
-          total_events: { user_1.id => 5, user_2.id => 1 }
+          push: { user_1.id => 1, user_2.id => 1, user_3.id => 1 },
+          total_events: { user_1.id => 5, user_2.id => 1, user_3.id => 1 }
         })
       end
 
@@ -45,7 +47,7 @@ RSpec.describe Gitlab::ContributionAnalytics::DataFormatter, feature_category: :
         it 'returns correct users' do
           users = described_class.new(data).users
 
-          expect(users).to eq([user_1, user_2])
+          expect(users).to eq([user_1, user_2, user_3])
         end
 
         context 'when banned users are present' do
@@ -54,7 +56,7 @@ RSpec.describe Gitlab::ContributionAnalytics::DataFormatter, feature_category: :
 
             users = described_class.new(data).users
 
-            expect(users).to eq([user_2])
+            expect(users).to eq([user_2, user_3])
           end
         end
 
@@ -71,6 +73,16 @@ RSpec.describe Gitlab::ContributionAnalytics::DataFormatter, feature_category: :
 
               expect(users).to eq([user_2])
             end
+          end
+
+          it 'queries only limit number of ids' do
+            recorder = ActiveRecord::QueryRecorder.new do
+              described_class.new(data).users(limit: 2)
+            end
+
+            users_query = recorder.occurrences.keys.find { |query| query[/FROM "users"/] }
+            expect(users_query).to be_present
+            expect(users_query).to include(%{"users"."id" IN (#{user_1.id}, #{user_2.id})})
           end
         end
       end
