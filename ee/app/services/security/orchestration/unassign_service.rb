@@ -42,7 +42,7 @@ module Security
         if container.is_a?(Project)
           Security::OrchestrationConfigurationRemoveBotWorker.perform_async(container.id, current_user.id)
         else
-          container.all_project_ids.each do |project_id|
+          container.all_project_ids.pluck_primary_key.each do |project_id|
             Security::OrchestrationConfigurationRemoveBotWorker.perform_async(project_id, current_user.id)
           end
         end
