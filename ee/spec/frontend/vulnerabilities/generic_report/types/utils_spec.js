@@ -50,15 +50,15 @@ const TEST_DATA = {
     },
   },
   table: {
-    type: REPORT_TYPES.table,
+    type: REPORT_TYPES.reportTable,
     header: [
-      { type: REPORT_TYPES.text, value: 'foo ' },
-      { type: REPORT_TYPES.text, value: 'bar ' },
+      { type: REPORT_TYPES.componentText, value: 'foo ' },
+      { type: REPORT_TYPES.componentText, value: 'bar ' },
     ],
     rows: [
       [
-        { type: REPORT_TYPES.text, value: 'foo' },
-        { type: REPORT_TYPES.text, value: 'bar' },
+        { type: REPORT_TYPES.componentText, value: 'foo' },
+        { type: REPORT_TYPES.componentText, value: 'bar' },
       ],
     ],
   },
@@ -110,7 +110,6 @@ describe('ee/vulnerabilities/components/generic_report/types/utils', () => {
 
     describe('with tables', () => {
       const filteredData = filterTypesAndLimitListDepth(TEST_DATA);
-
       it('adds a key to each header item', () => {
         expect(filteredData.table.header).toMatchObject([{ key: 'column_0' }, { key: 'column_1' }]);
       });

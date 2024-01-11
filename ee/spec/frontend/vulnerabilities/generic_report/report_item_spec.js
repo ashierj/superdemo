@@ -1,8 +1,7 @@
-import { shallowMount } from '@vue/test-utils';
 import ReportItem from 'ee/vulnerabilities/components/generic_report/report_item.vue';
 import { REPORT_COMPONENTS } from 'ee/vulnerabilities/components/generic_report/types/component_map';
 import { REPORT_TYPES } from 'ee/vulnerabilities/components/generic_report/types/constants';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { extendedWrapper, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 const TEST_DATA = {
   [REPORT_TYPES.url]: {
@@ -15,7 +14,7 @@ const TEST_DATA = {
     before: 'foo',
     after: 'bar',
   },
-  [REPORT_TYPES.text]: {
+  [REPORT_TYPES.componentText]: {
     name: 'some-string-field',
     value: 'some-value',
   },
@@ -23,7 +22,7 @@ const TEST_DATA = {
     name: 'some-numeric-field',
     value: 15,
   },
-  [REPORT_TYPES.moduleName]: {
+  [REPORT_TYPES.moduleLocation]: {
     moduleName: 'foo.c',
     offset: 15,
   },
@@ -41,25 +40,24 @@ const TEST_DATA = {
 describe('ee/vulnerabilities/components/generic_report/report_item.vue', () => {
   let wrapper;
 
-  const createWrapper = ({ props } = {}) =>
-    extendedWrapper(
-      shallowMount(ReportItem, {
-        propsData: {
-          item: {},
-          ...props,
-        },
-        // manual stubbing is needed because the components are dynamically imported
-        stubs: Object.keys(REPORT_COMPONENTS),
-      }),
-    );
+  const createWrapper = ({ props } = {}) => {
+    wrapper = shallowMountExtended(ReportItem, {
+      propsData: {
+        item: {},
+        ...props,
+      },
+      // manual stubbing is needed because the components are dynamically imported
+      stubs: Object.keys(REPORT_COMPONENTS),
+    });
+  };
 
-  const findReportComponent = () => wrapper.findByTestId('reportComponent');
+  const findReportComponent = () => extendedWrapper(wrapper.findByTestId('reportComponent'));
 
   describe.each(Object.values(REPORT_TYPES))('with report type "%s"', (reportType) => {
     const reportItem = { type: reportType, ...TEST_DATA[reportType] };
 
     beforeEach(() => {
-      wrapper = createWrapper({ props: { item: reportItem } });
+      createWrapper({ props: { item: reportItem } });
     });
 
     it('renders the corresponding component', () => {
@@ -67,7 +65,7 @@ describe('ee/vulnerabilities/components/generic_report/report_item.vue', () => {
     });
 
     it('passes the report data as props', () => {
-      expect(findReportComponent().props()).toMatchObject({
+      expect(wrapper.props()).toMatchObject({
         item: reportItem,
       });
     });
