@@ -14608,6 +14608,7 @@ CREATE TABLE ci_pipeline_metadata (
     name text,
     auto_cancel_on_new_commit smallint DEFAULT 0 NOT NULL,
     auto_cancel_on_job_failure smallint DEFAULT 0 NOT NULL,
+    partition_id bigint DEFAULT 100 NOT NULL,
     CONSTRAINT check_9d3665463c CHECK ((char_length(name) <= 255))
 );
 

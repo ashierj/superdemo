@@ -22,6 +22,7 @@ module Ci
         Ci::RunningBuild
         Ci::RunnerManagerBuild
         Ci::PipelineChatData
+        Ci::PipelineMetadata
         Ci::PipelineVariable
         Ci::Sources::Pipeline
         Ci::Stage
