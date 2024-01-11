@@ -154,7 +154,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
         resources :metrics, only: [:index, :show], constraints: { id: %r{[^/]+}, type: /\w+/ }, controller: :metrics
 
         namespace :ml do
-          resources :agents, only: [:index, :new], controller: 'agents', param: :agent_id
+          resources :agents, only: [:index, :new, :show], controller: 'agents', param: :agent_id
         end
       end
       # End of the /-/ scope.

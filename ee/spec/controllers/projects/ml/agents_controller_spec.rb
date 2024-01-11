@@ -58,4 +58,29 @@ RSpec.describe Projects::Ml::AgentsController, feature_category: :mlops do
       end
     end
   end
+
+  describe 'GET show' do
+    subject(:show_request) do
+      get :show, params: { namespace_id: project.namespace, project_id: project, agent_id: 1 }
+      response
+    end
+
+    it 'renders the template' do
+      expect(show_request).to render_template(:show)
+    end
+
+    it 'assigns the correct param' do
+      show_request
+
+      expect(assigns[:agent_id]).to eq('1')
+    end
+
+    context 'when user does not have access' do
+      let(:read_ai_agents) { false }
+
+      it 'renders 404' do
+        expect(show_request).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
 end

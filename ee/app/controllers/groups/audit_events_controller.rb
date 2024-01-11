@@ -11,6 +11,8 @@ class Groups::AuditEventsController < Groups::ApplicationController
 
   before_action :check_audit_events_available!
 
+  BATCH_SIZE = 100
+
   track_event :index,
     name: 'g_compliance_audit_events',
     action: 'visit_group_compliance_audit_events',
@@ -29,15 +31,19 @@ class Groups::AuditEventsController < Groups::ApplicationController
     @audit_event_definitions = Gitlab::Audit::Type::Definition.names_with_category
 
     @all_projects = []
-    group.all_projects_except_soft_deleted.each_batch do |projects|
+    group.all_projects_except_soft_deleted.each_batch(of: BATCH_SIZE) do |projects|
       projects_json = projects.map do |project|
         { value: project.full_path, text: project.name, type: "Projects" }
       end
       @all_projects.concat(projects_json)
     end
 
-    @all_groups = group.descendants.map do |group|
-      { value: group.full_path, text: group.name, type: "Groups" }
+    @all_groups = []
+    group.descendants.each_batch(of: BATCH_SIZE) do |groups|
+      groups_json = groups.map do |group|
+        { value: group.full_path, text: group.name, type: "Groups" }
+      end
+      @all_groups.concat(groups_json)
     end
 
     Gitlab::Tracking.event(self.class.name, 'search_audit_event', user: current_user, namespace: group)
