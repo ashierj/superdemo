@@ -14344,9 +14344,11 @@ CREATE TABLE ci_instance_variables (
     encrypted_value text,
     encrypted_value_iv text,
     raw boolean DEFAULT false NOT NULL,
+    description text,
     CONSTRAINT check_07a45a5bcb CHECK ((char_length(encrypted_value_iv) <= 255)),
     CONSTRAINT check_5aede12208 CHECK ((char_length(key) <= 255)),
-    CONSTRAINT check_956afd70f1 CHECK ((char_length(encrypted_value) <= 13579))
+    CONSTRAINT check_956afd70f1 CHECK ((char_length(encrypted_value) <= 13579)),
+    CONSTRAINT check_a0a9762afa CHECK ((char_length(description) <= 255))
 );
 
 CREATE SEQUENCE ci_instance_variables_id_seq
