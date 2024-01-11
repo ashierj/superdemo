@@ -235,12 +235,10 @@ export const DORA_PERFORMERS_SCORE_METRICS = [
   },
 ];
 
-export const DORA_PERFORMERS_SCORE_DEFAULT_PANEL_TITLE = s__(
-  'DORA4Metrics|Total projects with DORA performers score',
-);
+export const DORA_PERFORMERS_SCORE_DEFAULT_PANEL_TITLE = s__('DORA4Metrics|DORA performers score');
 
 export const DORA_PERFORMERS_SCORE_PANEL_TITLE_WITH_PROJECTS_COUNT = s__(
-  'DORA4Metrics|Total projects (%{count}) with DORA performers score for %{groupName} group',
+  'DORA4Metrics|Total projects (%{count}) with DORA metrics',
 );
 
 export const DORA_PERFORMERS_SCORE_TOOLTIP_PROJECTS_COUNT_TITLE = (count) =>
@@ -250,15 +248,15 @@ export const DORA_PERFORMERS_SCORE_NOT_INCLUDED = (count) =>
   n__('DORA4Metrics|Has no calculated data.', 'DORA4Metrics|Have no calculated data.', count);
 
 export const DORA_PERFORMERS_SCORE_LOADING_ERROR = s__(
-  'DORA4Metrics|Failed to load DORA performance scores for Namespace: %{fullPath}',
+  'DORA4Metrics|Failed to load DORA performance scores for Group: %{fullPath}',
 );
 
-export const DORA_PERFORMERS_SCORE_PROJECT_NAMESPACE_ERROR = s__(
-  'DORA4Metrics|This visualization is not supported for project namespaces.',
+export const DORA_PERFORMERS_SCORE_GROUP_ERROR = s__(
+  'DORA4Metrics|Failed to load Group: %{fullPath}',
 );
 
 export const DORA_PERFORMERS_SCORE_NO_DATA = s__(
-  'DORA4Metrics|No data available for Namespace: %{fullPath}',
+  'DORA4Metrics|No data available for Group: %{fullPath}',
 );
 
 export const DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE = [GREEN_400, ORANGE_400, RED_400, GRAY_400];
@@ -271,6 +269,9 @@ export const BUILT_IN_PRODUCT_ANALYTICS_DASHBOARDS = ['behaviour', 'audience'];
 
 export const VISUALIZATION_USAGE_OVERVIEW = 'usage_overview';
 export const VISUALIZATION_USAGE_TITLE = s__('Analytics|Usage overview for %{namespaceName} group');
+export const VISUALIZATION_DORA_PERFORMERS_SCORE_TITLE = s__(
+  'Analytics|DORA performers score for %{namespaceName} group',
+);
 
 export const PRODUCT_ANALYTICS_DASHBOARD_FEEDBACK_CALLOUT_ID =
   'product_analytics_dashboard_feedback';
