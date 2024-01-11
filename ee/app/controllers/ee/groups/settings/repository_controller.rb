@@ -31,6 +31,19 @@ module EE
           @protected_branches = group.protected_branches.order(:name).page(params[:page])
           @protected_branch = group.protected_branches.new
           gon.push(helpers.protected_access_levels_for_dropdowns)
+
+          return unless ::Feature.enabled?(:scan_result_policy_block_group_branch_modification, group)
+
+          protected_from_deletion =
+            ::Security::SecurityOrchestrationPolicies::GroupProtectedBranchesDeletionCheckService
+              .new(group: group)
+              .execute
+
+          return unless protected_from_deletion
+
+          @protected_branches.each do |protected_branch|
+            protected_branch.protected_from_deletion = true
+          end
         end
         # rubocop:enable Gitlab/ModuleWithInstanceVariables
         # rubocop:enable CodeReuse/ActiveRecord

@@ -26,6 +26,12 @@ module EE
       private
 
       def blocked_by_scan_result_policy?(protected_branch)
+        return blocked_on_project_level?(protected_branch) if protected_branch.project_level?
+
+        blocked_on_group_level?(protected_branch)
+      end
+
+      def blocked_on_project_level?(protected_branch)
         project = protected_branch.project
 
         return false unless project&.licensed_feature_available?(:security_orchestration_policies)
@@ -35,6 +41,12 @@ module EE
         protected_from_deletion = service.execute([protected_branch])
 
         protected_branch.in?(protected_from_deletion)
+      end
+
+      def blocked_on_group_level?(protected_branch)
+        ::Security::SecurityOrchestrationPolicies::GroupProtectedBranchesDeletionCheckService
+          .new(group: protected_branch.group)
+          .execute
       end
     end
   end

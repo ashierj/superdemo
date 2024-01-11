@@ -828,7 +828,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
                 remove_approvals_with_new_commit: true,
                 require_password_to_approve: false,
                 block_branch_modification: true,
-                prevent_pushing_and_force_pushing: true
+                prevent_pushing_and_force_pushing: true,
+                block_group_branch_modification: true
               }
             end
 
@@ -840,6 +841,24 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
             specify do
               expect(errors).to be_empty
+            end
+          end
+
+          describe "block_group_branch_modification" do
+            context "in object form" do
+              let(:approval_settings) { { enabled: true } }
+
+              specify do
+                expect(errors).to be_empty
+              end
+
+              context "with exceptions" do
+                let(:approval_settings) { { enabled: true, exceptions: %w[foobar] } }
+
+                specify do
+                  expect(errors).to be_empty
+                end
+              end
             end
           end
         end

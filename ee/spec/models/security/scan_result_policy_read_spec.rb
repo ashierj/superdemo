@@ -35,7 +35,13 @@ RSpec.describe Security::ScanResultPolicyRead, feature_category: :security_polic
       is_expected.to allow_value(
         { prevent_approval_by_author: true, prevent_approval_by_commit_author: false,
           remove_approvals_with_new_commit: true, require_password_to_approve: false,
-          block_branch_modification: true }
+          block_branch_modification: true, block_group_branch_modification: true }
+      ).for(:project_approval_settings)
+    end
+
+    it do
+      is_expected.to allow_value(
+        { block_group_branch_modification: { enabled: true, exceptions: %w[foobar] } }
       ).for(:project_approval_settings)
     end
 
