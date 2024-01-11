@@ -117,6 +117,7 @@ export default {
             class="gl-w-30p"
             :label="$options.i18n.accessDropdownLabel"
             :access-levels-data="accessLevelsData"
+            groups-with-project-access
             :access-level="$options.ACCESS_LEVELS.DEPLOY"
             @hidden="setRule({ environment: addingEnvironment, newRules: $event })"
           />
