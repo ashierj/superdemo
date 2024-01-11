@@ -67,5 +67,42 @@ RSpec.describe Groups::Settings::RepositoryController, feature_category: :source
         end
       end
     end
+
+    describe 'protected branches' do
+      let_it_be(:protected_branch) { create(:protected_branch, project_id: nil, namespace_id: group.id) }
+
+      subject(:protected_branches) { assigns[:protected_branches] }
+
+      before do
+        group.add_owner(user)
+      end
+
+      it 'assigns group protected branches' do
+        get group_settings_repository_path(group)
+
+        expect(protected_branches).to contain_exactly(protected_branch)
+      end
+
+      it 'does not protect from deletion' do
+        get group_settings_repository_path(group)
+
+        expect(protected_branches.none?(&:protected_from_deletion)).to be(true)
+      end
+
+      context 'with blocking policy' do
+        let(:service_klass) { Security::SecurityOrchestrationPolicies::GroupProtectedBranchesDeletionCheckService }
+
+        before do
+          allow(service_klass)
+            .to receive(:new).with(group: group).and_return(instance_double(service_klass, execute: true))
+        end
+
+        it 'protects from deletion' do
+          get group_settings_repository_path(group)
+
+          expect(protected_branches.all?(&:protected_from_deletion)).to be(true)
+        end
+      end
+    end
   end
 end
