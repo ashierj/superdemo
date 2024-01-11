@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe "Policy editor", :js, feature_category: :security_policy_management do
+RSpec.describe "User creates security policy", :js, feature_category: :security_policy_management do
   include ListboxHelpers
 
-  let_it_be(:owner) { create(:user) }
+  let_it_be(:owner) { create(:user, :with_namespace) }
   let_it_be(:project) { create(:project, :repository, namespace: owner.namespace) }
   let_it_be(:protected_branch) { create(:protected_branch, name: 'spooky-stuff', project: project) }
   let_it_be(:policy_management_project) { create(:project, :repository, namespace: owner.namespace) }
