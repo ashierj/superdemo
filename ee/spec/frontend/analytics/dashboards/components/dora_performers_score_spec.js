@@ -1,5 +1,5 @@
 import { GlStackedColumnChart } from '@gitlab/ui/dist/charts';
-import { GlAlert, GlCard, GlSkeletonLoader, GlIcon } from '@gitlab/ui';
+import { GlAlert, GlSkeletonLoader, GlIcon } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
@@ -10,8 +10,6 @@ import waitForPromises from 'helpers/wait_for_promises';
 import groupDoraPerformanceScoreCountsQuery from 'ee/analytics/dashboards/graphql/group_dora_performance_score_counts.query.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE } from 'ee/analytics/dashboards/constants';
-import getGroupOrProject from 'ee/analytics/dashboards/graphql/get_group_or_project.query.graphql';
-import { TYPENAME_GROUP, TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { mockGraphqlDoraPerformanceScoreCountsResponse } from '../helpers';
 import {
@@ -23,21 +21,8 @@ Vue.use(VueApollo);
 
 describe('DoraPerformersScore', () => {
   const fullPath = 'toolbox';
-  const groupName = 'Toolbox';
   const mockData = { namespace: fullPath };
   const mockProjectsCount = 70;
-  const mockGroup = {
-    __typename: TYPENAME_GROUP,
-    id: 'gid://gitlab/Group/22',
-    name: groupName,
-    webUrl: 'gdk.test/groups/toolbox',
-  };
-  const mockProject = {
-    __typename: TYPENAME_PROJECT,
-    id: 'gid://gitlab/Project/22',
-    name: 'Hammer',
-    webUrl: 'gdk.test/toolbox/hammer',
-  };
   const doraPerformanceScoreCountsSuccess = mockGraphqlDoraPerformanceScoreCountsResponse({
     totalProjectsCount: mockProjectsCount,
   });
@@ -51,33 +36,24 @@ describe('DoraPerformersScore', () => {
     noDoraDataProjectsCount: mockProjectsCount + 1,
     mockDataResponse: mockEmptyDoraPerformersScoreResponseData,
   });
-  const queryError = jest.fn().mockRejectedValueOnce(new Error('Something went wrong'));
-  const loadingErrorMessage = `Failed to load DORA performance scores for Namespace: ${fullPath}`;
-  const projectNamespaceErrorMessage =
-    'This visualization is not supported for project namespaces.';
   const mockGroupBy = [
     'Deployment Frequency (Velocity)',
     'Lead Time for Changes (Velocity)',
     'Time to Restore Service (Quality)',
     'Change Failure Rate (Quality)',
   ];
-  const defaultGlFeatures = { doraPerformersScorePanel: true };
   const panelTitleWithProjectsCount = (projectsCount = mockProjectsCount) =>
-    `Total projects (${projectsCount}) with DORA performers score for ${groupName} group`;
+    `Total projects (${projectsCount}) with DORA metrics`;
 
   let wrapper;
   let mockApollo;
 
   const createWrapper = async ({
     props = {},
-    group = mockGroup,
-    project = null,
     doraPerformanceScoreCountsHandler = doraPerformanceScoreCountsSuccess,
-    glFeatures = defaultGlFeatures,
   } = {}) => {
     mockApollo = createMockApollo([
       [groupDoraPerformanceScoreCountsQuery, doraPerformanceScoreCountsHandler],
-      [getGroupOrProject, jest.fn().mockResolvedValue({ data: { group, project } })],
     ]);
 
     wrapper = shallowMountExtended(DoraPerformersScore, {
@@ -89,18 +65,11 @@ describe('DoraPerformersScore', () => {
       directives: {
         GlTooltip: createMockDirective('gl-tooltip'),
       },
-      stubs: {
-        GlCard,
-      },
-      provide: {
-        glFeatures,
-      },
     });
 
     await waitForPromises();
   };
 
-  const findDoraPerformersScorePanel = () => wrapper.findByTestId('dora-performers-score-panel');
   const findDoraPerformersScoreChart = () => wrapper.findComponent(GlStackedColumnChart);
   const findDoraPerformersScorePanelTitle = () =>
     wrapper.findByTestId('dora-performers-score-panel-title');
@@ -196,7 +165,7 @@ describe('DoraPerformersScore', () => {
     });
 
     it('renders empty state message', () => {
-      const noDataMessage = `No data available for Namespace: ${fullPath}`;
+      const noDataMessage = `No data available for Group: ${fullPath}`;
       expect(wrapper.findByText(noDataMessage).exists()).toBe(true);
     });
 
@@ -213,38 +182,28 @@ describe('DoraPerformersScore', () => {
     });
   });
 
-  describe.each`
-    error                                         | props                                                | expectedErrorMessage
-    ${'it fails to fetch DORA performers scores'} | ${{ doraPerformanceScoreCountsHandler: queryError }} | ${loadingErrorMessage}
-    ${'namespace is `null`'}                      | ${{ group: null }}                                   | ${loadingErrorMessage}
-    ${'namespace is project'}                     | ${{ group: null, project: mockProject }}             | ${projectNamespaceErrorMessage}
-  `('when $error', ({ props, expectedErrorMessage }) => {
+  describe('fails to fetch data', () => {
     beforeEach(async () => {
-      await createWrapper(props);
+      const doraPerformanceScoreCountsHandler = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('Something went wrong'));
+      await createWrapper({ doraPerformanceScoreCountsHandler });
     });
 
     it('renders alert component', () => {
       expect(findAlert().exists()).toBe(true);
-      expect(findAlert().text()).toBe(expectedErrorMessage);
+      expect(findAlert().text()).toBe(
+        `Failed to load DORA performance scores for Group: ${fullPath}`,
+      );
     });
 
-    it('renders default panel title', () => {
-      expect(wrapper.findByText('Total projects with DORA performers score').exists()).toBe(true);
-    });
-
-    it('does not render panel title tooltip', () => {
-      expect(findPanelTitleHelpIcon().exists()).toBe(false);
+    it('does not render panel title', () => {
+      expect(findDoraPerformersScorePanelTitle().exists()).toBe(false);
     });
 
     it('does not render chart', () => {
       expect(findDoraPerformersScoreChart().exists()).toBe(false);
     });
-  });
-
-  it('does not render if "doraPerformersScorePanel" feature flag is disabled', async () => {
-    await createWrapper({ glFeatures: { doraPerformersScorePanel: false } });
-
-    expect(findDoraPerformersScorePanel().exists()).toBe(false);
   });
 
   describe('project topics filter', () => {
