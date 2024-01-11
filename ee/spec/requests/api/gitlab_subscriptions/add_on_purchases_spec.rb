@@ -80,6 +80,50 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
           expect(json_response['purchase_xid']).to eq(params[:purchase_xid])
         end
 
+        context 'when product_analytics_billing flag is disabled' do
+          before do
+            stub_feature_flags(product_analytics_billing: false)
+          end
+
+          context 'when the add-on is product_analytics' do
+            let(:add_on_name) { 'product_analytics' }
+
+            it 'does not create a new add-on purchase' do
+              expect { post_add_on_purchase }.not_to change { GitlabSubscriptions::AddOnPurchase.count }
+            end
+          end
+
+          context 'when the add-on is code_suggestions' do
+            let(:add_on_name) { 'code_suggestions' }
+
+            it 'creates a new add-on purchase' do
+              expect { post_add_on_purchase }.to change { GitlabSubscriptions::AddOnPurchase.count }.by(1)
+            end
+          end
+        end
+
+        context 'when product_analytics_billing flag is enabled' do
+          before do
+            stub_feature_flags(product_analytics_billing: true)
+          end
+
+          context 'when the add-on is product_analytics' do
+            let(:add_on_name) { 'product_analytics' }
+
+            it 'creates a new add-on purchase' do
+              expect { post_add_on_purchase }.to change { GitlabSubscriptions::AddOnPurchase.count }.by(1)
+            end
+          end
+
+          context 'when the add-on is code_suggestions' do
+            let(:add_on_name) { 'code_suggestions' }
+
+            it 'creates a new add-on purchase' do
+              expect { post_add_on_purchase }.to change { GitlabSubscriptions::AddOnPurchase.count }.by(1)
+            end
+          end
+        end
+
         context 'when the add-on purchase cannot be saved' do
           let(:params) { super().merge(quantity: 0) }
 
