@@ -9,7 +9,34 @@ export function durationNanoToMs(durationNano) {
 }
 
 export function formatDurationMs(durationMs) {
-  return sprintf(s__('Tracing|%{ms} ms'), { ms: durationMs.toFixed(2) });
+  if (durationMs <= 0) return s__('Tracing|0ms');
+
+  const durationSecs = durationMs / 1000;
+  const milliseconds = durationMs % 1000;
+  const seconds = Math.floor(durationSecs) % 60;
+  const minutes = Math.floor(durationSecs / 60) % 60;
+  const hours = Math.floor(durationSecs / 60 / 60);
+
+  const formattedTime = [];
+  if (hours > 0) {
+    formattedTime.push(sprintf(s__('Tracing|%{h}h'), { h: hours }));
+  }
+  if (minutes > 0) {
+    formattedTime.push(sprintf(s__('Tracing|%{m}m'), { m: minutes }));
+  }
+  if (seconds > 0) {
+    formattedTime.push(sprintf(s__('Tracing|%{s}s'), { s: seconds }));
+  }
+
+  if (milliseconds > 0) {
+    const ms =
+      durationMs >= 1000 || Math.floor(milliseconds) === milliseconds
+        ? Math.floor(milliseconds)
+        : milliseconds.toFixed(2);
+    formattedTime.push(sprintf(s__('Tracing|%{ms}ms'), { ms }));
+  }
+
+  return formattedTime.join(' ');
 }
 
 export function formatTraceDuration(durationNano) {
