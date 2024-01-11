@@ -228,19 +228,20 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         )
       end
 
-      let_it_be(:merge_request) do
-        create(:merge_request,
-          author: current_user,
-          source_project: project,
-          source_branch: 'feature',
-          target_project: project,
-          target_branch: 'master'
+      let_it_be(:feature2_change_unrelated_to_codeowners) do
+        project.repository.add_branch(current_user, 'feature2', 'feature')
+        project.repository.create_file(
+          current_user,
+          'file.txt',
+          'text',
+          message: 'text file',
+          branch_name: 'feature2'
         )
       end
 
-      let(:patch_id_sha) { nil }
+      let(:patch_id_sha) { previous_merge_request_diff.patch_id_sha }
 
-      let!(:approval_1) do
+      let(:security_approval) do
         create(
           :approval,
           merge_request: merge_request,
@@ -249,7 +250,7 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         )
       end
 
-      let!(:approval_2) do
+      let(:js_approval) do
         create(
           :approval,
           merge_request: merge_request,
@@ -258,7 +259,7 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         )
       end
 
-      let!(:approval_3) do
+      let(:rb_approval) do
         create(
           :approval,
           merge_request: merge_request,
@@ -267,8 +268,28 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         )
       end
 
+      let!(:previous_merge_request_diff) do
+        create(:merge_request_diff,
+          merge_request: merge_request,
+          head_commit_sha: feature_sha2,
+          start_commit_sha: merge_request.target_branch_sha,
+          base_commit_sha: merge_request.target_branch_sha
+        )
+      end
+
+      let!(:merge_request) do
+        create(:merge_request,
+          # Skip creating the diff so we can specify them for the context
+          :skip_diff_creation,
+          author: current_user,
+          source_project: project,
+          source_branch: 'feature',
+          target_project: project,
+          target_branch: 'master'
+        )
+      end
+
       before do
-        ::MergeRequests::SyncCodeOwnerApprovalRules.new(merge_request).execute
         perform_enqueued_jobs do
           merge_request.update!(approver_ids: [approver.id, owner.id, current_user.id])
         end
@@ -277,14 +298,82 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         merge_request.approval_rules.regular.each do |rule|
           rule.users = [security]
         end
+
+        previous_merge_request_diff
+        merge_request.create_merge_request_diff
+
+        # Instantiate these after the MergeRequestDiff we will use for patch_id_sha
+        security_approval
+        js_approval
+        rb_approval
+        ::MergeRequests::SyncCodeOwnerApprovalRules.new(merge_request).execute
       end
 
-      it 'resets code owner approvals with changes' do
-        service.execute("feature", feature_sha3)
-        merge_request.reload
+      context 'when the latest push is related to codeowners' do
+        it 'resets code owner approvals with changes' do
+          service.execute("feature", feature_sha3)
+          merge_request.reload
 
-        expect(merge_request.approvals.count).to be(2)
-        expect(merge_request.approvals).to contain_exactly(approval_1, approval_2)
+          expect(merge_request.approvals.count).to eq(2)
+          expect(merge_request.approvals).to contain_exactly(security_approval, js_approval)
+        end
+      end
+
+      context 'when the latest push affects multiple codeowners entries' do
+        let(:previous_merge_request_diff) do
+          create(:merge_request_diff,
+            merge_request: merge_request,
+            head_commit_sha: feature_sha1,
+            start_commit_sha: merge_request.target_branch_sha,
+            base_commit_sha: merge_request.target_branch_sha
+          )
+        end
+
+        it 'resets code owner approvals with changes' do
+          service.execute("feature", feature_sha3)
+          merge_request.reload
+
+          expect(merge_request.approvals.count).to eq(1)
+          expect(merge_request.approvals).to contain_exactly(security_approval)
+        end
+      end
+
+      context 'when the latest push is not related to codeowners' do
+        let!(:merge_request) do
+          create(:merge_request,
+            # Skip creating the diff so we can specify them for the context
+            :skip_diff_creation,
+            author: current_user,
+            source_project: project,
+            source_branch: 'feature2',
+            target_project: project,
+            target_branch: 'master'
+          )
+        end
+
+        before do
+          ::MergeRequests::SyncCodeOwnerApprovalRules.new(merge_request).execute
+        end
+
+        context 'and codeowners related changes were in a previous push' do
+          let(:previous_merge_request_diff) do
+            create(:merge_request_diff,
+              merge_request: merge_request,
+              head_commit_sha: feature_sha3,
+              start_commit_sha: merge_request.target_branch_sha,
+              base_commit_sha: merge_request.target_branch_sha
+            )
+          end
+
+          it 'does not reset code owner approvals' do
+            expect do
+              service.execute("feature2", feature2_change_unrelated_to_codeowners)
+            end.not_to change {
+              merge_request.reload.approvals.count
+            }
+            expect(merge_request.approvals).to contain_exactly(security_approval, js_approval, rb_approval)
+          end
+        end
       end
 
       it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
@@ -302,8 +391,8 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
           service.execute("feature", feature_sha3)
           merge_request.reload
 
-          expect(merge_request.approvals.count).to be(3)
-          expect(merge_request.approvals).to contain_exactly(approval_1, approval_2, approval_3)
+          expect(merge_request.approvals.count).to eq(3)
+          expect(merge_request.approvals).to contain_exactly(security_approval, js_approval, rb_approval)
         end
       end
     end
