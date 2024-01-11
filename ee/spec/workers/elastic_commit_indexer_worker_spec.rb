@@ -245,6 +245,21 @@ RSpec.describe ElasticCommitIndexerWorker, feature_category: :global_search do
 
         worker.perform(project.id)
       end
+
+      it 'skips index and schedules a job' do
+        expect(subject).to receive(:in_lock)
+          .with("ElasticCommitIndexerWorker/#{project.id}/false",
+            ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute),
+            retries: 2,
+            sleep_sec: 1)
+          .and_raise(Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError)
+
+        expect(Gitlab::Elastic::Indexer).not_to receive(:new)
+        expect(described_class).to receive(:perform_in)
+          .with(described_class::RETRY_IN_IF_LOCKED, project.id, false, {})
+
+        worker.perform(project.id)
+      end
     end
 
     context 'when the indexer fails' do
