@@ -1,0 +1,23 @@
+# frozen_string_literal: true
+
+module Backup
+  module Tasks
+    class Artifacts < Task
+      def human_name = _('artifacts')
+
+      def destination_path = 'artifacts.tar.gz'
+
+      def task
+        excludes = ['tmp']
+
+        Files.new(progress, app_files_dir, options: options, excludes: excludes)
+      end
+
+      private
+
+      def app_files_dir
+        JobArtifactUploader.root
+      end
+    end
+  end
+end

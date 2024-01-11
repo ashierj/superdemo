@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+
+module Backup
+  module Tasks
+    class Database < Task
+      def human_name = _('database')
+
+      def destination_path = 'db'
+
+      def cleanup_path = 'db'
+
+      def task
+        ::Backup::Database.new(progress, options: options, force: options.force?)
+      end
+    end
+  end
+end

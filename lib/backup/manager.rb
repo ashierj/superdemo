@@ -5,10 +5,6 @@ module Backup
     FILE_NAME_SUFFIX = '_gitlab_backup.tar'
     MANIFEST_NAME = 'backup_information.yml'
 
-    # pages used to deploy tmp files to this path
-    # if some of these files are still there, we don't need them in the backup
-    LEGACY_PAGES_TMP_PATH = '@pages.tmp'
-
     TaskDefinition = Struct.new(
       :enabled, # `true` if the task can be used. Treated as `true` when not specified.
       :human_name, # Name of the task used for logging.
@@ -116,95 +112,20 @@ module Backup
     private
 
     def definitions
-      @definitions ||= build_definitions
-    end
-
-    def build_definitions # rubocop:disable Metrics/AbcSize
-      {
-        'db' => TaskDefinition.new(
-          human_name: _('database'),
-          destination_path: 'db',
-          cleanup_path: 'db',
-          task: build_db_task
-        ),
-        'repositories' => TaskDefinition.new(
-          human_name: _('repositories'),
-          destination_path: 'repositories',
-          destination_optional: true,
-          task: build_repositories_task
-        ),
-        'uploads' => TaskDefinition.new(
-          human_name: _('uploads'),
-          destination_path: 'uploads.tar.gz',
-          task: build_files_task(File.join(Gitlab.config.uploads.storage_path, 'uploads'), excludes: ['tmp'])
-        ),
-        'builds' => TaskDefinition.new(
-          human_name: _('builds'),
-          destination_path: 'builds.tar.gz',
-          task: build_files_task(Settings.gitlab_ci.builds_path)
-        ),
-        'artifacts' => TaskDefinition.new(
-          human_name: _('artifacts'),
-          destination_path: 'artifacts.tar.gz',
-          task: build_files_task(JobArtifactUploader.root, excludes: ['tmp'])
-        ),
-        'pages' => TaskDefinition.new(
-          human_name: _('pages'),
-          destination_path: 'pages.tar.gz',
-          task: build_files_task(Gitlab.config.pages.path, excludes: [LEGACY_PAGES_TMP_PATH])
-        ),
-        'lfs' => TaskDefinition.new(
-          human_name: _('lfs objects'),
-          destination_path: 'lfs.tar.gz',
-          task: build_files_task(Settings.lfs.storage_path)
-        ),
-        'terraform_state' => TaskDefinition.new(
-          human_name: _('terraform states'),
-          destination_path: 'terraform_state.tar.gz',
-          task: build_files_task(Settings.terraform_state.storage_path, excludes: ['tmp'])
-        ),
-        'registry' => TaskDefinition.new(
-          enabled: Gitlab.config.registry.enabled,
-          human_name: _('container registry images'),
-          destination_path: 'registry.tar.gz',
-          task: build_files_task(Settings.registry.path)
-        ),
-        'packages' => TaskDefinition.new(
-          human_name: _('packages'),
-          destination_path: 'packages.tar.gz',
-          task: build_files_task(Settings.packages.storage_path, excludes: ['tmp'])
-        ),
-        'ci_secure_files' => TaskDefinition.new(
-          human_name: _('ci secure files'),
-          destination_path: 'ci_secure_files.tar.gz',
-          task: build_files_task(Settings.ci_secure_files.storage_path, excludes: ['tmp'])
-        )
+      @definitions ||= {
+        'db' => Backup::Tasks::Database.new(progress: progress, options: options),
+        'repositories' => Backup::Tasks::Repositories.new(progress: progress, options: options,
+          server_side: backup_information[:repositories_server_side]),
+        'uploads' => Backup::Tasks::Uploads.new(progress: progress, options: options),
+        'builds' => Backup::Tasks::Builds.new(progress: progress, options: options),
+        'artifacts' => Backup::Tasks::Artifacts.new(progress: progress, options: options),
+        'pages' => Backup::Tasks::Pages.new(progress: progress, options: options),
+        'lfs' => Backup::Tasks::Lfs.new(progress: progress, options: options),
+        'terraform_state' => Backup::Tasks::TerraformState.new(progress: progress, options: options),
+        'registry' => Backup::Tasks::Registry.new(progress: progress, options: options),
+        'packages' => Backup::Tasks::Packages.new(progress: progress, options: options),
+        'ci_secure_files' => Backup::Tasks::CiSecureFiles.new(progress: progress, options: options)
       }.freeze
-    end
-
-    def build_db_task
-      Database.new(progress, options: options, force: options.force?)
-    end
-
-    def build_repositories_task
-      strategy = Backup::GitalyBackup.new(progress,
-                                          incremental: options.incremental?,
-                                          max_parallelism: options.max_parallelism,
-                                          storage_parallelism: options.max_storage_parallelism,
-                                          server_side: backup_information[:repositories_server_side]
-                                         )
-
-      Repositories.new(progress,
-        strategy: strategy,
-        options: options,
-        storages: options.repositories_storages,
-        paths: options.repositories_paths,
-        skip_paths: options.skip_repositories_paths
-      )
-    end
-
-    def build_files_task(app_files_dir, excludes: [])
-      Files.new(progress, app_files_dir, options: options, excludes: excludes)
     end
 
     def run_all_create_tasks

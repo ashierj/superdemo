@@ -1,0 +1,27 @@
+# frozen_string_literal: true
+
+module Backup
+  module Tasks
+    class Pages < Task
+      # pages used to deploy tmp files to this path
+      # if some of these files are still there, we don't need them in the backup
+      LEGACY_PAGES_TMP_PATH = '@pages.tmp'
+
+      def human_name = _('pages')
+
+      def destination_path = 'pages.tar.gz'
+
+      def task
+        excludes = [LEGACY_PAGES_TMP_PATH]
+
+        Files.new(progress, app_files_dir, options: options, excludes: excludes)
+      end
+
+      private
+
+      def app_files_dir
+        Gitlab.config.pages.path
+      end
+    end
+  end
+end
