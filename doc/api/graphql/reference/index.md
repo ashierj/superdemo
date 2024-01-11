@@ -15750,6 +15750,7 @@ CI/CD variables for a GitLab instance.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="ciinstancevariabledescription"></a>`description` | [`String`](#string) | Description of the variable. |
 | <a id="ciinstancevariableenvironmentscope"></a>`environmentScope` **{warning-solid}** | [`String`](#string) | **Deprecated** in 15.3. No longer used, only available for GroupVariableType and ProjectVariableType. |
 | <a id="ciinstancevariableid"></a>`id` | [`ID!`](#id) | ID of the variable. |
 | <a id="ciinstancevariablekey"></a>`key` | [`String`](#string) | Name of the variable. |
@@ -20817,6 +20818,7 @@ CI/CD variables a project inherites from its parent group and ancestors.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="inheritedcivariabledescription"></a>`description` | [`String`](#string) | Description of the variable. |
 | <a id="inheritedcivariableenvironmentscope"></a>`environmentScope` | [`String`](#string) | Scope defining the environments that can use the variable. |
 | <a id="inheritedcivariablegroupcicdsettingspath"></a>`groupCiCdSettingsPath` | [`String`](#string) | Indicates the path to the CI/CD settings of the group the variable belongs to. |
 | <a id="inheritedcivariablegroupname"></a>`groupName` | [`String`](#string) | Indicates group the variable belongs to. |
