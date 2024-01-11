@@ -15,6 +15,7 @@ class ElasticCommitIndexerWorker
 
   LOCK_RETRIES = 2
   LOCK_SLEEP_SEC = 1
+  RETRY_IN_IF_LOCKED = 10.minutes
 
   # Performs the commits and blobs indexation
   #
@@ -62,5 +63,7 @@ class ElasticCommitIndexerWorker
     end
 
     @ret
+  rescue Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError
+    self.class.perform_in(RETRY_IN_IF_LOCKED, project_id, wiki, options)
   end
 end
