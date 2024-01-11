@@ -16,8 +16,7 @@ module Issues
       issues = issues.confidential_only if params[:confidential]
 
       # We do not need to do the confidentiality check if we know that only public issues will be returned
-      return issues.public_only if @current_user.blank? || params.fetch(:public_only, false) ||
-        params[:confidential] == false
+      return issues.public_only if @current_user.blank? || params[:confidential] == false
 
       return issues if user_can_see_all_confidential_issues?
 

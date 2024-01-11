@@ -19,7 +19,6 @@
 #     label_name: string
 #     sort: string
 #     my_reaction_emoji: string
-#     public_only: boolean
 #     due_date: date or '0', '', 'overdue', 'week', or 'month'
 #     created_after: datetime
 #     created_before: datetime
