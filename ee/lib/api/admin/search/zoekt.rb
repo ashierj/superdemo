@@ -113,7 +113,7 @@ module API
                   search = params.fetch(:search, nil)
 
                   attributes = { root_namespace_id: root_namespace.id }
-                  zoekt_enabled_namespace = ::Search::Zoekt::EnabledNamespace.find_or_create_by(attributes) # rubocop:disable CodeReuse/ActiveRecord -- only be called from this API
+                  zoekt_enabled_namespace = ::Search::Zoekt::EnabledNamespace.create_or_find_by(attributes) # rubocop:disable Performance/ActiveRecordSubtransactionMethods -- only be called from this API
                   if !search.nil? && zoekt_enabled_namespace.search != search
                     zoekt_enabled_namespace.update(search: search)
                   end
@@ -123,7 +123,7 @@ module API
                     zoekt_enabled_namespace_id: zoekt_enabled_namespace.id,
                     namespace_id: zoekt_enabled_namespace.root_namespace_id
                   }
-                  zoekt_index = ::Search::Zoekt::Index.find_or_create_by(attributes) do |record| # rubocop:disable CodeReuse/ActiveRecord -- only be called from this API
+                  zoekt_index = ::Search::Zoekt::Index.create_or_find_by(attributes) do |record| # rubocop:disable Performance/ActiveRecordSubtransactionMethods -- only be called from this API
                     record.state = ::Search::Zoekt::Index.states[:ready]
                   end
 
