@@ -32,7 +32,7 @@ describe('TracingTable', () => {
       badge: '1 span / 1 match',
       service_name: 'tracegen',
       operation: 'lets-go',
-      duration: '1.50 ms',
+      duration: '1.50ms',
       trace_id: 'trace-1',
     },
     {
@@ -40,7 +40,7 @@ describe('TracingTable', () => {
       badge: '3 spans / 2 matches',
       service_name: 'tracegen-2',
       operation: 'lets-go-2',
-      duration: '2.00 ms',
+      duration: '2ms',
       trace_id: 'trace-2',
     },
   ];

@@ -16,14 +16,33 @@ describe('trace_utils', () => {
   });
 
   describe('formatDurationMs', () => {
-    it('formats a duration ms value', () => {
-      expect(formatDurationMs(12.2934)).toBe('12.29 ms');
+    it.each`
+      input      | output              | description
+      ${123}     | ${'123ms'}          | ${'format as milliseconds only'}
+      ${0.1234}  | ${'0.12ms'}         | ${'format as milliseconds only'}
+      ${5000}    | ${'5s'}             | ${'format as seconds only'}
+      ${60000}   | ${'1m'}             | ${'format as minutes only'}
+      ${3600000} | ${'1h'}             | ${'format as hours only'}
+      ${3660}    | ${'3s 660ms'}       | ${'format as seconds and ms'}
+      ${121000}  | ${'2m 1s'}          | ${'format as minutes and seconds'}
+      ${120100}  | ${'2m 100ms'}       | ${'format as minutes and ms'}
+      ${7200020} | ${'2h 20ms'}        | ${'format as hours and ms'}
+      ${7260000} | ${'2h 1m'}          | ${'format as hours and minutes'}
+      ${3605000} | ${'1h 5s'}          | ${'format as hours and seconds'}
+      ${3665000} | ${'1h 1m 5s'}       | ${'format as hours, minutes, and seconds'}
+      ${3665123} | ${'1h 1m 5s 123ms'} | ${'format as hours, minutes, seconds, and milliseconds'}
+      ${0}       | ${'0ms'}            | ${'handle zero duration'}
+      ${-1000}   | ${'0ms'}            | ${'handle negative duration'}
+    `('should format $input as $description', ({ input, output }) => {
+      expect(formatDurationMs(input)).toBe(output);
     });
   });
 
   describe('formatTraceDuration', () => {
     it('formats the trace duration nano value', () => {
-      expect(formatTraceDuration(1234567)).toBe('1.23 ms');
+      expect(formatTraceDuration(5737516022863)).toBe('1h 35m 37s 516ms');
+      expect(formatTraceDuration(496896)).toBe('0.50ms');
+      expect(formatTraceDuration(9250)).toBe('0.01ms');
     });
   });
 

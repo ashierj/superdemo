@@ -160,7 +160,7 @@ describe('TracingSpansChart', () => {
   describe('span duration', () => {
     it('renders the duration value', () => {
       const durationValue = getSpanDurationValue(0);
-      expect(durationValue.text()).toBe('150.00 ms');
+      expect(durationValue.text()).toBe('150ms');
       expect(durationValue.element.style.marginLeft).toBe('33%');
     });
 
