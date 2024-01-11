@@ -50,7 +50,7 @@ module Security
           variables = action_variables(action)
           jobs = custom_scan?(action) ? Gitlab::Ci::Config.new(config.to_yaml).jobs : config
 
-          jobs.each_key do |key|
+          jobs&.each_key do |key|
             hash[key] = variables
           end
         end
