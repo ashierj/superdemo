@@ -4777,6 +4777,12 @@ No changes.
 - [Add schema_version in the commits index mapping](gitlab-org/gitlab@e75b94903b69e1e1588e251217926882875555a8) ([merge request](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/123435)) **GitLab Enterprise Edition**
 - [Allow to set labels for Redis calls](gitlab-org/gitlab@8ccfff9e2d250eb22afaa7d0243e707b536a5436) ([merge request](gitlab-org/gitlab!122340))
 
+## 16.1.6 (2024-01-11)
+
+### Security (1 change)
+
+- [User password reset accepts multiple email addresses](gitlab-org/security/gitlab@44deb06e2c8e1c1b9424fc89dec4f60c8806711a) ([merge request](gitlab-org/security/gitlab!3798))
+
 ## 16.1.5 (2023-08-31)
 
 ### Fixed (1 change)
