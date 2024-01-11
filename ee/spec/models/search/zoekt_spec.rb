@@ -4,9 +4,13 @@ require 'spec_helper'
 
 RSpec.describe ::Search::Zoekt, feature_category: :global_search do
   let_it_be(:group) { create(:group) }
+  let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:project) { create(:project, namespace: group) }
   let_it_be(:node) { create(:zoekt_node) }
-  let_it_be_with_reload(:indexed_namespace) { create(:zoekt_indexed_namespace, node: node, namespace: group) }
+  let_it_be_with_reload(:enabled_namespace) { create(:zoekt_enabled_namespace, namespace: group) }
+  let_it_be_with_reload(:index) do
+    create(:zoekt_index, :ready, zoekt_enabled_namespace: enabled_namespace, node: node)
+  end
 
   describe '#fetch_node_id' do
     subject(:fetch_node_id) { described_class.fetch_node_id(container) }
@@ -24,12 +28,12 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
     end
 
     context 'when passed a subgroup' do
-      let(:container) { create(:group, parent: group) }
+      let(:container) { subgroup }
 
       it { is_expected.to eq(node.id) }
     end
 
-    context 'when passed a namespace id' do
+    context 'when passed a root namespace id' do
       let(:container) { group.id }
 
       it { is_expected.to eq(node.id) }
@@ -52,9 +56,9 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
     subject(:search) { described_class.search?(container) }
 
     [true, false].each do |search|
-      context "when search on the indexed_namespace is set to #{search}" do
+      context "when search on the zoekt_enabled_namespace is set to #{search}" do
         before do
-          indexed_namespace.update!(search: search)
+          enabled_namespace.update!(search: search)
         end
 
         context 'when passed a project' do
@@ -68,10 +72,32 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
 
           it { is_expected.to eq(search) }
         end
+
+        context 'when passed a subgroup' do
+          let(:container) { subgroup }
+
+          it { is_expected.to eq(search) }
+        end
+
+        context 'when passed a root namespace id' do
+          let(:container) { group.id }
+
+          it { is_expected.to eq(search) }
+        end
       end
     end
 
-    context 'when Zoekt::IndexedNamespace not found' do
+    context 'when no indices are ready' do
+      let(:container) { project }
+
+      before do
+        index.update!(state: :initializing)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when Zoekt::EnabledNamespace not found' do
       let(:container) { build(:project) }
 
       it { is_expected.to eq(false) }
@@ -99,7 +125,13 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
       it { is_expected.to eq(true) }
     end
 
-    context 'when Zoekt::IndexedNamespace not found' do
+    context 'when passed a root namespace id' do
+      let(:container) { group.id }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when Zoekt::EnabledNamespace not found' do
       let(:container) { build(:project) }
 
       it { is_expected.to eq(false) }

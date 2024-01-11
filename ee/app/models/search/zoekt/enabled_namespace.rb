@@ -10,8 +10,17 @@ module Search
 
       has_many :indices, class_name: '::Search::Zoekt::Index',
         foreign_key: :zoekt_enabled_namespace_id, inverse_of: :zoekt_enabled_namespace
+      has_many :nodes, through: :indices
 
       validate :only_root_namespaces_can_be_indexed
+
+      scope :search_enabled, -> { where(search: true) }
+      scope :recent, -> { order(id: :desc) }
+      scope :with_limit, ->(maximum) { limit(maximum) }
+
+      def self.for_root_namespace_id(root_namespace_id)
+        where(root_namespace_id: root_namespace_id)
+      end
 
       private
 
