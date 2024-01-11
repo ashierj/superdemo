@@ -22,6 +22,10 @@ FactoryBot.define do
       admin_terraform_state { true }
     end
 
+    trait :read_code do
+      read_code { true }
+    end
+
     # this trait can be used only for self-managed
     trait(:instance) { namespace { nil } }
   end
