@@ -68,8 +68,13 @@ export default {
     projectPath: { default: null },
     sourceProjectPath: { default: null },
     title: { default: '' },
-    tabs: { default: () => [] },
     isFluidLayout: { default: false },
+  },
+  props: {
+    tabs: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
