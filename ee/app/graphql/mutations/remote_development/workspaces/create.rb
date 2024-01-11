@@ -65,7 +65,28 @@ module Mutations
 
           cluster_agent_id = args.delete(:cluster_agent_id)
 
+          # NOTE: What the following line actually does - the agent is delegating to the project to check that the user
+          # has the :create_workspace ability on the _agent's_ project, which will be true if the user is a developer
+          # on the agent's project.
           agent = authorized_find!(id: cluster_agent_id)
+
+          # NOTE: We only do the common-root-namespace check in the create mutation, because if we did it in the
+          # update mutation too, and the projects got moved to different namespaces, there would be no way to
+          # terminate the workspace via setting the desired state to `Terminated`. However, since the project
+          # and agent associations are immutable (cannot be updated via GraphQL, which is the only update path),
+          # there's no way that a direct update to the workspace associations could cause this to become invalid -
+          # only if the projects or their namespace hierarchies are changed.
+          #
+          # It is only possible to violate this check by directly calling the GraphQL API - the UI will only
+          # present agents for workspace creation which are under the same common root namespace as the
+          # workspace project.
+          #
+          # Also, this check will be removed when we implement the new authorization scheme for workspaces. See
+          # https://gitlab.com/groups/gitlab-org/-/epics/12193 for more details.
+          unless project.root_namespace == agent.project.root_namespace
+            raise ::Gitlab::Graphql::Errors::ArgumentError,
+              "Workspace's project and agent's project must both be under the same common root group/namespace."
+          end
 
           track_usage_event(:users_creating_workspaces, current_user.id)
 

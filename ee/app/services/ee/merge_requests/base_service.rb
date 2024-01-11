@@ -67,7 +67,10 @@ module EE
         code_owner_rules = approved_code_owner_rules(merge_request)
         return if code_owner_rules.empty?
 
-        rule_names = ::Gitlab::CodeOwners.entries_since_merge_request_commit(merge_request).map(&:pattern)
+        previous_diff_head_sha = merge_request.previous_diff&.head_commit_sha
+
+        rule_names = ::Gitlab::CodeOwners.entries_since_merge_request_commit(merge_request,
+          sha: previous_diff_head_sha).map(&:pattern)
         match_ids = code_owner_rules.flat_map do |rule|
           next unless rule_names.include?(rule.name)
 
