@@ -14720,7 +14720,8 @@ CREATE TABLE ci_pipelines (
 
 CREATE TABLE ci_pipelines_config (
     pipeline_id bigint NOT NULL,
-    content text NOT NULL
+    content text NOT NULL,
+    partition_id bigint DEFAULT 100 NOT NULL
 );
 
 CREATE SEQUENCE ci_pipelines_id_seq
