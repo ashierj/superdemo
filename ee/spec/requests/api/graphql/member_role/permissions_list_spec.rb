@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.member_role_permissions', feature_category: :system_access do
+RSpec.describe 'Query.member_role_permissions', feature_category: :permissions do
   include GraphqlHelpers
 
   let(:fields) do
@@ -21,32 +21,50 @@ RSpec.describe 'Query.member_role_permissions', feature_category: :system_access
     graphql_query_for('memberRolePermissions', fields)
   end
 
+  def redefine_enum!
+    # We need to override the enum values, because they are defined at boot time
+    # and stubbing the permissions won't have an effect.
+    Types::MemberRoles::PermissionsEnum.class_eval do
+      def self.enum_values(_)
+        MemberRole.all_customizable_permissions.map do |key, _|
+          enum_value_class.new(key.upcase, value: key, owner: self)
+        end
+      end
+    end
+  end
+
+  def reset_enum!
+    # Remove the override
+    Types::MemberRoles::PermissionsEnum.singleton_class.remove_method(:enum_values)
+  end
+
   before do
     allow(MemberRole).to receive(:all_customizable_permissions).and_return(
       {
         admin_ability_one: {
           description: 'Allows admin access to do something.',
-          minimal_level: Gitlab::Access::GUEST
+          project_ability: true
         },
         admin_ability_two: {
           description: 'Allows admin access to do something else.',
-          minimal_level: Gitlab::Access::DEVELOPER,
-          requirement: :read_ability_two
+          requirement: :read_ability_two,
+          group_ability: true
         },
         read_ability_two: {
           description: 'Allows read access to do something else.',
-          minimal_level: Gitlab::Access::GUEST
+          group_ability: true,
+          project_ability: true
         }
       }
     )
-    allow(MemberRole).to receive(:all_customizable_project_permissions).and_return(
-      [:admin_ability_one, :read_ability_two]
-    )
-    allow(MemberRole).to receive(:all_customizable_group_permissions).and_return(
-      [:admin_ability_two, :read_ability_two]
-    )
+
+    redefine_enum!
 
     post_graphql(query)
+  end
+
+  after do
+    reset_enum!
   end
 
   subject { graphql_data.dig('memberRolePermissions', 'nodes') }
