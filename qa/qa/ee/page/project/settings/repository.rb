@@ -13,13 +13,13 @@ module QA
 
               base.class_eval do
                 view 'ee/app/views/projects/push_rules/_index.html.haml' do
-                  element :push_rules_content
+                  element 'push-rules-content'
                 end
               end
             end
 
             def expand_push_rules(&block)
-              expand_content(:push_rules_content) do
+              expand_content('push-rules-content') do
                 PushRules.perform(&block)
               end
             end
