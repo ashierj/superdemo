@@ -2262,6 +2262,13 @@ entry.
 - [Alias read_namespace to access_namespace and move usages to new ability](gitlab-org/gitlab@61cdb4127143162a9bf9182f9c3c2d8421ee447f) by @Taucher2003 ([merge request](gitlab-org/gitlab!126625))
 - [Remove `custom_roles_on_groups` feature flag](gitlab-org/gitlab@ddb4b4399b8bb82793410005c5778a002ae409b9) ([merge request](gitlab-org/gitlab!132187)) **GitLab Enterprise Edition**
 
+## 16.4.5 (2024-01-11)
+
+### Security (2 changes)
+
+- [Fix clickouse-server version in CI](gitlab-org/security/gitlab@71878185c35a1025d00eebc6dea54688fb93b585) ([merge request](gitlab-org/security/gitlab!3808))
+- [User password reset accepts multiple email addresses](gitlab-org/security/gitlab@394e91005d4a7b3df36be077aecf8a36acdee0f3) ([merge request](gitlab-org/security/gitlab!3795))
+
 ## 16.4.4 (2023-12-13)
 
 ### Security (8 changes)
