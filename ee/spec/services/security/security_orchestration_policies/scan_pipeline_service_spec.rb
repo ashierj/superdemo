@@ -210,6 +210,19 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
           it { is_expected.to eq({ pipeline_scan: { image: "busybox:latest", custom: { stage: "build", script: ["echo \"Defined in security policy\""] } }, on_demand: {}, variables: { custom: { 'CUSTOM_VARIABLE' => 'test' } } }) }
         end
       end
+
+      context 'when CI does not define jobs' do
+        let(:ci_configuration) do
+          <<~CI_CONFIG
+          variables:
+            CUSTOM_VARIABLE: test
+          CI_CONFIG
+        end
+
+        specify do
+          expect { subject }.not_to raise_error
+        end
+      end
     end
   end
 end
