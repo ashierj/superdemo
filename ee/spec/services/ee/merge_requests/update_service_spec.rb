@@ -214,6 +214,11 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
 
           expect(merge_request.reload.approvals).to be_empty
         end
+
+        it 'does not publish MergeRequests::ApprovalsResetEvent' do
+          expect { update_merge_request(target_branch: 'video') }
+            .not_to publish_event(MergeRequests::ApprovalsResetEvent)
+        end
       end
 
       context 'when reset_approvals_on_push is set to true' do

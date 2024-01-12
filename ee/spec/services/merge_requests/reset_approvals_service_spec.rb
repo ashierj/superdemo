@@ -42,6 +42,21 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
       project.add_developer(owner)
     end
 
+    shared_examples_for 'MergeRequests::ApprovalsResetEvent published' do
+      it 'publishes MergeRequests::ApprovalsResetEvent' do
+        expect { action }
+          .to publish_event(MergeRequests::ApprovalsResetEvent)
+          .with(expected_data)
+      end
+    end
+
+    shared_examples_for 'MergeRequests::ApprovalsResetEvent not published' do
+      it 'does not publish MergeRequests::ApprovalsResetEvent' do
+        expect { action }
+          .not_to publish_event(MergeRequests::ApprovalsResetEvent)
+      end
+    end
+
     context 'as default' do
       let(:patch_id_sha) { nil }
 
@@ -70,7 +85,7 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
       end
 
       it 'resets all approvals and does not create new todos for approvers' do
-        service.execute("refs/heads/master", newrev)
+        service.execute('refs/heads/master', newrev)
         merge_request.reload
 
         expect(merge_request.approvals).to be_empty
@@ -80,7 +95,7 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
       it 'removes the unmergeable flag after the service is run' do
         merge_request.approval_state.temporarily_unapprove!
 
-        service.execute("refs/heads/master", newrev)
+        service.execute('refs/heads/master', newrev)
         merge_request.reload
 
         expect(merge_request.approval_state.temporarily_unapproved?).to be_falsey
@@ -94,15 +109,32 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         let(:action) { service.execute('refs/heads/master', newrev) }
       end
 
+      it_behaves_like 'MergeRequests::ApprovalsResetEvent published' do
+        let(:action) { service.execute('refs/heads/master', newrev) }
+
+        let(:expected_data) do
+          {
+            current_user_id: current_user.id,
+            merge_request_id: merge_request.id,
+            cause: 'new_push',
+            approver_ids: merge_request.approvals.pluck(:user_id)
+          }
+        end
+      end
+
       context 'when approvals patch_id_sha matches MergeRequest#current_patch_id_sha' do
         let(:patch_id_sha) { merge_request.current_patch_id_sha }
 
         it 'does not delete approvals' do
-          service.execute("refs/heads/master", newrev)
+          service.execute('refs/heads/master', newrev)
 
           merge_request.reload
 
           expect(merge_request.approvals).to contain_exactly(approval_1, approval_2)
+        end
+
+        it_behaves_like 'MergeRequests::ApprovalsResetEvent not published' do
+          let(:action) { service.execute('refs/heads/master', newrev) }
         end
       end
     end
@@ -138,7 +170,7 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         expect(service).to receive(:delete_approvals).and_call_original
         expect(service).not_to receive(:reset_approvals)
 
-        service.execute("refs/heads/master", newrev, skip_reset_checks: true)
+        service.execute('refs/heads/master', newrev, skip_reset_checks: true)
 
         merge_request.reload
 
@@ -150,7 +182,7 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         expect(service).to receive(:reset_approvals?).and_return(false)
 
         expect do
-          service.execute("refs/heads/master", newrev)
+          service.execute('refs/heads/master', newrev)
           merge_request.reload
         end.not_to change { merge_request.approvals.length }
 
@@ -158,7 +190,7 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         expect(service).to receive(:delete_approvals).and_call_original
         expect(service).not_to receive(:reset_approvals)
 
-        service.execute("refs/heads/master", newrev, skip_reset_checks: true)
+        service.execute('refs/heads/master', newrev, skip_reset_checks: true)
 
         merge_request.reload
 
@@ -166,15 +198,32 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         expect(approval_todos(merge_request)).to be_empty
       end
 
+      it_behaves_like 'MergeRequests::ApprovalsResetEvent published' do
+        let(:action) { service.execute('refs/heads/master', newrev, skip_reset_checks: true) }
+
+        let(:expected_data) do
+          {
+            current_user_id: current_user.id,
+            merge_request_id: merge_request.id,
+            cause: 'new_push',
+            approver_ids: merge_request.approvals.pluck(:user_id)
+          }
+        end
+      end
+
       context 'when approvals patch_id_sha matches MergeRequest#current_patch_id_sha' do
         let(:patch_id_sha) { merge_request.current_patch_id_sha }
 
         it 'does not delete approvals' do
-          service.execute("refs/heads/master", newrev, skip_reset_checks: true)
+          service.execute('refs/heads/master', newrev, skip_reset_checks: true)
 
           merge_request.reload
 
           expect(merge_request.approvals).to contain_exactly(approval_1, approval_2)
+        end
+
+        it_behaves_like 'MergeRequests::ApprovalsResetEvent not published' do
+          let(:action) { service.execute('refs/heads/master', newrev, skip_reset_checks: true) }
         end
       end
     end
@@ -311,11 +360,24 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
 
       context 'when the latest push is related to codeowners' do
         it 'resets code owner approvals with changes' do
-          service.execute("feature", feature_sha3)
+          service.execute('feature', feature_sha3)
           merge_request.reload
 
           expect(merge_request.approvals.count).to eq(2)
           expect(merge_request.approvals).to contain_exactly(security_approval, js_approval)
+        end
+
+        it_behaves_like 'MergeRequests::ApprovalsResetEvent published' do
+          let(:action) { service.execute('feature', feature_sha3) }
+
+          let(:expected_data) do
+            {
+              current_user_id: current_user.id,
+              merge_request_id: merge_request.id,
+              cause: 'new_push',
+              approver_ids: [rb_approval.user_id]
+            }
+          end
         end
       end
 
@@ -330,11 +392,24 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         end
 
         it 'resets code owner approvals with changes' do
-          service.execute("feature", feature_sha3)
+          service.execute('feature', feature_sha3)
           merge_request.reload
 
           expect(merge_request.approvals.count).to eq(1)
           expect(merge_request.approvals).to contain_exactly(security_approval)
+        end
+
+        it_behaves_like 'MergeRequests::ApprovalsResetEvent published' do
+          let(:action) { service.execute('feature', feature_sha3) }
+
+          let(:expected_data) do
+            {
+              current_user_id: current_user.id,
+              merge_request_id: merge_request.id,
+              cause: 'new_push',
+              approver_ids: [js_approval.user_id, rb_approval.user_id]
+            }
+          end
         end
       end
 
@@ -367,11 +442,15 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
 
           it 'does not reset code owner approvals' do
             expect do
-              service.execute("feature2", feature2_change_unrelated_to_codeowners)
+              service.execute('feature2', feature2_change_unrelated_to_codeowners)
             end.not_to change {
               merge_request.reload.approvals.count
             }
             expect(merge_request.approvals).to contain_exactly(security_approval, js_approval, rb_approval)
+          end
+
+          it_behaves_like 'MergeRequests::ApprovalsResetEvent not published' do
+            let(:action) { service.execute('feature2', feature2_change_unrelated_to_codeowners) }
           end
         end
       end
@@ -388,11 +467,15 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         let(:patch_id_sha) { merge_request.current_patch_id_sha }
 
         it 'does not delete any code owner approvals' do
-          service.execute("feature", feature_sha3)
+          service.execute('feature', feature_sha3)
           merge_request.reload
 
           expect(merge_request.approvals.count).to eq(3)
           expect(merge_request.approvals).to contain_exactly(security_approval, js_approval, rb_approval)
+        end
+
+        it_behaves_like 'MergeRequests::ApprovalsResetEvent not published' do
+          let(:action) { service.execute('feature', feature_sha3) }
         end
       end
     end
