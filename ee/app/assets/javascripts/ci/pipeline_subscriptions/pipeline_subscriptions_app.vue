@@ -4,6 +4,8 @@ import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import GetUpstreamSubscriptions from './graphql/queries/get_upstream_subscriptions.query.graphql';
 import GetDownstreamSubscriptions from './graphql/queries/get_downstream_subscriptions.query.graphql';
+import DeletePipelineSubscription from './graphql/mutations/delete_pipeline_subscription.mutation.graphql';
+import DeleteSubscriptionConfirmationModal from './components/delete_subscription_confirmation_modal.vue';
 import PipelineSubscriptionsTable from './components/pipeline_subscriptions_table.vue';
 
 export default {
@@ -23,8 +25,13 @@ export default {
     downstreamEmptyText: s__(
       'PipelineSubscriptions|No project subscribes to the pipelines in this project.',
     ),
+    deleteError: s__(
+      'PipelineSubscriptions|An error occurred while deleting this pipeline subscription.',
+    ),
+    deleteSuccess: s__('PipelineSubscriptions|Subscription successfully deleted.'),
   },
   components: {
+    DeleteSubscriptionConfirmationModal,
     GlLoadingIcon,
     PipelineSubscriptionsTable,
   },
@@ -89,6 +96,8 @@ export default {
         count: 0,
         nodes: [],
       },
+      subscriptionToDelete: null,
+      isModalVisible: false,
     };
   },
   computed: {
@@ -97,6 +106,35 @@ export default {
     },
     downstreamSubscriptionsLoading() {
       return this.$apollo.queries.downstreamSubscriptions.loading;
+    },
+  },
+  methods: {
+    async deleteSubscription() {
+      try {
+        const { data } = await this.$apollo.mutate({
+          mutation: DeletePipelineSubscription,
+          variables: { id: this.subscriptionToDelete },
+        });
+
+        if (data.projectSubscriptionDelete.errors.length > 0) {
+          createAlert({ message: data.projectSubscriptionDelete.errors[0] });
+          this.subscriptionToDelete = null;
+        } else {
+          createAlert({ message: this.$options.i18n.deleteSuccess, variant: 'success' });
+          this.$apollo.queries.upstreamSubscriptions.refetch();
+        }
+      } catch {
+        createAlert({ message: this.$options.i18n.deleteError });
+        this.subscriptionToDelete = null;
+      }
+    },
+    showModal(id) {
+      this.isModalVisible = true;
+      this.subscriptionToDelete = id;
+    },
+    hideModal() {
+      this.isModalVisible = false;
+      this.subscriptionToDelete = null;
     },
   },
 };
@@ -112,6 +150,7 @@ export default {
       :title="$options.i18n.upstreamTitle"
       :empty-text="$options.i18n.upstreamEmptyText"
       show-actions
+      @showModal="showModal"
     />
 
     <gl-loading-icon v-if="downstreamSubscriptionsLoading" />
@@ -121,6 +160,12 @@ export default {
       :subscriptions="downstreamSubscriptions.nodes"
       :title="$options.i18n.downstreamTitle"
       :empty-text="$options.i18n.downstreamEmptyText"
+    />
+
+    <delete-subscription-confirmation-modal
+      :is-modal-visible="isModalVisible"
+      @deleteConfirmed="deleteSubscription"
+      @hide="hideModal"
     />
   </div>
 </template>

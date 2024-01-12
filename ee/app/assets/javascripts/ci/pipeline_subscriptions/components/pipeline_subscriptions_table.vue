@@ -61,12 +61,6 @@ export default {
       required: true,
     },
   },
-  methods: {
-    // functionality will be added in https://gitlab.com/gitlab-org/gitlab/-/issues/425294
-    deleteSubscription(id) {
-      return id;
-    },
-  },
 };
 </script>
 
@@ -127,7 +121,7 @@ export default {
           size="small"
           icon="remove"
           data-testid="delete-subscription-btn"
-          @click="deleteSubscription(item.id)"
+          @click="$emit('showModal', item.id)"
         />
       </template>
     </gl-table>
