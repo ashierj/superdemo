@@ -9,6 +9,7 @@ import {
   FETCH_EXPORT_ERROR_MESSAGE,
   DEPENDENCIES_FILENAME,
   LICENSES_FETCH_ERROR_MESSAGE,
+  VULNERABILITIES_FETCH_ERROR_MESSAGE,
 } from 'ee/dependencies/store/modules/list/constants';
 import * as types from 'ee/dependencies/store/modules/list/mutation_types';
 import getInitialState from 'ee/dependencies/store/modules/list/state';
@@ -658,6 +659,89 @@ describe('Dependencies actions', () => {
         expect(createAlert).toHaveBeenCalledTimes(1);
         expect(createAlert).toHaveBeenCalledWith({
           message: LICENSES_FETCH_ERROR_MESSAGE,
+        });
+      });
+    });
+  });
+
+  describe('fetchVulnerabilities', () => {
+    let mock;
+    const dependenciesEndpoint = `${TEST_HOST}/vulnerabilities`;
+    const item = { occurrenceId: 1 };
+
+    beforeEach(() => {
+      mock = new MockAdapter(axios);
+    });
+
+    afterEach(() => {
+      mock.restore();
+    });
+
+    describe('when the given endpoint is empty', () => {
+      it('does nothing', () => {
+        testAction(
+          actions.fetchVulnerabilities,
+          { item: null, vulnerabilitiesEndpoint: null },
+          getInitialState(),
+          [],
+          [],
+        );
+      });
+    });
+
+    describe('on success', () => {
+      const payload = [{ occurrence_id: 1 }];
+
+      it('correctly sets the loading item and the fetched vulnerabilities', async () => {
+        mock.onGet(dependenciesEndpoint).replyOnce(HTTP_STATUS_OK, payload);
+
+        await testAction(
+          actions.fetchVulnerabilities,
+          { item, vulnerabilitiesEndpoint: dependenciesEndpoint },
+          getInitialState(),
+          [
+            {
+              type: types.SET_VULNERABILITY_ITEM,
+              payload: item,
+            },
+            {
+              type: types.SET_VULNERABILITIES,
+              payload,
+            },
+            {
+              type: types.SET_VULNERABILITY_ITEM,
+              payload: null,
+            },
+          ],
+          [],
+        );
+      });
+    });
+
+    describe('on error', () => {
+      it('creates an alert and sets vulnerability item to null', async () => {
+        mock.onGet(dependenciesEndpoint).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+
+        await testAction(
+          actions.fetchVulnerabilities,
+          { item, vulnerabilitiesEndpoint: dependenciesEndpoint },
+          getInitialState(),
+          [
+            {
+              type: types.SET_VULNERABILITY_ITEM,
+              payload: item,
+            },
+            {
+              type: types.SET_VULNERABILITY_ITEM,
+              payload: null,
+            },
+          ],
+          [],
+        );
+
+        expect(createAlert).toHaveBeenCalledTimes(1);
+        expect(createAlert).toHaveBeenCalledWith({
+          message: VULNERABILITIES_FETCH_ERROR_MESSAGE,
         });
       });
     });

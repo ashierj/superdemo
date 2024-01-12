@@ -148,4 +148,30 @@ describe('Dependencies mutations', () => {
       expect(sortState.sortOrder).toBe(SORT_ASCENDING);
     });
   });
+
+  describe(types.SET_VULNERABILITY_ITEM, () => {
+    const item = { occurrenceId: 1 };
+
+    it('sets the selected item', () => {
+      mutations[types.SET_VULNERABILITY_ITEM](state, item);
+
+      expect(state.vulnerabilityItem).toBe(item);
+    });
+  });
+
+  describe(types.SET_VULNERABILITIES, () => {
+    const payload = [{ occurrence_id: 1 }];
+
+    it('sets the vulnerability data', () => {
+      mutations[types.SET_VULNERABILITIES](state, payload);
+
+      expect(state.vulnerabilityInfo).toStrictEqual({ 1: payload });
+    });
+
+    it('does not set vulnerability data if empty', () => {
+      mutations[types.SET_VULNERABILITIES](state, []);
+
+      expect(state.vulnerabilityInfo).toEqual({});
+    });
+  });
 });

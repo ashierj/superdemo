@@ -14,6 +14,7 @@ import {
   FETCH_ERROR_MESSAGE,
   FETCH_EXPORT_ERROR_MESSAGE,
   LICENSES_FETCH_ERROR_MESSAGE,
+  VULNERABILITIES_FETCH_ERROR_MESSAGE,
 } from './constants';
 import * as types from './mutation_types';
 import { isValidResponse } from './utils';
@@ -188,4 +189,30 @@ export const fetchLicenses = async ({ commit }, licensesEndpoint) => {
   } finally {
     commit(types.SET_FETCHING_LICENSES_IN_PROGRESS, false);
   }
+};
+
+export const fetchVulnerabilities = ({ commit }, { item, vulnerabilitiesEndpoint }) => {
+  if (!vulnerabilitiesEndpoint) {
+    return;
+  }
+
+  commit(types.SET_VULNERABILITY_ITEM, item);
+
+  axios
+    .get(vulnerabilitiesEndpoint, {
+      params: {
+        id: item.occurrenceId,
+      },
+    })
+    .then(({ data }) => {
+      commit(types.SET_VULNERABILITIES, data);
+    })
+    .catch(() => {
+      createAlert({
+        message: VULNERABILITIES_FETCH_ERROR_MESSAGE,
+      });
+    })
+    .finally(() => {
+      commit(types.SET_VULNERABILITY_ITEM, null);
+    });
 };

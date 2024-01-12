@@ -61,3 +61,7 @@ export const DEPENDENCIES_FILENAME = 'dependencies.json';
 export const LICENSES_FETCH_ERROR_MESSAGE = s__(
   'Dependencies|There was a problem fetching the licenses for this group.',
 );
+
+export const VULNERABILITIES_FETCH_ERROR_MESSAGE = s__(
+  'Dependencies|There was a problem fetching vulnerabilities.',
+);

@@ -30,6 +30,7 @@ describe('DependenciesApp component', () => {
     documentationPath: TEST_HOST,
     supportDocumentationPath: `${TEST_HOST}/dependency_scanning#supported-languages`,
     namespaceType: 'project',
+    vulnerabilitiesEndpoint: `/vulnerabilities`,
   };
 
   const factory = ({ provide } = {}) => {
