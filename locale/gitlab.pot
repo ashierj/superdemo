@@ -19882,6 +19882,9 @@ msgstr ""
 msgid "EscalationStatus|Triggered"
 msgstr ""
 
+msgid "Escape"
+msgstr ""
+
 msgid "Estimate"
 msgstr ""
 
