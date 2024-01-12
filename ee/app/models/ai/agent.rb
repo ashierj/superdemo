@@ -2,6 +2,8 @@
 
 module Ai
   class Agent < ApplicationRecord
+    include Presentable
+
     self.table_name = "ai_agents"
 
     validates :project, presence: true
