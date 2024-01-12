@@ -36,6 +36,25 @@ describe('TracingDrawer', () => {
     });
   };
 
+  const findSection = (sectionId) => {
+    const section = wrapper.findByTestId(sectionId);
+    const title = section.find('[data-testid="section-title"]').text();
+    const lines = section.findAll('[data-testid="section-line"]').wrappers.map((w) => ({
+      name: w.find('[data-testid="section-line-name"]').text(),
+      value: w.find('[data-testid="section-line-value"]').text(),
+    }));
+    return {
+      title,
+      lines,
+    };
+  };
+
+  const getSectionLineWrapperByName = (name) =>
+    wrapper
+      .findByTestId('section-span-details')
+      .findAll('[data-testid="section-line"]')
+      .wrappers.find((w) => w.find('[data-testid="section-line-name"]').text() === name);
+
   beforeEach(() => {
     mountComponent();
   });
@@ -54,19 +73,6 @@ describe('TracingDrawer', () => {
   it('displays the correct title', () => {
     expect(wrapper.findByTestId('drawer-title').text()).toBe('test-service : test-operation');
   });
-
-  const findSection = (sectionId) => {
-    const section = wrapper.findByTestId(sectionId);
-    const title = section.find('[data-testid="section-title"]').text();
-    const lines = section.findAll('[data-testid="section-line"]').wrappers.map((w) => ({
-      name: w.find('[data-testid="section-line-name"]').text(),
-      value: w.find('[data-testid="section-line-value"]').text(),
-    }));
-    return {
-      title,
-      lines,
-    };
-  };
 
   it.each([
     [
@@ -132,17 +138,36 @@ describe('TracingDrawer', () => {
         service: 'not-a-link',
       },
     });
-    const getSectionLineWrapperByName = (name) =>
-      wrapper
-        .findByTestId('section-span-details')
-        .findAll('[data-testid="section-line"]')
-        .wrappers.find((w) => w.find('[data-testid="section-line-name"]').text() === name);
 
     expect(getSectionLineWrapperByName('service').findComponent(GlLink).exists()).toBe(false);
 
     const operation = getSectionLineWrapperByName('operation');
     expect(operation.findComponent(GlLink).exists()).toBe(true);
     expect(operation.findComponent(GlLink).attributes('href')).toBe(link);
+  });
+
+  describe('error code', () => {
+    it('highlights the status_code section in case of error', () => {
+      mountComponent({
+        span: {
+          ...mockSpan,
+          status_code: 'STATUS_CODE_ERROR',
+        },
+      });
+
+      expect(getSectionLineWrapperByName('status_code').classes()).toContain('gl-bg-red-100');
+    });
+
+    it('does not highlight the status_code section if there is no error', () => {
+      mountComponent({
+        span: {
+          ...mockSpan,
+          status_code: 'STATUS_CODE_UNSET',
+        },
+      });
+
+      expect(getSectionLineWrapperByName('status_code').classes()).not.toContain('gl-bg-red-100');
+    });
   });
 
   describe('header height', () => {

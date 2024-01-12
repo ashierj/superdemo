@@ -108,6 +108,7 @@ describe('trace_utils', () => {
             operation: 'okey-dokey',
             duration_nano: 50027500,
             parent_span_id: 'SPAN-2',
+            status_code: 'STATUS_CODE_ERROR',
           },
           {
             timestamp: '2023-08-07T15:03:32.199871Z',
@@ -147,6 +148,7 @@ describe('trace_utils', () => {
         span_id: 'SPAN-1',
         start_ms: 0,
         timestamp: '2023-08-07T15:03:32.199806Z',
+        hasError: false,
         children: [
           {
             duration_ms: 100.055,
@@ -155,6 +157,7 @@ describe('trace_utils', () => {
             span_id: 'SPAN-2',
             start_ms: 0,
             timestamp: '2023-08-07T15:03:32.199871Z',
+            hasError: false,
             children: [
               {
                 children: [],
@@ -164,6 +167,7 @@ describe('trace_utils', () => {
                 span_id: 'SPAN-3',
                 start_ms: 21000,
                 timestamp: '2023-08-07T15:03:53.199871Z',
+                hasError: true,
               },
               {
                 children: [],
@@ -173,6 +177,7 @@ describe('trace_utils', () => {
                 span_id: 'SPAN-4',
                 start_ms: 21000,
                 timestamp: '2023-08-07T15:03:53.199871Z',
+                hasError: false,
               },
             ],
           },
