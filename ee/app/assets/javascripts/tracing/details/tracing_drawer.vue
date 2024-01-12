@@ -87,6 +87,9 @@ export default {
         return false;
       }
     },
+    hasError(line) {
+      return line.name === 'status_code' && line.value === 'STATUS_CODE_ERROR';
+    },
   },
   DRAWER_Z_INDEX,
 };
@@ -124,7 +127,8 @@ export default {
           v-for="line in section.content"
           :key="line.name"
           data-testid="section-line"
-          class="gl-py-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-100"
+          class="gl-py-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-200"
+          :class="{ 'gl-bg-red-100': hasError(line) }"
         >
           <label data-testid="section-line-name">{{ line.name }}</label>
           <div data-testid="section-line-value" class="gl-overflow-wrap-anywhere">

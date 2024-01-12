@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlTruncate } from '@gitlab/ui';
+import { GlButton, GlTruncate, GlIcon } from '@gitlab/ui';
 import { clamp } from 'lodash';
 import { s__ } from '~/locale';
 import { formatDurationMs } from '../trace_utils';
@@ -9,6 +9,7 @@ export default {
   components: {
     GlButton,
     GlTruncate,
+    GlIcon,
   },
   i18n: {
     toggleChildrenSpans: s__('Tracing|Toggle child spans'),
@@ -60,6 +61,9 @@ export default {
     },
     hasChildrenSpans(index) {
       return this.spans[index].children.length > 0;
+    },
+    hasError(index) {
+      return this.spans[index].hasError;
     },
     toggleExpand(index) {
       if (!this.hasChildrenSpans(index)) return;
@@ -143,6 +147,12 @@ export default {
               category="tertiary"
               size="small"
               @click.stop="toggleExpand(index)"
+            />
+            <gl-icon
+              v-if="hasError(index)"
+              data-testid="span-details-error-icon"
+              name="status-alert"
+              class="gl-mr-3 gl-text-red-500"
             />
           </div>
 

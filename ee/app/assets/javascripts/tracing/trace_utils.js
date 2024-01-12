@@ -82,6 +82,7 @@ export function mapTraceToTreeRoot(trace) {
     service: span.service_name,
     duration_ms: durationNanoToMs(span.duration_nano),
     children: [],
+    hasError: span.status_code === 'STATUS_CODE_ERROR',
   });
 
   // We need to loop twice here because we don't want to assume that parent nodes appear

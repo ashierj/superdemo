@@ -23,13 +23,15 @@ describe('TracingTable', () => {
       trace_id: 'trace-2',
       total_spans: 3,
       matched_span_count: 2,
+      error_span_count: 1,
     },
   ];
 
   const expectedTraces = [
     {
       timestamp: 'Jul 10, 2023 3:02pm UTC',
-      badge: '1 span / 1 match',
+      badge: '1 span',
+      errorBadge: undefined,
       service_name: 'tracegen',
       operation: 'lets-go',
       duration: '1.50ms',
@@ -38,6 +40,7 @@ describe('TracingTable', () => {
     {
       timestamp: 'Aug 11, 2023 4:03pm UTC',
       badge: '3 spans / 2 matches',
+      errorBadge: '1 error',
       service_name: 'tracegen-2',
       operation: 'lets-go-2',
       duration: '2ms',
@@ -69,12 +72,17 @@ describe('TracingTable', () => {
     expect(rows.length).toBe(mockTraces.length);
     mockTraces.forEach((_, i) => {
       const row = getRows().at(i);
-      const trace = expectedTraces[i];
-      expect(row.find(`[data-testid="trace-timestamp"]`).text()).toContain(trace.timestamp);
-      expect(row.find(`[data-testid="trace-timestamp"]`).text()).toContain(trace.badge);
-      expect(row.find(`[data-testid="trace-service"]`).text()).toBe(trace.service_name);
-      expect(row.find(`[data-testid="trace-operation"]`).text()).toBe(trace.operation);
-      expect(row.find(`[data-testid="trace-duration"]`).text()).toBe(trace.duration);
+      const expected = expectedTraces[i];
+      expect(row.find(`[data-testid="trace-timestamp"]`).text()).toContain(expected.timestamp);
+      expect(row.find(`[data-testid="trace-timestamp"]`).text()).toContain(expected.badge);
+      if (expected.errorBadge) {
+        expect(row.find(`[data-testid="trace-timestamp"]`).text()).toContain(expected.errorBadge);
+      } else {
+        expect(row.find(`[data-testid="trace-timestamp"]`).text()).not.toContain('error');
+      }
+      expect(row.find(`[data-testid="trace-service"]`).text()).toBe(expected.service_name);
+      expect(row.find(`[data-testid="trace-operation"]`).text()).toBe(expected.operation);
+      expect(row.find(`[data-testid="trace-duration"]`).text()).toBe(expected.duration);
     });
   });
 

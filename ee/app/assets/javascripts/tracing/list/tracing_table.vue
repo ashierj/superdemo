@@ -1,6 +1,6 @@
 <script>
-import { GlTable, GlBadge } from '@gitlab/ui';
-import { s__, __, sprintf, n__ } from '~/locale';
+import { GlTable, GlBadge, GlIcon } from '@gitlab/ui';
+import { s__, __, n__ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { formatTraceDuration } from '../trace_utils';
 
@@ -38,6 +38,7 @@ export default {
   components: {
     GlTable,
     GlBadge,
+    GlIcon,
   },
   props: {
     traces: {
@@ -66,18 +67,21 @@ export default {
     rowClass(item, type) {
       if (!item || type !== 'row') return '';
       if (item.trace_id === this.highlightedTraceId) return 'gl-bg-t-gray-a-08';
-      return '';
+      return 'gl-hover-bg-t-gray-a-08';
     },
     matchesBadgeContent(item) {
-      const spans = n__('Tracing|%{count} span', 'Tracing|%{count} spans', item.total_spans);
-      const matches = n__(
-        'Tracing|%{count} match',
-        'Tracing|%{count} matches',
-        item.matched_span_count,
-      );
-      return `${sprintf(spans, { count: item.total_spans })} / ${sprintf(matches, {
-        count: item.matched_span_count,
-      })}`;
+      const spans = n__('Tracing|%d span', 'Tracing|%d spans', item.total_spans);
+      if (item.total_spans === item.matched_span_count) {
+        return spans;
+      }
+      const matches = n__('Tracing|%d match', 'Tracing|%d matches', item.matched_span_count);
+      return `${spans} / ${matches}`;
+    },
+    errorBadgeContent(item) {
+      return n__('Tracing|%d error', 'Tracing|%d errors', item.error_span_count);
+    },
+    hasError(item) {
+      return item.error_span_count > 0;
     },
   },
 };
@@ -102,8 +106,12 @@ export default {
     >
       <template #cell(timestamp)="{ item }">
         {{ item.timestamp }}
-        <div class="gl-mt-4">
-          <gl-badge variant="info">{{ matchesBadgeContent(item) }}</gl-badge>
+        <div class="gl-mt-4 gl-display-flex">
+          <gl-badge variant="info" size="md">{{ matchesBadgeContent(item) }}</gl-badge>
+          <gl-badge v-if="hasError(item)" variant="danger" size="md" class="gl-ml-2">
+            <gl-icon name="status-alert" class="gl-mr-2 gl-text-red-500" />
+            {{ errorBadgeContent(item) }}
+          </gl-badge>
         </div>
       </template>
 

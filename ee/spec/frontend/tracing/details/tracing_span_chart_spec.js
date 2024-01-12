@@ -155,6 +155,38 @@ describe('TracingSpansChart', () => {
     it('renders the expanded button', () => {
       expect(getToggleButton(0).props('icon')).toBe('chevron-down');
     });
+
+    describe('error icon', () => {
+      const mountWithError = (hasError) => {
+        wrapper = shallowMountExtended(TracingSpansChart, {
+          propsData: {
+            ...mockProps,
+            spans: [
+              {
+                operation: 'operation-2',
+                service: 'service-2',
+                span_id: 'span2',
+                start_ms: 100,
+                duration_ms: 200,
+                children: [],
+                hasError,
+              },
+            ],
+          },
+        });
+      };
+
+      const getErrorIcon = () => getSpanDetails(0).find('[data-testid="span-details-error-icon"]');
+      it('renders the error icon if the span has errors', () => {
+        mountWithError(true);
+        expect(getErrorIcon().exists()).toBe(true);
+      });
+
+      it('does not render the error icon if the span has no errors', () => {
+        mountWithError(false);
+        expect(getErrorIcon().exists()).toBe(false);
+      });
+    });
   });
 
   describe('span duration', () => {
