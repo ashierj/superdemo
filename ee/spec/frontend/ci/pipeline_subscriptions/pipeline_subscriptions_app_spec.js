@@ -7,10 +7,16 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import PipelineSubscriptionsApp from 'ee/ci/pipeline_subscriptions/pipeline_subscriptions_app.vue';
 import PipelineSubscriptionsTable from 'ee/ci/pipeline_subscriptions/components/pipeline_subscriptions_table.vue';
+import DeleteSubscriptionConfirmationModal from 'ee/ci/pipeline_subscriptions/components/delete_subscription_confirmation_modal.vue';
 import getUpstreamSubscriptions from 'ee/ci/pipeline_subscriptions/graphql/queries/get_upstream_subscriptions.query.graphql';
 import getDownstreamSubscriptions from 'ee/ci/pipeline_subscriptions/graphql/queries/get_downstream_subscriptions.query.graphql';
+import deletePipelineSubscription from 'ee/ci/pipeline_subscriptions/graphql/mutations/delete_pipeline_subscription.mutation.graphql';
 
-import { mockUpstreamSubscriptions, mockDownstreamSubscriptions } from './mock_data';
+import {
+  deleteMutationResponse,
+  mockUpstreamSubscriptions,
+  mockDownstreamSubscriptions,
+} from './mock_data';
 
 Vue.use(VueApollo);
 
@@ -21,15 +27,19 @@ describe('Pipeline subscriptions app', () => {
 
   const upstreamHanlder = jest.fn().mockResolvedValue(mockUpstreamSubscriptions);
   const downstreamHandler = jest.fn().mockResolvedValue(mockDownstreamSubscriptions);
+  const deleteMutationHandler = jest.fn().mockResolvedValue(deleteMutationResponse);
   const failedHandler = jest.fn().mockRejectedValue(new Error('GraphQL error'));
 
   const findLoadingIcons = () => wrapper.findAllComponents(GlLoadingIcon);
   const findTables = () => wrapper.findAllComponents(PipelineSubscriptionsTable);
+  const findModal = () => wrapper.findComponent(DeleteSubscriptionConfirmationModal);
 
   const defaultHandlers = [
     [getUpstreamSubscriptions, upstreamHanlder],
     [getDownstreamSubscriptions, downstreamHandler],
   ];
+
+  const mockId = mockUpstreamSubscriptions.data.project.ciSubscriptionsProjects.nodes[0].id;
 
   const defaultProvideOptions = {
     projectPath: '/namespace/my-project',
@@ -92,6 +102,33 @@ describe('Pipeline subscriptions app', () => {
 
       expect(findTables().at(0).props('subscriptions')).toEqual(expectedFormat);
     });
+
+    it('deletes pipeline subscription and refetches upstream subscriptions', async () => {
+      createComponent([
+        [getUpstreamSubscriptions, upstreamHanlder],
+        [getDownstreamSubscriptions, downstreamHandler],
+        [deletePipelineSubscription, deleteMutationHandler],
+      ]);
+
+      await waitForPromises();
+
+      expect(upstreamHanlder).toHaveBeenCalledTimes(1);
+
+      findTables().at(0).vm.$emit('showModal', mockId);
+
+      findModal().vm.$emit('deleteConfirmed');
+
+      await waitForPromises();
+
+      expect(deleteMutationHandler).toHaveBeenCalledWith({
+        id: mockId,
+      });
+      expect(upstreamHanlder).toHaveBeenCalledTimes(2);
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'Subscription successfully deleted.',
+        variant: 'success',
+      });
+    });
   });
 
   describe('failures', () => {
@@ -118,6 +155,26 @@ describe('Pipeline subscriptions app', () => {
 
       expect(createAlert).toHaveBeenCalledWith({
         message: 'An error occurred while fetching downstream pipeline subscriptions.',
+      });
+    });
+
+    it('shows error alert when delete pipeline subscription mutation fails', async () => {
+      createComponent([
+        [getUpstreamSubscriptions, upstreamHanlder],
+        [getDownstreamSubscriptions, downstreamHandler],
+        [deletePipelineSubscription, failedHandler],
+      ]);
+
+      await waitForPromises();
+
+      findTables().at(0).vm.$emit('showModal', mockId);
+
+      findModal().vm.$emit('deleteConfirmed');
+
+      await waitForPromises();
+
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'An error occurred while deleting this pipeline subscription.',
       });
     });
   });

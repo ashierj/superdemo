@@ -10,6 +10,7 @@ describe('Pipeline Subscriptions Table', () => {
 
   const subscriptions = nodes.map((subscription) => {
     return {
+      id: subscription.id,
       project: subscription.upstreamProject,
     };
   });
@@ -67,6 +68,16 @@ describe('Pipeline Subscriptions Table', () => {
 
     expect(findProject().text()).toBe(defaultProps.subscriptions[0].project.name);
     expect(findProject().attributes('href')).toBe(defaultProps.subscriptions[0].project.webUrl);
+  });
+
+  it('emits subscription id when delete button is clicked', () => {
+    createComponent();
+
+    findDeleteBtn().vm.$emit('click');
+
+    const expectedId = defaultProps.subscriptions[0].id;
+
+    expect(wrapper.emitted('showModal')).toEqual([[expectedId]]);
   });
 
   it.each`
