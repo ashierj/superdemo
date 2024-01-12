@@ -43,13 +43,15 @@ module Security
           end
 
           def state_transitions
+            current_time = Time.now.utc
+
             redetected_vulnerability_ids.map do |vulnerability_id|
               ::Vulnerabilities::StateTransition.new(
                 vulnerability_id: vulnerability_id,
                 from_state: :resolved,
                 to_state: :detected,
-                created_at: Time.now.utc,
-                updated_at: Time.now.utc
+                created_at: current_time,
+                updated_at: current_time
               )
             end
           end
