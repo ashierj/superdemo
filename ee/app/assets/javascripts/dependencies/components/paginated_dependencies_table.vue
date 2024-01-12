@@ -11,6 +11,7 @@ export default {
     DependenciesTable,
     TablePagination,
   },
+  inject: ['vulnerabilitiesEndpoint'],
   props: {
     namespace: {
       type: String,
@@ -34,6 +35,12 @@ export default {
     ...mapActions({
       fetchPage(dispatch, page) {
         return dispatch(`${this.namespace}/fetchDependencies`, { page });
+      },
+      fetchVulnerabilities(dispatch, item) {
+        return dispatch(`${this.namespace}/fetchVulnerabilities`, {
+          item,
+          vulnerabilitiesEndpoint: this.vulnerabilitiesEndpoint,
+        });
       },
     }),
   },

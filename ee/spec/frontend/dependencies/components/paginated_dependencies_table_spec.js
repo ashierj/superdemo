@@ -5,6 +5,7 @@ import PaginatedDependenciesTable from 'ee/dependencies/components/paginated_dep
 import createStore from 'ee/dependencies/store';
 import { DEPENDENCY_LIST_TYPES } from 'ee/dependencies/store/constants';
 import TablePagination from '~/vue_shared/components/pagination/table_pagination.vue';
+import { TEST_HOST } from 'helpers/test_constants';
 import mockDependenciesResponse from '../store/modules/list/data/mock_dependencies.json';
 
 describe('PaginatedDependenciesTable component', () => {
@@ -18,6 +19,7 @@ describe('PaginatedDependenciesTable component', () => {
     wrapper = shallowMount(PaginatedDependenciesTable, {
       store,
       propsData: { ...props },
+      provide: { vulnerabilitiesEndpoint: TEST_HOST },
     });
   };
 

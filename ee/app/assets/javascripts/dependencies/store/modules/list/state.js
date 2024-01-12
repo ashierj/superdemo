@@ -3,6 +3,8 @@ import { FILTER, REPORT_STATUS } from './constants';
 export default () => ({
   endpoint: '',
   exportEndpoint: '',
+  vulnerabilityInfo: {},
+  vulnerabilityItem: null,
   fetchingInProgress: false,
   initialized: false,
   isLoading: false,

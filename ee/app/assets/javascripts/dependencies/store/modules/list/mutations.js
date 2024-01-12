@@ -61,4 +61,13 @@ export default {
   [types.SET_FETCHING_LICENSES_IN_PROGRESS](state, fetchLicensesInProgress) {
     state.fetchingLicensesInProgress = fetchLicensesInProgress;
   },
+  [types.SET_VULNERABILITIES](state, payload) {
+    if (payload.length) {
+      const id = parseInt(payload[0].occurrence_id, 10);
+      state.vulnerabilityInfo[id] = payload;
+    }
+  },
+  [types.SET_VULNERABILITY_ITEM](state, item) {
+    state.vulnerabilityItem = item;
+  },
 };
