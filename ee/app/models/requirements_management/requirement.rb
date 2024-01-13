@@ -26,8 +26,8 @@ module RequirementsManagement
         description
         description_html
       ],
-      remove_with: '15.7',
-      remove_after: '2022-11-22'
+      remove_with: '16.9',
+      remove_after: '2024-01-22'
     )
 
     # the expected name for this table is `requirements_management_requirements`,
