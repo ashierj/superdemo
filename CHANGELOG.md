@@ -928,6 +928,10 @@ entry.
 
 - [Move export buttons next to each other](gitlab-org/gitlab@106bea7a6246cd153cf66d133936a09d46369ae3) ([merge request](gitlab-org/gitlab!137461))
 
+## 16.6.5 (2024-01-13)
+
+No changes.
+
 ## 16.6.4 (2024-01-10)
 
 ### Fixed (1 change)
