@@ -5,7 +5,7 @@ import GroupDastProfileSelector from 'ee/security_orchestration/components/polic
 import ProjectDastProfileSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/project_dast_profile_selector.vue';
 import RunnerTagsList from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/runner_tags_list.vue';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
-import ScanAction from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_action.vue';
+import CiVariablesSelectors from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/ci_variables_selectors.vue';
 import {
   DEFAULT_ASSIGNED_POLICY_PROJECT,
   NAMESPACE_TYPES,
@@ -25,7 +25,7 @@ import {
   mockDastActionScanExecutionManifest,
   mockActionsVariablesScanExecutionManifest,
 } from '../mocks/action_mocks';
-import { verify, findYamlPreview } from '../utils';
+import { verify } from '../utils';
 
 describe('Scan execution policy actions', () => {
   let wrapper;
@@ -54,23 +54,12 @@ describe('Scan execution policy actions', () => {
     window.gon = {};
   });
 
+  const findCiVariablesSelectors = () => wrapper.findComponent(CiVariablesSelectors);
   const findScanTypeSelector = () => wrapper.findByTestId('scan-type-selector');
   const findGroupDastProfileSelector = () => wrapper.findComponent(GroupDastProfileSelector);
   const findProjectDastProfileSelector = () => wrapper.findComponent(ProjectDastProfileSelector);
-  const findScanAction = () => wrapper.findComponent(ScanAction);
   const findRunnerTagsList = () => wrapper.findComponent(RunnerTagsList);
   const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
-
-  describe('initial state', () => {
-    beforeEach(() => {
-      createWrapper();
-    });
-
-    it('should render action section', () => {
-      expect(findScanAction().exists()).toBe(true);
-      expect(findYamlPreview(wrapper).text()).toContain('actions:\n  - scan: secret_detection');
-    });
-  });
 
   describe('secret detection', () => {
     beforeEach(() => {
@@ -79,11 +68,8 @@ describe('Scan execution policy actions', () => {
 
     it('selects secret detection scan as action', async () => {
       const verifyRuleMode = () => {
-        expect(findScanAction().exists()).toBe(true);
+        expect(findScanTypeSelector().exists()).toBe(true);
         expect(findRunnerTagsList().exists()).toBe(true);
-        expect(findScanAction().props('initAction')).toEqual({
-          scan: REPORT_TYPE_SECRET_DETECTION,
-        });
       };
 
       await verify({
@@ -107,9 +93,8 @@ describe('Scan execution policy actions', () => {
       ${REPORT_TYPE_DEPENDENCY_SCANNING}
     `(`selects secret detection $scanType as action`, async ({ scanType }) => {
       const verifyRuleMode = () => {
-        expect(findScanAction().exists()).toBe(true);
+        expect(findScanTypeSelector().exists()).toBe(true);
         expect(findRunnerTagsList().exists()).toBe(true);
-        expect(findScanAction().props('initAction')).toEqual({ scan: scanType });
       };
 
       await findScanTypeSelector().vm.$emit('select', scanType);
@@ -135,14 +120,9 @@ describe('Scan execution policy actions', () => {
       });
 
       const verifyRuleMode = () => {
-        expect(findScanAction().exists()).toBe(true);
+        expect(findScanTypeSelector().exists()).toBe(true);
         expect(findDastSelector().exists()).toBe(true);
         expect(findRunnerTagsList().exists()).toBe(true);
-        expect(findScanAction().props('initAction')).toEqual({
-          scan: REPORT_TYPE_DAST,
-          site_profile: '',
-          scanner_profile: '',
-        });
       };
 
       await findScanTypeSelector().vm.$emit('select', REPORT_TYPE_DAST);
@@ -158,10 +138,9 @@ describe('Scan execution policy actions', () => {
 
     it('selects variables filter', async () => {
       const verifyRuleMode = () => {
-        expect(findScanAction().props('initAction')).toEqual({
-          scan: REPORT_TYPE_SECRET_DETECTION,
-          variables: { '': '' },
-        });
+        expect(findScanTypeSelector().exists()).toBe(true);
+        expect(findRunnerTagsList().exists()).toBe(true);
+        expect(findCiVariablesSelectors().exists()).toBe(true);
       };
 
       await findScanFilterSelector().vm.$emit('select', CI_VARIABLE);
