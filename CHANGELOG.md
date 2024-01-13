@@ -1531,6 +1531,12 @@ No changes.
 - [Remove pubsub migration helper for actioncable](gitlab-org/gitlab@763ca1305db6f1c9cf6700b8497494a81926d742) ([merge request](gitlab-org/gitlab!133066))
 - [Use partitioned table for CommitStatus](gitlab-org/gitlab@063826e042778995fae13928a2fb5de2c8855b45) ([merge request](gitlab-org/gitlab!134489))
 
+## 16.5.7 (2024-01-13)
+
+### Fixed (1 change)
+
+- [Make chat_names table migration idempotent](gitlab-org/gitlab@1a2ac58037d06717b9a27f5b2a6a9e5ec887d374) ([merge request](gitlab-org/gitlab!141706))
+
 ## 16.5.6 (2024-01-11)
 
 ### Fixed (1 change)
