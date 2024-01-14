@@ -16,7 +16,6 @@ module Security
         merge_request = MergeRequest.find_by_id(merge_request_id)
 
         return unless merge_request
-        return unless Feature.enabled?(:scan_result_any_merge_request, merge_request.project)
 
         Security::ScanResultPolicies::SyncAnyMergeRequestRulesService.new(merge_request).execute
       end

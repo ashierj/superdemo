@@ -12,6 +12,7 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
+approval_settings: {}
 `;
 
 export const mockLicenseScanResultManifest = `type: scan_result_policy
@@ -27,6 +28,7 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
+approval_settings: {}
 `;
 
 export const mockAnyMergeRequestScanResultManifest = `type: scan_result_policy

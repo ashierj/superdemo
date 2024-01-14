@@ -450,18 +450,6 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
           execute
         end
       end
-
-      context 'when feature flag "scan_result_any_merge_request" is disabled' do
-        before do
-          stub_feature_flags(scan_result_any_merge_request: false)
-        end
-
-        it 'does not enqueue SyncAnyMergeRequestApprovalRulesWorker' do
-          expect(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).not_to receive(:perform_async)
-
-          execute
-        end
-      end
     end
 
     describe '#notify_for_policy_violations' do

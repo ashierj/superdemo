@@ -46,7 +46,7 @@ describe('Policy Editor', () => {
       expect(findEmptyState().exists()).toBe(false);
       expect(findActionSection().exists()).toBe(true);
       expect(findRuleSection().exists()).toBe(true);
-      expect(findSettingsSection().exists()).toBe(false);
+      expect(findSettingsSection().exists()).toBe(true);
       expect(findYamlPreview().exists()).toBe(true);
     });
   });

@@ -81,7 +81,7 @@ describe('Scan result policy rules', () => {
       const verifyRuleMode = () => {
         expect(findDefaultRuleBuilder().exists()).toBe(false);
         expect(findSecurityScanRuleBuilder().exists()).toBe(true);
-        expect(findSettingsSection().exists()).toBe(false);
+        expect(findSettingsSection().exists()).toBe(true);
       };
 
       await findScanTypeSelect().vm.$emit('select', SCAN_FINDING);
@@ -102,7 +102,7 @@ describe('Scan result policy rules', () => {
       const verifyRuleMode = () => {
         expect(findDefaultRuleBuilder().exists()).toBe(false);
         expect(findLicenseScanRuleBuilder().exists()).toBe(true);
-        expect(findSettingsSection().exists()).toBe(false);
+        expect(findSettingsSection().exists()).toBe(true);
       };
       await findScanTypeSelect().vm.$emit('select', LICENSE_FINDING);
       await verify({ manifest: mockLicenseScanResultManifest, verifyRuleMode, wrapper });
@@ -111,9 +111,7 @@ describe('Scan result policy rules', () => {
 
   describe('any merge request rule', () => {
     beforeEach(() => {
-      createWrapper({
-        provide: { glFeatures: { scanResultAnyMergeRequest: true } },
-      });
+      createWrapper();
     });
 
     it('should select any merge request rule', async () => {

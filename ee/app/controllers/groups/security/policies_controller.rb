@@ -11,7 +11,6 @@ module Groups
 
       before_action do
         push_frontend_feature_flag(:scan_result_policies_block_unprotecting_branches, group)
-        push_frontend_feature_flag(:scan_result_any_merge_request, group)
         push_frontend_feature_flag(:scan_result_policies_block_force_push, group)
         push_frontend_feature_flag(:security_policies_policy_scope, group)
         push_frontend_feature_flag(:compliance_pipeline_in_policies, group)

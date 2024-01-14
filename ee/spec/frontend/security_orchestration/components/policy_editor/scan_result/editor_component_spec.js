@@ -304,10 +304,9 @@ describe('EditorComponent', () => {
           [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
         };
 
-        it('does update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled and the "scanResultAnyMergeRequest" ff enabled and the "scanResultPoliciesBlockForcePush" ff enabled', () => {
+        it('does update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled and the "scanResultPoliciesBlockForcePush" ff enabled', () => {
           const features = {
             scanResultPoliciesBlockUnprotectingBranches: true,
-            scanResultAnyMergeRequest: true,
             scanResultPoliciesBlockForcePush: true,
           };
           window.gon = { features };
@@ -329,7 +328,7 @@ describe('EditorComponent', () => {
           );
         });
 
-        it('does update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled and the "scanResultAnyMergeRequest" ff disabled', () => {
+        it('does update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled', () => {
           const features = {
             scanResultPoliciesBlockUnprotectingBranches: true,
           };
@@ -351,9 +350,9 @@ describe('EditorComponent', () => {
           );
         });
 
-        it('does update the settings with the "scanResultAnyMergeRequest" ff enabled', () => {
+        it('does update the settings with ANY_MERGE_REQUEST type', () => {
           const newValue = { type: ANY_MERGE_REQUEST };
-          factory({ glFeatures: { scanResultAnyMergeRequest: true } });
+          factory();
           expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
           findAllRuleSections().at(0).vm.$emit('changed', newValue);
           expect(findPolicyEditorLayout().props('policy')).toEqual(
@@ -377,14 +376,6 @@ describe('EditorComponent', () => {
               approval_settings: pushingBranchesConfiguration,
             }),
           );
-        });
-
-        it('does not update the settings with no feature flags enabled', () => {
-          const newValue = { type: ANY_MERGE_REQUEST };
-          factory();
-          expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
-          findAllRuleSections().at(0).vm.$emit('changed', newValue);
-          expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
         });
       });
     });
@@ -735,12 +726,39 @@ describe('EditorComponent', () => {
 
   describe('settings section', () => {
     describe('settings', () => {
-      it('does not display the settings', () => {
-        factory();
-        expect(findSettingsSection().exists()).toBe(false);
+      describe('without default flags', () => {
+        beforeEach(() => {
+          factory();
+        });
+
+        it('displays setting section', () => {
+          expect(findSettingsSection().exists()).toBe(true);
+        });
+
+        it('does not show settings for non-merge request rules', async () => {
+          await findAllRuleSections().at(0).vm.$emit('changed', { type: 'scan_finding' });
+          expect(findSettingsSection().exists()).toBe(true);
+          expect(findSettingsSection().props('settings')).toEqual({});
+        });
+
+        it('does show the policy for merge request rule', async () => {
+          await findAllRuleSections().at(0).vm.$emit('changed', { type: 'any_merge_request' });
+          expect(findSettingsSection().props('settings')).toEqual(mergeRequestConfiguration);
+        });
+
+        it('updates the policy for merge request rule', async () => {
+          findAllRuleSections().at(0).vm.$emit('changed', { type: 'any_merge_request' });
+          await findSettingsSection().vm.$emit('changed', {
+            [PREVENT_APPROVAL_BY_AUTHOR]: false,
+          });
+          expect(findSettingsSection().props('settings')).toEqual({
+            ...mergeRequestConfiguration,
+            [PREVENT_APPROVAL_BY_AUTHOR]: false,
+          });
+        });
       });
 
-      describe('feature flags', () => {
+      describe('with feature flags', () => {
         describe('with "scanResultPoliciesBlockUnprotectingBranches" feature flag enabled', () => {
           beforeEach(() => {
             const features = { scanResultPoliciesBlockUnprotectingBranches: true };
@@ -762,42 +780,6 @@ describe('EditorComponent', () => {
             expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
               `${BLOCK_BRANCH_MODIFICATION}: false`,
             );
-          });
-        });
-
-        describe('with "scanResultAnyMergeRequest" feature flag enabled', () => {
-          beforeEach(() => {
-            const features = { scanResultAnyMergeRequest: true };
-            window.gon = { features };
-            factory({ glFeatures: features });
-          });
-
-          it('displays setting section', () => {
-            expect(findSettingsSection().exists()).toBe(true);
-          });
-
-          it('does not show settings for non-merge request rules', async () => {
-            await findAllRuleSections().at(0).vm.$emit('changed', { type: 'scan_finding' });
-            expect(findSettingsSection().exists()).toBe(true);
-            expect(findSettingsSection().props('settings')).toEqual({});
-          });
-
-          it('does show the policy for merge request rule', async () => {
-            await findAllRuleSections().at(0).vm.$emit('changed', { type: 'any_merge_request' });
-            expect(findSettingsSection().props('settings')).toEqual({
-              ...mergeRequestConfiguration,
-            });
-          });
-
-          it('updates the policy for merge request rule', async () => {
-            findAllRuleSections().at(0).vm.$emit('changed', { type: 'any_merge_request' });
-            await findSettingsSection().vm.$emit('changed', {
-              [PREVENT_APPROVAL_BY_AUTHOR]: false,
-            });
-            expect(findSettingsSection().props('settings')).toEqual({
-              ...mergeRequestConfiguration,
-              [PREVENT_APPROVAL_BY_AUTHOR]: false,
-            });
           });
         });
 

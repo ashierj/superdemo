@@ -206,13 +206,6 @@ export default {
     rulesHaveBranches() {
       return this.policy.rules.some(this.ruleHasBranchesProperty);
     },
-    shouldShowSettings() {
-      return (
-        this.glFeatures.scanResultPoliciesBlockUnprotectingBranches ||
-        this.glFeatures.scanResultAnyMergeRequest ||
-        this.glFeatures.scanResultPoliciesBlockForcePush
-      );
-    },
     settingAlert() {
       if (this.hasEmptySettings) {
         return {
@@ -275,13 +268,7 @@ export default {
     },
     updateRule(ruleIndex, rule) {
       this.policy.rules.splice(ruleIndex, 1, rule);
-      if (
-        this.glFeatures.scanResultPoliciesBlockUnprotectingBranches ||
-        this.glFeatures.scanResultAnyMergeRequest ||
-        this.glFeatures.scanResultPoliciesBlockForcePush
-      ) {
-        this.updateSettings(this.settings);
-      }
+      this.updateSettings(this.settings);
       this.updateYamlEditorValue(this.policy);
     },
     handleError(error) {
@@ -484,7 +471,7 @@ export default {
       </dim-disable-container>
     </template>
     <template #settings>
-      <dim-disable-container v-if="shouldShowSettings" :disabled="hasParsingError">
+      <dim-disable-container :disabled="hasParsingError">
         <template #title>
           <h4>{{ $options.i18n.settingsTitle }}</h4>
         </template>

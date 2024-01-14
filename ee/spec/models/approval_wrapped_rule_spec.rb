@@ -178,14 +178,6 @@ RSpec.describe ApprovalWrappedRule, feature_category: :code_review_workflow do
       let(:rule) { create(:report_approver_rule, :any_merge_request) }
 
       it { is_expected.to eq(false) }
-
-      context 'when feature flag "scan_result_any_merge_request" is disabled' do
-        before do
-          stub_feature_flags(scan_result_any_merge_request: false)
-        end
-
-        it { is_expected.to eq(true) }
-      end
     end
 
     context 'when report_type is nil' do

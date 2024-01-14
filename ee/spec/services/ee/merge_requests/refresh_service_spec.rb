@@ -210,18 +210,6 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
           subject
         end
       end
-
-      context 'when feature flag "scan_result_any_merge_request" is disabled' do
-        before do
-          stub_feature_flags(scan_result_any_merge_request: false)
-        end
-
-        it 'does not enqueue SyncAnyMergeRequestApprovalRulesWorker' do
-          expect(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).not_to receive(:perform_async)
-
-          subject
-        end
-      end
     end
 
     describe '#update_approvers_for_source_branch_merge_requests' do

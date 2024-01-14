@@ -15,11 +15,6 @@ describe('ScanTypeSelect', () => {
       propsData: {
         ...props,
       },
-      provide: {
-        glFeatures: {
-          scanResultAnyMergeRequest: true,
-        },
-      },
       stubs: {
         GlCollapsibleListbox,
       },
@@ -44,15 +39,6 @@ describe('ScanTypeSelect', () => {
     findListBox().vm.$emit('select', SCAN_FINDING);
 
     expect(wrapper.emitted('select')).toEqual([[SCAN_FINDING]]);
-  });
-
-  it('can render additional options', () => {
-    createComponent({
-      items: [{ text: 'test', value: 'test' }],
-    });
-
-    expect(findListBoxItems()).toHaveLength(1);
-    expect(findListBoxItems().at(0).text('')).toEqual('test');
   });
 
   it('can preselect existing scan', () => {

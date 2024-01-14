@@ -89,20 +89,6 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
           have_received(:perform_async).with(merge_request.id)
         )
       end
-
-      context 'when feature flag "scan_result_any_merge_request" is disabled' do
-        before do
-          stub_feature_flags(scan_result_any_merge_request: false)
-        end
-
-        it 'does not enqueue the worker' do
-          execute
-
-          expect(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).not_to(
-            have_received(:perform_async)
-          )
-        end
-      end
     end
 
     describe 'suggested reviewers' do

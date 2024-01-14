@@ -12,7 +12,6 @@ module Projects
 
       before_action do
         push_frontend_feature_flag(:scan_result_policies_block_unprotecting_branches, project)
-        push_frontend_feature_flag(:scan_result_any_merge_request, project)
         push_frontend_feature_flag(:scan_result_policies_block_force_push, project)
         push_frontend_feature_flag(:compliance_pipeline_in_policies, project)
       end
