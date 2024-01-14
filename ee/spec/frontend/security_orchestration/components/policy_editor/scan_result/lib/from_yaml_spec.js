@@ -61,13 +61,6 @@ describe('fromYaml', () => {
       expect(fromYaml(input)).toStrictEqual(output);
     });
 
-    it('returns the policy object for a manifest with "approval_settings" with the "scanResultAnyMergeRequest" feature flag on', () => {
-      const input = { manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true };
-      const output = mockApprovalSettingsScanResultObject;
-      window.gon = { features: { scanResultAnyMergeRequest: true } };
-      expect(fromYaml(input)).toStrictEqual(output);
-    });
-
     it('returns the policy object for a manifest with "approval_settings" with the "scanResultPoliciesBlockForcePush" feature flag on', () => {
       const input = { manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true };
       const output = mockApprovalSettingsScanResultObject;
@@ -75,9 +68,9 @@ describe('fromYaml', () => {
       expect(fromYaml(input)).toStrictEqual(output);
     });
 
-    it('returns the error object for a manifest with "approval_settings" with all feature flags off', () => {
+    it('returns the policy object for a manifest with "approval_settings" with all feature flags off', () => {
       const input = { manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true };
-      const output = { error: true };
+      const output = mockApprovalSettingsScanResultObject;
       window.gon = { features: {} };
       expect(fromYaml(input)).toStrictEqual(output);
     });
@@ -101,9 +94,7 @@ describe('createPolicyObject', () => {
       ${'returns the policy object for a manifest with `approval_settings` containing permitted invalid settings and the `scanResultPoliciesBlockUnprotectingBranches` feature flag on'} | ${{ scanResultPoliciesBlockUnprotectingBranches: true }} | ${mockApprovalSettingsPermittedInvalidScanResultManifest} | ${{ policy: mockApprovalSettingsPermittedInvalidScanResultObject, hasParsingError: false }}
       ${'returns the policy object for a manifest with `policy_scope` feature flag on'}                                                                                                  | ${{ securityPoliciesPolicyScope: true }}                 | ${mockPolicyScopeScanResultManifest}                      | ${{ policy: mockPolicyScopeScanResultObject, hasParsingError: false }}
       ${'returns the error object for a manifest with `approval_settings` containing permitted invalid settings and the `scanResultPoliciesBlockUnprotectingBranches` feature flag off'} | ${{}}                                                    | ${mockApprovalSettingsPermittedInvalidScanResultManifest} | ${{ policy: mockApprovalSettingsPermittedInvalidScanResultObject, hasParsingError: false }}
-      ${'returns the policy object for a manifest with `approval_settings` with the `scanResultAnyMergeRequest` feature flag on'}                                                        | ${{ scanResultAnyMergeRequest: true }}                   | ${mockApprovalSettingsScanResultManifest}                 | ${{ policy: mockApprovalSettingsScanResultObject, hasParsingError: false }}
-      ${'returns the error object for a manifest with `approval_settings` with all feature flags off'}                                                                                   | ${{}}                                                    | ${mockApprovalSettingsScanResultManifest}                 | ${{ policy: { error: true }, hasParsingError: true }}
-      ${'returns the error object for a manifest with `approval_settings` with all feature flags off'}                                                                                   | ${{}}                                                    | ${mockApprovalSettingsScanResultManifest}                 | ${{ policy: { error: true }, hasParsingError: true }}
+      ${'returns the policy object for a manifest with `approval_settings` with all feature flags off'}                                                                                  | ${{}}                                                    | ${mockApprovalSettingsScanResultManifest}                 | ${{ policy: mockApprovalSettingsScanResultObject, hasParsingError: false }}
       ${'returns the error object for a manifest with `policy_scope` feature flag off'}                                                                                                  | ${{}}                                                    | ${mockPolicyScopeScanResultManifest}                      | ${{ policy: { error: true }, hasParsingError: true }}
     `('$title', ({ features, input, output }) => {
       window.gon = { features };

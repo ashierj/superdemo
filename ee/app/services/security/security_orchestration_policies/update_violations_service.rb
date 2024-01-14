@@ -19,9 +19,6 @@ module Security
       end
 
       def execute
-        return [violated_policy_ids.clear, unviolated_policy_ids.clear] unless Feature.enabled?(
-          :scan_result_any_merge_request, merge_request.project)
-
         Security::ScanResultPolicyViolation.transaction do
           delete_violations if unviolated_policy_ids.any?
           create_violations if violated_policy_ids.any?

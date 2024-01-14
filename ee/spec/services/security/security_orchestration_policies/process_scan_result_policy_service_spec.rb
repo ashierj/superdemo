@@ -636,24 +636,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
         expect(scan_result_policy_read.rule_idx).to be(0)
       end
 
-      context 'when feature flag "scan_result_any_merge_request" is disabled' do
-        before do
-          stub_feature_flags(scan_result_any_merge_request: false)
-        end
-
-        it "doesn't create new approval rules" do
-          expect { subject }.not_to change { project.approval_rules.count }
-        end
-
-        it 'creates scan_result_policy_read' do
-          expect { subject }.to change { project.scan_result_policy_reads.count }.by(1)
-
-          scan_result_policy_read = project.scan_result_policy_reads.first
-          expect(scan_result_policy_read).to be_commits_unsigned
-          expect(scan_result_policy_read.rule_idx).to be(0)
-        end
-      end
-
       context 'when rule has no actions' do
         let(:policy) { build(:scan_result_policy, :any_merge_request, commits: 'unsigned', actions: []) }
 

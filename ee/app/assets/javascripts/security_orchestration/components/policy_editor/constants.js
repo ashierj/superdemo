@@ -96,7 +96,15 @@ export const RULE_MODE_SCANNERS = {
 
 export const MAX_ALLOWED_RULES_LENGTH = 5;
 
-export const PRIMARY_POLICY_KEYS = ['type', 'name', 'description', 'enabled', 'rules', 'actions'];
+export const PRIMARY_POLICY_KEYS = [
+  'type',
+  'name',
+  'description',
+  'enabled',
+  'rules',
+  'actions',
+  'approval_settings',
+];
 
 export const SPECIFIC_BRANCHES = {
   id: 'SPECIFIC_BRANCHES',

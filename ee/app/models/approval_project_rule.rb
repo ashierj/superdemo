@@ -96,7 +96,6 @@ class ApprovalProjectRule < ApplicationRecord
       rule = merge_request_report_approver_rule(merge_request)
       rule.update!(report_approver_attributes)
 
-      next rule unless Feature.enabled?(:scan_result_any_merge_request, merge_request.project)
       next rule unless rule.scan_result_policy_id
 
       Security::ScanResultPolicyViolation.upsert_all(

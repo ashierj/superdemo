@@ -29,7 +29,6 @@ module Security
       private
 
       def sync_any_merge_request_approval_rules(merge_request)
-        return if ::Feature.disabled?(:scan_result_any_merge_request, merge_request.project)
         return unless merge_request.approval_rules.any_merge_request.any?
 
         ::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker.perform_async(merge_request.id)

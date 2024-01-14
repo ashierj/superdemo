@@ -22,16 +22,9 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
        * schema. These values should not be retrieved from the backend schema because
        * the UI for new attributes may not be available.
        */
-      const hasApprovalSettings =
-        gon.features?.scanResultPoliciesBlockUnprotectingBranches ||
-        gon.features?.scanResultAnyMergeRequest ||
-        gon.features?.scanResultPoliciesBlockForcePush;
 
       const primaryKeys = [
         ...PRIMARY_POLICY_KEYS,
-        ...(hasApprovalSettings || isEqual(policy.approval_settings, PERMITTED_INVALID_SETTINGS) // Temporary workaround to allow the rule builder to load with wrongly persisted settings
-          ? [`approval_settings`]
-          : []),
         ...(gon?.features?.securityPoliciesPolicyScope ? ['policy_scope'] : []),
       ];
       const rulesKeys = [
@@ -62,14 +55,15 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
 
       const { approval_settings: settings = {} } = policy;
 
-      const hasInvalidApprovalSettings = hasApprovalSettings
-        ? hasInvalidKey(settings, [...VALID_APPROVAL_SETTINGS, PERMITTED_INVALID_SETTINGS_KEY])
-        : false;
+      // Temporary workaround to allow the rule builder to load with wrongly persisted settings
+      const hasInvalidApprovalSettings = hasInvalidKey(settings, [
+        ...VALID_APPROVAL_SETTINGS,
+        PERMITTED_INVALID_SETTINGS_KEY,
+      ]);
 
-      const hasInvalidSettingStructure =
-        hasApprovalSettings && !isEqual(settings, PERMITTED_INVALID_SETTINGS)
-          ? !Object.values(settings).every((setting) => isBoolean(setting))
-          : false;
+      const hasInvalidSettingStructure = !isEqual(settings, PERMITTED_INVALID_SETTINGS)
+        ? !Object.values(settings).every((setting) => isBoolean(setting))
+        : false;
 
       return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
         !hasInvalidApprovalSettings &&

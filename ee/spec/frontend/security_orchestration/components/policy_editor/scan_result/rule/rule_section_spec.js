@@ -49,9 +49,6 @@ describe('RuleSection', () => {
       provide: {
         namespaceId: '1',
         namespaceType: NAMESPACE_TYPES.PROJECT,
-        glFeatures: {
-          scanResultAnyMergeRequest: true,
-        },
         ...provide,
       },
       stubs: {

@@ -30,17 +30,5 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWor
         run_worker
       end
     end
-
-    context 'when feature flag "scan_result_any_merge_request" is disabled' do
-      before do
-        stub_feature_flags(scan_result_any_merge_request: false)
-      end
-
-      it 'does not call SyncAnyMergeRequestRulesService' do
-        expect(Security::ScanResultPolicies::SyncAnyMergeRequestRulesService).not_to receive(:new)
-
-        run_worker
-      end
-    end
   end
 end

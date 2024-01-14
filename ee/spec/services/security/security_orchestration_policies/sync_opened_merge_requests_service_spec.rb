@@ -125,20 +125,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsS
 
         subject
       end
-
-      context 'when the feature flag "scan_result_any_merge_request" is disabled' do
-        before do
-          stub_feature_flags(scan_result_any_merge_request: false)
-        end
-
-        it "does not enqueue SyncAnyMergeRequestApprovalRulesWorker" do
-          expect(::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).not_to(
-            receive(:perform_async)
-          )
-
-          subject
-        end
-      end
     end
 
     it "does not synchronize rules to merged or closed requests" do

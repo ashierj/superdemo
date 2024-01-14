@@ -1,6 +1,5 @@
 <script>
 import { GlAlert, GlSprintf } from '@gitlab/ui';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { ANY_MERGE_REQUEST, SCAN_FINDING, LICENSE_FINDING } from '../lib';
 import AnyMergeRequestRuleBuilder from './any_merge_request_rule_builder.vue';
 import SecurityScanRuleBuilder from './security_scan_rule_builder.vue';
@@ -16,7 +15,6 @@ export default {
     SecurityScanRuleBuilder,
     LicenseScanRuleBuilder,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     initRule: {
       type: Object,
@@ -101,7 +99,7 @@ export default {
     />
 
     <any-merge-request-rule-builder
-      v-else-if="isAnyMergeRequestRule && glFeatures.scanResultAnyMergeRequest"
+      v-else-if="isAnyMergeRequestRule"
       :init-rule="initRule"
       @changed="updateRule"
       @remove="removeRule"
