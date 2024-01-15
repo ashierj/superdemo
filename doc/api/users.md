@@ -2197,9 +2197,9 @@ Example response:
 
 Pre-requisite:
 
-- You must be an administrator.
+- You must be an administrator to view the activity of users with private profiles.
 
-Get the last activity date for all users, sorted from oldest to newest.
+Get the last activity date for users with public profiles, sorted from oldest to newest.
 
 The activities that update the user event timestamps (`last_activity_on` and `current_sign_in_at`) are:
 
@@ -2209,7 +2209,7 @@ The activities that update the user event timestamps (`last_activity_on` and `cu
 - User using the API
 - User using the GraphQL API
 
-By default, it shows the activity for all users in the last 6 months, but this can be
+By default, it shows the activity for users with public profiles in the last 6 months, but this can be
 amended by using the `from` parameter.
 
 ```plaintext
