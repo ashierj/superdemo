@@ -145,6 +145,45 @@ RSpec.describe API::GroupVariables, feature_category: :secrets_management do
             expect(variable.reload.environment_scope).to eq('*')
           end
         end
+
+        context 'when there are two variables with the same key on different environments' do
+          let!(:var1) { create(:ci_group_variable, group: group, key: 'key1', environment_scope: 'staging') }
+          let!(:var2) { create(:ci_group_variable, group: group, key: 'key1', environment_scope: 'production') }
+
+          # Naturally we would expect a 409 (conflict) here, but
+          # the PUT endpoint was originally introduced without
+          # `filter` support so we have to retain this behavior.
+          # See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/136475
+          context 'when filter[environment_scope] is not passed' do
+            it 'returns 200' do
+              put api("/groups/#{group.id}/variables/key1", user)
+
+              expect(response).to have_gitlab_http_status(:ok)
+            end
+          end
+
+          # Naturally we would expect a 404 (not_found) here, but
+          # the PUT endpoint was originally introduced without
+          # `filter` support so we have to retain this behavior.
+          # See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/136475
+          context 'when wrong filter[environment_scope] is passed' do
+            it 'returns 200' do
+              put api("/groups/#{group.id}/variables/key1", user), params: { 'filter[environment_scope]': 'invalid' }
+
+              expect(response).to have_gitlab_http_status(:ok)
+            end
+          end
+
+          context 'when filter[environment_scope] is passed' do
+            it 'updates the correct variable' do
+              put api("/groups/#{group.id}/variables/key1", user), params: { value: 'newvalue', 'filter[environment_scope]': var2.environment_scope }
+
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(var2.reload.value).to eq('newvalue')
+              expect(json_response['value']).to eq('newvalue')
+            end
+          end
+        end
       end
 
       context ':group_scoped_ci_variables licensed feature is not available' do
