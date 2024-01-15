@@ -8,6 +8,12 @@ module MemberRoles
 
     VALID_PARAMS = [:parent, :id, :instance_roles].freeze
 
+    ALLOWED_SORT_VALUES = %i[id created_at name].freeze
+    DEFAULT_SORT_VALUE = :name
+
+    ALLOWED_SORT_DIRECTIONS = %i[asc desc].freeze
+    DEFAULT_SORT_DIRECTION = :asc
+
     def initialize(current_user, params = {})
       @current_user = current_user
       @params = params
@@ -21,7 +27,7 @@ module MemberRoles
       items = by_id(items)
       items = for_instance(items)
 
-      items.ordered_by_name
+      sort(items)
     end
 
     private
@@ -49,6 +55,14 @@ module MemberRoles
       items = items.id_in(params[:id])
 
       items.by_namespace(allowed_group_ids(items))
+    end
+
+    def sort(items)
+      order_by = ALLOWED_SORT_VALUES.include?(params[:order_by]) ? params[:order_by] : DEFAULT_SORT_VALUE
+      order_direction = ALLOWED_SORT_DIRECTIONS.include?(params[:sort]) ? params[:sort] : DEFAULT_SORT_DIRECTION
+      order_by = :id if order_by == :created_at
+
+      items.order(order_by => order_direction) # rubocop:disable CodeReuse/ActiveRecord -- simple ordering
     end
 
     def for_instance(items)

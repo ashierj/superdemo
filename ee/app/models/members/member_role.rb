@@ -38,7 +38,6 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     where(query)
   end
 
-  scope :ordered_by_name, -> { order(:name) }
   scope :by_namespace, ->(group_ids) { where(namespace_id: group_ids) }
 
   scope :with_members_count, -> do

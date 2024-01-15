@@ -9,10 +9,10 @@ RSpec.describe MemberRoles::RolesFinder, feature_category: :system_access do
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:user) { create(:user) }
   let_it_be(:admin) { create(:admin) }
-  let_it_be(:member_role_1) { create(:member_role, name: 'Tester', namespace: group) }
-  let_it_be(:member_role_2) { create(:member_role, name: 'Manager', namespace: group) }
   let_it_be(:member_role_instance) { create(:member_role, :instance) }
   let_it_be(:group_2_member_role) { create(:member_role, name: 'Another role') }
+  let_it_be(:member_role_1) { create(:member_role, name: 'Tester', namespace: group) }
+  let_it_be(:member_role_2) { create(:member_role, name: 'Manager', namespace: group) }
   let_it_be(:active_group_iterations_cadence) do
     create(:iterations_cadence, group: group, active: true, duration_in_weeks: 1, title: 'one week iterations')
   end
@@ -99,6 +99,38 @@ RSpec.describe MemberRoles::RolesFinder, feature_category: :system_access do
 
           it 'returns all requested member roles for the instance admin' do
             expect(find_member_roles).to eq([group_2_member_role, member_role_2, member_role_1])
+          end
+
+          context 'when providing the order_by and sort parameters' do
+            using RSpec::Parameterized::TableSyntax
+
+            let_it_be(:name_asc) { [group_2_member_role, member_role_2, member_role_1] }
+            let_it_be(:name_desc) { [member_role_1, member_role_2, group_2_member_role] }
+            let_it_be(:id_asc) { [group_2_member_role, member_role_1, member_role_2] }
+            let_it_be(:id_desc) { [member_role_2, member_role_1, group_2_member_role] }
+
+            where(:order, :sort, :result) do
+              nil         | nil   | :name_asc
+              nil         | :asc  | :name_asc
+              nil         | :desc | :name_desc
+              :name       | nil   | :name_asc
+              :name       | :asc  | :name_asc
+              :name       | :desc | :name_desc
+              :id         | nil   | :id_asc
+              :id         | :asc  | :id_asc
+              :id         | :desc | :id_desc
+              :created_at | nil   | :id_asc
+              :created_at | :asc  | :id_asc
+              :created_at | :desc | :id_desc
+            end
+
+            with_them do
+              let(:params) { super().merge(order_by: order, sort: sort) }
+
+              it 'returns the result with correct ordering' do
+                expect(find_member_roles).to eq public_send(result)
+              end
+            end
           end
         end
       end

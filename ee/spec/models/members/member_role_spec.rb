@@ -203,12 +203,6 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
       end
     end
 
-    describe 'ordered_by_name' do
-      it 'returns member roles orderd by name' do
-        expect(described_class.ordered_by_name).to eq([group_2_member_role, member_role_2, member_role_1])
-      end
-    end
-
     describe '.with_members_count' do
       let_it_be(:member_role_1_members) do
         create_list(:group_member, 3, :developer, {

@@ -10,10 +10,20 @@ module Resolvers
         required: false,
         description: 'Global ID of the member role to look up.'
 
-      def resolve_with_lookahead(id: nil)
+      argument :order_by, ::Types::MemberRoles::OrderByEnum,
+        required: false,
+        description: 'Ordering column. Default is NAME.'
+
+      argument :sort, ::Types::SortDirectionEnum,
+        required: false,
+        description: 'Ordering column. Default is ASC.'
+
+      def resolve_with_lookahead(id: nil, order_by: nil, sort: nil)
         params = {}
         params = { parent: object } if object
         params[:id] = id.model_id if id.present?
+        params[:order_by] = order_by.presence || :name
+        params[:sort] = sort.present? ? sort.to_sym : :asc
         params[:instance_roles] = true if instance_roles?(params)
 
         member_roles = ::MemberRoles::RolesFinder.new(current_user, params).execute
