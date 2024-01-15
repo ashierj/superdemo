@@ -153,7 +153,7 @@ RSpec.describe 'creating member role', feature_category: :system_access do
         end
 
         context 'when on SaaS', :saas do
-          it_behaves_like 'a mutation that returns a top-level access error'
+          it_behaves_like 'a mutation that returns top-level errors', errors: ['group_path argument is required.']
         end
 
         context 'when running on self-managed' do
