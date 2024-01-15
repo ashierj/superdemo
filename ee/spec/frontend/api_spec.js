@@ -1,7 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import Api from 'ee/api';
 import axios from '~/lib/utils/axios_utils';
-import { ContentTypeMultipartFormData } from '~/lib/utils/headers';
+import { contentTypeMultipartFormData } from '~/lib/utils/headers';
 import { HTTP_STATUS_CREATED, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 describe('Api', () => {
@@ -243,7 +243,7 @@ describe('Api', () => {
           ({ data }) => {
             expect(data).toEqual({});
             expect(axios.post.mock.calls[0][2]).toEqual({
-              headers: { ...ContentTypeMultipartFormData },
+              headers: { ...contentTypeMultipartFormData },
             });
           },
         );

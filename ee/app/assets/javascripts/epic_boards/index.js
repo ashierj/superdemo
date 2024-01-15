@@ -7,7 +7,7 @@ import BoardApp from '~/boards/components/board_app.vue';
 
 import '~/boards/filters/due_date_filters';
 import {
-  NavigationType,
+  navigationType,
   isLoggedIn,
   parseBoolean,
   convertObjectPropsToCamelCase,
@@ -96,7 +96,7 @@ export default () => {
   // check for browser back and trigger a hard reload to circumvent browser caching.
   window.addEventListener('pageshow', (event) => {
     const isNavTypeBackForward =
-      window.performance && window.performance.navigation.type === NavigationType.TYPE_BACK_FORWARD;
+      window.performance && window.performance.navigation.type === navigationType.TYPE_BACK_FORWARD;
 
     if (event.persisted || isNavTypeBackForward) {
       window.location.reload();
