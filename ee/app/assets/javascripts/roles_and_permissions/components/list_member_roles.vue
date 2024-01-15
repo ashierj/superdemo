@@ -1,23 +1,37 @@
 <script>
 import { GlBadge, GlButton, GlCard, GlEmptyState, GlModal, GlTable } from '@gitlab/ui';
-import { keyBy } from 'lodash';
-import { deleteMemberRole, getMemberRoles } from 'ee/rest_api';
-import { ACCESS_LEVEL_LABELS } from '~/access_level/constants';
+import { capitalize } from 'lodash';
 import { createAlert } from '~/alert';
-import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import { sprintf, s__, __ } from '~/locale';
+import { TYPENAME_MEMBER_ROLE } from '~/graphql_shared/constants';
+import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
+import memberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
 import memberRolePermissionsQuery from '../graphql/member_role_permissions.query.graphql';
+import deleteMemberRoleMutation from '../graphql/delete_member_role.mutation.graphql';
 import CreateMemberRole from './create_member_role.vue';
 
 export const FIELDS = [
   { key: 'name', label: s__('MemberRole|Name'), sortable: true },
   { key: 'id', label: s__('MemberRole|ID'), sortable: true },
-  { key: 'base_access_level', label: s__('MemberRole|Base role'), sortable: true },
+  { key: 'baseAccessLevel', label: s__('MemberRole|Base role'), sortable: true },
   { key: 'permissions', label: s__('MemberRole|Permissions') },
   { key: 'actions', label: s__('MemberRole|Actions') },
 ];
 
 export default {
+  i18n: {
+    addNewRole: s__('MemberRole|Add new role'),
+    cardTitle: s__('MemberRole|Custom roles'),
+    deleteRole: s__('MemberRole|Delete role'),
+    emptyTitle: s__('MemberRole|No custom roles for this group'),
+    fetchRolesError: s__('MemberRole|Failed to fetch roles: %{message}'),
+    fetchPermissionsError: s__('MemberRole|Could not fetch available permissions: %{message}'),
+    deleteSuccess: s__('MemberRole|Role successfully deleted.'),
+    deleteError: s__('MemberRole|Failed to delete the role.'),
+    deleteErrorWithReason: s__('MemberRole|Failed to delete the role: %{message}'),
+    createSuccess: s__('MemberRole|Role successfully created.'),
+    licenseError: s__('MemberRole|Make sure the group is in the Ultimate tier.'),
+  },
   components: {
     CreateMemberRole,
     GlBadge,
@@ -33,7 +47,7 @@ export default {
       required: false,
       default: null,
     },
-    groupId: {
+    groupFullPath: {
       type: String,
       required: false,
       default: null,
@@ -42,7 +56,6 @@ export default {
   data() {
     return {
       alert: null,
-      isLoadingMemberRoles: false,
       memberRoles: [],
       memberRoleToDelete: null,
       showCreateMemberForm: false,
@@ -50,10 +63,36 @@ export default {
     };
   },
   apollo: {
+    memberRoles: {
+      query: memberRolesQuery,
+      variables() {
+        return {
+          fullPath: this.groupFullPath,
+        };
+      },
+      update(data) {
+        const memberRoles = data?.namespace?.memberRoles?.nodes || [];
+
+        return memberRoles.map(({ id, name, baseAccessLevel, enabledPermissions }) => ({
+          name,
+          id: getIdFromGraphQLId(id),
+          baseAccessLevel: capitalize(baseAccessLevel.stringValue),
+          permissions: enabledPermissions.nodes,
+        }));
+      },
+      error({ message }) {
+        this.alert = createAlert({
+          message: sprintf(this.$options.i18n.fetchRolesError, { message }),
+        });
+      },
+      skip() {
+        return !this.groupFullPath;
+      },
+    },
     availablePermissions: {
       query: memberRolePermissionsQuery,
-      update({ memberRolePermissions }) {
-        return memberRolePermissions.nodes;
+      update(data) {
+        return data?.memberRolePermissions?.nodes || [];
       },
       error({ message }) {
         this.alert = createAlert({
@@ -63,81 +102,59 @@ export default {
     },
   },
   computed: {
+    isLoading() {
+      return (
+        this.$apollo.queries.memberRoles.loading ||
+        this.$apollo.queries.availablePermissions.loading
+      );
+    },
     isModalVisible() {
       return this.memberRoleToDelete !== null;
     },
-    availablePermissionsLookup() {
-      return keyBy(this.availablePermissions, 'value');
-    },
   },
   watch: {
-    groupId: function newFetch(newGroupId) {
-      this.fetchMemberRoles(newGroupId);
+    groupFullPath() {
+      this.$apollo.queries.memberRoles.refetch();
     },
-  },
-  created() {
-    this.fetchMemberRoles(this.groupId);
   },
   methods: {
     async deleteMemberRole() {
       this.alert?.dismiss();
 
-      try {
-        await deleteMemberRole(this.groupId, this.memberRoleToDelete);
-        this.$toast.show(this.$options.i18n.deleteSuccess);
-        this.fetchMemberRoles(this.groupId);
-      } catch (error) {
-        this.alert = createAlert({
-          message: error.response?.data?.message || this.$options.i18n.deleteError,
-        });
-      } finally {
-        this.memberRoleToDelete = null;
-      }
-    },
-    async fetchMemberRoles(groupId) {
-      this.alert?.dismiss();
+      this.$apollo
+        .mutate({
+          mutation: deleteMemberRoleMutation,
+          refetchQueries: [memberRolesQuery],
+          variables: {
+            input: {
+              id: convertToGraphQLId(TYPENAME_MEMBER_ROLE, this.memberRoleToDelete),
+            },
+          },
+          update: (_, result) => {
+            const { errors } = result.data.memberRoleDelete;
 
-      if (!groupId) {
-        this.memberRoles = [];
-        return;
-      }
-      this.isLoadingMemberRoles = true;
-
-      try {
-        const { data } = await getMemberRoles(groupId);
-        this.memberRoles = data;
-      } catch (error) {
-        this.memberRoles = [];
-        if (error?.response?.status === HTTP_STATUS_NOT_FOUND) {
-          this.alert = createAlert({ message: this.$options.i18n.licenseError });
-        } else {
+            if (errors?.length) {
+              const errorMessage = sprintf(this.$options.i18n.deleteErrorWithReason, {
+                message: errors.join('. '),
+              });
+              createAlert({ message: errorMessage });
+            } else {
+              this.$toast.show(this.$options.i18n.deleteSuccess);
+            }
+          },
+        })
+        .catch(() => {
           this.alert = createAlert({
-            message: error?.response?.data?.message || this.$options.i18n.fetchRolesError,
+            message: this.$options.i18n.deleteError,
           });
-        }
-      } finally {
-        this.isLoadingMemberRoles = false;
-      }
-    },
-    listPermissions(item) {
-      return Object.entries(item).reduce((array, [key, value]) => {
-        const permission = this.availablePermissionsLookup[key.toUpperCase()];
-        // The member roles data has a mix of permissions data and other data. Only add the permission's name if the key
-        // is a permission and if its value is true.
-        if (permission && value) {
-          array.push(permission.name);
-        }
-
-        return array;
-      }, []);
-    },
-    nameAccessLevel(value) {
-      return ACCESS_LEVEL_LABELS[value];
+        })
+        .finally(() => {
+          this.memberRoleToDelete = null;
+        });
     },
     onCreatedMemberRole() {
       this.$toast.show(this.$options.i18n.createSuccess);
       this.showCreateMemberForm = false;
-      this.fetchMemberRoles(this.groupId);
     },
     onModalHide() {
       this.memberRoleToDelete = null;
@@ -147,18 +164,6 @@ export default {
     },
   },
   FIELDS,
-  i18n: {
-    addNewRole: s__('MemberRole|Add new role'),
-    cardTitle: s__('MemberRole|Custom roles'),
-    deleteRole: s__('MemberRole|Delete role'),
-    emptyTitle: s__('MemberRole|No custom roles for this group'),
-    fetchRolesError: s__('MemberRole|Failed to fetch roles.'),
-    fetchPermissionsError: s__('MemberRole|Could not fetch available permissions: %{message}'),
-    deleteSuccess: s__('MemberRole|Role successfully deleted.'),
-    deleteError: s__('MemberRole|Failed to delete the role.'),
-    createSuccess: s__('MemberRole|Role successfully created.'),
-    licenseError: s__('MemberRole|Make sure the group is in the Ultimate tier.'),
-  },
   modal: {
     actionPrimary: {
       text: s__('MemberRole|Delete role'),
@@ -192,8 +197,8 @@ export default {
       </div>
       <div class="gl-new-card-actions">
         <gl-button
-          :disabled="!groupId"
-          :loading="$apollo.queries.availablePermissions.loading"
+          :disabled="!groupFullPath"
+          :loading="isLoading"
           size="small"
           data-testid="add-role"
           @click="showCreateMemberForm = true"
@@ -205,7 +210,7 @@ export default {
 
     <div v-if="showCreateMemberForm" class="gl-new-card-add-form gl-m-3">
       <create-member-role
-        :group-id="groupId"
+        :group-full-path="groupFullPath"
         :available-permissions="availablePermissions"
         @cancel="showCreateMemberForm = false"
         @success="onCreatedMemberRole"
@@ -218,28 +223,22 @@ export default {
       :description="emptyText"
     />
 
-    <gl-table
-      v-else
-      :fields="$options.FIELDS"
-      :items="memberRoles"
-      :busy="isLoadingMemberRoles || $apollo.queries.availablePermissions.loading"
-      stacked="sm"
-    >
-      <template #cell(base_access_level)="{ item: { base_access_level } }">
-        <gl-badge class="gl-my-n4">{{ nameAccessLevel(base_access_level) }}</gl-badge>
+    <gl-table v-else :fields="$options.FIELDS" :items="memberRoles" :busy="isLoading" stacked="sm">
+      <template #cell(baseAccessLevel)="{ item: { baseAccessLevel } }">
+        <gl-badge class="gl-my-n4">{{ baseAccessLevel }}</gl-badge>
       </template>
 
-      <template #cell(permissions)="{ item }">
+      <template #cell(permissions)="{ item: { permissions } }">
         <div
           class="gl-display-flex gl-flex-wrap gl-gap-3 gl-justify-content-end gl-sm-justify-content-start"
         >
           <gl-badge
-            v-for="(permission, index) in listPermissions(item)"
+            v-for="(permission, index) in permissions"
             :key="index"
             variant="success"
             size="sm"
           >
-            {{ permission }}
+            {{ permission.name }}
           </gl-badge>
         </div>
       </template>

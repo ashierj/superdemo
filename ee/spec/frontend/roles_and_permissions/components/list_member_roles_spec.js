@@ -2,70 +2,54 @@ import { GlCard, GlEmptyState, GlModal, GlTable } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { createAlert } from '~/alert';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
-import { getMemberRoles, deleteMemberRole } from 'ee/api/member_roles_api';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import memberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
+import memberRolePermissionsQuery from 'ee/roles_and_permissions/graphql/member_role_permissions.query.graphql';
+import deleteMemberRoleMutation from 'ee/roles_and_permissions/graphql/delete_member_role.mutation.graphql';
 import CreateMemberRole from 'ee/roles_and_permissions/components/create_member_role.vue';
 import ListMemberRoles from 'ee/roles_and_permissions/components/list_member_roles.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import createMockApollo from 'helpers/mock_apollo_helper';
-import memberRolePermissionsQuery from 'ee/roles_and_permissions/graphql/member_role_permissions.query.graphql';
+import { mockDefaultPermissions, mockPermissions, mockMemberRoles } from '../mock_data';
 
-jest.mock('ee/api/member_roles_api');
+Vue.use(VueApollo);
 
 const mockAlertDismiss = jest.fn();
+
 jest.mock('~/alert', () => ({
   createAlert: jest.fn().mockImplementation(() => ({
     dismiss: mockAlertDismiss,
   })),
 }));
 
-Vue.use(VueApollo);
-
-const DEFAULT_PERMISSIONS = [
-  { name: 'Permission A', description: 'Description A', value: 'READ_CODE' },
-  { name: 'Permission B', description: 'Description B', value: 'READ_VULNERABILITY' },
-  { name: 'Permission C', description: 'Description C', value: 'ADMIN_VULNERABILITY' },
-];
-const NON_STANDARD_PERMISSION = {
-  name: 'Permission D',
-  description: 'Description D',
-  value: 'NON_STANDARD_PERMISSION',
-};
-const PERMISSIONS = [...DEFAULT_PERMISSIONS, NON_STANDARD_PERMISSION];
-
-const getMemberRolePermissionsHandler = ({ nodes = PERMISSIONS } = {}) =>
-  jest.fn().mockResolvedValue({ data: { memberRolePermissions: { nodes } } });
-
 describe('ListMemberRoles', () => {
-  const emptyText = 'blah, blah';
-  const groupId = '49';
-  const mockResponse = [
-    {
-      id: 1,
-      name: 'My custom Guest',
-      base_access_level: 10,
-      read_code: true,
-      read_vulnerability: true,
-      admin_vulnerability: true,
-    },
-    {
-      id: 2,
-      name: 'My name Developer',
-      base_access_level: 30,
-      non_standard_permission: true,
-      ignored: false,
-    },
-  ];
-  const mockToastShow = jest.fn();
   let wrapper;
 
-  const createComponent = (props = {}, mountFn = shallowMountExtended) => {
+  const mockToastShow = jest.fn();
+  const rolesSuccessQueryHandler = jest.fn().mockResolvedValue(mockMemberRoles);
+  const permissionsSuccessQueryHandler = jest.fn().mockResolvedValue(mockPermissions);
+  const deleteMutationSuccessHandler = jest
+    .fn()
+    .mockResolvedValue({ data: { memberRoleDelete: { errors: null, memberRole: { id: '1' } } } });
+
+  const failedQueryHandler = jest.fn().mockRejectedValue(new Error('GraphQL error'));
+
+  const createComponent = ({
+    mountFn = shallowMountExtended,
+    rolesQueryHandler = rolesSuccessQueryHandler,
+    permissionsQueryHandler = permissionsSuccessQueryHandler,
+    deleteMutationHandler = deleteMutationSuccessHandler,
+  } = {}) => {
     wrapper = mountFn(ListMemberRoles, {
       apolloProvider: createMockApollo([
-        [memberRolePermissionsQuery, getMemberRolePermissionsHandler()],
+        [memberRolesQuery, rolesQueryHandler],
+        [memberRolePermissionsQuery, permissionsQueryHandler],
+        [deleteMemberRoleMutation, deleteMutationHandler],
       ]),
-      propsData: { emptyText, ...props },
+      propsData: {
+        emptyText: 'mock text',
+        groupFullPath: 'test-group',
+      },
       stubs: { GlCard, GlTable },
       mocks: {
         $toast: {
@@ -75,6 +59,7 @@ describe('ListMemberRoles', () => {
     });
   };
 
+  const findTitle = () => wrapper.findByTestId('card-title');
   const findAddRoleButton = () => wrapper.findByTestId('add-role');
   const findButtonByText = (text) => wrapper.findByRole('button', { name: text });
   const findCounter = () => wrapper.findByTestId('counter');
@@ -85,96 +70,99 @@ describe('ListMemberRoles', () => {
   const findCellByText = (text) => wrapper.findByRole('cell', { name: text });
   const findCells = () => wrapper.findAllByRole('cell');
 
-  beforeEach(() => {
-    getMemberRoles.mockResolvedValue({ data: mockResponse });
-  });
+  const expectSortableColumn = (fieldKey) => {
+    const fields = findTable().props('fields');
+    expect(fields.find((field) => field.key === fieldKey)?.sortable).toBe(true);
+  };
 
   describe('empty state', () => {
     beforeEach(() => {
-      getMemberRoles.mockResolvedValue({ data: [] });
-      createComponent({ groupId });
+      createComponent();
     });
 
     it('shows empty state', () => {
-      expect(wrapper.findByTestId('card-title').text()).toMatch(ListMemberRoles.i18n.cardTitle);
+      expect(findTitle().text()).toMatch('Custom roles');
       expect(findCounter().text()).toBe('0');
+
       expect(findAddRoleButton().props('disabled')).toBe(false);
+
       expect(findEmptyState().props()).toMatchObject({
-        description: emptyText,
-        title: ListMemberRoles.i18n.emptyTitle,
+        description: 'mock text',
+        title: 'No custom roles for this group',
       });
+
       expect(findCreateMemberRole().exists()).toBe(false);
     });
 
     it('hides empty state when toggling the form', async () => {
       findAddRoleButton().vm.$emit('click');
       await waitForPromises();
+
       expect(findEmptyState().exists()).toBe(false);
     });
   });
 
-  describe('fetching roles', () => {
-    it('toggles the table busy state', async () => {
-      createComponent({ groupId });
-      await waitForPromises();
-      expect(findTable().attributes('busy')).toBeUndefined();
-
-      wrapper.setProps({ groupId: '9' });
-      await nextTick();
-      expect(findTable().attributes('busy')).toBe('true');
+  describe('member roles', () => {
+    beforeEach(() => {
+      createComponent();
     });
 
-    it('upon changes in the groupId', async () => {
-      createComponent({ groupId: null });
-      await waitForPromises();
-      expect(getMemberRoles).toHaveBeenCalledTimes(0);
-
-      wrapper.setProps({ groupId });
-      await waitForPromises();
-      expect(getMemberRoles).toHaveBeenCalledTimes(1);
-    });
-
-    it('shows license alert for 404 responses', async () => {
-      getMemberRoles.mockRejectedValue({ response: { status: HTTP_STATUS_NOT_FOUND } });
-      createComponent({ groupId: '100' });
+    it('fetches member roles', async () => {
       await waitForPromises();
 
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Make sure the group is in the Ultimate tier.',
+      expect(rolesSuccessQueryHandler).toHaveBeenCalledWith({
+        fullPath: 'test-group',
       });
     });
 
-    it('shows generic alert for non-404 responses', async () => {
-      getMemberRoles.mockRejectedValue({ response: { status: HTTP_STATUS_INTERNAL_SERVER_ERROR } });
-      createComponent({ groupId: '100' });
-      await waitForPromises();
+    describe('when groupFullPath is updated', () => {
+      beforeEach(() => {
+        wrapper.setProps({ groupFullPath: 'another-test-group' });
+      });
 
-      expect(createAlert).toHaveBeenCalledWith({ message: 'Failed to fetch roles.' });
+      it('sets the `busy` attribute on the table to true', () => {
+        expect(findTable().attributes('busy')).toBe('true');
+      });
+
+      it('refetches member roles', async () => {
+        await waitForPromises();
+
+        expect(rolesSuccessQueryHandler).toHaveBeenCalledWith({
+          fullPath: 'another-test-group',
+        });
+
+        expect(findTable().attributes('busy')).toBeUndefined();
+      });
     });
 
-    it('dismisses previous alerts', async () => {
-      getMemberRoles.mockRejectedValue({ response: { status: HTTP_STATUS_INTERNAL_SERVER_ERROR } });
-      createComponent({ groupId: '100' });
-      await waitForPromises();
-      expect(mockAlertDismiss).toHaveBeenCalledTimes(0);
+    describe('when there is an error fetching roles', () => {
+      beforeEach(() => {
+        createComponent({ rolesQueryHandler: failedQueryHandler });
+      });
 
-      wrapper.setProps({ groupId });
-      await waitForPromises();
-      expect(mockAlertDismiss).toHaveBeenCalledTimes(1);
+      it('shows alert when there is an error', async () => {
+        await waitForPromises();
+
+        expect(createAlert).toHaveBeenCalledWith({
+          message: 'Failed to fetch roles: GraphQL error',
+        });
+      });
     });
   });
 
   describe('create role form', () => {
-    beforeEach(async () => {
-      // Show form
-      createComponent({ groupId });
+    beforeEach(() => {
+      createComponent();
       findAddRoleButton().vm.$emit('click');
-      await waitForPromises();
+      return waitForPromises();
+    });
+
+    it('renders CreateMemberRole component', () => {
+      expect(findCreateMemberRole().exists()).toBe(true);
+      expect(findCreateMemberRole().props('availablePermissions')).toEqual(mockDefaultPermissions);
     });
 
     it('toggles display', async () => {
-      expect(findCreateMemberRole().exists()).toBe(true);
-
       findCreateMemberRole().vm.$emit('cancel');
       await nextTick();
 
@@ -187,35 +175,19 @@ describe('ListMemberRoles', () => {
 
         expect(mockToastShow).toHaveBeenCalledWith('Role successfully created.');
       });
-
-      it('fetches roles', async () => {
-        expect(getMemberRoles).toHaveBeenCalledTimes(1);
-
-        findCreateMemberRole().vm.$emit('success');
-        await waitForPromises();
-
-        expect(getMemberRoles).toHaveBeenCalledTimes(2);
-      });
     });
   });
 
-  describe('table of roles', () => {
-    it('shows name and id', async () => {
-      createComponent({ groupId }, mountExtended);
-      await waitForPromises();
-
-      expect(findCellByText(mockResponse[0].name).exists()).toBe(true);
-      expect(findCellByText(`${mockResponse[0].id}`).exists()).toBe(true);
+  describe('member roles table', () => {
+    beforeEach(() => {
+      createComponent({ mountFn: mountExtended });
+      return waitForPromises();
     });
 
-    const expectSortableColumn = async (fieldKey) => {
-      createComponent({ groupId }, mountExtended);
-      await waitForPromises();
-
-      const fields = findTable().props('fields');
-
-      expect(fields.find((field) => field.key === fieldKey)?.sortable).toBe(true);
-    };
+    it('shows name and id', () => {
+      expect(findCellByText('Test').exists()).toBe(true);
+      expect(findCellByText('1').exists()).toBe(true);
+    });
 
     it('sorts columns by name', () => {
       expectSortableColumn('name');
@@ -226,87 +198,78 @@ describe('ListMemberRoles', () => {
     });
 
     it('sorts columns by base role', () => {
-      expectSortableColumn('base_access_level');
+      expectSortableColumn('baseAccessLevel');
     });
 
-    it('shows list of standard permissions', async () => {
-      createComponent({ groupId }, mountExtended);
-      await waitForPromises();
-      const badgesText = findCells().at(3).text();
+    it('shows list of permissions', () => {
+      const permissionsText = findCells().at(3).text();
 
-      DEFAULT_PERMISSIONS.forEach((permission) => {
-        expect(badgesText).toContain(permission.name);
-      });
-    });
-
-    it('shows list of non-standard permissions', async () => {
-      createComponent({ groupId }, mountExtended);
-      await waitForPromises();
-
-      const badgesText = findCells().at(8).text();
-      expect(badgesText).toBe(NON_STANDARD_PERMISSION.name);
+      expect(permissionsText).toContain('Read code');
+      expect(permissionsText).toContain('Read vulnerability');
     });
   });
 
-  describe('delete role', () => {
-    const clickRoleDelete = () => {
-      findButtonByText('Delete role').trigger('click');
-      return nextTick();
-    };
-
-    beforeEach(async () => {
-      createComponent({ groupId }, mountExtended);
-      await waitForPromises();
+  describe('deleting member role', () => {
+    beforeEach(() => {
+      createComponent({ mountFn: mountExtended });
+      return waitForPromises();
     });
 
     it('shows confirm modal', async () => {
       expect(findModal().props('visible')).toBe(false);
 
-      await clickRoleDelete();
+      findButtonByText('Delete role').trigger('click');
+      await nextTick();
+
       expect(findModal().props('visible')).toBe(true);
     });
 
-    describe('when successful deletion', () => {
+    describe('when the role is deleted successfully', () => {
       beforeEach(async () => {
-        deleteMemberRole.mockResolvedValue();
-        await clickRoleDelete();
-      });
+        findButtonByText('Delete role').trigger('click');
+        await nextTick();
 
-      it('delete the role', async () => {
         findModal().vm.$emit('primary');
         await waitForPromises();
-
-        expect(deleteMemberRole).toHaveBeenNthCalledWith(1, '49', '1');
       });
 
-      it('shows toast', async () => {
-        findModal().vm.$emit('primary');
-        await waitForPromises();
+      it('delete the role', () => {
+        expect(deleteMutationSuccessHandler).toHaveBeenCalledWith({
+          input: {
+            id: 'gid://gitlab/MemberRole/1',
+          },
+        });
+      });
 
+      it('shows toast', () => {
         expect(mockToastShow).toHaveBeenCalledWith('Role successfully deleted.');
       });
 
-      it('fetches roles', async () => {
-        expect(getMemberRoles).toHaveBeenCalledTimes(1);
-
-        findModal().vm.$emit('primary');
-        await waitForPromises();
-
-        expect(getMemberRoles).toHaveBeenCalledTimes(2);
+      it('refetches roles', () => {
+        expect(rolesSuccessQueryHandler).toHaveBeenCalled();
       });
     });
 
-    describe('when unsuccessful deletion of a role', () => {
-      beforeEach(async () => {
-        deleteMemberRole.mockRejectedValue(new Error());
-        await clickRoleDelete();
+    describe('when there is an error deleting the role', () => {
+      const mutationMock = jest.fn().mockResolvedValue({
+        data: { memberRoleDelete: { errors: ['reason'], memberRole: null } },
       });
 
-      it('shows alert', async () => {
-        findModal().vm.$emit('primary');
+      beforeEach(async () => {
+        createComponent({ deleteMutationHandler: mutationMock, mountFn: mountExtended });
         await waitForPromises();
 
-        expect(createAlert).toHaveBeenCalledWith({ message: 'Failed to delete the role.' });
+        findButtonByText('Delete role').trigger('click');
+        await nextTick();
+
+        findModal().vm.$emit('primary');
+        await waitForPromises();
+      });
+
+      it('shows alert', () => {
+        expect(createAlert).toHaveBeenCalledWith({
+          message: 'Failed to delete the role: reason',
+        });
       });
     });
   });

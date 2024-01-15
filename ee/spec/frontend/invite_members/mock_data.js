@@ -47,3 +47,65 @@ export const allowGuestsSubscription = generateSubscriptionData({
   billedUserEmails: ['test@example'],
   excludeGuests: true,
 });
+
+export const mockGroupMemberRoles = {
+  data: {
+    namespace: {
+      id: 'gid://gitlab/Group/3',
+      memberRoles: {
+        nodes: [
+          {
+            baseAccessLevel: {
+              integerValue: 10,
+              stringValue: 'GUEST',
+              __typename: 'AccessLevel',
+            },
+            id: 'gid://gitlab/MemberRole/100',
+            name: 'My role 1',
+            enabledPermissions: {
+              nodes: [
+                {
+                  name: 'Read code',
+                  value: 'READ_CODE',
+                },
+              ],
+            },
+            __typename: 'MemberRole',
+          },
+          {
+            baseAccessLevel: {
+              integerValue: 20,
+              stringValue: 'REPORTER',
+              __typename: 'AccessLevel',
+            },
+            id: 'gid://gitlab/MemberRole/101',
+            name: 'My role 2',
+            enabledPermissions: {
+              nodes: [
+                {
+                  name: 'Read code',
+                  value: 'READ_CODE',
+                },
+              ],
+            },
+            __typename: 'MemberRole',
+          },
+        ],
+        __typename: 'MemberRoleConnection',
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const mockProjectMemberRoles = {
+  data: {
+    namespace: {
+      id: 'gid://gitlab/Project/12',
+      memberRoles: {
+        nodes: [],
+        __typename: 'MemberRoleConnection',
+      },
+    },
+  },
+};

@@ -18,8 +18,7 @@ import getBillableUserCountChanges from 'ee/invite_members/graphql/queries/billa
 import getGroupMemberRoles from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
 import getProjectMemberRoles from 'ee/invite_members/graphql/queries/project_member_roles.query.graphql';
 import { createMockClient } from 'helpers/mock_apollo_helper';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPENAME_GROUP, TYPENAME_MEMBER_ROLE } from '~/graphql_shared/constants';
+import { mockGroupMemberRoles, mockProjectMemberRoles } from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -48,44 +47,9 @@ describe('EEInviteModalBase', () => {
     },
   });
 
-  const groupMemberRolesResponse = jest.fn().mockResolvedValue({
-    data: {
-      namespace: {
-        id: convertToGraphQLId(TYPENAME_GROUP, 3),
-        memberRoles: {
-          nodes: [
-            {
-              baseAccessLevel: {
-                integerValue: 10,
-              },
-              name: 'My role 1',
-              id: convertToGraphQLId(TYPENAME_MEMBER_ROLE, 100),
-            },
-            {
-              baseAccessLevel: {
-                integerValue: 20,
-              },
-              name: 'My role 2',
-              id: convertToGraphQLId(TYPENAME_MEMBER_ROLE, 101),
-            },
-          ],
-          __typename: 'MemberRoleConnection',
-        },
-      },
-    },
-  });
+  const groupMemberRolesResponse = jest.fn().mockResolvedValue(mockGroupMemberRoles);
 
-  const projectMemberRolesResponse = jest.fn().mockResolvedValue({
-    data: {
-      namespace: {
-        id: convertToGraphQLId('Project', 12),
-        memberRoles: {
-          nodes: [],
-          __typename: 'MemberRoleConnection',
-        },
-      },
-    },
-  });
+  const projectMemberRolesResponse = jest.fn().mockResolvedValue(mockProjectMemberRoles);
 
   const createComponent = ({
     props = {},

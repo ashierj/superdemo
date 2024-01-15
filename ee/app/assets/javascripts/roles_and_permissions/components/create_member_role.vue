@@ -9,10 +9,12 @@ import {
   GlFormSelect,
   GlFormTextarea,
 } from '@gitlab/ui';
-import { createMemberRole } from 'ee/rest_api';
+
 import { createAlert } from '~/alert';
-import { s__ } from '~/locale';
+import { sprintf, s__ } from '~/locale';
 import { ACCESS_LEVEL_GUEST_INTEGER, ACCESS_LEVEL_LABELS } from '~/access_level/constants';
+import memberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
+import createMemberRoleMutation from '../graphql/create_member_role.mutation.graphql';
 
 // Base roles with Guest access or higher.
 export const BASE_ROLES = Object.entries(ACCESS_LEVEL_LABELS)
@@ -20,6 +22,10 @@ export const BASE_ROLES = Object.entries(ACCESS_LEVEL_LABELS)
   .map(([value, text]) => ({ value, text }));
 
 export default {
+  i18n: {
+    createError: s__('MemberRole|Failed to create role.'),
+    createErrorWithReason: s__('MemberRole|Failed to create role: %{message}'),
+  },
   components: {
     GlButton,
     GlForm,
@@ -31,7 +37,7 @@ export default {
     GlFormTextarea,
   },
   props: {
-    groupId: {
+    groupFullPath: {
       type: String,
       required: true,
     },
@@ -50,7 +56,13 @@ export default {
       nameValid: true,
       permissions: [],
       permissionsValid: true,
+      isLoading: false,
     };
+  },
+  computed: {
+    baseRoleUppercase() {
+      return ACCESS_LEVEL_LABELS[this.baseRole].toUpperCase();
+    },
   },
   methods: {
     validateFields() {
@@ -70,23 +82,46 @@ export default {
         return;
       }
 
-      const data = {
-        base_access_level: this.baseRole,
-        name: this.name,
-        description: this.description,
-      };
-      this.permissions.forEach((permission) => {
-        data[permission.toLowerCase()] = 1;
-      });
+      this.isLoading = true;
+      this.$apollo
+        .mutate({
+          mutation: createMemberRoleMutation,
+          refetchQueries: [
+            {
+              query: memberRolesQuery,
+              variables: { fullPath: this.groupFullPath },
+            },
+          ],
+          variables: {
+            input: {
+              baseAccessLevel: this.baseRoleUppercase,
+              name: this.name,
+              description: this.description,
+              permissions: this.permissions,
+              groupPath: this.groupFullPath,
+            },
+          },
+          update: (_, result) => {
+            const { errors } = result.data.memberRoleCreate;
 
-      try {
-        await createMemberRole(this.groupId, data);
-        this.$emit('success');
-      } catch (error) {
-        this.alert = createAlert({
-          message: error?.response?.data?.message || s__('MemberRole|Failed to create role.'),
+            if (errors?.length) {
+              const errorMessage = sprintf(this.$options.i18n.createErrorWithReason, {
+                message: errors.join('. '),
+              });
+              this.alert = createAlert({ message: errorMessage });
+            } else {
+              this.$emit('success');
+            }
+          },
+        })
+        .catch(() => {
+          this.alert = createAlert({
+            message: this.$options.i18n.createError,
+          });
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
-      }
     },
   },
   BASE_ROLES,
@@ -151,6 +186,7 @@ export default {
     <div class="gl-display-flex gl-flex-wrap gl-gap-3">
       <gl-button
         type="submit"
+        :loading="isLoading"
         data-testid="submit-button"
         variant="confirm"
         class="js-no-auto-disable"
