@@ -7,7 +7,7 @@ RSpec.describe 'Query.selfManagedAddOnEligibleUsers', feature_category: :seat_co
   let_it_be(:code_suggestions) { create(:gitlab_subscription_add_on) }
 
   let_it_be(:add_on_purchase) do
-    create(:gitlab_subscription_add_on_purchase, namespace: nil, add_on: code_suggestions)
+    create(:gitlab_subscription_add_on_purchase, :self_managed, add_on: code_suggestions)
   end
 
   let(:query_add_on_purchase_ids) { [global_id_of(add_on_purchase)] }

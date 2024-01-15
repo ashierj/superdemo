@@ -19,5 +19,9 @@ FactoryBot.define do
     trait :code_suggestions do
       add_on { association(:gitlab_subscription_add_on, :code_suggestions) }
     end
+
+    trait :self_managed do
+      namespace { nil }
+    end
   end
 end

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::UserAddOnAssignments::SelfManaged::CreateService, feature_category: :seat_cost_management do
   let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
-  let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, namespace: nil, add_on: add_on) }
+  let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, :self_managed, add_on: add_on) }
   let_it_be(:user) { create(:user) }
 
   subject(:response) do

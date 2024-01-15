@@ -3068,7 +3068,7 @@ RSpec.describe User, feature_category: :system_access do
       let_it_be(:code_suggestions) { create(:gitlab_subscription_add_on) }
 
       let_it_be(:add_on_purchase) do
-        create(:gitlab_subscription_add_on_purchase, namespace: nil, add_on: code_suggestions)
+        create(:gitlab_subscription_add_on_purchase, :self_managed, add_on: code_suggestions)
       end
 
       context "when the user is assigned" do

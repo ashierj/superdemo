@@ -51,7 +51,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchasePolicy, feature_category: :seat
     end
 
     context 'when namespace is nil, in Self-Managed instance context' do
-      let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, namespace: nil) }
+      let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, :self_managed) }
 
       # only admin is allowed
       where(:user, :admin_mode, :result) do
