@@ -18445,6 +18445,12 @@ msgstr ""
 msgid "Edit link"
 msgstr ""
 
+msgid "Edit merge request"
+msgstr ""
+
+msgid "Edit page"
+msgstr ""
+
 msgid "Edit project: %{project_name}"
 msgstr ""
 
