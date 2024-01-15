@@ -2357,6 +2357,164 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
+  describe '#latest_scan_finding_comparison_pipeline' do
+    let_it_be(:project) { create(:project, :public, :repository) }
+    let_it_be_with_refind(:merge_request) do
+      create(:merge_request, :with_merge_request_pipeline, source_project: project)
+    end
+
+    let_it_be(:base_pipeline) do
+      create(
+        :ee_ci_pipeline,
+        :with_dependency_scanning_report,
+        project: project,
+        ref: merge_request.target_branch,
+        sha: merge_request.diff_base_sha)
+    end
+
+    subject(:pipeline) { merge_request.latest_scan_finding_comparison_pipeline }
+
+    before do
+      merge_request.update_head_pipeline
+    end
+
+    context 'when there are merge base pipelines' do
+      let_it_be(:old_merge_base_pipeline) do
+        create(
+          :ee_ci_pipeline,
+          :success,
+          :with_dependency_scanning_report,
+          project: project,
+          ref: merge_request.target_branch,
+          sha: merge_request.target_branch_sha)
+      end
+
+      let_it_be(:most_recent_merge_base_pipeline) do
+        create(
+          :ee_ci_pipeline,
+          :success,
+          :with_dependency_scanning_report,
+          project: project,
+          ref: merge_request.target_branch,
+          sha: merge_request.target_branch_sha)
+      end
+
+      context 'when all pipelines have security reports' do
+        it 'returns the most recent merge base pipeline' do
+          expect(pipeline).to eq(most_recent_merge_base_pipeline)
+        end
+      end
+
+      context 'when the most recent pipeline does not have security reports' do
+        before do
+          most_recent_merge_base_pipeline.job_artifacts.security_reports.delete_all
+        end
+
+        context 'when other merge base pipeline has security reports' do
+          it 'returns the latest merge base pipeline with security reports' do
+            expect(pipeline).to eq(old_merge_base_pipeline)
+          end
+        end
+
+        context 'when no other merge base pipeline has security reports' do
+          before do
+            old_merge_base_pipeline.job_artifacts.security_reports.delete_all
+          end
+
+          context 'when base pipeline has security reports' do
+            it 'returns the base pipeline' do
+              expect(pipeline).to eq(base_pipeline)
+            end
+          end
+
+          context 'when no base pipeline has security reports' do
+            before do
+              base_pipeline.job_artifacts.security_reports.delete_all
+
+              most_recent_merge_base_pipeline.update!(status: :manual)
+            end
+
+            it 'returns nil' do
+              expect(pipeline).to be_nil
+            end
+          end
+        end
+      end
+    end
+
+    context 'when there is no merge base pipeline' do
+      let_it_be_with_refind(:old_base_pipeline) do
+        create(
+          :ee_ci_pipeline,
+          :with_dependency_scanning_report,
+          project: project,
+          ref: merge_request.target_branch,
+          sha: merge_request.diff_base_sha)
+      end
+
+      let_it_be_with_refind(:most_recent_base_pipeline) do
+        create(
+          :ee_ci_pipeline,
+          :with_dependency_scanning_report,
+          project: project,
+          ref: merge_request.target_branch,
+          sha: merge_request.diff_base_sha)
+      end
+
+      context 'when all pipelines have security reports' do
+        it 'returns the most recent base pipeline' do
+          expect(pipeline).to eq(most_recent_base_pipeline)
+        end
+      end
+
+      context 'when the most recent pipeline does not have security reports' do
+        before do
+          most_recent_base_pipeline.job_artifacts.security_reports.delete_all
+        end
+
+        it 'returns the latest base pipeline with security reports' do
+          expect(pipeline).to eq(old_base_pipeline)
+        end
+
+        context 'when no base pipeline has security reports' do
+          before do
+            base_pipeline.job_artifacts.security_reports.delete_all
+            old_base_pipeline.job_artifacts.security_reports.delete_all
+            most_recent_base_pipeline.job_artifacts.security_reports.delete_all
+          end
+
+          it 'returns nil' do
+            expect(pipeline).to be_nil
+          end
+        end
+
+        context 'when no base pipeline has completed' do
+          before do
+            base_pipeline.update!(status: :manual)
+            old_base_pipeline.update!(status: :manual)
+            most_recent_base_pipeline.update!(status: :manual)
+          end
+
+          context 'when comparison prior to pipeline completion is disabled' do
+            before do
+              stub_feature_flags(mr_show_reports_immediately: false)
+            end
+
+            it 'returns nil' do
+              expect(pipeline).to be_nil
+            end
+          end
+
+          context 'when comparison prior to pipeline completion is enabled' do
+            it 'returns the most recent base pipeline' do
+              expect(pipeline).to eq(old_base_pipeline)
+            end
+          end
+        end
+      end
+    end
+  end
+
   describe '#blocking_merge_requests_feature_available?' do
     let(:merge_request) { build_stubbed(:merge_request) }
 

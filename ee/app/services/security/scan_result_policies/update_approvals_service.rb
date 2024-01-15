@@ -121,7 +121,7 @@ module Security
 
       def target_pipeline
         if Feature.enabled?(:scan_result_policy_merge_base_pipeline, project)
-          merge_request.merge_base_pipeline || merge_request.base_pipeline
+          merge_request.latest_scan_finding_comparison_pipeline
         else
           merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy
         end
