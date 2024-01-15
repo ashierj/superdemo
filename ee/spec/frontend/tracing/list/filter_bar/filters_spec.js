@@ -15,6 +15,7 @@ describe('utils', () => {
     '&trace_id[]=9609bf00-4b68-f86c-abe2-5e23d0089c83' +
     '&not%5Btrace_id%5D[]=9609bf00-4b68-f86c-abe2-5e23d0089c83' +
     '&attribute[]=foo%3Dbar&attribute[]=baz%3Dbar' +
+    '&status[]=ok&not%5Bstatus%5D[]=error' +
     '&search=searchquery';
 
   const filterObj = {
@@ -39,6 +40,10 @@ describe('utils', () => {
       { operator: '=', value: 'foo=bar' },
       { operator: '=', value: 'baz=bar' },
     ],
+    status: [
+      { operator: '=', value: 'ok' },
+      { operator: '!=', value: 'error' },
+    ],
     search: [{ value: 'searchquery' }],
   };
 
@@ -53,8 +58,10 @@ describe('utils', () => {
     'not[period]': null,
     'not[service]': ['adservice'],
     'not[trace_id]': ['9609bf00-4b68-f86c-abe2-5e23d0089c83'],
+    'not[status]': ['error'],
     operation: ['orders receive'],
     period: ['1h'],
+    status: ['ok'],
     search: 'searchquery',
     service: ['accountingservice'],
     trace_id: ['9609bf00-4b68-f86c-abe2-5e23d0089c83'],
@@ -79,6 +86,8 @@ describe('utils', () => {
     { type: 'attribute', value: { data: 'foo=bar', operator: '=' } },
     { type: 'attribute', value: { data: 'baz=bar', operator: '=' } },
     { type: 'filtered-search-term', value: { data: 'searchquery', operator: undefined } },
+    { type: 'status', value: { data: 'ok', operator: '=' } },
+    { type: 'status', value: { data: 'error', operator: '!=' } },
   ];
 
   describe('queryToFilterObj', () => {

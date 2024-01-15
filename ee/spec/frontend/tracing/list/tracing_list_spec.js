@@ -100,6 +100,7 @@ describe('TracingList', () => {
       setWindowLocation(
         '?sortBy=duration_desc' +
           '&period[]=4h' +
+          '&status[]=ok' +
           '&service[]=loadgenerator' +
           '&service[]=test-service' +
           '&operation[]=test-op' +
@@ -126,6 +127,7 @@ describe('TracingList', () => {
           traceId: [{ operator: '=', value: 'test_trace' }],
           durationMs: [{ operator: '>', value: '100' }],
           attribute: [{ operator: '=', value: 'foo=bar' }],
+          status: [{ operator: '=', value: 'ok' }],
         }),
       );
       expect(findFilteredSearch().props('initialSort')).toBe('duration_desc');
@@ -163,8 +165,10 @@ describe('TracingList', () => {
         'not[period]': null,
         'not[service]': null,
         'not[trace_id]': null,
+        'not[status]': null,
         operation: ['test-op'],
         period: ['4h'],
+        status: ['ok'],
         service: ['loadgenerator', 'test-service'],
         sortBy: 'duration_desc',
         trace_id: ['test_trace'],
@@ -183,6 +187,7 @@ describe('TracingList', () => {
           traceId: [{ operator: '=', value: 'test_trace' }],
           durationMs: [{ operator: '>', value: '100' }],
           attribute: [{ operator: '=', value: 'foo=bar' }],
+          status: [{ operator: '=', value: 'ok' }],
           search: undefined,
         },
         pageSize: 500,
@@ -200,6 +205,7 @@ describe('TracingList', () => {
           traceId: [{ operator: '=', value: 'another_trace' }],
           durationMs: [{ operator: '>', value: '200' }],
           attribute: [{ operator: '=', value: 'foo=baz' }],
+          status: [{ operator: '=', value: 'error' }],
         });
       });
 
@@ -217,11 +223,13 @@ describe('TracingList', () => {
           'not[period]': null,
           'not[service]': null,
           'not[trace_id]': null,
+          'not[status]': null,
           operation: ['op'],
           period: ['12h'],
           service: ['frontend'],
           sortBy: 'duration_desc',
           trace_id: ['another_trace'],
+          status: ['error'],
         });
       });
 
@@ -234,6 +242,7 @@ describe('TracingList', () => {
             traceId: [{ operator: '=', value: 'another_trace' }],
             durationMs: [{ operator: '>', value: '200' }],
             attribute: [{ operator: '=', value: 'foo=baz' }],
+            status: [{ operator: '=', value: 'error' }],
           },
           pageSize: 500,
           pageToken: null,
@@ -250,6 +259,7 @@ describe('TracingList', () => {
             traceId: [{ operator: '=', value: 'another_trace' }],
             durationMs: [{ operator: '>', value: '200' }],
             attribute: [{ operator: '=', value: 'foo=baz' }],
+            status: [{ operator: '=', value: 'error' }],
           }),
         );
       });
@@ -265,6 +275,7 @@ describe('TracingList', () => {
             traceId: undefined,
             durationMs: undefined,
             attribute: undefined,
+            status: undefined,
           },
           pageSize: 500,
           pageToken: null,
@@ -279,6 +290,7 @@ describe('TracingList', () => {
             traceId: null,
             durationMs: null,
             attribute: null,
+            status: null,
           }),
         );
 
@@ -295,11 +307,13 @@ describe('TracingList', () => {
           'not[period]': null,
           'not[service]': null,
           'not[trace_id]': null,
+          'not[status]': null,
           operation: null,
           period: ['1h'],
           service: null,
           sortBy: 'duration_desc',
           trace_id: null,
+          status: null,
         });
       });
     });

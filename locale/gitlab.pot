@@ -51623,6 +51623,9 @@ msgstr ""
 msgid "Tracing|Duration (ms)"
 msgstr ""
 
+msgid "Tracing|Error"
+msgstr ""
+
 msgid "Tracing|Error: Failed to load trace details. Try reloading the page."
 msgstr ""
 
@@ -51671,6 +51674,9 @@ msgstr ""
 msgid "Tracing|Metadata"
 msgstr ""
 
+msgid "Tracing|Ok"
+msgstr ""
+
 msgid "Tracing|Operation"
 msgstr ""
 
@@ -51684,6 +51690,9 @@ msgid "Tracing|Select a service to load suggestions"
 msgstr ""
 
 msgid "Tracing|Service"
+msgstr ""
+
+msgid "Tracing|Status"
 msgstr ""
 
 msgid "Tracing|Time range"
