@@ -19,7 +19,6 @@ RSpec.describe ::Security::RefreshProjectPoliciesWorker, feature_category: :secu
 
   before do
     stub_licensed_features(security_orchestration_policies: true)
-    stub_feature_flags(skip_refresh_project_policies: false)
   end
 
   it_behaves_like 'subscribes to event' do
@@ -60,14 +59,6 @@ RSpec.describe ::Security::RefreshProjectPoliciesWorker, feature_category: :secu
         expect(worker).to receive(:perform_in).with(0, project.id, configuration.id)
 
         consume_event(subscriber: described_class, event: project_member_changed_event)
-      end
-
-      context 'when skip_refresh_project_policies is enabled' do
-        before do
-          stub_feature_flags(skip_refresh_project_policies: true)
-        end
-
-        it_behaves_like 'does not invoke the worker'
       end
     end
   end
