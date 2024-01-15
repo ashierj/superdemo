@@ -16,9 +16,7 @@ module QA
 
         label_board_list.project.add_member(qa_user, Resource::Members::AccessLevel::GUEST)
 
-        Page::Main::Login.perform do |login|
-          login.sign_out_and_sign_in_as user: qa_user
-        end
+        Flow::Login.sign_in(as: qa_user, skip_page_validation: true)
 
         label_board_list.project.visit!
         Page::Project::Menu.perform(&:go_to_issue_boards)

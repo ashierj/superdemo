@@ -36,7 +36,7 @@ module QA
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347768' do
         push branch: project.default_branch, file: 'directory/file', as_user: user_one
 
-        sign_out_and_sign_in_as user: user_one
+        Flow::Login.sign_in(as: user_one, skip_page_validation: true)
         go_to_directory
         click_lock
 
@@ -46,7 +46,7 @@ module QA
 
       it 'locks a file and tries to push as a second user', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347769' do
-        sign_out_and_sign_in_as user: user_one
+        Flow::Login.sign_in(as: user_one, skip_page_validation: true)
         go_to_file
         click_lock
 
@@ -58,7 +58,7 @@ module QA
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347767' do
         go_to_file
         click_lock
-        sign_out_and_sign_in_as user: user_one
+        Flow::Login.sign_in(as: user_one, skip_page_validation: true)
         go_to_file
 
         Page::File::Show.perform do |show|
@@ -78,7 +78,7 @@ module QA
 
         go_to_file
         click_lock
-        sign_out_and_sign_in_as user: user_one
+        Flow::Login.sign_in(as: user_one, skip_page_validation: true)
         merge_request.visit!
 
         Page::MergeRequest::Show.perform do |merge_request|
@@ -90,7 +90,7 @@ module QA
 
       it 'locks a file and unlocks in list',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347766' do
-        sign_out_and_sign_in_as user: user_one
+        Flow::Login.sign_in(as: user_one, skip_page_validation: true)
         go_to_file
         click_lock
         project.visit!
@@ -102,12 +102,6 @@ module QA
         end
 
         expect_no_error_on_push as_user: user_two
-      end
-
-      def sign_out_and_sign_in_as(user:)
-        Page::Main::Login.perform do |login|
-          login.sign_out_and_sign_in_as user: user
-        end
       end
 
       def go_to_file
