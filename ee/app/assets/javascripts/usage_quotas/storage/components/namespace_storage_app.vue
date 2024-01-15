@@ -1,8 +1,9 @@
 <script>
-import { GlAlert, GlKeysetPagination } from '@gitlab/ui';
+import { GlKeysetPagination } from '@gitlab/ui';
 import { captureException } from '~/ci/runner/sentry_utils';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
-import { s__, __ } from '~/locale';
+import { __ } from '~/locale';
+import CeNamespaceStorageApp from '~/usage_quotas/storage/components/namespace_storage_app.vue';
 import NamespaceStorageQuery from '../queries/namespace_storage.query.graphql';
 import ProjectListStorageQuery from '../queries/project_list_storage.query.graphql';
 import { parseGetStorageResults } from '../utils';
@@ -16,10 +17,10 @@ import ContainerRegistryUsage from './container_registry_usage.vue';
 export default {
   name: 'NamespaceStorageApp',
   components: {
-    GlAlert,
+    GlKeysetPagination,
+    CeNamespaceStorageApp,
     ProjectList,
     StorageUsageStatistics,
-    GlKeysetPagination,
     DependencyProxyUsage,
     ContainerRegistryUsage,
     SearchAndSortBar,
@@ -68,9 +69,6 @@ export default {
   i18n: {
     NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE,
     search: __('Search'),
-    dataFetchingError: s__(
-      'UsageQuota|An error occured while loading the storage usage details. Please refresh the page to try again.',
-    ),
   },
   data() {
     return {
@@ -152,61 +150,58 @@ export default {
 };
 </script>
 <template>
-  <div>
-    <gl-alert
-      v-if="namespaceLoadingError || projectsLoadingError"
-      variant="danger"
-      :dismissible="false"
-      class="gl-mt-4"
-    >
-      {{ $options.i18n.dataFetchingError }}
-    </gl-alert>
-    <storage-usage-statistics
-      :additional-purchased-storage-size="namespace.additionalPurchasedStorageSize"
-      :used-storage="costFactoredStorageSize"
-      :loading="$apollo.queries.namespace.loading"
-    />
-
-    <h3 data-testid="breakdown-subtitle">
-      {{ $options.i18n.NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE }}
-    </h3>
-    <dependency-proxy-usage
-      v-if="!userNamespace"
-      :dependency-proxy-total-size="dependencyProxyTotalSize"
-      :loading="$apollo.queries.namespace.loading"
-    />
-    <container-registry-usage
-      :container-registry-size="containerRegistrySize"
-      :container-registry-size-is-estimated="containerRegistrySizeIsEstimated"
-      :loading="$apollo.queries.namespace.loading"
-    />
-
-    <section class="gl-mt-5">
-      <div class="gl-bg-gray-10 gl-p-5 gl-display-flex">
-        <search-and-sort-bar
-          :namespace="namespaceId"
-          :search-input-placeholder="$options.i18n.search"
-          @onFilter="onSearch"
-        />
-      </div>
-
-      <project-list
-        :projects="projectList"
-        :is-loading="$apollo.queries.projects.loading"
-        :help-links="helpLinks"
-        :sort-by="initialSortBy"
-        :sort-desc="true"
-        @sortChanged="onSortChanged($event)"
+  <ce-namespace-storage-app
+    :projects-loading-error="projectsLoadingError"
+    :namespace-loading-error="namespaceLoadingError"
+  >
+    <template #ee-storage-app>
+      <storage-usage-statistics
+        :additional-purchased-storage-size="namespace.additionalPurchasedStorageSize"
+        :used-storage="costFactoredStorageSize"
+        :loading="$apollo.queries.namespace.loading"
       />
 
-      <div class="gl-display-flex gl-justify-content-center gl-mt-5">
-        <gl-keyset-pagination
-          v-if="showPagination"
-          v-bind="pageInfo"
-          @prev="onPrev"
-          @next="onNext"
+      <h3 data-testid="breakdown-subtitle">
+        {{ $options.i18n.NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE }}
+      </h3>
+      <dependency-proxy-usage
+        v-if="!userNamespace"
+        :dependency-proxy-total-size="dependencyProxyTotalSize"
+        :loading="$apollo.queries.namespace.loading"
+      />
+      <container-registry-usage
+        :container-registry-size="containerRegistrySize"
+        :container-registry-size-is-estimated="containerRegistrySizeIsEstimated"
+        :loading="$apollo.queries.namespace.loading"
+      />
+
+      <section class="gl-mt-5">
+        <div class="gl-bg-gray-10 gl-p-5 gl-display-flex">
+          <search-and-sort-bar
+            :namespace="namespaceId"
+            :search-input-placeholder="$options.i18n.search"
+            @onFilter="onSearch"
+          />
+        </div>
+
+        <project-list
+          :projects="projectList"
+          :is-loading="$apollo.queries.projects.loading"
+          :help-links="helpLinks"
+          :sort-by="initialSortBy"
+          :sort-desc="true"
+          @sortChanged="onSortChanged($event)"
         />
-      </div>
-    </section>
-  </div>
+
+        <div class="gl-display-flex gl-justify-content-center gl-mt-5">
+          <gl-keyset-pagination
+            v-if="showPagination"
+            v-bind="pageInfo"
+            @prev="onPrev"
+            @next="onNext"
+          />
+        </div>
+      </section>
+    </template>
+  </ce-namespace-storage-app>
 </template>
