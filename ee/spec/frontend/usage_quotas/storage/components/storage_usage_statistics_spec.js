@@ -2,14 +2,13 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlButton, GlLink, GlSprintf, GlProgressBar } from '@gitlab/ui';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
-import StorageUsageOverviewCard from 'ee/usage_quotas/storage/components/storage_usage_overview_card.vue';
+import StorageUsageOverviewCard from '~/usage_quotas/storage/components/storage_usage_overview_card.vue';
 import NamespaceLimitsStorageUsageOverviewCard from 'ee/usage_quotas/storage/components/namespace_limits_storage_usage_overview_card.vue';
 import NamespaceLimitsTotalStorageAvailableBreakdownCard from 'ee/usage_quotas/storage/components/namespace_limits_total_storage_available_breakdown_card.vue';
 import NoLimitsPurchasedStorageBreakdownCard from 'ee/usage_quotas/storage/components/no_limits_purchased_storage_breakdown_card.vue';
 import ProjectLimitsExcessStorageBreakdownCard from 'ee/usage_quotas/storage/components/project_limits_excess_storage_breakdown_card.vue';
 import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { NAMESPACE_STORAGE_OVERVIEW_SUBTITLE } from 'ee/usage_quotas/storage/constants';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
 import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
 import { createMockClient } from 'helpers/mock_apollo_helper';
@@ -87,7 +86,7 @@ describe('StorageUsageStatistics', () => {
     });
 
     it('shows the namespace storage overview subtitle', () => {
-      expect(findOverviewSubtitle().text()).toBe(NAMESPACE_STORAGE_OVERVIEW_SUBTITLE);
+      expect(findOverviewSubtitle().text()).toBe('Namespace overview');
     });
 
     describe('purchase more storage button when namespace is using project enforcement', () => {

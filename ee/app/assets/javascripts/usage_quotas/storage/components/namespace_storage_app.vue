@@ -11,7 +11,6 @@ import { NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE } from '../constants';
 import SearchAndSortBar from '../../components/search_and_sort_bar/search_and_sort_bar.vue';
 import ProjectList from './project_list.vue';
 import DependencyProxyUsage from './dependency_proxy_usage.vue';
-import StorageUsageStatistics from './storage_usage_statistics.vue';
 import ContainerRegistryUsage from './container_registry_usage.vue';
 
 export default {
@@ -20,7 +19,6 @@ export default {
     GlKeysetPagination,
     CeNamespaceStorageApp,
     ProjectList,
-    StorageUsageStatistics,
     DependencyProxyUsage,
     ContainerRegistryUsage,
     SearchAndSortBar,
@@ -82,9 +80,6 @@ export default {
     };
   },
   computed: {
-    costFactoredStorageSize() {
-      return this.namespace.rootStorageStatistics?.costFactoredStorageSize;
-    },
     containerRegistrySize() {
       return this.namespace.rootStorageStatistics?.containerRegistrySize ?? 0;
     },
@@ -153,14 +148,10 @@ export default {
   <ce-namespace-storage-app
     :projects-loading-error="projectsLoadingError"
     :namespace-loading-error="namespaceLoadingError"
+    :is-namespace-storage-statistics-loading="$apollo.queries.namespace.loading"
+    :namespace="namespace"
   >
     <template #ee-storage-app>
-      <storage-usage-statistics
-        :additional-purchased-storage-size="namespace.additionalPurchasedStorageSize"
-        :used-storage="costFactoredStorageSize"
-        :loading="$apollo.queries.namespace.loading"
-      />
-
       <h3 data-testid="breakdown-subtitle">
         {{ $options.i18n.NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE }}
       </h3>
