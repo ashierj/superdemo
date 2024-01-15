@@ -1,18 +1,19 @@
 <script>
 import { GlSprintf, GlLink, GlButton, GlModalDirective } from '@gitlab/ui';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
+import StorageUsageOverviewCard from '~/usage_quotas/storage/components/storage_usage_overview_card.vue';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import { LIMITED_ACCESS_KEYS } from 'ee/usage_quotas/components/constants';
 import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
-import { BUY_STORAGE, NAMESPACE_STORAGE_OVERVIEW_SUBTITLE } from '../constants';
+import { BUY_STORAGE } from '../constants';
 import LimitedAccessModal from '../../components/limited_access_modal.vue';
 import NamespaceLimitsStorageUsageOverviewCard from './namespace_limits_storage_usage_overview_card.vue';
 import NamespaceLimitsTotalStorageAvailableBreakdownCard from './namespace_limits_total_storage_available_breakdown_card.vue';
-import StorageUsageOverviewCard from './storage_usage_overview_card.vue';
 import ProjectLimitsExcessStorageBreakdownCard from './project_limits_excess_storage_breakdown_card.vue';
 import NoLimitsPurchasedStorageBreakdownCard from './no_limits_purchased_storage_breakdown_card.vue';
 
 export default {
+  name: 'StorageUsageStatistics',
   components: {
     GlSprintf,
     GlLink,
@@ -84,7 +85,6 @@ export default {
   usageQuotasHelpPaths,
   i18n: {
     purchaseButtonText: BUY_STORAGE,
-    namespaceStorageOverviewSubtitle: NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
   },
   computed: {
     isPurchaseButtonShown() {
@@ -120,7 +120,7 @@ export default {
 <template>
   <div>
     <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
-      <h3 data-testid="overview-subtitle">{{ $options.i18n.namespaceStorageOverviewSubtitle }}</h3>
+      <h3 data-testid="overview-subtitle">{{ s__('UsageQuota|Namespace overview') }}</h3>
       <template v-if="isPurchaseButtonShown">
         <gl-button
           v-if="!shouldShowLimitedAccessModal"

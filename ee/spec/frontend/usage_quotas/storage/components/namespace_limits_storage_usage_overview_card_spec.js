@@ -3,10 +3,7 @@ import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
 import NamespaceLimitsStorageUsageOverviewCard from 'ee/usage_quotas/storage/components/namespace_limits_storage_usage_overview_card.vue';
 import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
-import {
-  STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
-  STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
-} from 'ee/usage_quotas/storage/constants';
+import { STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE } from 'ee/usage_quotas/storage/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { statisticsCardDefaultProps, defaultNamespaceProvideValues } from '../mock_data';
 
@@ -40,7 +37,7 @@ describe('NamespaceLimitsStorageUsageOverviewCard', () => {
     });
 
     it('renders the card title', () => {
-      expect(findCardTitle().text()).toBe(STORAGE_STATISTICS_NAMESPACE_STORAGE_USED);
+      expect(findCardTitle().text()).toBe('Namespace storage used');
     });
 
     it('renders the help link with the proper attributes', () => {

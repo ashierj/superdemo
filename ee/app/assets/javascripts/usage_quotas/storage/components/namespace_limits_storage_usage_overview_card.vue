@@ -6,7 +6,6 @@ import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/numb
 import {
   STORAGE_STATISTICS_PERCENTAGE_REMAINING,
   STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
-  STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
 } from '../constants';
 
 export default {
@@ -66,7 +65,6 @@ export default {
   },
   i18n: {
     STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
-    STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
   },
   usageQuotasHelpPaths,
 };
@@ -75,7 +73,7 @@ export default {
 <template>
   <gl-card>
     <div class="gl-font-weight-bold" data-testid="namespace-storage-card-title">
-      {{ $options.i18n.STORAGE_STATISTICS_NAMESPACE_STORAGE_USED }}
+      {{ s__('UsageQuota|Namespace storage used') }}
 
       <gl-link
         :href="$options.usageQuotasHelpPaths.usageQuotasNamespaceStorageLimit"
