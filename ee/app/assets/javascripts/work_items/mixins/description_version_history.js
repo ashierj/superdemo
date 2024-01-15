@@ -13,7 +13,7 @@ export default {
   },
   computed: {
     systemNoteDescriptionVersion() {
-      return this.note.systemNoteMetadata.descriptionVersion;
+      return this.note.systemNoteMetadata?.descriptionVersion;
     },
     descriptionVersionDiffPath() {
       return this.systemNoteDescriptionVersion?.diffPath;
