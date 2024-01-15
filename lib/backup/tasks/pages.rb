@@ -7,6 +7,8 @@ module Backup
       # if some of these files are still there, we don't need them in the backup
       LEGACY_PAGES_TMP_PATH = '@pages.tmp'
 
+      def self.id = 'pages'
+
       def human_name = _('pages')
 
       def destination_path = 'pages.tar.gz'

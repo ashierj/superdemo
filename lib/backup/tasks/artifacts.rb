@@ -3,6 +3,8 @@
 module Backup
   module Tasks
     class Artifacts < Task
+      def self.id = 'artifacts'
+
       def human_name = _('artifacts')
 
       def destination_path = 'artifacts.tar.gz'

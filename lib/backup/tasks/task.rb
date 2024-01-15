@@ -5,10 +5,16 @@ module Backup
     class Task
       attr_reader :progress, :options
 
+      # Identifier used as parameter in the CLI to skip from executing
+      def self.id = raise NotImplementedError
+
       def initialize(progress:, options:)
         @progress = progress
         @options = options
       end
+
+      # Key string that identifies the task
+      def key = raise NotImplementedError
 
       # Name of the task used for logging.
       def human_name = raise NotImplementedError

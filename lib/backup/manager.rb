@@ -113,18 +113,18 @@ module Backup
 
     def definitions
       @definitions ||= {
-        'db' => Backup::Tasks::Database.new(progress: progress, options: options),
-        'repositories' => Backup::Tasks::Repositories.new(progress: progress, options: options,
+        Backup::Tasks::Database.id => Backup::Tasks::Database.new(progress: progress, options: options),
+        Backup::Tasks::Repositories.id => Backup::Tasks::Repositories.new(progress: progress, options: options,
           server_side: backup_information[:repositories_server_side]),
-        'uploads' => Backup::Tasks::Uploads.new(progress: progress, options: options),
-        'builds' => Backup::Tasks::Builds.new(progress: progress, options: options),
-        'artifacts' => Backup::Tasks::Artifacts.new(progress: progress, options: options),
-        'pages' => Backup::Tasks::Pages.new(progress: progress, options: options),
-        'lfs' => Backup::Tasks::Lfs.new(progress: progress, options: options),
-        'terraform_state' => Backup::Tasks::TerraformState.new(progress: progress, options: options),
-        'registry' => Backup::Tasks::Registry.new(progress: progress, options: options),
-        'packages' => Backup::Tasks::Packages.new(progress: progress, options: options),
-        'ci_secure_files' => Backup::Tasks::CiSecureFiles.new(progress: progress, options: options)
+        Backup::Tasks::Uploads.id => Backup::Tasks::Uploads.new(progress: progress, options: options),
+        Backup::Tasks::Builds.id => Backup::Tasks::Builds.new(progress: progress, options: options),
+        Backup::Tasks::Artifacts.id => Backup::Tasks::Artifacts.new(progress: progress, options: options),
+        Backup::Tasks::Pages.id => Backup::Tasks::Pages.new(progress: progress, options: options),
+        Backup::Tasks::Lfs.id => Backup::Tasks::Lfs.new(progress: progress, options: options),
+        Backup::Tasks::TerraformState.id => Backup::Tasks::TerraformState.new(progress: progress, options: options),
+        Backup::Tasks::Registry.id => Backup::Tasks::Registry.new(progress: progress, options: options),
+        Backup::Tasks::Packages.id => Backup::Tasks::Packages.new(progress: progress, options: options),
+        Backup::Tasks::CiSecureFiles.id => Backup::Tasks::CiSecureFiles.new(progress: progress, options: options)
       }.freeze
     end
 

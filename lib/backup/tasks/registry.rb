@@ -3,6 +3,8 @@
 module Backup
   module Tasks
     class Registry < Task
+      def self.id = 'registry'
+
       def enabled = Gitlab.config.registry.enabled
 
       def human_name = _('container registry images')

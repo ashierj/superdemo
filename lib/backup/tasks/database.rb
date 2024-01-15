@@ -3,6 +3,8 @@
 module Backup
   module Tasks
     class Database < Task
+      def self.id = 'db'
+
       def human_name = _('database')
 
       def destination_path = 'db'

@@ -5,6 +5,8 @@ module Backup
     class Repositories < Task
       attr_reader :server_side
 
+      def self.id = 'repositories'
+
       def initialize(progress:, options:, server_side:)
         @server_side = server_side
 

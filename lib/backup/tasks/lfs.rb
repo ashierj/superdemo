@@ -3,6 +3,8 @@
 module Backup
   module Tasks
     class Lfs < Task
+      def self.id = 'lfs'
+
       def human_name = _('lfs objects')
 
       def destination_path = 'lfs.tar.gz'
