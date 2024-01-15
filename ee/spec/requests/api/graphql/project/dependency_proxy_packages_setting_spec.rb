@@ -138,13 +138,5 @@ RSpec.describe 'getting dependency proxy for packages settings for a project', f
 
       it_behaves_like 'returning a blank response'
     end
-
-    context 'with packages_dependency_proxy_maven disabled' do
-      before do
-        stub_feature_flags(packages_dependency_proxy_maven: false)
-      end
-
-      it_behaves_like 'returning a blank response'
-    end
   end
 end

@@ -291,11 +291,9 @@ module EE
         field :dependency_proxy_packages_setting,
           ::Types::DependencyProxy::Packages::SettingType,
           null: true,
-          alpha: { milestone: '16.5' },
           description: 'Packages Dependency Proxy settings for the project. ' \
                        'Requires the packages and dependency proxy to be enabled in the config. ' \
-                       'Requires the packages feature to be enabled at the project level. ' \
-                       'Returns `null` if `packages_dependency_proxy_maven` feature flag is disabled.'
+                       'Requires the packages feature to be enabled at the project level. '
         field :member_roles, ::Types::MemberRoles::MemberRoleType.connection_type,
           null: true, description: 'Member roles available for the group.',
           resolver: ::Resolvers::MemberRoles::RolesResolver,
@@ -353,12 +351,6 @@ module EE
             end
           end
         end
-      end
-
-      def dependency_proxy_packages_setting
-        return if ::Feature.disabled?(:packages_dependency_proxy_maven, object)
-
-        object.dependency_proxy_packages_setting
       end
     end
   end
