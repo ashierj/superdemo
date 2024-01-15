@@ -12,6 +12,11 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
 
   subject { described_class.new(group: group, current_user: user, params: params).execute }
 
+  before do
+    group.add_reporter(user)
+    stub_licensed_features(epics: true, subepics: true)
+  end
+
   it_behaves_like 'rate limited service' do
     let(:key) { :issues_create }
     let(:key_scope) { %i[current_user] }
@@ -21,11 +26,6 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
   end
 
   describe '#execute' do
-    before do
-      group.add_reporter(user)
-      stub_licensed_features(epics: true, subepics: true)
-    end
-
     it 'creates one epic correctly' do
       allow(NewEpicWorker).to receive(:perform_async)
 
@@ -39,6 +39,62 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
       expect(epic.relative_position).not_to be_nil
       expect(epic.confidential).to be_truthy
       expect(NewEpicWorker).to have_received(:perform_async).with(epic.id, user.id)
+    end
+
+    context 'when syncing work item' do
+      it 'creates an epic work item' do
+        expect { subject }.to change { Epic.count }.by(1).and(change { WorkItem.count }.by(1))
+      end
+
+      it 'creates epic work item with same attributes' do
+        expect { subject }.to change { Epic.count }.by(1)
+
+        epic = Epic.last
+        work_item = WorkItem.last
+        expect(epic.title).to eq(work_item.title)
+        expect(epic.description).to eq(work_item.description)
+        expect(epic.confidential).to eq(work_item.confidential)
+        expect(epic.issue_id).to eq(work_item.id)
+        expect(epic.iid).to eq(work_item.iid)
+      end
+
+      context 'when work item creation fails' do
+        it 'does not create epic' do
+          error_msg = 'error 1, error 2'
+          allow_next_instance_of(Epics::CreateService) do |instance|
+            allow(instance).to receive(:create_work_item_for).and_return(
+              instance_double(
+                ServiceResponse,
+                success?: false,
+                payload: { errors: instance_double(ActiveModel::Errors, full_messages: error_msg.split(", ")) })
+            )
+          end
+
+          expect(Gitlab::AppLogger).to receive(:error)
+                                   .with("Unable create synced work item: #{error_msg}. Group ID: #{group.id}")
+          expect { subject }.to raise_error(StandardError, error_msg).and not_change { Epic.count }
+        end
+      end
+
+      context 'when epic creation fails' do
+        it 'does not create work item' do
+          allow_next_instance_of(Epic) do |instance|
+            allow(instance).to receive(:save).and_return(false)
+          end
+
+          expect { subject }.to not_change { Epic.count }.and(not_change { WorkItem.count })
+        end
+      end
+
+      context 'when epic_creation_with_synced_work_item feature flag is disabled' do
+        before do
+          stub_feature_flags(epic_creation_with_synced_work_item: false)
+        end
+
+        it 'does not create epic work item' do
+          expect { subject }.to change { Epic.count }.by(1).and(not_change { WorkItem.count })
+        end
+      end
     end
 
     context 'handling parent change' do

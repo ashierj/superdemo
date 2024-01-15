@@ -13,6 +13,7 @@ RSpec.describe 'Setting the epic of an issue', feature_category: :team_planning 
   let_it_be(:issue) { create(:issue, project: project) }
   let_it_be(:user) { create(:user) }
 
+  let(:queries_count_threshold) { 112 }
   let(:input) { { group_path: new_epic_group&.full_path } }
 
   let(:mutation) do
@@ -52,7 +53,7 @@ RSpec.describe 'Setting the epic of an issue', feature_category: :team_planning 
     # todo: investigate too many qeuries issue as part of Project Management Database and Query Performance
     # epic: https://gitlab.com/groups/gitlab-org/-/epics/5804
     # specific issue: https://gitlab.com/gitlab-org/gitlab/-/issues/333845
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(110)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(queries_count_threshold)
   end
 
   it 'returns an error if the user is not allowed to update the issue' do
@@ -96,6 +97,8 @@ RSpec.describe 'Setting the epic of an issue', feature_category: :team_planning 
     end
 
     context 'when user can create epic in new group' do
+      let(:queries_count_threshold) { 118 }
+
       before do
         new_epic_group.add_developer(current_user)
       end
