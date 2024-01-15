@@ -14,12 +14,6 @@ RSpec.describe GroupMembersFinder, feature_category: :groups_and_projects do
     group.add_member(create(:user, managing_group: group), non_owner_access_level)
   end
 
-  describe '#not_managed' do
-    it 'returns non-owners without group managed accounts' do
-      expect(finder.not_managed).to eq([group_member_membership])
-    end
-  end
-
   describe '#execute' do
     context 'with custom roles' do
       let_it_be(:group)                { create(:group) }

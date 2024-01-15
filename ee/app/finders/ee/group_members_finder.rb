@@ -16,13 +16,6 @@ module EE::GroupMembersFinder
     members
   end
 
-  # rubocop: disable CodeReuse/ActiveRecord
-  def not_managed
-    group.group_members.non_owners.joins(:user).merge(User.not_managed(group: group))
-      .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422405')
-  end
-  # rubocop: enable CodeReuse/ActiveRecord
-
   override :group_members_list
   def group_members_list
     return group.all_group_members if group.minimal_access_role_allowed?

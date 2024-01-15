@@ -127,41 +127,6 @@ RSpec.describe 'SAML provider settings', feature_category: :system_access do
       it_behaves_like 'Microsoft Azure integration form' do
         let(:path) { group_saml_providers_path(group) }
       end
-
-      context 'enforced_group_managed_accounts enabled', :js do
-        before do
-          create(:group_saml_identity, saml_provider: saml_provider, user: user)
-          stub_feature_flags(group_managed_accounts: true)
-        end
-
-        it 'updates the enforced_group_managed_accounts flag' do
-          visit group_saml_providers_path(group)
-
-          check 'Enforce users to have dedicated group-managed accounts for this group'
-
-          expect { submit }.to change { saml_provider.reload.enforced_group_managed_accounts }.to(true)
-        end
-
-        it 'updates the prohibited_outer_forks flag' do
-          visit group_saml_providers_path(group)
-
-          check 'Enforce users to have dedicated group-managed accounts for this group'
-          check 'Prohibit outer forks for this group'
-
-          expect { submit }.to change { saml_provider.reload.prohibited_outer_forks }.to(true)
-        end
-      end
-
-      context 'enforced_group_managed_accounts disabled' do
-        it 'does not render toggles' do
-          stub_feature_flags(group_managed_accounts: false)
-
-          visit group_saml_providers_path(group)
-
-          expect(page).not_to have_field('Enforce users to have dedicated group-managed accounts for this group')
-          expect(page).not_to have_field('Prohibit outer forks for this group')
-        end
-      end
     end
 
     describe 'test button' do
