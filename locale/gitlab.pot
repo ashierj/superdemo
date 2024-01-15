@@ -29013,6 +29013,9 @@ msgstr ""
 msgid "Limit the number of pipeline creation requests per minute. This limit includes pipelines created through the UI, the API, and by background processing."
 msgstr ""
 
+msgid "Limit the number of project or group members a user can delete per minute through API requests."
+msgstr ""
+
 msgid "Limit the size of Sidekiq jobs stored in Redis."
 msgstr ""
 
@@ -29882,6 +29885,9 @@ msgstr ""
 msgid "Maximum requests per minute"
 msgstr ""
 
+msgid "Maximum requests per minute per group / project"
+msgstr ""
+
 msgid "Maximum running slices"
 msgstr ""
 
@@ -30069,6 +30075,9 @@ msgid "MemberRole|must be top-level namespace"
 msgstr ""
 
 msgid "Members"
+msgstr ""
+
+msgid "Members API rate limit"
 msgstr ""
 
 msgid "Members can be added by project %{i_open}Maintainers%{i_close} or %{i_open}Owners%{i_close}"
