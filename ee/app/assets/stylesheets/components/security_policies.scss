@@ -7,6 +7,18 @@
   min-width: 285px;
 }
 
+.security-policies-popover-max-width {
+  min-width: 420px;
+}
+
+.security-policies-popover-content-height {
+  height: 12rem;
+}
+
+.security-policies-textarea-min-height {
+  min-height: 200px;
+}
+
 .security-policies-bg-gray-10 {
   @include gl-bg-gray-10;
 
