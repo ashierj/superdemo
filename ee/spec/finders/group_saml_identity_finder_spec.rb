@@ -24,22 +24,6 @@ RSpec.describe GroupSamlIdentityFinder do
     end
   end
 
-  describe '.not_managed_identities' do
-    subject { described_class.not_managed_identities(group: group) }
-
-    let!(:group_managed_identity) do
-      create(:group_saml_identity, saml_provider: saml_provider, user: create(:user, managing_group: group))
-    end
-
-    let!(:different_group_managed_identity) do
-      create(:group_saml_identity, saml_provider: saml_provider, user: create(:user, :group_managed))
-    end
-
-    it 'returns all identities of users not managed by given group' do
-      expect(subject).to match_array([identity, different_group_managed_identity])
-    end
-  end
-
   describe "#find_linked" do
     it "finds identity matching user and group" do
       expect(subject.find_linked(group: group)).to eq(identity)

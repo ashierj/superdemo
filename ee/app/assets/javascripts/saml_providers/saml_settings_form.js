@@ -41,19 +41,9 @@ export default class SamlSettingsForm {
         dependsOn: 'group-saml',
       },
       {
-        name: 'enforced-group-managed-accounts',
-        el: this.form.querySelector('.js-group-saml-enforced-group-managed-accounts-input'),
-        dependsOn: 'enforced-sso',
-      },
-      {
         name: 'enforced-git-activity-check',
         el: this.form.querySelector('.js-group-saml-enforced-git-check-input'),
         dependsOn: 'enforced-sso',
-      },
-      {
-        name: 'prohibited-outer-forks',
-        el: this.form.querySelector('.js-group-saml-prohibited-outer-forks-input'),
-        dependsOn: 'enforced-group-managed-accounts',
       },
     ]
       .filter((s) => s.el)

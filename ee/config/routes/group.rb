@@ -218,10 +218,6 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
 
     resource :scim_oauth, only: [:create], controller: :scim_oauth
 
-    get :sign_up, to: 'sso#sign_up_form'
-    post :sign_up, to: 'sso#sign_up'
-    post :authorize_managed_account, to: 'sso#authorize_managed_account'
-
     resource :roadmap, only: [:show], controller: 'roadmap'
 
     post '/restore' => '/groups#restore', as: :restore

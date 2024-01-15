@@ -12,7 +12,6 @@ module QA
               element 'identity-provider-sso-field'
               element 'certificate-fingerprint-field'
               element 'enforced-sso-checkbox'
-              element 'group-managed-accounts-checkbox'
               element 'save-changes-button'
             end
 
@@ -63,24 +62,6 @@ module QA
             def disable_enforced_sso
               uncheck_element('enforced-sso-checkbox', true) if enforce_sso_enabled?
               Support::Waiter.wait_until(raise_on_failure: true) { !enforce_sso_enabled? }
-            end
-
-            def has_group_managed_accounts_checkbox?
-              has_element?('group-managed-accounts-checkbox', wait: 5)
-            end
-
-            def group_managed_accounts_enabled?
-              enforce_sso_enabled? && has_group_managed_accounts_checkbox? && find_element('group-managed-accounts-checkbox').checked?
-            end
-
-            def enable_group_managed_accounts
-              check_element('group-managed-accounts-checkbox', true) unless group_managed_accounts_enabled?
-              Support::Waiter.wait_until { group_managed_accounts_enabled? }
-            end
-
-            def disable_group_managed_accounts
-              uncheck_element('group-managed-accounts-checkbox', true) if group_managed_accounts_enabled?
-              Support::Waiter.wait_until { !group_managed_accounts_enabled? }
             end
 
             def click_save_changes

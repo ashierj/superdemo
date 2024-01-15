@@ -117,13 +117,6 @@ module EE
       has_many :assigned_add_ons, class_name: 'GitlabSubscriptions::UserAddOnAssignment', inverse_of: :user
 
       scope :auditors, -> { where('auditor IS true') }
-
-      scope :not_managed, ->(group: nil) {
-        scope = where(managing_group_id: nil)
-        scope = scope.or(where.not(managing_group_id: group.id)) if group
-        scope
-      }
-
       scope :managed_by, ->(group) { where(managing_group: group) }
 
       scope :excluding_guests, -> do
