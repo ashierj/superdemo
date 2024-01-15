@@ -16,6 +16,7 @@ export const generateNote = ({ id = 1295 } = {}) => ({
   id: `gid://gitlab/DiscussionNote/${id}`,
   body: 'Created a note.',
   bodyHtml: '\u003cp\u003eCreated a note\u003c/p\u003e',
+  createdAt: '2021-08-25T16:19:10Z',
   updatedAt: '2021-08-25T16:21:18Z',
   system: false,
   systemNoteIconName: null,
