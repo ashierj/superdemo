@@ -446,6 +446,10 @@ module EE
       find_merge_base_pipeline_with_sbom_report || find_base_pipeline_with_sbom_report
     end
 
+    def latest_scan_finding_comparison_pipeline
+      find_common_ancestor_pipeline_with_security_reports
+    end
+
     override :can_suggest_reviewers?
     def can_suggest_reviewers?
       open? && modified_paths.any?
@@ -500,7 +504,7 @@ module EE
     def comparison_base_pipeline(service_class)
       return super unless security_comparision?(service_class)
 
-      find_merge_base_pipeline_with_security_reports || find_base_pipeline_with_security_reports
+      find_common_ancestor_pipeline_with_security_reports
     end
 
     def blocking_merge_requests_feature_available?
@@ -521,6 +525,10 @@ module EE
 
     def security_comparision?(service_class)
       service_class == ::Ci::CompareSecurityReportsService
+    end
+
+    def find_common_ancestor_pipeline_with_security_reports
+      find_merge_base_pipeline_with_security_reports || find_base_pipeline_with_security_reports
     end
 
     def find_merge_base_pipeline_with_security_reports

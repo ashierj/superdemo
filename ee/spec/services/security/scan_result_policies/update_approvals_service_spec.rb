@@ -15,13 +15,13 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     let_it_be(:project) { merge_request.project }
 
     let_it_be(:pipeline) do
-      create(:ee_ci_pipeline, :success, project: project, ref: merge_request.source_branch,
-        sha: merge_request.diff_head_sha)
+      create(:ee_ci_pipeline, :success, :with_dependency_scanning_report, project: project,
+        ref: merge_request.source_branch, sha: merge_request.diff_head_sha)
     end
 
     let_it_be(:target_pipeline) do
-      create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch,
-        sha: merge_request.diff_base_sha)
+      create(:ee_ci_pipeline, :success, :with_dependency_scanning_report, project: project,
+        ref: merge_request.target_branch, sha: merge_request.diff_base_sha)
     end
 
     let_it_be(:pipeline_scan) do
@@ -191,6 +191,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         create(
           :ee_ci_pipeline,
           :success,
+          :with_dependency_scanning_report,
           merge_request: merge_request,
           project: project,
           ref: merge_request.target_branch,
@@ -238,6 +239,16 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         it_behaves_like 'does not update approvals_required'
 
         it_behaves_like 'triggers policy bot comment', :scan_finding, true
+
+        context 'when no common ancestor pipeline has security reports' do
+          before do
+            merge_base_pipeline_scan.delete
+          end
+
+          it_behaves_like 'does not update approvals_required'
+
+          it_behaves_like 'triggers policy bot comment', :scan_finding, true
+        end
       end
 
       context 'with feature disabled' do
