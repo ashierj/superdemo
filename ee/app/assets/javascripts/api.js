@@ -1,6 +1,6 @@
 import Api, { DEFAULT_PER_PAGE } from '~/api';
 import axios from '~/lib/utils/axios_utils';
-import { ContentTypeMultipartFormData } from '~/lib/utils/headers';
+import { contentTypeMultipartFormData } from '~/lib/utils/headers';
 
 export default {
   ...Api,
@@ -185,7 +185,7 @@ export default {
   },
 
   uploadIssueMetricImage({ issueIid, id, file, url = null, urlText = null }) {
-    const options = { headers: { ...ContentTypeMultipartFormData } };
+    const options = { headers: { ...contentTypeMultipartFormData } };
     const metricImagesUrl = Api.buildUrl(this.issueMetricImagesPath)
       .replace(':id', encodeURIComponent(id))
       .replace(':issue_iid', encodeURIComponent(issueIid));
