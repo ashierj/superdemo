@@ -67,9 +67,6 @@ exports[`License Compliance extension expanded data with new licenses displays a
                 class="gl-min-w-0 gl-w-full"
               >
                 <div
-                  class="gl-display-flex"
-                />
-                <div
                   class="gl-align-items-baseline gl-display-flex"
                 >
                   <div
@@ -257,9 +254,6 @@ exports[`License Compliance extension expanded data with new licenses displays d
                 class="gl-min-w-0 gl-w-full"
               >
                 <div
-                  class="gl-display-flex"
-                />
-                <div
                   class="gl-align-items-baseline gl-display-flex"
                 >
                   <div
@@ -367,9 +361,6 @@ exports[`License Compliance extension expanded data with new licenses displays u
               <div
                 class="gl-min-w-0 gl-w-full"
               >
-                <div
-                  class="gl-display-flex"
-                />
                 <div
                   class="gl-align-items-baseline gl-display-flex"
                 >
