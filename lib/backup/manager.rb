@@ -54,7 +54,7 @@ module Backup
         return
       end
 
-      if skipped?(task_name)
+      if options.skip_task?(task_name)
         puts_time "Dumping #{definition.human_name} ... ".color(:blue) + "[SKIPPED]".color(:cyan)
         return
       end
@@ -159,7 +159,7 @@ module Backup
       verify_backup_version
 
       definitions.each do |task_name, definition|
-        if !skipped?(task_name) && definition.enabled?
+        if !options.skip_task?(task_name) && definition.enabled?
           run_restore_task(task_name)
         end
       end
@@ -397,10 +397,6 @@ module Backup
       tar_version.dup.force_encoding('locale').split("\n").first
     end
 
-    def skipped?(item)
-      options.skippable_tasks[item]
-    end
-
     def backup_file?(file)
       file.match(/^(\d{10})(?:_\d{4}_\d{2}_\d{2}(_\d+\.\d+\.\d+((-|\.)(pre|rc\d))?(-ee)?)?)?_gitlab_backup\.tar$/)
     end
@@ -427,7 +423,7 @@ module Backup
 
     def backup_contents
       [MANIFEST_NAME] + definitions.reject do |name, definition|
-        skipped?(name) || !definition.enabled? ||
+        options.skip_task?(name) || !definition.enabled? ||
           (definition.destination_optional && !File.exist?(File.join(backup_path, definition.destination_path)))
       end.values.map(&:destination_path)
     end
