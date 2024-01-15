@@ -83,7 +83,7 @@ export default {
   >
     <group-dependencies-filtered-search
       v-if="glFeatures.groupLevelDependenciesFiltering && !isProjectNamespace"
-      class="gl-mr-3"
+      class="gl-mr-3 gl-flex-grow-1"
     />
     <gl-sorting
       :text="sortFieldName"
