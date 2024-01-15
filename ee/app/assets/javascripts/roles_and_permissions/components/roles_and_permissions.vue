@@ -12,7 +12,7 @@ export default {
       type: Boolean,
       required: true,
     },
-    groupId: {
+    groupFullPath: {
       type: String,
       required: false,
       default: '',
@@ -23,11 +23,13 @@ export default {
     },
   },
   data() {
-    return { selectedGroupId: this.groupId };
+    return {
+      selectedGroupPath: this.groupFullPath,
+    };
   },
   methods: {
-    updateGroup({ value }) {
-      this.selectedGroupId = value;
+    updateGroup({ full_path: fullPath }) {
+      this.selectedGroupPath = fullPath;
     },
   },
   apiParams: { top_level_only: '1' },
@@ -43,6 +45,10 @@ export default {
       :api-params="$options.apiParams"
       @input="updateGroup"
     />
-    <list-member-roles class="gl-mt-5" :group-id="selectedGroupId" :empty-text="emptyText" />
+    <list-member-roles
+      class="gl-mt-5"
+      :group-full-path="selectedGroupPath"
+      :empty-text="emptyText"
+    />
   </div>
 </template>

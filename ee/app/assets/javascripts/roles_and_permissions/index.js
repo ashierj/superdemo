@@ -24,7 +24,7 @@ export const initRolesAndPermissions = ({ emptyText, showGroupSelector }) => {
     name: 'RolesAndPermissionsRoot',
     render(h) {
       return h(RolesAndPermissions, {
-        props: { groupId: el.dataset.groupId, emptyText, showGroupSelector },
+        props: { groupFullPath: el.dataset.groupFullPath, emptyText, showGroupSelector },
       });
     },
   });

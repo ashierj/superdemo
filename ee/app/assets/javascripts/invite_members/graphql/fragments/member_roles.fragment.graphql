@@ -2,8 +2,15 @@ fragment MemberRoles on MemberRoleConnection {
   nodes {
     baseAccessLevel {
       integerValue
+      stringValue
     }
     id
     name
+    enabledPermissions {
+      nodes {
+        name
+        value
+      }
+    }
   }
 }

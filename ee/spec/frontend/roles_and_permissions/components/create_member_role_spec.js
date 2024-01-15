@@ -1,13 +1,17 @@
 import { GlFormInput, GlFormSelect, GlFormTextarea, GlFormCheckbox } from '@gitlab/ui';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import { createAlert, VARIANT_DANGER } from '~/alert';
-import { createMemberRole } from 'ee/api/member_roles_api';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import memberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
+import createMemberRoleMutation from 'ee/roles_and_permissions/graphql/create_member_role.mutation.graphql';
 import CreateMemberRole from 'ee/roles_and_permissions/components/create_member_role.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { stubComponent } from 'helpers/stub_component';
+import { mockDefaultPermissions, mockMemberRoles } from '../mock_data';
 
-jest.mock('ee/api/member_roles_api');
+Vue.use(VueApollo);
 
 const mockAlertDismiss = jest.fn();
 jest.mock('~/alert', () => ({
@@ -16,22 +20,33 @@ jest.mock('~/alert', () => ({
   })),
 }));
 
-const DEFAULT_PERMISSIONS = [
-  { name: 'Permission A', description: 'Description A', value: 'permission_a' },
-  { name: 'Permission B', description: 'Description B', value: 'permission_b' },
-  { name: 'Permission C', description: 'Description C', value: 'permission_c' },
-];
-
 describe('CreateMemberRole', () => {
   let wrapper;
 
-  const createComponent = ({ availablePermissions = DEFAULT_PERMISSIONS, stubs = {} } = {}) => {
+  const mutationSuccessHandler = jest
+    .fn()
+    .mockResolvedValue({ data: { memberRoleCreate: { errors: null, memberRole: { id: '1' } } } });
+  const rolesSuccessQueryHandler = jest.fn().mockResolvedValue(mockMemberRoles);
+
+  const createMockApolloProvider = (resolverMock) => {
+    return createMockApollo([
+      [memberRolesQuery, rolesSuccessQueryHandler],
+      [createMemberRoleMutation, resolverMock],
+    ]);
+  };
+
+  const createComponent = ({
+    availablePermissions = mockDefaultPermissions,
+    stubs = {},
+    mutationMock = mutationSuccessHandler,
+  } = {}) => {
     wrapper = mountExtended(CreateMemberRole, {
       propsData: {
-        groupId: '4',
+        groupFullPath: 'test-group',
         availablePermissions,
       },
       stubs,
+      apolloProvider: createMockApolloProvider(mutationMock),
     });
   };
 
@@ -65,7 +80,7 @@ describe('CreateMemberRole', () => {
 
   it('has the expected permissions checkboxes', () => {
     createComponent();
-    DEFAULT_PERMISSIONS.forEach((permission, index) => {
+    mockDefaultPermissions.forEach((permission, index) => {
       const checkbox = findCheckboxes().at(index);
 
       expect(checkbox.text()).toContain(permission.name);
@@ -80,7 +95,7 @@ describe('CreateMemberRole', () => {
       value: 'MANAGE_PROJECT_ACCESS_TOKENS',
     };
 
-    createComponent({ manageProjectAccessTokens: true, availablePermissions: [permission] });
+    createComponent({ availablePermissions: [permission] });
 
     const checkbox = findCheckboxes().at(0);
 
@@ -139,11 +154,14 @@ describe('CreateMemberRole', () => {
       findButtonSubmit().trigger('submit');
       await waitForPromises();
 
-      expect(createMemberRole).toHaveBeenCalledWith('4', {
-        base_access_level: 10,
-        name: 'My role name',
-        description: 'My description',
-        permission_a: 1,
+      expect(mutationSuccessHandler).toHaveBeenCalledWith({
+        input: {
+          baseAccessLevel: 'GUEST',
+          name: 'My role name',
+          description: 'My description',
+          permissions: ['READ_CODE'],
+          groupPath: 'test-group',
+        },
       });
     });
 
@@ -157,12 +175,14 @@ describe('CreateMemberRole', () => {
     });
   });
 
-  describe('when unsuccessful submission', () => {
-    beforeEach(() => {
-      createComponent();
-      fillForm();
+  describe('when there is an error creating the role', () => {
+    const mutationMock = jest
+      .fn()
+      .mockResolvedValue({ data: { memberRoleCreate: { errors: ['reason'], memberRole: null } } });
 
-      createMemberRole.mockRejectedValue(new Error());
+    beforeEach(() => {
+      createComponent({ mutationMock });
+      fillForm();
     });
 
     it('shows alert', async () => {
@@ -170,7 +190,7 @@ describe('CreateMemberRole', () => {
       await waitForPromises();
 
       expect(createAlert).toHaveBeenCalledWith({
-        message: 'Failed to create role.',
+        message: 'Failed to create role: reason',
         variant: VARIANT_DANGER,
       });
     });

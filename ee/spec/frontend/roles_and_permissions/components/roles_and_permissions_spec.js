@@ -8,7 +8,7 @@ describe('RolesAndPermissionsSaas', () => {
   let wrapper;
   const createComponent = ({ showGroupSelector = true } = {}) => {
     wrapper = shallowMount(RolesAndPermissions, {
-      propsData: { groupId: '31', emptyText: 'empty', showGroupSelector },
+      propsData: { groupFullPath: 'test-group', emptyText: 'empty', showGroupSelector },
     });
   };
 
@@ -27,19 +27,19 @@ describe('RolesAndPermissionsSaas', () => {
   it('updates the group ID when group selector is changed', async () => {
     createComponent();
 
-    expect(findListMemberRoles().props('groupId')).toBe('31');
+    expect(findListMemberRoles().props('groupFullPath')).toBe('test-group');
 
-    findGroupSelect().vm.$emit('input', { value: '32' });
+    findGroupSelect().vm.$emit('input', { full_path: 'another-test-group' });
     await nextTick();
 
-    expect(findListMemberRoles().props('groupId')).toBe('32');
+    expect(findListMemberRoles().props('groupFullPath')).toBe('another-test-group');
   });
 
   it('shows the ListMemberRoles component with the expected props', () => {
     createComponent();
 
     expect(findListMemberRoles().props()).toMatchObject({
-      groupId: '31',
+      groupFullPath: 'test-group',
       emptyText: 'empty',
     });
   });
