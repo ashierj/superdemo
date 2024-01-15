@@ -4,12 +4,21 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
   let(:arkose_labs_params) { { arkose_labs_token: 'arkose-labs-token' } }
   let(:params) { { user: user_attrs }.merge(arkose_labs_params) }
 
-  let(:arkose_verification_response) do
-    Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json')))
+  let(:successful_service_response) do
+    json = Gitlab::Json.parse(
+      File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json'))
+    )
+    response = Arkose::VerifyResponse.new(json)
+    ServiceResponse.success(payload: { response: response })
   end
 
-  let(:verify_response) { Arkose::VerifyResponse.new(arkose_verification_response) }
-  let(:service_response) { ServiceResponse.success(payload: { response: verify_response }) }
+  let(:failed_service_response) do
+    json = Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/invalid_token.json')))
+    response = Arkose::VerifyResponse.new(json)
+    ServiceResponse.error(message: response.error)
+  end
+
+  let(:service_response) { successful_service_response }
   let(:arkose_status_response) { ServiceResponse.success }
 
   before do
@@ -133,13 +142,17 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
     end
   end
 
-  context 'when arkose_labs_token param is not present' do
-    let(:arkose_labs_params) { {} }
+  context 'when arkose_labs_token verification fails' do
+    let(:service_response) { failed_service_response }
 
     context 'when arkose is operational' do
       it_behaves_like 'renders new action with an alert flash'
 
-      it_behaves_like 'skips verification and data recording'
+      it 'skips verification and data recording' do
+        expect(Arkose::RecordUserDataService).not_to receive(:new)
+
+        create_user
+      end
 
       it 'logs the event' do
         expect(Gitlab::AppLogger).to receive(:info).with(

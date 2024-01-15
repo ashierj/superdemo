@@ -4,9 +4,12 @@ import { mount } from '@vue/test-utils';
 import IdentityVerificationArkoseApp from 'ee/arkose_labs/components/identity_verification_arkose_app.vue';
 import { initArkoseLabsScript } from 'ee/arkose_labs/init_arkose_labs_script';
 import { VERIFICATION_TOKEN_INPUT_NAME, CHALLENGE_CONTAINER_CLASS } from 'ee/arkose_labs/constants';
+import { logError } from '~/lib/logger';
 
 jest.mock('~/lib/utils/csrf', () => ({ token: 'mock-csrf-token' }));
 jest.mock('ee/arkose_labs/init_arkose_labs_script');
+jest.mock('~/lib/logger');
+
 let onShown;
 let onCompleted;
 initArkoseLabsScript.mockImplementation(() => ({
@@ -99,6 +102,29 @@ describe('IdentityVerificationArkoseApp', () => {
 
     it('submits the form', () => {
       expect(formSubmitSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('when challenge initialization fails', () => {
+    let formSubmitSpy;
+    const arkoseError = new Error();
+
+    beforeEach(() => {
+      initArkoseLabsScript.mockImplementation(() => {
+        throw arkoseError;
+      });
+
+      createComponent();
+
+      formSubmitSpy = jest.spyOn(findForm().element, 'submit');
+    });
+
+    it('logs the error', () => {
+      expect(logError).toHaveBeenCalledWith('ArkoseLabs initialization error', arkoseError);
+    });
+
+    it('submits the form', () => {
+      expect(formSubmitSpy).toHaveBeenCalled();
     });
   });
 });

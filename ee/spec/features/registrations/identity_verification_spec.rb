@@ -25,7 +25,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
         })
       .to_return(
         status: 200,
-        body: '{ "status": { "indicator": "none" }}',
+        body: { status: { indicator: arkose_status_indicator } }.to_json,
         headers: { 'Content-Type' => 'application/json' }
       )
   end
@@ -33,6 +33,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   let(:user_email) { 'onboardinguser@example.com' }
   let(:new_user) { build(:user, email: user_email) }
   let(:user) { User.find_by_email(user_email) }
+  let(:arkose_status_indicator) { 'none' }
 
   shared_examples 'does not allow unauthorized access to verification endpoints' do |protected_endpoints|
     # Normally, users cannot trigger requests to endpoints of verification
@@ -314,6 +315,8 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     let(:provider) { 'google_oauth2' }
 
     before do
+      stub_arkose_token_verification(response: arkose_token_verification_response)
+
       mock_auth_hash(provider, 'external_uid', user_email)
       stub_omniauth_setting(block_auto_created_users: false)
 
@@ -325,9 +328,28 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       with_omniauth_full_host { example.run }
     end
 
-    it_behaves_like 'registering a low risk user with identity verification', flow: :saml
-    it_behaves_like 'registering a medium risk user with identity verification', flow: :saml
-    it_behaves_like 'registering a high risk user with identity verification', flow: :saml
+    context 'when Arkose is up' do
+      let(:arkose_token_verification_response) { { session_risk: { risk_band: risk.capitalize } } }
+
+      it_behaves_like 'registering a low risk user with identity verification', flow: :saml
+      it_behaves_like 'registering a medium risk user with identity verification', flow: :saml
+      it_behaves_like 'registering a high risk user with identity verification', flow: :saml
+    end
+
+    describe 'when Arkose is down' do
+      let(:arkose_token_verification_response) { { error: "DENIED ACCESS" } }
+      let(:arkose_status_indicator) { 'critical' }
+
+      it 'verifies the user' do
+        expect_to_see_identity_verification_page
+
+        verify_email
+
+        expect_verification_completed
+
+        expect_to_see_dashboard_page
+      end
+    end
   end
 
   describe 'Subscription flow', :saas do
@@ -384,7 +406,6 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
   def saml_sign_up
     click_button Gitlab::Auth::OAuth::Provider.label_for(provider)
-    solve_arkose_verify_challenge(saml: true, risk: risk)
   end
 
   def trial_sign_up

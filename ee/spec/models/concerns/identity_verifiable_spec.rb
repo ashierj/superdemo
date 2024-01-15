@@ -759,12 +759,14 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
   it 'delegates risk profile methods', :aggregate_failures do
     expect_next_instance_of(IdentityVerification::UserRiskProfile, user) do |instance|
       expect(instance).to receive(:arkose_verified?).ordered
+      expect(instance).to receive(:assume_low_risk!).with(reason: 'Low reason').ordered
+      expect(instance).to receive(:assume_high_risk!).with(reason: 'High reason').ordered
       expect(instance).to receive(:assumed_high_risk?).ordered
-      expect(instance).to receive(:assume_high_risk!).with(reason: 'Because').ordered
     end
 
     user.arkose_verified?
+    user.assume_low_risk!(reason: 'Low reason')
+    user.assume_high_risk!(reason: 'High reason')
     user.assumed_high_risk?
-    user.assume_high_risk!(reason: 'Because')
   end
 end

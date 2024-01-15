@@ -97,6 +97,8 @@ module SaasRegistrationHelpers
   end
 
   def user_signs_up_with_sso(params = {}, provider: 'google_oauth2', name: 'Registering User')
+    stub_arkose_token_verification
+
     mock_auth_hash(provider, 'external_uid', user_email, name: name)
     stub_omniauth_setting(block_auto_created_users: false)
     allow(::Arkose::Settings).to receive(:enabled?).and_return(true)
@@ -110,7 +112,6 @@ module SaasRegistrationHelpers
     wait_for_all_requests
 
     click_link_or_button Gitlab::Auth::OAuth::Provider.label_for(provider)
-    solve_arkose_verify_challenge(saml: true)
   end
 
   def user_signs_up_through_subscription_with_sso(provider: 'google_oauth2')
