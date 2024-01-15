@@ -4,12 +4,12 @@ module Gitlab
   module Analytics
     module CycleAnalytics
       module StageEvents
-        class FirstAssignedAt < StageEvent
+        class FirstResourceEventBase < StageEvent
           def column_list
             [event_model.arel_table[:created_at]]
           end
 
-          # rubocop: disable CodeReuse/ActiveRecord
+          # rubocop: disable CodeReuse/ActiveRecord -- VSA specific DB query
           # This method is not used on production since we're using the aggregated backend.
           # It's implemented so we respect the interface of StageEvent.
           override :apply_query_customization
@@ -31,9 +31,13 @@ module Gitlab
               .joins("LEFT JOIN LATERAL (#{subquery.to_sql}) #{event_model.quoted_table_name} ON TRUE")
           end
 
+          def issuable_id_column
+            event_model.arel_table[event_model.issuable_id_column]
+          end
+
           def subquery
             event_model
-              .where(object_type.arel_table[:id].eq(event_model.arel_table[event_model.issuable_id_column]))
+              .where(object_type.arel_table[:id].eq(issuable_id_column))
               .where(action: :add)
               .order(:created_at, :id)
               .limit(1)
