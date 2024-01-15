@@ -140,7 +140,8 @@ RSpec.shared_context 'secret detection error and log messages context' do
       message,
       {
         path: Rails.application.routes.url_helpers.help_page_url(
-          Gitlab::Checks::SecretsCheck::DOCUMENTATION_PATH
+          Gitlab::Checks::SecretsCheck::DOCUMENTATION_PATH,
+          anchor: Gitlab::Checks::SecretsCheck::DOCUMENTATION_PATH_ANCHOR
         )
       }
     )

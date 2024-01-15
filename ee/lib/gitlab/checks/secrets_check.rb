@@ -31,7 +31,8 @@ module Gitlab
 
       BLOB_BYTES_LIMIT = 1.megabyte # Limit is 1MiB to start with.
       SPECIAL_COMMIT_FLAG = /\[skip secret detection\]/i
-      DOCUMENTATION_PATH = 'user/application_security/secret_detection/pre_receive.html#resolve-a-blocked-push'
+      DOCUMENTATION_PATH = 'user/application_security/secret_detection/pre_receive.html'
+      DOCUMENTATION_PATH_ANCHOR = 'resolve-a-blocked-push'
 
       def validate!
         # Return early and not perform the check if:
@@ -189,7 +190,12 @@ module Gitlab
         message += LOG_MESSAGES[:found_secrets_post_message]
         message += format(
           LOG_MESSAGES[:found_secrets_docs_link],
-          { path: Rails.application.routes.url_helpers.help_page_url(DOCUMENTATION_PATH) }
+          {
+            path: Rails.application.routes.url_helpers.help_page_url(
+              DOCUMENTATION_PATH,
+              anchor: DOCUMENTATION_PATH_ANCHOR
+            )
+          }
         )
 
         message
@@ -213,7 +219,12 @@ module Gitlab
         message += LOG_MESSAGES[:found_secrets_post_message]
         message += format(
           LOG_MESSAGES[:found_secrets_docs_link],
-          { path: Rails.application.routes.url_helpers.help_page_url(DOCUMENTATION_PATH) }
+          {
+            path: Rails.application.routes.url_helpers.help_page_url(
+              DOCUMENTATION_PATH,
+              anchor: DOCUMENTATION_PATH_ANCHOR
+            )
+          }
         )
 
         message
