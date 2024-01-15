@@ -7,7 +7,7 @@ import { ALL_ID as ALL_STATUS_VALUE } from 'ee/security_dashboard/components/sha
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 
-const STATUS_OPTION_VALUES = GROUPS[0].options.map(({ value }) => value);
+const STATUS_OPTION_VALUES = ['ALL', 'DETECTED', 'CONFIRMED', 'RESOLVED'];
 const DEFAULT_VALUES = ['DETECTED', 'CONFIRMED'];
 
 describe('Status Filter component', () => {
@@ -71,11 +71,11 @@ describe('Status Filter component', () => {
 
   describe('default view', () => {
     it('shows the label', () => {
-      expect(wrapper.find('label').text()).toBe(StatusFilter.i18n.label);
+      expect(wrapper.find('label').text()).toBe('Status');
     });
 
     it('shows the dropdown with correct header text', () => {
-      expect(findListbox().props('headerText')).toBe(StatusFilter.i18n.label);
+      expect(findListbox().props('headerText')).toBe('Status');
     });
 
     it('shows the placeholder correctly', async () => {

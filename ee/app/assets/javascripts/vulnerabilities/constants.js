@@ -29,6 +29,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
   detected: {
     action: 'revert',
     state: 'detected',
+    searchParamValue: 'DETECTED',
     buttonText: VULNERABILITY_STATES.detected,
     dropdownText: s__('VulnerabilityManagement|Needs triage'),
     dropdownDescription: s__('VulnerabilityManagement|Requires assessment'),
@@ -39,6 +40,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
   confirmed: {
     action: 'confirm',
     state: 'confirmed',
+    searchParamValue: 'CONFIRMED',
     buttonText: VULNERABILITY_STATES.confirmed,
     dropdownText: __('Confirm'),
     dropdownDescription: s__('VulnerabilityManagement|A true-positive and will fix'),
@@ -48,6 +50,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
   dismissed: {
     action: 'dismiss',
     state: 'dismissed',
+    searchParamValue: 'DISMISSED',
     buttonText: VULNERABILITY_STATES.dismissed,
     dropdownText: __('Dismiss'),
     dropdownDescription: falsePositiveMessage,
@@ -60,6 +63,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
   resolved: {
     action: 'resolve',
     state: 'resolved',
+    searchParamValue: 'RESOLVED',
     buttonText: VULNERABILITY_STATES.resolved,
     dropdownText: __('Resolve'),
     dropdownDescription: s__('VulnerabilityManagement|Verified as fixed or mitigated'),

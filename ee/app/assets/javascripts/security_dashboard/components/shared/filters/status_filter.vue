@@ -7,22 +7,21 @@ import QuerystringSync from './querystring_sync.vue';
 import { ALL_ID as ALL_STATUS_VALUE } from './constants';
 
 const { detected, confirmed, dismissed, resolved } = VULNERABILITY_STATE_OBJECTS;
-// For backwards compatibility with existing bookmarks, the "value" needs to be capitalized.
 export const GROUPS = [
   {
     text: '',
     textSrOnly: true,
     options: [
       { value: ALL_STATUS_VALUE, text: s__('SecurityReports|All statuses') },
-      { value: detected.state.toUpperCase(), text: detected.buttonText },
-      { value: confirmed.state.toUpperCase(), text: confirmed.buttonText },
-      { value: resolved.state.toUpperCase(), text: resolved.buttonText },
+      { value: detected.searchParamValue, text: detected.buttonText },
+      { value: confirmed.searchParamValue, text: confirmed.buttonText },
+      { value: resolved.searchParamValue, text: resolved.buttonText },
     ],
   },
   {
     text: s__('SecurityReports|Dismissed as...'),
     options: [
-      { value: dismissed.state.toUpperCase(), text: s__('SecurityReports|All dismissal reasons') },
+      { value: dismissed.searchParamValue, text: s__('SecurityReports|All dismissal reasons') },
       ...Object.entries(DISMISSAL_REASONS).map(([value, text]) => ({
         value: value.toUpperCase(),
         text,
@@ -33,7 +32,7 @@ export const GROUPS = [
 
 const OPTIONS = [...GROUPS[0].options, ...GROUPS[1].options];
 const VALID_VALUES = OPTIONS.map(({ value }) => value);
-const DEFAULT_VALUES = [detected.state.toUpperCase(), confirmed.state.toUpperCase()];
+const DEFAULT_VALUES = [detected.searchParamValue, confirmed.searchParamValue];
 
 const ALL_DISMISSED_VALUE = GROUPS[1].options[0].value;
 const DISMISSAL_REASON_VALUES = GROUPS[1].options.slice(1).map(({ value }) => value);
