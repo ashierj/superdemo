@@ -101,9 +101,9 @@ RSpec.describe ResourceEvents::MergeIntoNotesService, feature_category: :team_pl
 
         expect(notes.size).to eq(3)
 
-        expect(notes[0].note).to eq('changed weight to 3')
-        expect(notes[1].note).to eq('changed weight to 1')
-        expect(notes[2].note).to eq('changed weight to 5')
+        expect(notes[0].note).to eq('set weight to 3')
+        expect(notes[1].note).to eq('set weight to 1')
+        expect(notes[2].note).to eq('set weight to 5')
       end
     end
   end

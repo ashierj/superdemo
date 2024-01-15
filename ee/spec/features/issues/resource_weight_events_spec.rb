@@ -20,8 +20,8 @@ RSpec.describe 'issue resource weight events', :js, feature_category: :team_plan
     it 'shows both notes and resource weight event synthetic notes' do
       page.within('#notes') do
         expect(find("#note_#{note.id}")).to have_content 'some note'
-        expect(find("#note_#{event1.discussion_id}")).to have_content 'changed weight to 1', count: 1
-        expect(find("#note_#{event2.discussion_id}")).to have_content 'changed weight to 5', count: 1
+        expect(find("#note_#{event1.discussion_id}")).to have_content 'set weight to 1', count: 1
+        expect(find("#note_#{event2.discussion_id}")).to have_content 'set weight to 5', count: 1
       end
     end
   end
