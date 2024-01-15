@@ -471,14 +471,6 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
 
         it_behaves_like 'returning response status', :forbidden
       end
-
-      context 'with feature flag packages_dependency_proxy_maven disabled' do
-        before do
-          stub_feature_flags(packages_dependency_proxy_maven: false)
-        end
-
-        it_behaves_like 'returning response status', :not_found
-      end
     end
   end
 end

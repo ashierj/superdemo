@@ -14,9 +14,11 @@ module EE
     private
 
     def show_dependency_proxy_settings?(project)
-      ::Feature.enabled?(:packages_dependency_proxy_maven, project) &&
-        Ability.allowed?(current_user, :admin_dependency_proxy_packages_settings,
-          project.dependency_proxy_packages_setting)
+      Ability.allowed?(
+        current_user,
+        :admin_dependency_proxy_packages_settings,
+        project.dependency_proxy_packages_setting
+      )
     end
   end
 end

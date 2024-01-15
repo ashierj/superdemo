@@ -13,7 +13,6 @@ module Mutations
             Updates or creates dependency proxy for packages settings.
             Requires the packages and dependency proxy to be enabled in the config.
             Requires the packages feature to be enabled at the project level.
-            Error is raised if `packages_dependency_proxy_maven` feature flag is disabled.
           DESC
 
           authorize :admin_dependency_proxy_packages_settings
@@ -58,10 +57,6 @@ module Mutations
 
           def resolve(project_path:, **args)
             setting = authorized_find!(project_path: project_path)
-
-            if Feature.disabled?(:packages_dependency_proxy_maven, setting.project)
-              raise_resource_not_available_error! '`packages_dependency_proxy_maven` feature flag is disabled.'
-            end
 
             result = ::DependencyProxy::Packages::Settings::UpdateService
               .new(setting: setting, current_user: current_user, params: args)

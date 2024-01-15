@@ -165,14 +165,6 @@ RSpec.describe 'Updating the dependency proxy packages settings', :aggregate_fai
         it_behaves_like 'returning a graphql error',
           ::Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR
       end
-
-      context 'with packages_dependency_proxy_maven disabled' do
-        before do
-          stub_feature_flags(packages_dependency_proxy_maven: false)
-        end
-
-        it_behaves_like 'returning a graphql error', '`packages_dependency_proxy_maven` feature flag is disabled.'
-      end
     end
   end
 end

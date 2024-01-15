@@ -42,39 +42,5 @@ RSpec.describe EE::PackagesHelper, feature_category: :package_registry do
         )
       end
     end
-
-    context 'with feature flag disabled' do
-      before do
-        stub_feature_flags(packages_dependency_proxy_maven: false)
-      end
-
-      context 'when the current user cannot admin dependency proxy packages settings' do
-        before do
-          allow(Ability).to receive(:allowed?).with(user, :admin_dependency_proxy_packages_settings,
-            project.dependency_proxy_packages_setting)
-            .and_return(false)
-        end
-
-        it 'returns the settings data' do
-          expect(settings_data).to include(
-            show_dependency_proxy_settings: 'false'
-          )
-        end
-      end
-
-      context 'when the current user can admin dependency proxy packages settings' do
-        before do
-          allow(Ability).to receive(:allowed?).with(user, :admin_dependency_proxy_packages_settings,
-            project.dependency_proxy_packages_setting)
-            .and_return(true)
-        end
-
-        it 'returns the settings data with show_dependency_proxy_settings set to true' do
-          expect(settings_data).to include(
-            show_dependency_proxy_settings: 'false'
-          )
-        end
-      end
-    end
   end
 end

@@ -215,10 +215,7 @@ module API
           end
           get ':id/dependency_proxy/packages/maven/*path/:file_name',
             requirements: ::API::MavenPackages::MAVEN_ENDPOINT_REQUIREMENTS do
-            unless Feature.enabled?(:packages_dependency_proxy_maven, project) && dependency_proxy_setting
-              unauthorized_or! { not_found! }
-            end
-
+            unauthorized_or! { not_found! } unless dependency_proxy_setting
             unauthorized_or! { forbidden! } unless project.licensed_feature_available?(:dependency_proxy_for_packages)
 
             file_name, format = extract_format(params[:file_name])
