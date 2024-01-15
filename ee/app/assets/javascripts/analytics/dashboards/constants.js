@@ -265,7 +265,7 @@ export const DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE = [GREEN_400, ORANGE_400,
 // the slug name for a dashboard must match the URL path that is used
 export const BUILT_IN_VALUE_STREAM_DASHBOARD = 'value_streams_dashboard';
 
-export const BUILT_IN_PRODUCT_ANALYTICS_DASHBOARDS = ['behaviour', 'audience'];
+export const BUILT_IN_PRODUCT_ANALYTICS_DASHBOARDS = ['behavior', 'audience'];
 
 export const VISUALIZATION_USAGE_OVERVIEW = 'usage_overview';
 export const VISUALIZATION_USAGE_TITLE = s__('Analytics|Usage overview for %{namespaceName} group');
