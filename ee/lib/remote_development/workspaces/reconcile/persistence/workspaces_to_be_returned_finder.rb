@@ -36,7 +36,12 @@ module RemoteDevelopment
           # @return [ActiveRecord::Relation]
           def self.generate_workspaces_to_be_returned_query(agent:, update_type:, workspaces_from_agent_infos:)
             # For a FULL update, return all workspaces for the agent which exist in the database
-            return agent.workspaces.without_terminated.all if update_type == FULL
+            if update_type == FULL
+              return agent
+                       .workspaces.desired_state_not_terminated
+                       .or(agent.workspaces.actual_state_not_terminated)
+                       .all
+            end
 
             # For a PARTIAL update, return:
             # 1. Workspaces with_desired_state_updated_more_recently_than_last_response_to_agent

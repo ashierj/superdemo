@@ -49,7 +49,10 @@ module RemoteDevelopment
           config_from_agent_config_file.fetch(:max_resources_per_workspace, {})
 
         if model_instance.save
-          model_instance.workspaces.without_terminated.update_all(force_include_all_resources: true)
+          model_instance
+            .workspaces
+            .desired_state_not_terminated
+            .update_all(force_include_all_resources: true)
           Result.ok(AgentConfigUpdateSuccessful.new({ remote_development_agent_config: model_instance }))
         else
           Result.err(AgentConfigUpdateFailed.new({ errors: model_instance.errors }))

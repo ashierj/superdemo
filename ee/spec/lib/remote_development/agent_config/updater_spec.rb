@@ -106,7 +106,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
           .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
             { remote_development_agent_config: config_instance }
           ))
-        expect(config_instance.workspaces.without_terminated)
+        expect(config_instance.workspaces.desired_state_not_terminated.actual_state_not_terminated)
           .to all(have_attributes(force_include_all_resources: true))
       end
     end

@@ -49,9 +49,13 @@ module RemoteDevelopment
     scope :by_project_ids, ->(ids) { where(project_id: ids) }
     scope :by_agent_ids, ->(ids) { where(cluster_agent_id: ids) }
     scope :by_actual_states, ->(actual_states) { where(actual_state: actual_states) }
-    scope :without_terminated, -> do
+    scope :desired_state_not_terminated, -> do
       where.not(
-        desired_state: RemoteDevelopment::Workspaces::States::TERMINATED,
+        desired_state: RemoteDevelopment::Workspaces::States::TERMINATED
+      )
+    end
+    scope :actual_state_not_terminated, -> do
+      where.not(
         actual_state: RemoteDevelopment::Workspaces::States::TERMINATED
       )
     end
@@ -65,10 +69,6 @@ module RemoteDevelopment
       return true if responded_to_agent_at.nil?
 
       desired_state_updated_at >= responded_to_agent_at
-    end
-
-    def terminated?
-      actual_state == TERMINATED
     end
 
     private
