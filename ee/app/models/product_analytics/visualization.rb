@@ -28,14 +28,14 @@ module ProductAnalytics
     VALUE_STREAM_DASHBOARD_PATH = 'ee/lib/gitlab/analytics/value_stream_dashboard/visualizations'
     VALUE_STREAM_DASHBOARD_VISUALIZATIONS = %w[dora_chart usage_overview].freeze
 
-    def self.for(container:)
+    def self.for(container:, user:)
       config_project =
         container.analytics_dashboards_configuration_project ||
         container.default_dashboards_configuration_source
 
       visualizations = []
       visualizations << custom_visualizations(config_project)
-      visualizations << builtin_visualizations
+      visualizations << builtin_visualizations(container, user)
 
       visualizations.flatten
     end
@@ -145,10 +145,12 @@ module ProductAnalytics
       load_visualizations(VALUE_STREAM_DASHBOARD_VISUALIZATIONS, VALUE_STREAM_DASHBOARD_PATH)
     end
 
-    def self.builtin_visualizations
+    def self.builtin_visualizations(container, user)
       visualizations = []
 
-      visualizations << product_analytics_visualizations
+      if container.product_analytics_enabled? && container.product_analytics_onboarded?(user)
+        visualizations << product_analytics_visualizations
+      end
 
       visualizations.flatten
     end

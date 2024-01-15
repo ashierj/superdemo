@@ -13,7 +13,8 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
   let_it_be(:user) { create(:user) }
 
   let(:dashboards) { project.product_analytics_dashboards(user) }
-  let(:num_builtin_visualizations) { 15 }
+  let(:num_builtin_visualizations) { 14 }
+  let(:num_custom_visualizations) { 2 }
 
   before do
     allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
@@ -42,7 +43,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
   end
 
   describe '#slug' do
-    subject { described_class.for(container: project) }
+    subject { described_class.for(container: project, user: user) }
 
     it 'returns the slugs' do
       expect(subject.map(&:slug)).to include('cube_bar_chart', 'cube_line_chart')
@@ -51,10 +52,9 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
 
   describe '.for' do
     context 'when resource_parent is a Project' do
-      subject { described_class.for(container: project) }
+      subject { described_class.for(container: project, user: user) }
 
       it 'returns all visualizations stored in the project as well as built-in ones' do
-        num_custom_visualizations = 1
         expect(subject.count).to eq(num_builtin_visualizations + num_custom_visualizations)
         expect(subject.map { |v| v.config['type'] }).to include('BarChart', 'LineChart')
       end
@@ -69,7 +69,10 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
         end
 
         it 'returns custom visualizations from pointer project' do
-          expect(subject.count).to eq(num_builtin_visualizations)
+          # :with_product_analytics_custom_visualization adds another visualization
+          expected_visualizations_count = num_builtin_visualizations + 1
+
+          expect(subject.count).to eq(expected_visualizations_count)
           expect(subject.map(&:slug)).to include('example_custom_visualization')
         end
 
@@ -77,17 +80,37 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
           expect(subject.map { |v| v.config['title'] }).not_to include('Daily Something', 'Example title')
         end
       end
+
+      context 'when the product analytics feature is disabled' do
+        before do
+          stub_licensed_features(product_analytics: false)
+        end
+
+        it 'returns all visualizations stored in the project but no built in product analytics visualizations' do
+          expect(subject.count).to eq(num_custom_visualizations)
+          expect(subject.map { |v| v.config['type'] }).to include('BarChart', 'LineChart')
+        end
+      end
+
+      context 'when the product analytics feature is not onboarded' do
+        before do
+          project.project_setting.update!(product_analytics_instrumentation_key: nil)
+        end
+
+        it 'returns all visualizations stored in the project but no built in product analytics visualizations' do
+          expect(subject.count).to eq(num_custom_visualizations)
+          expect(subject.map { |v| v.config['type'] }).to include('BarChart', 'LineChart')
+        end
+      end
     end
 
     context 'when resource_parent is a group' do
       let_it_be_with_reload(:group) { create(:group) }
 
-      subject { described_class.for(container: group) }
+      subject { described_class.for(container: group, user: user) }
 
       it 'returns built in visualizations' do
-        expected_visualizations = ProductAnalytics::Visualization::PRODUCT_ANALYTICS_VISUALIZATIONS
-
-        expect(subject.map(&:slug)).to match_array(expected_visualizations)
+        expect(subject.map(&:slug)).to match_array([])
       end
 
       context 'when group value stream dashboard is not available' do
@@ -96,9 +119,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
         end
 
         it 'does not include built in visualizations for VSD' do
-          expect(subject.map(&:slug)).to match_array(
-            ProductAnalytics::Visualization::PRODUCT_ANALYTICS_VISUALIZATIONS
-          )
+          expect(subject.map(&:slug)).to match_array([])
         end
       end
 
@@ -110,9 +131,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
         end
 
         it 'returns builtin and custom visualizations' do
-          expected_visualizations =
-            ProductAnalytics::Visualization::PRODUCT_ANALYTICS_VISUALIZATIONS +
-            ['example_custom_visualization']
+          expected_visualizations = ['example_custom_visualization']
 
           expect(subject.map(&:slug)).to match_array(expected_visualizations)
         end
@@ -206,7 +225,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
       )
     end
 
-    subject { described_class.for(container: project) }
+    subject { described_class.for(container: project, user: user) }
 
     it 'captures the error' do
       vis = (subject.select { |v| v.slug == 'example_invalid_custom_visualization' }).first
