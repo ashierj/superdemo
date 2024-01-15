@@ -21,7 +21,6 @@ module Security
       return unless project
 
       return unless project.licensed_feature_available?(:security_orchestration_policies)
-      return if Feature.enabled?(:skip_refresh_project_policies, project.root_namespace)
 
       configurations_with_users = project.all_security_orchestration_policy_configurations.select do |configuration|
         configuration.active_scan_result_policies.any? do |policy|
