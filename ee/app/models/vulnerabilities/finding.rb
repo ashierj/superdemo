@@ -110,6 +110,26 @@ module Vulnerabilities
       preload(:scanner, :identifiers, :feedbacks, project: [:namespace, :project_feature])
     end
 
+    scope :with_false_positive, -> (false_positive) do
+      flags = ::Vulnerabilities::Flag.arel_table
+
+      where(
+        false_positive ? 'EXISTS (?)' : 'NOT EXISTS (?)',
+        ::Vulnerabilities::Flag.select(1).false_positive.where(flags[:vulnerability_occurrence_id].eq(arel_table[:id]))
+      )
+    end
+
+    scope :with_fix_available, -> (fix_available) do
+      remediation = ::Vulnerabilities::FindingRemediation.arel_table
+      solution_query = where(fix_available ? 'solution IS NOT NULL' : 'solution IS NULL')
+      exist_query = where(
+        fix_available ? 'EXISTS (?)' : 'NOT EXISTS (?)',
+        ::Vulnerabilities::FindingRemediation.select(1).where(remediation[:vulnerability_occurrence_id].eq(arel_table[:id]))
+      )
+
+      fix_available ? solution_query.or(exist_query) : solution_query.and(exist_query)
+    end
+
     scope :scoped_project, -> { where('vulnerability_occurrences.project_id = projects.id') }
     scope :eager_load_vulnerability_flags, -> { includes(:vulnerability_flags) }
     scope :by_location_image, -> (images) do
