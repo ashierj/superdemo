@@ -35,12 +35,6 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
       allow(helper).to receive(:current_user).and_return(current_user)
     end
 
-    context 'for show_generate_test_file_button' do
-      it 'returns expected value' do
-        expect(subject[:show_generate_test_file_button]).to eq('false')
-      end
-    end
-
     context 'for endpoint_codequality' do
       before do
         stub_licensed_features(inline_codequality: true)

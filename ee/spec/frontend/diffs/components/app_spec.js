@@ -22,7 +22,6 @@ const TEST_ENDPOINT = `${TEST_HOST}/diff/endpoint`;
 
 jest.mock('~/mr_notes/stores', () => jest.requireActual('helpers/mocks/mr_notes/stores'));
 Vue.use(VueApollo);
-Vue.config.ignoredElements = ['copy-code'];
 
 describe('diffs/components/app', () => {
   let mockDispatch;

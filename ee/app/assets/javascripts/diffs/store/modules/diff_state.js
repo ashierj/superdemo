@@ -7,5 +7,4 @@ export default () => ({
   codequalityDiff: {},
   sastReportAvailable: false,
   sastDiff: {},
-  generateTestFilePath: '',
 });
