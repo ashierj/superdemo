@@ -6,6 +6,8 @@ module RemoteDevelopment
     #       https://gitlab.com/gitlab-org/gitlab/-/issues/410045#note_1385602915
     include IgnorableColumns
 
+    UNLIMITED_QUOTA = -1
+
     ignore_column :max_workspaces, remove_with: '16.8', remove_after: '2023-12-22'
     ignore_column :max_workspaces_per_user, remove_with: '16.8', remove_after: '2023-12-22'
 
@@ -28,8 +30,9 @@ module RemoteDevelopment
     validates :max_resources_per_workspace,
       json_schema: { filename: 'remote_development_agent_configs_workspace_container_resources' }
     validates :max_resources_per_workspace, 'remote_development/workspace_container_resources': true
-    validates :workspaces_quota, numericality: { only_integer: true, greater_than_or_equal_to: -1 }
-    validates :workspaces_per_user_quota, numericality: { only_integer: true, greater_than_or_equal_to: -1 }
+    validates :workspaces_quota, numericality: { only_integer: true, greater_than_or_equal_to: UNLIMITED_QUOTA }
+    validates :workspaces_per_user_quota,
+      numericality: { only_integer: true, greater_than_or_equal_to: UNLIMITED_QUOTA }
 
     # noinspection RubyResolve - likely due to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-25400
     before_validation :prevent_dns_zone_update, if: ->(record) { record.persisted? && record.dns_zone_changed? }
