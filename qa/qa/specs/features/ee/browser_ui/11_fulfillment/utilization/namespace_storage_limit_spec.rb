@@ -32,14 +32,6 @@ module QA
           project: project)
       end
 
-      let(:one_b_file_path) do
-        File.expand_path('../../../../../../fixtures/files/one_b', __dir__)
-      end
-
-      let(:one_b_file_content) do
-        File.read(one_b_file_path).to_s
-      end
-
       let(:application_settings_endpoint) do
         QA::Runtime::API::Request.new(admin_api_client, '/application/settings').url
       end
@@ -73,6 +65,17 @@ module QA
         }
 
         group.visit!
+
+        expect_storage_limit_message(storage_warning_message, 'Warning for storage limit not shown')
+
+        create(:commit,
+          project: project,
+          commit_message: 'Commit 1B of data',
+          actions: [{
+            action: 'create',
+            file_path: 'file.txt',
+            content: '1' * 512
+          }])
       end
 
       after do
@@ -85,24 +88,36 @@ module QA
         }
 
         runner.remove_via_api!
-        project.remove_via_api! # This is important to have here to revert the namespace back to full-access mode
+
+        begin
+          # This is important to have here to revert the namespace back to full-access mode and have it be ready for
+          # the next test run
+          project.remove_via_api!
+        rescue QA::Resource::Errors::ResourceNotDeletedError
+          # The error is expected for the other test if that test passes because the project would already be deleted
+          # as part of the test steps but this can serve as a backup in case something goes wrong and the project
+          # doesn't get deleted
+        end
       end
 
       context 'when namespace storage usage hits the limit' do
         it(
-          'puts the project into read-only mode',
+          'puts the namespace into read-only mode',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/437114'
         ) do
-          expect_storage_limit_message(storage_warning_message, 'Warning for storage limit not shown')
-
-          Resource::Repository::ProjectPush.fabricate! do |push|
-            push.project = project
-            push.file_name = 'one_b'
-            push.file_content = one_b_file_content
-            push.commit_message = 'Commit 1B of data'
-          end
-
           expect_storage_limit_message(storage_limit_reached_message, 'Alert for storage limit exceeded not shown')
+        end
+      end
+
+      context 'when namespace storage usage goes back down below the limit' do
+        it(
+          'reverts the namespace back to full-access mode',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/437807'
+        ) do
+          project.remove_via_api!
+          group.visit!
+
+          expect_storage_limit_message(storage_warning_message, 'Warning for storage limit not shown')
         end
       end
 
