@@ -294,4 +294,9 @@ RSpec.describe ElasticCommitIndexerWorker, feature_category: :global_search do
       end
     end
   end
+
+  it 'registers worker to limit concurrency' do
+    max_jobs = ::Gitlab::SidekiqMiddleware::ConcurrencyLimit::WorkersMap.limit_for(worker: described_class)
+    expect(max_jobs.call).to eq(60)
+  end
 end
