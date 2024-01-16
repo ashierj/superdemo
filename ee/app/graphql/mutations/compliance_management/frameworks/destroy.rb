@@ -6,7 +6,7 @@ module Mutations
       class Destroy < ::Mutations::BaseMutation
         graphql_name 'DestroyComplianceFramework'
 
-        authorize :manage_compliance_framework
+        authorize :admin_compliance_framework
 
         argument :id,
                  ::Types::GlobalIDType[::ComplianceManagement::Framework],

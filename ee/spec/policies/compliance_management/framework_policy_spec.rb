@@ -11,15 +11,15 @@ RSpec.describe ComplianceManagement::FrameworkPolicy do
   subject { described_class.new(user, framework) }
 
   shared_examples 'full access to compliance framework administration' do
-    it { is_expected.to be_allowed(:manage_compliance_framework) }
+    it { is_expected.to be_allowed(:admin_compliance_framework) }
     it { is_expected.to be_allowed(:read_compliance_framework) }
-    it { is_expected.to be_allowed(:manage_group_level_compliance_pipeline_config) }
+    it { is_expected.to be_allowed(:admin_compliance_pipeline_configuration) }
   end
 
   shared_examples 'no access to compliance framework administration' do
-    it { is_expected.to be_disallowed(:manage_compliance_framework) }
+    it { is_expected.to be_disallowed(:admin_compliance_framework) }
     it { is_expected.to be_disallowed(:read_compliance_framework) }
-    it { is_expected.to be_disallowed(:manage_group_level_compliance_pipeline_config) }
+    it { is_expected.to be_disallowed(:admin_compliance_pipeline_configuration) }
   end
 
   context 'feature is licensed' do
@@ -58,8 +58,8 @@ RSpec.describe ComplianceManagement::FrameworkPolicy do
       end
 
       it { is_expected.to be_allowed(:read_compliance_framework) }
-      it { is_expected.to be_disallowed(:manage_compliance_framework) }
-      it { is_expected.to be_disallowed(:manage_group_level_compliance_pipeline_config) }
+      it { is_expected.to be_disallowed(:admin_compliance_framework) }
+      it { is_expected.to be_disallowed(:admin_compliance_pipeline_configuration) }
     end
   end
 

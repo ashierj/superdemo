@@ -5,7 +5,7 @@ module ComplianceManagement
     def compliance_pipeline_configuration_available?
       return true if params[:pipeline_configuration_full_path].blank?
 
-      can?(current_user, :manage_group_level_compliance_pipeline_config, framework)
+      can?(current_user, :admin_compliance_pipeline_configuration, framework)
     end
   end
 end

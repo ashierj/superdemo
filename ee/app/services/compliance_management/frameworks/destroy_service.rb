@@ -20,7 +20,7 @@ module ComplianceManagement
       private
 
       def permitted?
-        can? current_user, :manage_compliance_framework, framework
+        can? current_user, :admin_compliance_framework, framework
       end
 
       def success
