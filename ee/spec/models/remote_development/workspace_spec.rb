@@ -156,5 +156,217 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
           .to include("is 'Terminated', and cannot be updated. Create a new workspace instead.")
       end
     end
+
+    describe "#workspaces_count_for_current_user_and_agent" do
+      let_it_be(:user1) { create(:user) }
+      let_it_be(:user2) { create(:user) }
+      let_it_be(:user3) { create(:user) }
+      let_it_be(:agent1, reload: true) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+      let_it_be(:agent2, reload: true) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+      let_it_be(:workspace1) do
+        create(:workspace, user: user1, agent: agent1, desired_state: ::RemoteDevelopment::Workspaces::States::RUNNING)
+      end
+
+      let_it_be(:workspace2) do
+        create(:workspace, user: user2, agent: agent1,
+          desired_state: ::RemoteDevelopment::Workspaces::States::TERMINATED)
+      end
+
+      let_it_be(:workspace3) do
+        create(:workspace, user: user1, agent: agent1, desired_state: ::RemoteDevelopment::Workspaces::States::STOPPED)
+      end
+
+      let_it_be(:workspace4) do
+        create(:workspace, user: user2, agent: agent2,
+          desired_state: ::RemoteDevelopment::Workspaces::States::TERMINATED)
+      end
+
+      let_it_be(:workspace5) do
+        create(:workspace, user: user3, agent: agent2, desired_state: ::RemoteDevelopment::Workspaces::States::RUNNING)
+      end
+
+      it "returns the correct count for the current user and agent" do
+        expect(workspace1.workspaces_count_for_current_user_and_agent).to eq(2)
+        expect(workspace2.workspaces_count_for_current_user_and_agent).to eq(0)
+        expect(workspace4.workspaces_count_for_current_user_and_agent).to eq(0)
+        expect(workspace5.workspaces_count_for_current_user_and_agent).to eq(1)
+      end
+    end
+
+    describe "#workspaces_count_for_current_agent" do
+      let_it_be(:agent1, reload: true) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+      let_it_be(:agent2, reload: true) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+      let_it_be(:workspace1) do
+        create(:workspace, agent: agent1,  desired_state: ::RemoteDevelopment::Workspaces::States::RUNNING)
+      end
+
+      let_it_be(:workspace2) do
+        create(:workspace, agent: agent1,  desired_state: ::RemoteDevelopment::Workspaces::States::TERMINATED)
+      end
+
+      let_it_be(:workspace3) do
+        create(:workspace, agent: agent1,  desired_state: ::RemoteDevelopment::Workspaces::States::STOPPED)
+      end
+
+      let_it_be(:workspace4) do
+        create(:workspace, agent: agent2,  desired_state: ::RemoteDevelopment::Workspaces::States::TERMINATED)
+      end
+
+      let_it_be(:workspace5) do
+        create(:workspace, agent: agent2,  desired_state: ::RemoteDevelopment::Workspaces::States::RUNNING)
+      end
+
+      it "returns the correct count for the current agent" do
+        expect(workspace1.workspaces_count_for_current_agent).to eq(2)
+        expect(workspace4.workspaces_count_for_current_agent).to eq(1)
+        expect(workspace5.workspaces_count_for_current_agent).to eq(1)
+      end
+    end
+
+    describe "#exceeds_workspaces_per_user_quota?" do
+      let(:workspace) { create(:workspace) }
+
+      context "when remote_development_agent_config is nil" do
+        it "returns false" do
+          workspace.remote_development_agent_config = nil
+          expect(workspace.exceeds_workspaces_per_user_quota?).to be nil
+        end
+      end
+
+      context "when remote_development_agent_config is present" do
+        context "when workspaces_per_user_quota is 0" do
+          before do
+            allow(workspace).to receive(:remote_development_agent_config).and_return(instance_double(
+              RemoteDevelopment::RemoteDevelopmentAgentConfig, workspaces_per_user_quota: 0))
+          end
+
+          it "returns true" do
+            expect(workspace.exceeds_workspaces_per_user_quota?).to be true
+          end
+        end
+
+        context "when workspaces_per_user_quota is -1" do
+          before do
+            allow(workspace).to receive(:remote_development_agent_config).and_return(instance_double(
+              RemoteDevelopment::RemoteDevelopmentAgentConfig, workspaces_per_user_quota: -1))
+          end
+
+          it "returns false" do
+            expect(workspace.exceeds_workspaces_per_user_quota?).to be false
+          end
+        end
+
+        context "when workspaces_per_user_quota is greater than 0" do
+          before do
+            allow(workspace).to receive(:remote_development_agent_config).and_return(instance_double(
+              RemoteDevelopment::RemoteDevelopmentAgentConfig, workspaces_per_user_quota: 2))
+          end
+
+          it "returns true if the workspaces count for current user and agent is greater than or equal to the quota" do
+            allow(workspace).to receive(:workspaces_count_for_current_user_and_agent).and_return(3)
+            expect(workspace.exceeds_workspaces_per_user_quota?).to be true
+          end
+
+          it "returns false if the workspaces count for current user and agent is less than the quota" do
+            allow(workspace).to receive(:workspaces_count_for_current_user_and_agent).and_return(1)
+            expect(workspace.exceeds_workspaces_per_user_quota?).to be false
+          end
+        end
+      end
+    end
+
+    describe "#exceeds_workspaces_quota?" do
+      let(:workspace) { create(:workspace) }
+
+      context "when remote_development_agent_config is nil" do
+        it "returns false" do
+          workspace.remote_development_agent_config = nil
+          expect(workspace.exceeds_workspaces_quota?).to be nil
+        end
+      end
+
+      context "when remote_development_agent_config is present" do
+        context "when workspaces_quota is 0" do
+          before do
+            allow(workspace).to receive(:remote_development_agent_config).and_return(instance_double(
+              RemoteDevelopment::RemoteDevelopmentAgentConfig, workspaces_quota: 0))
+          end
+
+          it "returns true" do
+            expect(workspace.exceeds_workspaces_quota?).to be true
+          end
+        end
+
+        context "when workspaces_quota is -1" do
+          before do
+            allow(workspace).to receive(:remote_development_agent_config).and_return(instance_double(
+              RemoteDevelopment::RemoteDevelopmentAgentConfig, workspaces_quota: -1))
+          end
+
+          it "returns false" do
+            expect(workspace.exceeds_workspaces_quota?).to be false
+          end
+        end
+
+        context "when workspaces_quota is greater than 0" do
+          before do
+            allow(workspace).to receive(:remote_development_agent_config).and_return(instance_double(
+              RemoteDevelopment::RemoteDevelopmentAgentConfig, workspaces_quota: 2))
+          end
+
+          it "returns true if the workspaces count for the current agent is greater than or equal to the quota" do
+            allow(workspace).to receive(:workspaces_count_for_current_agent).and_return(3)
+            expect(workspace.exceeds_workspaces_quota?).to be true
+          end
+
+          it "returns false if the workspaces count for the current agent is less than the quota" do
+            allow(workspace).to receive(:workspaces_count_for_current_agent).and_return(1)
+            expect(workspace.exceeds_workspaces_quota?).to be false
+          end
+        end
+      end
+    end
+
+    describe '#enforce_quotas' do
+      subject(:workspace) do
+        build(:workspace,
+          user: user,
+          agent: agent,
+          project: project,
+          personal_access_token: personal_access_token, desired_state: desired_state)
+      end
+
+      before do
+        allow(workspace).to receive(:exceeds_workspaces_per_user_quota?).and_return(false)
+        allow(workspace).to receive(:exceeds_workspaces_quota?).and_return(false)
+      end
+
+      it 'does not add base errors when quotas are not exceeded' do
+        workspace.validate
+        expect(workspace.errors[:base]).to be_empty
+      end
+
+      it 'adds base error when per user quota exceeded' do
+        allow(workspace).to receive(:remote_development_agent_config).and_return(instance_double(
+          ::RemoteDevelopment::RemoteDevelopmentAgentConfig, workspaces_per_user_quota: 5))
+        allow(workspace).to receive(:workspaces_count_for_current_user_and_agent).and_return(6)
+        allow(workspace).to receive(:exceeds_workspaces_per_user_quota?).and_return(true)
+        workspace.validate
+        message = "You cannot create a workspace because you already have \"6\" \
+existing workspaces for the given agent with a per user quota of \"5\" workspaces"
+        expect(workspace.errors[:base]).to include(message)
+      end
+
+      it 'adds base error when total quota exceeded' do
+        allow(workspace).to receive(:remote_development_agent_config).and_return(instance_double(
+          ::RemoteDevelopment::RemoteDevelopmentAgentConfig, workspaces_quota: 3))
+        allow(workspace).to receive(:workspaces_count_for_current_agent).and_return(3)
+        allow(workspace).to receive(:exceeds_workspaces_quota?).and_return(true)
+        workspace.validate
+        message = "You cannot create a workspace because there are already \"3\" \
+existing workspaces for the given agent with a total quota of \"3\" workspaces"
+        expect(workspace.errors[:base]).to include(message)
+      end
+    end
   end
 end
