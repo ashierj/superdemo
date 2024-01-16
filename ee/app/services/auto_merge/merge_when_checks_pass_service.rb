@@ -23,7 +23,7 @@ module AutoMerge
         merge_request,
         project,
         current_user,
-        merge_request.actual_head_pipeline.sha
+        merge_request.merge_params.symbolize_keys[:sha]
       )
     end
 
