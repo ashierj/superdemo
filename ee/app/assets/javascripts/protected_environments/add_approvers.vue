@@ -8,6 +8,7 @@ import {
   GlFormInput,
   GlSprintf,
   GlTooltipDirective as GlTooltip,
+  GlToggle,
 } from '@gitlab/ui';
 import { uniqueId } from 'lodash';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
@@ -15,7 +16,7 @@ import Api from 'ee/api';
 import { getUser } from '~/rest_api';
 import { s__ } from '~/locale';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
-import { ACCESS_LEVELS } from './constants';
+import { ACCESS_LEVELS, INHERITED_GROUPS, NON_INHERITED_GROUPS } from './constants';
 
 const mapUserToApprover = (user) => ({
   name: user.name,
@@ -37,6 +38,7 @@ const mapGroupToApprover = (group) => ({
   id: group.id,
   avatarShape: 'rect',
   approvals: 1,
+  groupInheritanceType: false,
   type: 'group',
 });
 
@@ -60,6 +62,7 @@ export default {
     GlLink,
     GlFormInput,
     GlSprintf,
+    GlToggle,
     AccessDropdown,
   },
   directives: { GlTooltip },
@@ -142,6 +145,11 @@ export default {
       this.$set(this.approverInfo, i, { ...approver, approvals });
       this.emitApprovalRules();
     },
+    updateApproverInheritance(approver, groupInheritanceType) {
+      const i = this.approverInfo.indexOf(approver);
+      this.$set(this.approverInfo, i, { ...approver, groupInheritanceType });
+      this.emitApprovalRules();
+    },
     removeApprover({ type, id }) {
       const key = ID_FOR_TYPE[type];
       const index = this.approvers.findIndex(({ [key]: i }) => id === i);
@@ -154,13 +162,22 @@ export default {
     approvalsId(index) {
       return `${this.uniqueId}-${index}`;
     },
+    inheritanceId(index) {
+      return `${this.uniqueId}-inheritance-${index}`;
+    },
     emitApprovalRules() {
       const rules = this.approverInfo.map((info) => {
         switch (info.type) {
           case 'user':
             return { user_id: info.id, required_approvals: info.approvals };
           case 'group':
-            return { group_id: info.id, required_approvals: info.approvals };
+            return {
+              group_id: info.id,
+              required_approvals: info.approvals,
+              group_inheritance_type: info.groupInheritanceType
+                ? INHERITED_GROUPS
+                : NON_INHERITED_GROUPS,
+            };
           case 'access':
             return { access_level: info.accessLevel, required_approvals: info.approvals };
           default:
@@ -168,6 +185,9 @@ export default {
         }
       });
       this.$emit('change', rules);
+    },
+    isGroupRule(rule) {
+      return rule.type === 'group';
     },
   },
   i18n: {
@@ -182,6 +202,7 @@ export default {
       'ProtectedEnvironments|To configure unified approval rules, use the %{apiLinkStart}API%{apiLinkEnd}. Consider using %{docsLinkStart}multiple approval rules%{docsLinkEnd} instead.',
     ),
     accessDropdownLabel: s__('ProtectedEnvironments|Select users'),
+    inheritanceLabel: s__('ProtectedEnvironments|Enable group inheritance'),
   },
 };
 </script>
@@ -222,7 +243,9 @@ export default {
         class="protected-environment-approvers gl-display-grid gl-gap-5 gl-align-items-center"
       >
         <span class="protected-environment-approvers-label">{{ __('Approvers') }}</span>
-        <span class="protected-environment-approvers-label">{{ __('Approvals required') }}</span>
+        <span>{{ __('Approvals required') }}</span>
+        <span>{{ __('Group inheritance') }}</span>
+        <span></span>
         <template v-for="(approver, index) in approverInfo">
           <gl-avatar
             v-if="approver.avatarShape"
@@ -260,6 +283,19 @@ export default {
               {{ $options.i18n.approvalsInvalid }}
             </template>
           </gl-form-group>
+
+          <gl-toggle
+            v-if="isGroupRule(approver)"
+            :id="inheritanceId(index)"
+            :key="`${index}-inheritance`"
+            :label="$options.i18n.inheritanceLabel"
+            :name="`approval-inheritance-${approver.name}`"
+            :value="approver.groupInheritanceType"
+            label-position="hidden"
+            class="gl-align-items-center"
+            @change="updateApproverInheritance(approver, $event)"
+          />
+          <span v-else :key="`${index}-inheritance`"></span>
           <gl-button
             :key="`${index}-remove`"
             v-gl-tooltip

@@ -23207,6 +23207,9 @@ msgstr ""
 msgid "Group information"
 msgstr ""
 
+msgid "Group inheritance"
+msgstr ""
+
 msgid "Group invite"
 msgstr ""
 
@@ -39627,6 +39630,12 @@ msgid "ProtectedEnvironments|Delete deployer rule"
 msgstr ""
 
 msgid "ProtectedEnvironments|Edit"
+msgstr ""
+
+msgid "ProtectedEnvironments|Enable group inheritance"
+msgstr ""
+
+msgid "ProtectedEnvironments|Group inheritance"
 msgstr ""
 
 msgid "ProtectedEnvironments|Number of approvals must be between 1 and 5"

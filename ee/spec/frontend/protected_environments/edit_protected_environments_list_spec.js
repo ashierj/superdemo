@@ -1,4 +1,4 @@
-import { GlAvatar, GlButton } from '@gitlab/ui';
+import { GlAvatar, GlButton, GlToggle } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
 // eslint-disable-next-line no-restricted-imports
@@ -16,7 +16,11 @@ import AddApprovers from 'ee/protected_environments/add_approvers.vue';
 import EditProtectedEnvironmentRulesCard from 'ee/protected_environments/edit_protected_environment_rules_card.vue';
 import EditProtectedEnvironmentsList from 'ee/protected_environments/edit_protected_environments_list.vue';
 import ProtectedEnvironments from 'ee/protected_environments/protected_environments.vue';
-import { DEPLOYER_RULE_KEY, APPROVER_RULE_KEY } from 'ee/protected_environments/constants';
+import {
+  DEPLOYER_RULE_KEY,
+  APPROVER_RULE_KEY,
+  INHERITED_GROUPS,
+} from 'ee/protected_environments/constants';
 import { MAINTAINER_ACCESS_LEVEL, DEVELOPER_ACCESS_LEVEL } from './constants';
 
 const DEFAULT_ENVIRONMENTS = [
@@ -33,7 +37,7 @@ const DEFAULT_ENVIRONMENTS = [
       {
         id: 2,
         group_id: 1,
-        group_inheritance_type: '1',
+        group_inheritance_type: INHERITED_GROUPS,
         access_level_description: 'Some group',
         access_level: null,
         user_id: null,
@@ -58,7 +62,7 @@ const DEFAULT_ENVIRONMENTS = [
       {
         id: 2,
         group_id: 1,
-        group_inheritance_type: '1',
+        group_inheritance_type: INHERITED_GROUPS,
         access_level_description: 'Some group',
         access_level: null,
         user_id: null,
@@ -121,6 +125,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
     wrapper.findByTitle(s__('ProtectedEnvironments|Delete approver rule'));
   const findApproverEditButton = (w = wrapper) =>
     w.findByRole('button', { name: s__('ProtectedEnvironments|Edit') });
+  const findInheritanceToggle = (w = wrapper) => w.findComponent(GlToggle);
   const findApproverSaveButton = () =>
     wrapper.findByRole('button', { name: s__('ProtectedEnvironments|Save') });
   const findApprovalsInput = () =>
@@ -406,6 +411,49 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
           },
         ],
       });
+    });
+
+    it('shows a toggle for group ID rules', async () => {
+      const [, rule] = environment.approval_rules;
+      mock.onPut().reply(HTTP_STATUS_OK);
+
+      const row = wrapper.findByTestId(`approval_rules-${rule.id}`);
+      const button = findApproverEditButton(extendedWrapper(row));
+
+      expect(findInheritanceToggle(row).props('value')).toBe(true);
+      expect(findInheritanceToggle(row).props('disabled')).toBe(true);
+
+      await button.trigger('click');
+
+      expect(findInheritanceToggle(row).props('value')).toBe(true);
+      expect(findInheritanceToggle(row).props('disabled')).toBe(false);
+
+      await findInheritanceToggle(row).vm.$emit('change', false);
+
+      findApproverSaveButton().trigger('click');
+
+      await waitForPromises();
+
+      expect(mock.history.put.length).toBe(1);
+      const [{ data }] = mock.history.put;
+      expect(JSON.parse(data)).toMatchObject({
+        name: environment.name,
+        approval_rules: [
+          {
+            id: rule.id,
+            group_id: rule.group_id,
+            access_level_description: rule.access_level_description,
+            group_inheritance_type: 0,
+          },
+        ],
+      });
+    });
+
+    it('hides the toggle for non-group rules', () => {
+      const { id } = environment.approval_rules.find(({ user_id: userId }) => userId);
+      const row = wrapper.findByTestId(`approval_rules-${id}`);
+
+      expect(findInheritanceToggle(row).exists()).toBe(false);
     });
 
     it('hides the edit button for user rules', () => {

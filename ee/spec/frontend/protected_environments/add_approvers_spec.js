@@ -1,6 +1,6 @@
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
-import { GlAvatar, GlFormInput, GlFormGroup } from '@gitlab/ui';
+import { GlAvatar, GlFormInput, GlFormGroup, GlToggle } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { TEST_HOST } from 'helpers/test_constants';
@@ -51,6 +51,11 @@ describe('ee/protected_environments/add_approvers.vue', () => {
     wrapper
       .findAllComponents(GlFormInput)
       .wrappers.find((w) => w.attributes('name') === `approval-count-${name}`);
+
+  const findInheritanceForApprover = (name) =>
+    wrapper
+      .findAllComponents(GlToggle)
+      .wrappers.find((w) => w.props('name') === `approval-inheritance-${name}`);
 
   const findRemoveApproverButton = (name) =>
     wrapper.findComponentByTestId(`remove-approver-${name}`);
@@ -155,6 +160,48 @@ describe('ee/protected_environments/add_approvers.vue', () => {
     });
   });
 
+  it('shows an inheritance toggle for group approval rules', async () => {
+    createComponent();
+    mockAxios.onGet('/api/v4/groups/1').replyOnce(HTTP_STATUS_OK, {
+      avatarUrl: '/root/group.png',
+      href: `${TEST_HOST}/root/group`,
+      full_name: 'root / group',
+    });
+
+    findApproverDropdown().vm.$emit('select', [{ group_id: 1 }]);
+
+    await nextTick();
+    await waitForPromises();
+
+    const toggle = findInheritanceForApprover('root / group');
+
+    expect(toggle.props('value')).toBe(false);
+    expect(toggle.props('label')).toBe('Enable group inheritance');
+  });
+
+  it('emits 1 when inheritance is toggled', async () => {
+    createComponent();
+    mockAxios.onGet('/api/v4/groups/1').replyOnce(HTTP_STATUS_OK, {
+      id: 1,
+      avatarUrl: '/root/group.png',
+      href: `${TEST_HOST}/root/group`,
+      full_name: 'root / group',
+    });
+
+    findApproverDropdown().vm.$emit('select', [{ group_id: 1 }]);
+
+    await nextTick();
+    await waitForPromises();
+
+    const toggle = findInheritanceForApprover('root / group');
+    toggle.vm.$emit('change', true);
+
+    await nextTick();
+
+    const [[[event]]] = wrapper.emitted('change').reverse();
+    expect(event).toEqual({ group_id: 1, required_approvals: 1, group_inheritance_type: 1 });
+  });
+
   it('removes approvers if remove is clicked', async () => {
     createComponent();
     mockAxios
@@ -256,7 +303,7 @@ describe('ee/protected_environments/add_approvers.vue', () => {
         input.vm.$emit('input', 3);
         await nextTick();
         const [[[event]]] = wrapper.emitted('change').reverse();
-        expect(event).toEqual({ ...access, required_approvals: 3 });
+        expect(event).toMatchObject({ ...access, required_approvals: 3 });
       });
     });
   });

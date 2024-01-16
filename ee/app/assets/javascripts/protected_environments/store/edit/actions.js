@@ -1,7 +1,12 @@
 import { getUser, getProjectMembers, getGroupMembers } from '~/rest_api';
 import Api from 'ee/api';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
-import { INHERITED_GROUPS, RULE_KEYS } from '../../constants';
+import {
+  INHERITED_GROUPS,
+  NON_INHERITED_GROUPS,
+  RULE_KEYS,
+  GROUP_INHERITANCE_KEY,
+} from '../../constants';
 import * as types from './mutation_types';
 
 const fetchUsersForRuleForProject = (
@@ -17,15 +22,12 @@ const fetchUsersForRuleForProject = (
     return getUser(userId).then(({ data }) => [data]);
   }
   if (groupId != null) {
-    return getGroupMembers(groupId, groupInheritanceType?.toString() === INHERITED_GROUPS).then(
+    return getGroupMembers(groupId, groupInheritanceType === INHERITED_GROUPS).then(
       ({ data }) => data,
     );
   }
 
-  return getProjectMembers(
-    projectId,
-    groupInheritanceType?.toString() === INHERITED_GROUPS,
-  ).then(({ data }) =>
+  return getProjectMembers(projectId, groupInheritanceType === INHERITED_GROUPS).then(({ data }) =>
     data.filter(({ access_level: memberAccessLevel }) => memberAccessLevel >= accessLevel),
   );
 };
@@ -119,7 +121,7 @@ export const saveRule = ({ dispatch, state }, { environment, ruleKey }) => {
 
 export const updateRule = ({ dispatch, state, commit }, { environment, ruleKey, rule }) => {
   const updatedRuleEntries = Object.entries(state.editingRules[rule.id]).filter(
-    ([, value]) => value,
+    ([key, value]) => value || key === GROUP_INHERITANCE_KEY,
   );
   const updatedEnvironment = {
     name: environment.name,
@@ -141,6 +143,13 @@ export const updateEnvironment = ({ state, commit, dispatch }, environment) => {
     .catch((error) => {
       commit(types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR, error);
     });
+};
+
+export const updateApproverInheritance = ({ commit }, { rule, value }) => {
+  commit(types.EDIT_RULE, {
+    ...rule,
+    group_inheritance_type: value ? INHERITED_GROUPS : NON_INHERITED_GROUPS,
+  });
 };
 
 export const editRule = ({ commit }, rule) => commit(types.EDIT_RULE, rule);
