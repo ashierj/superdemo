@@ -1307,10 +1307,10 @@
   resolved "https://registry.yarnpkg.com/@gitlab/fonts/-/fonts-1.3.0.tgz#df89c1bb6714e4a8a5d3272568aa4de7fb337267"
   integrity sha512-DoMUIN3DqjEn7wvcxBg/b7Ite5fTdF5EmuOZoBRo2j0UBGweDXmNBi+9HrTZs4cBU660dOxcf1hATFcG3npbPg==
 
-"@gitlab/stylelint-config@6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@gitlab/stylelint-config/-/stylelint-config-6.0.0.tgz#00a50e3c574fe0e8a45f2511fd2a633e9dd0d141"
-  integrity sha512-I+8NRzGEySZcA8hE/o5f9qj8qHG1F1PveoT3p52aXRoRpfM21z/xvlN0hcZQDa9xrHBuu0pm9A7HyweO3rDvmw==
+"@gitlab/stylelint-config@6.1.0":
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/@gitlab/stylelint-config/-/stylelint-config-6.1.0.tgz#8345eb7523e97ad737c94fd024d25de4329df1a6"
+  integrity sha512-PosGz6l6DRPR9YAGvBDZnBVo6/iTxSLy76+/adlvxuvcQz9AoPwCEEhdMKS7h8+Wtw3oCjAOBYA2pPMHxltwqA==
   dependencies:
     postcss-scss "4.0.9"
     stylelint-declaration-strict-value "1.10.4"
