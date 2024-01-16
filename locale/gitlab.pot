@@ -22538,7 +22538,7 @@ msgstr ""
 msgid "GithubImporter|Issue %{issue_iid} attachment"
 msgstr ""
 
-msgid "GithubImporter|Issue links"
+msgid "GithubImporter|Issue attachments"
 msgstr ""
 
 msgid "GithubImporter|Merge request %{merge_request_iid} attachment"
@@ -22547,7 +22547,7 @@ msgstr ""
 msgid "GithubImporter|Note attachment"
 msgstr ""
 
-msgid "GithubImporter|Note links"
+msgid "GithubImporter|Note attachments"
 msgstr ""
 
 msgid "GithubImporter|PR attachments"
@@ -22586,7 +22586,7 @@ msgstr ""
 msgid "GithubImporter|Release %{tag} attachment"
 msgstr ""
 
-msgid "GithubImporter|Release links"
+msgid "GithubImporter|Release attachments"
 msgstr ""
 
 msgid "GithubImporter|Your import of GitHub gists into GitLab snippets is complete."
