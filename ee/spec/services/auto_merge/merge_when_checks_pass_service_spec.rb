@@ -104,6 +104,24 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
       let(:expected_note) do
         "enabled an automatic merge when all merge checks for #{pipeline.sha} pass"
       end
+
+      before do
+        merge_request.update!(merge_params: { sha: pipeline.sha })
+      end
+    end
+
+    context 'when no pipeline exists' do
+      it_behaves_like 'auto_merge service #execute' do
+        let(:pipeline) { nil }
+        let(:auto_merge_strategy) { AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS }
+        let(:expected_note) do
+          "enabled an automatic merge when all merge checks for 123456 pass"
+        end
+
+        before do
+          merge_request.update!(merge_params: { sha: "123456" })
+        end
+      end
     end
   end
 
