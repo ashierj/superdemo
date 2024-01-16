@@ -26,8 +26,7 @@ describe('MemberList', () => {
             members: [],
             tableFields: [],
             tableAttrs: {
-              table: { 'data-qa-selector': 'members_list' },
-              tr: { 'data-qa-selector': 'member_row' },
+              tr: { 'data-testid': 'member-row' },
             },
             pagination: {},
             ...state,
