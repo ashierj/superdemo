@@ -10,11 +10,7 @@ module ResourceEvents
     end
 
     def execute
-      ids = ::ApplicationRecord.legacy_bulk_insert( # rubocop:disable Gitlab/BulkInsert
-        ResourceWeightEvent.table_name, resource_weight_changes, return_ids: true
-      )
-      ResourceWeightEvent.id_in(ids).with_work_item.each(&:trigger_note_subscription_create)
-
+      resource.resource_weight_events.create!(resource_weight_event_attributes)
       resource.broadcast_notes_changed
 
       if resource.is_a?(WorkItem)
@@ -27,14 +23,14 @@ module ResourceEvents
 
     private
 
-    def resource_weight_changes
-      changes = []
-      base_data = { user_id: user.id, issue_id: resource.id }
-
-      changes << base_data.merge({ weight: resource.previous_weight, created_at: resource.previous_updated_at }) if resource.first_weight_event?
-      changes << base_data.merge({ weight: resource.weight, created_at: resource.system_note_timestamp })
-
-      changes
+    def resource_weight_event_attributes
+      {
+        user_id: user.id,
+        issue_id: resource.id,
+        weight: resource.weight,
+        previous_weight: resource.previous_changes['weight']&.first,
+        created_at: resource.system_note_timestamp
+      }
     end
   end
 end

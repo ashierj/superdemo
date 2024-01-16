@@ -33,31 +33,6 @@ RSpec.describe ResourceEvents::ChangeWeightService, feature_category: :team_plan
     end
   end
 
-  context 'when there is no existing weight event record' do
-    before do
-      ResourceWeightEvent.delete_all
-      issue.update!(weight: 5, updated_at: 10.seconds.ago)
-    end
-
-    it 'creates the expected event records' do
-      prev_update_at = issue.previous_changes['updated_at']&.first
-
-      expect { subject }.to change { ResourceWeightEvent.count }.by(2)
-
-      record = ResourceWeightEvent.first
-      expect_event_record(record, weight: 3, created_at: prev_update_at)
-
-      record = ResourceWeightEvent.last
-      expect_event_record(record, weight: 5, created_at: created_at_time)
-    end
-
-    it 'triggers note created subscription' do
-      expect(GraphqlTriggers).to receive(:work_item_note_created).twice
-
-      subject
-    end
-  end
-
   describe 'events tracking', :snowplow do
     context 'when resource is an issuable' do
       it 'tracks issue usage data counters' do

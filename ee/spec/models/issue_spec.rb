@@ -23,12 +23,6 @@ RSpec.describe Issue, feature_category: :team_planning do
     it { is_expected.to have_many(:issuable_resource_links) }
   end
 
-  describe 'modules' do
-    subject { build(:issue) }
-
-    it { is_expected.to include_module(EE::WeightEventable) }
-  end
-
   context 'scopes' do
     describe 'health status' do
       let_it_be(:on_track) { create(:issue, health_status: :on_track) }
