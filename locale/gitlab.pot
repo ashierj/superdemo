@@ -38405,7 +38405,7 @@ msgstr ""
 msgid "ProjectSettings|Configure your infrastructure."
 msgstr ""
 
-msgid "ProjectSettings|Connect your instance"
+msgid "ProjectSettings|Configure your instance"
 msgstr ""
 
 msgid "ProjectSettings|Contact an admin to change this setting."
@@ -38606,7 +38606,7 @@ msgstr ""
 msgid "ProjectSettings|Only signed commits can be pushed to this repository."
 msgstr ""
 
-msgid "ProjectSettings|Override instance analytics configuration for this project"
+msgid "ProjectSettings|Override the instance analytics configuration for this project."
 msgstr ""
 
 msgid "ProjectSettings|Package registry"

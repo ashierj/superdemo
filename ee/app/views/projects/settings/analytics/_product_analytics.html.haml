@@ -7,10 +7,10 @@
 .gl-mb-3
   #js-product-analytics-instrumentation-settings{ data: data }
 
-%h5
-  = s_('ProjectSettings|Connect your instance')
+%h4
+  = s_('ProjectSettings|Configure your instance')
 %p
-  = s_('ProjectSettings|Override instance analytics configuration for this project')
+  = s_('ProjectSettings|Override the instance analytics configuration for this project.')
 
 = gitlab_ui_form_for @project, url: project_settings_analytics_path(@project, anchor: 'js-analytics-instance-settings'), html: { class: 'fieldset-form', id: 'product-analytics-settings', autocomplete: 'off' } do |f|
   = f.fields_for :project_setting do |settings|
