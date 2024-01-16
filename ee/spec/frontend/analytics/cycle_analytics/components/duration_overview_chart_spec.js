@@ -51,6 +51,7 @@ describe('DurationOverviewChart', () => {
   const findChartDescription = () => wrapper.findComponent(GlIcon);
   const findDurationOverviewChart = () => wrapper.findComponent(GlAreaChart);
   const findLoader = () => wrapper.findComponent(ChartSkeletonLoader);
+  const findAlert = () => wrapper.findComponent(GlAlert);
   const findNoDataAvailableState = (_wrapper) => _wrapper.findComponent(NoDataAvailableState);
 
   const emitChartCreated = () =>
@@ -79,7 +80,6 @@ describe('DurationOverviewChart', () => {
       store: fakeStore({ initialState, initialGetters, rootGetters, rootState }),
       stubs: {
         ChartSkeletonLoader: true,
-        GlAlert,
         ...stubs,
       },
     });
@@ -123,16 +123,38 @@ describe('DurationOverviewChart', () => {
   });
 
   describe('with no chart data', () => {
-    beforeEach(() => {
-      createComponent({
-        initialGetters: {
-          durationOverviewChartPlottableData: () => [],
-        },
+    describe('if there is error', () => {
+      const errorMessage = 'Error message!';
+
+      beforeEach(() => {
+        createComponent({
+          initialGetters: {
+            durationOverviewChartPlottableData: () => [],
+          },
+          initialState: {
+            errorMessage,
+          },
+        });
+      });
+
+      it('renders the alert with the error message', () => {
+        expect(findAlert().exists()).toBe(true);
+        expect(findAlert().text()).toBe(errorMessage);
       });
     });
 
-    it('renders the no data available message', () => {
-      expect(findNoDataAvailableState(wrapper).exists()).toBe(true);
+    describe('if there is no error', () => {
+      beforeEach(() => {
+        createComponent({
+          initialGetters: {
+            durationOverviewChartPlottableData: () => [],
+          },
+        });
+      });
+
+      it('renders the no data available message', () => {
+        expect(findNoDataAvailableState(wrapper).exists()).toBe(true);
+      });
     });
   });
 

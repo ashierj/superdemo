@@ -8,23 +8,44 @@ export default {
   decorators: [withVuexStore],
 };
 
-const Template = (args, { argTypes, createVuexStore }) => ({
-  components: { DurationOverviewChart },
-  props: Object.keys(argTypes),
-  template: '<duration-overview-chart v-bind="$props" />',
-  store: createVuexStore({
-    modules: {
-      durationChart: {
-        namespaced: true,
-        getters: {
-          durationOverviewChartPlottableData: () => durationChartData,
-        },
-        state: {
-          isLoading: false,
+const createStoryWithState = ({ durationChart: { getters, state } = {} }) => {
+  return (args, { argTypes, createVuexStore }) => ({
+    components: { DurationOverviewChart },
+    props: Object.keys(argTypes),
+    template: '<duration-overview-chart v-bind="$props" />',
+    store: createVuexStore({
+      modules: {
+        durationChart: {
+          namespaced: true,
+          getters: {
+            durationOverviewChartPlottableData: () => durationChartData,
+            ...getters,
+          },
+          state: {
+            isLoading: false,
+            ...state,
+          },
         },
       },
-    },
-  }),
-});
+    }),
+  });
+};
 
-export const Default = Template.bind({});
+const defaultState = {};
+
+export const Default = createStoryWithState(defaultState).bind({});
+
+const noDataState = {
+  durationChart: { getters: { durationOverviewChartPlottableData: () => [] } },
+};
+
+export const NoData = createStoryWithState(noDataState).bind({});
+
+const errorState = {
+  durationChart: {
+    ...noDataState.durationChart,
+    state: { errorMessage: 'Failed to load chart' },
+  },
+};
+
+export const ErrorMessage = createStoryWithState(errorState).bind({});

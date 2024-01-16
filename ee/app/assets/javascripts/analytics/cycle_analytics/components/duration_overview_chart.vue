@@ -2,7 +2,7 @@
 import { GlAreaChart, GlChartSeriesLabel } from '@gitlab/ui/dist/charts';
 // eslint-disable-next-line no-restricted-imports
 import { mapGetters, mapState } from 'vuex';
-import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlAlert, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import { dateFormats } from '~/analytics/shared/constants';
 import dateFormat from '~/lib/dateformat';
@@ -26,6 +26,7 @@ import NoDataAvailableState from './no_data_available_state.vue';
 export default {
   name: 'DurationOverviewChart',
   components: {
+    GlAlert,
     GlAreaChart,
     GlChartSeriesLabel,
     GlIcon,
