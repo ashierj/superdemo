@@ -19,3 +19,15 @@ RSpec.shared_examples 'schedules completion worker' do
     expect(subject.execute).to be_success
   end
 end
+
+RSpec.shared_examples 'does not schedule completion worker' do
+  before do
+    allow(SecureRandom).to receive(:uuid).and_return('uuid')
+  end
+
+  it 'asynchronously with correct params' do
+    expect(::Llm::CompletionWorker).not_to receive(:perform_for)
+
+    expect(subject.execute).not_to be_success
+  end
+end

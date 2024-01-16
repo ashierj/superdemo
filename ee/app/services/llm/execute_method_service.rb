@@ -14,7 +14,8 @@ module Llm
       generate_description: Llm::GenerateDescriptionService,
       generate_commit_message: Llm::GenerateCommitMessageService,
       chat: Llm::ChatService,
-      fill_in_merge_request_template: Llm::FillInMergeRequestTemplateService
+      fill_in_merge_request_template: Llm::FillInMergeRequestTemplateService,
+      generate_cube_query: ::Llm::ProductAnalytics::GenerateCubeQueryService
     }.freeze
 
     INTERNAL_METHODS = {

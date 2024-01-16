@@ -32,6 +32,17 @@ module EE
       condition(:is_development) { Rails.env.development? }
 
       with_scope :global
+      condition(:ai_available) do
+        ::Feature.enabled?(:ai_global_switch, type: :ops)
+      end
+
+      with_scope :subject
+      condition(:generate_cube_query_enabled) do
+        ::Feature.enabled?(:generate_cube_query, @subject) &&
+          @subject.licensed_feature_available?(:ai_generate_cube_query)
+      end
+
+      with_scope :global
       condition(:locked_approvers_rules) do
         !@user.can_admin_all_resources? &&
           License.feature_available?(:admin_merge_request_approvers_rules) &&
@@ -871,6 +882,8 @@ module EE
       end
 
       rule { guest | admin }.enable :read_limit_alert
+
+      rule { ai_available & generate_cube_query_enabled }.enable :generate_cube_query
 
       rule { agent_registry_enabled }.policy do
         enable :read_ai_agents
