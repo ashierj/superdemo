@@ -29,11 +29,6 @@ module Gitlab
           prompt_class: ::Gitlab::Llm::VertexAi::Templates::ExplainCode,
           feature_category: :ai_abstraction_layer
         },
-        generate_test_file: {
-          service_class: ::Gitlab::Llm::VertexAi::Completions::GenerateTestFile,
-          prompt_class: ::Gitlab::Llm::Templates::GenerateTestFile,
-          feature_category: :code_review_workflow
-        },
         generate_description: {
           service_class: ::Gitlab::Llm::Anthropic::Completions::GenerateDescription,
           prompt_class: ::Gitlab::Llm::Templates::GenerateDescription,
