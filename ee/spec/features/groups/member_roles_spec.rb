@@ -58,12 +58,12 @@ RSpec.describe 'Member Roles', :saas, :js, feature_category: :permissions do
 
     context 'when the permission has a requirement' do
       let(:permissions) do
-        { admin_vulnerability: { name: 'admin_vulnerability', requirement: 'read_vulnerability' },
+        { admin_vulnerability: { name: 'admin_vulnerability', requirements: ['read_vulnerability'] },
           read_vulnerability: { name: 'read_vulnerability' } }
       end
 
       let(:permission) { :admin_vulnerability }
-      let(:requirement) { permissions[permission][:requirement] }
+      let(:requirement) { permissions[permission][:requirements].first }
       let(:requirement_name) { requirement.to_s.humanize }
 
       context 'when the requirement has not been met' do

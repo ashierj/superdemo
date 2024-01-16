@@ -77,8 +77,8 @@ RSpec.describe 'bin/custom-ability', feature_category: :permissions do
         :description         | %w[foo --description desc]                | 'desc'
         :feature_category    | %w[foo -c abilities]                    | 'abilities'
         :feature_category    | %w[foo --feature-category abilities]    | 'abilities'
-        :requirement         | %w[foo -r other_abilities]              | 'other_abilities'
-        :requirement         | %w[foo --requirement other_abilities]   | 'other_abilities'
+        :requirements        | %w[foo -r other,abilities]               | %w[other abilities]
+        :requirements        | %w[foo --requirements other,abilities]   | %w[other abilities]
         :milestone           | %w[foo -M 15.6]                           | '15.6'
         :milestone           | %w[foo --milestone 15.6]                  | '15.6'
         :group_ability    | %w[foo -g] | true
@@ -288,6 +288,17 @@ RSpec.describe 'bin/custom-ability', feature_category: :permissions do
       it 'returns the correct milestone from the VERSION file' do
         expect(File).to receive(:read).with('VERSION').and_return('15.6.0-pre')
         expect(described_class.read_milestone).to eq('15.6')
+      end
+    end
+
+    describe '.read_requirements' do
+      let(:requirements) { ' ability_a , ability_b ' }
+
+      it 'reads requirements from stdin' do
+        expect(Readline).to receive(:readline).and_return(requirements)
+        expect do
+          expect(described_class.read_requirements).to match_array(%w[ability_a ability_b])
+        end.to output(/Specify requirements for enabling this ability/).to_stdout
       end
     end
   end

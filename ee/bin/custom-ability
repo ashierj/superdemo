@@ -7,12 +7,12 @@
 # Automatically stages the file and amends the previous commit if the `--amend`
 # argument is used.
 
+require_relative '../../config/bundler_setup'
 require 'optparse'
 require 'yaml'
 require 'fileutils'
 require 'uri'
 require 'readline'
-require_relative '../../config/bundler_setup'
 require 'gitlab/utils/all'
 
 require_relative '../lib/gitlab/custom_roles/shared' unless defined?(::Gitlab::CustomRoles::Shared)
@@ -47,7 +47,7 @@ class CustomAbilityOptionParser
     :introduced_by_mr,
     :group_ability,
     :project_ability,
-    :requirement
+    :requirements
   )
 
   class << self
@@ -106,9 +106,9 @@ class CustomAbilityOptionParser
           options.project_ability = value
         end
 
-        opts.on('-r', '--requirement [string]', String,
-          'The custom ability that needs to be enabled for this ability.') do |value|
-          options.requirement = value
+        opts.on('-r', '--requirements [string]', Array,
+          'The custom abilities that need to be enabled for this ability.') do |value|
+          options.requirements = value
         end
 
         opts.on('-h', '--help', 'Print help message') do
@@ -183,11 +183,11 @@ class CustomAbilityOptionParser
     end
 
     # TODO: ideally we'll check if the required ability is already defined
-    def read_requirement
+    def read_requirements
       $stdout.puts
-      $stdout.puts ">> Specify requirement for enabling this ability [read_vulnerability] (enter to skip):"
+      $stdout.puts ">> Specify requirements for enabling this ability [read_code, read_vulnerability] - enter to skip:"
 
-      Readline.readline('?> ', false)&.strip
+      Readline.readline('?> ', false)&.split(',')&.map(&:strip)
     end
 
     def read_introduced_by_mr
@@ -242,7 +242,7 @@ class CustomAbilityCreator
     options.project_ability ||= CustomAbilityOptionParser.read_project_ability
     options.introduced_by_mr ||= CustomAbilityOptionParser.read_introduced_by_mr
     options.introduced_by_issue ||= CustomAbilityOptionParser.read_introduced_by_issue
-    options.requirement ||= CustomAbilityOptionParser.read_requirement || nil
+    options.requirements ||= CustomAbilityOptionParser.read_requirements
     options.milestone ||= CustomAbilityOptionParser.read_milestone
 
     $stdout.puts "\e[32mcreate\e[0m #{file_path}"
@@ -276,7 +276,7 @@ class CustomAbilityCreator
       'project_ability' => options.project_ability,
       'introduced_by_mr' => options.introduced_by_mr,
       'introduced_by_issue' => options.introduced_by_issue,
-      'requirement' => options.requirement
+      'requirements' => options.requirements
     }
   end
 
