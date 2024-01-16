@@ -1928,6 +1928,12 @@ msgstr ""
 msgid "AIAgents|AI Agents"
 msgstr ""
 
+msgid "AIAgents|Agent name"
+msgstr ""
+
+msgid "AIAgents|An error has occurred when saving the agent."
+msgstr ""
+
 msgid "AIAgents|Create agent"
 msgstr ""
 
@@ -39395,6 +39401,9 @@ msgid "Promotions|When you have a lot of issues, it can be hard to get an overvi
 msgstr ""
 
 msgid "Promotions|You can restrict access to protected branches by choosing a role (Maintainers, Developers) as well as certain users."
+msgstr ""
+
+msgid "Prompt"
 msgstr ""
 
 msgid "Prompt users to upload SSH keys"
