@@ -8,6 +8,8 @@ module MemberRoles
       return authorized_error unless allowed?
 
       if member_role.destroy
+        log_audit_event(member_role, action: :deleted)
+
         ::ServiceResponse.success(payload: {
           member_role: member_role
         })

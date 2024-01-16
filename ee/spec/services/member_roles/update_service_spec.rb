@@ -8,7 +8,14 @@ RSpec.describe MemberRoles::UpdateService, feature_category: :system_access do
   let_it_be(:member_role) { create(:member_role, :guest, namespace: group, read_vulnerability: true) }
 
   describe '#execute' do
-    let(:params) { { name: 'new name', read_vulnerability: false, base_access_level: Gitlab::Access::DEVELOPER } }
+    let(:params) do
+      {
+        name: 'new name',
+        description: 'new description',
+        read_vulnerability: false,
+        base_access_level: Gitlab::Access::DEVELOPER
+      }
+    end
 
     subject(:result) { described_class.new(user, params).execute(member_role) }
 
@@ -45,6 +52,33 @@ RSpec.describe MemberRoles::UpdateService, feature_category: :system_access do
         it 'does not update unpermitted attributes' do
           expect { result }.not_to change { member_role.reload.base_access_level }
         end
+
+        include_examples 'audit event logging' do
+          let(:licensed_features_to_stub) { { custom_roles: true } }
+          let(:event_type) { 'member_role_updated' }
+          let(:operation) { result }
+          let(:fail_condition!) { allow(member_role).to receive(:save).and_return(false) }
+
+          let(:attributes) do
+            {
+              author_id: user.id,
+              entity_id: group.id,
+              entity_type: group.class.name,
+              details: {
+                author_name: user.name,
+                target_id: member_role.id,
+                target_type: member_role.class.name,
+                target_details: {
+                  name: 'new name',
+                  description: 'new description',
+                  abilities: ''
+                }.to_s,
+                custom_message: 'Member role was updated',
+                author_class: user.class.name
+              }
+            }
+          end
+        end
       end
 
       context 'when member role can not be updated' do
@@ -62,6 +96,10 @@ RSpec.describe MemberRoles::UpdateService, feature_category: :system_access do
 
         it 'includes the object errors' do
           expect(result.message).to eq(['this is wrong'])
+        end
+
+        it 'does not log an audit event' do
+          expect { result }.not_to change { AuditEvent.count }
         end
       end
     end

@@ -37,6 +37,33 @@ RSpec.describe MemberRoles::DeleteService, feature_category: :system_access do
 
           expect(member_role).to be_destroyed
         end
+
+        include_examples 'audit event logging' do
+          let(:licensed_features_to_stub) { { custom_roles: true } }
+          let(:event_type) { 'member_role_deleted' }
+          let(:operation) { result }
+          let(:fail_condition!) { allow(member_role).to receive(:destroy).and_return(false) }
+
+          let(:attributes) do
+            {
+              author_id: user.id,
+              entity_id: group.id,
+              entity_type: group.class.name,
+              details: {
+                author_name: user.name,
+                target_id: member_role.id,
+                target_type: member_role.class.name,
+                target_details: {
+                  name: member_role.name,
+                  description: member_role.description,
+                  abilities: member_role.enabled_permissions.join(', ')
+                }.to_s,
+                custom_message: 'Member role was deleted',
+                author_class: user.class.name
+              }
+            }
+          end
+        end
       end
 
       context 'when failing to destroy the member role' do
@@ -49,6 +76,10 @@ RSpec.describe MemberRoles::DeleteService, feature_category: :system_access do
         it 'returns an array including the error message' do
           expect(result).to be_error
           expect(result.message).to match_array(['error message'])
+        end
+
+        it 'does not log an audit event' do
+          expect { result }.not_to change { AuditEvent.count }
         end
       end
     end
