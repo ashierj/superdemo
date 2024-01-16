@@ -12,12 +12,18 @@ import {
   updateRule,
   updateEnvironment,
   unprotectEnvironment,
+  updateApproverInheritance,
 } from 'ee/protected_environments/store/edit/actions';
 import * as types from 'ee/protected_environments/store/edit/mutation_types';
 import { state } from 'ee/protected_environments/store/edit/state';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK, HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
-import { DEPLOYER_RULE_KEY, RULE_KEYS } from 'ee/protected_environments/constants';
+import {
+  DEPLOYER_RULE_KEY,
+  RULE_KEYS,
+  NON_INHERITED_GROUPS,
+  INHERITED_GROUPS,
+} from 'ee/protected_environments/constants';
 import { MAINTAINER_ACCESS_LEVEL, DEVELOPER_ACCESS_LEVEL } from '../../constants';
 
 describe('ee/protected_environments/store/edit/actions', () => {
@@ -145,7 +151,6 @@ describe('ee/protected_environments/store/edit/actions', () => {
   describe('fetchMembers', () => {
     it.each`
       type                                | rule                                                                                                     | url                               | response
-      ${'group with inheritance'}         | ${{ group_id: 1, user_id: null, access_level: null, group_inheritance_type: '1' }}                       | ${'/api/v4/groups/1/members/all'} | ${[{ name: 'root' }]}
       ${'group with integer inheritance'} | ${{ group_id: 1, user_id: null, access_level: null, group_inheritance_type: 1 }}                         | ${'/api/v4/groups/1/members/all'} | ${[{ name: 'root' }]}
       ${'group without inheritance'}      | ${{ group_id: 1, user_id: null, access_level: null, group_inheritance_type: 0 }}                         | ${'/api/v4/groups/1/members'}     | ${[{ name: 'root' }]}
       ${'user'}                           | ${{ group_id: null, user_id: 1, access_level: null, group_ineritance_type: null }}                       | ${'/api/v4/users/1'}              | ${{ name: 'root' }}
@@ -360,6 +365,27 @@ describe('ee/protected_environments/store/edit/actions', () => {
           },
         ],
       );
+    });
+  });
+  describe('updateApproverInheritance', () => {
+    let rule;
+    beforeEach(() => {
+      rule = { group_id: 5 };
+    });
+
+    it.each`
+      value    | result
+      ${false} | ${NON_INHERITED_GROUPS}
+      ${true}  | ${INHERITED_GROUPS}
+    `('sets group inheritance to $result when passed $value', ({ value, result }) => {
+      return testAction({
+        action: updateApproverInheritance,
+        mockedState,
+        payload: { rule, value },
+        expectedMutations: [
+          { type: types.EDIT_RULE, payload: { ...rule, group_inheritance_type: result } },
+        ],
+      });
     });
   });
   describe('unprotectEnvironment', () => {

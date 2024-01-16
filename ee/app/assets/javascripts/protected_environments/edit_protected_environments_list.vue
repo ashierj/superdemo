@@ -5,12 +5,13 @@ import {
   GlFormGroup,
   GlFormInput,
   GlTooltipDirective as GlTooltip,
+  GlToggle,
 } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { s__, __ } from '~/locale';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
-import { ACCESS_LEVELS, DEPLOYER_RULE_KEY, APPROVER_RULE_KEY } from './constants';
+import { ACCESS_LEVELS, DEPLOYER_RULE_KEY, APPROVER_RULE_KEY, INHERITED_GROUPS } from './constants';
 import EditProtectedEnvironmentRulesCard from './edit_protected_environment_rules_card.vue';
 import AddRuleModal from './add_rule_modal.vue';
 import AddApprovers from './add_approvers.vue';
@@ -23,6 +24,7 @@ export default {
     GlButton,
     GlFormGroup,
     GlFormInput,
+    GlToggle,
     AccessDropdown,
     ProtectedEnvironments,
     EditProtectedEnvironmentRulesCard,
@@ -61,6 +63,7 @@ export default {
       'editRule',
       'updateRule',
       'unprotectEnvironment',
+      'updateApproverInheritance',
     ]),
     canDeleteDeployerRules(env) {
       return env[DEPLOYER_RULE_KEY].length > 1;
@@ -72,6 +75,12 @@ export default {
     },
     isUserRule({ user_id: userId }) {
       return userId != null;
+    },
+    isGroupRule({ group_id: groupId }) {
+      return groupId != null;
+    },
+    isUsingGroupInheritance({ group_inheritance_type: type }) {
+      return type === INHERITED_GROUPS;
     },
   },
   i18n: {
@@ -91,6 +100,7 @@ export default {
     editApproverButton: s__('ProtectedEnvironments|Edit'),
     saveApproverButton: s__('ProtectedEnvironments|Save'),
     accessDropdownLabel: s__('ProtectedEnvironments|Select users'),
+    inheritanceLabel: s__('ProtectedEnvironments|Group inheritance'),
   },
   ACCESS_LEVELS,
   DEPLOYER_RULE_KEY,
@@ -194,7 +204,8 @@ export default {
           <template #card-header>
             <span class="gl-w-30p">{{ $options.i18n.approversHeader }}</span>
             <span class="gl-w-20p">{{ $options.i18n.usersHeader }}</span>
-            <span class="gl-w-30p">{{ $options.i18n.approvalsHeader }}</span>
+            <span class="gl-w-20p">{{ $options.i18n.approvalsHeader }}</span>
+            <span class="gl-w-30p">{{ $options.i18n.inheritanceLabel }}</span>
           </template>
           <template #rule="{ rule, ruleKey }">
             <span class="gl-w-30p" data-testid="rule-description">
@@ -233,6 +244,17 @@ export default {
                 />
               </gl-form-group>
 
+              <gl-toggle
+                v-if="isGroupRule(rule)"
+                :id="`approval-inheritance-${rule.id}`"
+                :label="$options.i18n.inheritanceLabel"
+                :name="`approval-inheritance-${rule.id}`"
+                :value="isUsingGroupInheritance(editingRules[rule.id])"
+                label-position="hidden"
+                class="gl-ml-11 gl-align-items-center"
+                @change="updateApproverInheritance({ rule, value: $event })"
+              />
+              <span v-else></span>
               <gl-button
                 class="gl-ml-auto gl-mr-4"
                 @click="updateRule({ rule, environment, ruleKey })"
@@ -242,6 +264,17 @@ export default {
             </template>
             <template v-else>
               <span class="gl-w-20p gl-text-center">{{ rule.required_approvals }}</span>
+
+              <gl-toggle
+                v-if="isGroupRule(rule)"
+                :label="$options.i18n.inheritanceLabel"
+                :name="`approval-inheritance-${rule.id}`"
+                :value="isUsingGroupInheritance(rule)"
+                class="gl-ml-11 gl-align-items-center"
+                label-position="hidden"
+                disabled
+              />
+              <span v-else></span>
 
               <gl-button
                 v-if="!isUserRule(rule)"
