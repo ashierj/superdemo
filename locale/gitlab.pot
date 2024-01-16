@@ -9121,6 +9121,9 @@ msgstr ""
 msgid "BulkImport|Be aware of %{linkStart}visibility rules%{linkEnd} when importing groups."
 msgstr ""
 
+msgid "BulkImport|Because of settings on the source GitLab instance or group, you can't import projects with this group. To permit importing projects with this group, reconfigure the source GitLab instance or group. %{linkStart}Learn more.%{linkEnd}"
+msgstr ""
+
 msgid "BulkImport|Check that the source instance base URL and the personal access token meet the necessary requirements."
 msgstr ""
 
@@ -9230,6 +9233,9 @@ msgid "BulkImport|Showing %{start}-%{end} of %{total} that you own from %{link}"
 msgstr ""
 
 msgid "BulkImport|Showing %{start}-%{end} of %{total} that you own matching filter \"%{filter}\" from %{link}"
+msgstr ""
+
+msgid "BulkImport|Some groups will be imported without projects."
 msgstr ""
 
 msgid "BulkImport|Source"
