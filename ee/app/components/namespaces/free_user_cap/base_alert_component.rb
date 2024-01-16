@@ -68,23 +68,35 @@ module Namespaces
       end
 
       def namespace_primary_cta
-        link_to _('Manage members'),
-                group_usage_quotas_path(namespace),
-                class: 'btn gl-alert-action btn-info btn-md gl-button',
-                data: {
-                  track_action: 'click_button',
-                  track_label: 'manage_members',
-                  testid: 'user-over-limit-primary-cta'
-                }
+        render Pajamas::ButtonComponent.new(variant: :confirm, size: :medium,
+          href: group_usage_quotas_path(namespace),
+          button_options: {
+            class: 'gl-alert-action',
+            data: {
+              track_action: 'click_button',
+              track_label: 'manage_members',
+              testid: 'user-over-limit-primary-cta'
+            }
+          }
+        ) do
+          _('Manage members')
+        end
       end
 
       def namespace_secondary_cta
-        link_to _('Explore paid plans'),
-                group_billings_path(namespace, source: 'user-limit-alert-enforcement'),
-                class: 'btn gl-alert-action btn-default btn-md gl-button',
-                data: { track_action: 'click_button',
-                        track_label: 'explore_paid_plans',
-                        testid: 'user-over-limit-secondary-cta' }
+        render Pajamas::ButtonComponent.new(size: :medium,
+          href: group_billings_path(namespace, source: 'user-limit-alert-enforcement'),
+          button_options: {
+            class: 'gl-alert-action',
+            data: {
+              track_action: 'click_button',
+              track_label: 'explore_paid_plans',
+              testid: 'user-over-limit-secondary-cta'
+            }
+          }
+        ) do
+          _('Explore paid plans')
+        end
       end
 
       def link_end
