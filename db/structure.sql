@@ -14040,7 +14040,8 @@ CREATE TABLE catalog_resources (
     name character varying,
     description text,
     visibility_level integer DEFAULT 0 NOT NULL,
-    search_vector tsvector GENERATED ALWAYS AS ((setweight(to_tsvector('english'::regconfig, (COALESCE(name, ''::character varying))::text), 'A'::"char") || setweight(to_tsvector('english'::regconfig, COALESCE(description, ''::text)), 'B'::"char"))) STORED
+    search_vector tsvector GENERATED ALWAYS AS ((setweight(to_tsvector('english'::regconfig, (COALESCE(name, ''::character varying))::text), 'A'::"char") || setweight(to_tsvector('english'::regconfig, COALESCE(description, ''::text)), 'B'::"char"))) STORED,
+    verification_level smallint DEFAULT 0
 );
 
 CREATE SEQUENCE catalog_resources_id_seq
