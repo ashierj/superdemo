@@ -55,6 +55,106 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
       end
     end
 
+    shared_examples 'merges configuration from the external command for main: connection' do
+      context 'when the external command returns valid yaml' do
+        before do
+          allow(Gitlab::Popen)
+            .to receive(:popen)
+            .and_return(["---\nmain:\n  password: 'secure password'\n", 0])
+        end
+
+        it 'merges the extra configuration' do
+          database_configuration = configuration.database_configuration
+
+          expect(database_configuration).to match(
+            "production" => { "main" => a_hash_including("password" => "secure password") },
+            "development" => { "main" => a_hash_including("password" => "secure password") },
+            "test" => { "main" => a_hash_including("password" => "secure password") }
+          )
+        end
+      end
+
+      context 'when the external command returns invalid yaml' do
+        before do
+          allow(Gitlab::Popen)
+            .to receive(:popen)
+            .and_return(["---\nmain:\n  password: 'secure password\n", 0])
+        end
+
+        it 'raises an error' do
+          expect { configuration.database_configuration }
+            .to raise_error(
+              Gitlab::Patch::DatabaseConfig::CommandExecutionError,
+              %r{database.yml: Execution of `/opt/database-config.sh` generated invalid yaml}
+            )
+        end
+      end
+
+      context 'when the external command fails' do
+        before do
+          allow(Gitlab::Popen).to receive(:popen).and_return(["", 125])
+        end
+
+        it 'raises error' do
+          expect { configuration.database_configuration }
+            .to raise_error(
+              Gitlab::Patch::DatabaseConfig::CommandExecutionError,
+              %r{database.yml: Execution of `/opt/database-config.sh` failed}
+            )
+        end
+      end
+    end
+
+    shared_examples 'merges configuration from the external command for both main: and geo: connections' do
+      context 'when the external command returns valid yaml' do
+        before do
+          allow(Gitlab::Popen)
+            .to receive(:popen)
+            .and_return(["---\nmain:\n  password: 'secure password'\ngeo:\n  password: 'secure geo password'\n", 0])
+        end
+
+        it 'merges the extra configuration' do
+          database_configuration = configuration.database_configuration
+
+          expect(database_configuration).to match(
+            "production" => { "main" => a_hash_including("password" => "secure password"), "geo" => a_hash_including("password" => "secure geo password") },
+            "development" => { "main" => a_hash_including("password" => "secure password"), "geo" => a_hash_including("password" => "secure geo password") },
+            "test" => { "main" => a_hash_including("password" => "secure password"), "geo" => a_hash_including("password" => "secure geo password") }
+          )
+        end
+      end
+
+      context 'when the external command returns invalid yaml' do
+        before do
+          allow(Gitlab::Popen)
+            .to receive(:popen)
+            .and_return(["---\nmain:\n  password: 'secure password'\ngeo:\n  password: 'secure geo password\n", 0])
+        end
+
+        it 'raises an error' do
+          expect { configuration.database_configuration }
+            .to raise_error(
+              Gitlab::Patch::DatabaseConfig::CommandExecutionError,
+              %r{database.yml: Execution of `/opt/database-config.sh` generated invalid yaml}
+            )
+        end
+      end
+
+      context 'when the external command fails' do
+        before do
+          allow(Gitlab::Popen).to receive(:popen).and_return(["", 125])
+        end
+
+        it 'raises error' do
+          expect { configuration.database_configuration }
+            .to raise_error(
+              Gitlab::Patch::DatabaseConfig::CommandExecutionError,
+              %r{database.yml: Execution of `/opt/database-config.sh` failed}
+            )
+        end
+      end
+    end
+
     context 'when config/database.yml does not contain Geo settings' do
       let(:database_yml) do
         <<-EOS
@@ -64,7 +164,7 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
                 encoding: unicode
                 database: gitlabhq_production
                 username: git
-                password: "secure password"
+                password: "dummy password"
                 host: localhost
 
             development:
@@ -73,7 +173,7 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
                 encoding: unicode
                 database: gitlabhq_development
                 username: postgres
-                password: "secure password"
+                password: "dummy password"
                 host: localhost
                 variables:
                   statement_timeout: 15s
@@ -84,7 +184,7 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
                 encoding: unicode
                 database: gitlabhq_test
                 username: postgres
-                password:
+                password: "dummy password"
                 host: localhost
                 prepared_statements: false
                 variables:
@@ -93,6 +193,49 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
       end
 
       include_examples 'hash containing main: connection name'
+
+      context 'when config/database.yml contains extra configuration through an external command' do
+        let(:database_yml) do
+          <<-EOS
+              production:
+                config_command: '/opt/database-config.sh'
+                main:
+                  adapter: postgresql
+                  encoding: unicode
+                  database: gitlabhq_production
+                  username: git
+                  password: "secure password"
+                  host: localhost
+
+              development:
+                config_command: '/opt/database-config.sh'
+                main:
+                  adapter: postgresql
+                  encoding: unicode
+                  database: gitlabhq_development
+                  username: postgres
+                  password: "secure password"
+                  host: localhost
+                  variables:
+                    statement_timeout: 15s
+
+              test: &test
+                config_command: '/opt/database-config.sh'
+                main:
+                  adapter: postgresql
+                  encoding: unicode
+                  database: gitlabhq_test
+                  username: postgres
+                  password:
+                  host: localhost
+                  prepared_statements: false
+                  variables:
+                    statement_timeout: 15s
+          EOS
+        end
+
+        include_examples 'merges configuration from the external command for main: connection'
+      end
     end
 
     context 'when config/database.yml contains Geo settings' do
@@ -104,14 +247,14 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
                 encoding: unicode
                 database: gitlabhq_production
                 username: git
-                password: "secure password"
+                password: "dummy password"
                 host: localhost
               geo:
                 adapter: postgresql
                 encoding: unicode
                 database: gitlabhq_geo_production
                 username: git
-                password: "secure password"
+                password: "dummy password"
                 host: localhost
 
             development:
@@ -120,7 +263,7 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
                 encoding: unicode
                 database: gitlabhq_development
                 username: postgres
-                password: "secure password"
+                password: "dummy password"
                 host: localhost
                 variables:
                   statement_timeout: 15s
@@ -129,7 +272,7 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
                 encoding: unicode
                 database: gitlabhq_geo_development
                 username: postgres
-                password: "secure password"
+                password: "dummy password"
                 host: localhost
                 variables:
                   statement_timeout: 15s
@@ -159,6 +302,75 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
       end
 
       include_examples 'hash containing both main: and geo: connection names'
+
+      context 'when config/database.yml contains extra configuration through an external command' do
+        let(:database_yml) do
+          <<-EOS
+              production:
+                config_command: '/opt/database-config.sh'
+                main:
+                  adapter: postgresql
+                  encoding: unicode
+                  database: gitlabhq_production
+                  username: git
+                  password: "secure password"
+                  host: localhost
+                geo:
+                  adapter: postgresql
+                  encoding: unicode
+                  database: gitlabhq_geo_production
+                  username: git
+                  password: "secure password"
+                  host: localhost
+
+              development:
+                config_command: '/opt/database-config.sh'
+                main:
+                  adapter: postgresql
+                  encoding: unicode
+                  database: gitlabhq_development
+                  username: postgres
+                  password: "secure password"
+                  host: localhost
+                  variables:
+                    statement_timeout: 15s
+                geo:
+                  adapter: postgresql
+                  encoding: unicode
+                  database: gitlabhq_geo_development
+                  username: postgres
+                  password: "secure password"
+                  host: localhost
+                  variables:
+                    statement_timeout: 15s
+
+              test: &test
+                config_command: '/opt/database-config.sh'
+                main:
+                  adapter: postgresql
+                  encoding: unicode
+                  database: gitlabhq_test
+                  username: postgres
+                  password:
+                  host: localhost
+                  prepared_statements: false
+                  variables:
+                    statement_timeout: 15s
+                geo:
+                  adapter: postgresql
+                  encoding: unicode
+                  database: gitlabhq_geo_test
+                  username: postgres
+                  password:
+                  host: localhost
+                  prepared_statements: false
+                  variables:
+                    statement_timeout: 15s
+          EOS
+        end
+
+        include_examples 'merges configuration from the external command for both main: and geo: connections'
+      end
     end
   end
 end
