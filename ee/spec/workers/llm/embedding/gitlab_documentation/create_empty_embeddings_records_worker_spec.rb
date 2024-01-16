@@ -6,6 +6,26 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::CreateEmptyEmbeddingsRecords
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :always
 
   describe '#perform' do
+    shared_examples 'enqueing workers per file' do
+      it 'enqueues worker per file' do
+        expect(embeddings_per_doc_file_worker).to receive(:perform_async).with(
+          Rails.root.join(described_class::DOC_DIRECTORY, "index.md").to_s, next_version
+        ).once
+
+        expect { perform }.not_to change { ::Embedding::Vertex::GitlabDocumentation.count }
+      end
+
+      it_behaves_like 'an idempotent worker' do
+        before do
+          allow(embeddings_per_doc_file_worker).to receive(:perform_async)
+        end
+
+        it 'creates no records' do
+          expect { perform }.not_to change { ::Embedding::Vertex::GitlabDocumentation.count }
+        end
+      end
+    end
+
     before do
       stub_const("#{described_class}::DOC_DIRECTORY", './ee/spec/fixtures/gitlab_documentation')
       allow(::Gitlab::Llm::Embeddings::Utils::DocsContentParser).to receive(:parse_and_split).and_return([item])
@@ -72,39 +92,40 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::CreateEmptyEmbeddingsRecords
       end
 
       context 'when no embeddings exist' do
-        it 'enqueues worker per file' do
-          expect(embeddings_per_doc_file_worker).to receive(:perform_async).with(
-            Rails.root.join(described_class::DOC_DIRECTORY, "index.md").to_s, next_version
-          ).once
-
-          expect { perform }.not_to change { ::Embedding::Vertex::GitlabDocumentation.count }
-        end
-
-        it_behaves_like 'an idempotent worker' do
-          before do
-            allow(embeddings_per_doc_file_worker).to receive(:perform_async)
-          end
-
-          it 'creates no records' do
-            expect { perform }.not_to change { ::Embedding::Vertex::GitlabDocumentation.count }
-          end
-        end
+        it_behaves_like 'enqueing workers per file'
       end
 
-      context 'when embeddings exist and have the same md5sum' do
+      context 'when embeddings exist' do
+        let(:embeddings_model) { 'textembedding-gecko@002' }
+        let(:model) { embeddings_model }
         let(:content) { File.read(File.join(described_class::DOC_DIRECTORY, "index.md")) }
-        let(:md5sum) { OpenSSL::Digest::SHA256.hexdigest(content) }
+        let(:md5sum) { OpenSSL::Digest::SHA256.hexdigest(content + model) }
         let(:metadata) { { source: '/ee/spec/fixtures/gitlab_documentation/index.md', md5sum: md5sum } }
+        let!(:records) { create_list(:vertex_gitlab_documentation, 3, version: version, metadata: metadata) }
 
-        it_behaves_like 'an idempotent worker' do
-          let!(:records) { create_list(:vertex_gitlab_documentation, 3, version: version, metadata: metadata) }
+        before do
+          stub_const('Gitlab::Llm::VertexAi::ModelConfigurations::TextEmbeddings::NAME', embeddings_model)
+        end
+
+        context 'when model and content match' do
+          it_behaves_like 'an idempotent worker'
+        end
+
+        context 'when models differ' do
+          let(:model) { 'textembedding-gecko@003' }
+
+          it_behaves_like 'enqueing workers per file'
+        end
+
+        context 'when content differ' do
+          let(:content) { 'new content' }
+
+          it_behaves_like 'enqueing workers per file'
         end
 
         context 'when there are embeddings for non existent files' do
           let(:content) { File.read(File.join(described_class::DOC_DIRECTORY, "index.md")) }
-          let(:md5sum1) { OpenSSL::Digest::SHA256.hexdigest(content) }
           let(:md5sum2) { 'does not really matter' }
-          let(:metadata) { { source: '/ee/spec/fixtures/gitlab_documentation/index.md', md5sum: md5sum1 } }
           let(:other_metadata) { { source: '/ee/spec/fixtures/gitlab_documentation/non_existent.md', md5sum: md5sum2 } }
 
           it 'removes embeddings for non-existent files' do
