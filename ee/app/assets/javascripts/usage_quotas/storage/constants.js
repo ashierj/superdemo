@@ -12,8 +12,6 @@ export const STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE = s__(
   'UsageQuota|Learn more about usage quotas.',
 );
 
-export const NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE = s__('UsageQuota|Storage usage breakdown');
-
 export const STORAGE_STATISTICS_PERCENTAGE_REMAINING = s__(
   'UsageQuota|%{percentageRemaining}%% namespace storage remaining.',
 );

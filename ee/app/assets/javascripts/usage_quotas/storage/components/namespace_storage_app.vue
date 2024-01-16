@@ -7,10 +7,8 @@ import CeNamespaceStorageApp from '~/usage_quotas/storage/components/namespace_s
 import NamespaceStorageQuery from '../queries/namespace_storage.query.graphql';
 import ProjectListStorageQuery from '../queries/project_list_storage.query.graphql';
 import { parseGetStorageResults } from '../utils';
-import { NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE } from '../constants';
 import SearchAndSortBar from '../../components/search_and_sort_bar/search_and_sort_bar.vue';
 import ProjectList from './project_list.vue';
-import DependencyProxyUsage from './dependency_proxy_usage.vue';
 import ContainerRegistryUsage from './container_registry_usage.vue';
 
 export default {
@@ -19,7 +17,6 @@ export default {
     GlKeysetPagination,
     CeNamespaceStorageApp,
     ProjectList,
-    DependencyProxyUsage,
     ContainerRegistryUsage,
     SearchAndSortBar,
   },
@@ -65,7 +62,6 @@ export default {
     },
   },
   i18n: {
-    NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE,
     search: __('Search'),
   },
   data() {
@@ -85,9 +81,6 @@ export default {
     },
     containerRegistrySizeIsEstimated() {
       return this.namespace.rootStorageStatistics?.containerRegistrySizeIsEstimated ?? false;
-    },
-    dependencyProxyTotalSize() {
-      return this.namespace.rootStorageStatistics?.dependencyProxySize ?? 0;
     },
     projectList() {
       return this.projects?.nodes ?? [];
@@ -152,14 +145,6 @@ export default {
     :namespace="namespace"
   >
     <template #ee-storage-app>
-      <h3 data-testid="breakdown-subtitle">
-        {{ $options.i18n.NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE }}
-      </h3>
-      <dependency-proxy-usage
-        v-if="!userNamespace"
-        :dependency-proxy-total-size="dependencyProxyTotalSize"
-        :loading="$apollo.queries.namespace.loading"
-      />
       <container-registry-usage
         :container-registry-size="containerRegistrySize"
         :container-registry-size-is-estimated="containerRegistrySizeIsEstimated"
