@@ -49,6 +49,13 @@ module QA
 
               view 'ee/app/assets/javascripts/security_dashboard/components/pipeline/vulnerability_finding_modal.vue' do
                 element 'vulnerability-modal-content'
+                element 'dismiss-button'
+                element 'save-editing-dismissal'
+                element 'dismissal-comment'
+              end
+
+              view 'ee/app/assets/javascripts/security_dashboard/components/pipeline/vulnerability_dismissal_reason.vue' do
+                element 'dismissal-reason'
               end
 
               view 'ee/app/assets/javascripts/vue_shared/security_reports/components/modal.vue' do
@@ -142,13 +149,29 @@ module QA
           end
 
           def add_comment_and_dismiss(comment)
-            click_element :dismiss_with_comment_button
-            find_element(:dismiss_comment_field).fill_in with: comment, fill_options: { automatic_label_click: true }
-            click_element :add_and_dismiss_button
+            if has_element?(:dismiss_with_comment_button)
+              click_element :dismiss_with_comment_button
+              find_element(:dismiss_comment_field).fill_in with: comment, fill_options: { automatic_label_click: true }
+              click_element :add_and_dismiss_button
+            else
+              click_element('dismiss-button')
+              find(dismissal_reason_selector, wait: 5).click
+              find(dismissal_reason_item_selector("not_applicable")).click
+              find_element('dismissal-comment').fill_in with: comment, fill_options: { automatic_label_click: true }
+              click_element('save-editing-dismissal')
+            end
 
             wait_until(reload: false) do
               has_no_element?('vulnerability-modal-content')
             end
+          end
+
+          def dismissal_reason_selector
+            "[data-testid='dismissal-reason'] > button"
+          end
+
+          def dismissal_reason_item_selector(reason)
+            "[data-testid='listbox-item-#{reason}']"
           end
 
           def resolve_vulnerability_with_mr(name)
