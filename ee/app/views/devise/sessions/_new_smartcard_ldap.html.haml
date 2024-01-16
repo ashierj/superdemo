@@ -8,9 +8,8 @@
     %p
       = _('Use your smart card to authenticate with the LDAP server.')
 
-    .login-body
-      = form_tag(auth_smartcard_url(provider: server['provider_name']),
-                 html: { 'aria-live' => 'assertive'}) do
-        .submit-container
-          = submit_tag(_('Sign in with smart card'),
-                       class: smartcard_login_button_classes(server['provider_name']))
+    = form_tag(auth_smartcard_url(provider: server['provider_name']),
+               html: { 'aria-live' => 'assertive'}) do
+      .submit-container
+        = submit_tag(_('Sign in with smart card'),
+                     class: smartcard_login_button_classes(server['provider_name']))
