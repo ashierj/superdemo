@@ -12,6 +12,7 @@ class ElasticCommitIndexerWorker
   urgency :throttled
   idempotent!
   loggable_arguments 1, 2
+  concurrency_limit -> { 60 }
 
   LOCK_RETRIES = 2
   LOCK_SLEEP_SEC = 1
