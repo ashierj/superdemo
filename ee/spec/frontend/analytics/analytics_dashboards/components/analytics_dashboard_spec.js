@@ -611,11 +611,11 @@ describe('AnalyticsDashboard', () => {
 
   describe('with a built-in product analytics dashboards dashboard', () => {
     it.each`
-      slug           | userDefined | showsBanner
-      ${'audience'}  | ${false}    | ${true}
-      ${'behaviour'} | ${false}    | ${true}
-      ${'vsd'}       | ${false}    | ${false}
-      ${'audience'}  | ${true}     | ${false}
+      slug          | userDefined | showsBanner
+      ${'audience'} | ${false}    | ${true}
+      ${'behavior'} | ${false}    | ${true}
+      ${'vsd'}      | ${false}    | ${false}
+      ${'audience'} | ${true}     | ${false}
     `(
       'when the dashboard slug is "$slug" and userDefined is $userDefined then the banner is $showsBanner',
       async ({ slug, userDefined, showsBanner }) => {
