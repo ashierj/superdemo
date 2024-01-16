@@ -3,8 +3,8 @@
 require "spec_helper"
 
 RSpec.describe EE::WorkItemsHelper, feature_category: :team_planning do
-  describe '#work_items_index_data' do
-    subject(:work_items_index_data) { helper.work_items_index_data(project) }
+  describe '#work_items_show_data' do
+    subject(:work_items_show_data) { helper.work_items_show_data(project) }
 
     before do
       stub_licensed_features(
@@ -21,7 +21,7 @@ RSpec.describe EE::WorkItemsHelper, feature_category: :team_planning do
       let(:feature_available) { true }
 
       it 'returns true for the features' do
-        expect(work_items_index_data).to include(
+        expect(work_items_show_data).to include(
           {
             has_issuable_health_status_feature: "true",
             has_issue_weights_feature: "true",
@@ -36,7 +36,7 @@ RSpec.describe EE::WorkItemsHelper, feature_category: :team_planning do
       let(:feature_available) { false }
 
       it 'returns false for the features' do
-        expect(work_items_index_data).to include(
+        expect(work_items_show_data).to include(
           {
             has_issuable_health_status_feature: "false",
             has_issue_weights_feature: "false",
