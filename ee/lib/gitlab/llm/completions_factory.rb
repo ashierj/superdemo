@@ -64,6 +64,11 @@ module Gitlab
           prompt_class: ::Gitlab::Llm::Templates::SummarizeMergeRequest,
           feature_category: :code_review_workflow
         },
+        generate_cube_query: {
+          service_class: ::Gitlab::Llm::VertexAi::Completions::GenerateCubeQuery,
+          prompt_class: ::Gitlab::Llm::VertexAi::Templates::GenerateCubeQuery,
+          feature_category: :product_analytics_visualization
+        },
         categorize_question: {
           service_class: ::Gitlab::Llm::Anthropic::Completions::CategorizeQuestion,
           prompt_class: ::Gitlab::Llm::Templates::CategorizeQuestion,

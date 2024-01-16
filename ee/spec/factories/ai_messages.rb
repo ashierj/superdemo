@@ -96,6 +96,10 @@ FactoryBot.define do
       ai_action { :categorize_question }
     end
 
+    trait :generate_cube_query do
+      ai_action { :generate_cube_query }
+    end
+
     trait :assistant do
       role { 'assistant' }
     end

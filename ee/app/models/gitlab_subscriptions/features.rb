@@ -199,6 +199,8 @@ module GitlabSubscriptions
       experimental_features
       generate_description
       generate_commit_message
+      generate_test_file
+      ai_generate_cube_query
       git_abuse_rate_limit
       group_ci_cd_analytics
       group_level_compliance_dashboard
