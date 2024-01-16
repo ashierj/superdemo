@@ -68,7 +68,7 @@ module ProductAnalytics
     end
 
     def self.load_yaml_dashboard_config(name, file_path)
-      Gitlab::PathTraversal.check_path_traversal!(name)
+      Gitlab::PathTraversal.check_allowed_absolute_path_and_path_traversal!(name, [])
 
       YAML.safe_load(
         File.read(Rails.root.join(file_path, "#{name}.yaml"))
