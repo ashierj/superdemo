@@ -10,7 +10,7 @@ RSpec.describe NamespaceSetting do
     it 'defines an enum for enabled_git_access_protocol' do
       is_expected.to define_enum_for(
         :enabled_git_access_protocol
-      ).with_values([:all, :ssh, :http, :ssh_certificates]).with_suffix
+      ).with_values([:all, :ssh, :http]).with_suffix
     end
   end
 
