@@ -20189,6 +20189,9 @@ msgstr ""
 msgid "Expand milestones"
 msgstr ""
 
+msgid "Expand project information"
+msgstr ""
+
 msgid "Expand settings section"
 msgstr ""
 
