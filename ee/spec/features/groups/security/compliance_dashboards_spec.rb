@@ -6,8 +6,15 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
   let_it_be(:current_user) { create(:user) }
   let_it_be(:user) { current_user }
   let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, :repository, :public, namespace: group) }
+  let_it_be(:subgroup) { create(:group, parent: group) }
+
+  let_it_be(:framework1) { create(:compliance_framework) }
+  let_it_be(:framework2) { create(:compliance_framework) }
+
+  let_it_be(:subgroup_project) { create(:project, namespace: subgroup, compliance_framework_setting: create(:compliance_framework_project_setting, compliance_management_framework: framework1)) }
+  let_it_be(:project) { create(:project, :repository, :public, namespace: group, compliance_framework_setting: create(:compliance_framework_project_setting, compliance_management_framework: framework2)) }
   let_it_be(:project_2) { create(:project, :repository, :public, namespace: group) }
+
   let(:compliance_framework_ff) { false }
 
   before do
@@ -69,6 +76,25 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
 
             expect(find('[aria-selected="true"]').text).to eq('Projects')
           end
+        end
+
+        it 'displays list of projects with their frameworks' do
+          visit group_security_compliance_dashboard_path(group, vueroute: :projects)
+          wait_for_requests
+
+          expect(all('tbody > tr').count).to eq(3)
+
+          expect(first_row).to have_content(project_2.name)
+          expect(first_row).to have_content(project_2.full_path)
+          expect(first_row).to have_content("Add framework")
+
+          expect(second_row).to have_content(project.name)
+          expect(second_row).to have_content(project.full_path)
+          expect(second_row).to have_content(framework2.name)
+
+          expect(third_row).to have_content(subgroup_project.name)
+          expect(third_row).to have_content(subgroup_project.full_path)
+          expect(third_row).to have_content(framework1.name)
         end
       end
     end
@@ -265,6 +291,10 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
 
   def second_row
     all('tbody tr')[1]
+  end
+
+  def third_row
+    all('tbody tr')[2]
   end
 
   def drawer_user_avatar
