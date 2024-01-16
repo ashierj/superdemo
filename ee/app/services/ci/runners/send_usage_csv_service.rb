@@ -34,7 +34,7 @@ module Ci
 
       def process_csv
         GenerateUsageCsvService.new(
-          current_user: @current_user,
+          @current_user,
           runner_type: @runner_type,
           from_date: @from_date,
           to_date: @to_date,

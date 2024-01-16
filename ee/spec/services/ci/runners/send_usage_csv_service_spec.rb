@@ -31,7 +31,7 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
 
   it 'sends the csv by email' do
     expect_next_instance_of(Ci::Runners::GenerateUsageCsvService,
-      current_user: current_user, runner_type: :instance_type, from_date: from_date, to_date: to_date,
+      current_user, runner_type: :instance_type, from_date: from_date, to_date: to_date,
       max_project_count: max_project_count
     ) do |service|
       expect(service).to receive(:execute).and_call_original

@@ -51,7 +51,7 @@ RSpec.describe Ci::Runners::ExportUsageCsvWorker, :click_house, :enable_admin_mo
 
         expect(worker.logging_extras).to eq({
           "extra.ci_runners_export_usage_csv_worker.status" => :error,
-          "extra.ci_runners_export_usage_csv_worker.message" => 'Insufficient permissions to generate export'
+          "extra.ci_runners_export_usage_csv_worker.message" => 'Insufficient permissions'
         })
       end
     end

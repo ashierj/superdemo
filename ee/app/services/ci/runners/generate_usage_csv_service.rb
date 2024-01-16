@@ -8,11 +8,8 @@ module Ci
     class GenerateUsageCsvService
       include Gitlab::Utils::StrongMemoize
 
-      attr_reader :project_ids, :runner_type, :from_date, :to_date
-
       MAX_PROJECT_COUNT = 1_000
       OTHER_PROJECTS_NAME = '<Other projects>'
-      GROUPING_COLUMNS = %w[grouped_project_id status runner_type].freeze
 
       # @param [User] current_user The user performing the reporting
       # @param [Symbol] runner_type The type of runners to report on, or nil to report on all types
@@ -20,9 +17,7 @@ module Ci
       # @param [Date] to_date The end date of the period to examine
       # @param [Integer] max_project_count The maximum number of projects in the report. All others will be folded
       #   into an 'Other projects' entry
-      def initialize(current_user:, runner_type:, from_date:, to_date:, max_project_count:)
-        runner_type = Ci::Runner.runner_types[runner_type] if runner_type.is_a?(Symbol)
-
+      def initialize(current_user, runner_type:, from_date:, to_date:, max_project_count:)
         @current_user = current_user
         @runner_type = runner_type
         @max_project_count = [MAX_PROJECT_COUNT, max_project_count].min
@@ -31,11 +26,13 @@ module Ci
       end
 
       def execute
-        return db_not_configured unless ClickHouse::Client.database_configured?(:main)
-        return insufficient_permissions unless Ability.allowed?(@current_user, :read_runner_usage)
+        result = ::Ci::Runners::GetUsageByProjectService.new(current_user, runner_type: runner_type,
+          from_date: from_date, to_date: to_date, max_project_count: max_project_count,
+          group_by_columns: [:status, :runner_type]).execute
 
-        result = ClickHouse::Client.select(clickhouse_query, :main)
-        rows = transform_rows(result)
+        return result unless result.success?
+
+        rows = transform_rows(result.payload)
         csv_builder = CsvBuilder::SingleBatch.new(rows, header_to_value_hash)
         csv_data = csv_builder.render(ExportCsv::BaseService::TARGET_FILESIZE)
         export_status = csv_builder.status
@@ -47,26 +44,17 @@ module Ci
         # rubocop: enable CodeReuse/ActiveRecord
         export_status[:projects_expected] =
           if export_status[:truncated] || export_status[:rows_written] == 0
-            @max_project_count
+            max_project_count
           else
             export_status[:projects_written]
           end
 
         ServiceResponse.success(payload: { csv_data: csv_data, status: export_status })
-      rescue StandardError => e
-        Gitlab::ErrorTracking.track_and_raise_for_dev_exception(e)
-        ServiceResponse.error(message: 'Failed to generate export', reason: :clickhouse_error)
       end
 
       private
 
-      def db_not_configured
-        ServiceResponse.error(message: 'ClickHouse database is not configured', reason: :db_not_configured)
-      end
-
-      def insufficient_permissions
-        ServiceResponse.error(message: 'Insufficient permissions to generate export', reason: :insufficient_permissions)
-      end
+      attr_reader :current_user, :runner_type, :from_date, :to_date, :max_project_count
 
       def header_to_value_hash
         {
@@ -78,78 +66,6 @@ module Ci
           'Total duration (minutes)' => 'total_duration_in_mins',
           'Total duration' => 'total_duration_human_readable'
         }
-      end
-
-      def clickhouse_query
-        # This query computes the top-used projects, and performs a union to add the aggregates
-        # for the projects not in that list
-        grouping_columns = GROUPING_COLUMNS.join(', ')
-        raw_query = <<~SQL.squish
-          WITH top_projects AS
-            (
-              SELECT project_id
-              FROM ci_used_minutes_mv
-              WHERE #{where_conditions}
-              GROUP BY project_id
-              ORDER BY sumSimpleState(total_duration) DESC
-              LIMIT {max_project_count: UInt64}
-            )
-          SELECT project_id AS grouped_project_id, #{select_list}
-          FROM ci_used_minutes_mv
-          WHERE #{where_conditions} AND project_id IN top_projects
-          GROUP BY #{grouping_columns}
-          ORDER BY #{order_list}
-          UNION ALL (
-            SELECT NULL AS grouped_project_id, #{select_list}
-            FROM ci_used_minutes_mv
-            WHERE #{where_conditions} AND project_id NOT IN top_projects
-            GROUP BY #{grouping_columns}
-            ORDER BY #{order_list}
-          )
-        SQL
-
-        ClickHouse::Client::Query.new(raw_query: raw_query, placeholders: placeholders)
-      end
-
-      def select_list
-        [
-          *(GROUPING_COLUMNS - %w[grouped_project_id]),
-          'countMerge(count_builds) AS count_builds',
-          'sumSimpleState(total_duration) / 60000 AS total_duration_in_mins'
-        ].join(', ')
-      end
-      strong_memoize_attr :select_list
-
-      def where_conditions
-        <<~SQL
-          #{'runner_type = {runner_type: UInt8} AND' if runner_type}
-          finished_at_bucket >= {from_date: DateTime('UTC', 6)} AND
-          finished_at_bucket < {to_date: DateTime('UTC', 6)}
-        SQL
-      end
-      strong_memoize_attr :where_conditions
-
-      def order_list
-        [
-          'total_duration_in_mins DESC',
-          *GROUPING_COLUMNS.map { |column| "#{column} ASC" }
-        ].join(', ')
-      end
-      strong_memoize_attr :order_list
-
-      def placeholders
-        placeholders = {
-          runner_type: runner_type,
-          from_date: format_date(@from_date),
-          to_date: format_date(@to_date + 1), # Include jobs until the end of the day
-          max_project_count: @max_project_count
-        }
-
-        placeholders.compact
-      end
-
-      def format_date(date)
-        date.strftime('%Y-%m-%d %H:%M:%S')
       end
 
       def transform_rows(result)
@@ -168,13 +84,6 @@ module Ci
           row['runner_type'] = runner_types_by_value[row['runner_type']&.to_i]
           row['total_duration_human_readable'] =
             ActiveSupport::Duration.build(row['total_duration_in_mins'] * 60).inspect
-        end
-
-        # Perform special treatment for any <Other projects> entries, moving them to the end of the list
-        other_projects_rows = result.select { |row| row['grouped_project_id'].nil? }
-        if other_projects_rows.any?
-          result.reject! { |row| row['grouped_project_id'].nil? }
-          result += other_projects_rows.select { |row| row['count_builds'] > 0 }
         end
 
         result
