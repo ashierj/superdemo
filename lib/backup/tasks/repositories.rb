@@ -19,7 +19,7 @@ module Backup
 
       def destination_optional = true
 
-      def task
+      def target
         strategy = Backup::GitalyBackup.new(progress,
           incremental: options.incremental?,
           max_parallelism: options.max_parallelism,
@@ -27,7 +27,7 @@ module Backup
           server_side: server_side
         )
 
-        Backup::Repositories.new(progress,
+        ::Backup::Targets::Repositories.new(progress,
           strategy: strategy,
           options: options,
           storages: options.repositories_storages,

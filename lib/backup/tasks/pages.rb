@@ -13,10 +13,10 @@ module Backup
 
       def destination_path = 'pages.tar.gz'
 
-      def task
+      def target
         excludes = [LEGACY_PAGES_TMP_PATH]
 
-        Files.new(progress, app_files_dir, options: options, excludes: excludes)
+        ::Backup::Targets::Files.new(progress, app_files_dir, options: options, excludes: excludes)
       end
 
       private

@@ -11,8 +11,8 @@ module Backup
 
       def destination_path = 'registry.tar.gz'
 
-      def task
-        Files.new(progress, app_files_dir, options: options)
+      def target
+        ::Backup::Targets::Files.new(progress, app_files_dir, options: options)
       end
 
       private

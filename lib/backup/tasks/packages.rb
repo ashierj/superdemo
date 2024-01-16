@@ -9,10 +9,10 @@ module Backup
 
       def destination_path = 'packages.tar.gz'
 
-      def task
+      def target
         excludes = ['tmp']
 
-        Files.new(progress, app_files_dir, options: options, excludes: excludes)
+        ::Backup::Targets::Files.new(progress, app_files_dir, options: options, excludes: excludes)
       end
 
       private

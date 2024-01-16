@@ -5,20 +5,6 @@ module Backup
     FILE_NAME_SUFFIX = '_gitlab_backup.tar'
     MANIFEST_NAME = 'backup_information.yml'
 
-    TaskDefinition = Struct.new(
-      :enabled, # `true` if the task can be used. Treated as `true` when not specified.
-      :human_name, # Name of the task used for logging.
-      :destination_path, # Where the task should put its backup file/dir.
-      :destination_optional, # `true` if the destination might not exist on a successful backup.
-      :cleanup_path, # Path to remove after a successful backup. Uses `destination_path` when not specified.
-      :task,
-      keyword_init: true
-    ) do
-      def enabled?
-        enabled.nil? || enabled
-      end
-    end
-
     attr_reader :progress, :remote_storage, :options
 
     def initialize(progress, definitions: nil)
@@ -60,7 +46,7 @@ module Backup
       end
 
       puts_time "Dumping #{definition.human_name} ... ".color(:blue)
-      definition.task.dump(destination_dir, backup_id)
+      definition.target.dump(destination_dir, backup_id)
       puts_time "Dumping #{definition.human_name} ... ".color(:blue) + "done".color(:green)
 
     rescue Backup::DatabaseBackupError, Backup::FileBackupError => e
@@ -88,17 +74,17 @@ module Backup
 
       puts_time "Restoring #{definition.human_name} ... ".color(:blue)
 
-      warning = definition.task.pre_restore_warning
+      warning = definition.target.pre_restore_warning
       if warning.present?
         puts_time warning.color(:red)
         Gitlab::TaskHelpers.ask_to_continue
       end
 
-      definition.task.restore(File.join(Gitlab.config.backup.path, definition.destination_path), backup_id)
+      definition.target.restore(File.join(Gitlab.config.backup.path, definition.destination_path), backup_id)
 
       puts_time "Restoring #{definition.human_name} ... ".color(:blue) + "done".color(:green)
 
-      warning = definition.task.post_restore_warning
+      warning = definition.target.post_restore_warning
       if warning.present?
         puts_time warning.color(:red)
         Gitlab::TaskHelpers.ask_to_continue

@@ -9,8 +9,8 @@ module Backup
 
       def destination_path = 'lfs.tar.gz'
 
-      def task
-        Files.new(progress, app_files_dir, options: options)
+      def target
+        ::Backup::Targets::Files.new(progress, app_files_dir, options: options)
       end
 
       private

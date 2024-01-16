@@ -11,8 +11,8 @@ module Backup
 
       def cleanup_path = 'db'
 
-      def task
-        ::Backup::Database.new(progress, options: options, force: options.force?)
+      def target
+        ::Backup::Targets::Database.new(progress, options: options, force: options.force?)
       end
     end
   end

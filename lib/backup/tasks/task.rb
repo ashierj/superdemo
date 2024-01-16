@@ -22,8 +22,8 @@ module Backup
       # Where the task should put its backup file/dir
       def destination_path = raise NotImplementedError
 
-      # The task factory method
-      def task = raise NotImplementedError
+      # The target factory method
+      def target = raise NotImplementedError
 
       # Path to remove after a successful backup, uses #destination_path when not specified
       def cleanup_path
