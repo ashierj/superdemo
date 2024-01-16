@@ -14,7 +14,6 @@ module EE
 
       include Elastic::ApplicationVersionedSearch
       include UsageStatistics
-      include WeightEventable
       include IterationEventable
       include HealthStatus
       include Epics::MetadataCacheUpdate
@@ -116,6 +115,8 @@ module EE
       has_many :pending_escalations, class_name: 'IncidentManagement::PendingEscalations::Issue', foreign_key: :issue_id, inverse_of: :issue
 
       has_many :issuable_resource_links, class_name: 'IncidentManagement::IssuableResourceLink', inverse_of: :issue
+
+      has_many :resource_weight_events
 
       validates :weight, allow_nil: true, numericality: { greater_than_or_equal_to: 0 }
       validate :validate_confidential_epic

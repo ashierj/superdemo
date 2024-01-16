@@ -41,13 +41,13 @@ RSpec.describe 'Resource weight events', :js, feature_category: :team_planning d
         wait_for_all_requests
 
         expect(page).to have_content('set weight to 2', count: 1)
-        expect(page).to have_content('set weight to 3', count: 1)
+        expect(page).to have_content('changed weight to 3 from 2', count: 1)
 
         visit project_issue_path(project, issue)
         wait_for_all_requests
 
         expect(page).to have_content('set weight to 2', count: 1)
-        expect(page).to have_content('set weight to 3', count: 1)
+        expect(page).to have_content('changed weight to 3 from 2', count: 1)
         expect(page).to have_content 'Closed'
       end
     end
