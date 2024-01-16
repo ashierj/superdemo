@@ -279,7 +279,7 @@ RSpec.describe IssuesFinder do
               let(:params) { { group_id: group, not: { iteration_id: ::Iteration::Predefined::Current.title } } }
 
               it 'returns filtered issues' do
-                expect(items).to contain_exactly(item1, item5, iteration_1_issue, iteration_2_issue)
+                expect(items).to contain_exactly(item1, item5, group_level_item, iteration_1_issue, iteration_2_issue)
               end
             end
           end
