@@ -5,7 +5,6 @@ import { cloneDeep } from 'lodash';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { captureException } from '~/ci/runner/sentry_utils';
-import { NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE } from 'ee/usage_quotas/storage/constants';
 import NamespaceStorageApp from 'ee/usage_quotas/storage/components/namespace_storage_app.vue';
 import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import getNamespaceStorageQuery from 'ee/usage_quotas/storage/queries/namespace_storage.query.graphql';
@@ -13,7 +12,6 @@ import getProjectListStorageQuery from 'ee/usage_quotas/storage/queries/project_
 import createMockApollo from 'helpers/mock_apollo_helper';
 import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
-import DependencyProxyUsage from 'ee/usage_quotas/storage/components/dependency_proxy_usage.vue';
 import ContainerRegistryUsage from 'ee/usage_quotas/storage/components/container_registry_usage.vue';
 import {
   mockGetNamespaceStorageGraphQLResponse,
@@ -32,13 +30,11 @@ describe('NamespaceStorageApp', () => {
   const getNamespaceStorageHandler = jest.fn();
   const getProjectListStorageHandler = jest.fn();
 
-  const findDependencyProxy = () => wrapper.findComponent(DependencyProxyUsage);
   const findStorageUsageStatistics = () => wrapper.findComponent(StorageUsageStatistics);
   const findSearchAndSortBar = () => wrapper.findComponent(SearchAndSortBar);
   const findProjectList = () => wrapper.findComponent(ProjectList);
   const findPrevButton = () => wrapper.findByTestId('prevButton');
   const findNextButton = () => wrapper.findByTestId('nextButton');
-  const findBreakdownSubtitle = () => wrapper.findByTestId('breakdown-subtitle');
   const findContainerRegistry = () => wrapper.findComponent(ContainerRegistryUsage);
   const findAlert = () => wrapper.findComponent(GlAlert);
 
@@ -70,33 +66,10 @@ describe('NamespaceStorageApp', () => {
       await waitForPromises();
     });
 
-    it('shows the namespace storage breakdown subtitle', () => {
-      expect(findBreakdownSubtitle().text()).toBe(NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE);
-    });
-
     it('renders purchase more storage button', () => {
       const purchaseButton = wrapper.findComponent(GlButton);
 
       expect(purchaseButton.exists()).toBe(true);
-    });
-  });
-
-  describe('Dependency proxy usage', () => {
-    it('shows the dependency proxy usage component', async () => {
-      createComponent({
-        provide: { userNamespace: false },
-      });
-      await waitForPromises();
-
-      expect(findDependencyProxy().exists()).toBe(true);
-    });
-
-    it('does not display the dependency proxy for personal namespaces', () => {
-      createComponent({
-        provide: { userNamespace: true },
-      });
-
-      expect(findDependencyProxy().exists()).toBe(false);
     });
   });
 
