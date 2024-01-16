@@ -100,6 +100,12 @@ export default {
       return this.selectedIteration?.iterationCadence?.title;
     },
   },
+  watch: {
+    iteration(newVal) {
+      this.localIteration = newVal;
+      this.selectedIterationId = newVal?.id;
+    },
+  },
   apollo: {
     iterations: {
       query: projectIterationsQuery,
