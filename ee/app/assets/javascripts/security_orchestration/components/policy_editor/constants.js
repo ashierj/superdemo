@@ -190,3 +190,16 @@ export const MULTIPLE_SELECTED_LABEL = s__(
 );
 export const SELECTED_ITEMS_LABEL = s__('PolicyRuleMultiSelect|Select %{itemTypeName}');
 export const ALL_SELECTED_LABEL = s__('PolicyRuleMultiSelect|All %{itemTypeName}');
+
+export const REGULAR_BRANCH = 'regular';
+export const PROTECTED_BRANCH = 'protected';
+
+export const BRANCH_TYPES = {
+  [PROTECTED_BRANCH]: s__('SecurityOrchestration|Add protected branches'),
+  [REGULAR_BRANCH]: s__('SecurityOrchestration|Add regular branches'),
+};
+
+export const BRANCH_TYPES_ITEMS = Object.entries(BRANCH_TYPES).map(([value, text]) => ({
+  value,
+  text,
+}));
