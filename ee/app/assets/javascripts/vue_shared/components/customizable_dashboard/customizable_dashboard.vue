@@ -20,7 +20,8 @@ import {
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import PanelsBase from './panels_base.vue';
 import {
-  GRIDSTACK_MARGIN,
+  GRIDSTACK_MARGIN_X,
+  GRIDSTACK_MARGIN_Y,
   GRIDSTACK_CSS_HANDLE,
   GRIDSTACK_CELL_HEIGHT,
   GRIDSTACK_MIN_ROW,
@@ -270,7 +271,10 @@ export default {
       if (this.loaded) {
         this.grid = GridStack.init({
           staticGrid: !this.editing,
-          margin: GRIDSTACK_MARGIN,
+          marginLeft: GRIDSTACK_MARGIN_X,
+          marginRight: GRIDSTACK_MARGIN_X,
+          marginTop: GRIDSTACK_MARGIN_Y,
+          marginBottom: GRIDSTACK_MARGIN_Y,
           handle: GRIDSTACK_CSS_HANDLE,
           cellHeight: GRIDSTACK_CELL_HEIGHT,
           minRow: GRIDSTACK_MIN_ROW,

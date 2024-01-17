@@ -204,7 +204,7 @@ export default {
 <template>
   <div
     :id="popoverId"
-    class="grid-stack-item-content gl-border gl-rounded-small gl-p-4 gl-bg-white gl-overflow-visible! gl-shadow-sm"
+    class="grid-stack-item-content gl-border gl-rounded-base gl-p-4 gl-bg-white gl-overflow-visible!"
     :class="{
       'gl-border-t-2 gl-border-t-solid gl-border-t-red-500': showErrorState,
     }"
