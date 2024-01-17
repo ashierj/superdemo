@@ -297,8 +297,6 @@ module Geo
     #
     # @return [Boolean] whether it is a good idea to mark a replicable synced without downloading it
     def ok_to_skip_download?
-      return false unless Feature.enabled?(:geo_skip_download_if_exists)
-
       # Verification of immutable data is likely to pass if the data seems to
       # already exist. We are much less sure about mutable data, so let's
       # exclude it from this optimization for now.

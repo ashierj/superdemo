@@ -697,84 +697,74 @@ RSpec.shared_examples 'a verifiable replicator' do
   describe '#ok_to_skip_download?' do
     subject(:ok_to_skip_download?) { replicator.ok_to_skip_download? }
 
-    context 'when geo_skip_download_if_exists is enabled' do
-      context 'when the registry is brand new' do
-        context 'when the model is immutable' do
+    context 'when the registry is brand new' do
+      context 'when the model is immutable' do
+        before do
+          skip 'this context does not apply to mutable models' unless replicator.immutable?
+        end
+
+        context 'when the resource already exists on this site' do
           before do
-            skip 'this context does not apply to mutable models' unless replicator.immutable?
+            allow(replicator).to receive(:resource_exists?).and_return(true)
           end
 
-          context 'when the resource already exists on this site' do
+          context 'when verification is enabled for this model' do
             before do
-              allow(replicator).to receive(:resource_exists?).and_return(true)
-            end
-
-            context 'when verification is enabled for this model' do
-              before do
-                unless replicator.class.verification_enabled?
-                  skip 'this context does not apply to models that are not verified'
-                end
-              end
-
-              context 'when the resource is in verifiables' do
-                before do
-                  allow(model_record).to receive(:in_verifiables?).and_return(true)
-                end
-
-                it { is_expected.to be_truthy }
-              end
-
-              context 'when the resource is not in verifiables' do
-                before do
-                  allow(model_record).to receive(:in_verifiables?).and_return(false)
-                end
-
-                it { is_expected.to be_falsey }
+              unless replicator.class.verification_enabled?
+                skip 'this context does not apply to models that are not verified'
               end
             end
 
-            context 'when verification is disabled for this model' do
+            context 'when the resource is in verifiables' do
               before do
-                skip 'this context does not apply to models that are verified' if replicator.class.verification_enabled?
+                allow(model_record).to receive(:in_verifiables?).and_return(true)
+              end
+
+              it { is_expected.to be_truthy }
+            end
+
+            context 'when the resource is not in verifiables' do
+              before do
+                allow(model_record).to receive(:in_verifiables?).and_return(false)
               end
 
               it { is_expected.to be_falsey }
             end
           end
 
-          context 'when the resource does not exist on this site' do
+          context 'when verification is disabled for this model' do
             before do
-              allow(replicator).to receive(:resource_exists?).and_return(false)
+              skip 'this context does not apply to models that are verified' if replicator.class.verification_enabled?
             end
 
             it { is_expected.to be_falsey }
           end
         end
 
-        context 'when the model is mutable' do
+        context 'when the resource does not exist on this site' do
           before do
-            skip 'this context does not apply to immutable models' if replicator.immutable?
+            allow(replicator).to receive(:resource_exists?).and_return(false)
           end
 
           it { is_expected.to be_falsey }
         end
       end
 
-      context 'when the registry is not brand new (sync or verification has been attempted before)' do
+      context 'when the model is mutable' do
         before do
-          model_record.save!
-          replicator.registry.start
-          replicator.registry.synced!
-          replicator.registry.pending!
+          skip 'this context does not apply to immutable models' if replicator.immutable?
         end
 
         it { is_expected.to be_falsey }
       end
     end
 
-    context 'when geo_skip_download_if_exists is disabled' do
+    context 'when the registry is not brand new (sync or verification has been attempted before)' do
       before do
-        stub_feature_flags(geo_skip_download_if_exists: false)
+        model_record.save!
+        replicator.registry.start
+        replicator.registry.synced!
+        replicator.registry.pending!
       end
 
       it { is_expected.to be_falsey }
