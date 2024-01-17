@@ -8,8 +8,19 @@ module EE
 
         prepended do
           helpers do
+            def audit_download(build, filename)
+              super
+
+              Audit::Ci::ArtifactDownloadAuditor.new(
+                current_user: current_user,
+                build: build,
+                filename: filename
+              ).execute
+            end
+
             def authorize_download_artifacts!
               super
+
               check_cross_project_pipelines_feature!
             end
 

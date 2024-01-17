@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe API::Ci::Runner, feature_category: :runner do
   include Ci::JobTokenScopeHelpers
 
-  let_it_be_with_reload(:project) { create(:project, :repository) }
+  let_it_be_with_reload(:project) { create(:project, :repository, :in_group) }
 
   let_it_be(:user) { create(:user) }
   let_it_be(:ref) { 'master' }
@@ -136,7 +136,21 @@ RSpec.describe API::Ci::Runner, feature_category: :runner do
       end
 
       shared_examples 'successful artifact download' do
+        before do
+          project.group.root_ancestor.external_audit_event_destinations.create!(destination_url: 'http://example.com')
+          stub_licensed_features(admin_audit_log: true, extended_audit_events: true, external_audit_events: true)
+        end
+
         it 'downloads artifacts' do
+          expect(::Gitlab::Audit::Auditor).to(
+            receive(:audit).with(hash_including(name: 'job_artifact_downloaded')).and_call_original
+          )
+          expect(AuditEvents::AuditEventStreamingWorker).to(
+            receive(:perform_async)
+              .with('job_artifact_downloaded', nil, a_string_including("Downloaded artifact"))
+              .and_call_original
+          )
+
           download_artifact
 
           expect(response).to have_gitlab_http_status(:ok)
