@@ -9,7 +9,7 @@
 #
 # `ApprovalProjectRule` doesn't have access to the merge request unlike
 # `ApprovalMergeRequestRule`. Given that, instead of having different checks and
-# methods when dealing with a `ApprovalProjectRule`, having a comon interface
+# methods when dealing with a `ApprovalProjectRule`, having a common interface
 # is easier and simpler to interact with.
 #
 # Different types of `ApprovalWrappedRule` also helps since we have different
