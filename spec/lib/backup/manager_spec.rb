@@ -27,6 +27,7 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
       Backup::Tasks::TerraformState.new(progress: progress, options: options)
                                    .tap { |state| allow(state).to receive(:target).and_return(target) }
     end
+
     let(:target) { instance_double(Backup::Targets::Target) }
     let(:definitions) do
       { 'terraform_state' => terraform_state }
@@ -66,6 +67,7 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
       Backup::Tasks::TerraformState.new(progress: progress, options: options)
                                    .tap { |task| allow(task).to receive(:target).and_return(target) }
     end
+
     let(:pre_restore_warning) { '' }
     let(:post_restore_warning) { '' }
     let(:target) do
@@ -73,6 +75,7 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
         pre_restore_warning: pre_restore_warning,
         post_restore_warning: post_restore_warning)
     end
+
     let(:definitions) { { 'terraform_state' => terraform_state } }
     let(:backup_information) { { backup_created_at: Time.zone.parse('2019-01-01'), gitlab_version: '12.3' } }
 
@@ -166,10 +169,12 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
       Backup::Tasks::Lfs.new(progress: progress, options: options)
                                    .tap { |task| allow(task).to receive(:target).and_return(target1) }
     end
+
     let(:pages) do
       Backup::Tasks::Pages.new(progress: progress, options: options)
                           .tap { |task| allow(task).to receive(:target).and_return(target2) }
     end
+
     let(:target1) { instance_double(Backup::Targets::Target) }
     let(:target2) { instance_double(Backup::Targets::Target) }
     let(:definitions) do
@@ -259,17 +264,17 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
 
       context 'many backup files' do
         let(:files) do
-          [
-            '1451606400_2016_01_01_1.2.3_gitlab_backup.tar',
-            '1451520000_2015_12_31_4.5.6_gitlab_backup.tar',
-            '1451520000_2015_12_31_4.5.6-pre_gitlab_backup.tar',
-            '1451520000_2015_12_31_4.5.6-rc1_gitlab_backup.tar',
-            '1451520000_2015_12_31_4.5.6-pre-ee_gitlab_backup.tar',
-            '1451510000_2015_12_30_gitlab_backup.tar',
-            '1450742400_2015_12_22_gitlab_backup.tar',
-            '1449878400_gitlab_backup.tar',
-            '1449014400_gitlab_backup.tar',
-            'manual_gitlab_backup.tar'
+          %w[
+            1451606400_2016_01_01_1.2.3_gitlab_backup.tar
+            1451520000_2015_12_31_4.5.6_gitlab_backup.tar
+            1451520000_2015_12_31_4.5.6-pre_gitlab_backup.tar
+            1451520000_2015_12_31_4.5.6-rc1_gitlab_backup.tar
+            1451520000_2015_12_31_4.5.6-pre-ee_gitlab_backup.tar
+            1451510000_2015_12_30_gitlab_backup.tar
+            1450742400_2015_12_22_gitlab_backup.tar
+            1449878400_gitlab_backup.tar
+            1449014400_gitlab_backup.tar
+            manual_gitlab_backup.tar
           ]
         end
 
@@ -299,10 +304,10 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
 
         context 'when no valid file is found' do
           let(:files) do
-            [
-              '14516064000_2016_01_01_1.2.3_gitlab_backup.tar',
-              'foo_1451520000_2015_12_31_4.5.6_gitlab_backup.tar',
-              '1451520000_2015_12_31_4.5.6-foo_gitlab_backup.tar'
+            %w[
+              14516064000_2016_01_01_1.2.3_gitlab_backup.tar
+              foo_1451520000_2015_12_31_4.5.6_gitlab_backup.tar
+              1451520000_2015_12_31_4.5.6-foo_gitlab_backup.tar
             ]
           end
 
@@ -658,9 +663,9 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
       context 'when there are two backup files in the directory and BACKUP variable is not set' do
         before do
           allow(Dir).to receive(:glob).and_return(
-            [
-              '1451606400_2016_01_01_1.2.3_gitlab_backup.tar',
-              '1451520000_2015_12_31_gitlab_backup.tar'
+            %w[
+              1451606400_2016_01_01_1.2.3_gitlab_backup.tar
+              1451520000_2015_12_31_gitlab_backup.tar
             ]
           )
         end
@@ -931,10 +936,12 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
       Backup::Tasks::Lfs.new(progress: progress, options: options)
                         .tap { |task| allow(task).to receive(:target).and_return(target1) }
     end
+
     let(:pages) do
       Backup::Tasks::Pages.new(progress: progress, options: options)
                           .tap { |task| allow(task).to receive(:target).and_return(target2) }
     end
+
     let(:target1) { instance_double(Backup::Targets::Target, pre_restore_warning: nil, post_restore_warning: nil) }
     let(:target2) { instance_double(Backup::Targets::Target, pre_restore_warning: nil, post_restore_warning: nil) }
     let(:definitions) do
@@ -980,9 +987,9 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
     context 'when there are two backup files in the directory and BACKUP variable is not set' do
       before do
         allow(Dir).to receive(:glob).and_return(
-          [
-            '1451606400_2016_01_01_1.2.3_gitlab_backup.tar',
-            '1451520000_2015_12_31_gitlab_backup.tar'
+          %w[
+            1451606400_2016_01_01_1.2.3_gitlab_backup.tar
+            1451520000_2015_12_31_gitlab_backup.tar
           ]
         )
       end
