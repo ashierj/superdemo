@@ -14,7 +14,7 @@ export default {
     emptyState: {
       title: s__("Organization|You don't have any projects yet."),
       description: s__(
-        'GroupsEmptyState|Projects are where you can store your code, access issues, wiki, and other features of Gitlab.',
+        'GroupsEmptyState|Projects are where you can store your code, access issues, wiki, and other features of GitLab.',
       ),
       primaryButtonText: __('New project'),
     },

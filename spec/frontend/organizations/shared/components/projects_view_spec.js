@@ -80,7 +80,7 @@ describe('ProjectsView', () => {
         expect(wrapper.findComponent(GlEmptyState).props()).toMatchObject({
           title: "You don't have any projects yet.",
           description:
-            'Projects are where you can store your code, access issues, wiki, and other features of Gitlab.',
+            'Projects are where you can store your code, access issues, wiki, and other features of GitLab.',
           svgHeight: 144,
           svgPath: defaultProvide.projectsEmptyStateSvgPath,
           primaryButtonLink: null,
