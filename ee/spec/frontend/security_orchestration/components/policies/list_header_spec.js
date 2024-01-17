@@ -79,7 +79,7 @@ describe('List Header Component', () => {
 
     it('displays the subheader', () => {
       expect(findSubheader().text()).toMatchInterpolatedText(
-        'Enforce security for this project. More information.',
+        'Enforce security policies for this project.',
       );
       expect(findMoreInformationLink().attributes('href')).toBe(documentationPath);
     });

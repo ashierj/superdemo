@@ -23,7 +23,7 @@ export default {
   i18n: {
     title: s__('SecurityOrchestration|Policies'),
     subtitle: s__(
-      'SecurityOrchestration|Enforce security for this project. %{linkStart}More information.%{linkEnd}',
+      'SecurityOrchestration|Enforce %{linkStart}security policies%{linkEnd} for this project.',
     ),
     newPolicyButtonText: NEW_POLICY_BUTTON_TEXT,
     editPolicyProjectButtonText: s__('SecurityOrchestration|Edit policy project'),
