@@ -319,6 +319,26 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
         end
       end
     end
+
+    context 'when removing a service account group member' do
+      subject(:destroy_service) { described_class.new(current_user).execute(member) }
+
+      let(:member_user) { create(:user, :service_account) }
+
+      it 'raises AccessDeniedError when :service_accounts feature unavailable' do
+        expect { subject }.to raise_error(Gitlab::Access::AccessDeniedError)
+      end
+
+      context 'when :service_accounts feature is enabled' do
+        before do
+          stub_licensed_features(service_accounts: true)
+        end
+
+        it 'removes the service account member' do
+          expect { subject }.to change { member.source.members_and_requesters.count }.by(-1)
+        end
+      end
+    end
   end
 
   context 'when current user is not present' do # ie, when the system initiates the destroy

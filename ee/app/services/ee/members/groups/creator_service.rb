@@ -30,6 +30,15 @@ module EE
           attributes.merge(member_role_id: member_role_id)
         end
 
+        override :can_create_new_member?
+        def can_create_new_member?
+          if member.user&.service_account?
+            current_user.can?(:admin_service_account_member, member.group)
+          else
+            current_user.can?(:admin_group_member, member.group)
+          end
+        end
+
         def ignore_user_limits
           args[:ignore_user_limits]
         end

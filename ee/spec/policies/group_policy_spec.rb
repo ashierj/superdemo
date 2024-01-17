@@ -1339,6 +1339,14 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         it { is_expected.not_to be_allowed(:admin_group_member) }
         it { is_expected.not_to be_allowed(:override_group_member) }
         it { is_expected.not_to be_allowed(:update_group_member) }
+
+        context 'and service_accounts feature is enabled' do
+          before do
+            stub_licensed_features(service_accounts: true)
+          end
+
+          it { is_expected.to be_allowed(:admin_service_account_member) }
+        end
       end
     end
   end
@@ -2832,6 +2840,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       let(:current_user) { owner }
 
       it { is_expected.to be_disallowed(:admin_service_accounts) }
+      it { is_expected.to be_disallowed(:admin_service_account_member) }
     end
 
     context 'when feature is enabled' do
@@ -2843,12 +2852,14 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         let(:current_user) { maintainer }
 
         it { is_expected.to be_disallowed(:admin_service_accounts) }
+        it { is_expected.to be_disallowed(:admin_service_account_member) }
       end
 
       context 'when the user is an owner' do
         let(:current_user) { owner }
 
         it { is_expected.to be_allowed(:admin_service_accounts) }
+        it { is_expected.to be_allowed(:admin_service_account_member) }
       end
 
       context 'when the user is an instance admin' do
@@ -2856,10 +2867,12 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
         context 'when admin mode is enabled', :enable_admin_mode do
           it { is_expected.to be_allowed(:admin_service_accounts) }
+          it { is_expected.to be_allowed(:admin_service_account_member) }
         end
 
         context 'when admin mode is not enabled' do
           it { is_expected.to be_disallowed(:admin_service_accounts) }
+          it { is_expected.to be_disallowed(:admin_service_account_member) }
         end
       end
     end
@@ -3058,6 +3071,44 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       let(:allowed_abilities) { [:admin_group_member] }
 
       it_behaves_like 'custom roles abilities'
+
+      context 'admin_service_account_member' do
+        let_it_be(:guest) { create(:user) }
+        let_it_be(:group) { create(:group) }
+
+        let_it_be(:group_member_guest) do
+          create(
+            :group_member,
+            user: guest,
+            source: group,
+            access_level: Gitlab::Access::GUEST
+          )
+        end
+
+        let(:role) do
+          create(
+            :member_role,
+            :guest,
+            namespace: group,
+            admin_group_member: true
+          )
+        end
+
+        before do
+          role.members << group_member_guest
+          stub_licensed_features(custom_roles: true)
+        end
+
+        it { is_expected.to be_disallowed(:admin_service_account_member) }
+
+        context 'when service accounts feature enabled' do
+          before do
+            stub_licensed_features(custom_roles: true, service_accounts: true)
+          end
+
+          it { is_expected.to be_allowed(:admin_service_account_member) }
+        end
+      end
     end
 
     context 'for a member role with manage_group_access_tokens true' do

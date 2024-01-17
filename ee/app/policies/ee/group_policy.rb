@@ -462,6 +462,7 @@ module EE
 
       rule { (admin | owner) & service_accounts_available }.policy do
         enable :admin_service_accounts
+        enable :admin_service_account_member
       end
 
       rule { memberships_locked_to_saml & saml_group_links_enabled & ~admin }.policy do
@@ -520,6 +521,10 @@ module EE
         enable :admin_group_member
         enable :update_group_member
         enable :destroy_group_member
+      end
+
+      rule { custom_roles_allowed & role_enables_admin_group_member & service_accounts_available }.policy do
+        enable :admin_service_account_member
       end
 
       rule { custom_roles_allowed & role_enables_manage_group_access_tokens & resource_access_token_feature_available }.policy do

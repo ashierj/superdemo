@@ -200,5 +200,27 @@ RSpec.describe Members::Groups::CreatorService, feature_category: :groups_and_pr
         end
       end
     end
+
+    context 'when adding a service_account member' do
+      let_it_be(:user) { create(:user, :service_account) }
+      let_it_be(:source) { create(:group) }
+      let_it_be(:group_owner) { create(:user) }
+
+      before_all do
+        source.add_owner(group_owner)
+      end
+
+      before do
+        allow(group_owner).to receive(:can?).and_return(false)
+        allow(group_owner).to receive(:can?).with(:admin_service_account_member, anything).and_return(true)
+      end
+
+      it 'checks the appropriate permission' do
+        member = described_class.add_member(source, user, :maintainer, current_user: group_owner)
+
+        expect(member).to be_a GroupMember
+        expect(member).to be_persisted
+      end
+    end
   end
 end
