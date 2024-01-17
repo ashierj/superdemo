@@ -63,7 +63,7 @@ RSpec.describe 'compliance_management/compliance_framework/_project_settings.htm
 
     context 'project does not have a gitlab_ci_yml file' do
       before do
-        allow(project.repository).to receive(:gitlab_ci_yml).and_return(nil)
+        allow(project).to receive(:has_ci_config_file?).and_return(false)
       end
 
       it 'does not render the No pipeline alert' do
@@ -75,7 +75,7 @@ RSpec.describe 'compliance_management/compliance_framework/_project_settings.htm
 
     context 'project has a gitlab_ci_yml file' do
       before do
-        allow(project.repository).to receive(:gitlab_ci_yml).and_return('test: scriptx: exit 0')
+        allow(project).to receive(:has_ci_config_file?).and_return(true)
       end
 
       it 'does render the No pipeline alert' do
