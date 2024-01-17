@@ -23,7 +23,7 @@
       "name": "Administrator",
       "username": "root",
       "state": "active",
-      "avatar_url": "https://secure.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80\u0026d=identicon",
+      "avatar_url": "https://secure.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80&d=identicon",
       "web_url": "https://22878.qa-tunnel.gitlab.info/root",
       "status_tooltip_html": null,
       "path": "/root"
@@ -32,7 +32,9 @@
       "id": "63492726c2264a0277141d6a6573c3d22ecd7de3",
       "short_id": "63492726",
       "created_at": "2017-09-07T13:45:32.000Z",
-      "parent_ids": ["3fc05cdfcdc813ffe7d82af7bac9df5663f3bc17"],
+      "parent_ids": [
+        "3fc05cdfcdc813ffe7d82af7bac9df5663f3bc17"
+      ],
       "title": "Improve code quality",
       "message": "Improve code quality",
       "author_name": "Alessio Caiazza",
@@ -42,7 +44,7 @@
       "committer_email": "acaiazza@gitlab.com",
       "committed_date": "2017-09-07T13:45:32.000Z",
       "author": null,
-      "author_gravatar_url": "https://secure.gravatar.com/avatar/9c90b0ce0129300552700dc0fcd871fc?s=80\u0026d=identicon",
+      "author_gravatar_url": "https://secure.gravatar.com/avatar/9c90b0ce0129300552700dc0fcd871fc?s=80&d=identicon",
       "commit_url": "https://22878.qa-tunnel.gitlab.info/root/minimal-ruby-app/commit/63492726c2264a0277141d6a6573c3d22ecd7de3",
       "commit_path": "/root/minimal-ruby-app/commit/63492726c2264a0277141d6a6573c3d22ecd7de3"
     },
@@ -66,8 +68,8 @@
         "has_details": true,
         "details_path": "/root/minimal-ruby-app/-/jobs/1097",
         "illustration": {
-          "image": "/assets/illustrations/skipped-job_empty-8b877955fbf175e42ae65b6cb95346e15282c6fc5b682756c329af3a0055225e.svg",
-          "size": "svg-430",
+          "image": "/assets/illustrations/empty-state/empty-job-skipped-md-8b877955fbf175e42ae65b6cb95346e15282c6fc5b682756c329af3a0055225e.svg",
+          "size": "",
           "title": "This job does not have a trace."
         },
         "favicon": "/assets/ci_favicons/favicon_status_success-8451333011eee8ce9f2ab25dc487fe24a8758c694827a582f17f42b0a90446a2.png",
@@ -80,8 +82,12 @@
         }
       }
     },
-    "manual_actions": [],
-    "scheduled_actions": []
+    "manual_actions": [
+
+    ],
+    "scheduled_actions": [
+
+    ]
   },
   "has_stop_action": false,
   "environment_path": "/root/minimal-ruby-app/environments/27",
@@ -103,7 +109,7 @@
     "title": "my metric",
     "query": "avg(metric)",
     "threshold": 1.0,
-    "operator": "\u003e",
+    "operator": ">",
     "alert_path": "/root/minimal-ruby-app/prometheus/alerts/21.json?environment_id=27"
   }
 }
