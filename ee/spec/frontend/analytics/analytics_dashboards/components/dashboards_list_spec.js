@@ -73,7 +73,6 @@ describe('DashboardsList', () => {
         isGroup: false,
         collectorHost: TEST_COLLECTOR_HOST,
         trackingKey: TEST_TRACKING_KEY,
-        customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
         canConfigureDashboardsProject: true,
         namespaceFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         analyticsSettingsPath: '/test/-/settings#foo',
@@ -93,14 +92,6 @@ describe('DashboardsList', () => {
 
     it('should render the page title', () => {
       expect(findPageTitle().text()).toBe('Analytics dashboards');
-    });
-
-    it('renders the visualization designer button', () => {
-      expect(findVisualizationDesignerButton().exists()).toBe(true);
-    });
-
-    it('renders the new dashboard button', () => {
-      expect(findNewDashboardButton().exists()).toBe(true);
     });
 
     it('should render the help link', () => {
@@ -136,18 +127,77 @@ describe('DashboardsList', () => {
   });
 
   describe('for projects', () => {
-    beforeEach(() => {
-      createWrapper();
-    });
-
     it('should render the page description', () => {
+      createWrapper();
+
       expect(findPageDescription().text()).toContain(
         'Dashboards are created by editing the projects dashboard files.',
       );
     });
+
+    it('does not render the visualization designer button', () => {
+      createWrapper();
+
+      expect(findVisualizationDesignerButton().exists()).toBe(false);
+    });
+
+    it('does not render the new dashboard button', () => {
+      createWrapper();
+
+      expect(findNewDashboardButton().exists()).toBe(false);
+    });
+
+    describe('when custom dashboards project is configured', () => {
+      it('should display the new dashboard button', () => {
+        createWrapper({
+          customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
+        });
+
+        expect(findNewDashboardButton().exists()).toBe(true);
+      });
+
+      it('does not render the visualization designer button', () => {
+        createWrapper();
+
+        expect(findVisualizationDesignerButton().exists()).toBe(false);
+      });
+
+      describe('when product analytics is onboarded', () => {
+        beforeEach(async () => {
+          mockAnalyticsDashboardsHandler = jest
+            .fn()
+            .mockResolvedValue(TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE);
+
+          createWrapper({
+            features: ['productAnalytics'],
+            customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
+          });
+
+          await waitForPromises();
+
+          findProductAnalyticsOnboarding().vm.$emit('complete');
+        });
+
+        it('should show the visualization designer button', () => {
+          expect(findVisualizationDesignerButton().exists()).toBe(true);
+        });
+      });
+    });
   });
 
   describe('for groups', () => {
+    it('does not render the visualization designer button', () => {
+      createWrapper({ isProject: false, isGroup: true });
+
+      expect(findVisualizationDesignerButton().exists()).toBe(false);
+    });
+
+    it('does not render the new dashboard button', () => {
+      createWrapper({ isProject: false, isGroup: true });
+
+      expect(findNewDashboardButton().exists()).toBe(false);
+    });
+
     describe('when `groupAnalyticsDashboards` FF is disabled', () => {
       beforeEach(() => {
         createWrapper({ isProject: false, isGroup: true });
@@ -223,6 +273,24 @@ describe('DashboardsList', () => {
         });
       });
     });
+
+    describe('when custom dashboards project is configured', () => {
+      it('does not render the visualization designer button', () => {
+        createWrapper({ isProject: false, isGroup: true });
+
+        expect(findVisualizationDesignerButton().exists()).toBe(false);
+      });
+
+      it('does not render the new dashboard button', () => {
+        createWrapper({
+          isProject: false,
+          isGroup: true,
+          customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
+        });
+
+        expect(findNewDashboardButton().exists()).toBe(false);
+      });
+    });
   });
 
   describe('configure custom dashboards project', () => {
@@ -241,17 +309,6 @@ describe('DashboardsList', () => {
 
       it('does not show the custom dashboard setup alert', () => {
         expect(findConfigureAlert().exists()).toBe(false);
-      });
-    });
-
-    describe('when custom dashboards project is falsy', () => {
-      beforeEach(() => {
-        createWrapper({ customDashboardsProject: null });
-      });
-
-      it('does not show the designer buttons', () => {
-        expect(findVisualizationDesignerButton().exists()).toBe(false);
-        expect(findNewDashboardButton().exists()).toBe(false);
       });
     });
   });
@@ -371,7 +428,7 @@ describe('DashboardsList', () => {
     });
   });
 
-  describe('when an error occured while fetching the list of dashboards', () => {
+  describe('when an error occurred while fetching the list of dashboards', () => {
     const message = 'failed';
     const error = new Error(message);
 

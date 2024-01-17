@@ -11,8 +11,9 @@ import {
 import getAllCustomizableDashboardsQuery from '../graphql/queries/get_all_customizable_dashboards.query.graphql';
 import DashboardListItem from './list/dashboard_list_item.vue';
 
+const productAnalyticsOnboardingType = 'productAnalytics';
 const ONBOARDING_FEATURE_COMPONENTS = {
-  productAnalytics: () =>
+  [productAnalyticsOnboardingType]: () =>
     import('ee/product_analytics/onboarding/components/onboarding_list_item.vue'),
 };
 
@@ -43,12 +44,6 @@ export default {
     namespaceFullPath: {
       type: String,
     },
-    collectorHost: {
-      type: String,
-    },
-    trackingKey: {
-      type: String,
-    },
     features: {
       type: Array,
       default: () => [],
@@ -66,7 +61,10 @@ export default {
     };
   },
   computed: {
-    showDesignerAndNewDashboardButtons() {
+    showVizDesignerButton() {
+      return this.isProject && this.customDashboardsProject && this.productAnalyticsIsOnboarded;
+    },
+    showNewDashboardButton() {
       return this.isProject && this.customDashboardsProject;
     },
     showValueStreamsDashboard() {
@@ -99,6 +97,12 @@ export default {
     },
     showCustomDashboardSetupBanner() {
       return !this.customDashboardsProject && this.canConfigureDashboardsProject;
+    },
+    productAnalyticsIsOnboarded() {
+      return (
+        this.featureEnabled([productAnalyticsOnboardingType]) &&
+        !this.featureRequiresOnboarding([productAnalyticsOnboardingType])
+      );
     },
   },
   mounted() {
@@ -172,11 +176,16 @@ export default {
           }}</gl-link>
         </p>
       </div>
-      <div v-if="showDesignerAndNewDashboardButtons">
-        <gl-button to="visualization-designer" data-testid="visualization-designer-button">
+      <div v-if="showVizDesignerButton || showNewDashboardButton">
+        <gl-button
+          v-if="showVizDesignerButton"
+          to="visualization-designer"
+          data-testid="visualization-designer-button"
+        >
           {{ s__('Analytics|Visualization designer') }}
         </gl-button>
         <router-link
+          v-if="showNewDashboardButton"
           to="/new"
           class="btn btn-confirm btn-md gl-button"
           data-testid="new-dashboard-button"
