@@ -34,5 +34,9 @@ module Elastic
         end
       end
     end
+
+    def indexing_bytes_per_second_target
+      Gitlab::Metrics::GlobalSearchIndexingSlis::INITIAL_INDEXED_BYTES_PER_SECOND_TARGET
+    end
   end
 end

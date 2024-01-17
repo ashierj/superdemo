@@ -82,10 +82,6 @@ RSpec.describe Gitlab::Metrics::GlobalSearchIndexingSlis, feature_category: :glo
   describe '#record_bytes_per_second_apdex' do
     using RSpec::Parameterized::TableSyntax
 
-    before do
-      stub_const("#{described_class.name}::INDEXED_BYTES_PER_SECOND_TARGET", 200.0)
-    end
-
     where(:throughput, :expected_success) do
       20.0  | false
       300.0 | true
@@ -101,7 +97,7 @@ RSpec.describe Gitlab::Metrics::GlobalSearchIndexingSlis, feature_category: :glo
           success: expected_success
         )
 
-        described_class.record_bytes_per_second_apdex(throughput: throughput)
+        described_class.record_bytes_per_second_apdex(throughput: throughput, target: 200)
       end
     end
   end

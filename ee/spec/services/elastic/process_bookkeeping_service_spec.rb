@@ -379,7 +379,8 @@ RSpec.describe Elastic::ProcessBookkeepingService,
         expect_processing(*fake_refs)
 
         expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_bytes_per_second_apdex).with(
-          throughput: a_kind_of(Numeric)
+          throughput: a_kind_of(Numeric),
+          target: Gitlab::Metrics::GlobalSearchIndexingSlis::INCREMENTAL_INDEXED_BYTES_PER_SECOND_TARGET
         ).once
 
         described_class.new.execute
@@ -392,7 +393,8 @@ RSpec.describe Elastic::ProcessBookkeepingService,
         expect_processing(*fake_refs, failures: [failed])
 
         expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_bytes_per_second_apdex).with(
-          throughput: a_kind_of(Numeric)
+          throughput: a_kind_of(Numeric),
+          target: Gitlab::Metrics::GlobalSearchIndexingSlis::INCREMENTAL_INDEXED_BYTES_PER_SECOND_TARGET
         ).once
 
         described_class.new.execute
