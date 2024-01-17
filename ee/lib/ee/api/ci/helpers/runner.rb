@@ -11,6 +11,17 @@ module EE
           def track_ci_minutes_usage!(build, runner)
             ::Ci::Minutes::TrackLiveConsumptionService.new(build).execute
           end
+
+          override :audit_download
+          def audit_download(build, filename)
+            super
+
+            Audit::Ci::ArtifactDownloadAuditor.new(
+              current_user: current_user,
+              build: build,
+              filename: filename
+            ).execute
+          end
         end
       end
     end
