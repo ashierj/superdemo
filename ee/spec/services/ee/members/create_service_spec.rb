@@ -207,7 +207,7 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
       subject(:execute_service) { described_class.new(user, params.merge({ source: invited_group })).execute }
 
       it 'triggers an email notification to owners' do
-        root_ancestor.all_owner_members.preload_user.find_each do |member|
+        root_ancestor.all_owner_members.preload_users.find_each do |member|
           expect(::Namespaces::FreeUserCapMailer)
             .to receive(:over_limit_email).with(member.user, root_ancestor).once.and_call_original
         end

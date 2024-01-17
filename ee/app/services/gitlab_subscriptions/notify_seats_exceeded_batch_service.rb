@@ -58,13 +58,23 @@ module GitlabSubscriptions
       end
 
       def build_owners(namespace)
-        namespace.owners.map do |owner|
-          {
-            id: owner.id,
-            email: owner&.notification_email_for(namespace),
-            fullName: owner.name
-          }
+        if namespace.is_a?(::Group)
+          owners_data = []
+          namespace.all_owner_members.non_invite.preload_users.each_batch do |relation|
+            owners_data.concat(relation.map { |member| owner_data(member.user, namespace) })
+          end
+          owners_data
+        else
+          namespace.owners.map { |owner| owner_data(owner, namespace) }
         end
+      end
+
+      def owner_data(owner, namespace)
+        {
+          id: owner.id,
+          email: owner&.notification_email_for(namespace),
+          fullName: owner.name
+        }
       end
     end
   end
