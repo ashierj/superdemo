@@ -51,12 +51,12 @@ module Groups
       preference = current_user.user_preference
 
       if params[:state].present?
-        preference.roadmap_epics_state = Epic.state_ids[params[:state]]
+        preference.roadmap_epics_state = Epic.available_states[params[:state]]
 
         preference.save if preference.changed? && Gitlab::Database.read_write?
       end
 
-      Epic.state_ids.key(preference.roadmap_epics_state)
+      Epic.available_states.key(preference.roadmap_epics_state)
     end
   end
 end

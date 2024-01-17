@@ -55,8 +55,17 @@ RSpec.describe Groups::RoadmapController, feature_category: :portfolio_managemen
 
           expect do
             get group_roadmap_path(group, layout: layout)
-            get group_roadmap_path(group, layout: layout)
           end.to change { user.reload.roadmap_layout }.to(layout.downcase)
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+
+      context 'specifying state' do
+        it 'persists state to user preferences' do
+          expect do
+            get group_roadmap_path(group, state: 'opened')
+          end.to change { user.user_preference.roadmap_epics_state }.to(Epic.available_states['opened'])
 
           expect(response).to have_gitlab_http_status(:ok)
         end

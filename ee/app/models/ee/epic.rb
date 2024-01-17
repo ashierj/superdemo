@@ -31,28 +31,30 @@ module EE
       MAX_CHILDREN_COUNT = 100
 
       attribute :color, ::Gitlab::Database::Type::Color.new, default: DEFAULT_COLOR
-
-      enum state_id: {
-        opened: ::Epic.available_states[:opened],
-        closed: ::Epic.available_states[:closed]
-      }
-
       validates :color, color: true, presence: true
-
-      alias_attribute :state, :state_id
 
       belongs_to :closed_by, class_name: 'User'
 
-      def reopen
-        return if opened?
+      state_machine :state_id, initial: :opened, initialize: false do
+        event :close do
+          transition [:opened] => :closed
+        end
 
-        update(state: :opened, closed_at: nil, closed_by: nil)
-      end
+        event :reopen do
+          transition closed: :opened
+        end
 
-      def close
-        return if closed?
+        state :opened, value: ::Epic.available_states[:opened]
+        state :closed, value: ::Epic.available_states[:closed]
 
-        update(state: :closed, closed_at: Time.zone.now)
+        before_transition any => :closed do |epic|
+          epic.closed_at = Time.zone.now
+        end
+
+        before_transition closed: :opened do |epic|
+          epic.closed_at = nil
+          epic.closed_by = nil
+        end
       end
 
       belongs_to :assignee, class_name: "User"

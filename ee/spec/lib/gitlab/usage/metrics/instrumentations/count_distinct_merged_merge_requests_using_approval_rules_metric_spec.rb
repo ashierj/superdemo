@@ -12,7 +12,7 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountDistinctMergedMerg
   let_it_be(:other_merged_merge_request) { create(:merge_request) }
 
   let(:expected_value) { 1 }
-  let(:expected_query) { 'SELECT COUNT(DISTINCT "merge_requests"."id") FROM "merge_requests" INNER JOIN "approval_merge_request_rules" ON "approval_merge_request_rules"."merge_request_id" = "merge_requests"."id" WHERE ("merge_requests"."state_id" IN (3))' }
+  let(:expected_query) { 'SELECT COUNT(DISTINCT "merge_requests"."id") FROM "merge_requests" INNER JOIN "approval_merge_request_rules" ON "approval_merge_request_rules"."merge_request_id" = "merge_requests"."id" WHERE "merge_requests"."state_id" = 3' }
 
   before do
     merge_request.mark_as_merged! unless merge_request.merged?

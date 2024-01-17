@@ -114,7 +114,7 @@ class EpicsFinder < IssuableFinder
     last_value = Array(value).last
 
     if last_value.is_a?(Integer)
-      Epic.states.invert[last_value].to_sym
+      Epic.available_states.invert[last_value].to_sym
     else
       last_value.to_sym
     end
