@@ -118,6 +118,15 @@ module EE
         ::User.clear_group_with_ai_available_cache(member.user.id)
       end
 
+      override :destroy_group_member_permission
+      def destroy_group_member_permission(member)
+        if member.user&.service_account?
+          :admin_service_account_member
+        else
+          super(member)
+        end
+      end
+
       def enqueue_cleanup_add_on_seat_assignments(member)
         namespace = member.source.root_ancestor
 

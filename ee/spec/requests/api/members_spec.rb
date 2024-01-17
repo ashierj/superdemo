@@ -1273,6 +1273,68 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
         expect(response).to have_gitlab_http_status(:forbidden)
       end
+
+      context 'when user to be added is a service account' do
+        let_it_be(:service_account) { create(:service_account) }
+
+        it 'does not allow adding the account to the group' do
+          post api("/groups/#{group.id}/members", owner),
+               params: { user_id: service_account.id, access_level: Member::DEVELOPER }
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+
+        context 'and the service_account feature is enabled' do
+          before do
+            stub_licensed_features(service_accounts: true)
+          end
+
+          it 'adds the service account to the group' do
+            expect do
+              post api("/groups/#{group.id}/members", owner),
+                   params: { user_id: service_account.id, access_level: Member::DEVELOPER }
+            end.to change { Member.count }.by(1)
+          end
+        end
+      end
+    end
+
+    describe 'DELETE /groups/:id/members/:user_id' do
+      let(:service_account) { create(:user, :service_account) }
+      let!(:service_account_member) do
+        create(:group_member, :developer, group: group, user: service_account, ldap: false)
+      end
+
+      it 'fails for LDAP-managed group member' do
+        expect do
+          delete api("/groups/#{group.id}/members/#{ldap_developer.id}", owner)
+        end.not_to change { Member.count }
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+
+      it 'fails when group member is a service account' do
+        expect do
+          delete api("/groups/#{group.id}/members/#{service_account.id}", owner)
+        end.not_to change { Member.count }
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+
+      context 'when service_accounts feature is enabled' do
+        before do
+          stub_licensed_features(service_accounts: true)
+        end
+
+        it 'succeeds when group member is a service account' do
+          expect do
+            delete api("/groups/#{group.id}/members/#{service_account.id}", owner)
+          end.to change { Member.count }.by(-1)
+
+          expect(response).to have_gitlab_http_status(:no_content)
+          expect(response.body).to be_empty
+        end
+      end
     end
 
     describe 'POST /groups/:id/members/:user_id/override' do
