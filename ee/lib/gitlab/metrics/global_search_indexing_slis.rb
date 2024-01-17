@@ -5,11 +5,10 @@ module Gitlab
     module GlobalSearchIndexingSlis
       CODE_DOCUMENT_TYPES = %w[Code Wiki].freeze
 
-      # The following target was gathered on 2023-02-14
-      # from https://log.gprd.gitlab.net/app/lens#/edit/d7f1fae0-69cf-11ed-85ed-e7557b0a598c (internal only)
-      # Non-Code indexing bytes/second should be above this value
-      # Needs to be kept low until https://gitlab.com/gitlab-org/gitlab/-/issues/390599 is implemented
-      INDEXED_BYTES_PER_SECOND_TARGET = 50_000 / ::Elastic::ProcessBookkeepingService::SHARDS_MAX
+      # Non-Code indexing bytes/second should be above these values
+      # Set to low values until https://gitlab.com/gitlab-org/gitlab/-/issues/390599 is implemented
+      INCREMENTAL_INDEXED_BYTES_PER_SECOND_TARGET = 100
+      INITIAL_INDEXED_BYTES_PER_SECOND_TARGET = 0
 
       # The following targets are the 99.95th percentile of indexing
       # gathered on 20-10-2022
@@ -33,10 +32,10 @@ module Gitlab
           )
         end
 
-        def record_bytes_per_second_apdex(throughput:)
+        def record_bytes_per_second_apdex(throughput:, target:)
           Gitlab::Metrics::Sli::Apdex[:global_search_indexing].increment(
             labels: labels(document_type: 'Database'),
-            success: throughput >= INDEXED_BYTES_PER_SECOND_TARGET
+            success: throughput >= target
           )
         end
 

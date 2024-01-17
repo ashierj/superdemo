@@ -202,7 +202,10 @@ module Elastic
         search_flushing_duration_s: flushing_duration_s,
         search_indexed_bytes_per_second: indexed_bytes_per_second
       )
-      Gitlab::Metrics::GlobalSearchIndexingSlis.record_bytes_per_second_apdex(throughput: indexed_bytes_per_second)
+      Gitlab::Metrics::GlobalSearchIndexingSlis.record_bytes_per_second_apdex(
+        throughput: indexed_bytes_per_second,
+        target: indexing_bytes_per_second_target
+      )
 
       # Re-enqueue any failures so they are retried
       self.class.track!(*@failures) if @failures.present?
@@ -270,6 +273,10 @@ module Elastic
 
     def logger
       self.class.logger
+    end
+
+    def indexing_bytes_per_second_target
+      Gitlab::Metrics::GlobalSearchIndexingSlis::INCREMENTAL_INDEXED_BYTES_PER_SECOND_TARGET
     end
   end
 end

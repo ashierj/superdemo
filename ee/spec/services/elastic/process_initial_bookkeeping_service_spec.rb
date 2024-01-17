@@ -63,4 +63,20 @@ RSpec.describe Elastic::ProcessInitialBookkeepingService, feature_category: :glo
       end
     end
   end
+
+  describe '#execute' do
+    let(:refs) { [::Gitlab::Elastic::DocumentReference.new(Issue, 1, 'issue', 'project')] }
+
+    it 'increments the custom indexing sli apdex' do
+      described_class.track!(*refs)
+
+      expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_bytes_per_second_apdex)
+        .with(
+          throughput: a_kind_of(Numeric),
+          target: Gitlab::Metrics::GlobalSearchIndexingSlis::INITIAL_INDEXED_BYTES_PER_SECOND_TARGET
+        )
+
+      described_class.new.execute
+    end
+  end
 end
