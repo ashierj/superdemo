@@ -35,14 +35,20 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
       )
       stub_application_setting(product_analytics_enabled?: true)
       stub_application_setting(product_analytics_data_collector_host: 'https://collector.example.com')
+      stub_application_setting(product_analytics_configurator_connection_string: 'https://configurator.example.com')
       stub_application_setting(cube_api_base_url: 'https://cube.example.com')
       stub_application_setting(cube_api_key: '123')
 
+      project.project_setting.update!({ product_analytics_instrumentation_key: 456 })
       project.add_developer(user)
       project.reload
 
       stub_request(:get, cube_meta_api_url)
         .to_return(status: 200, body: meta_response_with_data, headers: {})
+      stub_request(:post, cube_dry_run_api_url)
+        .to_return(status: 200, body: query_response_with_data, headers: {})
+      stub_request(:post, cube_load_api_url)
+        .to_return(status: 200, body: query_response_with_data, headers: {})
     end
 
     context 'when a custom dashboard project has not been configured' do
@@ -68,13 +74,6 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
       end
 
       context 'with valid data' do
-        before do
-          stub_request(:post, cube_dry_run_api_url)
-            .to_return(status: 200, body: query_response_with_data, headers: {})
-          stub_request(:post, cube_load_api_url)
-            .to_return(status: 200, body: query_response_with_data, headers: {})
-        end
-
         it 'renders the measure selection & preview panels and the type selector' do
           visit_page
 
@@ -152,12 +151,13 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
 
       context 'when data fails to load' do
         it 'shows error when selecting a measure fails' do
+          visit_page
+
           stub_request(:post, cube_dry_run_api_url)
             .to_return(status: 200, body: query_response_with_error, headers: {})
           stub_request(:post, cube_load_api_url)
             .to_return(status: 200, body: query_response_with_error, headers: {})
 
-          visit_page
           select_all_views_measure
 
           expect(page).to have_content('An error occurred while loading data')
