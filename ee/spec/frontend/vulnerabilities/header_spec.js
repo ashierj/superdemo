@@ -6,12 +6,12 @@ import VueApollo from 'vue-apollo';
 import { createMockSubscription } from 'mock-apollo-client';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
-import aiActionMutation from 'ee/graphql_shared/mutations/ai_action.mutation.graphql';
+import aiResolveVulnerability from 'ee/vulnerabilities/graphql/ai_resolve_vulnerability.mutation.graphql';
 import Api from 'ee/api';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
 import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.vue';
-import Header from 'ee/vulnerabilities/components/header.vue';
+import Header, { CLIENT_SUBSCRIPTION_ID } from 'ee/vulnerabilities/components/header.vue';
 import ResolutionAlert from 'ee/vulnerabilities/components/resolution_alert.vue';
 import StatusDescription from 'ee/vulnerabilities/components/status_description.vue';
 import VulnerabilityStateDropdown from 'ee/vulnerabilities/components/vulnerability_state_dropdown.vue';
@@ -533,7 +533,7 @@ describe('Vulnerability Header', () => {
         mockSubscription = createMockSubscription();
         subscriptionSpy = jest.fn().mockReturnValue(mockSubscription);
 
-        const apolloProvider = createMockApollo([[aiActionMutation, mutationResponse]]);
+        const apolloProvider = createMockApollo([[aiResolveVulnerability, mutationResponse]]);
         apolloProvider.defaultClient.setRequestHandler(aiResponseSubscription, subscriptionSpy);
 
         createWrapper({
@@ -614,6 +614,16 @@ describe('Vulnerability Header', () => {
         await sendSubscriptionMessage(MOCK_SUBSCRIPTION_RESPONSE);
         expect(visitUrlMock).toHaveBeenCalledTimes(1);
         expect(visitUrlMock).toHaveBeenCalledWith(MOCK_SUBSCRIPTION_RESPONSE.content);
+      });
+
+      it('calls the mutation with the correct input', async () => {
+        await createWrapperAndClickButton();
+        await waitForSubscriptionToBeReady();
+
+        expect(MUTATION_AI_ACTION_DEFAULT_RESPONSE).toHaveBeenCalledWith({
+          resourceId: 'gid://gitlab/Vulnerability/1',
+          clientSubscriptionId: CLIENT_SUBSCRIPTION_ID,
+        });
       });
 
       it.each`

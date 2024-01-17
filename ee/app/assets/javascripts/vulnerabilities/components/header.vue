@@ -1,5 +1,6 @@
 <script>
 import { GlLoadingIcon, GlButton, GlBadge, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
+import { v4 as uuidv4 } from 'uuid';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.vue';
@@ -13,12 +14,14 @@ import { redirectTo, visitUrl } from '~/lib/utils/url_utility'; // eslint-disabl
 import UsersCache from '~/lib/utils/users_cache';
 import { s__ } from '~/locale';
 import { REPORT_TYPE_SAST } from '~/vue_shared/security_reports/constants';
-import aiActionMutation from 'ee/graphql_shared/mutations/ai_action.mutation.graphql';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+import aiResolveVulnerability from '../graphql/ai_resolve_vulnerability.mutation.graphql';
 import { VULNERABILITY_STATE_OBJECTS, FEEDBACK_TYPES, HEADER_ACTION_BUTTONS } from '../constants';
 import { normalizeGraphQLVulnerability, normalizeGraphQLLastStateTransition } from '../helpers';
 import ResolutionAlert from './resolution_alert.vue';
 import StatusDescription from './status_description.vue';
+
+export const CLIENT_SUBSCRIPTION_ID = uuidv4();
 
 export default {
   name: 'VulnerabilityHeader',
@@ -119,6 +122,7 @@ export default {
           return {
             resourceId: this.vulnerabilityGraphqlId,
             userId: convertToGraphQLId(TYPENAME_USER, gon.current_user_id),
+            clientSubscriptionId: CLIENT_SUBSCRIPTION_ID,
           };
         },
         async result({ data }) {
@@ -210,13 +214,10 @@ export default {
     resolveVulnerability() {
       this.$apollo
         .mutate({
-          mutation: aiActionMutation,
+          mutation: aiResolveVulnerability,
           variables: {
-            input: {
-              resolveVulnerability: {
-                resourceId: this.vulnerabilityGraphqlId,
-              },
-            },
+            clientSubscriptionId: CLIENT_SUBSCRIPTION_ID,
+            resourceId: this.vulnerabilityGraphqlId,
           },
         })
         .then(({ data }) => {
