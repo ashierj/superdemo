@@ -33626,6 +33626,8 @@ CREATE INDEX index_et_errors_on_project_id_and_status_first_seen_at_id_desc ON e
 
 CREATE INDEX index_et_errors_on_project_id_and_status_last_seen_at_id_desc ON error_tracking_errors USING btree (project_id, status, last_seen_at DESC, id DESC);
 
+CREATE INDEX index_events_author_id_group_id_action_target_type_created_at ON events USING btree (author_id, group_id, action, target_type, created_at);
+
 CREATE INDEX index_events_author_id_project_id_action_target_type_created_at ON events USING btree (author_id, project_id, action, target_type, created_at);
 
 CREATE INDEX index_events_for_followed_users ON events USING btree (author_id, target_type, action, id);
