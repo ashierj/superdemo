@@ -9,7 +9,7 @@ RSpec.describe ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitt
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, namespace: group) }
   let(:job_args) do
-    { 'group_id' => group_id, 'user_id' => user_id }
+    { 'group_id' => group_id, 'user_id' => user_id, 'track_progress' => true }
   end
 
   describe '#perform' do
@@ -31,7 +31,7 @@ RSpec.describe ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitt
       it 'enqueues PreventApprovalByCommitterWorker' do
         allow(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
           .to receive(:bulk_perform_async)
-                .with([[{ 'project_id' => project.id, 'user_id' => nil }]]).and_call_original
+                .with([[{ 'project_id' => project.id, 'user_id' => nil, 'track_progress' => true }]]).and_call_original
 
         worker.perform(job_args)
       end
