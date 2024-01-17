@@ -54676,6 +54676,9 @@ msgstr ""
 msgid "Vulnerability|Scanner:"
 msgstr ""
 
+msgid "Vulnerability|Search or filter vulnerabilities..."
+msgstr ""
+
 msgid "Vulnerability|Security Audit"
 msgstr ""
 
