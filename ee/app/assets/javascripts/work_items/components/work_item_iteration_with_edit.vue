@@ -6,7 +6,6 @@ import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import WorkItemSidebarDropdownWidgetWithEdit from '~/work_items/components/shared/work_item_sidebar_dropdown_widget_with_edit.vue';
 import projectIterationsQuery from 'ee/work_items/graphql/project_iterations.query.graphql';
 import { STATUS_OPEN } from '~/issues/constants';
-import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { s__ } from '~/locale';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import Tracking from '~/tracking';
@@ -109,7 +108,6 @@ export default {
   apollo: {
     iterations: {
       query: projectIterationsQuery,
-      debounce: DEFAULT_DEBOUNCE_AND_THROTTLE_MS,
       variables() {
         const search = this.searchTerm ? `"${this.searchTerm}"` : '';
         return {
