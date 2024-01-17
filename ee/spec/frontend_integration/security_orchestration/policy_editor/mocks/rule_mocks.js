@@ -48,3 +48,27 @@ approval_settings:
   remove_approvals_with_new_commit: true
   require_password_to_approve: false
 `;
+
+export const mockPipelineScanExecutionManifest = `type: scan_execution_policy
+name: ''
+description: ''
+enabled: true
+rules:
+  - type: pipeline
+    branches:
+      - '*'
+actions:
+  - scan: secret_detection
+`;
+
+export const mockScheduleScanExecutionManifest = `type: scan_execution_policy
+name: ''
+description: ''
+enabled: true
+rules:
+  - type: schedule
+    branches: []
+    cadence: 0 0 * * *
+actions:
+  - scan: secret_detection
+`;

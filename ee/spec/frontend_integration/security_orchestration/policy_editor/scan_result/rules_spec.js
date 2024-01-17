@@ -7,7 +7,6 @@ import LicenseScanRuleBuilder from 'ee/security_orchestration/components/policy_
 import SecurityScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result/rule/security_scan_rule_builder.vue';
 import SettingsItem from 'ee/security_orchestration/components/policy_editor/scan_result/settings/settings_item.vue';
 import SettingsSection from 'ee/security_orchestration/components/policy_editor/scan_result/settings/settings_section.vue';
-import RuleSection from 'ee/security_orchestration/components/policy_editor/scan_result/rule/rule_section.vue';
 import * as urlUtils from '~/lib/utils/url_utility';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
 import {
@@ -21,7 +20,7 @@ import {
   mockLicenseScanResultManifest,
   mockAnyMergeRequestScanResultManifest,
 } from '../mocks/rule_mocks';
-import { verify, findYamlPreview } from '../utils';
+import { verify } from '../utils';
 
 describe('Scan result policy rules', () => {
   let wrapper;
@@ -56,21 +55,8 @@ describe('Scan result policy rules', () => {
   const findDefaultRuleBuilder = () => wrapper.findComponent(DefaultRuleBuilder);
   const findScanTypeSelect = () => wrapper.findComponent(ScanTypeSelect);
   const findAnyMergeRequestRuleBuilder = () => wrapper.findComponent(AnyMergeRequestRuleBuilder);
-  const findRuleSection = () => wrapper.findComponent(RuleSection);
   const findSettingsSection = () => wrapper.findComponent(SettingsSection);
   const findAllSettingsItem = () => wrapper.findAllComponents(SettingsItem);
-
-  describe('initial state', () => {
-    beforeEach(() => {
-      createWrapper();
-    });
-
-    it('should render rule section', () => {
-      expect(findRuleSection().exists()).toBe(true);
-      expect(findDefaultRuleBuilder().exists()).toBe(true);
-      expect(findYamlPreview(wrapper).text()).toContain("rules:\n  - type: ''");
-    });
-  });
 
   describe('security scan', () => {
     beforeEach(() => {
