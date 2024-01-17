@@ -16,19 +16,35 @@ describe('SearchAndSortBar', () => {
   let wrapper;
 
   const fullPath = 'namespace/full-path';
+  const tokens = [
+    {
+      type: TOKEN_TYPE_PROJECT,
+      icon: 'project',
+      title: TOKEN_TITLE_PROJECT,
+      unique: true,
+      token: ProjectToken,
+      operators: OPERATORS_IS,
+      fullPath,
+    },
+    {
+      options: [
+        { value: 'true', title: 'Yes' },
+        { value: 'false', title: 'No' },
+      ],
+      type: TOKEN_TYPE_GROUP_INVITE,
+      icon: 'user',
+      title: TOKEN_TITLE_GROUP_INVITE,
+      unique: true,
+      token: BaseToken,
+      operators: OPERATORS_IS,
+    },
+  ];
 
-  const createComponent = ({
-    enableAddOnUsersFiltering = false,
-    props = {},
-    provideProps = {},
-  } = {}) => {
+  const createComponent = ({ props = {}, provideProps = {} } = {}) => {
     wrapper = shallowMount(SearchAndSortBar, {
       propsData: props,
       provide: {
         ...provideProps,
-        glFeatures: {
-          enableAddOnUsersFiltering,
-        },
       },
     });
   };
@@ -60,55 +76,24 @@ describe('SearchAndSortBar', () => {
       });
     });
 
+    describe('with the tokens', () => {
+      it('passes the correct tokens', () => {
+        createComponent({
+          props: { tokens },
+          provideProps: { fullPath },
+        });
+
+        expect(findFilteredSearchBar().props('tokens')).toHaveLength(2);
+        expect(findFilteredSearchBar().props('tokens')).toStrictEqual(tokens);
+      });
+    });
+
     it('renders search and sort bar with appropriate params', () => {
       createComponent({ provideProps: { fullPath } });
 
       expect(findFilteredSearchBar().props()).toMatchObject({
         namespace: fullPath,
         searchInputPlaceholder: 'Filter users',
-      });
-    });
-
-    describe('with `enableAddOnUsersFiltering`', () => {
-      describe('when enabled', () => {
-        it('passes the correct tokens', () => {
-          createComponent({ enableAddOnUsersFiltering: true, provideProps: { fullPath } });
-
-          expect(findFilteredSearchBar().props('tokens')).toHaveLength(2);
-          expect(findFilteredSearchBar().props('tokens')).toStrictEqual(
-            expect.arrayContaining([
-              expect.objectContaining({
-                type: TOKEN_TYPE_PROJECT,
-                icon: 'project',
-                title: TOKEN_TITLE_PROJECT,
-                unique: true,
-                token: ProjectToken,
-                operators: OPERATORS_IS,
-                fullPath,
-              }),
-              expect.objectContaining({
-                options: [
-                  { value: 'true', title: 'Yes' },
-                  { value: 'false', title: 'No' },
-                ],
-                type: TOKEN_TYPE_GROUP_INVITE,
-                icon: 'user',
-                title: TOKEN_TITLE_GROUP_INVITE,
-                unique: true,
-                token: BaseToken,
-                operators: OPERATORS_IS,
-              }),
-            ]),
-          );
-        });
-      });
-
-      describe('when disabled', () => {
-        it('passes the correct tokens', () => {
-          createComponent();
-
-          expect(findFilteredSearchBar().props('tokens')).toHaveLength(0);
-        });
       });
     });
   });
