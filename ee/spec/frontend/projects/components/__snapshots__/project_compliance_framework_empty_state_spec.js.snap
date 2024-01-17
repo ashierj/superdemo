@@ -11,7 +11,6 @@ exports[`Project compliance framework empty state matches the snapshot when "add
       alt=""
       class="gl-dark-invert-keep-hue gl-max-w-full"
       height="100"
-      role="img"
       src="/image.svg"
     />
   </div>
@@ -65,7 +64,6 @@ exports[`Project compliance framework empty state matches the snapshot when "add
       alt=""
       class="gl-dark-invert-keep-hue gl-max-w-full"
       height="100"
-      role="img"
       src="/image.svg"
     />
   </div>

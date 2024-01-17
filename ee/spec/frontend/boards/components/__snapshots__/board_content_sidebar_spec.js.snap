@@ -215,7 +215,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                 class="gl-new-dropdown-contents gl-new-dropdown-contents-with-scrim-overlay"
                 id="reference-4"
                 role="listbox"
-                tabindex="-1"
+                tabindex="0"
               >
                 <li
                   aria-hidden="true"

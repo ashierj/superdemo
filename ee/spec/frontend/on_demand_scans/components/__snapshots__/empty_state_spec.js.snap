@@ -11,7 +11,6 @@ exports[`EmptyState renders properly 1`] = `
       alt=""
       class="gl-dark-invert-keep-hue gl-max-w-full"
       height="144"
-      role="img"
       src="/empty/state/svg/path"
     />
   </div>
