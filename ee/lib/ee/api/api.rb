@@ -16,6 +16,7 @@ module EE
         mount ::API::Ai::Experimentation::Anthropic
         mount ::API::AuditEvents
         mount ::API::ProjectApprovalRules
+        mount ::API::GroupApprovalRules
         mount ::API::StatusChecks
         mount ::API::ProjectApprovalSettings
         mount ::API::Dora::Metrics

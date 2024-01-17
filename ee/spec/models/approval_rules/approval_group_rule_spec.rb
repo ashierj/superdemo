@@ -46,4 +46,67 @@ RSpec.describe ApprovalRules::ApprovalGroupRule, feature_category: :source_code_
       expect(rule.errors.messages).to eq(rule_type: ['any-approver for the group already exists'])
     end
   end
+
+  describe '#protected_branches' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:sub_group) { create(:group, parent: group) }
+    let_it_be(:project_1) { create(:project, group: group) }
+    let_it_be(:project_2) { create(:project, group: group) }
+    let_it_be(:project_3) { create(:project, group: sub_group) }
+    let_it_be(:rule) { create(:approval_group_rule, group: group) }
+    let_it_be(:protected_branches_project_1) { create_list(:protected_branch, 3, project: project_1) }
+    let_it_be(:protected_branches_project_2) { create_list(:protected_branch, 3, project: project_2) }
+
+    # protected_branches_project_3 belong to 'project_2' which is a member of 'sub_group'.
+    # It is used to demonstrate that protected branches from subgroups are not included.
+    let_it_be(:protected_branches_project_3) { create_list(:protected_branch, 3, project: project_3) }
+    let_it_be(:group_protected_branches) { create_list(:protected_branch, 2, project: nil, group: group) }
+
+    subject(:group_approval_rule) { rule.protected_branches }
+
+    shared_examples 'return protected branches' do
+      it 'returns all protected branches belonging to group projects and group level protected branches' do
+        expect(group_approval_rule).to contain_exactly(*protected_branches_project_1, *protected_branches_project_2,
+          *group_protected_branches)
+      end
+    end
+
+    # Flags `group_protected_branches` and `allow_protected_branches_for_group` represent the same feature.
+    # Group protected branches are enabled when either are enabled so test for both here.
+    # See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/116779 for more detail.
+    context 'when feature flags `group_protected_branches` and `allow_protected_branches_for_group` are disabled' do
+      before do
+        stub_feature_flags(group_protected_branches: false)
+        stub_feature_flags(allow_protected_branches_for_group: false)
+      end
+
+      it 'returns a collection of all protected branches belonging to group projects' do
+        expect(group_approval_rule).to contain_exactly(*protected_branches_project_1, *protected_branches_project_2)
+      end
+    end
+
+    context 'when only feature flag `group_protected_branches` is disabled' do
+      before do
+        stub_feature_flags(group_protected_branches: false)
+      end
+
+      it_behaves_like 'return protected branches'
+    end
+
+    context 'when only feature flag `allow_protected_branches_for_group` is disabled' do
+      before do
+        stub_feature_flags(allow_protected_branches_for_group: false)
+      end
+
+      it_behaves_like 'return protected branches'
+    end
+
+    context 'when feature flags `group_protected_branches` and `allow_protected_branches_for_group` are enabled' do
+      it_behaves_like 'return protected branches'
+
+      it 'returns a collection excluding protected branches from a sub group' do
+        expect(group_approval_rule).not_to contain_exactly(protected_branches_project_3)
+      end
+    end
+  end
 end
