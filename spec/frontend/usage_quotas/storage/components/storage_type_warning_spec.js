@@ -1,7 +1,7 @@
 import { nextTick } from 'vue';
 import { GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import StorageTypeWarning from 'ee/usage_quotas/storage/components/storage_type_warning.vue';
+import StorageTypeWarning from '~/usage_quotas/storage/components/storage_type_warning.vue';
 
 let wrapper;
 

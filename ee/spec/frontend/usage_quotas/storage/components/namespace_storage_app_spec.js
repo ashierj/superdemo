@@ -12,7 +12,6 @@ import getProjectListStorageQuery from 'ee/usage_quotas/storage/queries/project_
 import createMockApollo from 'helpers/mock_apollo_helper';
 import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
-import ContainerRegistryUsage from 'ee/usage_quotas/storage/components/container_registry_usage.vue';
 import {
   mockGetNamespaceStorageGraphQLResponse,
   defaultNamespaceProvideValues,
@@ -35,7 +34,6 @@ describe('NamespaceStorageApp', () => {
   const findProjectList = () => wrapper.findComponent(ProjectList);
   const findPrevButton = () => wrapper.findByTestId('prevButton');
   const findNextButton = () => wrapper.findByTestId('nextButton');
-  const findContainerRegistry = () => wrapper.findComponent(ContainerRegistryUsage);
   const findAlert = () => wrapper.findComponent(GlAlert);
 
   const createComponent = ({ provide = {} } = {}) => {
@@ -70,29 +68,6 @@ describe('NamespaceStorageApp', () => {
       const purchaseButton = wrapper.findComponent(GlButton);
 
       expect(purchaseButton.exists()).toBe(true);
-    });
-  });
-
-  describe('Container registry usage', () => {
-    beforeEach(async () => {
-      createComponent();
-      await waitForPromises();
-    });
-
-    it('will be rendered', () => {
-      expect(findContainerRegistry().exists()).toBe(true);
-    });
-
-    it('will receive relevant props', () => {
-      const {
-        containerRegistrySize,
-        containerRegistrySizeIsEstimated,
-      } = mockGetNamespaceStorageGraphQLResponse.data.namespace.rootStorageStatistics;
-      expect(findContainerRegistry().props()).toEqual({
-        containerRegistrySize,
-        containerRegistrySizeIsEstimated,
-        loading: false,
-      });
     });
   });
 
