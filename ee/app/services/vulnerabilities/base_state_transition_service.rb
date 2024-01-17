@@ -21,10 +21,20 @@ module Vulnerabilities
           )
 
           update_vulnerability!
+          update_vulnerability_reads!
         end
       end
 
       @vulnerability
+    end
+
+    def update_vulnerability_reads!
+      # the dismiss_service does not inherit from the
+      # BaseStateTransitionService so this check is a
+      # redundant safety check
+      return if to_state == :dismissed
+
+      Vulnerabilities::Read.by_vulnerabilities(@vulnerability).update_all(dismissal_reason: nil)
     end
   end
 end

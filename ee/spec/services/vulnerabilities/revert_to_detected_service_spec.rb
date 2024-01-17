@@ -61,6 +61,8 @@ RSpec.describe Vulnerabilities::RevertToDetectedService, feature_category: :vuln
         include_examples 'reverts vulnerability'
 
         it_behaves_like 'removes dismissal feedback from associated findings'
+
+        it_behaves_like 'nullifies dismissal fields from associated vulnerability read'
       end
 
       context 'when vulnerability is confirmed' do

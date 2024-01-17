@@ -62,6 +62,12 @@ RSpec.describe Vulnerabilities::ConfirmService, feature_category: :vulnerability
         confirm_vulnerability
       end
 
+      context 'when vulnerability is dismissed' do
+        let(:vulnerability) { create(:vulnerability, :dismissed, :with_findings, project: project) }
+
+        it_behaves_like 'nullifies dismissal fields from associated vulnerability read'
+      end
+
       context 'when security dashboard feature is disabled' do
         before do
           stub_licensed_features(security_dashboard: false)
