@@ -23,7 +23,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMapCollection, feature_category: :depe
         purl: nil },
       { name: "readline-common", version: "8.1-1", type: "library",
         purl: "pkg:npm/readline-common@8.1-1" }
-    ].map { |attributes| Gitlab::Ci::Reports::Sbom::Component.new(**attributes) }
+    ].map { |attributes| Gitlab::Ci::Reports::Sbom::Component.new(**component_attributes(attributes)) }
   end
 
   let(:sbom_report) { create(:ci_reports_sbom_report, components: components) }
@@ -47,7 +47,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMapCollection, feature_category: :depe
       { name: "readline-common", version: "8.1-1", type: "library",
         purl: "pkg:npm/readline-common@8.1-1" }
     ].map do |attributes|
-      component = Gitlab::Ci::Reports::Sbom::Component.new(**attributes)
+      component = Gitlab::Ci::Reports::Sbom::Component.new(**component_attributes(attributes))
       an_occurrence_map(Sbom::Ingestion::OccurrenceMap.new(component, sbom_report.source, vulnerability_info))
     end
   end
@@ -101,5 +101,13 @@ RSpec.describe Sbom::Ingestion::OccurrenceMapCollection, feature_category: :depe
 
       it_behaves_like '#each'
     end
+  end
+
+  def component_attributes(attributes)
+    return attributes unless attributes[:purl]
+
+    attributes[:purl] = Sbom::PackageUrl.parse(attributes[:purl])
+
+    attributes
   end
 end

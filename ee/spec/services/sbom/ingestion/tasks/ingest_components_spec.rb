@@ -81,12 +81,14 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestComponents, feature_category: :depe
     end
 
     context 'when there is a pypi component' do
+      let(:purl) { ::Sbom::PackageUrl.parse('pkg:pypi/Flask_SQLAlchemy@v0.0.1') }
+
       let(:report_component) do
         create(
           :ci_reports_sbom_component,
           name: 'Flask_SQLAlchemy',
           version: 'v0.0.1',
-          purl_type: 'pypi'
+          purl: purl
         )
       end
 
