@@ -98,7 +98,7 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
           transfer_service.execute(nil)
           subgroup.reload
 
-          expect(subgroup.all_owner_members.preload_user.map(&:user)).to match_array(user)
+          expect(subgroup.all_owner_members.preload_users.map(&:user)).to match_array(user)
           expect(subgroup.parent).to be_nil
         end
       end

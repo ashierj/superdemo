@@ -34,10 +34,22 @@ module Namespaces
         end
       end
 
+      def owners_emails(namespace)
+        if namespace.is_a?(::Group)
+          emails = []
+          namespace.all_owner_members.non_invite.preload_users.each_batch do |relation|
+            emails.concat(relation.map(&:user).map(&:email))
+          end
+          emails
+        else
+          namespace.owners.map(&:email)
+        end
+      end
+
       def send_notification(level, namespace, root_storage_size)
         return if level == :storage_remaining
 
-        owner_emails = namespace.owners.map(&:email)
+        owner_emails = owners_emails(namespace)
         usage_values = {
           current_size: root_storage_size.current_size,
           limit: root_storage_size.limit,

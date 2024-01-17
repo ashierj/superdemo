@@ -32,8 +32,10 @@ module Namespaces
       attr_reader :root_namespace
 
       def notify
-        root_namespace.owners.each do |owner|
-          ::Namespaces::FreeUserCapMailer.over_limit_email(owner, root_namespace).deliver_now
+        root_namespace.all_owner_members.non_invite.preload_users.each_batch do |members_relation|
+          members_relation.map(&:user).each do |owner|
+            ::Namespaces::FreeUserCapMailer.over_limit_email(owner, root_namespace).deliver_now
+          end
         end
       end
     end

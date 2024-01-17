@@ -71,7 +71,7 @@ module EE
     private
 
     def group_access_allowed?(current_user)
-      group.users.exists?(current_user.id)
+      group.has_user?(current_user)
     end
 
     def user?

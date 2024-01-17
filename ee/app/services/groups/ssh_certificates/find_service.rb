@@ -15,7 +15,8 @@ module Groups
         group = certificate.group
         return error('Feature is not available', :forbidden) unless group.licensed_feature_available?(:ssh_certificates)
 
-        user = group.users.find_by_login(user_identifier)
+        user = ::User.find_by_login(user_identifier)
+        user = group.has_user?(user) ? user : nil
 
         return error('User Not Found', :not_found) unless user
         return error('Not an Enterprise User of the group', :forbidden) unless user.enterprise_user_of_group?(group)

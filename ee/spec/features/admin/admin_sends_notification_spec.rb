@@ -45,7 +45,7 @@ RSpec.describe "Admin sends notification", :js, :sidekiq_might_not_need_inline, 
 
     emails = ActionMailer::Base.deliveries
     emails_to = emails.flat_map(&:to)
-    user_emails = group.users.map(&:email)
+    user_emails = group.group_members.non_invite.preload_users.map { |member| member.user.email }
 
     expect(emails_to).to match_array(user_emails)
     expect(emails.last.text_part.body.decoded).to include(NOTIFICATION_TEXT)

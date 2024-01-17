@@ -621,7 +621,11 @@ module EE
     end
 
     def owners_emails
-      owners.pluck(:email)
+      emails = []
+      self.all_owner_members.non_invite.each_batch do |relation|
+        emails.concat(::User.id_in(relation.pluck_user_ids).pluck(:email))
+      end
+      emails
     end
 
     # this method will be delegated to namespace_settings, but as we need to wait till
