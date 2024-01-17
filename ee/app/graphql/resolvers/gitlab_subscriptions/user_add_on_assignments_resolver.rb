@@ -5,6 +5,7 @@ module Resolvers
     class UserAddOnAssignmentsResolver < BaseResolver
       include LooksAhead
       include Gitlab::Graphql::Authorize::AuthorizeResource
+      include ::GitlabSubscriptions::CodeSuggestionsHelper
 
       argument :add_on_purchase_ids,
         type: [::Types::GlobalIDType[::GitlabSubscriptions::AddOnPurchase]],
@@ -23,12 +24,15 @@ module Resolvers
           query = ::GitlabSubscriptions::UserAddOnAssignment
                     .for_user_ids(user_ids)
                     .for_active_add_on_purchase_ids(args[:add_on_purchase_ids])
-                    .with_namespaces
+
+          query = query.with_namespaces if gitlab_saas?
 
           user_assignments = apply_lookahead(query)
 
-          namespaces_for_auth = user_assignments.map { |assignment| assignment.add_on_purchase.namespace }
-          Preloaders::GroupPolicyPreloader.new(namespaces_for_auth.compact, current_user).execute
+          if gitlab_saas?
+            namespaces_for_auth = user_assignments.map { |assignment| assignment.add_on_purchase.namespace }
+            Preloaders::GroupPolicyPreloader.new(namespaces_for_auth, current_user).execute
+          end
 
           grouped_assignments = user_assignments.group_by(&:user_id)
 
