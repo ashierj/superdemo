@@ -1,5 +1,5 @@
 import { parseGetStorageResults } from 'ee/usage_quotas/storage/utils';
-import { mockGetNamespaceStorageGraphQLResponse } from './mock_data';
+import { mockGetNamespaceStorageGraphQLResponse } from 'jest/usage_quotas/storage/mock_data';
 
 describe('parseGetStorageResults', () => {
   it('returns the object keys we use', () => {

@@ -1,6 +1,6 @@
 #import "~/graphql_shared/fragments/page_info.fragment.graphql"
 
-query getProjectListStorageStatisticsEE(
+query getProjectListStorageStatistics(
   $fullPath: ID!
   $searchTerm: String = ""
   $first: Int
@@ -30,7 +30,6 @@ query getProjectListStorageStatisticsEE(
         name
         statistics {
           storageSize
-          costFactoredStorageSize
           repositorySize
           lfsObjectsSize
           containerRegistrySize

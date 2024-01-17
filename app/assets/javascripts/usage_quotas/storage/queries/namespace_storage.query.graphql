@@ -1,16 +1,8 @@
-query getNamespaceStorageStatisticsEE($fullPath: ID!) {
+query getNamespaceStorageStatistics($fullPath: ID!) {
   namespace(fullPath: $fullPath) {
     id
-    storageSizeLimit
-    actualRepositorySizeLimit
-    additionalPurchasedStorageSize
-    totalRepositorySizeExcess
-    totalRepositorySize
-    containsLockedProjects
-    repositorySizeExcessProjectCount
     rootStorageStatistics {
       storageSize
-      costFactoredStorageSize
       repositorySize
       lfsObjectsSize
       containerRegistrySize
