@@ -11,7 +11,8 @@ import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_b
 import AnonUsersFilter from 'ee/vue_shared/components/customizable_dashboard/filters/anon_users_filter.vue';
 import DateRangeFilter from 'ee/vue_shared/components/customizable_dashboard/filters/date_range_filter.vue';
 import {
-  GRIDSTACK_MARGIN,
+  GRIDSTACK_MARGIN_X,
+  GRIDSTACK_MARGIN_Y,
   GRIDSTACK_CSS_HANDLE,
   GRIDSTACK_CELL_HEIGHT,
   GRIDSTACK_MIN_ROW,
@@ -197,7 +198,10 @@ describe('CustomizableDashboard', () => {
         alwaysShowResizeHandle: true,
         staticGrid: true,
         animate: false,
-        margin: GRIDSTACK_MARGIN,
+        marginLeft: GRIDSTACK_MARGIN_X,
+        marginRight: GRIDSTACK_MARGIN_X,
+        marginTop: GRIDSTACK_MARGIN_Y,
+        marginBottom: GRIDSTACK_MARGIN_Y,
         handle: GRIDSTACK_CSS_HANDLE,
         cellHeight: GRIDSTACK_CELL_HEIGHT,
         minRow: GRIDSTACK_MIN_ROW,
