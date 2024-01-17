@@ -129,6 +129,18 @@ describe('Pipeline subscriptions app', () => {
         variant: 'success',
       });
     });
+
+    it('refetches subscriptions after adding a new subscription', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      expect(upstreamHanlder).toHaveBeenCalledTimes(1);
+
+      findTables().at(0).vm.$emit('refetchSubscriptions');
+
+      expect(upstreamHanlder).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('failures', () => {

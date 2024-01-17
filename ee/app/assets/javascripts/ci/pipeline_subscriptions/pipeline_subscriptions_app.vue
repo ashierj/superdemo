@@ -121,7 +121,7 @@ export default {
           this.subscriptionToDelete = null;
         } else {
           createAlert({ message: this.$options.i18n.deleteSuccess, variant: 'success' });
-          this.$apollo.queries.upstreamSubscriptions.refetch();
+          this.refetchUpstreamSubscriptions();
         }
       } catch {
         createAlert({ message: this.$options.i18n.deleteError });
@@ -135,6 +135,9 @@ export default {
     hideModal() {
       this.isModalVisible = false;
       this.subscriptionToDelete = null;
+    },
+    refetchUpstreamSubscriptions() {
+      this.$apollo.queries.upstreamSubscriptions.refetch();
     },
   },
 };
@@ -151,6 +154,7 @@ export default {
       :empty-text="$options.i18n.upstreamEmptyText"
       show-actions
       @showModal="showModal"
+      @refetchSubscriptions="refetchUpstreamSubscriptions"
     />
 
     <gl-loading-icon v-if="downstreamSubscriptionsLoading" />
