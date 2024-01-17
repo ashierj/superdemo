@@ -64,7 +64,7 @@ module Gitlab
           timeout = options.delete(:timeout) || DEFAULT_TIMEOUT
 
           response = Gitlab::HTTP.post(
-            URI.join(Gitlab::AiGateway.url, '/v1/chat/agent'),
+            "#{Gitlab::AiGateway.url}/v1/chat/agent",
             headers: request_headers,
             body: request_body(prompt: prompt, options: options).to_json,
             timeout: timeout,

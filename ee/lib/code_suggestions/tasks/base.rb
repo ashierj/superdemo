@@ -11,11 +11,7 @@ module CodeSuggestions
       end
 
       def self.base_url
-        if Feature.enabled?('use_cloud_connector_lb', type: :experiment)
-          "#{Gitlab.config.cloud_connector.base_url}/ai"
-        else
-          Gitlab::AiGateway.url
-        end
+        Gitlab::AiGateway.url
       end
 
       def endpoint
