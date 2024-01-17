@@ -7,7 +7,6 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import {
   groupIterationsResponse,
   groupIterationsResponseWithNoIterations,
@@ -102,9 +101,6 @@ describe('WorkItemIterationWithEdit component', () => {
 
     it('calls successSearchQueryHandler with variables when dropdown is opened', async () => {
       showDropdown();
-      await nextTick();
-      jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
-
       await waitForPromises();
 
       expect(successSearchQueryHandler).toHaveBeenCalledWith({
@@ -116,8 +112,6 @@ describe('WorkItemIterationWithEdit component', () => {
 
     it('shows the skeleton loader when the items are being fetched on click', async () => {
       showDropdown();
-      await nextTick();
-      jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
 
       await nextTick();
 
@@ -126,8 +120,6 @@ describe('WorkItemIterationWithEdit component', () => {
 
     it('shows the iterations in dropdown when the items have finished fetching', async () => {
       showDropdown();
-      await nextTick();
-      jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
 
       await waitForPromises();
 
