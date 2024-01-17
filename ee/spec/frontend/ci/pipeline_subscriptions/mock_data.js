@@ -15,4 +15,17 @@ export const deleteMutationResponse = {
   },
 };
 
+export const addMutationResponse = {
+  data: {
+    projectSubscriptionCreate: {
+      subscription: {
+        id: 'gid://gitlab/Ci::Subscriptions::Project/18',
+        __typename: 'CiSubscriptionsProject',
+      },
+      errors: [],
+      __typename: 'ProjectSubscriptionCreatePayload',
+    },
+  },
+};
+
 export { mockUpstreamSubscriptions, mockDownstreamSubscriptions };

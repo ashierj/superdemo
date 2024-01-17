@@ -1,6 +1,7 @@
 <script>
 import { GlButton, GlCard, GlIcon, GlLink, GlTable, GlTooltipDirective } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
+import PipelineSubscriptionsForm from './pipeline_subscriptions_form.vue';
 
 export default {
   name: 'PipelineSubscriptionsTable',
@@ -34,6 +35,7 @@ export default {
     GlIcon,
     GlLink,
     GlTable,
+    PipelineSubscriptionsForm,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -61,6 +63,16 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      isAddNewClicked: false,
+    };
+  },
+  computed: {
+    showForm() {
+      return this.showActions && this.isAddNewClicked;
+    },
+  },
 };
 </script>
 
@@ -81,16 +93,23 @@ export default {
         </h3>
       </div>
       <div v-if="showActions" class="gl-new-card-actions">
-        <!-- functionality will be added in https://gitlab.com/gitlab-org/gitlab/-/issues/425293 -->
         <gl-button
+          v-if="!isAddNewClicked"
           size="small"
           data-testid="add-new-subscription-btn"
           data-qa-selector="add_new_subscription"
+          @click="isAddNewClicked = true"
         >
           {{ $options.i18n.newBtnText }}
         </gl-button>
       </div>
     </template>
+
+    <pipeline-subscriptions-form
+      v-if="showForm"
+      @canceled="isAddNewClicked = false"
+      @addSubscriptionSuccess="$emit('refetchSubscriptions')"
+    />
 
     <gl-table
       :fields="$options.fields"
