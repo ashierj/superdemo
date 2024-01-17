@@ -9,7 +9,10 @@ module Projects
 
     def execute
       if project.import_url &&
-          Gitlab::UrlBlocker.blocked_url?(normalized_url(project.import_url), schemes: Project::VALID_MIRROR_PROTOCOLS)
+          Gitlab::HTTP_V2::UrlBlocker.blocked_url?(
+            normalized_url(project.import_url),
+            schemes: Project::VALID_MIRROR_PROTOCOLS,
+            deny_all_requests_except_allowed: Gitlab::CurrentSettings.deny_all_requests_except_allowed?)
         return error("The import URL is invalid.")
       end
 

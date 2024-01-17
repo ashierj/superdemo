@@ -76,7 +76,7 @@ RSpec.describe Projects::UpdateMirrorService do
 
     context "when the URL is blocked" do
       before do
-        allow(Gitlab::UrlBlocker).to receive(:blocked_url?).and_return(true)
+        allow(Gitlab::HTTP_V2::UrlBlocker).to receive(:blocked_url?).and_return(true)
 
         stub_fetch_mirror(project)
       end
@@ -188,7 +188,7 @@ RSpec.describe Projects::UpdateMirrorService do
       before do
         allow(project).to receive(:import_url).and_return(mirror_path)
 
-        allow(Gitlab::UrlBlocker).to receive(:blocked_url?).and_return(false)
+        allow(Gitlab::HTTP_V2::UrlBlocker).to receive(:blocked_url?).and_return(false)
       end
 
       context 'when mirror_overwrites_diverged_branches is true' do
