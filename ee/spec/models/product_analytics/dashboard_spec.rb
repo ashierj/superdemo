@@ -232,4 +232,36 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
       end
     end
   end
+
+  describe '.load_yaml_dashboard_config' do
+    let(:file_path) { '.gitlab/analytics/dashboards' }
+
+    context 'when invalid path is provided' do
+      it 'raises exception for absolute path traversal attempt' do
+        invalid_file_name = '/tmp/foo'
+
+        error_message = "path #{invalid_file_name} is not allowed"
+        expect { described_class.load_yaml_dashboard_config(invalid_file_name, file_path) }
+          .to raise_error(StandardError, error_message)
+      end
+
+      it 'raises exception when path traversal is attempted' do
+        error_message = "Invalid path"
+        expect { described_class.load_yaml_dashboard_config('../foo', file_path) }
+          .to raise_error(Gitlab::PathTraversal::PathTraversalAttackError, error_message)
+      end
+    end
+
+    context 'for valid path' do
+      subject do
+        described_class.load_yaml_dashboard_config('behavior',
+          'ee/lib/gitlab/analytics/product_analytics/dashboards')
+      end
+
+      it 'loads the dashboard config' do
+        expect(subject["title"]).to eq('Behavior')
+        expect(subject.size).to eq(3)
+      end
+    end
+  end
 end
