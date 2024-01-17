@@ -9,7 +9,6 @@ import ProjectListStorageQuery from '../queries/project_list_storage.query.graph
 import { parseGetStorageResults } from '../utils';
 import SearchAndSortBar from '../../components/search_and_sort_bar/search_and_sort_bar.vue';
 import ProjectList from './project_list.vue';
-import ContainerRegistryUsage from './container_registry_usage.vue';
 
 export default {
   name: 'NamespaceStorageApp',
@@ -17,7 +16,6 @@ export default {
     GlKeysetPagination,
     CeNamespaceStorageApp,
     ProjectList,
-    ContainerRegistryUsage,
     SearchAndSortBar,
   },
   inject: [
@@ -76,12 +74,6 @@ export default {
     };
   },
   computed: {
-    containerRegistrySize() {
-      return this.namespace.rootStorageStatistics?.containerRegistrySize ?? 0;
-    },
-    containerRegistrySizeIsEstimated() {
-      return this.namespace.rootStorageStatistics?.containerRegistrySizeIsEstimated ?? false;
-    },
     projectList() {
       return this.projects?.nodes ?? [];
     },
@@ -145,12 +137,6 @@ export default {
     :namespace="namespace"
   >
     <template #ee-storage-app>
-      <container-registry-usage
-        :container-registry-size="containerRegistrySize"
-        :container-registry-size-is-estimated="containerRegistrySizeIsEstimated"
-        :loading="$apollo.queries.namespace.loading"
-      />
-
       <section class="gl-mt-5">
         <div class="gl-bg-gray-10 gl-p-5 gl-display-flex">
           <search-and-sort-bar
