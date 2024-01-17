@@ -15,6 +15,7 @@ import {
   TRACE_ID_FILTER_TOKEN_TYPE,
   DURATION_MS_FILTER_TOKEN_TYPE,
   ATTRIBUTE_FILTER_TOKEN_TYPE,
+  STATUS_FILTER_TOKEN_TYPE,
 } from './filters';
 import ServiceToken from './service_search_token.vue';
 import OperationToken from './operation_search_token.vue';
@@ -119,6 +120,16 @@ export default {
           type: ATTRIBUTE_FILTER_TOKEN_TYPE,
           token: AttributeSearchToken,
           operators: OPERATORS_IS,
+        },
+        {
+          title: s__('Tracing|Status'),
+          type: STATUS_FILTER_TOKEN_TYPE,
+          token: GlFilteredSearchToken,
+          operators: OPERATORS_IS_NOT,
+          options: [
+            { value: 'ok', title: s__('Tracing|Ok') },
+            { value: 'error', title: s__('Tracing|Error') },
+          ],
         },
       ];
     },
