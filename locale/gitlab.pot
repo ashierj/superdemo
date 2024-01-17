@@ -31385,7 +31385,7 @@ msgstr ""
 msgid "MlModelRegistry|Versions"
 msgstr ""
 
-msgid "MlModelRegistry|· No other versions"
+msgid "MlModelRegistry|· %d version"
 msgid_plural "MlModelRegistry|· %d versions"
 msgstr[0] ""
 msgstr[1] ""
