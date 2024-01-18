@@ -75,6 +75,7 @@ export default {
     class="gl-new-card js-approval-rules"
     header-class="gl-new-card-header"
     body-class="gl-new-card-body gl-px-0 gl-overflow-hidden"
+    footer-class="gl-new-card-footer"
     data-testid="mr-approval-rules"
   >
     <template #header>
@@ -117,6 +118,8 @@ export default {
           </gl-button>
         </div>
       </div>
+    </template>
+    <template v-if="$scopedSlots.footer" #footer>
       <slot name="footer"></slot>
     </template>
     <modal-rule-create :modal-id="createModalId" :is-mr-edit="isMrEdit" />

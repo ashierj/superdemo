@@ -18370,6 +18370,9 @@ msgstr ""
 msgid "Edit %{profileType} profile"
 msgstr ""
 
+msgid "Edit %{ruleName}"
+msgstr ""
+
 msgid "Edit Comment"
 msgstr ""
 
@@ -40581,6 +40584,9 @@ msgstr ""
 msgid "Remove %{displayReference}"
 msgstr ""
 
+msgid "Remove %{ruleName}"
+msgstr ""
+
 msgid "Remove Zoom meeting"
 msgstr ""
 
@@ -51087,10 +51093,10 @@ msgstr ""
 msgid "Time|s"
 msgstr ""
 
-msgid "Tip: Hover over a job to see the jobs it depends on to run."
+msgid "Tip: Add a %{linkStart}CODEOWNERS%{linkEnd} to automatically add approvers based on file paths and file types."
 msgstr ""
 
-msgid "Tip: add a %{linkStart}CODEOWNERS%{linkEnd} to automatically add approvers based on file paths and file types."
+msgid "Tip: Hover over a job to see the jobs it depends on to run."
 msgstr ""
 
 msgid "Title"

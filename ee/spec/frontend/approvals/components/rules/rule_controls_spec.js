@@ -1,18 +1,14 @@
-import { GlButton } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import RuleControls from 'ee/approvals/components/rules/rule_controls.vue';
 import { createStoreOptions } from 'ee/approvals/stores';
 import MREditModule from 'ee/approvals/stores/modules/mr_edit';
 
 Vue.use(Vuex);
 
-const TEST_RULE = { id: 10 };
-
-const findButtonLabel = (button) => button.attributes('aria-label') || button.text();
-const hasLabel = (button, label) => findButtonLabel(button) === label;
+const TEST_RULE = { id: 10, name: 'test rule' };
 
 describe('EE Approvals RuleControls', () => {
   let wrapper;
@@ -20,18 +16,16 @@ describe('EE Approvals RuleControls', () => {
   let actions;
 
   const factory = () => {
-    wrapper = shallowMount(RuleControls, {
+    wrapper = shallowMountExtended(RuleControls, {
       propsData: {
         rule: TEST_RULE,
       },
       store: new Vuex.Store(store),
     });
   };
-  const findButtons = () => wrapper.findAllComponents(GlButton);
-  const findButton = (label) =>
-    findButtons().filter((button) => hasLabel(button, label)).wrappers[0];
-  const findEditButton = () => findButton('Edit');
-  const findRemoveButton = () => findButton('Remove');
+
+  const findEditButton = () => wrapper.findByTestId('edit-rule-button');
+  const findRemoveButton = () => wrapper.findByTestId('delete-rule-button');
 
   beforeEach(() => {
     store = createStoreOptions({ approvals: MREditModule() });
@@ -47,21 +41,22 @@ describe('EE Approvals RuleControls', () => {
     });
 
     describe('edit button', () => {
-      let button;
-
       beforeEach(() => {
         factory();
-        button = findEditButton();
       });
 
       it('exists', () => {
-        expect(button.exists()).toBe(true);
+        expect(findEditButton().exists()).toBe(true);
+      });
+
+      it('references correct rule name in aria-label', () => {
+        expect(findEditButton().attributes('aria-label')).toBe('Edit test rule');
       });
 
       it('when click, opens create modal', () => {
         expect(store.modules.approvals.actions.requestEditRule).not.toHaveBeenCalled();
 
-        button.vm.$emit('click');
+        findEditButton().vm.$emit('click');
 
         expect(store.modules.approvals.actions.requestEditRule).toHaveBeenCalledWith(
           expect.anything(),
@@ -71,21 +66,22 @@ describe('EE Approvals RuleControls', () => {
     });
 
     describe('remove button', () => {
-      let button;
-
       beforeEach(() => {
         factory();
-        button = findRemoveButton();
       });
 
       it('exists', () => {
-        expect(button.exists()).toBe(true);
+        expect(findRemoveButton().exists()).toBe(true);
+      });
+
+      it('references correct rule name in aria-label', () => {
+        expect(findRemoveButton().attributes('aria-label')).toBe('Remove test rule');
       });
 
       it('when click, opens delete modal', () => {
         expect(store.modules.approvals.actions.requestDeleteRule).not.toHaveBeenCalled();
 
-        button.vm.$emit('click');
+        findRemoveButton().vm.$emit('click');
 
         expect(store.modules.approvals.actions.requestDeleteRule).toHaveBeenCalledWith(
           expect.anything(),

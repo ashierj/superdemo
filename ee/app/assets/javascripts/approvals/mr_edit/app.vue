@@ -119,29 +119,23 @@ export default {
         <approval-rules-app>
           <template #rules>
             <mr-rules />
+            <mr-rules-hidden-inputs />
           </template>
-          <template #footer>
-            <div>
-              <mr-rules-hidden-inputs />
-              <div
-                v-if="canUpdateApprovers && showCodeOwnerTip"
-                class="form-text text-muted"
-                data-testid="codeowners-tip"
+          <template v-if="canUpdateApprovers && showCodeOwnerTip" #footer>
+            <div class="form-text text-muted" data-testid="codeowners-tip">
+              <gl-sprintf
+                :message="
+                  __(
+                    'Tip: Add a %{linkStart}CODEOWNERS%{linkEnd} to automatically add approvers based on file paths and file types.',
+                  )
+                "
               >
-                <gl-sprintf
-                  :message="
-                    __(
-                      'Tip: add a %{linkStart}CODEOWNERS%{linkEnd} to automatically add approvers based on file paths and file types.',
-                    )
-                  "
-                >
-                  <template #link="{ content }">
-                    <gl-link :href="$options.codeOwnerHelpPage" target="_blank">{{
-                      content
-                    }}</gl-link>
-                  </template>
-                </gl-sprintf>
-              </div>
+                <template #link="{ content }">
+                  <gl-link :href="$options.codeOwnerHelpPage" target="_blank">{{
+                    content
+                  }}</gl-link>
+                </template>
+              </gl-sprintf>
             </div>
           </template>
         </approval-rules-app>

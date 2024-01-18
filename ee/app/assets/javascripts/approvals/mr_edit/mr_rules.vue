@@ -119,7 +119,7 @@ export default {
         <th :class="hasNamedRule ? 'w-50' : null">
           <span v-if="hasNamedRule">{{ members }}</span>
         </th>
-        <th>{{ approvalsRequired }}</th>
+        <th class="gl-text-center">{{ approvalsRequired }}</th>
         <th></th>
       </tr>
     </template>
