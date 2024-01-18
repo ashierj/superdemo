@@ -13,7 +13,7 @@ data:
       - operator: equals
         values:
           - page_view
-        member: TrackedEvents.event
+        member: TrackedEvents.eventName
     limit: 100
     timezone: UTC
     dimensions: []

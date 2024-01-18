@@ -32,7 +32,7 @@ RSpec.describe Gitlab::CubeJs::DataTransformer, feature_category: :product_analy
       "dimensions": [],
       "filters": [
         {
-          "member": "TrackedEvents.event",
+          "member": "TrackedEvents.eventName",
           "operator": "equals",
           "values": ["page_view"]
         },

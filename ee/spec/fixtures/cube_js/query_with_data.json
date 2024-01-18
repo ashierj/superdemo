@@ -194,7 +194,7 @@
         "values": [
           "page_view"
         ],
-        "member": "TrackedEvents.event"
+        "member": "TrackedEvents.eventName"
       },
       {
         "member": "TrackedEvents.derivedTstamp",

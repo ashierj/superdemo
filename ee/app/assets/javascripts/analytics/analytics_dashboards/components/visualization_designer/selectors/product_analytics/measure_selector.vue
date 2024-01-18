@@ -63,6 +63,7 @@ export default {
     addEventTypeFilter(measureType) {
       const eventTypeMap = {
         linkClickEvents: 'link_click',
+        pageViews: 'page_view',
       };
       const selectedEventType = eventTypeMap[measureType];
 
