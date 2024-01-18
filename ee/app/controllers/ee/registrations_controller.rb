@@ -8,6 +8,7 @@ module EE
 
     prepended do
       include Arkose::ContentSecurityPolicy
+      include Arkose::TokenVerifiable
       include RegistrationsTracking
       include ::Onboarding::SetRedirect
       include GoogleAnalyticsCSP
@@ -120,31 +121,6 @@ module EE
       glm_tracking_params.to_h
     end
 
-    def verify_arkose_labs_token
-      return true unless arkose_labs_enabled?
-
-      unless params[:arkose_labs_token].present?
-        # if arkose is down, skip challenge
-        arkose_status = Arkose::StatusService.new.execute
-
-        if arkose_status.error?
-          log_arkose_challenge_skipped
-          return true
-        end
-
-        log_arkose_token_missing
-        return false
-      end
-
-      arkose_labs_verify_response.present?
-    end
-
-    def arkose_labs_verify_response
-      result = Arkose::TokenVerificationService.new(session_token: params[:arkose_labs_token]).execute
-      result.success? ? result.payload[:response] : nil
-    end
-    strong_memoize_attr :arkose_labs_verify_response
-
     def record_arkose_data
       return unless resource&.persisted?
       return unless arkose_labs_enabled?
@@ -156,22 +132,6 @@ module EE
       ).execute
     end
 
-    def log_arkose_token_missing
-      ::Gitlab::AppLogger.info(
-        message: 'Sign-up blocked',
-        reason: 'arkose token is missing in request',
-        username: sign_up_params[:username]
-      )
-    end
-
-    def log_arkose_challenge_skipped
-      ::Gitlab::AppLogger.info(
-        message: 'Sign-up verification skipped',
-        reason: 'arkose is experiencing an outage',
-        username: sign_up_params[:username]
-      )
-    end
-
     override :arkose_labs_enabled?
     def arkose_labs_enabled?
       ::Feature.enabled?(:arkose_labs_signup_challenge) &&
@@ -181,6 +141,10 @@ module EE
     def allow_account_deletion?
       !License.feature_available?(:disable_deleting_account_for_users) ||
         ::Gitlab::CurrentSettings.allow_account_deletion?
+    end
+
+    def username
+      sign_up_params[:username]
     end
   end
 end
