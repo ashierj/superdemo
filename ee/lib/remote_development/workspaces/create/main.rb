@@ -34,6 +34,8 @@ module RemoteDevelopment
             generate_error_response_from_message(message: message, reason: :unauthorized)
           in { err: WorkspaceCreateParamsValidationFailed => message }
             generate_error_response_from_message(message: message, reason: :bad_request)
+          in { err: WorkspaceCreateDevfileYamlParseFailed => message }
+            generate_error_response_from_message(message: message, reason: :bad_request)
           in { err: WorkspaceCreateDevfileLoadFailed => message }
             generate_error_response_from_message(message: message, reason: :bad_request)
           in { err: WorkspaceCreatePreFlattenDevfileValidationFailed => message }

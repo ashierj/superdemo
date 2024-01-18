@@ -67,23 +67,32 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
   end
 
   context 'when the DevfileFetcher returns an err Result' do
-    before do
-      stub_methods_to_return_ok_result(
-        authorizer_method
-      )
-      stub_methods_to_return_err_result(
-        method: devfile_fetcher_method,
-        message_class: RemoteDevelopment::Messages::WorkspaceCreateParamsValidationFailed
-      )
+    shared_examples "returns an error response" do |message_class, message|
+      before do
+        stub_methods_to_return_ok_result(
+          authorizer_method
+        )
+        stub_methods_to_return_err_result(
+          method: devfile_fetcher_method,
+          message_class: message_class
+        )
+      end
+
+      it 'returns an error response' do
+        expect(response).to eq({
+          status: :error,
+          message: "#{message}: #{error_details}",
+          reason: :bad_request
+        })
+      end
     end
 
-    it 'returns an error response' do
-      expect(response).to eq({
-        status: :error,
-        message: "Workspace create params validation failed: #{error_details}",
-        reason: :bad_request
-      })
-    end
+    it_behaves_like 'returns an error response',
+      RemoteDevelopment::Messages::WorkspaceCreateParamsValidationFailed, "Workspace create params validation failed"
+    it_behaves_like 'returns an error response',
+      RemoteDevelopment::Messages::WorkspaceCreateDevfileLoadFailed, "Workspace create devfile load failed"
+    it_behaves_like 'returns an error response',
+      RemoteDevelopment::Messages::WorkspaceCreateDevfileYamlParseFailed, "Workspace create devfile yaml parse failed"
   end
 
   context 'when the PreFlattenDevfileValidator returns an err Result' do
