@@ -92,16 +92,6 @@ RSpec.describe Gitlab::Checks::Security::PolicyCheck, '#validate!', feature_cate
       end
     end
 
-    context 'with feature disabled' do
-      before do
-        stub_feature_flags(scan_result_policies_block_force_push: false)
-      end
-
-      it 'does not raise' do
-        expect { policy_check! }.not_to raise_error
-      end
-    end
-
     context 'with licensed feature unavailable' do
       before do
         stub_licensed_features(security_orchestration_policies: false)

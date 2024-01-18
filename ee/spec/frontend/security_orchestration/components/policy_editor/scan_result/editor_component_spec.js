@@ -18,7 +18,6 @@ import {
   USER_TYPE,
 } from 'ee/security_orchestration/constants';
 import {
-  mockBlockUnprotectingBranchesSettingsManifest,
   mockForcePushSettingsManifest,
   mockBlockAndForceSettingsManifest,
   mockDefaultBranchesScanResultManifest,
@@ -158,35 +157,21 @@ describe('EditorComponent', () => {
   });
 
   describe('rendering', () => {
+    it('passes the default yamlEditorValue prop to the PolicyEditorLayout component', () => {
+      factory();
+      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(mockForcePushSettingsManifest);
+    });
+
     describe('feature flags', () => {
-      describe('when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is enabled and the "scanResultPoliciesBlockForcePush" feature flag is enabled', () => {
+      describe('when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is enabled', () => {
         it('passes the correct yamlEditorValue prop to the PolicyEditorLayout component', () => {
           factory({
             glFeatures: {
               scanResultPoliciesBlockUnprotectingBranches: true,
-              scanResultPoliciesBlockForcePush: true,
             },
           });
           expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
             mockBlockAndForceSettingsManifest,
-          );
-        });
-      });
-
-      describe('when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is enabled and the "scanResultPoliciesBlockForcePush" feature flag is disabled', () => {
-        it('passes the correct yamlEditorValue prop to the PolicyEditorLayout component', () => {
-          factory({ glFeatures: { scanResultPoliciesBlockUnprotectingBranches: true } });
-          expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
-            mockBlockUnprotectingBranchesSettingsManifest,
-          );
-        });
-      });
-
-      describe('when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is disabled and the "scanResultPoliciesBlockForcePush" feature flag is enabled', () => {
-        it('passes the correct yamlEditorValue prop to the PolicyEditorLayout component', () => {
-          factory({ glFeatures: { scanResultPoliciesBlockForcePush: true } });
-          expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
-            mockForcePushSettingsManifest,
           );
         });
       });
@@ -304,10 +289,24 @@ describe('EditorComponent', () => {
           [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
         };
 
-        it('does update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled and the "scanResultPoliciesBlockForcePush" ff enabled', () => {
+        it('does update the settings containing permitted invalid settings', () => {
+          factoryWithExistingPolicy({
+            policy: { approval_settings: PERMITTED_INVALID_SETTINGS },
+          });
+          expect(findPolicyEditorLayout().props('policy')).toEqual(
+            expect.objectContaining({ approval_settings: PERMITTED_INVALID_SETTINGS }),
+          );
+          findAllRuleSections().at(0).vm.$emit('changed', { type: SCAN_FINDING });
+          expect(findPolicyEditorLayout().props('policy')).toEqual(
+            expect.objectContaining({
+              approval_settings: pushingBranchesConfiguration,
+            }),
+          );
+        });
+
+        it('does update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled', () => {
           const features = {
             scanResultPoliciesBlockUnprotectingBranches: true,
-            scanResultPoliciesBlockForcePush: true,
           };
           window.gon = { features };
           const newValue = { type: ANY_MERGE_REQUEST };
@@ -328,7 +327,7 @@ describe('EditorComponent', () => {
           );
         });
 
-        it('does update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled', () => {
+        it('does update the settings containing permitted invalid values with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled', () => {
           const features = {
             scanResultPoliciesBlockUnprotectingBranches: true,
           };
@@ -345,7 +344,10 @@ describe('EditorComponent', () => {
           findAllRuleSections().at(0).vm.$emit('changed', { type: SCAN_FINDING });
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
-              approval_settings: { [BLOCK_BRANCH_MODIFICATION]: false },
+              approval_settings: {
+                ...pushingBranchesConfiguration,
+                [BLOCK_BRANCH_MODIFICATION]: false,
+              },
             }),
           );
         });
@@ -353,27 +355,18 @@ describe('EditorComponent', () => {
         it('does update the settings with ANY_MERGE_REQUEST type', () => {
           const newValue = { type: ANY_MERGE_REQUEST };
           factory();
-          expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
-          findAllRuleSections().at(0).vm.$emit('changed', newValue);
-          expect(findPolicyEditorLayout().props('policy')).toEqual(
-            expect.objectContaining({ approval_settings: mergeRequestConfiguration }),
-          );
-        });
-
-        it('does update the settings with the "scanResultPoliciesBlockForcePush" ff enabled', () => {
-          const features = { scanResultPoliciesBlockForcePush: true };
-          window.gon = { features };
-          factoryWithExistingPolicy({
-            policy: { approval_settings: PERMITTED_INVALID_SETTINGS },
-            glFeatures: features,
-          });
-          expect(findPolicyEditorLayout().props('policy')).toEqual(
-            expect.objectContaining({ approval_settings: PERMITTED_INVALID_SETTINGS }),
-          );
-          findAllRuleSections().at(0).vm.$emit('changed', { type: SCAN_FINDING });
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
-              approval_settings: pushingBranchesConfiguration,
+              approval_settings: { [PREVENT_PUSHING_AND_FORCE_PUSHING]: true },
+            }),
+          );
+          findAllRuleSections().at(0).vm.$emit('changed', newValue);
+          expect(findPolicyEditorLayout().props('policy')).toEqual(
+            expect.objectContaining({
+              approval_settings: {
+                [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
+                ...mergeRequestConfiguration,
+              },
             }),
           );
         });
@@ -735,15 +728,20 @@ describe('EditorComponent', () => {
           expect(findSettingsSection().exists()).toBe(true);
         });
 
-        it('does not show settings for non-merge request rules', async () => {
+        it('shows default settings for non-merge request rules', async () => {
           await findAllRuleSections().at(0).vm.$emit('changed', { type: 'scan_finding' });
           expect(findSettingsSection().exists()).toBe(true);
-          expect(findSettingsSection().props('settings')).toEqual({});
+          expect(findSettingsSection().props('settings')).toEqual({
+            [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
+          });
         });
 
-        it('does show the policy for merge request rule', async () => {
+        it('does show the policy for merge request rule in addition to the default settings', async () => {
           await findAllRuleSections().at(0).vm.$emit('changed', { type: 'any_merge_request' });
-          expect(findSettingsSection().props('settings')).toEqual(mergeRequestConfiguration);
+          expect(findSettingsSection().props('settings')).toEqual({
+            [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
+            ...mergeRequestConfiguration,
+          });
         });
 
         it('updates the policy for merge request rule', async () => {
@@ -752,9 +750,19 @@ describe('EditorComponent', () => {
             [PREVENT_APPROVAL_BY_AUTHOR]: false,
           });
           expect(findSettingsSection().props('settings')).toEqual({
+            ...pushingBranchesConfiguration,
             ...mergeRequestConfiguration,
             [PREVENT_APPROVAL_BY_AUTHOR]: false,
           });
+        });
+
+        it('updates the policy when a change is emitted for pushingBranchesConfiguration', async () => {
+          await findSettingsSection().vm.$emit('changed', {
+            [PREVENT_PUSHING_AND_FORCE_PUSHING]: false,
+          });
+          expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
+            `${PREVENT_PUSHING_AND_FORCE_PUSHING}: false`,
+          );
         });
       });
 
@@ -769,6 +777,7 @@ describe('EditorComponent', () => {
           it('displays setting section', () => {
             expect(findSettingsSection().exists()).toBe(true);
             expect(findSettingsSection().props('settings')).toEqual({
+              [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
               [BLOCK_BRANCH_MODIFICATION]: true,
             });
           });
@@ -779,30 +788,6 @@ describe('EditorComponent', () => {
             });
             expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
               `${BLOCK_BRANCH_MODIFICATION}: false`,
-            );
-          });
-        });
-
-        describe('with "scanResultPoliciesBlockForcePush" feature flag enabled', () => {
-          beforeEach(() => {
-            const features = { scanResultPoliciesBlockForcePush: true };
-            window.gon = { features };
-            factory({ glFeatures: features });
-          });
-
-          it('displays setting section', () => {
-            expect(findSettingsSection().exists()).toBe(true);
-            expect(findSettingsSection().props('settings')).toEqual({
-              [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
-            });
-          });
-
-          it('updates the policy when a change is emitted', async () => {
-            await findSettingsSection().vm.$emit('changed', {
-              [PREVENT_PUSHING_AND_FORCE_PUSHING]: false,
-            });
-            expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
-              `${PREVENT_PUSHING_AND_FORCE_PUSHING}: false`,
             );
           });
         });

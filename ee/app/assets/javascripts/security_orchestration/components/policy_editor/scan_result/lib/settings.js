@@ -12,6 +12,7 @@ export const protectedBranchesConfiguration = {
   [BLOCK_BRANCH_MODIFICATION]: false,
 };
 
+// This defines behavior for existing policies. They shouldn't automatically opt-in to use this setting.
 export const pushingBranchesConfiguration = {
   [PREVENT_PUSHING_AND_FORCE_PUSHING]: false,
 };
@@ -113,7 +114,7 @@ const buildConfig = ({ hasAnyMergeRequestRule } = { hasAnyMergeRequestRule: fals
     gon.features?.scanResultPoliciesBlockUnprotectingBranches,
     protectedBranchesConfiguration,
   );
-  extendConfiguration(gon.features?.scanResultPoliciesBlockForcePush, pushingBranchesConfiguration);
+  extendConfiguration(true, pushingBranchesConfiguration);
   extendConfiguration(hasAnyMergeRequestRule, mergeRequestConfiguration);
 
   return configuration;

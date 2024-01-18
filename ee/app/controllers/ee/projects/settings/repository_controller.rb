@@ -51,8 +51,7 @@ module EE
         end
 
         def fetch_branches_protected_from_push(project)
-          return [] unless ::Feature.enabled?(:scan_result_policies_block_force_push, project) &&
-            project.licensed_feature_available?(:security_orchestration_policies)
+          return [] unless project.licensed_feature_available?(:security_orchestration_policies)
 
           ::Security::SecurityOrchestrationPolicies::ProtectedBranchesPushService
             .new(project: project)

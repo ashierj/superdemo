@@ -12,7 +12,8 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-approval_settings: {}
+approval_settings:
+  prevent_pushing_and_force_pushing: true
 `;
 
 export const mockLicenseScanResultManifest = `type: scan_result_policy
@@ -28,7 +29,8 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-approval_settings: {}
+approval_settings:
+  prevent_pushing_and_force_pushing: true
 `;
 
 export const mockAnyMergeRequestScanResultManifest = `type: scan_result_policy
@@ -43,6 +45,7 @@ actions:
   - type: require_approval
     approvals_required: 1
 approval_settings:
+  prevent_pushing_and_force_pushing: true
   prevent_approval_by_author: true
   prevent_approval_by_commit_author: true
   remove_approvals_with_new_commit: true

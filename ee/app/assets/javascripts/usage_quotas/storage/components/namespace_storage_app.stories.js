@@ -1,11 +1,11 @@
+import { defaultNamespaceProvideValues } from 'ee_jest/usage_quotas/storage/mock_data';
 import {
-  defaultNamespaceProvideValues,
   mockGetNamespaceStorageGraphQLResponse,
   mockGetProjectListStorageGraphQLResponse,
-} from 'ee_jest/usage_quotas/storage/mock_data';
+} from 'jest/usage_quotas/storage/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import getNamespaceStorageQuery from 'ee/usage_quotas/storage/queries/namespace_storage.query.graphql';
-import getProjectListStorageQuery from 'ee/usage_quotas/storage/queries/project_list_storage.query.graphql';
+import getNamespaceStorageQuery from 'ee_else_ce/usage_quotas/storage/queries/namespace_storage.query.graphql';
+import getProjectListStorageQuery from 'ee_else_ce/usage_quotas/storage/queries/project_list_storage.query.graphql';
 import NamespaceStorageApp from './namespace_storage_app.vue';
 
 const meta = {

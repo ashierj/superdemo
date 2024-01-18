@@ -15,6 +15,8 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
+approval_settings:
+  prevent_pushing_and_force_pushing: true
 `;
 
 export const DEFAULT_GROUP_SCAN_RESULT_POLICY = `type: scan_result_policy
@@ -28,4 +30,6 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
+approval_settings:
+  prevent_pushing_and_force_pushing: true
 `;

@@ -12,35 +12,21 @@ afterEach(() => {
 
 describe('approval_settings', () => {
   describe('buildSettingsList', () => {
-    it('returns an empty object by default', () => {
-      expect(buildSettingsList()).toEqual({});
+    it('returns the pushing branches settings by default', () => {
+      expect(buildSettingsList()).toEqual(pushingBranchesConfiguration);
     });
 
     it('returns the protected branches settings when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is enabled', () => {
       window.gon = { features: { scanResultPoliciesBlockUnprotectingBranches: true } };
-      expect(buildSettingsList()).toEqual(protectedBranchesConfiguration);
-    });
-
-    it('returns the protected branches settings when the "scanResultPoliciesBlockForcePush" feature flag is enabled', () => {
-      window.gon = { features: { scanResultPoliciesBlockForcePush: true } };
-      expect(buildSettingsList()).toEqual(pushingBranchesConfiguration);
-    });
-
-    it('returns the protected branches settings when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is enabled and the "scanResultPoliciesBlockForcePush" feature flag is enabled', () => {
-      window.gon = {
-        features: {
-          scanResultPoliciesBlockUnprotectingBranches: true,
-          scanResultPoliciesBlockForcePush: true,
-        },
-      };
       expect(buildSettingsList()).toEqual({
-        ...protectedBranchesConfiguration,
         ...pushingBranchesConfiguration,
+        ...protectedBranchesConfiguration,
       });
     });
 
     it('returns merge request settings for the merge request rule', () => {
       expect(buildSettingsList({ hasAnyMergeRequestRule: true })).toEqual({
+        ...pushingBranchesConfiguration,
         ...mergeRequestConfiguration,
       });
     });
@@ -48,6 +34,7 @@ describe('approval_settings', () => {
     it('can update merge request settings', () => {
       window.gon = { features: { scanResultPoliciesBlockUnprotectingBranches: true } };
       const settings = {
+        ...pushingBranchesConfiguration,
         ...mergeRequestConfiguration,
         [PREVENT_APPROVAL_BY_AUTHOR]: false,
       };
@@ -63,6 +50,7 @@ describe('approval_settings', () => {
       };
 
       expect(buildSettingsList({ settings, hasAnyMergeRequestRule: true })).toEqual({
+        ...pushingBranchesConfiguration,
         ...mergeRequestConfiguration,
       });
     });

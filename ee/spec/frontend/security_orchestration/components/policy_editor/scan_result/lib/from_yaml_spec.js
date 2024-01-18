@@ -25,7 +25,8 @@ afterEach(() => {
 describe('fromYaml', () => {
   it.each`
     title                                                                                                | input                                                                    | output
-    ${'returns the policy object for a supported manifest'}                                              | ${{ manifest: mockDefaultBranchesScanResultManifest }}                   | ${mockDefaultBranchesScanResultObject}
+    ${'returns the policy object for a supported manifest without approval_settings'}                    | ${{ manifest: mockDefaultBranchesScanResultManifest }}                   | ${mockDefaultBranchesScanResultObject}
+    ${'returns the policy object for a supported manifest with approval_settings'}                       | ${{ manifest: mockApprovalSettingsScanResultManifest }}                  | ${mockApprovalSettingsScanResultObject}
     ${'returns the error object for a policy with an unsupported attribute'}                             | ${{ manifest: unsupportedManifest, validateRuleMode: true }}             | ${{ error: true }}
     ${'returns the error object for a policy with colliding self excluded keys'}                         | ${{ manifest: collidingKeysScanResultManifest, validateRuleMode: true }} | ${{ error: true }}
     ${'returns the policy object for a policy with an unsupported attribute when validation is skipped'} | ${{ manifest: unsupportedManifest }}                                     | ${unsupportedManifestObject}
@@ -58,13 +59,6 @@ describe('fromYaml', () => {
       };
       const output = mockApprovalSettingsPermittedInvalidScanResultObject;
       window.gon = { features: {} };
-      expect(fromYaml(input)).toStrictEqual(output);
-    });
-
-    it('returns the policy object for a manifest with "approval_settings" with the "scanResultPoliciesBlockForcePush" feature flag on', () => {
-      const input = { manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true };
-      const output = mockApprovalSettingsScanResultObject;
-      window.gon = { features: { scanResultPoliciesBlockForcePush: true } };
       expect(fromYaml(input)).toStrictEqual(output);
     });
 
