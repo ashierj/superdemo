@@ -10,7 +10,7 @@ import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import getNamespaceStorageQuery from 'ee/usage_quotas/storage/queries/namespace_storage.query.graphql';
 import getProjectListStorageQuery from 'ee/usage_quotas/storage/queries/project_list_storage.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
+import SearchAndSortBar from '~/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
 import {
   mockGetNamespaceStorageGraphQLResponse,

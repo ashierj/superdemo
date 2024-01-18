@@ -18,7 +18,7 @@ import {
 } from 'ee/usage_quotas/seats/constants';
 import { mockTableItems } from 'ee_jest/usage_quotas/seats/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
+import SearchAndSortBar from '~/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 
 Vue.use(Vuex);
 

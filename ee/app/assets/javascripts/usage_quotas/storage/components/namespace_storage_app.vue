@@ -2,12 +2,10 @@
 import { GlKeysetPagination } from '@gitlab/ui';
 import { captureException } from '~/ci/runner/sentry_utils';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
-import { __ } from '~/locale';
 import CeNamespaceStorageApp from '~/usage_quotas/storage/components/namespace_storage_app.vue';
 import NamespaceStorageQuery from '../queries/namespace_storage.query.graphql';
 import ProjectListStorageQuery from '../queries/project_list_storage.query.graphql';
 import { parseGetStorageResults } from '../utils';
-import SearchAndSortBar from '../../components/search_and_sort_bar/search_and_sort_bar.vue';
 import ProjectList from './project_list.vue';
 
 export default {
@@ -16,7 +14,6 @@ export default {
     GlKeysetPagination,
     CeNamespaceStorageApp,
     ProjectList,
-    SearchAndSortBar,
   },
   inject: [
     'namespaceId',
@@ -58,9 +55,6 @@ export default {
         captureException({ error, component: this.$options.name });
       },
     },
-  },
-  i18n: {
-    search: __('Search'),
   },
   data() {
     return {
@@ -135,35 +129,26 @@ export default {
     :namespace-loading-error="namespaceLoadingError"
     :is-namespace-storage-statistics-loading="$apollo.queries.namespace.loading"
     :namespace="namespace"
+    @search="onSearch($event)"
   >
     <template #ee-storage-app>
-      <section class="gl-mt-5">
-        <div class="gl-bg-gray-10 gl-p-5 gl-display-flex">
-          <search-and-sort-bar
-            :namespace="namespaceId"
-            :search-input-placeholder="$options.i18n.search"
-            @onFilter="onSearch"
-          />
-        </div>
+      <project-list
+        :projects="projectList"
+        :is-loading="$apollo.queries.projects.loading"
+        :help-links="helpLinks"
+        :sort-by="initialSortBy"
+        :sort-desc="true"
+        @sortChanged="onSortChanged($event)"
+      />
 
-        <project-list
-          :projects="projectList"
-          :is-loading="$apollo.queries.projects.loading"
-          :help-links="helpLinks"
-          :sort-by="initialSortBy"
-          :sort-desc="true"
-          @sortChanged="onSortChanged($event)"
+      <div class="gl-display-flex gl-justify-content-center gl-mt-5">
+        <gl-keyset-pagination
+          v-if="showPagination"
+          v-bind="pageInfo"
+          @prev="onPrev"
+          @next="onNext"
         />
-
-        <div class="gl-display-flex gl-justify-content-center gl-mt-5">
-          <gl-keyset-pagination
-            v-if="showPagination"
-            v-bind="pageInfo"
-            @prev="onPrev"
-            @next="onNext"
-          />
-        </div>
-      </section>
+      </div>
     </template>
   </ce-namespace-storage-app>
 </template>

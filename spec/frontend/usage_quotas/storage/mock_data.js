@@ -14,4 +14,5 @@ export const defaultProjectProvideValues = {
 
 export const defaultNamespaceProvideValues = {
   userNamespace: false,
+  namespaceId: '42',
 };
