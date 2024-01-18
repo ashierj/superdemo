@@ -29,6 +29,7 @@ describe('MetricsTable', () => {
       expect(row.find(`[data-testid="metric-name"]`).text()).toBe(m.name);
       expect(row.find(`[data-testid="metric-description"]`).text()).toBe(m.description);
       expect(row.find(`[data-testid="metric-type"]`).text()).toBe(m.type);
+      expect(row.find(`[data-testid="metric-last-ingested"]`).text()).toBe('in 3 years');
     });
   });
 

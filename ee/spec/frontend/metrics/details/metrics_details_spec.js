@@ -25,6 +25,7 @@ describe('MetricsDetails', () => {
   const findHeaderTitle = () => findHeader().find(`[data-testid="metric-title"]`);
   const findHeaderType = () => findHeader().find(`[data-testid="metric-type"]`);
   const findHeaderDescription = () => findHeader().find(`[data-testid="metric-description"]`);
+  const findHeaderLastIngested = () => findHeader().find(`[data-testid="metric-last-ingested"]`);
 
   const findChart = () => findMetricDetails().findComponent(MetricsChart);
   const findEmptyState = () => findMetricDetails().findComponent(GlEmptyState);
@@ -103,6 +104,7 @@ describe('MetricsDetails', () => {
       expect(findHeaderTitle().text()).toBe(METRIC_ID);
       expect(findHeaderType().text()).toBe(`Type:\u00a0${METRIC_TYPE}`);
       expect(findHeaderDescription().text()).toBe('System disk operations');
+      expect(findHeaderLastIngested().text()).toBe('Last ingested:\u00a0in 3 years');
     });
 
     describe('with no data', () => {
@@ -111,13 +113,15 @@ describe('MetricsDetails', () => {
 
         await mountComponent();
       });
-      it('only renders the title and type headers', () => {
+      it('does not render the description', () => {
         expect(findHeaderTitle().text()).toBe(METRIC_ID);
         expect(findHeaderType().text()).toBe(`Type:\u00a0${METRIC_TYPE}`);
+        expect(findHeaderLastIngested().text()).toBe('Last ingested:\u00a0in 3 years');
         expect(findHeaderDescription().text()).toBe('');
       });
       it('renders the empty state', () => {
         expect(findEmptyState().exists()).toBe(true);
+        expect(findEmptyState().text()).toContain('Last ingested:\u00a0in 3 years');
       });
     });
   });

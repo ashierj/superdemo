@@ -6,6 +6,7 @@ import ObservabilityContainer from '~/observability/components/observability_con
 describe('DetailsIndex', () => {
   const props = {
     metricId: 'test.metric',
+    metricType: 'a-type',
     metricsIndexUrl: 'https://example.com/metrics/index',
     apiConfig: {
       oauthUrl: 'https://example.com/oauth',
@@ -42,5 +43,6 @@ describe('DetailsIndex', () => {
     expect(detailsCmp.exists()).toBe(true);
     expect(detailsCmp.props('metricId')).toBe(props.metricId);
     expect(detailsCmp.props('metricsIndexUrl')).toBe(props.metricsIndexUrl);
+    expect(detailsCmp.props('metricType')).toBe(props.metricType);
   });
 });

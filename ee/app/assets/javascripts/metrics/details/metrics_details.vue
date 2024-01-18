@@ -4,6 +4,7 @@ import EMPTY_CHART_SVG from '@gitlab/svgs/dist/illustrations/chart-empty-state.s
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
+import { ingestedAtTimeAgo } from '../utils';
 import MetricsChart from './metrics_chart.vue';
 
 export default {
@@ -12,6 +13,7 @@ export default {
       'ObservabilityMetrics|Error: Failed to load metrics details. Try reloading the page.',
     ),
     metricType: s__('ObservabilityMetrics|Type'),
+    lastIngested: s__('ObservabilityMetrics|Last ingested'),
     noData: s__('ObservabilityMetrics|No data found for the selected metric.'),
   },
   components: {
@@ -50,6 +52,8 @@ export default {
         title: this.metricId,
         type: this.metricType,
         description: this.metricData[0]?.description,
+        // TODO get last_ingested from searchmetadata API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2488
+        lastIngested: ingestedAtTimeAgo(1705247947518101200),
       };
     },
   },
@@ -114,6 +118,9 @@ export default {
       <p class="gl-my-0" data-testid="metric-type">
         <strong>{{ $options.i18n.metricType }}:&nbsp;</strong>{{ header.type }}
       </p>
+      <p class="gl-my-0" data-testid="metric-last-ingested">
+        <strong>{{ $options.i18n.lastIngested }}:&nbsp;</strong>{{ header.lastIngested }}
+      </p>
       <p class="gl-my-0" data-testid="metric-description">{{ header.description }}</p>
     </div>
 
@@ -121,7 +128,10 @@ export default {
       <metrics-chart v-if="metricData.length > 0" :metric-data="metricData" />
       <gl-empty-state v-else :svg-path="$options.EMPTY_CHART_SVG">
         <template #title>
-          <p class="gl-font-lg">{{ $options.i18n.noData }}</p>
+          <p class="gl-font-lg gl-my-0">{{ $options.i18n.noData }}</p>
+          <p class="gl-font-md gl-my-0">
+            <strong>{{ $options.i18n.lastIngested }}:&nbsp;</strong>{{ header.lastIngested }}
+          </p>
         </template>
       </gl-empty-state>
     </div>
