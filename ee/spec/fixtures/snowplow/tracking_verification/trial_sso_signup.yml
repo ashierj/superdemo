@@ -10,6 +10,9 @@ page_view_events:
   - /-/learn_gitlab/onboarding
   - /-/learn_gitlab
 structured_events:
+  - category: 'trial_registrations:new'
+    action: 'google_oauth2_sso'
+    label: 'trial_registration'
   - category: 'OmniauthCallbacksController'
     action: 'google_oauth2_sso'
   - category: 'registrations:welcome:show'
