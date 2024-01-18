@@ -1,6 +1,7 @@
 <script>
 import { GlTable, GlLabel } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
+import { ingestedAtTimeAgo } from '../utils';
 
 export default {
   i18n: {
@@ -22,6 +23,12 @@ export default {
       key: 'type',
       label: s__('ObservabilityMetrics|Type'),
       tdAttr: { 'data-testid': 'metric-type' },
+      thClass: 'gl-w-15p',
+    },
+    {
+      key: 'last_ingested_at',
+      label: s__('ObservabilityMetrics|Last ingested'),
+      tdAttr: { 'data-testid': 'metric-last-ingested' },
     },
   ],
   components: {
@@ -32,6 +39,14 @@ export default {
     metrics: {
       required: true,
       type: Array,
+    },
+  },
+  computed: {
+    formattedMetrics() {
+      return this.metrics.map((x) => ({
+        ...x,
+        last_ingested_at: ingestedAtTimeAgo(x.last_ingested_at),
+      }));
     },
   },
   methods: {
@@ -62,7 +77,7 @@ export default {
     <h4 class="gl-display-block gl-md-display-none! gl-my-5">{{ $options.i18n.title }}</h4>
 
     <gl-table
-      :items="metrics"
+      :items="formattedMetrics"
       :fields="$options.fields"
       show-empty
       fixed
