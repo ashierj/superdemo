@@ -11,12 +11,26 @@ feature_category: :system_access do
   let_it_be(:confirmed_user) { create(:user, :low_risk) }
   let_it_be(:invalid_verification_user_id) { non_existing_record_id }
 
+  let(:verify_response_json) do
+    Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json')))
+  end
+
+  let(:verify_response) { Arkose::VerifyResponse.new(verify_response_json) }
+  let(:token_verification_service_success_response) { ServiceResponse.success(payload: { response: verify_response }) }
+  let(:is_arkose_enabled) { true }
+
   before do
     stub_application_setting_enum('email_confirmation_setting', 'hard')
     stub_application_setting(require_admin_approval_after_user_signup: false)
 
     allow(::Gitlab::ApplicationRateLimiter).to receive(:peek).and_call_original
     allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_call_original
+
+    allow(::Arkose::Settings).to receive(:enabled?).and_return(is_arkose_enabled)
+
+    allow_next_instance_of(::Arkose::StatusService) do |instance|
+      allow(instance).to receive(:execute).and_return(ServiceResponse.success)
+    end
   end
 
   shared_examples 'it requires a valid verification_user_id' do
@@ -132,10 +146,8 @@ feature_category: :system_access do
   shared_examples 'it requires oauth users to go through ArkoseLabs challenge' do
     let(:user) { create(:omniauth_user, :unconfirmed) }
     let(:arkose_labs_oauth_signup_challenge) { true }
-    let(:is_arkose_enabled) { true }
 
     before do
-      allow(::Arkose::Settings).to receive(:enabled?).and_return(is_arkose_enabled)
       stub_feature_flags(arkose_labs_oauth_signup_challenge: arkose_labs_oauth_signup_challenge)
       stub_session(verification_user_id: user.id)
 
@@ -279,7 +291,7 @@ feature_category: :system_access do
           end
 
           context 'and token verification succeeds' do
-            let(:service_response) { ServiceResponse.success }
+            let(:service_response) { token_verification_service_success_response }
 
             it 'returns a 200' do
               do_request
@@ -832,7 +844,7 @@ feature_category: :system_access do
       end
 
       context 'when token verification succeeds' do
-        let(:service_response) { ServiceResponse.success }
+        let(:service_response) { token_verification_service_success_response }
 
         it 'redirects to show action' do
           expect(response).to redirect_to(identity_verification_path)
@@ -845,7 +857,7 @@ feature_category: :system_access do
 
       before do
         allow_next_instance_of(Arkose::TokenVerificationService) do |instance|
-          allow(instance).to receive(:execute).and_return(ServiceResponse.success)
+          allow(instance).to receive(:execute).and_return(token_verification_service_success_response)
         end
       end
 

@@ -5,6 +5,7 @@ module Users
     include AcceptsPendingInvitations
     include ActionView::Helpers::DateHelper
     include Arkose::ContentSecurityPolicy
+    include Arkose::TokenVerifiable
     include IdentityVerificationHelper
     include ::Gitlab::RackLoadBalancingHelpers
     include Recaptcha::Adapters::ControllerMethods
@@ -118,7 +119,7 @@ module Users
     def arkose_labs_challenge; end
 
     def verify_arkose_labs_session
-      unless verify_arkose_labs_token
+      unless verify_arkose_labs_token(user: @user)
         flash[:alert] = s_('IdentityVerification|Complete verification to sign up.')
         return render action: :arkose_labs_challenge
       end
@@ -247,8 +248,7 @@ module Users
     end
 
     def require_arkose_verification!
-      return unless Feature.enabled?(:arkose_labs_oauth_signup_challenge)
-      return unless ::Arkose::Settings.enabled?(user: @user, user_agent: request.user_agent)
+      return unless arkose_labs_enabled?
       return unless @user.identities.any?
       return unless @user.arkose_risk_band.blank?
 
@@ -310,15 +310,6 @@ module Users
       params.require(:identity_verification).permit(:verification_code)
     end
 
-    def verify_arkose_labs_token(save_user_data: true)
-      return false unless params[:arkose_labs_token].present?
-
-      user = @user if save_user_data
-
-      result = Arkose::TokenVerificationService.new(session_token: params[:arkose_labs_token], user: user).execute
-      result.success?
-    end
-
     def load_captcha
       show_recaptcha_challenge? && Gitlab::Recaptcha.load_configurations!
     end
@@ -342,11 +333,20 @@ module Users
         if arkose_shown
           log_event(:phone, :arkose_challenge_shown)
 
-          return verify_arkose_labs_token(save_user_data: false)
+          return verify_arkose_labs_token
         end
       end
 
       true
+    end
+
+    def arkose_labs_enabled?
+      ::Feature.enabled?(:arkose_labs_oauth_signup_challenge) &&
+        ::Arkose::Settings.enabled?(user: @user, user_agent: request.user_agent)
+    end
+
+    def username
+      @user.username
     end
   end
 end
