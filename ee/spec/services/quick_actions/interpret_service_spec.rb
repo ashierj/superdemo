@@ -216,6 +216,28 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
           expect(updates[:reviewer_ids]).to be_nil
           expect(msg).to eq "Could not apply unassign_reviewer command. Failed to find users for 'nobody'."
         end
+
+        context 'with "me" alias' do
+          context 'when the current user is referenced both by username and "me"' do
+            let(:content) do
+              <<-QUICKACTION
+/assign me
+/assign_reviewer #{developer2.to_reference} #{current_user.to_reference}
+/unassign_reviewer me
+              QUICKACTION
+            end
+
+            it 'will correctly remove the reviewer' do
+              _, updates, message = service.execute(content, merge_request)
+
+              expect(updates[:reviewer_ids].count).to eq(1)
+
+              expect(message).to include("Assigned #{current_user.to_reference}.")
+              expect(message).to include("Assigned #{current_user.to_reference} and #{developer2.to_reference} as reviewers.")
+              expect(message).to include("Removed reviewer #{current_user.to_reference}.")
+            end
+          end
+        end
       end
     end
 
