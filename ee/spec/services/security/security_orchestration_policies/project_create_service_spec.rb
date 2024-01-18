@@ -4,13 +4,12 @@ require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService, feature_category: :security_policy_management do
   describe '#execute' do
-    let_it_be(:namespace) { create(:namespace, path: 'target-namespace') }
+    let_it_be(:group) { create(:group, path: 'target-group', name: 'Target Group') }
 
     let_it_be_with_refind(:project) do
-      create(:project, path: 'target-project', name: 'Target Project', namespace: namespace)
+      create(:project, path: 'target-project', name: 'Target Project', group: group)
     end
 
-    let_it_be(:group) { create(:group, path: 'target-group', name: 'Target Group') }
     let_it_be(:owner) { create(:user) }
     let_it_be(:maintainer) { create(:user) }
     let_it_be(:developer) { create(:user) }
@@ -20,13 +19,15 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService, fe
       File.read(Rails.root.join(path))
     end
 
-    let(:current_user) { container.first_owner }
+    let(:current_user) { owner }
     let(:container) { project }
 
     subject(:service) { described_class.new(container: container, current_user: current_user) }
 
     before do
       stub_licensed_features(security_orchestration_policies: true)
+      group.add_owner(owner)
+      container.add_owner(owner)
     end
 
     context 'when security_orchestration_policies_configuration does not exist for project' do
@@ -64,7 +65,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService, fe
       let(:container) { group }
 
       before_all do
-        group.add_owner(owner)
         group.add_maintainer(maintainer)
         group.add_developer(developer)
       end
@@ -82,9 +82,22 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService, fe
       end
     end
 
-    context 'when adding users to security policy project fails' do
-      let(:current_user) { project.first_owner }
+    context 'when user is added as maintainer to both group and the project' do
+      let(:current_user) { owner }
 
+      before_all do
+        group.add_maintainer(maintainer)
+        project.add_maintainer(maintainer)
+      end
+
+      it 'successfully create projects without errors' do
+        response = service.execute
+
+        expect(response[:status]).to eq(:success)
+      end
+    end
+
+    context 'when adding users to security policy project fails' do
       before_all do
         project.add_maintainer(maintainer)
       end
@@ -144,7 +157,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService, fe
       let(:container) { group }
 
       before do
-        group.add_owner(owner)
         group.update_attribute(:project_creation_level, Gitlab::Access::NO_ACCESS)
       end
 
