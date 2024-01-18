@@ -30716,6 +30716,9 @@ msgstr ""
 msgid "Merged this merge request."
 msgstr ""
 
+msgid "Merged-By"
+msgstr ""
+
 msgid "Merged: %{merged}"
 msgstr ""
 

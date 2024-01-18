@@ -49,7 +49,7 @@ const approvers = {
 
 export default (IssuableTokenKeys, disableBranchFilter = false) => {
   addExtraTokensForMergeRequests(IssuableTokenKeys, disableBranchFilter);
-  const tokenPosition = 3;
+  const tokenPosition = gon.features.mrMergeUserFilter ? 4 : 3;
 
   IssuableTokenKeys.tokenKeys.splice(tokenPosition, 0, ...[approvers.token]);
   IssuableTokenKeys.tokenKeysWithAlternative.splice(
