@@ -7,7 +7,8 @@ RSpec.describe Ai::SyncServiceTokenWorker, type: :worker, feature_category: :clo
     let(:service_response) { ServiceResponse.success }
 
     before do
-      allow(Ai::SyncCloudConnectorAccessService).to receive_message_chain(:new, :execute).and_return(service_response)
+      allow(CloudConnector::SyncCloudConnectorAccessService).to receive_message_chain(:new,
+        :execute).and_return(service_response)
     end
 
     include_examples 'an idempotent worker' do
@@ -16,7 +17,7 @@ RSpec.describe Ai::SyncServiceTokenWorker, type: :worker, feature_category: :clo
       subject(:sync_service_token) { perform_multiple(worker: worker) }
 
       it 'executes the SyncCloudConnectorAccessService with expected params' do
-        expect(Ai::SyncCloudConnectorAccessService).to receive_message_chain(:new, :execute)
+        expect(CloudConnector::SyncCloudConnectorAccessService).to receive_message_chain(:new, :execute)
         expect(worker).not_to receive(:log_extra_metadata_on_done)
 
         sync_service_token
@@ -27,8 +28,8 @@ RSpec.describe Ai::SyncServiceTokenWorker, type: :worker, feature_category: :clo
           stub_feature_flags(use_sync_service_token_worker: false)
         end
 
-        it 'does not call Ai::SyncCloudConnectorAccessService' do
-          expect(::Ai::SyncCloudConnectorAccessService).not_to receive(:new)
+        it 'does not call CloudConnector::SyncCloudConnectorAccessService' do
+          expect(::CloudConnector::SyncCloudConnectorAccessService).not_to receive(:new)
           expect(worker).not_to receive(:log_extra_metadata_on_done)
 
           sync_service_token

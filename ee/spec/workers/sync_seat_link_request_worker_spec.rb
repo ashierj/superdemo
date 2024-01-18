@@ -254,8 +254,8 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
         let(:license_key) { build(:gitlab_license, :cloud).export }
         let(:body) { { success: true, license: license_key, service_tokens: { code_suggestions: { token: 'token1', expires_at: expires_at } } }.to_json }
 
-        it 'calls Ai::ServiceAccessTokensStorageService' do
-          expect_next_instance_of(Ai::ServiceAccessTokensStorageService, 'token1', expires_at) do |instance|
+        it 'calls CloudConnector::ServiceAccessTokensStorageService' do
+          expect_next_instance_of(CloudConnector::ServiceAccessTokensStorageService, 'token1', expires_at) do |instance|
             expect(instance).to receive(:execute)
           end
 
@@ -270,8 +270,8 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
               .to_return(status: 400, body: body)
           end
 
-          it 'does not call Ai::ServiceAccessTokensStorageService' do
-            expect(Ai::ServiceAccessTokensStorageService).not_to receive(:new)
+          it 'does not call CloudConnector::ServiceAccessTokensStorageService' do
+            expect(CloudConnector::ServiceAccessTokensStorageService).not_to receive(:new)
 
             expect { sync_seat_link }.to raise_error(
               described_class::RequestError,

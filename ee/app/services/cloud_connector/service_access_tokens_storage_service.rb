@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Ai
+module CloudConnector
   class ServiceAccessTokensStorageService
     def initialize(token, expires_at)
       @token = token

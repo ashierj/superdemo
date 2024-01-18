@@ -19,7 +19,7 @@ module Ai
     def perform
       return unless ::Feature.enabled?(:use_sync_service_token_worker)
 
-      result = ::Ai::SyncCloudConnectorAccessService.new.execute
+      result = ::CloudConnector::SyncCloudConnectorAccessService.new.execute
 
       log_extra_metadata_on_done(:error_message, result[:message]) unless result.success?
     end

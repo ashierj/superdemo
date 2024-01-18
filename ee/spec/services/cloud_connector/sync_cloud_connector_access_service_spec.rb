@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ai::SyncCloudConnectorAccessService, :freeze_time, feature_category: :cloud_connector do
+RSpec.describe CloudConnector::SyncCloudConnectorAccessService, :freeze_time, feature_category: :cloud_connector do
   describe '#execute' do
     shared_examples 'returns error with proper message' do |message|
       it 'returns error' do
@@ -43,7 +43,7 @@ RSpec.describe Ai::SyncCloudConnectorAccessService, :freeze_time, feature_catego
         end
 
         before do
-          allow_next_instance_of(Ai::ServiceAccessTokensStorageService, token, expires_at) do |service|
+          allow_next_instance_of(CloudConnector::ServiceAccessTokensStorageService, token, expires_at) do |service|
             allow(service).to receive(:execute).and_return(token_storage_service_response)
           end
 

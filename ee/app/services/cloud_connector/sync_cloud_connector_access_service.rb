@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Service to synchronize JWT Service AccessToken issued by CustomersDot application and Cloud Connector services data
-module Ai
+module CloudConnector
   class SyncCloudConnectorAccessService
     include ActiveModel::Validations
 
