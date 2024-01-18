@@ -4,7 +4,7 @@ module Gitlab
   module Analytics
     module CycleAnalytics
       module StageEvents
-        class MergeRequestFirstAssignedAt < FirstAssignedAt
+        class MergeRequestFirstAssignedAt < FirstResourceEventBase
           override :name
           def self.name
             s_("CycleAnalyticsEvent|Merge request first assigned")

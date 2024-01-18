@@ -272,6 +272,29 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector, feature_categor
         it_behaves_like 'custom Value Stream Analytics Stage'
       end
 
+      context 'between issue created and issue first added to an iteration' do
+        let_it_be(:iteration) { create(:iteration, group: group) }
+
+        let(:start_event_identifier) { :issue_created }
+        let(:end_event_identifier) { :issue_first_added_to_iteration }
+
+        def create_data_for_start_event(example_class)
+          create(:issue, :opened, project: example_class.project)
+        end
+
+        def create_data_for_end_event(issue, example_class)
+          Sidekiq::Worker.skipping_transaction_check do
+            Issues::UpdateService.new(
+              container: example_class.project,
+              current_user: user,
+              params: { iteration: iteration }
+            ).execute(issue)
+          end
+        end
+
+        it_behaves_like 'custom Value Stream Analytics Stage'
+      end
+
       context 'between issue label added time and label removed time' do
         let(:start_event_identifier) { :issue_label_added }
         let(:end_event_identifier) { :issue_label_removed }
