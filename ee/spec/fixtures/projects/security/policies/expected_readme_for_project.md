@@ -36,6 +36,6 @@ You can read more about the format and policies schema in the [documentation](ht
 ## Default branch protection settings
 
 This project is preconfigured with the default branch set as a protected branch, and only maintainers/owners of
-[Target Project](http://localhost/target-namespace/target-project) have permission to merge into that branch. This overrides any default branch protection both at the
+[Target Project](http://localhost/target-group/target-project) have permission to merge into that branch. This overrides any default branch protection both at the
 [group level](http://localhost/help/user/group/manage#change-the-default-branch-protection-of-a-group) and at the
 [instance level](http://localhost/help/user/project/repository/branches/default#instance-level-default-branch-protection).
