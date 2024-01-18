@@ -1551,6 +1551,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: merge_requests_create_approvals_reset_note
+  :worker_name: MergeRequests::CreateApprovalsResetNoteWorker
+  :feature_category: :code_review_workflow
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: merge_requests_fetch_suggested_reviewers
   :worker_name: MergeRequests::FetchSuggestedReviewersWorker
   :feature_category: :code_review_workflow

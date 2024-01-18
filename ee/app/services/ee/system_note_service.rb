@@ -171,6 +171,10 @@ module EE
       issuables_service(noteable, noteable.project, user).change_checkin_reminder_note
     end
 
+    def approvals_reset(noteable, user, cause, approvers)
+      merge_requests_service(noteable, noteable.project, user).approvals_reset(cause, approvers)
+    end
+
     private
 
     def issuables_service(noteable, project, author)

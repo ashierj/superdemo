@@ -28,4 +28,40 @@ RSpec.describe SystemNotes::MergeRequestsService, feature_category: :code_review
       )
     end
   end
+
+  describe '#approvals_reset' do
+    let(:cause) { :new_push }
+    let_it_be(:approvers) { create_list(:user, 3) }
+
+    subject(:approvals_reset_note) do
+      described_class
+        .new(noteable: noteable, project: project, author: author)
+        .approvals_reset(cause, approvers)
+    end
+
+    it_behaves_like 'a system note' do
+      let(:action) { 'approvals_reset' }
+    end
+
+    it 'sets the note text' do
+      expect(approvals_reset_note.note)
+        .to eq("revoked approvals from #{approvers.map(&:to_reference).to_sentence} by pushing to the branch")
+    end
+
+    context 'when cause is not new_push' do
+      let(:cause) { :something_else }
+
+      it 'returns nil' do
+        expect(approvals_reset_note).to be_nil
+      end
+    end
+
+    context 'when there are no approvers' do
+      let_it_be(:approvers) { [] }
+
+      it 'returns nil' do
+        expect(approvals_reset_note).to be_nil
+      end
+    end
+  end
 end
