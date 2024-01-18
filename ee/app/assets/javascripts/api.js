@@ -20,6 +20,7 @@ export default {
   paymentFormPath: '/-/subscriptions/payment_form',
   paymentMethodPath: '/-/subscriptions/payment_method',
   confirmOrderPath: '/-/subscriptions',
+  filePath: '/api/:version/projects/:id/repository/files/:file_path',
   validatePaymentMethodPath: '/-/subscriptions/validate_payment_method',
   vulnerabilityPath: '/api/:version/vulnerabilities/:id',
   vulnerabilityActionPath: '/api/:version/vulnerabilities/:id/:action',
@@ -122,6 +123,14 @@ export default {
   fetchPaymentMethodDetails(id) {
     const url = Api.buildUrl(this.paymentMethodPath);
     return axios.get(url, { params: { id } });
+  },
+
+  getFile(id, filePath, params = {}) {
+    const url = Api.buildUrl(this.filePath)
+      .replace(':id', encodeURIComponent(id))
+      .replace(':file_path', encodeURIComponent(filePath));
+
+    return axios.get(url, { params });
   },
 
   validatePaymentMethod(id, gitlabUserId) {

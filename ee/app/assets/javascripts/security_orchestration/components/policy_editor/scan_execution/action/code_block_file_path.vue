@@ -23,7 +23,10 @@ export default {
     filePathPrependLabel: __('Select project'),
     fileRefLabel: s__('ScanExecutionPolicy|Select ref'),
     filePathInputPlaceholder: s__('ScanExecutionPolicy|Link existing CI file'),
-    filePathInputValidationMessage: s__("ScanExecutionPolicy|The file path can't be empty"),
+    filePathInputEmptyMessage: s__("ScanExecutionPolicy|The file path can't be empty"),
+    filePathInputDoesNotExistMessage: s__(
+      "ScanExecutionPolicy|The file at that project, ref, and path doesn't exist",
+    ),
     formGroupLabel: s__('ScanExecutionPolicy|file path group'),
   },
   name: 'CodeBlockFilePath',
@@ -50,6 +53,11 @@ export default {
       required: false,
       default: null,
     },
+    doesFileExist: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
     selectedRef: {
       type: String,
       required: false,
@@ -68,6 +76,23 @@ export default {
       }
 
       return Boolean(this.filePath);
+    },
+    projectAndRefState() {
+      return !this.isValidFilePath || this.doesFileExist;
+    },
+    filePathState() {
+      return this.isValidFilePath && this.doesFileExist;
+    },
+    filePathValidationError() {
+      if (!this.isValidFilePath) {
+        return this.$options.i18n.filePathInputEmptyMessage;
+      }
+
+      if (!this.doesFileExist) {
+        return this.$options.i18n.filePathInputDoesNotExistMessage;
+      }
+
+      return '';
     },
     selectedProjectId() {
       return this.selectedProject?.id;
@@ -120,6 +145,7 @@ export default {
             :group-full-path="groupProjectsPath"
             :selected="selectedProjectId"
             :multiple="false"
+            :state="projectAndRefState"
             @select="setSelectedProject"
           />
         </template>
@@ -130,6 +156,7 @@ export default {
             class="gl-max-w-20"
             :disabled="!selectedProjectId"
             :project-id="selectedProjectIdShortFormat"
+            :state="projectAndRefState"
             :value="selectedRef"
             @input="setSelectedRef"
           />
@@ -138,6 +165,7 @@ export default {
             v-else
             class="gl-w-auto"
             :placeholder="$options.i18n.fileRefLabel"
+            :state="projectAndRefState"
             :value="selectedRef"
             @input="setSelectedRef"
           />
@@ -157,19 +185,19 @@ export default {
             label-sr-only
             :label="$options.i18n.formGroupLabel"
             :optional="false"
-            :invalid-feedback="$options.i18n.filePathInputValidationMessage"
-            :state="isValidFilePath"
+            :invalid-feedback="filePathValidationError"
+            :state="filePathState"
           >
             <gl-form-input-group
               id="file-path"
               :placeholder="$options.i18n.filePathInputPlaceholder"
-              :state="isValidFilePath"
+              :state="filePathState"
               :value="filePath"
               @input="updatedFilePath"
             >
               <template #prepend>
-                <gl-input-group-text class="gl-max-w-15 gl-max-h-full!">
-                  <gl-truncate :text="selectedProjectFullPath" with-tooltip />
+                <gl-input-group-text class="gl-max-w-26 gl-max-h-full!">
+                  <gl-truncate :text="selectedProjectFullPath" position="start" with-tooltip />
                 </gl-input-group-text>
               </template>
             </gl-form-input-group>

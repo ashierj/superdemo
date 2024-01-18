@@ -1,8 +1,11 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
+import { debounce } from 'lodash';
+import Api from 'ee/api';
 import { s__, __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { THOUSAND } from '~/lib/utils/constants';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import { parseCustomFileConfiguration } from 'ee/security_orchestration/components/policy_editor/utils';
@@ -69,6 +72,7 @@ export default {
     const yamlEditorValue = (this.initAction?.ci_configuration || '').trim();
 
     return {
+      doesFileExist: true,
       selectedProject,
       selectedType: showLinkedFile ? LINKED_EXISTING_FILE : INSERTED_CODE_BLOCK,
       yamlEditorValue,
@@ -96,17 +100,35 @@ export default {
     toggleText() {
       return CUSTOM_ACTION_OPTIONS[this.selectedType] || this.$options.i18n.customSectionTypeLabel;
     },
-    isValidFilePath() {
-      if (this.filePath === undefined) {
-        return undefined;
-      }
-
-      return Boolean(this.filePath);
+  },
+  watch: {
+    filePath() {
+      this.resetValidation();
+      this.handleFileValidation();
     },
+    selectedProject() {
+      this.resetValidation();
+      this.handleFileValidation();
+    },
+    selectedRef() {
+      this.resetValidation();
+      this.handleFileValidation();
+    },
+  },
+  created() {
+    this.handleFileValidation = debounce(this.validateFilePath, THOUSAND);
+  },
+  mounted() {
+    this.validateFilePath();
   },
   methods: {
     resetActionToDefault() {
       this.$emit('changed', { scan: CUSTOM_ACTION_KEY });
+    },
+    resetValidation() {
+      if (!this.doesFileExist) {
+        this.doesFileExist = true;
+      }
     },
     setSelectedType(type) {
       this.selectedType = type;
@@ -157,6 +179,25 @@ export default {
           file: path,
         },
       });
+    },
+    async validateFilePath() {
+      const selectedProjectId = getIdFromGraphQLId(this.selectedProject?.id);
+      if (!selectedProjectId) {
+        this.doesFileExist = false;
+        return;
+      }
+
+      if (!this.selectedRef) {
+        this.doesFileExist = true;
+        return;
+      }
+
+      try {
+        await Api.getFile(selectedProjectId, this.filePath, { ref: this.selectedRef });
+        this.doesFileExist = true;
+      } catch {
+        this.doesFileExist = false;
+      }
     },
     triggerChanged(value) {
       this.$emit('changed', { ...this.initAction, ...value });
@@ -209,6 +250,7 @@ export default {
                   :selected-type="selectedType"
                   :selected-ref="selectedRef"
                   :selected-project="selectedProject"
+                  :does-file-exist="doesFileExist"
                   @select-ref="setSelectedRef"
                   @select-type="setSelectedType"
                   @select-project="setSelectedProject"
