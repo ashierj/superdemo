@@ -365,6 +365,17 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         expect(record.sms_sent_at).to eq(Time.current)
       end
 
+      context 'when last SMS was sent before the current day' do
+        before do
+          create(:phone_number_validation, user: user, sms_sent_at: 1.day.ago, sms_send_count: 2)
+        end
+
+        it 'sets sms_send_count to 1' do
+          record = user.phone_number_validation
+          expect { service.execute }.to change { record.reload.sms_send_count }.from(2).to(1)
+        end
+      end
+
       context 'when sms_send_wait_time feature flag is disabled' do
         before do
           stub_feature_flags(sms_send_wait_time: false)

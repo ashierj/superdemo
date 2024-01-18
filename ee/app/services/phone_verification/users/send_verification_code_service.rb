@@ -174,9 +174,12 @@ module PhoneVerification
         attrs = { telesign_reference_xid: send_code_result[:telesign_reference_xid] }
 
         if Feature.enabled?(:sms_send_wait_time, user)
+          last_sms_sent_today = record.sms_sent_at&.today?
+          sms_send_count = last_sms_sent_today ? record.sms_send_count + 1 : 1
+
           attrs.merge!({
             sms_sent_at: Time.current,
-            sms_send_count: record.sms_send_count + 1
+            sms_send_count: sms_send_count
           })
         end
 
