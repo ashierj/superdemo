@@ -34,7 +34,7 @@ describe('PanelsBase', () => {
         namespaceId: '1',
         namespaceName: 'Namespace name',
         namespaceFullPath: 'namespace/full/path',
-        rootNamespaceName: 'Root namespace name',
+        rootNamespaceName: 'MEOW',
         rootNamespaceFullPath: 'namespace',
         isProject: true,
       },
@@ -311,6 +311,36 @@ describe('PanelsBase', () => {
       await nextTick();
 
       expect(wrapper.emitted('delete')).toHaveLength(1);
+    });
+  });
+
+  describe('usage overview visualization type', () => {
+    beforeEach(() => {
+      createWrapper({
+        visualization: {
+          ...panelConfig.visualization,
+          type: 'usage_overview',
+        },
+      });
+    });
+
+    it('should render title with the root namespace name', () => {
+      expect(findPanelTitle().text()).toBe('Usage overview for MEOW group');
+    });
+  });
+
+  describe('dora performers score visualization type', () => {
+    beforeEach(() => {
+      createWrapper({
+        visualization: {
+          ...panelConfig.visualization,
+          type: 'dora_performers_score',
+        },
+      });
+    });
+
+    it('should render title with the root namespace name', () => {
+      expect(findPanelTitle().text()).toBe('DORA performers score for MEOW group');
     });
   });
 });
