@@ -56,9 +56,6 @@ export const VULNERABILITY_STATE_OBJECTS = {
     dropdownDescription: falsePositiveMessage,
     mutation: vulnerabilityStateMutations.dismiss,
     findingMutation: dismissFindingMutation,
-    payload: {
-      comment: falsePositiveMessage,
-    },
   },
   resolved: {
     action: 'resolve',
