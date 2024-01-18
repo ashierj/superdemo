@@ -5,7 +5,6 @@ require "spec_helper"
 RSpec.describe ComplianceManagement::StandardsAdherenceChecksTracker, :freeze_time, :clean_gitlab_redis_shared_state,
   feature_category: :compliance_management do
   let_it_be(:group_id) { 1 }
-  let_it_be(:current_time_string) { Time.current.utc.to_s }
   let_it_be(:tracker) { described_class.new(group_id) }
 
   describe '#redis_key' do
@@ -21,7 +20,7 @@ RSpec.describe ComplianceManagement::StandardsAdherenceChecksTracker, :freeze_ti
       tracker.track_progress(3)
 
       expect(tracker.progress)
-        .to eq({ "checks_completed" => "0", "started_at" => current_time_string, "total_checks" => "3" })
+        .to eq({ "checks_completed" => "0", "started_at" => Time.current.utc.to_s, "total_checks" => "3" })
 
       Gitlab::Redis::SharedState.with do |redis|
         expect(redis.ttl(tracker.redis_key)).to eq(86400)
@@ -57,12 +56,12 @@ RSpec.describe ComplianceManagement::StandardsAdherenceChecksTracker, :freeze_ti
 
       it 'updates the progress', :aggregate_failures do
         expect(tracker.progress)
-          .to eq({ "checks_completed" => "0", "started_at" => current_time_string, "total_checks" => "3" })
+          .to eq({ "checks_completed" => "0", "started_at" => Time.current.utc.to_s, "total_checks" => "3" })
 
         tracker.update_progress
 
         expect(tracker.progress)
-          .to eq({ "checks_completed" => "1", "started_at" => current_time_string, "total_checks" => "3" })
+          .to eq({ "checks_completed" => "1", "started_at" => Time.current.utc.to_s, "total_checks" => "3" })
       end
     end
   end
@@ -81,7 +80,7 @@ RSpec.describe ComplianceManagement::StandardsAdherenceChecksTracker, :freeze_ti
 
       it 'returns the current progress of adherence checks for the group' do
         expect(tracker.progress)
-          .to eq({ "checks_completed" => "0", "started_at" => current_time_string, "total_checks" => "3" })
+          .to eq({ "checks_completed" => "0", "started_at" => Time.current.utc.to_s, "total_checks" => "3" })
       end
     end
   end
