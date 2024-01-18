@@ -261,6 +261,7 @@ export default {
       :x-axis-title="$options.xAxisTitle"
       :y-axis-title="$options.yAxisTitle"
       :format-tooltip-text="formatTooltipText"
+      height="380"
       responsive
       @created="onChartCreated"
     >

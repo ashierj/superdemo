@@ -20,4 +20,12 @@ panels:
       width: 12
       height: 1
     options: {}
-
+  - id: 3
+    visualization: dora_performers_score
+    title: DORA performers score
+    gridAttributes:
+      yPos: 8
+      xPos: 0
+      width: 12
+      height: 4
+    options: {}

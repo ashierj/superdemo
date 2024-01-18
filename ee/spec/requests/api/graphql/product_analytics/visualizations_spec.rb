@@ -98,7 +98,8 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
           graphql_data_at(:project, :customizable_dashboards, :nodes, 0,
             :panels, :nodes, 0, :visualization, :errors, 0))
           .to eq("property '/type' is not one of: " \
-                 "[\"LineChart\", \"ColumnChart\", \"DataTable\", \"SingleStat\", \"DORAChart\", \"UsageOverview\"]")
+                 "[\"LineChart\", \"ColumnChart\", \"DataTable\", \"SingleStat\", " \
+                 "\"DORAChart\", \"UsageOverview\", \"DoraPerformersScore\"]")
       end
     end
   end

@@ -26,7 +26,7 @@ module ProductAnalytics
     ].freeze
 
     VALUE_STREAM_DASHBOARD_PATH = 'ee/lib/gitlab/analytics/value_stream_dashboard/visualizations'
-    VALUE_STREAM_DASHBOARD_VISUALIZATIONS = %w[dora_chart usage_overview].freeze
+    VALUE_STREAM_DASHBOARD_VISUALIZATIONS = %w[dora_chart usage_overview dora_performers_score].freeze
 
     def self.for(container:, user:)
       config_project =
