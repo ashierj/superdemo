@@ -17,7 +17,7 @@ module ComplianceManagement
     end
 
     rule { can?(:owner_access) & custom_compliance_frameworks_enabled }.policy do
-      enable :manage_compliance_framework
+      enable :admin_compliance_framework
       enable :read_compliance_framework
     end
 
@@ -26,7 +26,7 @@ module ComplianceManagement
     end
 
     rule { can?(:owner_access) & group_level_compliance_pipeline_enabled }.policy do
-      enable :manage_group_level_compliance_pipeline_config
+      enable :admin_compliance_pipeline_configuration
     end
   end
 end
