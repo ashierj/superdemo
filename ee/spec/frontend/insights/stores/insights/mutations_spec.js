@@ -11,12 +11,15 @@ describe('Insights mutations', () => {
     title: 'Bugs Per Team',
     type: CHART_TYPES.STACKED_BAR,
     description: 'Chart Description',
+    data_source: 'issuables',
     query: {
-      name: 'filter_issues_by_label_category',
-      filter_label: 'bug',
-      category_labels: ['Plan', 'Create', 'Manage'],
-      group_by: 'month',
-      issuable_type: 'issue',
+      params: {
+        name: 'filter_issues_by_label_category',
+        filter_labels: ['bug'],
+        collection_labels: ['Plan', 'Create', 'Manage'],
+        group_by: 'month',
+        issuable_type: 'issue',
+      },
     },
   };
 
@@ -145,12 +148,55 @@ describe('Insights mutations', () => {
       expect(chartData[chart.title].type).toBe(chart.type);
     });
 
-    it('sets charts description to incoming type on success', () => {
+    it('sets charts description to incoming description on success', () => {
       mutations[types.RECEIVE_CHART_SUCCESS](state, { chart, data: incomingData });
 
       const { chartData } = state;
 
       expect(chartData[chart.title].description).toBe(chart.description);
+    });
+
+    it('sets charts filterLabels to incoming filter_labels on success', () => {
+      mutations[types.RECEIVE_CHART_SUCCESS](state, { chart, data: incomingData });
+
+      const { chartData } = state;
+
+      expect(chartData[chart.title].filterLabels).toBe(chart.query.params.filter_labels);
+    });
+
+    it('sets charts collectionLabels to incoming collection_labels on success', () => {
+      mutations[types.RECEIVE_CHART_SUCCESS](state, { chart, data: incomingData });
+
+      const { chartData } = state;
+
+      expect(chartData[chart.title].collectionLabels).toBe(chart.query.params.collection_labels);
+    });
+
+    it('sets charts groupBy to incoming group_by on success', () => {
+      mutations[types.RECEIVE_CHART_SUCCESS](state, { chart, data: incomingData });
+
+      const { chartData } = state;
+
+      expect(chartData[chart.title].groupBy).toBe(chart.query.params.group_by);
+    });
+
+    it('sets charts dataSourceType to incoming issuable_type on success', () => {
+      mutations[types.RECEIVE_CHART_SUCCESS](state, { chart, data: incomingData });
+
+      const { chartData } = state;
+
+      expect(chartData[chart.title].dataSourceType).toBe(chart.query.params.issuable_type);
+    });
+
+    it('sets charts dataSourceType to incoming DORA metric on success when data_source=dora', () => {
+      chart.query.data_source = 'dora';
+      chart.query.params.metric = 'deployment_frequency';
+
+      mutations[types.RECEIVE_CHART_SUCCESS](state, { chart, data: incomingData });
+
+      const { chartData } = state;
+
+      expect(chartData[chart.title].dataSourceType).toBe(chart.query.params.metric);
     });
   });
 

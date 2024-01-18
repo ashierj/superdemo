@@ -8,8 +8,17 @@ import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import InsightsChart from 'ee/insights/components/insights_chart.vue';
 import InsightsPage from 'ee/insights/components/insights_page.vue';
 import { createStore } from 'ee/insights/stores';
-import { chartInfo, pageInfo, pageInfoNoCharts, barChartData } from 'ee_jest/insights/mock_data';
+import {
+  chartInfo,
+  pageInfo,
+  pageInfoNoCharts,
+  barChartData,
+  mockFilterLabels,
+  mockCollectionLabels,
+  mockGroupBy,
+} from 'ee_jest/insights/mock_data';
 import { TEST_HOST } from 'helpers/test_constants';
+import { CHART_TYPES } from 'ee/insights/constants';
 
 Vue.use(Vuex);
 
@@ -45,6 +54,9 @@ describe('Insights page component', () => {
           description: '',
           data: barChartData,
           dataSourceType: 'issue',
+          filterLabels: mockFilterLabels,
+          collectionLabels: mockCollectionLabels,
+          groupBy: mockGroupBy,
           error: null,
         },
       };
@@ -127,9 +139,17 @@ describe('Insights page component', () => {
         store.state.insights.chartData = createLoadedChartData();
       });
 
-      it('does not render loading state', () => {
+      it('passes correct props to chart component', () => {
         expect(findInsightsChartData().props()).toMatchObject({
           loaded: true,
+          type: CHART_TYPES.BAR,
+          description: '',
+          data: barChartData,
+          dataSourceType: 'issue',
+          filterLabels: mockFilterLabels,
+          collectionLabels: mockCollectionLabels,
+          groupBy: mockGroupBy,
+          error: null,
         });
       });
 

@@ -115,14 +115,29 @@ export const doraSeries = [
   },
 ];
 
-export const chartDataSeriesParams = {
+export const groupedChartItem = {
   params: {
-    seriesName: 'bug',
+    name: 'January 2024',
+    seriesName: 'S::1',
   },
 };
 
-export const chartUndefinedDataSeriesParams = {
+export const undefinedChartItem = {
   params: {
+    name: 'January 2024',
     seriesName: 'undefined',
   },
 };
+
+export const ungroupedChartItem = {
+  params: {
+    name: 'S::1',
+    seriesName: 'all',
+  },
+};
+
+export const mockFilterLabels = ['bug', 'regression'];
+
+export const mockCollectionLabels = ['S::1', 'S::2', 'S::3', 'S::4'];
+
+export const mockGroupBy = 'month';

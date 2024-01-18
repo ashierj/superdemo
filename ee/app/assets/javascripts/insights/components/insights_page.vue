@@ -77,7 +77,19 @@ export default {
       <div class="insights-charts" data-testid="insights-charts">
         <insights-chart
           v-for="(
-            { loaded, type, description, data, dataSourceType, error }, key, index
+            {
+              loaded,
+              type,
+              description,
+              data,
+              dataSourceType,
+              error,
+              filterLabels,
+              collectionLabels,
+              groupBy,
+            },
+            key,
+            index
           ) in chartData"
           :key="index"
           :loaded="loaded"
@@ -87,6 +99,9 @@ export default {
           :data="data"
           :data-source-type="dataSourceType"
           :error="error"
+          :filter-labels="filterLabels"
+          :collection-labels="collectionLabels"
+          :group-by="groupBy"
           @chart-item-clicked="onChartItemClicked"
         />
       </div>

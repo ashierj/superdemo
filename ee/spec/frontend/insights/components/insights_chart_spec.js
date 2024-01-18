@@ -7,7 +7,6 @@ import InsightsChart from 'ee/insights/components/insights_chart.vue';
 import InsightsChartError from 'ee/insights/components/insights_chart_error.vue';
 import {
   CHART_TYPES,
-  INSIGHTS_CHARTS_SUPPORT_DRILLDOWN,
   INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES,
   ISSUABLE_TYPES,
 } from 'ee/insights/constants';
@@ -16,8 +15,12 @@ import {
   barChartData,
   lineChartData,
   stackedBarChartData,
-  chartDataSeriesParams,
-  chartUndefinedDataSeriesParams,
+  groupedChartItem,
+  undefinedChartItem,
+  mockFilterLabels,
+  mockCollectionLabels,
+  mockGroupBy,
+  ungroupedChartItem,
 } from 'ee_jest/insights/mock_data';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 
@@ -37,6 +40,14 @@ describe('Insights chart component', () => {
     isProject: false,
   };
 
+  const generateExpectedDrillDownUrl = ({ rootPath, namespacePath, pathSuffix, params } = {}) => {
+    const drillDownUrl = `${rootPath === '/' ? '' : rootPath}/${namespacePath}/${pathSuffix}`;
+
+    if (!params) return drillDownUrl;
+
+    return `${drillDownUrl}?${params}`;
+  };
+
   const createWrapper = ({ props = {}, provide = DEFAULT_PROVIDE } = {}) => {
     wrapper = shallowMount(InsightsChart, {
       propsData: {
@@ -44,6 +55,7 @@ describe('Insights chart component', () => {
         type: chartInfo.type,
         title: chartInfo.title,
         data: null,
+        groupBy: mockGroupBy,
         error: '',
         ...props,
       },
@@ -68,10 +80,8 @@ describe('Insights chart component', () => {
     ${CHART_TYPES.LINE}        | ${GlLineChart}          | ${'GlLineChart'}          | ${lineChartData}
     ${CHART_TYPES.STACKED_BAR} | ${GlStackedColumnChart} | ${'GlStackedColumnChart'} | ${stackedBarChartData}
     ${CHART_TYPES.PIE}         | ${GlColumnChart}        | ${'GlColumnChart'}        | ${barChartData}
-  `('when chart is loaded', ({ type, component, name, data }) => {
-    let chartComponent;
-
-    beforeEach(() => {
+  `('when $type chart is loaded', ({ type, component, name, data }) => {
+    it(`displays the ${name} chart in container and not the loader`, () => {
       createWrapper({
         props: {
           type,
@@ -79,28 +89,347 @@ describe('Insights chart component', () => {
         },
       });
 
-      chartComponent = findChart(component);
-    });
-
-    it(`when ${type} is passed: displays the ${name} chart in container and not the loader`, () => {
       expect(wrapper.findComponent(ChartSkeletonLoader).exists()).toBe(false);
-      expect(chartComponent.exists()).toBe(true);
+      expect(findChart(component).exists()).toBe(true);
     });
+  });
 
-    it('should have cursor property set to `auto`', () => {
-      expect(chartComponent.props('option')).toEqual(
-        expect.objectContaining({
-          cursor: 'auto',
-        }),
-      );
+  describe('when chart supports drilling down', () => {
+    describe.each`
+      type                       | component               | data
+      ${CHART_TYPES.BAR}         | ${GlColumnChart}        | ${barChartData}
+      ${CHART_TYPES.LINE}        | ${GlLineChart}          | ${lineChartData}
+      ${CHART_TYPES.STACKED_BAR} | ${GlStackedColumnChart} | ${stackedBarChartData}
+      ${CHART_TYPES.PIE}         | ${GlColumnChart}        | ${barChartData}
+    `('$type chart', ({ type, component, data }) => {
+      describe('`issue` data source type', () => {
+        const dataSourceType = ISSUABLE_TYPES.ISSUE;
+
+        it('should set correct hover interaction properties', () => {
+          createWrapper({
+            props: { type, data, dataSourceType },
+          });
+
+          expect(findChart(component).props('option')).toEqual(
+            expect.objectContaining({
+              cursor: 'pointer',
+              emphasis: {
+                focus: 'series',
+              },
+            }),
+          );
+        });
+
+        describe('chart item clicked', () => {
+          describe("chart item's collection label is defined", () => {
+            const filterLabelParams = 'label_name[]=bug&label_name[]=regression';
+            const collectionLabelParam = 'label_name[]=S%3A%3A1';
+
+            describe.each`
+              filterLabels        | collectionLabels        | groupBy        | chartItemData         | expectedParams
+              ${mockFilterLabels} | ${mockCollectionLabels} | ${mockGroupBy} | ${groupedChartItem}   | ${`${filterLabelParams}&${collectionLabelParam}`}
+              ${mockFilterLabels} | ${mockCollectionLabels} | ${undefined}   | ${ungroupedChartItem} | ${`${filterLabelParams}&${collectionLabelParam}`}
+              ${mockFilterLabels} | ${[]}                   | ${mockGroupBy} | ${groupedChartItem}   | ${filterLabelParams}
+              ${mockFilterLabels} | ${[]}                   | ${undefined}   | ${ungroupedChartItem} | ${filterLabelParams}
+              ${[]}               | ${mockCollectionLabels} | ${mockGroupBy} | ${groupedChartItem}   | ${collectionLabelParam}
+              ${[]}               | ${mockCollectionLabels} | ${undefined}   | ${ungroupedChartItem} | ${collectionLabelParam}
+              ${[]}               | ${[]}                   | ${mockGroupBy} | ${groupedChartItem}   | ${''}
+              ${[]}               | ${[]}                   | ${undefined}   | ${ungroupedChartItem} | ${''}
+            `(
+              'filterLabels=$filterLabels, groupBy=$groupBy and collectionLabels=$collectionLabels',
+              ({ filterLabels, collectionLabels, groupBy, chartItemData, expectedParams }) => {
+                const { groupPathSuffix, projectPathSuffix } = INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES[
+                  dataSourceType
+                ];
+                const mockRelativeUrl = '/gitlab';
+
+                it('should emit `chart-item-clicked` event', () => {
+                  createWrapper({
+                    props: {
+                      type,
+                      data,
+                      dataSourceType,
+                      filterLabels,
+                      collectionLabels,
+                      groupBy,
+                    },
+                  });
+
+                  findChart(component).vm.$emit('chartItemClicked', chartItemData);
+
+                  expect(wrapper.emitted('chart-item-clicked')).toHaveLength(1);
+                });
+
+                describe('at project level', () => {
+                  it.each(['', '/', mockRelativeUrl])(
+                    'should drill down to the correct URL when relative_url_root=%s',
+                    (relativeUrlRoot) => {
+                      gon.relative_url_root = relativeUrlRoot;
+
+                      createWrapper({
+                        props: {
+                          type,
+                          data,
+                          dataSourceType,
+                          filterLabels,
+                          collectionLabels,
+                          groupBy,
+                        },
+                        provide: { isProject: true, fullPath: projectPath },
+                      });
+
+                      findChart(component).vm.$emit('chartItemClicked', chartItemData);
+
+                      expect(visitUrl).toHaveBeenCalledTimes(1);
+                      expect(visitUrl).toHaveBeenCalledWith(
+                        generateExpectedDrillDownUrl({
+                          rootPath: relativeUrlRoot,
+                          namespacePath: projectPath,
+                          pathSuffix: projectPathSuffix,
+                          params: expectedParams,
+                        }),
+                      );
+                    },
+                  );
+                });
+
+                describe('at group level', () => {
+                  it.each(['', '/', mockRelativeUrl])(
+                    'should drill down to the correct URL when relative_url_root=%s',
+                    (relativeUrlRoot) => {
+                      gon.relative_url_root = relativeUrlRoot;
+
+                      createWrapper({
+                        props: {
+                          type,
+                          data,
+                          dataSourceType,
+                          filterLabels,
+                          collectionLabels,
+                          groupBy,
+                        },
+                        provide: { fullPath: groupPath },
+                      });
+
+                      findChart(component).vm.$emit('chartItemClicked', chartItemData);
+
+                      expect(visitUrl).toHaveBeenCalledTimes(1);
+                      expect(visitUrl).toHaveBeenCalledWith(
+                        generateExpectedDrillDownUrl({
+                          rootPath: relativeUrlRoot,
+                          namespacePath: `groups/${groupPath}`,
+                          pathSuffix: groupPathSuffix,
+                          params: expectedParams,
+                        }),
+                      );
+                    },
+                  );
+                });
+              },
+            );
+          });
+
+          describe("chart item's collection label is `undefined`", () => {
+            it('should not drill down on chart item', async () => {
+              createWrapper({
+                props: { type, data, dataSourceType },
+              });
+
+              findChart(component).vm.$emit('chartItemClicked', undefinedChartItem);
+
+              await nextTick();
+
+              expect(wrapper.emitted('chart-item-clicked')).toBeUndefined();
+              expect(visitUrl).not.toHaveBeenCalled();
+            });
+          });
+        });
+      });
+
+      describe('`merge_request` data source type', () => {
+        const dataSourceType = ISSUABLE_TYPES.MERGE_REQUEST;
+
+        it('should set correct hover interaction properties', () => {
+          createWrapper({
+            props: { type, data, dataSourceType },
+          });
+
+          expect(findChart(component).props('option')).toEqual(
+            expect.objectContaining({
+              cursor: 'pointer',
+              emphasis: {
+                focus: 'series',
+              },
+            }),
+          );
+        });
+
+        describe('chart item clicked', () => {
+          describe("chart item's collection label is defined", () => {
+            const filterLabelParams = 'label_name[]=bug&label_name[]=regression';
+            const collectionLabelParam = 'label_name[]=S%3A%3A1';
+
+            describe.each`
+              filterLabels        | collectionLabels        | groupBy        | chartItemData         | expectedParams
+              ${mockFilterLabels} | ${mockCollectionLabels} | ${mockGroupBy} | ${groupedChartItem}   | ${`${filterLabelParams}&${collectionLabelParam}`}
+              ${mockFilterLabels} | ${mockCollectionLabels} | ${undefined}   | ${ungroupedChartItem} | ${`${filterLabelParams}&${collectionLabelParam}`}
+              ${mockFilterLabels} | ${[]}                   | ${mockGroupBy} | ${groupedChartItem}   | ${filterLabelParams}
+              ${mockFilterLabels} | ${[]}                   | ${undefined}   | ${ungroupedChartItem} | ${filterLabelParams}
+              ${[]}               | ${mockCollectionLabels} | ${mockGroupBy} | ${groupedChartItem}   | ${collectionLabelParam}
+              ${[]}               | ${mockCollectionLabels} | ${undefined}   | ${ungroupedChartItem} | ${collectionLabelParam}
+              ${[]}               | ${[]}                   | ${mockGroupBy} | ${groupedChartItem}   | ${''}
+              ${[]}               | ${[]}                   | ${undefined}   | ${ungroupedChartItem} | ${''}
+            `(
+              'filterLabels=$filterLabels, groupBy=$groupBy and collectionLabels=$collectionLabels',
+              ({ filterLabels, collectionLabels, groupBy, chartItemData, expectedParams }) => {
+                const { groupPathSuffix, projectPathSuffix } = INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES[
+                  dataSourceType
+                ];
+                const mockRelativeUrl = '/gitlab';
+
+                it('should emit `chart-item-clicked` event', () => {
+                  createWrapper({
+                    props: {
+                      type,
+                      data,
+                      dataSourceType,
+                      filterLabels,
+                      collectionLabels,
+                      groupBy,
+                    },
+                  });
+
+                  findChart(component).vm.$emit('chartItemClicked', chartItemData);
+
+                  expect(wrapper.emitted('chart-item-clicked')).toHaveLength(1);
+                });
+
+                describe('at project level', () => {
+                  it.each(['', '/', mockRelativeUrl])(
+                    'should drill down to the correct URL when relative_url_root=%s',
+                    (relativeUrlRoot) => {
+                      gon.relative_url_root = relativeUrlRoot;
+
+                      createWrapper({
+                        props: {
+                          type,
+                          data,
+                          dataSourceType,
+                          filterLabels,
+                          collectionLabels,
+                          groupBy,
+                        },
+                        provide: { isProject: true, fullPath: projectPath },
+                      });
+
+                      findChart(component).vm.$emit('chartItemClicked', chartItemData);
+
+                      expect(visitUrl).toHaveBeenCalledTimes(1);
+                      expect(visitUrl).toHaveBeenCalledWith(
+                        generateExpectedDrillDownUrl({
+                          rootPath: relativeUrlRoot,
+                          namespacePath: projectPath,
+                          pathSuffix: projectPathSuffix,
+                          params: expectedParams,
+                        }),
+                      );
+                    },
+                  );
+                });
+
+                describe('at group level', () => {
+                  it.each(['', '/', mockRelativeUrl])(
+                    'should drill down to the correct URL when relative_url_root=%s',
+                    (relativeUrlRoot) => {
+                      gon.relative_url_root = relativeUrlRoot;
+
+                      createWrapper({
+                        props: {
+                          type,
+                          data,
+                          dataSourceType,
+                          filterLabels,
+                          collectionLabels,
+                          groupBy,
+                        },
+                        provide: { fullPath: groupPath },
+                      });
+
+                      findChart(component).vm.$emit('chartItemClicked', chartItemData);
+
+                      expect(visitUrl).toHaveBeenCalledTimes(1);
+                      expect(visitUrl).toHaveBeenCalledWith(
+                        generateExpectedDrillDownUrl({
+                          rootPath: relativeUrlRoot,
+                          namespacePath: `groups/${groupPath}`,
+                          pathSuffix: groupPathSuffix,
+                          params: expectedParams,
+                        }),
+                      );
+                    },
+                  );
+                });
+              },
+            );
+          });
+
+          describe("chart item's collection label is `undefined`", () => {
+            it('should not drill down on chart item', async () => {
+              createWrapper({
+                props: { type, data, dataSourceType },
+              });
+
+              findChart(component).vm.$emit('chartItemClicked', undefinedChartItem);
+
+              await nextTick();
+
+              expect(wrapper.emitted('chart-item-clicked')).toBeUndefined();
+              expect(visitUrl).not.toHaveBeenCalled();
+            });
+          });
+        });
+      });
     });
+  });
 
-    it('should not drill down when clicking on chart item', async () => {
-      chartComponent.vm.$emit('chartItemClicked', chartDataSeriesParams);
+  describe('does not support drilling down', () => {
+    describe.each`
+      type                       | component               | data
+      ${CHART_TYPES.BAR}         | ${GlColumnChart}        | ${barChartData}
+      ${CHART_TYPES.LINE}        | ${GlLineChart}          | ${lineChartData}
+      ${CHART_TYPES.STACKED_BAR} | ${GlStackedColumnChart} | ${stackedBarChartData}
+      ${CHART_TYPES.PIE}         | ${GlColumnChart}        | ${barChartData}
+    `('$type chart', ({ type, component, data }) => {
+      let chartComponent;
 
-      await nextTick();
+      beforeEach(() => {
+        createWrapper({
+          props: {
+            type,
+            data,
+            dataSourceType: 'deployment_frequency',
+          },
+        });
 
-      expect(visitUrl).not.toHaveBeenCalled();
+        chartComponent = findChart(component);
+      });
+
+      it('should have cursor property set to `auto`', () => {
+        expect(chartComponent.props('option')).toEqual(
+          expect.objectContaining({
+            cursor: 'auto',
+          }),
+        );
+      });
+
+      it('should not drill down when clicking on chart item', async () => {
+        chartComponent.vm.$emit('chartItemClicked', groupedChartItem);
+
+        await nextTick();
+
+        expect(wrapper.emitted('chart-item-clicked')).toBeUndefined();
+        expect(visitUrl).not.toHaveBeenCalled();
+      });
     });
   });
 
@@ -119,94 +448,6 @@ describe('Insights chart component', () => {
     it('displays info about the error', () => {
       expect(wrapper.findComponent(ChartSkeletonLoader).exists()).toBe(false);
       expect(wrapper.findComponent(InsightsChartError).exists()).toBe(true);
-    });
-  });
-
-  describe('when chart supports drilling down', () => {
-    const dataSourceType = ISSUABLE_TYPES.ISSUE;
-
-    const supportedChartProps = {
-      type: CHART_TYPES.STACKED_BAR,
-      data: stackedBarChartData,
-      dataSourceType,
-    };
-
-    const { groupPathSuffix, projectPathSuffix } = INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES[
-      dataSourceType
-    ];
-
-    describe.each(INSIGHTS_CHARTS_SUPPORT_DRILLDOWN)('`%s` chart', (chartTitle) => {
-      beforeEach(() => {
-        createWrapper({
-          props: { title: chartTitle, ...supportedChartProps },
-        });
-      });
-
-      it('should set correct hover interaction properties', () => {
-        expect(findChart(GlStackedColumnChart).props('option')).toEqual(
-          expect.objectContaining({
-            cursor: 'pointer',
-            emphasis: {
-              focus: 'series',
-            },
-          }),
-        );
-      });
-
-      describe('chart item clicked', () => {
-        it('should not drill down on `undefined` chart item', async () => {
-          findChart(GlStackedColumnChart).vm.$emit(
-            'chartItemClicked',
-            chartUndefinedDataSeriesParams,
-          );
-
-          await nextTick();
-
-          expect(visitUrl).not.toHaveBeenCalled();
-        });
-
-        describe("chart item's series name is valid", () => {
-          it('should emit `chart-item-clicked` event', async () => {
-            findChart(GlStackedColumnChart).vm.$emit('chartItemClicked', chartDataSeriesParams);
-
-            await nextTick();
-
-            expect(wrapper.emitted('chart-item-clicked')).toHaveLength(1);
-          });
-
-          it.each`
-            isProject | relativeUrlRoot | fullPath       | pathSuffix
-            ${false}  | ${'/'}          | ${groupPath}   | ${groupPathSuffix}
-            ${true}   | ${'/'}          | ${projectPath} | ${projectPathSuffix}
-            ${false}  | ${'/path'}      | ${groupPath}   | ${groupPathSuffix}
-            ${true}   | ${'/path'}      | ${projectPath} | ${projectPathSuffix}
-          `(
-            'should drill down to the correct URL',
-            async ({ isProject, relativeUrlRoot, fullPath, pathSuffix }) => {
-              const {
-                params: { seriesName },
-              } = chartDataSeriesParams;
-              const rootPath = relativeUrlRoot === '/' ? '' : relativeUrlRoot;
-              const namespacePath = isProject ? fullPath : `groups/${fullPath}`;
-              const expectedDrillDownUrl = `${rootPath}/${namespacePath}/${pathSuffix}?label_name=${seriesName}`;
-
-              gon.relative_url_root = relativeUrlRoot;
-
-              createWrapper({
-                props: { title: chartTitle, ...supportedChartProps },
-                provide: { isProject, fullPath },
-              });
-
-              findChart(GlStackedColumnChart).vm.$emit('chartItemClicked', chartDataSeriesParams);
-
-              await nextTick();
-
-              expect(visitUrl).toHaveBeenCalledTimes(1);
-              expect(visitUrl).toHaveBeenCalledWith(expectedDrillDownUrl);
-            },
-          );
-        });
-      });
     });
   });
 });
