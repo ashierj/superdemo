@@ -1,4 +1,5 @@
 import { s__, sprintf } from '~/locale';
+import { periodToDate } from '~/observability/utils';
 
 // See https://design.gitlab.com/data-visualization/color/#categorical-data
 const SPAN_COLOR_WEIGHT = ['500', '600', '700', '800', '900', '950'];
@@ -118,24 +119,5 @@ export const periodFilterToDate = (filters) => {
   }
   if (!timePeriod) return {};
 
-  const maxMs = Date.now();
-  let minMs;
-  const periodValue = parseInt(timePeriod.slice(0, -1), 10);
-  if (Number.isNaN(periodValue) || periodValue <= 0) return {};
-
-  const unit = timePeriod[timePeriod.length - 1];
-  switch (unit) {
-    case 'm':
-      minMs = periodValue * 60 * 1000;
-      break;
-    case 'h':
-      minMs = periodValue * 60 * 1000 * 60;
-      break;
-    case 'd':
-      minMs = periodValue * 60 * 1000 * 60 * 24;
-      break;
-    default:
-      return {};
-  }
-  return { min: new Date(maxMs - minMs), max: new Date(maxMs) };
+  return periodToDate(timePeriod);
 };

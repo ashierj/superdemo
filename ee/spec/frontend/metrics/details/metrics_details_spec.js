@@ -6,6 +6,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
 import MetricsChart from 'ee/metrics/details/metrics_chart.vue';
+import FilteredSearch from 'ee/metrics/details/filter_bar/metrics_filtered_search.vue';
 
 jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
@@ -30,15 +31,16 @@ describe('MetricsDetails', () => {
   const findChart = () => findMetricDetails().findComponent(MetricsChart);
   const findEmptyState = () => findMetricDetails().findComponent(GlEmptyState);
 
-  const props = {
+  const defaultProps = {
     metricId: METRIC_ID,
     metricType: METRIC_TYPE,
     metricsIndexUrl: METRICS_INDEX_URL,
   };
 
-  const mountComponent = async () => {
+  const mountComponent = async (props = {}) => {
     wrapper = shallowMountExtended(MetricsDetails, {
       propsData: {
+        ...defaultProps,
         ...props,
         observabilityClient: observabilityClientMock,
       },
@@ -93,6 +95,11 @@ describe('MetricsDetails', () => {
       expect(findMetricDetails().exists()).toBe(true);
     });
 
+    it('renders the FilteredSearch component', () => {
+      const filteredSearch = findMetricDetails().findComponent(FilteredSearch);
+      expect(filteredSearch.exists()).toBe(true);
+    });
+
     it('renders the details chart', () => {
       const chart = findMetricDetails().findComponent(MetricsChart);
       expect(chart.exists()).toBe(true);
@@ -133,7 +140,7 @@ describe('MetricsDetails', () => {
     });
 
     it('redirects to metricsIndexUrl', () => {
-      expect(visitUrl).toHaveBeenCalledWith(props.metricsIndexUrl);
+      expect(visitUrl).toHaveBeenCalledWith(defaultProps.metricsIndexUrl);
     });
   });
 
@@ -164,6 +171,22 @@ describe('MetricsDetails', () => {
         expect(findLoadingIcon().exists()).toBe(false);
         expect(findHeader().exists()).toBe(true);
         expect(findChart().exists()).toBe(false);
+      });
+    });
+
+    it('renders an alert if metricId is missing', async () => {
+      await mountComponent({ metricId: undefined });
+
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'Error: Failed to load metrics details. Try reloading the page.',
+      });
+    });
+
+    it('renders an alert if metricType is missing', async () => {
+      await mountComponent({ metricType: undefined });
+
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'Error: Failed to load metrics details. Try reloading the page.',
       });
     });
   });

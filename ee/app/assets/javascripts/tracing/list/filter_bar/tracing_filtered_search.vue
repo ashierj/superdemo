@@ -7,7 +7,7 @@ import {
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import DateRangeToken from '~/vue_shared/components/filtered_search_bar/tokens/daterange_token.vue';
-import { SORTING_OPTIONS } from '~/observability/constants';
+import { SORTING_OPTIONS, TIME_RANGE_OPTIONS } from '~/observability/constants';
 import {
   PERIOD_FILTER_TOKEN_TYPE,
   SERVICE_NAME_FILTER_TOKEN_TYPE,
@@ -73,18 +73,7 @@ export default {
           token: DateRangeToken,
           operators: OPERATORS_IS,
           unique: true,
-          options: [
-            { value: '5m', title: s__('Tracing|Last 5 minutes') },
-            { value: '15m', title: s__('Tracing|Last 15 minutes') },
-            { value: '30m', title: s__('Tracing|Last 30 minutes') },
-            { value: '1h', title: s__('Tracing|Last 1 hour') },
-            { value: '4h', title: s__('Tracing|Last 4 hours') },
-            { value: '12h', title: s__('Tracing|Last 12 hours') },
-            { value: '24h', title: s__('Tracing|Last 24 hours') },
-            { value: '7d', title: s__('Tracing|Last 7 days') },
-            { value: '14d', title: s__('Tracing|Last 14 days') },
-            { value: '30d', title: s__('Tracing|Last 30 days') },
-          ],
+          options: TIME_RANGE_OPTIONS,
         },
         {
           title: s__('Tracing|Service'),
