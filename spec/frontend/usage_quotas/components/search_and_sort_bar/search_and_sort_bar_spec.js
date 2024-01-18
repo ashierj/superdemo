@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
+import SearchAndSortBar from '~/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import { FILTERED_SEARCH_TERM } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 

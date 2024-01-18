@@ -26,7 +26,7 @@ import {
   filterUsersPlaceholder,
 } from 'ee/usage_quotas/seats/constants';
 import { s__, __ } from '~/locale';
-import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
+import SearchAndSortBar from '~/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import RemoveBillableMemberModal from './remove_billable_member_modal.vue';
 import SubscriptionSeatDetails from './subscription_seat_details.vue';
 
