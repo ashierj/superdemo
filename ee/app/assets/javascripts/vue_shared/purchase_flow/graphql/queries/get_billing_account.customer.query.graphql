@@ -17,6 +17,7 @@ query getBillingAccount {
       id
       firstName
       lastName
+      fullName
       workEmail
       address1
       address2
@@ -29,6 +30,7 @@ query getBillingAccount {
       id
       firstName
       lastName
+      fullName
       workEmail
       address1
       address2
