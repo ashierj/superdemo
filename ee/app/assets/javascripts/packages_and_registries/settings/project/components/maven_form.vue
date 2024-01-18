@@ -33,7 +33,7 @@ export default {
         id="maven-url"
         :value="value.mavenExternalRegistryUrl"
         width="xl"
-        @input="onModelChange($event, 'mavenExternalRegistryUrl')"
+        @input="onModelChange($event.trim(), 'mavenExternalRegistryUrl')"
       />
     </gl-form-group>
     <gl-form-group
@@ -45,7 +45,7 @@ export default {
         id="maven-username"
         :value="value.mavenExternalRegistryUsername"
         width="xl"
-        @input="onModelChange($event, 'mavenExternalRegistryUsername')"
+        @input="onModelChange($event.trim(), 'mavenExternalRegistryUsername')"
       />
     </gl-form-group>
     <gl-form-group

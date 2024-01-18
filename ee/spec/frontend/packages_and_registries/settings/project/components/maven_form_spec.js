@@ -32,11 +32,11 @@ describe('maven form', () => {
   });
 
   describe.each`
-    index | field                              | label         | description                               | value
-    ${0}  | ${'mavenExternalRegistryUrl'}      | ${'URL'}      | ${'Base URL of the external registry.'}   | ${mavenExternalRegistryUrl}
-    ${1}  | ${'mavenExternalRegistryUsername'} | ${'Username'} | ${'Username of the external registry.'}   | ${mavenExternalRegistryUsername}
-    ${2}  | ${'mavenExternalRegistryPassword'} | ${'Password'} | ${'Password for your external registry.'} | ${''}
-  `('$label', ({ index, field, description, label, value }) => {
+    index | field                              | label         | description                               | value                            | trimmed
+    ${0}  | ${'mavenExternalRegistryUrl'}      | ${'URL'}      | ${'Base URL of the external registry.'}   | ${mavenExternalRegistryUrl}      | ${true}
+    ${1}  | ${'mavenExternalRegistryUsername'} | ${'Username'} | ${'Username of the external registry.'}   | ${mavenExternalRegistryUsername} | ${true}
+    ${2}  | ${'mavenExternalRegistryPassword'} | ${'Password'} | ${'Password for your external registry.'} | ${''}                            | ${false}
+  `('$label', ({ index, field, description, label, value, trimmed }) => {
     let formGroup;
     let formInput;
 
@@ -56,8 +56,8 @@ describe('maven form', () => {
       expect(formInput.attributes('value')).toBe(value);
     });
 
-    it('emits input event', () => {
-      formInput.vm.$emit('input', 'new value');
+    it('emits trimmed input event', () => {
+      formInput.vm.$emit('input', trimmed ? '  new value  ' : 'new value');
 
       expect(wrapper.emitted('input')).toEqual([[{ ...defaultProps.value, [field]: 'new value' }]]);
     });
