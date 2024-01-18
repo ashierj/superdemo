@@ -87,18 +87,21 @@ module QA
       context "for export file download", :skip_live_env,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347939' do
         before do
-          QA::Support::Retrier.retry_until do
-            create(:project, :with_readme, name: 'project_for_export').visit!
+          create(:project, :with_readme, name: 'project_for_export').visit!
 
-            Page::Project::Menu.perform(&:go_to_general_settings)
-            Page::Project::Settings::Main.perform do |settings|
-              settings.expand_advanced_settings(&:click_export_project_link)
-              expect(page).to have_text("Project export started") # rubocop:disable RSpec/ExpectInHook
+          Page::Project::Menu.perform(&:go_to_general_settings)
+          Page::Project::Settings::Main.perform do |settings|
+            settings.expand_advanced_settings(&:click_export_project_link)
+            QA::Support::Waiter.wait_until(message: 'Wait for download export to start') do
+              settings.download_export_started?
+            end
 
+            # The project download export link is only rendered after some async jobs are completed
+            QA::Support::Retrier.retry_until(max_duration: 60, message: 'Failed to verify download export link') do
               Page::Project::Menu.perform(&:go_to_general_settings)
               settings.expand_advanced_settings do |advanced_settings|
                 advanced_settings.scroll_to_element('export-project-content')
-                advanced_settings.has_download_export_link?
+                advanced_settings.has_download_export_link?(wait: 0)
               end
             end
           end
