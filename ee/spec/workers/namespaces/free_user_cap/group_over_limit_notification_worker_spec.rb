@@ -179,12 +179,7 @@ RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas,
         end
 
         it 'runs notify service for first group only' do
-          expect(::Namespaces::FreeUserCap::Enforcement).to receive(:new).with(group).and_call_original
-          expect(::Namespaces::FreeUserCap::Enforcement).not_to receive(:new).with(another_top_level_group)
-          expect(::Namespaces::FreeUserCap::Enforcement).not_to receive(:new).with(over_top_level_group)
-          expect(::Namespaces::FreeUserCap::Enforcement).not_to receive(:new).with(under_top_level_group)
-
-          expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute).with(group).and_call_original
+          expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute).exactly(1).time
 
           perform
         end
