@@ -32,14 +32,18 @@ export const ISSUABLE_TYPES = {
   MERGE_REQUEST: 'merge_request',
 };
 
-export const INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES = {
+export const INSIGHTS_CHART_ITEM_TRACKING_CLICK_ACTION = 'insights_chart_item_clicked';
+
+export const INSIGHTS_CHART_ITEM_SETTINGS = {
   [ISSUABLE_TYPES.ISSUE]: {
     groupPathSuffix: '-/issues_analytics',
     projectPathSuffix: '-/analytics/issues_analytics',
+    trackingClickAction: 'insights_issue_chart_item_clicked',
   },
   [ISSUABLE_TYPES.MERGE_REQUEST]: {
     groupPathSuffix: '-/analytics/productivity_analytics',
     projectPathSuffix: '-/analytics/merge_request_analytics',
+    trackingClickAction: 'insights_merge_request_chart_item_clicked',
   },
 };
 

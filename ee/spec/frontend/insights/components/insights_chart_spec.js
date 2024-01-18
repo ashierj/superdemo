@@ -5,11 +5,7 @@ import { visitUrl } from '~/lib/utils/url_utility';
 
 import InsightsChart from 'ee/insights/components/insights_chart.vue';
 import InsightsChartError from 'ee/insights/components/insights_chart_error.vue';
-import {
-  CHART_TYPES,
-  INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES,
-  ISSUABLE_TYPES,
-} from 'ee/insights/constants';
+import { CHART_TYPES, INSIGHTS_CHART_ITEM_SETTINGS, ISSUABLE_TYPES } from 'ee/insights/constants';
 import {
   chartInfo,
   barChartData,
@@ -138,7 +134,7 @@ describe('Insights chart component', () => {
             `(
               'filterLabels=$filterLabels, groupBy=$groupBy and collectionLabels=$collectionLabels',
               ({ filterLabels, collectionLabels, groupBy, chartItemData, expectedParams }) => {
-                const { groupPathSuffix, projectPathSuffix } = INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES[
+                const { groupPathSuffix, projectPathSuffix } = INSIGHTS_CHART_ITEM_SETTINGS[
                   dataSourceType
                 ];
                 const mockRelativeUrl = '/gitlab';
@@ -282,7 +278,7 @@ describe('Insights chart component', () => {
             `(
               'filterLabels=$filterLabels, groupBy=$groupBy and collectionLabels=$collectionLabels',
               ({ filterLabels, collectionLabels, groupBy, chartItemData, expectedParams }) => {
-                const { groupPathSuffix, projectPathSuffix } = INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES[
+                const { groupPathSuffix, projectPathSuffix } = INSIGHTS_CHART_ITEM_SETTINGS[
                   dataSourceType
                 ];
                 const mockRelativeUrl = '/gitlab';
