@@ -96,5 +96,17 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::DevfileFetcher, feature_
         end
       end
     end
+
+    context 'when devfile YAML is valid but is invalid JSON' do
+      let(:devfile_yaml) { "!binary key: value" }
+
+      it 'returns an err Result containing error details' do
+        expect(result).to be_err_result do |message|
+          expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateDevfileYamlParseFailed)
+          message.context => { details: String => error_details }
+          expect(error_details).to match(/Devfile YAML could not be parsed: Invalid Unicode \[91 ec\] at 0/i)
+        end
+      end
+    end
   end
 end

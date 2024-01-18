@@ -6,8 +6,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, feature_
   include_context 'with remote development shared fixtures'
 
   let(:devfile_yaml) { example_devfile }
+  let(:devfile) { YAML.safe_load(devfile_yaml) }
   let(:expected_processed_devfile) { YAML.safe_load(example_flattened_devfile) }
-  let(:value) { { devfile_yaml: devfile_yaml } }
+  let(:value) { { devfile: devfile } }
 
   subject(:result) do
     described_class.flatten(value)
@@ -17,7 +18,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, feature_
     expect(result).to eq(
       Result.ok(
         {
-          devfile_yaml: devfile_yaml,
+          devfile: devfile,
           processed_devfile: expected_processed_devfile
         }
       )
@@ -34,7 +35,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, feature_
       expect(result).to eq(
         Result.ok(
           {
-            devfile_yaml: devfile_yaml,
+            devfile: devfile,
             processed_devfile: expected_processed_devfile
           }
         )
