@@ -1102,10 +1102,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 Find a workspace.
 
-WARNING:
-**Introduced** in 16.0.
-This feature is an Experiment. It can be changed or removed at any time.
-
 Returns [`Workspace`](#workspace).
 
 #### Arguments
@@ -1117,10 +1113,6 @@ Returns [`Workspace`](#workspace).
 ### `Query.workspaces`
 
 Find workspaces across the entire instance. This field is only available to instance admins, it will return an empty result for all non-admins.
-
-WARNING:
-**Introduced** in 16.0.
-This feature is an Experiment. It can be changed or removed at any time.
 
 Returns [`WorkspaceConnection`](#workspaceconnection).
 
@@ -8746,10 +8738,6 @@ Input type: `WorkItemUpdateTaskInput`
 
 ### `Mutation.workspaceCreate`
 
-WARNING:
-**Introduced** in 16.0.
-This feature is an Experiment. It can be changed or removed at any time.
-
 Input type: `WorkspaceCreateInput`
 
 #### Arguments
@@ -8774,10 +8762,6 @@ Input type: `WorkspaceCreateInput`
 | <a id="mutationworkspacecreateworkspace"></a>`workspace` | [`Workspace`](#workspace) | Created workspace. |
 
 ### `Mutation.workspaceUpdate`
-
-WARNING:
-**Introduced** in 16.0.
-This feature is an Experiment. It can be changed or removed at any time.
 
 Input type: `WorkspaceUpdateInput`
 
@@ -14392,10 +14376,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 Workspaces owned by the current user.
 
-WARNING:
-**Introduced** in 16.6.
-This feature is an Experiment. It can be changed or removed at any time.
-
 Returns [`WorkspaceConnection`](#workspaceconnection).
 
 This field returns a [connection](#connections). It accepts the
@@ -15108,10 +15088,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 ##### `AutocompletedUser.workspaces`
 
 Workspaces owned by the current user.
-
-WARNING:
-**Introduced** in 16.6.
-This feature is an Experiment. It can be changed or removed at any time.
 
 Returns [`WorkspaceConnection`](#workspaceconnection).
 
@@ -16211,10 +16187,6 @@ GitLab CI/CD configuration template.
 
 Workspaces associated with the agent.
 
-WARNING:
-**Introduced** in 16.7.
-This feature is an Experiment. It can be changed or removed at any time.
-
 Returns [`WorkspaceConnection`](#workspaceconnection).
 
 This field returns a [connection](#connections). It accepts the
@@ -17167,10 +17139,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 ##### `CurrentUser.workspaces`
 
 Workspaces owned by the current user.
-
-WARNING:
-**Introduced** in 16.6.
-This feature is an Experiment. It can be changed or removed at any time.
 
 Returns [`WorkspaceConnection`](#workspaceconnection).
 
@@ -22052,10 +22020,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 Workspaces owned by the current user.
 
-WARNING:
-**Introduced** in 16.6.
-This feature is an Experiment. It can be changed or removed at any time.
-
 Returns [`WorkspaceConnection`](#workspaceconnection).
 
 This field returns a [connection](#connections). It accepts the
@@ -22339,10 +22303,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 ##### `MergeRequestAuthor.workspaces`
 
 Workspaces owned by the current user.
-
-WARNING:
-**Introduced** in 16.6.
-This feature is an Experiment. It can be changed or removed at any time.
 
 Returns [`WorkspaceConnection`](#workspaceconnection).
 
@@ -22691,10 +22651,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 Workspaces owned by the current user.
 
-WARNING:
-**Introduced** in 16.6.
-This feature is an Experiment. It can be changed or removed at any time.
-
 Returns [`WorkspaceConnection`](#workspaceconnection).
 
 This field returns a [connection](#connections). It accepts the
@@ -23014,10 +22970,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 ##### `MergeRequestReviewer.workspaces`
 
 Workspaces owned by the current user.
-
-WARNING:
-**Introduced** in 16.6.
-This feature is an Experiment. It can be changed or removed at any time.
 
 Returns [`WorkspaceConnection`](#workspaceconnection).
 
@@ -28117,10 +28069,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 ##### `UserCore.workspaces`
 
 Workspaces owned by the current user.
-
-WARNING:
-**Introduced** in 16.6.
-This feature is an Experiment. It can be changed or removed at any time.
 
 Returns [`WorkspaceConnection`](#workspaceconnection).
 

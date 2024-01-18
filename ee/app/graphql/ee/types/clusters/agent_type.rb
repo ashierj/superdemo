@@ -17,8 +17,7 @@ module EE
             ::Types::RemoteDevelopment::WorkspaceType.connection_type,
             null: true,
             resolver: ::Resolvers::RemoteDevelopment::WorkspacesForAgentResolver,
-            description: 'Workspaces associated with the agent.',
-            alpha: { milestone: '16.7' }
+            description: 'Workspaces associated with the agent.'
         end
       end
     end
