@@ -10,6 +10,9 @@ page_view_events:
   - /-/learn_gitlab/onboarding
   - /-/learn_gitlab
 structured_events:
+  - category: 'trial_registrations:new'
+    action: 'register'
+    label: 'trial_registration'
   - category: 'registrations:welcome:show'
     action: 'render'
     label: 'trial_registration'

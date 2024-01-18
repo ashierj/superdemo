@@ -4,4 +4,5 @@
     = render 'devise/shared/signup_box_form',
       url: trial_registrations_path(glm_tracking_params),
       button_text: _('Continue'),
-      show_omniauth_providers: social_signin_enabled?
+      show_omniauth_providers: social_signin_enabled?,
+      tracking_label: registration_tracking_label(trial: true)

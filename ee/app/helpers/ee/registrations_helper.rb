@@ -26,8 +26,12 @@ module EE
       data.compact
     end
 
-    override :oauth_tracking_label
-    def oauth_tracking_label
+    override :registration_tracking_label
+    def registration_tracking_label(trial: false)
+      return ::Onboarding::Status::TRACKING_LABEL[:trial] if trial
+
+      return ::Onboarding::Status::TRACKING_LABEL[:invite] if params[:invite_email].present?
+
       ::Onboarding::Status::TRACKING_LABEL[:free]
     end
 
