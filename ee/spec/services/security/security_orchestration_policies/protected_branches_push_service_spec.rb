@@ -44,13 +44,5 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProtectedBranchesPushSer
 
       it { is_expected.to be_empty }
     end
-
-    context 'when feature flag "scan_result_policies_block_force_push" is disabled' do
-      before do
-        stub_feature_flags(scan_result_policies_block_force_push: false)
-      end
-
-      it { is_expected.to be_empty }
-    end
   end
 end

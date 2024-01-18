@@ -29,7 +29,6 @@ import RuleSection from './rule/rule_section.vue';
 import {
   ANY_MERGE_REQUEST,
   BLOCK_BRANCH_MODIFICATION,
-  PREVENT_PUSHING_AND_FORCE_PUSHING,
   buildSettingsList,
   createPolicyObject,
   DEFAULT_PROJECT_SCAN_RESULT_POLICY,
@@ -120,19 +119,11 @@ export default {
 
     const defaultPolicyObject = fromYaml({ manifest });
 
-    if (
-      this.glFeatures.scanResultPoliciesBlockUnprotectingBranches ||
-      this.glFeatures.scanResultPoliciesBlockForcePush
-    ) {
-      defaultPolicyObject.approval_settings = {};
-
-      if (this.glFeatures.scanResultPoliciesBlockUnprotectingBranches) {
-        defaultPolicyObject.approval_settings[BLOCK_BRANCH_MODIFICATION] = true;
-      }
-
-      if (this.glFeatures.scanResultPoliciesBlockForcePush) {
-        defaultPolicyObject.approval_settings[PREVENT_PUSHING_AND_FORCE_PUSHING] = true;
-      }
+    if (this.glFeatures.scanResultPoliciesBlockUnprotectingBranches) {
+      defaultPolicyObject.approval_settings = {
+        [BLOCK_BRANCH_MODIFICATION]: true,
+        ...defaultPolicyObject.approval_settings,
+      };
     }
 
     const yamlEditorValue = toYaml(this.existingPolicy || defaultPolicyObject);

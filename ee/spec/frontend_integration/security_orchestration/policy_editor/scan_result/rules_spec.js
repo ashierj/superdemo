@@ -105,7 +105,7 @@ describe('Scan result policy rules', () => {
         expect(findDefaultRuleBuilder().exists()).toBe(false);
         expect(findAnyMergeRequestRuleBuilder().exists()).toBe(true);
         expect(findSettingsSection().exists()).toBe(true);
-        expect(findAllSettingsItem()).toHaveLength(1);
+        expect(findAllSettingsItem()).toHaveLength(2);
       };
 
       await findScanTypeSelect().vm.$emit('select', ANY_MERGE_REQUEST);

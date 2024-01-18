@@ -28,6 +28,8 @@ actions:
     approvals_required: 2
     role_approvers:
       - developer
+approval_settings:
+  prevent_pushing_and_force_pushing: true
 `;
 
 export const mockUserApproversScanResultManifest = `type: scan_result_policy
@@ -41,6 +43,8 @@ actions:
     approvals_required: 2
     user_approvers_ids:
       - ${USER.id}
+approval_settings:
+  prevent_pushing_and_force_pushing: true
 `;
 
 export const mockGroupApproversScanResultManifest = `type: scan_result_policy
@@ -54,6 +58,8 @@ actions:
     approvals_required: 2
     group_approvers_ids:
       - ${GROUP.id}
+approval_settings:
+  prevent_pushing_and_force_pushing: true
 `;
 
 const mockScanExecutionManifest = `type: scan_execution_policy

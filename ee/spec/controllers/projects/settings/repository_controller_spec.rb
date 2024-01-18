@@ -107,11 +107,11 @@ RSpec.describe Projects::Settings::RepositoryController, feature_category: :sour
     describe '#fetch_branches_protected_from_push' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:feature_flag, :licensed_feature, :branches_protected_from_push, :expected_result) do
-        false            | false           | []                       | []
-        false            | true            | []                       | []
-        true             | false           | []                       | []
-        true             | true            | [ref(:protected_branch)] | [ref(:protected_branch)]
+      where(:licensed_feature, :branches_protected_from_push, :expected_result) do
+        false           | []                       | []
+        true            | []                       | []
+        false           | []                       | []
+        true            | [ref(:protected_branch)] | [ref(:protected_branch)]
       end
 
       let!(:protected_branch) { create(:protected_branch, project: project) }
@@ -121,7 +121,6 @@ RSpec.describe Projects::Settings::RepositoryController, feature_category: :sour
 
       with_them do
         before do
-          stub_feature_flags(scan_result_policies_block_force_push: feature_flag)
           stub_licensed_features(security_orchestration_policies: licensed_feature)
 
           allow_next_instance_of(
