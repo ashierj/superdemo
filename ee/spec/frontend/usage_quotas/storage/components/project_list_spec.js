@@ -159,7 +159,6 @@ describe('ProjectList', () => {
       project           | projectUrlWithUsageQuotas
       ${projectList[0]} | ${'http://localhost/frontend-fixtures/twitter/-/usage_quotas'}
       ${projectList[1]} | ${'http://localhost/frontend-fixtures/html5-boilerplate/-/usage_quotas'}
-      ${projectList[2]} | ${'http://localhost/frontend-fixtures/dummy-project/-/usage_quotas'}
     `('renders project link as usage_quotas URL', ({ project, projectUrlWithUsageQuotas }) => {
       createComponent({ props: { projects: [project] } });
 

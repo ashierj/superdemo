@@ -1,9 +1,8 @@
-import mockGetNamespaceStorageGraphQLResponse from 'test_fixtures/graphql/usage_quotas/storage/namespace_storage.query.graphql.json';
-import mockGetProjectListStorageGraphQLResponse from 'test_fixtures/graphql/usage_quotas/storage/project_list_storage.query.graphql.json';
 import { storageTypeHelpPaths } from '~/usage_quotas/storage/constants';
-
-export { mockGetNamespaceStorageGraphQLResponse };
-export { mockGetProjectListStorageGraphQLResponse };
+import {
+  mockGetNamespaceStorageGraphQLResponse,
+  mockGetProjectListStorageGraphQLResponse,
+} from 'jest/usage_quotas/storage/mock_data';
 
 export const { namespace } = mockGetNamespaceStorageGraphQLResponse.data;
 export const projectList = mockGetProjectListStorageGraphQLResponse.data.namespace.projects.nodes;

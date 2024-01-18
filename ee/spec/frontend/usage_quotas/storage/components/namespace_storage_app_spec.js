@@ -14,9 +14,9 @@ import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/sea
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
 import {
   mockGetNamespaceStorageGraphQLResponse,
-  defaultNamespaceProvideValues,
   mockGetProjectListStorageGraphQLResponse,
-} from '../mock_data';
+} from 'jest/usage_quotas/storage/mock_data';
+import { defaultNamespaceProvideValues } from '../mock_data';
 
 jest.mock('~/ci/runner/sentry_utils');
 
@@ -77,8 +77,8 @@ describe('NamespaceStorageApp', () => {
       await waitForPromises();
     });
 
-    it('renders the 3 projects', () => {
-      expect(findProjectList().props('projects')).toHaveLength(3);
+    it('renders the 2 projects', () => {
+      expect(findProjectList().props('projects')).toHaveLength(2);
     });
   });
 
