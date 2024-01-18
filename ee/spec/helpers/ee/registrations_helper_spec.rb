@@ -82,4 +82,26 @@ RSpec.describe EE::RegistrationsHelper, feature_category: :user_management do
       end
     end
   end
+
+  describe '#registration_tracking_label' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:trial, :params, :expected_label_symbol) do
+      true | {} | :trial
+      true | { invite_email: '123@example.com' } | :trial
+      false | {} | :free
+      false | { invite_email: '123@example.com' } | :invite
+    end
+
+    with_them do
+      before do
+        allow(helper).to receive(:params).and_return(params)
+      end
+
+      it 'returns correct tracking label' do
+        expect(helper.registration_tracking_label(trial: trial))
+          .to eq(::Onboarding::Status::TRACKING_LABEL[expected_label_symbol])
+      end
+    end
+  end
 end

@@ -16,7 +16,8 @@
             "DataTable",
             "SingleStat",
             "DORAChart",
-            "UsageOverview"
+            "UsageOverview",
+            "DoraPerformersScore"
           ]
         },
         "options": {

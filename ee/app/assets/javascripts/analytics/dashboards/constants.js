@@ -255,6 +255,10 @@ export const DORA_PERFORMERS_SCORE_GROUP_ERROR = s__(
   'DORA4Metrics|Failed to load Group: %{fullPath}',
 );
 
+export const DORA_PERFORMERS_SCORE_PROJECT_ERROR = s__(
+  'DORA4Metrics|This visualization is not supported for project namespaces.',
+);
+
 export const DORA_PERFORMERS_SCORE_NO_DATA = s__(
   'DORA4Metrics|No data available for Group: %{fullPath}',
 );
@@ -269,6 +273,8 @@ export const BUILT_IN_PRODUCT_ANALYTICS_DASHBOARDS = ['behavior', 'audience'];
 
 export const VISUALIZATION_USAGE_OVERVIEW = 'usage_overview';
 export const VISUALIZATION_USAGE_TITLE = s__('Analytics|Usage overview for %{namespaceName} group');
+
+export const VISUALIZATION_DORA_PERFORMERS_SCORE = 'dora_performers_score';
 export const VISUALIZATION_DORA_PERFORMERS_SCORE_TITLE = s__(
   'Analytics|DORA performers score for %{namespaceName} group',
 );
