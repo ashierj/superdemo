@@ -9,8 +9,11 @@ RSpec.describe Backup::Repositories, feature_category: :backup_restore do
   let(:paths) { [] }
   let(:destination) { 'repositories' }
   let(:backup_id) { 'backup_id' }
+  let(:backup_options) { Backup::Options.new }
 
-  subject { described_class.new(progress, strategy: strategy, storages: storages, paths: paths) }
+  subject do
+    described_class.new(progress, strategy: strategy, options: backup_options, storages: storages, paths: paths)
+  end
 
   describe '#dump' do
     let_it_be(:project) { create(:project, :repository) }
