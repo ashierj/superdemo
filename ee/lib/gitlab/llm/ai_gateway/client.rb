@@ -111,7 +111,7 @@ module Gitlab
               gitlab_realm: gitlab_realm
             ).encoded
           else
-            ::Ai::ServiceAccessToken.active.last&.token
+            ::CloudConnector::ServiceAccessToken.active.last&.token
           end
         end
         strong_memoize_attr :access_token

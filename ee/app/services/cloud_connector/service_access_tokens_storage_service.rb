@@ -27,7 +27,7 @@ module CloudConnector
     attr_reader :token, :expires_at
 
     def store_token
-      Ai::ServiceAccessToken.create!(token: token, expires_at: expires_at_time)
+      CloudConnector::ServiceAccessToken.create!(token: token, expires_at: expires_at_time)
       log_event({ action: 'created', expires_at: expires_at_time })
     end
 
@@ -40,12 +40,12 @@ module CloudConnector
     end
 
     def cleanup_expired_tokens
-      Ai::ServiceAccessToken.expired.delete_all
+      CloudConnector::ServiceAccessToken.expired.delete_all
       log_event({ action: 'cleanup_expired' })
     end
 
     def cleanup_all_tokens
-      Ai::ServiceAccessToken.delete_all
+      CloudConnector::ServiceAccessToken.delete_all
       log_event({ action: 'cleanup_all' })
     end
 

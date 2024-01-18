@@ -74,7 +74,7 @@ module API
             end
 
             def ai_access_token
-              ::Ai::ServiceAccessToken.active.last
+              ::CloudConnector::ServiceAccessToken.active.last
             end
             strong_memoize_attr :ai_access_token
 
