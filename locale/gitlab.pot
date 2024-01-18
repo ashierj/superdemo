@@ -12011,9 +12011,6 @@ msgstr ""
 msgid "Code Review Analytics displays a table of open merge requests considered to be in code review. There are currently no merge requests in review for this project and/or filters."
 msgstr ""
 
-msgid "Code Suggestions add-on status"
-msgstr ""
-
 msgid "Code block"
 msgstr ""
 
@@ -12108,9 +12105,6 @@ msgid "CodeSuggestions|Boost productivity by using %{linkStart}Code Suggestions%
 msgstr ""
 
 msgid "CodeSuggestions|Code Suggestions"
-msgstr ""
-
-msgid "CodeSuggestions|Code Suggestions add-on"
 msgstr ""
 
 msgid "CodeSuggestions|Duo Pro"
@@ -18299,6 +18293,9 @@ msgid "Due to inactivity, the %{project_name} (%{project_link}) project is sched
 msgstr ""
 
 msgid "Due to inactivity, this project is scheduled to be deleted on %{deletion_date}. %{link_start}Why is this scheduled?%{link_end}"
+msgstr ""
+
+msgid "Duo Pro add-on status"
 msgstr ""
 
 msgid "Duplicate page: A page with that title already exists"
