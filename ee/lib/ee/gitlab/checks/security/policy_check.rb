@@ -10,7 +10,6 @@ module EE
           LOG_MESSAGE = "Checking if scan result policies apply to branch..."
 
           def validate!
-            return unless ::Feature.enabled?(:scan_result_policies_block_force_push, project)
             return unless project.licensed_feature_available?(:security_orchestration_policies)
 
             logger.log_timed(LOG_MESSAGE) do

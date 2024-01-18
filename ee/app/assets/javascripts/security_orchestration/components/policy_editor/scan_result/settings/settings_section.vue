@@ -43,14 +43,10 @@ export default {
   },
   computed: {
     protectedBranchSettings() {
-      const settings = [];
+      const settings = [PREVENT_PUSHING_AND_FORCE_PUSHING];
 
       if (this.glFeatures.scanResultPoliciesBlockUnprotectingBranches) {
         settings.push(BLOCK_BRANCH_MODIFICATION);
-      }
-
-      if (this.glFeatures.scanResultPoliciesBlockForcePush) {
-        settings.push(PREVENT_PUSHING_AND_FORCE_PUSHING);
       }
 
       return this.groupSettingsBy(settings);

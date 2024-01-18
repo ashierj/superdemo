@@ -9,19 +9,6 @@
  * and keep them near each other.
  */
 
-export const mockBlockUnprotectingBranchesSettingsManifest = `type: scan_result_policy
-name: ''
-description: ''
-enabled: true
-rules:
-  - type: ''
-actions:
-  - type: require_approval
-    approvals_required: 1
-approval_settings:
-  block_branch_modification: true
-`;
-
 export const mockForcePushSettingsManifest = `type: scan_result_policy
 name: ''
 description: ''
@@ -155,6 +142,7 @@ actions:
       - the.one
 approval_settings:
   block_branch_modification: true
+  prevent_pushing_and_force_pushing: true
 `;
 
 export const mockApprovalSettingsPermittedInvalidScanResultManifest = `type: scan_result_policy
@@ -226,7 +214,10 @@ export const mockApprovalSettingsScanResultObject = {
       user_approvers: ['the.one'],
     },
   ],
-  approval_settings: { block_branch_modification: true },
+  approval_settings: {
+    block_branch_modification: true,
+    prevent_pushing_and_force_pushing: true,
+  },
 };
 
 export const mockApprovalSettingsScanResultPolicy = {
@@ -239,7 +230,7 @@ export const mockApprovalSettingsScanResultPolicy = {
   userApprovers: [{ name: 'the.one' }],
   allGroupApprovers: [],
   roleApprovers: [],
-  approval_settings: { block_branch_modification: true },
+  approval_settings: { block_branch_modification: true, prevent_pushing_and_force_pushing: true },
   source: {
     __typename: 'ProjectSecurityPolicySource',
     project: {

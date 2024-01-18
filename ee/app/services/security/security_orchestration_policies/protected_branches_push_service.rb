@@ -4,16 +4,10 @@ module Security
   module SecurityOrchestrationPolicies
     class ProtectedBranchesPushService < BaseProjectService
       def execute
-        return [] unless ::Feature.enabled?(:scan_result_policies_block_force_push, project)
-
-        applicable_branches
+        PolicyBranchesService.new(project: project).scan_result_branches(rules)
       end
 
       private
-
-      def applicable_branches
-        @applicable_branches ||= PolicyBranchesService.new(project: project).scan_result_branches(rules)
-      end
 
       def rules
         blocking_policies = applicable_active_policies.select do |rule|
