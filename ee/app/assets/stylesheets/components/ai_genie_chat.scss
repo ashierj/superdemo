@@ -41,7 +41,7 @@
   }
 
   pre code {
-    @include gl-font-sm;
+    font-size: $gl-font-size-sm;
     @include gl-line-height-1;
     @include gl-bg-transparent;
     white-space: inherit;

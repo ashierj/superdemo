@@ -20,13 +20,13 @@
       @include gl-border-b-solid;
       @include gl-border-b-gray-100;
       @include gl-border-b-1;
-      @include gl-display-flex;
+      display: flex;
       @include gl-pb-3;
       @include gl-align-items-flex-start;
 
       .title {
         @include gl-font-size-markdown-h2;
-        @include gl-mb-0;
+        margin-bottom: 0;
         @include gl-pb-0;
         @include gl-flex-grow-1;
         @include gl-mr-2;
@@ -35,10 +35,12 @@
     }
 
     .issuable-details {
-      @include gl-py-0;
+      padding-top: 0;
+      padding-bottom: 0;
 
       li.md-header-toolbar {
-        @include gl-py-3;
+        padding-top: $gl-spacing-scale-3;
+        padding-bottom: $gl-spacing-scale-3;
       }
 
       .detail-page-description {
