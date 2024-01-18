@@ -265,4 +265,17 @@ RSpec.describe SystemNoteService, feature_category: :team_planning do
       described_class.issuable_resource_link_removed(noteable, project, author, 'zoom')
     end
   end
+
+  describe '.approvals_reset' do
+    let(:cause) { :new_push }
+    let(:approvers) { [] }
+
+    it 'calls MergeRequestsService' do
+      expect_next_instance_of(::SystemNotes::MergeRequestsService) do |service|
+        expect(service).to receive(:approvals_reset).with(cause, approvers)
+      end
+
+      described_class.approvals_reset(noteable, author, cause, approvers)
+    end
+  end
 end
