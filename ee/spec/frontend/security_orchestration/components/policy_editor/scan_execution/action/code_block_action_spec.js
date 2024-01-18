@@ -1,6 +1,7 @@
 import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
+import Api from 'ee/api';
 import { toYaml } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import CodeBlockAction from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_action.vue';
@@ -15,8 +16,15 @@ import {
   LINKED_EXISTING_FILE,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
 
+jest.mock('ee/api');
+
 describe('CodeBlockAction', () => {
   let wrapper;
+
+  const project = {
+    id: 'gid://gitlab/Project/29',
+    fullPath: 'project-path',
+  };
 
   const createComponent = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = shallowMount(CodeBlockAction, {
@@ -181,7 +189,7 @@ describe('CodeBlockAction', () => {
         propsData: {
           initAction: {
             ci_configuration_path: {
-              id: 'id',
+              id: 1,
             },
           },
         },
@@ -189,7 +197,7 @@ describe('CodeBlockAction', () => {
 
       expect(findCodeBlockFilePath().props('selectedType')).toBe(LINKED_EXISTING_FILE);
       expect(findCodeBlockFilePath().props('selectedProject')).toEqual({
-        id: 'gid://gitlab/Project/id',
+        id: 'gid://gitlab/Project/1',
       });
     });
 
@@ -245,15 +253,8 @@ describe('CodeBlockAction', () => {
     });
 
     it('updates project', async () => {
-      const project = {
-        id: 'gid://gitlab/Project/29',
-        fullPath: 'project-path',
-      };
-
       await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
-
       await findCodeBlockFilePath().vm.$emit('select-project', project);
-
       expect(wrapper.emitted('changed')[1]).toEqual([
         { ci_configuration_path: { id: 29, project: project.fullPath }, scan: 'custom' },
       ]);
@@ -267,6 +268,160 @@ describe('CodeBlockAction', () => {
       expect(wrapper.emitted('changed')[1]).toEqual([
         { ci_configuration_path: {}, scan: 'custom' },
       ]);
+    });
+
+    describe('file validation', () => {
+      beforeEach(() => {
+        jest.spyOn(Api, 'getFile').mockResolvedValue();
+      });
+
+      afterEach(() => {
+        jest.clearAllMocks();
+      });
+
+      describe('no validation', () => {
+        it('does not validate on new linked file section', async () => {
+          createComponent();
+          await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
+          expect(Api.getFile).not.toHaveBeenCalled();
+        });
+
+        it('does not validate when ref is not selected', async () => {
+          createComponent({
+            propsData: {
+              initAction: {
+                ci_configuration_path: {
+                  id: 1,
+                },
+              },
+            },
+          });
+          await waitForPromises();
+          expect(Api.getFile).not.toHaveBeenCalled();
+          expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
+        });
+      });
+
+      describe('existing selection', () => {
+        it('succeeds validation', async () => {
+          createComponent({
+            propsData: {
+              initAction: {
+                ci_configuration_path: {
+                  id: 1,
+                  ref: 'main',
+                },
+              },
+            },
+          });
+          await waitForPromises();
+          expect(Api.getFile).toHaveBeenCalledTimes(1);
+          expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
+        });
+
+        it('fails validation', async () => {
+          jest.spyOn(Api, 'getFile').mockRejectedValue();
+          createComponent({
+            propsData: {
+              initAction: {
+                ci_configuration_path: {
+                  id: 1,
+                  ref: 'not-main',
+                },
+              },
+            },
+          });
+          await waitForPromises();
+          expect(Api.getFile).toHaveBeenCalledTimes(1);
+          expect(findCodeBlockFilePath().props('doesFileExist')).toBe(false);
+        });
+      });
+
+      describe('successful validation', () => {
+        beforeEach(() => {
+          createComponent({
+            propsData: {
+              initAction: {
+                ci_configuration_path: {
+                  id: 1,
+                  ref: 'main',
+                },
+              },
+            },
+          });
+        });
+
+        it('verifies on file path change', async () => {
+          await wrapper.setProps({
+            initAction: { ci_configuration_path: { ref: 'main', file: 'new-path' } },
+          });
+          await waitForPromises();
+          expect(Api.getFile).toHaveBeenCalledTimes(2);
+          expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
+        });
+
+        it('verifies on project change', async () => {
+          await findCodeBlockFilePath().vm.$emit('select-project', project);
+          await waitForPromises();
+          expect(Api.getFile).toHaveBeenCalledTimes(2);
+          expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
+        });
+
+        it('verifies on ref change', async () => {
+          await wrapper.setProps({ initAction: { ci_configuration_path: { ref: 'new-ref' } } });
+          await waitForPromises();
+          expect(Api.getFile).toHaveBeenCalledTimes(2);
+          expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
+        });
+      });
+
+      describe('failed validation', () => {
+        it('fails when a file does not exists on a ref', async () => {
+          jest.spyOn(Api, 'getFile').mockRejectedValue();
+          createComponent({
+            propsData: {
+              initAction: {
+                ci_configuration_path: {
+                  id: 1,
+                  ref: 'not-main',
+                },
+              },
+            },
+          });
+          await wrapper.setProps({ initAction: { ci_configuration_path: { ref: 'new-ref' } } });
+          await waitForPromises();
+          expect(Api.getFile).toHaveBeenCalledTimes(2);
+          expect(findCodeBlockFilePath().props('doesFileExist')).toBe(false);
+        });
+
+        it('fails validation when a project is not selected', async () => {
+          createComponent();
+          await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
+          expect(findCodeBlockFilePath().props('doesFileExist')).toBe(false);
+        });
+      });
+
+      describe('resetting validation', () => {
+        it('resets validation on change', async () => {
+          jest.spyOn(Api, 'getFile').mockRejectedValue();
+          createComponent({
+            propsData: {
+              initAction: {
+                ci_configuration_path: {
+                  id: 1,
+                  ref: 'main',
+                },
+              },
+            },
+          });
+          await waitForPromises();
+          expect(findCodeBlockFilePath().props('doesFileExist')).toBe(false);
+          await wrapper.setProps({
+            initAction: { ci_configuration_path: { ref: 'new-ref', file: 'new-path' } },
+          });
+          expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
+        });
+      });
     });
   });
 });

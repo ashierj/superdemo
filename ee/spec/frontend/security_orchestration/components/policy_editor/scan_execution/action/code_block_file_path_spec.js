@@ -101,7 +101,7 @@ describe('CodeBlockFilePath', () => {
         },
       });
 
-      expect(findFormInputGroup().props('value')).toBe('filePath');
+      expect(findFormInputGroup().attributes('value')).toBe('filePath');
     });
 
     it('has fallback values', () => {
@@ -172,6 +172,55 @@ describe('CodeBlockFilePath', () => {
       });
 
       expect(findGroupProjectsDropdown().props('groupFullPath')).toBe('gitlab');
+    });
+  });
+
+  describe('validation', () => {
+    it('is valid by default', () => {
+      createComponent({ propsData: { selectedProject: { id: PROJECT_ID } } });
+      expect(findRefSelector().props('state')).toBe(true);
+      expect(findFormInputGroup().attributes('state')).toBe(undefined);
+      expect(findFormGroup().attributes('state')).toBe(undefined);
+    });
+
+    describe('project and ref selectors', () => {
+      it.each`
+        title                                                         | filePath | doesFileExist | output
+        ${'is valid when the file at the file path exists'}           | ${'ref'} | ${true}       | ${true}
+        ${'is invalid when the file at the file path does not exist'} | ${'ref'} | ${false}      | ${false}
+        ${'is valid when the file path is not provided'}              | ${null}  | ${true}       | ${true}
+        ${'is valid when the file path is not provided'}              | ${null}  | ${false}      | ${true}
+      `('$title', ({ filePath, doesFileExist, output }) => {
+        createComponent({
+          propsData: {
+            filePath,
+            doesFileExist,
+            selectedProject: { id: PROJECT_ID },
+          },
+        });
+        expect(findRefSelector().props('state')).toBe(output);
+        expect(findGroupProjectsDropdown().props('state')).toBe(output);
+      });
+    });
+
+    describe('file path selector', () => {
+      it.each`
+        title                                                         | filePath | doesFileExist | state        | message
+        ${'is valid when the file exists at the file path'}           | ${'ref'} | ${true}       | ${'true'}    | ${''}
+        ${'is invalid when the file does not exist at the file path'} | ${'ref'} | ${false}      | ${undefined} | ${"The file at that project, ref, and path doesn't exist"}
+        ${'is invalid when the file path is not provided'}            | ${null}  | ${true}       | ${undefined} | ${"The file path can't be empty"}
+        ${'is invalid when the file path is not provided'}            | ${null}  | ${false}      | ${undefined} | ${"The file path can't be empty"}
+      `('$title', ({ filePath, doesFileExist, state, message }) => {
+        createComponent({
+          propsData: {
+            filePath,
+            doesFileExist,
+          },
+        });
+        expect(findFormInputGroup().attributes('state')).toBe(state);
+        expect(findFormGroup().attributes('state')).toBe(state);
+        expect(findFormGroup().attributes('invalid-feedback')).toBe(message);
+      });
     });
   });
 });

@@ -43077,6 +43077,9 @@ msgstr ""
 msgid "ScanExecutionPolicy|Select timezone"
 msgstr ""
 
+msgid "ScanExecutionPolicy|The file at that project, ref, and path doesn't exist"
+msgstr ""
+
 msgid "ScanExecutionPolicy|The file path can't be empty"
 msgstr ""
 
