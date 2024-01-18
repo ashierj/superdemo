@@ -313,17 +313,23 @@ module Gitlab
             error(CONNECTIVITY_ERROR)
           end
 
-          def get_service_token(license_key)
+          def get_cloud_connector_access_data(license_key)
             query = <<~GQL
-            query ServiceToken($licenseKey: String!) {
-              serviceToken(licenseKey: $licenseKey) {
-                token
-                expiresAt
+            query cloudConnectorAccess($licenseKey: String!) {
+              cloudConnectorAccess(licenseKey: $licenseKey) {
+                serviceToken {
+                  token
+                  expiresAt
+                }
+                availableServices {
+                  name
+                  serviceStartTime
+                }
               }
             }
             GQL
 
-            response = http_post('graphql',
+            full_response = http_post('graphql',
               json_headers,
               {
                 query: query,
@@ -331,20 +337,24 @@ module Gitlab
                   licenseKey: license_key
                 }
               }
-            )[:data]
+            )
+            response = full_response[:data]
 
-            if response['errors'].blank?
-              token = response.dig('data', 'serviceToken', 'token')
-              expires_at = response.dig('data', 'serviceToken', 'expiresAt')
+            errors = parse_errors(full_response, query_name: 'cloudConnectorAccess')
+            if errors.blank?
+              token = response.dig('data', 'cloudConnectorAccess', 'serviceToken', 'token')
+              expires_at = response.dig('data', 'cloudConnectorAccess', 'serviceToken', 'expiresAt')
+              available_services = response.dig('data', 'cloudConnectorAccess', 'availableServices')
               {
                 success: true,
                 token: token,
-                expires_at: expires_at
+                expires_at: expires_at,
+                available_services: available_services
               }
             else
               track_error(query, response)
 
-              error(response['errors'])
+              errors
             end
           end
 
