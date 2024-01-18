@@ -12,19 +12,28 @@ module GitlabSubscriptions
       length: { maximum: 512 }
 
     enum name: {
-      code_suggestions: 1
+      code_suggestions: 1,
+      product_analytics: 2
     }
 
     # Note: If a new enum is added, make sure to update this method to reflect that as well.
     def self.descriptions
       {
-        code_suggestions: 'Add-on for code suggestions.'
+        code_suggestions: 'Add-on for code suggestions.',
+        product_analytics: 'Add-on for product analytics. Quantity suggests multiple of available stored event.'
       }
     end
 
     def self.find_or_create_by_name(add_on_name)
+      check_add_on_availability!(add_on_name)
+
       create_with(description: GitlabSubscriptions::AddOn.descriptions[add_on_name.to_sym])
         .find_or_create_by!(name: add_on_name)
+    end
+
+    def self.check_add_on_availability!(add_on_name)
+      raise ::ArgumentError if
+        add_on_name.eql?("product_analytics") && ::Feature.disabled?(:product_analytics_billing, type: :wip)
     end
   end
 end
