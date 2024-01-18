@@ -7,6 +7,7 @@ const HEADERS = {
   members: s__('ApprovalRule|Approvers'),
   approvalsRequired: s__('ApprovalRule|Approvals required'),
   branches: __('Target branch'),
+  actions: __('Actions'),
 };
 
 export default {

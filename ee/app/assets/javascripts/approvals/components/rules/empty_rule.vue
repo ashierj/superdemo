@@ -53,10 +53,10 @@ export default {
     <td colspan="2" :data-label="__('Approvers')">
       <empty-rule-name :eligible-approvers-docs-path="eligibleApproversDocsPath" />
     </td>
-    <td v-if="showProtectedBranch" :data-label="__('Target branch')">
+    <td v-if="showProtectedBranch" class="gl-text-center" :data-label="__('Target branch')">
       <rule-branches :rule="rule" />
     </td>
-    <td class="js-approvals-required gl-text-right" :data-label="__('Approvals required')">
+    <td class="js-approvals-required" :data-label="__('Approvals required')">
       <rule-input :rule="rule" :is-mr-edit="isMrEdit" />
     </td>
     <td class="gl-md-pl-0! gl-md-pr-0!">
