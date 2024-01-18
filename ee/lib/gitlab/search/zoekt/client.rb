@@ -4,7 +4,6 @@ module Gitlab
   module Search
     module Zoekt
       class Client # rubocop:disable Search/NamespacedClass
-        include Gitlab::Utils::StrongMemoize
         include ::Gitlab::Loggable
         INDEXING_TIMEOUT_S = 30.minutes.to_i
 
@@ -250,7 +249,7 @@ module Gitlab
         def format_query(query, search_mode:)
           case search_mode.to_sym
           when :exact
-            "\"#{query}\""
+            ::Search::Zoekt::Query.new(query).exact_search_query
           when :regex
             query
           else
