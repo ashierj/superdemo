@@ -95,15 +95,6 @@
   }
 }
 
-@include media-breakpoint-down(xs) {
-  .login-page {
-    .col-md-5.float-right {
-      float: none !important;
-      margin-bottom: 45px;
-    }
-  }
-}
-
 .html-devise-layout {
   margin: 0;
   padding: 0;
