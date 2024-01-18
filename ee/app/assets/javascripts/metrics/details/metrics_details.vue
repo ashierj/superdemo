@@ -6,6 +6,7 @@ import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
 import { ingestedAtTimeAgo } from '../utils';
 import MetricsChart from './metrics_chart.vue';
+import FilteredSearch from './filter_bar/metrics_filtered_search.vue';
 
 export default {
   i18n: {
@@ -20,6 +21,7 @@ export default {
     GlLoadingIcon,
     MetricsChart,
     GlEmptyState,
+    FilteredSearch,
   },
   props: {
     observabilityClient: {
@@ -43,6 +45,7 @@ export default {
   data() {
     return {
       metricData: [],
+      dimensions: [],
       loading: false,
     };
   },
@@ -62,7 +65,7 @@ export default {
   },
   methods: {
     async validateAndFetch() {
-      if (!this.metricId) {
+      if (!this.metricId || !this.metricType) {
         createAlert({
           message: this.$options.i18n.error,
         });
@@ -91,6 +94,8 @@ export default {
           this.metricId,
           this.metricType,
         );
+        // TODO fetch dimensions from API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2488
+        this.dimensions = ['dimension_one', 'dimension_two'];
       } catch (e) {
         createAlert({
           message: this.$options.i18n.error,
@@ -125,6 +130,7 @@ export default {
     </div>
 
     <div class="gl-my-6">
+      <filtered-search v-if="dimensions.length > 0" :dimensions="dimensions" />
       <metrics-chart v-if="metricData.length > 0" :metric-data="metricData" />
       <gl-empty-state v-else :svg-path="$options.EMPTY_CHART_SVG">
         <template #title>
