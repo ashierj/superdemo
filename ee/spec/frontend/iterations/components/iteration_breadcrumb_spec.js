@@ -1,6 +1,8 @@
-import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import { GlBreadcrumb, GlSkeletonLoader } from '@gitlab/ui';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import VueRouter from 'vue-router';
 import IterationBreadcrumb from 'ee/iterations/components/iteration_breadcrumb.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import readCadenceQuery from 'ee/iterations/queries/iteration_cadence.query.graphql';
@@ -8,8 +10,8 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import createRouter from 'ee/iterations/router';
 import waitForPromises from 'helpers/wait_for_promises';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
+Vue.use(VueRouter);
 
 describe('Iteration Breadcrumb', () => {
   let router;
@@ -26,6 +28,30 @@ describe('Iteration Breadcrumb', () => {
   const cadenceId = 1234;
   const iterationId = 4567;
 
+  const cadenceTitle = 'cadenceTitle';
+  const cadenceResponse = {
+    data: {
+      group: {
+        id: '',
+        iterationCadences: {
+          nodes: [
+            {
+              __typename: 'IterationCadence',
+              title: cadenceTitle,
+              id: 'cadenceid',
+              automatic: '',
+              startDate: '',
+              rollOver: '',
+              durationInWeeks: '',
+              iterationsInAdvance: '',
+              description: '',
+            },
+          ],
+        },
+      },
+    },
+  };
+
   const findBreadcrumb = () => wrapper.findComponent(GlBreadcrumb);
 
   const waitForApollo = async () => {
@@ -37,61 +63,34 @@ describe('Iteration Breadcrumb', () => {
     router = createRouter({ base, permissions });
   };
 
-  const mountComponent = (fn = mount, loading = false) => {
-    wrapper = fn(IterationBreadcrumb, {
-      router,
-      mocks: {
-        $apollo: {
-          queries: {
-            group: {
-              loading,
-            },
-          },
-        },
-      },
-      provide: {
-        groupPath: '',
-      },
-      propsData: {
-        cadenceId,
-      },
-      data() {
-        return {
-          cadenceTitle: 'cadenceTitle',
-        };
-      },
-    });
-  };
-
-  const createComponentWithApollo = async ({ requestHandlers = [], readCadenceSpy } = {}) => {
+  const mountComponent = ({ requestHandlers = [], readCadenceSpy } = {}) => {
     mockApollo = createMockApollo([[readCadenceQuery, readCadenceSpy], ...requestHandlers]);
 
     wrapper = extendedWrapper(
       shallowMount(IterationBreadcrumb, {
-        localVue,
         router,
         provide: { groupPath: '' },
         apolloProvider: mockApollo,
         propsData: {},
       }),
     );
-
-    await waitForApollo();
   };
 
   beforeEach(() => {
     initRouter();
   });
 
-  it('finds glbreadcrumb', () => {
+  it('finds glbreadcrumb', async () => {
     mountComponent();
+    await waitForApollo();
 
     expect(findBreadcrumb().exists()).toBe(true);
   });
 
   describe('when fetching cadence', () => {
-    it('renders the GlSkeletonLoader', () => {
-      mountComponent(shallowMount, true);
+    it('renders the GlSkeletonLoader', async () => {
+      await router.push({ name: 'editIteration', params: { iterationId: '1', cadenceId: '123' } });
+      mountComponent({ readCadenceSpy: jest.fn().mockResolvedValue(cadenceResponse) });
 
       expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(true);
     });
@@ -99,23 +98,21 @@ describe('Iteration Breadcrumb', () => {
 
   describe('when not fetching cadence', () => {
     it('does not render the GlSkeletonLoader', () => {
-      mountComponent(shallowMount);
+      mountComponent({ readCadenceSpy: jest.fn().mockResolvedValue(cadenceResponse) });
 
       expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(false);
     });
   });
 
   describe('when a user is on a cadence page', () => {
-    beforeEach(() => {
-      mountComponent();
-    });
-
     afterEach(() => {
       router = null;
     });
 
     it('passes the correct items to GlBreadcrumb', async () => {
       await router.push({ name: 'editIteration', params: { cadenceId, iterationId } });
+      mountComponent({ readCadenceSpy: jest.fn().mockResolvedValue(cadenceResponse) });
+      await waitForApollo();
 
       expect(findBreadcrumb().props('items')).toEqual([
         { path: '', text: 'Iteration cadences', to: '/' },
@@ -137,7 +134,7 @@ describe('Iteration Breadcrumb', () => {
         .fn()
         .mockResolvedValue({ data: { group: { id: '', iterationCadences: { nodes: [] } } } });
 
-      createComponentWithApollo({ readCadenceSpy: cadenceSpy });
+      mountComponent({ readCadenceSpy: cadenceSpy });
 
       expect(cadenceSpy).toHaveBeenCalledTimes(0);
     });
@@ -151,47 +148,25 @@ describe('Iteration Breadcrumb', () => {
 
       await router.push({ name: 'editIteration', params: { iterationId: '1', cadenceId: '123' } });
 
-      createComponentWithApollo({ readCadenceSpy: cadenceSpy });
+      mountComponent({ readCadenceSpy: cadenceSpy });
 
       expect(cadenceSpy).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('when cadence is present', () => {
-    const cadenceTitle = 'cadencetitle';
     const breadcrumbProps = () => findBreadcrumb().props('items');
 
     let cadenceSpy;
 
     beforeEach(() => {
-      cadenceSpy = jest.fn().mockResolvedValue({
-        data: {
-          group: {
-            id: '',
-            iterationCadences: {
-              nodes: [
-                {
-                  __typename: 'IterationCadence',
-                  title: cadenceTitle,
-                  id: 'cadenceid',
-                  automatic: '',
-                  startDate: '',
-                  rollOver: '',
-                  durationInWeeks: '',
-                  iterationsInAdvance: '',
-                  description: '',
-                },
-              ],
-            },
-          },
-        },
-      });
+      cadenceSpy = jest.fn().mockResolvedValue(cadenceResponse);
     });
 
     it('is found in crumb items', async () => {
       await router.push({ name: 'editIteration', params: { cadenceId: '123', iterationId: '1' } });
 
-      createComponentWithApollo({ readCadenceSpy: cadenceSpy });
+      mountComponent({ readCadenceSpy: cadenceSpy });
 
       await waitForPromises();
       expect(breadcrumbProps().some(({ text }) => text === cadenceTitle)).toBe(true);
@@ -200,7 +175,7 @@ describe('Iteration Breadcrumb', () => {
     it('does not pass a breadcrumb without a title', async () => {
       await router.push({ name: 'index' });
 
-      createComponentWithApollo({ readCadenceSpy: cadenceSpy });
+      mountComponent({ readCadenceSpy: cadenceSpy });
 
       await waitForPromises();
 
@@ -216,7 +191,7 @@ describe('Iteration Breadcrumb', () => {
 
       await router.push({ name: 'editIteration', params: { cadenceId: '123', iterationId: '1' } });
 
-      createComponentWithApollo({ readCadenceSpy: cadenceSpy });
+      mountComponent({ readCadenceSpy: cadenceSpy });
 
       await waitForPromises();
 
@@ -234,7 +209,7 @@ describe('Iteration Breadcrumb', () => {
 
       await router.push({ name: 'editIteration', params: { cadenceId: '123', iterationId: '1' } });
 
-      createComponentWithApollo({ readCadenceSpy: cadenceSpy });
+      mountComponent({ readCadenceSpy: cadenceSpy });
 
       await waitForPromises();
 
@@ -252,7 +227,7 @@ describe('Iteration Breadcrumb', () => {
 
       await router.push({ name: 'editIteration', params: { cadenceId: '123', iterationId: '1' } });
 
-      createComponentWithApollo({ readCadenceSpy: cadenceSpy });
+      mountComponent({ readCadenceSpy: cadenceSpy });
 
       await waitForPromises();
 

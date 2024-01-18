@@ -52,9 +52,9 @@ export default {
       const breadcrumbs = [];
 
       pathArray.forEach((path, index) => {
-        let text = this.$route.matched[index].meta?.breadcrumb || path;
+        let text = this.$route.matched[index]?.meta?.breadcrumb || path;
 
-        if (this.$route.matched[index].path === cadencePath) {
+        if (this.$route.matched[index]?.path === cadencePath) {
           text = this.cadenceTitle;
         }
         const prevPath = breadcrumbs[index - 1]?.to || '';
