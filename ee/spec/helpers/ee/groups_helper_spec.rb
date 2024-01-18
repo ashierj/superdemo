@@ -216,6 +216,49 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     end
   end
 
+  describe '#show_user_cap_alert??' do
+    before do
+      allow(group).to receive(:user_cap_available?).and_return(user_cap_applied)
+      allow(helper).to receive(:current_user).and_return(current_user)
+    end
+
+    describe 'when user cap is available' do
+      let(:user_cap_applied) { true }
+
+      describe 'when user is an owner of the root namespace' do
+        it { expect(helper.show_user_cap_alert?).to be true }
+      end
+
+      describe 'when user is not an owner of the root namespace' do
+        let(:current_user) { create(:user) }
+
+        it { expect(helper.show_user_cap_alert?).to be false }
+      end
+    end
+
+    describe 'when user cap is not available' do
+      let(:user_cap_applied) { false }
+
+      it { expect(helper.show_user_cap_alert?).to be false }
+    end
+  end
+
+  describe '#pending_members_link' do
+    it { expect(helper.pending_members_link).to eq link_to('', pending_members_group_usage_quotas_path(group)) }
+
+    describe 'for a sub-group' do
+      let(:sub_group) { create(:group, :private, parent: group) }
+
+      before do
+        helper.instance_variable_set(:@group, sub_group)
+      end
+
+      it 'returns a link to the root group' do
+        expect(helper.pending_members_link).to eq link_to('', pending_members_group_usage_quotas_path(group))
+      end
+    end
+  end
+
   describe '#show_product_purchase_success_alert?' do
     describe 'when purchased_product is present' do
       before do

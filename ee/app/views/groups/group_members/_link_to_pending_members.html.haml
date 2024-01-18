@@ -1,5 +1,4 @@
-- if @group.user_cap_available?
-  - pending_members_link = link_to('', pending_members_group_usage_quotas_path(@group))
+- if show_user_cap_alert?
   .gl-w-full.order-md-1
     = render Pajamas::AlertComponent.new(variant: :info, dismissible: false) do |c|
       - c.with_body do
