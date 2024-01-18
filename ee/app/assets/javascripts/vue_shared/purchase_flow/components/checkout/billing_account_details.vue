@@ -8,11 +8,7 @@ export default {
     ContactBillingAddress,
   },
   props: {
-    soldToContact: {
-      type: Object,
-      required: true,
-    },
-    billToContact: {
+    billingAccount: {
       type: Object,
       required: true,
     },
@@ -21,9 +17,9 @@ export default {
 </script>
 <template>
   <div>
-    <contact-billing-address :is-sold-to-contact="true" :contact="soldToContact" />
-    <contact-billing-address :is-sold-to-contact="false" :contact="billToContact" />
+    <contact-billing-address :is-sold-to-contact="true" :contact="billingAccount.soldToContact" />
+    <contact-billing-address :is-sold-to-contact="false" :contact="billingAccount.billToContact" />
 
-    <company-information />
+    <company-information :billing-account="billingAccount" />
   </div>
 </template>
