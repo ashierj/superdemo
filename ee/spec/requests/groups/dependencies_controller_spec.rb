@@ -161,7 +161,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                     'occurrence_count' => 1,
                     'project_count' => 1,
                     "project" => { "full_path" => project.full_path, "name" => project.name },
-                    "component_id" => sbom_occurrence_npm.component_id,
+                    "component_id" => sbom_occurrence_npm.component_version_id,
                     "occurrence_id" => sbom_occurrence_npm.id,
                     "vulnerability_count" => 0
                   },
@@ -180,7 +180,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                     'occurrence_count' => 1,
                     'project_count' => 1,
                     "project" => { "full_path" => project.full_path, "name" => project.name },
-                    "component_id" => sbom_occurrence_bundler.component_id,
+                    "component_id" => sbom_occurrence_bundler.component_version_id,
                     "occurrence_id" => sbom_occurrence_bundler.id,
                     "vulnerability_count" => 0
                   }
@@ -422,8 +422,8 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
 
   describe 'GET locations' do
     let_it_be(:project) { create(:project, namespace: group) }
-    let_it_be(:component) { create(:sbom_component) }
-    let(:params) { { group_id: group.to_param, search: 'file', component_id: component.id } }
+    let_it_be(:component_version) { create(:sbom_component_version) }
+    let(:params) { { group_id: group.to_param, search: 'file', component_id: component_version.id } }
 
     subject { get locations_group_dependencies_path(group_id: group.full_path), params: params, as: :json }
 
@@ -450,11 +450,14 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
         end
 
         context 'with existing matches' do
-          let_it_be(:occurrence_npm) { create(:sbom_occurrence, component: component, project: project) }
+          let_it_be(:occurrence_npm) do
+            create(:sbom_occurrence, component_version: component_version, project: project)
+          end
+
           let_it_be(:source_npm) { occurrence_npm.source }
           let_it_be(:source_bundler) { create(:sbom_source, packager_name: 'bundler', input_file_path: 'Gemfile.lock') }
           let_it_be(:occurrence_bundler) do
-            create(:sbom_occurrence, source: source_bundler, component: component, project: project)
+            create(:sbom_occurrence, source: source_bundler, component_version: component_version, project: project)
           end
 
           let_it_be(:location_bundler) { occurrence_bundler.location }

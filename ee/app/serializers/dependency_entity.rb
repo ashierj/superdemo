@@ -56,7 +56,7 @@ class DependencyEntity < Grape::Entity
   expose :project_count, if: ->(_) { group? } do |object|
     object.respond_to?(:project_count) ? object.project_count : 1
   end
-  expose :component_id, if: ->(_) { group? }
+  expose :component_version_id, as: :component_id, if: ->(_) { group? }
 
   expose :id, as: :occurrence_id, if: ->(_) { group? || project_level_sbom_occurrences_enabled? }
   expose :vulnerability_count, if: ->(_) { group? || project_level_sbom_occurrences_enabled? }

@@ -83,7 +83,7 @@ module Sbom
     end
 
     scope :filter_by_search_with_component_and_group, ->(search, component_id, group) do
-      relation = includes(project: :namespace).where(component_id: component_id, project: group.all_projects)
+      relation = includes(project: :namespace).where(component_version_id: component_id, project: group.all_projects)
       if search.present?
         relation.where('input_file_path ILIKE ?', "%#{sanitize_sql_like(search.to_s)}%") # rubocop:disable GitlabSecurity/SqlInjection -- This cop is a false positive as we are using parameterization via ?
       else
