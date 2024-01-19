@@ -33,7 +33,8 @@ module Geo
                             :with_verification_state, :verification_started,
                             :verification_succeeded?, :verification_failed,
                             :verification_pending, :verification_disabled,
-                            :verification_disabled!, :verification_disabled?].freeze
+                            :verification_disabled!, :verification_disabled?,
+                            :verification_pending?].freeze
 
     included do
       sha_attribute :verification_checksum
