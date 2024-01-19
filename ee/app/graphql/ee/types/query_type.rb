@@ -86,7 +86,6 @@ module EE
         end
         field :workspace, ::Types::RemoteDevelopment::WorkspaceType,
           null: true,
-          alpha: { milestone: '16.0' },
           description: 'Find a workspace.' do
           argument :id, ::Types::GlobalIDType[::RemoteDevelopment::Workspace],
             required: true,
@@ -95,7 +94,6 @@ module EE
         field :workspaces,
           ::Types::RemoteDevelopment::WorkspaceType.connection_type,
           null: true,
-          alpha: { milestone: '16.0' },
           resolver: ::Resolvers::RemoteDevelopment::WorkspacesForQueryRootResolver,
           description: 'Find workspaces across the entire instance. This field is only available to instance admins, ' \
                        'it will return an empty result for all non-admins.'

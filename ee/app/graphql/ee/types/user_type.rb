@@ -8,7 +8,6 @@ module EE
 
       prepended do
         field :workspaces,
-          alpha: { milestone: '16.6' },
           description: 'Workspaces owned by the current user.',
           resolver: ::Resolvers::RemoteDevelopment::WorkspacesForCurrentUserResolver
       end
