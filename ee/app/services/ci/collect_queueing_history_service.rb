@@ -14,7 +14,7 @@ module Ci
     end
 
     def execute
-      unless ::ClickHouse::Client.database_configured?(:main)
+      unless ::Gitlab::ClickHouse.configured?
         return ServiceResponse.error(message: 'ClickHouse database is not configured')
       end
 

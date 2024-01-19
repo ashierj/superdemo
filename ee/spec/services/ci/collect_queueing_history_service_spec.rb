@@ -36,7 +36,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
 
   context "when ClickHouse database is not configured" do
     before do
-      allow(ClickHouse::Client).to receive(:database_configured?).and_return(false)
+      allow(::Gitlab::ClickHouse).to receive(:configured?).and_return(false)
     end
 
     it 'returns error' do
