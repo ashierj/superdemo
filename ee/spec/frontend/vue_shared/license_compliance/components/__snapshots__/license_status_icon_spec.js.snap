@@ -6,7 +6,7 @@ exports[`LicenseStatusIcon renders "failed" state correctly 1`] = `
 >
   <gl-icon-stub
     class="gl-mb-1"
-    data-qa-selector="status_failed_icon"
+    data-testid="status-failed-icon"
     name="status-failed"
     size="12"
   />
@@ -19,7 +19,7 @@ exports[`LicenseStatusIcon renders "neutral" state correctly 1`] = `
 >
   <gl-icon-stub
     class="gl-mb-1"
-    data-qa-selector="status_neutral_icon"
+    data-testid="status-neutral-icon"
     name="status-alert"
     size="12"
   />
@@ -32,7 +32,7 @@ exports[`LicenseStatusIcon renders "success" state correctly 1`] = `
 >
   <gl-icon-stub
     class="gl-mb-1"
-    data-qa-selector="status_success_icon"
+    data-testid="status-success-icon"
     name="status-success"
     size="12"
   />
