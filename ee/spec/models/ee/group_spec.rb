@@ -3527,6 +3527,30 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#jira_issues_integration_available?' do
+    subject { group.jira_issues_integration_available? }
+
+    context 'licensed' do
+      before do
+        stub_licensed_features(jira_issues_integration: true)
+      end
+
+      it 'returns true for licensed instance' do
+        is_expected.to be true
+      end
+    end
+
+    context 'unlicensed' do
+      before do
+        stub_licensed_features(jira_issues_integration: false)
+      end
+
+      it 'returns false for unlicensed instance' do
+        is_expected.to be false
+      end
+    end
+  end
+
   describe '#multiple_approval_rules_available?' do
     subject { group.multiple_approval_rules_available? }
 
