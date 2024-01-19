@@ -1,7 +1,12 @@
 import { formatAsPercentageWithoutSymbol, secondsToDays } from 'ee/dora/components/util';
 import { VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 import { groupDoraPerformanceScoreCountsByCategory } from './utils';
-import { TABLE_METRICS, UNITS, DORA_PERFORMERS_SCORE_CATEGORIES } from './constants';
+import {
+  TABLE_METRICS,
+  UNITS,
+  DORA_PERFORMERS_SCORE_CATEGORIES,
+  MAX_METRIC_PRECISION,
+} from './constants';
 
 /**
  * @typedef {Object} ValueStreamDashboardTableMetric
@@ -45,11 +50,15 @@ export const extractGraphqlVulnerabilitiesData = (rawVulnerabilityData = []) => 
   };
 };
 
-const scaledValueForDisplay = (value, units) => {
-  if ([UNITS.PERCENT, UNITS.DAYS].includes(units)) {
-    return units === UNITS.PERCENT ? formatAsPercentageWithoutSymbol(value) : secondsToDays(value);
+export const scaledValueForDisplay = (value, units, precision = MAX_METRIC_PRECISION) => {
+  switch (units) {
+    case UNITS.PERCENT:
+      return formatAsPercentageWithoutSymbol(value);
+    case UNITS.DAYS:
+      return secondsToDays(value, precision);
+    default:
+      return value;
   }
-  return value;
 };
 
 /**
