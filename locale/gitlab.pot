@@ -31334,6 +31334,9 @@ msgstr ""
 msgid "MlModelRegistry|Failed to load model versions with error: %{message}"
 msgstr ""
 
+msgid "MlModelRegistry|Failed to load model with error: %{message}"
+msgstr ""
+
 msgid "MlModelRegistry|ID"
 msgstr ""
 
