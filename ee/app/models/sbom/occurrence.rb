@@ -7,6 +7,7 @@ module Sbom
     include IgnorableColumns
 
     belongs_to :component, optional: false
+    belongs_to :source_package
     belongs_to :component_version
     belongs_to :project, optional: false
     belongs_to :pipeline, class_name: 'Ci::Pipeline'
@@ -34,6 +35,7 @@ module Sbom
     delegate :purl_type, to: :component
     delegate :component_type, to: :component
     delegate :version, to: :component_version, allow_nil: true
+    delegate :source_package_name, to: :component_version, allow_nil: true
     delegate :packager, to: :source, allow_nil: true
 
     scope :order_by_id, -> { order(id: :asc) }
@@ -76,6 +78,10 @@ module Sbom
 
     scope :filter_by_components, ->(components) do
       where(component: components)
+    end
+
+    scope :filter_by_source_packages, ->(source_packages) do
+      where(source_package: source_packages)
     end
 
     scope :filter_by_component_names, ->(component_names) do
