@@ -11,6 +11,11 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 > - [Introduced support for Code Generation](https://gitlab.com/gitlab-org/gitlab/-/issues/415583) in GitLab 16.3.
 > - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/435271) in GitLab 16.7.
 
+NOTE:
+Starting in February 2024, Code Suggestions will be part of
+[GitLab Duo Pro](https://about.gitlab.com/gitlab-duo/),
+available to Premium and Ultimate users for purchase now.
+
 Write code more efficiently by using generative AI to suggest code while you're developing.
 
 With [GitLab Duo Code Suggestions](https://about.gitlab.com/solutions/code-suggestions/), you get:
