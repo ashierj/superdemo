@@ -279,16 +279,6 @@ RSpec.describe Repositories::GitHttpController, feature_category: :source_code_m
 
       it_behaves_like 'does not track Git operation from a Geo secondary'
     end
-
-    context 'when feature flag :track_geo_secondary_git_op_action is disabled' do
-      subject { post_git_receive_pack }
-
-      before do
-        stub_feature_flags(track_geo_secondary_git_op_action: false)
-      end
-
-      it_behaves_like 'does not track Git operation from a Geo secondary'
-    end
   end
 
   context 'GET #git_upload_pack' do
