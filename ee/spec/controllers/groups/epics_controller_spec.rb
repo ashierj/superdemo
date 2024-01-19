@@ -314,12 +314,12 @@ RSpec.describe Groups::EpicsController, feature_category: :portfolio_management 
             expect(response).to have_gitlab_http_status(:ok)
           end
 
-          it 'creates a new epic' do
-            expect { subject }.to change { Epic.count }.from(0).to(1)
+          it 'creates a new epic with a synced work item' do
+            expect { subject }.to change { Epic.count }.from(0).to(1).and change { WorkItem.count }.by(1)
           end
 
-          it 'assigns labels to the new epic' do
-            expect { subject }.to change { LabelLink.count }.from(0).to(1)
+          it 'assigns labels to the new epic and the synced work item' do
+            expect { subject }.to change { LabelLink.count }.by(2)
           end
 
           it 'returns the correct json' do

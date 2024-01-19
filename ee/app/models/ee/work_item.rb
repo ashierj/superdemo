@@ -12,6 +12,8 @@ module EE
 
       has_one :color, class_name: 'WorkItems::Color', foreign_key: 'issue_id', inverse_of: :work_item
 
+      has_one :synced_epic, class_name: 'Epic', foreign_key: 'issue_id', inverse_of: :work_item
+
       delegate :reminder_frequency, to: :progress, allow_nil: true
 
       scope :with_reminder_frequency, ->(frequency) {

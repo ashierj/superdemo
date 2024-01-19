@@ -31,7 +31,10 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
     subject(:service) { epics_create_service.new(group: group, current_user: user, params: params) }
 
     it 'defines allowed params' do
-      expect(described_class::ALLOWED_PARAMS).to contain_exactly(:title, :description, :confidential)
+      expect(described_class::ALLOWED_PARAMS).to contain_exactly(
+        :title, :description, :confidential, :author, :created_at, :updated_at, :updated_by_id,
+        :last_edited_by_id, :last_edited_at, :closed_by_id, :closed_at, :state_id
+      )
     end
 
     it 'calls WorkItems::CreateService with allowed params' do
@@ -45,11 +48,13 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
           current_user: user,
           params: {
             iid: be_a_kind_of(Numeric),
+            created_at: be_a_kind_of(Time),
             title: 'foo',
             confidential: true,
             work_item_type: WorkItems::Type.default_by_type(:epic),
             extra_params: { synced_work_item: true }
-          }
+          },
+          widget_params: {}
         )
 
       service.execute
