@@ -6,7 +6,9 @@ import {
   extractGraphqlVulnerabilitiesData,
   extractGraphqlMergeRequestsData,
   extractDoraPerformanceScoreCounts,
+  scaledValueForDisplay,
 } from 'ee/analytics/dashboards/api';
+import { UNITS } from 'ee/analytics/dashboards/constants';
 import {
   mockDoraMetricsResponseData,
   mockLastVulnerabilityCountData,
@@ -60,8 +62,8 @@ describe('Analytics Dashboards api', () => {
     const doraResponse = {
       change_failure_rate: { identifier: 'change_failure_rate', value: '5.7' },
       deployment_frequency: { identifier: 'deployment_frequency', value: 23.75 },
-      lead_time_for_changes: { identifier: 'lead_time_for_changes', value: '0.3' },
-      time_to_restore_service: { identifier: 'time_to_restore_service', value: '0.8' },
+      lead_time_for_changes: { identifier: 'lead_time_for_changes', value: '0.2721' },
+      time_to_restore_service: { identifier: 'time_to_restore_service', value: '0.8343' },
     };
 
     it('returns each flow metric', () => {
@@ -134,5 +136,28 @@ describe('Analytics Dashboards api', () => {
         mockDoraPerformersScoreChartData,
       );
     });
+  });
+
+  describe('scaledValueForDisplay', () => {
+    it.each`
+      value    | units            | result
+      ${86400} | ${UNITS.DAYS}    | ${'1.0000'}
+      ${0.5}   | ${UNITS.PERCENT} | ${'50.0'}
+      ${0.75}  | ${UNITS.PER_DAY} | ${0.75}
+      ${1500}  | ${UNITS.COUNT}   | ${1500}
+    `('formats the $value as $result when units set to $units', ({ value, units, result }) => {
+      expect(scaledValueForDisplay(value, units)).toBe(result);
+    });
+
+    it.each`
+      precision | result
+      ${1}      | ${'0.3'}
+      ${3}      | ${'0.271'}
+    `(
+      'returns the value with $precision decimals as $result when units set to $units',
+      ({ precision, result }) => {
+        expect(scaledValueForDisplay(23456, UNITS.DAYS, precision)).toBe(result);
+      },
+    );
   });
 });

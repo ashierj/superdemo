@@ -15,6 +15,9 @@ export const UNITS = {
   PERCENT: 'PERCENT',
 };
 
+// Limits the number of decimals we round values to
+export const MAX_METRIC_PRECISION = 4;
+
 export const SUPPORTED_DORA_METRICS = [
   DORA_METRICS.DEPLOYMENT_FREQUENCY,
   DORA_METRICS.LEAD_TIME_FOR_CHANGES,
