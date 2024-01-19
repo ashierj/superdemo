@@ -57,6 +57,11 @@ export default {
       required: false,
       default: true,
     },
+    state: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -145,6 +150,7 @@ export default {
     is-check-centered
     searchable
     fluid-width
+    :toggle-class="{ 'gl-inset-border-1-red-500!': !state }"
     :multiple="multiple"
     :loading="loading"
     :header-text="$options.i18n.projectDropdownHeader"
