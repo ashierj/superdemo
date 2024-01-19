@@ -238,7 +238,7 @@ module Gitlab
       end
 
       def last_commit_ancestor_of?(to_sha)
-        return true if from_sha == Gitlab::Git::SHA1_BLANK_SHA
+        return true if Gitlab::Git.blank_ref?(from_sha)
         return false unless repository_contains_last_indexed_commit?
 
         # we always treat the `EMPTY_TREE_ID` as an ancestor to make sure
