@@ -6,7 +6,7 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
   let_it_be(:indexed_namespace1) { create(:namespace) }
   let_it_be(:indexed_namespace2) { create(:namespace) }
   let_it_be(:unindexed_namespace) { create(:namespace) }
-  let(:node) do
+  let_it_be(:node) do
     create(:zoekt_node, index_base_url: 'http://example.com:1234/', search_base_url: 'http://example.com:4567/')
   end
 
@@ -23,6 +23,17 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
   describe 'relations' do
     it { is_expected.to have_many(:indices).inverse_of(:node) }
     it { is_expected.to have_many(:enabled_namespaces).through(:indices) }
+  end
+
+  describe 'scopes' do
+    describe '.descending_order_by_free_bytes' do
+      let_it_be(:node_with_more_free_space) { create(:zoekt_node, used_bytes: node.used_bytes.pred) }
+
+      it 'returns node by the descending order of free bytes' do
+        expect(described_class.descending_order_by_free_bytes.pluck(:id)).to eq [node_with_more_free_space.id, node.id]
+        expect(described_class.pluck(:id)).to eq [node.id, node_with_more_free_space.id]
+      end
+    end
   end
 
   it 'has many indexed_namespaces' do
