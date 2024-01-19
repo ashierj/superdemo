@@ -2,11 +2,20 @@
 
 module Projects
   class BranchRule
+    include GlobalID::Identification
     extend Forwardable
 
     attr_reader :project, :protected_branch
 
-    def_delegators(:protected_branch, :name, :group, :default_branch?, :created_at, :updated_at)
+    def_delegators(:protected_branch, :id, :name, :group, :default_branch?, :created_at, :updated_at)
+
+    def self.find(id)
+      protected_branch = ProtectedBranch.find(id)
+
+      new(protected_branch.project, protected_branch)
+    rescue ActiveRecord::RecordNotFound
+      raise ActiveRecord::RecordNotFound, "Couldn't find Projects::BranchRule with 'id'=#{id}"
+    end
 
     def initialize(project, protected_branch)
       @protected_branch = protected_branch

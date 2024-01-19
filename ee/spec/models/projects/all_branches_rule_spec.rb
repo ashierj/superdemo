@@ -17,6 +17,36 @@ RSpec.describe Projects::AllBranchesRule, feature_category: :source_code_managem
 
   subject { described_class.new(project) }
 
+  describe '::find(id)' do
+    context 'when id matches a Project' do
+      it 'finds the project and initializes a branch rule' do
+        instance = described_class.find(project.id)
+        expect(instance).to be_instance_of(described_class)
+        expect(instance.project.id).to eq(project.id)
+      end
+    end
+
+    context 'when id does not match a Project' do
+      it 'raises an ActiveRecord::RecordNotFound error describing the branch rule' do
+        expect { described_class.find(0) }.to raise_error(
+          ActiveRecord::RecordNotFound, "Couldn't find Projects::AllBranchesRule with 'id'=0"
+        )
+      end
+    end
+  end
+
+  describe '#id' do
+    it 'delegates to project' do
+      expect(subject).to delegate_method(:id).to(:project)
+    end
+  end
+
+  describe '#to_global_id' do
+    it 'generates a valid global id' do
+      expect(subject.to_global_id.to_s).to eq("gid://gitlab/Projects::AllBranchesRule/#{project.id}")
+    end
+  end
+
   describe '#any_rules?' do
     context 'when there are no approval rules and no status checks' do
       it 'returns false' do
