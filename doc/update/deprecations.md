@@ -227,6 +227,25 @@ From GitLab 18.0 and later, the methods to register runners introduced by the ne
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### Agent for Kubernetes option `ca-cert-file` renamed
+
+<div class="deprecation-notes">
+- Announced in GitLab <span class="milestone">16.9</span>
+- Removal in GitLab <span class="milestone">17.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/437728).
+</div>
+
+In the GitLab agent for Kubernetes (agentk), the `--ca-cert-file` command line option
+and the corresponding `config.caCert` Helm chart value have been renamed
+to `--kas-ca-cert-file` and `config.kasCaCert`, respectively.
+
+The old `--ca-cert-file` and `config.caCert` options are deprecated, and will
+be removed in GitLab 17.0.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### Auto DevOps support for Herokuish is deprecated
 
 <div class="deprecation-notes">
