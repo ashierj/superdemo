@@ -65,6 +65,24 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     end
   end
 
+  shared_examples 'without node backoffs' do |method|
+    context 'and an exception occurs' do
+      it 'does not backoff current node and exception is still raised' do
+        expect(node.backoff).not_to receive(:backoff!)
+        expect(::Gitlab::HTTP).to receive(method).and_raise 'boom'
+        expect { make_request }.to raise_error 'boom'
+      end
+    end
+
+    context 'when a backoff is active for zoekt node' do
+      it 'does not raise an exception' do
+        node.backoff.backoff!
+
+        expect { make_request }.not_to raise_error
+      end
+    end
+  end
+
   shared_examples 'with node backoffs' do |method|
     before do
       allow(::Search::Zoekt::Node).to receive(:find_by_id).with(node.id).and_return(node)
@@ -93,21 +111,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
         stub_feature_flags(zoekt_node_backoffs: false)
       end
 
-      context 'and an exception occurs' do
-        it 'does not backoff current node and exception is still raised' do
-          expect(node.backoff).not_to receive(:backoff!)
-          expect(::Gitlab::HTTP).to receive(method).and_raise 'boom'
-          expect { make_request }.to raise_error 'boom'
-        end
-      end
-
-      context 'when a backoff is active for zoekt node' do
-        it 'does not raise an exception' do
-          node.backoff.backoff!
-
-          expect { make_request }.not_to raise_error
-        end
-      end
+      it_behaves_like 'without node backoffs', method
     end
   end
 
@@ -308,7 +312,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       let(:expected_path) { '/indexer/index' }
     end
 
-    it_behaves_like 'with node backoffs', :post do
+    it_behaves_like 'without node backoffs', :post do
       let(:make_request) { subject }
     end
 
@@ -359,7 +363,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       let(:expected_path) { "/indexer/index/#{project_1.id}" }
     end
 
-    it_behaves_like 'with node backoffs', :delete do
+    it_behaves_like 'without node backoffs', :delete do
       let(:make_request) { subject }
     end
 

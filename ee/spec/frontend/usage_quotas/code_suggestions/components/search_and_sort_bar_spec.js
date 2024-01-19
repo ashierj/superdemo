@@ -126,7 +126,11 @@ describe('SearchAndSortBar', () => {
           createComponent();
           findFilteredSearchBar().vm.$emit('onFilter', searchTokens);
 
-          expect(wrapper.emitted('onFilter')[0][0]).toStrictEqual({ search: searchTerm });
+          expect(wrapper.emitted('onFilter')[0][0]).toStrictEqual({
+            search: searchTerm,
+            filterByProjectId: undefined,
+            filterByGroupInvite: undefined,
+          });
         });
       });
 
@@ -143,7 +147,11 @@ describe('SearchAndSortBar', () => {
           createComponent();
           findFilteredSearchBar().vm.$emit('onFilter', searchTokens);
 
-          expect(wrapper.emitted('onFilter')[0][0]).toStrictEqual({ search: 'search with spaces' });
+          expect(wrapper.emitted('onFilter')[0][0]).toStrictEqual({
+            search: 'search with spaces',
+            filterByProjectId: undefined,
+            filterByGroupInvite: undefined,
+          });
         });
       });
     });
@@ -170,36 +178,46 @@ describe('SearchAndSortBar', () => {
       });
 
       describe.each([
-        [[{ type: FILTERED_SEARCH_TERM, value: { data: searchTerm } }], { search: searchTerm }],
         [
-          [{ type: TOKEN_TYPE_GROUP_INVITE, value: { data: groupInvite } }],
-          { filterByGroupInvite: groupInvite },
+          { type: FILTERED_SEARCH_TERM, value: { data: searchTerm } },
+          { search: searchTerm, filterByProjectId: undefined, filterByGroupInvite: undefined },
         ],
         [
-          [{ type: TOKEN_TYPE_PROJECT, value: { data: projectId } }],
-          { filterByProjectId: projectId },
+          { type: TOKEN_TYPE_GROUP_INVITE, value: { data: groupInvite } },
+          { search: undefined, filterByProjectId: undefined, filterByGroupInvite: groupInvite },
         ],
-        [[{ type: 'status', value: { data: 'test' } }], {}],
-      ])('with invalid type or data', (searchTokens, expected) => {
-        it('emits an empty object', () => {
+        [
+          { type: TOKEN_TYPE_PROJECT, value: { data: projectId } },
+          { search: undefined, filterByProjectId: projectId, filterByGroupInvite: undefined },
+        ],
+        [
+          { type: 'status', value: { data: 'test' } },
+          { search: undefined, filterByProjectId: undefined, filterByGroupInvite: undefined },
+        ],
+      ])('with invalid type or data: %s', (searchTokens, expected) => {
+        it('emits the correct filter values', () => {
           createComponent();
-          findFilteredSearchBar().vm.$emit('onFilter', searchTokens);
+          findFilteredSearchBar().vm.$emit('onFilter', [searchTokens]);
 
           expect(wrapper.emitted('onFilter')[0][0]).toStrictEqual(expected);
         });
       });
 
       describe.each([
-        [[{ type: FILTERED_SEARCH_TERM, value: { data: undefined } }]],
-        [[{ type: TOKEN_TYPE_GROUP_INVITE, value: { data: undefined } }]],
-        [[{ type: TOKEN_TYPE_PROJECT, value: { data: undefined } }]],
-        [[{ type: 'status', value: { data: 'test' } }]],
-      ])('with invalid type or data', (searchTokens) => {
-        it('emits an empty object', () => {
+        [{ type: FILTERED_SEARCH_TERM, value: { data: undefined } }],
+        [{ type: TOKEN_TYPE_GROUP_INVITE, value: { data: undefined } }],
+        [{ type: TOKEN_TYPE_PROJECT, value: { data: undefined } }],
+        [{ type: 'status', value: { data: 'test' } }],
+      ])('with invalid type or data: %s', (searchTokens) => {
+        it('emits the correct filter values', () => {
           createComponent();
-          findFilteredSearchBar().vm.$emit('onFilter', searchTokens);
+          findFilteredSearchBar().vm.$emit('onFilter', [searchTokens]);
 
-          expect(wrapper.emitted('onFilter')[0][0]).toStrictEqual({});
+          expect(wrapper.emitted('onFilter')[0][0]).toStrictEqual({
+            search: undefined,
+            filterByProjectId: undefined,
+            filterByGroupInvite: undefined,
+          });
         });
       });
 
@@ -220,6 +238,7 @@ describe('SearchAndSortBar', () => {
         expect(wrapper.emitted('onFilter')[0][0]).toStrictEqual({
           search: searchTerm,
           filterByProjectId: projectId,
+          filterByGroupInvite: undefined,
         });
       });
     });
