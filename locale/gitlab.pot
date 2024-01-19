@@ -4489,6 +4489,18 @@ msgstr ""
 msgid "AiAgents|AI agent"
 msgstr ""
 
+msgid "AiAgents|Agent Name"
+msgstr ""
+
+msgid "AiAgents|Create and manage your AI Agents"
+msgstr ""
+
+msgid "AiAgents|Create your own AI Agents"
+msgstr ""
+
+msgid "AiAgents|Get started"
+msgstr ""
+
 msgid "Akismet"
 msgstr ""
 

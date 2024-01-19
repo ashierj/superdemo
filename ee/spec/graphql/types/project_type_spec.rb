@@ -24,7 +24,7 @@ RSpec.describe GitlabSchema.types['Project'] do
       code_coverage_summary api_fuzzing_ci_configuration corpuses path_locks incident_management_escalation_policies
       incident_management_escalation_policy scan_execution_policies network_policies security_training_urls
       vulnerability_images only_allow_merge_if_all_status_checks_passed dependencies merge_requests_disable_committers_approval
-      has_jira_vulnerability_issue_creation_enabled ci_subscriptions_projects ci_subscribed_projects
+      has_jira_vulnerability_issue_creation_enabled ci_subscriptions_projects ci_subscribed_projects ai_agents
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
@@ -353,6 +353,13 @@ RSpec.describe GitlabSchema.types['Project'] do
         expect(has_jira_vulnerability_issue_creation_enabled).to be false
       end
     end
+  end
+
+  describe 'aiAgents' do
+    subject { described_class.fields['aiAgents'] }
+
+    it { is_expected.to have_graphql_type(Types::Ai::Agents::AgentType.connection_type) }
+    it { is_expected.to have_graphql_resolver(Resolvers::Ai::Agents::FindAgentResolver) }
   end
 
   private

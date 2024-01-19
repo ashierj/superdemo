@@ -2,11 +2,13 @@
 import { GlBadge, GlButton } from '@gitlab/ui';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import AgentList from '../components/agent_list.vue';
 
 export default {
   name: 'ListAiAgents',
   components: {
     TitleArea,
+    AgentList,
     GlBadge,
     GlButton,
   },
@@ -49,5 +51,7 @@ export default {
         <gl-button :href="createAgentPath">{{ s__('AIAgents|Create agent') }}</gl-button>
       </template>
     </title-area>
+
+    <agent-list :create-agent-path="createAgentPath" />
   </div>
 </template>
