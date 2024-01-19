@@ -13,6 +13,8 @@ RSpec.describe 'Setting the epic of an issue', feature_category: :team_planning 
   let_it_be(:issue) { create(:issue, project: project) }
   let_it_be(:user) { create(:user) }
 
+  # TODO: restore threshold after epic-work item sync
+  # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
   let(:queries_count_threshold) { 112 }
   let(:input) { { group_path: new_epic_group&.full_path } }
 

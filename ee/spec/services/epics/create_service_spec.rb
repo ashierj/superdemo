@@ -6,9 +6,34 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
   let_it_be(:ancestor_group) { create(:group, :internal) }
   let_it_be(:group) { create(:group, :internal, parent: ancestor_group) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:parent_epic) { create(:epic, group: group) }
+  let_it_be(:other_user) { create(:user) }
+  let_it_be(:author) { create(:user) }
+  let_it_be(:label1) { create(:group_label, group: group, title: 'priority::1', color: '#FF0000') }
+  let_it_be(:label2) { create(:group_label, group: group, title: 'priority::4', color: '#CC1111') }
+  let_it_be(:synced_parent_work_item) { create(:work_item, :epic, namespace: group) }
+  let_it_be(:parent_epic) { create(:epic, group: group, issue_id: synced_parent_work_item.id) }
+  let(:base_attrs) do
+    %i[title description confidential updated_by_id last_edited_by_id last_edited_at closed_by_id closed_at]
+  end
 
-  let(:params) { { title: 'new epic', description: 'epic description', parent_id: parent_epic.id, confidential: true } }
+  let(:params) do
+    {
+      title: 'new epic',
+      description: 'epic description',
+      parent_id: parent_epic.id,
+      confidential: true,
+      add_label_ids: [label1.id],
+      label_ids: [label2.id],
+      remove_label_ids: [label1.id],
+      author: author,
+      updated_by_id: user.id,
+      last_edited_by_id: other_user.id,
+      last_edited_at: '2024-01-10T01:00:00Z',
+      closed_by_id: other_user.id,
+      closed_at: '2024-01-11T01:00:00Z',
+      state_id: 2
+    }
+  end
 
   subject { described_class.new(group: group, current_user: user, params: params).execute }
 
@@ -33,9 +58,11 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
 
       epic = Epic.last
       expect(epic).to be_persisted
-      expect(epic.title).to eq('new epic')
-      expect(epic.description).to eq('epic description')
+      expect(epic.attributes.with_indifferent_access.values_at(*base_attrs)).to eq(params.values_at(*base_attrs))
+      expect(epic.state_id).to eq('closed')
+      expect(epic.author).to eq(author)
       expect(epic.parent).to eq(parent_epic)
+      expect(epic.labels).to contain_exactly(label2)
       expect(epic.relative_position).not_to be_nil
       expect(epic.confidential).to be_truthy
       expect(NewEpicWorker).to have_received(:perform_async).with(epic.id, user.id)
@@ -47,15 +74,22 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
       end
 
       it 'creates epic work item with same attributes' do
-        expect { subject }.to change { Epic.count }.by(1)
+        subject
 
         epic = Epic.last
         work_item = WorkItem.last
-        expect(epic.title).to eq(work_item.title)
-        expect(epic.description).to eq(work_item.description)
-        expect(epic.confidential).to eq(work_item.confidential)
+
+        expect(work_item.work_item_type.name).to eq('Epic')
+        expect(epic.attributes.with_indifferent_access.slice(*base_attrs))
+          .to eq(work_item.attributes.with_indifferent_access.slice(*base_attrs))
+
         expect(epic.issue_id).to eq(work_item.id)
         expect(epic.iid).to eq(work_item.iid)
+        expect(epic.created_at).to eq(work_item.created_at)
+        expect(epic.author).to eq(work_item.author)
+        expect(epic.parent.work_item).to eq(work_item.work_item_parent)
+        expect(epic.labels).to eq(work_item.labels)
+        expect(epic.state).to eq(work_item.state)
       end
 
       context 'when work item creation fails' do
