@@ -192,7 +192,6 @@ export default {
           data-testid="group-name"
           data-placement="right"
           data-show="true"
-          :data-qa-selector="groupInputAttr('group_name_field')"
           :value="groupName || storeGroupName"
           @update="onGroupUpdate"
         />
@@ -222,7 +221,6 @@ export default {
           data-track-action="activate_form_input"
           data-track-property="project_name"
           data-track-value=""
-          data-qa-selector="project_name_field"
           :value="projectName"
           @update="onProjectUpdate"
         />
