@@ -6220,7 +6220,6 @@
 - './spec/lib/gitlab/hook_data/subgroup_builder_spec.rb'
 - './spec/lib/gitlab/hook_data/user_builder_spec.rb'
 - './spec/lib/gitlab/hotlinking_detector_spec.rb'
-- './spec/lib/gitlab/http_connection_adapter_spec.rb'
 - './spec/lib/gitlab/http_io_spec.rb'
 - './spec/lib/gitlab/http_spec.rb'
 - './spec/lib/gitlab/i18n/metadata_entry_spec.rb'
