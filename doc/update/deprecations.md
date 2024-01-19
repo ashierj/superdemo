@@ -795,6 +795,26 @@ In GitLab 16.0 and later:
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### Heroku image upgrade in Auto DevOps build
+
+<div class="deprecation-notes">
+- Announced in GitLab <span class="milestone">16.9</span>
+- Removal in GitLab <span class="milestone">17.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/437937).
+</div>
+
+In GitLab 17.0, the `auto-build-image` project will upgrade from the `heroku/builder:20` image to `heroku/builder:22`.
+
+To test the behavior of the new image, set the CI/CD variable `AUTO_DEVOPS_BUILD_IMAGE_CNB_BUILDER` to
+`heroku/builder:22`.
+
+To continue to use `heroku/builder:20` after GitLab 17.0,
+set `AUTO_DEVOPS_BUILD_IMAGE_CNB_BUILDER` to `heroku/builder:20`.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### Internal container registry API tag deletion endpoint
 
 <div class="deprecation-notes">
