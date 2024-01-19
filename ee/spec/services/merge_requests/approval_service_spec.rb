@@ -3,24 +3,26 @@
 require 'spec_helper'
 
 RSpec.describe MergeRequests::ApprovalService, feature_category: :code_review_workflow do
+  include LoginHelpers
+
+  let_it_be(:user) { create :user }
+  let_it_be(:group) { create :group }
+  let_it_be(:project) do
+    create :project,
+      :public,
+      :repository,
+      group: group,
+      approvals_before_merge: 0,
+      merge_requests_author_approval: true,
+      merge_requests_disable_committers_approval: false
+  end
+
+  let_it_be(:merge_request) { create :merge_request_with_diffs, source_project: project, reviewers: [user] }
+  let(:enforced_sso) { false }
+
+  subject(:service) { described_class.new(project: project, current_user: user) }
+
   describe '#execute' do
-    let_it_be(:user) { create :user }
-    let_it_be(:group) { create :group }
-    let_it_be(:project) do
-      create :project,
-        :public,
-        :repository,
-        group: group,
-        approvals_before_merge: 0,
-        merge_requests_author_approval: true,
-        merge_requests_disable_committers_approval: false
-    end
-
-    let_it_be(:merge_request) { create :merge_request_with_diffs, source_project: project, reviewers: [user] }
-    let(:enforced_sso) { false }
-
-    subject(:service) { described_class.new(project: project, current_user: user) }
-
     before do
       stub_licensed_features merge_request_approvers: true, group_saml: true
       stub_feature_flags ff_require_saml_auth_to_approve: false
@@ -168,6 +170,47 @@ RSpec.describe MergeRequests::ApprovalService, feature_category: :code_review_wo
           end
         end
       end
+    end
+  end
+
+  describe '#execute with instance saml' do
+    let(:access_restricted) { true }
+    # if password auth is allowed, instance SAML is not enforced via SSOEnforcer
+    let(:password_authentication_enabled_for_web) { false }
+
+    before do
+      stub_licensed_features merge_request_approvers: true
+      stub_application_setting password_authentication_enabled_for_web: password_authentication_enabled_for_web
+
+      stub_omniauth_saml_config(
+        enabled: true,
+        auto_link_saml_user: false,
+        allow_single_sign_on: ['saml'],
+        providers: [mock_saml_config]
+      )
+    end
+
+    before_all do
+      project.add_developer(user)
+      group.add_developer(user)
+    end
+
+    def simulate_require_saml_auth_to_approve(restricted: true)
+      allow_next_instances_of(::Gitlab::Auth::Saml::SsoEnforcer, 1) do |enforcer|
+        allow(enforcer).to receive(:access_restricted?).and_return(restricted)
+      end
+    end
+
+    def simulate_instance_saml_approval_in_time?(in_time:)
+      allow_next_instances_of(::Gitlab::Auth::Saml::SsoState, 2) do |state|
+        allow(state).to receive(:active_since?).and_return(in_time)
+      end
+    end
+
+    it 'changes approval count' do
+      simulate_require_saml_auth_to_approve(restricted: access_restricted)
+      simulate_instance_saml_approval_in_time?(in_time: true)
+      expect { service.execute(merge_request) }.to change { merge_request.approvals.size }
     end
   end
 end
