@@ -12,6 +12,13 @@ RSpec.describe WorkItem do
       .inverse_of(:work_item)
   end
 
+  it 'has one `synced_epic`' do
+    is_expected.to have_one(:synced_epic)
+      .class_name('Epic')
+      .with_foreign_key('issue_id')
+      .inverse_of(:work_item)
+  end
+
   describe '#supported_quick_action_commands' do
     subject { work_item.supported_quick_action_commands }
 

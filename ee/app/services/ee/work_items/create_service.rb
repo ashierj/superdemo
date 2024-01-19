@@ -12,6 +12,13 @@ module EE
         # Used when creating a new epic with a synced work item
         extra_params&.fetch(:synced_work_item, false) || super
       end
+
+      override :filter_timestamp_params
+      def filter_timestamp_params
+        return if extra_params&.fetch(:synced_work_item, false)
+
+        super
+      end
     end
   end
 end
