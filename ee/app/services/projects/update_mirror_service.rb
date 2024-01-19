@@ -117,7 +117,7 @@ module Projects
       tags.each do |tag|
         old_tag = old_tags[tag.name]
         tag_target = tag.dereferenced_target.sha
-        old_tag_target = old_tag ? old_tag.dereferenced_target.sha : Gitlab::Git::SHA1_BLANK_SHA
+        old_tag_target = old_tag ? old_tag.dereferenced_target.sha : repository.blank_ref
 
         next if old_tag_target == tag_target
 

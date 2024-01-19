@@ -27,11 +27,6 @@ export default {
       required: false,
       default: '',
     },
-    checkboxQaSelector: {
-      type: String,
-      required: false,
-      default: null,
-    },
   },
   methods: {
     input(value) {
@@ -45,13 +40,7 @@ export default {
 </script>
 
 <template>
-  <gl-form-checkbox
-    :disabled="locked"
-    :checked="checked"
-    :data-qa-selector="checkboxQaSelector"
-    @input="input"
-    @change="change"
-  >
+  <gl-form-checkbox :disabled="locked" :checked="checked" @input="input" @change="change">
     {{ label }}
     <approval-settings-locked-icon v-if="locked" :label="label" :locked-text="lockedText" />
     <template #help>

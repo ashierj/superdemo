@@ -53,7 +53,7 @@ export default {
     class="form-control gl-ml-auto gl-sm-mr-auto gl-w-10 gl-mt-n2 gl-mb-n2 gl-text-center"
     type="number"
     :min="rule.minApprovalsRequired || 0"
-    data-qa-selector="approvals_number_field"
+    data-testid="approvals-number-field"
     @input="onInputChangeDebounced"
   />
 </template>
