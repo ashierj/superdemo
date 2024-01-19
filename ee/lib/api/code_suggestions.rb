@@ -164,6 +164,11 @@ module API
           body = task.body
           file_too_large! if body.size > MAX_BODY_SIZE
 
+          Gitlab::InternalEvents.track_event(
+            'code_suggestions_requested',
+            user: current_user
+          )
+
           workhorse_headers =
             Gitlab::Workhorse.send_url(
               task.endpoint,

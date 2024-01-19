@@ -15,5 +15,8 @@ module Ai
 
     belongs_to :project
     has_many :versions, class_name: 'Ai::AgentVersion'
+
+    scope :including_project, -> { includes(:project) }
+    scope :for_project, ->(project) { where(project_id: project.id) }
   end
 end

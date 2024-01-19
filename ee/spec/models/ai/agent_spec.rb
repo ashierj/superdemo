@@ -43,4 +43,18 @@ RSpec.describe Ai::Agent, feature_category: :mlops do
       end
     end
   end
+
+  describe 'scopes' do
+    describe '.for_project' do
+      subject { described_class.for_project(project) }
+
+      it { is_expected.to contain_exactly(existing_agent) }
+    end
+
+    describe '.including_project' do
+      subject { described_class.for_project(project) }
+
+      it { expect(described_class.including_project.first.association(:project)).to be_loaded }
+    end
+  end
 end

@@ -308,6 +308,12 @@ module EE
           type: ::Types::Ci::Subscriptions::ProjectType.connection_type,
           method: :downstream_project_subscriptions,
           description: 'Pipeline subscriptions for projects subscribed to the project.'
+
+        field :ai_agents, ::Types::Ai::Agents::AgentType.connection_type,
+          null: true,
+          alpha: { milestone: '16.9' },
+          description: 'Ai Agents for the project.',
+          resolver: ::Resolvers::Ai::Agents::FindAgentResolver
       end
 
       def tracking_key
