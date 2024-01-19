@@ -1,8 +1,10 @@
 <script>
-import { GlTooltipDirective, GlSkeletonLoader } from '@gitlab/ui';
+import { GlAlert, GlTooltipDirective, GlSkeletonLoader } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState, mapGetters } from 'vuex';
+import { visitUrl } from '~/lib/utils/url_utility';
 import {
+  pendingMembersAlertButtonText,
   seatsAvailableText,
   seatsInSubscriptionText,
   seatsInSubscriptionTextForFreePlan,
@@ -11,7 +13,7 @@ import {
   seatsTooltipTrialText,
   unlimited,
 } from 'ee/usage_quotas/seats/constants';
-import { sprintf } from '~/locale';
+import { sprintf, n__ } from '~/locale';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
 import { updateSubscriptionPlanApolloCache } from 'ee/usage_quotas/seats/graphql/utils';
@@ -26,6 +28,7 @@ export default {
   },
   components: {
     PublicNamespacePlanInfoCard,
+    GlAlert,
     StatisticsCard,
     StatisticsSeatsCard,
     SubscriptionUpgradeInfoCard,
@@ -38,6 +41,8 @@ export default {
       'namespaceId',
       'hasError',
       'total',
+      'pendingMembersPagePath',
+      'pendingMembersCount',
       'seatsInSubscription',
       'seatsInUse',
       'maxSeatsUsed',
@@ -53,6 +58,23 @@ export default {
     ...mapGetters(['hasFreePlan', 'isLoading']),
     isPublicFreeNamespace() {
       return this.hasFreePlan && this.isPublicNamespace;
+    },
+    pendingMembersAlertMessage() {
+      return sprintf(
+        n__(
+          'You have %{pendingMembersCount} pending member that needs approval.',
+          'You have %{pendingMembersCount} pending members that need approval.',
+          this.pendingMembersCount,
+        ),
+        {
+          pendingMembersCount: this.pendingMembersCount,
+        },
+      );
+    },
+    shouldShowPendingMembersAlert() {
+      return (
+        this.pendingMembersCount > 0 && this.pendingMembersPagePath && !this.hasLimitedFreePlan
+      );
     },
     seatsInUsePercentage() {
       if (this.totalSeatsAvailable == null || this.activeTrial) {
@@ -125,6 +147,9 @@ export default {
   },
   methods: {
     ...mapActions(['fetchBillableMembersList', 'fetchGitlabSubscription']),
+    navigateToPendingMembersPage() {
+      visitUrl(this.pendingMembersPagePath);
+    },
   },
   helpLinks: {
     seatsInUseLink,
@@ -136,12 +161,25 @@ export default {
     seatsTooltipTrialText,
     seatsTooltipText,
     unlimited,
+    pendingMembersAlertButtonText,
   },
 };
 </script>
 
 <template>
   <section>
+    <gl-alert
+      v-if="shouldShowPendingMembersAlert"
+      variant="info"
+      :dismissible="false"
+      :primary-button-text="$options.i18n.pendingMembersAlertButtonText"
+      class="gl-my-3"
+      data-testid="pending-members-alert"
+      @primaryAction="navigateToPendingMembersPage"
+    >
+      {{ pendingMembersAlertMessage }}
+    </gl-alert>
+
     <div class="gl-bg-gray-10 gl-p-5">
       <div
         v-if="isLoaderShown"
