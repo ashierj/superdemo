@@ -13,6 +13,7 @@ module Elastic
       ElasticNamespaceIndexerWorker,
       ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker,
       ElasticWikiIndexerWorker,
+      Search::Elastic::TriggerIndexingWorker,
       Search::ElasticDefaultBranchChangedWorker,
       Search::ElasticGroupAssociationDeletionWorker,
       Search::IndexCurationWorker,

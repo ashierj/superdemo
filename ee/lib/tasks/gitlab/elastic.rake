@@ -26,10 +26,20 @@ namespace :gitlab do
         puts "Setting `elasticsearch_indexing` has been enabled."
       end
 
-      Rake::Task["gitlab:elastic:index_group_entities"].invoke
-      Rake::Task["gitlab:elastic:index_projects"].invoke
-      Rake::Task["gitlab:elastic:index_snippets"].invoke
-      Rake::Task["gitlab:elastic:index_users"].invoke
+      if Feature.enabled?(:elastic_index_use_trigger_indexing, type: :gitlab_com_derisk)
+        puts 'Scheduling indexing with TriggerIndexingWorker'
+
+        # skip projects, all namespace and project data is handled by `namespaces` task
+        Search::Elastic::TriggerIndexingWorker.perform_in(1.minute,
+          Search::Elastic::TriggerIndexingWorker::INITIAL_TASK, { 'skip' => 'projects' })
+
+        puts "Scheduling indexing with TriggerIndexingWorker... #{'done'.color(:green)}"
+      else
+        Rake::Task["gitlab:elastic:index_group_entities"].invoke
+        Rake::Task["gitlab:elastic:index_projects"].invoke
+        Rake::Task["gitlab:elastic:index_snippets"].invoke
+        Rake::Task["gitlab:elastic:index_users"].invoke
+      end
     end
 
     desc 'GitLab | Elasticsearch | Index Group entities'
