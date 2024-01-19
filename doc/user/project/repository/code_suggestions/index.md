@@ -17,7 +17,7 @@ With [GitLab Duo Code Suggestions](https://about.gitlab.com/solutions/code-sugge
 
 - Code Completion, which suggests completions to the current line you are typing. These suggestions are usually low latency.
 - Code Generation, which generates code based on a natural language code
-  comment block. Write a comment like `# Type more here` to generate the
+  comment block. Write a comment like `# Type more here`, then press <kbd>Enter</kbd> to generate the
   appropriate code, based on the context of your comment and the rest of your code.
   - Algorithms or large code blocks may take more than 10 seconds to generate.
   - Streaming of code generation responses is supported in VS Code, leading to faster average response times. Other supported IDEs offer slower response times and will return the generated code in a single block.
