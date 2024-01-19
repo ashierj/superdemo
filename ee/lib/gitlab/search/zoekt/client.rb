@@ -56,33 +56,30 @@ module Gitlab
         end
 
         def index(project, node_id, force: false)
-          target_node = node(node_id)
-          with_node_exception_handling(target_node) do
-            response = zoekt_indexer_post('/indexer/index', indexing_payload(project, force: force), node_id)
+          raise 'Node can not be found' unless node(node_id)
 
-            raise "Request failed with: #{response.inspect}" unless response.success?
+          response = zoekt_indexer_post('/indexer/index', indexing_payload(project, force: force), node_id)
 
-            parsed_response = parse_response(response)
-            raise parsed_response['Error'] if parsed_response['Error']
+          raise "Request failed with: #{response.inspect}" unless response.success?
 
-            response
-          end
+          parsed_response = parse_response(response)
+          raise parsed_response['Error'] if parsed_response['Error']
+
+          response
         end
 
         def delete(node_id:, project_id:)
           target_node = node(node_id)
           raise 'Node can not be found' unless target_node
 
-          with_node_exception_handling(target_node) do
-            response = delete_request(join_url(target_node.index_base_url, "/indexer/index/#{project_id}"))
+          response = delete_request(join_url(target_node.index_base_url, "/indexer/index/#{project_id}"))
 
-            raise "Request failed with: #{response.inspect}" unless response.success?
+          raise "Request failed with: #{response.inspect}" unless response.success?
 
-            parsed_response = parse_response(response)
-            raise parsed_response['Error'] if parsed_response['Error']
+          parsed_response = parse_response(response)
+          raise parsed_response['Error'] if parsed_response['Error']
 
-            response
-          end
+          response
         end
 
         def truncate
