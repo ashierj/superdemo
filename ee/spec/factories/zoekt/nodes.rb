@@ -12,5 +12,9 @@ FactoryBot.define do
     sequence(:metadata) do |n|
       { name: "zoekt-#{n}" }
     end
+
+    trait :enough_free_space do
+      total_bytes { 100_000_000 }
+    end
   end
 end

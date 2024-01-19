@@ -14,13 +14,12 @@ module Search
 
       validate :only_root_namespaces_can_be_indexed
 
-      scope :search_enabled, -> { where(search: true) }
+      scope :for_root_namespace_id, ->(root_namespace_id) { where(root_namespace_id: root_namespace_id) }
+      scope :preload_storage_statistics, -> { includes(namespace: :root_storage_statistics) }
       scope :recent, -> { order(id: :desc) }
+      scope :search_enabled, -> { where(search: true) }
       scope :with_limit, ->(maximum) { limit(maximum) }
-
-      def self.for_root_namespace_id(root_namespace_id)
-        where(root_namespace_id: root_namespace_id)
-      end
+      scope :with_missing_indices, -> { left_joins(:indices).where(zoekt_indices: { zoekt_enabled_namespace_id: nil }) }
 
       private
 
