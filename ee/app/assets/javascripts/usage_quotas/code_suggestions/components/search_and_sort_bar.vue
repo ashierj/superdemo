@@ -12,6 +12,7 @@ import {
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
 import ProjectToken from 'ee/usage_quotas/code_suggestions/tokens/project_token.vue';
+import { processFilters } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 
 export default {
   name: 'SearchAndSortBar',
@@ -66,29 +67,24 @@ export default {
   },
   methods: {
     handleFilter(filterOptions) {
-      this.$emit('onFilter', this.getFilterParams(filterOptions));
+      const {
+        [FILTERED_SEARCH_TERM]: searchFilters = [],
+        [TOKEN_TYPE_PROJECT]: [{ value: filterByProjectId } = {}] = [],
+        [TOKEN_TYPE_GROUP_INVITE]: [{ value: filterByGroupInvite } = {}] = [],
+      } = processFilters(filterOptions);
+      const search = this.processSearchFilters(searchFilters);
+      this.$emit('onFilter', { search, filterByProjectId, filterByGroupInvite });
     },
     handleSort(sortValue) {
       this.$emit('onSort', sortValue);
     },
-    getFilterParams(filters = []) {
-      let searchTerm = '';
-
-      return filters.reduce((filterParams, filter) => {
-        const { type, value } = filter || {};
-        if (!value?.data) return filterParams;
-        switch (type) {
-          case TOKEN_TYPE_GROUP_INVITE:
-            return { ...filterParams, filterByGroupInvite: value.data };
-          case TOKEN_TYPE_PROJECT:
-            return { ...filterParams, filterByProjectId: value.data };
-          case FILTERED_SEARCH_TERM:
-            searchTerm = searchTerm.concat(' ', value.data).trim();
-            return { ...filterParams, search: searchTerm };
-          default:
-            return filterParams;
-        }
-      }, {});
+    processSearchFilters(searchFilters) {
+      if (searchFilters.length === 0) return undefined;
+      return searchFilters.reduce((acc, { value }) => {
+        if (!acc && !value) return undefined;
+        if (!value) return acc;
+        return `${acc} ${value}`.trim();
+      }, '');
     },
   },
 };
