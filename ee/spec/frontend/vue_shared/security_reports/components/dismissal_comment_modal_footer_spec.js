@@ -9,7 +9,7 @@ describe('DismissalCommentModalFooter', () => {
   let origPage;
   let wrapper;
 
-  const findAddAndDismissButton = () => wrapper.find('[data-testid="add_and_dismiss_button"]');
+  const findAddAndDismissButton = () => wrapper.find('[data-testid="add-and-dismiss-button"]');
 
   afterEach(() => {
     document.body.dataset.page = origPage;

@@ -66,7 +66,7 @@ export default {
     <div class="circle-icon-container gl-flex-shrink-0 gl-align-self-start" :class="iconClass">
       <gl-icon :size="16" :name="iconName" />
     </div>
-    <div class="gl-ml-5 gl-flex-grow-1" data-qa-selector="event_item_content">
+    <div class="gl-ml-5 gl-flex-grow-1" data-testid="event-item-content">
       <note-header
         :note-id="id"
         :author="author"

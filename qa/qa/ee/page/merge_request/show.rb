@@ -63,25 +63,25 @@ module QA
               end
 
               view 'ee/app/assets/javascripts/vue_shared/security_reports/components/event_item.vue' do
-                element :event_item_content
+                element 'event-item-content'
               end
 
               view 'ee/app/assets/javascripts/vue_shared/security_reports/components/modal_footer.vue' do
-                element :resolve_split_button
+                element 'resolve-split-button'
                 element 'create-issue-button'
                 element 'cancel-button'
               end
 
               view 'ee/app/assets/javascripts/vue_shared/security_reports/components/dismiss_button.vue' do
-                element :dismiss_with_comment_button
+                element 'dismiss-with-comment-button'
               end
 
               view 'ee/app/assets/javascripts/vue_shared/security_reports/components/dismissal_comment_box_toggle.vue' do
-                element :dismiss_comment_field
+                element 'dismiss-comment-field'
               end
 
               view 'ee/app/assets/javascripts/vue_shared/security_reports/components/dismissal_comment_modal_footer.vue' do
-                element :add_and_dismiss_button
+                element 'add-and-dismiss-button'
               end
             end
           end
@@ -149,10 +149,10 @@ module QA
           end
 
           def add_comment_and_dismiss(comment)
-            if has_element?(:dismiss_with_comment_button)
-              click_element :dismiss_with_comment_button
-              find_element(:dismiss_comment_field).fill_in with: comment, fill_options: { automatic_label_click: true }
-              click_element :add_and_dismiss_button
+            if has_element?('dismiss-with-comment-button')
+              click_element('dismiss-with-comment-button')
+              find_element('dismiss-comment-field').fill_in with: comment, fill_options: { automatic_label_click: true }
+              click_element('add-and-dismiss-button')
             else
               click_element('dismiss-button')
               find(dismissal_reason_selector, wait: 5).click
@@ -179,7 +179,7 @@ module QA
             click_vulnerability(name)
 
             previous_page = page.current_url
-            click_element :resolve_split_button
+            click_element 'resolve-split-button'
 
             wait_until(max_duration: 15, reload: false) do
               page.current_url != previous_page
@@ -242,15 +242,15 @@ module QA
 
           def has_security_finding_dismissed_on_mr_widget?(reason)
             within_element('vulnerability-modal-content') do
-              has_element?(:event_item_content, text: /Dismissed.*/) &&
-                has_element?(:event_item_content, text: reason)
+              has_element?('event-item-content', text: /Dismissed.*/) &&
+                has_element?('event-item-content', text: reason)
             end
           end
 
           def has_security_finding_dismissed?(reason, project_path)
             within_element('vulnerability-modal-content') do
-              has_element?(:event_item_content, text: "Dismissed at #{project_path.gsub('/', ' / ')}") &&
-                has_element?(:event_item_content, text: reason)
+              has_element?('event-item-content', text: "Dismissed at #{project_path.gsub('/', ' / ')}") &&
+                has_element?('event-item-content', text: reason)
             end
           end
 
