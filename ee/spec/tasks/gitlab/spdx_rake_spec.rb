@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'gitlab:rake tasks', :silence_stdout do
+RSpec.describe 'gitlab:rake tasks', :silence_stdout, feature_category: :software_composition_analysis do
   before do
     Rake.application.rake_require 'tasks/gitlab/spdx'
   end
