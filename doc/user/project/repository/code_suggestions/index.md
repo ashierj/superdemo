@@ -71,8 +71,10 @@ The editor supports these languages:
 |------------------|------------------------|------------------------|------------------------|--------|
 | C++              | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
 | C#               | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
+| CSS              | **{check-circle}** No  | **{check-circle}** Yes | **{check-circle}** No  | **{check-circle}** No  |
 | Go               | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
 | Google SQL       | **{dotted-circle}** No | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
+| HTML             | **{check-circle}** No  | **{check-circle}** Yes | **{check-circle}** No  | **{check-circle}** No  |
 | Java             | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
 | JavaScript       | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
 | Kotlin           | **{check-circle}** Yes (Requires third-party extension providing Kotlin support) | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
@@ -81,6 +83,7 @@ The editor supports these languages:
 | Ruby             | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
 | Rust             | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
 | Scala            | **{check-circle}** Yes (Requires third-party extension providing Scala support) | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
+| Shell scripts (`bash` only) | **{check-circle}** No  | **{check-circle}** Yes | **{check-circle}** No  | **{check-circle}** No  |
 | Swift            | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
 | TypeScript       | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
 | Terraform        | **{check-circle}** Yes (Requires third-party extension providing Terraform support) | **{check-circle}** Yes | **{dotted-circle}** No | **{check-circle}** Yes (Requires third-party extension providing the `terraform` file type) |
