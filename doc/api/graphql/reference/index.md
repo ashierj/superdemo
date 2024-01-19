@@ -15551,7 +15551,7 @@ Branch protection details for a branch rule.
 
 ### `BranchRule`
 
-List of branch rules for a project, grouped by branch name.
+Branch rules configured for a rule target.
 
 #### Fields
 
@@ -15564,7 +15564,7 @@ List of branch rules for a project, grouped by branch name.
 | <a id="branchruleisdefault"></a>`isDefault` | [`Boolean!`](#boolean) | Check if this branch rule protects the project's default branch. |
 | <a id="branchruleisprotected"></a>`isProtected` | [`Boolean!`](#boolean) | Check if this branch rule protects access for the branch. |
 | <a id="branchrulematchingbranchescount"></a>`matchingBranchesCount` | [`Int!`](#int) | Number of existing branches that match this branch rule. |
-| <a id="branchrulename"></a>`name` | [`String!`](#string) | Branch name, with wildcards, for the branch rules. |
+| <a id="branchrulename"></a>`name` | [`String!`](#string) | Name of the branch rule target. Includes wildcards. |
 | <a id="branchruleupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the branch rule was last updated. |
 
 ### `BurnupChartDailyTotals`
