@@ -8,7 +8,7 @@ RSpec.describe FreeTrialRegistrationRedesignExperiment, :experiment, feature_cat
       stub_experiments(free_trial_registration_redesign: :candidate)
     end
 
-    it 'excludes projects with environments' do
+    it 'registers the behavior' do
       expect(experiment(:free_trial_registration_redesign)).to register_behavior(:candidate).with(nil)
       expect { experiment(:free_trial_registration_redesign).run }.not_to raise_error
     end
@@ -19,7 +19,7 @@ RSpec.describe FreeTrialRegistrationRedesignExperiment, :experiment, feature_cat
       stub_experiments(free_trial_registration_redesign: :control)
     end
 
-    it 'excludes projects with environments' do
+    it 'registers the behavior' do
       expect(experiment(:free_trial_registration_redesign)).to register_behavior(:control).with(nil)
       expect { experiment(:free_trial_registration_redesign).run }.not_to raise_error
     end
