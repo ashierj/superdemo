@@ -2,7 +2,7 @@ import { s__ } from '~/locale';
 import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 import { convertObjectPropsToLowerCase } from '~/lib/utils/common_utils';
 
-const salesLink = `${PROMO_URL}/sales/`;
+const salesLink = `${PROMO_URL}/solutions/code-suggestions/sales/`;
 const supportLink = `${PROMO_URL}/support/`;
 
 const NO_SEATS_AVAILABLE_ERROR = {
