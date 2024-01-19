@@ -9,7 +9,6 @@ module EE
       prepended do
         field :workspaces,
           description: 'Workspaces owned by the current user.',
-          alpha: { milestone: '16.6' },
           resolver: ::Resolvers::RemoteDevelopment::WorkspacesForCurrentUserResolver
 
         field :duo_chat_available, ::GraphQL::Types::Boolean,
