@@ -2,7 +2,7 @@ import { GlAlert, GlCard, GlSkeletonLoader } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import DoraPerformersScoreCard from 'ee/analytics/dashboards/components/dora_performers_score_card.vue';
-import DoraPerformersScore from 'ee/analytics/dashboards/components/dora_performers_score.vue';
+import DoraPerformersScoreChart from 'ee/analytics/dashboards/components/dora_performers_score_chart.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
@@ -42,7 +42,7 @@ describe('DoraPerformersScoreCard', () => {
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findPanelTitle = () => wrapper.findByTestId('dora-performers-score-panel-title');
-  const findDoraPerformersScore = () => wrapper.findComponent(DoraPerformersScore);
+  const findDoraPerformersScoreChart = () => wrapper.findComponent(DoraPerformersScoreChart);
 
   describe('loading group', () => {
     beforeEach(() => {
@@ -66,7 +66,29 @@ describe('DoraPerformersScoreCard', () => {
     });
   });
 
-  describe('group loaded successfully', () => {
+  describe('chart raised an error', () => {
+    const mockError = 'mock error';
+
+    beforeEach(async () => {
+      await createWrapper();
+
+      findDoraPerformersScoreChart().vm.$emit('error', { error: mockError });
+    });
+
+    it('renders the default panel title', () => {
+      expect(findPanelTitle().text()).toBe('DORA performers score');
+    });
+
+    it('renders an error alert', () => {
+      expect(findAlert().text()).toBe(mockError);
+    });
+
+    it('hides the dora performers score chart', () => {
+      expect(findDoraPerformersScoreChart().exists()).toBe(false);
+    });
+  });
+
+  describe('loaded successfully', () => {
     beforeEach(() => createWrapper());
 
     it('renders a panel title with the group name', () => {
@@ -74,7 +96,9 @@ describe('DoraPerformersScoreCard', () => {
     });
 
     it('renders the dora performers score chart', () => {
-      expect(findDoraPerformersScore().props()).toMatchObject({ data: { namespace: 'fullpath' } });
+      expect(findDoraPerformersScoreChart().props()).toMatchObject({
+        data: { namespace: 'fullpath' },
+      });
     });
   });
 });

@@ -91,11 +91,12 @@ export default {
   },
   data() {
     const validationErrors = this.visualization?.errors;
+    const hasValidationErrors = Boolean(validationErrors);
 
     return {
       errors: validationErrors || [],
-      hasValidationErrors: Boolean(validationErrors),
-      canRetryError: false,
+      hasValidationErrors,
+      canRetryError: !hasValidationErrors,
       data: null,
       loading: false,
       popoverId: uniqueId('panel-error-popover-'),
@@ -193,17 +194,20 @@ export default {
           filters,
         });
       } catch (error) {
-        this.handleFetchError(error);
+        this.handleError({
+          error,
+
+          // bad or malformed CubeJS query, retry won't fix
+          canRetry: !this.isCubeJsBadRequest(error),
+        });
       } finally {
         this.loading = false;
       }
     },
-    handleFetchError(error) {
-      const isCubeJsBadRequest = this.isCubeJsBadRequest(error);
-      this.canRetryError = !isCubeJsBadRequest; // bad or malformed CubeJS query, retry won't fix
+    handleError({ error, canRetry = true }) {
+      if (!canRetry) this.canRetryError = false;
 
       this.errors = [error];
-
       Sentry.captureException(error);
     },
     isCubeJsBadRequest(error) {
@@ -274,6 +278,7 @@ export default {
           class="gl-overflow-hidden"
           :data="data"
           :options="visualization.options"
+          @error="handleError"
         />
       </div>
 
