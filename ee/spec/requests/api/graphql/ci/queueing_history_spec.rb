@@ -49,7 +49,7 @@ RSpec.describe 'Query.ciQueueingHistory', :click_house, feature_category: :fleet
 
   context "when ClickHouse database is not configured" do
     before do
-      allow(ClickHouse::Client).to receive(:database_configured?).and_return(false)
+      allow(::Gitlab::ClickHouse).to receive(:configured?).and_return(false)
     end
 
     it 'returns error' do

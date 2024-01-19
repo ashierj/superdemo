@@ -42,8 +42,8 @@ module Gitlab
       end
 
       def totals_by_author_target_type_action
-        query = ClickHouse::Client::Query.new(raw_query: QUERY, placeholders: placeholders)
-        ClickHouse::Client.select(query, :main).each_with_object({}) do |row, hash|
+        query = ::ClickHouse::Client::Query.new(raw_query: QUERY, placeholders: placeholders)
+        ::ClickHouse::Client.select(query, :main).each_with_object({}) do |row, hash|
           hash[[row['author_id'], row['target_type'].presence, row['action']]] = row['count']
         end
       end

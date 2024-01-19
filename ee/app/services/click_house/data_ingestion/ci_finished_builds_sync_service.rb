@@ -15,7 +15,7 @@ module ClickHouse
       BUILD_ID_PARTITIONS = 100
 
       def self.enabled?
-        ::ClickHouse::Client.database_configured?(:main)
+        ::Gitlab::ClickHouse.configured?
       end
 
       def initialize(worker_index: 0, total_workers: 1)

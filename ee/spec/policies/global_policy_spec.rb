@@ -427,7 +427,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
 
         enable_admin_mode!(admin) if enable_admin_mode
 
-        allow(ClickHouse::Client).to receive(:database_configured?).with(:main).and_return(clickhouse_configured)
+        allow(::Gitlab::ClickHouse).to receive(:configured?).and_return(clickhouse_configured)
       end
 
       let(:current_user) { is_admin ? admin : user }
