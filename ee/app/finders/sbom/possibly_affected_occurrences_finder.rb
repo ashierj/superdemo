@@ -16,9 +16,9 @@ module Sbom
     end
 
     def execute_in_batches(of: BATCH_SIZE)
-      return unless component_id
+      return unless search_scope
 
-      Sbom::Occurrence.filter_by_components(component_id).each_batch(of: of) do |batch|
+      search_scope.each_batch(of: of) do |batch|
         yield batch
           .with_component_source_version_project_and_pipeline
           .filter_by_non_nil_component_version
@@ -29,13 +29,34 @@ module Sbom
 
     attr_reader :package_name, :purl_type
 
-    def component_id
-      Sbom::Component
-        .libraries
+    def container_scanning?
+      Enums::Sbom.container_scanning_purl_type?(purl_type)
+    end
+
+    def package_identity
+      scope = if container_scanning?
+                Sbom::SourcePackage.all
+              else
+                Sbom::Component.libraries
+              end
+
+      scope
         .by_purl_type_and_name(purl_type, package_name)
         .select(:id)
         .first
     end
-    strong_memoize_attr :component_id
+    strong_memoize_attr :package_identity
+
+    def search_scope
+      return unless package_identity
+
+      case package_identity
+      when Sbom::Component
+        Sbom::Occurrence.filter_by_components(package_identity)
+      when Sbom::SourcePackage
+        Sbom::Occurrence.filter_by_source_packages(package_identity)
+      end
+    end
+    strong_memoize_attr :search_scope
   end
 end
