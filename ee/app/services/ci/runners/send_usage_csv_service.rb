@@ -21,6 +21,8 @@ module Ci
       end
 
       def execute
+        Gitlab::InternalEvents.track_event('export_runner_usage_by_project_as_csv', user: @current_user)
+
         result = process_csv
         return result if result.error?
 
