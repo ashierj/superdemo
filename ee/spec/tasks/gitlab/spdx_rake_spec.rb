@@ -10,12 +10,13 @@ RSpec.describe 'gitlab:rake tasks', :silence_stdout do
   describe 'import' do
     subject { run_rake_task 'gitlab:spdx:import' }
 
-    let(:path) { Gitlab::SPDX::CatalogueGateway::OFFLINE_CATALOGUE }
+    let(:path) { Gitlab::SPDX::CatalogueGateway::OFFLINE_CATALOGUE_PATH }
     let(:data) { { license1: 'test', license2: 'test2' } }
 
     context 'with successful download of the catalogue' do
       before do
-        stub_request(:get, Gitlab::SPDX::CatalogueGateway::URL).to_return(status: 200, body: data.to_json)
+        stub_request(:get, Gitlab::SPDX::CatalogueGateway::ONLINE_CATALOGUE_URL).to_return(status: 200,
+          body: data.to_json)
         allow(IO).to receive(:write)
         expect(IO).to receive(:write).with(path, anything, mode: 'w')
       end
@@ -27,7 +28,8 @@ RSpec.describe 'gitlab:rake tasks', :silence_stdout do
 
     context 'when downloaded catalogue is broken' do
       before do
-        stub_request(:get, Gitlab::SPDX::CatalogueGateway::URL).to_return(status: 200, body: data.inspect)
+        stub_request(:get, Gitlab::SPDX::CatalogueGateway::ONLINE_CATALOGUE_URL).to_return(status: 200,
+          body: data.inspect)
       end
 
       it 'raises parsing failure' do
@@ -37,7 +39,7 @@ RSpec.describe 'gitlab:rake tasks', :silence_stdout do
 
     context 'with network failure' do
       before do
-        stub_request(:get, Gitlab::SPDX::CatalogueGateway::URL).to_return(status: 404)
+        stub_request(:get, Gitlab::SPDX::CatalogueGateway::ONLINE_CATALOGUE_URL).to_return(status: 404)
       end
 
       it 'raises network failure error' do

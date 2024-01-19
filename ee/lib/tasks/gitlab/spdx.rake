@@ -7,14 +7,14 @@ namespace :gitlab do
       require 'net/http'
       require 'gitlab/json'
 
-      spdx_url = ::Gitlab::SPDX::CatalogueGateway::URL
+      spdx_url = ::Gitlab::SPDX::CatalogueGateway::ONLINE_CATALOGUE_URL
       resp = Gitlab::HTTP.get(URI.parse(spdx_url))
 
       raise 'Network failure' if resp.code != 200
 
       data = ::Gitlab::Json.parse(resp.body)
 
-      path = ::Gitlab::SPDX::CatalogueGateway::OFFLINE_CATALOGUE
+      path = ::Gitlab::SPDX::CatalogueGateway::OFFLINE_CATALOGUE_PATH
       File.write(path, data.to_json, mode: 'w')
 
       puts "Local copy of SPDX catalogue is saved to #{path}"
