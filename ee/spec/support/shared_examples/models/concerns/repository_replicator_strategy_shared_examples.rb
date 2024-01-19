@@ -46,9 +46,21 @@ RSpec.shared_examples 'a repository replicator' do
         "replicable_name" => replicator.replicable_name, "event_name" => ::Geo::RepositoryReplicatorStrategy::EVENT_UPDATED, "payload" => { "model_record_id" => replicator.model_record.id })
     end
 
+    it 'calls #before_verifiable_update' do
+      expect(replicator).to receive(:before_verifiable_update)
+
+      replicator.geo_handle_after_update
+    end
+
     context 'when replication feature flag is disabled' do
       before do
         stub_feature_flags(replicator.replication_enabled_feature_key => false)
+      end
+
+      it 'does not call #before_verifiable_update' do
+        expect(replicator).not_to receive(:before_verifiable_update)
+
+        replicator.geo_handle_after_update
       end
 
       it 'does not publish' do
@@ -76,8 +88,8 @@ RSpec.shared_examples 'a repository replicator' do
       )
     end
 
-    it 'calls #after_verifiable_update' do
-      expect(replicator).to receive(:after_verifiable_update)
+    it 'does not call #before_verifiable_update' do
+      expect(replicator).not_to receive(:before_verifiable_update)
 
       replicator.geo_handle_after_create
     end
@@ -87,8 +99,8 @@ RSpec.shared_examples 'a repository replicator' do
         stub_feature_flags(replicator.replication_enabled_feature_key => false)
       end
 
-      it 'does not call #after_verifiable_update' do
-        expect(replicator).not_to receive(:after_verifiable_update)
+      it 'does not call #before_verifiable_update' do
+        expect(replicator).not_to receive(:before_verifiable_update)
 
         replicator.geo_handle_after_create
       end
@@ -211,6 +223,37 @@ RSpec.shared_examples 'a repository replicator' do
   describe '#housekeeping_model_record' do
     it 'is implemented' do
       expect(replicator.housekeeping_model_record).to eq(housekeeping_model_record)
+    end
+  end
+
+  describe '#before_verifiable_update' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:primary, :verification_enabled, :checksum, :expect_verification_pending) do
+      true  | true  | 'abc123' | true
+      true  | false | 'abc123' | false
+      false | true  | 'abc123' | false
+      false | false | 'abc123' | false
+    end
+
+    with_them do
+      before do
+        if primary
+          stub_primary_node
+        else
+          stub_secondary_node
+        end
+
+        allow(described_class).to receive(:verification_enabled?).and_return(verification_enabled)
+
+        model_record.verification_started!
+      end
+
+      it 'marks pending verification only if needed' do
+        replicator.before_verifiable_update
+
+        expect(model_record.verification_pending?).to eq(expect_verification_pending)
+      end
     end
   end
 
