@@ -13,7 +13,6 @@ class ElasticNamespaceIndexerWorker # rubocop:disable Scalability/IdempotentWork
 
   def perform(namespace_id, operation)
     return true unless Gitlab::CurrentSettings.elasticsearch_indexing?
-    return true unless Gitlab::CurrentSettings.elasticsearch_limit_indexing?
 
     namespace = Namespace.find(namespace_id)
 

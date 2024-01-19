@@ -63,16 +63,6 @@ module EE
       !params[:purchased_product].blank?
     end
 
-    def show_user_cap_alert?
-      root_namespace = @group.root_ancestor
-
-      root_namespace.user_cap_available? && can?(current_user, :admin_group, root_namespace)
-    end
-
-    def pending_members_link
-      link_to('', pending_members_group_usage_quotas_path(@group.root_ancestor))
-    end
-
     def group_seats_usage_quota_app_data(group)
       pending_members_page_path = group.user_cap_available? ? pending_members_group_usage_quotas_path(group) : nil
       pending_members_count = ::Member.in_hierarchy(group).with_state("awaiting").count

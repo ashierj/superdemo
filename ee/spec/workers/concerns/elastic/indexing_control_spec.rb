@@ -40,6 +40,7 @@ RSpec.describe Elastic::IndexingControl, feature_category: :global_search do
 
     it 'includes all workers with feature_category :global_search and without pause_control' do
       exceptions = [
+        ConcurrencyLimit::ResumeWorker,
         Elastic::MigrationWorker,
         ElasticClusterReindexingCronWorker,
         ElasticIndexBulkCronWorker,
@@ -47,7 +48,6 @@ RSpec.describe Elastic::IndexingControl, feature_category: :global_search do
         ElasticIndexingControlWorker,
         ElasticNamespaceRolloutWorker,
         PauseControl::ResumeWorker,
-        ConcurrencyLimit::ResumeWorker,
         Search::Zoekt::DefaultBranchChangedWorker
       ]
 

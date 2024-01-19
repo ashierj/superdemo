@@ -54,7 +54,7 @@ export default {
       class="gl-mb-1"
       :name="iconName"
       :size="statusIconSize"
-      :data-qa-selector="`status_${status}_icon`"
+      :data-testid="`status-${status}-icon`"
     />
   </div>
 </template>

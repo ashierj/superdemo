@@ -60,7 +60,7 @@ export default {
       v-gl-tooltip
       :disabled="disabled"
       :title="s__('vulnerability|Add comment and dismiss')"
-      data-qa-selector="dismiss_with_comment_button"
+      data-testid="dismiss-with-comment-button"
       class="js-dismiss-with-comment"
       :aria-label="s__('vulnerability|Add comment and dismiss')"
       icon="comment"

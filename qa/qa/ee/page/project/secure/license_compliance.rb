@@ -48,7 +48,7 @@ module QA
             def has_approved_license?(name)
               has_element?(:admin_license_compliance_container, text: name)
               within_element(:admin_license_compliance_container, text: name) do
-                has_element?(:status_success_icon)
+                has_element?('status-success-icon')
               end
             end
 
@@ -63,7 +63,7 @@ module QA
             def has_denied_license?(name)
               has_element?(:admin_license_compliance_container, text: name)
               within_element(:admin_license_compliance_container, text: name) do
-                has_element?(:status_failed_icon)
+                has_element?('status-failed-icon')
               end
             end
 

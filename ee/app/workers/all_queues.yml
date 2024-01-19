@@ -1794,6 +1794,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: search_elastic_trigger_indexing
+  :worker_name: Search::Elastic::TriggerIndexingWorker
+  :feature_category: :global_search
+  :has_external_dependencies: false
+  :urgency: :throttled
+  :resource_boundary: :cpu
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: search_namespace_index_integrity
   :worker_name: Search::NamespaceIndexIntegrityWorker
   :feature_category: :global_search
