@@ -15,9 +15,7 @@ module EE
 
       override :info_refs
       def info_refs
-        if ::Feature.enabled?(:track_geo_secondary_git_op_action)
-          track_git_ops_event_if_from_secondary(params["geo_node_id"])
-        end
+        track_git_ops_event_if_from_secondary(params["geo_node_id"])
 
         super
       end
@@ -27,9 +25,7 @@ module EE
       # the primary
       override :git_upload_pack
       def git_upload_pack
-        if ::Feature.enabled?(:track_geo_secondary_git_op_action)
-          track_git_ops_event_if_from_secondary(params["geo_node_id"])
-        end
+        track_git_ops_event_if_from_secondary(params["geo_node_id"])
 
         super
       end
@@ -45,7 +41,7 @@ module EE
           gl_repository = repo_type.identifier_for_container(container)
           node_id = params["geo_node_id"]
 
-          track_git_ops_event_if_from_secondary(node_id) if ::Feature.enabled?(:track_geo_secondary_git_op_action)
+          track_git_ops_event_if_from_secondary(node_id)
 
           ::Gitlab::Geo::GitPushHttp.new(gl_id, gl_repository).cache_referrer_node(node_id)
         end
