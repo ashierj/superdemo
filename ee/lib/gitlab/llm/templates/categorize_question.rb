@@ -6,26 +6,23 @@ module Gitlab
       class CategorizeQuestion
         include Gitlab::Utils::StrongMemoize
 
-        PROMPT = ERB.new(<<~PROMPT)
+        PROMPT = <<~PROMPT
           \n\nHuman: You are helpful assistant, ready to give as accurate answer as possible in JSON format.
 
-          Based on the information below (user input, <% if previous_answer %>previous answer, <% end %>categories, labels, language), classify user input's category, detailed_category, labels. There may be multiple labels. Don't provide clarification or explanation. Always return only a JSON hash, e.g.:
+          Based on the information below (user input, categories, labels, language, %<previous_answer_prefix>s), classify user input's category, detailed_category, labels. There may be multiple labels. Don't provide clarification or explanation. Always return only a JSON hash, e.g.:
           <example>{"category": "Write, improve, or explain code", "detailed_category": "What are the potential security risks in this code?", "labels": ["contains_credentials", "contains_rejection_previous_answer_incorrect"], "language": "en"}</example>
           <example>{"category": "Documentation about GitLab", "detailed_category": "Documentation about GitLab", "labels": [], "language": "ja"}</example>
 
-          <% if previous_answer %>
-          Previous answer:
-          <answer><%= previous_answer %></answer>
-          <% end %>
+          %<previous_answer_section>s
 
           User input:
-          <input><%= question %></input>
+          <input>%<question>s</input>
 
           Categories:
-          <%= ::Gitlab::Llm::Anthropic::Completions::CategorizeQuestion::LLM_MATCHING_CATEGORIES_XML %>
+          %<categories>s
 
           Labels:
-          <%= ::Gitlab::Llm::Anthropic::Completions::CategorizeQuestion::LLM_MATCHING_LABELS_XML %>
+          %<labels>s
 
           Assistant:
         PROMPT
@@ -39,9 +36,21 @@ module Gitlab
           previous_message = messages[-2]
           previous_answer = previous_message&.assistant? ? previous_message.content : nil
 
-          PROMPT.result_with_hash(
+          if previous_answer
+            previous_answer_prefix = "previous answer"
+            previous_answer_section = "Previous answer:\n<answer>#{previous_answer}</answer>"
+          else
+            previous_answer_prefix = nil
+            previous_answer_section = nil
+          end
+
+          format(
+            PROMPT,
             question: params[:question],
-            previous_answer: previous_answer
+            previous_answer_prefix: previous_answer_prefix,
+            previous_answer_section: previous_answer_section,
+            categories: ::Gitlab::Llm::Anthropic::Completions::CategorizeQuestion::LLM_MATCHING_CATEGORIES_XML,
+            labels: ::Gitlab::Llm::Anthropic::Completions::CategorizeQuestion::LLM_MATCHING_LABELS_XML
           )
         end
 
