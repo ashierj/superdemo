@@ -7,14 +7,13 @@ RSpec.describe ComplianceManagement::Standards::ExportService, feature_category:
 
   let_it_be(:user) { create(:user, name: 'Foo Bar') }
   let_it_be(:group) { create(:group, name: 'parent') }
-
-  let_it_be(:csv_header) do
-    "Status,Project ID,Check,Standard,Last Scanned"
-  end
-
   let_it_be(:project) do
     create :project, :repository, namespace: group, name: 'Parent Project', path: 'parent_project'
   end
+
+  let(:executed) { service.execute }
+  let(:payload) { CSV.parse(executed.payload) }
+  let(:expected_header) { ["Status", "Project ID", "Check", "Standard", "Last Scanned"] }
 
   describe '#execute' do
     context 'without visibility to user' do
@@ -32,25 +31,36 @@ RSpec.describe ComplianceManagement::Standards::ExportService, feature_category:
 
       context 'with no standards adherences' do
         it 'exports a CSV payload without standards adherences' do
-          result = service.execute
-
-          expect(result).to be_success
-          expect(result.payload).to eq "#{csv_header}\n"
+          expect(executed).to be_success
+          expect(payload).to match_array [expected_header]
         end
       end
 
       context 'with a standards adherence' do
         let_it_be(:adherence) { create(:compliance_standards_adherence, project: project) }
+        let(:expected_row) do
+          ["success", project.id.to_s, "prevent_approval_by_merge_request_author", "gitlab", adherence.updated_at.to_s]
+        end
 
         it 'exports a CSV payload' do
-          expected_row = "success,#{project.id},prevent_approval_by_merge_request_author,gitlab,#{adherence.updated_at}"
+          expect(payload).to match_array [expected_header, expected_row]
+        end
 
-          export = <<~EXPORT
-          #{csv_header}
-          #{expected_row}
-          EXPORT
+        context 'when a subgroup has adherences available' do
+          let_it_be(:subgroup) { create(:group, parent: group) }
+          let_it_be(:subgroup_project) do
+            create :project, :repository, namespace: subgroup, name: 'Child Project', path: 'child_project'
+          end
 
-          expect(service.execute.payload).to eq export
+          let_it_be(:subgroup_adherence) { create(:compliance_standards_adherence, project: subgroup_project) }
+          let(:additional_row) do
+            ["success", subgroup_project.id.to_s, "prevent_approval_by_merge_request_author", "gitlab",
+              subgroup_adherence.updated_at.to_s]
+          end
+
+          it 'includes the subgroup in the payload' do
+            expect(payload).to match_array [expected_header, expected_row, additional_row]
+          end
         end
 
         it "avoids N+1 when exporting" do
