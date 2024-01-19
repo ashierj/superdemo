@@ -65,9 +65,10 @@ RSpec.describe Emails::ServiceDesk, feature_category: :team_planning do
 
   describe '.service_desk_new_note_email' do
     let_it_be(:note) { build_stubbed(:note_on_issue, noteable: issue, project: project) }
+    let_it_be(:issue_email_participant) { build_stubbed(:issue_email_participant, issue: issue, email: email) }
     let(:template_content) { 'thank you, new note on issue has been created. %{ADDITIONAL_TEXT}' }
 
-    subject { ServiceEmailClass.service_desk_new_note_email(issue.id, note.id, email) }
+    subject { ServiceEmailClass.service_desk_new_note_email(issue.id, note.id, issue_email_participant) }
 
     before do
       allow(Note).to receive(:find).with(note.id).and_return(note)
