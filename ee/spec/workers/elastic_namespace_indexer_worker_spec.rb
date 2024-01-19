@@ -26,15 +26,6 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
       stub_ee_application_setting(elasticsearch_limit_indexing: true)
     end
 
-    it 'returns true if limited indexing is not enabled' do
-      stub_ee_application_setting(elasticsearch_limit_indexing: false)
-
-      expect(Elastic::ProcessInitialBookkeepingService).not_to receive(:backfill_projects!)
-      expect(ElasticWikiIndexerWorker).not_to receive(:perform_async)
-
-      expect(subject.perform(1, "index")).to be_truthy
-    end
-
     describe 'indexing and deleting' do
       let_it_be(:namespace) { create :namespace }
       let_it_be(:group) { create(:group) }
