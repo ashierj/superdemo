@@ -34,7 +34,9 @@ module Gitlab
               merged_config = merged_config.deep_merge(scan_custom_actions[:pipeline_scan])
 
               # The stages array will not be merged by `deep_merge` so it has to be merged seperately.
-              merged_config[:stages] = stages + merged_config[:stages]
+              # Remove duplicated stages before merge so security policy stages order takes precedence.
+              duplicated_stages = stages & merged_config[:stages]
+              merged_config[:stages] = (stages - duplicated_stages) + merged_config[:stages]
             end
 
             merged_config[:stages] = cleanup_stages(merged_config[:stages])
