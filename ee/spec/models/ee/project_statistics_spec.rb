@@ -25,12 +25,13 @@ RSpec.describe ProjectStatistics do
           pipeline_artifacts_size: other_sizes,
           build_artifacts_size: other_sizes,
           packages_size: other_sizes,
+          container_registry_size: other_sizes,
           uploads_size: uploads_size
         )
 
         statistics.reload
 
-        expect(statistics.storage_size).to eq(other_sizes * 6)
+        expect(statistics.storage_size).to eq(other_sizes * 7)
       end
     end
 
@@ -44,12 +45,13 @@ RSpec.describe ProjectStatistics do
           pipeline_artifacts_size: other_sizes,
           build_artifacts_size: other_sizes,
           packages_size: other_sizes,
+          container_registry_size: other_sizes,
           uploads_size: uploads_size
         )
 
         statistics.reload
 
-        expect(statistics.storage_size).to eq(other_sizes * 6 + uploads_size)
+        expect(statistics.storage_size).to eq(other_sizes * 7 + uploads_size)
       end
     end
   end

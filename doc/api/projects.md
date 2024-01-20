@@ -446,7 +446,8 @@ GET /users/:user_id/projects
       "pipeline_artifacts_size": 0,
       "packages_size": 0,
       "snippets_size": 0,
-      "uploads_size": 0
+      "uploads_size": 0,
+      "container_registry_size": 0
     },
     "container_registry_image_prefix": "registry.example.com/diaspora/diaspora-client",
     "_links": {
@@ -577,7 +578,8 @@ GET /users/:user_id/projects
       "pipeline_artifacts_size": 0,
       "packages_size": 0,
       "snippets_size": 0,
-      "uploads_size": 0
+      "uploads_size": 0,
+      "container_registry_size": 0
     },
     "container_registry_image_prefix": "registry.example.com/brightbox/puppet",
     "_links": {
@@ -699,7 +701,8 @@ Example response:
       "pipeline_artifacts_size": 0,
       "packages_size": 0,
       "snippets_size": 0,
-      "uploads_size": 0
+      "uploads_size": 0,
+      "container_registry_size": 0
     },
     "container_registry_image_prefix": "registry.example.com/diaspora/diaspora-client",
     "_links": {
@@ -819,7 +822,8 @@ Example response:
       "pipeline_artifacts_size": 0,
       "packages_size": 0,
       "snippets_size": 0,
-      "uploads_size": 0
+      "uploads_size": 0,
+      "container_registry_size": 0
     },
     "container_registry_image_prefix": "registry.example.com/brightbox/puppet",
     "_links": {
@@ -957,7 +961,8 @@ Example response:
       "pipeline_artifacts_size": 0,
       "packages_size": 0,
       "snippets_size": 0,
-      "uploads_size": 0
+      "uploads_size": 0,
+      "container_registry_size": 0
     },
     "container_registry_image_prefix": "registry.example.com/diaspora/diaspora-client",
     "_links": {
@@ -1077,7 +1082,8 @@ Example response:
       "pipeline_artifacts_size": 0,
       "packages_size": 0,
       "snippets_size": 0,
-      "uploads_size": 0
+      "uploads_size": 0,
+      "container_registry_size": 0
     },
     "container_registry_image_prefix": "registry.example.com/brightbox/puppet",
     "_links": {
@@ -1265,7 +1271,8 @@ GET /projects/:id
     "pipeline_artifacts_size": 0,
     "packages_size": 0,
     "snippets_size": 0,
-    "uploads_size": 0
+    "uploads_size": 0,
+    "container_registry_size": 0
   },
   "container_registry_image_prefix": "registry.example.com/diaspora/diaspora-client",
   "_links": {
