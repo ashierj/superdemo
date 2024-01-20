@@ -99,11 +99,11 @@ html.group-epics-roadmap-html {
 .epics-list-section .epic-details-cell::after,
 .milestones-list-section .milestones-list-title::after {
   content: '';
-  @include gl-absolute;
+  position: absolute;
   top: 0;
   right: -$grid-size;
   width: $grid-size;
-  @include gl-pointer-events-none;
+  pointer-events: none;
   background: $column-right-gradient;
 }
 
