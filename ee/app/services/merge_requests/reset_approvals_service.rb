@@ -57,10 +57,14 @@ module MergeRequests
       end.compact
 
       # In case there is still a temporary flag on the MR
+      #
       merge_request.approval_state.expire_unapproved_key!
-      approvals = merge_request.approvals.where(user_id: match_ids) # rubocop:disable CodeReuse/ActiveRecord
-      approvals = filter_approvals(approvals, patch_id_sha) if patch_id_sha.present?
-      approvals.delete_all
+
+      filtered_approvals = merge_request.approvals.where(user_id: match_ids) # rubocop:disable CodeReuse/ActiveRecord
+      filtered_approvals = filter_approvals(filtered_approvals, patch_id_sha) if patch_id_sha.present?
+
+      filtered_approvals.delete_all
+
       trigger_merge_request_merge_status_updated(merge_request)
       trigger_merge_request_approval_state_updated(merge_request)
     end
