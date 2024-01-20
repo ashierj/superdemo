@@ -65,8 +65,6 @@ describe('GroupProjectsDropdown', () => {
   };
 
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
-  const selectAllProjects = () => findDropdown().vm.$emit('select-all');
-  const resetAllProjects = () => findDropdown().vm.$emit('reset');
 
   beforeEach(() => {
     createComponent();
@@ -88,12 +86,6 @@ describe('GroupProjectsDropdown', () => {
     await waitForPromises();
     findDropdown().vm.$emit('select', [id]);
     expect(wrapper.emitted('select')).toEqual([[[defaultNodes[0]]]]);
-  });
-
-  it('should select all projects', async () => {
-    await waitForPromises();
-    selectAllProjects();
-    expect(wrapper.emitted('select')).toEqual([[defaultNodes]]);
   });
 
   it('renders default text when loading', () => {
@@ -131,13 +123,6 @@ describe('GroupProjectsDropdown', () => {
     it('renders all projects selected text when', async () => {
       await waitForPromises();
       expect(findDropdown().props('toggleText')).toBe('All projects');
-    });
-
-    it('should reset all projects', async () => {
-      await waitForPromises();
-      resetAllProjects();
-
-      expect(wrapper.emitted('select')).toEqual([[[]]]);
     });
   });
 
@@ -233,19 +218,6 @@ describe('GroupProjectsDropdown', () => {
   });
 
   describe('full id format', () => {
-    it('should emit full format of id', async () => {
-      createComponent({
-        propsData: {
-          useShortIdFormat: false,
-        },
-      });
-
-      await waitForPromises();
-      selectAllProjects();
-
-      expect(wrapper.emitted('select')).toEqual([[defaultNodes]]);
-    });
-
     it('should render selected ids in full format', async () => {
       createComponent({
         propsData: {

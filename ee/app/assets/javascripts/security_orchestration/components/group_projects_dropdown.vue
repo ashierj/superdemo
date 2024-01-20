@@ -10,8 +10,6 @@ import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 export default {
   i18n: {
     projectDropdownHeader: __('Select projects'),
-    selectAllLabel: __('Select all'),
-    clearAllLabel: __('Clear all'),
   },
   name: 'GroupProjectsDropdown',
   components: {
@@ -160,13 +158,9 @@ export default {
     :selected="existingFormattedSelectedProjectsIds"
     :placement="placement"
     :items="projectListBoxItems"
-    :reset-button-label="$options.i18n.clearAllLabel"
-    :show-select-all-button-label="$options.i18n.selectAllLabel"
     :toggle-text="dropdownPlaceholder"
     @bottom-reached="fetchMoreGroupProjects"
-    @reset="selectProjects([])"
     @search="debouncedSearch"
     @select="selectProjects"
-    @select-all="selectProjects(projectsIds)"
   />
 </template>
