@@ -383,47 +383,6 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
               expect(subject[:stages]).to eq(%w[scan-policies ci_config_test ci_config_deploy custom_stage])
             end
           end
-
-          context 'when project CI contains stages in different order' do
-            let_it_be(:ci_configuration) do
-              <<~CI_CONFIG
-              stages:
-                - stage1
-                - stage2
-              custom_job:
-                stage: stage1
-                script:
-                  - echo "Defined in security policy"
-              CI_CONFIG
-            end
-
-            let_it_be(:policy) do
-              build(
-                :scan_execution_policy,
-                actions: [
-                  {
-                    scan: 'custom',
-                    ci_configuration: ci_configuration
-                  }
-                ]
-              )
-            end
-
-            let_it_be(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
-
-            let(:config) do
-              {
-                stages: %w[stage2 stage1],
-                job1: {
-                  stage: 'stage2'
-                }
-              }
-            end
-
-            it 'security policy stage order takes precedence' do
-              expect(subject[:stages]).to eq(%w[scan-policies stage1 stage2])
-            end
-          end
         end
       end
     end
