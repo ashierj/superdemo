@@ -4,29 +4,31 @@
     @include gl-font-regular;
     @include gl-font-base;
     @include gl-line-height-normal;
-    @include gl-py-3;
-    @include gl-px-4;
-    @include gl-h-auto;
+    padding-top: $gl-spacing-scale-3;
+    padding-bottom: $gl-spacing-scale-3;
+    padding-left: $gl-spacing-scale-4;
+    padding-right: $gl-spacing-scale-4;
+    height: auto;
     @include gl-text-left;
     @include gl-border-none;
     @include gl-inset-border-1-gray-200;
-    @include gl-rounded-base;
+    border-radius: $gl-border-radius-base;
     @include gl-white-space-nowrap;
 
     .gl-button-text {
       @include gl-text-gray-500;
-      @include gl-display-flex;
+      display: flex;
       @include gl-justify-content-space-between;
-      @include gl-w-full;
+      width: 100%;
     }
 
     .gl-icon {
-      @include gl-m-0;
+      margin: 0;
     }
   }
 
   .labels-select-wrapper.is-embedded {
-    @include gl-left-0;
+    left: 0;
     @include gl-shadow-x0-y2-b4-s0;
 
     width: 300px !important;
@@ -44,6 +46,6 @@
   }
 
   .dropdown-footer .list-unstyled {
-    @include gl-m-0;
+    margin: 0;
   }
 }

@@ -63,7 +63,7 @@
 
   .actions-cell::before,
   .header-cell::before {
-    @include gl-display-none;
+    display: none;
   }
 
   .da-table-mobile-header::before {
