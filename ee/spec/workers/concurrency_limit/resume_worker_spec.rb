@@ -29,14 +29,16 @@ RSpec.describe ConcurrencyLimit::ResumeWorker, feature_category: :global_search 
       end
 
       it 'resumes processing' do
+        stub_application_setting(elasticsearch_max_code_indexing_concurrency: 35)
         expect(Gitlab::SidekiqMiddleware::ConcurrencyLimit::ConcurrencyLimitService)
          .to receive(:resume_processing!)
-         .with(worker_with_concurrency_limit.name, limit: 60)
+         .with(worker_with_concurrency_limit.name, limit: 35)
 
         worker.perform
       end
 
       it 'resumes processing if there are other jobs' do
+        stub_application_setting(elasticsearch_max_code_indexing_concurrency: 60)
         allow(::Gitlab::SidekiqMiddleware::ConcurrencyLimit::WorkersConcurrency).to receive(:workers)
           .and_return(worker_with_concurrency_limit.name => 15)
         expect(Gitlab::SidekiqMiddleware::ConcurrencyLimit::ConcurrencyLimitService)
