@@ -243,6 +243,7 @@ namespace :gitlab do
       puts "Indexing restrictions enabled:\t#{setting.elasticsearch_limit_indexing? ? 'yes'.color(:yellow) : 'no'}"
       puts "File size limit:\t\t#{setting.elasticsearch_indexed_file_size_limit_kb} KiB"
       puts "Indexing number of shards:\t#{Elastic::ProcessBookkeepingService.active_number_of_shards}"
+      puts "Max code indexing concurrency:\t#{setting.elasticsearch_max_code_indexing_concurrency}"
 
       puts ""
       puts "Indexing Queues".color(:yellow)

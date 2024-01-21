@@ -60,6 +60,15 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
       it { is_expected.not_to allow_value(nil).for(:elasticsearch_max_bulk_concurrency) }
 
       it { is_expected.to validate_numericality_of(:elasticsearch_client_request_timeout).only_integer.is_greater_than_or_equal_to(0) }
+
+      it { is_expected.to allow_value(2).for(:elasticsearch_max_code_indexing_concurrency) }
+      it { is_expected.to allow_value(0).for(:elasticsearch_max_code_indexing_concurrency) }
+      it { is_expected.not_to allow_value(-1).for(:elasticsearch_max_code_indexing_concurrency) }
+      it { is_expected.not_to allow_value(nil).for(:elasticsearch_max_code_indexing_concurrency) }
+      it { is_expected.not_to allow_value(1.1).for(:elasticsearch_max_code_indexing_concurrency) }
+
+      it { is_expected.to allow_value(30).for(:elasticsearch_client_request_timeout) }
+      it { is_expected.to allow_value(0).for(:elasticsearch_client_request_timeout) }
       it { is_expected.not_to allow_value(nil).for(:elasticsearch_client_request_timeout) }
 
       it { is_expected.to allow_value('').for(:elasticsearch_username) }

@@ -102,6 +102,13 @@
               .form-text.gl-text-gray-600.gl-mt-0
                 = _('Improve indexing performance by increasing Sidekiq load. Values greater than the current shard limit (%{limit}) are not allowed.') % { limit: Elastic::ProcessBookkeepingService::SHARDS_MAX }
 
+            - if Feature.enabled?(:sidekiq_concurrency_limit_middleware, type: :ops)
+              .form-group
+                = f.label :elasticsearch_max_code_indexing_concurrency, _('Code indexing concurrency'), class: 'label-bold'
+                = f.number_field :elasticsearch_max_code_indexing_concurrency, value: @application_setting.elasticsearch_max_code_indexing_concurrency, class: 'form-control gl-form-input'
+                .form-text.gl-text-gray-600.gl-mt-0
+                  = _('How many code indexing jobs are allowed to run concurrently. A higher value improves repository indexing performance by increasing Sidekiq and Elasticsearch load. Setting it to 0 allows an unlimited number of indexing jobs.')
+
             .form-group
               = f.label :elasticsearch_indexed_file_size_limit_kb, _('Maximum file size indexed (KiB)'), class: 'label-bold'
               = f.number_field :elasticsearch_indexed_file_size_limit_kb, value: @application_setting.elasticsearch_indexed_file_size_limit_kb, class: 'form-control gl-form-input'
