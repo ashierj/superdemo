@@ -38,6 +38,10 @@ module EE
         :search_max_shard_size_gb,
         numericality: { only_integer: true, greater_than: 0 }
 
+      validates :elasticsearch_max_code_indexing_concurrency,
+        presence: true,
+        numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
       validates :namespace_storage_forks_cost_factor,
         presence: true,
         numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
@@ -202,6 +206,7 @@ module EE
           elasticsearch_indexed_file_size_limit_kb: 1024, # 1 MiB (units in KiB)
           elasticsearch_max_bulk_concurrency: 10,
           elasticsearch_max_bulk_size_bytes: 10.megabytes,
+          elasticsearch_max_code_indexing_concurrency: 30,
           elasticsearch_url: ENV['ELASTIC_URL'] || 'http://localhost:9200',
           elasticsearch_username: nil,
           elasticsearch_password: nil,

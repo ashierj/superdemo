@@ -327,6 +327,10 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_helpers, :silence
       expect { subject }.to output(/Indexing number of shards:\s+\d+/).to_stdout
     end
 
+    it 'outputs max code indexing concurrency' do
+      expect { subject }.to output(/Max code indexing concurrency:\s+\d+/).to_stdout
+    end
+
     it 'outputs queue sizes' do
       allow(Elastic::ProcessInitialBookkeepingService).to receive(:queue_size).and_return(100)
       allow(Elastic::ProcessBookkeepingService).to receive(:queue_size).and_return(200)

@@ -12,7 +12,7 @@ class ElasticCommitIndexerWorker
   urgency :throttled
   idempotent!
   loggable_arguments 1, 2
-  concurrency_limit -> { 60 }
+  concurrency_limit -> { Gitlab::CurrentSettings.elasticsearch_max_code_indexing_concurrency }
 
   LOCK_RETRIES = 2
   LOCK_SLEEP_SEC = 1
