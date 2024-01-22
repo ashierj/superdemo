@@ -1,7 +1,6 @@
 import { helpPagePath } from '~/helpers/help_page_helper';
 
-export const GRIDSTACK_MARGIN_X = 16;
-export const GRIDSTACK_MARGIN_Y = 8;
+export const GRIDSTACK_MARGIN = 8;
 export const GRIDSTACK_CSS_HANDLE = '.grid-stack-item-handle';
 
 /* Magic number 125px:
