@@ -35940,6 +35940,8 @@ CREATE INDEX index_web_hooks_on_group_id ON web_hooks USING btree (group_id) WHE
 
 CREATE INDEX index_web_hooks_on_integration_id ON web_hooks USING btree (integration_id);
 
+CREATE INDEX index_web_hooks_on_project_id_and_id ON web_hooks USING btree (project_id, id) WHERE ((type)::text = 'ProjectHook'::text);
+
 CREATE INDEX index_web_hooks_on_project_id_recent_failures ON web_hooks USING btree (project_id, recent_failures);
 
 CREATE INDEX index_web_hooks_on_type ON web_hooks USING btree (type);
