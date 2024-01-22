@@ -48,11 +48,6 @@
     filter: drop-shadow(0 1px 0.5px #fff) drop-shadow(1px 0 0.5px #fff) drop-shadow(0 -1px 0.5px #fff) drop-shadow(-1px 0 0.5px #fff);
   }
 
-  // this rule needs to be removed together when the sastReportsInInlineDiff flag is removed https://gitlab.com/gitlab-org/gitlab/-/issues/410191
-  .more-count-copy {
-    line-height: $code-line-height;
-  }
-
   .more-count-copy-dropdown {
     line-height: 0.11;
   }

@@ -24,13 +24,11 @@ jest.mock('~/mr_notes/stores', () => jest.requireActual('helpers/mocks/mr_notes/
 Vue.use(VueApollo);
 
 describe('diffs/components/app', () => {
-  let mockDispatch;
   let fakeApollo;
 
   const createComponent = (
     props = {},
     baseConfig = {},
-    flags = {},
     queryHandler = codeQualityNewErrorsHandler,
   ) => {
     store.reset();
@@ -63,17 +61,10 @@ describe('diffs/components/app', () => {
       ...baseConfig,
     });
 
-    mockDispatch = jest.spyOn(store, 'dispatch');
-
     fakeApollo = createMockApollo([[getMRCodequalityAndSecurityReports, queryHandler]]);
 
     shallowMount(App, {
       apolloProvider: fakeApollo,
-      provide: {
-        glFeatures: {
-          ...flags,
-        },
-      },
       propsData: {
         endpointCoverage: `${TEST_HOST}/diff/endpointCoverage`,
         endpointCodequality: '',
@@ -89,165 +80,108 @@ describe('diffs/components/app', () => {
   };
 
   describe('EE codequality diff', () => {
-    describe('sastReportsInInlineDiff flag off', () => {
-      it('fetches Code Quality data via REST and not via GraphQL when endpoint is provided', () => {
-        createComponent({
-          shouldShow: true,
-          endpointCodequality: `${TEST_HOST}/diff/endpointCodequality`,
-        });
-        expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
-        expect(mockDispatch).toHaveBeenCalledWith('diffs/fetchCodequality');
-      });
+    it('polls Code Quality data via GraphQL and not via REST when codequalityReportAvailable is true', async () => {
+      createComponent(
+        { shouldShow: true, codequalityReportAvailable: true },
+        {},
+        codeQualityErrorAndParsed,
+      );
+      await waitForPromises();
+      expect(codeQualityErrorAndParsed).toHaveBeenCalledTimes(1);
+      jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
 
-      it('does not fetch code quality data when endpoint is blank', () => {
-        createComponent({ shouldShow: true, endpointCodequality: '' });
-
-        expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
-        expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
-      });
+      expect(codeQualityErrorAndParsed).toHaveBeenCalledTimes(2);
     });
 
-    describe('sastReportsInInlineDiff flag on', () => {
-      it('polls Code Quality data via GraphQL and not via REST when codequalityReportAvailable is true', async () => {
-        createComponent(
-          { shouldShow: true, codequalityReportAvailable: true },
-          {},
-          { sastReportsInInlineDiff: true },
-          codeQualityErrorAndParsed,
-        );
-        await waitForPromises();
-        expect(codeQualityErrorAndParsed).toHaveBeenCalledTimes(1);
-        expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
-        jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
+    it('does not poll Code Quality data via GraphQL when codequalityReportAvailable is false', async () => {
+      createComponent(
+        { shouldShow: true, codequalityReportAvailable: false },
+        {},
+        codeQualityErrorAndParsed,
+      );
+      await waitForPromises();
+      expect(codeQualityErrorAndParsed).toHaveBeenCalledTimes(0);
+    });
 
-        expect(codeQualityErrorAndParsed).toHaveBeenCalledTimes(2);
-      });
+    it('stops polling when newErrors in response are defined', async () => {
+      createComponent(
+        {
+          shouldShow: true,
+          codequalityReportAvailable: true,
+        },
+        {},
+      );
 
-      it('does not poll Code Quality data via GraphQL when codequalityReportAvailable is false', async () => {
-        createComponent(
-          { shouldShow: true, codequalityReportAvailable: false },
-          {},
-          { sastReportsInInlineDiff: true },
-          codeQualityErrorAndParsed,
-        );
-        await waitForPromises();
-        expect(codeQualityErrorAndParsed).toHaveBeenCalledTimes(0);
-        expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
-      });
+      await waitForPromises();
 
-      it('stops polling when newErrors in response are defined', async () => {
-        createComponent(
-          {
-            shouldShow: true,
-            codequalityReportAvailable: true,
-          },
-          {},
-          { sastReportsInInlineDiff: true },
-        );
+      expect(codeQualityNewErrorsHandler).toHaveBeenCalledTimes(1);
+      jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
 
-        await waitForPromises();
+      expect(codeQualityNewErrorsHandler).toHaveBeenCalledTimes(1);
+    });
 
-        expect(codeQualityNewErrorsHandler).toHaveBeenCalledTimes(1);
-        jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
-
-        expect(codeQualityNewErrorsHandler).toHaveBeenCalledTimes(1);
-      });
-
-      it('does not fetch code quality data when endpoint is blank', () => {
-        createComponent(
-          { shouldShow: false, endpointCodequality: '' },
-          {},
-          { sastReportsInInlineDiff: true },
-        );
-        expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
-        expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
-      });
+    it('does not fetch code quality data when endpoint is blank', () => {
+      createComponent({ shouldShow: false, endpointCodequality: '' }, {});
+      expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
     });
   });
 
   describe('EE SAST diff', () => {
-    describe('sastReportsInInlineDiff flag off', () => {
-      it('does not fetch SAST data when sastReportAvailable is true', () => {
-        createComponent({ shouldShow: true, sastReportAvailable: true });
-        expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
-      });
+    it('polls SAST data when sastReportAvailable is true', async () => {
+      createComponent(
+        { shouldShow: true, sastReportAvailable: true },
+        {},
+        SASTParsingAndParsedHandler,
+      );
+      await waitForPromises();
 
-      it('does not fetch SAST data when sastReportAvailable is false', () => {
-        createComponent({ shouldShow: false, sastReportAvailable: false });
+      expect(SASTParsingAndParsedHandler).toHaveBeenCalledTimes(1);
+      jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
 
-        expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
-      });
+      expect(SASTParsingAndParsedHandler).toHaveBeenCalledTimes(2);
     });
 
-    describe('sastReportsInInlineDiff flag on', () => {
-      it('polls SAST data when sastReportAvailable is true', async () => {
-        createComponent(
-          { shouldShow: true, sastReportAvailable: true },
-          {},
-          { sastReportsInInlineDiff: true },
-          SASTParsingAndParsedHandler,
-        );
-        await waitForPromises();
+    it('stops polling when sastReport status is PARSED', async () => {
+      createComponent(
+        {
+          shouldShow: true,
+          sastReportAvailable: true,
+        },
+        {},
+        SASTParsedHandler,
+      );
 
-        expect(SASTParsingAndParsedHandler).toHaveBeenCalledTimes(1);
-        jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
+      await waitForPromises();
 
-        expect(SASTParsingAndParsedHandler).toHaveBeenCalledTimes(2);
-      });
+      expect(SASTParsedHandler).toHaveBeenCalledTimes(1);
+      jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
 
-      it('stops polling when sastReport status is PARSED', async () => {
-        createComponent(
-          {
-            shouldShow: true,
-            sastReportAvailable: true,
-          },
-          {},
-          { sastReportsInInlineDiff: true },
-          SASTParsedHandler,
-        );
+      expect(SASTParsedHandler).toHaveBeenCalledTimes(1);
+    });
 
-        await waitForPromises();
+    it('stops polling on request error', async () => {
+      createComponent({ shouldShow: true, sastReportAvailable: true }, {}, requestError);
+      await waitForPromises();
 
-        expect(SASTParsedHandler).toHaveBeenCalledTimes(1);
-        jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
+      expect(requestError).toHaveBeenCalledTimes(1);
+      jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
 
-        expect(SASTParsedHandler).toHaveBeenCalledTimes(1);
-      });
+      expect(requestError).toHaveBeenCalledTimes(1);
+    });
 
-      it('stops polling on request error', async () => {
-        createComponent(
-          { shouldShow: true, sastReportAvailable: true },
-          {},
-          { sastReportsInInlineDiff: true },
-          requestError,
-        );
-        await waitForPromises();
+    it('stops polling on response status error', async () => {
+      createComponent({ shouldShow: true, sastReportAvailable: true }, {}, SASTErrorHandler);
+      await waitForPromises();
 
-        expect(requestError).toHaveBeenCalledTimes(1);
-        jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
+      expect(SASTErrorHandler).toHaveBeenCalledTimes(1);
+      jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
 
-        expect(requestError).toHaveBeenCalledTimes(1);
-      });
+      expect(SASTErrorHandler).toHaveBeenCalledTimes(1);
+    });
 
-      it('stops polling on response status error', async () => {
-        createComponent(
-          { shouldShow: true, sastReportAvailable: true },
-          {},
-          { sastReportsInInlineDiff: true },
-          SASTErrorHandler,
-        );
-        await waitForPromises();
-
-        expect(SASTErrorHandler).toHaveBeenCalledTimes(1);
-        jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
-
-        expect(SASTErrorHandler).toHaveBeenCalledTimes(1);
-      });
-
-      it('does not fetch SAST data when sastReportAvailable is false', () => {
-        createComponent({ shouldShow: false }, {}, { sastReportsInInlineDiff: true });
-        expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
-      });
+    it('does not fetch SAST data when sastReportAvailable is false', () => {
+      createComponent({ shouldShow: false }, {});
+      expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
     });
   });
 });
