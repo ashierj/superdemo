@@ -170,6 +170,7 @@ export const generateVulnerabilities = () => [
     },
     vulnerabilityPath: 'path',
     userNotesCount: 1,
+    hasRemediations: true,
     __typename: 'Vulnerability',
   },
   {
@@ -202,6 +203,7 @@ export const generateVulnerabilities = () => [
     scanner: { id: 'scanner-2', vendor: 'GitLab' },
     vulnerabilityPath: '#',
     userNotesCount: 0,
+    hasRemediations: true,
     __typename: 'Vulnerability',
   },
   {
@@ -229,6 +231,7 @@ export const generateVulnerabilities = () => [
     },
     vulnerabilityPath: 'path',
     userNotesCount: 2,
+    hasRemediations: true,
     __typename: 'Vulnerability',
   },
   {
@@ -253,6 +256,7 @@ export const generateVulnerabilities = () => [
     scanner: { id: 'scanner-3', vendor: '' },
     vulnerabilityPath: 'path',
     userNotesCount: 3,
+    hasRemediations: true,
     __typename: 'Vulnerability',
   },
   {
@@ -275,6 +279,7 @@ export const generateVulnerabilities = () => [
     scanner: { id: 'scanner-4', vendor: 'GitLab' },
     vulnerabilityPath: 'path',
     userNotesCount: 4,
+    hasRemediations: true,
     __typename: 'Vulnerability',
   },
   {
@@ -299,6 +304,7 @@ export const generateVulnerabilities = () => [
     scanner: { id: 'scanner-5', vendor: 'GitLab' },
     vulnerabilityPath: 'path',
     userNotesCount: 5,
+    hasRemediations: true,
     __typename: 'Vulnerability',
   },
   {
@@ -324,6 +330,7 @@ export const generateVulnerabilities = () => [
     scanner: { id: 'scanner-5', vendor: 'GitLab' },
     vulnerabilityPath: 'path',
     userNotesCount: 5,
+    hasRemediations: true,
     __typename: 'Vulnerability',
   },
 ];
