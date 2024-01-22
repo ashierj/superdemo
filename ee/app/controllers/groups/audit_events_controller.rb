@@ -31,11 +31,12 @@ class Groups::AuditEventsController < Groups::ApplicationController
     @audit_event_definitions = Gitlab::Audit::Type::Definition.names_with_category
 
     @all_projects = []
-    group.all_projects_except_soft_deleted.each_batch(of: BATCH_SIZE) do |projects|
-      projects_json = projects.map do |project|
-        { value: project.full_path, text: project.name, type: "Projects" }
+    group.all_projects.each_batch(of: BATCH_SIZE) do |projects|
+      projects.each do |project|
+        if project.marked_for_deletion_at.nil? && project.pending_delete == false
+          @all_projects.append({ value: project.full_path, text: project.name, type: "Projects" })
+        end
       end
-      @all_projects.concat(projects_json)
     end
 
     @all_groups = []
