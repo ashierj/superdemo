@@ -275,19 +275,19 @@ describe('DashboardsList', () => {
     });
 
     describe('when custom dashboards project is configured', () => {
-      it('does not render the visualization designer button', () => {
-        createWrapper({ isProject: false, isGroup: true });
-
-        expect(findVisualizationDesignerButton().exists()).toBe(false);
-      });
-
-      it('does not render the new dashboard button', () => {
+      beforeEach(() => {
         createWrapper({
           isProject: false,
           isGroup: true,
           customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
         });
+      });
 
+      it('does not render the visualization designer button', () => {
+        expect(findVisualizationDesignerButton().exists()).toBe(false);
+      });
+
+      it('does not render the new dashboard button', () => {
         expect(findNewDashboardButton().exists()).toBe(false);
       });
     });
