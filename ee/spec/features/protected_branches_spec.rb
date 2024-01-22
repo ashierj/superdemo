@@ -252,7 +252,8 @@ RSpec.describe 'Protected Branches', :js, :disable_rate_limiter, feature_categor
     end
   end
 
-  context 'when the users for protected branches feature is on' do
+  context 'when the users for protected branches feature is on',
+    quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/437794' do
     before do
       stub_licensed_features(protected_refs_for_users: true)
     end
