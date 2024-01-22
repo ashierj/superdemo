@@ -120,16 +120,12 @@ RSpec.describe Users::BuildService, feature_category: :user_management do
       end
 
       context 'user signup cap' do
-        let(:new_user_signups_cap) { 10 }
-
-        before do
-          allow(Gitlab::CurrentSettings).to receive(:new_user_signups_cap).and_return(new_user_signups_cap)
-        end
-
         context 'when user signup cap is set' do
-          let(:new_user_signups_cap) { 3 }
+          before do
+            allow(Gitlab::CurrentSettings).to receive(:new_user_signups_cap).and_return(3)
+          end
 
-          context 'when user signup cap would be exceeded by new user signup' do
+          context 'when new user signup exceeds user cap' do
             let!(:users) { create_list(:user, 2) }
 
             it 'sets the user state to blocked_pending_approval' do
@@ -139,10 +135,24 @@ RSpec.describe Users::BuildService, feature_category: :user_management do
             end
           end
 
-          context 'when user signup cap would not be exceeded by new user signup' do
+          context 'when new user signup does not exceed user cap' do
             let!(:users) { create_list(:user, 1) }
 
-            it 'does not set the user state to blocked_pending_approval' do
+            it 'sets the user state to active' do
+              user = service.execute
+
+              expect(user).to be_active
+            end
+          end
+
+          context 'when new bot user exceeds user cap' do
+            let!(:users) { create_list(:user, 2) }
+
+            before do
+              params.merge!({ user_type: :project_bot })
+            end
+
+            it 'sets the bot user state to active' do
               user = service.execute
 
               expect(user).to be_active
@@ -151,9 +161,7 @@ RSpec.describe Users::BuildService, feature_category: :user_management do
         end
 
         context 'when user signup cap is not set' do
-          let(:new_user_signups_cap) { nil }
-
-          it 'does not set the user state to blocked_pending_approval' do
+          it 'sets the user state to active' do
             user = service.execute
 
             expect(user).to be_active
