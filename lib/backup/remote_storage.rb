@@ -150,7 +150,7 @@ module Backup
 
     # TODO: This is a temporary workaround for bad design in Backup::Manager
     def backup_path
-      Gitlab.config.backup.path
+      Pathname(Gitlab.config.backup.path)
     end
   end
 end

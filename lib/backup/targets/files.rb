@@ -60,7 +60,7 @@ module Backup
         backup_existing_files_dir(backup_tarball)
 
         cmd_list = [decompress_cmd, %W[#{tar} --unlink-first --recursive-unlink -C #{app_files_realpath} -xf -]]
-        status_list, output = run_pipeline!(cmd_list, in: backup_tarball)
+        status_list, output = run_pipeline!(cmd_list, in: backup_tarball.to_s)
         success = pipeline_succeeded?(compress_status: status_list[0], tar_status: status_list[1], output: output)
 
         raise Backup::Error, "Restore operation failed: #{output}" unless success
