@@ -154,24 +154,6 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
       post_graphql(query, current_user: user)
     end
 
-    context 'when sast_reports_in_inline_diff FF is disabled' do
-      before_all do
-        stub_feature_flags(sast_reports_in_inline_diff: false)
-      end
-
-      it 'returns null for scanner, identifiers, and location fields' do
-        expect(result['report']['added']).to include(
-          a_hash_including(
-            {
-              location: nil,
-              identifiers: nil,
-              scanner: nil
-            }.deep_stringify_keys
-          )
-        )
-      end
-    end
-
     it 'returns expected data' do
       expect(result).to match(a_hash_including(
         {
