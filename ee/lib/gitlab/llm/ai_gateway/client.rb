@@ -6,8 +6,8 @@ module Gitlab
       class Client
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
         include ::Gitlab::Llm::Concerns::EventTracking
-        include ::API::Helpers::GlobalIds
         include ::Gitlab::Utils::StrongMemoize
+        include ::API::Helpers::CloudConnector
 
         DEFAULT_PROVIDER = 'anthropic'
         DEFAULT_MODEL = 'claude-2.0'
@@ -84,23 +84,13 @@ module Gitlab
         end
 
         def request_headers
-          instance_id, user_id = global_instance_and_user_id_for(user)
           {
-            'X-Gitlab-Instance-Id' => instance_id,
-            'X-Gitlab-Global-User-Id' => user_id,
             'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
-            'X-Gitlab-Realm' => gitlab_realm,
             'X-Gitlab-Authentication-Type' => 'oidc',
             'Authorization' => "Bearer #{access_token}",
             'Content-Type' => 'application/json',
             'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
-          }
-        end
-
-        def gitlab_realm
-          return Gitlab::Ai::AccessToken::GITLAB_REALM_SAAS if Gitlab.org_or_com? # rubocop:disable Gitlab/AvoidGitlabInstanceChecks -- To align with ee/lib/api/code_suggestions.rb.
-
-          Gitlab::Ai::AccessToken::GITLAB_REALM_SELF_MANAGED
+          }.merge(cloud_connector_headers(user))
         end
 
         def access_token

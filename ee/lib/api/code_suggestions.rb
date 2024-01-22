@@ -6,7 +6,7 @@ module API
 
     feature_category :code_suggestions
 
-    helpers ::API::Helpers::GlobalIds
+    helpers ::API::Helpers::CloudConnector
 
     # a limit used for overall body size when forwarding request to ai-assist, overall size should not be bigger than
     # summary of limits on accepted parameters
@@ -31,17 +31,14 @@ module API
       def model_gateway_headers(headers, gateway_token)
         telemetry_headers = headers.select { |k| /\Ax-gitlab-cs-/i.match?(k) }
 
-        instance_id, user_id = global_instance_and_user_id_for(current_user)
         {
-          'X-Gitlab-Instance-Id' => instance_id,
-          'X-Gitlab-Global-User-Id' => user_id,
           'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
-          'X-Gitlab-Realm' => gitlab_realm,
           'X-Gitlab-Authentication-Type' => 'oidc',
           'Authorization' => "Bearer #{gateway_token}",
           'Content-Type' => 'application/json',
           'User-Agent' => headers["User-Agent"] # Forward the User-Agent on to the model gateway
-        }.merge(telemetry_headers).merge(saas_headers).transform_values { |v| Array(v) }
+        }.merge(telemetry_headers).merge(saas_headers).merge(cloud_connector_headers(current_user))
+          .transform_values { |v| Array(v) }
       end
 
       def saas_headers
@@ -75,9 +72,7 @@ module API
         # See https://gitlab.com/groups/gitlab-org/-/epics/11114
         return Gitlab::Ai::AccessToken::GITLAB_REALM_SELF_MANAGED if proxied?
 
-        return Gitlab::Ai::AccessToken::GITLAB_REALM_SAAS if Gitlab.org_or_com?
-
-        Gitlab::Ai::AccessToken::GITLAB_REALM_SELF_MANAGED
+        super
       end
     end
 
