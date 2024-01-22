@@ -5,12 +5,12 @@ require 'spec_helper'
 RSpec.describe ServicePing::ServicePingSettings do
   using RSpec::Parameterized::TableSyntax
 
-  describe '#product_intelligence_enabled?' do
+  describe '#enabled_and_consented?' do
     where(
       :usage_ping_enabled,
       :customer_service_enabled,
       :requires_usage_stats_consent,
-      :expected_product_intelligence_enabled
+      :expected_enabled_and_consented
     ) do
       # Customer service enabled
       true  | true  | false | true
@@ -39,8 +39,8 @@ RSpec.describe ServicePing::ServicePingSettings do
         create_current_license(operational_metrics_enabled: customer_service_enabled)
       end
 
-      it 'has the correct product_intelligence_enabled?' do
-        expect(described_class.product_intelligence_enabled?).to eq(expected_product_intelligence_enabled)
+      it 'has the correct enabled_and_consented?' do
+        expect(described_class.enabled_and_consented?).to eq(expected_enabled_and_consented)
       end
     end
   end
