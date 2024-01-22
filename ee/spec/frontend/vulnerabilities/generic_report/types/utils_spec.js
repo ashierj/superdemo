@@ -1,33 +1,37 @@
-import { REPORT_TYPES } from 'ee/vulnerabilities/components/generic_report/types/constants';
 import { filterTypesAndLimitListDepth } from 'ee/vulnerabilities/components/generic_report/types/utils';
 
 const MOCK_REPORT_TYPE_UNSUPPORTED = 'MOCK_REPORT_TYPE_UNSUPPORTED';
+const REPORT_TYPE_LIST = 'list';
+const REPORT_TYPE_NAMED_LIST = 'named-list';
+const REPORT_TYPE_TABLE = 'table';
+const REPORT_TYPE_TEXT = 'text';
+const REPORT_TYPE_URL = 'url';
 
 const TEST_DATA = {
   url: {
-    type: REPORT_TYPES.url,
+    type: REPORT_TYPE_URL,
     name: 'url1',
   },
   list: {
-    type: REPORT_TYPES.list,
+    type: REPORT_TYPE_LIST,
     name: 'rootList',
     items: [
-      { type: REPORT_TYPES.url, name: 'url2' },
+      { type: REPORT_TYPE_URL, name: 'url2' },
       {
-        type: REPORT_TYPES.list,
+        type: REPORT_TYPE_LIST,
         name: 'listDepthOne',
         items: [
-          { type: REPORT_TYPES.url, name: 'url3' },
+          { type: REPORT_TYPE_URL, name: 'url3' },
           {
-            type: REPORT_TYPES.list,
+            type: REPORT_TYPE_LIST,
             name: 'listDepthTwo',
             items: [
-              { type: REPORT_TYPES.url, name: 'url4' },
+              { type: REPORT_TYPE_URL, name: 'url4' },
               {
-                type: REPORT_TYPES.list,
+                type: REPORT_TYPE_LIST,
                 name: 'listDepthThree',
                 items: [
-                  { type: REPORT_TYPES.url, name: 'url5' },
+                  { type: REPORT_TYPE_URL, name: 'url5' },
                   { type: MOCK_REPORT_TYPE_UNSUPPORTED },
                 ],
               },
@@ -41,24 +45,24 @@ const TEST_DATA = {
     ],
   },
   namedList: {
-    type: REPORT_TYPES.namedList,
+    type: REPORT_TYPE_NAMED_LIST,
     name: 'rootNamedList',
     items: {
-      url1: { type: REPORT_TYPES.url, name: 'foo' },
-      url2: { type: REPORT_TYPES.url, name: 'bar' },
+      url1: { type: REPORT_TYPE_URL, name: 'foo' },
+      url2: { type: REPORT_TYPE_URL, name: 'bar' },
       unsupported: { type: MOCK_REPORT_TYPE_UNSUPPORTED },
     },
   },
   table: {
-    type: REPORT_TYPES.reportTable,
+    type: REPORT_TYPE_TABLE,
     header: [
-      { type: REPORT_TYPES.componentText, value: 'foo ' },
-      { type: REPORT_TYPES.componentText, value: 'bar ' },
+      { type: REPORT_TYPE_TEXT, value: 'foo ' },
+      { type: REPORT_TYPE_TEXT, value: 'bar ' },
     ],
     rows: [
       [
-        { type: REPORT_TYPES.componentText, value: 'foo' },
-        { type: REPORT_TYPES.componentText, value: 'bar' },
+        { type: REPORT_TYPE_TEXT, value: 'foo' },
+        { type: REPORT_TYPE_TEXT, value: 'bar' },
       ],
     ],
   },
@@ -71,7 +75,7 @@ describe('ee/vulnerabilities/components/generic_report/types/utils', () => {
     const getListWithDepthTwo = (reportsData) => reportsData.list.items[1].items[1];
     const includesType = (type) => (items) =>
       items.find(({ type: currentType }) => currentType === type) !== undefined;
-    const includesListItem = includesType(REPORT_TYPES.list);
+    const includesListItem = includesType(REPORT_TYPE_LIST);
     const includesUnsupportedType = includesType(MOCK_REPORT_TYPE_UNSUPPORTED);
 
     describe.each`
@@ -102,8 +106,8 @@ describe('ee/vulnerabilities/components/generic_report/types/utils', () => {
 
       it('transforms the items object into an array of report-items with labels', () => {
         expect(filteredData.namedList.items).toEqual([
-          { label: 'url1', type: REPORT_TYPES.url, name: 'foo' },
-          { label: 'url2', type: REPORT_TYPES.url, name: 'bar' },
+          { label: 'url1', type: REPORT_TYPE_URL, name: 'foo' },
+          { label: 'url2', type: REPORT_TYPE_URL, name: 'bar' },
         ]);
       });
     });

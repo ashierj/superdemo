@@ -1,25 +1,29 @@
 import { within } from '@testing-library/dom';
 import { GlCollapse } from '@gitlab/ui';
 import ReportSection from 'ee/vulnerabilities/components/generic_report/report_section.vue';
-import { REPORT_TYPES } from 'ee/vulnerabilities/components/generic_report/types/constants';
+import {
+  REPORT_TYPE_CODE,
+  REPORT_TYPE_TABLE,
+  REPORT_TYPE_URL,
+} from 'ee/vulnerabilities/components/generic_report/types/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 const TEST_DATA = {
   supportedTypes: {
     url: {
       name: 'url',
-      type: REPORT_TYPES.url,
+      type: REPORT_TYPE_URL,
       href: 'http://foo.com',
     },
     table: {
       name: 'table',
-      type: REPORT_TYPES.reportTable,
+      type: REPORT_TYPE_TABLE,
       header: [],
       rows: [],
     },
     code: {
       name: 'code',
-      type: REPORT_TYPES.codeCell,
+      type: REPORT_TYPE_CODE,
       value: '<h1>Foo</h1>',
     },
   },
