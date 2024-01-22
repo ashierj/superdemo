@@ -31,6 +31,7 @@ ConnectionPool.prepend(Gitlab::Instrumentation::ConnectionPool)
 
 # this only instruments `RedisClient` used in `Sidekiq.redis`
 RedisClient.register(Gitlab::Instrumentation::RedisClientMiddleware)
+RedisClient.prepend(Gitlab::Patch::RedisClient)
 
 if Gitlab::Redis::Workhorse.params[:cluster].present?
   raise "Do not configure workhorse with a Redis Cluster as pub/sub commands are not cluster-compatible."
