@@ -10,6 +10,7 @@ module Geo
 
     def log_geo_pipeline_ref_created_event
       return unless ::Gitlab::Geo.primary?
+      return unless self.class.enabled?
 
       publish(:pipeline_ref_created, **event_params)
     end
