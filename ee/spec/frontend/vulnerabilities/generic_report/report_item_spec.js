@@ -1,37 +1,56 @@
 import ReportItem from 'ee/vulnerabilities/components/generic_report/report_item.vue';
 import { REPORT_COMPONENTS } from 'ee/vulnerabilities/components/generic_report/types/component_map';
-import { REPORT_TYPES } from 'ee/vulnerabilities/components/generic_report/types/constants';
 import { extendedWrapper, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
+const REPORT_TYPE_DIFF = 'diff';
+const REPORT_TYPE_FILE_LOCATION = 'file-location';
+const REPORT_TYPE_LIST = 'list';
+const REPORT_TYPE_MARKDOWN = 'markdown';
+const REPORT_TYPE_MODULE_LOCATION = 'module-location';
+const REPORT_TYPE_TEXT = 'text';
+const REPORT_TYPE_URL = 'url';
+const REPORT_TYPE_VALUE = 'value';
+
+const REPORT_TYPES = [
+  REPORT_TYPE_DIFF,
+  REPORT_TYPE_FILE_LOCATION,
+  REPORT_TYPE_LIST,
+  REPORT_TYPE_MARKDOWN,
+  REPORT_TYPE_MODULE_LOCATION,
+  REPORT_TYPE_TEXT,
+  REPORT_TYPE_URL,
+  REPORT_TYPE_VALUE,
+];
+
 const TEST_DATA = {
-  [REPORT_TYPES.url]: {
+  [REPORT_TYPE_URL]: {
     href: 'http://foo.com',
   },
-  [REPORT_TYPES.list]: {
+  [REPORT_TYPE_LIST]: {
     items: [],
   },
-  [REPORT_TYPES.diff]: {
+  [REPORT_TYPE_DIFF]: {
     before: 'foo',
     after: 'bar',
   },
-  [REPORT_TYPES.componentText]: {
+  [REPORT_TYPE_TEXT]: {
     name: 'some-string-field',
     value: 'some-value',
   },
-  [REPORT_TYPES.value]: {
+  [REPORT_TYPE_VALUE]: {
     name: 'some-numeric-field',
     value: 15,
   },
-  [REPORT_TYPES.moduleLocation]: {
+  [REPORT_TYPE_MODULE_LOCATION]: {
     moduleName: 'foo.c',
     offset: 15,
   },
-  [REPORT_TYPES.fileLocation]: {
+  [REPORT_TYPE_FILE_LOCATION]: {
     fileName: 'index.js',
     lineStart: '1',
     lineEnd: '2',
   },
-  [REPORT_TYPES.markdown]: {
+  [REPORT_TYPE_MARKDOWN]: {
     name: 'Markdown:',
     value: 'Checkout [GitLab](http://gitlab.com)',
   },
@@ -53,7 +72,7 @@ describe('ee/vulnerabilities/components/generic_report/report_item.vue', () => {
 
   const findReportComponent = () => extendedWrapper(wrapper.findByTestId('reportComponent'));
 
-  describe.each(Object.values(REPORT_TYPES))('with report type "%s"', (reportType) => {
+  describe.each(REPORT_TYPES)('with report type "%s"', (reportType) => {
     const reportItem = { type: reportType, ...TEST_DATA[reportType] };
 
     beforeEach(() => {

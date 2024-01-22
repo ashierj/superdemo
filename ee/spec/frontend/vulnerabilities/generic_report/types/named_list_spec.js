@@ -1,12 +1,11 @@
 import { shallowMount } from '@vue/test-utils';
-import { REPORT_TYPES } from 'ee/vulnerabilities/components/generic_report/types/constants';
 import NamedList from 'ee/vulnerabilities/components/generic_report/types/named_list.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 const TEST_DATA = {
   items: [
-    { label: 'comment_1', name: 'url1', type: REPORT_TYPES.url, href: 'http://foo.bar' },
-    { label: 'comment_2', name: 'url2', type: REPORT_TYPES.url, href: 'http://bar.baz' },
+    { label: 'comment_1', name: 'url1', type: 'url', href: 'http://foo.bar' },
+    { label: 'comment_2', name: 'url2', type: 'url', href: 'http://bar.baz' },
   ],
 };
 
