@@ -11,7 +11,11 @@ data:
       - TrackedEvents.baseUrl
     limit: 100
     timezone: UTC
-    filters: []
+    filters:
+      - operator: equals
+        values:
+          - page_view
+        member: TrackedEvents.eventName
     timeDimensions: []
 options:
   links:

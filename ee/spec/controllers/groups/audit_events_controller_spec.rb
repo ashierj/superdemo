@@ -177,6 +177,8 @@ RSpec.describe Groups::AuditEventsController, feature_category: :audit_events do
         let_it_be(:project1) { create(:project, :private, group: group) }
         let_it_be(:project2) { create(:project, :private, group: subgroup1) }
         let_it_be(:other_project) { create(:project, group: other_group) }
+        let_it_be(:marked_for_deletion_project) { create(:project, :private, group: group, marked_for_deletion_at: Date.current) }
+        let_it_be(:pending_for_deletion_project) { create(:project, :private, group: group, pending_delete: true) }
 
         it 'sets list of all subgroups and projects' do
           request
