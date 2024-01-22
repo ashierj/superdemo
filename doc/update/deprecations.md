@@ -402,6 +402,31 @@ To help avoid being impacted by this breaking change, create new access tokens w
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### Dependency Scanning incorrect SBOM metadata properties
+
+<div class="deprecation-notes">
+- Announced in GitLab <span class="milestone">16.9</span>
+- Removal in GitLab <span class="milestone">17.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/438779).
+</div>
+
+GitLab 17.0 removes support for the following metadata properties in CycloneDX SBOM reports:
+
+- `gitlab:dependency_scanning:input_file`
+- `gitlab:dependency_scanning:package_manager`
+
+These were added in GitLab 15.7 to the SBOM produced by Dependency Scanning. However, these properties were incorrect and didn't align with the [GitLab CycloneDX property taxonomy](https://docs.gitlab.com/ee/development/sec/cyclonedx_property_taxonomy.html).
+The following correct properties were added in GitLab 15.11 to address this:
+
+- `gitlab:dependency_scanning:input_file:path`
+- `gitlab:dependency_scanning:package_manager:name`
+
+The incorrect properties were kept for backward compatibility. They are now deprecated and will be removed in 17.0.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### Dependency Scanning support for sbt 1.0.X
 
 <div class="deprecation-notes">
