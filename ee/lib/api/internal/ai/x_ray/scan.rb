@@ -10,6 +10,7 @@ module API
           feature_category :code_suggestions
 
           helpers ::API::Ci::Helpers::Runner
+          helpers ::API::Helpers::CloudConnector
 
           before do
             authenticate_job!
@@ -65,12 +66,6 @@ module API
               {
                 'X-Gitlab-Saas-Namespace-Ids' => [current_job.namespace.id.to_s]
               }
-            end
-
-            def gitlab_realm
-              return Gitlab::Ai::AccessToken::GITLAB_REALM_SAAS if Gitlab.org_or_com?
-
-              Gitlab::Ai::AccessToken::GITLAB_REALM_SELF_MANAGED
             end
 
             def ai_access_token
