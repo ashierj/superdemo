@@ -1428,7 +1428,6 @@ Layout/LineLength:
     - 'ee/spec/graphql/resolvers/incident_management/oncall_schedule_resolver_spec.rb'
     - 'ee/spec/graphql/resolvers/iterations/cadences_resolver_spec.rb'
     - 'ee/spec/graphql/resolvers/iterations_resolver_spec.rb'
-    - 'ee/spec/graphql/resolvers/network_policy_resolver_spec.rb'
     - 'ee/spec/graphql/resolvers/pipeline_security_report_findings_resolver_spec.rb'
     - 'ee/spec/graphql/resolvers/requirements_management/requirements_resolver_spec.rb'
     - 'ee/spec/graphql/resolvers/requirements_management/test_reports_resolver_spec.rb'
