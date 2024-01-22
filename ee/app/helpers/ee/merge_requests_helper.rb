@@ -21,13 +21,11 @@ module EE
     override :diffs_tab_pane_data
     def diffs_tab_pane_data(project, merge_request, params)
       data = {
-        endpoint_codequality: (codequality_mr_diff_reports_project_merge_request_path(project, merge_request, 'json') if project.licensed_feature_available?(:inline_codequality) && merge_request.has_codequality_mr_diff_report?)
+        endpoint_codequality: (codequality_mr_diff_reports_project_merge_request_path(project, merge_request, 'json') if project.licensed_feature_available?(:inline_codequality) && merge_request.has_codequality_mr_diff_report?),
+        sast_report_available: merge_request.has_sast_reports?.to_s
       }
 
-      if ::Feature.enabled?(:sast_reports_in_inline_diff, project)
-        data[:codequality_report_available] = merge_request.has_codequality_reports?.to_s if project.licensed_feature_available?(:inline_codequality)
-        data[:sast_report_available] = merge_request.has_sast_reports?.to_s
-      end
+      data[:codequality_report_available] = merge_request.has_codequality_reports?.to_s if project.licensed_feature_available?(:inline_codequality)
 
       super.merge(data)
     end

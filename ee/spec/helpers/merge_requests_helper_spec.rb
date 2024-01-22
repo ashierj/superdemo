@@ -70,16 +70,6 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
             expect(subject[:codequality_report_available]).to eq('false')
           end
         end
-
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(sast_reports_in_inline_diff: false)
-          end
-
-          it 'does not return the variable' do
-            expect(subject).not_to have_key(:codequality_report_available)
-          end
-        end
       end
 
       context 'when feature is not licensed' do
@@ -105,16 +95,6 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
 
         it 'returns expected value' do
           expect(subject[:sast_report_available]).to eq('false')
-        end
-      end
-
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(sast_reports_in_inline_diff: false)
-        end
-
-        it 'does not return the variable' do
-          expect(subject).not_to have_key(:sast_report_available)
         end
       end
     end
