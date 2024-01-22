@@ -109,7 +109,7 @@ module SaasRegistrationHelpers
 
     wait_for_all_requests
 
-    click_link_or_button "oauth-login-#{provider}"
+    click_link_or_button Gitlab::Auth::OAuth::Provider.label_for(provider)
     solve_arkose_verify_challenge(saml: true)
   end
 
