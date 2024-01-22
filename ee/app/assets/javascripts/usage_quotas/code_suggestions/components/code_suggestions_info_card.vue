@@ -1,9 +1,10 @@
 <script>
-import { GlCard, GlLink, GlSprintf, GlButton } from '@gitlab/ui';
+import { GlButton, GlCard, GlLink, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import UsageStatistics from 'ee/usage_quotas/components/usage_statistics.vue';
 import { codeSuggestionsLearnMoreLink } from 'ee/usage_quotas/code_suggestions/constants';
 import { addSeatsText } from 'ee/usage_quotas/seats/constants';
+import Tracking from '~/tracking';
 
 export default {
   name: 'CodeSuggestionsUsageInfoCard',
@@ -18,13 +19,27 @@ export default {
     addSeatsText,
   },
   components: {
+    GlButton,
     GlCard,
     GlLink,
     GlSprintf,
-    GlButton,
     UsageStatistics,
   },
-  inject: ['addDuoProHref'],
+  mixins: [Tracking.mixin()],
+  inject: ['addDuoProHref', 'isSaaS'],
+  computed: {
+    trackingPreffix() {
+      return this.isSaaS ? 'saas' : 'sm';
+    },
+  },
+  methods: {
+    handleAddDuoProClick() {
+      this.track('click_button', {
+        label: `add_duo_pro_${this.trackingPreffix}`,
+        property: 'usage_quotas_page',
+      });
+    },
+  },
 };
 </script>
 <template>
@@ -51,6 +66,7 @@ export default {
           variant="confirm"
           target="_blank"
           :href="addDuoProHref"
+          @click="handleAddDuoProClick"
         >
           {{ $options.i18n.addSeatsText }}
         </gl-button>
