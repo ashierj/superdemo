@@ -43,7 +43,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest, feature_category: :sub
   shared_examples 'when response code is 422' do
     let(:response) { Net::HTTPUnprocessableEntity.new(1.0, '422', 'Error') }
     let(:message) { 'Email has already been taken' }
-    let(:error_attribute_map) { { email: ["taken"] } }
+    let(:error_attribute_map) { { "email" => ["taken"] } }
     let(:parsed_response) { { errors: message, error_attribute_map: error_attribute_map }.stringify_keys }
 
     it 'has a unprocessable entity status' do

@@ -4,12 +4,6 @@ module Projects
   class AllBranchesRule < BranchRule
     include Projects::CustomBranchRule
 
-    attr_reader :project
-
-    def initialize(project)
-      @project = project
-    end
-
     def name
       s_('All branches')
     end

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Projects::CustomBranchRule, feature_category: :source_code_management do
-  subject(:instance) { Class.new.include(described_class).new }
+  subject(:instance) { Class.new.include(described_class).new(instance_double('Project')) }
 
   describe '#name' do
     it 'raises NotImplementedError' do

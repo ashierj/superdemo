@@ -61,30 +61,23 @@ module Gitlab
           end
 
           def http_get(path, headers)
-            response = Gitlab::HTTP.get("#{base_url}/#{path}", headers: headers)
-
-            parse_response(response)
-          rescue *Gitlab::HTTP::HTTP_ERRORS => e
-            track_exception(e.message)
-            { success: false, data: { errors: error_message } }
+            process_http_call { Gitlab::HTTP.get("#{base_url}/#{path}", headers: headers) }
           end
 
           def http_post(path, headers, params = {})
-            response = Gitlab::HTTP.post("#{base_url}/#{path}", body: params.to_json, headers: headers)
-
-            parse_response(response)
-          rescue *Gitlab::HTTP::HTTP_ERRORS => e
-            track_exception(e.message)
-            { success: false, data: { errors: error_message } }
+            process_http_call { Gitlab::HTTP.post("#{base_url}/#{path}", body: params.to_json, headers: headers) }
           end
 
           def http_put(path, headers, params = {})
-            response = Gitlab::HTTP.put("#{base_url}/#{path}", body: params.to_json, headers: headers)
+            process_http_call { Gitlab::HTTP.put("#{base_url}/#{path}", body: params.to_json, headers: headers) }
+          end
 
+          def process_http_call
+            response = yield
             parse_response(response)
           rescue *Gitlab::HTTP::HTTP_ERRORS => e
             track_exception(e.message)
-            { success: false, data: { errors: error_message } }
+            { success: false, data: { errors: error_message } }.with_indifferent_access
           end
         end
       end

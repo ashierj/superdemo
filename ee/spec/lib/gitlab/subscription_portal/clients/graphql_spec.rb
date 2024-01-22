@@ -6,6 +6,31 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
   let(:client) { Gitlab::SubscriptionPortal::Client }
   let(:graphql_url) { ::Gitlab::Routing.url_helpers.subscription_portal_graphql_url }
 
+  shared_examples 'connectivity problems calling the endpoint' do
+    let_it_be(:connectivity_error) { "HTTP status code: 403" }
+
+    let_it_be(:connectivity_error_response) do
+      {
+        success: false,
+        data: {
+          errors: connectivity_error
+        }
+      }.with_indifferent_access
+    end
+
+    it 'returns a failure response and logs the error when failed to call endpoint' do
+      expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).with(
+        a_kind_of(Gitlab::SubscriptionPortal::Client::ResponseError),
+        query: params[:query],
+        response: connectivity_error_response[:data]
+      )
+
+      expect(client).to receive(:http_post).with('graphql', headers, params).and_return(connectivity_error_response)
+
+      expect(subject).to eq(success: false, errors: connectivity_error)
+    end
+  end
+
   describe '#activate' do
     let(:license_key) { 'license_key' }
 
@@ -386,7 +411,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
 
     context 'when the request is successful' do
       it 'returns the data' do
-        response = { data: { 'data' => { 'plans' => [{ 'id' => 1 }, { 'id' => 3 }] } } }
+        response = { success: true, data: { 'data' => { 'plans' => [{ 'id' => 1 }, { 'id' => 3 }] } } }
 
         expect(client).to receive(:http_post).with('graphql', headers, params).and_return(response)
 
@@ -397,6 +422,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
     context 'when the request is unsuccessful' do
       it 'returns a failure response and logs the error' do
         response = {
+          success: true,
           data: {
             "data" => { "plans" => nil },
             "errors" => [
@@ -427,6 +453,8 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
         expect(subject).to eq(success: false, errors: [error])
       end
     end
+
+    include_examples 'connectivity problems calling the endpoint'
   end
 
   describe '#filter_purchase_eligible_namespaces' do
@@ -507,6 +535,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
     context 'when the response is successful' do
       it 'returns the namespace data', :aggregate_failures do
         response = {
+          success: true,
           data: {
             'data' => {
               'namespaceEligibility' => [
@@ -525,6 +554,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
     context 'when the response is unsuccessful' do
       it 'returns the error message', :aggregate_failures do
         response = {
+          success: true,
           data: {
             "data" => {
               "namespaceEligibility" => nil
@@ -555,6 +585,8 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
         expect(subject).to eq(success: false, errors: [error])
       end
     end
+
+    include_examples 'connectivity problems calling the endpoint'
   end
 
   describe '#update_namespace_name' do
@@ -897,7 +929,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
       end
     end
 
-    context 'when the request is unsuccessful' do
+    context 'when the response contains an error' do
       it 'returns a failure response and logs the error' do
         response = {
           success: true,
@@ -930,27 +962,6 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
       end
     end
 
-    context 'when there is a network connectivity error' do
-      let(:error_message) {  "CONNECTIVITY_ERROR" }
-
-      it 'returns a failure response and logs the error' do
-        response = {
-          success: false,
-          data: {
-            errors: error_message
-          }
-        }
-
-        expect(client).to receive(:http_post).with('graphql', headers, params).and_return(response)
-
-        expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).with(
-          a_kind_of(Gitlab::SubscriptionPortal::Client::ResponseError),
-          query: params[:query],
-          response: response[:data]
-        )
-
-        expect(subject).to eq({ success: false, errors: error_message })
-      end
-    end
+    include_examples 'connectivity problems calling the endpoint'
   end
 end
