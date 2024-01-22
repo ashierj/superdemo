@@ -39,7 +39,7 @@ module Types
         field :scanner,
           type: FindingReportsComparer::ScannerType,
           null: true,
-          description: 'Compared report vulnerability scanner.'
+          description: 'Compared report vulnerability scanner.', hash_key: "scanner"
 
         field :found_by_pipeline_iid,
           type: GraphQL::Types::String,
@@ -50,45 +50,23 @@ module Types
           type: VulnerabilityLocationType,
           null: true,
           alpha: { milestone: '16.3' },
-          description: 'Location of the vulnerability finding. Returns `null` ' \
-                       'if `sast_reports_in_inline_diff` feature flag is disabled.'
+          description: 'Location of the vulnerability finding.'
 
         field :identifiers,
           type: [VulnerabilityIdentifierType],
           null: true,
           alpha: { milestone: '16.3' },
-          description: 'Identifiers of the vulnerability finding. Returns `null` ' \
-                       'if `sast_reports_in_inline_diff` feature flag is disabled.'
+          description: 'Identifiers of the vulnerability finding.', hash_key: "identifiers"
 
         def found_by_pipeline_iid
           object.dig('found_by_pipeline', 'iid')
         end
 
         def location
-          return unless sast_reports_enabled?
-
           object['location'].merge(
             report_type: object['report_type'],
             blob_path: object['blob_path']
           )
-        end
-
-        def identifiers
-          return unless sast_reports_enabled?
-
-          object['identifiers']
-        end
-
-        def scanner
-          return unless sast_reports_enabled?
-
-          object['scanner']
-        end
-
-        private
-
-        def sast_reports_enabled?
-          Feature.enabled?(:sast_reports_in_inline_diff, context[:project])
         end
       end
       # rubocop: enable Graphql/AuthorizeTypes
