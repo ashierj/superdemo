@@ -2,6 +2,9 @@ mutation revertFindingToDetected($uuid: String!) {
   securityFindingRevertToDetected(input: { uuid: $uuid }) {
     errors
     securityFinding {
+      id: uuid
+      state
+      dismissalReason
       vulnerability {
         id
         stateTransitions(last: 1) {

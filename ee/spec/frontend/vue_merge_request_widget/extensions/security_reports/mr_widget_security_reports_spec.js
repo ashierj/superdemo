@@ -41,6 +41,9 @@ const DISMISSAL_RESPONSE = jest.fn().mockResolvedValue({
     securityFindingDismiss: {
       errors: [],
       securityFinding: {
+        id: 1,
+        state: 'DISMISSED',
+        dismissalReason: 'FALSE_POSITIVE',
         vulnerability: {
           id: 1,
           stateTransitions: {
@@ -1190,6 +1193,9 @@ describe('MR Widget Security Reports', () => {
                     securityFindingRevertToDetected: {
                       errors: [],
                       securityFinding: {
+                        id: 1,
+                        state: 'DETECTED',
+                        dismissalReason: null,
                         vulnerability: {
                           id: 1,
                           stateTransitions: {
