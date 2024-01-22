@@ -20,8 +20,7 @@ import {
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import PanelsBase from './panels_base.vue';
 import {
-  GRIDSTACK_MARGIN_X,
-  GRIDSTACK_MARGIN_Y,
+  GRIDSTACK_MARGIN,
   GRIDSTACK_CSS_HANDLE,
   GRIDSTACK_CELL_HEIGHT,
   GRIDSTACK_MIN_ROW,
@@ -271,10 +270,7 @@ export default {
       if (this.loaded) {
         this.grid = GridStack.init({
           staticGrid: !this.editing,
-          marginLeft: GRIDSTACK_MARGIN_X,
-          marginRight: GRIDSTACK_MARGIN_X,
-          marginTop: GRIDSTACK_MARGIN_Y,
-          marginBottom: GRIDSTACK_MARGIN_Y,
+          margin: GRIDSTACK_MARGIN,
           handle: GRIDSTACK_CSS_HANDLE,
           cellHeight: GRIDSTACK_CELL_HEIGHT,
           minRow: GRIDSTACK_MIN_ROW,
@@ -530,8 +526,8 @@ export default {
         >{{ s__('Analytics|Edit') }}</gl-button
       >
     </section>
-    <div class="grid-stack-container gl-mx-n5">
-      <div class="grid-stack-container gl-display-flex">
+    <div class="gl-mx-n3">
+      <div class="gl-display-flex">
         <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1">
           <section
             v-if="showFilters"
@@ -559,7 +555,7 @@ export default {
           />
           <button
             v-if="showEditControls"
-            class="card upload-dropzone-card upload-dropzone-border gl-display-flex gl-align-items-center gl-px-5 gl-py-3 gl-my-3 gl-mx-4"
+            class="card upload-dropzone-card upload-dropzone-border gl-display-flex gl-align-items-center gl-px-5 gl-py-3 gl-m-3"
             data-testid="add-visualization-button"
             @click="toggleVisualizationDrawer"
           >
