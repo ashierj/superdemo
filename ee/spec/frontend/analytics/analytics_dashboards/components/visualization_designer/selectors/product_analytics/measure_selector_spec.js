@@ -88,6 +88,7 @@ describe('ProductAnalyticsMeasureSelector', () => {
     startButton                 | showAllButton                   | eventType       | field                | summaryString
     ${'linkclickevents-button'} | ${'linkclickevents-all-button'} | ${'link_click'} | ${'linkClicksCount'} | ${'linkClickEvents::all'}
     ${'events-button'}          | ${'events-all-button'}          | ${''}           | ${'count'}           | ${'events::all'}
+    ${'pageviews-button'}       | ${'pageviews-all-button'}       | ${'page_view'}  | ${'pageViewsCount'}  | ${'pageViews::all'}
   `(
     'navigates from overview to event subpage $summaryString',
     async ({ startButton, showAllButton, eventType, field, summaryString }) => {
