@@ -146,7 +146,7 @@ describe('WorkItemIterationWithEdit component', () => {
       findSidebarDropdownWidget().vm.$emit('updateValue', iterationAtIndex.id);
       await waitForPromises();
 
-      expect(findSidebarDropdownWidget().props('itemValue').title).toBe('Iteration title widget');
+      expect(findSidebarDropdownWidget().props('itemValue')).toBe(iterationAtIndex.id);
     });
   });
 

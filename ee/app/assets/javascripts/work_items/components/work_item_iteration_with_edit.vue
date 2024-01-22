@@ -98,6 +98,9 @@ export default {
     selectedIterationCadenceName() {
       return this.selectedIteration?.iterationCadence?.title;
     },
+    localIterationId() {
+      return this.localIteration ? this.localIteration?.id : null;
+    },
   },
   watch: {
     iteration(newVal) {
@@ -192,7 +195,7 @@ export default {
     dropdown-name="iteration"
     :loading="isLoadingIterations"
     :list-items="listboxItems"
-    :item-value="localIteration"
+    :item-value="localIterationId"
     :update-in-progress="updateInProgress"
     :toggle-dropdown-text="dropdownText"
     :header-text="__('Select iteration')"
