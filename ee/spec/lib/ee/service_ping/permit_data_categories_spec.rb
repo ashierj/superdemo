@@ -73,7 +73,7 @@ RSpec.describe ServicePing::PermitDataCategories do
           before do
             # License.current.usage_ping? == true
             create_current_license(operational_metrics_enabled: true)
-            allow(ServicePing::ServicePingSettings).to receive(:product_intelligence_enabled?).and_return(true)
+            allow(ServicePing::ServicePingSettings).to receive(:enabled_and_consented?).and_return(true)
           end
 
           it 'returns all categories' do
