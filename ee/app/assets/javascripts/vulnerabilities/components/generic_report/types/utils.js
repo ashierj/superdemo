@@ -1,5 +1,10 @@
 import { overEvery, flow } from 'lodash';
-import { REPORT_TYPES } from './constants';
+import {
+  REPORT_TYPES,
+  REPORT_TYPE_LIST,
+  REPORT_TYPE_TABLE,
+  REPORT_TYPE_NAMED_LIST,
+} from './constants';
 
 /**
  * Check if the given report is of a type that can be rendered (i.e, is mapped to a component and can be rendered)
@@ -7,7 +12,7 @@ import { REPORT_TYPES } from './constants';
  * @param {{ type: string }} reportItem
  * @returns boolean
  */
-const isSupportedType = ({ type }) => Object.values(REPORT_TYPES).includes(type);
+const isSupportedType = ({ type }) => REPORT_TYPES.includes(type);
 
 /**
  * Higher order function that accepts a type and returns a function that returns true if the passed in report type matches
@@ -23,7 +28,7 @@ const isOfType = (typeToCheck) => ({ type }) => type === typeToCheck;
  * @param {{ type: string } } reportItem
  * @returns boolean
  */
-export const isOfTypeList = isOfType(REPORT_TYPES.list);
+export const isOfTypeList = isOfType(REPORT_TYPE_LIST);
 
 /**
  * Check if the given report is of type 'table'
@@ -31,7 +36,7 @@ export const isOfTypeList = isOfType(REPORT_TYPES.list);
  * @param {{ type: string } } reportItem
  * @returns boolean
  */
-const isOfTypeTable = isOfType(REPORT_TYPES.reportTable);
+const isOfTypeTable = isOfType(REPORT_TYPE_TABLE);
 
 /**
  * Check if the given report is of type named-list
@@ -39,7 +44,7 @@ const isOfTypeTable = isOfType(REPORT_TYPES.reportTable);
  * @param {{ type: string } } reportItem
  * @returns boolean
  */
-export const isOfTypeNamedList = isOfType(REPORT_TYPES.namedList);
+export const isOfTypeNamedList = isOfType(REPORT_TYPE_NAMED_LIST);
 
 /**
  * Check if the current report item is of that list and is not nested deeper than the maximum depth
