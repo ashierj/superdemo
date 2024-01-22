@@ -55,7 +55,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     visit invite_path(invitation.raw_invite_token, invite_type: Emails::Members::INITIAL_INVITE)
 
     # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/438017
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(103)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(102)
 
     fill_in_sign_up_form(user, invite: true)
   end
