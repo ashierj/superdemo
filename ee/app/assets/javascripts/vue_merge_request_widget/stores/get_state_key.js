@@ -16,11 +16,7 @@ export default function getStateKey() {
     return stateKey.jiraAssociationMissing;
   }
 
-  if (
-    !this.autoMergeEnabled &&
-    this.detailedMergeStatus === DETAILED_MERGE_STATUS.NOT_APPROVED &&
-    this.preferredAutoMergeStrategy === MWCP_MERGE_STRATEGY
-  ) {
+  if (!this.autoMergeEnabled && this.preferredAutoMergeStrategy === MWCP_MERGE_STRATEGY) {
     return CEStateKey.readyToMerge;
   }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Auth::CurrentUserMode, :request_store do
+RSpec.describe Gitlab::Auth::CurrentUserMode, :request_store, feature_category: :system_access do
   let_it_be(:user) { create(:user, :admin) }
 
   subject { described_class.new(user) }
