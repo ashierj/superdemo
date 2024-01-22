@@ -63,6 +63,7 @@ RSpec.describe MemberEntity, feature_category: :system_access do
     end
 
     it 'correctly exposes `can_disable_two_factor`' do
+      allow(member.user).to receive(:managed_by_user?).and_call_original
       allow(member.user).to receive(:managed_by_user?).with(current_user, group: group).and_return(true)
       allow(member.user).to receive(:two_factor_enabled?).and_return(true)
 
@@ -70,6 +71,7 @@ RSpec.describe MemberEntity, feature_category: :system_access do
     end
 
     it 'always returns boolean value for `can_disable_two_factor`' do
+      allow(member.user).to receive(:managed_by_user?).and_call_original
       allow(member.user).to receive(:managed_by_user?).with(current_user, group: group).and_return(nil)
       allow(member.user).to receive(:two_factor_enabled?).and_return(true)
 

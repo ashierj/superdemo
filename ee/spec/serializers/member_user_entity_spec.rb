@@ -7,9 +7,17 @@ RSpec.describe MemberUserEntity do
 
   let_it_be_with_reload(:user) { create(:user) }
 
-  let(:entity) { described_class.new(user, source: source) }
-  let(:entity_hash) { entity.as_json }
+  let(:current_user) { nil }
   let(:source) { nil }
+  let(:options) do
+    {
+      current_user: current_user,
+      source: source
+    }
+  end
+
+  let(:entity) { described_class.new(user, options) }
+  let(:entity_hash) { entity.as_json }
 
   it 'matches json schema' do
     expect(entity.to_json).to match_schema('entities/member_user_default')
@@ -82,6 +90,105 @@ RSpec.describe MemberUserEntity do
 
       def get_url(policy)
         Gitlab::Routing.url_helpers.project_incident_management_escalation_policies_url(policy.project)
+      end
+    end
+
+    context 'for email' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:current_user) { create(:user) }
+
+      let_it_be(:source) { group }
+
+      shared_examples "exposes the user's email" do
+        it "exposes the user's email" do
+          expect(entity_hash.keys).to include(:email)
+          expect(entity_hash[:email]).to eq(user.email)
+        end
+      end
+
+      shared_examples "does not expose the user's email" do
+        it "does not expose the user's email" do
+          expect(entity_hash.keys).not_to include(:email)
+        end
+      end
+
+      context 'when the current_user is a group owner' do
+        before do
+          create(:group_member, :owner, user: current_user, group: group)
+        end
+
+        include_examples "does not expose the user's email"
+      end
+
+      context 'when the current_user is an admin' do
+        let_it_be(:current_user) { create(:user, :admin) }
+
+        context 'when admin mode enabled', :enable_admin_mode do
+          include_examples "exposes the user's email"
+        end
+
+        context 'when admin mode disabled' do
+          include_examples "does not expose the user's email"
+        end
+      end
+
+      context 'on SaaS', :saas do
+        using RSpec::Parameterized::TableSyntax
+
+        let_it_be(:another_group) { create(:group_member, :owner, user: current_user).group }
+
+        where(
+          :domain_verification_availabe_for_group,
+          :user_is_enterprise_user_of_the_group,
+          :current_user_is_group_owner,
+          :shared_examples
+        ) do
+          false | false | false | "does not expose the user's email"
+          false | false | true  | "does not expose the user's email"
+          false | true  | false | "does not expose the user's email"
+          false | true  | true  | "does not expose the user's email"
+          true  | false | false | "does not expose the user's email"
+          true  | false | true  | "does not expose the user's email"
+          true  | true  | false | "does not expose the user's email"
+          true  | true  | true  | "exposes the user's email"
+        end
+
+        with_them do
+          before do
+            stub_licensed_features(domain_verification: domain_verification_availabe_for_group)
+
+            user.user_detail.enterprise_group_id = user_is_enterprise_user_of_the_group ? group.id : another_group.id
+
+            if current_user_is_group_owner
+              create(:group_member, :owner, user: current_user, group: group)
+            else
+              create(:group_member, :maintainer, user: current_user, group: group)
+            end
+          end
+
+          include_examples params[:shared_examples]
+
+          context 'when source is subgroup' do
+            let_it_be(:subgroup) { create :group, parent: group }
+            let_it_be(:source) { subgroup }
+
+            include_examples params[:shared_examples]
+          end
+
+          context 'when source is project' do
+            let_it_be(:project) { create(:project, group: group) }
+            let_it_be(:source) { project }
+
+            include_examples params[:shared_examples]
+
+            context 'when project is within subgroup' do
+              let_it_be(:subgroup) { create :group, parent: group }
+              let_it_be(:project) { create(:project, group: subgroup) }
+
+              include_examples params[:shared_examples]
+            end
+          end
+        end
       end
     end
 
