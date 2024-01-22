@@ -6,7 +6,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { captureException } from '~/ci/runner/sentry_utils';
 import NamespaceStorageApp from 'ee/usage_quotas/storage/components/namespace_storage_app.vue';
-import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
+import ProjectList from '~/usage_quotas/storage/components/project_list.vue';
 import getNamespaceStorageQuery from 'ee/usage_quotas/storage/queries/namespace_storage.query.graphql';
 import getProjectListStorageQuery from 'ee/usage_quotas/storage/queries/project_list_storage.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';

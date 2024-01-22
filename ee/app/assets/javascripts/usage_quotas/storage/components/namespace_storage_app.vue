@@ -1,24 +1,19 @@
 <script>
-import { GlKeysetPagination } from '@gitlab/ui';
 import { captureException } from '~/ci/runner/sentry_utils';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import CeNamespaceStorageApp from '~/usage_quotas/storage/components/namespace_storage_app.vue';
 import NamespaceStorageQuery from '../queries/namespace_storage.query.graphql';
 import ProjectListStorageQuery from '../queries/project_list_storage.query.graphql';
 import { parseGetStorageResults } from '../utils';
-import ProjectList from './project_list.vue';
 
 export default {
   name: 'NamespaceStorageApp',
   components: {
-    GlKeysetPagination,
     CeNamespaceStorageApp,
-    ProjectList,
   },
   inject: [
     'namespaceId',
     'namespacePath',
-    'helpLinks',
     'defaultPerPage',
     'userNamespace',
     'isUsingProjectEnforcementWithLimits',
@@ -64,19 +59,7 @@ export default {
       namespaceLoadingError: false,
       projectsLoadingError: false,
       sortKey: this.isUsingProjectEnforcementWithLimits ? 'STORAGE' : 'STORAGE_SIZE_DESC',
-      initialSortBy: this.isUsingProjectEnforcementWithLimits ? null : 'storage',
     };
-  },
-  computed: {
-    projectList() {
-      return this.projects?.nodes ?? [];
-    },
-    pageInfo() {
-      return this.projects?.pageInfo;
-    },
-    showPagination() {
-      return Boolean(this.pageInfo?.hasPreviousPage || this.pageInfo?.hasNextPage);
-    },
   },
   methods: {
     onSearch(searchTerm) {
@@ -110,16 +93,6 @@ export default {
         },
       });
     },
-    onPrev(before) {
-      if (this.pageInfo?.hasPreviousPage) {
-        this.fetchMoreProjects({ before, last: this.defaultPerPage, first: undefined });
-      }
-    },
-    onNext(after) {
-      if (this.pageInfo?.hasNextPage) {
-        this.fetchMoreProjects({ after, first: this.defaultPerPage });
-      }
-    },
   },
 };
 </script>
@@ -128,27 +101,12 @@ export default {
     :projects-loading-error="projectsLoadingError"
     :namespace-loading-error="namespaceLoadingError"
     :is-namespace-storage-statistics-loading="$apollo.queries.namespace.loading"
+    :is-namespace-projects-loading="$apollo.queries.projects.loading"
     :namespace="namespace"
-    @search="onSearch($event)"
-  >
-    <template #ee-storage-app>
-      <project-list
-        :projects="projectList"
-        :is-loading="$apollo.queries.projects.loading"
-        :help-links="helpLinks"
-        :sort-by="initialSortBy"
-        :sort-desc="true"
-        @sortChanged="onSortChanged($event)"
-      />
-
-      <div class="gl-display-flex gl-justify-content-center gl-mt-5">
-        <gl-keyset-pagination
-          v-if="showPagination"
-          v-bind="pageInfo"
-          @prev="onPrev"
-          @next="onNext"
-        />
-      </div>
-    </template>
-  </ce-namespace-storage-app>
+    :projects="projects"
+    :initial-sort-by="isUsingProjectEnforcementWithLimits ? null : 'storage'"
+    @search="onSearch"
+    @sort-changed="onSortChanged"
+    @fetch-more-projects="fetchMoreProjects"
+  />
 </template>

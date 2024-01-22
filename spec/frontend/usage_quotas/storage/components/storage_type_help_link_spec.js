@@ -1,6 +1,6 @@
 import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import StorageTypeHelpLink from 'ee/usage_quotas/storage/components/storage_type_help_link.vue';
+import StorageTypeHelpLink from '~/usage_quotas/storage/components/storage_type_help_link.vue';
 import { storageTypeHelpPaths } from '~/usage_quotas/storage/constants';
 
 let wrapper;
