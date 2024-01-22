@@ -1,0 +1,10 @@
+query getArtifacts($fullPath: ID!) {
+  project(fullPath: $fullPath) {
+    id
+    googleCloudPlatformArtifactRegistryRepositoryArtifacts @client {
+      project
+      repository
+      gcpRepositoryUrl
+    }
+  }
+}

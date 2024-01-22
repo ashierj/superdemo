@@ -23039,6 +23039,18 @@ msgstr ""
 msgid "Google Play service account key."
 msgstr ""
 
+msgid "GoogleArtifactRegistry|An error occurred while fetching the artifacts."
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Open in Google Cloud"
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Project ID"
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Repository name"
+msgstr ""
+
 msgid "GoogleCloud|Cancel"
 msgstr ""
 
