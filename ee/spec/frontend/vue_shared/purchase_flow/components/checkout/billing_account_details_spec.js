@@ -11,13 +11,11 @@ describe('Billing account details', () => {
   const findCompanyInformation = () => wrapper.findComponent(CompanyInformation);
 
   const { soldToContact, billToContact } = mockBillingAccount;
-  const initialProps = {
-    soldToContact,
-    billToContact,
-  };
 
   const createComponent = () => {
-    wrapper = shallowMount(BillingAccountDetails, { propsData: initialProps });
+    wrapper = shallowMount(BillingAccountDetails, {
+      propsData: { billingAccount: mockBillingAccount },
+    });
   };
 
   beforeEach(() => {
@@ -42,7 +40,7 @@ describe('Billing account details', () => {
     });
   });
 
-  it('renders CompanyInformation component', () => {
+  it('renders company information', () => {
     expect(findCompanyInformation().exists()).toBe(true);
   });
 });
