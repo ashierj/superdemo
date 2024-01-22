@@ -1,9 +1,9 @@
 import { GlTable } from '@gitlab/ui';
 import { merge } from 'lodash';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
+import ProjectList from '~/usage_quotas/storage/components/project_list.vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
-import StorageTypeHelpLink from 'ee/usage_quotas/storage/components/storage_type_help_link.vue';
+import StorageTypeHelpLink from '~/usage_quotas/storage/components/storage_type_help_link.vue';
 import StorageTypeWarning from '~/usage_quotas/storage/components/storage_type_warning.vue';
 import { storageTypeHelpPaths } from '~/usage_quotas/storage/constants';
 import { stubComponent } from 'helpers/stub_component';

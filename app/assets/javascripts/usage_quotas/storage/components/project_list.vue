@@ -5,8 +5,8 @@ import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import { containerRegistryPopover } from '~/usage_quotas/storage/constants';
 import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import HelpPageLink from '~/vue_shared/components/help_page_link/help_page_link.vue';
-import StorageTypeHelpLink from 'ee/usage_quotas/storage/components/storage_type_help_link.vue';
-import StorageTypeWarning from '~/usage_quotas/storage/components/storage_type_warning.vue';
+import StorageTypeHelpLink from './storage_type_help_link.vue';
+import StorageTypeWarning from './storage_type_warning.vue';
 
 export default {
   name: 'ProjectList',
