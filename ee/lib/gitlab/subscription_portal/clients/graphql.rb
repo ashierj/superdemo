@@ -329,7 +329,7 @@ module Gitlab
             }
             GQL
 
-            full_response = http_post('graphql',
+            response = http_post('graphql',
               json_headers,
               {
                 query: query,
@@ -337,11 +337,9 @@ module Gitlab
                   licenseKey: license_key
                 }
               }
-            )
-            response = full_response[:data]
+            )[:data]
 
-            errors = parse_errors(full_response, query_name: 'cloudConnectorAccess')
-            if errors.blank?
+            if response['errors'].blank?
               token = response.dig('data', 'cloudConnectorAccess', 'serviceToken', 'token')
               expires_at = response.dig('data', 'cloudConnectorAccess', 'serviceToken', 'expiresAt')
               available_services = response.dig('data', 'cloudConnectorAccess', 'availableServices')
@@ -354,7 +352,7 @@ module Gitlab
             else
               track_error(query, response)
 
-              errors
+              error(response['errors'])
             end
           end
 
