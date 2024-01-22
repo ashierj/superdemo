@@ -124,6 +124,8 @@ module Registrations
     def track_joining_a_project_event
       return unless onboarding_status.joining_a_project?
 
+      cookies[:signup_with_joining_a_project] = { value: true, expires: 30.days }
+
       track_event('select_button', label: 'join_a_project')
     end
 

@@ -18,6 +18,7 @@ module EE
       PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY = 'profile_personal_access_token_expiry'
       CODE_SUGGESTIONS_GA_NON_OWNER_ALERT = 'code_suggestions_ga_non_owner_alert'
       CODE_SUGGESTIONS_GA_OWNER_ALERT = 'code_suggestions_ga_owner_alert'
+      JOINING_A_PROJECT_ALERT = 'joining_a_project_alert'
 
       override :render_dashboard_ultimate_trial
       def render_dashboard_ultimate_trial(user)
@@ -87,6 +88,13 @@ module EE
         return false unless show_code_suggestions_ga_alert?(group)
 
         !user_dismissed?(CODE_SUGGESTIONS_GA_OWNER_ALERT)
+      end
+
+      def show_joining_a_project_alert?
+        return false unless cookies[:signup_with_joining_a_project]
+        return false unless ::Gitlab::Saas.feature_available?(:onboarding)
+
+        !user_dismissed?(JOINING_A_PROJECT_ALERT)
       end
 
       private

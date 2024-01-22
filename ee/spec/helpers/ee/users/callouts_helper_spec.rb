@@ -375,4 +375,25 @@ RSpec.describe EE::Users::CalloutsHelper do
       it { is_expected.to eq(expected_result) }
     end
   end
+
+  describe '.show_joining_a_project_alert?', feature_category: :onboarding do
+    where(:cookie_present?, :onboarding?, :user_dismissed_callout?, :expected_result) do
+      true | true | true | false
+      false | true | true | false
+      true | false | true | false
+      true | true | false | true
+    end
+
+    with_them do
+      before do
+        cookies[:signup_with_joining_a_project] = cookie_present?
+        allow(::Gitlab::Saas).to receive(:feature_available?).with(:onboarding).and_return(onboarding?)
+        allow(helper).to receive(:user_dismissed?).and_return(user_dismissed_callout?)
+      end
+
+      subject { helper.show_joining_a_project_alert? }
+
+      it { is_expected.to eq(expected_result) }
+    end
+  end
 end

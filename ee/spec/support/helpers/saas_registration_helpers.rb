@@ -320,6 +320,10 @@ module SaasRegistrationHelpers
   def expect_to_be_on_projects_dashboard_with_zero_authorized_projects
     expect(page).to have_content 'Welcome to GitLab'
     expect(page).to have_content 'Faster releases. Better code. Less pain.'
+
+    page.within('[data-testid="joining-a-project-alert"') do
+      expect(page).to have_content 'Looking for your team?'
+    end
   end
 
   def super_sidebar_selector

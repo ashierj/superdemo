@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   include DragTo
+  include ListboxHelpers
 
   let(:user) { create(:user, name: 'Sherlock Holmes') }
   let(:user2) { create(:user, name: 'John') }
@@ -116,23 +117,32 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       visit work_items_path
     end
 
-    it 'assigns to multiple users' do
-      find_by_testid('work-item-assignees-input').fill_in(with: user.username)
-      wait_for_requests
+    context 'when work_items_mvc_2 is disabled' do
+      before do
+        stub_feature_flags(work_items_mvc_2: false)
 
-      send_keys(:enter)
-      find("body").click
-      wait_for_requests
+        page.refresh
+        wait_for_all_requests
+      end
 
-      find_by_testid('work-item-assignees-input').fill_in(with: user2.username)
-      wait_for_requests
+      it 'assigns to multiple users' do
+        find_by_testid('work-item-assignees-input').fill_in(with: user.username)
+        wait_for_requests
 
-      send_keys(:enter)
-      find("body").click
-      wait_for_requests
+        send_keys(:enter)
+        find("body").click
+        wait_for_requests
 
-      expect(work_item.reload.assignees).to include(user)
-      expect(work_item.reload.assignees).to include(user2)
+        find_by_testid('work-item-assignees-input').fill_in(with: user2.username)
+        wait_for_requests
+
+        send_keys(:enter)
+        find("body").click
+        wait_for_requests
+
+        expect(work_item.reload.assignees).to include(user)
+        expect(work_item.reload.assignees).to include(user2)
+      end
     end
 
     it_behaves_like 'work items toggle status button'
@@ -358,23 +368,32 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       visit work_items_path
     end
 
-    it 'assigns to multiple users' do
-      find_by_testid('work-item-assignees-input').fill_in(with: user.username)
-      wait_for_requests
+    context 'when work_items_mvc_2 is disabled' do
+      before do
+        stub_feature_flags(work_items_mvc_2: false)
 
-      send_keys(:enter)
-      find("body").click
-      wait_for_requests
+        page.refresh
+        wait_for_all_requests
+      end
 
-      find_by_testid('work-item-assignees-input').fill_in(with: user2.username)
-      wait_for_requests
+      it 'assigns to multiple users' do
+        find_by_testid('work-item-assignees-input').fill_in(with: user.username)
+        wait_for_requests
 
-      send_keys(:enter)
-      find("body").click
-      wait_for_requests
+        send_keys(:enter)
+        find("body").click
+        wait_for_requests
 
-      expect(work_item.reload.assignees).to include(user)
-      expect(work_item.reload.assignees).to include(user2)
+        find_by_testid('work-item-assignees-input').fill_in(with: user2.username)
+        wait_for_requests
+
+        send_keys(:enter)
+        find("body").click
+        wait_for_requests
+
+        expect(work_item.reload.assignees).to include(user)
+        expect(work_item.reload.assignees).to include(user2)
+      end
     end
 
     it_behaves_like 'work items toggle status button'
