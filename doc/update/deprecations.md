@@ -1273,6 +1273,31 @@ automatically from GitLab 16.0 onwards.
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### Support for self-hosted Sentry versions 21.4.1 and earlier
+
+<div class="deprecation-notes">
+- Announced in GitLab <span class="milestone">16.9</span>
+- Removal in GitLab <span class="milestone">17.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/435791).
+</div>
+
+Support for self-hosted Sentry versions 21.4.1 and earlier is deprecated and will be removed in GitLab 17.0.
+
+If your self-hosted Sentry version is 21.4.1 or earlier, you may not be able to collect errors from your GitLab instance after upgrading to GitLab 17.0 or later.
+To continue sending errors from your GitLab instance to your Sentry instance, upgrade Sentry to version 21.5.0 or later. For more information,
+see [Sentry documentation](https://develop.sentry.dev/self-hosted/releases/).
+
+NOTE:
+The deprecated support is for
+[GitLab instance error tracking features](https://docs.gitlab.com/omnibus/settings/configuration.html#error-reporting-and-logging-with-sentry)
+for administrators. The deprecated support does not relate to
+[GitLab error tracking](https://docs.gitlab.com/ee/operations/error_tracking.html#sentry-error-tracking) for
+developers' own deployed applications.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### Support for setting custom schema for backup is deprecated
 
 <div class="deprecation-notes">
