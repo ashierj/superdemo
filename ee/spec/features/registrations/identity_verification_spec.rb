@@ -383,7 +383,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   end
 
   def saml_sign_up
-    click_button "oauth-login-#{provider}"
+    click_button Gitlab::Auth::OAuth::Provider.label_for(provider)
     solve_arkose_verify_challenge(saml: true, risk: risk)
   end
 
