@@ -7,6 +7,11 @@ module Projects
 
       feature_category :container_registry
 
+      # The show action renders index to allow frontend routing to work on page refresh
+      def show
+        render :index
+      end
+
       private
 
       def ensure_feature!
