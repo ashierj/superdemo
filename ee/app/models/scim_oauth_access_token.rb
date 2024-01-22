@@ -35,6 +35,6 @@ class ScimOauthAccessToken < ApplicationRecord
   end
 
   def prefix_for_token
-    Feature.enabled?(:prefix_scim_tokens) ? TOKEN_PREFIX : ''
+    TOKEN_PREFIX
   end
 end

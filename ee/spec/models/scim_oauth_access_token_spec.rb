@@ -99,17 +99,5 @@ RSpec.describe ScimOauthAccessToken, feature_category: :system_access do
 
       expect(scim_token.token).to match(/^glsoat-[\w-]{20}$/)
     end
-
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(prefix_scim_tokens: false)
-      end
-
-      it 'is not prefixed' do
-        scim_token = described_class.create!
-
-        expect(scim_token.token).to match(/^[\w-]{20}$/)
-      end
-    end
   end
 end
