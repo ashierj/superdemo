@@ -12,13 +12,16 @@ module Iterations
       @params = params
     end
 
-    def execute
+    def execute(skip_authorization: false)
+      @skip_authorization = skip_authorization
+
       raise ArgumentError, 'group argument is missing' unless group.present?
 
       items = Iterations::Cadence.all
       items = by_id(items)
       items = by_groups(items)
       items = by_title(items)
+      items = by_exact_title(items)
       items = by_duration(items)
       items = by_automatic(items)
       items = by_active(items)
@@ -28,12 +31,16 @@ module Iterations
 
     private
 
+    attr_reader :skip_authorization
+
     def by_groups(items)
       items.with_groups(groups)
     end
 
     def groups
       groups = groups_to_include(group)
+
+      return groups.map(&:id) if skip_authorization
 
       groups_user_can_read_cadences(groups).map(&:id)
     end
@@ -71,6 +78,12 @@ module Iterations
       return items if params[:title].blank?
 
       items.search_title(params[:title])
+    end
+
+    def by_exact_title(items)
+      return items if params[:exact_title].blank?
+
+      items.by_title(params[:exact_title])
     end
 
     def by_duration(items)

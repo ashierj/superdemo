@@ -1,6 +1,6 @@
 .security-policies-alert {
   top: $calc-application-header-height;
-  @include gl-z-index-1;
+  z-index: 1;
 }
 
 .security-policies-pre-min-width {
@@ -23,6 +23,6 @@
   background-color: $gray-10;
 
   .gl-dark & {
-    @include gl-bg-white;
+    background-color: $white;
   }
 }

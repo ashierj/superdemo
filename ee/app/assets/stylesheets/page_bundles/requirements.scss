@@ -3,8 +3,8 @@
 .requirements-container {
   .requirement-form-drawer {
     .gl-drawer-header {
-      @include gl-border-bottom-0;
-      @include gl-pb-0;
+      border-bottom: 0;
+      padding-bottom: 0;
     }
 
     &.zen-mode {
@@ -17,20 +17,20 @@
     // elements within `issuable_body.vue`
     // and are specific to requirements.
     .title-container {
-      @include gl-border-b-solid;
-      @include gl-border-b-gray-100;
-      @include gl-border-b-1;
+      border-bottom-style: solid;
+      border-bottom-color: $gray-100;
+      border-bottom-width: $gl-border-size-1;
       display: flex;
-      @include gl-pb-3;
+      padding-bottom: $gl-spacing-scale-3;
       @include gl-align-items-flex-start;
 
       .title {
         @include gl-font-size-markdown-h2;
         margin-bottom: 0;
-        @include gl-pb-0;
-        @include gl-flex-grow-1;
-        @include gl-mr-2;
-        @include gl-border-bottom-0;
+        padding-bottom: 0;
+        flex-grow: 1;
+        margin-right: $gl-spacing-scale-2;
+        border-bottom: 0;
       }
     }
 
@@ -48,7 +48,7 @@
       }
 
       .description {
-        @include gl-mt-4;
+        margin-top: $gl-spacing-scale-4;
       }
     }
   }

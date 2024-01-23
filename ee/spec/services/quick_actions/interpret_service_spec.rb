@@ -422,9 +422,9 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
     end
 
     context 'iteration command' do
-      let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
-
-      let(:content) { "/iteration #{iteration.to_reference(project)}" }
+      let_it_be(:root_group) { create(:group, :private) }
+      let_it_be(:group) { create(:group, :private, parent: root_group) }
+      let_it_be(:project) { create(:project, :private, :repository, group: group) }
 
       context 'when iterations are enabled' do
         before do
@@ -432,9 +432,20 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
         end
 
         context 'when iteration exists' do
+          let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
+
+          let(:content) { "/iteration #{iteration.to_reference(project)}" }
+
           context 'with permissions' do
             before do
               group.add_developer(current_user)
+            end
+
+            it 'does not assign iteration when reference does not match any iteration' do
+              _, updates, message = service.execute("/iteration *iteration:#{non_existing_record_id}", issue)
+
+              expect(updates).to be_empty
+              expect(message).to eq(_("Could not apply iteration command. Failed to find the referenced iteration."))
             end
 
             it 'assigns an iteration to an issue' do
@@ -473,19 +484,138 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
           end
         end
 
-        context 'when iteration does not exist' do
-          let(:content) { "/iteration none" }
+        context 'with --current and --next options' do
+          before do
+            group.add_developer(current_user)
+          end
 
-          it 'returns empty message' do
-            _, updates, message = service.execute(content, issue)
+          context "with iterations cadence reference" do
+            let_it_be(:cadence) { create(:iterations_cadence, title: "one cadence", group: root_group) }
+            let_it_be(:past_iteration) { create(:iteration, :with_due_date, iterations_cadence: cadence, start_date: 10.days.ago) }
+            let_it_be(:current_iteration) { create(:iteration, :with_due_date, iterations_cadence: cadence, start_date: 2.days.ago) }
+            let_it_be(:next_iteration) { create(:iteration, :with_due_date, iterations_cadence: cadence, start_date: 10.days.from_now) }
 
-            expect(updates).to be_empty
-            expect(message).to be_empty
+            let_it_be(:another_cadence) { create(:iterations_cadence, title: "another cadence", group: root_group) }
+            let_it_be(:another_current_iteration) { create(:iteration, :with_due_date, iterations_cadence: another_cadence, start_date: 2.days.ago) }
+
+            let_it_be(:empty_cadence) { create(:iterations_cadence, title: "empty cadence", group: root_group) }
+
+            let_it_be(:inaccessible_cadence) { create(:iterations_cadence, title: "another cadence") }
+
+            it 'does not assign any iteration when the referenced cadence is empty' do
+              _, updates, message = service.execute("/iteration #{empty_cadence.to_reference} --current", issue)
+              expect(updates).to be_empty
+              expect(message).to eq(_('Could not apply iteration command. No current iteration found for the cadence.'))
+
+              _, updates, message = service.execute("/iteration #{empty_cadence.to_reference} --next", issue)
+              expect(updates).to be_empty
+              expect(message).to eq(_('Could not apply iteration command. No upcoming iteration found for the cadence.'))
+            end
+
+            it 'does not assign any iteration when referencing non-existent iterations cadence' do
+              _, updates, message = service.execute("/iteration [cadence:\"foobar cadence\"] --current", issue)
+              expect(updates).to be_empty
+              expect(message).to eq(_('Could not apply iteration command. Failed to find the referenced iteration cadence.'))
+
+              _, updates, message = service.execute("/iteration [cadence:#{non_existing_record_id}] --current", issue)
+              expect(updates).to be_empty
+              expect(message).to eq(_('Could not apply iteration command. Failed to find the referenced iteration cadence.'))
+            end
+
+            it 'does not assign any iteration when referencing unauthorized iterations cadence' do
+              _, updates, message = service.execute("/iteration #{inaccessible_cadence.to_reference} --current", issue)
+              expect(updates).to be_empty
+              expect(message).to eq(_('Could not apply iteration command. Failed to find the referenced iteration cadence.'))
+            end
+
+            it 'does not assign any iteration when option are missing' do
+              _, updates, message = service.execute("/iteration #{cadence.to_reference}", issue)
+              expect(updates).to be_empty
+              expect(message).to eq(_("Could not apply iteration command. Missing option --current or --next."))
+            end
+
+            context 'with --current option' do
+              where(:content) do
+                [
+                  [lazy { "/iteration #{cadence.to_reference} --current" }],
+                  [lazy { "/iteration [cadence:\"#{cadence.title}\"] --current" }]
+                ]
+              end
+
+              with_them do
+                it 'assigns the current iteration of the referenced iterations cadence' do
+                  _, updates, message = service.execute(content, issue)
+
+                  expect(updates).to eq(iteration: current_iteration)
+                  expect(message).to eq("Set the iteration to #{current_iteration.to_reference}.")
+                end
+              end
+            end
+
+            context 'with --next option' do
+              where(:content) do
+                [
+                  [lazy { "/iteration #{cadence.to_reference} --next" }],
+                  [lazy { "/iteration [cadence:\"#{cadence.title}\"] --next" }]
+                ]
+              end
+
+              with_them do
+                it 'assigns the next upcoming iteration of the referenced iterations cadence' do
+                  _, updates, message = service.execute(content, issue)
+
+                  expect(updates).to eq(iteration: next_iteration)
+                  expect(message).to eq("Set the iteration to #{next_iteration.to_reference}.")
+                end
+              end
+            end
+          end
+
+          context "without iterations cadence reference" do
+            let_it_be(:cadence) { create(:iterations_cadence, title: "cadence", group: group) }
+            let_it_be(:current_iteration) { create(:iteration, :with_due_date, iterations_cadence: cadence, start_date: 2.days.ago) }
+            let_it_be(:next_iteration) { create(:iteration, :with_due_date, iterations_cadence: cadence, start_date: 10.days.from_now) }
+
+            context 'when a group hierarchy has a single iterations cadence' do
+              it 'assigns the current iteration from the iterations cadence' do
+                _, updates, message = service.execute("/iteration --current", issue)
+
+                expect(updates).to eq(iteration: current_iteration)
+                expect(message).to eq("Set the iteration to #{current_iteration.to_reference}.")
+              end
+
+              it 'assigns the next iteration from the iterations cadence' do
+                _, updates, message = service.execute("/iteration --next", issue)
+
+                expect(updates).to eq(iteration: next_iteration)
+                expect(message).to eq("Set the iteration to #{next_iteration.to_reference}.")
+              end
+            end
+
+            context 'when a group hierarchy has multiple iterations cadences' do
+              before_all do
+                create(:iterations_cadence, title: "another cadence", group: group)
+              end
+
+              it 'does not assign any iteration' do
+                _, updates, message = service.execute("/iteration --current", issue)
+                expect(updates).to be_empty
+                expect(message).to eq(_('Could not apply iteration command. There are multiple cadences but no cadence is specified.'))
+
+                _, updates, message = service.execute("/iteration --next", issue)
+                expect(updates).to be_empty
+                expect(message).to eq(_('Could not apply iteration command. There are multiple cadences but no cadence is specified.'))
+              end
+            end
           end
         end
       end
 
       context 'when iterations are disabled' do
+        let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
+
+        let(:content) { "/iteration #{iteration.to_reference(project)}" }
+
         before do
           stub_licensed_features(iterations: false)
         end
@@ -498,6 +628,10 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       end
 
       context 'when issuable does not support iterations' do
+        let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
+
+        let(:content) { "/iteration #{iteration.to_reference(project)}" }
+
         it 'does not assign an iteration to an incident' do
           incident = create(:incident, project: project)
 

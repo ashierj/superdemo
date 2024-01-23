@@ -5,7 +5,7 @@ module EE
     module ReferenceExtractor
       extend ActiveSupport::Concern
 
-      EE_REFERABLES = %i[iteration].freeze
+      EE_REFERABLES = %i[iteration iterations_cadence].freeze
 
       prepended do
         EE_REFERABLES.each do |type|
