@@ -66,6 +66,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
   describe 'scopes' do
     shared_context 'with add-on purchases' do
       let_it_be(:code_suggestions_add_on) { create(:gitlab_subscription_add_on) }
+      let_it_be(:product_analytics_add_on) { create(:gitlab_subscription_add_on, :product_analytics) }
 
       let_it_be(:expired_code_suggestion_purchase_as_owner) do
         create(:gitlab_subscription_add_on_purchase, expires_on: 1.day.ago, add_on: code_suggestions_add_on)
@@ -91,6 +92,30 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
         create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
       end
 
+      let_it_be(:expired_product_analytics_purchase_as_owner) do
+        create(:gitlab_subscription_add_on_purchase, expires_on: 1.day.ago, add_on: product_analytics_add_on)
+      end
+
+      let_it_be(:active_product_analytics_purchase_as_guest) do
+        create(:gitlab_subscription_add_on_purchase, add_on: product_analytics_add_on)
+      end
+
+      let_it_be(:active_product_analytics_purchase_as_reporter) do
+        create(:gitlab_subscription_add_on_purchase, add_on: product_analytics_add_on)
+      end
+
+      let_it_be(:active_product_analytics_purchase_as_developer) do
+        create(:gitlab_subscription_add_on_purchase, add_on: product_analytics_add_on)
+      end
+
+      let_it_be(:active_product_analytics_purchase_as_maintainer) do
+        create(:gitlab_subscription_add_on_purchase, add_on: product_analytics_add_on)
+      end
+
+      let_it_be(:active_product_analytics_purchase_unrelated) do
+        create(:gitlab_subscription_add_on_purchase, add_on: product_analytics_add_on)
+      end
+
       let_it_be(:user) { create(:user) }
 
       before do
@@ -99,6 +124,12 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
         active_code_suggestion_purchase_as_reporter.namespace.add_reporter(user)
         active_code_suggestion_purchase_as_developer.namespace.add_developer(user)
         active_code_suggestion_purchase_as_maintainer.namespace.add_maintainer(user)
+
+        expired_product_analytics_purchase_as_owner.namespace.add_owner(user)
+        active_product_analytics_purchase_as_guest.namespace.add_guest(user)
+        active_product_analytics_purchase_as_reporter.namespace.add_reporter(user)
+        active_product_analytics_purchase_as_developer.namespace.add_developer(user)
+        active_product_analytics_purchase_as_maintainer.namespace.add_maintainer(user)
       end
     end
 
@@ -112,7 +143,9 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
           [
             active_code_suggestion_purchase_as_guest, active_code_suggestion_purchase_as_reporter,
             active_code_suggestion_purchase_as_developer, active_code_suggestion_purchase_as_maintainer,
-            active_code_suggestion_purchase_unrelated
+            active_code_suggestion_purchase_unrelated, active_product_analytics_purchase_as_guest,
+            active_product_analytics_purchase_as_reporter, active_product_analytics_purchase_as_developer,
+            active_product_analytics_purchase_as_maintainer, active_product_analytics_purchase_unrelated
           ]
         )
       end
@@ -196,6 +229,22 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
       end
     end
 
+    describe '.for_product_analytics' do
+      subject(:product_analytics_purchases) { described_class.for_product_analytics }
+
+      include_context 'with add-on purchases'
+
+      it 'returns all the purchases related to product_analytics' do
+        expect(product_analytics_purchases).to match_array(
+          [
+            expired_product_analytics_purchase_as_owner, active_product_analytics_purchase_as_guest,
+            active_product_analytics_purchase_as_reporter, active_product_analytics_purchase_as_developer,
+            active_product_analytics_purchase_as_maintainer, active_product_analytics_purchase_unrelated
+          ]
+        )
+      end
+    end
+
     describe '.for_user' do
       subject(:user_purchases) { described_class.for_user(user) }
 
@@ -205,7 +254,9 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
         expect(user_purchases).to match_array(
           [
             expired_code_suggestion_purchase_as_owner, active_code_suggestion_purchase_as_reporter,
-            active_code_suggestion_purchase_as_developer, active_code_suggestion_purchase_as_maintainer
+            active_code_suggestion_purchase_as_developer, active_code_suggestion_purchase_as_maintainer,
+            expired_product_analytics_purchase_as_owner, active_product_analytics_purchase_as_reporter,
+            active_product_analytics_purchase_as_developer, active_product_analytics_purchase_as_maintainer
           ]
         )
       end

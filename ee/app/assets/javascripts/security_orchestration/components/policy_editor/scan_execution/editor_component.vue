@@ -27,7 +27,7 @@ import {
   DEFAULT_PROJECT_SCAN_EXECUTION_POLICY,
   DEFAULT_GROUP_SCAN_EXECUTION_POLICY,
   fromYaml,
-  toYaml,
+  policyToYaml,
 } from './lib';
 import {
   DEFAULT_SCANNER,
@@ -99,7 +99,7 @@ export default {
     let yamlEditorValue;
 
     if (this.existingPolicy) {
-      yamlEditorValue = toYaml(this.existingPolicy);
+      yamlEditorValue = policyToYaml(this.existingPolicy);
     } else {
       const hasPolicyScope =
         this.glFeatures.securityPoliciesPolicyScope && this.namespaceType === NAMESPACE_TYPES.GROUP;
@@ -233,7 +233,7 @@ export default {
       this.policy = policy;
     },
     updateYamlEditorValue(policy) {
-      this.yamlEditorValue = toYaml(policy);
+      this.yamlEditorValue = policyToYaml(policy);
     },
   },
 };
@@ -268,7 +268,8 @@ export default {
 
         <rule-section
           v-for="(rule, index) in policy.rules"
-          :key="index"
+          :key="rule.id"
+          :data-testid="`rule-${index}`"
           class="gl-mb-4"
           :init-rule="rule"
           :rule-index="index"
@@ -297,7 +298,8 @@ export default {
         <template v-if="showActionSection">
           <action-section
             v-for="(action, index) in policy.actions"
-            :key="index"
+            :key="action.id"
+            :data-testid="`action-${index}`"
             :action-index="index"
             :init-action="action"
             @changed="updateActionOrRule($options.ACTION, index, $event)"
@@ -317,7 +319,8 @@ export default {
         <template v-else>
           <scan-action
             v-for="(action, index) in policy.actions"
-            :key="index"
+            :key="action.id"
+            :data-testid="`action-${index}`"
             class="gl-mb-4"
             :init-action="action"
             :action-index="index"

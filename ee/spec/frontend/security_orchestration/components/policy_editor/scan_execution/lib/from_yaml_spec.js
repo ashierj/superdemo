@@ -4,6 +4,7 @@ import {
   hasRuleModeSupportedScanners,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib/from_yaml';
 import {
+  actionId,
   unsupportedManifest,
   unsupportedManifestObject,
 } from 'ee_jest/security_orchestration/mocks/mock_data';
@@ -19,6 +20,8 @@ import {
   mockCodeBlockFilePathScanExecutionManifest,
   mockCodeBlockFilePathScanExecutionObject,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_execution_policy_data';
+
+jest.mock('lodash/uniqueId', () => jest.fn((prefix) => `${prefix}0`));
 
 describe('fromYaml', () => {
   it.each`
@@ -51,11 +54,11 @@ describe('createPolicyObject', () => {
 
 describe('hasRuleModeSupportedScanners', () => {
   it.each`
-    title                                                 | input                                                                    | output
-    ${'return true when all scanners are supported'}      | ${{ actions: [{ scan: 'sast' }, { scan: 'dast' }] }}                     | ${true}
-    ${'return false when not all scanners are supported'} | ${{ actions: [{ scan: 'sast' }, { scan: 'cluster_image_scanning' }] }}   | ${false}
-    ${'return true when no actions on policy'}            | ${{ name: 'test' }}                                                      | ${true}
-    ${'return false when no valid scanners'}              | ${{ actions: [{ scan2: 'sast' }, { scan3: 'cluster_image_scanning' }] }} | ${false}
+    title                                                 | input                                                                                              | output
+    ${'return true when all scanners are supported'}      | ${{ actions: [{ scan: 'sast', id: actionId }, { scan: 'dast', id: actionId }] }}                   | ${true}
+    ${'return false when not all scanners are supported'} | ${{ actions: [{ scan: 'sast', id: actionId }, { scan: 'cluster_image_scanning', id: actionId }] }} | ${false}
+    ${'return true when no actions on policy'}            | ${{ name: 'test' }}                                                                                | ${true}
+    ${'return false when no valid scanners'}              | ${{ actions: [{ scan2: 'sast' }, { scan3: 'cluster_image_scanning' }] }}                           | ${false}
   `('$title', ({ input, output }) => {
     expect(hasRuleModeSupportedScanners(input)).toBe(output);
   });

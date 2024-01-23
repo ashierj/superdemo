@@ -1,6 +1,6 @@
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution/rule/rule_section.vue';
+import RuleSection from 'ee/security_orchestration/components/policy_editor/scan_execution/rule/rule_section.vue';
 import BaseRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution/rule/base_rule_component.vue';
 import ScheduleRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution/rule/schedule_rule_component.vue';
 import { RULE_KEY_MAP } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib/rules';
@@ -10,16 +10,20 @@ import {
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
 import { CRON_DEFAULT_TIME } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 
-describe('PolicyRuleBuilder', () => {
+const ruleId = 'rule_0';
+jest.mock('lodash/uniqueId', () => jest.fn().mockReturnValue(ruleId));
+
+describe('RuleSection', () => {
   let wrapper;
 
   const initRule = {
     type: SCAN_EXECUTION_PIPELINE_RULE,
     branches: [],
+    id: ruleId,
   };
 
   const createComponent = ({ propsData = {} } = {}) => {
-    wrapper = shallowMountExtended(PolicyRuleBuilder, {
+    wrapper = shallowMountExtended(RuleSection, {
       propsData: {
         initRule,
         ...propsData,
@@ -55,7 +59,7 @@ describe('PolicyRuleBuilder', () => {
     await nextTick();
 
     expect(wrapper.emitted()).toEqual({
-      changed: [[expectedRule()]],
+      changed: [[{ ...expectedRule(), id: ruleId }]],
     });
   });
 
@@ -66,6 +70,7 @@ describe('PolicyRuleBuilder', () => {
           type: SCAN_EXECUTION_SCHEDULE_RULE,
           branches: [],
           cadence: CRON_DEFAULT_TIME,
+          id: ruleId,
         },
       },
     });

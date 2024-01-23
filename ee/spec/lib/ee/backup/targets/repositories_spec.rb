@@ -2,16 +2,16 @@
 
 require 'spec_helper'
 
-RSpec.describe Backup::Repositories, feature_category: :backup_restore do
-  let(:progress) { spy(:stdout) }
-  let(:strategy) { spy(:strategy) }
+RSpec.describe Backup::Targets::Repositories, feature_category: :backup_restore do
+  let(:progress) { instance_double(StringIO, puts: nil, print: nil) }
+  let(:strategy) { instance_double(Backup::GitalyBackup, start: nil, enqueue: nil, finish!: nil) }
   let(:storages) { [] }
   let(:paths) { [] }
   let(:destination) { 'repositories' }
   let(:backup_id) { 'backup_id' }
   let(:backup_options) { Backup::Options.new }
 
-  subject do
+  subject(:repositories) do
     described_class.new(progress, strategy: strategy, options: backup_options, storages: storages, paths: paths)
   end
 
@@ -20,7 +20,7 @@ RSpec.describe Backup::Repositories, feature_category: :backup_restore do
     let_it_be(:groups) { create_list(:group, 5, :wiki_repo) }
 
     it 'calls enqueue for each repository type', :aggregate_failures do
-      subject.dump(destination, backup_id)
+      repositories.dump(destination, backup_id)
 
       expect(strategy).to have_received(:start).with(:create, destination, backup_id: backup_id)
       expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
@@ -34,29 +34,29 @@ RSpec.describe Backup::Repositories, feature_category: :backup_restore do
       it 'enqueue_group raises an error' do
         allow(strategy).to receive(:enqueue).with(anything, Gitlab::GlRepository::WIKI).and_raise(IOError)
 
-        expect { subject.dump(destination, backup_id) }.to raise_error(IOError)
+        expect { repositories.dump(destination, backup_id) }.to raise_error(IOError)
       end
 
       it 'group query raises an error' do
         allow(Group).to receive_message_chain(:includes, :find_each).and_raise(ActiveRecord::StatementTimeout)
 
-        expect { subject.dump(destination, backup_id) }.to raise_error(ActiveRecord::StatementTimeout)
+        expect { repositories.dump(destination, backup_id) }.to raise_error(ActiveRecord::StatementTimeout)
       end
     end
 
     it 'avoids N+1 database queries' do
       control = ActiveRecord::QueryRecorder.new do
-        subject.dump(destination, backup_id)
+        repositories.dump(destination, backup_id)
       end
 
       create_list(:group, 2, :wiki_repo)
 
       expect do
-        subject.dump(destination, backup_id)
+        repositories.dump(destination, backup_id)
       end.not_to exceed_query_limit(control)
     end
 
-    context 'storages' do
+    context 'for storages' do
       let(:storages) { %w[default] }
 
       before do
@@ -67,7 +67,7 @@ RSpec.describe Backup::Repositories, feature_category: :backup_restore do
         excluded_group = create(:group, :wiki_repo)
         excluded_group.group_wiki_repository.update!(shard_name: 'test_second_storage')
 
-        subject.dump(destination, backup_id)
+        repositories.dump(destination, backup_id)
 
         expect(strategy).to have_received(:start).with(:create, destination, backup_id: backup_id)
         expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
@@ -85,7 +85,7 @@ RSpec.describe Backup::Repositories, feature_category: :backup_restore do
     let_it_be(:group) { create(:group, :wiki_repo) }
 
     it 'calls enqueue for each repository type', :aggregate_failures do
-      subject.restore(destination, backup_id)
+      repositories.restore(destination, backup_id)
 
       expect(strategy).to have_received(:start).with(
         :restore,
@@ -98,7 +98,7 @@ RSpec.describe Backup::Repositories, feature_category: :backup_restore do
       expect(strategy).to have_received(:finish!)
     end
 
-    context 'storages' do
+    context 'for storages' do
       let(:storages) { %w[default] }
 
       before do
@@ -109,7 +109,7 @@ RSpec.describe Backup::Repositories, feature_category: :backup_restore do
         excluded_group = create(:group, :wiki_repo)
         excluded_group.group_wiki_repository.update!(shard_name: 'test_second_storage')
 
-        subject.restore(destination, backup_id)
+        repositories.restore(destination, backup_id)
 
         expect(strategy).to have_received(:start).with(
           :restore,
@@ -124,11 +124,11 @@ RSpec.describe Backup::Repositories, feature_category: :backup_restore do
       end
     end
 
-    context 'paths' do
+    context 'for paths' do
       let(:paths) { [group.full_path] }
 
       it 'calls enqueue for all descendant repositories on the specified group', :aggregate_failures do
-        subject.restore(destination, backup_id)
+        repositories.restore(destination, backup_id)
 
         expect(strategy).to have_received(:start).with(
           :restore,

@@ -132,6 +132,7 @@ export default {
         scanner,
         siteProfile,
         scannerProfile,
+        id: this.initAction.id,
       });
 
       const { tags, variables } = this.initAction;

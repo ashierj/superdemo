@@ -1,4 +1,5 @@
 import { GlEmptyState } from '@gitlab/ui';
+import { uniqueId } from 'lodash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import SettingsSection from 'ee/security_orchestration/components/policy_editor/scan_result/settings/settings_section.vue';
@@ -44,6 +45,8 @@ import {
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
 import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section.vue';
 import RuleSection from 'ee/security_orchestration/components/policy_editor/scan_result/rule/rule_section.vue';
+
+jest.mock('lodash/uniqueId');
 
 jest.mock('ee/security_orchestration/components/policy_editor/scan_result/lib', () => ({
   ...jest.requireActual('ee/security_orchestration/components/policy_editor/scan_result/lib'),
@@ -150,6 +153,7 @@ describe('EditorComponent', () => {
 
   beforeEach(() => {
     getInvalidBranches.mockClear();
+    uniqueId.mockImplementation(jest.fn((prefix) => `${prefix}0`));
   });
 
   afterEach(() => {
@@ -185,22 +189,20 @@ describe('EditorComponent', () => {
     `(
       'passes the correct $prop prop to the PolicyEditorLayout component',
       ({ prop, compareFn, expected }) => {
+        uniqueId.mockRestore();
         factory();
-
         expect(findPolicyEditorLayout().props(prop))[compareFn](expected);
       },
     );
 
     it('displays the initial rule and add rule button', () => {
       factory();
-
       expect(findAllRuleSections()).toHaveLength(1);
       expect(findAddRuleButton().exists()).toBe(true);
     });
 
     it('displays the initial action', () => {
       factory();
-
       expect(findAllActionSections()).toHaveLength(1);
       expect(findActionSection().props('existingApprovers')).toEqual(scanResultPolicyApprovers);
     });
@@ -226,11 +228,8 @@ describe('EditorComponent', () => {
       ${'enabled'}     | ${true}  | ${false}
     `('triggers a change on $component', ({ component, newValue, oldValue }) => {
       factory();
-
       expect(findPolicyEditorLayout().props('policy')[component]).toBe(oldValue);
-
       findPolicyEditorLayout().vm.$emit('set-policy-property', component, newValue);
-
       expect(findPolicyEditorLayout().props('policy')[component]).toBe(newValue);
     });
 
@@ -238,19 +237,16 @@ describe('EditorComponent', () => {
       it('adds a new rule', async () => {
         const rulesCount = 1;
         factory();
-
         expect(findAllRuleSections()).toHaveLength(rulesCount);
-
         await findAddRuleButton().vm.$emit('click');
-
         expect(findAllRuleSections()).toHaveLength(rulesCount + 1);
       });
 
       it('hides add button when the limit of five rules has been reached', () => {
         const limit = 5;
-        const rule = mockDefaultBranchesScanResultObject.rules[0];
+        const { id, ...rule } = mockDefaultBranchesScanResultObject.rules[0];
+        uniqueId.mockRestore();
         factoryWithExistingPolicy({ policy: { rules: [rule, rule, rule, rule, rule] } });
-
         expect(findAllRuleSections()).toHaveLength(limit);
         expect(findAddRuleButton().exists()).toBe(false);
       });
@@ -410,6 +406,7 @@ describe('EditorComponent', () => {
             {
               approvals_required: 1,
               type: 'require_approval',
+              id: 'action_0',
             },
           ]);
           expect(findActionSection().props('existingApprovers')).toEqual({});
@@ -454,7 +451,6 @@ describe('EditorComponent', () => {
 
     it('updates the policy yaml and policy object when "update-yaml" is emitted', async () => {
       await findPolicyEditorLayout().vm.$emit('update-yaml', mockDefaultBranchesScanResultManifest);
-
       expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
         mockDefaultBranchesScanResultManifest,
       );

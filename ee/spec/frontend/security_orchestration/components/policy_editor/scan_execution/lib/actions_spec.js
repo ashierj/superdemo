@@ -1,5 +1,17 @@
-import { buildScannerAction } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib/actions';
+import {
+  buildCustomCodeAction,
+  buildScannerAction,
+} from 'ee/security_orchestration/components/policy_editor/scan_execution/lib/actions';
 import { REPORT_TYPE_DAST } from '~/vue_shared/security_reports/constants';
+
+const actionId = 'action_0';
+jest.mock('lodash/uniqueId', () => jest.fn().mockReturnValue(actionId));
+
+describe('buildCustomCodeAction', () => {
+  it('returns a custom code action', () => {
+    expect(buildCustomCodeAction()).toEqual({ scan: 'custom', id: actionId });
+  });
+});
 
 describe('buildScannerAction', () => {
   describe('DAST', () => {
@@ -8,6 +20,7 @@ describe('buildScannerAction', () => {
         scan: REPORT_TYPE_DAST,
         site_profile: '',
         scanner_profile: '',
+        id: actionId,
       });
     });
 
@@ -21,6 +34,7 @@ describe('buildScannerAction', () => {
         scan: REPORT_TYPE_DAST,
         site_profile: siteProfile,
         scanner_profile: scannerProfile,
+        id: actionId,
       });
     });
   });
@@ -30,6 +44,7 @@ describe('buildScannerAction', () => {
       const scanner = 'sast';
       expect(buildScannerAction({ scanner })).toEqual({
         scan: scanner,
+        id: actionId,
       });
     });
   });

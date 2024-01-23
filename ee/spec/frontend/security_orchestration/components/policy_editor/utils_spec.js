@@ -1,4 +1,5 @@
 import {
+  addIdsToPolicy,
   assignSecurityPolicyProject,
   modifyPolicy,
   createHumanizedScanners,
@@ -11,6 +12,7 @@ import {
   parseCustomFileConfiguration,
   mapExceptionsListBoxItem,
   mapBranchesToString,
+  removeIdsFromPolicy,
   validateBranchProjectFormat,
 } from 'ee/security_orchestration/components/policy_editor/utils';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
@@ -19,6 +21,7 @@ import createScanExecutionPolicy from 'ee/security_orchestration/graphql/mutatio
 import { gqClient } from 'ee/security_orchestration/utils';
 import createMergeRequestMutation from '~/graphql_shared/mutations/create_merge_request.mutation.graphql';
 
+jest.mock('lodash/uniqueId', () => jest.fn((prefix) => `${prefix}0`));
 jest.mock('ee/security_orchestration/utils');
 
 const defaultAssignedPolicyProject = { fullPath: 'path/to/policy-project', branch: 'main' };
@@ -70,6 +73,37 @@ const mockApolloResponses = (shouldReject) => {
     return Promise.resolve();
   };
 };
+
+describe('addIdsToPolicy', () => {
+  it('adds ids to a policy with actions and rules', () => {
+    expect(addIdsToPolicy({ actions: [{}], rules: [{}] })).toStrictEqual({
+      actions: [{ id: 'action_0' }],
+      rules: [{ id: 'rule_0' }],
+    });
+  });
+
+  it('does not add ids to a policy with no actions and no rules', () => {
+    expect(addIdsToPolicy({ name: 'the best' })).toStrictEqual({ name: 'the best' });
+  });
+});
+
+describe('removeIdsFromPolicy', () => {
+  it('removes ids from a policy with actions and rules', () => {
+    expect(
+      removeIdsFromPolicy({ actions: [{ key: 'value', id: 0 }], rules: [{ key: 'value', id: 0 }] }),
+    ).toStrictEqual({ actions: [{ key: 'value' }], rules: [{ key: 'value' }] });
+  });
+
+  it('does not remove ids from a policy with actions and rules without ids', () => {
+    const policy = { name: 'the best', actions: [{ key: 'value' }], rules: [{ key: 'value' }] };
+    expect(removeIdsFromPolicy(policy)).toStrictEqual(policy);
+  });
+
+  it('does not remove ids from a policy with no actions and no rules', () => {
+    const policy = { name: 'the best' };
+    expect(removeIdsFromPolicy(policy)).toStrictEqual(policy);
+  });
+});
 
 describe('assignSecurityPolicyProject', () => {
   it('returns the newly created policy project', async () => {

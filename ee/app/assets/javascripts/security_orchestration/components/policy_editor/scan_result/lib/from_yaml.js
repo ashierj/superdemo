@@ -1,6 +1,6 @@
 import { safeLoad } from 'js-yaml';
 import { isBoolean, isEqual } from 'lodash';
-import { hasInvalidKey, isValidPolicy } from '../../utils';
+import { addIdsToPolicy, hasInvalidKey, isValidPolicy } from '../../utils';
 import { PRIMARY_POLICY_KEYS } from '../../constants';
 import {
   VALID_APPROVAL_SETTINGS,
@@ -13,7 +13,8 @@ import {
 */
 export const fromYaml = ({ manifest, validateRuleMode = false }) => {
   try {
-    const policy = safeLoad(manifest, { json: true });
+    const policy = addIdsToPolicy(safeLoad(manifest, { json: true }));
+
     if (validateRuleMode) {
       /**
        * These values are what is supported by rule mode. If the yaml has any other values,
@@ -42,6 +43,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'vulnerability_states',
         'vulnerability_age',
         'vulnerability_attributes',
+        'id',
       ];
       const actionsKeys = [
         'type',
@@ -51,6 +53,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'user_approvers_ids',
         'group_approvers_ids',
         'role_approvers',
+        'id',
       ];
 
       const { approval_settings: settings = {} } = policy;

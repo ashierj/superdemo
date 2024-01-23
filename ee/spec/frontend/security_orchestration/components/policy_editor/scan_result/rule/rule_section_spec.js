@@ -17,6 +17,9 @@ import {
   licenseScanBuildRule,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/rules';
 
+const ruleId = 'rule_0';
+jest.mock('lodash/uniqueId', () => jest.fn().mockReturnValue(ruleId));
+
 describe('RuleSection', () => {
   let wrapper;
 
@@ -111,6 +114,7 @@ describe('RuleSection', () => {
       const updatedLicenceRule = {
         ...licenseScanBuildRule(),
         branches: ['main'],
+        id: ruleId,
       };
 
       findLicenseScanRule().vm.$emit('changed', updatedLicenceRule);

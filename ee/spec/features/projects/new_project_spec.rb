@@ -92,7 +92,6 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
         expect(page).to have_text('Authenticate with GitHub')
 
         octokit = instance_double(Octokit::Client)
-        headers = { 'x-oauth-scopes' => 'read:org' }
 
         allow_next_instance_of(Gitlab::GithubImport::Clients::Proxy) do |proxy|
           allow(proxy).to receive(:repos).and_return({ repos: [repo] })
@@ -101,7 +100,6 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
           allow(client).to receive(:user).and_return({ login: 'my-user' })
           allow(client).to receive(:octokit).and_return(octokit)
         end
-        allow(octokit).to receive_message_chain(:last_response, :headers).and_return(headers)
         allow(octokit).to receive(:access_token).and_return('fake-token')
         allow(octokit).to receive(:organizations).and_return([])
 

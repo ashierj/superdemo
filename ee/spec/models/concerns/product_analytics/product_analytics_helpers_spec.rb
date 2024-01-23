@@ -8,6 +8,7 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
   let_it_be(:group) { create(:group) }
   let_it_be_with_refind(:project) { create(:project, group: group) }
   let_it_be(:user) { create(:user) }
+  let_it_be(:add_on) { create(:gitlab_subscription_add_on, :product_analytics) }
 
   describe '#product_analytics_enabled?' do
     subject { project.product_analytics_enabled? }
@@ -35,6 +36,38 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
       end
 
       it { is_expected.to eq(outcome) }
+    end
+  end
+
+  describe '#product_analytics_stored_events_limit' do
+    subject { group.product_analytics_stored_events_limit }
+
+    context 'when the product_analytics_billing flag is disabled' do
+      before do
+        stub_feature_flags(product_analytics_billing: false)
+      end
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when the product_analytics_billing flag is enabled' do
+      it { is_expected.to be_zero }
+
+      context 'when 1 product_analytics add-on has been purchased' do
+        before do
+          create(:gitlab_subscription_add_on_purchase, :product_analytics, namespace: group, add_on: add_on)
+        end
+
+        it { is_expected.to eq(0) }
+      end
+    end
+
+    context 'when 5 product_analytics add-on has been purchased' do
+      before do
+        create(:gitlab_subscription_add_on_purchase, :product_analytics, namespace: group, add_on: add_on, quantity: 5)
+      end
+
+      it { is_expected.to eq(4000000) }
     end
   end
 
