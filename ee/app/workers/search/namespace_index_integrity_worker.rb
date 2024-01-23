@@ -5,6 +5,7 @@ module Search
     include ApplicationWorker
     include Gitlab::ExclusiveLeaseHelpers
     prepend ::Elastic::IndexingControl
+    prepend ::Geo::SkipSecondary
 
     data_consistency :delayed
 

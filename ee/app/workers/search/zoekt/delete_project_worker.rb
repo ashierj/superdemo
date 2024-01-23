@@ -5,6 +5,7 @@ module Search
     class DeleteProjectWorker
       include ApplicationWorker
       include Gitlab::ExclusiveLeaseHelpers
+      prepend ::Geo::SkipSecondary
 
       TIMEOUT = 1.minute
       MAX_JOBS_PER_HOUR = 3600

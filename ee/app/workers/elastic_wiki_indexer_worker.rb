@@ -6,6 +6,7 @@ class ElasticWikiIndexerWorker
 
   data_consistency :delayed
   prepend Elastic::IndexingControl
+  prepend ::Geo::SkipSecondary
   include Gitlab::ExclusiveLeaseHelpers
 
   feature_category :global_search

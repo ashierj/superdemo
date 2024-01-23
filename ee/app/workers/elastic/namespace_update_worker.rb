@@ -4,6 +4,7 @@ module Elastic
   class NamespaceUpdateWorker # rubocop:disable Scalability/IdempotentWorker
     include ApplicationWorker
     prepend IndexingControl
+    prepend ::Geo::SkipSecondary
 
     data_consistency :sticky
     feature_category :global_search

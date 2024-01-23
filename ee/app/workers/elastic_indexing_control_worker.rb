@@ -2,7 +2,7 @@
 
 class ElasticIndexingControlWorker
   include ApplicationWorker
-
+  prepend ::Geo::SkipSecondary
   data_consistency :always
 
   sidekiq_options retry: 3

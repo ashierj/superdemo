@@ -9,6 +9,7 @@ module Zoekt
     REINDEXING_CHANCE_PERCENTAGE = 0.5
 
     include ApplicationWorker
+    prepend ::Geo::SkipSecondary
 
     data_consistency :always
     include Gitlab::ExclusiveLeaseHelpers
