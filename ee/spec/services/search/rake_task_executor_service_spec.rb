@@ -281,18 +281,20 @@ RSpec.describe ::Search::RakeTaskExecutorService, :silence_stdout, feature_categ
   end
 
   describe '#index_projects' do
-    subject(:task) { service.execute(:index_projects) }
-
-    let(:project1) { create :project }
-    let(:project2) { create :project }
-    let(:project3) { create :project }
-
     before do
+      stub_ee_application_setting(elasticsearch_indexing: true)
+
       Sidekiq::Testing.disable! do
         project1
         project2
       end
     end
+
+    subject(:task) { service.execute(:index_projects) }
+
+    let(:project1) { create :project }
+    let(:project2) { create :project }
+    let(:project3) { create :project }
 
     it 'queues jobs for each project batch' do
       expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project1, project2)
@@ -314,8 +316,31 @@ RSpec.describe ::Search::RakeTaskExecutorService, :silence_stdout, feature_categ
         stub_ee_application_setting(elasticsearch_limit_indexing: true)
       end
 
-      it 'does not queue jobs for projects that should not be indexed' do
-        expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project1, project3)
+      context 'when the search_index_all_projects feature flag is disabled' do
+        before do
+          stub_feature_flags(search_index_all_projects: false)
+        end
+
+        it 'does not queue jobs for projects that should not be indexed' do
+          expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project1, project3)
+
+          task
+        end
+      end
+
+      context 'when elasticsearch_indexing is disabled' do
+        before do
+          stub_ee_application_setting(elasticsearch_indexing: false)
+        end
+
+        it 'outputs a warning' do
+          expect { task }.to output(/WARNING: Setting `elasticsearch_indexing` is disabled/).to_stdout
+        end
+      end
+
+      it 'queues jobs for all projects' do
+        expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!)
+          .with(project1, project2, project3)
 
         task
       end

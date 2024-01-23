@@ -112,8 +112,8 @@ module Search
     end
 
     def index_projects_status
-      projects = elastic_enabled_projects.size
-      indexed = IndexStatus.for_project(elastic_enabled_projects).size
+      projects = projects_maintaining_indexed_associations.size
+      indexed = IndexStatus.for_project(projects_maintaining_indexed_associations).size
       percent = (indexed / projects.to_f) * 100.0
 
       puts format("Indexing is %.2f%% complete (%d/%d projects)", percent, indexed, projects)
@@ -131,10 +131,15 @@ module Search
     end
 
     def index_projects
+      unless Gitlab::CurrentSettings.elasticsearch_indexing?
+        puts "WARNING: Setting `elasticsearch_indexing` is disabled. " \
+             "This setting must be enabled to enqueue projects for indexing. ".color(:yellow)
+      end
+
       print "Enqueuing projects…"
 
-      count = project_id_batches do |ids|
-        ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(*Project.find(ids))
+      count = projects_in_batches do |projects|
+        ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(*projects)
         print "."
       end
 
@@ -168,25 +173,25 @@ module Search
       end
     end
 
-    def elastic_enabled_projects
+    def projects_maintaining_indexed_associations
       return Project.all unless ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
 
       ::Gitlab::CurrentSettings.elasticsearch_limited_projects
     end
 
-    def project_id_batches
-      relation = Project.all
-
-      if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
-        relation.merge!(::Gitlab::CurrentSettings.elasticsearch_limited_projects)
-      end
-
+    def projects_in_batches
       count = 0
-      relation.in_batches(start: ENV['ID_FROM'], finish: ENV['ID_TO']) do |relation| # rubocop:disable Cop/InBatches -- We need start/finish IDs here
-        ids = relation.reorder(:id).pluck(:id) # rubocop:disable CodeReuse/ActiveRecord,Database/AvoidUsingPluckWithoutLimit -- this was ported from elastic.rake
-        yield ids
+      Project.all.in_batches(start: ENV['ID_FROM'], finish: ENV['ID_TO']) do |batch| # rubocop:disable Cop/InBatches -- We need start/finish IDs here
+        projects = batch.reorder(:id) # rubocop:disable CodeReuse/ActiveRecord,-- this was ported from elastic.rake
 
-        count += ids.size
+        if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
+          ::Preloaders::ProjectRootAncestorPreloader.new(projects).execute
+          projects = projects.select(&:maintaining_elasticsearch?)
+        end
+
+        yield projects
+
+        count += projects.size
       end
 
       count
