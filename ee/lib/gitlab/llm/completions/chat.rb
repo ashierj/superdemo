@@ -20,7 +20,7 @@ module Gitlab
           ::Gitlab::Llm::Chain::Tools::RefactorCode
         ].freeze
 
-        def initialize(prompt_message, ai_prompt_class, options = nil)
+        def initialize(prompt_message, ai_prompt_class, options = {})
           super
 
           # we should be able to switch between different providers that we know agent supports, by initializing the
