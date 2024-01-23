@@ -62,6 +62,40 @@ describe('DataTable Visualization', () => {
       });
     });
 
+    it('should not add delimiters for small numbers', () => {
+      createWrapper(mount, {
+        data: [
+          {
+            field_one: 123,
+          },
+        ],
+      });
+
+      const rowCells = findTableRowCells(0);
+
+      expect(rowCells.at(0).text()).toBe('123');
+    });
+
+    it.each([
+      [1234, '1,234'],
+      [12345, '12,345'],
+      [123456789, '123,456,789'],
+    ])('should format "%d" with delimiters as "%s"', (value, expected) => {
+      createWrapper(mount, {
+        data: [
+          {
+            field_one: value,
+          },
+        ],
+      });
+
+      const rowCells = findTableRowCells(0);
+
+      expect(rowCells.at(0).text()).toBe(expected);
+    });
+  });
+
+  describe('with links data', () => {
     it('should render values as links when provided with links data', () => {
       const linksData = [
         { foo: { text: 'foo', href: 'https://example.com/foo' } },
@@ -92,6 +126,30 @@ describe('DataTable Visualization', () => {
         expect(icon.exists()).toBe(true);
         expect(icon.props('name')).toBe('external-link');
       });
+    });
+
+    it('should not add delimiters to link text for small numbers', () => {
+      createWrapper(mount, {
+        data: [{ foo: { text: 123, href: 'https://example.com/foo' } }],
+      });
+
+      const rowCells = findTableRowCells(0);
+
+      expect(rowCells.at(0).text()).toBe('123');
+    });
+
+    it.each([
+      [1234, '1,234'],
+      [12345, '12,345'],
+      [123456789, '123,456,789'],
+    ])('should format link text of "%d" with delimiters as "%s"', (value, expected) => {
+      createWrapper(mount, {
+        data: [{ foo: { text: value, href: 'https://example.com/foo' } }],
+      });
+
+      const rowCells = findTableRowCells(0);
+
+      expect(rowCells.at(0).text()).toBe(expected);
     });
   });
 });
