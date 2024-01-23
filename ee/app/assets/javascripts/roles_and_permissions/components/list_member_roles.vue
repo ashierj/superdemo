@@ -5,7 +5,8 @@ import { createAlert } from '~/alert';
 import { sprintf, s__, __ } from '~/locale';
 import { TYPENAME_MEMBER_ROLE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
-import memberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
+import groupMemberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
+import instanceMemberRolesQuery from '../graphql/instance_member_roles.query.graphql';
 import memberRolePermissionsQuery from '../graphql/member_role_permissions.query.graphql';
 import deleteMemberRoleMutation from '../graphql/delete_member_role.mutation.graphql';
 import CreateMemberRole from './create_member_role.vue';
@@ -23,14 +24,14 @@ export default {
     addNewRole: s__('MemberRole|Add new role'),
     cardTitle: s__('MemberRole|Custom roles'),
     deleteRole: s__('MemberRole|Delete role'),
-    emptyTitle: s__('MemberRole|No custom roles for this group'),
+    emptyTitle: s__('MemberRole|No custom roles found'),
+    emptyDescription: s__(`MemberRole|To add a new role select 'Add new role'.`),
     fetchRolesError: s__('MemberRole|Failed to fetch roles: %{message}'),
     fetchPermissionsError: s__('MemberRole|Could not fetch available permissions: %{message}'),
     deleteSuccess: s__('MemberRole|Role successfully deleted.'),
     deleteError: s__('MemberRole|Failed to delete the role.'),
     deleteErrorWithReason: s__('MemberRole|Failed to delete the role: %{message}'),
     createSuccess: s__('MemberRole|Role successfully created.'),
-    licenseError: s__('MemberRole|Make sure the group is in the Ultimate tier.'),
   },
   components: {
     CreateMemberRole,
@@ -42,11 +43,6 @@ export default {
     GlTable,
   },
   props: {
-    emptyText: {
-      type: String,
-      required: false,
-      default: null,
-    },
     groupFullPath: {
       type: String,
       required: false,
@@ -64,14 +60,20 @@ export default {
   },
   apollo: {
     memberRoles: {
-      query: memberRolesQuery,
+      query() {
+        return this.fetchMemberRolesQuery;
+      },
       variables() {
         return {
           fullPath: this.groupFullPath,
         };
       },
       update(data) {
-        const memberRoles = data?.namespace?.memberRoles?.nodes || [];
+        const nodes = this.groupFullPath
+          ? data?.namespace?.memberRoles?.nodes
+          : data?.memberRoles?.nodes;
+
+        const memberRoles = nodes || [];
 
         return memberRoles.map(({ id, name, baseAccessLevel, enabledPermissions }) => ({
           name,
@@ -84,9 +86,6 @@ export default {
         this.alert = createAlert({
           message: sprintf(this.$options.i18n.fetchRolesError, { message }),
         });
-      },
-      skip() {
-        return !this.groupFullPath;
       },
     },
     availablePermissions: {
@@ -102,6 +101,9 @@ export default {
     },
   },
   computed: {
+    fetchMemberRolesQuery() {
+      return this.groupFullPath ? groupMemberRolesQuery : instanceMemberRolesQuery;
+    },
     isLoading() {
       return (
         this.$apollo.queries.memberRoles.loading ||
@@ -112,11 +114,6 @@ export default {
       return this.memberRoleToDelete !== null;
     },
   },
-  watch: {
-    groupFullPath() {
-      this.$apollo.queries.memberRoles.refetch();
-    },
-  },
   methods: {
     async deleteMemberRole() {
       this.alert?.dismiss();
@@ -124,7 +121,7 @@ export default {
       this.$apollo
         .mutate({
           mutation: deleteMemberRoleMutation,
-          refetchQueries: [memberRolesQuery],
+          refetchQueries: [this.fetchMemberRolesQuery],
           variables: {
             input: {
               id: convertToGraphQLId(TYPENAME_MEMBER_ROLE, this.memberRoleToDelete),
@@ -187,7 +184,11 @@ export default {
 </script>
 
 <template>
-  <gl-card header-class="gl-new-card-header" body-class="gl-new-card-body gl-px-0 gl-bg-gray-10">
+  <gl-card
+    header-class="gl-new-card-header"
+    body-class="gl-new-card-body gl-px-0 gl-bg-gray-10"
+    class="gl-mt-5"
+  >
     <template #header>
       <div class="gl-new-card-title-wrapper">
         <h3 class="gl-new-card-title" data-testid="card-title">
@@ -197,7 +198,6 @@ export default {
       </div>
       <div class="gl-new-card-actions">
         <gl-button
-          :disabled="!groupFullPath"
           :loading="isLoading"
           size="small"
           data-testid="add-role"
@@ -220,7 +220,7 @@ export default {
     <gl-empty-state
       v-if="memberRoles.length === 0 && !showCreateMemberForm"
       :title="$options.i18n.emptyTitle"
-      :description="emptyText"
+      :description="$options.i18n.emptyDescription"
     />
 
     <gl-table v-else :fields="$options.FIELDS" :items="memberRoles" :busy="isLoading" stacked="sm">

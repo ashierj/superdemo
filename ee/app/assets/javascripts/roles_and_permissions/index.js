@@ -2,12 +2,12 @@ import { GlToast } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import RolesAndPermissions from './components/roles_and_permissions.vue';
+import ListMemberRoles from './components/list_member_roles.vue';
 
 Vue.use(GlToast);
 Vue.use(VueApollo);
 
-export const initRolesAndPermissions = ({ emptyText, showGroupSelector }) => {
+export const initRolesAndPermissions = () => {
   const apolloProvider = new VueApollo({
     defaultClient: createDefaultClient(),
   });
@@ -23,8 +23,8 @@ export const initRolesAndPermissions = ({ emptyText, showGroupSelector }) => {
     apolloProvider,
     name: 'RolesAndPermissionsRoot',
     render(h) {
-      return h(RolesAndPermissions, {
-        props: { groupFullPath: el.dataset.groupFullPath, emptyText, showGroupSelector },
+      return h(ListMemberRoles, {
+        props: { groupFullPath: el.dataset.groupFullPath },
       });
     },
   });
