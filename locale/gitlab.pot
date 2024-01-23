@@ -33505,6 +33505,9 @@ msgstr ""
 msgid "ObservabilityMetrics|is not like"
 msgstr ""
 
+msgid "ObservabilityMetrics|multiple"
+msgstr ""
+
 msgid "Observability|Enable"
 msgstr ""
 
