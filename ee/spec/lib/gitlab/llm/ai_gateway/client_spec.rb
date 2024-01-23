@@ -59,13 +59,14 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
     }
   end
 
+  let(:request_url) { "#{Gitlab::AiGateway.url}/v1/chat/agent" }
   let(:tracking_context) { { request_id: 'uuid', action: 'chat' } }
   let(:response_body) { expected_response.to_json }
   let(:http_status) { 200 }
   let(:response_headers) { { 'Content-Type' => 'application/json' } }
 
   before do
-    stub_request(:post, "#{Gitlab::AiGateway.url}/v1/chat/agent")
+    stub_request(:post, request_url)
       .with(
         body: expected_request_body,
         headers: expected_request_headers
@@ -125,6 +126,24 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
         .with(anything, hash_including(timeout: described_class::DEFAULT_TIMEOUT))
         .and_call_original
       expect(complete.parsed_response).to eq(expected_response)
+    end
+
+    context 'when AI_GATEWAY_URL is not set' do
+      let(:request_url) { "https://cloud.gitlab.com/ai/v1/chat/agent" }
+
+      it 'sends requests through Cloud Connector load balancer' do
+        expect(complete.parsed_response).to eq(expected_response)
+      end
+    end
+
+    context 'when AI_GATEWAY_URL is set' do
+      let(:request_url) { "http://127.0.0.1:5000/v1/chat/agent" }
+
+      it 'sends requests to this host instead' do
+        stub_env('AI_GATEWAY_URL', "http://127.0.0.1:5000")
+
+        expect(complete.parsed_response).to eq(expected_response)
+      end
     end
 
     context 'when passing stream: true' do

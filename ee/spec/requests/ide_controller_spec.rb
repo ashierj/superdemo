@@ -14,6 +14,6 @@ RSpec.describe IdeController, feature_category: :web_ide do
   end
 
   it 'adds CSP headers for code suggestions' do
-    expect(find_csp_directive('connect-src')).to include("https://codesuggestions.gitlab.com/")
+    expect(find_csp_directive('connect-src')).to include("https://cloud.gitlab.com/ai/")
   end
 end
