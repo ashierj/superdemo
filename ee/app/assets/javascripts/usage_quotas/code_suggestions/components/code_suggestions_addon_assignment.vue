@@ -1,7 +1,7 @@
 <script>
 import { GlToggle } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import { __ } from '~/locale';
+import { s__ } from '~/locale';
 import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
 import {
   CANNOT_ASSIGN_ADDON_ERROR_CODE,
@@ -14,7 +14,7 @@ import userAddOnAssignmentRemoveMutation from 'ee/usage_quotas/add_on/graphql/us
 export default {
   name: 'CodeSuggestionsAddonAssignment',
   i18n: {
-    toggleLabel: __('Duo Pro add-on status'),
+    toggleLabel: s__('CodeSuggestions|Duo Pro add-on status'),
   },
   components: {
     GlToggle,
