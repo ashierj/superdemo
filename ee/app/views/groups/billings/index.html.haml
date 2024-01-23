@@ -31,8 +31,10 @@
           %p
             - docs_link_url = help_page_path('user/project/repository/code_suggestions/index')
             - docs_link = link_to('', docs_link_url, target: '_blank', rel: 'noopener noreferrer')
-            = safe_format(s_("CodeSuggestions|Boost productivity by using %{linkStart}Code Suggestions%{linkEnd} to write and understand code. Code Suggestions is part of the GitLab Duo Pro add-on, available to Premium and Ultimate users now."),
-              tag_pair(docs_link, :linkStart, :linkEnd))
+            - duo_pro_link = link_to('', 'https://about.gitlab.com/gitlab-duo/', target: '_blank', rel: 'noopener noreferrer')
+
+            = safe_format(s_("CodeSuggestions|Boost productivity by using %{linkStart}Code Suggestions%{linkEnd} to write and understand code. Starting in February 2024, Code Suggestions will be part of %{duoLinkStart}GitLab Duo Pro%{duoLinkEnd}, available to Premium and Ultimate users for purchase now."),
+              tag_pair(docs_link, :linkStart, :linkEnd), tag_pair(duo_pro_link, :duoLinkStart, :duoLinkEnd))
           .js-hand-raise-lead-button{ data: code_suggestions_hand_raise_props(@group) }
 
     - data_attributes = subscription_plan_data_attributes(@group, current_plan, read_only: read_only)
