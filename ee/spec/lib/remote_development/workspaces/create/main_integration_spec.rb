@@ -77,7 +77,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
         expect(workspace.namespace).to eq("gl-rd-ns-#{agent.id}-#{user.id}-#{random_string}")
         expect(workspace.editor).to eq('webide')
         expect(workspace.url).to eq(URI::HTTPS.build({
-          host: "60001-#{workspace.name}.#{workspace.dns_zone}",
+          host: "60001-#{workspace.name}.#{workspace.agent.remote_development_agent_config.dns_zone}",
           query: {
             folder: "#{workspace_root}/#{project.path}"
           }.to_query

@@ -30,14 +30,5 @@ module RemoteDevelopment
     validates :workspaces_quota, numericality: { only_integer: true, greater_than_or_equal_to: UNLIMITED_QUOTA }
     validates :workspaces_per_user_quota,
       numericality: { only_integer: true, greater_than_or_equal_to: UNLIMITED_QUOTA }
-
-    # noinspection RubyResolve - likely due to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-25400
-    before_validation :prevent_dns_zone_update, if: ->(record) { record.persisted? && record.dns_zone_changed? }
-
-    private
-
-    def prevent_dns_zone_update
-      errors.add(:dns_zone, _('is currently immutable, and cannot be updated. Create a new agent instead.'))
-    end
   end
 end

@@ -57,8 +57,9 @@ FactoryBot.define do
       user = workspace.user
       workspace.project.add_developer(user)
       workspace.agent.project.add_developer(user)
-      dns_zone = workspace.agent.remote_development_agent_config&.dns_zone || 'example.com'
-      workspace.url ||= "https://60001-#{workspace.name}.#{dns_zone}"
+      workspace.dns_zone = workspace.agent.remote_development_agent_config&.dns_zone || 'example.com'
+      workspace.url_prefix ||= "60001-#{workspace.name}"
+      workspace.url_query_string ||= "folder=dir%2Ffile"
     end
 
     after(:create) do |workspace, evaluator|

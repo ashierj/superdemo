@@ -37,15 +37,6 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
     end
   end
 
-  describe '#after_update' do
-    it 'prevents dns_zone from being updated' do
-      expect { config.update!(dns_zone: 'new-zone') }.to raise_error(
-        ActiveRecord::RecordInvalid,
-        "Validation failed: Dns zone is currently immutable, and cannot be updated. Create a new agent instead."
-      )
-    end
-  end
-
   describe 'validations' do
     context 'when config has an invalid dns_zone' do
       subject(:config) { build(:remote_development_agent_config, dns_zone: "invalid dns zone") }

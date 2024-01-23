@@ -47,8 +47,18 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
         expect(workspace.personal_access_token).to eq(personal_access_token)
         expect(workspace.remote_development_agent_config).to eq(agent.remote_development_agent_config)
         expect(agent.remote_development_agent_config.workspaces.first).to eq(workspace)
-        expect(workspace.url).to eq("https://60001-#{workspace.name}.#{agent.remote_development_agent_config.dns_zone}")
+        expect(workspace.url_prefix).to eq("60001-#{workspace.name}")
+        expect(workspace.dns_zone).to eq(agent.remote_development_agent_config.dns_zone)
+        expect(workspace.url_query_string).to eq("folder=dir%2Ffile")
       end
+    end
+  end
+
+  describe '#url' do
+    subject(:workspace) { build(:workspace) }
+
+    it 'returns calculated url' do
+      expect(workspace.url).to eq("https://60001-#{workspace.name}.#{agent.remote_development_agent_config.dns_zone}?folder=dir%2Ffile")
     end
   end
 
@@ -138,6 +148,52 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
             expect(workspace).not_to be_valid
             expect(workspace.errors[:agent])
               .to include("must have the 'enabled' flag set to true")
+          end
+        end
+      end
+    end
+
+    context 'on dns_zone' do
+      subject(:workspace) do
+        build(:workspace, user: user, agent: agent, project: project)
+      end
+
+      context 'when dns_zone matches config dns_zone' do
+        before do
+          workspace.dns_zone = 'zone1'
+          agent.remote_development_agent_config.dns_zone = 'zone1'
+        end
+
+        it 'validates presence of agent.remote_development_agent_config' do
+          expect(workspace).to be_valid
+        end
+      end
+
+      context 'when dns_zone does not match config dns_zone' do
+        before do
+          workspace.dns_zone = 'zone1'
+          agent.remote_development_agent_config.dns_zone = 'zone2'
+        end
+
+        context "when workspace is in desired_state Terminated" do
+          before do
+            workspace.desired_state = ::RemoteDevelopment::Workspaces::States::TERMINATED
+          end
+
+          it 'does not validate dns_zone matches agent.remote_development_agent_config.dns_zone' do
+            expect(workspace).to be_valid
+          end
+        end
+
+        context "when workspace is not in desired_state terminated" do
+          before do
+            workspace.desired_state = ::RemoteDevelopment::Workspaces::States::RUNNING
+          end
+
+          it 'validates dns_zone matches agent.remote_development_agent_config.dns_zone' do
+            expect(workspace).not_to be_valid
+            expect(workspace.errors[:dns_zone])
+              .to include("for Workspace must match the dns_zone of the associated RemoteDevelopmentAgentConfig")
           end
         end
       end
