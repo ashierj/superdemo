@@ -61,7 +61,7 @@ RSpec.describe Admin::Licenses::UsageExportsController, feature_category: :consu
       end
 
       context 'when current license is an offline cloud license' do
-        let(:license) { build(:license, data: build(:gitlab_license, :cloud, :offline_enabled).export) }
+        let(:license) { build(:license, data: build(:gitlab_license, :offline).export) }
 
         it 'updates the license usage data exported flag' do
           expect(Gitlab::CurrentSettings).to receive(:update).with(license_usage_data_exported: true).and_call_original
