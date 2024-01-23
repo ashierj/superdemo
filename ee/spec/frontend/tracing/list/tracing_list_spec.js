@@ -55,13 +55,14 @@ describe('TracingList', () => {
     observabilityClientMock.fetchTraces.mockResolvedValue(mockResponse);
   });
 
-  describe('fetching traces', () => {
+  describe('fetching data', () => {
     beforeEach(async () => {
       await mountComponent();
     });
 
-    it('fetches the traces and renders the trace list with filtered search', () => {
+    it('fetches data and renders the trace list with filtered search', () => {
       expect(observabilityClientMock.fetchTraces).toHaveBeenCalled();
+      expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenCalled();
       expect(findLoadingIcon().exists()).toBe(false);
       expect(findTableList().exists()).toBe(true);
       expect(findFilteredSearch().exists()).toBe(true);
@@ -69,6 +70,41 @@ describe('TracingList', () => {
       expect(findTableList().props('traces')).toEqual(mockResponse.traces);
     });
 
+    describe('traces and analytics API requests', () => {
+      let resolveFetchTraces;
+      let resolveFetchTracesAnalytics;
+      beforeEach(async () => {
+        const fetchTracesPromise = new Promise((resolve) => {
+          resolveFetchTraces = resolve;
+        });
+        const fetchTracesAnalyticsPromise = new Promise((resolve) => {
+          resolveFetchTracesAnalytics = resolve;
+        });
+        observabilityClientMock.fetchTraces.mockReturnValue(fetchTracesPromise);
+        observabilityClientMock.fetchTracesAnalytics.mockReturnValue(fetchTracesAnalyticsPromise);
+
+        await mountComponent();
+      });
+
+      it('fetches traces and analytics in parallel', () => {
+        expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenCalled();
+        expect(observabilityClientMock.fetchTraces).toHaveBeenCalled();
+      });
+
+      it('waits for both requests to complete', async () => {
+        expect(findLoadingIcon().exists()).toBe(true);
+
+        resolveFetchTraces();
+        await waitForPromises();
+
+        expect(findLoadingIcon().exists()).toBe(true);
+
+        resolveFetchTracesAnalytics();
+        await waitForPromises();
+
+        expect(findLoadingIcon().exists()).toBe(false);
+      });
+    });
     describe('on trace-clicked', () => {
       let visitUrlMock;
       beforeEach(() => {
@@ -175,29 +211,38 @@ describe('TracingList', () => {
       });
     });
 
-    it('fetches traces with filters and sort order', () => {
+    it('fetches traces and analytics with options', () => {
+      const expectedFilters = {
+        period: [{ operator: '=', value: '4h' }],
+        service: [
+          { operator: '=', value: 'loadgenerator' },
+          { operator: '=', value: 'test-service' },
+        ],
+        operation: [{ operator: '=', value: 'test-op' }],
+        traceId: [{ operator: '=', value: 'test_trace' }],
+        durationMs: [{ operator: '>', value: '100' }],
+        attribute: [{ operator: '=', value: 'foo=bar' }],
+        status: [{ operator: '=', value: 'ok' }],
+        search: undefined,
+      };
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
         filters: {
-          period: [{ operator: '=', value: '4h' }],
-          service: [
-            { operator: '=', value: 'loadgenerator' },
-            { operator: '=', value: 'test-service' },
-          ],
-          operation: [{ operator: '=', value: 'test-op' }],
-          traceId: [{ operator: '=', value: 'test_trace' }],
-          durationMs: [{ operator: '>', value: '100' }],
-          attribute: [{ operator: '=', value: 'foo=bar' }],
-          status: [{ operator: '=', value: 'ok' }],
-          search: undefined,
+          ...expectedFilters,
         },
         pageSize: 500,
         pageToken: null,
         sortBy: 'duration_desc',
       });
+      expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenLastCalledWith({
+        filters: {
+          ...expectedFilters,
+        },
+      });
     });
 
     describe('on search submit', () => {
       beforeEach(async () => {
+        observabilityClientMock.fetchTracesAnalytics.mockReset();
         await setFilters({
           period: [{ operator: '=', value: '12h' }],
           service: [{ operator: '=', value: 'frontend' }],
@@ -233,20 +278,29 @@ describe('TracingList', () => {
         });
       });
 
-      it('fetches traces with updated filters', () => {
+      it('fetches traces and analytics with updated filters', () => {
+        const expectedFilters = {
+          period: [{ operator: '=', value: '12h' }],
+          service: [{ operator: '=', value: 'frontend' }],
+          operation: [{ operator: '=', value: 'op' }],
+          traceId: [{ operator: '=', value: 'another_trace' }],
+          durationMs: [{ operator: '>', value: '200' }],
+          attribute: [{ operator: '=', value: 'foo=baz' }],
+          status: [{ operator: '=', value: 'error' }],
+        };
         expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
           filters: {
-            period: [{ operator: '=', value: '12h' }],
-            service: [{ operator: '=', value: 'frontend' }],
-            operation: [{ operator: '=', value: 'op' }],
-            traceId: [{ operator: '=', value: 'another_trace' }],
-            durationMs: [{ operator: '>', value: '200' }],
-            attribute: [{ operator: '=', value: 'foo=baz' }],
-            status: [{ operator: '=', value: 'error' }],
+            ...expectedFilters,
           },
           pageSize: 500,
           pageToken: null,
           sortBy: 'duration_desc',
+        });
+
+        expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenLastCalledWith({
+          filters: {
+            ...expectedFilters,
+          },
         });
       });
 
@@ -267,19 +321,24 @@ describe('TracingList', () => {
       it('sets the 1h period filter if not specified otherwise', async () => {
         await setFilters({});
 
+        const expectedFilters = {
+          period: [{ operator: '=', value: '1h' }],
+          service: undefined,
+          operation: undefined,
+          traceId: undefined,
+          durationMs: undefined,
+          attribute: undefined,
+          status: undefined,
+        };
+
         expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
-          filters: {
-            period: [{ operator: '=', value: '1h' }],
-            service: undefined,
-            operation: undefined,
-            traceId: undefined,
-            durationMs: undefined,
-            attribute: undefined,
-            status: undefined,
-          },
+          filters: { ...expectedFilters },
           pageSize: 500,
           pageToken: null,
           sortBy: 'duration_desc',
+        });
+        expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenLastCalledWith({
+          filters: { ...expectedFilters },
         });
 
         expect(findFilteredSearch().props('initialFilters')).toEqual(
@@ -323,6 +382,8 @@ describe('TracingList', () => {
         setWindowLocation('?sortBy=duration_desc');
         await mountComponent();
 
+        observabilityClientMock.fetchTracesAnalytics.mockReset();
+
         findFilteredSearch().vm.$emit('sort', 'timestamp_asc');
         await waitForPromises();
       });
@@ -348,6 +409,10 @@ describe('TracingList', () => {
           pageToken: null,
           sortBy: 'timestamp_asc',
         });
+      });
+
+      it('does not fetch analytics', () => {
+        expect(observabilityClientMock.fetchTracesAnalytics).not.toHaveBeenCalled();
       });
 
       it('updates FilteredSearch initial sort', () => {
@@ -405,6 +470,14 @@ describe('TracingList', () => {
       ]);
     });
 
+    it('does not fetch analytics when bottom reached', async () => {
+      observabilityClientMock.fetchTracesAnalytics.mockReset();
+
+      await bottomReached();
+
+      expect(observabilityClientMock.fetchTracesAnalytics).not.toHaveBeenCalled();
+    });
+
     it('does not update the next_page_token if missing - i.e. it reached the last page', async () => {
       observabilityClientMock.fetchTraces.mockReturnValueOnce({
         traces: [],
@@ -457,25 +530,31 @@ describe('TracingList', () => {
 
       await setFilters({ period: [{ operator: '=', value: '4h' }] });
 
+      const expectedFilters = {
+        attribute: undefined,
+        durationMs: undefined,
+        operation: undefined,
+        period: [{ operator: '=', value: '4h' }],
+        search: undefined,
+        service: undefined,
+        traceId: undefined,
+      };
+
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
-        filters: {
-          attribute: undefined,
-          durationMs: undefined,
-          operation: undefined,
-          period: [{ operator: '=', value: '4h' }],
-          search: undefined,
-          service: undefined,
-          traceId: undefined,
-        },
+        filters: { ...expectedFilters },
         pageSize: 500,
         pageToken: null,
         sortBy: 'duration_desc',
+      });
+      expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenCalledWith({
+        filters: { ...expectedFilters },
       });
 
       expect(findTableList().props('traces')).toEqual(mockResponse.traces);
     });
 
     it('when sort order is changed, pagination and traces are reset', async () => {
+      observabilityClientMock.fetchTracesAnalytics.mockReset();
       observabilityClientMock.fetchTraces.mockReturnValueOnce({
         traces: [{ trace_id: 'trace-3' }],
         next_page_token: 'page-3',
@@ -499,6 +578,7 @@ describe('TracingList', () => {
         pageToken: null,
         sortBy: 'duration_asc',
       });
+      expect(observabilityClientMock.fetchTracesAnalytics).not.toHaveBeenCalled();
 
       expect(findTableList().props('traces')).toEqual(mockResponse.traces);
     });
@@ -570,6 +650,16 @@ describe('TracingList', () => {
   describe('error handling', () => {
     it('if fetchTraces fails, it renders an alert and empty list', async () => {
       observabilityClientMock.fetchTraces.mockRejectedValue('error');
+
+      await mountComponent();
+
+      expect(createAlert).toHaveBeenLastCalledWith({ message: 'Failed to load traces.' });
+      expect(findTableList().exists()).toBe(true);
+      expect(findTableList().props('traces')).toEqual([]);
+    });
+
+    it('if fetchTracesAnalytics fails, it renders an alert and empty list', async () => {
+      observabilityClientMock.fetchTracesAnalytics.mockRejectedValue('error');
 
       await mountComponent();
 

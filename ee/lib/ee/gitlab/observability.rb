@@ -11,6 +11,10 @@ module EE
           "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/traces"
         end
 
+        def tracing_analytics_url(project)
+          "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/traces/analytics"
+        end
+
         def services_url(project)
           "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/services"
         end
