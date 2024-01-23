@@ -2,8 +2,12 @@ import {
   APPROVER_TYPE_DICT,
   approversOutOfSync,
   actionHasType,
+  buildApprovalAction,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/actions';
 import { GROUP_TYPE, USER_TYPE, ROLE_TYPE } from 'ee/security_orchestration/constants';
+
+const actionId = 'action_0';
+jest.mock('lodash/uniqueId', () => jest.fn().mockReturnValue(actionId));
 
 describe('approversOutOfSync', () => {
   const userApprover = {
@@ -214,5 +218,15 @@ describe('actionHasType', () => {
     ${{ [APPROVER_TYPE_DICT[GROUP_TYPE][1]]: 'value' }} | ${GROUP_TYPE} | ${true}
   `('returns $output when action is $action and type is $type', ({ action, type, output }) => {
     expect(actionHasType(action, type)).toBe(output);
+  });
+});
+
+describe('buildApprovalAction', () => {
+  it('builds an approval action', () => {
+    expect(buildApprovalAction()).toEqual({
+      approvals_required: 1,
+      id: actionId,
+      type: 'require_approval',
+    });
   });
 });

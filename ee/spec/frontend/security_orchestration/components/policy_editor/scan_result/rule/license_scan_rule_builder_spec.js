@@ -15,6 +15,9 @@ import {
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/rules';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
+const actionId = 'action_0';
+jest.mock('lodash/uniqueId', () => jest.fn().mockReturnValue(actionId));
+
 describe('LicenseScanRuleBuilder', () => {
   let wrapper;
 

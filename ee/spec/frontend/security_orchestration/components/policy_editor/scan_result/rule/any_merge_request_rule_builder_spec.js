@@ -4,7 +4,6 @@ import AnyMergeRequestRuleBuilder from 'ee/security_orchestration/components/pol
 import BranchExceptionSelector from 'ee/security_orchestration/components/policy_editor/branch_exception_selector.vue';
 import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import BranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result/rule/branch_selection.vue';
-
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   ANY_COMMIT,
@@ -18,6 +17,9 @@ import {
   SCAN_FINDING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/rules';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+
+const ruleId = 'rule_0';
+jest.mock('lodash/uniqueId', () => jest.fn().mockReturnValue(ruleId));
 
 describe('AnyMergeRequestRuleBuilder', () => {
   let wrapper;

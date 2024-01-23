@@ -1,6 +1,6 @@
 import { safeLoad } from 'js-yaml';
 import { CUSTOM_ACTION_KEY } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
-import { isValidPolicy, hasInvalidCron } from '../../utils';
+import { addIdsToPolicy, isValidPolicy, hasInvalidCron } from '../../utils';
 import {
   BRANCH_TYPE_KEY,
   PRIMARY_POLICY_KEYS,
@@ -51,7 +51,7 @@ export const hasRuleModeSupportedScanners = (policy) => {
 */
 export const fromYaml = ({ manifest, validateRuleMode = false }) => {
   try {
-    const policy = safeLoad(manifest, { json: true });
+    const policy = addIdsToPolicy(safeLoad(manifest, { json: true }));
 
     if (validateRuleMode) {
       /**
@@ -69,8 +69,9 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'cadence',
         'timezone',
         'branch_exceptions',
+        'id',
       ];
-      const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables', 'tags'];
+      const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables', 'tags', 'id'];
 
       if (gon?.features?.compliancePipelineInPolicies) {
         actionsKeys.push('ci_configuration_path');

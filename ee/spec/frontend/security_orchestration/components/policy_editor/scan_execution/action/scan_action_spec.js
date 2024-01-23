@@ -24,6 +24,9 @@ import {
   FILTERS,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/constants';
 
+const actionId = 'action_0';
+jest.mock('lodash/uniqueId', () => jest.fn().mockReturnValue(actionId));
+
 describe('PolicyActionBuilder', () => {
   let wrapper;
   let requestHandlers;

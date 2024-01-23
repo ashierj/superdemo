@@ -1,8 +1,9 @@
 import { safeDump } from 'js-yaml';
+import { removeIdsFromPolicy } from '../../utils';
 
 /*
  Return yaml representation of a policy.
 */
-export const toYaml = (policy) => {
-  return safeDump(policy);
+export const policyToYaml = (policy) => {
+  return safeDump(removeIdsFromPolicy(policy));
 };

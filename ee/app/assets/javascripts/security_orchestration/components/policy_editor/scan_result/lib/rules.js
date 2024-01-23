@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import { isEmpty, uniqueId } from 'lodash';
 import { s__, sprintf } from '~/locale';
 import Api from 'ee/api';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
@@ -42,6 +42,7 @@ export const LICENSE_STATES = {
   Construct a new rule object.
 */
 export const securityScanBuildRule = () => ({
+  id: uniqueId('rule_'),
   type: SCAN_FINDING,
   scanners: [],
   vulnerabilities_allowed: 0,
@@ -51,6 +52,7 @@ export const securityScanBuildRule = () => ({
 });
 
 export const licenseScanBuildRule = () => ({
+  id: uniqueId('rule_'),
   type: LICENSE_FINDING,
   match_on_inclusion: true,
   license_types: [],
@@ -59,6 +61,7 @@ export const licenseScanBuildRule = () => ({
 });
 
 export const anyMergeRequestBuildRule = () => ({
+  id: uniqueId('rule_'),
   type: ANY_MERGE_REQUEST,
   branch_type: ALL_PROTECTED_BRANCHES.value,
   commits: ANY_COMMIT,
