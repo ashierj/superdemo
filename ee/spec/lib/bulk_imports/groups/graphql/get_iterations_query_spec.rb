@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe BulkImports::Groups::Graphql::GetIterationsQuery do
+RSpec.describe BulkImports::Groups::Graphql::GetIterationsQuery, feature_category: :importers do
   let_it_be(:tracker) { create(:bulk_import_tracker) }
   let_it_be(:context) { BulkImports::Pipeline::Context.new(tracker) }
 
