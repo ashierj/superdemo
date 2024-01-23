@@ -2,8 +2,11 @@
 
 class Groups::SsoController < Groups::ApplicationController
   include InternalRedirect
+  include OneTrustCSP
+
   skip_before_action :group
 
+  before_action :init_preferred_language
   before_action :authenticate_user!, only: [:unlink]
   before_action :require_group_saml_instance!
   before_action :require_licensed_group!, except: [:unlink]
