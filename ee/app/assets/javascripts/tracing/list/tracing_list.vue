@@ -47,6 +47,7 @@ export default {
       nextPageToken: null,
       highlightedTraceId: null,
       sortBy: sortBy || DEFAULT_SORTING_OPTION,
+      analytics: [],
     };
   },
   computed: {
@@ -76,22 +77,30 @@ export default {
   },
   created() {
     this.debouncedChartItemOver = debounce(this.chartItemOver, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
-    this.fetchTraces();
+    this.fetchTraces(true);
   },
   methods: {
-    async fetchTraces() {
+    async fetchTraces(updateAnalytics = false) {
       this.loading = true;
 
       try {
-        const {
-          traces,
-          next_page_token: nextPageToken,
-        } = await this.observabilityClient.fetchTraces({
-          filters: this.filters,
-          pageToken: this.nextPageToken,
-          pageSize: PAGE_SIZE,
-          sortBy: this.sortBy,
-        });
+        const apiRequests = [
+          this.observabilityClient.fetchTraces({
+            filters: this.filters,
+            pageToken: this.nextPageToken,
+            pageSize: PAGE_SIZE,
+            sortBy: this.sortBy,
+          }),
+        ];
+        if (updateAnalytics) {
+          apiRequests.push(
+            this.observabilityClient.fetchTracesAnalytics({ filters: this.filters }),
+          );
+        }
+
+        const [tracesResults, analyticsResults] = await Promise.all(apiRequests);
+        this.analytics = analyticsResults;
+        const { traces, next_page_token: nextPageToken } = tracesResults;
         this.traces = [...this.traces, ...traces];
         if (nextPageToken) {
           this.nextPageToken = nextPageToken;
@@ -112,7 +121,7 @@ export default {
       this.filters = filterTokensToFilterObj(filterTokens);
       this.nextPageToken = null;
       this.traces = [];
-      this.fetchTraces();
+      this.fetchTraces(true);
     },
     onSort(sortBy) {
       this.sortBy = sortBy;
@@ -121,7 +130,7 @@ export default {
       this.fetchTraces();
     },
     bottomReached() {
-      this.fetchTraces({ skipUpdatingChartRange: true });
+      this.fetchTraces();
     },
     chartItemSelected({ traceId }) {
       this.onTraceClicked({ traceId });

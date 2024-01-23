@@ -97,6 +97,7 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
           expect(rendered).to have_content('Boost productivity by using Code Suggestions to write and understand code.')
           href = help_page_path('user/project/repository/code_suggestions/index')
           expect(rendered).to have_link('Code Suggestions', href: href)
+          expect(rendered).to have_link('GitLab Duo Pro', href: 'https://about.gitlab.com/gitlab-duo/')
           hand_raise_selector = '.js-hand-raise-lead-button[data-track-label="code_suggestions_hand_raise_lead_form"]'
           expect(rendered).to have_selector(hand_raise_selector)
         end
