@@ -70,16 +70,6 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
         end
       end
 
-      context 'when use_cloud_connector_lb is disabled' do
-        let(:endpoint) { 'https://codesuggestions.gitlab.com/v1/x-ray/libraries' }
-
-        before do
-          stub_feature_flags(use_cloud_connector_lb: false)
-        end
-
-        include_examples 'sends request to the XRay libraries'
-      end
-
       include_examples 'sends request to the XRay libraries'
     end
 
