@@ -9,6 +9,7 @@ import {
   mockLastVulnerabilityCountData,
   mockMergeRequestsResponseData,
   mockDoraPerformersScoreResponseData,
+  mockContributorCountResponseData,
 } from './mock_data';
 
 export const doraMetricsParamsHelper = ({
@@ -45,6 +46,12 @@ export const mergeRequestsParamsHelper = ({ start, end, fullPath = '', labelName
   labelNames,
 });
 
+export const contributorCountParamsHelper = ({ fullPath = '', start, end }) => ({
+  fullPath,
+  startDate: utils.toYmd(start),
+  endDate: utils.toYmd(end),
+});
+
 export const mockGraphqlVulnerabilityResponse = (
   mockDataResponse = mockLastVulnerabilityCountData,
 ) =>
@@ -77,6 +84,15 @@ export const mockGraphqlMergeRequestsResponse = (
   jest.fn().mockResolvedValue({
     data: {
       namespace: { id: 'fake-merge-requests-request', mergeRequests: mockDataResponse },
+    },
+  });
+
+export const mockGraphqlContributorCountResponse = (
+  mockDataResponse = mockContributorCountResponseData,
+) =>
+  jest.fn().mockResolvedValue({
+    data: {
+      namespace: { id: 'fake-contributor-count-request', contributors: mockDataResponse },
     },
   });
 

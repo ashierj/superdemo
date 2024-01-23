@@ -1,8 +1,10 @@
 <script>
 import { GlAlert } from '@gitlab/ui';
+import { uniq } from 'lodash';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { toYmd } from '~/analytics/shared/utils';
+import { CONTRIBUTOR_METRICS } from '~/analytics/shared/constants';
 import GroupVulnerabilitiesQuery from '../graphql/group_vulnerabilities.query.graphql';
 import ProjectVulnerabilitiesQuery from '../graphql/project_vulnerabilities.query.graphql';
 import GroupMergeRequestsQuery from '../graphql/group_merge_requests.query.graphql';
@@ -11,6 +13,7 @@ import GroupFlowMetricsQuery from '../graphql/group_flow_metrics.query.graphql';
 import ProjectFlowMetricsQuery from '../graphql/project_flow_metrics.query.graphql';
 import GroupDoraMetricsQuery from '../graphql/group_dora_metrics.query.graphql';
 import ProjectDoraMetricsQuery from '../graphql/project_dora_metrics.query.graphql';
+import GroupContributorCountQuery from '../graphql/group_contributor_count.query.graphql';
 import { BUCKETING_INTERVAL_ALL, MERGE_REQUESTS_STATE_MERGED } from '../graphql/constants';
 import {
   TABLE_METRICS,
@@ -20,6 +23,7 @@ import {
   SUPPORTED_FLOW_METRICS,
   SUPPORTED_MERGE_REQUEST_METRICS,
   SUPPORTED_VULNERABILITY_METRICS,
+  SUPPORTED_CONTRIBUTOR_METRICS,
 } from '../constants';
 import {
   fetchMetricsForTimePeriods,
@@ -27,6 +31,7 @@ import {
   extractGraphqlDoraData,
   extractGraphqlFlowData,
   extractGraphqlMergeRequestsData,
+  extractGraphqlContributorCountData,
 } from '../api';
 import {
   generateSkeletonTableData,
@@ -57,6 +62,11 @@ export default {
     GlAlert,
     ComparisonTable,
   },
+  inject: {
+    dataSourceClickhouse: {
+      default: false,
+    },
+  },
   props: {
     requestPath: {
       type: String,
@@ -79,7 +89,7 @@ export default {
   },
   data() {
     return {
-      tableData: generateSkeletonTableData(this.excludeMetrics),
+      tableData: [],
       failedTableMetrics: [],
       failedChartMetrics: [],
     };
@@ -97,6 +107,10 @@ export default {
           metrics: SUPPORTED_VULNERABILITY_METRICS,
           queryFn: this.fetchVulnerabilitiesMetricsQuery,
         },
+        {
+          metrics: SUPPORTED_CONTRIBUTOR_METRICS,
+          queryFn: this.fetchContributorsCountQuery,
+        },
       ].filter(({ metrics }) => this.areAnyMetricsIncluded(metrics));
     },
     tableError() {
@@ -105,14 +119,27 @@ export default {
     chartError() {
       return this.failedChartMetrics.join(', ');
     },
+    shouldRenderContributorsCountMetric() {
+      // Contributors count metric is not supported at the project level or when the Clickhouse data store is disabled
+      return !this.isProject && this.dataSourceClickhouse;
+    },
+    skippedMetrics() {
+      return uniq([
+        ...(!this.shouldRenderContributorsCountMetric ? [CONTRIBUTOR_METRICS.COUNT] : []),
+        ...this.excludeMetrics,
+      ]);
+    },
   },
   async mounted() {
     this.failedTableMetrics = await this.resolveQueries(this.fetchTableMetrics);
     this.failedChartMetrics = await this.resolveQueries(this.fetchSparklineCharts);
   },
+  created() {
+    this.tableData = generateSkeletonTableData(this.skippedMetrics);
+  },
   methods: {
     areAnyMetricsIncluded(identifiers) {
-      return !identifiers.every((identifier) => this.excludeMetrics.includes(identifier));
+      return !identifiers.every((identifier) => this.skippedMetrics.includes(identifier));
     },
 
     async resolveQueries(handler) {
@@ -227,6 +254,26 @@ export default {
       return {
         ...timePeriod,
         ...extractGraphqlVulnerabilitiesData(responseData?.nodes || []),
+      };
+    },
+    async fetchContributorsCountQuery({ startDate, endDate }, timePeriod) {
+      const result = await this.$apollo.query({
+        query: GroupContributorCountQuery,
+        variables: {
+          fullPath: this.requestPath,
+          startDate: toYmd(startDate),
+          endDate: toYmd(endDate),
+        },
+      });
+
+      const responseData = extractQueryResponseFromNamespace({
+        result,
+        resultKey: 'contributors',
+      });
+
+      return {
+        ...timePeriod,
+        ...extractGraphqlContributorCountData(responseData || {}),
       };
     },
   },

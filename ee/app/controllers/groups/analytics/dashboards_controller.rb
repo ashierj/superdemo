@@ -19,6 +19,8 @@ module Groups
         push_frontend_feature_flag(:group_analytics_dashboard_dynamic_vsd, @group)
 
         load_visualizations
+
+        @data_source_clickhouse = Feature.enabled?(:clickhouse_data_collection, @group)
       end
 
       layout 'group'
