@@ -12116,6 +12116,9 @@ msgstr ""
 msgid "CodeSuggestions|Duo Pro add-on"
 msgstr ""
 
+msgid "CodeSuggestions|Duo Pro add-on status"
+msgstr ""
+
 msgid "CodeSuggestions|Duo Pro seats used"
 msgstr ""
 
@@ -18299,9 +18302,6 @@ msgid "Due to inactivity, the %{project_name} (%{project_link}) project is sched
 msgstr ""
 
 msgid "Due to inactivity, this project is scheduled to be deleted on %{deletion_date}. %{link_start}Why is this scheduled?%{link_end}"
-msgstr ""
-
-msgid "Duo Pro add-on status"
 msgstr ""
 
 msgid "Duplicate page: A page with that title already exists"
