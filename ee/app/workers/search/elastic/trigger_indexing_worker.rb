@@ -69,7 +69,7 @@ module Search
 
       def projects
         Project.each_batch do |batch|
-          ::Preloaders::ProjectRootAncestorPreloader.new(batch, :group).execute
+          ::Preloaders::ProjectRootAncestorPreloader.new(batch, :namespace).execute
           batch = batch.select(&:maintaining_elasticsearch?)
 
           ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(*batch)
