@@ -23,7 +23,7 @@ module RemoteDevelopment
           # NOTE: Editor is currently unused
           # editor = params[:editor]
 
-          editor_port = 60001
+          editor_port = WorkspaceCreator::WORKSPACE_PORT
           ssh_port = 60022
 
           editor_component = processed_devfile['components'].find { |c| c.dig('attributes', 'gl/inject-editor') }

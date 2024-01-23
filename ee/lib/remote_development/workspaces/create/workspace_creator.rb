@@ -28,6 +28,7 @@ module RemoteDevelopment
           }
           params => {
             project: Project => project,
+            agent: Clusters::Agent => agent,
           }
           project_dir = "#{workspace_root}/#{project.path}"
 
@@ -39,12 +40,12 @@ module RemoteDevelopment
           workspace.processed_devfile = YAML.dump(processed_devfile.deep_stringify_keys)
           workspace.actual_state = CREATION_REQUESTED
           workspace.config_version = RemoteDevelopment::Workspaces::ConfigVersion::LATEST_VERSION
-          workspace.url = URI::HTTPS.build({
-            host: workspace_host(workspace: workspace),
-            query: {
-              folder: project_dir
-            }.to_query
-          }).to_s
+
+          set_workspace_url(
+            workspace: workspace,
+            agent_dns_zone: agent.remote_development_agent_config.dns_zone,
+            project_dir: project_dir
+          )
           workspace.save
 
           if workspace.errors.present?
@@ -61,9 +62,20 @@ module RemoteDevelopment
         end
 
         # @param [Workspace] workspace
-        # @return [String (frozen)]
-        def self.workspace_host(workspace:)
-          "#{WORKSPACE_PORT}-#{workspace.name}.#{workspace.dns_zone}"
+        # @param [String] agent_dns_zone
+        # @param [String] project_dir
+        # @return [void]
+        def self.set_workspace_url(workspace:, agent_dns_zone:, project_dir:)
+          host = "#{WORKSPACE_PORT}-#{workspace.name}.#{agent_dns_zone}"
+          query = { folder: project_dir }.to_query
+
+          # NOTE: Use URI builder to ensure that we are building a valid URI, then retrieve parts from it
+
+          uri = URI::HTTPS.build(host: host, query: query)
+
+          workspace.url_prefix = uri.hostname.gsub(".#{agent_dns_zone}", '')
+          workspace.dns_zone = agent_dns_zone
+          workspace.url_query_string = uri.query
         end
       end
     end
