@@ -13,6 +13,24 @@ RSpec.describe Note, feature_category: :team_planning do
     let(:set_mentionable_text) { ->(txt) { subject.note = txt } }
   end
 
+  describe 'validation' do
+    describe 'confidentiality' do
+      context 'for a new note' do
+        let(:note_params) { { confidential: true, noteable: noteable, project: noteable.project } }
+
+        subject(:note) { build(:note, **note_params) }
+
+        context 'when noteable is a epic' do
+          let_it_be(:noteable) { create(:epic) }
+
+          it 'can not be set confidential' do
+            expect(note).to be_valid
+          end
+        end
+      end
+    end
+  end
+
   describe '#ensure_namespace_id' do
     context 'for an epic note' do
       let_it_be(:epic) { create(:epic) }
