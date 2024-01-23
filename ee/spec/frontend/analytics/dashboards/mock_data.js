@@ -11,6 +11,7 @@ const METRIC_IDENTIFIERS = [
   'issues',
   'issues_completed',
   'deploys',
+  'contributor_count',
   'vulnerability_critical',
   'vulnerability_high',
   'merge_request_throughput',
@@ -98,6 +99,7 @@ export const mockMonthToDate = mockMetrics({
   issues: 6,
   issues_completed: 10080,
   deploys: 8,
+  contributor_count: 5,
   vulnerability_critical: 3,
   vulnerability_high: 0,
   merge_request_throughput: 5,
@@ -115,6 +117,7 @@ export const mockPreviousMonth = mockMetrics({
   issues: 12,
   issues_completed: 9000,
   deploys: 16,
+  contributor_count: 10,
   vulnerability_critical: 0,
   vulnerability_high: 3,
   merge_request_throughput: 2,
@@ -132,6 +135,7 @@ export const mockTwoMonthsAgo = mockMetrics({
   issues: 6,
   issues_completed: 6000,
   deploys: 8,
+  contributor_count: 5,
   vulnerability_critical: 2,
   vulnerability_high: 0,
   merge_request_throughput: 0,
@@ -149,6 +153,7 @@ export const mockThreeMonthsAgo = mockMetrics({
   issues: 12,
   issues_completed: 8000,
   deploys: 16,
+  contributor_count: 10,
   vulnerability_critical: 0,
   vulnerability_high: 0,
   merge_request_throughput: 15,
@@ -168,6 +173,7 @@ export const mockChartsTimePeriods = MOCK_CHART_TIME_PERIODS.map((timePeriod, i)
     issues: 100 - i * 2,
     issues_completed: 200 - i * 2,
     deploys: i * i,
+    contributor_count: i * 3,
     vulnerability_critical: i % 4,
     vulnerability_high: i % 2,
     merge_request_throughput: i,
@@ -377,6 +383,24 @@ export const mockComparativeTableData = [
   },
   {
     metric: {
+      identifier: 'contributor_count',
+      value: 'Contributor count',
+    },
+    lastMonth: {
+      change: 1,
+      value: 10,
+    },
+    thisMonth: {
+      change: -0.5,
+      value: 5,
+    },
+    twoMonthsAgo: {
+      change: -0.5,
+      value: 5,
+    },
+  },
+  {
+    metric: {
       identifier: 'vulnerability_critical',
       value: 'Critical Vulnerabilities over time',
     },
@@ -492,6 +516,11 @@ export const mockChartData = {
   deploys: {
     chart: {
       data: mockChartDataValues([0, 1, 4, 9, 16, 25]),
+    },
+  },
+  contributor_count: {
+    chart: {
+      data: mockChartDataValues([0, 3, 6, 9, 12, 15]),
     },
   },
   vulnerability_critical: {
@@ -610,6 +639,13 @@ export const mockFlowMetricsResponseData = {
 export const mockMergeRequestsResponseData = {
   merge_request_throughput: 10,
   __typename: 'MergeRequestConnection',
+};
+
+export const mockContributorCountResponseData = {
+  identifier: 'CONTRIBUTORS',
+  count: 4,
+  recordedAt: '2024-01-11T19:11:05Z',
+  __typename: 'ValueStreamDashboardCount',
 };
 
 export const MOCK_LABELS = [

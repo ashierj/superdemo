@@ -1,5 +1,5 @@
 import { formatAsPercentageWithoutSymbol, secondsToDays } from 'ee/dora/components/util';
-import { VULNERABILITY_METRICS } from '~/analytics/shared/constants';
+import { CONTRIBUTOR_METRICS, VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 import { groupDoraPerformanceScoreCountsByCategory } from './utils';
 import {
   TABLE_METRICS,
@@ -187,6 +187,31 @@ export const extractGraphqlMergeRequestsData = (data = {}) =>
         : acc,
     {},
   );
+
+/**
+ * @typedef {Object} ValueStreamDashboardCountItem
+ * @property {String} identifier - Type of object being measured
+ * @property {Integer} count - Object count
+ * @property {Date} recordedAt - Time the measurement was taken
+ */
+
+/**
+ * @typedef {Object} ContributorsCountResponseItem
+ * @property {ValueStreamDashboardTableMetric} contributors - Count of distinct contributors in the given time period
+ */
+
+/**
+ * Takes the contributors count from the raw Group.valueStreamDashboardUsageOverview graphql response
+ * and prepares the data for display
+ * @param {ValueStreamDashboardCountItem} data
+ * @return {ContributorsCountResponseItem} - Contributors count ready for rendering in the Value Streams Dashboard
+ */
+export const extractGraphqlContributorCountData = (data = {}) => ({
+  [CONTRIBUTOR_METRICS.COUNT]: {
+    identifier: CONTRIBUTOR_METRICS.COUNT,
+    value: data?.count || 0,
+  },
+});
 
 /**
  * Takes an array of timePeriods, a query function to execute and query parameters

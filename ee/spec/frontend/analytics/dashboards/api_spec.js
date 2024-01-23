@@ -7,6 +7,7 @@ import {
   extractGraphqlMergeRequestsData,
   extractDoraPerformanceScoreCounts,
   scaledValueForDisplay,
+  extractGraphqlContributorCountData,
 } from 'ee/analytics/dashboards/api';
 import { UNITS } from 'ee/analytics/dashboards/constants';
 import {
@@ -16,6 +17,7 @@ import {
   mockMergeRequestsResponseData,
   mockDoraPerformersScoreResponseData,
   mockDoraPerformersScoreChartData,
+  mockContributorCountResponseData,
 } from './mock_data';
 
 describe('Analytics Dashboards api', () => {
@@ -159,5 +161,21 @@ describe('Analytics Dashboards api', () => {
         expect(scaledValueForDisplay(23456, UNITS.DAYS, precision)).toBe(result);
       },
     );
+  });
+
+  describe('extractGraphqlContributorCountData', () => {
+    it('returns each contributors count metric', () => {
+      const keys = Object.keys(
+        extractGraphqlContributorCountData(mockContributorCountResponseData),
+      );
+
+      expect(keys).toEqual(['contributor_count']);
+    });
+
+    it('replaces null values with 0', () => {
+      expect(extractGraphqlContributorCountData({ contributors: null })).toEqual({
+        contributor_count: { identifier: 'contributor_count', value: 0 },
+      });
+    });
   });
 });

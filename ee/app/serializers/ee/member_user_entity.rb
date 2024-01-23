@@ -7,9 +7,13 @@ module EE
 
     prepended do
       unexpose :gitlab_employee
-      unexpose :email
       expose :oncall_schedules, with: ::IncidentManagement::OncallScheduleEntity
       expose :escalation_policies, with: ::IncidentManagement::EscalationPolicyEntity
+
+      expose :email, if: ->(user, options) do
+        options[:current_user]&.can_admin_all_resources? ||
+          user.managed_by_user?(options[:current_user], group: options[:source]&.root_ancestor)
+      end
 
       def oncall_schedules
         object.oncall_schedules.for_project(project_ids)

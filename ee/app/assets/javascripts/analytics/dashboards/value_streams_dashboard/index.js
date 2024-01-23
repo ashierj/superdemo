@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import DashboardsApp from './components/app.vue';
 
 Vue.use(VueApollo);
@@ -12,7 +12,13 @@ const apolloProvider = new VueApollo({
 
 export default () => {
   const el = document.querySelector('#js-analytics-dashboards-app');
-  const { fullPath, namespaces, pointerProject, topicsExploreProjectsPath } = el.dataset;
+  const {
+    fullPath,
+    namespaces,
+    pointerProject,
+    topicsExploreProjectsPath,
+    dataSourceClickhouse,
+  } = el.dataset;
 
   let queryPaths;
   try {
@@ -37,6 +43,7 @@ export default () => {
     apolloProvider,
     provide: {
       topicsExploreProjectsPath,
+      dataSourceClickhouse: parseBoolean(dataSourceClickhouse),
     },
     render: (createElement) =>
       createElement(DashboardsApp, {

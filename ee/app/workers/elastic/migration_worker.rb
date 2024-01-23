@@ -12,6 +12,8 @@ module Elastic
     include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
     include ActionView::Helpers::NumberHelper
 
+    prepend ::Geo::SkipSecondary
+
     feature_category :global_search
     idempotent!
     urgency :low

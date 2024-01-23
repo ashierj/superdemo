@@ -42,6 +42,7 @@ export default () => {
     availableVisualizations = '',
     rootNamespaceName,
     rootNamespaceFullPath,
+    dataSourceClickhouse,
   } = el.dataset;
 
   const analyticsDashboardPointer = buildAnalyticsDashboardPointer(analyticsDashboardPointerJSON);
@@ -116,6 +117,7 @@ export default () => {
       vsdAvailableVisualizations,
       rootNamespaceName,
       rootNamespaceFullPath,
+      dataSourceClickhouse: parseBoolean(dataSourceClickhouse),
     },
     render(h) {
       return h(DashboardsApp);

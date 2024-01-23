@@ -6,6 +6,7 @@ class ElasticClusterReindexingCronWorker
   data_consistency :always
   include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
   include Gitlab::ExclusiveLeaseHelpers
+  prepend ::Geo::SkipSecondary
 
   sidekiq_options retry: false
 

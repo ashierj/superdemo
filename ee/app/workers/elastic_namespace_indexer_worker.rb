@@ -3,6 +3,7 @@
 class ElasticNamespaceIndexerWorker # rubocop:disable Scalability/IdempotentWorker
   include ApplicationWorker
   prepend Elastic::IndexingControl
+  prepend ::Geo::SkipSecondary
 
   data_consistency :always
 

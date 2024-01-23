@@ -38,7 +38,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
         end
 
         context 'with offline cloud license' do
-          let(:gl_license) { build(:gitlab_license, :cloud, :offline_enabled, starts_at: 'not-a-date') }
+          let(:gl_license) { build(:gitlab_license, :offline, starts_at: 'not-a-date') }
           let(:error_message) do
             _('The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.')
           end
@@ -185,7 +185,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
         context 'when license is an online cloud license' do
           let(:cloud) { true }
-          let(:gl_license) { build(:gitlab_license, :cloud, :offline_disabled, restrictions: restrictions) }
+          let(:gl_license) { build(:gitlab_license, :online, restrictions: restrictions) }
 
           it 'does not validate for true-ups' do
             expect(license).not_to receive(:check_trueup)
@@ -196,7 +196,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
         context 'when license is an offline cloud license' do
           let(:cloud) { true }
-          let(:gl_license) { build(:gitlab_license, :cloud, :offline_enabled, restrictions: restrictions) }
+          let(:gl_license) { build(:gitlab_license, :offline, restrictions: restrictions) }
 
           it 'does not validate for true-ups' do
             expect(license).not_to receive(:check_trueup)
@@ -1719,13 +1719,13 @@ RSpec.describe License, feature_category: :sm_provisioning do
     end
 
     context 'when the license has cloud licensing disabled' do
-      let(:gl_license) { build(:gitlab_license, cloud_licensing_enabled: false) }
+      let(:gl_license) { build(:gitlab_license, :legacy) }
 
       it { is_expected.to be false }
     end
 
     context 'when the license has cloud licensing enabled' do
-      let(:gl_license) { build(:gitlab_license, cloud_licensing_enabled: true) }
+      let(:gl_license) { build(:gitlab_license, :cloud) }
 
       it { is_expected.to be true }
     end
@@ -1742,20 +1742,26 @@ RSpec.describe License, feature_category: :sm_provisioning do
       it { is_expected.to be false }
     end
 
-    context 'when the license has offline cloud licensing disabled' do
-      let(:gl_license) { build(:gitlab_license, :cloud, :offline_disabled) }
+    context 'when the license is an online cloud license' do
+      let(:gl_license) { build(:gitlab_license, :online) }
 
       it { is_expected.to be false }
     end
 
-    context 'when the license has offline cloud licensing enabled' do
-      let(:gl_license) { build(:gitlab_license, :cloud, :offline_enabled) }
+    context 'when the license is an offline cloud license' do
+      let(:gl_license) { build(:gitlab_license, :offline) }
 
       it { is_expected.to be true }
     end
 
-    context 'when the license offline cloud licensing is not set' do
+    context 'when the license only has the cloud attribute set' do
       let(:gl_license) { build(:gitlab_license, :cloud) }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when the license is a legacy license' do
+      let(:gl_license) { build(:gitlab_license, :legacy) }
 
       it { is_expected.to be false }
     end
@@ -1772,20 +1778,26 @@ RSpec.describe License, feature_category: :sm_provisioning do
       it { is_expected.to be false }
     end
 
-    context 'when the license has cloud licensing and offline cloud licensing enabled' do
-      let(:gl_license) { build(:gitlab_license, :cloud, :offline_enabled) }
+    context 'when the license is an offline cloud license' do
+      let(:gl_license) { build(:gitlab_license, :offline) }
 
       it { is_expected.to be false }
     end
 
-    context 'when the license has cloud licensing enabled and offline cloud licensing disabled' do
-      let(:gl_license) { build(:gitlab_license, :cloud, :offline_disabled) }
+    context 'when the license is an online cloud license' do
+      let(:gl_license) { build(:gitlab_license, :online) }
 
       it { is_expected.to be true }
     end
 
-    context 'when the license has cloud licensing and offline cloud licensing disabled' do
-      let(:gl_license) { build(:gitlab_license) }
+    context 'when the license only has the cloud attribute set' do
+      let(:gl_license) { build(:gitlab_license, :cloud) }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when the license is a legacy license' do
+      let(:gl_license) { build(:gitlab_license, :legacy) }
 
       it { is_expected.to be false }
     end
@@ -1824,7 +1836,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
     subject { license.subscription_cancelled? }
 
     context 'when license is an online cloud license' do
-      let(:gl_license) { build(:gitlab_license, :cloud, :offline_disabled) }
+      let(:gl_license) { build(:gitlab_license, :online) }
 
       context 'when license is generated_from_cancellation' do
         before do
@@ -1844,7 +1856,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
     end
 
     context 'when license is an offline cloud license' do
-      let(:gl_license) { build(:gitlab_license, :cloud, :offline_enabled) }
+      let(:gl_license) { build(:gitlab_license, :offline) }
 
       it { is_expected.to be false }
     end
@@ -1922,13 +1934,13 @@ RSpec.describe License, feature_category: :sm_provisioning do
     end
 
     context 'when the license is an online cloud license' do
-      let(:gl_license) { build(:gitlab_license, cloud_licensing_enabled: true) }
+      let(:gl_license) { build(:gitlab_license, :online) }
 
       it { is_expected.to eq(described_class::ONLINE_CLOUD_TYPE) }
     end
 
     context 'when the license is an offline cloud license' do
-      let(:gl_license) { build(:gitlab_license, cloud_licensing_enabled: true, offline_cloud_licensing_enabled: true) }
+      let(:gl_license) { build(:gitlab_license, :offline) }
 
       it { is_expected.to eq(described_class::OFFLINE_CLOUD_TYPE) }
     end

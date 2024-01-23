@@ -10,6 +10,7 @@ module Search
 
       data_consistency :delayed
       prepend ::Elastic::IndexingControl
+      prepend ::Geo::SkipSecondary
 
       feature_category :global_search
       urgency :throttled
