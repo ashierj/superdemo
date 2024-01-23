@@ -13,7 +13,8 @@ import {
 import { createAlert } from '~/alert';
 import { sprintf, s__ } from '~/locale';
 import { ACCESS_LEVEL_GUEST_INTEGER, ACCESS_LEVEL_LABELS } from '~/access_level/constants';
-import memberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
+import groupMemberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
+import instanceMemberRolesQuery from '../graphql/instance_member_roles.query.graphql';
 import createMemberRoleMutation from '../graphql/create_member_role.mutation.graphql';
 
 // Base roles with Guest access or higher.
@@ -39,7 +40,8 @@ export default {
   props: {
     groupFullPath: {
       type: String,
-      required: true,
+      required: false,
+      default: null,
     },
     availablePermissions: {
       type: Array,
@@ -62,6 +64,9 @@ export default {
   computed: {
     baseRoleUppercase() {
       return ACCESS_LEVEL_LABELS[this.baseRole].toUpperCase();
+    },
+    refetchMemberRolesQuery() {
+      return this.groupFullPath ? groupMemberRolesQuery : instanceMemberRolesQuery;
     },
   },
   methods: {
@@ -88,7 +93,7 @@ export default {
           mutation: createMemberRoleMutation,
           refetchQueries: [
             {
-              query: memberRolesQuery,
+              query: this.refetchMemberRolesQuery,
               variables: { fullPath: this.groupFullPath },
             },
           ],

@@ -47,3 +47,31 @@ export const mockMemberRoles = {
     },
   },
 };
+
+export const mockInstanceMemberRoles = {
+  data: {
+    memberRoles: {
+      nodes: [
+        {
+          baseAccessLevel: {
+            integerValue: 10,
+            stringValue: 'GUEST',
+            __typename: 'AccessLevel',
+          },
+          id: 'gid://gitlab/MemberRole/2',
+          name: 'Instance Test',
+          enabledPermissions: {
+            nodes: [
+              {
+                name: 'Admin group',
+                value: 'ADMIN_GROUP',
+              },
+            ],
+          },
+          __typename: 'MemberRole',
+        },
+      ],
+      __typename: 'MemberRoleConnection',
+    },
+  },
+};
