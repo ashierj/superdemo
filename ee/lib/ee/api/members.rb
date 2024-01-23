@@ -26,7 +26,7 @@ module EE
             updated_member = result[:members].first
 
             if result[:status] == :success
-              present_member(updated_member)
+              present_members updated_member
             else
               render_validation_error!(updated_member)
             end
@@ -48,7 +48,7 @@ module EE
             updated_member = result[:members].first
 
             if result[:status] == :success
-              present_member(updated_member)
+              present_members updated_member
             else
               render_validation_error!(updated_member)
             end
@@ -129,7 +129,7 @@ module EE
 
             result = BilledUsersFinder.new(group, search_term: params[:search], order_by: sorting).execute
 
-            users = result[:users].with_emails
+            users = result[:users].preload_user_detail
 
             present paginate(users),
               with: ::EE::API::Entities::BillableMember,

@@ -2,53 +2,228 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Entities::Member do
-  subject(:entity_representation) { described_class.new(member).as_json }
+RSpec.describe API::Entities::Member, feature_category: :groups_and_projects do
+  subject(:entity_representation) { described_class.new(member, options).as_json }
 
-  let(:member) { build_stubbed(:group_member) }
-  let(:group_saml_identity) { build_stubbed(:group_saml_identity, extern_uid: 'TESTIDENTITY') }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:saml_provider) { create(:saml_provider, group: group) }
 
-  before do
-    allow(member).to receive(:group_saml_identity).and_return(group_saml_identity)
+  let_it_be(:current_user) { create(:user) }
+
+  let_it_be(:user) { create(:user) }
+  let_it_be(:member) { create(:group_member, :owner, user: user, group: group) }
+
+  let(:options) do
+    {
+      current_user: current_user
+    }
   end
 
-  context 'when current user is allowed to read group saml identity' do
-    before do
-      allow(Ability).to receive(:allowed?).with(anything, :read_group_saml_identity, member.source).and_return(true)
-    end
+  context 'when current_user option is nil' do
+    let(:current_user) { nil }
 
-    it 'exposes group_saml_identity' do
-      expect(entity_representation[:group_saml_identity]).to include(extern_uid: 'TESTIDENTITY')
-    end
-  end
-
-  context 'when current user is not allowed to read group saml identity' do
-    before do
-      allow(Ability).to receive(:allowed?).with(anything, :read_group_saml_identity, member.source).and_return(false)
-    end
-
-    it 'does not expose group saml identity' do
-      expect(entity_representation.keys).not_to include(:group_saml_identity)
+    it 'exposes basic attributes' do
+      expect(entity_representation).to be_kind_of(Hash)
     end
   end
 
-  context 'when current user is allowed to manage user' do
-    before do
-      allow(member.user).to receive(:managed_by?).and_return(true)
+  context 'when member record is invited member' do
+    let_it_be(:member) { create(:group_member, :invited, :owner, group: group) }
+
+    it 'exposes basic attributes' do
+      expect(entity_representation).to be_kind_of(Hash)
     end
 
-    it 'exposes email' do
-      expect(entity_representation.keys).to include(:email)
+    context 'when current_user is an admin' do
+      let_it_be(:current_user) { create(:user, :admin) }
+
+      context 'when admin mode enabled', :enable_admin_mode do
+        it 'exposes basic attributes' do
+          expect(entity_representation).to be_kind_of(Hash)
+        end
+      end
+
+      context 'when admin mode disabled' do
+        it 'exposes basic attributes' do
+          expect(entity_representation).to be_kind_of(Hash)
+        end
+      end
     end
   end
 
-  context 'when current user is not allowed to manage user' do
+  context 'when member record is member request' do
+    let_it_be(:member) { create(:group_member, :access_request, group: group) }
+
+    it 'exposes basic attributes' do
+      expect(entity_representation).to be_kind_of(Hash)
+    end
+  end
+
+  # This case is valid until https://gitlab.com/gitlab-org/gitlab/-/issues/329841 is resolved.
+  context 'when member have orphaned source' do
+    let(:member) { create(:group_member, :owner, group: group) }
+
     before do
-      allow(member.user).to receive(:managed_by?).and_return(false)
+      member.update_column(:source_id, -42)
     end
 
-    it 'does not expose email' do
-      expect(entity_representation.keys).not_to include(:email)
+    it 'exposes basic attributes' do
+      expect(entity_representation).to be_kind_of(Hash)
+    end
+  end
+
+  context 'for group_saml_identity' do
+    let_it_be(:group_saml_identity) { build_stubbed(:group_saml_identity, extern_uid: 'TESTIDENTITY') }
+
+    before do
+      allow(member).to receive(:group_saml_identity).and_return(group_saml_identity)
+    end
+
+    context 'when current user is allowed to read group saml identity' do
+      before do
+        create(:group_member, :owner, user: current_user, group: group)
+      end
+
+      it 'exposes group_saml_identity' do
+        expect(entity_representation[:group_saml_identity]).to include(extern_uid: 'TESTIDENTITY')
+      end
+
+      context 'when member source is subgroup' do
+        let_it_be(:subgroup) { create :group, parent: group }
+        let_it_be(:member) { create(:group_member, :owner, user: user, group: subgroup) }
+
+        it 'does not expose group saml identity' do
+          expect(entity_representation.keys).not_to include(:group_saml_identity)
+        end
+      end
+
+      context 'when member source is project' do
+        let_it_be(:project) { create(:project, group: group) }
+        let_it_be(:member) { create(:project_member, :owner, user: user, project: project) }
+
+        it 'does not expose group saml identity' do
+          expect(entity_representation.keys).not_to include(:group_saml_identity)
+        end
+      end
+    end
+
+    context 'when current user is not allowed to read group saml identity' do
+      before do
+        create(:group_member, :maintainer, user: current_user, group: group)
+      end
+
+      it 'does not expose group saml identity' do
+        expect(entity_representation.keys).not_to include(:group_saml_identity)
+      end
+    end
+  end
+
+  context 'for email' do
+    shared_examples "exposes the user's email" do
+      it "exposes the user's email" do
+        expect(entity_representation.keys).to include(:email)
+        expect(entity_representation[:email]).to eq(user.email)
+      end
+    end
+
+    shared_examples "does not expose the user's email" do
+      it "does not expose the user's email" do
+        expect(entity_representation.keys).not_to include(:email)
+      end
+    end
+
+    context 'when the current_user is a group owner' do
+      before do
+        create(:group_member, :owner, user: current_user, group: group)
+      end
+
+      include_examples "does not expose the user's email"
+    end
+
+    context 'when the current_user is an admin' do
+      let_it_be(:current_user) { create(:user, :admin) }
+
+      context 'when admin mode enabled', :enable_admin_mode do
+        include_examples "exposes the user's email"
+      end
+
+      context 'when admin mode disabled' do
+        include_examples "does not expose the user's email"
+      end
+    end
+
+    context 'on SaaS', :saas do
+      using RSpec::Parameterized::TableSyntax
+
+      let_it_be(:another_group) { create(:group_member, :owner, user: current_user).group }
+
+      where(
+        :domain_verification_availabe_for_group,
+        :user_is_enterprise_user_of_the_group,
+        :current_user_is_group_owner,
+        :shared_examples
+      ) do
+        false | false | false | "does not expose the user's email"
+        false | false | true  | "does not expose the user's email"
+        false | true  | false | "does not expose the user's email"
+        false | true  | true  | "does not expose the user's email"
+        true  | false | false | "does not expose the user's email"
+        true  | false | true  | "does not expose the user's email"
+        true  | true  | false | "does not expose the user's email"
+        true  | true  | true  | "exposes the user's email"
+      end
+
+      with_them do
+        before do
+          stub_licensed_features(domain_verification: domain_verification_availabe_for_group)
+
+          user.user_detail.enterprise_group_id = user_is_enterprise_user_of_the_group ? group.id : another_group.id
+
+          if current_user_is_group_owner
+            create(:group_member, :owner, user: current_user, group: group)
+          else
+            create(:group_member, :maintainer, user: current_user, group: group)
+          end
+        end
+
+        include_examples params[:shared_examples]
+
+        context 'when member source is subgroup' do
+          let_it_be(:subgroup) { create :group, parent: group }
+          let_it_be(:member) { create(:group_member, :owner, user: user, group: subgroup) }
+
+          include_examples params[:shared_examples]
+        end
+
+        context 'when member source is project' do
+          let_it_be(:project) { create(:project, group: group) }
+          let_it_be(:member) { create(:project_member, :owner, user: user, project: project) }
+
+          include_examples params[:shared_examples]
+        end
+      end
+    end
+
+    context 'when members_api_expose_enterprise_users_emails_only FF is disabled' do
+      before do
+        stub_feature_flags(members_api_expose_enterprise_users_emails_only: false)
+      end
+
+      context 'when the current_user is a group owner' do
+        before do
+          create(:group_member, :owner, user: current_user, group: group)
+        end
+
+        include_examples "does not expose the user's email"
+
+        context 'when member user is provisioned by the group' do
+          before do
+            member.user.provisioned_by_group = group
+          end
+
+          include_examples "exposes the user's email"
+        end
+      end
     end
   end
 
@@ -56,24 +231,6 @@ RSpec.describe API::Entities::Member do
     it 'exposes human_state_name as membership_state' do
       expect(entity_representation.keys).to include(:membership_state)
       expect(entity_representation[:membership_state]).to eq member.human_state_name
-    end
-  end
-
-  context 'when the member is provisioned' do
-    it 'does not include the user email address' do
-      expect(entity_representation.keys).not_to include(:email)
-    end
-
-    context 'when the current user manages the provisioned user' do
-      before do
-        allow(member.user).to receive(:provisioned_by_group).and_return(true)
-        allow(Ability).to receive(:allowed?).and_call_original
-        allow(Ability).to receive(:allowed?).with(anything, :admin_group_member, anything).and_return(true)
-      end
-
-      it 'includes the user email address' do
-        expect(entity_representation[:email]).to eq(member.user.email)
-      end
     end
   end
 

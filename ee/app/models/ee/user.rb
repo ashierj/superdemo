@@ -441,12 +441,6 @@ module EE
       managing_group.present?
     end
 
-    # This method is outdated, see https://gitlab.com/groups/gitlab-org/-/epics/8518.
-    # Use `managed_by_user?` instead.
-    def managed_by?(user)
-      self.group_managed_account? && self.managing_group.owned_by?(user)
-    end
-
     def managed_by_group?(group)
       return false unless group
 
