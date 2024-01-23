@@ -19,6 +19,7 @@ RSpec.describe GitlabSchema.types['Namespace'], feature_category: :groups_and_pr
       temporary_storage_increase_ends_on
       compliance_frameworks
       scan_execution_policies
+      product_analytics_stored_events_limit
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)

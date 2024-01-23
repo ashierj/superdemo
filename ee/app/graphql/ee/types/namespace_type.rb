@@ -118,6 +118,17 @@ module EE
               description: 'Scan Result Policies of the project',
               resolver: ::Resolvers::SecurityOrchestration::ScanResultPolicyResolver
 
+        field :product_analytics_stored_events_limit,
+              ::GraphQL::Types::Int,
+              null: true,
+              description: 'Number of product analytics events namespace is permitted to store per cycle.',
+              alpha: { milestone: '16.9' },
+              authorize: :modify_product_analytics_settings
+
+        def product_analytics_stored_events_limit
+          object.root_ancestor.product_analytics_stored_events_limit
+        end
+
         def additional_purchased_storage_size
           object.additional_purchased_storage_size.megabytes
         end

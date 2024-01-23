@@ -3,6 +3,8 @@
 module ProductAnalyticsHelpers
   extend ActiveSupport::Concern
 
+  EVENTS_PER_ADD_ON_PURCHASE = 1_000_000
+
   def product_analytics_enabled?
     return false unless ::Gitlab::CurrentSettings.product_analytics_enabled?
 
@@ -16,6 +18,20 @@ module ProductAnalyticsHelpers
     return false unless root_group.product_analytics_enabled
 
     true
+  end
+
+  def product_analytics_stored_events_limit
+    return unless Feature.enabled?(:product_analytics_billing, type: :wip)
+
+    analytics_addon_quantity = GitlabSubscriptions::AddOnPurchase
+                                 .active
+                                 .for_product_analytics
+                                 .by_namespace_id(id)
+                                 .sum(:quantity)
+
+    return 0 if analytics_addon_quantity < 1
+
+    (analytics_addon_quantity - 1) * EVENTS_PER_ADD_ON_PURCHASE
   end
 
   def project_value_streams_dashboards_enabled?
