@@ -138,9 +138,9 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
             end
 
             it 'checks ServiceAccessToken', :aggregate_failures do
-              token_double = instance_double(::Ai::ServiceAccessToken)
+              token_double = instance_double(::CloudConnector::ServiceAccessToken)
               expect(token_double).to receive(:token).and_return(ai_gateway_token)
-              expect(::Ai::ServiceAccessToken).to receive_message_chain(:active, :last)
+              expect(::CloudConnector::ServiceAccessToken).to receive_message_chain(:active, :last)
                                                     .and_return(token_double)
 
               post_api
@@ -159,8 +159,8 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
 
               before do
                 allow(Gitlab::CurrentSettings).to receive(:uuid).and_return(instance_uuid)
-                token_double = instance_double(::Ai::ServiceAccessToken, token: ai_gateway_token)
-                allow(::Ai::ServiceAccessToken).to receive_message_chain(:active, :last)
+                token_double = instance_double(::CloudConnector::ServiceAccessToken, token: ai_gateway_token)
+                allow(::CloudConnector::ServiceAccessToken).to receive_message_chain(:active, :last)
                                                      .and_return(token_double)
               end
 
@@ -178,8 +178,8 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
                   relative_url_root: "http://#{hostname}"
                 })
 
-                token_double = instance_double(::Ai::ServiceAccessToken, token: ai_gateway_token)
-                allow(::Ai::ServiceAccessToken).to receive_message_chain(:active, :last)
+                token_double = instance_double(::CloudConnector::ServiceAccessToken, token: ai_gateway_token)
+                allow(::CloudConnector::ServiceAccessToken).to receive_message_chain(:active, :last)
                                                      .and_return(token_double)
               end
 

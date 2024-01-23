@@ -12,7 +12,7 @@ RSpec.describe CloudConnector::ServiceAccessTokensStorageService, :freeze_time, 
   describe '#execute' do
     shared_examples 'cleans up all tokens' do
       it 'removes all tokens' do
-        expect { service_token_storage_service }.to change { Ai::ServiceAccessToken.count }.to(0)
+        expect { service_token_storage_service }.to change { CloudConnector::ServiceAccessToken.count }.to(0)
       end
 
       it 'logs that it cleans up all tokens' do
@@ -29,13 +29,13 @@ RSpec.describe CloudConnector::ServiceAccessTokensStorageService, :freeze_time, 
       it 'creates a new token' do
         expect(service_token_storage_service.success?).to eq(true)
 
-        service_token = Ai::ServiceAccessToken.last
+        service_token = CloudConnector::ServiceAccessToken.last
         expect(service_token.token).to eq(token)
         expect(service_token.expires_at).to eq(expected_expired_at)
       end
 
       it 'cleans up all expired tokens' do
-        expect { subject }.to change { Ai::ServiceAccessToken.expired.count }.to(0)
+        expect { subject }.to change { CloudConnector::ServiceAccessToken.expired.count }.to(0)
       end
 
       it 'logs the actions it takes' do

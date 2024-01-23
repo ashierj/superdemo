@@ -135,7 +135,7 @@ module API
               gitlab_realm: gitlab_realm
             ).encoded
           else
-            code_suggestions_token = ::Ai::ServiceAccessToken.active.last
+            code_suggestions_token = ::CloudConnector::ServiceAccessToken.active.last
             unauthorized! if code_suggestions_token.nil?
 
             token = code_suggestions_token.token
