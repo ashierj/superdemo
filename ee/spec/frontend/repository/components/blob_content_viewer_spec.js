@@ -110,6 +110,7 @@ const createComponent = async (mockData = {}) => {
       resourceId: 'test',
       userId: 'test',
       explainCodeAvailable,
+      highlightWorker: { postMessage: jest.fn() },
     },
   });
 
