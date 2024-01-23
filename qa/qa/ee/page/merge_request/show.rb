@@ -174,10 +174,7 @@ module QA
             "[data-testid='listbox-item-#{reason}']"
           end
 
-          def resolve_vulnerability_with_mr(name)
-            expand_vulnerability_report
-            click_vulnerability(name)
-
+          def resolve_vulnerability_with_mr
             previous_page = page.current_url
             click_element 'resolve-split-button'
 
