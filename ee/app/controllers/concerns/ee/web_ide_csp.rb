@@ -12,7 +12,7 @@ module EE
 
       default_src = Array(request.content_security_policy.directives['default-src'] || [])
       request.content_security_policy.directives['connect-src'] ||= default_src
-      request.content_security_policy.directives['connect-src'].concat(["#{::Gitlab::AiGateway::DEFAULT_URL}/"])
+      request.content_security_policy.directives['connect-src'].concat(["#{::Gitlab::AiGateway.url}/"])
     end
   end
 end

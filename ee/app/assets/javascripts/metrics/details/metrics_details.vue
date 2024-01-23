@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       metricData: [],
-      dimensions: [],
+      searchConfig: null,
       loading: false,
     };
   },
@@ -94,8 +94,13 @@ export default {
           this.metricId,
           this.metricType,
         );
-        // TODO fetch dimensions from API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2488
-        this.dimensions = ['dimension_one', 'dimension_two'];
+        // TODO fetch config from API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2488
+        this.searchConfig = {
+          dimensions: ['dimension_one', 'dimension_two'],
+          groupByFunctions: ['avg', 'sum', 'p50'],
+          defaultGroupByFunction: 'avg',
+          defaultGroupByDimensions: ['dimension_one', 'dimension_two'],
+        };
       } catch (e) {
         createAlert({
           message: this.$options.i18n.error,
@@ -130,7 +135,7 @@ export default {
     </div>
 
     <div class="gl-my-6">
-      <filtered-search v-if="dimensions.length > 0" :dimensions="dimensions" />
+      <filtered-search v-if="searchConfig" :search-config="searchConfig" />
       <metrics-chart v-if="metricData.length > 0" :metric-data="metricData" />
       <gl-empty-state v-else :svg-path="$options.EMPTY_CHART_SVG">
         <template #title>

@@ -140,7 +140,7 @@ export default {
           }
         },
         error(e) {
-          this.handleError(e);
+          this.handleError(e?.message || e.toString());
         },
       },
     },

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe BulkImports::Common::Pipelines::BoardsPipeline do
+RSpec.describe BulkImports::Common::Pipelines::BoardsPipeline, feature_category: :importers do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:bulk_import) { create(:bulk_import, user: user) }
@@ -38,6 +38,8 @@ RSpec.describe BulkImports::Common::Pipelines::BoardsPipeline do
       allow_next_instance_of(BulkImports::FileDownloadService) do |service|
         allow(service).to receive(:execute)
       end
+
+      allow(subject).to receive(:set_source_objects_counter)
 
       expect { subject.run }.to change(Board, :count).by(2)
 

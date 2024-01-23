@@ -6,6 +6,7 @@ import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered
 import { OPERATORS_LIKE_NOT } from '~/observability/constants';
 import { periodToDate } from '~/observability/utils';
 import DateRangeFilter from './date_range_filter.vue';
+import GroupByFilter from './groupby_filter.vue';
 
 const DEFAULT_TIME_RANGE = '1h';
 
@@ -13,13 +14,14 @@ export default {
   components: {
     FilteredSearch,
     DateRangeFilter,
+    GroupByFilter,
   },
   i18n: {
     searchInputPlaceholder: s__('ObservabilityMetrics|Filter dimensions...'),
   },
   props: {
-    dimensions: {
-      type: Array,
+    searchConfig: {
+      type: Object,
       required: true,
     },
   },
@@ -33,11 +35,15 @@ export default {
         startDarte: defaultRange.min,
         endDate: defaultRange.max,
       },
+      groupBy: {
+        dimensions: this.searchConfig.defaultGroupByDimensions ?? [],
+        func: this.searchConfig.defaultGroupByFunction ?? '',
+      },
     };
   },
   computed: {
     availableTokens() {
-      return this.dimensions.map((dimension) => ({
+      return this.searchConfig.dimensions.map((dimension) => ({
         title: dimension,
         type: dimension,
         token: GlFilteredSearchToken,
@@ -48,10 +54,18 @@ export default {
   methods: {
     onFilter(filters) {
       this.dimensionFilters = filters;
-      this.$emit('filter', { dimensions: this.dimensionFilters, dateRange: this.dateRange });
+
+      this.$emit('filter', {
+        dimensions: this.dimensionFilters,
+        dateRange: this.dateRange,
+        groupBy: this.groupBy,
+      });
     },
     onDateRangeSelected({ value, startDate, endDate }) {
       this.dateRange = { value, startDate, endDate };
+    },
+    onGroupBy({ dimensions, func }) {
+      this.groupBy = { dimensions, func };
     },
   },
 };
@@ -71,8 +85,17 @@ export default {
       @onFilter="onFilter"
     />
 
-    <hr class="gl-my-5" />
+    <hr class="gl-my-3" />
 
     <date-range-filter :selected="dateRange" @onDateRangeSelected="onDateRangeSelected" />
+
+    <hr class="gl-my-3" />
+
+    <group-by-filter
+      :search-config="searchConfig"
+      :selected-dimensions="groupBy.dimensions"
+      :selected-function="groupBy.func"
+      @groupBy="onGroupBy"
+    />
   </div>
 </template>

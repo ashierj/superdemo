@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe BulkImports::Groups::Pipelines::IterationsPipeline do
+RSpec.describe BulkImports::Groups::Pipelines::IterationsPipeline, feature_category: :importers do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:timestamp) { Time.new(2020, 01, 01).utc }
@@ -27,6 +27,8 @@ RSpec.describe BulkImports::Groups::Pipelines::IterationsPipeline do
   before do
     stub_licensed_features(iterations: true)
     group.add_owner(user)
+
+    allow(subject).to receive(:set_source_objects_counter)
   end
 
   describe '#run', :clean_gitlab_redis_cache do
