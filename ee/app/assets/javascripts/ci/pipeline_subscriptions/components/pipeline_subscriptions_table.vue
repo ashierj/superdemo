@@ -97,7 +97,6 @@ export default {
           v-if="!isAddNewClicked"
           size="small"
           data-testid="add-new-subscription-btn"
-          data-qa-selector="add_new_subscription"
           @click="isAddNewClicked = true"
         >
           {{ $options.i18n.newBtnText }}
