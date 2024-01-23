@@ -310,10 +310,10 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     let_it_be(:project) { create(:project, namespace: group) }
     let_it_be(:occurrence_npm) { create(:sbom_occurrence, project: project) }
     let_it_be(:source_npm) { occurrence_npm.source }
-    let_it_be(:component) { occurrence_npm.component }
+    let_it_be(:component_version) { occurrence_npm.component_version }
     let_it_be(:source_bundler) { create(:sbom_source, packager_name: 'bundler', input_file_path: 'Gemfile.lock') }
     let_it_be(:occurrence_bundler) do
-      create(:sbom_occurrence, source: source_bundler, component: component, project: project)
+      create(:sbom_occurrence, source: source_bundler, component_version: component_version, project: project)
     end
 
     context 'with different search keywords' do
@@ -328,7 +328,7 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
 
       with_them do
         it 'returns records filtered by search' do
-          result = described_class.filter_by_search_with_component_and_group(keyword, component.id, group)
+          result = described_class.filter_by_search_with_component_and_group(keyword, component_version.id, group)
 
           expect(result).to eq(occurrences)
         end
@@ -337,13 +337,13 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
 
     context 'with no search keyword' do
       let_it_be(:occurrence_bundler_with_no_source) do
-        create(:sbom_occurrence, source: nil, component: component, project: project)
+        create(:sbom_occurrence, source: nil, component_version: component_version, project: project)
       end
 
       let(:keyword) { nil }
 
       it 'returns all relevant records' do
-        result = described_class.filter_by_search_with_component_and_group(keyword, component.id, group)
+        result = described_class.filter_by_search_with_component_and_group(keyword, component_version.id, group)
 
         expect(result).to match_array([occurrence_npm, occurrence_bundler, occurrence_bundler_with_no_source])
       end
@@ -353,17 +353,17 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
       let_it_be(:unrelated_group) { create(:group) }
 
       subject do
-        described_class.filter_by_search_with_component_and_group('file', component.id, unrelated_group)
+        described_class.filter_by_search_with_component_and_group('file', component_version.id, unrelated_group)
       end
 
       it { is_expected.to be_empty }
     end
 
     context 'with unrelated component' do
-      let_it_be(:unrelated_component) { create(:sbom_component) }
+      let_it_be(:unrelated_component_version) { create(:sbom_component_version) }
 
       subject do
-        described_class.filter_by_search_with_component_and_group('file', unrelated_component.id, group)
+        described_class.filter_by_search_with_component_and_group('file', unrelated_component_version.id, group)
       end
 
       it { is_expected.to be_empty }

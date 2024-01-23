@@ -129,7 +129,7 @@ RSpec.describe DependencyEntity, feature_category: :dependency_management do
           "project_count" => 1,
           "version" => sbom_occurrence.version,
           "licenses" => sbom_occurrence.licenses,
-          "component_id" => sbom_occurrence.component_id,
+          "component_id" => sbom_occurrence.component_version_id,
           "location" => {
             "ancestors" => nil,
             "blob_path" => sbom_occurrence.location[:blob_path],

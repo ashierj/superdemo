@@ -7,14 +7,14 @@ RSpec.describe Sbom::DependencyLocationsFinder, feature_category: :dependency_ma
   let_it_be(:project) { create(:project, namespace: group) }
   let_it_be(:occurrence_npm) { create(:sbom_occurrence, project: project) }
   let_it_be(:source_npm) { occurrence_npm.source }
-  let_it_be(:component) { occurrence_npm.component }
+  let_it_be(:component_version) { occurrence_npm.component_version }
   let_it_be(:source_bundler) { create(:sbom_source, packager_name: 'bundler', input_file_path: 'Gemfile.lock') }
   let_it_be(:occurrence_bundler) do
-    create(:sbom_occurrence, source: source_bundler, component: component, project: project)
+    create(:sbom_occurrence, source: source_bundler, component_version: component_version, project: project)
   end
 
   let(:namespace) { group }
-  let(:params) { { search: 'file', component_id: component.id } }
+  let(:params) { { search: 'file', component_id: component_version.id } }
 
   subject(:dependencies) { described_class.new(namespace: namespace, params: params).execute }
 
@@ -24,7 +24,8 @@ RSpec.describe Sbom::DependencyLocationsFinder, feature_category: :dependency_ma
 
   context 'with multiple occurrences' do
     before do
-      create(:sbom_occurrence, source: source_bundler, component: component, project: project)
+      component_version_2 = create(:sbom_component_version)
+      create(:sbom_occurrence, source: source_bundler, component_version: component_version_2, project: project)
       stub_const("#{described_class}::DEFAULT_PER_PAGE", 1)
     end
 
