@@ -11,6 +11,7 @@ module EE
             [
               ::Banzai::Filter::References::EpicReferenceFilter,
               ::Banzai::Filter::References::IterationReferenceFilter,
+              ::Banzai::Filter::References::IterationsCadenceReferenceFilter,
               ::Banzai::Filter::References::VulnerabilityReferenceFilter,
               *super
             ]

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Iterations::Cadence, :freeze_time do
+RSpec.describe ::Iterations::Cadence, :freeze_time, feature_category: :team_planning do
   describe 'associations' do
     subject { build(:iterations_cadence) }
 
@@ -174,6 +174,15 @@ RSpec.describe ::Iterations::Cadence, :freeze_time do
   end
 
   describe 'scopes' do
+    describe 'by_title' do
+      let_it_be(:cadence) { create(:iterations_cadence, title: 'cadence') }
+      let_it_be(:another_cadence) { create(:iterations_cadence, title: 'another_cadence') }
+
+      it 'returns iteration cadences that match the given title' do
+        expect(described_class.by_title(cadence.title)).to match_array([cadence])
+      end
+    end
+
     describe 'next_to_auto_schedule' do
       let_it_be(:current_date) { Time.zone.now.to_date }
       let_it_be(:group) { create(:group) }
@@ -186,6 +195,83 @@ RSpec.describe ::Iterations::Cadence, :freeze_time do
       it "returns automatic cadences with 'next_run_date' set in the past or to the current date" do
         expect(described_class.next_to_auto_schedule).to match_array([cadence1, cadence2, cadence3])
       end
+    end
+  end
+
+  describe '.reference_pattern' do
+    subject(:captures) { described_class.reference_pattern.match(reference).named_captures }
+
+    context 'when cadence id is provided' do
+      let(:reference) { '[cadence:123]' }
+
+      it 'correctly detects the reference' do
+        expect(captures).to eq('cadence_id' => '123', 'cadence_title' => nil, 'group' => nil)
+      end
+
+      context 'when the provided id exceeds the allowed upperbound' do
+        let(:id) { '1' * 21 }
+        let(:reference) { "[cadence:#{id}]" }
+
+        it 'captures the id as title' do
+          expect(captures).to eq('cadence_id' => nil, 'cadence_title' => id, 'group' => nil)
+        end
+      end
+    end
+
+    context 'when cadence title is provided' do
+      let(:reference) { '[cadence:abc]' }
+
+      context 'when the provided title exceeds the 255-char limit' do
+        let(:reference) { "[cadence:#{'a' * 256}]" }
+
+        it 'does not match the reference' do
+          expect(described_class.reference_pattern.match(reference)).to be_nil
+        end
+      end
+
+      it 'correctly detects the reference' do
+        expect(captures).to eq('cadence_id' => nil, 'cadence_title' => 'abc', 'group' => nil)
+      end
+
+      context 'with multiple words' do
+        let(:reference) { '[cadence:"abc def"]' }
+
+        it 'correctly detects the reference' do
+          expect(captures).to eq('cadence_id' => nil, 'cadence_title' => '"abc def"', 'group' => nil)
+        end
+      end
+    end
+  end
+
+  describe '#to_reference' do
+    let_it_be(:cadence) { create(:iterations_cadence, group: create(:group), title: 'foobar cadence') }
+
+    it 'raises an error when format is not supported' do
+      expect { cadence.to_reference(format: :iid) }
+        .to raise_error(ArgumentError, 'Unknown format')
+    end
+
+    it 'returns the correct reference when using :id format' do
+      expect(cadence.to_reference).to eq "[cadence:#{cadence.id}]"
+    end
+
+    it 'returns the correct reference when using :title format' do
+      expect(cadence.to_reference(format: :title)).to eq '[cadence:"foobar cadence"]'
+    end
+  end
+
+  describe '#upcoming_iterations and #current_iteration' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:current_iteration) { create(:iteration, :with_due_date, iterations_cadence: cadence, start_date: 2.days.ago) }
+    let_it_be(:upcoming_iteration) { create(:iteration, :with_due_date, iterations_cadence: cadence, start_date: 10.days.from_now) }
+
+    it 'returns upcoming iterations' do
+      expect(cadence.upcoming_iterations).to match_array([upcoming_iteration])
+    end
+
+    it 'returns current iteration' do
+      expect(cadence.current_iteration).to eq(current_iteration)
     end
   end
 

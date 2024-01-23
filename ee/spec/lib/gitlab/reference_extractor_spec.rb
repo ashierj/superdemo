@@ -17,6 +17,7 @@ RSpec.describe Gitlab::ReferenceExtractor do
       described_class.referrables.each_with_object({}) do |referable, result|
         class_name = referable.to_s.camelize
         klass = class_name.constantize if Object.const_defined?(class_name)
+        klass = ::Iterations::Cadence if referable == :iterations_cadence
 
         next unless klass.respond_to?(:reference_prefix)
 
@@ -27,7 +28,7 @@ RSpec.describe Gitlab::ReferenceExtractor do
     end
 
     it 'returns all supported prefixes' do
-      expect(prefixes.keys.uniq).to match_array(%w(@ # ~ % ! $ & [vulnerability: *iteration:))
+      expect(prefixes.keys.uniq).to match_array(%w(@ # ~ % ! $ & [vulnerability: *iteration: [cadence:))
     end
   end
 
@@ -43,6 +44,26 @@ RSpec.describe Gitlab::ReferenceExtractor do
     subject.analyze(text, { group: group })
 
     expect(subject.epics).to match_array([@e0, @e1])
+  end
+
+  context 'for iterations cadences', feature_category: :team_planning do
+    let_it_be(:cadence1) { create(:iterations_cadence, group: group) }
+    let_it_be(:cadence2) { create(:iterations_cadence, group: group) }
+    let_it_be(:cadence3) { create(:iterations_cadence, group: create(:group, :private)) }
+
+    before do
+      stub_licensed_features(iterations: true)
+    end
+
+    it 'accesses valid iterations cadences' do
+      inaccessible_cadence_ref = cadence3.to_reference
+      accessible_cadence_refs = "#{cadence1.to_reference}, #{cadence2.to_reference}"
+      text = "#{accessible_cadence_refs}, #{inaccessible_cadence_ref}, [cadence:#{non_existing_record_id}]"
+
+      subject.analyze(text, { group: group })
+
+      expect(subject.iterations_cadences).to match_array([cadence1, cadence2])
+    end
   end
 
   context 'for vulnerabilities' do
