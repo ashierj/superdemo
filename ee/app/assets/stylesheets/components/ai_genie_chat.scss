@@ -37,7 +37,7 @@
   max-width: 90%;
 
   code {
-    @include gl-bg-gray-100;
+    background-color: $gray-100;
   }
 
   pre code {
@@ -134,6 +134,7 @@
     content: attr(data-value) ' ';
     @include gl-visibility-hidden;
     @include gl-white-space-pre-wrap;
-    @include gl-py-4;
+    padding-top: $gl-spacing-scale-4;
+    padding-bottom: $gl-spacing-scale-4;
   }
 }

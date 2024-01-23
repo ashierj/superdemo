@@ -1,9 +1,9 @@
 .labels-select-wrapper.is-embedded {
   .labels-select-dropdown-button {
-    @include gl-bg-white;
+    background-color: $white;
     @include gl-font-regular;
-    @include gl-font-base;
-    @include gl-line-height-normal;
+    font-size: $gl-font-size;
+    line-height: $gl-line-height-16;
     padding-top: $gl-spacing-scale-3;
     padding-bottom: $gl-spacing-scale-3;
     padding-left: $gl-spacing-scale-4;
@@ -16,9 +16,9 @@
     @include gl-white-space-nowrap;
 
     .gl-button-text {
-      @include gl-text-gray-500;
+      color: $gray-500;
       display: flex;
-      @include gl-justify-content-space-between;
+      justify-content: space-between;
       width: 100%;
     }
 
