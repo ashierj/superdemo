@@ -10,6 +10,19 @@ module Features
       merge_policy_mr(create_policy_update_branch)
     end
 
+    def create_policy_setup
+      stub_feature_flags(merge_when_checks_pass: false)
+      stub_licensed_features(security_dashboard: true,
+        security_orchestration_policies: true)
+      policy_management_project.add_developer(user)
+
+      create(:security_orchestration_policy_configuration,
+        security_policy_management_project: policy_management_project,
+        project: project)
+
+      create_security_policy
+    end
+
     def create_policy_update_branch
       params = { policy_yaml: policy_yaml, name: policy_name, operation: :append }
       service = Security::SecurityOrchestrationPolicies::PolicyCommitService.new(container: project,
@@ -40,7 +53,7 @@ module Features
         branches: %w[master],
         match_on_inclusion: true,
         license_types: [license_type],
-        license_states: %w[newly_detected]
+        license_states: license_states
       }
     end
 

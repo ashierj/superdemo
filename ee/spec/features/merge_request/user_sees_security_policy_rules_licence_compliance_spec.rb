@@ -50,29 +50,25 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
 
       let(:policy_name) { "Deny #{license_type} licenses" }
 
-      before do
-        stub_feature_flags(merge_when_checks_pass: false)
-        stub_licensed_features(security_dashboard: true,
-          license_scanning: true,
-          security_orchestration_policies: true)
-        policy_management_project.add_developer(user)
-
-        create(:security_orchestration_policy_configuration,
-          security_policy_management_project: policy_management_project,
-          project: project)
-
-        create_security_policy
-      end
-
       context 'when scan result policy for license scanning is not violated' do
         let(:license_type) { 'Apache-2.0' }
+        let(:license_states) { %w[newly_detected] }
+
+        before do
+          create_policy_setup
+        end
 
         it_behaves_like 'a merge request without violations'
       end
 
       context 'when scan result policy for license scanning is violated' do
+        before do
+          create_policy_setup
+        end
+
         context 'when signed in as user' do
           let(:license_type) { 'MIT' }
+          let(:license_states) { %w[newly_detected] }
 
           it 'requires approval', :aggregate_failures do
             visit(ee_merge_request_path)
@@ -91,6 +87,7 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
           end
 
           let(:license_type) { 'MIT' }
+          let(:license_states) { %w[newly_detected] }
 
           it 'can approve and merge the MR', :aggregate_failures do
             visit(ee_merge_request_path)
@@ -103,6 +100,36 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
             wait_for_requests
             expect(page).to have_button('Merge', exact: true)
           end
+        end
+      end
+
+      context 'when scan result policy rule has detected licenses' do
+        let(:license_type) { 'MIT' }
+        let(:license_states) { %w[detected] }
+        let!(:target_pipeline) do
+          create(:ee_ci_pipeline, :with_cyclonedx_report, project: project,
+            status: :success)
+        end
+
+        let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
+        let(:sbom_scanner) do
+          instance_double('Gitlab::LicenseScanning::SbomScanner',
+            report: pipeline_report, results_available?: true, has_data?: true)
+        end
+
+        before do
+          pipeline_report.add_license(id: license_type, name: license_type).add_dependency(name: package.name)
+          allow(::Gitlab::LicenseScanning).to receive(:scanner_for_pipeline)
+            .with(project, anything).and_return(sbom_scanner)
+          create_policy_setup
+        end
+
+        it 'requires approval for detected', :aggregate_failures do
+          visit(ee_merge_request_path)
+          wait_for_requests
+          expect(page).to have_content 'Requires 1 approval from eligible users'
+          expect(page).to have_content 'Policy violation(s) detected'
+          expect(page).to have_content 'Merge blocked'
         end
       end
     end
