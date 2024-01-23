@@ -98,6 +98,15 @@ describe('MetricsDetails', () => {
     it('renders the FilteredSearch component', () => {
       const filteredSearch = findMetricDetails().findComponent(FilteredSearch);
       expect(filteredSearch.exists()).toBe(true);
+      // TODO get searchConfig from API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2488
+      expect(Object.keys(filteredSearch.props('searchConfig'))).toEqual(
+        expect.arrayContaining([
+          'dimensions',
+          'groupByFunctions',
+          'defaultGroupByFunction',
+          'defaultGroupByDimensions',
+        ]),
+      );
     });
 
     it('renders the details chart', () => {
