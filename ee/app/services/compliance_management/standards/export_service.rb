@@ -40,7 +40,7 @@ module ComplianceManagement
       end
 
       def rows
-        ::Projects::ComplianceStandards::AdherenceFinder.new(group, user).execute
+        ::Projects::ComplianceStandards::AdherenceFinder.new(group, user, { include_subgroups: true }).execute
       end
 
       def csv_header
