@@ -24,7 +24,7 @@ module RemoteDevelopment
               .and_then(PostFlattenDevfileValidator.method(:validate))
               .map(VolumeDefiner.method(:define))
               .map(VolumeComponentInjector.method(:inject))
-              .map(EditorComponentInjector.method(:inject))
+              .map(ToolsComponentInjector.method(:inject))
               .map(ProjectClonerComponentInjector.method(:inject))
               .and_then(Creator.method(:create))
 

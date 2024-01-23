@@ -3,7 +3,7 @@
 module RemoteDevelopment
   module Workspaces
     module Create
-      class EditorComponentInjector
+      class ToolsComponentInjector
         include Messages
 
         # @param [Hash] value
@@ -32,12 +32,12 @@ module RemoteDevelopment
             type: :beta
           )
 
-          inject_editor_component(processed_devfile, volume_name, volume_path)
-          editor_component = processed_devfile['components'].find { |c| c.dig('attributes', 'gl/inject-editor') }
+          inject_tools_component(processed_devfile, volume_name, volume_path)
+          tools_component = processed_devfile['components'].find { |c| c.dig('attributes', 'gl/inject-editor') }
 
-          if editor_component
+          if tools_component
             override_main_container(
-              editor_component,
+              tools_component,
               volume_name,
               volume_path,
               editor_port,
@@ -68,7 +68,7 @@ module RemoteDevelopment
             else
               echo "'sshd' not found in path. Not starting SSH server."
             fi
-            #{volume_path}/.gl-editor/start_server.sh
+            ${GL_TOOLS_DIR}/init_tools.sh
           SH
           component['container']['command'] = %w[/bin/sh -c]
           component['container']['args'] = [container_args]
@@ -81,8 +81,8 @@ module RemoteDevelopment
 
           component['container']['env'] += [
             {
-              'name' => 'GL_EDITOR_VOLUME_DIR',
-              'value' => "#{volume_path}/.gl-editor"
+              'name' => 'GL_TOOLS_DIR',
+              'value' => "#{volume_path}/.gl-tools"
             },
             {
               'name' => 'GL_EDITOR_LOG_LEVEL',
@@ -126,40 +126,40 @@ module RemoteDevelopment
         # @param [String] volume_name
         # @param [String] volume_path
         # @return [Array]
-        def self.inject_editor_component(processed_devfile, volume_name, volume_path)
-          processed_devfile['components'] += editor_components(volume_name, volume_path)
+        def self.inject_tools_component(processed_devfile, volume_name, volume_path)
+          processed_devfile['components'] += tools_components(volume_name, volume_path)
 
           processed_devfile['commands'] = [] if processed_devfile['commands'].nil?
           processed_devfile['commands'] += [{
-            'id' => 'gl-editor-injector-command',
+            'id' => 'gl-tools-injector-command',
             'apply' => {
-              'component' => 'gl-editor-injector'
+              'component' => 'gl-tools-injector'
             }
           }]
 
           processed_devfile['events'] = {} if processed_devfile['events'].nil?
           processed_devfile['events']['preStart'] = [] if processed_devfile['events']['preStart'].nil?
-          processed_devfile['events']['preStart'] += ['gl-editor-injector-command']
+          processed_devfile['events']['preStart'] += ['gl-tools-injector-command']
         end
 
         # @param [String] volume_name
         # @param [String] volume_path
         # @return [Array]
-        def self.editor_components(volume_name, volume_path)
+        def self.tools_components(volume_name, volume_path)
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409775 - choose image based on which editor is passed.
           image_name = 'registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector'
-          image_tag = '6'
+          image_tag = '7'
 
           [
             {
-              'name' => 'gl-editor-injector',
+              'name' => 'gl-tools-injector',
               'container' => {
                 'image' => "#{image_name}:#{image_tag}",
                 'volumeMounts' => [{ 'name' => volume_name, 'path' => volume_path }],
                 'env' => [
                   {
-                    'name' => 'GL_EDITOR_VOLUME_DIR',
-                    'value' => "#{volume_path}/.gl-editor"
+                    'name' => 'GL_TOOLS_DIR',
+                    'value' => "#{volume_path}/.gl-tools"
                   }
                 ],
                 'memoryLimit' => '256Mi',
