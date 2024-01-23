@@ -3,6 +3,7 @@ import VueApollo from 'vue-apollo';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
+  SUPPORTED_CONTRIBUTOR_METRICS,
   SUPPORTED_DORA_METRICS,
   SUPPORTED_FLOW_METRICS,
   SUPPORTED_MERGE_REQUEST_METRICS,
@@ -19,6 +20,7 @@ import GroupDoraMetricsQuery from 'ee/analytics/dashboards/graphql/group_dora_me
 import ProjectDoraMetricsQuery from 'ee/analytics/dashboards/graphql/project_dora_metrics.query.graphql';
 import GroupMergeRequestsQuery from 'ee/analytics/dashboards/graphql/group_merge_requests.query.graphql';
 import ProjectMergeRequestsQuery from 'ee/analytics/dashboards/graphql/project_merge_requests.query.graphql';
+import GroupContributorCountQuery from 'ee/analytics/dashboards/graphql/group_contributor_count.query.graphql';
 import { VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -32,6 +34,8 @@ import {
   mockGraphqlVulnerabilityResponse,
   mockGraphqlMergeRequestsResponse,
   expectTimePeriodRequests,
+  mockGraphqlContributorCountResponse,
+  contributorCountParamsHelper,
 } from '../helpers';
 import {
   MOCK_TABLE_TIME_PERIODS,
@@ -41,12 +45,14 @@ import {
   mockDoraMetricsResponseData,
   mockFlowMetricsResponseData,
   mockMergeRequestsResponseData,
+  mockContributorCountResponseData,
 } from '../mock_data';
 
 const mockTypePolicy = {
   Query: { fields: { project: { merge: false }, group: { merge: false } } },
 };
 const mockProps = { requestPath: 'exec-group', isProject: false };
+const mockProvide = { dataSourceClickhouse: true };
 const groupPath = 'exec-group';
 const allTimePeriods = [...MOCK_TABLE_TIME_PERIODS, ...MOCK_CHART_TIME_PERIODS];
 
@@ -65,17 +71,20 @@ describe('Comparison chart', () => {
   let flowMetricsRequestHandler = null;
   let doraMetricsRequestHandler = null;
   let mergeRequestsRequestHandler = null;
+  let contributorCountRequestHandler = null;
 
   const setGraphqlQueryHandlerResponses = ({
     vulnerabilityResponse = mockLastVulnerabilityCountData,
     doraMetricsResponse = mockDoraMetricsResponseData,
     flowMetricsResponse = mockFlowMetricsResponseData,
     mergeRequestsResponse = mockMergeRequestsResponseData,
+    contributorCountResponse = mockContributorCountResponseData,
   } = {}) => {
     vulnerabilityRequestHandler = mockGraphqlVulnerabilityResponse(vulnerabilityResponse);
     flowMetricsRequestHandler = mockGraphqlFlowMetricsResponse(flowMetricsResponse);
     doraMetricsRequestHandler = mockGraphqlDoraMetricsResponse(doraMetricsResponse);
     mergeRequestsRequestHandler = mockGraphqlMergeRequestsResponse(mergeRequestsResponse);
+    contributorCountRequestHandler = mockGraphqlContributorCountResponse(contributorCountResponse);
   };
 
   const createMockApolloProvider = ({
@@ -84,6 +93,7 @@ describe('Comparison chart', () => {
     doraMetricsRequest = doraMetricsRequestHandler,
     vulnerabilityRequest = vulnerabilityRequestHandler,
     mergeRequestsRequest = mergeRequestsRequestHandler,
+    contributorCountRequest = contributorCountRequestHandler,
   } = {}) => {
     const flowMetricsQuery = isProject ? ProjectFlowMetricsQuery : GroupFlowMetricsQuery;
     const doraMetricsQuery = isProject ? ProjectDoraMetricsQuery : GroupDoraMetricsQuery;
@@ -91,6 +101,7 @@ describe('Comparison chart', () => {
       ? ProjectVulnerabilitiesQuery
       : GroupVulnerabilitiesQuery;
     const mergeRequestsQuery = isProject ? ProjectMergeRequestsQuery : GroupMergeRequestsQuery;
+    const contributorCountQuery = GroupContributorCountQuery;
 
     return createMockApollo(
       [
@@ -98,6 +109,7 @@ describe('Comparison chart', () => {
         [doraMetricsQuery, doraMetricsRequest],
         [vulnerabilitiesQuery, vulnerabilityRequest],
         [mergeRequestsQuery, mergeRequestsRequest],
+        [contributorCountQuery, contributorCountRequest],
       ],
       {},
       {
@@ -106,12 +118,16 @@ describe('Comparison chart', () => {
     );
   };
 
-  const createWrapper = async ({ props = {}, apolloProvider = null } = {}) => {
+  const createWrapper = async ({ props = {}, apolloProvider = null, provide = {} } = {}) => {
     wrapper = shallowMountExtended(ComparisonChart, {
       apolloProvider,
       propsData: {
         ...mockProps,
         ...props,
+      },
+      provide: {
+        ...mockProvide,
+        ...provide,
       },
     });
 
@@ -157,6 +173,13 @@ describe('Comparison chart', () => {
       paramsFn: (timePeriod) => mergeRequestsParamsHelper({ ...timePeriod, fullPath, labelNames }),
     });
 
+  const expectContributorCountRequests = (timePeriods, { fullPath = groupPath } = {}) =>
+    expectTimePeriodRequests({
+      timePeriods,
+      requestHandler: contributorCountRequestHandler,
+      paramsFn: (timePeriod) => contributorCountParamsHelper({ ...timePeriod, fullPath }),
+    });
+
   afterEach(() => {
     mockApolloProvider = null;
 
@@ -164,6 +187,7 @@ describe('Comparison chart', () => {
     flowMetricsRequestHandler.mockClear();
     doraMetricsRequestHandler.mockClear();
     mergeRequestsRequestHandler.mockClear();
+    contributorCountRequestHandler.mockClear();
   });
 
   describe('loading table and chart data', () => {
@@ -199,6 +223,10 @@ describe('Comparison chart', () => {
 
     it('will request merge request data for the table and sparklines', () => {
       expectMergeRequestsRequests(allTimePeriods);
+    });
+
+    it('will request contributor count data for the table and sparklines', () => {
+      expectContributorCountRequests(allTimePeriods);
     });
 
     it('renders each DORA metric when there is table data', () => {
@@ -333,6 +361,16 @@ describe('Comparison chart', () => {
 
       expect(mergeRequestsRequestHandler).not.toHaveBeenCalled();
     });
+
+    it('does not request contributor metrics if count was excluded', async () => {
+      const excludeMetrics = SUPPORTED_CONTRIBUTOR_METRICS;
+      await createWrapper({
+        props: { excludeMetrics },
+        apolloProvider: mockApolloProvider,
+      });
+
+      expect(contributorCountRequestHandler).not.toHaveBeenCalled();
+    });
   });
 
   describe('failed table requests', () => {
@@ -404,6 +442,26 @@ describe('Comparison chart', () => {
 
     it('will request project vulnerability metrics for the table and sparklines', () => {
       expectVulnerabilityRequests(allTimePeriods, { fullPath: fakeProjectPath });
+    });
+
+    it('will not request contributor count data for the table and sparklines', () => {
+      expect(contributorCountRequestHandler).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('dataSourceClickhouse=false', () => {
+    beforeEach(async () => {
+      setGraphqlQueryHandlerResponses();
+      mockApolloProvider = createMockApolloProvider();
+
+      await createWrapper({
+        apolloProvider: mockApolloProvider,
+        provide: { dataSourceClickhouse: false },
+      });
+    });
+
+    it('will not request contributor count data for the table and sparklines', () => {
+      expect(contributorCountRequestHandler).not.toHaveBeenCalled();
     });
   });
 });

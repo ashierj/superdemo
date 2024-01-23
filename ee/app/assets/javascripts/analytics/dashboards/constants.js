@@ -6,6 +6,7 @@ import {
   DORA_METRICS,
   VULNERABILITY_METRICS,
   MERGE_REQUEST_METRICS,
+  CONTRIBUTOR_METRICS,
 } from '~/analytics/shared/constants';
 
 export const UNITS = {
@@ -39,6 +40,8 @@ export const SUPPORTED_VULNERABILITY_METRICS = [
   VULNERABILITY_METRICS.CRITICAL,
   VULNERABILITY_METRICS.HIGH,
 ];
+
+export const SUPPORTED_CONTRIBUTOR_METRICS = [CONTRIBUTOR_METRICS.COUNT];
 
 export const TABLE_METRICS = {
   [DORA_METRICS.DEPLOYMENT_FREQUENCY]: {
@@ -91,6 +94,10 @@ export const TABLE_METRICS = {
   },
   [MERGE_REQUEST_METRICS.THROUGHPUT]: {
     label: s__('DORA4Metrics|Merge request throughput'),
+    units: UNITS.COUNT,
+  },
+  [CONTRIBUTOR_METRICS.COUNT]: {
+    label: s__('DORA4Metrics|Contributor count'),
     units: UNITS.COUNT,
   },
   [VULNERABILITY_METRICS.CRITICAL]: {

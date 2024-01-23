@@ -15419,6 +15419,9 @@ msgstr ""
 msgid "DORA4Metrics|Change failure rate (percentage)"
 msgstr ""
 
+msgid "DORA4Metrics|Contributor count"
+msgstr ""
+
 msgid "DORA4Metrics|Critical Vulnerabilities over time"
 msgstr ""
 
@@ -53939,6 +53942,9 @@ msgid "ValueStreamAnalytics|Number of commits pushed to the default branch"
 msgstr ""
 
 msgid "ValueStreamAnalytics|Number of issues closed by month."
+msgstr ""
+
+msgid "ValueStreamAnalytics|Number of monthly unique users with contributions in the group."
 msgstr ""
 
 msgid "ValueStreamAnalytics|Number of new issues created."
