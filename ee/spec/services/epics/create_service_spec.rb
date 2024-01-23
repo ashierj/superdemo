@@ -59,7 +59,7 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
       epic = Epic.last
       expect(epic).to be_persisted
       expect(epic.attributes.with_indifferent_access.values_at(*base_attrs)).to eq(params.values_at(*base_attrs))
-      expect(epic.state_id).to eq('closed')
+      expect(epic.state_id).to eq(Epic.available_states['closed'])
       expect(epic.author).to eq(author)
       expect(epic.parent).to eq(parent_epic)
       expect(epic.labels).to contain_exactly(label2)
