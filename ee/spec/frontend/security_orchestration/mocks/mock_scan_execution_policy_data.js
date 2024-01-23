@@ -1,4 +1,9 @@
-import { unsupportedManifest, unsupportedManifestObject } from './mock_data';
+import { actionId, ruleId, unsupportedManifest, unsupportedManifestObject } from './mock_data';
+
+export const customYaml = `variable: true
+`;
+
+export const customYamlObject = { variable: true };
 
 export const mockUnsupportedAttributeScanExecutionPolicy = {
   __typename: 'ScanExecutionPolicy',
@@ -47,12 +52,13 @@ export const mockDastScanExecutionObject = {
   name: 'Scheduled Dast/SAST scan',
   description: 'This policy enforces pipeline configuration to have a job with DAST scan',
   enabled: false,
-  rules: [{ type: 'pipeline', branches: ['main'] }],
+  rules: [{ type: 'pipeline', branches: ['main'], id: ruleId }],
   actions: [
     {
       scan: 'dast',
       site_profile: 'required_site_profile',
       scanner_profile: 'required_scanner_profile',
+      id: actionId,
     },
   ],
 };
@@ -62,12 +68,15 @@ export const mockBranchExceptionsScanExecutionObject = {
   name: 'Branch exceptions',
   description: 'This policy enforces pipeline configuration to have branch exceptions',
   enabled: false,
-  rules: [{ type: 'pipeline', branches: ['main'], branch_exceptions: ['main', 'test'] }],
+  rules: [
+    { type: 'pipeline', branches: ['main'], branch_exceptions: ['main', 'test'], id: ruleId },
+  ],
   actions: [
     {
       scan: 'dast',
       site_profile: 'required_site_profile',
       scanner_profile: 'required_scanner_profile',
+      id: actionId,
     },
   ],
 };
@@ -193,23 +202,22 @@ export const mockInvalidCadenceScanExecutionObject = {
     {
       type: 'pipeline',
       branches: ['main'],
+      id: ruleId,
     },
     {
       type: 'schedule',
       branches: ['main'],
       cadence: '0 0 * * INVALID',
+      id: ruleId,
     },
     {
       type: 'schedule',
       branches: ['main'],
       cadence: '0 0 * * *',
+      id: ruleId,
     },
   ],
-  actions: [
-    {
-      scan: 'sast',
-    },
-  ],
+  actions: [{ scan: 'sast', id: actionId }],
 };
 
 export const mockPolicyScopeExecutionManifest = `type: scan_execution_policy
@@ -231,17 +239,8 @@ export const mockPolicyScopeScanExecutionObject = {
   name: 'Project scope',
   enabled: false,
   description: 'This policy enforces policy scope',
-  rules: [
-    {
-      type: 'pipeline',
-      branches: ['main'],
-    },
-  ],
-  actions: [
-    {
-      scan: 'container_scanning',
-    },
-  ],
+  rules: [{ type: 'pipeline', branches: ['main'], id: ruleId }],
+  actions: [{ scan: 'container_scanning', id: actionId }],
   policy_scope: {
     compliance_frameworks: [],
   },
@@ -267,16 +266,9 @@ export const mockCodeBlockFilePathScanExecutionObject = {
   type: 'scan_execution_policy',
   name: 'Test File Path',
   enabled: false,
-  rules: [
-    {
-      type: 'pipeline',
-      branches: ['main'],
-    },
-  ],
+  rules: [{ type: 'pipeline', branches: ['main'], id: ruleId }],
   actions: [
-    {
-      scan: 'sast',
-    },
+    { scan: 'sast', id: actionId },
     {
       scan: 'custom',
       ci_configuration_path: {
@@ -285,6 +277,7 @@ export const mockCodeBlockFilePathScanExecutionObject = {
       ci_configuration: {
         file: 'file',
       },
+      id: actionId,
     },
   ],
 };

@@ -22,6 +22,8 @@ afterEach(() => {
   window.gon = {};
 });
 
+jest.mock('lodash/uniqueId', () => jest.fn((prefix) => `${prefix}0`));
+
 describe('fromYaml', () => {
   it.each`
     title                                                                                                | input                                                                    | output

@@ -8,6 +8,7 @@
  * match), please name them similarly (e.g. fooBarScanResultManifest and fooBarScanResultObject)
  * and keep them near each other.
  */
+import { actionId, ruleId } from './mock_data';
 
 export const mockForcePushSettingsManifest = `type: scan_result_policy
 name: ''
@@ -70,6 +71,7 @@ export const mockDefaultBranchesScanResultObject = {
       vulnerabilities_allowed: 1,
       severity_levels: ['critical'],
       vulnerability_states: ['newly_detected'],
+      id: ruleId,
     },
   ],
   actions: [
@@ -77,6 +79,7 @@ export const mockDefaultBranchesScanResultObject = {
       type: 'require_approval',
       approvals_required: 1,
       user_approvers: ['the.one'],
+      id: actionId,
     },
   ],
 };
@@ -205,6 +208,7 @@ export const mockApprovalSettingsScanResultObject = {
       vulnerabilities_allowed: 1,
       severity_levels: ['critical'],
       vulnerability_states: ['newly_detected'],
+      id: ruleId,
     },
   ],
   actions: [
@@ -212,6 +216,7 @@ export const mockApprovalSettingsScanResultObject = {
       type: 'require_approval',
       approvals_required: 1,
       user_approvers: ['the.one'],
+      id: actionId,
     },
   ],
   approval_settings: {
@@ -252,6 +257,7 @@ export const mockApprovalSettingsPermittedInvalidScanResultObject = {
       vulnerabilities_allowed: 1,
       severity_levels: ['critical'],
       vulnerability_states: ['newly_detected'],
+      id: ruleId,
     },
   ],
   actions: [
@@ -259,6 +265,7 @@ export const mockApprovalSettingsPermittedInvalidScanResultObject = {
       type: 'require_approval',
       approvals_required: 1,
       user_approvers: ['the.one'],
+      id: actionId,
     },
   ],
   approval_settings: {

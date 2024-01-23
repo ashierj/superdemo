@@ -14,6 +14,9 @@ import {
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { SCAN_RESULT_BRANCH_TYPE_OPTIONS } from 'ee/security_orchestration/components/policy_editor/constants';
 
+const ruleId = 'rule_0';
+jest.mock('lodash/uniqueId', () => jest.fn().mockReturnValue(ruleId));
+
 describe('DefaultRuleBuilder', () => {
   let wrapper;
 
@@ -78,16 +81,7 @@ describe('DefaultRuleBuilder', () => {
     findScanTypeSelect().vm.$emit('select', SCAN_FINDING);
 
     expect(wrapper.emitted('set-scan-type')).toEqual([
-      [
-        {
-          type: SCAN_FINDING,
-          scanners: [],
-          severity_levels: [],
-          vulnerabilities_allowed: 0,
-          vulnerability_states: [],
-          branches: ['main'],
-        },
-      ],
+      [{ ...getDefaultRule(SCAN_FINDING), branch_type: undefined, branches: ['main'], id: ruleId }],
     ]);
   });
 
@@ -99,16 +93,7 @@ describe('DefaultRuleBuilder', () => {
     findScanTypeSelect().vm.$emit('select', SCAN_FINDING);
 
     expect(wrapper.emitted('set-scan-type')).toEqual([
-      [
-        {
-          type: SCAN_FINDING,
-          scanners: [],
-          severity_levels: [],
-          vulnerabilities_allowed: 0,
-          vulnerability_states: [],
-          branch_type: 'protected',
-        },
-      ],
+      [{ ...getDefaultRule(SCAN_FINDING), branch_type: 'protected', id: ruleId }],
     ]);
   });
 
@@ -132,13 +117,10 @@ describe('DefaultRuleBuilder', () => {
     expect(wrapper.emitted('set-scan-type')).toEqual([
       [
         {
-          type: SCAN_FINDING,
-          scanners: [],
-          vulnerabilities_allowed: 0,
-          severity_levels: [],
-          vulnerability_states: [],
+          ...getDefaultRule(SCAN_FINDING),
           branch_type: 'protected',
           branch_exceptions: ['main', 'test'],
+          id: ruleId,
         },
       ],
     ]);
@@ -158,13 +140,10 @@ describe('DefaultRuleBuilder', () => {
     expect(wrapper.emitted('set-scan-type')).toEqual([
       [
         {
-          type: SCAN_FINDING,
-          scanners: [],
-          vulnerabilities_allowed: 0,
-          severity_levels: [],
-          vulnerability_states: [],
+          ...getDefaultRule(SCAN_FINDING),
           branch_type: 'protected',
           branch_exceptions: ['main', 'test'],
+          id: ruleId,
         },
       ],
     ]);
@@ -175,12 +154,9 @@ describe('DefaultRuleBuilder', () => {
 
     expect(wrapper.emitted('set-scan-type')[1]).toEqual([
       {
-        type: SCAN_FINDING,
-        scanners: [],
-        vulnerabilities_allowed: 0,
-        severity_levels: [],
-        vulnerability_states: [],
+        ...getDefaultRule(SCAN_FINDING),
         branch_type: 'protected',
+        id: ruleId,
       },
     ]);
   });

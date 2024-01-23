@@ -2,7 +2,10 @@ import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import Api from 'ee/api';
-import { toYaml } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
+import {
+  buildCustomCodeAction,
+  toYaml,
+} from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import CodeBlockAction from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_action.vue';
 import CodeBlockFilePath from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_file_path.vue';
@@ -11,10 +14,12 @@ import PolicyPopover from 'ee/security_orchestration/components/policy_popover.v
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import YamlEditor from 'ee/security_orchestration/components/yaml_editor.vue';
 import {
-  CUSTOM_ACTION_KEY,
   INSERTED_CODE_BLOCK,
   LINKED_EXISTING_FILE,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
+
+const actionId = 'action_0';
+jest.mock('lodash/uniqueId', () => jest.fn().mockReturnValue(actionId));
 
 jest.mock('ee/api');
 
@@ -29,9 +34,7 @@ describe('CodeBlockAction', () => {
   const createComponent = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = shallowMount(CodeBlockAction, {
       propsData: {
-        initAction: {
-          scan: 'custom',
-        },
+        initAction: buildCustomCodeAction(),
         ...propsData,
       },
       provide: {
@@ -71,9 +74,8 @@ describe('CodeBlockAction', () => {
       await waitForPromises();
       await findYamlEditor().vm.$emit('input', fileContents);
       expect(findCodeBlockImport().props('hasExistingCode')).toBe(true);
-
       expect(wrapper.emitted('changed')).toEqual([
-        [{ ci_configuration: toYaml(fileContents), scan: 'custom' }],
+        [{ ...buildCustomCodeAction(), ci_configuration: toYaml(fileContents) }],
       ]);
     });
 
@@ -84,7 +86,7 @@ describe('CodeBlockAction', () => {
       expect(findYamlEditor().props('value')).toBe(fileContents);
       expect(findCodeBlockImport().props('hasExistingCode')).toBe(true);
       expect(wrapper.emitted('changed')).toEqual([
-        [{ ci_configuration: toYaml(fileContents), scan: 'custom' }],
+        [{ ...buildCustomCodeAction(), ci_configuration: toYaml(fileContents) }],
       ]);
     });
 
@@ -137,8 +139,8 @@ describe('CodeBlockAction', () => {
       findCodeBlockFilePath().vm.$emit('update-file-path', 'file/path');
 
       expect(wrapper.emitted('changed')).toEqual([
-        [{ scan: CUSTOM_ACTION_KEY }],
-        [{ scan: 'custom', ci_configuration_path: { file: 'file/path' } }],
+        [buildCustomCodeAction()],
+        [{ ...buildCustomCodeAction(), ci_configuration_path: { file: 'file/path' } }],
       ]);
     });
 
@@ -147,8 +149,8 @@ describe('CodeBlockAction', () => {
       await findCodeBlockFilePath().vm.$emit('select-type', INSERTED_CODE_BLOCK);
 
       expect(wrapper.emitted('changed')).toEqual([
-        [{ scan: CUSTOM_ACTION_KEY }],
-        [{ scan: CUSTOM_ACTION_KEY }],
+        [buildCustomCodeAction()],
+        [buildCustomCodeAction()],
       ]);
     });
   });
@@ -229,7 +231,7 @@ describe('CodeBlockAction', () => {
       findCodeBlockFilePath().vm.$emit('select-ref', 'ref');
 
       expect(wrapper.emitted('changed')[1]).toEqual([
-        { ci_configuration_path: { ref: 'ref' }, scan: 'custom' },
+        { ...buildCustomCodeAction(), ci_configuration_path: { ref: 'ref' } },
       ]);
     });
 
@@ -238,7 +240,7 @@ describe('CodeBlockAction', () => {
 
       await findCodeBlockFilePath().vm.$emit('select-type', INSERTED_CODE_BLOCK);
 
-      expect(wrapper.emitted('changed')[1]).toEqual([{ scan: 'custom' }]);
+      expect(wrapper.emitted('changed')[1]).toEqual([buildCustomCodeAction()]);
       expect(findCodeBlockSourceSelector().props('selectedType')).toBe(INSERTED_CODE_BLOCK);
     });
 
@@ -248,7 +250,7 @@ describe('CodeBlockAction', () => {
       findCodeBlockFilePath().vm.$emit('update-file-path', 'file-path');
 
       expect(wrapper.emitted('changed')[1]).toEqual([
-        { ci_configuration_path: { file: 'file-path' }, scan: 'custom' },
+        { ...buildCustomCodeAction(), ci_configuration_path: { file: 'file-path' } },
       ]);
     });
 
@@ -256,7 +258,10 @@ describe('CodeBlockAction', () => {
       await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
       await findCodeBlockFilePath().vm.$emit('select-project', project);
       expect(wrapper.emitted('changed')[1]).toEqual([
-        { ci_configuration_path: { id: 29, project: project.fullPath }, scan: 'custom' },
+        {
+          ...buildCustomCodeAction(),
+          ci_configuration_path: { id: 29, project: project.fullPath },
+        },
       ]);
     });
 
@@ -266,7 +271,7 @@ describe('CodeBlockAction', () => {
       await findCodeBlockFilePath().vm.$emit('select-project', undefined);
 
       expect(wrapper.emitted('changed')[1]).toEqual([
-        { ci_configuration_path: {}, scan: 'custom' },
+        { ...buildCustomCodeAction(), ci_configuration_path: {} },
       ]);
     });
 

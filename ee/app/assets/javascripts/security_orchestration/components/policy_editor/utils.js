@@ -1,4 +1,4 @@
-import { intersection } from 'lodash';
+import { intersection, uniqueId } from 'lodash';
 import { isValidCron } from 'cron-validator';
 import { sprintf } from '~/locale';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
@@ -184,9 +184,9 @@ export const isValidPolicy = ({
 }) => {
   return !(
     hasInvalidKey(policy, primaryKeys) ||
-    policy.rules?.some((rule) => hasInvalidKey(rule, rulesKeys)) ||
+    policy.rules?.some((rule) => hasInvalidKey(rule, [...rulesKeys, 'id'])) ||
     policy.rules?.some(hasConflictingKeys) ||
-    policy.actions?.some((action) => hasInvalidKey(action, actionsKeys))
+    policy.actions?.some((action) => hasInvalidKey(action, [...actionsKeys, 'id']))
   );
 };
 
@@ -373,4 +373,35 @@ export const mapBranchesToString = (branches) => {
 export const validateBranchProjectFormat = (value) => {
   const branchProjectRegexp = /\S+@\S/;
   return branchProjectRegexp.test(value);
+};
+
+export const addIdsToPolicy = (policy) => {
+  const updatedPolicy = { ...policy };
+
+  if (updatedPolicy.actions) {
+    updatedPolicy.actions = policy.actions?.map((action) => ({
+      ...action,
+      id: uniqueId('action_'),
+    }));
+  }
+
+  if (updatedPolicy.rules) {
+    updatedPolicy.rules = policy.rules?.map((action) => ({ ...action, id: uniqueId('rule_') }));
+  }
+
+  return updatedPolicy;
+};
+
+export const removeIdsFromPolicy = (policy) => {
+  const updatedPolicy = { ...policy };
+
+  if (updatedPolicy.actions) {
+    updatedPolicy.actions = policy.actions?.map(({ id, ...action }) => ({ ...action }));
+  }
+
+  if (updatedPolicy.rules) {
+    updatedPolicy.rules = policy.rules?.map(({ id, ...rule }) => ({ ...rule }));
+  }
+
+  return updatedPolicy;
 };

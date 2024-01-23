@@ -35,7 +35,7 @@ import {
   DEFAULT_GROUP_SCAN_RESULT_POLICY,
   getInvalidBranches,
   fromYaml,
-  toYaml,
+  policyToYaml,
   approversOutOfSync,
   emptyBuildRule,
   invalidScanners,
@@ -46,6 +46,7 @@ import {
   invalidVulnerabilityAttributes,
   humanizeInvalidBranchesError,
   invalidBranchType,
+  buildApprovalAction,
 } from './lib';
 
 export default {
@@ -126,7 +127,7 @@ export default {
       };
     }
 
-    const yamlEditorValue = toYaml(this.existingPolicy || defaultPolicyObject);
+    const yamlEditorValue = policyToYaml(this.existingPolicy || defaultPolicyObject);
 
     const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
 
@@ -226,7 +227,7 @@ export default {
       return BRANCHES_KEY in rule;
     },
     addAction() {
-      this.$set(this.policy, 'actions', [{ type: 'require_approval', approvals_required: 1 }]);
+      this.$set(this.policy, 'actions', [buildApprovalAction()]);
       this.updateYamlEditorValue(this.policy);
     },
     removeAction() {
@@ -253,8 +254,8 @@ export default {
       this.policy.rules.push(emptyBuildRule());
       this.updateYamlEditorValue(this.policy);
     },
-    removeRule(ruleIndex) {
-      this.policy.rules.splice(ruleIndex, 1);
+    removeRule(index) {
+      this.policy.rules.splice(index, 1);
       this.updateYamlEditorValue(this.policy);
     },
     updateRule(ruleIndex, rule) {
@@ -341,7 +342,7 @@ export default {
       this.policy = policy;
     },
     updateYamlEditorValue(policy) {
-      this.yamlEditorValue = toYaml(policy);
+      this.yamlEditorValue = policyToYaml(policy);
     },
     async changeEditorMode(mode) {
       this.mode = mode;
@@ -412,7 +413,8 @@ export default {
 
         <rule-section
           v-for="(rule, index) in policy.rules"
-          :key="index"
+          :key="rule.id"
+          :data-testid="`rule-${index}`"
           class="gl-mb-4"
           :init-rule="rule"
           @changed="updateRule(index, $event)"
@@ -442,7 +444,8 @@ export default {
         <div v-if="Boolean(policy.actions)">
           <action-section
             v-for="(action, index) in policy.actions"
-            :key="index"
+            :key="action.id"
+            :data-testid="`action-${index}`"
             class="gl-mb-4"
             :init-action="action"
             :errors="errors.action"

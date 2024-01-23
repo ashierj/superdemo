@@ -1,9 +1,10 @@
 import { GlEmptyState } from '@gitlab/ui';
+import { uniqueId } from 'lodash';
 import { nextTick } from 'vue';
-import ScanExecutionPolicyEditor from 'ee/security_orchestration/components/policy_editor/scan_execution/editor_component.vue';
+import EditorComponent from 'ee/security_orchestration/components/policy_editor/scan_execution/editor_component.vue';
 import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_execution/action/action_section.vue';
-import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution/rule/rule_section.vue';
-import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_action.vue';
+import RuleSection from 'ee/security_orchestration/components/policy_editor/scan_execution/rule/rule_section.vue';
+import ActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_action.vue';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -38,10 +39,11 @@ import {
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
 import { RULE_KEY_MAP } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib/rules';
 
+jest.mock('lodash/uniqueId');
+
 jest.mock('~/lib/utils/url_utility', () => ({
-  joinPaths: jest.requireActual('~/lib/utils/url_utility').joinPaths,
+  ...jest.requireActual('~/lib/utils/url_utility'),
   visitUrl: jest.fn().mockName('visitUrlMock'),
-  setUrlFragment: jest.requireActual('~/lib/utils/url_utility').setUrlFragment,
 }));
 
 const newlyCreatedPolicyProject = {
@@ -50,18 +52,15 @@ const newlyCreatedPolicyProject = {
 };
 
 jest.mock('ee/security_orchestration/components/policy_editor/utils', () => ({
+  ...jest.requireActual('ee/security_orchestration/components/policy_editor/utils'),
   assignSecurityPolicyProject: jest.fn().mockResolvedValue({
     branch: 'main',
     fullPath: 'path/to/new-project',
   }),
-  hasInvalidCron: jest.requireActual('ee/security_orchestration/components/policy_editor/utils')
-    .hasInvalidCron,
   modifyPolicy: jest.fn().mockResolvedValue({ id: '2' }),
-  isValidPolicy: jest.requireActual('ee/security_orchestration/components/policy_editor/utils')
-    .isValidPolicy,
 }));
 
-describe('ScanExecutionPolicyEditor', () => {
+describe('EditorComponent', () => {
   let wrapper;
   const defaultProjectPath = 'path/to/project';
   const policyEditorEmptyStateSvgPath = 'path/to/svg';
@@ -72,7 +71,7 @@ describe('ScanExecutionPolicyEditor', () => {
   };
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {
-    wrapper = shallowMountExtended(ScanExecutionPolicyEditor, {
+    wrapper = shallowMountExtended(EditorComponent, {
       propsData: {
         assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
         ...propsData,
@@ -103,13 +102,17 @@ describe('ScanExecutionPolicyEditor', () => {
   const findAddRuleButton = () => wrapper.findByTestId('add-rule');
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findPolicyEditorLayout = () => wrapper.findComponent(EditorLayout);
-  const findPolicyActionBuilder = () => wrapper.findComponent(PolicyActionBuilder);
-  const findAllPolicyActionBuilders = () => wrapper.findAllComponents(PolicyActionBuilder);
-  const findPolicyRuleBuilder = () => wrapper.findComponent(PolicyRuleBuilder);
-  const findAllPolicyRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
+  const findActionBuilder = () => wrapper.findComponent(ActionBuilder);
+  const findAllActionBuilders = () => wrapper.findAllComponents(ActionBuilder);
+  const findRuleSection = () => wrapper.findComponent(RuleSection);
+  const findAllRuleSections = () => wrapper.findAllComponents(RuleSection);
   const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
   const findActionSection = () => wrapper.findComponent(ActionSection);
   const findAllActionSections = () => wrapper.findAllComponents(ActionSection);
+
+  beforeEach(() => {
+    uniqueId.mockImplementation(jest.fn((prefix) => `${prefix}0`));
+  });
 
   describe('default', () => {
     beforeEach(() => {
@@ -214,7 +217,10 @@ enabled: true`;
   });
 
   describe('policy rule builder', () => {
-    beforeEach(factory);
+    beforeEach(() => {
+      uniqueId.mockRestore();
+      factory();
+    });
 
     it('should add new rule', async () => {
       const initialValue = [RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE]()];
@@ -222,6 +228,7 @@ enabled: true`;
       expect(
         fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).rules,
       ).toStrictEqual(initialValue);
+      expect(findAllRuleSections()).toHaveLength(1);
 
       findAddRuleButton().vm.$emit('click');
       await nextTick();
@@ -234,6 +241,7 @@ enabled: true`;
       expect(
         fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).rules,
       ).toStrictEqual(finalValue);
+      expect(findAllRuleSections()).toHaveLength(2);
     });
 
     it('should update rule', async () => {
@@ -244,7 +252,7 @@ enabled: true`;
       ).toStrictEqual(initialValue);
 
       const finalValue = [{ ...RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE](), branches: ['main'] }];
-      findPolicyRuleBuilder().vm.$emit('changed', finalValue[0]);
+      findRuleSection().vm.$emit('changed', finalValue[0]);
       await nextTick();
 
       expect(findPolicyEditorLayout().props('policy').rules).toStrictEqual(finalValue);
@@ -257,16 +265,16 @@ enabled: true`;
       findAddRuleButton().vm.$emit('click');
       await nextTick();
 
-      expect(findAllPolicyRuleBuilders()).toHaveLength(2);
+      expect(findAllRuleSections()).toHaveLength(2);
       expect(findPolicyEditorLayout().props('policy').rules).toHaveLength(2);
       expect(
         fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).rules,
       ).toHaveLength(2);
 
-      findPolicyRuleBuilder().vm.$emit('remove', 1);
+      findRuleSection().vm.$emit('remove', 1);
       await nextTick();
 
-      expect(findAllPolicyRuleBuilders()).toHaveLength(1);
+      expect(findAllRuleSections()).toHaveLength(1);
       expect(findPolicyEditorLayout().props('policy').rules).toHaveLength(1);
       expect(
         fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).rules,
@@ -275,7 +283,10 @@ enabled: true`;
   });
 
   describe('policy action builder', () => {
-    beforeEach(factory);
+    beforeEach(() => {
+      uniqueId.mockRestore();
+      factory();
+    });
 
     it('should add new action', async () => {
       const initialValue = [buildScannerAction({ scanner: DEFAULT_SCANNER })];
@@ -305,7 +316,7 @@ enabled: true`;
       ).toStrictEqual(initialValue);
 
       const finalValue = [buildScannerAction({ scanner: 'sast' })];
-      findPolicyActionBuilder().vm.$emit('changed', finalValue[0]);
+      findActionBuilder().vm.$emit('changed', finalValue[0]);
       await nextTick();
 
       expect(findPolicyEditorLayout().props('policy').actions).toStrictEqual(finalValue);
@@ -318,16 +329,16 @@ enabled: true`;
       findAddActionButton().vm.$emit('click');
       await nextTick();
 
-      expect(findAllPolicyActionBuilders()).toHaveLength(2);
+      expect(findAllActionBuilders()).toHaveLength(2);
       expect(findPolicyEditorLayout().props('policy').actions).toHaveLength(2);
       expect(
         fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).actions,
       ).toHaveLength(2);
 
-      findPolicyActionBuilder().vm.$emit('remove', 1);
+      findActionBuilder().vm.$emit('remove', 1);
       await nextTick();
 
-      expect(findAllPolicyActionBuilders()).toHaveLength(1);
+      expect(findAllActionBuilders()).toHaveLength(1);
       expect(findPolicyEditorLayout().props('policy').actions).toHaveLength(1);
       expect(
         fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).actions,
@@ -336,17 +347,19 @@ enabled: true`;
   });
 
   describe('parsing tags errors', () => {
+    beforeEach(() => {
+      factory();
+    });
+
     it.each`
-      name                | errorKey                                         | expectedErrorMessage
-      ${'tags '}          | ${POLICY_ACTION_BUILDER_TAGS_ERROR_KEY}          | ${RUNNER_TAGS_PARSING_ERROR}
-      ${'DAST profiles '} | ${POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY} | ${DAST_SCANNERS_PARSING_ERROR}
+      name               | errorKey                                         | expectedErrorMessage
+      ${'tags'}          | ${POLICY_ACTION_BUILDER_TAGS_ERROR_KEY}          | ${RUNNER_TAGS_PARSING_ERROR}
+      ${'DAST profiles'} | ${POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY} | ${DAST_SCANNERS_PARSING_ERROR}
     `(
       'disables rule editor when parsing of $name fails',
       async ({ errorKey, expectedErrorMessage }) => {
-        factory();
-        findPolicyActionBuilder().vm.$emit('parsing-error', errorKey);
+        findActionBuilder().vm.$emit('parsing-error', errorKey);
         await nextTick();
-
         expect(findPolicyEditorLayout().props('hasParsingError')).toBe(true);
         expect(findPolicyEditorLayout().props('parsingError')).toBe(expectedErrorMessage);
       },
@@ -371,6 +384,7 @@ enabled: true`;
     );
 
     it('should add custom action', async () => {
+      uniqueId.mockRestore();
       factory({
         provide: {
           glFeatures: { compliancePipelineInPolicies: true },

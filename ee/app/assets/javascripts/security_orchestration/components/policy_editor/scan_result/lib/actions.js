@@ -1,3 +1,4 @@
+import { uniqueId } from 'lodash';
 import { n__, s__ } from '~/locale';
 import { GROUP_TYPE, ROLE_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 
@@ -106,3 +107,7 @@ export const getDefaultHumanizedTemplate = (numOfApproversRequired) => {
 export const MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE = s__('SecurityOrchestration|or from:');
 
 export const DEFAULT_APPROVER_DROPDOWN_TEXT = s__('SecurityOrchestration|Choose approver type');
+
+export const buildApprovalAction = () => {
+  return { type: 'require_approval', approvals_required: 1, id: uniqueId('action_') };
+};

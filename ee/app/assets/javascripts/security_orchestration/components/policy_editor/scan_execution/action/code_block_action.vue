@@ -9,11 +9,13 @@ import { THOUSAND } from '~/lib/utils/constants';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import { parseCustomFileConfiguration } from 'ee/security_orchestration/components/policy_editor/utils';
-import { toYaml } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
+import {
+  buildCustomCodeAction,
+  toYaml,
+} from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import SectionLayout from '../../section_layout.vue';
 import { ACTION_AND_LABEL } from '../../constants';
 import {
-  CUSTOM_ACTION_KEY,
   CUSTOM_ACTION_OPTIONS,
   CUSTOM_ACTION_OPTIONS_LISTBOX_ITEMS,
   CUSTOM_ACTION_OPTIONS_KEYS,
@@ -123,7 +125,7 @@ export default {
   },
   methods: {
     resetActionToDefault() {
-      this.$emit('changed', { scan: CUSTOM_ACTION_KEY });
+      this.$emit('changed', buildCustomCodeAction());
     },
     resetValidation() {
       if (!this.doesFileExist) {

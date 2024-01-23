@@ -35,6 +35,9 @@ import {
   LESS_THAN_OPERATOR,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 
+const actionId = 'action_0';
+jest.mock('lodash/uniqueId', () => jest.fn().mockReturnValue(actionId));
+
 describe('SecurityScanRuleBuilder', () => {
   let wrapper;
 
