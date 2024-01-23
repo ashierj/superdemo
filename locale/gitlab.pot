@@ -2923,6 +2923,9 @@ msgstr ""
 msgid "Add an impersonation token"
 msgstr ""
 
+msgid "Add another branch"
+msgstr ""
+
 msgid "Add another link"
 msgstr ""
 
@@ -44011,6 +44014,9 @@ msgstr ""
 msgid "SecurityOrchestration|Add new approver"
 msgstr ""
 
+msgid "SecurityOrchestration|Add project full path after @ to following branches: %{branches}"
+msgstr ""
+
 msgid "SecurityOrchestration|Add protected branches"
 msgstr ""
 
@@ -44078,6 +44084,9 @@ msgid "SecurityOrchestration|Choose an action"
 msgstr ""
 
 msgid "SecurityOrchestration|Choose approver type"
+msgstr ""
+
+msgid "SecurityOrchestration|Choose exception branches"
 msgstr ""
 
 msgid "SecurityOrchestration|Choose specific role"
@@ -44149,6 +44158,9 @@ msgstr ""
 msgid "SecurityOrchestration|Every time a pipeline runs for %{branches}%{branchExceptionsString}"
 msgstr ""
 
+msgid "SecurityOrchestration|Exception branches"
+msgstr ""
+
 msgid "SecurityOrchestration|Exceptions"
 msgstr ""
 
@@ -44162,6 +44174,9 @@ msgid "SecurityOrchestration|Failed to load group projects"
 msgstr ""
 
 msgid "SecurityOrchestration|Failed to load images."
+msgstr ""
+
+msgid "SecurityOrchestration|Fill in branch name with project name in the format of %{boldStart}branch-name@project-path,%{boldEnd} separate with `,`"
 msgstr ""
 
 msgid "SecurityOrchestration|Following projects:"
@@ -44233,6 +44248,9 @@ msgstr ""
 msgid "SecurityOrchestration|No actions defined - policy will not run."
 msgstr ""
 
+msgid "SecurityOrchestration|No branches yet"
+msgstr ""
+
 msgid "SecurityOrchestration|No compliance frameworks"
 msgstr ""
 
@@ -44275,6 +44293,9 @@ msgid "SecurityOrchestration|Override the following project settings:"
 msgstr ""
 
 msgid "SecurityOrchestration|Overwrite the current CI/CD code with the new file's content?"
+msgstr ""
+
+msgid "SecurityOrchestration|Please remove duplicated values"
 msgstr ""
 
 msgid "SecurityOrchestration|Policies"
