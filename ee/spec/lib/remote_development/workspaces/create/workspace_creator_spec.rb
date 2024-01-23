@@ -64,6 +64,16 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceCreator, featur
         expect(workspace).to eq(project.workspaces.last)
       end
     end
+
+    it 'creates the workspace with the right url components' do
+      expect(result).to be_ok_result do |message|
+        message => { workspace: RemoteDevelopment::Workspace => workspace }
+        expected_url =
+          "https://60001-#{workspace.name}.#{agent.remote_development_agent_config.dns_zone}" \
+          "?folder=%2Fprojects%2F#{project.path}"
+        expect(workspace.url).to eq(expected_url)
+      end
+    end
   end
 
   context 'when workspace create fails' do

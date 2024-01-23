@@ -106,8 +106,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
           .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
             { remote_development_agent_config: config_instance }
           ))
-        expect(config_instance.workspaces.desired_state_not_terminated.actual_state_not_terminated)
-          .to all(have_attributes(force_include_all_resources: true))
+        expect(config_instance.workspaces).to all(have_attributes(force_include_all_resources: true))
       end
     end
 
@@ -144,9 +143,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
             [
               {
                 allow: "0.0.0.0/0",
-                except: [
-                  - "10.0.0.0/8"
-                ]
+                except: %w[10.0.0.0/8]
               }
             ].freeze
           end
@@ -210,6 +207,113 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
         let(:saved_quota) { -1 }
 
         it_behaves_like 'successful update'
+      end
+
+      context 'when the dns_zone has been updated' do # rubocop:disable RSpec/MultipleMemoizedHelpers -- Need helpers for scenarios
+        let_it_be(:old_dns_zone) { 'old-dns-zone.test' }
+        let_it_be(:new_dns_zone) { 'new-dns-zone.test' }
+        let_it_be(:dns_zone) { new_dns_zone }
+
+        let_it_be(:non_terminated_workspace) do
+          create(
+            :workspace,
+            agent: agent,
+            actual_state: RemoteDevelopment::Workspaces::States::RUNNING,
+            desired_state: RemoteDevelopment::Workspaces::States::RUNNING,
+            dns_zone: old_dns_zone,
+            force_include_all_resources: false
+          )
+        end
+
+        let_it_be(:terminated_workspace) do
+          create(
+            :workspace,
+            agent: agent,
+            actual_state: RemoteDevelopment::Workspaces::States::RUNNING,
+            desired_state: RemoteDevelopment::Workspaces::States::TERMINATED,
+            dns_zone: old_dns_zone,
+            force_include_all_resources: false
+          )
+        end
+
+        let_it_be(:new_config) do
+          {
+            remote_development: {
+              enabled: true,
+              dns_zone: new_dns_zone
+            }
+          }
+        end
+
+        before do
+          described_class.update(agent: agent, config: config) # rubocop:disable Rails/SaveBang -- this isn't ActiveRecord
+        end
+
+        it 'updates the dns_zone' do
+          expect { result }.not_to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+          config_instance = agent.reload.remote_development_agent_config
+          expect(result)
+            .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
+              { remote_development_agent_config: config_instance }
+            ))
+          expect(config_instance.dns_zone).to eq(new_dns_zone)
+        end
+
+        context 'when workspaces are present' do # rubocop:disable RSpec/MultipleMemoizedHelpers -- Need helpers for scenarios
+          it 'updates workspaces in a non-terminated state to force update' do
+            expect { result }.not_to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+            config_instance = agent.reload.remote_development_agent_config
+            expect(result)
+              .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
+                { remote_development_agent_config: config_instance }
+              ))
+            expect(non_terminated_workspace.reload.force_include_all_resources).to eq(true)
+          end
+
+          it 'updates the dns_zone of a workspace with desired_state non-terminated' do
+            expect { result }.not_to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+            config_instance = agent.reload.remote_development_agent_config
+            expect(result)
+              .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
+                { remote_development_agent_config: config_instance }
+              ))
+            expect(non_terminated_workspace.reload.dns_zone).to eq(new_dns_zone)
+          end
+
+          it 'does not update workspaces with desired_state terminated' do
+            expect { result }.not_to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+            config_instance = agent.reload.remote_development_agent_config
+            expect(result)
+              .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
+                { remote_development_agent_config: config_instance }
+              ))
+            expect(terminated_workspace.reload.force_include_all_resources).to eq(false)
+          end
+
+          context 'when workspaces update_all fails' do # rubocop:disable RSpec/MultipleMemoizedHelpers -- Need helpers for scenarios
+            before do
+              # rubocop:disable RSpec/AnyInstanceOf -- allow_next_instance_of does not work here
+              allow_any_instance_of(RemoteDevelopment::RemoteDevelopmentAgentConfig)
+                .to receive_message_chain(:workspaces, :desired_state_not_terminated, :touch_all)
+              allow_any_instance_of(RemoteDevelopment::RemoteDevelopmentAgentConfig)
+                .to receive_message_chain(:workspaces, :desired_state_not_terminated, :update_all)
+                      .and_raise(ActiveRecord::ActiveRecordError, "SOME ERROR")
+              # rubocop:enable RSpec/AnyInstanceOf
+            end
+
+            it 'returns an error result' do
+              expect { result }.not_to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+              expect(result).to be_err_result do |message|
+                expect(message).to be_a(RemoteDevelopment::Messages::AgentConfigUpdateFailed)
+                message.context => { details: String => details }
+                expect(details).to eq(
+                  "Error updating associated workspaces with update_all: SOME ERROR"
+                )
+              end
+              expect(terminated_workspace.reload.force_include_all_resources).to eq(false)
+            end
+          end
+        end
       end
     end
 

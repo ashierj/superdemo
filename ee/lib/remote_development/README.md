@@ -15,7 +15,7 @@
 
 ## TL;DR and Quickstart
 
-- All the domain logic lives under `ee/lib/remote_development`. Unless you are changing the DB schema or API structure, your changes will probably be made here.
+- All the domain logic lives under `ee/lib/remote_development` in the "Domain Logic layer". Unless you are changing the DB schema or API structure, your changes will probably be made here.
 - The `Main` class is the entry point for each sub-module, and is found at `ee/lib/remote_development/**/main.rb`
 - Have a look through the ["Railway Oriented Programming"](https://fsharpforfunandprofit.com/rop/) presentation slides (middle of that page) to understand the patterns used in the Domain Logic layer.
 - Prefer `ee/spec/lib/remote_development/fast_spec_helper.rb` instead of `spec_helper` where possible. See [Avoid coupling Domain Logic layer to Rails application](#avoid-coupling-domain-logic-layer-to-rails-application).
@@ -55,6 +55,10 @@ flowchart TB
 The layers are designed to be _loosely coupled_, with clear interfaces and no circular dependencies, to the extent this is possible within the current GitLab Rails monolith architecture.
 
 An example of this is how we avoid coupling the Domain Logic layer to the Service layer's `ServiceResponse` concern, which would technically be a circular dependency, since the `ServiceResponse` is owned by the Service layer. Instead of using the ServiceResponse class directly in the Domain Logic layer, we have the Domain Logic layer return a hash with the necessary entries to create a ServiceResponse object. This also provides other benefits. See the comments in [`ee/app/services/remote_development/service_response_factory.rb`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/app/services/remote_development/service_response_factory.rb#L12-12) for more details.
+
+We also minimize the amount of logic that lives in the ActiveRecord models, and keep them as thin and dumb as possible. The only logic that currently lives on the models is related to ActiveRecord validations,
+ActiveRecord lifecycle hooks, and simple aliases such as the `Workspace#url` method, which only does string concatenation. And if any of this logic in the models were to become more complex,
+it should be extracted out to the Domain Logic layer where it can be decoupled and unit tested in isolation.
 
 This overall approach is aligned with [our direction towards a more modular monolith](https://docs.gitlab.com/ee/architecture/blueprints/modular_monolith/). See that document for more information on
 the motivations and patterns. Specifically, see the `References` sub-page and reference to the the [`hexagonal architecture ports and adapters`](https://www.google.com/search?q=hexagonal+architecture+ports+and+adapters&tbm=isch) pattern, which includes [this article with an example of this architecture](https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together/)

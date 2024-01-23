@@ -21,8 +21,6 @@ module RemoteDevelopment
     has_one :remote_development_agent_config, through: :agent, source: :remote_development_agent_config
     has_many :workspace_variables, class_name: 'RemoteDevelopment::WorkspaceVariable', inverse_of: :workspace
 
-    delegate :dns_zone, to: :remote_development_agent_config, prefix: false, allow_nil: false
-
     validates :user, presence: true
     validates :agent, presence: true
     validates :editor, presence: true
@@ -31,6 +29,8 @@ module RemoteDevelopment
     # Ensure that the associated agent has an existing RemoteDevelopmentAgentConfig before we allow it
     # to be used to create a new workspace
     validate :validate_agent_config_presence
+
+    validate :validate_dns_zone_matches_remote_development_agent_config_dns_zone
 
     # See https://gitlab.com/gitlab-org/remote-development/gitlab-remote-development-docs/blob/main/doc/architecture.md?plain=0#workspace-states
     # for state validation rules
@@ -110,6 +110,10 @@ module RemoteDevelopment
       workspaces_count_for_current_agent >= quota
     end
 
+    def url
+      URI::HTTPS.build(host: "#{url_prefix}.#{dns_zone}", query: url_query_string).to_s
+    end
+
     private
 
     def validate_agent_config_presence
@@ -122,6 +126,19 @@ module RemoteDevelopment
 
       errors.add(:agent, _("must have the 'enabled' flag set to true"))
       false
+    end
+
+    def validate_dns_zone_matches_remote_development_agent_config_dns_zone
+      return if desired_state == TERMINATED
+
+      unless agent&.remote_development_agent_config&.dns_zone == dns_zone
+        errors.add(
+          :dns_zone,
+          _('for Workspace must match the dns_zone of the associated RemoteDevelopmentAgentConfig'))
+        return false
+      end
+
+      true
     end
 
     def enforce_permanent_termination
