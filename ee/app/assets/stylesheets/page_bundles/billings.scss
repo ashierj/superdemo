@@ -38,8 +38,8 @@ $badge-height: $gl-spacing-scale-7;
 
   .card-wrapper-has-badge {
     .card {
-      @include gl-border-1;
-      @include gl-border-solid;
+      border-width: $gl-border-size-1;
+      border-style: solid;
       @include gl-rounded-top-left-none;
       @include gl-rounded-top-right-none;
 
@@ -50,7 +50,7 @@ $badge-height: $gl-spacing-scale-7;
   .card-badge {
     @include gl-rounded-top-left-base;
     @include gl-rounded-top-right-base;
-    @include gl-font-weight-bold;
+    font-weight: $gl-font-weight-bold;
     padding-left: $gl-spacing-scale-5;
     padding-right: $gl-spacing-scale-5;
     color: $white;
@@ -65,7 +65,7 @@ $badge-height: $gl-spacing-scale-7;
     line-height: $badge-height;
 
     &-text {
-      @include gl-display-block;
+      display: block;
       @include gl-text-truncate;
     }
   }
@@ -106,7 +106,7 @@ $badge-height: $gl-spacing-scale-7;
       }
 
       .price-conclusion {
-        @include gl-font-base;
+        font-size: $gl-font-size;
         color: $blue-500;
         font-weight: $gl-font-weight-bold;
       }
@@ -118,7 +118,7 @@ $badge-height: $gl-spacing-scale-7;
   .billing-plans {
     display: flex;
     @include gl-flex-wrap;
-    @include gl-justify-content-space-between;
+    justify-content: space-between;
 
     > * + * {
       margin-top: 0;
@@ -152,7 +152,7 @@ $badge-height: $gl-spacing-scale-7;
     }
 
     .card-wrapper {
-      @include gl-flex-grow-1;
+      flex-grow: 1;
       margin-bottom: 0;
       @include gl-overflow-hidden;
     }

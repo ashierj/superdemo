@@ -4,7 +4,7 @@ $draft-actions-left-margin: 40px + $gl-padding;
   margin: 0;
 
   .referenced-commands.draft-note-commands {
-    @include gl-text-gray-500;
+    color: $gray-500;
     background: $orange-50;
     font-size: $label-font-size;
   }
@@ -75,7 +75,7 @@ button[disabled] {
 }
 
 .referenced-commands.draft-note-commands {
-  @include gl-text-gray-500;
+  color: $gray-500;
   background-color: transparent;
   border: 0;
   padding: $gl-padding-8 0 0;

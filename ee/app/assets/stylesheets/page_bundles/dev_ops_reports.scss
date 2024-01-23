@@ -14,7 +14,7 @@
   height: $gl-spacing-scale-3;
   border: 1px solid var(--gray-300, $gray-300);
   border-radius: $avatar-radius;
-  @include gl-display-inline-block;
+  display: inline-block;
 
   &-enabled {
     &-default {
@@ -67,7 +67,7 @@
   }
 
   .da-table-mobile-header::before {
-    @include gl-text-gray-400;
+    color: $gray-400;
   }
 }
 

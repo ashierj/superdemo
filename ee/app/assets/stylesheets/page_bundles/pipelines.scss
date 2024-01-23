@@ -10,7 +10,7 @@
     }
 
     &:first-of-type:last-of-type {
-      @include gl-mr-0;
+      margin-right: 0;
     }
   }
 
