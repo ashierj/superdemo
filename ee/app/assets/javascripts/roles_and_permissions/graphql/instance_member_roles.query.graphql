@@ -1,0 +1,7 @@
+#import "ee/invite_members/graphql/fragments/member_roles.fragment.graphql"
+
+query getInstanceMemberRoles {
+  memberRoles {
+    ...MemberRoles
+  }
+}

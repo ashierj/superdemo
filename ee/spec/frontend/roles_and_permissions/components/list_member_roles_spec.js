@@ -3,14 +3,20 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { createAlert } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import memberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
+import groupMemberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
+import instanceMemberRolesQuery from 'ee/roles_and_permissions/graphql/instance_member_roles.query.graphql';
 import memberRolePermissionsQuery from 'ee/roles_and_permissions/graphql/member_role_permissions.query.graphql';
 import deleteMemberRoleMutation from 'ee/roles_and_permissions/graphql/delete_member_role.mutation.graphql';
 import CreateMemberRole from 'ee/roles_and_permissions/components/create_member_role.vue';
 import ListMemberRoles from 'ee/roles_and_permissions/components/list_member_roles.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { mockDefaultPermissions, mockPermissions, mockMemberRoles } from '../mock_data';
+import {
+  mockDefaultPermissions,
+  mockPermissions,
+  mockMemberRoles,
+  mockInstanceMemberRoles,
+} from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -26,7 +32,8 @@ describe('ListMemberRoles', () => {
   let wrapper;
 
   const mockToastShow = jest.fn();
-  const rolesSuccessQueryHandler = jest.fn().mockResolvedValue(mockMemberRoles);
+  const groupRolesSuccessQueryHandler = jest.fn().mockResolvedValue(mockMemberRoles);
+  const instanceRolesSuccessQueryHandler = jest.fn().mockResolvedValue(mockInstanceMemberRoles);
   const permissionsSuccessQueryHandler = jest.fn().mockResolvedValue(mockPermissions);
   const deleteMutationSuccessHandler = jest
     .fn()
@@ -36,19 +43,22 @@ describe('ListMemberRoles', () => {
 
   const createComponent = ({
     mountFn = shallowMountExtended,
-    rolesQueryHandler = rolesSuccessQueryHandler,
+    groupRolesQueryHandler = groupRolesSuccessQueryHandler,
+    instanceRolesQueryHandler = instanceRolesSuccessQueryHandler,
     permissionsQueryHandler = permissionsSuccessQueryHandler,
     deleteMutationHandler = deleteMutationSuccessHandler,
+    props = {},
   } = {}) => {
     wrapper = mountFn(ListMemberRoles, {
       apolloProvider: createMockApollo([
-        [memberRolesQuery, rolesQueryHandler],
+        [groupMemberRolesQuery, groupRolesQueryHandler],
+        [instanceMemberRolesQuery, instanceRolesQueryHandler],
         [memberRolePermissionsQuery, permissionsQueryHandler],
         [deleteMemberRoleMutation, deleteMutationHandler],
       ]),
       propsData: {
-        emptyText: 'mock text',
         groupFullPath: 'test-group',
+        ...props,
       },
       stubs: { GlCard, GlTable },
       mocks: {
@@ -86,11 +96,6 @@ describe('ListMemberRoles', () => {
 
       expect(findAddRoleButton().props('disabled')).toBe(false);
 
-      expect(findEmptyState().props()).toMatchObject({
-        description: 'mock text',
-        title: 'No custom roles for this group',
-      });
-
       expect(findCreateMemberRole().exists()).toBe(false);
     });
 
@@ -102,7 +107,7 @@ describe('ListMemberRoles', () => {
     });
   });
 
-  describe('member roles', () => {
+  describe('group-level member roles', () => {
     beforeEach(() => {
       createComponent();
     });
@@ -110,34 +115,43 @@ describe('ListMemberRoles', () => {
     it('fetches member roles', async () => {
       await waitForPromises();
 
-      expect(rolesSuccessQueryHandler).toHaveBeenCalledWith({
+      expect(groupRolesSuccessQueryHandler).toHaveBeenCalledWith({
         fullPath: 'test-group',
-      });
-    });
-
-    describe('when groupFullPath is updated', () => {
-      beforeEach(() => {
-        wrapper.setProps({ groupFullPath: 'another-test-group' });
-      });
-
-      it('sets the `busy` attribute on the table to true', () => {
-        expect(findTable().attributes('busy')).toBe('true');
-      });
-
-      it('refetches member roles', async () => {
-        await waitForPromises();
-
-        expect(rolesSuccessQueryHandler).toHaveBeenCalledWith({
-          fullPath: 'another-test-group',
-        });
-
-        expect(findTable().attributes('busy')).toBeUndefined();
       });
     });
 
     describe('when there is an error fetching roles', () => {
       beforeEach(() => {
-        createComponent({ rolesQueryHandler: failedQueryHandler });
+        createComponent({ groupRolesQueryHandler: failedQueryHandler });
+      });
+
+      it('shows alert when there is an error', async () => {
+        await waitForPromises();
+
+        expect(createAlert).toHaveBeenCalledWith({
+          message: 'Failed to fetch roles: GraphQL error',
+        });
+      });
+    });
+  });
+
+  describe('instance-level member roles', () => {
+    beforeEach(() => {
+      createComponent({ props: { groupFullPath: null } });
+    });
+
+    it('fetches member roles', async () => {
+      await waitForPromises();
+
+      expect(instanceRolesSuccessQueryHandler).toHaveBeenCalled();
+    });
+
+    describe('when there is an error fetching roles', () => {
+      beforeEach(() => {
+        createComponent({
+          props: { groupFullPath: null },
+          instanceRolesQueryHandler: failedQueryHandler,
+        });
       });
 
       it('shows alert when there is an error', async () => {
@@ -246,7 +260,40 @@ describe('ListMemberRoles', () => {
       });
 
       it('refetches roles', () => {
-        expect(rolesSuccessQueryHandler).toHaveBeenCalled();
+        expect(groupRolesSuccessQueryHandler).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('deleting instance-level member role', () => {
+      beforeEach(() => {
+        createComponent({ mountFn: mountExtended, props: { groupFullPath: null } });
+        return waitForPromises();
+      });
+
+      describe('when the role is deleted successfully', () => {
+        beforeEach(async () => {
+          findButtonByText('Delete role').trigger('click');
+          await nextTick();
+
+          findModal().vm.$emit('primary');
+          await waitForPromises();
+        });
+
+        it('delete the role', () => {
+          expect(deleteMutationSuccessHandler).toHaveBeenCalledWith({
+            input: {
+              id: 'gid://gitlab/MemberRole/2',
+            },
+          });
+        });
+
+        it('shows toast', () => {
+          expect(mockToastShow).toHaveBeenCalledWith('Role successfully deleted.');
+        });
+
+        it('refetches roles', () => {
+          expect(instanceRolesSuccessQueryHandler).toHaveBeenCalledTimes(2);
+        });
       });
     });
 

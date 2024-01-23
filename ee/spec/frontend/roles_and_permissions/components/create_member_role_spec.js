@@ -3,13 +3,14 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { createAlert, VARIANT_DANGER } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import memberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
+import groupMemberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
+import instanceMemberRolesQuery from 'ee/roles_and_permissions/graphql/instance_member_roles.query.graphql';
 import createMemberRoleMutation from 'ee/roles_and_permissions/graphql/create_member_role.mutation.graphql';
 import CreateMemberRole from 'ee/roles_and_permissions/components/create_member_role.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { stubComponent } from 'helpers/stub_component';
-import { mockDefaultPermissions, mockMemberRoles } from '../mock_data';
+import { mockDefaultPermissions, mockMemberRoles, mockInstanceMemberRoles } from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -26,11 +27,14 @@ describe('CreateMemberRole', () => {
   const mutationSuccessHandler = jest
     .fn()
     .mockResolvedValue({ data: { memberRoleCreate: { errors: null, memberRole: { id: '1' } } } });
-  const rolesSuccessQueryHandler = jest.fn().mockResolvedValue(mockMemberRoles);
+
+  const groupRolesQueryHandler = jest.fn().mockResolvedValue(mockMemberRoles);
+  const instanceRolesQueryHandler = jest.fn().mockResolvedValue(mockInstanceMemberRoles);
 
   const createMockApolloProvider = (resolverMock) => {
     return createMockApollo([
-      [memberRolesQuery, rolesSuccessQueryHandler],
+      [groupMemberRolesQuery, groupRolesQueryHandler],
+      [instanceMemberRolesQuery, instanceRolesQueryHandler],
       [createMemberRoleMutation, resolverMock],
     ]);
   };
@@ -39,11 +43,13 @@ describe('CreateMemberRole', () => {
     availablePermissions = mockDefaultPermissions,
     stubs = {},
     mutationMock = mutationSuccessHandler,
+    props = {},
   } = {}) => {
     wrapper = mountExtended(CreateMemberRole, {
       propsData: {
         groupFullPath: 'test-group',
         availablePermissions,
+        ...props,
       },
       stubs,
       apolloProvider: createMockApolloProvider(mutationMock),
@@ -144,7 +150,7 @@ describe('CreateMemberRole', () => {
     });
   });
 
-  describe('when successful submission', () => {
+  describe('when a group-level member-role is created successfully', () => {
     beforeEach(() => {
       createComponent();
       fillForm();
@@ -172,6 +178,51 @@ describe('CreateMemberRole', () => {
       await waitForPromises();
 
       expect(wrapper.emitted('success')).toHaveLength(1);
+    });
+
+    it('refetches roles', async () => {
+      findButtonSubmit().trigger('submit');
+      await waitForPromises();
+
+      expect(groupRolesQueryHandler).toHaveBeenCalled();
+    });
+  });
+
+  describe('when an instance-level member-role is created successfully', () => {
+    beforeEach(() => {
+      createComponent({ props: { groupFullPath: null } });
+      fillForm();
+    });
+
+    it('sends the correct data', async () => {
+      findButtonSubmit().trigger('submit');
+      await waitForPromises();
+
+      expect(mutationSuccessHandler).toHaveBeenCalledWith({
+        input: {
+          baseAccessLevel: 'GUEST',
+          name: 'My role name',
+          description: 'My description',
+          permissions: ['READ_CODE'],
+          groupPath: null,
+        },
+      });
+    });
+
+    it('emits success event', async () => {
+      expect(wrapper.emitted('success')).toBeUndefined();
+
+      findButtonSubmit().trigger('submit');
+      await waitForPromises();
+
+      expect(wrapper.emitted('success')).toHaveLength(1);
+    });
+
+    it('refetches roles', async () => {
+      findButtonSubmit().trigger('submit');
+      await waitForPromises();
+
+      expect(instanceRolesQueryHandler).toHaveBeenCalled();
     });
   });
 
