@@ -4,6 +4,7 @@ module Search
   module Zoekt
     class NamespaceIndexerWorker
       include ApplicationWorker
+      prepend ::Geo::SkipSecondary
 
       INDEXING_DELAY_PER_PROJECT = 10.seconds
 

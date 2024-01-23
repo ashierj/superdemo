@@ -5,6 +5,7 @@ module Search
     class SchedulingWorker
       include ApplicationWorker
       include CronjobQueue
+      prepend ::Geo::SkipSecondary
 
       BUFFER_FACTOR = 3
       WATERMARK_LIMIT = 0.8

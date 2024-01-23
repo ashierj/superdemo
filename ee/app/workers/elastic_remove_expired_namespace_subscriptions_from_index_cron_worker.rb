@@ -2,6 +2,7 @@
 
 class ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker
   include ApplicationWorker
+  prepend ::Geo::SkipSecondary
   prepend Elastic::IndexingControl
 
   data_consistency :always

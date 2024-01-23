@@ -5,6 +5,7 @@ class ElasticCommitIndexerWorker
 
   data_consistency :always
   prepend Elastic::IndexingControl
+  prepend ::Geo::SkipSecondary
   include Gitlab::ExclusiveLeaseHelpers
 
   feature_category :global_search

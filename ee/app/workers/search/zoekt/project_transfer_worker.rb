@@ -4,6 +4,7 @@ module Search
   module Zoekt
     class ProjectTransferWorker
       include ApplicationWorker
+      prepend ::Geo::SkipSecondary
 
       pause_control :zoekt
 

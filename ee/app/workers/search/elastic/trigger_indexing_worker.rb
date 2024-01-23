@@ -5,6 +5,7 @@ module Search
     class TriggerIndexingWorker
       include ApplicationWorker
       prepend ::Elastic::IndexingControl
+      prepend ::Geo::SkipSecondary
 
       INITIAL_TASK = :initiate
       TASKS = %i[namespaces projects snippets users].freeze

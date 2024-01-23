@@ -28,7 +28,7 @@ RSpec.describe Elastic::IndexingControl, feature_category: :global_search do
   describe '::WORKERS' do
     it 'only includes classes which inherit from this class' do
       described_class::WORKERS.each do |klass|
-        expect(klass.ancestors.first).to eq(described_class)
+        expect(klass.ancestors).to include(described_class)
       end
     end
 
