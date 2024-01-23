@@ -55117,6 +55117,9 @@ msgstr ""
 msgid "Webhooks|Deployment events"
 msgstr ""
 
+msgid "Webhooks|Description (optional)"
+msgstr ""
+
 msgid "Webhooks|Do not show sensitive data such as tokens in the UI."
 msgstr ""
 
@@ -55154,6 +55157,9 @@ msgid "Webhooks|Merge request events"
 msgstr ""
 
 msgid "Webhooks|Must match part of URL"
+msgstr ""
+
+msgid "Webhooks|Name (optional)"
 msgstr ""
 
 msgid "Webhooks|Pipeline events"
