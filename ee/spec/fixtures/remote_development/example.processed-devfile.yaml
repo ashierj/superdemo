@@ -32,6 +32,8 @@ components:
           value: "60001"
         - name: GL_SSH_PORT
           value: "60022"
+        - name: GL_EDITOR_ENABLE_MARKETPLACE
+          value: "true"
       endpoints:
         - name: editor-server
           targetPort: 60001
@@ -49,7 +51,7 @@ components:
       size: 15Gi
   - name: gl-editor-injector
     container:
-      image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:5
+      image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:6
       volumeMounts:
         - name: gl-workspace-data
           path: /projects

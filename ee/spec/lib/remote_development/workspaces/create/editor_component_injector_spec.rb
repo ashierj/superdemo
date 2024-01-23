@@ -5,17 +5,18 @@ require "spec_helper"
 RSpec.describe RemoteDevelopment::Workspaces::Create::EditorComponentInjector, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
 
+  let(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
   let(:flattened_devfile_name) { 'example.flattened-devfile.yaml' }
-  let(:processed_devfile) { YAML.safe_load(read_devfile(flattened_devfile_name)).to_h }
-  let(:expected_processed_devfile) { YAML.safe_load(example_processed_devfile) }
-  let(:component_name) { "gl-editor-injector" }
-  let(:volume_name) { "gl-workspace-data" }
+  let(:input_processed_devfile) { YAML.safe_load(read_devfile(flattened_devfile_name)).to_h }
+  let(:processed_devfile_name) { 'example.processed-devfile.yaml' }
+  let(:expected_processed_devfile) { YAML.safe_load(read_devfile(processed_devfile_name)).to_h }
+  let(:volume_name) { 'gl-workspace-data' }
   let(:value) do
     {
       params: {
-        editor: "editor" # NOTE: Currently unused
+        agent: agent
       },
-      processed_devfile: processed_devfile,
+      processed_devfile: input_processed_devfile,
       volume_mounts: {
         data_volume: {
           name: volume_name,
@@ -29,13 +30,30 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::EditorComponentInjector, f
     described_class.inject(value)
   end
 
-  it "injects the editor injector component" do
-    components = returned_value.dig(:processed_devfile, "components")
-    editor_injector_component = components.find { |component| component.fetch("name") == component_name }
-    processed_devfile_components = expected_processed_devfile.fetch("components")
-    expected_volume_component = processed_devfile_components.find do |component|
-      component.fetch("name") == component_name
+  shared_examples 'successful injection of editor components' do
+    it 'injects the editor injector component' do
+      components = returned_value.dig(:processed_devfile, 'components')
+      editor_component = components.find { |c| c.dig('attributes', 'gl/inject-editor') }
+      editor_injector_component = components.find { |c| c.fetch('name') == 'gl-editor-injector' }
+      relevant_components = [editor_component, editor_injector_component]
+      relevant_components_name = relevant_components.map { |c| c.fetch('name') }
+      processed_devfile_components = expected_processed_devfile.fetch('components')
+      expected_relevant_components = processed_devfile_components.select do |component|
+        relevant_components_name.include? component.fetch('name')
+      end
+      expect(relevant_components).to eq(expected_relevant_components)
     end
-    expect(editor_injector_component).to eq(expected_volume_component)
+  end
+
+  it_behaves_like 'successful injection of editor components'
+
+  context "when allow_extensions_marketplace_in_workspace is disabled" do
+    let(:processed_devfile_name) { 'example.processed-marketplace-disabled-devfile.yaml' }
+
+    before do
+      stub_feature_flags(allow_extensions_marketplace_in_workspace: false)
+    end
+
+    it_behaves_like 'successful injection of editor components'
   end
 end

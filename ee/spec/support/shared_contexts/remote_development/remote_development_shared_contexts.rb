@@ -619,6 +619,10 @@ RSpec.shared_context 'with remote development shared fixtures' do
                     value: "60022"
                   },
                   {
+                    name: "GL_EDITOR_ENABLE_MARKETPLACE",
+                    value: "true"
+                  },
+                  {
                     name: "PROJECTS_ROOT",
                     value: "/projects"
                   },
@@ -741,7 +745,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
                     value: "/projects"
                   }
                 ],
-                image: "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:5",
+                image: "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:6",
                 imagePullPolicy: "Always",
                 name: "gl-editor-injector-gl-editor-injector-command-2",
                 resources: {
