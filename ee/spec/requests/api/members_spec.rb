@@ -33,6 +33,30 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
         expect(subject.map { |u| u['id'] }).not_to include(minimal_access_member.user_id)
       end
+
+      context 'when members_api_expose_enterprise_users_emails_only FF is disabled' do
+        before do
+          stub_feature_flags(members_api_expose_enterprise_users_emails_only: false)
+        end
+
+        context 'when the current_user is a group owner' do
+          let_it_be(:member) { create(:group_member, :owner, group: group) }
+
+          it_behaves_like 'members response with hidden email' do
+            let(:email) { member.user.email }
+          end
+
+          context 'when member user is provisioned by the group' do
+            before do
+              member.user.update!(provisioned_by_group: group)
+            end
+
+            it_behaves_like 'members response with exposed email' do
+              let(:email) { member.user.email }
+            end
+          end
+        end
+      end
     end
 
     describe 'POST /groups/:id/members' do
@@ -352,215 +376,633 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
     end
   end
 
-  context 'group members endpoint for group managed accounts' do
+  context 'group members endpoint for enterprise users', :saas do
     let(:group) { create(:group) }
     let(:owner) { create(:user) }
 
     before do
+      stub_licensed_features(domain_verification: true)
+
       group.add_owner(owner)
     end
 
-    include_context "group managed account with group members"
+    include_context 'group with enterprise users in group members'
+    include_context 'group with enterprise users from another group in group members'
 
     subject do
       get api(url, owner)
       json_response
     end
 
-    describe "GET /groups/:id/members" do
+    describe 'GET /groups/:id/members' do
       let(:url) { "/groups/#{group.id}/members" }
 
-      it_behaves_like 'members response with exposed emails' do
-        let(:emails) { gma_member.email }
+      context 'for regular user' do
+        it_behaves_like 'members response with hidden email' do
+          let(:email) { user_member.email }
+        end
       end
 
-      it_behaves_like 'members response with hidden emails' do
-        let(:emails) { member.email }
+      context 'for enterprise user' do
+        it_behaves_like 'members response with exposed email' do
+          let(:email) { enterprise_user_member.email }
+        end
+      end
+
+      context 'for enterprise user from another group' do
+        it_behaves_like 'members response with hidden email' do
+          let(:email) { enterprise_user_member_from_another_group.email }
+        end
+      end
+
+      it 'avoids N+1 database queries' do
+        # warm up
+        get api(url, owner)
+
+        control = ActiveRecord::QueryRecorder.new do
+          get api(url, owner)
+        end
+
+        group.add_developer(create(:user))
+        group.add_developer(create(:user, :enterprise_user, enterprise_group: group))
+        group.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+
+        subgroup = create(:group, parent: group)
+        subgroup.add_developer(create(:user))
+        subgroup.add_developer(create(:user, :enterprise_user, enterprise_group: group))
+        subgroup.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+
+        project = create(:project, group: group)
+        project.add_developer(create(:user))
+        project.add_developer(create(:user, :enterprise_user, enterprise_group: group))
+        project.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+
+        expect do
+          get api(url, owner)
+        end.not_to exceed_query_limit(control)
       end
     end
 
-    describe "GET /groups/:id/members/:user_id" do
+    describe 'GET /groups/:id/members/:user_id' do
       let(:url) { "/groups/#{group.id}/members/#{user_id}" }
 
-      context 'with group managed account member' do
-        let(:user_id) { gma_member.id }
+      context 'for regular user' do
+        let(:user_id) { user_member.id }
+
+        it_behaves_like 'member response with hidden email'
+      end
+
+      context 'for enterprise user' do
+        let(:user_id) { enterprise_user_member.id }
 
         it_behaves_like 'member response with exposed email' do
-          let(:email) { gma_member.email }
+          let(:email) { enterprise_user_member.email }
         end
       end
 
-      context 'with a regular member' do
-        let(:user_id) { member.id }
+      context 'for enterprise user from another group' do
+        let(:user_id) { enterprise_user_member_from_another_group.id }
 
         it_behaves_like 'member response with hidden email'
       end
     end
 
-    describe "GET /groups/:id/members/all" do
-      include_context "child group with group managed account members"
+    describe 'GET /groups/:id/members/all' do
+      include_context 'subgroup with enterprise users in group members'
 
-      context 'parent group' do
+      context 'top-level group' do
         let(:url) { "/groups/#{group.id}/members/all" }
 
-        it_behaves_like 'members response with exposed emails' do
-          let(:emails) { gma_member.email }
+        context 'for regular user' do
+          it_behaves_like 'members response with hidden email' do
+            let(:email) { user_member.email }
+          end
         end
 
-        it_behaves_like 'members response with hidden emails' do
-          let(:emails) { member.email }
+        context 'for enterprise user' do
+          it_behaves_like 'members response with exposed email' do
+            let(:email) { enterprise_user_member.email }
+          end
+        end
+
+        context 'for enterprise user from another group' do
+          it_behaves_like 'members response with hidden email' do
+            let(:email) { enterprise_user_member_from_another_group.email }
+          end
         end
       end
 
-      context 'child group' do
-        let(:url) { "/groups/#{child_group.id}/members/all" }
+      context 'subgroup' do
+        let(:url) { "/groups/#{subgroup.id}/members/all" }
 
-        it_behaves_like 'members response with exposed emails' do
-          let(:emails) { [gma_member.email, child_gma_member.email] }
+        context 'for regular user' do
+          it_behaves_like 'members response with hidden email' do
+            let(:email) { user_member.email }
+          end
+
+          context 'when direct member' do
+            it_behaves_like 'members response with hidden email' do
+              let(:email) { user_member_in_subgroup.email }
+            end
+          end
         end
 
-        it_behaves_like 'members response with hidden emails' do
-          let(:emails) { [member.email, child_member.email] }
+        context 'for enterprise user' do
+          it_behaves_like 'members response with exposed email' do
+            let(:email) { enterprise_user_member.email }
+          end
+
+          context 'when direct member' do
+            it_behaves_like 'members response with exposed email' do
+              let(:email) { enterprise_user_member_in_subgroup.email }
+            end
+          end
+        end
+
+        context 'for enterprise user from another group' do
+          it_behaves_like 'members response with hidden email' do
+            let(:email) { enterprise_user_member_from_another_group.email }
+          end
+        end
+
+        it 'avoids N+1 database queries' do
+          # warm up
+          get api(url, owner)
+
+          control = ActiveRecord::QueryRecorder.new do
+            get api(url, owner)
+          end
+
+          group.add_developer(create(:user))
+          group.add_developer(create(:user, :enterprise_user, enterprise_group: group))
+          group.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+
+          subgroup.add_developer(create(:user))
+          subgroup.add_developer(create(:user, :enterprise_user, enterprise_group: group))
+          subgroup.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+
+          expect do
+            get api(url, owner)
+          end.not_to exceed_query_limit(control)
         end
       end
     end
 
-    describe "GET /groups/:id/members/all/:user_id" do
-      include_context "child group with group managed account members"
+    describe 'GET /groups/:id/members/all/:user_id' do
+      include_context 'subgroup with enterprise users in group members'
 
-      let(:url) { "/groups/#{child_group.id}/members/all/#{user_id}" }
+      context 'top-level group' do
+        let(:url) { "/groups/#{group.id}/members/all/#{user_id}" }
 
-      context 'with group managed account member' do
-        let(:user_id) { gma_member.id }
+        context 'for regular user' do
+          let(:user_id) { user_member.id }
 
-        it_behaves_like 'member response with exposed email' do
-          let(:email) { gma_member.email }
+          it_behaves_like 'member response with hidden email'
+        end
+
+        context 'for enterprise user' do
+          let(:user_id) { enterprise_user_member.id }
+
+          it_behaves_like 'member response with exposed email' do
+            let(:email) { enterprise_user_member.email }
+          end
+        end
+
+        context 'for enterprise user from another group' do
+          let(:user_id) { enterprise_user_member_from_another_group.id }
+
+          it_behaves_like 'member response with hidden email'
         end
       end
 
-      context 'with regular member' do
-        let(:user_id) { member.id }
+      context 'subgroup' do
+        let(:url) { "/groups/#{subgroup.id}/members/all/#{user_id}" }
+
+        context 'for regular user' do
+          let(:user_id) { user_member.id }
+
+          it_behaves_like 'member response with hidden email'
+
+          context 'when direct member' do
+            let(:user_id) { user_member_in_subgroup.id }
+
+            it_behaves_like 'member response with hidden email'
+          end
+        end
+
+        context 'for enterprise user' do
+          let(:user_id) { enterprise_user_member.id }
+
+          it_behaves_like 'member response with exposed email' do
+            let(:email) { enterprise_user_member.email }
+          end
+
+          context 'when direct member' do
+            let(:user_id) { enterprise_user_member_in_subgroup.id }
+
+            it_behaves_like 'member response with exposed email' do
+              let(:email) { enterprise_user_member_in_subgroup.email }
+            end
+          end
+        end
+      end
+    end
+
+    describe 'POST /groups/:id/members' do
+      let(:url) { "/groups/#{group.id}/members" }
+
+      subject do
+        post api(url, owner), params: { user_id: user.id, access_level: Gitlab::Access::GUEST }
+        expect(response).to have_gitlab_http_status(:created)
+        json_response
+      end
+
+      context 'for regular user' do
+        let(:user) { create(:user) }
 
         it_behaves_like 'member response with hidden email'
       end
 
-      context 'with group managed account child group member' do
-        let(:user_id) { child_gma_member.id }
+      context 'for enterprise user' do
+        let(:user) { create(:user, :enterprise_user, enterprise_group: group) }
 
         it_behaves_like 'member response with exposed email' do
-          let(:email) { child_gma_member.email }
+          let(:email) { user.email }
         end
       end
 
-      context 'with child group regular member' do
-        let(:user_id) { child_member.id }
+      context 'for enterprise user from another group' do
+        let(:user) { create(:user, :enterprise_user, enterprise_group: another_group) }
 
         it_behaves_like 'member response with hidden email'
+      end
+    end
+
+    describe 'PUT /groups/:id/members/:user_id' do
+      let(:url) { "/groups/#{group.id}/members/#{user_id}" }
+
+      subject do
+        put api(url, owner), params: { access_level: Gitlab::Access::GUEST }
+        expect(response).to have_gitlab_http_status(:ok)
+        json_response
+      end
+
+      context 'for regular user' do
+        let(:user_id) { user_member.id }
+
+        it_behaves_like 'member response with hidden email'
+      end
+
+      context 'for enterprise user' do
+        let(:user_id) { enterprise_user_member.id }
+
+        it_behaves_like 'member response with exposed email' do
+          let(:email) { enterprise_user_member.email }
+        end
+      end
+
+      context 'for enterprise user from another group' do
+        let(:user_id) { enterprise_user_member_from_another_group.id }
+
+        it_behaves_like 'member response with hidden email'
+      end
+    end
+
+    context 'group with LDAP group link' do
+      include LdapHelpers
+
+      let(:group) { create(:group_with_ldap_group_link) }
+      let(:ldap_user) { create(:user) }
+
+      before do
+        stub_ldap_setting(enabled: true)
+
+        create(:group_member, :developer, group: group, user: ldap_user, ldap: true)
+      end
+
+      describe 'POST /groups/:id/members/:user_id/override' do
+        let(:url) { "/groups/#{group.id}/members/#{ldap_user.id}/override" }
+
+        subject do
+          post api(url, owner)
+          expect(response).to have_gitlab_http_status(:created)
+          json_response
+        end
+
+        context 'for regular user' do
+          it_behaves_like 'member response with hidden email'
+        end
+
+        context 'for enterprise user' do
+          before do
+            ldap_user.user_detail.update!(enterprise_group: group)
+          end
+
+          it_behaves_like 'member response with exposed email' do
+            let(:email) { ldap_user.email }
+          end
+        end
+
+        context 'for enterprise user from another group' do
+          before do
+            ldap_user.user_detail.update!(enterprise_group: another_group)
+          end
+
+          it_behaves_like 'member response with hidden email'
+        end
+      end
+
+      describe 'DELETE /groups/:id/members/:user_id/override' do
+        let(:url) { "/groups/#{group.id}/members/#{ldap_user.id}/override" }
+
+        subject do
+          delete api(url, owner)
+          expect(response).to have_gitlab_http_status(:ok)
+          json_response
+        end
+
+        context 'for regular user' do
+          it_behaves_like 'member response with hidden email'
+        end
+
+        context 'for enterprise user' do
+          before do
+            ldap_user.user_detail.update!(enterprise_group: group)
+          end
+
+          it_behaves_like 'member response with exposed email' do
+            let(:email) { ldap_user.email }
+          end
+        end
+
+        context 'for enterprise user from another group' do
+          before do
+            ldap_user.user_detail.update!(enterprise_group: another_group)
+          end
+
+          it_behaves_like 'member response with hidden email'
+        end
+      end
+    end
+
+    describe 'GET /groups/:id/billable_members', feature_category: :seat_cost_management do
+      let(:url) { "/groups/#{group.id}/billable_members" }
+
+      context 'for regular user' do
+        it_behaves_like 'members response with hidden email' do
+          let(:email) { user_member.email }
+        end
+      end
+
+      context 'for enterprise user' do
+        it_behaves_like 'members response with exposed email' do
+          let(:email) { enterprise_user_member.email }
+        end
+      end
+
+      context 'for enterprise user from another group' do
+        it_behaves_like 'members response with hidden email' do
+          let(:email) { enterprise_user_member_from_another_group.email }
+        end
+      end
+
+      it 'avoids N+1 database queries' do
+        # warm up
+        get api(url, owner)
+
+        control = ActiveRecord::QueryRecorder.new do
+          get api(url, owner)
+        end
+
+        group.add_developer(create(:user))
+        group.add_developer(create(:user, :enterprise_user, enterprise_group: group))
+        group.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+
+        subgroup = create(:group, parent: group)
+        subgroup.add_developer(create(:user))
+        subgroup.add_developer(create(:user, :enterprise_user, enterprise_group: group))
+        subgroup.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+
+        project = create(:project, group: group)
+        project.add_developer(create(:user))
+        project.add_developer(create(:user, :enterprise_user, enterprise_group: group))
+        project.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+
+        expect do
+          get api(url, owner)
+        end.not_to exceed_query_limit(control)
       end
     end
   end
 
-  context 'project members endpoint for group managed accounts' do
+  context 'project members endpoint for enterprise users', :saas do
     let(:group) { create(:group) }
     let(:owner) { create(:user) }
     let(:project) { create(:project, group: group) }
 
     before do
+      stub_licensed_features(domain_verification: true)
+
       group.add_owner(owner)
     end
 
-    include_context "group managed account with project members"
+    include_context 'project with enterprise users in project members'
+    include_context 'project with enterprise users from another group in project members'
 
     subject do
       get api(url, owner)
       json_response
     end
 
-    describe "GET /projects/:id/members" do
+    describe 'GET /projects/:id/members' do
       let(:url) { "/projects/#{project.id}/members" }
 
-      it_behaves_like 'members response with exposed emails' do
-        let(:emails) { gma_member.email }
+      context 'for regular user' do
+        it_behaves_like 'members response with hidden email' do
+          let(:email) { user_member.email }
+        end
       end
 
-      it_behaves_like 'members response with hidden emails' do
-        let(:emails) { member.email }
+      context 'for enterprise user' do
+        it_behaves_like 'members response with exposed email' do
+          let(:email) { enterprise_user_member.email }
+        end
+      end
+
+      context 'for enterprise user from another group' do
+        it_behaves_like 'members response with hidden email' do
+          let(:email) { enterprise_user_member_from_another_group.email }
+        end
+      end
+
+      it 'avoids N+1 database queries' do
+        # warm up
+        get api(url, owner)
+
+        control = ActiveRecord::QueryRecorder.new do
+          get api(url, owner)
+        end
+
+        group.add_developer(create(:user))
+        group.add_developer(create(:user, :enterprise_user, enterprise_group: group))
+        group.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+
+        project.add_developer(create(:user))
+        project.add_developer(create(:user, :enterprise_user, enterprise_group: group))
+        project.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+
+        expect do
+          get api(url, owner)
+        end.not_to exceed_query_limit(control)
       end
     end
 
-    describe "GET /projects/:id/members/:user_id" do
+    describe 'GET /projects/:id/members/:user_id' do
       let(:url) { "/projects/#{project.id}/members/#{user_id}" }
 
-      context 'with group managed account member' do
-        let(:user_id) { gma_member.id }
+      context 'for regular user' do
+        let(:user_id) { user_member.id }
+
+        it_behaves_like 'member response with hidden email'
+      end
+
+      context 'for enterprise user' do
+        let(:user_id) { enterprise_user_member.id }
 
         it_behaves_like 'member response with exposed email' do
-          let(:email) { gma_member.email }
+          let(:email) { enterprise_user_member.email }
         end
       end
 
-      context 'with a regular member' do
-        let(:user_id) { member.id }
+      context 'for enterprise user from another group' do
+        let(:user_id) { enterprise_user_member_from_another_group.id }
 
         it_behaves_like 'member response with hidden email'
       end
     end
 
-    describe "GET /project/:id/members/all" do
-      include_context "child project with group managed account members"
+    describe 'GET /projects/:id/members/all' do
+      let(:url) { "/projects/#{project.id}/members/all" }
 
-      context 'parent group project' do
-        let(:url) { "/projects/#{project.id}/members/all" }
-
-        it_behaves_like 'members response with exposed emails' do
-          let(:emails) { gma_member.email }
-        end
-
-        it_behaves_like 'members response with hidden emails' do
-          let(:emails) { member.email }
+      context 'for regular user' do
+        it_behaves_like 'members response with hidden email' do
+          let(:email) { user_member.email }
         end
       end
 
-      context 'child group project' do
-        let(:url) { "/projects/#{child_project.id}/members/all" }
+      context 'for enterprise user' do
+        it_behaves_like 'members response with exposed email' do
+          let(:email) { enterprise_user_member.email }
+        end
+      end
 
-        it_behaves_like 'members response with exposed emails' do
-          let(:emails) { [child_gma_member.email] }
+      context 'for enterprise user from another group' do
+        it_behaves_like 'members response with hidden email' do
+          let(:email) { enterprise_user_member_from_another_group.email }
+        end
+      end
+
+      it 'avoids N+1 database queries' do
+        # warm up
+        get api(url, owner)
+
+        control = ActiveRecord::QueryRecorder.new do
+          get api(url, owner)
         end
 
-        it_behaves_like 'members response with hidden emails' do
-          let(:emails) { [member.email, child_member.email] }
-        end
+        group.add_developer(create(:user))
+        group.add_developer(create(:user, :enterprise_user, enterprise_group: group))
+        group.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+
+        project.add_developer(create(:user))
+        project.add_developer(create(:user, :enterprise_user, enterprise_group: group))
+        project.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+
+        expect do
+          get api(url, owner)
+        end.not_to exceed_query_limit(control)
       end
     end
 
-    describe "GET /projects/:id/members/all/:user_id" do
-      include_context "child project with group managed account members"
+    describe 'GET /projects/:id/members/all/:user_id' do
+      let(:url) { "/projects/#{project.id}/members/all/#{user_id}" }
 
-      let(:url) { "/projects/#{child_project.id}/members/all/#{user_id}" }
-
-      context 'with group managed account member' do
-        let(:user_id) { gma_member.id }
+      context 'for regular user' do
+        let(:user_id) { user_member.id }
 
         it_behaves_like 'member response with hidden email'
       end
 
-      context 'with regular member' do
-        let(:user_id) { member.id }
-
-        it_behaves_like 'member response with hidden email'
-      end
-
-      context 'with group managed account child group member' do
-        let(:user_id) { child_gma_member.id }
+      context 'for enterprise user' do
+        let(:user_id) { enterprise_user_member.id }
 
         it_behaves_like 'member response with exposed email' do
-          let(:email) { child_gma_member.email }
+          let(:email) { enterprise_user_member.email }
         end
       end
 
-      context 'with child group regular member' do
-        let(:user_id) { child_member.id }
+      context 'for enterprise user from another group' do
+        let(:user_id) { enterprise_user_member_from_another_group.id }
+
+        it_behaves_like 'member response with hidden email'
+      end
+    end
+
+    describe 'POST /projects/:id/members' do
+      let(:url) { "/projects/#{project.id}/members" }
+
+      subject do
+        post api(url, owner), params: { user_id: user.id, access_level: Gitlab::Access::GUEST }
+        expect(response).to have_gitlab_http_status(:created)
+        json_response
+      end
+
+      context 'for regular user' do
+        let(:user) { create(:user) }
+
+        it_behaves_like 'member response with hidden email'
+      end
+
+      context 'for enterprise user' do
+        let(:user) { create(:user, :enterprise_user, enterprise_group: group) }
+
+        it_behaves_like 'member response with exposed email' do
+          let(:email) { user.email }
+        end
+      end
+
+      context 'for enterprise user from another group' do
+        let(:user) { create(:user, :enterprise_user, enterprise_group: another_group) }
+
+        it_behaves_like 'member response with hidden email'
+      end
+    end
+
+    describe 'PUT /projects/:id/members/:user_id' do
+      let(:url) { "/projects/#{project.id}/members/#{user_id}" }
+
+      subject do
+        put api(url, owner), params: { access_level: Gitlab::Access::GUEST }
+        expect(response).to have_gitlab_http_status(:ok)
+        json_response
+      end
+
+      context 'for regular user' do
+        let(:user_id) { user_member.id }
+
+        it_behaves_like 'member response with hidden email'
+      end
+
+      context 'for enterprise user' do
+        let(:user_id) { enterprise_user_member.id }
+
+        it_behaves_like 'member response with exposed email' do
+          let(:email) { enterprise_user_member.email }
+        end
+      end
+
+      context 'for enterprise user from another group' do
+        let(:user_id) { enterprise_user_member_from_another_group.id }
 
         it_behaves_like 'member response with hidden email'
       end
@@ -586,10 +1028,11 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
     describe 'GET /groups/:id/billable_members', feature_category: :seat_cost_management do
       let(:url) { "/groups/#{group.id}/billable_members" }
+      let(:current_user) { owner }
       let(:params) { {} }
 
       subject(:get_billable_members) do
-        get api(url, owner), params: params
+        get api(url, current_user), params: params
         json_response
       end
 
@@ -746,24 +1189,30 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
       end
 
       context 'email' do
-        before do
-          group.add_owner(owner)
-        end
+        let_it_be(:member) { create(:group_member, :developer, group: group) }
 
-        include_context 'group managed account with group members'
+        context 'when member has a public_email' do
+          let_it_be(:member_public_email) { create(:email, :confirmed, user: member.user, email: 'member-public-email@example.com') }
 
-        context 'when members have a public_email' do
           before do
-            allow_next_found_instance_of(User) do |instance|
-              allow(instance).to receive(:public_email).and_return('public@email.com')
-            end
+            member.user.update!(public_email: member_public_email.email)
           end
 
-          it { is_expected.to include(a_hash_including('email' => 'public@email.com')) }
+          it { is_expected.to include(a_hash_including('email' => member.user.public_email)) }
         end
 
-        context 'when members have no public_email' do
+        context 'when member has no public_email' do
+          before do
+            member.user.update!(public_email: nil)
+          end
+
           it { is_expected.to include(a_hash_including('email' => nil)) }
+        end
+
+        context 'when the current_user is an admin', :enable_admin_mode do
+          let_it_be(:current_user) { create(:user, :admin) }
+
+          it { is_expected.to include(a_hash_including('email' => member.user.email)) }
         end
       end
     end
@@ -1111,6 +1560,31 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
             expect(response).to have_gitlab_http_status(:ok)
             expect(json_response.size).to eq(1)
             expect(json_response.any? { |member| member['id'] == maintainer.id }).to be_falsey
+          end
+
+          context 'subgroup' do
+            let(:subgroup) { create :group, parent: group }
+
+            before do
+              subgroup.add_owner(owner)
+              subgroup.add_maintainer(maintainer)
+            end
+
+            it 'returns a list of users without group SAML identities info' do
+              get api("/groups/#{subgroup.id}/members", owner)
+
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(json_response.size).to eq(2)
+              expect(json_response.map(&:keys).flatten).not_to include('group_saml_identity')
+            end
+
+            it 'ignores filter by linked identity presence' do
+              get api("/groups/#{subgroup.id}/members?with_saml_identity=true", owner)
+
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(json_response.size).to eq(2)
+              expect(json_response.any? { |member| member['id'] == maintainer.id }).to be_truthy
+            end
           end
         end
 

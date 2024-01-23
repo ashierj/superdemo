@@ -7,13 +7,23 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
-          # Override attributes
-          expose :user, override: true, merge: true, using: ::API::Entities::UserWithProvisionedAttrs
-
           # EE attributes
           expose :group_saml_identity,
             using: ::API::Entities::Identity,
-            if: -> (member, options) { Ability.allowed?(options[:current_user], :read_group_saml_identity, member.source) }
+            if: -> (member, options) { member.user && Ability.allowed?(options[:current_user], :read_group_saml_identity, member.source) }
+
+          expose(
+            :email,
+            if: ->(member, options) {
+              options[:current_user]&.can_admin_all_resources? || member.user&.managed_by_user?(options[:current_user], group: member.source&.root_ancestor) ||
+                (
+                  ::Feature.disabled?(:members_api_expose_enterprise_users_emails_only, type: :gitlab_com_derisk) &&
+                    Ability.allowed?(options[:current_user], :admin_group_member, member.user&.provisioned_by_group)
+                )
+            }
+          ) do |member, _options|
+            member.user&.email
+          end
 
           expose :is_using_seat, if: -> (_, options) { options[:show_seat_info] }
 

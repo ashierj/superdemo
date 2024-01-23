@@ -1,54 +1,54 @@
 # frozen_string_literal: true
 
-RSpec.shared_context 'group managed account with group members' do
-  let(:group) { create :group_with_managed_accounts }
-  let(:member) { create :user, :group_managed }
-  let(:gma_member) { create :user, :group_managed, managing_group: group }
+RSpec.shared_context 'group with enterprise users in group members' do
+  let(:user_member) { create(:user) }
+  let(:enterprise_user_member) { create(:user, :enterprise_user, enterprise_group: group) }
 
   before do
-    stub_licensed_features(group_saml: true)
-
-    group.add_maintainer(member)
-    group.add_maintainer(gma_member)
+    group.add_maintainer(user_member)
+    group.add_maintainer(enterprise_user_member)
   end
 end
 
-RSpec.shared_context 'group managed account with project members' do
-  let(:group) { create :group_with_managed_accounts }
-  let(:member) { create :user, :group_managed }
-  let(:gma_member) { create :user, managing_group: group }
+RSpec.shared_context 'group with enterprise users from another group in group members' do
+  let(:another_group) { create(:group) }
+  let(:enterprise_user_member_from_another_group) { create(:user, :enterprise_user, enterprise_group: another_group) }
 
   before do
-    project.add_maintainer(member)
-    project.add_maintainer(gma_member)
+    another_group.add_owner(owner)
 
-    stub_licensed_features(group_saml: true)
+    group.add_maintainer(enterprise_user_member_from_another_group)
   end
 end
 
-RSpec.shared_context 'child group with group managed account members' do
-  let(:child_group) { create :group, parent: group }
-  let(:child_member) { create :user, :group_managed }
-  let(:child_gma_member) { create :user, :group_managed, managing_group: group }
+RSpec.shared_context 'subgroup with enterprise users in group members' do
+  let(:subgroup) { create :group, parent: group }
+  let(:user_member_in_subgroup) { create(:user) }
+  let(:enterprise_user_member_in_subgroup) { create(:user, :enterprise_user, enterprise_group: group) }
 
   before do
-    child_group.add_owner(owner)
-
-    child_group.add_developer(child_member)
-    child_group.add_developer(child_gma_member)
+    subgroup.add_developer(user_member_in_subgroup)
+    subgroup.add_developer(enterprise_user_member_in_subgroup)
   end
 end
 
-RSpec.shared_context 'child project with group managed account members' do
-  let(:child_group) { create :group, parent: group }
-  let(:child_project) { create :project, group: child_group }
-  let(:child_member) { create :user, :group_managed }
-  let(:child_gma_member) { create :user, :group_managed, managing_group: group }
+RSpec.shared_context 'project with enterprise users in project members' do
+  let(:user_member) { create(:user) }
+  let(:enterprise_user_member) { create(:user, :enterprise_user, enterprise_group: group) }
 
   before do
-    child_group.add_owner(owner)
+    project.add_maintainer(user_member)
+    project.add_maintainer(enterprise_user_member)
+  end
+end
 
-    child_project.add_developer(child_member)
-    child_project.add_developer(child_gma_member)
+RSpec.shared_context 'project with enterprise users from another group in project members' do
+  let(:another_group) { create(:group) }
+  let(:enterprise_user_member_from_another_group) { create(:user, :enterprise_user, enterprise_group: another_group) }
+
+  before do
+    another_group.add_owner(owner)
+
+    project.add_maintainer(enterprise_user_member_from_another_group)
   end
 end

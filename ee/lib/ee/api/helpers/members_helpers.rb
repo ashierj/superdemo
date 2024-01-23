@@ -43,7 +43,11 @@ module EE
         override :retrieve_members
         def retrieve_members(source, params:, deep: false)
           members = super
-          members = members.includes(user: [:user_highest_role, { user_detail: :provisioned_by_group }])
+          members = if ::Feature.enabled?(:members_api_expose_enterprise_users_emails_only, type: :gitlab_com_derisk)
+                      members.includes(user: [:user_highest_role, :user_detail])
+                    else
+                      members.includes(user: [:user_highest_role, { user_detail: :provisioned_by_group }])
+                    end
 
           if can_view_group_identity?(source)
             members = members.includes(user: :group_saml_identities)
@@ -76,14 +80,6 @@ module EE
           authorize! :override_group_member, source
 
           source.members.by_user_id(params[:user_id]).first
-        end
-
-        def present_member(updated_member)
-          if updated_member.valid?
-            present updated_member, with: ::API::Entities::Member
-          else
-            render_validation_error!(updated_member)
-          end
         end
 
         def billable_member?(group, user)

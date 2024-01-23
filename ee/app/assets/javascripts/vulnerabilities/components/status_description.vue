@@ -1,8 +1,14 @@
 <script>
-import { GlLink, GlSprintf, GlSkeletonLoader, GlLoadingIcon } from '@gitlab/ui';
+import {
+  GlLink,
+  GlSprintf,
+  GlSkeletonLoader,
+  GlLoadingIcon,
+  GlAvatarLink,
+  GlAvatarLabeled,
+} from '@gitlab/ui';
 import { s__ } from '~/locale';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
-import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
 import { DISMISSAL_REASONS } from '../constants';
 
 export default {
@@ -12,7 +18,8 @@ export default {
     TimeAgoTooltip,
     GlSkeletonLoader,
     GlLoadingIcon,
-    UserAvatarLink,
+    GlAvatarLink,
+    GlAvatarLabeled,
   },
 
   props: {
@@ -97,7 +104,7 @@ export default {
 </script>
 
 <template>
-  <span>
+  <div class="gl-display-flex gl-align-items-center gl-flex-wrap gl-white-space-pre-wrap">
     <gl-skeleton-loader v-if="isLoadingVulnerability" :lines="1" class="gl-h-auto" />
     <!-- there are cases in which `time` is undefined (e.g.: manually submitted vulnerabilities in "needs triage" state) -->
     <gl-sprintf v-else-if="time" :message="statusText">
@@ -107,31 +114,30 @@ export default {
         }}</span>
       </template>
       <template #dismissalReason>
-        <span :class="{ 'gl-font-weight-bold': isStatusBolded }" data-testid="dismissal-reason">
-          {{ dismissalReasonText }}
-        </span>
+        <span :class="{ 'gl-font-weight-bold': isStatusBolded }" data-testid="dismissal-reason">{{
+          dismissalReasonText
+        }}</span>
       </template>
       <template #timeago>
         <time-ago-tooltip ref="timeAgo" :time="time" />
       </template>
       <template #user>
-        <gl-loading-icon v-if="isLoadingUser" class="gl-display-inline gl-ml-1" size="sm" />
-        <user-avatar-link
+        <gl-loading-icon v-if="isLoadingUser" class="gl-display-inline gl-ml-2" size="sm" />
+        <gl-avatar-link
           v-else-if="user"
-          :link-href="user.web_url"
-          :img-src="user.avatar_url"
-          :img-size="24"
-          :username="user.name"
+          :href="user.web_url"
           :data-user-id="user.id"
-          class="gl-font-weight-bold js-user-link"
-          img-css-classes="avatar-inline"
-        />
+          :data-username="user.username"
+          class="js-user-link gl-font-weight-bold gl-ml-2"
+        >
+          <gl-avatar-labeled :src="user.avatar_url" :label="user.name" :size="24" />
+        </gl-avatar-link>
       </template>
       <template v-if="vulnerability.pipeline" #pipelineLink>
-        <gl-link :href="vulnerability.pipeline.url" target="_blank" class="link">
-          {{ vulnerability.pipeline.id }}
-        </gl-link>
+        <gl-link :href="vulnerability.pipeline.url" target="_blank" class="link">{{
+          vulnerability.pipeline.id
+        }}</gl-link>
       </template>
     </gl-sprintf>
-  </span>
+  </div>
 </template>

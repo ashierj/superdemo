@@ -1,4 +1,4 @@
-import { GlLink, GlSkeletonLoader, GlLoadingIcon } from '@gitlab/ui';
+import { GlLink, GlSkeletonLoader, GlLoadingIcon, GlAvatarLink, GlAvatarLabeled } from '@gitlab/ui';
 import { capitalize } from 'lodash';
 import StatusDescription from 'ee/vulnerabilities/components/status_description.vue';
 import {
@@ -9,7 +9,6 @@ import {
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import UsersMockHelper from 'helpers/user_mock_data_helper';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
-import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
 
 const { detected, ...NON_DETECTED_STATE_OBJECTS } = VULNERABILITY_STATE_OBJECTS;
 const NON_DETECTED_STATES = Object.keys(NON_DETECTED_STATE_OBJECTS);
@@ -20,7 +19,8 @@ describe('Vulnerability status description component', () => {
 
   const timeAgo = () => wrapper.findComponent(TimeAgoTooltip);
   const pipelineLink = () => wrapper.findComponent(GlLink);
-  const userAvatar = () => wrapper.findComponent(UserAvatarLink);
+  const avatarLink = () => wrapper.findComponent(GlAvatarLink);
+  const avatarLabeled = () => wrapper.findComponent(GlAvatarLabeled);
   const userLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const skeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const statusEl = () => wrapper.findByTestId('status');
@@ -146,7 +146,7 @@ describe('Vulnerability status description component', () => {
       });
 
       expect(userLoadingIcon().exists()).toBe(true);
-      expect(userAvatar().exists()).toBe(false);
+      expect(avatarLink().exists()).toBe(false);
     });
 
     it('shows the user when it exists and is not loading', () => {
@@ -157,18 +157,21 @@ describe('Vulnerability status description component', () => {
       });
 
       expect(userLoadingIcon().exists()).toBe(false);
-      expect(userAvatar().props()).toMatchObject({
-        linkHref: user.web_url,
-        imgSrc: user.avatar_url,
-        username: user.name,
+      expect(avatarLink().attributes()).toMatchObject({
+        href: user.web_url,
+        'data-user-id': `${user.id}`,
+        'data-username': user.username,
       });
+      expect(avatarLink().classes('js-user-link')).toBe(true);
+      expect(avatarLabeled().attributes('src')).toBe(user.avatar_url);
+      expect(avatarLabeled().props('label')).toBe(user.name);
     });
 
     it('does not show the user when it does not exist and is not loading', () => {
       createWrapper();
 
       expect(userLoadingIcon().exists()).toBe(false);
-      expect(userAvatar().exists()).toBe(false);
+      expect(avatarLink().exists()).toBe(false);
     });
   });
 
