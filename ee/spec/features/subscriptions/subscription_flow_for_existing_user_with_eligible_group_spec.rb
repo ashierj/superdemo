@@ -7,6 +7,8 @@ RSpec.describe 'Subscription flow for existing user with eligible group', :js, f
   include SubscriptionPortalHelpers
 
   let_it_be(:user) { create(:user) }.freeze
+  let_it_be(:has_billing_account) { true }
+
   let_it_be(:group) { create(:group, name: 'Existing Group').tap { |g| g.add_owner(user) } }.freeze
   let_it_be(:plans_data) { billing_plans_data }.freeze
   let_it_be(:premium_plan) { plans_data.find { |plan_data| plan_data[:id] == 'premium-external-id' } }.freeze
@@ -16,7 +18,7 @@ RSpec.describe 'Subscription flow for existing user with eligible group', :js, f
     stub_eligible_namespaces
     stub_billing_plans(nil)
     stub_invoice_preview('null', premium_plan[:id])
-    stub_feature_flags(key_contacts_management: false)
+    stub_get_billing_account(has_billing_account: has_billing_account)
 
     sign_in(user)
   end
@@ -30,7 +32,7 @@ RSpec.describe 'Subscription flow for existing user with eligible group', :js, f
 
     select_gitlab_group('Existing Group')
 
-    fill_in_checkout_form
+    fill_in_checkout_form(has_billing_account: has_billing_account)
 
     expect(page).to have_current_path(group_billings_path(group, plan_id: premium_plan[:id], purchased_quantity: 1))
   end
@@ -49,7 +51,7 @@ RSpec.describe 'Subscription flow for existing user with eligible group', :js, f
       fill_in with: group_name
     end
 
-    fill_in_checkout_form
+    fill_in_checkout_form(has_billing_account: has_billing_account)
 
     fill_in 'Group name (your organization)', with: '@invalid group name'
 
