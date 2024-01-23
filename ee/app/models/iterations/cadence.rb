@@ -5,6 +5,8 @@ module Iterations
     include Gitlab::SQL::Pattern
     include EachBatch
     include Importable
+    include FromUnion
+    include Referable
 
     self.table_name = 'iterations_cadences'
 
@@ -32,6 +34,7 @@ module Iterations
 
     after_commit :ensure_iterations_in_advance, on: [:create, :update], if: :changed_iterations_automation_fields?
 
+    scope :by_title, -> (title) { where(title: title) }
     scope :with_groups, -> (group_ids) { where(group_id: group_ids) }
     scope :with_duration, -> (duration) { where(duration_in_weeks: duration) }
     scope :is_automatic, -> (automatic) { where(automatic: automatic) }
@@ -43,6 +46,36 @@ module Iterations
     end
 
     class << self
+      def link_reference_pattern
+        nil
+      end
+
+      def reference_pattern
+        # <group> is a no-op named capture as ReferenceCache expects one of <group> or <project> to be present.
+        # Cadence reference do not need to support group scoping for now.
+        @reference_pattern ||= %r{
+          #{Regexp.escape(reference_prefix)}((?<group>)/)?
+          (?:
+            (?<cadence_id>
+              \d{1,20} # Integer-based cadence id, or
+            ) |
+            (?<cadence_title>
+              [^"\s\<]{1,255}\b |  # String-based single-word cadence title, or
+              "[^"]{1,255}"        # String-based multi-word cadence surrounded in quotes
+            )
+          )
+          #{Regexp.escape(reference_postfix)}
+        }x
+      end
+
+      def reference_prefix
+        '[cadence:'
+      end
+
+      def reference_postfix
+        ']'
+      end
+
       def search_title(query)
         fuzzy_search(query, [::Resolvers::IterationsResolver::DEFAULT_IN_FIELD], use_minimum_char_limit: contains_digit?(query))
       end
@@ -52,6 +85,18 @@ module Iterations
       def contains_digit?(query)
         !(query =~ / \d+ /).nil?
       end
+    end
+
+    def to_reference(_from = nil, format: :id, full: false) # rubocop:disable Lint/UnusedMethodArgument -- :full not used for this implementation
+      raise ArgumentError, _('Unknown format') unless [:id, :title].include?(format)
+
+      format_reference = if format == :title && title.exclude?('"')
+                           %("#{title}")
+                         else
+                           id
+                         end
+
+      "#{self.class.reference_prefix}#{format_reference}#{self.class.reference_postfix}"
     end
 
     def next_open_iteration(date)
@@ -148,6 +193,14 @@ module Iterations
       end
     end
 
+    def upcoming_iterations
+      iterations.upcoming.order(start_date: :asc)
+    end
+
+    def current_iteration
+      open_iterations.first
+    end
+
     private
 
     def schedule_count(new_start_date)
@@ -178,10 +231,6 @@ module Iterations
 
     def open_iterations
       iterations.due_date_order_asc.start_date_passed
-    end
-
-    def current_iteration
-      open_iterations.first
     end
 
     def current_iteration_start_date?(start_date)

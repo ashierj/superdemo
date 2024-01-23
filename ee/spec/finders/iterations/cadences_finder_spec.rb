@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Iterations::CadencesFinder do
+RSpec.describe Iterations::CadencesFinder, feature_category: :team_planning do
   let(:params) { {} }
 
   let_it_be(:group) { create(:group, :private) }
@@ -21,10 +21,16 @@ RSpec.describe Iterations::CadencesFinder do
 
   context 'without permissions' do
     context 'groups and projects' do
+      subject(:service) { described_class.new(user, current_group, params) }
+
       let(:params) { {} }
 
       it 'returns no iterations cadences for group' do
-        expect(subject).to be_empty
+        expect(service.execute).to be_empty
+      end
+
+      it 'returns iterations cadences for group when `skip_authorization` param is true' do
+        expect(service.execute(skip_authorization: true)).to match_array(current_group.iterations_cadences)
       end
     end
   end
@@ -74,6 +80,17 @@ RSpec.describe Iterations::CadencesFinder do
     context 'with filters' do
       let(:current_group) { sub_group }
       let(:params) { { include_ancestor_groups: true } }
+
+      it 'filters by exact title' do
+        params[:exact_title] = 'one week iterations'
+
+        expect(subject).to contain_exactly(
+          active_group_iterations_cadence,
+          automatic_iterations_cadence,
+          active_sub_group_iterations_cadence,
+          non_automatic_sub_group_iterations_cadence
+        )
+      end
 
       it 'filters by title' do
         params[:title] = 'one week'
