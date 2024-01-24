@@ -26,7 +26,7 @@ module Elastic
         indexes :name_with_namespace, type: :text, index_options: 'positions', analyzer: :my_ngram_analyzer
         indexes :description, type: :text, index_options: 'positions'
         indexes :path_with_namespace, type: :text, index_options: 'positions'
-        indexes :namespace_id, type: :integer
+        indexes :namespace_id, type: :long
 
         indexes :archived, type: :boolean
         indexes :traversal_ids, type: :keyword

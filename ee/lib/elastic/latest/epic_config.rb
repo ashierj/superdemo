@@ -15,7 +15,7 @@ module Elastic
       mappings dynamic: 'strict' do
         indexes :id, type: :integer
         indexes :iid, type: :integer
-        indexes :group_id, type: :integer
+        indexes :group_id, type: :long
 
         indexes :created_at, type: :date
         indexes :updated_at, type: :date

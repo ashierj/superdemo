@@ -19,7 +19,7 @@ module Elastic
       mappings dynamic: 'strict' do
         indexes :type, type: :keyword
 
-        indexes :id, type: :integer
+        indexes :id, type: :long
 
         indexes :note, type: :text, index_options: 'positions'
         indexes :project_id, type: :integer
