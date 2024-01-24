@@ -25,7 +25,7 @@
     "closed_at": null,
     "parent_id": null,
     "relative_position": null,
-    "state_id": "opened",
+    "state_id": 1,
     "start_date_sourcing_epic_id": null,
     "due_date_sourcing_epic_id": null,
     "external_key": null,
