@@ -1,5 +1,5 @@
 <script>
-import { GlSorting, GlSortingItem } from '@gitlab/ui';
+import { GlSorting } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { omit } from 'lodash';
@@ -21,7 +21,6 @@ export default {
   name: 'DependenciesActions',
   components: {
     GlSorting,
-    GlSortingItem,
     GroupDependenciesFilteredSearch: () =>
       import('ee/dependencies/components/filtered_search/group_dependencies_filtered_search.vue'),
   },
@@ -57,6 +56,12 @@ export default {
 
       return this.isProjectNamespace ? SORT_FIELDS_PROJECT : groupFields;
     },
+    sortOptions() {
+      return Object.keys(this.sortFields).map((key) => ({
+        text: this.sortFields[key],
+        value: key,
+      }));
+    },
     isProjectNamespace() {
       return this.namespaceType === NAMESPACE_PROJECT;
     },
@@ -70,9 +75,6 @@ export default {
         dispatch(`${this.namespace}/toggleSortOrder`);
       },
     }),
-    isCurrentSortField(field) {
-      return field === this.sortField;
-    },
   },
 };
 </script>
@@ -89,19 +91,11 @@ export default {
       :text="sortFieldName"
       :is-ascending="isSortAscending"
       :sort-direction-tool-tip="$options.i18n.sortDirectionLabel"
+      :sort-options="sortOptions"
+      :sort-by="sortField"
       class="gl-ml-auto"
-      dropdown-class="gl-flex-grow-1"
-      sort-direction-toggle-class="gl-flex-grow-0!"
       @sortDirectionChange="toggleSortOrder"
-    >
-      <gl-sorting-item
-        v-for="(name, field) in sortFields"
-        :key="field"
-        :active="isCurrentSortField(field)"
-        @click="setSortField(field)"
-      >
-        {{ name }}
-      </gl-sorting-item>
-    </gl-sorting>
+      @sortByChange="setSortField"
+    />
   </div>
 </template>
