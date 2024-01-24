@@ -12,11 +12,11 @@ module Epics
     end
 
     def opened_epics
-      epics_count.fetch(Epic.state_ids[:opened], 0)
+      epics_count.fetch(Epic.available_states[:opened], 0)
     end
 
     def closed_epics
-      epics_count.fetch(Epic.state_ids[:closed], 0)
+      epics_count.fetch(Epic.available_states[:closed], 0)
     end
 
     def opened_issues
