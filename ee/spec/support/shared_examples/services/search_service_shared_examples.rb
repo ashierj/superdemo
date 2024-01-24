@@ -118,3 +118,66 @@ RSpec.shared_examples 'EE search service shared examples' do |normal_results, el
     end
   end
 end
+
+RSpec.shared_examples 'can search by title for miscellaneous cases' do |type|
+  let_it_be(:searched_project) { create(:project, :public, :repository, :wiki_repo) }
+  let(:records_count) { 2 }
+
+  def create_records!(type)
+    case type
+    when 'issues'
+      create_list(:issue, records_count, project: searched_project)
+    end
+  end
+
+  # rubocop:disable RSpec/InstanceVariable -- Want to reuse the @records
+  before do
+    @records = create_records!(type)
+  end
+
+  it 'handles plural words through algorithmic stemming', :aggregate_failures do
+    @records[0].update!(title: 'remove :title attribute from submit buttons to prevent un-styled tooltips')
+    @records[1].update!(title: 'smarter submit behavior for buttons groups')
+    ensure_elasticsearch_index!
+    results = described_class.new(user, 'button', [searched_project.id])
+    expect(results.objects(type)).to match_array(@records)
+    expect(results.issues_count).to eq records_count
+  end
+
+  it 'handles if title has umlauts', :aggregate_failures do
+    @records[0].update!(title: 'köln')
+    @records[1].update!(title: 'kǒln')
+    ensure_elasticsearch_index!
+    results = described_class.new(user, 'koln', [searched_project.id])
+    expect(results.objects(type)).to match_array(@records)
+    expect(results.issues_count).to eq records_count
+  end
+
+  it 'handles if title has dots', :aggregate_failures do
+    @records[0].update!(title: 'with.dot.title')
+    @records[1].update!(title: 'there is.dot')
+    ensure_elasticsearch_index!
+    results = described_class.new(user, 'dot', [searched_project.id])
+    expect(results.objects(type)).to match_array(@records)
+    expect(results.issues_count).to eq records_count
+  end
+
+  it 'handles if title has underscore', :aggregate_failures do
+    @records[0].update!(title: 'with_underscore_text')
+    @records[1].update!(title: 'some_underscore')
+    ensure_elasticsearch_index!
+    results = described_class.new(user, 'underscore', [searched_project.id])
+    expect(results.objects(type)).to match_array(@records)
+    expect(results.issues_count).to eq records_count
+  end
+
+  it 'handles if title has camelcase', :aggregate_failures do
+    @records[0].update!(title: 'withCamelcaseTitle')
+    @records[1].update!(title: 'CamelcaseText')
+    ensure_elasticsearch_index!
+    results = described_class.new(user, 'Camelcase', [searched_project.id])
+    expect(results.objects(type)).to match_array(@records)
+    expect(results.issues_count).to eq records_count
+  end
+  # rubocop:enable RSpec/InstanceVariable
+end

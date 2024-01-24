@@ -364,17 +364,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
       expect(results.issues_count).to eq 0
     end
 
-    it 'handles plural words through algorithmic stemming', :aggregate_failures do
-      issue1 = create(:issue, project: project_1, title: 'remove :title attribute from submit buttons to prevent un-styled tooltips')
-      issue2 = create(:issue, project: project_1, title: 'smarter submit behavior for buttons groups')
-
-      ensure_elasticsearch_index!
-
-      results = described_class.new(user, 'button', limit_project_ids)
-
-      expect(results.objects('issues')).to contain_exactly(issue1, issue2)
-      expect(results.issues_count).to eq 2
-    end
+    it_behaves_like 'can search by title for miscellaneous cases', 'issues'
 
     it 'executes count only queries' do
       results = described_class.new(user, query, limit_project_ids)
