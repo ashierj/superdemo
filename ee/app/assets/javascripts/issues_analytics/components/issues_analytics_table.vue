@@ -207,7 +207,6 @@ export default {
     :fields="$options.tableHeaderFields"
     :items="issues"
     stacked="sm"
-    striped
   >
     <template #cell(issueDetails)="{ item }">
       <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1" data-testid="detailsCol">
@@ -216,7 +215,7 @@ export default {
             item.title
           }}</gl-link>
         </div>
-        <ul class="horizontal-list list-items-separated gl-mb-0">
+        <ul class="horizontal-list list-items-separated gl-mt-2 gl-mb-0">
           <li>{{ formatIssueId(item.iid) }}</li>
           <li v-if="item.epic">{{ formatEpicId(item.epic.iid) }}</li>
           <li v-if="item.labels.count">
