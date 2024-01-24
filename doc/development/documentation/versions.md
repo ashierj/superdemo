@@ -37,19 +37,24 @@ For example:
 ```markdown
 ## Feature name
 
-> [Introduced](<link-to-issue>) in GitLab 11.3.
+> - [Introduced](<link-to-issue>) in GitLab 11.3.
 
 This feature does something.
 ```
 
-The item text must include these words in order. Capitalization doesn't matter.
+The item text should include these words in order. Capitalization doesn't matter.
 
 - `introduced`, `enabled`, `deprecated`, `changed`, `moved`, `recommended`, `removed`, or `renamed`
 - `in` or `to`
 - `GitLab` (or, for external projects, the name of the project)
 
+If you cannot use this format, you can use different language. Try to be
+consistent with other notes on the page, or other notes on the docs site.
+
 If possible, include a link to the related issue, merge request, or epic.
 Do not link to the pricing page. Do not include the subscription tier.
+
+Even if you have only one item, ensure it begins with `> -`.
 
 #### Introducing a new feature
 
