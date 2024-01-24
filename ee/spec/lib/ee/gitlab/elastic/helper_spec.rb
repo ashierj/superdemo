@@ -480,7 +480,7 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
   end
 
   describe '#standalone_indices_proxies' do
-    subject { helper.standalone_indices_proxies(target_classes: target_classes, exclude_classes: exclude_classes) }
+    subject(:standalone_indices_proxies) { helper.standalone_indices_proxies(target_classes: target_classes, exclude_classes: exclude_classes) }
 
     let(:target_classes) { nil }
     let(:exclude_classes) { nil }
@@ -504,6 +504,34 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
 
       it 'creates proxies for only the target classes' do
         expect(subject.count).to eq(1)
+      end
+    end
+
+    context 'with foreign keys mappings', :aggregate_failures do
+      let(:ignore_columns) do
+        {
+          id: [Project, Issue, MergeRequest, Commit, Epic, User],
+          project_id: :all,
+          target_project_id: :all,
+          source_project_id: :all,
+          author_id: :all,
+          assignee_id: :all,
+          hashed_root_namespace_id: :all,
+          work_item_type_id: :all,
+          noteable_id: :all
+        }
+      end
+
+      it 'has correct foreign key types' do
+        standalone_indices_proxies.each do |proxy|
+          mappings = proxy.mappings.to_hash
+
+          mappings[:properties].select { |k, _| k =~ /(^id$)|(_id$)/ }.each do |key, value|
+            next if ignore_columns[key] == :all || ignore_columns[key]&.include?(proxy.target)
+
+            expect(value[:type]).to eq(:long), "#{proxy.target}.#{key} is not a long"
+          end
+        end
       end
     end
   end
