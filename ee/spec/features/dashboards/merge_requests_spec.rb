@@ -3,8 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe 'Dashboard merge requests', feature_category: :code_review_workflow do
-  let(:user) { create(:user) }
-  let(:page_path) { merge_requests_dashboard_path }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:page_path) { merge_requests_dashboard_path }
 
   it_behaves_like 'dashboard ultimate trial callout'
+
+  it_behaves_like 'dashboard SAML reauthentication banner'
 end
