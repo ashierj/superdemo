@@ -1994,7 +1994,11 @@ For an example, see [GitLab 16 changes](../../../update/versions/gitlab_16_chang
 Use the following template to add information to the page.
 
 ```markdown
-# GitLab X changes **(FREE SELF)**
+# GitLab X changes
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 This page contains upgrade information for minor and patch versions of GitLab X. Review these instructions for:
 
@@ -2018,7 +2022,11 @@ For more information about upgrading GitLab Helm Chart, see [the release notes f
 - Information specific to self-compiled installations.
 - ...
 
-### Geo installations **(PREMIUM SELF)**
+### Geo installations
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
  - Information specific to Geo.
  - ...

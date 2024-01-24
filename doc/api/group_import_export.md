@@ -21,7 +21,7 @@ Group exports include the following:
 - Group labels
 - Group badges
 - Group members
-- Group wikis **(PREMIUM SELF)**
+- Group wikis (Premium and Ultimate only)
 - Subgroups. Each subgroup includes all data above
 
 To preserve group-level relationships from imported projects, you should run group export and import first. This way,

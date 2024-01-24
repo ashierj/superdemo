@@ -231,7 +231,11 @@ To change the activity sort order:
 1. On the right side of the page, from the **Sort or filter** dropdown list, select the sort order
    **Newest first** or **Oldest first** (default).
 
-## View description change history **(PREMIUM ALL)**
+## View description change history
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 You can see changes to the description listed in the history.
 

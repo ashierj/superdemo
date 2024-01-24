@@ -47,7 +47,7 @@ POST /projects/:id/invitations
 | `access_level` | integer | yes | A valid access level |
 | `expires_at` | string | no | A date string in the format YEAR-MONTH-DAY |
 | `invite_source` | string | no | The source of the invitation that starts the member creation process. See [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/327120). |
-| `member_role_id` **(ULTIMATE ALL)** | integer | no | Assigns the new member to the provided custom role. ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/134100) in GitLab 16.6.  |
+| `member_role_id` | integer | no | Assigns the new member to the provided custom role. ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/134100) in GitLab 16.6. Ultimate only. |
 
 ```shell
 curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" \
