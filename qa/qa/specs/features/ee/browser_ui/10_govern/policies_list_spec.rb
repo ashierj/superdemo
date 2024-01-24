@@ -48,7 +48,7 @@ module QA
 
         EE::Page::Project::Policies::PolicyEditor.perform do |policy_editor|
           aggregate_failures do
-            expect(policy_editor).to have_policy_selection(:policy_selection_wizard)
+            expect(policy_editor).to have_policy_selection('policy-selection-wizard')
           end
         end
       end

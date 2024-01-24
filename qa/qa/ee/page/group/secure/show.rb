@@ -26,7 +26,7 @@ module QA
             end
 
             def has_security_status_project_for_severity?(severity, project)
-              within_element("severity_accordion_item_#{severity}") do
+              within_element("severity-accordion-item-#{severity}") do
                 click_on severity
               end
               has_element?('project-name-text', text: "#{project.group.sandbox.path} / #{project.group.path} / #{project.name}", wait: 5)

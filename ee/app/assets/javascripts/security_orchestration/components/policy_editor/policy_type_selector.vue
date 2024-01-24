@@ -82,7 +82,7 @@ export default {
   <div class="gl-mb-4">
     <div
       class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-6 gl-mb-4"
-      data-qa-selector="policy_selection_wizard"
+      data-testid="policy-selection-wizard"
     >
       <gl-card
         v-for="option in policies"
