@@ -274,12 +274,6 @@ module EE
       end
     end
 
-    def top_most_excess_storage_projects
-      projects_for_repository_size_excess
-        .order_by_storage_size('desc')
-        .limit(5)
-    end
-
     def repository_size_excess_project_count
       strong_memoize(:repository_size_excess_project_count) do
         projects_for_repository_size_excess.count

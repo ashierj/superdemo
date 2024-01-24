@@ -7,15 +7,7 @@ RSpec.describe Namespaces::Storage::RepositoryLimitAlertComponent, :saas, type: 
   let(:user) { build_stubbed(:user) }
   let(:alert_title) { /You have used \d+% of the purchased storage for #{group.name}/ }
   let(:alert_title_over_storage_limit) { "You have used all available storage for #{group.name}" }
-  let(:top_most_excess_storage_projects) { build_stubbed_list(:project, 6) }
-  let(:repository_size_excess_project_count) { 72 }
-  let(:alert_project_list) do
-    top_most_excess_storage_projects.map(&:full_path).join('')
-  end
-
-  let(:alert_title_free_tier) do
-    "You have reached the free storage limit of 1,000 MiB on #{repository_size_excess_project_count} projects"
-  end
+  let(:alert_title_free_tier) { "You have reached the free storage limit of 1,000 MiB on 72 projects" }
 
   let(:alert_message_below_limit) do
     "If a project reaches 100% of the storage quota (1,000 MiB) the project will be in a read-only state, " \
@@ -26,17 +18,13 @@ RSpec.describe Namespaces::Storage::RepositoryLimitAlertComponent, :saas, type: 
   let(:alert_message_above_limit_no_purchased_storage) do
     "You have consumed all available storage and you can't push or add large files to projects over the " \
       "free tier limit (1,000 MiB). To remove the read-only state, reduce git repository and git LFS storage, " \
-      "or purchase more storage. From the #{repository_size_excess_project_count} projects exceeding the quota, " \
-      "below are the projects using the most storage:#{alert_project_list} " \
-      "For more information about storage limits, see our FAQ."
+      "or purchase more storage. For more information about storage limits, see our FAQ."
   end
 
   let(:alert_message_above_limit_with_purchased_storage) do
     "You have consumed all available storage and you can't push or add large files to projects over the " \
       "free tier limit (1,000 MiB). To remove the read-only state, reduce git repository and git LFS storage, " \
-      "or purchase more storage. From the #{repository_size_excess_project_count} projects exceeding the quota, " \
-      "below are the projects using the most storage:#{alert_project_list} " \
-      "For more information about storage limits, see our FAQ."
+      "or purchase more storage. For more information about storage limits, see our FAQ."
   end
 
   let(:alert_message_non_owner_copy) do
@@ -53,10 +41,6 @@ RSpec.describe Namespaces::Storage::RepositoryLimitAlertComponent, :saas, type: 
       stub_feature_flags(namespace_storage_limit: false)
 
       stub_member_access_level(group, owner: user)
-      allow(group).to receive(:top_most_excess_storage_projects)
-        .and_return(top_most_excess_storage_projects)
-      allow(group).to receive(:repository_size_excess_project_count)
-        .and_return(repository_size_excess_project_count)
     end
 
     context 'when namespace has no additional storage and is above size limit' do
@@ -67,11 +51,6 @@ RSpec.describe Namespaces::Storage::RepositoryLimitAlertComponent, :saas, type: 
           allow(size_checker).to receive(:usage_ratio).and_return(1)
           allow(size_checker).to receive(:above_size_limit?).and_return(true)
         end
-      end
-
-      it 'lists the top 5 storage consuming projects' do
-        render_inline(component)
-        expect(page).to have_content(alert_project_list)
       end
 
       it 'renders the alert title' do
