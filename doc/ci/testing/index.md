@@ -4,7 +4,11 @@ group: Pipeline Execution
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Test with GitLab CI/CD and generate reports in merge requests **(FREE ALL)**
+# Test with GitLab CI/CD and generate reports in merge requests 
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 Use GitLab CI/CD to test the changes included in a feature branch. You can also
 display reports or link to important information directly from [merge requests](../../user/project/merge_requests/index.md).

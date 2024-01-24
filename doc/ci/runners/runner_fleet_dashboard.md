@@ -8,7 +8,7 @@ info: >-
 ---
 # Runner Fleet Dashboard **(ULTIMATE)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/424495) in GitLab 16.6
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/424495) in GitLab 16.6
 
 GitLab administrators can use the Runner Fleet Dashboard to assess the health of your instance runners.
 The Runner Fleet Dashboard shows:
