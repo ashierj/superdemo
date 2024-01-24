@@ -23,7 +23,7 @@ module QA
             end
 
             def fill_dynamic_field(field_name, content)
-              fill_element("#{field_name}_field", content)
+              fill_element("#{field_name}-field", content)
             end
           end
         end

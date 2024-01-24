@@ -175,7 +175,7 @@ export default {
           v-for="severityGroup in severityGroups"
           :ref="`accordionItem${severityGroup.type}`"
           :key="severityGroup.type"
-          :data-qa-selector="`severity_accordion_item_${severityGroup.type}`"
+          :data-testid="`severity-accordion-item-${severityGroup.type}`"
           :accordion-id="accordionId"
           :disabled="shouldAccordionItemBeDisabled(severityGroup)"
           :max-height="$options.accordionItemsContentMaxHeight"
