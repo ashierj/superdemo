@@ -28,4 +28,47 @@ RSpec.describe DashboardHelper, type: :helper do
       it { is_expected.to eq(output) }
     end
   end
+
+  describe '.user_groups_requiring_reauth', feature_category: :system_access do
+    subject(:user_groups_requiring_reauth) { helper.user_groups_requiring_reauth }
+
+    let!(:current_user) { create(:user) }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(current_user)
+    end
+
+    context 'when the user has no Group SAML identities' do
+      it 'returns an empty array' do
+        expect(user_groups_requiring_reauth).to match_array([])
+      end
+    end
+
+    context 'when the user has Group SAML identities' do
+      let_it_be(:saml_provider) { create(:saml_provider, group: create(:group), enforced_sso: true) }
+
+      before do
+        stub_licensed_features(group_saml: true)
+        create(:group_saml_identity, user: current_user, saml_provider: saml_provider)
+      end
+
+      context 'when access is not restricted' do
+        it 'returns an empty array' do
+          expect(user_groups_requiring_reauth).to match_array([])
+        end
+      end
+
+      context 'when access is restricted' do
+        before do
+          allow_next_instance_of(::Gitlab::Auth::GroupSaml::SsoEnforcer) do |instance|
+            allow(instance).to receive(:access_restricted?).and_return(true)
+          end
+        end
+
+        it 'returns the group that the SAML provider belongs to' do
+          expect(user_groups_requiring_reauth).to match_array(saml_provider.group)
+        end
+      end
+    end
+  end
 end

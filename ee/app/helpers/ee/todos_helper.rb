@@ -36,9 +36,11 @@ module EE
       super
     end
 
+    override :todo_groups_requiring_saml_reauth
     def todo_groups_requiring_saml_reauth(todos)
-      groups = todos.filter_map { |todo| todo.group || todo.project.group }.uniq
+      return super unless todos&.any?
 
+      groups = todos.filter_map { |todo| todo.group || todo.project.group }.uniq
       ::Gitlab::Auth::GroupSaml::SsoEnforcer.access_restricted_groups(groups, user: current_user)
     end
   end

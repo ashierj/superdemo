@@ -224,4 +224,42 @@ RSpec.describe ::TodosHelper do
       it { expect(helper.todo_action_name(todo)).to eq(expected_action_name) }
     end
   end
+
+  describe '.todo_groups_requiring_saml_reauth', feature_category: :system_access do
+    subject(:todo_groups_requiring_saml_reauth) { helper.todo_groups_requiring_saml_reauth([issue_todo, group_todo]) }
+
+    let_it_be(:current_user) { create(:user) }
+
+    let_it_be(:group1) { create(:group) }
+    let_it_be(:project) { create(:project, group: group1) }
+    let_it_be(:issue) { create(:issue, title: 'Issue 1') }
+    let_it_be(:issue_todo) do
+      create(:todo, target: issue, project: project)
+    end
+
+    let_it_be(:group2) { create(:group) }
+    let_it_be(:group_todo) do
+      create(:todo, target: group2, group: group2, project: nil, user: current_user)
+    end
+
+    before do
+      allow(helper).to receive(:current_user).and_return(current_user)
+    end
+
+    context 'when access is not restricted' do
+      it 'returns an empty array' do
+        expect(todo_groups_requiring_saml_reauth).to match_array([])
+      end
+    end
+
+    context 'when access is restricted' do
+      before do
+        allow(::Gitlab::Auth::GroupSaml::SsoEnforcer).to receive(:access_restricted_groups).and_return([group1, group2])
+      end
+
+      it 'returns the todo groups' do
+        expect(todo_groups_requiring_saml_reauth).to match_array([group1, group2])
+      end
+    end
+  end
 end

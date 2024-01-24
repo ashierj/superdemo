@@ -31,6 +31,18 @@ module EE
       !current_user.has_current_license? && current_user.can_admin_all_resources?
     end
 
+    override :user_groups_requiring_reauth
+    def user_groups_requiring_reauth
+      saml_providers = current_user.group_saml_identities.map(&:saml_provider)
+      return super unless saml_providers.any?
+
+      saml_providers.select! do |saml_provider|
+        ::Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider, user: current_user).access_restricted?
+      end
+
+      saml_providers.map(&:group)
+    end
+
     private
 
     def security_dashboard_available?

@@ -1,9 +1,8 @@
-- groups_requiring_saml_reauth = todo_groups_requiring_saml_reauth(@todos)
 - return unless groups_requiring_saml_reauth.any?
 
 = render Pajamas::AlertComponent.new(variant: :warning, dismissible: false) do |c|
   - c.with_body do
-    = s_('GroupSAML|Some to-do items may be hidden because your SAML session has expired. Select the group’s path to reauthenticate and view the hidden to-do items.')
+    = s_('GroupSAML|Some items may be hidden because your SAML session has expired. Select the group’s path to reauthenticate and view any hidden items.')
   - c.with_actions do
     .gl-display-flex.gl-flex-wrap
       - groups_requiring_saml_reauth.each do |group|
