@@ -79,6 +79,10 @@ const convertToSingleValue = (resultSet, query) => {
   const [measure] = query?.measures ?? [];
   const [row] = resultSet.rawData();
 
+  if (!row) {
+    return 0;
+  }
+
   return row[measure] ?? 0;
 };
 
