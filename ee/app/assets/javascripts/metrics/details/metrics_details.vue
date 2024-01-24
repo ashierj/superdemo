@@ -47,6 +47,7 @@ export default {
       metricData: [],
       dimensions: [],
       loading: false,
+      searchMetadata: null,
     };
   },
   computed: {
@@ -54,9 +55,8 @@ export default {
       return {
         title: this.metricId,
         type: this.metricType,
-        description: this.metricData[0]?.description,
-        // TODO get last_ingested from searchmetadata API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2488
-        lastIngested: ingestedAtTimeAgo(1705247947518101200),
+        lastIngested: ingestedAtTimeAgo(this.searchMetadata?.last_ingested_at),
+        description: this.searchMetadata?.description,
       };
     },
   },
@@ -75,7 +75,10 @@ export default {
       try {
         const enabled = await this.observabilityClient.isObservabilityEnabled();
         if (enabled) {
-          await this.fetchMetricDetails();
+          await this.fetchMetricSearchMetadata();
+          if (this.searchMetadata) {
+            await this.fetchMetricData();
+          }
         } else {
           this.goToMetricsIndex();
         }
@@ -87,7 +90,19 @@ export default {
         this.loading = false;
       }
     },
-    async fetchMetricDetails() {
+    async fetchMetricSearchMetadata() {
+      try {
+        this.searchMetadata = await this.observabilityClient.fetchMetricSearchMetadata(
+          this.metricId,
+          this.metricType,
+        );
+      } catch (e) {
+        createAlert({
+          message: this.$options.i18n.error,
+        });
+      }
+    },
+    async fetchMetricData() {
       this.loading = true;
       try {
         this.metricData = await this.observabilityClient.fetchMetric(

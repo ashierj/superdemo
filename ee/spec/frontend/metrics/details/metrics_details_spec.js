@@ -7,9 +7,11 @@ import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
 import MetricsChart from 'ee/metrics/details/metrics_chart.vue';
 import FilteredSearch from 'ee/metrics/details/filter_bar/metrics_filtered_search.vue';
+import { ingestedAtTimeAgo } from 'ee/metrics/utils';
 
 jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
+jest.mock('ee/metrics/utils');
 
 describe('MetricsDetails', () => {
   let wrapper;
@@ -51,6 +53,8 @@ describe('MetricsDetails', () => {
   beforeEach(() => {
     isSafeURL.mockReturnValue(true);
 
+    ingestedAtTimeAgo.mockReturnValue('3 days ago');
+
     observabilityClientMock = createMockClient();
   });
 
@@ -66,7 +70,6 @@ describe('MetricsDetails', () => {
     const mockMetricData = [
       {
         name: 'container_cpu_usage_seconds_total',
-        description: 'System disk operations',
         type: 'Gauge',
         unit: 'gb',
         attributes: {
@@ -82,15 +85,37 @@ describe('MetricsDetails', () => {
         ],
       },
     ];
+
+    const mockSearchMetadata = {
+      name: 'cpu_seconds_total',
+      type: 'sum',
+      description: 'System disk operations',
+      last_ingested_at: 1705374438711900000,
+      attribute_keys: ['host.name', 'host.dc', 'host.type'],
+      supported_aggregations: ['1m', '1h'],
+      supported_functions: ['min', 'max', 'avg', 'sum', 'count'],
+      default_group_by_attributes: ['host.name'],
+      default_group_by_function: ['avg'],
+    };
+
     beforeEach(async () => {
-      observabilityClientMock.isObservabilityEnabled.mockResolvedValueOnce(true);
-      observabilityClientMock.fetchMetric.mockResolvedValueOnce(mockMetricData);
+      observabilityClientMock.isObservabilityEnabled.mockResolvedValue(true);
+      observabilityClientMock.fetchMetric.mockResolvedValue(mockMetricData);
+      observabilityClientMock.fetchMetricSearchMetadata.mockResolvedValue(mockSearchMetadata);
+
       await mountComponent();
     });
 
-    it('fetches details and renders the metrics details', () => {
+    it('fetches data', () => {
       expect(observabilityClientMock.isObservabilityEnabled).toHaveBeenCalled();
       expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(METRIC_ID, METRIC_TYPE);
+      expect(observabilityClientMock.fetchMetricSearchMetadata).toHaveBeenCalledWith(
+        METRIC_ID,
+        METRIC_TYPE,
+      );
+    });
+
+    it('renders the metrics details', () => {
       expect(findLoadingIcon().exists()).toBe(false);
       expect(findMetricDetails().exists()).toBe(true);
     });
@@ -111,36 +136,44 @@ describe('MetricsDetails', () => {
       expect(findHeaderTitle().text()).toBe(METRIC_ID);
       expect(findHeaderType().text()).toBe(`Type:\u00a0${METRIC_TYPE}`);
       expect(findHeaderDescription().text()).toBe('System disk operations');
-      expect(findHeaderLastIngested().text()).toBe('Last ingested:\u00a0in 3 years');
+      expect(findHeaderLastIngested().text()).toBe('Last ingested:\u00a03 days ago');
+      expect(ingestedAtTimeAgo).toHaveBeenCalledWith(mockSearchMetadata.last_ingested_at);
     });
 
     describe('with no data', () => {
       beforeEach(async () => {
-        observabilityClientMock.fetchMetric.mockResolvedValueOnce([]);
+        observabilityClientMock.fetchMetric.mockResolvedValue([]);
 
         await mountComponent();
       });
-      it('does not render the description', () => {
+
+      it('renders the header', () => {
         expect(findHeaderTitle().text()).toBe(METRIC_ID);
         expect(findHeaderType().text()).toBe(`Type:\u00a0${METRIC_TYPE}`);
-        expect(findHeaderLastIngested().text()).toBe('Last ingested:\u00a0in 3 years');
-        expect(findHeaderDescription().text()).toBe('');
+        expect(findHeaderLastIngested().text()).toBe('Last ingested:\u00a03 days ago');
+        expect(findHeaderDescription().text()).toBe('System disk operations');
       });
       it('renders the empty state', () => {
         expect(findEmptyState().exists()).toBe(true);
-        expect(findEmptyState().text()).toContain('Last ingested:\u00a0in 3 years');
+        expect(findEmptyState().text()).toContain('Last ingested:\u00a03 days ago');
       });
     });
   });
 
   describe('when observability is not enabled', () => {
     beforeEach(async () => {
-      observabilityClientMock.isObservabilityEnabled.mockResolvedValueOnce(false);
+      observabilityClientMock.isObservabilityEnabled.mockResolvedValue(false);
       await mountComponent();
     });
 
     it('redirects to metricsIndexUrl', () => {
       expect(visitUrl).toHaveBeenCalledWith(defaultProps.metricsIndexUrl);
+    });
+
+    it('does not fetch data', () => {
+      expect(observabilityClientMock.isObservabilityEnabled).toHaveBeenCalled();
+      expect(observabilityClientMock.fetchMetric).not.toHaveBeenCalled();
+      expect(observabilityClientMock.fetchMetricSearchMetadata).not.toHaveBeenCalled();
     });
   });
 
@@ -153,6 +186,7 @@ describe('MetricsDetails', () => {
 
     describe.each([
       ['isObservabilityEnabled', () => observabilityClientMock.isObservabilityEnabled],
+      ['fetchMetricSearchMetadata', () => observabilityClientMock.fetchMetricSearchMetadata],
       ['fetchMetric', () => observabilityClientMock.fetchMetric],
     ])('when %s fails', (_, mockFn) => {
       beforeEach(async () => {
@@ -172,6 +206,12 @@ describe('MetricsDetails', () => {
         expect(findHeader().exists()).toBe(true);
         expect(findChart().exists()).toBe(false);
       });
+    });
+
+    it('does not fetch metric data if fetching search metadata fails', async () => {
+      observabilityClientMock.fetchMetricSearchMetadata.mockRejectedValueOnce('error');
+      await mountComponent();
+      expect(observabilityClientMock.fetchMetric).not.toHaveBeenCalled();
     });
 
     it('renders an alert if metricId is missing', async () => {
