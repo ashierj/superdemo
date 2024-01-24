@@ -44254,10 +44254,25 @@ msgstr ""
 msgid "Secrets|Audit log"
 msgstr ""
 
+msgid "Secrets|Created on"
+msgstr ""
+
+msgid "Secrets|Delete"
+msgstr ""
+
 msgid "Secrets|Edit %{key}"
 msgstr ""
 
+msgid "Secrets|Edit secret"
+msgstr ""
+
+msgid "Secrets|Last accessed"
+msgstr ""
+
 msgid "Secrets|New secret"
+msgstr ""
+
+msgid "Secrets|Revoke"
 msgstr ""
 
 msgid "Secrets|Secret details"
