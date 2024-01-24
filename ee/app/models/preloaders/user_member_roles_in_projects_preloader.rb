@@ -15,6 +15,13 @@ module Preloaders
     end
 
     def execute
+      ActiveRecord::Associations::Preloader.new(
+        records: projects,
+        associations: [:group]
+      ).call
+
+      ::Preloaders::ProjectRootAncestorPreloader.new(projects, :namespace).execute
+
       ::Gitlab::SafeRequestLoader.execute(
         resource_key: resource_key,
         resource_ids: projects.map(&:id)
