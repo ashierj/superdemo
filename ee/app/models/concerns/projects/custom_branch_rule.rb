@@ -34,10 +34,6 @@ module Projects
       nil
     end
 
-    def can_unprotect?
-      false
-    end
-
     def group
       nil
     end

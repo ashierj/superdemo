@@ -73,12 +73,6 @@ RSpec.describe Projects::AllBranchesRule, feature_category: :source_code_managem
     end
   end
 
-  describe '#can_unprotect?' do
-    it 'returns false' do
-      expect(subject.can_unprotect?).to eq(false)
-    end
-  end
-
   describe '#created_at' do
     it 'returns timestamp when the first status check or approval rule was created' do
       expect(subject.created_at).to eq(created_at)
