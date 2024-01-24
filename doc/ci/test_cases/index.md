@@ -5,7 +5,11 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 description: Test cases in GitLab can help your teams create testing scenarios in their existing development platform.
 ---
 
-# Test cases **(ULTIMATE ALL)**
+# Test cases
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
 
 Test cases in GitLab can help your teams create testing scenarios in their existing development platform.
 

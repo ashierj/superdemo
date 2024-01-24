@@ -92,7 +92,11 @@ The following is an example of what a job annotations report might look like:
 }
 ```
 
-## `artifacts:reports:api_fuzzing` **(ULTIMATE ALL)**
+## `artifacts:reports:api_fuzzing`
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
 
 The `api_fuzzing` report collects [API Fuzzing bugs](../../user/application_security/api_fuzzing/index.md)
 as artifacts.
@@ -160,7 +164,11 @@ GitLab can display the results of one or more reports in:
 
 The [`artifacts:expire_in`](../yaml/index.md#artifactsexpire_in) value is set to `1 week`.
 
-## `artifacts:reports:container_scanning` **(ULTIMATE ALL)**
+## `artifacts:reports:container_scanning`
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
 
 The `container_scanning` report collects [Container Scanning vulnerabilities](../../user/application_security/container_scanning/index.md).
 The collected Container Scanning report uploads to GitLab as an artifact.
@@ -172,7 +180,11 @@ GitLab can display the results of one or more reports in:
 - The [security dashboard](../../user/application_security/security_dashboard/index.md).
 - The [Project Vulnerability report](../../user/application_security/vulnerability_report/index.md).
 
-## `artifacts:reports:coverage_fuzzing` **(ULTIMATE ALL)**
+## `artifacts:reports:coverage_fuzzing`
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
 
 The `coverage_fuzzing` report collects [coverage fuzzing bugs](../../user/application_security/coverage_fuzzing/index.md).
 The collected coverage fuzzing report uploads to GitLab as an artifact.
@@ -208,7 +220,11 @@ artifacts:
       - gl-sbom-bundler-gem.cdx.json
 ```
 
-## `artifacts:reports:dast` **(ULTIMATE ALL)**
+## `artifacts:reports:dast`
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
 
 The `dast` report collects [DAST vulnerabilities](../../user/application_security/dast/index.md). The collected DAST
 report uploads to GitLab as an artifact.
@@ -220,7 +236,11 @@ GitLab can display the results of one or more reports in:
 - The [Project Vulnerability report](../../user/application_security/vulnerability_report/index.md).
 - The [security dashboard](../../user/application_security/security_dashboard/index.md).
 
-## `artifacts:reports:dependency_scanning` **(ULTIMATE ALL)**
+## `artifacts:reports:dependency_scanning`
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
 
 The `dependency_scanning` report collects [Dependency Scanning vulnerabilities](../../user/application_security/dependency_scanning/index.md).
 The collected Dependency Scanning report uploads to GitLab as an artifact.
@@ -320,7 +340,11 @@ artifact.
 GitLab can display the results of one or more reports in the merge request
 [metrics reports widget](../testing/metrics_reports.md#metrics-reports).
 
-## `artifacts:reports:requirements` **(ULTIMATE ALL)**
+## `artifacts:reports:requirements`
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
 
 The `requirements` report collects `requirements.json` files. The collected Requirements report uploads to GitLab as an
 artifact and existing [requirements](../../user/project/requirements/index.md) are marked as Satisfied.
@@ -328,7 +352,11 @@ artifact and existing [requirements](../../user/project/requirements/index.md) a
 GitLab can display the results of one or more reports in the
 [project requirements](../../user/project/requirements/index.md#view-a-requirement).
 
-## `artifacts:reports:repository_xray` **(ULTIMATE ALL)**
+## `artifacts:reports:repository_xray`
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/432235) in GitLab 16.7.
 
