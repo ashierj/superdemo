@@ -1,12 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Plan', :reliable, product_group: :project_management,
-    quarantine: {
-      only: { job: 'airgapped' },
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/414247',
-      type: :investigating
-    } do
+  RSpec.describe 'Plan', :external_api_calls, product_group: :project_management do
     describe 'Custom email', :requires_admin do
       before do
         Flow::Login.sign_in_as_admin
