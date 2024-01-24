@@ -19,6 +19,15 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
     stub_feature_flags(moved_mr_sidebar: false)
   end
 
+  context 'for accessibility', :js do
+    it 'passes axe automated accessibility testing' do
+      project.add_developer(user)
+      visit_issue(project, issue)
+
+      expect(page).to be_axe_clean.within('aside.right-sidebar')
+    end
+  end
+
   context 'for Assignees', :js do
     let(:user2) { create(:user) }
     let(:issue2) { create(:issue, project: project, author: user2) }
