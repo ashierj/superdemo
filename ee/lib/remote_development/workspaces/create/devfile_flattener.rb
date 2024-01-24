@@ -9,10 +9,10 @@ module RemoteDevelopment
         # @param [Hash] value
         # @return [Result]
         def self.flatten(value)
-          value => { devfile_yaml: String => devfile_yaml }
+          value => { devfile: Hash => devfile }
 
           begin
-            flattened_devfile_yaml = Devfile::Parser.flatten(devfile_yaml)
+            flattened_devfile_yaml = Devfile::Parser.flatten(YAML.dump(devfile))
           rescue Devfile::CliError => e
             return Result.err(WorkspaceCreateDevfileFlattenFailed.new(details: e.message))
           end
