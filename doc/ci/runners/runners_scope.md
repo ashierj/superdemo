@@ -4,7 +4,11 @@ group: Runner
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Manage runners **(FREE ALL)**
+# Manage runners 
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 GitLab Runner has the following types of runners, which are available based on who you want to have access:
 
@@ -265,7 +269,7 @@ The runner authentication token displays in the UI for only a short period of ti
 
 ### Create a group runner with a registration token (deprecated)
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/19819) in GitLab 14.10, path changed from **Settings > CI/CD > Runners**.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/19819) in GitLab 14.10, path changed from **Settings > CI/CD > Runners**.
 
 WARNING:
 The ability to pass a runner registration token, and support for certain configuration arguments was
@@ -358,7 +362,7 @@ To delete a single or multiple group runners:
 
 ### Clean up stale group runners **(ULTIMATE ALL)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/363012) in GitLab 15.1.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/363012) in GitLab 15.1.
 
 Prerequisites:
 
@@ -572,7 +576,7 @@ A runner can have one of the following statuses.
 
 ## View statistics for runner performance **(ULTIMATE ALL)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/377963) in GitLab 15.8.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/377963) in GitLab 15.8.
 
 As an administrator, you can view runner statistics to learn about the performance of your runner fleet.
 
@@ -592,7 +596,7 @@ To view runner statistics:
 
 ## Determine which runners need to be upgraded **(ULTIMATE ALL)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/365078) in GitLab 15.3.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/365078) in GitLab 15.3.
 
 The version of GitLab Runner used by your runners should be
 [kept up-to-date](https://docs.gitlab.com/runner/index.html#gitlab-runner-versions).

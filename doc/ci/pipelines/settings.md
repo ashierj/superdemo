@@ -4,7 +4,11 @@ group: Pipeline Execution
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Customize pipeline configuration **(FREE ALL)**
+# Customize pipeline configuration 
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 You can customize how pipelines run for your project.
 
@@ -102,9 +106,13 @@ To avoid this scenario:
 
 For more information, see [Deployment safety](../environments/deployment_safety.md#prevent-outdated-deployment-jobs).
 
-## Restrict roles that can cancel pipelines or jobs **(PREMIUM ALL)**
+## Restrict roles that can cancel pipelines or jobs 
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/137301) in GitLab 16.7.
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/137301) in GitLab 16.7.
 
 You can customize which roles have permission to cancel pipelines or jobs.
 
