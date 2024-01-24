@@ -281,14 +281,6 @@ export const BUILT_IN_VALUE_STREAM_DASHBOARD = 'value_streams_dashboard';
 
 export const BUILT_IN_PRODUCT_ANALYTICS_DASHBOARDS = ['behavior', 'audience'];
 
-export const VISUALIZATION_USAGE_OVERVIEW = 'usage_overview';
-export const VISUALIZATION_USAGE_TITLE = s__('Analytics|Usage overview for %{namespaceName} group');
-
-export const VISUALIZATION_DORA_PERFORMERS_SCORE = 'dora_performers_score';
-export const VISUALIZATION_DORA_PERFORMERS_SCORE_TITLE = s__(
-  'Analytics|DORA performers score for %{namespaceName} group',
-);
-
 export const PRODUCT_ANALYTICS_DASHBOARD_FEEDBACK_CALLOUT_ID =
   'product_analytics_dashboard_feedback';
 export const PRODUCT_ANALYTICS_DASHBOARD_SURVEY_LINK =

@@ -12,16 +12,9 @@ import {
 import uniqueId from 'lodash/uniqueId';
 import isString from 'lodash/isString';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import {
-  VISUALIZATION_USAGE_OVERVIEW,
-  VISUALIZATION_USAGE_TITLE,
-  VISUALIZATION_DORA_PERFORMERS_SCORE,
-  VISUALIZATION_DORA_PERFORMERS_SCORE_TITLE,
-} from 'ee/analytics/dashboards/constants';
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import { isEmptyPanelData } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
-import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 import { __, s__, sprintf } from '~/locale';
 import { PANEL_POPOVER_DELAY, PANEL_TROUBLESHOOTING_URL } from './constants';
@@ -148,17 +141,7 @@ export default {
       };
     },
     panelTitle() {
-      const visualizationType = convertToSnakeCase(this.visualization.type);
-      const namespaceName = this.rootNamespaceName;
-
-      switch (visualizationType) {
-        case VISUALIZATION_USAGE_OVERVIEW:
-          return sprintf(VISUALIZATION_USAGE_TITLE, { namespaceName });
-        case VISUALIZATION_DORA_PERFORMERS_SCORE:
-          return sprintf(VISUALIZATION_DORA_PERFORMERS_SCORE_TITLE, { namespaceName });
-        default:
-          return this.title;
-      }
+      return sprintf(this.title, { namespaceName: this.rootNamespaceName });
     },
   },
   watch: {

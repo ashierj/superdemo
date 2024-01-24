@@ -4,7 +4,7 @@ description: The Value Streams Dashboard allows all stakeholders from executives
 panels:
   - id: 1
     visualization: dora_chart
-    title: DORA metrics comparison
+    title: Metrics comparison for %{namespaceName} group
     gridAttributes:
       yPos: 2
       xPos: 0
@@ -13,7 +13,7 @@ panels:
     options: {}
   - id: 2
     visualization: usage_overview
-    title: Usage overview
+    title: Usage overview for %{namespaceName} group
     gridAttributes:
       yPos: 1
       xPos: 0
@@ -22,7 +22,7 @@ panels:
     options: {}
   - id: 3
     visualization: dora_performers_score
-    title: DORA performers score
+    title: DORA performers score for %{namespaceName} group
     gridAttributes:
       yPos: 8
       xPos: 0

@@ -332,6 +332,16 @@ describe('PanelsBase', () => {
     });
   });
 
+  describe('when the title includes %{namespaceName}', () => {
+    beforeEach(() => {
+      createWrapper({ title: 'title for %{namespaceName}' });
+    });
+
+    it('replaces the token with the root namespace name', () => {
+      expect(findPanelTitle().text()).toBe('title for MEOW');
+    });
+  });
+
   describe('when editing', () => {
     beforeEach(() => {
       createWrapper({ editing: true }, mountExtended);
@@ -346,36 +356,6 @@ describe('PanelsBase', () => {
       await nextTick();
 
       expect(wrapper.emitted('delete')).toHaveLength(1);
-    });
-  });
-
-  describe('usage overview visualization type', () => {
-    beforeEach(() => {
-      createWrapper({
-        visualization: {
-          ...panelConfig.visualization,
-          type: 'usage_overview',
-        },
-      });
-    });
-
-    it('should render title with the root namespace name', () => {
-      expect(findPanelTitle().text()).toBe('Usage overview for MEOW group');
-    });
-  });
-
-  describe('dora performers score visualization type', () => {
-    beforeEach(() => {
-      createWrapper({
-        visualization: {
-          ...panelConfig.visualization,
-          type: 'dora_performers_score',
-        },
-      });
-    });
-
-    it('should render title with the root namespace name', () => {
-      expect(findPanelTitle().text()).toBe('DORA performers score for MEOW group');
     });
   });
 });
