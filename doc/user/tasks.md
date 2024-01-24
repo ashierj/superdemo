@@ -62,7 +62,7 @@ To create a task:
 
 ### From a task list item
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/377307) in GitLab 15.9.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/377307) in GitLab 15.9.
 
 Prerequisites:
 
@@ -78,7 +78,7 @@ Any nested task list items are moved up a nested level.
 
 ## Add existing tasks to an issue
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/381868) in GitLab 15.6.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/381868) in GitLab 15.6.
 
 Prerequisites:
 
@@ -140,7 +140,7 @@ To edit the description of a task:
 
 ## Promote a task to an issue
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/412534) in GitLab 16.1.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/412534) in GitLab 16.1.
 
 Prerequisites:
 
@@ -183,7 +183,7 @@ To delete a task:
 
 ## Reorder tasks
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/385887) in GitLab 16.0.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/385887) in GitLab 16.0.
 
 Prerequisites:
 
@@ -194,7 +194,7 @@ To reorder them, drag them around.
 
 ## Assign users to a task
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/334810) in GitLab 15.4.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/334810) in GitLab 15.4.
 
 To show who is responsible for a task, you can assign users to it.
 
@@ -218,7 +218,7 @@ To change the assignee on a task:
 
 ## Assign labels to a task
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339756) in GitLab 15.5.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339756) in GitLab 15.5.
 
 Prerequisites:
 
@@ -356,7 +356,7 @@ You can add [comments](discussions/index.md) and reply to threads in tasks.
 
 ## Copy task reference
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/396553) in GitLab 16.1.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/396553) in GitLab 16.1.
 
 To refer to a task elsewhere in GitLab, you can use its full URL or a short reference, which looks like
 `namespace/project-name#123`, where `namespace` is either a group or a username.
@@ -374,7 +374,7 @@ For more information about task references, see [GitLab-Flavored Markdown](markd
 
 ## Copy task email address
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/396553) in GitLab 16.1.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/396553) in GitLab 16.1.
 
 You can create a comment in a task by sending an email.
 Sending an email to this address creates a comment that contains the email body.
@@ -390,7 +390,7 @@ To copy the task's email address:
 
 ## Set an issue as a parent
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/11198) in GitLab 16.5.
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/11198) in GitLab 16.5.
 
 Prerequisites:
 
@@ -411,7 +411,7 @@ next to **Parent**, select the dropdown list and then select **Unassign**.
 
 ## Confidential tasks
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/8410) in GitLab 15.3.
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/8410) in GitLab 15.3.
 
 Confidential tasks are tasks visible only to members of a project with
 [sufficient permissions](#who-can-see-confidential-tasks).
@@ -480,7 +480,7 @@ system note in the task's comments, for example:
 
 ## Two-column layout
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/415077) in GitLab 16.2 [with a flag](../administration/feature_flags.md) named `work_items_mvc_2`. Disabled by default.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/415077) in GitLab 16.2 [with a flag](../administration/feature_flags.md) named `work_items_mvc_2`. Disabled by default.
 
 FLAG:
 On self-managed GitLab, by default this feature is not available. To make it available, an administrator can [enable the feature flag](../administration/feature_flags.md) named `work_items_mvc_2`.
