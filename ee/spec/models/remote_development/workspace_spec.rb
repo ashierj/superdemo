@@ -122,6 +122,12 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
           expect(invalid_workspace.errors[:agent])
             .to include('for Workspace must have an associated RemoteDevelopmentAgentConfig')
         end
+
+        it "is only validated on create" do
+          invalid_workspace.save(validate: false) # rubocop:disable Rails/SaveBang -- intentional to test validation
+          invalid_workspace.valid?
+          expect(invalid_workspace.errors[:agent]).to be_blank
+        end
       end
 
       context 'when a config is present' do
@@ -144,10 +150,16 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
             agent.remote_development_agent_config.enabled = false
           end
 
-          it 'validates presence of agent.remote_development_agent_config' do
+          it 'validates agent.remote_development_agent_config is enabled' do
             expect(workspace).not_to be_valid
             expect(workspace.errors[:agent])
               .to include("must have the 'enabled' flag set to true")
+          end
+
+          it "is only validated on create" do
+            workspace.save(validate: false) # rubocop:disable Rails/SaveBang -- intentional to test validation
+            workspace.valid?
+            expect(workspace.errors[:agent]).to be_blank
           end
         end
       end

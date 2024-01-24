@@ -28,7 +28,7 @@ module RemoteDevelopment
 
     # Ensure that the associated agent has an existing RemoteDevelopmentAgentConfig before we allow it
     # to be used to create a new workspace
-    validate :validate_agent_config_presence
+    validate :validate_agent_config_present_and_enabled, on: :create
 
     validate :validate_dns_zone_matches_remote_development_agent_config_dns_zone
 
@@ -116,7 +116,7 @@ module RemoteDevelopment
 
     private
 
-    def validate_agent_config_presence
+    def validate_agent_config_present_and_enabled
       unless agent&.remote_development_agent_config
         errors.add(:agent, _('for Workspace must have an associated RemoteDevelopmentAgentConfig'))
         return false
