@@ -447,22 +447,6 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     end
   end
 
-  describe('#arkose_risk_band') do
-    subject { user.arkose_risk_band }
-
-    context 'when user does not have an arkose labs risk band' do
-      it { is_expected.to be_nil }
-    end
-
-    context 'when user has an arkose labs risk band' do
-      before do
-        add_user_risk_band('High')
-      end
-
-      it { is_expected.to eq 'high' }
-    end
-  end
-
   describe '#exempt_from_phone_number_verification?' do
     subject(:phone_number_exemption_attribute) { user.exempt_from_phone_number_verification? }
 
@@ -772,29 +756,15 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     end
   end
 
-  describe '#assumed_high_risk?' do
-    subject(:result) { user.assumed_high_risk? }
-
-    it { is_expected.to eq false }
-
-    context 'when user has a ASSUMED_HIGH_RISK_REASON custom attribute' do
-      before do
-        create(:user_custom_attribute, :assumed_high_risk_reason, user: user)
-      end
-
-      it { is_expected.to eq true }
+  it 'delegates risk profile methods', :aggregate_failures do
+    expect_next_instance_of(IdentityVerification::UserRiskProfile, user) do |instance|
+      expect(instance).to receive(:arkose_verified?).ordered
+      expect(instance).to receive(:assumed_high_risk?).ordered
+      expect(instance).to receive(:assume_high_risk!).with(reason: 'Because').ordered
     end
-  end
 
-  describe '#assume_high_risk' do
-    subject(:call_method) { user.assume_high_risk(reason: 'Because') }
-
-    it 'creates a custom attribute with correct attribute values for the user', :aggregate_failures do
-      expect { call_method }.to change { user.custom_attributes.count }.by(1)
-
-      record = user.custom_attributes.last
-      expect(record.key).to eq UserCustomAttribute::ASSUMED_HIGH_RISK_REASON
-      expect(record.value).to eq 'Because'
-    end
+    user.arkose_verified?
+    user.assumed_high_risk?
+    user.assume_high_risk!(reason: 'Because')
   end
 end
