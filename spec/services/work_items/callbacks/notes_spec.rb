@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe WorkItems::Widgets::NotesService::UpdateService, feature_category: :team_planning do
+RSpec.describe WorkItems::Callbacks::Notes, feature_category: :team_planning do
   let_it_be(:guest) { create(:user) }
   let_it_be(:reporter) { create(:user) }
   let_it_be(:project) { create(:project) }
@@ -14,17 +14,16 @@ RSpec.describe WorkItems::Widgets::NotesService::UpdateService, feature_category
   let(:widget) { work_item.widgets.find { |widget| widget.is_a?(WorkItems::Widgets::Notes) } }
   let(:discussion_locked) { true }
   let(:params) { { discussion_locked: discussion_locked } }
+  let(:service) { described_class.new(issuable: work_item, current_user: current_user, params: params) }
 
   before_all do
     project.add_guest(guest)
     project.add_reporter(reporter)
   end
 
-  describe '#update' do
-    let(:service) { described_class.new(widget: widget, current_user: current_user) }
+  subject(:update_discussion_locked) { service.before_update }
 
-    subject(:update_discussion_locked) { service.before_update_callback(params: params) }
-
+  describe '#before_update_callback' do
     shared_examples 'discussion_locked is unchanged' do
       it 'does not change the discussion_locked of the work item' do
         expect { update_discussion_locked }.to not_change { work_item.discussion_locked }
