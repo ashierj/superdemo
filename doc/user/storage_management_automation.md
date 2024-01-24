@@ -4,7 +4,11 @@ group: Utilization
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Automate storage management **(FREE ALL)**
+# Automate storage management
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 This page describes how to automate storage analysis and cleanup to manage your storage usage
 with the GitLab REST API.
