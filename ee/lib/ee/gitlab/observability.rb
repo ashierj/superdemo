@@ -30,6 +30,10 @@ module EE
         def metrics_search_url(project)
           "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/metrics/search"
         end
+
+        def metrics_search_metadata_url(project)
+          "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/metrics/searchmetadata"
+        end
       end
     end
   end
