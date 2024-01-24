@@ -68,6 +68,20 @@ RSpec.describe Gitlab::SPDX::Catalogue do
     end
   end
 
+  describe "#licenses" do
+    it 'returns all licenses converted to POROs' do
+      expected = catalogue_hash[:licenses].map do |license|
+        an_object_having_attributes(
+          id: license[:licenseId],
+          name: license[:name],
+          deprecated: license[:isDeprecatedLicenseId]
+        )
+      end
+
+      expect(subject.licenses).to match_array(expected)
+    end
+  end
+
   describe ".latest" do
     subject { described_class.latest }
 

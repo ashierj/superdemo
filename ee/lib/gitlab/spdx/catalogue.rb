@@ -23,13 +23,13 @@ module Gitlab
         CatalogueGateway.new.fetch
       end
 
-      private
-
-      attr_reader :catalogue
-
       def licenses
         @licenses ||= catalogue.fetch(:licenses, []).map { |x| map_from(x) }
       end
+
+      private
+
+      attr_reader :catalogue
 
       def map_from(license_hash)
         ::Gitlab::SPDX::License.new(
