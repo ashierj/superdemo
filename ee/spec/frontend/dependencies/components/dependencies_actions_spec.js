@@ -1,4 +1,4 @@
-import { GlSorting, GlSortingItem } from '@gitlab/ui';
+import { GlSorting } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import DependenciesActions from 'ee/dependencies/components/dependencies_actions.vue';
 import GroupDependenciesFilteredSearch from 'ee/dependencies/components/filtered_search/group_dependencies_filtered_search.vue';
@@ -28,9 +28,6 @@ describe('DependenciesActions component', () => {
     wrapper = shallowMountExtended(DependenciesActions, {
       store,
       propsData: { ...propsData },
-      stubs: {
-        GlSortingItem,
-      },
       provide: {
         ...objectBasicProp,
         glFeatures: { groupLevelDependenciesFiltering: true },
@@ -40,6 +37,7 @@ describe('DependenciesActions component', () => {
   };
 
   const findSorting = () => wrapper.findComponent(GlSorting);
+  const emitSortByChange = (value) => findSorting().vm.$emit('sortByChange', value);
 
   beforeEach(async () => {
     factory({
@@ -50,12 +48,8 @@ describe('DependenciesActions component', () => {
   });
 
   it('dispatches the right setSortField action on clicking each item in the dropdown', () => {
-    const sortingItems = wrapper.findAllComponents(GlSortingItem).wrappers;
-
-    sortingItems.forEach((item) => {
-      // trigger() does not work on stubbed/shallow mounted components
-      // https://github.com/vuejs/vue-test-utils/issues/919
-      item.vm.$emit('click');
+    Object.keys(SORT_FIELDS_PROJECT).forEach((field) => {
+      emitSortByChange(field);
     });
 
     expect(store.dispatch.mock.calls).toEqual(
@@ -76,10 +70,8 @@ describe('DependenciesActions component', () => {
     });
 
     it('dispatches the right setSortField action on clicking each item in the dropdown', () => {
-      const sortingItems = wrapper.findAllComponents(GlSortingItem).wrappers;
-
-      sortingItems.forEach((item) => {
-        item.vm.$emit('click');
+      Object.keys(SORT_FIELDS_GROUP).forEach((field) => {
+        emitSortByChange(field);
       });
 
       expect(store.dispatch.mock.calls).toEqual(
@@ -103,11 +95,11 @@ describe('DependenciesActions component', () => {
       });
 
       it('does not dispatch the "license" action', () => {
-        const sortingItems = wrapper.findAllComponents(GlSortingItem).wrappers;
-
-        sortingItems.forEach((item) => {
-          item.vm.$emit('click');
-        });
+        findSorting()
+          .props('sortOptions')
+          .forEach((option) => {
+            emitSortByChange(option.value);
+          });
 
         expect(store.dispatch.mock.calls).not.toEqual(
           expect.arrayContaining([[`${namespace}/setSortField`, 'license']]),
