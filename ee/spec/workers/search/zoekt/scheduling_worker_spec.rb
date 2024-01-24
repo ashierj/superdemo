@@ -160,7 +160,10 @@ RSpec.describe ::Search::Zoekt::SchedulingWorker, feature_category: :global_sear
             )
             expect { execute_worker }.to change { Search::Zoekt::Index.count }.by(1)
             expect(zkt_enabled_namespace.indices).to be_empty
-            expect(zkt_enabled_namespace2.indices).not_to be_empty
+            index = zkt_enabled_namespace2.indices.last
+            expect(index).not_to be_nil
+            expect(index.namespace_id).to eq zkt_enabled_namespace2.root_namespace_id
+            expect(index).to be_ready
           end
         end
       end
