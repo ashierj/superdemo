@@ -131,6 +131,19 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
         end
       end
     end
+
+    it 'avoids N+1 queries' do
+      projects = [project]
+      described_class.new(projects: projects, user: user).execute
+
+      control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+        described_class.new(projects: projects, user: user).execute
+      end
+
+      projects = [project, create(:project, :private, :in_group)]
+
+      expect { described_class.new(projects: projects, user: user).execute }.to issue_same_number_of_queries_as(control)
+    end
   end
 
   MemberRole.all_customizable_project_permissions.each do |ability|
