@@ -1651,6 +1651,8 @@ which speeds up subsequent pipeline runs.
 
 - An array of one or two file paths.
 
+CI/CD variables are not supported.
+
 **Example of `cache:key:files`**:
 
 ```yaml
