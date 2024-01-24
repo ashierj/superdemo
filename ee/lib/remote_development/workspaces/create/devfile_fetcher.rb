@@ -34,17 +34,17 @@ module RemoteDevelopment
           end
 
           begin
-            devfile = YAML.safe_load(devfile_yaml)
-          rescue RuntimeError => e
+            # convert YAML to JSON to remove YAML vulnerabilities
+            devfile = YAML.safe_load(YAML.safe_load(devfile_yaml).to_json)
+          rescue RuntimeError, JSON::GeneratorError => e
             return Result.err(WorkspaceCreateDevfileYamlParseFailed.new(
               details: "Devfile YAML could not be parsed: #{e.message}"
             ))
           end
 
           Result.ok(value.merge({
-            # NOTE: The devfile_yaml is not currently used by any subsequent step in the chain, but we include it in
-            #       case it may provide useful context when debugging, or may be included as context with some error
-            #       logging or observability in the future.
+            # NOTE: The devfile_yaml should only be used for storing it in the database and not in any other
+            #       subsequent step in the chain.
             devfile_yaml: devfile_yaml,
             devfile: devfile
           }))
