@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe EE::AuthHelper do
+  include LoginHelpers
+
   describe "button_based_providers" do
     it 'excludes group_saml' do
       allow(helper).to receive(:auth_providers) { [:group_saml] }
@@ -247,6 +249,64 @@ RSpec.describe EE::AuthHelper do
       end
 
       it { is_expected.to eq('nonce') }
+    end
+  end
+
+  describe '#saml_group_sync_enabled?' do
+    subject { helper.saml_group_sync_enabled? }
+
+    let(:groups_enabled_saml_provider) do
+      {
+        name: 'saml',
+        groups_attribute: 'groups',
+        external_groups: ['ExternGroups'],
+        args: {}
+      }
+    end
+
+    let(:groups_disabled_saml_provider) do
+      {
+        name: 'saml',
+        groups_attribute: nil,
+        external_groups: ['ExternGroups'],
+        args: {}
+      }
+    end
+
+    let(:group_saml_provider) { Hash[name: 'group_saml'] }
+
+    before do
+      stub_licensed_features(saml_group_sync: true)
+      stub_omniauth_config(providers: [current_provider])
+      allow(Devise).to receive(:omniauth_providers).and_return([current_provider[:name].to_sym])
+    end
+
+    context 'when enabled' do
+      let(:current_provider) { groups_enabled_saml_provider }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when enabled for group_saml provider' do
+      let(:current_provider) { group_saml_provider }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when not enabled' do
+      let(:current_provider) { groups_disabled_saml_provider }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when saml_group_sync feature is not enabled' do
+      let(:current_provider) { groups_enabled_saml_provider }
+
+      before do
+        stub_licensed_features(saml_group_sync: false)
+      end
+
+      it { is_expected.to eq(false) }
     end
   end
 end
