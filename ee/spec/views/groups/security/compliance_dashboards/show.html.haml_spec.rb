@@ -52,32 +52,10 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
   end
 
   context 'for violations export' do
-    context "with compliance_violation_csv_export ff enabled" do
-      it 'renders with the correct data attributes', :aggregate_failures do
-        render
+    it 'renders with the correct data attributes', :aggregate_failures do
+      render
 
-        expect(rendered).to have_selector("[data-violations-csv-export-path='#{violations_csv_export_path}']")
-      end
-    end
-
-    context 'with compliance_violation_csv_export ff disabled', :aggregate_failures do
-      before do
-        Feature.disable(:compliance_violation_csv_export)
-      end
-
-      it 'renders with the correct data attributes for excluded group' do
-        render
-
-        expect(rendered).not_to have_selector("[data-violations-csv-export-path]")
-      end
-
-      it 'renders with the correct data attributes for included group' do
-        Feature.enable(:compliance_violation_csv_export, group)
-
-        render
-
-        expect(rendered).to have_selector("[data-violations-csv-export-path='#{violations_csv_export_path}']")
-      end
+      expect(rendered).to have_selector("[data-violations-csv-export-path='#{violations_csv_export_path}']")
     end
   end
 

@@ -14,20 +14,8 @@ RSpec.describe ComplianceManagement::ViolationExportMailerWorker, feature_catego
 
     subject(:worker) { described_class.new.perform user.id, namespace.id }
 
-    context "with compliance_violation_csv_export ff implicitly enabled" do
-      it 'schedules mail for delivery' do
-        expect { worker }.to change { ActionMailer::Base.deliveries.count }.by(1)
-      end
-    end
-
-    context "with compliance_violation_csv_export ff disabled" do
-      it 'schedules mail for delivery' do
-        stub_feature_flags compliance_violation_csv_export: false
-
-        expect(ComplianceManagement::Violations::ExportService).not_to receive(:new)
-
-        expect { worker }.not_to change { ActionMailer::Base.deliveries.count }
-      end
+    it 'schedules mail for delivery' do
+      expect { worker }.to change { ActionMailer::Base.deliveries.count }.by(1)
     end
 
     context 'with failing export' do

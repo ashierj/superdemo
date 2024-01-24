@@ -32,35 +32,18 @@ RSpec.describe Groups::Security::ComplianceViolationReportsController, feature_c
         stub_licensed_features group_level_compliance_dashboard: true
       end
 
-      context "with compliance_violation_csv_export ff implicitly enabled" do
-        it 'defers email generation and redirects with message on following page' do
-          expect(ComplianceManagement::ViolationExportMailerWorker).to(
-            receive(:perform_async).with(user.id, group.id, {}, {})
-          )
+      it 'defers email generation and redirects with message on following page' do
+        expect(ComplianceManagement::ViolationExportMailerWorker).to(
+          receive(:perform_async).with(user.id, group.id, {}, {})
+        )
 
-          request_export
+        request_export
 
-          expect(response).to have_gitlab_http_status :redirect
+        expect(response).to have_gitlab_http_status :redirect
 
-          follow_redirect!
+        follow_redirect!
 
-          expect(response.body).to include(email_notice_message)
-        end
-      end
-
-      context "with compliance_violation_csv_export ff disabled" do
-        it 'defers email generation and redirects with message on following page' do
-          stub_feature_flags compliance_violation_csv_export: false
-
-          expect(ComplianceManagement::ViolationExportMailerWorker).not_to(receive(:perform_async))
-          request_export
-
-          expect(response).to have_gitlab_http_status :redirect
-
-          follow_redirect!
-
-          expect(response.body).not_to include(email_notice_message)
-        end
+        expect(response.body).to include(email_notice_message)
       end
     end
   end
