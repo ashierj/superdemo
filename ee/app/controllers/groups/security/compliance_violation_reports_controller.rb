@@ -10,24 +10,25 @@ module Groups
       feature_category :compliance_management
 
       def index
-        if feature_enabled?
-          ComplianceManagement::Violations::ExportService.new(
-            user: current_user,
-            namespace: group,
-            filters: filter_params,
-            sort: sort_param
-          ).email_export
-
-          flash[:notice] = _('After the report is generated, an email will be sent with the report attached.')
-        end
+        trigger_export
+        notifiy_report_is_pending
 
         redirect_to group_security_compliance_dashboard_path(group, vueroute: :violations)
       end
 
       private
 
-      def feature_enabled?
-        Feature.enabled?(:compliance_violation_csv_export, group)
+      def notifiy_report_is_pending
+        flash[:notice] = _('After the report is generated, an email will be sent with the report attached.')
+      end
+
+      def trigger_export
+        ComplianceManagement::Violations::ExportService.new(
+          user: current_user,
+          namespace: group,
+          filters: filter_params,
+          sort: sort_param
+        ).email_export
       end
 
       def filter_params
