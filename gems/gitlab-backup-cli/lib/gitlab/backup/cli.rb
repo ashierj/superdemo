@@ -8,6 +8,7 @@ module Gitlab
       autoload :Runner, 'gitlab/backup/cli/runner'
       autoload :Utils, 'gitlab/backup/cli/utils'
       autoload :Dependencies, 'gitlab/backup/cli/dependencies'
+      autoload :Shell, 'gitlab/backup/cli/shell'
 
       Error = Class.new(StandardError)
       # Your code goes here...
