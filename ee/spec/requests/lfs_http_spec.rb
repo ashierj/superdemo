@@ -180,6 +180,82 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
             end
           end
 
+          context 'when push includes an lfs object that already exists' do
+            let(:existing_object) { create(:lfs_object, :with_file, size: 150.megabytes) }
+
+            let(:body) do
+              {
+                'operation' => 'upload',
+                'objects' => [
+                  {
+                    'oid' => sample_oid,
+                    'size' => sample_size
+                  },
+                  {
+                    'oid' => existing_object.oid,
+                    'size' => existing_object.size
+                  }
+                ]
+              }
+            end
+
+            before do
+              create(
+                :lfs_objects_project,
+                project: project,
+                lfs_object: existing_object
+              )
+            end
+
+            it 'uses new objects for change size' do
+              expect_next_instance_of(Gitlab::RepositorySizeChecker) do |checker|
+                expect(checker).to receive(:changes_will_exceed_size_limit?).with(sample_size, project)
+              end
+
+              batch_request
+            end
+
+            context 'when the push will not go over the repository size limit' do
+              let(:sample_size) { 75.megabytes }
+
+              before do
+                allow_next_instance_of(Gitlab::RepositorySizeChecker) do |checker|
+                  allow(checker).to receive_messages(
+                    enabled?: true,
+                    current_size: 150.megabytes,
+                    limit: 300.megabytes
+                  )
+                end
+              end
+
+              it 'responds with status 200' do
+                batch_request
+
+                expect(response).to have_gitlab_http_status(:ok)
+              end
+            end
+
+            context 'when the push will go over the repository size limit' do
+              let(:sample_size) { 275.megabytes }
+
+              before do
+                allow_next_instance_of(Gitlab::RepositorySizeChecker) do |checker|
+                  allow(checker).to receive_messages(
+                    enabled?: true,
+                    current_size: 150.megabytes,
+                    limit: 300.megabytes
+                  )
+                end
+              end
+
+              it 'responds with status 406' do
+                batch_request
+
+                expect(response).to have_gitlab_http_status(:not_acceptable)
+              end
+            end
+          end
+
           context 'when pushing to a subgroup project' do
             let(:sample_size) { 150.megabytes }
             let(:sample_oid) { '91eff75a492a3ed0dfcb544d7f31326bc4014c8551849c192fd1e48d4dd2c897' }
@@ -274,7 +350,7 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
     end
   end
 
-  describe 'when pushing a lfs object' do
+  describe 'when pushing an lfs object' do
     before do
       enable_lfs
     end

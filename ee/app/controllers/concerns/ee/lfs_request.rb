@@ -21,15 +21,14 @@ module EE
 
     override :limit_exceeded?
     def limit_exceeded?
-      strong_memoize(:limit_exceeded) do
-        size_checker.changes_will_exceed_size_limit?(lfs_push_size, project)
-      end
+      size_checker.changes_will_exceed_size_limit?(lfs_objects_change_size, project)
     end
+    strong_memoize_attr :limit_exceeded?
 
     def render_size_error
       render(
         json: {
-          message: size_checker.error_message.push_error(lfs_push_size),
+          message: size_checker.error_message.push_error(lfs_objects_change_size),
           documentation_url: help_url
         },
         content_type: ::LfsRequest::CONTENT_TYPE,
@@ -57,10 +56,23 @@ module EE
       project.repository_size_checker
     end
 
-    def lfs_push_size
-      strong_memoize(:lfs_push_size) do
-        objects.sum { |o| o[:size] }
-      end
+    def lfs_objects_change_size
+      return 0 if lfs_push_size == 0
+      return lfs_push_size if existing_pushed_lfs_objects_size == 0
+
+      lfs_push_size - existing_pushed_lfs_objects_size
     end
+    strong_memoize_attr :lfs_objects_change_size
+
+    def existing_pushed_lfs_objects_size
+      oids = objects_oids
+      project.lfs_objects.for_oids(oids).sum(:size)
+    end
+
+    # objects can contain LFS files that may not have been saved yet.
+    def lfs_push_size
+      objects.sum { |o| o[:size] }
+    end
+    strong_memoize_attr :lfs_push_size
   end
 end
