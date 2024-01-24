@@ -45,13 +45,8 @@ module Namespaces
       def alert_message
         [
           alert_message_explanation << " " << alert_message_cta,
-          alert_detailed_explanation,
           alert_message_faq
-        ].compact
-      end
-
-      def alert_detailed_explanation
-        # no-op: overridden in RepositoryLimitAlertComponent
+        ]
       end
 
       def alert_variant
