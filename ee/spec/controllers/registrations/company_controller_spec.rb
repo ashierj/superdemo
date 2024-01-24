@@ -92,7 +92,6 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
         country: 'US',
         state: 'CA',
         website_url: 'gitlab.com',
-        opt_in: 'true',
         trial: trial_registration
       }.merge(glm_params)
     end

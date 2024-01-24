@@ -6,6 +6,17 @@ RSpec.describe UserDetail, feature_category: :system_access do
   it { is_expected.to belong_to(:provisioned_by_group) }
   it { is_expected.to belong_to(:enterprise_group) }
 
+  describe 'validations' do
+    context 'with support for hash with indifferent access - ind_jsonb' do
+      specify do
+        user_detail = build(:user_detail, onboarding_status: { 'step_url' => '_string_' })
+        user_detail.onboarding_status[:email_opt_in] = true
+
+        expect(user_detail).to be_valid
+      end
+    end
+  end
+
   describe 'scopes' do
     describe '.with_enterprise_group' do
       subject(:scope) { described_class.with_enterprise_group }

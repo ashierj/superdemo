@@ -33,7 +33,7 @@
             = render 'jobs_to_be_done', f: f
             = render 'setup_for_company', f: f
             = render 'joining_project'
-            = render 'opt_in_to_email'
+            = render 'opt_in_to_email', f: f
             .row
               .form-group.col-sm-12.gl-mb-0
                 = render Pajamas::ButtonComponent.new(variant: :confirm, block: true,

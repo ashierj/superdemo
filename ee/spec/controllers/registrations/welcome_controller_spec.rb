@@ -152,13 +152,14 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
     let(:setup_for_company) { 'false' }
     let(:joining_project) { 'false' }
     let(:extra_params) { {} }
+    let(:extra_user_params) { {} }
     let(:update_params) do
       {
         user: {
           role: 'software_developer',
           setup_for_company: setup_for_company,
           registration_objective: 'code_storage'
-        },
+        }.merge(extra_user_params),
         joining_project: joining_project,
         jobs_to_be_done_other: '_jobs_to_be_done_other_',
         glm_source: 'some_source',
@@ -349,6 +350,65 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
             end
           end
 
+          context 'for email opt_in' do
+            using RSpec::Parameterized::TableSyntax
+
+            let(:invite?) { true }
+            let(:setup_for_company?) { false }
+
+            before do
+              allow_next_instance_of(::Onboarding::Status) do |instance|
+                allow(instance).to receive(:invite?).and_return(invite?)
+                allow(instance).to receive(:setup_for_company?).and_return(setup_for_company?)
+              end
+            end
+
+            where(:extra_user_params, :opt_in) do
+              { onboarding_status_email_opt_in: 'true' }  | true
+              { onboarding_status_email_opt_in: 'false' } | false
+              { onboarding_status_email_opt_in: nil }     | false
+              { onboarding_status_email_opt_in: '1' }     | true
+              { onboarding_status_email_opt_in: '0' }     | false
+              { onboarding_status_email_opt_in: '' }      | false
+              {}                                          | false
+            end
+
+            with_them do
+              context 'for an invite' do
+                specify do
+                  patch_update
+                  user.reload
+
+                  expect(user.onboarding_status_email_opt_in).to eq(false)
+                end
+              end
+
+              context 'for a non-invite' do
+                let(:invite?) { false }
+
+                context 'when setup_for_company is true' do
+                  let(:setup_for_company?) { true }
+
+                  specify do
+                    patch_update
+                    user.reload
+
+                    expect(user.onboarding_status_email_opt_in).to eq(true)
+                  end
+                end
+
+                context 'when setup_for_company is false' do
+                  specify do
+                    patch_update
+                    user.reload
+
+                    expect(user.onboarding_status_email_opt_in).to eq(opt_in)
+                  end
+                end
+              end
+            end
+          end
+
           context 'when setup_for_company is "true"' do
             let(:setup_for_company) { 'true' }
             let(:trial_concerns) { {} }
@@ -359,8 +419,7 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
                 role: 'software_developer',
                 jobs_to_be_done_other: '_jobs_to_be_done_other_',
                 glm_source: 'some_source',
-                glm_content: 'some_content',
-                opt_in: 'true'
+                glm_content: 'some_content'
               }.merge(trial_concerns)
             end
 
@@ -373,6 +432,8 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
 
               expect(user.onboarding_in_progress).to be_truthy
               expect(user.user_detail.onboarding_step_url).to eq(redirect_path)
+              expect(user.onboarding_status_step_url).to eq(redirect_path)
+              expect(user.onboarding_status_email_opt_in).to eq(true)
               expect(response).to redirect_to redirect_path
             end
 
@@ -413,12 +474,16 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
             context 'when trial is true' do
               using RSpec::Parameterized::TableSyntax
 
-              where(:extra_params, :opt_in) do
-                { trial: 'true', opt_in_to_email: 'true' }  | 'true'
-                { trial: 'true', opt_in_to_email: 'false' } | 'false'
-                { trial: 'true', opt_in_to_email: nil }     | 'false'
-                { trial: 'true', opt_in_to_email: '' }      | 'false'
-                { trial: 'true' }                           | 'false'
+              let(:extra_params) { { trial: 'true' } }
+
+              where(:extra_user_params, :opt_in) do
+                { onboarding_status_email_opt_in: 'true' }  | true
+                { onboarding_status_email_opt_in: 'false' } | false
+                { onboarding_status_email_opt_in: nil }     | false
+                { onboarding_status_email_opt_in: '1' }     | true
+                { onboarding_status_email_opt_in: '0' }     | false
+                { onboarding_status_email_opt_in: '' }      | false
+                {}                                          | false
               end
 
               with_them do
@@ -429,8 +494,7 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
                     jobs_to_be_done_other: '_jobs_to_be_done_other_',
                     glm_source: 'some_source',
                     glm_content: 'some_content',
-                    trial: 'true',
-                    opt_in: opt_in
+                    trial: 'true'
                   }
 
                   patch_update
@@ -439,6 +503,8 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
 
                   expect(user.onboarding_in_progress).to be_truthy
                   expect(user.user_detail.onboarding_step_url).to eq(path)
+                  expect(user.onboarding_status_step_url).to eq(path)
+                  expect(user.onboarding_status_email_opt_in).to eq(opt_in)
                   expect(response).to redirect_to path
                 end
               end
@@ -527,8 +593,7 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
                     glm_source: 'some_source',
                     jobs_to_be_done_other: '_jobs_to_be_done_other_',
                     registration_objective: 'code_storage',
-                    role: 'software_developer',
-                    opt_in: false
+                    role: 'software_developer'
                   }.merge(extra_params)
                 )
 

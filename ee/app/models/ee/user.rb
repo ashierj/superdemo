@@ -53,7 +53,8 @@ module EE
         to: :namespace
       delegate :provisioned_by_group, :provisioned_by_group=,
         :provisioned_by_group_id, :provisioned_by_group_id=,
-        :onboarding_step_url=,
+        :onboarding_step_url=, :onboarding_status_step_url, :onboarding_status_step_url=,
+        :onboarding_status_email_opt_in, :onboarding_status_email_opt_in=, :onboarding_status,
         to: :user_detail, allow_nil: true
 
       delegate :enabled_zoekt?, :enabled_zoekt, :enabled_zoekt=,
@@ -408,6 +409,11 @@ module EE
     override :has_current_license?
     def has_current_license?
       License.current.present?
+    end
+
+    def update_onboarding_status(field, value)
+      onboarding_status[field] = value
+      save
     end
 
     def using_license_seat?
