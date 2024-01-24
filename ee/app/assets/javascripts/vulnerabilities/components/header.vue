@@ -2,6 +2,7 @@
 import { GlLoadingIcon, GlButton, GlBadge, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 import { v4 as uuidv4 } from 'uuid';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import glAbilitiesMixin from '~/vue_shared/mixins/gl_abilities_mixin';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.vue';
 import { createAlert } from '~/alert';
@@ -39,9 +40,13 @@ export default {
   directives: {
     GlTooltip,
   },
-  mixins: [glFeatureFlagsMixin()],
+  mixins: [glFeatureFlagsMixin(), glAbilitiesMixin()],
   props: {
     vulnerability: {
+      type: Object,
+      required: true,
+    },
+    ability: {
       type: Object,
       required: true,
     },
@@ -70,7 +75,7 @@ export default {
       }
 
       if (
-        this.glFeatures.resolveVulnerability &&
+        this.glAbilities.resolveVulnerabilityAi &&
         this.vulnerability.reportType === REPORT_TYPE_SAST
       ) {
         buttons.push(HEADER_ACTION_BUTTONS.mergeRequestCreationAi);
