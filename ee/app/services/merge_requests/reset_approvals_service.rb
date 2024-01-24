@@ -19,7 +19,7 @@ module MergeRequests
         if skip_reset_checks
           # Delete approvals immediately, with no additional checks or side-effects
           #
-          delete_approvals(merge_request, patch_id_sha: mr_patch_id_sha)
+          delete_approvals(merge_request, patch_id_sha: mr_patch_id_sha, cause: :new_push)
         else
           reset_approvals(merge_request, newrev, patch_id_sha: mr_patch_id_sha)
         end
@@ -30,17 +30,17 @@ module MergeRequests
       super && merge_request.rebase_commit_sha != newrev
     end
 
-    def reset_approvals(merge_request, newrev = nil, patch_id_sha: nil)
+    def reset_approvals(merge_request, newrev = nil, patch_id_sha: nil, cause: :new_push)
       return unless reset_approvals?(merge_request, newrev)
 
       if delete_approvals?(merge_request)
-        delete_approvals(merge_request, patch_id_sha: patch_id_sha)
+        delete_approvals(merge_request, patch_id_sha: patch_id_sha, cause: cause)
       elsif merge_request.target_project.project_setting.selective_code_owner_removals
-        delete_code_owner_approvals(merge_request, patch_id_sha: patch_id_sha)
+        delete_code_owner_approvals(merge_request, patch_id_sha: patch_id_sha, cause: cause)
       end
     end
 
-    def delete_code_owner_approvals(merge_request, patch_id_sha: nil)
+    def delete_code_owner_approvals(merge_request, patch_id_sha: nil, cause: nil)
       return if merge_request.approvals.empty?
 
       code_owner_rules = approved_code_owner_rules(merge_request)
@@ -62,11 +62,13 @@ module MergeRequests
 
       filtered_approvals = merge_request.approvals.where(user_id: match_ids) # rubocop:disable CodeReuse/ActiveRecord
       filtered_approvals = filter_approvals(filtered_approvals, patch_id_sha) if patch_id_sha.present?
+      approver_ids = filtered_approvals.map(&:user_id)
 
       filtered_approvals.delete_all
 
       trigger_merge_request_merge_status_updated(merge_request)
       trigger_merge_request_approval_state_updated(merge_request)
+      publish_approvals_reset_event(merge_request, cause, approver_ids)
     end
 
     def approved_code_owner_rules(merge_request)

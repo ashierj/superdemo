@@ -19,6 +19,10 @@ RSpec.describe MergeRequests::CreateApprovalsResetNoteWorker, feature_category: 
 
   let(:approvals_reset_event) { MergeRequests::ApprovalsResetEvent.new(data: data) }
 
+  it_behaves_like 'subscribes to event' do
+    let(:event) { approvals_reset_event }
+  end
+
   it 'calls SystemNoteService.approvals_reset' do
     expect(SystemNoteService).to receive(:approvals_reset).with(merge_request, user, :new_push, [approver])
 
