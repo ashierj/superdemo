@@ -15,11 +15,11 @@ RSpec.describe UserPreference do
 
   describe 'roadmap_epics_state' do
     context 'when set to open epics' do
-      it_behaves_like 'updates roadmap_epics_state', Epic.state_ids[:opened]
+      it_behaves_like 'updates roadmap_epics_state', Epic.available_states[:opened]
     end
 
     context 'when set to closed epics' do
-      it_behaves_like 'updates roadmap_epics_state', Epic.state_ids[:closed]
+      it_behaves_like 'updates roadmap_epics_state', Epic.available_states[:closed]
     end
 
     context 'when reset to all epics' do
