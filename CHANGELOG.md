@@ -2061,6 +2061,12 @@ No changes.
 - [Remove pubsub migration helper for actioncable](gitlab-org/gitlab@763ca1305db6f1c9cf6700b8497494a81926d742) ([merge request](gitlab-org/gitlab!133066))
 - [Use partitioned table for CommitStatus](gitlab-org/gitlab@063826e042778995fae13928a2fb5de2c8855b45) ([merge request](gitlab-org/gitlab!134489))
 
+## 16.5.8 (2024-01-24)
+
+### Security (1 change)
+
+- [Devfile parser arbitrary file write](gitlab-org/security/gitlab@0a831ae0ed0eb32b42ab69652010815e9dffec51) ([merge request](gitlab-org/security/gitlab!3802))
+
 ## 16.5.7 (2024-01-13)
 
 ### Fixed (1 change)
