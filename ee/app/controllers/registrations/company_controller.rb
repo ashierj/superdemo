@@ -50,8 +50,7 @@ module Registrations
         # passed through params
         :role,
         :registration_objective,
-        :jobs_to_be_done_other,
-        :opt_in
+        :jobs_to_be_done_other
       ).merge(glm_tracking_params)
     end
 

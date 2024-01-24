@@ -11,8 +11,10 @@ module Onboarding
     end
 
     def save_onboarding_step_url(onboarding_step_url, user)
-      Onboarding.user_onboarding_in_progress?(user) &&
-        user.user_detail.update(onboarding_step_url: onboarding_step_url)
+      return unless Onboarding.user_onboarding_in_progress?(user)
+
+      user.user_detail.onboarding_step_url = onboarding_step_url
+      user.update_onboarding_status(:step_url, onboarding_step_url)
     end
 
     def start_onboarding(onboarding_step_url, user)
@@ -20,6 +22,7 @@ module Onboarding
 
       user.onboarding_in_progress = true
       user.user_detail.onboarding_step_url = onboarding_step_url
+      user.onboarding_status_step_url = onboarding_step_url
       user
     end
 

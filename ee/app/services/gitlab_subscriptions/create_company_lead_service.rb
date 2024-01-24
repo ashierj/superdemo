@@ -30,7 +30,8 @@ module GitlabSubscriptions
         uid: user.id,
         work_email: user.email,
         setup_for_company: user.setup_for_company,
-        preferred_language: ::Gitlab::I18n.trimmed_language_name(user.preferred_language)
+        preferred_language: ::Gitlab::I18n.trimmed_language_name(user.preferred_language),
+        opt_in: user.onboarding_status_email_opt_in
       }
     end
 
