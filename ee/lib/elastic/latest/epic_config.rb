@@ -21,7 +21,7 @@ module Elastic
         indexes :updated_at, type: :date
 
         indexes :title, type: :text, index_options: 'positions'
-        indexes :description, type: :text, index_options: 'positions', analyzer: :code_analyzer
+        indexes :description, type: :text, index_options: 'positions'
         indexes :state, type: :keyword
         indexes :confidential, type: :boolean
         indexes :author_id, type: :integer
