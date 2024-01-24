@@ -23166,7 +23166,26 @@ Machine learning model in the model registry.
 | <a id="mlmodellatestversion"></a>`latestVersion` | [`MlModelVersion`](#mlmodelversion) | Latest version of the model. |
 | <a id="mlmodelname"></a>`name` | [`String!`](#string) | Name of the model. |
 | <a id="mlmodelversioncount"></a>`versionCount` | [`Int`](#int) | Count of versions in the model. |
-| <a id="mlmodelversions"></a>`versions` | [`MlModelVersionConnection`](#mlmodelversionconnection) | Versions of the model. (see [Connections](#connections)) |
+
+#### Fields with arguments
+
+##### `MlModel.versions`
+
+Versions of the model.
+
+Returns [`MlModelVersionConnection`](#mlmodelversionconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlmodelversionsorderby"></a>`orderBy` | [`MlModelVersionsOrderBy`](#mlmodelversionsorderby) | Ordering column. Default is created_at. |
+| <a id="mlmodelversionssort"></a>`sort` | [`SortDirectionEnum`](#sortdirectionenum) | Ordering column. Default is desc. |
+| <a id="mlmodelversionsversion"></a>`version` | [`String`](#string) | Search for versions where the name includes the string. |
 
 ### `MlModelVersion`
 
@@ -31161,6 +31180,16 @@ Milestone ID wildcard values.
 | <a id="milestonewildcardidnone"></a>`NONE` | No milestone is assigned. |
 | <a id="milestonewildcardidstarted"></a>`STARTED` | Milestone assigned is open and started (start date <= today). |
 | <a id="milestonewildcardidupcoming"></a>`UPCOMING` | Milestone assigned is due in the future (due date > today). |
+
+### `MlModelVersionsOrderBy`
+
+Field names for ordering machine learning model versions.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="mlmodelversionsorderbycreated_at"></a>`CREATED_AT` | Ordered by creation time. |
+| <a id="mlmodelversionsorderbyid"></a>`ID` | Ordered by id. |
+| <a id="mlmodelversionsorderbyversion"></a>`VERSION` | Ordered by name. |
 
 ### `MlModelsOrderBy`
 
