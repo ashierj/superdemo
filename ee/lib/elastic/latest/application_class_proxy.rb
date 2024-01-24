@@ -377,7 +377,7 @@ module Elastic
 
         project_ids = filter_ids_by_feature(scoped_project_ids, current_user, options[:features])
         rejected_ids = namespaces.flat_map do |namespace|
-          namespace.all_project_ids_except(project_ids)
+          namespace.all_project_ids_except(project_ids).pluck_primary_key
         end
 
         {

@@ -57,19 +57,16 @@ module Registrations
     end
 
     def update_params
-      params.require(:user).permit(:role, :setup_for_company, :registration_objective)
+      params.require(:user)
+            .permit(:role, :setup_for_company, :registration_objective, :onboarding_status_email_opt_in)
+            .merge(onboarding_status_email_opt_in: parsed_opt_in)
     end
 
     def passed_through_params
-      opt_in_param = {
-        opt_in: ::Gitlab::Utils.to_boolean(params[:opt_in_to_email], default: onboarding_status.setup_for_company?)
-      }
-
       update_params.slice(:role, :registration_objective)
                    .merge(params.permit(:jobs_to_be_done_other))
                    .merge(glm_tracking_params)
                    .merge(params.permit(:trial))
-                   .merge(opt_in_param)
     end
 
     def iterable_params
@@ -80,7 +77,7 @@ module Registrations
         comment: params[:jobs_to_be_done_other],
         jtbd: update_params[:registration_objective],
         product_interaction: onboarding_status.iterable_product_interaction,
-        opt_in: ::Gitlab::Utils.to_boolean(params[:opt_in_to_email], default: false),
+        opt_in: current_user.onboarding_status_email_opt_in,
         preferred_language: ::Gitlab::I18n.trimmed_language_name(current_user.preferred_language)
       }.merge(update_params.slice(:setup_for_company, :role).to_h.symbolize_keys)
     end
@@ -119,6 +116,15 @@ module Registrations
         save_onboarding_step_url(path, current_user)
         path
       end
+    end
+
+    def parsed_opt_in
+      return false if onboarding_status.invite? # order matters here as invites are treated differently
+      # The below would override DOM setting, but DOM is interwoven with JS to hide the opt in checkbox if
+      # setup for company is toggled, so this is where this is a bit complex to think about
+      return true if onboarding_status.setup_for_company?
+
+      ::Gitlab::Utils.to_boolean(params.dig(:user, :onboarding_status_email_opt_in), default: false)
     end
 
     def track_joining_a_project_event

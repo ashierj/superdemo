@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: :subscription_management do
-  let(:user) { build(:user, last_name: 'Jones') }
+  let(:user) { build(:user, last_name: 'Jones', onboarding_status_email_opt_in: true) }
 
   describe '#execute' do
     using RSpec::Parameterized::TableSyntax
@@ -16,6 +16,7 @@ RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: 
         last_name: user.last_name,
         work_email: user.email,
         setup_for_company: user.setup_for_company,
+        opt_in: user.onboarding_status_email_opt_in,
         preferred_language: 'English',
         provider: 'gitlab',
         skip_email_confirmation: true,

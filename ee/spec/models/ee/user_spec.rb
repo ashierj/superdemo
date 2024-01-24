@@ -17,6 +17,15 @@ RSpec.describe User, feature_category: :system_access do
     it { is_expected.to delegate_method(:shared_runners_minutes_limit).to(:namespace) }
     it { is_expected.to delegate_method(:shared_runners_minutes_limit=).to(:namespace).with_arguments(133) }
     it { is_expected.to delegate_method(:onboarding_step_url=).to(:user_detail).with_arguments('_url_').allow_nil }
+    it { is_expected.to delegate_method(:onboarding_status_step_url=).to(:user_detail).with_arguments('url').allow_nil }
+    it { is_expected.to delegate_method(:onboarding_status_step_url).to(:user_detail).allow_nil }
+
+    it do
+      is_expected.to delegate_method(:onboarding_status_email_opt_in=).to(:user_detail).with_arguments(true).allow_nil
+    end
+
+    it { is_expected.to delegate_method(:onboarding_status_email_opt_in).to(:user_detail).allow_nil }
+    it { is_expected.to delegate_method(:onboarding_status).to(:user_detail).allow_nil }
   end
 
   describe 'associations' do
@@ -699,6 +708,43 @@ RSpec.describe User, feature_category: :system_access do
       expect(user.access_level).to eq(:auditor)
       expect(user.admin).to be false
       expect(user.auditor).to be true
+    end
+  end
+
+  describe '#update_onboarding_status' do
+    let_it_be(:user, reload: true) { create(:user) }
+
+    context 'with adding attribute' do
+      it 'sets the attribute' do
+        expect(user.onboarding_status_step_url).to eq(nil)
+        expect(user.update_onboarding_status(:step_url, '_step_url_')).to be_truthy
+        expect(user.reload.onboarding_status_step_url).to eq('_step_url_')
+      end
+    end
+
+    context 'with overriding existing attribute' do
+      before do
+        user.update!(onboarding_status_step_url: '_foo_')
+      end
+
+      it 'sets the attribute' do
+        expect(user.update_onboarding_status(:step_url, '_step_url_')).to be_truthy
+        expect(user.reload.onboarding_status_step_url).to eq('_step_url_')
+      end
+
+      context 'when overriding with string field value' do
+        it 'sets the attribute' do
+          expect(user.update_onboarding_status('step_url', '_step_url_')).to be_truthy
+          expect(user.reload.onboarding_status_step_url).to eq('_step_url_')
+        end
+      end
+    end
+
+    context 'with an unknown attribute' do
+      it 'does not set the attribute' do
+        expect(user.update_onboarding_status(:foo, '_foo_')).to be(false)
+        expect(user).to be_invalid
+      end
     end
   end
 
