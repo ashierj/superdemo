@@ -39,9 +39,8 @@ RSpec.describe Admin::UsersController, feature_category: :user_management do
       end
 
       it 'updates the value' do
-        expect { put :update, params: params }.to change { user.arkose_risk_band }
-          .from(Arkose::VerifyResponse::RISK_BAND_MEDIUM.downcase)
-          .to(Arkose::VerifyResponse::RISK_BAND_LOW.downcase)
+        expect { put :update, params: params }
+          .to change { user.custom_attributes.by_key('arkose_risk_band').first.value }.from('Medium').to('Low')
 
         expect(response).to redirect_to(admin_user_path(user))
       end

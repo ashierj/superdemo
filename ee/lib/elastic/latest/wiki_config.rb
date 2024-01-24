@@ -17,7 +17,7 @@ module Elastic
         indexes :type, type: :keyword
 
         indexes :project_id, type: :integer
-        indexes :group_id, type: :integer
+        indexes :group_id, type: :long
         indexes :rid, type: :keyword
         indexes :oid, type: :keyword, index_options: 'docs', normalizer: :sha_normalizer
         indexes :traversal_ids, type: :keyword

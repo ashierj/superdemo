@@ -250,7 +250,7 @@ module Users
     def require_arkose_verification!
       return unless arkose_labs_enabled?
       return unless @user.identities.any?
-      return unless @user.arkose_risk_band.blank?
+      return if @user.arkose_verified?
 
       redirect_to action: :arkose_labs_challenge
     end
