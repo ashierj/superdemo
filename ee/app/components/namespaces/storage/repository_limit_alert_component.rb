@@ -3,28 +3,6 @@
 module Namespaces
   module Storage
     class RepositoryLimitAlertComponent < LimitAlertComponent
-      def alert_detailed_explanation
-        return unless root_storage_size.above_size_limit?
-
-        excess_storage_projects = root_namespace.top_most_excess_storage_projects.map do |project|
-          content_tag(:li) { link_to(project.full_path, project_path(project)) }
-        end
-
-        text_args = {
-          projects_list: content_tag(:ul, excess_storage_projects.join.html_safe),
-          repository_size_excess_project_count: root_namespace.repository_size_excess_project_count
-        }
-
-        Kernel.format(
-          ns_(
-            "ProjectExceededSize|Here is the project exceeding the storage quota:%{projects_list}",
-            "ProjectExceededSize|From the %{repository_size_excess_project_count} projects exceeding the quota, " \
-            "below are the projects using the most storage:%{projects_list}",
-            text_args[:repository_size_excess_project_count]
-          ) % text_args
-        ).html_safe
-      end
-
       def usage_percentage_alert_title
         text_args = {
           usage_in_percent: used_storage_percentage(root_storage_size.usage_ratio),

@@ -70,7 +70,7 @@ To edit a test case:
 
 ## Make a test case confidential
 
-> Introduced for [new](https://gitlab.com/gitlab-org/gitlab/-/issues/422121) and [existing](https://gitlab.com/gitlab-org/gitlab/-/issues/422120) test cases in GitLab 16.5.
+> - Introduced for [new](https://gitlab.com/gitlab-org/gitlab/-/issues/422121) and [existing](https://gitlab.com/gitlab-org/gitlab/-/issues/422120) test cases in GitLab 16.5.
 
 If you're working on a test case that contains private information, you can make it confidential.
 

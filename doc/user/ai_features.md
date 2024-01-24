@@ -55,7 +55,7 @@ The following subsections describe the experimental AI features in more detail.
 
 ### Explain code in the Web UI with Code explanation **(ULTIMATE SAAS EXPERIMENT)**
 
-> Introduced in GitLab 15.11 as an [Experiment](../policy/experiment-beta-support.md#experiment) on GitLab.com.
+> - Introduced in GitLab 15.11 as an [Experiment](../policy/experiment-beta-support.md#experiment) on GitLab.com.
 
 To use this feature:
 
@@ -100,7 +100,7 @@ We cannot guarantee that the large language model produces results that are corr
 
 ### Summarize issue discussions with Discussion summary **(ULTIMATE SAAS EXPERIMENT)**
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10344) in GitLab 16.0 as an [Experiment](../policy/experiment-beta-support.md#experiment).
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10344) in GitLab 16.0 as an [Experiment](../policy/experiment-beta-support.md#experiment).
 
 To use this feature:
 
@@ -123,7 +123,7 @@ language model referenced above.
 
 ### Forecast deployment frequency with Value stream forecasting **(ULTIMATE ALL EXPERIMENT)**
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10228) in GitLab 16.2 as an [Experiment](../policy/experiment-beta-support.md#experiment).
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10228) in GitLab 16.2 as an [Experiment](../policy/experiment-beta-support.md#experiment).
 
 To use this feature:
 
@@ -148,7 +148,7 @@ Provide feedback on this experimental feature in [issue 416833](https://gitlab.c
 
 ### Root cause analysis **(ULTIMATE SAAS EXPERIMENT)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/123692) in GitLab 16.2 as an [Experiment](../policy/experiment-beta-support.md#experiment).
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/123692) in GitLab 16.2 as an [Experiment](../policy/experiment-beta-support.md#experiment).
 
 To use this feature:
 
@@ -162,7 +162,7 @@ reason for the failure.
 
 ### Summarize an issue with Issue description generation **(ULTIMATE SAAS EXPERIMENT)**
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10762) in GitLab 16.3 as an [Experiment](../policy/experiment-beta-support.md#experiment).
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10762) in GitLab 16.3 as an [Experiment](../policy/experiment-beta-support.md#experiment).
 
 To use this feature:
 
