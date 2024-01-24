@@ -55631,10 +55631,10 @@ msgstr ""
 msgid "WikiPage|Write your content or drag files here…"
 msgstr ""
 
-msgid "Wiki|Create New Page"
+msgid "Wiki|Edit Page"
 msgstr ""
 
-msgid "Wiki|Edit Page"
+msgid "Wiki|New Page"
 msgstr ""
 
 msgid "Wiki|New page"
