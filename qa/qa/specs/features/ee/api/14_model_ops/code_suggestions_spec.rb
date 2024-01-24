@@ -77,10 +77,7 @@ module QA
           it_behaves_like 'completions API with PAT auth', :code_completion, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/436992'
         end
 
-        context 'on Self-managed', :orchestrated, :ai_gateway, quarantine: {
-          type: :investigating,
-          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/436465'
-        } do
+        context 'on Self-managed', :orchestrated, :ai_gateway do
           let(:project_path) { nil }
           let(:project_id) { nil }
           let(:expected_language) { 'ruby' }
@@ -110,17 +107,6 @@ module QA
 
           it_behaves_like 'completions API with PAT auth', :code_generation, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/420973'
         end
-
-        context 'on Self-managed', :orchestrated, :ai_gateway, quarantine: {
-          type: :investigating,
-          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/436465'
-        } do
-          let(:project_path) { nil }
-          let(:project_id) { nil }
-          let(:expected_language) { 'python' }
-
-          it_behaves_like 'completions API with PAT auth', :code_generation, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/435227'
-        end
       end
 
       context 'when streaming code suggestions' do
@@ -144,16 +130,6 @@ module QA
           let(:project_id) { 278964 }
 
           it_behaves_like 'completions API with PAT auth using streaming', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/436994'
-        end
-
-        context 'on Self-managed', :orchestrated, :ai_gateway, quarantine: {
-          type: :investigating,
-          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/436465'
-        } do
-          let(:project_path) { nil }
-          let(:project_id) { nil }
-
-          it_behaves_like 'completions API with PAT auth using streaming', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/436995'
         end
       end
 
