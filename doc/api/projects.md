@@ -4,7 +4,11 @@ group: Tenant Scale
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Projects API **(FREE ALL)**
+# Projects API 
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 Interact with [projects](../user/project/index.md) by using the REST API.
 
@@ -1348,9 +1352,13 @@ target the upstream project by default.
 }
 ```
 
-### Templates for issues and merge requests **(PREMIUM ALL)**
+### Templates for issues and merge requests 
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/55718) in GitLab 13.10.
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/55718) in GitLab 13.10.
 
 Users of [GitLab Premium or Ultimate](https://about.gitlab.com/pricing/)
 can also see the `issues_template` and `merge_requests_template` parameters for managing
@@ -2522,9 +2530,13 @@ DELETE /projects/:id
 | `full_path`                            | string            | no       | Full path of project to use with `permanently_remove`. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/396500) in GitLab 15.11. To find the project path, use `path_with_namespace` from [get single project](projects.md#get-single-project). Premium and Ultimate only. |
 | `permanently_remove`                   | boolean/string    | no       | Immediately deletes a project if it is marked for deletion. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/396500) in GitLab 15.11. Premium and Ultimate only. |
 
-## Restore project marked for deletion **(PREMIUM ALL)**
+## Restore project marked for deletion 
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/32935) in GitLab 12.6.
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/32935) in GitLab 12.6.
 
 Restores project marked for deletion.
 
@@ -2614,7 +2626,7 @@ Returned object:
 
 ## Remove a project avatar
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92604) in GitLab 15.4.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92604) in GitLab 15.4.
 
 To remove a project avatar, use a blank value for the `avatar` attribute.
 
@@ -2901,7 +2913,11 @@ POST /projects/:id/housekeeping
 | `id`      | integer or string | Yes      | The ID or [URL-encoded path of the project](rest/index.md#namespaced-path-encoding). |
 | `task`    | string            | No       | `prune` to trigger manual prune of unreachable objects or `eager` to trigger eager housekeeping. |
 
-## Push rules **(PREMIUM ALL)**
+## Push rules 
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 ### Get project push rules
 
@@ -2986,7 +3002,7 @@ PUT /projects/:id/push_rule
 
 ### Delete project push rule
 
-> Moved to GitLab Premium in 13.9.
+> - Moved to GitLab Premium in 13.9.
 
 Removes a push rule from a project.
 
@@ -3000,7 +3016,7 @@ DELETE /projects/:id/push_rule
 
 ## Get groups to which a user can transfer a project
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/371006) in GitLab 15.4
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/371006) in GitLab 15.4
 
 Retrieve a list of groups to which the user can transfer a project.
 
@@ -3192,9 +3208,13 @@ Read more in the [Project members](members.md) documentation.
 
 Read more in the [Project vulnerabilities](project_vulnerabilities.md) documentation.
 
-## Get a project's pull mirror details **(PREMIUM ALL)**
+## Get a project's pull mirror details 
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/354506) in GitLab 15.6.
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/354506) in GitLab 15.6.
 
 Returns the details of the project's pull mirror.
 
@@ -3228,7 +3248,11 @@ Example response:
 }
 ```
 
-## Configure pull mirroring for a project **(PREMIUM ALL)**
+## Configure pull mirroring for a project 
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 > - Field `mirror_branch_regex` [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/381667) in GitLab 15.8 [with a flag](../administration/feature_flags.md) named `mirror_only_branches_match_regex`. Disabled by default.
 > - [Enabled by default](https://gitlab.com/gitlab-org/gitlab/-/issues/381667) in GitLab 16.0.
@@ -3282,9 +3306,13 @@ curl --request PUT --header "PRIVATE-TOKEN: <your_access_token>" \
  --data "mirror=false"
 ```
 
-## Start the pull mirroring process for a Project **(PREMIUM ALL)**
+## Start the pull mirroring process for a Project 
 
-> Moved to GitLab Premium in 13.9.
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+
+> - Moved to GitLab Premium in 13.9.
 
 ```plaintext
 POST /projects/:id/mirror/pull
@@ -3324,7 +3352,7 @@ GET /projects/:id/snapshot
 
 ## Get the path to repository storage
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/29861) in GitLab 14.0.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/29861) in GitLab 14.0.
 
 Get the path to repository storage for specified project if Gitaly Cluster is not being used. If Gitaly Cluster is being used, see
 [Praefect-generated replica paths (GitLab 15.0 and later)](../administration/gitaly/index.md#praefect-generated-replica-paths-gitlab-150-and-later).
