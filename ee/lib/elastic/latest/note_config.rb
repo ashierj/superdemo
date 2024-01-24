@@ -21,7 +21,7 @@ module Elastic
 
         indexes :id, type: :integer
 
-        indexes :note, type: :text, index_options: 'positions'
+        indexes :note, type: :text, index_options: 'positions', analyzer: :code_analyzer
         indexes :project_id, type: :integer
 
         indexes :noteable_type, type: :keyword
