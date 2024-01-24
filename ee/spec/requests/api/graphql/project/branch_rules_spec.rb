@@ -89,11 +89,27 @@ RSpec.describe 'getting list of branch rules for a project', feature_category: :
         create(:protected_branch, project: project, name: branch_name_b)
       end
 
+      let_it_be(:all_branches_external_status_check) do
+        create(:external_status_check, project: project)
+      end
+
+      let_it_be(:all_branches_approval_rule) do
+        create(:approval_project_rule, project: project)
+      end
+
+      let_it_be(:all_protected_branches_approval_rule) do
+        create(:approval_project_rule, project: project, applies_to_all_protected_branches: true)
+      end
+
       let(:branch_rule_a) { Projects::BranchRule.new(project, protected_branch_a) }
       let(:branch_rule_b) { Projects::BranchRule.new(project, protected_branch_b) }
+      let(:all_branches_rule) { Projects::AllBranchesRule.new(project) }
+      let(:all_protected_branches_rule) { Projects::AllProtectedBranchesRule.new(project) }
       # branchRules are returned in alphabetical order
-      let(:branch_rule_b_data) { branch_rules_data.first }
-      let(:branch_rule_a_data) { branch_rules_data.second }
+      let(:all_branches_rule_data) { branch_rules_data.first }
+      let(:all_protected_branches_rule_data) { branch_rules_data.second }
+      let(:branch_rule_b_data) { branch_rules_data.third }
+      let(:branch_rule_a_data) { branch_rules_data.fourth }
 
       before do
         post_graphql(query, current_user: current_user, variables: variables)
@@ -102,6 +118,49 @@ RSpec.describe 'getting list of branch rules for a project', feature_category: :
       it_behaves_like 'a working graphql query'
 
       it 'includes all fields', :use_sql_query_cache, :aggregate_failures do
+        expect(all_branches_rule_data).to include(
+          'name' => all_branches_rule.name,
+          'isDefault' => all_branches_rule.default_branch?,
+          'isProtected' => all_branches_rule.protected?,
+          'matchingBranchesCount' => all_branches_rule.matching_branches_count,
+          'branchProtection' => all_branches_rule.branch_protection,
+          'createdAt' => all_branches_rule.created_at.iso8601,
+          'updatedAt' => all_branches_rule.updated_at.iso8601,
+          'approvalRules' => be_kind_of(Hash),
+          'externalStatusChecks' => be_kind_of(Hash)
+        )
+        approval_rules_data = all_branches_rule_data['approvalRules']['nodes']
+        expect(approval_rules_data).to eq([{
+          'id' => all_branches_approval_rule.to_global_id.to_s,
+          'name' => all_branches_approval_rule.name,
+          'type' => 'REGULAR',
+          'approvalsRequired' => 0
+        }])
+        external_checks_data = all_branches_rule_data['externalStatusChecks']['nodes']
+        expect(external_checks_data).to eq([{
+          'id' => all_branches_external_status_check.to_global_id.to_s,
+          'name' => all_branches_external_status_check.name,
+          'externalUrl' => all_branches_external_status_check.external_url
+        }])
+        expect(all_protected_branches_rule_data).to include(
+          'name' => all_protected_branches_rule.name,
+          'isDefault' => all_protected_branches_rule.default_branch?,
+          'isProtected' => all_protected_branches_rule.protected?,
+          'matchingBranchesCount' => all_protected_branches_rule.matching_branches_count,
+          'branchProtection' => all_protected_branches_rule.branch_protection,
+          'createdAt' => all_protected_branches_rule.created_at.iso8601,
+          'updatedAt' => all_protected_branches_rule.updated_at.iso8601,
+          'approvalRules' => be_kind_of(Hash),
+          'externalStatusChecks' => be_kind_of(Hash)
+        )
+        approval_rules_data = all_protected_branches_rule_data['approvalRules']['nodes']
+        expect(approval_rules_data).to eq([{
+          'id' => all_protected_branches_approval_rule.to_global_id.to_s,
+          'name' => all_protected_branches_approval_rule.name,
+          'type' => 'REGULAR',
+          'approvalsRequired' => 0
+        }])
+
         expect(branch_rule_a_data).to include(
           'name' => branch_rule_a.name,
           'isDefault' => branch_rule_a.default_branch?,
