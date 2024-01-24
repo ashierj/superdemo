@@ -9,8 +9,8 @@ module EE
       include CrudPolicyHelpers
 
       condition(:ldap_synced, scope: :subject) { @subject.ldap_synced? }
-      condition(:saml_group_links_enabled, scope: :subject) do
-        @subject.root_ancestor.saml_group_links_enabled?
+      condition(:saml_group_links_exists, scope: :subject) do
+        @subject.root_ancestor.saml_group_links_exists?
       end
 
       condition(:epics_available, scope: :subject) { @subject.feature_available?(:epics) }
@@ -121,7 +121,7 @@ module EE
         !@subject.subgroup? && @subject.feature_available?(:group_saml)
       end
 
-      condition(:group_saml_group_sync_available, scope: :subject) do
+      condition(:saml_group_sync_available, scope: :subject) do
         @subject.saml_group_sync_available?
       end
 
@@ -436,7 +436,7 @@ module EE
 
       rule { group_saml_globally_enabled & group_saml_available & (admin | owner) }.enable :admin_group_saml
 
-      rule { group_saml_group_sync_available & (admin | owner) }.policy do
+      rule { saml_group_sync_available & (admin | owner) }.policy do
         enable :admin_saml_group_links
       end
 
@@ -464,7 +464,7 @@ module EE
         enable :admin_service_accounts
       end
 
-      rule { memberships_locked_to_saml & saml_group_links_enabled & ~admin }.policy do
+      rule { memberships_locked_to_saml & saml_group_sync_available & saml_group_links_exists & ~admin }.policy do
         prevent :admin_group_member
       end
 

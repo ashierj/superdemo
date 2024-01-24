@@ -100,5 +100,13 @@ module EE
     def group_saml_enabled?
       auth_providers.include?(:group_saml)
     end
+
+    def saml_group_sync_enabled?
+      return true if group_saml_enabled?
+
+      saml_providers.any? do |provider|
+        ::Gitlab::Auth::Saml::Config.new(provider).group_sync_enabled?
+      end
+    end
   end
 end

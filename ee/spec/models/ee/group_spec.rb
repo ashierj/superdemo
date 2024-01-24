@@ -2325,8 +2325,8 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
-  describe '#saml_group_links_enabled?' do
-    subject { group.saml_group_links_enabled? }
+  describe '#saml_group_links_exists?' do
+    subject { group.saml_group_links_exists? }
 
     context 'with group saml disabled' do
       it { is_expected.to eq(false) }
