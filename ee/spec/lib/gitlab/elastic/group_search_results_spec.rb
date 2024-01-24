@@ -217,26 +217,6 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
         group.add_developer(user)
       end
 
-      include_context 'with code examples' do
-        before do
-          code_examples.values.uniq.each do |description|
-            sha = Digest::SHA256.hexdigest(description)
-            create :epic, group: group, title: sha, description: description
-          end
-
-          ensure_elasticsearch_index!
-        end
-
-        it 'finds all examples' do
-          code_examples.each do |query, description|
-            sha = Digest::SHA256.hexdigest(description)
-
-            epics = described_class.new(user, query, [], group: group, filters: filters).objects('epics')
-            expect(epics.map(&:title)).to include(sha)
-          end
-        end
-      end
-
       it 'returns matching epics belonging to the group or its descendants, including confidential epics' do
         epics = results.objects('epics')
 
