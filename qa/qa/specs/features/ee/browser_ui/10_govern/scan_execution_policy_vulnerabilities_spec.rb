@@ -77,7 +77,7 @@ module QA
         create_commit(commit_branch) # commit_branch variable is also used in create_test_mr function
 
         create_test_mr
-        Flow::Pipeline.wait_for_latest_pipeline(status: 'Passed')
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'Passed', wait: 90)
         # Check that secret-detection job is NOT present in MR pipeline (non-default branch)
         expect(pipeline_has_a_job?).to be_falsey
       end

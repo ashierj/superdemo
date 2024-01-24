@@ -98,7 +98,7 @@ module QA
         # Create MR after creating the scan result policy
         merge_request = create_test_mr
 
-        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed', wait: 90)
         merge_request.visit!
 
         Page::MergeRequest::Show.perform do |mr|

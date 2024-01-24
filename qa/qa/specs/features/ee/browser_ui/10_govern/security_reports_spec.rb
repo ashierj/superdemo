@@ -280,7 +280,7 @@ module QA
       end
 
       def wait_for_pipeline_success
-        Support::Waiter.wait_until(sleep_interval: 10, message: "Check for pipeline success") do
+        Support::Waiter.wait_until(sleep_interval: 10, message: "Check for pipeline success", max_duration: 90) do
           latest_pipeline.status == 'success'
         end
       end

@@ -44,7 +44,7 @@ module QA
           target_new_branch: false)
 
         @project.visit!
-        Flow::Pipeline.wait_for_latest_pipeline(status: 'Passed')
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'Passed', wait: 90)
 
         merge_request.visit!
       end
