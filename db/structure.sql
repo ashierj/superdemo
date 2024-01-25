@@ -29133,7 +29133,7 @@ ALTER TABLE ONLY ci_job_artifact_states
     ADD CONSTRAINT ci_job_artifact_states_pkey PRIMARY KEY (job_artifact_id);
 
 ALTER TABLE ONLY ci_job_artifacts
-    ADD CONSTRAINT ci_job_artifacts_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT ci_job_artifacts_pkey PRIMARY KEY (id, partition_id);
 
 ALTER TABLE ONLY ci_job_token_project_scope_links
     ADD CONSTRAINT ci_job_token_project_scope_links_pkey PRIMARY KEY (id);
@@ -33000,8 +33000,6 @@ CREATE INDEX index_ci_job_artifacts_on_file_final_path ON ci_job_artifacts USING
 CREATE INDEX index_ci_job_artifacts_on_file_store ON ci_job_artifacts USING btree (file_store);
 
 CREATE INDEX index_ci_job_artifacts_on_file_type_for_devops_adoption ON ci_job_artifacts USING btree (file_type, project_id, created_at) WHERE (file_type = ANY (ARRAY[5, 6, 8, 23]));
-
-CREATE UNIQUE INDEX index_ci_job_artifacts_on_id_partition_id_unique ON ci_job_artifacts USING btree (id, partition_id);
 
 CREATE INDEX index_ci_job_artifacts_on_id_project_id_and_created_at ON ci_job_artifacts USING btree (project_id, created_at, id);
 
