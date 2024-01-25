@@ -1,33 +1,24 @@
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import { GlCollapsibleListbox } from '@gitlab/ui';
-import fuzzaldrinPlus from 'fuzzaldrin-plus';
+
 import { shallowMount } from '@vue/test-utils';
 import StreamNamespaceFilters from 'ee/audit_events/components/stream/stream_namespace_filters.vue';
+import getNamespaceFiltersQuery from 'ee/audit_events/graphql/queries/get_namespace_filters.query.graphql';
+
 import { AUDIT_STREAMS_FILTERING } from 'ee/audit_events/constants';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import {
-  mockExternalDestinations,
   mockAuditEventDefinitions,
-  createAllGroups,
-  createAllProjects,
   mockNamespaceFilter,
+  getMockNamespaceFilters,
 } from '../../mock_data';
 
-const EXPECTED_ITEMS = [
-  {
-    text: 'Groups',
-    options: [
-      { text: 'sub group 0', value: 'gitlab-org/sub-group-0', type: 'Groups' },
-      { text: 'sub group 1', value: 'gitlab-org/sub-group-1', type: 'Groups' },
-    ],
-  },
-  {
-    text: 'Projects',
-    options: [
-      { text: 'project 0', value: 'gitlab-org/project-0', type: 'Projects' },
-      { text: 'project 1', value: 'gitlab-org/project-1', type: 'Projects' },
-      { text: 'project 2', value: 'gitlab-org/project-2', type: 'Projects' },
-    ],
-  },
-];
+Vue.use(VueApollo);
+
+const namespaceFilters = getMockNamespaceFilters();
+const getNamespaceFiltersQueryFn = jest.fn().mockResolvedValue(namespaceFilters);
+const fakeApollo = createMockApollo([[getNamespaceFiltersQuery, getNamespaceFiltersQueryFn]]);
 
 describe('StreamWithNamespaceFilters', () => {
   let wrapper;
@@ -35,27 +26,27 @@ describe('StreamWithNamespaceFilters', () => {
   const createComponent = (props) => {
     wrapper = shallowMount(StreamNamespaceFilters, {
       propsData: {
-        value: mockNamespaceFilter(mockExternalDestinations[1].namespaceFilter.namespace.fullPath),
+        value: mockNamespaceFilter(namespaceFilters.data.group.projects.nodes[0].fullPath),
         ...props,
       },
+      apolloProvider: fakeApollo,
       provide: {
         auditEventDefinitions: mockAuditEventDefinitions,
-        allGroups: createAllGroups(2),
-        allProjects: createAllProjects(3),
+        groupPath: 'group1',
       },
     });
+
+    return nextTick();
   };
 
   const findCollapsibleListbox = () => wrapper.findComponent(GlCollapsibleListbox);
 
-  beforeEach(() => {
-    createComponent();
-  });
+  beforeEach(() => createComponent());
 
   it('renders correctly', () => {
     expect(findCollapsibleListbox().props()).toMatchObject({
-      items: EXPECTED_ITEMS,
-      selected: mockExternalDestinations[1].namespaceFilter.namespace.fullPath,
+      items: expect.any(Array),
+      selected: namespaceFilters.data.group.projects.nodes[0].id,
       showSelectAllButtonLabel: AUDIT_STREAMS_FILTERING.SELECT_ALL,
       resetButtonLabel: AUDIT_STREAMS_FILTERING.UNSELECT_ALL,
       headerText: AUDIT_STREAMS_FILTERING.SELECT_NAMESPACE,
@@ -86,15 +77,14 @@ describe('StreamWithNamespaceFilters', () => {
 
   describe('events', () => {
     it('emits `input` event when selecting event', () => {
-      findCollapsibleListbox().vm.$emit(
-        'select',
-        mockExternalDestinations[1].namespaceFilter.namespace.fullPath,
-      );
+      const target = namespaceFilters.data.group.projects.nodes[1];
+
+      findCollapsibleListbox().vm.$emit('select', target.id);
 
       expect(wrapper.emitted('input')).toStrictEqual([
         [
           {
-            namespace: mockExternalDestinations[1].namespaceFilter.namespace.fullPath,
+            namespace: target.fullPath,
             type: 'project',
           },
         ],
@@ -116,23 +106,14 @@ describe('StreamWithNamespaceFilters', () => {
   });
 
   describe('search', () => {
-    beforeEach(() => {
-      jest.spyOn(fuzzaldrinPlus, 'filter');
-    });
-
-    it('does not filter items if searchTerm is empty string', async () => {
-      await findCollapsibleListbox().vm.$emit('search', '');
-
-      expect(fuzzaldrinPlus.filter).not.toHaveBeenCalled();
-      expect(findCollapsibleListbox().props('items')).toMatchObject(EXPECTED_ITEMS);
-    });
-
     it('filters items correctly when searching', async () => {
-      // Omit 'e' in 'user' to test for fuzzy search
       await findCollapsibleListbox().vm.$emit('search', 'project');
+      await nextTick();
 
-      expect(findCollapsibleListbox().props('items')).toMatchObject([EXPECTED_ITEMS[1]]);
-      expect(fuzzaldrinPlus.filter).toHaveBeenCalled();
+      expect(getNamespaceFiltersQueryFn).toHaveBeenCalledWith({
+        fullPath: 'group1',
+        search: 'project',
+      });
     });
   });
 });
