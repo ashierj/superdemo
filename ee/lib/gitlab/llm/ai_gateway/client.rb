@@ -94,15 +94,7 @@ module Gitlab
         end
 
         def access_token
-          if Gitlab.org_or_com? # rubocop:disable Gitlab/AvoidGitlabInstanceChecks -- To align with ee/lib/api/code_suggestions.rb.
-            Gitlab::Ai::AccessToken.new(
-              user,
-              scopes: [:duo_chat],
-              gitlab_realm: gitlab_realm
-            ).encoded
-          else
-            ::CloudConnector::ServiceAccessToken.active.last&.token
-          end
+          ::CloudConnector::AccessService.new.access_token([:duo_chat], gitlab_realm)
         end
         strong_memoize_attr :access_token
 

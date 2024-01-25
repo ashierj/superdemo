@@ -124,22 +124,17 @@ module API
             documentation: { example: 'namespace/project' }
         end
         post do
+          # rubocop: disable Style/SoleNestedConditional -- Feature Flag shouldn't be checked in the same condition.
           if Gitlab.org_or_com?
             if ::Feature.enabled?(:purchase_code_suggestions)
-              not_found! unless current_user.code_suggestions_add_on_available? # rubocop: disable Style/SoleNestedConditional -- Feature Flag shouldn't be checked in the same condition.
+              not_found! unless current_user.code_suggestions_add_on_available?
             end
-
-            token = Gitlab::Ai::AccessToken.new(
-              current_user,
-              scopes: [:code_suggestions],
-              gitlab_realm: gitlab_realm
-            ).encoded
-          else
-            code_suggestions_token = ::CloudConnector::ServiceAccessToken.active.last
-            unauthorized! if code_suggestions_token.nil?
-
-            token = code_suggestions_token.token
           end
+          # rubocop: enable Style/SoleNestedConditional
+
+          token = ::CloudConnector::AccessService.new.access_token([:code_suggestions], gitlab_realm)
+
+          unauthorized! if token.nil?
 
           check_rate_limit!(:code_suggestions_api_endpoint, scope: current_user) do
             Gitlab::InternalEvents.track_event(

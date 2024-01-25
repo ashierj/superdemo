@@ -35,7 +35,7 @@ module API
               if Gitlab.org_or_com?
                 code_suggestions_add_on?(group)
               else
-                ai_access_token.present?
+                ai_gateway_token.present?
               end
             end
 
@@ -68,20 +68,10 @@ module API
               }
             end
 
-            def ai_access_token
-              ::CloudConnector::ServiceAccessToken.active.last
-            end
-            strong_memoize_attr :ai_access_token
-
             def ai_gateway_token
-              return ai_access_token.token unless Gitlab.org_or_com?
-
-              Gitlab::Ai::AccessToken.new(
-                nil,
-                scopes: [:code_suggestions],
-                gitlab_realm: gitlab_realm
-              ).encoded
+              ::CloudConnector::AccessService.new.access_token([:code_suggestions], gitlab_realm)
             end
+            strong_memoize_attr :ai_gateway_token
           end
 
           namespace 'internal' do
