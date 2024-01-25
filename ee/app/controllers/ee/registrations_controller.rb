@@ -65,11 +65,6 @@ module EE
       start_onboarding(onboarding_first_step_path, resource)
     end
 
-    override :set_blocked_pending_approval?
-    def set_blocked_pending_approval?
-      super || ::User.user_cap_reached?
-    end
-
     override :identity_verification_enabled?
     def identity_verification_enabled?
       resource.identity_verification_enabled?
