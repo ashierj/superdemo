@@ -1,9 +1,9 @@
 import { GlStackedColumnChart } from '@gitlab/ui/dist/charts';
-import { GlAlert, GlSkeletonLoader, GlIcon } from '@gitlab/ui';
+import { GlSkeletonLoader, GlIcon } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
-import DoraPerformersScore from 'ee/analytics/dashboards/components/dora_performers_score.vue';
+import DoraPerformersScoreChart from 'ee/analytics/dashboards/components/dora_performers_score_chart.vue';
 import FilterProjectTopicsBadges from 'ee/analytics/dashboards/components/filter_project_topics_badges.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -19,7 +19,7 @@ import {
 
 Vue.use(VueApollo);
 
-describe('DoraPerformersScore', () => {
+describe('DoraPerformersScoreChart', () => {
   const fullPath = 'toolbox';
   const mockData = { namespace: fullPath };
   const mockProjectsCount = 70;
@@ -56,7 +56,7 @@ describe('DoraPerformersScore', () => {
       [groupDoraPerformanceScoreCountsQuery, doraPerformanceScoreCountsHandler],
     ]);
 
-    wrapper = shallowMountExtended(DoraPerformersScore, {
+    wrapper = shallowMountExtended(DoraPerformersScoreChart, {
       apolloProvider: mockApollo,
       propsData: {
         data: mockData,
@@ -75,7 +75,6 @@ describe('DoraPerformersScore', () => {
     wrapper.findByTestId('dora-performers-score-panel-title');
   const findChartSkeletonLoader = () => wrapper.findComponent(ChartSkeletonLoader);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
-  const findAlert = () => wrapper.findComponent(GlAlert);
   const findPanelTitleHelpIcon = () => wrapper.findComponent(GlIcon);
   const findExcludedProjectsTooltip = () =>
     getBinding(findPanelTitleHelpIcon().element, 'gl-tooltip');
@@ -190,19 +189,12 @@ describe('DoraPerformersScore', () => {
       await createWrapper({ doraPerformanceScoreCountsHandler });
     });
 
-    it('renders alert component', () => {
-      expect(findAlert().exists()).toBe(true);
-      expect(findAlert().text()).toBe(
-        `Failed to load DORA performance scores for Group: ${fullPath}`,
-      );
-    });
-
-    it('does not render panel title', () => {
-      expect(findDoraPerformersScorePanelTitle().exists()).toBe(false);
-    });
-
-    it('does not render chart', () => {
-      expect(findDoraPerformersScoreChart().exists()).toBe(false);
+    it('emits an error event', () => {
+      const emitted = wrapper.emitted('error');
+      expect(emitted).toHaveLength(1);
+      expect(emitted[0]).toEqual([
+        { error: `Failed to load DORA performance scores for Group: ${fullPath}` },
+      ]);
     });
   });
 

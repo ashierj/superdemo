@@ -113,7 +113,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
             .serialize_for_ai(
               user: context.current_user,
               content_limit: ::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic::MAX_CHARACTERS
-            ).to_json
+            ).to_xml(root: :root, skip_types: true, skip_instruct: true)
           ai_response = "Please use this information about this resource: #{issue_json}"
 
           expect_answer_with_content(ai_response)

@@ -1,13 +1,11 @@
 <script>
-import { GlAlert } from '@gitlab/ui';
 import { DORA_PERFORMERS_SCORE_PROJECT_ERROR } from 'ee/analytics/dashboards/constants';
-import DoraPerformersScore from 'ee/analytics/dashboards/components/dora_performers_score.vue';
+import DoraPerformersScoreChart from 'ee/analytics/dashboards/components/dora_performers_score_chart.vue';
 
 export default {
   name: 'DoraPerformersScoreVisualization',
   components: {
-    GlAlert,
-    DoraPerformersScore,
+    DoraPerformersScoreChart,
   },
   props: {
     data: {
@@ -22,20 +20,24 @@ export default {
     },
   },
   computed: {
+    isProject() {
+      return this.data.namespace.isProject;
+    },
     formattedData() {
       return { namespace: this.data.namespace.requestPath };
     },
-    errorMessage() {
-      return this.data.namespace.isProject ? DORA_PERFORMERS_SCORE_PROJECT_ERROR : '';
-    },
+  },
+  mounted() {
+    if (this.isProject) {
+      this.$emit('error', { error: DORA_PERFORMERS_SCORE_PROJECT_ERROR, canRetry: false });
+    }
   },
 };
 </script>
 <template>
-  <div>
-    <gl-alert v-if="errorMessage" variant="danger" :dismissible="false">
-      {{ errorMessage }}
-    </gl-alert>
-    <dora-performers-score v-else :data="formattedData" />
-  </div>
+  <dora-performers-score-chart
+    v-if="!isProject"
+    :data="formattedData"
+    @error="$emit('error', arguments[0])"
+  />
 </template>

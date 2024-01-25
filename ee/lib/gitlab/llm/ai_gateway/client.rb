@@ -117,7 +117,7 @@ module Gitlab
               payload: {
                 content: prompt,
                 provider: DEFAULT_PROVIDER,
-                model: options.fetch(:model, DEFAULT_MODEL)
+                model: options.fetch(:model, model)
               }.merge(payload_params(options))
             }],
             stream: options.fetch(:stream, false)
@@ -137,6 +137,14 @@ module Gitlab
           # instead we estimate the number of tokens based on typical token size -
           # one token is roughly 4 chars.
           content.to_s.size / 4
+        end
+
+        def model
+          if Feature.enabled?(:ai_claude_2_1, user)
+            'claude-2.1'
+          else
+            DEFAULT_MODEL
+          end
         end
       end
     end
