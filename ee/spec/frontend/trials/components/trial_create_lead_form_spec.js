@@ -18,9 +18,10 @@ Vue.use(VueApollo);
 describe('TrialCreateLeadForm', () => {
   let wrapper;
 
-  const createComponent = ({ mountFunction = shallowMountExtended } = {}) => {
+  const createComponent = ({ mountFunction = shallowMountExtended, formSubmitText = '' } = {}) => {
     return mountFunction(TrialCreateLeadForm, {
       provide: {
+        formSubmitText,
         submitPath: SUBMIT_PATH,
         user: FORM_DATA,
       },
@@ -39,10 +40,6 @@ describe('TrialCreateLeadForm', () => {
   describe('rendering', () => {
     beforeEach(() => {
       wrapper = createComponent();
-    });
-
-    it('has the "Continue" text on the submit button', () => {
-      expect(findButton().text()).toBe(TRIAL_FORM_SUBMIT_TEXT);
     });
 
     it.each`
@@ -66,6 +63,23 @@ describe('TrialCreateLeadForm', () => {
       ];
 
       visibleFields.forEach((f) => expect(findFormInput(f).exists()).toBe(true));
+    });
+  });
+
+  describe('submit button text', () => {
+    it('has the "Continue" text on the submit button', () => {
+      wrapper = createComponent();
+
+      expect(findButton().text()).toBe(TRIAL_FORM_SUBMIT_TEXT);
+    });
+
+    describe('when submit button text is provided', () => {
+      it('has the provided text on the submit button', () => {
+        const formSubmitText = '_formSubmitText_';
+        wrapper = createComponent({ formSubmitText });
+
+        expect(findButton().text()).toBe(formSubmitText);
+      });
     });
   });
 

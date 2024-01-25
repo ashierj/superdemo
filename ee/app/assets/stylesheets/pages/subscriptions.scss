@@ -201,3 +201,13 @@ $subscriptions-full-width-lg: 541px;
     }
   }
 }
+
+.duo-pro-trials {
+  background-color: $brand-charcoal;
+
+  .bg-decorations {
+    background-image: url('illustrations/bg-decorations.svg');
+    background-repeat: no-repeat;
+    background-position: top 40% right 70px;
+  }
+}
