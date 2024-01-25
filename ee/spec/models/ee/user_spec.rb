@@ -3077,22 +3077,32 @@ RSpec.describe User, feature_category: :system_access do
       let(:user) { create(:user) }
       let_it_be(:code_suggestions) { create(:gitlab_subscription_add_on) }
 
-      let_it_be(:add_on_purchase) do
+      let(:add_on_purchase) do
         create(:gitlab_subscription_add_on_purchase, :self_managed, add_on: code_suggestions)
       end
 
-      context "when the user is assigned" do
+      context 'when the user is assigned' do
         before do
           create(:gitlab_subscription_user_add_on_assignment, user: user, add_on_purchase: add_on_purchase)
         end
 
-        it 'return true' do
+        it 'returns true' do
           expect(user.code_suggestions_add_on_available?).to be_truthy
+        end
+
+        context 'when the add_on_purchase has expired' do
+          let(:add_on_purchase) do
+            create(:gitlab_subscription_add_on_purchase, :expired, :self_managed, add_on: code_suggestions)
+          end
+
+          it 'returns false' do
+            expect(user.code_suggestions_add_on_available?).to eq(false)
+          end
         end
       end
 
-      context "when the user is not assigned" do
-        it 'return false' do
+      context 'when the user is not assigned' do
+        it 'returns false' do
           expect(user.code_suggestions_add_on_available?).to be_falsey
         end
       end
