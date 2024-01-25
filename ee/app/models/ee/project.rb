@@ -64,6 +64,7 @@ module EE
       has_one :vulnerability_statistic, class_name: 'Vulnerabilities::Statistic'
 
       has_one :dependency_proxy_packages_setting, class_name: '::DependencyProxy::Packages::Setting', inverse_of: :project
+      has_one :zoekt_repository, class_name: '::Search::Zoekt::Repository', inverse_of: :project
 
       has_many :approvers, as: :target, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
       has_many :approver_users, through: :approvers, source: :user
