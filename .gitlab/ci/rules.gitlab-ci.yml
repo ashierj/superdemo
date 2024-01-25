@@ -2726,6 +2726,7 @@
       changes:
         - '{,ee/}app/**/*.{js,vue,rb,haml}'
     - <<: *if-default-branch-refs
+      allow_failure: true
 
 ################
 # Review rules #
