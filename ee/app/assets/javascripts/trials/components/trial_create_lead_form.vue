@@ -32,7 +32,7 @@ export default {
   directives: {
     autofocusonshow,
   },
-  inject: ['user', 'submitPath'],
+  inject: ['user', 'formSubmitText', 'submitPath'],
   data() {
     return this.user;
   },
@@ -45,6 +45,9 @@ export default {
         },
         ...companySizes,
       ];
+    },
+    submitText() {
+      return this.formSubmitText || this.$options.i18n.formSubmitText;
     },
   },
   methods: {
@@ -137,7 +140,7 @@ export default {
       />
     </gl-form-group>
     <gl-button type="submit" variant="confirm" class="gl-w-20" data-testid="continue">
-      {{ $options.i18n.formSubmitText }}
+      {{ submitText }}
     </gl-button>
   </gl-form>
 </template>
