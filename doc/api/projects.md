@@ -45,7 +45,7 @@ The `merge_method` can use these options:
 
 ## List all projects
 
-> The `_links.cluster_agents` attribute in the response was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 15.0.
+> - The `_links.cluster_agents` attribute in the response was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 15.0.
 
 Get a list of all visible projects across GitLab for the authenticated user.
 When accessed without authentication, only public projects with _simple_ fields
@@ -311,7 +311,7 @@ Keyset pagination supports only `order_by=id`. Other sorting options aren't avai
 
 ## List user projects
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Get a list of visible projects owned by the given user. When accessed without
 authentication, only public projects are returned.
@@ -846,7 +846,7 @@ Example response:
 
 ## List projects starred by a user
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Get a list of visible projects starred by the given user. When accessed without
 authentication, only public projects are returned.
@@ -1106,7 +1106,7 @@ Example response:
 
 ## Get single project
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Get a specific project. This endpoint can be accessed without authentication if
 the project is publicly accessible.
@@ -1831,7 +1831,7 @@ POST /projects/:id/fork
 
 ## List forks of a project
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 List the projects accessible to the calling user that have an established,
 forked relationship with the specified project
@@ -1950,7 +1950,7 @@ Example responses:
 
 ## Star a project
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Stars a given project. Returns status code `304` if the project is already
 starred.
@@ -2059,7 +2059,7 @@ Example response:
 
 ## Unstar a project
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Unstars a given project. Returns status code `304` if the project is not starred.
 
@@ -2240,7 +2240,7 @@ Example response:
 
 ## Archive a project
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Archives the project if the user is either an administrator or the owner of this
 project. This action is idempotent, thus archiving an already archived project
@@ -2373,7 +2373,7 @@ Example response:
 
 ## Unarchive a project
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Unarchives the project if the user is either an administrator or the owner of
 this project. This action is idempotent, thus unarchiving a non-archived project
@@ -2506,7 +2506,7 @@ Example response:
 
 ## Delete project
 
-> The default behavior of [Delayed project deletion](https://gitlab.com/gitlab-org/gitlab/-/issues/32935) in GitLab 12.6 was changed to [Immediate deletion](https://gitlab.com/gitlab-org/gitlab/-/issues/220382) in GitLab 13.2.
+> - The default behavior of [Delayed project deletion](https://gitlab.com/gitlab-org/gitlab/-/issues/32935) in GitLab 12.6 was changed to [Immediate deletion](https://gitlab.com/gitlab-org/gitlab/-/issues/220382) in GitLab 13.2.
 
 This endpoint:
 
@@ -3067,7 +3067,7 @@ Example response:
 
 ## Transfer a project to a new namespace
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 See the [Project documentation](../user/project/settings/migrate_projects.md#transfer-a-project-to-another-namespace)
 for prerequisites to transfer a project.
