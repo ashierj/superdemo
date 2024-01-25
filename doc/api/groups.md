@@ -323,7 +323,7 @@ Parameters:
 | `include_subgroups`                    | boolean        | no       | Include projects in subgroups of this group. Default is `false` |
 | `min_access_level`                     | integer        | no       | Limit to projects where current user has at least this [role (`access_level`)](members.md#roles) |
 | `with_custom_attributes`               | boolean        | no       | Include [custom attributes](custom_attributes.md) in response (administrators only) |
-| `with_security_reports` **(ULTIMATE ALL)** | boolean    | no       | Return only projects that have security reports artifacts present in any of their builds. This means "projects with security reports enabled". Default is `false` |
+| `with_security_reports`                | boolean    | no       | Return only projects that have security reports artifacts present in any of their builds. This means "projects with security reports enabled". Default is `false`. Ultimate only. |
 
 <html>
 <small>Footnotes:
@@ -1328,7 +1328,12 @@ Example response:
 ]
 ```
 
-## List group users **(PREMIUM ALL EXPERIMENT)**
+## List group users
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+**Status:** Experiment
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/424505) in GitLab 16.6. This feature is an [Experiment](../policy/experiment-beta-support.md).
 

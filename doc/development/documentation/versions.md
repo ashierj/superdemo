@@ -116,7 +116,11 @@ To deprecate a page or topic:
    when it will be removed, and the replacement feature.
 
    ```markdown
-   ## Title (deprecated) **(ULTIMATE SELF)**
+   ## Title (deprecated)
+   
+   DETAILS:
+   **Tier:** Premium, Ultimate
+   **Offering:** SaaS, self-managed
 
    WARNING:
    This feature was [deprecated](<link-to-issue>) in GitLab 14.8
@@ -140,7 +144,11 @@ To deprecate a page or topic:
    ```markdown
    <!--- start_remove The following content will be removed on remove_date: 'YYYY-MM-DD' -->
 
-   ## Title (deprecated) **(ULTIMATE SELF)**
+   ## Title (deprecated)
+   
+   DETAILS:
+   **Tier:** Premium, Ultimate
+   **Offering:** SaaS, self-managed
 
    WARNING:
    This feature was [deprecated](<link-to-issue>) in GitLab 14.8
@@ -175,7 +183,11 @@ To remove a page:
    redirect_to: '../newpath/to/file/index.md'
    ---
 
-   # Title (removed) **(ULTIMATE SELF)**
+   # Title (removed)
+   
+   DETAILS:
+   **Tier:** Premium, Ultimate
+   **Offering:** SaaS, self-managed
 
    This feature was [deprecated](<link-to-issue>) in GitLab X.Y
    and [removed](<link-to-issue>) in X.Y.
@@ -200,7 +212,11 @@ To remove a topic:
    ```markdown
    <!--- start_remove The following content will be removed on remove_date: 'YYYY-MM-DD' -->
 
-   ## Title (removed) **(ULTIMATE SELF)**
+   ## Title (removed)
+   
+   DETAILS:
+   **Tier:** Premium, Ultimate
+   **Offering:** SaaS, self-managed
 
    This feature was [deprecated](<link-to-issue>) in GitLab X.Y
    and [removed](<link-to-issue>) in X.Y.

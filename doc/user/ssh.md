@@ -4,7 +4,11 @@ group: Authentication
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Use SSH keys to communicate with GitLab **(FREE ALL)**
+# Use SSH keys to communicate with GitLab
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 Git is a distributed version control system, which means you can work locally,
 then share or *push* your changes to a server. In this case, the server you push to is GitLab.

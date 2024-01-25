@@ -1713,7 +1713,7 @@ The following IPs will be used as an example:
 - `10.6.0.71`: Sidekiq 1
 - `10.6.0.72`: Sidekiq 2
 
-To configure the Sidekiq nodes, one each one:
+To configure the Sidekiq nodes, on each one:
 
 1. SSH in to the Sidekiq server.
 1. [Download and install](https://about.gitlab.com/install/) the Linux

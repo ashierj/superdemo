@@ -819,10 +819,6 @@ Each topic title has an anchor link. For example, a topic with the title
 The first topic title on a page (the `h1`) has an anchor link,
 but do not use it. Link to the page instead.
 
-If a topic title has a [product tier badge](#product-tier-badges),
-do not include it in the anchor link. For example, for the topic
-`## This is an example **(FREE ALL)**`, use the anchor `#this-is-an-example`.
-
 With Kramdown, you can add a custom ID to an HTML element, but these IDs
 don't work in `/help`, so you should not use them.
 
@@ -1998,7 +1994,11 @@ For an example, see [GitLab 16 changes](../../../update/versions/gitlab_16_chang
 Use the following template to add information to the page.
 
 ```markdown
-# GitLab X changes **(FREE SELF)**
+# GitLab X changes
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 This page contains upgrade information for minor and patch versions of GitLab X. Review these instructions for:
 
@@ -2022,7 +2022,11 @@ For more information about upgrading GitLab Helm Chart, see [the release notes f
 - Information specific to self-compiled installations.
 - ...
 
-### Geo installations **(PREMIUM SELF)**
+### Geo installations
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
  - Information specific to Geo.
  - ...

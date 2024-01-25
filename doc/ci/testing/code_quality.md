@@ -62,7 +62,11 @@ full report available in the **Pipeline** details view.
 
 ![Code Quality Widget](img/code_quality_widget_13_11.png)
 
-### Merge request changes view **(ULTIMATE ALL)**
+### Merge request changes view
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/267612) in GitLab 13.11, disabled by default behind the `codequality_mr_diff` [feature flag](../../administration/feature_flags.md).
 > - [Enabled by default](https://gitlab.com/gitlab-org/gitlab/-/issues/284140) in GitLab 13.12.
@@ -86,7 +90,11 @@ that were found on the branch it was run on.
 
 ![Code Quality Report](img/code_quality_report_13_11.png)
 
-### Project quality view **(ULTIMATE ALL)**
+### Project quality view
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
 
 The project quality view displays an overview of the code quality findings. The view can be found under **Analyze > CI/CD analytics**, and requires [`project_quality_summary_page`](../../user/feature_flags.md) feature flag to be enabled for this particular project.
 

@@ -1957,7 +1957,11 @@ In this example:
   is not recorded or displayed. Check [the related issue](https://gitlab.com/gitlab-org/gitlab/-/issues/280818)
   for more details.
 
-### `dast_configuration` **(ULTIMATE ALL)**
+### `dast_configuration`
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
 
 > - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/5981) in GitLab 14.1.
 
@@ -3290,7 +3294,12 @@ This example uses [Eleventy](https://www.11ty.dev) to generate a static website 
 output the generated HTML files into a the `dist/` directory. This directory is exported
 as an artifact and published with GitLab Pages.
 
-#### `pages:pages.path_prefix` **(PREMIUM ALL EXPERIMENT)**
+#### `pages:pages.path_prefix`
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+**Status:** Experiment
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129534) in GitLab 16.7 as an [Experiment](../../policy/experiment-beta-support.md) [with a flag](../../user/feature_flags.md) named `pages_multiple_versions_setting`, disabled by default.
 
