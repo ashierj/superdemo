@@ -1,8 +1,9 @@
 <script>
-import { GlCard, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlCard, GlLink, GlSprintf, GlButton } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import UsageStatistics from 'ee/usage_quotas/components/usage_statistics.vue';
 import { codeSuggestionsLearnMoreLink } from 'ee/usage_quotas/code_suggestions/constants';
+import { addSeatsText } from 'ee/usage_quotas/seats/constants';
 
 export default {
   name: 'CodeSuggestionsUsageInfoCard',
@@ -14,13 +15,16 @@ export default {
       `CodeSuggestions|%{linkStart}Code Suggestions%{linkEnd} uses generative AI to suggest code while you're developing.`,
     ),
     title: s__('CodeSuggestions|Duo Pro add-on'),
+    addSeatsText,
   },
   components: {
     GlCard,
     GlLink,
     GlSprintf,
+    GlButton,
     UsageStatistics,
   },
+  inject: ['addDuoProHref'],
 };
 </script>
 <template>
@@ -39,6 +43,17 @@ export default {
             </template>
           </gl-sprintf>
         </p>
+      </template>
+      <template #actions>
+        <gl-button
+          v-if="addDuoProHref"
+          category="primary"
+          variant="confirm"
+          target="_blank"
+          :href="addDuoProHref"
+        >
+          {{ $options.i18n.addSeatsText }}
+        </gl-button>
       </template>
     </usage-statistics>
   </gl-card>

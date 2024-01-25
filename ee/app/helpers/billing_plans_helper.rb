@@ -211,6 +211,12 @@ module BillingPlansHelper
     ::Gitlab::Routing.url_helpers.subscription_portal_add_extra_seats_url(group.id)
   end
 
+  def duo_pro_url(group)
+    return unless group
+
+    ::Gitlab::Routing.url_helpers.subscription_portal_add_duo_pro_seats_url(group.id)
+  end
+
   def plan_upgrade_url(group, plan)
     return unless group && plan&.id
 
