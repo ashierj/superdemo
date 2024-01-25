@@ -55822,6 +55822,9 @@ msgstr ""
 msgid "WorkItem|Discard changes"
 msgstr ""
 
+msgid "WorkItem|Due"
+msgstr ""
+
 msgid "WorkItem|Due date"
 msgstr ""
 
@@ -56027,6 +56030,9 @@ msgid "WorkItem|Something went wrong while updating the %{workItemType}. Please 
 msgstr ""
 
 msgid "WorkItem|Something went wrong while updating the work item. Please try again."
+msgstr ""
+
+msgid "WorkItem|Start"
 msgstr ""
 
 msgid "WorkItem|Start date"
