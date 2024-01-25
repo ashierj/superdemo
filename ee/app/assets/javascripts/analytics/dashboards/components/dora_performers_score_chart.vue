@@ -1,6 +1,6 @@
 <script>
 import { GlStackedColumnChart, GlChartSeriesLabel } from '@gitlab/ui/dist/charts';
-import { GlSkeletonLoader, GlAlert, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlSkeletonLoader, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { initial } from 'lodash';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import { sprintf, __, n__ } from '~/locale';
@@ -19,13 +19,12 @@ import { validateProjectTopics } from '../utils';
 import FilterProjectTopicsBadges from './filter_project_topics_badges.vue';
 
 export default {
-  name: 'DoraPerformersScore',
+  name: 'DoraPerformersScoreChart',
   components: {
     GlStackedColumnChart,
     GlChartSeriesLabel,
     ChartSkeletonLoader,
     GlSkeletonLoader,
-    GlAlert,
     GlIcon,
     FilterProjectTopicsBadges,
   },
@@ -41,7 +40,6 @@ export default {
   data() {
     return {
       chart: null,
-      hasDoraPerformanceScoresFetchError: false,
       tooltip: {
         projectsCountTitle: null,
         metricTitle: null,
@@ -73,7 +71,8 @@ export default {
         };
       },
       error() {
-        this.hasDoraPerformanceScoresFetchError = true;
+        const error = sprintf(this.$options.i18n.loadingError, { fullPath: this.fullPath });
+        this.$emit('error', { error });
       },
     },
   },
@@ -99,15 +98,6 @@ export default {
     panelTitle() {
       const count = this.projectsCountWithDoraData;
       return sprintf(this.$options.i18n.panelTitleWithProjectsCount, { count });
-    },
-    errorMessage() {
-      if (this.hasDoraPerformanceScoresFetchError) {
-        return sprintf(this.$options.i18n.loadingError, {
-          fullPath: this.fullPath,
-        });
-      }
-
-      return '';
     },
     hasData() {
       return (
@@ -221,10 +211,7 @@ export default {
 <template>
   <div>
     <gl-skeleton-loader v-if="isLoading" :lines="1" :width="450" />
-    <div
-      v-else-if="!errorMessage"
-      class="gl-display-flex gl-justify-content-space-between gl-align-items-center"
-    >
+    <div v-else class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
       <div
         data-testid="dora-performers-score-panel-title"
         class="gl-my-0 gl-display-flex gl-gap-3 gl-align-items-center"
@@ -241,10 +228,6 @@ export default {
     </div>
 
     <chart-skeleton-loader v-if="isLoading" />
-
-    <gl-alert v-else-if="errorMessage" variant="danger" :dismissible="false">
-      {{ errorMessage }}
-    </gl-alert>
 
     <div v-else-if="!hasData" class="gl-text-center gl-text-secondary">
       {{ noDataMessage }}
