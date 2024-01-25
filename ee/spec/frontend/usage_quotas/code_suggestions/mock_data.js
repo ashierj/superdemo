@@ -24,7 +24,7 @@ export const purchasedAddonFuzzyData = {
       id: 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/3',
       name: ADD_ON_CODE_SUGGESTIONS,
       assignedQuantity: 0,
-      purchasedQuantity: undefined,
+      purchasedQuantity: null,
       __typename: 'AddOnPurchase',
     },
   },

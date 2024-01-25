@@ -7,6 +7,11 @@ import SaasAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/componen
 import SelfManagedAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/self_managed_add_on_eligible_user_list.vue';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
+import {
+  ADD_ON_ERROR_DICTIONARY,
+  ADD_ON_PURCHASE_FETCH_ERROR_CODE,
+} from 'ee/usage_quotas/error_constants';
+import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import CodeSuggestionsInfoCard from './code_suggestions_info_card.vue';
 import CodeSuggestionsIntro from './code_suggestions_intro.vue';
 import CodeSuggestionsStatisticsCard from './code_suggestions_usage_statistics_card.vue';
@@ -14,6 +19,7 @@ import CodeSuggestionsStatisticsCard from './code_suggestions_usage_statistics_c
 export default {
   name: 'CodeSuggestionsUsage',
   components: {
+    ErrorAlert,
     SaasAddOnEligibleUserList,
     SelfManagedAddOnEligibleUserList,
     CodeSuggestionsInfoCard,
@@ -22,9 +28,11 @@ export default {
     GlSkeletonLoader,
   },
   inject: { isSaaS: {}, groupId: { default: null } },
+  addOnErrorDictionary: ADD_ON_ERROR_DICTIONARY,
   data() {
     return {
       addOnPurchase: undefined,
+      addOnPurchaseFetchError: undefined,
     };
   },
   computed: {
@@ -49,6 +57,12 @@ export default {
     isLoading() {
       return this.$apollo.queries.addOnPurchase.loading;
     },
+    showTitleAndSubtitle() {
+      if (this.isSaaS) {
+        return false;
+      }
+      return !this.isLoading && (this.hasCodeSuggestions || this.addOnPurchaseFetchError);
+    },
   },
   apollo: {
     addOnPurchase: {
@@ -60,11 +74,15 @@ export default {
         return addOnPurchase;
       },
       error(error) {
-        this.reportError(error);
+        this.handleAddOnPurchaseFetchError(error);
       },
     },
   },
   methods: {
+    handleAddOnPurchaseFetchError(error) {
+      this.addOnPurchaseFetchError = ADD_ON_PURCHASE_FETCH_ERROR_CODE;
+      this.reportError(error);
+    },
     reportError(error) {
       Sentry.captureException(error, {
         tags: {
@@ -100,7 +118,7 @@ export default {
       </div>
     </section>
     <template v-else>
-      <section v-if="hasCodeSuggestions">
+      <section v-if="showTitleAndSubtitle">
         <h1 data-testid="code-suggestions-title" class="page-title gl-font-size-h-display">
           {{ s__('CodeSuggestions|Duo Pro') }}
         </h1>
@@ -108,7 +126,8 @@ export default {
         <p data-testid="code-suggestions-subtitle">
           {{ s__('CodeSuggestions|Manage seat assignments for Duo Pro across your instance.') }}
         </p>
-
+      </section>
+      <section v-if="hasCodeSuggestions">
         <section
           class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5 gl-bg-gray-10 gl-p-5"
         >
@@ -118,6 +137,13 @@ export default {
         <saas-add-on-eligible-user-list v-if="isSaaS" :add-on-purchase-id="addOnPurchase.id" />
         <self-managed-add-on-eligible-user-list v-else :add-on-purchase-id="addOnPurchase.id" />
       </section>
+      <error-alert
+        v-else-if="addOnPurchaseFetchError"
+        data-testid="add-on-purchase-fetch-error"
+        :error="addOnPurchaseFetchError"
+        :error-dictionary="$options.addOnErrorDictionary"
+        class="gl-mt-5"
+      />
       <code-suggestions-intro v-else />
     </template>
   </section>
