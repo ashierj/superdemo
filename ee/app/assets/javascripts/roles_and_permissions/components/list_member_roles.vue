@@ -29,8 +29,8 @@ export default {
     fetchRolesError: s__('MemberRole|Failed to fetch roles: %{message}'),
     fetchPermissionsError: s__('MemberRole|Could not fetch available permissions: %{message}'),
     deleteSuccess: s__('MemberRole|Role successfully deleted.'),
-    deleteError: s__('MemberRole|Failed to delete the role.'),
-    deleteErrorWithReason: s__('MemberRole|Failed to delete the role: %{message}'),
+    deleteError: s__('MemberRole|Failed to delete role.'),
+    deleteErrorWithReason: s__('MemberRole|Failed to delete role. %{message}'),
     createSuccess: s__('MemberRole|Role successfully created.'),
   },
   components: {
