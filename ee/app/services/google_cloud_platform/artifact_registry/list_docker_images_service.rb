@@ -3,10 +3,10 @@
 module GoogleCloudPlatform
   module ArtifactRegistry
     class ListDockerImagesService < BaseProjectService
-      def execute(page_token: nil)
-        return ServiceResponse.error(message: "Access denied") unless allowed?
+      def execute(page_token: nil, order_by: nil)
+        return ServiceResponse.error(message: 'Access denied') unless allowed?
 
-        ServiceResponse.success(payload: client.list_docker_images(page_token: page_token))
+        ServiceResponse.success(payload: client.docker_images(page_token: page_token, order_by: order_by))
       end
 
       private

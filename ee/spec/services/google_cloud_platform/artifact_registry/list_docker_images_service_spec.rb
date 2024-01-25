@@ -24,7 +24,8 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::ListDockerImagesService, f
   end
 
   describe '#execute' do
-    let(:page_token) { nil }
+    let(:page_token) { 'token' }
+    let(:order_by) { :name }
     let(:list_docker_images_response) { dummy_list_response }
     let(:client_double) { instance_double('::GoogleCloudPlatform::ArtifactRegistry::Client') }
 
@@ -38,25 +39,18 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::ListDockerImagesService, f
           gcp_repository: gcp_repository,
           gcp_wlif: gcp_wlif
         ).and_return(client_double)
-      allow(client_double).to receive(:list_docker_images)
-        .with(page_token: page_token)
+      allow(client_double).to receive(:docker_images)
+        .with(page_token: page_token, order_by: order_by)
         .and_return(list_docker_images_response)
     end
 
-    subject(:list) { service.execute(page_token: page_token) }
+    subject(:list) { service.execute(page_token: page_token, order_by: order_by) }
 
     it 'returns the docker images' do
       expect(list).to be_success
-      expect(list.payload).to include(images: an_instance_of(Array), next_page_token: an_instance_of(String))
-    end
-
-    context 'with the client returning an empty hash' do
-      let(:list_docker_images_response) { {} }
-
-      it 'returns an empty hash' do
-        expect(list).to be_success
-        expect(list.payload).to eq({})
-      end
+      expect(list.payload).to be_a Google::Cloud::ArtifactRegistry::V1::ListDockerImagesResponse
+      expect(list.payload.docker_images).to be_a Enumerable
+      expect(list.payload.next_page_token).to eq('next_page_token')
     end
 
     context 'with not enough permissions' do
@@ -71,21 +65,10 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::ListDockerImagesService, f
     private
 
     def dummy_list_response
-      {
-        images: [
-          {
-            built_at: '2023-11-30T23:23:11.980068941Z',
-            media_type: 'application/vnd.docker.distribution.manifest.v2+json',
-            name: 'projects/project/locations/location/repositories/repo/dockerImages/image@sha256:6a',
-            size_bytes: 2827903,
-            tags: %w[tag1 tag2],
-            updated_at: '2023-12-07T11:48:50.840751Z',
-            uploaded_at: '2023-12-07T11:48:47.598511Z',
-            uri: 'location.pkg.dev/project/repo/image@sha256:6a'
-          }
-        ],
+      Google::Cloud::ArtifactRegistry::V1::ListDockerImagesResponse.new(
+        docker_images: [::Google::Cloud::ArtifactRegistry::V1::DockerImage.new],
         next_page_token: 'next_page_token'
-      }
+      )
     end
   end
 end
