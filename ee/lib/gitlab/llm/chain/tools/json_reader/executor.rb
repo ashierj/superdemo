@@ -42,20 +42,20 @@ module Gitlab
 
             def perform
               begin
-                resource_json = context.resource_json(content_limit: provider_prompt_class::MAX_CHARACTERS)
+                resource_serialized = context.resource_serialized(content_limit: provider_prompt_class::MAX_CHARACTERS)
               rescue ArgumentError
                 return Answer.error_answer(context: context,
                   content: _("Unexpected error: Cannot serialize resource", resource_class: resource.class)
                 )
               end
 
-              @data = Gitlab::Json.parse(resource_json)
+              @data = Hash.from_xml(resource_serialized)['root']
 
               options[:suggestions] = options[:suggestions].to_s
-              prompt_length = resource_json.length + options[:suggestions].length
+              prompt_length = resource_serialized.length + options[:suggestions].length
 
               if prompt_length < provider_prompt_class::MAX_CHARACTERS
-                process_short_path(resource_json)
+                process_short_path(resource_serialized)
               else
                 process_long_path
               end
@@ -72,8 +72,9 @@ module Gitlab
               Utils::Authorizer.context_allowed?(context: context)
             end
 
-            def process_short_path(resource_json)
-              content = "Please use this information about this resource: #{resource_json}"
+            def process_short_path(resource_serialized)
+              content = "Please use this information about this resource: #{resource_serialized}"
+
               ::Gitlab::Llm::Chain::Answer.new(status: :ok, context: context, content: content, tool: nil)
             end
 

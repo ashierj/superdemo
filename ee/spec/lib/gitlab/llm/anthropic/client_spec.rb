@@ -48,6 +48,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
 
   before do
     stub_application_setting(anthropic_api_key: api_key)
+    stub_feature_flags(ai_claude_2_1: false)
     stub_request(:post, "#{described_class::URL}/v1/complete")
       .with(
         body: expected_request_body,
@@ -126,6 +127,25 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
 
       it 'returns response' do
         expect(Gitlab::HTTP).to receive(:post).with(anything, hash_including(timeout: 50.seconds)).and_call_original
+        expect(complete.parsed_response).to eq(expected_response)
+      end
+    end
+
+    context 'when claude 2.1 feature flag is on' do
+      before do
+        stub_feature_flags(ai_claude_2_1: true)
+      end
+
+      let(:expected_request_body) do
+        {
+          prompt: "anything",
+          model: 'claude-2.1',
+          max_tokens_to_sample: described_class::DEFAULT_MAX_TOKENS,
+          temperature: described_class::DEFAULT_TEMPERATURE
+        }
+      end
+
+      it 'returns response' do
         expect(complete.parsed_response).to eq(expected_response)
       end
     end

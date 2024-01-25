@@ -30,6 +30,8 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
     }
   end
 
+  let(:model) { described_class::DEFAULT_MODEL }
+
   let(:default_body_params) do
     {
       prompt_components: [{
@@ -41,7 +43,7 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
         payload: {
           content: "anything",
           provider: described_class::DEFAULT_PROVIDER,
-          model: described_class::DEFAULT_MODEL
+          model: model
         }
       }],
       stream: false
@@ -66,6 +68,7 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
   let(:response_headers) { { 'Content-Type' => 'application/json' } }
 
   before do
+    stub_feature_flags(ai_claude_2_1: false)
     stub_request(:post, request_url)
       .with(
         body: expected_request_body,
@@ -142,6 +145,22 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
       it 'sends requests to this host instead' do
         stub_env('AI_GATEWAY_URL', "http://127.0.0.1:5000")
 
+        expect(complete.parsed_response).to eq(expected_response)
+      end
+    end
+
+    context 'when claude 2.1 feature flag is on' do
+      let(:request_url) { "https://cloud.gitlab.com/ai/v1/chat/agent" }
+      let(:model) { 'claude-2.1' }
+
+      before do
+        stub_feature_flags(ai_claude_2_1: true)
+      end
+
+      it 'returns response' do
+        expect(Gitlab::HTTP).to receive(:post)
+                                  .with(anything, hash_including(timeout: described_class::DEFAULT_TIMEOUT))
+                                  .and_call_original
         expect(complete.parsed_response).to eq(expected_response)
       end
     end
