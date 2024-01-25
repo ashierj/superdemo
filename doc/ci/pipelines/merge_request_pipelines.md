@@ -5,7 +5,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 ---
 
 
-# Merge request pipelines 
+# Merge request pipelines
 
 DETAILS:
 **Tier:** Free, Premium, Ultimate
