@@ -19442,6 +19442,7 @@ GPG signature for a signed commit.
 | <a id="grouprequestaccessenabled"></a>`requestAccessEnabled` | [`Boolean`](#boolean) | Indicates if users can request access to namespace. |
 | <a id="grouprequiretwofactorauthentication"></a>`requireTwoFactorAuthentication` | [`Boolean`](#boolean) | Indicates if all users in this group are required to set up two-factor authentication. |
 | <a id="grouprootstoragestatistics"></a>`rootStorageStatistics` | [`RootStorageStatistics`](#rootstoragestatistics) | Aggregated storage statistics of the namespace. Only available for root namespaces. |
+| <a id="groupsecuritypolicyproject"></a>`securityPolicyProject` | [`Project`](#project) | Security policy project assigned to the namespace. |
 | <a id="groupsharewithgrouplock"></a>`shareWithGroupLock` | [`Boolean`](#boolean) | Indicates if sharing a project with another group within this group is prevented. |
 | <a id="groupsharedrunnerssetting"></a>`sharedRunnersSetting` | [`SharedRunnersSetting`](#sharedrunnerssetting) | Shared runners availability for the namespace and its descendants. |
 | <a id="groupstats"></a>`stats` | [`GroupStats`](#groupstats) | Group statistics. |
@@ -23237,6 +23238,7 @@ Product analytics events for a specific month and year.
 | <a id="namespacerepositorysizeexcessprojectcount"></a>`repositorySizeExcessProjectCount` | [`Int`](#int) | Number of projects in the root namespace where the repository size exceeds the limit. This only applies to namespaces under Project limit enforcement. |
 | <a id="namespacerequestaccessenabled"></a>`requestAccessEnabled` | [`Boolean`](#boolean) | Indicates if users can request access to namespace. |
 | <a id="namespacerootstoragestatistics"></a>`rootStorageStatistics` | [`RootStorageStatistics`](#rootstoragestatistics) | Aggregated storage statistics of the namespace. Only available for root namespaces. |
+| <a id="namespacesecuritypolicyproject"></a>`securityPolicyProject` | [`Project`](#project) | Security policy project assigned to the namespace. |
 | <a id="namespacesharedrunnerssetting"></a>`sharedRunnersSetting` | [`SharedRunnersSetting`](#sharedrunnerssetting) | Shared runners availability for the namespace and its descendants. |
 | <a id="namespacestoragesizelimit"></a>`storageSizeLimit` | [`Float`](#float) | The storage limit (in bytes) included with the root namespace plan. This limit only applies to namespaces under namespace limit enforcement. |
 | <a id="namespacetemporarystorageincreaseendson"></a>`temporaryStorageIncreaseEndsOn` **{warning-solid}** | [`Time`](#time) | **Deprecated** in 16.7. Feature removal, will be completely removed in 17.0. |
@@ -24434,6 +24436,7 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="projectrequirementstatescount"></a>`requirementStatesCount` | [`RequirementStatesCount`](#requirementstatescount) | Number of requirements for the project by their state. |
 | <a id="projectsastciconfiguration"></a>`sastCiConfiguration` | [`SastCiConfiguration`](#sastciconfiguration) | SAST CI configuration for the project. |
 | <a id="projectsecuritydashboardpath"></a>`securityDashboardPath` | [`String`](#string) | Path to project's security dashboard. |
+| <a id="projectsecuritypolicyproject"></a>`securityPolicyProject` | [`Project`](#project) | Security policy project assigned to the project, absent if assigned to a parent group. |
 | <a id="projectsecurityscanners"></a>`securityScanners` | [`SecurityScanners`](#securityscanners) | Information about security analyzers used in the project. |
 | <a id="projectsentryerrors"></a>`sentryErrors` | [`SentryErrorCollection`](#sentryerrorcollection) | Paginated collection of Sentry errors on the project. |
 | <a id="projectservicedeskaddress"></a>`serviceDeskAddress` | [`String`](#string) | E-mail address of the Service Desk. |

@@ -118,6 +118,12 @@ module EE
               description: 'Scan Result Policies of the project',
               resolver: ::Resolvers::SecurityOrchestration::ScanResultPolicyResolver
 
+        field :security_policy_project,
+          ::Types::ProjectType,
+          null: true,
+          method: :security_policy_management_project,
+          description: 'Security policy project assigned to the namespace.'
+
         field :product_analytics_stored_events_limit,
               ::GraphQL::Types::Int,
               null: true,
