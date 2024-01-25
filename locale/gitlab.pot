@@ -34682,6 +34682,9 @@ msgstr ""
 msgid "PackageRegistry|Add composer registry"
 msgstr ""
 
+msgid "PackageRegistry|Add package protection rule"
+msgstr ""
+
 msgid "PackageRegistry|Additional metadata"
 msgstr ""
 
@@ -34937,6 +34940,9 @@ msgstr ""
 msgid "PackageRegistry|Maven XML"
 msgstr ""
 
+msgid "PackageRegistry|Npm"
+msgstr ""
+
 msgid "PackageRegistry|NuGet"
 msgstr ""
 
@@ -35044,6 +35050,9 @@ msgstr ""
 msgid "PackageRegistry|RubyGems"
 msgstr ""
 
+msgid "PackageRegistry|Rule saved."
+msgstr ""
+
 msgid "PackageRegistry|Show Composer commands"
 msgstr ""
 
@@ -35084,6 +35093,9 @@ msgid "PackageRegistry|Something went wrong while fetching the package history."
 msgstr ""
 
 msgid "PackageRegistry|Something went wrong while fetching the package metadata."
+msgstr ""
+
+msgid "PackageRegistry|Something went wrong while saving the package protection rule."
 msgstr ""
 
 msgid "PackageRegistry|Sorry, your filter produced no results"
