@@ -443,7 +443,7 @@ module EE
       end
 
       define_method("#{attribute}?") do |inherit_group_setting: false|
-        return super() unless licensed_feature_available?(:group_level_merge_checks_setting) && ::Feature.enabled?(:support_group_level_merge_checks_setting, self)
+        return super() unless licensed_feature_available?(:group_level_merge_checks_setting)
 
         if inherit_group_setting
           result = self.public_send(attribute) || public_send("#{attribute}_of_parent_group") # rubocop:disable GitlabSecurity/PublicSend
@@ -455,7 +455,7 @@ module EE
       end
 
       define_method("#{attribute}_locked?") do
-        return super() unless licensed_feature_available?(:group_level_merge_checks_setting) && ::Feature.enabled?(:support_group_level_merge_checks_setting, self)
+        return super() unless licensed_feature_available?(:group_level_merge_checks_setting)
 
         public_send("#{attribute}_of_parent_group") # rubocop:disable GitlabSecurity/PublicSend
       end
