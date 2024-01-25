@@ -25,4 +25,24 @@ RSpec.describe Integration do
       expect(described_class.vulnerability_hooks.count).to eq 0
     end
   end
+
+  describe 'git_guardian_integration feature flag' do
+    context 'when feature flag is enabled' do
+      it 'includes git_guardian in Integration.project_specific_integration_names' do
+        expect(described_class.project_specific_integration_names)
+          .to include('git_guardian')
+      end
+    end
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(git_guardian_integration: false)
+      end
+
+      it 'does not include git_guardian Integration.project_specific_integration_names' do
+        expect(described_class.project_specific_integration_names)
+         .not_to include('git_guardian')
+      end
+    end
+  end
 end

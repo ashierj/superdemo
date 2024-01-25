@@ -61,6 +61,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
     it { is_expected.to have_one(:github_integration) }
     it { is_expected.to have_one(:zoekt_repository) }
+    it { is_expected.to have_one(:git_guardian_integration) }
     it { is_expected.to have_many(:project_aliases) }
     it { is_expected.to have_many(:approval_rules) }
 

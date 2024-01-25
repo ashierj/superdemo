@@ -8,4 +8,11 @@ FactoryBot.define do
     token { 'github-token' }
     repository_url { 'https://github.com/owner/repository' }
   end
+
+  factory :git_guardian_integration, class: 'Integrations::GitGuardian' do
+    project
+    type { 'Integrations::GitGuardian' }
+    active { true }
+    token { 'git_guardian-token' }
+  end
 end

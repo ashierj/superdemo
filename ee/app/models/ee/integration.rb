@@ -17,7 +17,10 @@ module EE
 
       override :project_specific_integration_names
       def project_specific_integration_names
-        super + EE_PROJECT_SPECIFIC_INTEGRATION_NAMES
+        integration_names = super + EE_PROJECT_SPECIFIC_INTEGRATION_NAMES
+        integration_names.append('git_guardian') if ::Feature.enabled?(:git_guardian_integration, type: :wip)
+
+        integration_names
       end
     end
   end

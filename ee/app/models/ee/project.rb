@@ -56,6 +56,7 @@ module EE
       has_one :index_status
 
       has_one :github_integration, class_name: 'Integrations::Github'
+      has_one :git_guardian_integration, class_name: 'Integrations::GitGuardian'
 
       has_one :status_page_setting, inverse_of: :project, class_name: 'StatusPage::ProjectSetting'
       has_one :compliance_framework_setting, class_name: 'ComplianceManagement::ComplianceFramework::ProjectSettings', inverse_of: :project
