@@ -11,13 +11,17 @@ module EE
 
           override :integrations
           def integrations
-            super.merge('github' => ::Integrations::Github.api_fields)
+            super.merge(
+              'github' => ::Integrations::Github.api_fields,
+              'git-guardian' => ::Integrations::GitGuardian.api_fields
+            )
           end
 
           override :integration_classes
           def integration_classes
             [
               ::Integrations::Github,
+              ::Integrations::GitGuardian,
               *super
             ]
           end
