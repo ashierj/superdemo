@@ -23,9 +23,7 @@ class GenerateAsIfFossEnv
   ]).freeze
 
   def initialize
-    @client = Gitlab.client(
-      endpoint: ENV['CI_API_V4_URL'],
-      private_token: ENV['PROJECT_TOKEN_FOR_CI_SCRIPTS_API_USAGE'] || '')
+    @client = Gitlab.client(endpoint: ENV['CI_API_V4_URL'], private_token: '')
     @rspec_jobs = Set.new
     @other_jobs = Set.new
   end
@@ -66,13 +64,9 @@ class GenerateAsIfFossEnv
   end
 
   def detect_rspec(job)
-    rspec_type = job.name[%r{^rspec(?:-all)? ([\w\-]+)}, 1]
+    rspec_type = job.name[/^rspec(?:-all)? ([\w\-]+)/, 1]
 
-    return unless rspec_type
-
-    rspec_kind = job.name[%r{pg\d+ ([\w\-]+)(?: \d+/\d+)?$}, 1]
-    rspec_jobs << rspec_type
-    rspec_jobs << rspec_kind if rspec_kind
+    rspec_jobs << rspec_type if rspec_type
   end
 
   def detect_other_jobs(job)

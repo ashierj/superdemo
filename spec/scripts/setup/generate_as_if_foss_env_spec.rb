@@ -21,11 +21,7 @@ RSpec.describe GenerateAsIfFossEnv, feature_category: :tooling do
     let(:jobs) do
       [
         'rspec fast_spec_helper',
-        'rspec unit pg14 praefect 1/5',
-        'rspec unit pg14 single-db 2/5',
-        'rspec unit pg14 single-db-ci-connection 3/5',
-        'rspec unit pg14 single-redis 4/5',
-        'rspec unit pg14 5/5',
+        'rspec unit pg14',
         'rspec integration pg14',
         'rspec system pg14',
         'rspec migration pg14',
@@ -68,10 +64,6 @@ RSpec.describe GenerateAsIfFossEnv, feature_category: :tooling do
         ENABLE_RSPEC: 'true',
         ENABLE_RSPEC_FAST_SPEC_HELPER: 'true',
         ENABLE_RSPEC_UNIT: 'true',
-        ENABLE_RSPEC_PRAEFECT: 'true',
-        ENABLE_RSPEC_SINGLE_DB: 'true',
-        ENABLE_RSPEC_SINGLE_DB_CI_CONNECTION: 'true',
-        ENABLE_RSPEC_SINGLE_REDIS: 'true',
         ENABLE_RSPEC_INTEGRATION: 'true',
         ENABLE_RSPEC_SYSTEM: 'true',
         ENABLE_RSPEC_MIGRATION: 'true',
@@ -104,10 +96,6 @@ RSpec.describe GenerateAsIfFossEnv, feature_category: :tooling do
         ENABLE_RSPEC=true
         ENABLE_RSPEC_FAST_SPEC_HELPER=true
         ENABLE_RSPEC_UNIT=true
-        ENABLE_RSPEC_PRAEFECT=true
-        ENABLE_RSPEC_SINGLE_DB=true
-        ENABLE_RSPEC_SINGLE_DB_CI_CONNECTION=true
-        ENABLE_RSPEC_SINGLE_REDIS=true
         ENABLE_RSPEC_INTEGRATION=true
         ENABLE_RSPEC_SYSTEM=true
         ENABLE_RSPEC_MIGRATION=true
