@@ -15605,6 +15605,7 @@ Represents the total number of issues and their weights for a particular day.
 | <a id="cicatalogresourceopenmergerequestscount"></a>`openMergeRequestsCount` **{warning-solid}** | [`Int!`](#int) | **Introduced** in 16.3. This feature is an Experiment. It can be changed or removed at any time. Count of open merge requests that belong to the the catalog resource. |
 | <a id="cicatalogresourcereadmehtml"></a>`readmeHtml` **{warning-solid}** | [`String!`](#string) | **Introduced** in 16.1. This feature is an Experiment. It can be changed or removed at any time. GitLab Flavored Markdown rendering of `readme`. |
 | <a id="cicatalogresourcestarcount"></a>`starCount` **{warning-solid}** | [`Int!`](#int) | **Introduced** in 16.1. This feature is an Experiment. It can be changed or removed at any time. Number of times the catalog resource has been starred. |
+| <a id="cicatalogresourceverificationlevel"></a>`verificationLevel` **{warning-solid}** | [`CiCatalogResourceComponentVerificationLevel`](#cicatalogresourcecomponentverificationlevel) | **Introduced** in 16.9. This feature is an Experiment. It can be changed or removed at any time. Verification level of the catalog resource. |
 | <a id="cicatalogresourcewebpath"></a>`webPath` **{warning-solid}** | [`String`](#string) | **Introduced** in 16.1. This feature is an Experiment. It can be changed or removed at any time. Web path of the catalog resource. |
 
 #### Fields with arguments
@@ -29718,6 +29719,13 @@ Types of blob viewers.
 | <a id="blobviewerstypeauxiliary"></a>`auxiliary` | Auxiliary blob viewers type. |
 | <a id="blobviewerstyperich"></a>`rich` | Rich blob viewers type. |
 | <a id="blobviewerstypesimple"></a>`simple` | Simple blob viewers type. |
+
+### `CiCatalogResourceComponentVerificationLevel`
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="cicatalogresourcecomponentverificationlevelgitlab"></a>`GITLAB` | Component is maintained by GitLab. |
+| <a id="cicatalogresourcecomponentverificationlevelunverified"></a>`UNVERIFIED` | Component is unverified. |
 
 ### `CiCatalogResourceScope`
 
