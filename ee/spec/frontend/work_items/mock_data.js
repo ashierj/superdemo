@@ -60,3 +60,46 @@ export const createWorkItemMutationErrorResponse = {
     },
   },
 };
+
+export const workItemObjectiveMetadataWidgetsEE = {
+  HEALTH_STATUS: {
+    type: 'HEALTH_STATUS',
+    __typename: 'WorkItemWidgetHealthStatus',
+    healthStatus: 'onTrack',
+  },
+  PROGRESS: {
+    type: 'PROGRESS',
+    __typename: 'WorkItemWidgetProgress',
+    progress: 10,
+    updatedAt: new Date(),
+  },
+  WEIGHT: {
+    type: 'WEIGHT',
+    __typename: 'WorkItemWidgetWEIGHT',
+    weight: 1,
+  },
+  ITERATION: {
+    type: 'ITERATION',
+    __typename: 'WorkItemWidgetIteration',
+    iteration: {
+      description: null,
+      id: 'gid://gitlab/Iteration/1',
+      iid: '12',
+      title: 'Iteration title',
+      startDate: '2023-12-19',
+      dueDate: '2024-01-15',
+      updatedAt: new Date(),
+      iterationCadence: {
+        title: 'Iteration 101',
+        __typename: 'IterationCadence',
+      },
+      __typename: 'Iteration',
+    },
+  },
+  START_AND_DUE_DATE: {
+    type: 'START_AND_DUE_DATE',
+    dueDate: '2024-06-27',
+    startDate: '2024-01-01',
+    __typename: 'WorkItemWidgetStartAndDueDate',
+  },
+};
