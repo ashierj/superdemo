@@ -19,7 +19,6 @@ module Security
         mark_project_as_vulnerable!
         set_latest_pipeline!
         schedule_mark_dropped_vulnerabilities
-        schedule_auto_fix
         sync_findings_to_approval_rules
         schedule_sbom_records
       end
@@ -81,22 +80,6 @@ module Security
       def primary_identifiers_by_scan_type
         latest_security_scans.group_by(&:scan_type)
                              .transform_values { |scans| scans.flat_map(&:report_primary_identifiers).compact }
-      end
-
-      def schedule_auto_fix
-        ::Security::AutoFixWorker.perform_async(pipeline.id) if auto_fix_enabled?
-      end
-
-      def auto_fix_enabled?
-        project.security_setting&.auto_fix_enabled? && has_auto_fixable_report_type?
-      end
-
-      def has_auto_fixable_report_type?
-        (project.security_setting.auto_fix_enabled_types & report_types).any?
-      end
-
-      def report_types
-        latest_security_scans.map(&:scan_type).map(&:to_sym)
       end
 
       def schedule_sbom_records

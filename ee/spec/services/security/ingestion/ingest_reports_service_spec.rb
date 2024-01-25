@@ -76,54 +76,6 @@ RSpec.describe Security::Ingestion::IngestReportsService, feature_category: :vul
       end
     end
 
-    describe 'scheduling the AutoFix background job' do
-      let(:auto_fix_dependency_scanning?) { false }
-
-      before do
-        allow(Security::AutoFixWorker).to receive(:perform_async)
-        allow(project.security_setting).to receive(:auto_fix_enabled?).and_return(auto_fix_enabled?)
-        project.security_setting.update!(auto_fix_container_scanning: false, auto_fix_dependency_scanning: auto_fix_dependency_scanning?)
-
-        ingest_reports
-      end
-
-      context 'when the auto_fix is not enabled for the project' do
-        let(:auto_fix_enabled?) { false }
-
-        context 'when the pipeline does not have any auto fix enabled report type' do
-          it 'does not schedule the background job' do
-            expect(Security::AutoFixWorker).not_to have_received(:perform_async)
-          end
-        end
-
-        context 'when the pipeline has an auto fix enabled report type' do
-          let(:auto_fix_dependency_scanning?) { true }
-
-          it 'does not schedule the background job' do
-            expect(Security::AutoFixWorker).not_to have_received(:perform_async)
-          end
-        end
-      end
-
-      context 'when the auto_fix is enabled for the project' do
-        let(:auto_fix_enabled?) { true }
-
-        context 'when the pipeline does not have any auto fix enabled report type' do
-          it 'does not schedule the background job' do
-            expect(Security::AutoFixWorker).not_to have_received(:perform_async)
-          end
-        end
-
-        context 'when the pipeline has an auto fix enabled report type' do
-          let(:auto_fix_dependency_scanning?) { true }
-
-          it 'does not schedule the background job' do
-            expect(Security::AutoFixWorker).to have_received(:perform_async)
-          end
-        end
-      end
-    end
-
     describe 'scheduling the SyncFindingsToApprovalRulesWorker background job' do
       before do
         allow(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).to receive(:perform_async)
