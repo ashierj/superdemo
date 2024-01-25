@@ -28,6 +28,7 @@ export default (containerId = 'js-code-suggestions-usage-app') => {
     trackAction,
     trackLabel,
     userName,
+    addDuoProHref,
   } = el.dataset;
 
   return new Vue({
@@ -38,6 +39,7 @@ export default (containerId = 'js-code-suggestions-usage-app') => {
       fullPath,
       groupId,
       createHandRaiseLeadPath,
+      addDuoProHref,
       isSaaS: true,
       buttonAttributes: buttonAttributes && { ...JSON.parse(buttonAttributes), variant: 'confirm' },
       user: {
