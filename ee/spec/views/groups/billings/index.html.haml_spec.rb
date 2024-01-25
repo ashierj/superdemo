@@ -67,6 +67,32 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
         expect(rendered).to have_css(css)
       end
 
+      context 'with Duo Pro trial link' do
+        it 'renders the link' do
+          render
+
+          expect(rendered).to have_link(
+            'Start a free Duo Pro trial',
+            href: new_trials_duo_pro_path(namespace_id: group.id)
+          )
+        end
+
+        context 'when duo_pro_trials is disabled' do
+          before do
+            stub_feature_flags(duo_pro_trials: false)
+          end
+
+          it 'does not render the link' do
+            render
+
+            expect(rendered).not_to have_link(
+              'Start a free Duo Pro trial',
+              href: new_trials_duo_pro_path(namespace_id: group.id)
+            )
+          end
+        end
+      end
+
       context 'with an expired trial' do
         let_it_be(:group) { create(:group_with_plan, plan: :free_plan, trial_ends_on: Date.yesterday) }
 
