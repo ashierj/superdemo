@@ -5,7 +5,7 @@ module Gitlab
     module VertexAi
       module ModelConfigurations
         class TextEmbeddings < Base
-          NAME = 'textembedding-gecko'
+          NAME = 'textembedding-gecko@003'
 
           def payload(content)
             {

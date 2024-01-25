@@ -29,9 +29,14 @@ module Llm
             next unless embeddable?(content)
 
             current_md5sum = extract_md5sum(embeddings_sources, source)
-            new_md5sum = OpenSSL::Digest::SHA256.hexdigest(content)
 
-            # if file content did not change, then no need to rebuild it's file_embeddings, just used them as is.
+            # Create the digest by concatenating the file content and the model used, so that we generate new embeddings
+            # if either change
+            new_md5sum = OpenSSL::Digest::SHA256.hexdigest(
+              content + ::Gitlab::Llm::VertexAi::ModelConfigurations::TextEmbeddings::NAME
+            )
+
+            # If the file digest did not change, then there's no need to rebuild its embeddings, just used them as is.
             next if new_md5sum == current_md5sum
 
             CreateDbEmbeddingsPerDocFileWorker.perform_async(filename, update_version)
