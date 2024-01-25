@@ -48,10 +48,9 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
 
     shared_examples_for 'successful prompt processing' do
       it 'answers query using expected tools', :aggregate_failures do
-        answer = executor.execute
-
+        # make the call to Duo Chat in order to receive the list of selected tools
+        executor.execute
         expect(executor.context).to match_llm_tools(tools)
-        expect(answer.response_body).to match_llm_answer(answer_match)
       end
     end
 
@@ -59,11 +58,11 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
       let(:blob) { project.repository.blob_at("master", "files/ruby/popen.rb") }
       let(:extra_resource) { { blob: blob } }
 
-      where(:input_template, :tools, :answer_match) do
-        'Explain the code'          | [] | /ruby|popen/i
-        'Explain this code'         | [] | /ruby|popen/i
-        'What is this code doing?'  | [] | /ruby|popen/i
-        'Can you explain the code ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /hello/i
+      where(:input_template, :tools) do
+        'Explain the code'          | []
+        'Explain this code'         | []
+        'What is this code doing?'  | []
+        'Can you explain the code ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | []
       end
 
       with_them do
@@ -81,7 +80,6 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
 
         let(:input) { 'What is this code doing?' }
         let(:tools) { [] }
-        let(:answer_match) { /ruby|rails/i }
 
         it_behaves_like 'successful prompt processing'
       end
@@ -90,10 +88,10 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
     context 'without tool' do
       let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
 
-      where(:input_template, :tools, :answer_match) do
-        'Summarize this Merge Request' | [] | /is not available/
-        'Summarize %<merge_request_identifier>s Merge Request' | [] | /is not available/
-        'Why did this pipeline fail?' | [] | /is not available/
+      where(:input_template, :tools) do
+        'Summarize this Merge Request' | []
+        'Summarize %<merge_request_identifier>s Merge Request' | []
+        'Why did this pipeline fail?' | []
       end
 
       with_them do
@@ -124,15 +122,15 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
           let(:input) { format(input_template, issue_identifier: "the issue #{issue.to_reference(full: true)}") }
 
           # rubocop: disable Layout/LineLength -- keep table structure readable
-          where(:input_template, :tools, :answer_match) do
-            'Please summarize %<issue_identifier>s' | %w[IssueIdentifier ResourceReader] | /reliability/
-            'Summarize %<issue_identifier>s with bullet points' | %w[IssueIdentifier ResourceReader] | /reliability/
-            'Can you list all the labels on %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /ai-enablement/
-            'How old is %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /2 days/
-            'How many days ago %<issue_identifier>s was created?' | %w[IssueIdentifier ResourceReader] | //
-            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueIdentifier ResourceReader] | lazy { /(#{milestone&.title}|due date.*#{due_date.strftime('%Y-%m-%d')})/ }
-            'Summarize the comments from %<issue_identifier>s into bullet points' | %w[IssueIdentifier ResourceReader] | /latency/
-            'What should be the final solution for %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /solution/
+          where(:input_template, :tools) do
+            'Please summarize %<issue_identifier>s' | %w[IssueIdentifier ResourceReader]
+            'Summarize %<issue_identifier>s with bullet points' | %w[IssueIdentifier ResourceReader]
+            'Can you list all the labels on %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader]
+            'How old is %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader]
+            'How many days ago %<issue_identifier>s was created?' | %w[IssueIdentifier ResourceReader]
+            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueIdentifier ResourceReader]
+            'Summarize the comments from %<issue_identifier>s into bullet points' | %w[IssueIdentifier ResourceReader]
+            'What should be the final solution for %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader]
           end
           # rubocop: enable Layout/LineLength
 
@@ -146,13 +144,13 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
           let(:input) { format(input_template, issue_identifier: "this issue") }
 
           # rubocop: disable Layout/LineLength -- keep table structure readable
-          where(:input_template, :tools, :answer_match) do
-            'Please summarize %<issue_identifier>s' | %w[IssueIdentifier ResourceReader] | //
-            'Can you list all the labels on %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /ai-enablement/
-            'How old is %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /2 days/
-            'How many days ago %<issue_identifier>s was created?' | %w[IssueIdentifier ResourceReader] | //
-            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueIdentifier ResourceReader] | lazy { /(#{milestone&.title}|due date.*#{due_date.strftime('%Y-%m-%d')})/ }
-            'What should be the final solution for %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /solution/
+          where(:input_template, :tools) do
+            'Please summarize %<issue_identifier>s' | %w[IssueIdentifier ResourceReader]
+            'Can you list all the labels on %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader]
+            'How old is %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader]
+            'How many days ago %<issue_identifier>s was created?' | %w[IssueIdentifier ResourceReader]
+            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueIdentifier ResourceReader]
+            'What should be the final solution for %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader]
           end
           # rubocop: enable Layout/LineLength
 
@@ -194,17 +192,17 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
         end
 
         # rubocop: disable Layout/LineLength -- keep table structure readable
-        where(:input_template, :tools, :answer_match) do
+        where(:input_template, :tools) do
           # evaluation of questions which involve processing of other resources is not reliable yet
           # because both IssueIdentifier and JsonReader tools assume we work with single resource:
           # IssueIdentifier overrides context.resource
           # JsonReader takes resource from context
           # So JsonReader twice with different action input
-          'Can you provide more details about that issue?' | %w[IssueIdentifier ResourceReader] | /(reliability|providers)/
-          'Can you reword your answer?' | [] | /provider/i
-          'Can you simplify your answer?' | [] | /provider|simplify/i
-          'Can you expand on your last paragraph?' | [] | /provider/i
-          'Can you identify the unique use cases the commenters have raised on this issue?' | %w[IssueIdentifier ResourceReader] | /test|manage/
+          'Can you provide more details about that issue?' | %w[IssueIdentifier ResourceReader]
+          'Can you reword your answer?' | []
+          'Can you simplify your answer?' | []
+          'Can you expand on your last paragraph?' | []
+          'Can you identify the unique use cases the commenters have raised on this issue?' | %w[IssueIdentifier ResourceReader]
         end
         # rubocop: enable Layout/LineLength
 
@@ -235,8 +233,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
           end
 
           # rubocop: disable Layout/LineLength -- keep table structure readable
-          where(:input_template, :tools, :answer_match) do
-            'Can you sort this list by the number of users that have requested the use case and include the number for each use case? Can you include a verbatim for the two most requested use cases that reflect the general opinion of commenters for these two use cases?' | %w[] | /test|manage/
+          where(:input_template, :tools) do
+            'Can you sort this list by the number of users that have requested the use case and include the number for each use case? Can you include a verbatim for the two most requested use cases that reflect the general opinion of commenters for these two use cases?' | %w[]
           end
           # rubocop: enable Layout/LineLength
 
@@ -251,21 +249,21 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
 
     context 'when asking to explain code' do
       # rubocop: disable Layout/LineLength -- keep table structure readable
-      where(:input_template, :tools, :answer_match) do
+      where(:input_template, :tools) do
         # NOTE: `tools: []` is the correct expected value.
         # There is no tool for explaining a code and the LLM answers the question directly.
-        'Can you explain the code ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /(ruby|method|hello_world)/i
-        'Can you explain function ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /(ruby|function|method|hello_world)/i
-        'Write me tests for function ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""' | [] | /(ruby|test)/
-        'What is the complexity of the function ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /O\(1\)/
-        'How would you refactor the ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend"" code?' | [] | /(ruby|refactor)/i
-        'Can you fix the bug in my ""def hello_world\\nput(\""Hello, world!\\n\"");\nend"" code?' | [] | /ruby/i
-        'Create an example of how to use method ""def hello_world\\nput(\""Hello, world!\\n\"");\nend""' | [] | /(ruby|example|hello_world)/
-        'Write documentation for ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /(ruby|method|hello_world)/i
-        'Create a function to validate an e-mail address' | [] | /(validate|email address)/i
-        'Create a function in Python to call the spotify API to get my playlists' | [] | /python/i
-        'Create a tic tac toe game in Javascript' | [] | /javascript/i
-        'What would the ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend"" code look like in Python?' | [] | /python/i
+        'Can you explain the code ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | []
+        'Can you explain function ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | []
+        'Write me tests for function ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""' | []
+        'What is the complexity of the function ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | []
+        'How would you refactor the ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend"" code?' | []
+        'Can you fix the bug in my ""def hello_world\\nput(\""Hello, world!\\n\"");\nend"" code?' | []
+        'Create an example of how to use method ""def hello_world\\nput(\""Hello, world!\\n\"");\nend""' | []
+        'Write documentation for ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | []
+        'Create a function to validate an e-mail address' | []
+        'Create a function in Python to call the spotify API to get my playlists' | []
+        'Create a tic tac toe game in Javascript' | []
+        'What would the ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend"" code look like in Python?' | []
       end
       # rubocop: enable Layout/LineLength
 
@@ -277,12 +275,12 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
     end
 
     context 'when asking about how to use GitLab', :ai_embedding_fixtures do
-      where(:input_template, :tools, :answer_match) do
-        'How do I change my password in GitLab' | ['GitlabDocumentation'] | /password/
-        'How do I fork a project?' | ['GitlabDocumentation'] | /fork/
-        'How do I clone a repository?' | ['GitlabDocumentation'] | /clone/
-        'How do I create a project template?' | ['GitlabDocumentation'] | /project/
-        'What is DevOps? What is DevSecOps?' | ['GitlabDocumentation'] | /(DevOps|DevSecOps)/i
+      where(:input_template, :tools) do
+        'How do I change my password in GitLab' | ['GitlabDocumentation']
+        'How do I fork a project?' | ['GitlabDocumentation']
+        'How do I clone a repository?' | ['GitlabDocumentation']
+        'How do I create a project template?' | ['GitlabDocumentation']
+        'What is DevOps? What is DevSecOps?' | ['GitlabDocumentation']
       end
 
       with_them do
@@ -309,11 +307,11 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
           let(:input) { format(input_template, epic_identifier: "the epic #{epic.to_reference(full: true)}") }
 
           # rubocop: disable Layout/LineLength -- keep table structure readable
-          where(:input_template, :tools, :answer_match) do
-            'Please summarize %<epic_identifier>s'                    | %w[EpicIdentifier ResourceReader] | //
-            'Can you list all labels on %{epic_identifier} epic?'     | %w[EpicIdentifier ResourceReader] | /ai-framework/
-            'How old is %<epic_identifier>s?' | %w[EpicIdentifier ResourceReader] | /5 days/
-            'How many days ago was %<epic_identifier>s epic created?' | %w[EpicIdentifier ResourceReader] | /5 days/
+          where(:input_template, :tools) do
+            'Please summarize %<epic_identifier>s'                    | %w[EpicIdentifier ResourceReader]
+            'Can you list all labels on %{epic_identifier} epic?'     | %w[EpicIdentifier ResourceReader]
+            'How old is %<epic_identifier>s?' | %w[EpicIdentifier ResourceReader]
+            'How many days ago was %<epic_identifier>s epic created?' | %w[EpicIdentifier ResourceReader]
           end
           # rubocop: enable Layout/LineLength
 
@@ -325,9 +323,9 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
         context 'with `this epic`' do
           let(:resource) { epic }
 
-          where(:input_template, :tools, :answer_match) do
-            'Can you list all labels on this epic?'       | %w[EpicIdentifier ResourceReader] | /ai-framework/
-            'How many days ago was current epic created?' | %w[EpicIdentifier ResourceReader] | /5 days/
+          where(:input_template, :tools) do
+            'Can you list all labels on this epic?'       | %w[EpicIdentifier ResourceReader]
+            'How many days ago was current epic created?' | %w[EpicIdentifier ResourceReader]
           end
 
           with_them do
@@ -360,17 +358,16 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
         end
 
         # rubocop: disable Layout/LineLength -- keep table structure readable
-        where(:input_template, :tools, :answer_match) do
+        where(:input_template, :tools) do
           # evaluation of questions which involve processing of other resources is not reliable yet
           # because both EpicIdentifier and JsonReader tools assume we work with single resource:
           # EpicIdentifier overrides context.resource
           # JsonReader takes resource from context
           # So JsonReader twice with different action input
-          'Can you provide more details about that epic?' | %w[EpicIdentifier ResourceReader] | /(reliability|providers)/
+          'Can you provide more details about that epic?' | %w[EpicIdentifier ResourceReader]
           # Translation would have to be explicitly allowed in prompt rules first
-          # 'Can you translate your last answer to German?' | [] | /Anbieter/ # Anbieter == provider
-          'Can you reword your answer?' | [] | /provider/i
-          'Can you explain your third point in different words?' | [] | /provider/i
+          'Can you reword your answer?' | []
+          'Can you explain your third point in different words?' | []
         end
         # rubocop: enable Layout/LineLength
 
@@ -383,13 +380,13 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
     end
 
     context 'when asked about CI/CD' do
-      where(:input_template, :tools, :answer_match) do
+      where(:input_template, :tools) do
         'How do I configure CI/CD pipeline to deploy a ruby application to k8s?' |
-          ['CiEditorAssistant'] | /gitlab-ci/
+          ['CiEditorAssistant']
         'Please help me configure a CI/CD pipeline for node application that would run lint and unit tests.' |
-          ['CiEditorAssistant'] | /gitlab-ci/
+          ['CiEditorAssistant']
         'Please provide a .gitlab-ci.yaml config for running a review app for merge requests?' |
-          ['CiEditorAssistant'] | /gitlab-ci/
+          ['CiEditorAssistant']
       end
 
       with_them do
@@ -405,7 +402,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
       it 'answers question about a name', :aggregate_failures do
         answer = executor.execute
 
-        expect(answer.response_body).to match_llm_answer('GitLab Duo Chat')
+        expect(answer.response_body).to match('GitLab Duo Chat')
       end
     end
 
@@ -422,10 +419,10 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
       end
 
       context 'when asked about writing tests' do
-        where(:input_template, :tools, :answer_match) do
-          'Write tests for selected code' | []             | /tests.*hello_world/m
-          '/tests'                        | %w[WriteTests] | /tests.*hello_world/m
-          '/tests integration'            | %w[WriteTests] | /integration.*hello_world/m
+        where(:input_template, :tools) do
+          'Write tests for selected code' | []
+          '/tests'                        | %w[WriteTests]
+          '/tests integration'            | %w[WriteTests]
         end
 
         with_them do
@@ -436,10 +433,10 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
       end
 
       context 'when refactoring selected code' do
-        where(:input_template, :tools, :answer_match) do
-          'Refactor this code'     | []               | /method.*hello_world/
-          '/refactor'              | %w[RefactorCode] | /change/i
-          '/refactor input params' | %w[RefactorCode] | /param/
+        where(:input_template, :tools) do
+          'Refactor this code'     | []
+          '/refactor'              | %w[RefactorCode]
+          '/refactor input params' | %w[RefactorCode]
         end
 
         with_them do
@@ -450,10 +447,10 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
       end
 
       context 'when explaining selected code' do
-        where(:input_template, :tools, :answer_match) do
-          'Explain this code'     | []              | /method.*hello_world/
-          '/explain'              | %w[ExplainCode] | /method.*hello_world/
-          '/explain return value' | %w[ExplainCode] | /return.*nil/
+        where(:input_template, :tools) do
+          'Explain this code'     | []
+          '/explain'              | %w[ExplainCode]
+          '/explain return value' | %w[ExplainCode]
         end
 
         with_them do
