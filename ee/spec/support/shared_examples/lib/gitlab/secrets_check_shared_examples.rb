@@ -29,7 +29,7 @@ RSpec.shared_examples 'scan passed' do
     end
 
     it 'filters existing blobs out' do
-      expect_next_instance_of(described_class) do |instance|
+      expect_next_instance_of(::Gitlab::Checks::ChangedBlobs) do |instance|
         # old blob is expected to be filtered out
         expect(instance).to receive(:filter_existing)
           .with(
@@ -145,7 +145,7 @@ RSpec.shared_examples 'scan detected secrets' do
     end
 
     it 'filters existing blobs out' do
-      expect_next_instance_of(described_class) do |instance|
+      expect_next_instance_of(::Gitlab::Checks::ChangedBlobs) do |instance|
         # old blob is expected to be filtered out
         expect(instance).to receive(:filter_existing)
           .with(
@@ -405,7 +405,7 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
     end
 
     it 'filters existing blobs out' do
-      expect_next_instance_of(described_class) do |instance|
+      expect_next_instance_of(::Gitlab::Checks::ChangedBlobs) do |instance|
         # old blob is expected to be filtered out
         expect(instance).to receive(:filter_existing)
           .with(
