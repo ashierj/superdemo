@@ -187,6 +187,12 @@ module EE
               description: 'Scan Result Policies of the project',
               resolver: ::Resolvers::SecurityOrchestration::ScanResultPolicyResolver
 
+        field :security_policy_project,
+              ::Types::ProjectType,
+              null: true,
+              method: :security_policy_management_project,
+              description: 'Security policy project assigned to the project, absent if assigned to a parent group.'
+
         field :network_policies,
               ::Types::NetworkPolicyType.connection_type,
               null: true,

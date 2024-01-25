@@ -40,6 +40,7 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
   it { is_expected.to delegate_method(:eligible_for_temporary_storage_increase?).to(:namespace_limit) }
   it { is_expected.to delegate_method(:experiment_features_enabled).to(:namespace_settings).allow_nil }
   it { is_expected.to delegate_method(:experiment_features_enabled=).to(:namespace_settings).with_arguments(:args).allow_nil }
+  it { is_expected.to delegate_method(:security_policy_management_project).to(:security_orchestration_policy_configuration) }
 
   shared_examples 'plan helper' do |namespace_plan|
     let(:namespace) { create(:namespace_with_plan, plan: "#{plan_name}_plan") }
