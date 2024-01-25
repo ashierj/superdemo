@@ -25,7 +25,7 @@ Branch pipelines:
 Merge request pipelines:
 
 - **Do not run by default**. The jobs in the CI/CD configuration file [must be configured](#prerequisites)
-  to run in merge request pipelines.
+  to run in merge request pipelines. Some configurations can [accidentally cause merge request pipelines to run](#two-pipelines-when-pushing-to-a-branch).
 - If configured, merge request pipelines run when you:
   - Create a new merge request from a source branch with one or more commits.
   - Push a new commit to the source branch for a merge request.
