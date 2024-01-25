@@ -41,9 +41,6 @@ export default {
     billingAccount: {
       query: getBillingAccountQuery,
       client: CUSTOMERSDOT_CLIENT,
-      skip() {
-        return !gon.features?.keyContactsManagement;
-      },
       error(error) {
         this.handleError(error);
       },

@@ -67,84 +67,40 @@ describe('Billing Address', () => {
     await waitForPromises();
   };
 
-  describe('with keyContactsManagement flag true', () => {
-    beforeEach(() => {
-      gon.features = { keyContactsManagement: true };
-    });
-    describe.each`
-      billingAccountExists | billingAccountData    | stepTitle                | showAddress
-      ${true}              | ${mockBillingAccount} | ${'Contact information'} | ${false}
-      ${false}             | ${null}               | ${'Billing address'}     | ${true}
-    `(
-      'when billingAccount exists is $billingAccountExists',
-      ({ billingAccountData, stepTitle, showAddress }) => {
-        beforeEach(async () => {
-          await createComponent(
-            {},
-            jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-          );
-        });
+  describe.each`
+    billingAccountExists | billingAccountData    | stepTitle                | showAddress
+    ${true}              | ${mockBillingAccount} | ${'Contact information'} | ${false}
+    ${false}             | ${null}               | ${'Billing address'}     | ${true}
+  `(
+    'when billingAccount exists is $billingAccountExists',
+    ({ billingAccountData, stepTitle, showAddress }) => {
+      beforeEach(async () => {
+        await createComponent(
+          {},
+          jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
+        );
+      });
 
-        it('shows step component', () => {
-          expect(findStep().exists()).toBe(true);
-        });
+      it('shows step component', () => {
+        expect(findStep().exists()).toBe(true);
+      });
 
-        it('passes correct step title', () => {
-          expect(findStep().props('title')).toEqual(stepTitle);
-        });
+      it('passes correct step title', () => {
+        expect(findStep().props('title')).toEqual(stepTitle);
+      });
 
-        it(`${showAddress ? 'shows' : 'does not show'} address form`, () => {
-          expect(findAddressForm().exists()).toBe(showAddress);
-        });
+      it(`${showAddress ? 'shows' : 'does not show'} address form`, () => {
+        expect(findAddressForm().exists()).toBe(showAddress);
+      });
 
-        it(`${showAddress ? 'does not show' : 'shows'} manage contact message`, () => {
-          expect(findManageContacts().exists()).toBe(!showAddress);
-        });
-      },
-    );
-  });
-  describe('with keyContactsManagement flag false', () => {
-    beforeEach(() => {
-      gon.features = { keyContactsManagement: false };
-    });
-
-    describe.each`
-      billingAccountExists | billingAccountData    | stepTitle            | showAddress
-      ${true}              | ${mockBillingAccount} | ${'Billing address'} | ${true}
-      ${false}             | ${null}               | ${'Billing address'} | ${true}
-    `(
-      'when  billingAccount exists is $billingAccountExists',
-      ({ billingAccountData, stepTitle, showAddress }) => {
-        beforeEach(async () => {
-          await createComponent(
-            {},
-            jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-          );
-        });
-
-        it('shows step component', () => {
-          expect(findStep().exists()).toBe(true);
-        });
-
-        it('passes correct step title', () => {
-          expect(findStep().props('title')).toEqual(stepTitle);
-        });
-
-        it(`${showAddress ? 'shows' : 'does not show'} address form`, () => {
-          expect(findAddressForm().exists()).toBe(showAddress);
-        });
-
-        it(`${showAddress ? 'does not show' : 'shows'} manage contact message`, () => {
-          expect(findManageContacts().exists()).toBe(!showAddress);
-        });
-      },
-    );
-  });
+      it(`${showAddress ? 'does not show' : 'shows'} manage contact message`, () => {
+        expect(findManageContacts().exists()).toBe(!showAddress);
+      });
+    },
+  );
 
   describe('manage contacts', () => {
     beforeEach(async () => {
-      gon.features = { keyContactsManagement: true };
-
       await createComponent(
         {},
         jest.fn().mockResolvedValue({ data: { billingAccount: mockBillingAccount } }),
@@ -255,72 +211,34 @@ describe('Billing Address', () => {
   });
 
   describe('summary', () => {
-    describe('when keyContactsManagement flag is true', () => {
-      beforeEach(() => {
-        gon.features = { keyContactsManagement: true };
-      });
-      describe.each`
-        billingAccountExists | billingAccountData    | showSummary
-        ${true}              | ${mockBillingAccount} | ${false}
-        ${false}             | ${null}               | ${true}
-      `(
-        'when billingAccount exists is $billingAccountExists',
-        ({ billingAccountData, showSummary }) => {
-          beforeEach(async () => {
-            await createComponent(
-              {
-                customer: {
-                  country: 'US',
-                  address1: 'address line 1',
-                  address2: 'address line 2',
-                  city: 'city',
-                  zipCode: 'zip',
-                  state: 'CA',
-                },
+    describe.each`
+      billingAccountExists | billingAccountData    | showSummary
+      ${true}              | ${mockBillingAccount} | ${false}
+      ${false}             | ${null}               | ${true}
+    `(
+      'when billingAccount exists is $billingAccountExists',
+      ({ billingAccountData, showSummary }) => {
+        beforeEach(async () => {
+          await createComponent(
+            {
+              customer: {
+                country: 'US',
+                address1: 'address line 1',
+                address2: 'address line 2',
+                city: 'city',
+                zipCode: 'zip',
+                state: 'CA',
               },
-              jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-            );
-          });
+            },
+            jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
+          );
+        });
 
-          it(`${showSummary ? 'renders' : 'does not render'}`, () => {
-            expect(findAddressSummary().exists()).toBe(showSummary);
-          });
-        },
-      );
-    });
-    describe('when keyContactsManagement flag is false', () => {
-      beforeEach(() => {
-        gon.features = { keyContactsManagement: false };
-      });
-      describe.each`
-        billingAccountExists | billingAccountData    | showSummary
-        ${true}              | ${mockBillingAccount} | ${true}
-        ${false}             | ${null}               | ${true}
-      `(
-        'when billingAccount exists is $billingAccountExists',
-        ({ billingAccountData, showSummary }) => {
-          beforeEach(async () => {
-            await createComponent(
-              {
-                customer: {
-                  country: 'US',
-                  address1: 'address line 1',
-                  address2: 'address line 2',
-                  city: 'city',
-                  zipCode: 'zip',
-                  state: 'CA',
-                },
-              },
-              jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-            );
-          });
-
-          it(`${showSummary ? 'renders' : 'does not render'}`, () => {
-            expect(findAddressSummary().exists()).toBe(showSummary);
-          });
-        },
-      );
-    });
+        it(`${showSummary ? 'renders' : 'does not render'}`, () => {
+          expect(findAddressSummary().exists()).toBe(showSummary);
+        });
+      },
+    );
 
     describe('without billing account', () => {
       beforeEach(async () => {
@@ -373,7 +291,6 @@ describe('Billing Address', () => {
     const error = new Error('oh no!');
 
     beforeEach(async () => {
-      gon.features = { keyContactsManagement: true };
       jest.spyOn(Sentry, 'captureException');
 
       wrapper = await createComponent({}, jest.fn().mockRejectedValue(error));
