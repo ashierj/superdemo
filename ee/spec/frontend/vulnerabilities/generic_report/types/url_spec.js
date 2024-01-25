@@ -1,12 +1,12 @@
 import { GlFriendlyWrap, GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Url from 'ee/vulnerabilities/components/generic_report/types/url.vue';
+import Url from 'ee/vulnerabilities/components/generic_report/types/report_type_url.vue';
 
 const TEST_DATA = {
   href: 'http://gitlab.com',
 };
 
-describe('ee/vulnerabilities/components/generic_report/types/url.vue', () => {
+describe('ee/vulnerabilities/components/generic_report/types/report_type_url.vue', () => {
   let wrapper;
 
   const createWrapper = () => {

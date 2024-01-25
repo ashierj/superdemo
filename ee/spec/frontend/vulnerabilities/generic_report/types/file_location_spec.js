@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
-import FileLocation from 'ee/vulnerabilities/components/generic_report/types/file_location.vue';
+import FileLocation from 'ee/vulnerabilities/components/generic_report/types/report_type_file_location.vue';
 
-describe('ee/vulnerabilities/components/generic_report/types/file_location.vue', () => {
+describe('ee/vulnerabilities/components/generic_report/types/report_type_file_location.vue', () => {
   let wrapper;
 
   describe.each`

@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import CodeBlock from '~/vue_shared/components/code_block.vue';
 

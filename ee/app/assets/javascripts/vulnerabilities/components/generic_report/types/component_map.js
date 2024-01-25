@@ -19,16 +19,18 @@ export const getComponentNameForType = (reportType) =>
   `ReportType${capitalizeFirstCharacter(reportType)}`;
 
 export const REPORT_COMPONENTS = {
-  [getComponentNameForType(REPORT_TYPE_LIST)]: () => import('./list.vue'),
-  [getComponentNameForType(REPORT_TYPE_URL)]: () => import('./url.vue'),
-  [getComponentNameForType(REPORT_TYPE_DIFF)]: () => import('./diff.vue'),
-  [getComponentNameForType(REPORT_TYPE_NAMED_LIST)]: () => import('./named_list.vue'),
-  [getComponentNameForType(REPORT_TYPE_TEXT)]: () => import('./value.vue'),
-  [getComponentNameForType(REPORT_TYPE_VALUE)]: () => import('./value.vue'),
-  [getComponentNameForType(REPORT_TYPE_MODULE_LOCATION)]: () => import('./module_location.vue'),
-  [getComponentNameForType(REPORT_TYPE_FILE_LOCATION)]: () => import('./file_location.vue'),
-  [getComponentNameForType(REPORT_TYPE_TABLE)]: () => import('./table.vue'),
-  [getComponentNameForType(REPORT_TYPE_CODE)]: () => import('./code.vue'),
-  [getComponentNameForType(REPORT_TYPE_MARKDOWN)]: () => import('./markdown.vue'),
-  [getComponentNameForType(REPORT_TYPE_COMMIT)]: () => import('./commit.vue'),
+  [getComponentNameForType(REPORT_TYPE_LIST)]: () => import('./report_type_list.vue'),
+  [getComponentNameForType(REPORT_TYPE_URL)]: () => import('./report_type_url.vue'),
+  [getComponentNameForType(REPORT_TYPE_DIFF)]: () => import('./report_type_diff.vue'),
+  [getComponentNameForType(REPORT_TYPE_NAMED_LIST)]: () => import('./report_type_named_list.vue'),
+  [getComponentNameForType(REPORT_TYPE_TEXT)]: () => import('./report_type_value.vue'),
+  [getComponentNameForType(REPORT_TYPE_VALUE)]: () => import('./report_type_value.vue'),
+  [getComponentNameForType(REPORT_TYPE_MODULE_LOCATION)]: () =>
+    import('./report_type_module_location.vue'),
+  [getComponentNameForType(REPORT_TYPE_FILE_LOCATION)]: () =>
+    import('./report_type_file_location.vue'),
+  [getComponentNameForType(REPORT_TYPE_TABLE)]: () => import('./report_type_table.vue'),
+  [getComponentNameForType(REPORT_TYPE_CODE)]: () => import('./report_type_code.vue'),
+  [getComponentNameForType(REPORT_TYPE_MARKDOWN)]: () => import('./report_type_markdown.vue'),
+  [getComponentNameForType(REPORT_TYPE_COMMIT)]: () => import('./report_type_commit.vue'),
 };
