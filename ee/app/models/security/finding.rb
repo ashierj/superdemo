@@ -104,7 +104,12 @@ module Security
       )
     end
 
-    scope :ordered, -> { order(severity: :desc, id: :asc) }
+    scope :ordered, -> (severity_order = nil) do
+      order = severity_order == 'severity_asc' ? :asc : :desc
+
+      order(severity: order, id: :asc)
+    end
+
     scope :with_pipeline_entities, -> { preload(build: [:job_artifacts, :pipeline]) }
     scope :with_scan, -> { preload(:scan) }
     scope :with_scanner, -> { includes(:scanner) }

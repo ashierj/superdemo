@@ -22,6 +22,11 @@ module Resolvers
              required: false,
              description: 'Filter vulnerability findings by state.'
 
+    argument :sort, Types::Security::PipelineSecurityReportFindingSortEnum,
+             required: false,
+             default_value: 'severity_desc',
+             description: 'List vulnerability findings by sort order.'
+
     def resolve(**args)
       pure_finder = ::Security::PureFindingsFinder.new(pipeline, params: args)
       return pure_finder.execute if pure_finder.available?

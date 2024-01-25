@@ -19,6 +19,7 @@ RSpec.shared_examples 'security findings finder' do
   let(:per_page) { nil }
   let(:scanner) { nil }
   let(:state) { nil }
+  let(:sort) { nil }
   let(:service_object) { described_class.new(pipeline, params: params) }
   let(:params) do
     {
@@ -29,7 +30,8 @@ RSpec.shared_examples 'security findings finder' do
       page: page,
       per_page: per_page,
       scanner: scanner,
-      state: state
+      state: state,
+      sort: sort
     }
   end
 
