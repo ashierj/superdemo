@@ -2,16 +2,16 @@
 
 require 'fast_spec_helper'
 
-RSpec.describe Gitlab::Auth::GroupSaml::SsoState do
+RSpec.describe Gitlab::Auth::GroupSaml::SsoState, feature_category: :system_access do
   let(:saml_provider_id) { 10 }
 
-  subject { described_class.new(saml_provider_id) }
+  subject(:sso_state) { described_class.new(saml_provider_id) }
 
   describe '#update_active' do
     it 'updates the current sign in state' do
       Gitlab::Session.with_session({}) do
         new_state = double
-        subject.update_active(new_state)
+        sso_state.update_active(new_state)
 
         expect(Gitlab::Session.current[:active_group_sso_sign_ins]).to eq({ saml_provider_id => new_state })
       end
@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoState do
       current_state = double
 
       Gitlab::Session.with_session(active_group_sso_sign_ins: { saml_provider_id => current_state }) do
-        expect(subject.active?).to eq current_state
+        expect(sso_state.active?).to eq current_state
       end
     end
   end
@@ -54,6 +54,17 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoState do
 
       Gitlab::Session.with_session(active_group_sso_sign_ins: { saml_provider_id => time_before_cut_off }) do
         is_expected.not_to be_active_since(cutoff)
+      end
+    end
+
+    context "when cutoff is nil" do
+      let(:cutoff) { nil }
+
+      it 'is nil when last_sign_in is also nil in an active session' do
+        Gitlab::Session.with_session(active_group_sso_sign_ins: { saml_provider_id => nil }) do
+          is_expected.not_to be_active_since(cutoff)
+          expect(sso_state.active_since?(cutoff)).to be_nil
+        end
       end
     end
   end

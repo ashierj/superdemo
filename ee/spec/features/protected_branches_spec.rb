@@ -193,7 +193,7 @@ RSpec.describe 'Protected Branches', :js, :disable_rate_limiter, feature_categor
         stub_licensed_features(protected_refs_for_users: true)
       end
 
-      include_examples 'protected branches > access control > EE'
+      include_examples 'protected branches > access control > EE', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/437793'
     end
 
     describe 'with ref permissions for users disabled' do
