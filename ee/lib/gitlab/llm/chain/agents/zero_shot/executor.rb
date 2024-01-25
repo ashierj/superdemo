@@ -109,9 +109,7 @@ module Gitlab
               @options ||= {
                 tool_names: tools.map { |tool_class| tool_class::Executor::NAME }.join(', '),
                 tools_definitions: tools.map.with_index do |tool_class, idx|
-                  "#{idx + 1}. #{tool_class::Executor::NAME}: #{tool_class::Executor::DESCRIPTION}" \
-                    "\n" \
-                    "Example of usage: #{tool_class::Executor.full_example}" \
+                  "#{idx + 1}. #{tool_class::Executor.full_definition}" \
                 end.join("\n"),
                 user_input: user_input,
                 agent_scratchpad: +"",
@@ -202,7 +200,7 @@ module Gitlab
               <<~CONTEXT
                 Here is additional data in <resource></resource> tags about the resource the user is working with:
                 <resource>
-                #{context.resource_json(content_limit: provider_prompt_class::MAX_CHARACTERS / 10)}
+                #{context.resource_serialized(content_limit: provider_prompt_class::MAX_CHARACTERS / 10)}
                 </resource>
 
               CONTEXT
@@ -216,11 +214,12 @@ module Gitlab
                   Answer the question as accurate as you can.
 
                   You have access only to the following tools:
+                  <tools>
                   %<tools_definitions>s
+                  </tools>
                   Consider every tool before making a decision.
                   Identifying resource mustn't be the last step.
-                  Ensure that your answer is accurate and contain only information directly supported
-                  by the information retrieved using provided tools.
+                  Ensure that your answer is accurate and contain only information directly supported by the information retrieved using provided tools.
 
                   You must always use the following format:
                   Question: the input question you must answer
@@ -240,8 +239,7 @@ module Gitlab
 
                   You have access to the following GitLab resources: %<resources>s.
                   At the moment, you do not have access to the following GitLab resources: Merge Requests, Pipelines, Vulnerabilities.
-                  When there is no available tool, not enough context or resource is not available to accurately answer the question you must tell it to the user using phrase:
-                  "The question you are asking requires data that is not available to GitLab Duo Chat. Please share your feedback below.".
+                  When there is no available tool, not enough context or resource is not available to accurately answer the question you must tell it to the user using phrase: "The question you are asking requires data that is not available to GitLab Duo Chat. Please share your feedback below.".
                   Avoid asking for more details if you cannot provide an answer anyway.
                   Ask user to leave feedback.
 

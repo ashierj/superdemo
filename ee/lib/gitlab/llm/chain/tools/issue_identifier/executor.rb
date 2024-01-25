@@ -21,8 +21,7 @@ module Gitlab
                 Picked tools: First: "IssueIdentifier" tool, second: "ResourceReader" tool.
                 Reason: You have access to the same resources as user who asks a question.
                   There is issue identifier in the question, so you need to use "IssueIdentifier" tool.
-                  Once the issue is identified, you should use "ResourceReader" tool to fetch relevant information
-                  about the resource. Based on this information you can present final answer.
+                  Once the issue is identified, you should use "ResourceReader" tool to fetch relevant information about the resource. Based on this information you can present final answer.
               PROMPT
 
             PROVIDER_PROMPT_CLASSES = {
@@ -42,11 +41,9 @@ module Gitlab
                 <<~PROMPT
                 You can fetch information about a resource called: an issue.
                 An issue can be referenced by url or numeric IDs preceded by symbol.
-                An issue can also be referenced by a GitLab reference.
-                A GitLab reference ends with a number preceded by the delimiter # and contains one or more /.
-                ResourceIdentifierType can only be one of [current, iid, url, reference]
-                ResourceIdentifier can be number, url. If ResourceIdentifier is not a number or a url
-                use "current".
+                An issue can also be referenced by a GitLab reference. A GitLab reference ends with a number preceded by the delimiter # and contains one or more /.
+                ResourceIdentifierType can only be one of [current, iid, url, reference].
+                ResourceIdentifier can be number, url. If ResourceIdentifier is not a number or a url, use "current".
                 When you see a GitLab reference, ResourceIdentifierType should be reference.
 
                 Make sure the response is a valid JSON. The answer should be just the JSON without any other commentary!

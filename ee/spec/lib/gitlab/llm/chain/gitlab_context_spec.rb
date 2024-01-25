@@ -11,15 +11,16 @@ RSpec.describe Gitlab::Llm::Chain::GitlabContext, :saas, feature_category: :duo_
     described_class.new(current_user: user, container: nil, resource: resource, ai_request: ai_request)
   end
 
-  describe '#resource_json' do
+  describe '#resource_serialized' do
     let(:content_limit) { 500 }
 
     context 'with a serializable resource' do
       let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
       let_it_be(:project) { create(:project, group: group) }
       let(:resource) { create(:issue, project: project) }
-      let(:resource_json) do
-        Ai::AiResource::Issue.new(resource).serialize_for_ai(user: user, content_limit: content_limit).to_json
+      let(:resource_xml) do
+        Ai::AiResource::Issue.new(resource).serialize_for_ai(user: user, content_limit: content_limit)
+          .to_xml(root: :root, skip_types: true, skip_instruct: true)
       end
 
       before_all do
@@ -33,7 +34,7 @@ RSpec.describe Gitlab::Llm::Chain::GitlabContext, :saas, feature_category: :duo_
       end
 
       it 'returns the AI serialization of the resource' do
-        expect(context.resource_json(content_limit: content_limit)).to eq(resource_json)
+        expect(context.resource_serialized(content_limit: content_limit)).to eq(resource_xml)
       end
     end
 
@@ -41,13 +42,13 @@ RSpec.describe Gitlab::Llm::Chain::GitlabContext, :saas, feature_category: :duo_
       let(:resource) { create(:issue) }
 
       it 'returns an empty string' do
-        expect(context.resource_json(content_limit: content_limit)).to eq('')
+        expect(context.resource_serialized(content_limit: content_limit)).to eq('')
       end
     end
 
     context 'with a non-serializable resource' do
       it 'raises an ArgumentError' do
-        expect { context.resource_json(content_limit: content_limit) }.to raise_error(ArgumentError)
+        expect { context.resource_serialized(content_limit: content_limit) }.to raise_error(ArgumentError)
       end
     end
   end

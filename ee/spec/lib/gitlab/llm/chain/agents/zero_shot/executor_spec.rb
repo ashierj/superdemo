@@ -243,18 +243,29 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       end
 
       shared_examples_for 'includes metadata' do
-        let(:metadata_json) { '{"id":1,"iid":1,"description":null,"title":"My title 1"}' }
+        let(:metadata) do
+          <<~XML
+            <root>
+              <id>1</id>
+              <iid>1</iid>
+              <description>
+                <title>My title 1</title>
+              </description>
+            </root>
+          XML
+        end
+
         let(:prompt_resource) do
           <<~CONTEXT
             Here is additional data in <resource></resource> tags about the resource the user is working with:
             <resource>
-            #{metadata_json}
+            #{metadata}
             </resource>
           CONTEXT
         end
 
         it 'includes the current resource metadata' do
-          expect(context).to receive(:resource_json).and_return(metadata_json)
+          expect(context).to receive(:resource_serialized).and_return(metadata)
           expect(agent.prompt[:prompt]).to include(prompt_resource)
         end
 
