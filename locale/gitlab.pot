@@ -16253,6 +16253,9 @@ msgstr ""
 msgid "DateRange|%{start_date}–%{end_date}"
 msgstr ""
 
+msgid "Dates"
+msgstr ""
+
 msgid "Day of month"
 msgstr ""
 
