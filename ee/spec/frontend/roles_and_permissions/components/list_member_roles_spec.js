@@ -315,7 +315,7 @@ describe('ListMemberRoles', () => {
 
       it('shows alert', () => {
         expect(createAlert).toHaveBeenCalledWith({
-          message: 'Failed to delete the role: reason',
+          message: 'Failed to delete role. reason',
         });
       });
     });

@@ -156,8 +156,8 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
         expect(member_role.errors.messages[:base])
           .to(
             include(s_(
-              "MemberRole|cannot be deleted because it is already assigned to a user. " \
-              "Please disassociate the member role from all users before deletion."
+              "MemberRole|Role is assigned to one or more group members. " \
+              "Remove role from all group members, then delete role."
             ))
           )
       end
