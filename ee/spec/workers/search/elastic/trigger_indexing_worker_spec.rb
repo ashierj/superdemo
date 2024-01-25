@@ -163,7 +163,9 @@ RSpec.describe ::Search::Elastic::TriggerIndexingWorker, feature_category: :glob
 
         control = ActiveRecord::QueryRecorder.new(skip_cached: false) { worker.perform(*job_args) }
 
-        create_list(:project, 5, :in_group)
+        create(:project, :in_group)
+        create(:project_namespace, parent: create(:group))
+        create(:project)
 
         expect { worker.perform(*job_args) }.to issue_same_number_of_queries_as(control)
       end
