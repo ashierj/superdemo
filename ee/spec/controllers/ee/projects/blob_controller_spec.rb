@@ -60,6 +60,15 @@ RSpec.describe Projects::BlobController, feature_category: :source_code_manageme
           { force_repair_blobs: true }).once
         get(:show, params: params)
       end
+
+      context 'when project is missing' do
+        let(:params) { { namespace_id: project.namespace, project_id: non_existing_record_id, id: id } }
+
+        it 'does not call ProjectIndexIntegrityWorker' do
+          expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_async)
+          get(:show, params: params)
+        end
+      end
     end
   end
 

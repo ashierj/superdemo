@@ -485,7 +485,21 @@ module SaasRegistrationHelpers
     expect(page).to have_content('Subscription details')
   end
 
-  def fill_in_checkout_form
+  def fill_in_checkout_form(has_billing_account: false)
+    subscription_portal_url = ::Gitlab::Routing.url_helpers.subscription_portal_url
+
+    stub_request(:get, "#{subscription_portal_url}/payment_forms/paid_signup_flow")
+      .with(
+        headers: {
+          'Accept' => 'application/json',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Type' => 'application/json',
+          'User-Agent' => 'Ruby',
+          'X-Admin-Email' => 'gl_com_api@gitlab.com',
+          'X-Admin-Token' => 'customer_admin_token'
+        })
+      .to_return(status: 200, body: "", headers: {})
+
     if user.setup_for_company
       within_fieldset('Name of company or organization using GitLab') do
         fill_in with: 'Test company'
@@ -494,24 +508,26 @@ module SaasRegistrationHelpers
 
     click_button 'Continue to billing'
 
-    within_fieldset('Country') do
-      select 'United States of America'
-    end
+    unless has_billing_account
+      within_fieldset('Country') do
+        select 'United States of America'
+      end
 
-    within_fieldset('Street address') do
-      first("input[type='text']").fill_in with: '123 fake street'
-    end
+      within_fieldset('Street address') do
+        first("input[type='text']").fill_in with: '123 fake street'
+      end
 
-    within_fieldset('City') do
-      fill_in with: 'Fake city'
-    end
+      within_fieldset('City') do
+        fill_in with: 'Fake city'
+      end
 
-    within_fieldset('State') do
-      select 'Florida'
-    end
+      within_fieldset('State') do
+        select 'Florida'
+      end
 
-    within_fieldset('Zip code') do
-      fill_in with: 'A1B 2C3'
+      within_fieldset('Zip code') do
+        fill_in with: 'A1B 2C3'
+      end
     end
 
     click_button 'Continue to payment'
