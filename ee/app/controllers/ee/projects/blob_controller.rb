@@ -28,6 +28,7 @@ module EE
         return if @blob # rubocop:disable Gitlab/ModuleWithInstanceVariables -- We cannot use blob method as that is redirecting us in case of 404.
 
         return unless visiting_from_search_page?
+        return unless project
 
         ::Search::ProjectIndexIntegrityWorker.perform_async(project.id, { force_repair_blobs: true })
       end
