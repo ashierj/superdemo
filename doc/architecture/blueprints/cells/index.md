@@ -424,7 +424,7 @@ The Tenant Scale team sees an opportunity to use GitLab Dedicated as a base for 
 
 ## Decision log
 
-- 2022-03-15: Google Cloud as the cloud service. For details, see [issue 396641](https://gitlab.com/gitlab-org/gitlab/-/issues/396641#note_1314932272).
+- [ADR-001: Routing Technology using Cloudflare Workers](decisions/001_routing_technology.md)
 
 ## Links
 
