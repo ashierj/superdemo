@@ -30,8 +30,11 @@ RSpec.describe EE::RegistrationsHelper, feature_category: :user_management do
       allow(::Arkose::Settings).to receive(:arkose_public_api_key).and_return('api-key')
       allow(::Arkose::Settings).to receive(:arkose_labs_domain).and_return('domain')
 
-      init_params = [request_double, { use_case: Arkose::DataExchangePayload::USE_CASE_SIGN_UP }]
-      allow_next_instance_of(::Arkose::DataExchangePayload, *init_params) do |instance|
+      options = {
+        use_case: Arkose::DataExchangePayload::USE_CASE_SIGN_UP,
+        require_challenge: false
+      }
+      allow_next_instance_of(::Arkose::DataExchangePayload, request_double, options) do |instance|
         allow(instance).to receive(:build).and_return(data_exchange_payload)
       end
     end
@@ -39,6 +42,25 @@ RSpec.describe EE::RegistrationsHelper, feature_category: :user_management do
     subject(:data) { helper.arkose_labs_data }
 
     it { is_expected.to eq({ api_key: 'api-key', domain: 'domain', data_exchange_payload: data_exchange_payload }) }
+
+    context 'when phone verifications hard limit has been exceeded' do
+      before do
+        allow(PhoneVerification::Users::RateLimitService)
+          .to receive(:daily_transaction_hard_limit_exceeded?).and_return(true)
+      end
+
+      it 'builds Arkose data exchange payload with require_challenge option set to true' do
+        options = {
+          use_case: Arkose::DataExchangePayload::USE_CASE_SIGN_UP,
+          require_challenge: true
+        }
+        expect_next_instance_of(Arkose::DataExchangePayload, request_double, options) do |instance|
+          allow(instance).to receive(:build).and_return(data_exchange_payload)
+        end
+
+        data
+      end
+    end
 
     context 'when arkose_labs_signup_data_exchange feature flag is disabled' do
       before do

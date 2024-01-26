@@ -18,9 +18,7 @@ module EE
       }
 
       if ::Feature.enabled?(:arkose_labs_signup_data_exchange)
-        use_case = Arkose::DataExchangePayload::USE_CASE_SIGN_UP
-        payload = Arkose::DataExchangePayload.new(request, use_case: use_case).build
-        data[:data_exchange_payload] = payload
+        data[:data_exchange_payload] = arkose_labs_data_exchange_payload
       end
 
       data.compact
@@ -60,6 +58,18 @@ module EE
 
     def registration_objective_options
       localized_jobs_to_be_done_choices.dup
+    end
+
+    def arkose_labs_data_exchange_payload
+      use_case = Arkose::DataExchangePayload::USE_CASE_SIGN_UP
+      show_challenge =
+        PhoneVerification::Users::RateLimitService.daily_transaction_hard_limit_exceeded?
+
+      Arkose::DataExchangePayload.new(
+        request,
+        use_case: use_case,
+        require_challenge: show_challenge
+      ).build
     end
   end
 end
