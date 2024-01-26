@@ -1279,8 +1279,6 @@ class Repository
   end
 
   def object_format
-    return unless exists?
-
     cache_key = "object_format:#{full_path}"
 
     request_store_cache.fetch(cache_key) do
@@ -1291,6 +1289,8 @@ class Repository
         FORMAT_SHA256
       end
     end
+  rescue Gitlab::Git::Repository::NoRepository
+    nil
   end
 
   def blank_ref
