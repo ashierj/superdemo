@@ -244,6 +244,10 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     end
 
     describe 'variable CI_HAS_OPEN_REQUIREMENTS' do
+      before do
+        stub_licensed_features(requirements: true)
+      end
+
       it "is included with value 'true' if there are open requirements" do
         create(:work_item, :requirement, project: project)
 
@@ -257,6 +261,20 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
         requirement_variable = subject.find { |var| var[:key] == 'CI_HAS_OPEN_REQUIREMENTS' }
 
         expect(requirement_variable).to be_nil
+      end
+
+      context 'when feature is not available' do
+        before do
+          stub_licensed_features(requirements: false)
+        end
+
+        it 'is not included even if there are open requirements' do
+          create(:work_item, :requirement, project: project)
+
+          requirement_variable = subject.find { |var| var[:key] == 'CI_HAS_OPEN_REQUIREMENTS' }
+
+          expect(requirement_variable).to be_nil
+        end
       end
     end
   end
