@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas, feature_category: :continuous_integration do
   let(:project) { create(:project, :private, shared_runners_enabled: true, namespace: namespace) }
   let(:pipeline) { create(:ci_pipeline, project: project) }
-  let(:namespace) { create(:namespace, shared_runners_minutes_limit: 100) }
+  let(:namespace) { create(:namespace_with_plan, plan: :default_plan, shared_runners_minutes_limit: 100) }
   let(:user) { create(:user) }
   let(:build) { create(:ci_build, :running, project: project, pipeline: pipeline, runner: runner, user: user) }
   let(:runner) { create(:ci_runner, :instance) }
@@ -127,17 +127,18 @@ RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas, feature_category
       it_behaves_like 'limit exceeded'
 
       context 'when namespace is on a trial hosted plan' do
-        before do
-          create(:gitlab_subscription, :premium, :active_trial, namespace: namespace)
+        let(:namespace) do
+          create(:namespace_with_plan,
+            plan: :premium_plan,
+            trial_ends_on: Date.current.advance(days: 15),
+            shared_runners_minutes_limit: 100)
         end
 
         it_behaves_like 'limit exceeded'
       end
 
       context 'when namespace is on a paid plan' do
-        before do
-          create(:gitlab_subscription, :premium, namespace: namespace)
-        end
+        let(:namespace) { create(:namespace_with_plan, plan: :premium_plan, shared_runners_minutes_limit: 100) }
 
         it_behaves_like 'limit exceeded'
       end

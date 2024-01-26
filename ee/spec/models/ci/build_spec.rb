@@ -819,6 +819,10 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
         context 'on create' do
           let(:ci_build) { build(:ci_build, secrets: valid_secrets, user: user) }
 
+          before do
+            allow(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event).and_call_original
+          end
+
           it 'tracks RedisHLL event with user_id' do
             expect(::Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
               .with('i_ci_secrets_management_vault_build_created', values: user.id)
@@ -850,9 +854,9 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
               stub_feature_flags(usage_data_i_ci_secrets_management_vault_build_created: false)
             end
 
-            it 'does not track RedisHLL event' do
-              # Events FF are checked inside track_event, so need to verify it on the next level
-              expect(::Gitlab::Redis::HLL).not_to receive(:add)
+            it 'does not track RedisHLL secrets management event' do
+              expect(::Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
+                .with('i_ci_secrets_management_id_tokens_build_created', values: user.id)
 
               ci_build.save!
             end
@@ -889,6 +893,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
       context 'on create' do
         it 'does not track RedisHLL event' do
           expect(::Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
+            .with('i_ci_secrets_management_id_tokens_build_created', values: user.id)
 
           ci_build.save!
         end
