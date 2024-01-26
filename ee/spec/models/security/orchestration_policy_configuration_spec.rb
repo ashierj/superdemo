@@ -226,7 +226,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
   end
 
   describe '#policy_by_type' do
-    subject { security_orchestration_policy_configuration.policy_by_type(:scan_execution_policy) }
+    subject(:policies) { security_orchestration_policy_configuration.policy_by_type(type) }
 
     before do
       allow(security_policy_management_project).to receive(:repository).and_return(repository)
@@ -234,18 +234,62 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
 
     context 'when policy is present' do
-      let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [build(:scan_execution_policy, name: 'Run DAST in every pipeline' )]) }
+      let(:policy_yaml) do
+        build(:orchestration_policy_yaml,
+          scan_execution_policy: [build(:scan_execution_policy, name: 'Run DAST in every pipeline')],
+          scan_result_policy: [build(:scan_result_policy, name: 'Require approvals for scan result policy')],
+          approval_policy: [build(:approval_policy, name: 'Require approvals for approval policy')]
+        )
+      end
 
-      it 'retrieves policy by type' do
-        expect(subject.first[:name]).to eq('Run DAST in every pipeline')
+      context 'when type is a string' do
+        let(:type) { :scan_execution_policy }
+
+        it 'retrieves policy by type' do
+          expect(policies.first[:name]).to eq('Run DAST in every pipeline')
+        end
+      end
+
+      context 'when type is an array' do
+        let(:type) { %i[scan_result_policy approval_policy] }
+
+        it 'retrieves all applicable policies by type' do
+          expect(policies.size).to eq(2)
+          expect(policies.pluck(:name))
+            .to contain_exactly 'Require approvals for scan result policy', 'Require approvals for approval policy'
+        end
+      end
+    end
+
+    context 'when type does not match any existing policy' do
+      let(:type) { :scan_result_policy }
+      let(:policy_yaml) do
+        build(:orchestration_policy_yaml,
+          scan_execution_policy: [build(:scan_execution_policy, name: 'Run DAST in every pipeline')])
+      end
+
+      it 'returns an empty array' do
+        expect(policies).to eq([])
       end
     end
 
     context 'when policy is nil' do
       let(:policy_yaml) { nil }
 
-      it 'returns an empty array' do
-        expect(subject).to eq([])
+      context 'when type is a string' do
+        let(:type) { :scan_execution_policy }
+
+        it 'returns an empty array' do
+          expect(policies).to eq([])
+        end
+      end
+
+      context 'when type is an array' do
+        let(:type) { %i[scan_result_policy approval_policy] }
+
+        it 'returns an empty array' do
+          expect(policies).to eq([])
+        end
       end
     end
   end
@@ -461,7 +505,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
       specify do
         expect(errors).to contain_exactly("root is missing required keys: scan_execution_policy",
-          "root is missing required keys: scan_result_policy")
+          "root is missing required keys: scan_result_policy",
+          "root is missing required keys: approval_policy")
       end
     end
 
@@ -738,7 +783,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       it_behaves_like "policy_scope"
     end
 
-    describe "scan result policies" do
+    shared_examples_for "approval policy validations" do |type|
       let(:scan_execution_policy) { nil }
       let(:scan_result_policy) { build(:scan_result_policy, rules: rules, actions: actions, policy_scope: policy_scope) }
       let(:rules) { [rule].compact }
@@ -754,7 +799,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
             end
 
             specify do
-              expect(errors).to include("property '/scan_result_policy/0' is missing required keys: #{key}")
+              expect(errors).to include("property '/#{type}/0' is missing required keys: #{key}")
             end
           end
         end
@@ -767,7 +812,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
             specify do
               expect(errors).to contain_exactly(
-                "property '/scan_result_policy/0/rules/0' is missing required keys: #{key}")
+                "property '/#{type}/0/rules/0' is missing required keys: #{key}")
             end
           end
         end
@@ -779,7 +824,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
             end
 
             specify do
-              expect(errors).to contain_exactly("property '/scan_result_policy/0/name' is invalid: error_type=minLength")
+              expect(errors).to contain_exactly("property '/#{type}/0/name' is invalid: error_type=minLength")
             end
           end
 
@@ -789,7 +834,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
             end
 
             specify do
-              expect(errors).to contain_exactly("property '/scan_result_policy/0/name' is invalid: error_type=maxLength")
+              expect(errors).to contain_exactly("property '/#{type}/0/name' is invalid: error_type=maxLength")
             end
           end
         end
@@ -802,7 +847,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
             specify do
               expect(errors.count).to be(1)
-              expect(errors.first).to match("property '/scan_result_policy/0/rules/0/type' is not one of")
+              expect(errors.first).to match("property '/#{type}/0/rules/0/type' is not one of")
             end
           end
         end
@@ -877,7 +922,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
             specify do
               expect(errors).to include(
-                "property '/scan_result_policy/0/actions/0/approvals_required' is invalid: error_type=maximum")
+                "property '/#{type}/0/actions/0/approvals_required' is invalid: error_type=maximum")
             end
           end
 
@@ -901,7 +946,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
               specify do
                 expect(errors).to contain_exactly(
-                  "property '/scan_result_policy/0/actions/0/user_approvers' is invalid: error_type=minItems")
+                  "property '/#{type}/0/actions/0/user_approvers' is invalid: error_type=minItems")
               end
             end
           end
@@ -920,7 +965,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
               specify do
                 expect(errors).to contain_exactly(
-                  "property '/scan_result_policy/0/actions/0/user_approvers_ids' is invalid: error_type=minItems")
+                  "property '/#{type}/0/actions/0/user_approvers_ids' is invalid: error_type=minItems")
               end
             end
           end
@@ -939,7 +984,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
               specify do
                 expect(errors).to contain_exactly(
-                  "property '/scan_result_policy/0/actions/0/group_approvers' is invalid: error_type=minItems")
+                  "property '/#{type}/0/actions/0/group_approvers' is invalid: error_type=minItems")
               end
             end
           end
@@ -958,7 +1003,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
               specify do
                 expect(errors).to contain_exactly(
-                  "property '/scan_result_policy/0/actions/0/group_approvers_ids' is invalid: error_type=minItems")
+                  "property '/#{type}/0/actions/0/group_approvers_ids' is invalid: error_type=minItems")
               end
             end
           end
@@ -977,7 +1022,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
               specify do
                 expect(errors.count).to be(1)
-                expect(errors.first).to match("property '/scan_result_policy/0/actions/0/role_approvers/0' is not one of")
+                expect(errors.first).to match("property '/#{type}/0/actions/0/role_approvers/0' is not one of")
               end
             end
           end
@@ -992,8 +1037,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
           end
 
           specify do
-            expect(errors).to contain_exactly("property '/scan_result_policy/0' is missing required keys: actions",
-              "property '/scan_result_policy/0' is missing required keys: approval_settings")
+            expect(errors).to contain_exactly("property '/#{type}/0' is missing required keys: actions",
+              "property '/#{type}/0' is missing required keys: approval_settings")
           end
         end
 
@@ -1054,7 +1099,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
             end
 
             specify do
-              expect(errors).to contain_exactly("property '/scan_result_policy/0/rules/0' is invalid: error_type=oneOf")
+              expect(errors).to contain_exactly("property '/#{type}/0/rules/0' is invalid: error_type=oneOf")
             end
           end
         end
@@ -1073,7 +1118,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
             end
 
             specify do
-              expect(errors).to contain_exactly("property '/scan_result_policy/0/rules/0' is invalid: error_type=oneOf")
+              expect(errors).to contain_exactly("property '/#{type}/0/rules/0' is invalid: error_type=oneOf")
             end
           end
         end
@@ -1086,8 +1131,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
           specify do
             expect(errors).to contain_exactly(
-              "property '/scan_result_policy/0/rules/0' is missing required keys: branch_type",
-              "property '/scan_result_policy/0/rules/0' is missing required keys: branches")
+              "property '/#{type}/0/rules/0' is missing required keys: branch_type",
+              "property '/#{type}/0/rules/0' is missing required keys: branches")
           end
         end
       end
@@ -1117,7 +1162,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
           specify do
             expect(errors).to contain_exactly(
-              "property '/scan_result_policy/0/rules/0/scanners/0' is invalid: error_type=minLength")
+              "property '/#{type}/0/rules/0/scanners/0' is invalid: error_type=minLength")
           end
         end
 
@@ -1128,7 +1173,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
           specify do
             expect(errors.count).to be(1)
-            expect(errors.first).to match("property '/scan_result_policy/0/rules/0/severity_levels/0' is not one of")
+            expect(errors.first).to match("property '/#{type}/0/rules/0/severity_levels/0' is not one of")
           end
         end
 
@@ -1140,7 +1185,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
           specify do
             expect(errors.count).to be(1)
             expect(errors.first).to match(
-              "property '/scan_result_policy/0/rules/0/vulnerability_states/0' is not one of")
+              "property '/#{type}/0/rules/0/vulnerability_states/0' is not one of")
           end
         end
 
@@ -1168,7 +1213,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
               specify do
                 expect(errors.count).to eq(1)
                 expect(errors.first).to(
-                  match "property '/scan_result_policy/0/rules/0/vulnerability_age' is missing required keys: #{key}"
+                  match "property '/#{type}/0/rules/0/vulnerability_age' is missing required keys: #{key}"
                 )
               end
             end
@@ -1180,7 +1225,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
             specify do
               expect(errors.count).to eq(1)
               expect(errors.first).to(
-                match "property '/scan_result_policy/0/rules/0/vulnerability_age/additional' is invalid"
+                match "property '/#{type}/0/rules/0/vulnerability_age/additional' is invalid"
               )
             end
           end
@@ -1210,7 +1255,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
           specify do
             expect(errors).to contain_exactly(
-              "property '/scan_result_policy/0/rules/0/license_types/0' is invalid: error_type=minLength")
+              "property '/#{type}/0/rules/0/license_types/0' is invalid: error_type=minLength")
           end
         end
 
@@ -1222,7 +1267,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
             specify do
               expect(errors).to contain_exactly(
-                "property '/scan_result_policy/0/rules/0/license_states' is invalid: error_type=minItems")
+                "property '/#{type}/0/rules/0/license_states' is invalid: error_type=minItems")
             end
           end
 
@@ -1234,7 +1279,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
             specify do
               expect(errors.count).to be(1)
               expect(errors.first).to match(
-                "property '/scan_result_policy/0/rules/0/license_states/0' is not one of")
+                "property '/#{type}/0/rules/0/license_states/0' is not one of")
             end
           end
         end
@@ -1261,8 +1306,22 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
           specify do
             expect(errors).to contain_exactly(
-              "property '/scan_result_policy/0/rules/0/commits' is not one of: [\"any\", \"unsigned\"]")
+              "property '/#{type}/0/rules/0/commits' is not one of: [\"any\", \"unsigned\"]")
           end
+        end
+      end
+    end
+
+    describe "scan result policies" do
+      it_behaves_like 'approval policy validations', 'scan_result_policy'
+    end
+
+    describe "approval policies" do
+      it_behaves_like 'approval policy validations', 'approval_policy' do
+        let(:policy_yaml) do
+          {
+            approval_policy: [scan_result_policy].compact
+          }
         end
       end
     end
