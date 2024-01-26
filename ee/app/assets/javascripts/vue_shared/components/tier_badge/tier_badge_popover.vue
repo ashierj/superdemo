@@ -9,7 +9,7 @@ export default {
     GlPopover,
     GlButton,
   },
-  mixins: [Tracking.mixin({ experiment: 'tier_badge', label: 'tier-badge' })],
+  mixins: [Tracking.mixin({ label: 'tier_badge' })],
   inject: ['primaryCtaLink', 'secondaryCtaLink', 'isProject'],
   props: {
     popoverId: {
@@ -19,11 +19,6 @@ export default {
     tier: {
       type: String,
       required: true,
-    },
-    showIcon: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
   },
   computed: {
@@ -58,18 +53,14 @@ export default {
 </script>
 
 <template>
-  <gl-popover :target="popoverId" placement="bottom" :css-classes="['tier-badge-popover']">
-    <template #title>
-      <h5><span v-if="showIcon">🚀</span> {{ $options.i18n.title }}</h5>
-    </template>
-
+  <gl-popover :title="$options.i18n.title" :target="popoverId" placement="bottom">
     <div class="gl-mb-3">
       {{ copyText }}
     </div>
 
     <gl-button
       :href="primaryCtaLink"
-      class="my-1 w-100"
+      class="gl-my-2 gl-w-full"
       variant="confirm"
       data-testid="tier-badge-popover-primary-cta"
       @click="trackPrimaryCta"
@@ -77,7 +68,7 @@ export default {
     >
     <gl-button
       :href="secondaryCtaLink"
-      class="my-1 w-100"
+      class="gl-my-2 gl-w-full"
       variant="confirm"
       category="secondary"
       data-testid="tier-badge-popover-secondary-cta"
@@ -86,9 +77,3 @@ export default {
     >
   </gl-popover>
 </template>
-
-<style>
-.tier-badge-popover .popover-body {
-  border-top: 1px solid #dbdbdb;
-}
-</style>

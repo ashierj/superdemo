@@ -171,11 +171,13 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
   end
 
   describe '#show_tier_badge_for_new_trial?' do
-    where(:paid?, :authorized, :result) do
-      true  | true  | false
-      false | true  | true
-      false | false | false
-      true  | false | false
+    where(:trials_available?, :paid?, :private?, :never_had_trial?, :authorized, :result) do
+      false | false | true | true | true | false
+      true | true | true | true | true | false
+      true | false | false | true | true | false
+      true | false | true | false | true | false
+      true | false | true | true | false | false
+      true | false | true | true | true | true
     end
 
     with_them do
@@ -183,7 +185,10 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
       let(:user) { build(:user) }
 
       before do
+        stub_saas_features(subscriptions_trials: trials_available?)
         allow(namespace).to receive(:paid?).and_return(paid?)
+        allow(namespace).to receive(:private?).and_return(private?)
+        allow(namespace).to receive(:never_had_trial?).and_return(never_had_trial?)
         allow(helper).to receive(:can?).with(user, :read_billing, namespace).and_return(authorized)
       end
 

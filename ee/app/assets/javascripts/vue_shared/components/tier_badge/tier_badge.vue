@@ -9,7 +9,7 @@ export default {
     GlBadge,
     TierBadgePopover,
   },
-  mixins: [Tracking.mixin({ experiment: 'tier_badge', label: 'tier-badge' })],
+  mixins: [Tracking.mixin({ label: 'tier_badge' })],
   props: {
     tier: {
       type: String,
@@ -40,7 +40,6 @@ export default {
       :popover-id="$options.popoverTriggerId"
       triggers="hover focus manual"
       :tier="tier"
-      :show-icon="true"
     />
   </span>
 </template>

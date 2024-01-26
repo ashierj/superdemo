@@ -7,13 +7,12 @@ RSpec.describe 'Project show page', :js, :saas, feature_category: :groups_and_pr
 
   let(:path) { project_path(project) }
 
-  context "when experiment 'tier_badge' is candidate" do
+  context "with free tier badge" do
     let(:tier_badge_selector) { '[data-testid="tier-badge"]' }
     let(:tier_badge_element) { page.find(tier_badge_selector) }
     let(:popover_element) { page.find('.gl-popover') }
 
     before do
-      stub_experiments(tier_badge: :candidate)
       project.add_maintainer(user)
       sign_in(user)
       visit path
