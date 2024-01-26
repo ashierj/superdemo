@@ -1,12 +1,11 @@
 <script>
-import { GlAvatar, GlIcon, GlBadge, GlButton } from '@gitlab/ui';
+import { GlIcon, GlBadge, GlButton } from '@gitlab/ui';
 import { __ } from '~/locale';
 
 export default {
   name: 'FeatureListItem',
   components: {
     GlButton,
-    GlAvatar,
     GlIcon,
     GlBadge,
   },
@@ -33,11 +32,6 @@ export default {
       required: false,
       default: __('Set up'),
     },
-    avatarName: {
-      type: String,
-      required: false,
-      default: '💡',
-    },
   },
   featureAvatarColor: 1,
 };
@@ -47,12 +41,6 @@ export default {
   <li class="gl-display-flex! gl-px-5! gl-align-items-center">
     <div class="gl-float-left gl-mr-4 gl-display-flex gl-align-items-center">
       <gl-icon name="cloud-gear" class="gl-text-gray-200 gl-mr-3" :size="16" />
-      <gl-avatar
-        :entity-name="avatarName"
-        :entity-id="$options.featureAvatarColor"
-        shape="rect"
-        :size="32"
-      />
     </div>
     <div
       class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-flex-grow-1"
