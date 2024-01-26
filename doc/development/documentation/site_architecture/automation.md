@@ -42,7 +42,7 @@ that are coded across multiple repositories.
 | Page | Details | Owner |
 |---|---|---|
 | [All feature flags in GitLab](../../../user/feature_flags.md) | [Generated during docs build](https://gitlab.com/gitlab-org/gitlab-docs/-/blob/main/doc/raketasks.md#generate-the-feature-flag-tables) | [Technical Writing](https://about.gitlab.com/handbook/product/ux/technical-writing/) |
-| [GitLab Runner feature flags](https://docs.gitlab.com/runner/configuration/feature-flags.html) | [Page source](https://gitlab.com/gitlab-org/gitlab-runner/-/blob/ec6e1797d2173a95c8ac7f726bd62f6f110b7211/docs/configuration/feature-flags.md?plain=1#L39) | [Runner](https://about.gitlab.com/handbook/engineering/development/ops/verify/runner/) |
+| [GitLab Runner feature flags](https://docs.gitlab.com/runner/configuration/feature-flags.html) | [Page source](https://gitlab.com/gitlab-org/gitlab-runner/-/blob/ec6e1797d2173a95c8ac7f726bd62f6f110b7211/docs/configuration/feature-flags.md?plain=1#L39) | [Runner](https://handbook.gitlab.com/handbook/engineering/development/ops/verify/runner/) |
 | [Deprecations and removals by version](../../../update/deprecations.md) | [Deprecating GitLab features](../../deprecation_guidelines/index.md) |  |
 | [GraphQL API resources](../../../api/graphql/reference/index.md) | [GraphQL API style guide](../../api_graphql_styleguide.md#documentation-and-schema) | [Import and Integrate](https://about.gitlab.com/handbook/engineering/development/dev/manage/import-and-integrate/) |
 | [Audit event types](../../../administration/audit_event_streaming/audit_event_types.md) | [Audit event development guidelines](../../audit_event_guide/index.md) | [Compliance](https://about.gitlab.com/handbook/engineering/development/sec/govern/compliance/) |
