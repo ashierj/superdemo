@@ -57,7 +57,11 @@ module TrialsHelper
   end
 
   def show_tier_badge_for_new_trial?(namespace, user)
-    !namespace.paid? && can?(user, :read_billing, namespace)
+    ::Gitlab::Saas.feature_available?(:subscriptions_trials) &&
+      !namespace.paid? &&
+      namespace.private? &&
+      namespace.never_had_trial? &&
+      can?(user, :read_billing, namespace)
   end
 
   def namespace_options_for_listbox

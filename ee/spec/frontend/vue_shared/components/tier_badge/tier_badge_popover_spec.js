@@ -7,7 +7,6 @@ describe('TierBadgePopover', () => {
 
   const primaryCTALink = '#trials/new';
   const secondaryCTALink = '#/groups/foobar-group/-/billings?source=overview-free-tier-highlight';
-  const popoverTitle = 'Enhance team productivity';
   const popoverContentForGroup =
     'This group and all its related projects use the Free GitLab tier. Want to enhance team productivity and access advanced features like Merge Approvals, Push rules, Epics, Code Review Analytics, and Container Scanning? Try all GitLab has to offer for free for 30 days. No credit card required.';
   const popoverContentForProject =
@@ -33,19 +32,17 @@ describe('TierBadgePopover', () => {
     });
   };
 
-  describe('with title and content', () => {
+  describe('with content', () => {
     describe('when isProject is provided', () => {
-      it('renders the title and correct content for `false`', () => {
+      it('renders the correct content for `false`', () => {
         createComponent({ provide: { isProject: false } });
 
-        expect(wrapper.findByText(popoverTitle).exists()).toBe(true);
         expect(wrapper.findByText(popoverContentForGroup).exists()).toBe(true);
       });
 
-      it('renders the title and correct content for `true`', () => {
+      it('renders the correct content for `true`', () => {
         createComponent({ provide: { isProject: true } });
 
-        expect(wrapper.findByText(popoverTitle).exists()).toBe(true);
         expect(wrapper.findByText(popoverContentForProject).exists()).toBe(true);
       });
     });
@@ -70,7 +67,7 @@ describe('TierBadgePopover', () => {
           const trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
           findPrimaryCTA().trigger('click');
           expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_start_trial_button', {
-            label: 'tier-badge',
+            label: 'tier_badge',
           });
         });
 
@@ -78,7 +75,7 @@ describe('TierBadgePopover', () => {
           const trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
           findSecondaryCTA().trigger('click');
           expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_compare_plans_button', {
-            label: 'tier-badge',
+            label: 'tier_badge',
           });
         });
       });
