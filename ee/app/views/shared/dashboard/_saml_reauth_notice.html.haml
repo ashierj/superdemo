@@ -6,5 +6,5 @@
   - c.with_actions do
     .gl-display-flex.gl-flex-wrap
       - groups_requiring_saml_reauth.each do |group|
-        = render Pajamas::ButtonComponent.new(href: sso_group_saml_providers_path(group, { token: group.saml_discovery_token, redirect: dashboard_todos_path }), button_options: { class: "gl-mr-3 gl-mb-3" }) do
+        = render Pajamas::ButtonComponent.new(href: sso_group_saml_providers_path(group, { token: group.saml_discovery_token, redirect: url_for }), button_options: { class: "gl-mr-3 gl-mb-3" }) do
           = group.path
