@@ -5,8 +5,6 @@ module Search
     class Node < ApplicationRecord
       self.table_name = 'zoekt_nodes'
 
-      has_many :indexed_namespaces,
-        foreign_key: :zoekt_node_id, inverse_of: :node, class_name: '::Zoekt::IndexedNamespace'
       has_many :indices,
         foreign_key: :zoekt_node_id, inverse_of: :node, class_name: '::Search::Zoekt::Index'
       has_many :enabled_namespaces,
