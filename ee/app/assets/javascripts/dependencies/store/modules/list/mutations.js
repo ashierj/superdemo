@@ -67,7 +67,11 @@ export default {
       state.vulnerabilityInfo[id] = payload;
     }
   },
-  [types.SET_VULNERABILITY_ITEM](state, item) {
-    state.vulnerabilityItem = item;
+  [types.TOGGLE_VULNERABILITY_ITEM_LOADING](state, item) {
+    if (state.vulnerabilityItemsLoading.includes(item)) {
+      state.vulnerabilityItemsLoading = state.vulnerabilityItemsLoading.filter((i) => i !== item);
+    } else {
+      state.vulnerabilityItemsLoading.push(item);
+    }
   },
 };

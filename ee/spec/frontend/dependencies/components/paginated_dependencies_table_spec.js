@@ -48,6 +48,8 @@ describe('PaginatedDependenciesTable component', () => {
     expectComponentWithProps(DependenciesTable, {
       dependencies: mockDependenciesResponse.dependencies,
       isLoading: store.state[namespace].isLoading,
+      vulnerabilityItemsLoading: store.state[namespace].vulnerabilityItemsLoading,
+      vulnerabilityInfo: store.state[namespace].vulnerabilityInfo,
     });
   });
 
@@ -63,6 +65,17 @@ describe('PaginatedDependenciesTable component', () => {
     wrapper.vm.fetchPage(page);
     expect(store.dispatch).toHaveBeenCalledTimes(1);
     expect(store.dispatch).toHaveBeenCalledWith(`${namespace}/fetchDependencies`, { page });
+  });
+
+  it('dispatches fetch vulnerabilities', async () => {
+    const item = {};
+    const table = wrapper.findComponent(DependenciesTable);
+    await table.vm.$emit('row-click', item);
+
+    expect(store.dispatch).toHaveBeenCalledWith(`${namespace}/fetchVulnerabilities`, {
+      item,
+      vulnerabilitiesEndpoint: TEST_HOST,
+    });
   });
 
   describe('when the list is loading', () => {
