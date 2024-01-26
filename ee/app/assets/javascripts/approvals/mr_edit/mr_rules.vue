@@ -100,11 +100,9 @@ export default {
     },
     indicatorText(rule) {
       if (rule.hasSource) {
-        if (rule.overridden) {
-          return __('Overridden');
-        }
-        return '';
+        return rule.overridden ? __('Overridden') : '';
       }
+
       return __('Added for this merge request');
     },
   },
@@ -113,14 +111,14 @@ export default {
 
 <template>
   <rules :rules="rules">
-    <template #thead="{ name, members, approvalsRequired }">
+    <template #thead="{ name, members, approvalsRequired, actions }">
       <tr>
         <th :class="hasNamedRule ? 'w-25' : 'w-75'">{{ hasNamedRule ? name : members }}</th>
         <th :class="hasNamedRule ? 'w-50' : null">
           <span v-if="hasNamedRule">{{ members }}</span>
         </th>
         <th class="gl-text-center">{{ approvalsRequired }}</th>
-        <th></th>
+        <th>{{ actions }}</th>
       </tr>
     </template>
     <template #tbody="{ rules }">
@@ -134,9 +132,13 @@ export default {
           :can-edit="canEdit"
         />
         <tr v-else :key="index">
-          <td>
-            <div class="js-name" :data-label="__('Name')">{{ rule.name }}</div>
-            <div ref="indicator" class="text-muted">{{ indicatorText(rule) }}</div>
+          <td :data-label="__('Name')">
+            <div>
+              <div class="js-name" :data-label="__('Name')">{{ rule.name }}</div>
+              <div ref="indicator" class="text-muted">
+                {{ indicatorText(rule) }}
+              </div>
+            </div>
           </td>
           <td class="js-members" :data-label="__('Approvers')">
             <user-avatar-list
@@ -148,7 +150,7 @@ export default {
           <td class="js-approvals-required gl-text-right" :data-label="__('Approvals required')">
             <rule-input :rule="rule" />
           </td>
-          <td class="text-nowrap px-2 w-0 js-controls" :data-label="__('Actions')">
+          <td class="gl-md-pl-0! gl-md-pr-0! js-controls" :data-label="__('Actions')">
             <rule-controls v-if="canEdit" :rule="rule" />
           </td>
         </tr>
