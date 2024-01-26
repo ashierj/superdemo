@@ -197,6 +197,118 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
         let(:mutation) { graphql_mutation(:workItemCreate, input.merge(namespacePath: group.full_path), fields) }
 
         it_behaves_like 'creates work item'
+
+        context "with rolledup dates widget input" do
+          before do
+            stub_licensed_features(epics: true)
+          end
+
+          let(:fields) do
+            <<~FIELDS
+            workItem {
+              widgets {
+                type
+                  ... on WorkItemWidgetRolledupDates {
+                    startDate
+                    startDateFixed
+                    startDateIsFixed
+                    startDateSourcingWorkItem {
+                      id
+                    }
+                    startDateSourcingMilestone {
+                      id
+                    }
+                    dueDate
+                    dueDateFixed
+                    dueDateIsFixed
+                    startDateSourcingWorkItem {
+                      id
+                    }
+                    dueDateSourcingMilestone {
+                      id
+                    }
+                  }
+              }
+            }
+            errors
+            FIELDS
+          end
+
+          context "when the work_items_rolledup_dates feature flag is disabled" do
+            before do
+              stub_feature_flags(work_items_rolledup_dates: false)
+            end
+
+            let(:start_date) { 5.days.ago.to_date }
+            let(:due_date) { 5.days.from_now.to_date }
+
+            let(:input) do
+              {
+                title: "some WI",
+                workItemTypeId: WorkItems::Type.default_by_type(:epic).to_gid.to_s,
+                rolledupDatesWidget: {
+                  startDateFixed: start_date.to_s,
+                  dueDateFixed: due_date.to_s
+                }
+              }
+            end
+
+            it "does not set the work item's start and due date" do
+              expect { post_graphql_mutation(mutation, current_user: current_user) }
+                .to change { WorkItem.count }.by(1)
+
+              expect(response).to have_gitlab_http_status(:success)
+              expect(widgets_response).to include(
+                "type" => "ROLLEDUP_DATES",
+                "dueDate" => nil,
+                "dueDateFixed" => nil,
+                "dueDateIsFixed" => nil,
+                "dueDateSourcingMilestone" => nil,
+                "startDate" => nil,
+                "startDateFixed" => nil,
+                "startDateIsFixed" => nil,
+                "startDateSourcingMilestone" => nil,
+                "startDateSourcingWorkItem" => nil
+              )
+            end
+          end
+
+          context "with fixed dates" do
+            let(:start_date) { 5.days.ago.to_date }
+            let(:due_date) { 5.days.from_now.to_date }
+
+            let(:input) do
+              {
+                title: "some WI",
+                workItemTypeId: WorkItems::Type.default_by_type(:epic).to_gid.to_s,
+                rolledupDatesWidget: {
+                  startDateFixed: start_date.to_s,
+                  dueDateFixed: due_date.to_s
+                }
+              }
+            end
+
+            it "sets the work item's start and due date" do
+              expect { post_graphql_mutation(mutation, current_user: current_user) }
+                .to change { WorkItem.count }
+                .by(1)
+
+              expect(response).to have_gitlab_http_status(:success)
+              expect(widgets_response).to include(
+                "type" => "ROLLEDUP_DATES",
+                "dueDate" => due_date.to_s,
+                "dueDateFixed" => due_date.to_s,
+                "dueDateIsFixed" => true,
+                "dueDateSourcingMilestone" => nil,
+                "startDate" => start_date.to_s,
+                "startDateFixed" => start_date.to_s,
+                "startDateIsFixed" => true,
+                "startDateSourcingMilestone" => nil,
+                "startDateSourcingWorkItem" => nil
+              )
+            end
+          end
+        end
       end
     end
   end

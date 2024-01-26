@@ -25965,7 +25965,9 @@ CREATE TABLE work_item_dates_sources (
     start_date_sourcing_work_item_id bigint,
     start_date_sourcing_milestone_id bigint,
     due_date_sourcing_work_item_id bigint,
-    due_date_sourcing_milestone_id bigint
+    due_date_sourcing_milestone_id bigint,
+    start_date_fixed date,
+    due_date_fixed date
 );
 
 CREATE TABLE work_item_hierarchy_restrictions (

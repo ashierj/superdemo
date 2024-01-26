@@ -16,6 +16,11 @@ module Types
           null: true,
           description: 'Start date for the work item.'
 
+        field :start_date_fixed,
+          ::Types::DateType,
+          null: true,
+          description: 'Fixed start date for the work item.'
+
         field :start_date_is_fixed,
           ::GraphQL::Types::Boolean,
           null: true,
@@ -35,6 +40,11 @@ module Types
           ::Types::DateType,
           null: true,
           description: 'Due date for the work item.'
+
+        field :due_date_fixed,
+          ::Types::DateType,
+          null: true,
+          description: 'Fixed due date for the work item.'
 
         field :due_date_is_fixed,
           ::GraphQL::Types::Boolean,

@@ -415,6 +415,180 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
         end
       end
     end
+
+    context "when epic is licensed" do
+      before do
+        stub_licensed_features(epics: true)
+      end
+
+      context "when updating rolledup dates widget" do
+        let(:current_user) { reporter }
+        let_it_be(:work_item) { create(:work_item, :epic, namespace: group) }
+        let_it_be(:milestone) { create(:milestone, group: group, start_date: 2.days.ago, due_date: 2.days.from_now) }
+        let_it_be(:child_work_item) do
+          create(:work_item, :issue, namespace: group, milestone: milestone).tap do |child|
+            create(:parent_link, work_item: child, work_item_parent: work_item)
+          end
+        end
+
+        let(:fields) do
+          <<~FIELDS
+          workItem {
+            widgets {
+              type
+              ... on WorkItemWidgetRolledupDates {
+                startDate
+                startDateFixed
+                startDateIsFixed
+                startDateSourcingWorkItem {
+                  id
+                }
+                startDateSourcingMilestone {
+                  id
+                }
+                dueDate
+                dueDateFixed
+                dueDateIsFixed
+                dueDateSourcingWorkItem {
+                  id
+                }
+                dueDateSourcingMilestone {
+                  id
+                }
+              }
+            }
+          }
+          errors
+          FIELDS
+        end
+
+        context "when updating from rolledup dates to fixed dates" do
+          let_it_be(:start_date) { "2002-01-01" }
+          let_it_be(:due_date) { "2002-12-31" }
+          let_it_be(:dates_dource) do
+            create(
+              :work_items_dates_source,
+              work_item: work_item,
+              start_date: milestone.start_date.to_date,
+              due_date: milestone.due_date.to_date)
+          end
+
+          let(:input) do
+            {
+              "rolledupDatesWidget" => {
+                "startDateFixed" => start_date,
+                "dueDateFixed" => due_date
+              }
+            }
+          end
+
+          it "updates the work item's start and due date" do
+            post_graphql_mutation(mutation, current_user: current_user)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(mutation_response['workItem']['widgets']).to include(
+              "type" => "ROLLEDUP_DATES",
+              "dueDate" => due_date,
+              "dueDateFixed" => due_date,
+              "dueDateIsFixed" => true,
+              "dueDateSourcingMilestone" => nil,
+              "dueDateSourcingWorkItem" => nil,
+              "startDate" => start_date,
+              "startDateFixed" => start_date,
+              "startDateIsFixed" => true,
+              "startDateSourcingMilestone" => nil,
+              "startDateSourcingWorkItem" => nil)
+          end
+        end
+
+        context "when the work_items_rolledup_dates feature flag is disabled" do
+          before do
+            stub_feature_flags(work_items_rolledup_dates: false)
+          end
+
+          let_it_be(:start_date) { "2002-01-01" }
+          let_it_be(:due_date) { "2002-12-31" }
+          let_it_be(:dates_dource) do
+            create(
+              :work_items_dates_source,
+              work_item: work_item,
+              due_date_sourcing_milestone: milestone,
+              due_date: milestone.due_date.to_date,
+              start_date: milestone.start_date.to_date,
+              start_date_sourcing_milestone: milestone)
+          end
+
+          let(:input) do
+            {
+              "rolledupDatesWidget" => {
+                "startDateFixed" => start_date,
+                "dueDateFixed" => due_date
+              }
+            }
+          end
+
+          it "does not update the work item's start and due date" do
+            post_graphql_mutation(mutation, current_user: current_user)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(mutation_response['workItem']['widgets']).to include(
+              "type" => "ROLLEDUP_DATES",
+              "dueDate" => milestone.due_date.to_s,
+              "dueDateFixed" => nil,
+              "dueDateIsFixed" => false,
+              "dueDateSourcingMilestone" => { "id" => milestone.to_gid.to_s },
+              "dueDateSourcingWorkItem" => nil,
+              "startDate" => milestone.start_date.to_s,
+              "startDateFixed" => nil,
+              "startDateIsFixed" => false,
+              "startDateSourcingMilestone" => { "id" => milestone.to_gid.to_s },
+              "startDateSourcingWorkItem" => nil)
+          end
+        end
+
+        context "when updating from fixed dates to rolledup dates" do
+          let_it_be(:due_date_fixed) { 1.day.from_now.to_date }
+          let_it_be(:start_date_fixed) { 1.day.ago.to_date }
+          let_it_be(:dates_dource) do
+            create(
+              :work_items_dates_source,
+              work_item: work_item,
+              start_date_fixed: start_date_fixed,
+              start_date_is_fixed: true,
+              due_date_fixed: due_date_fixed,
+              due_date_is_fixed: true)
+          end
+
+          let(:input) do
+            {
+              "rolledupDatesWidget" => {
+                "startDateIsFixed" => false,
+                "dueDateIsFixed" => false
+              }
+            }
+          end
+
+          it "updates the work item's start and due date" do
+            post_graphql_mutation(mutation, current_user: current_user)
+
+            expect(response).to have_gitlab_http_status(:success)
+
+            expect(mutation_response['workItem']['widgets']).to include(
+              "type" => "ROLLEDUP_DATES",
+              "dueDate" => milestone.due_date.to_s,
+              "dueDateFixed" => due_date_fixed.to_s,
+              "dueDateIsFixed" => false,
+              "dueDateSourcingMilestone" => { "id" => milestone.to_gid.to_s },
+              "dueDateSourcingWorkItem" => nil,
+              "startDate" => milestone.start_date.to_s,
+              "startDateFixed" => start_date_fixed.to_s,
+              "startDateIsFixed" => false,
+              "startDateSourcingMilestone" => { "id" => milestone.to_gid.to_s },
+              "startDateSourcingWorkItem" => nil)
+          end
+        end
+      end
+    end
   end
 
   context 'with status widget input' do
