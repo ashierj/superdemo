@@ -2,12 +2,8 @@
 
 module GitlabSubscriptions
   module SubscriptionHelper
-    def gitlab_saas?
-      ::Gitlab::Saas.feature_available?(:gitlab_saas_subscriptions)
-    end
-
-    def gitlab_sm?
-      !gitlab_saas?
+    def gitlab_com_subscription?
+      ::Gitlab::Saas.feature_available?(:gitlab_com_subscriptions)
     end
   end
 end

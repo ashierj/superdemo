@@ -55,7 +55,7 @@ module Mutations
         end
 
         def create_user_add_on_service
-          service_class = if gitlab_saas?
+          service_class = if gitlab_com_subscription?
                             ::GitlabSubscriptions::UserAddOnAssignments::Saas::CreateService
                           else
                             ::GitlabSubscriptions::UserAddOnAssignments::SelfManaged::CreateService

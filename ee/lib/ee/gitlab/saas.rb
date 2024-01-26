@@ -18,7 +18,7 @@ module EE
           search_indexing_status
           subscriptions_trials
           group_custom_roles
-          gitlab_saas_subscriptions
+          gitlab_com_subscriptions
           duo_chat_categorize_question
           google_artifact_registry
           duo_chat_on_saas

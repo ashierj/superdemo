@@ -35,7 +35,7 @@ module Resolvers
         private
 
         def authorize!
-          return unless gitlab_saas? || !current_user.can_admin_all_resources?
+          return unless gitlab_com_subscription? || !current_user.can_admin_all_resources?
 
           raise_resource_not_available_error!
         end
