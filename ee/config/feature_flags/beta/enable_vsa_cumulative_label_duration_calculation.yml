@@ -1,0 +1,9 @@
+---
+name: enable_vsa_cumulative_label_duration_calculation
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/432568
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/142897
+rollout_issue_url: https://gitlab.com/gitlab-com/gl-infra/production/-/issues/17478
+milestone: '16.9'
+group: group::optimize
+type: beta
+default_enabled: false
