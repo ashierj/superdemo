@@ -2,10 +2,8 @@ import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
-
 import { getDiffFileMock } from 'jest/diffs/mock_data/diff_file';
 import DiffViewComponent from '~/diffs/components/diff_view.vue';
-
 import createDiffsStore from '~/diffs/store/modules';
 
 function createComponent({ withCodequality = true, provide = {} }) {
@@ -21,8 +19,10 @@ function createComponent({ withCodequality = true, provide = {} }) {
 
   store.state.diffs.diffFiles = [diffFile];
 
+  let codequalityData = null;
+
   if (withCodequality) {
-    store.state.diffs.codequalityDiff = {
+    codequalityData = {
       files: {
         [diffFile.file_path]: [
           { line: 1, description: 'Unexpected alert.', severity: 'minor' },
@@ -41,6 +41,7 @@ function createComponent({ withCodequality = true, provide = {} }) {
     propsData: {
       diffFile,
       diffLines: [],
+      codequalityData,
     },
     provide,
   });
