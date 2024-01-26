@@ -13,6 +13,7 @@ module Security
     LICENSE_SCANNING = 'license_scanning'
     LICENSE_FINDING = 'license_finding'
     ANY_MERGE_REQUEST = 'any_merge_request'
+    SCAN_RESULT_POLICY_TYPES = %i[scan_result_policy approval_policy].freeze
 
     REQUIRE_APPROVAL = 'require_approval'
 
@@ -75,7 +76,7 @@ module Security
       end
 
       def scan_result_policies
-        policy_by_type(:scan_result_policy)
+        policy_by_type(SCAN_RESULT_POLICY_TYPES)
       end
 
       def delete_in_batches(relation)

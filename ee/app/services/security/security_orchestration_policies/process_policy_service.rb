@@ -40,37 +40,47 @@ module Security
       delegate :policy_configuration_validation_errors, :policy_configuration_valid?, to: :policy_configuration
 
       def append_to_policy_hash(policy_hash, policy, type)
-        if policy_hash[type].blank?
-          policy_hash[type] = [policy]
-          return
-        end
-
         raise Error, "Policy already exists with same name" if policy_exists?(policy_hash, policy[:name], type)
 
+        policy_hash[type] ||= []
         policy_hash[type] += [policy]
       end
 
       def replace_in_policy_hash(policy_hash, name, policy, type)
         raise Error, "Policy already exists with same name" if name && name != policy[:name] && policy_exists?(policy_hash, policy[:name], type)
 
-        existing_policy_index = check_if_policy_exists!(policy_hash, name || policy[:name], type)
+        existing_policy_index, type = check_if_policy_exists!(policy_hash, name || policy[:name], type)
         policy_hash[type][existing_policy_index] = policy
       end
 
       def remove_from_policy_hash(policy_hash, policy, type)
-        check_if_policy_exists!(policy_hash, policy[:name], type)
+        _index, type = check_if_policy_exists!(policy_hash, policy[:name], type)
         policy_hash[type].reject! { |p| p[:name] == policy[:name] }
       end
 
       def check_if_policy_exists!(policy_hash, policy_name, type)
-        existing_policy_index = policy_exists?(policy_hash, policy_name, type)
+        existing_policy_index, type = policy_exists?(policy_hash, policy_name, type)
+
         raise Error, "Policy does not exist" if existing_policy_index.nil?
 
-        existing_policy_index
+        [existing_policy_index, type]
       end
 
       def policy_exists?(policy_hash, policy_name, type)
-        policy_hash[type].find_index { |p| p[:name] == policy_name }
+        if type == :scan_execution_policy
+          existing_policy_index = policy_index(policy_hash, policy_name, type)
+          [existing_policy_index, :scan_execution_policy] if existing_policy_index.present?
+        else
+          existing_policy_index_scan_result = policy_index(policy_hash, policy_name, :scan_result_policy)
+          return [existing_policy_index_scan_result, :scan_result_policy] if existing_policy_index_scan_result.present?
+
+          existing_policy_index_approval = policy_index(policy_hash, policy_name, :approval_policy)
+          [existing_policy_index_approval, :approval_policy] if existing_policy_index_approval.present?
+        end
+      end
+
+      def policy_index(policy_hash, policy_name, type)
+        policy_hash[type]&.find_index { |p| p[:name] == policy_name }
       end
 
       attr_reader :policy_configuration, :params

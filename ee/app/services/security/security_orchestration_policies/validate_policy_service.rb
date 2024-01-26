@@ -198,7 +198,7 @@ module Security
       end
 
       def scan_result_policy?
-        policy_type == :scan_result_policy
+        Security::ScanResultPolicy::SCAN_RESULT_POLICY_TYPES.include?(policy_type)
       end
 
       def compliance_framework_ids
