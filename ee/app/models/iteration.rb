@@ -332,7 +332,6 @@ class Iteration < ApplicationRecord
     errors.add(:group, s_('is not valid. The iteration group has to match the iteration cadence group.'))
   end
 
-  # TODO: remove this as part of https://gitlab.com/gitlab-org/gitlab/-/issues/354878
   def uniqueness_of_title
     relation = self.class.where(iterations_cadence_id: self.iterations_cadence)
     title_exists = relation.find_by_title(title)
