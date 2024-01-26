@@ -34,6 +34,7 @@ module EE
       def log_audit_event(member:, author:, action:)
         audit_context = {
           name: 'member_destroyed',
+          author: author,
           scope: member.source,
           target: member.user || ::Gitlab::Audit::NullTarget.new,
           target_details: member.user ? member.user.name : 'Deleted User',
@@ -43,21 +44,17 @@ module EE
           }
         }
 
+        if author.nil?
+          audit_context[:author] = ::Gitlab::Audit::UnauthenticatedAuthor.new(name: '(System)')
+          audit_context[:additional_details][:system_event] = true
+        end
+
         case action
         when :destroy
-          audit_context.update(
-            author: author,
-            message: 'Membership destroyed'
-          )
+          audit_context[:message] = 'Membership destroyed'
         when :expired
-          audit_context.update(
-            author: ::Gitlab::Audit::UnauthenticatedAuthor.new(name: '(System)'),
-            message: "Membership expired on #{member.expires_at}"
-          )
-          audit_context[:additional_details].update(
-            system_event: true,
-            reason: "access expired on #{member.expires_at}"
-          )
+          audit_context[:message] = "Membership expired on #{member.expires_at}"
+          audit_context[:additional_details][:reason] = "access expired on #{member.expires_at}"
         end
 
         ::Gitlab::Audit::Auditor.audit(audit_context)
