@@ -50327,9 +50327,6 @@ msgstr ""
 msgid "This block is self-referential"
 msgstr ""
 
-msgid "This board's scope is reduced"
-msgstr ""
-
 msgid "This branch has diverged from upstream."
 msgstr ""
 
