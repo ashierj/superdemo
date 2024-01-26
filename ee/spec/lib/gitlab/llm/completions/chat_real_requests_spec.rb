@@ -281,6 +281,42 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
         'How do I clone a repository?' | ['GitlabDocumentation']
         'How do I create a project template?' | ['GitlabDocumentation']
         'What is DevOps? What is DevSecOps?' | ['GitlabDocumentation']
+        'Is it possible to resolve threads in issues?' | ['GitlabDocumentation']
+        'Can I use you to search for code on GitLab?' | []
+        'How can I search for code on Gitlab' | ['GitlabDocumentation']
+        'Is it possible to add stages to pipelines?' | ['GitlabDocumentation']
+        'Explain the GitLab Flow Branching Strategy' | ['GitlabDocumentation']
+        'How to standardize CICD using GitLab?' | ['GitlabDocumentation']
+        'Can I fetch a job by name using the Gitlab API?' | ['GitlabDocumentation']
+        'How does remote development feature work?' | ['GitlabDocumentation']
+        'How can I migrate from Jenkins to GitLab CI/CD?' | ['GitlabDocumentation']
+        'How do I push an existing folder into a newly created GitLab Repository?' | ['GitlabDocumentation']
+        'How do I run unit tests for my Next JS application in a GitLab pipeline?' | ['GitlabDocumentation']
+        'How to clone a github project to gitlab and keep both repositories in sync?' | ['GitlabDocumentation']
+        'What is the maximum artifact upload limit?' | ['GitlabDocumentation']
+        'What is the artifact upload limit for self-managed?' | ['GitlabDocumentation']
+        'What is the job maximum artifact size?' | ['GitlabDocumentation']
+        'What is the recommended installation for GitLab?' | ['GitlabDocumentation']
+        'How can I achieve high availability with GitLab?' | ['GitlabDocumentation']
+        'What are the tradeoffs between GitLab SaaS vs GitLab self-managed?' | ['GitlabDocumentation']
+        'How do I create a secure connection from a ci job to AWS?' | ['GitlabDocumentation']
+        'What are security policies?' | ['GitlabDocumentation']
+        'How do I set up gitlba pages' | ['GitlabDocumentation']
+        'How do I set up SAML for my GitLab Instance' | ['GitlabDocumentation']
+        'What is the difference between gitlab ultimate and gitlab premium?' | ['GitlabDocumentation']
+        'how do i create custom rulesets with the secret detection scanner?' | ['GitlabDocumentation']
+        'Is the 50,000 compute units that come with Ultimate for the entire namespace or per user?' \
+        | ['GitlabDocumentation']
+        'Where is GitLab.com hosted in GCP?' | ['GitlabDocumentation']
+        'Is it possible to link MRs between two projects?' | ['GitlabDocumentation']
+        'What can you do with AI?' | []
+        'What are the key differences between GitHub Actions and GitLab CI/CD?' | ['GitlabDocumentation']
+        'Can I store Ruby Gems in the package registry? What are the limitations?' | ['GitlabDocumentation']
+        'where can i find documentation for Azure SAML SSO?' | ['GitlabDocumentation']
+        'What are artifacts in gitlab?' | ['GitlabDocumentation']
+        'What kinds of things can you help with?' | []
+        'Can I proxy to Maven Central using the Maven package regsitry?' | ['GitlabDocumentation']
+        'Can you help me setup a gitlab pages site?' | ['GitlabDocumentation']
       end
 
       with_them do
@@ -386,6 +422,10 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
         'Please help me configure a CI/CD pipeline for node application that would run lint and unit tests.' |
           ['CiEditorAssistant']
         'Please provide a .gitlab-ci.yaml config for running a review app for merge requests?' |
+          ['CiEditorAssistant']
+        'How do I optimize my pipelines so that they do not cost so much money?' |
+          ['CiEditorAssistant']
+        'How can I migrate from GitHub Actions to GitLab CI?' |
           ['CiEditorAssistant']
       end
 
