@@ -1,20 +1,11 @@
 <script>
-import {
-  GlButton,
-  GlCard,
-  GlTableLite,
-  GlSprintf,
-  GlLink,
-  GlBadge,
-  GlLabel,
-  GlDisclosureDropdown,
-  GlDisclosureDropdownItem,
-} from '@gitlab/ui';
+import { GlButton, GlCard, GlTableLite, GlSprintf, GlLink, GlBadge, GlLabel } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserDate from '~/vue_shared/components/user_date.vue';
 import { LONG_DATE_FORMAT_WITH_TZ } from '~/vue_shared/constants';
 import { NEW_ROUTE_NAME, DETAILS_ROUTE_NAME } from '../../constants';
+import SecretActionsCell from './secret_actions_cell.vue';
 
 export default {
   name: 'SecretsTable',
@@ -26,10 +17,9 @@ export default {
     GlLink,
     GlBadge,
     GlLabel,
-    GlDisclosureDropdown,
-    GlDisclosureDropdownItem,
     TimeAgo,
     UserDate,
+    SecretActionsCell,
   },
   props: {
     secrets: {
@@ -130,36 +120,7 @@ export default {
           />
         </template>
         <template #cell(actions)="{ item: { key } }">
-          <gl-disclosure-dropdown
-            icon="ellipsis_v"
-            toggle-text="Actions"
-            text-sr-only
-            category="tertiary"
-            no-caret
-            data-testid="secret-actions"
-          >
-            <gl-disclosure-dropdown-item>
-              <template #list-item>
-                <router-link
-                  data-testid="secret-details-link"
-                  :to="getDetailsRoute(key)"
-                  class="gl-display-block gl-text-body gl-hover-text-gray-900 gl-hover-text-decoration-none"
-                >
-                  {{ s__('Secrets|Edit secret') }}
-                </router-link>
-              </template>
-            </gl-disclosure-dropdown-item>
-            <gl-disclosure-dropdown-item>
-              <template #list-item>
-                {{ s__('Secrets|Delete') }}
-              </template>
-            </gl-disclosure-dropdown-item>
-            <gl-disclosure-dropdown-item>
-              <template #list-item>
-                {{ s__('Secrets|Revoke') }}
-              </template>
-            </gl-disclosure-dropdown-item>
-          </gl-disclosure-dropdown>
+          <secret-actions-cell :details-route="getDetailsRoute(key)" />
         </template>
       </gl-table-lite>
     </gl-card>

@@ -1,8 +1,9 @@
-import { GlTableLite, GlLabel, GlDisclosureDropdownItem } from '@gitlab/ui';
+import { GlTableLite, GlLabel } from '@gitlab/ui';
 import { RouterLinkStub } from '@vue/test-utils';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { NEW_ROUTE_NAME, DETAILS_ROUTE_NAME } from 'ee/ci/secrets/constants';
 import SecretsTable from 'ee/ci/secrets/components/secrets_table/secrets_table.vue';
+import SecretActionsCell from 'ee/ci/secrets/components/secrets_table/secret_actions_cell.vue';
 import { mockGroupSecretsData, mockProjectSecretsData } from 'ee/ci/secrets/mock_data';
 
 describe('SecretsTable component', () => {
@@ -16,8 +17,7 @@ describe('SecretsTable component', () => {
   const findSecretLabels = () => findSecretsTableRows().at(0).findAllComponents(GlLabel);
   const findSecretLastAccessed = () => wrapper.findByTestId('secret-last-accessed');
   const findSecretCreatedOn = () => wrapper.findByTestId('secret-created-on');
-  const findSecretActionItems = () =>
-    wrapper.findByTestId('secret-actions').findAllComponents(GlDisclosureDropdownItem);
+  const findSecretActionsCell = () => wrapper.findComponent(SecretActionsCell);
 
   const createComponent = (props) => {
     wrapper = mountExtended(SecretsTable, {
@@ -77,31 +77,12 @@ describe('SecretsTable component', () => {
       expect(findSecretCreatedOn().props('date')).toBe(secret.createdOn);
     });
 
-    describe('secret actions', () => {
-      it('shows the actions dropdown for the secret', () => {
-        expect(findSecretActionItems().length).toBe(3);
-      });
-
-      it('shows the "Edit secret" action', () => {
-        const action = findSecretActionItems().at(0);
-
-        expect(action.text()).toBe('Edit secret');
-        expect(action.findComponent(RouterLinkStub).props('to')).toMatchObject({
+    it('passes correct props to actions cell', () => {
+      expect(findSecretActionsCell().props()).toMatchObject({
+        detailsRoute: {
           name: DETAILS_ROUTE_NAME,
           params: { key: secret.key },
-        });
-      });
-
-      it('shows the "Delete" action', () => {
-        const action = findSecretActionItems().at(1);
-
-        expect(action.text()).toBe('Delete');
-      });
-
-      it('shows the "Revoke" action', () => {
-        const action = findSecretActionItems().at(2);
-
-        expect(action.text()).toBe('Revoke');
+        },
       });
     });
   });
