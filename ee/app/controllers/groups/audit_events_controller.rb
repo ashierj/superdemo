@@ -30,23 +30,6 @@ class Groups::AuditEventsController < Groups::ApplicationController
     @events = AuditEventSerializer.new.represent(events)
     @audit_event_definitions = Gitlab::Audit::Type::Definition.names_with_category
 
-    @all_projects = []
-    group.all_projects.each_batch(of: BATCH_SIZE) do |projects|
-      projects.each do |project|
-        if project.marked_for_deletion_at.nil? && project.pending_delete == false
-          @all_projects.append({ value: project.full_path, text: project.name, type: "Projects" })
-        end
-      end
-    end
-
-    @all_groups = []
-    group.descendants.each_batch(of: BATCH_SIZE) do |groups|
-      groups_json = groups.map do |group|
-        { value: group.full_path, text: group.name, type: "Groups" }
-      end
-      @all_groups.concat(groups_json)
-    end
-
     Gitlab::Tracking.event(self.class.name, 'search_audit_event', user: current_user, namespace: group)
   end
 

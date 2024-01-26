@@ -8,6 +8,7 @@ import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
+import getNamespaceFiltersQuery from 'ee/audit_events/graphql/queries/get_namespace_filters.query.graphql';
 import externalAuditEventDestinationCreate from 'ee/audit_events/graphql/mutations/create_external_destination.mutation.graphql';
 import externalAuditEventDestinationUpdate from 'ee/audit_events/graphql/mutations/update_external_destination.mutation.graphql';
 import externalAuditEventDestinationHeaderCreate from 'ee/audit_events/graphql/mutations/create_external_destination_header.mutation.graphql';
@@ -59,13 +60,12 @@ import {
   destinationInstanceFilterRemoveMutationPopulator,
   destinationInstanceFilterUpdateMutationPopulator,
   destinationInstanceUpdateMutationPopulator,
-  createAllProjects,
-  createAllGroups,
   mockNamespaceFilter,
   destinationNamespaceFilterRemoveMutationPopulator,
   destinationNamespaceFilterAddMutationPopulator,
   mockAddNamespaceFilters,
   mockRemoveNamespaceFilters,
+  getMockNamespaceFilters,
 } from '../../mock_data';
 
 jest.mock('~/alert');
@@ -88,15 +88,16 @@ describe('StreamDestinationEditor', () => {
       ],
     ],
   } = {}) => {
-    const mockApollo = createMockApollo(apolloHandlers);
+    const STATIC_HANDLERS = [
+      [getNamespaceFiltersQuery, jest.fn().mockResolvedValue(getMockNamespaceFilters())],
+    ];
+    const mockApollo = createMockApollo([...apolloHandlers, ...STATIC_HANDLERS]);
     wrapper = mountFn(StreamDestinationEditor, {
       attachTo: document.body,
       provide: {
         groupPath: groupPathProvide,
         maxHeaders,
         auditEventDefinitions: mockAuditEventDefinitions,
-        allGroups: createAllGroups(3),
-        allProjects: createAllProjects(5),
       },
       propsData: {
         ...props,

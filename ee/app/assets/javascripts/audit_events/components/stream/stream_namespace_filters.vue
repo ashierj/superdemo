@@ -1,17 +1,14 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
-import { groupBy } from 'lodash';
-import fuzzaldrinPlus from 'fuzzaldrin-plus';
-import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
+import { __ } from '~/locale';
 import { AUDIT_STREAMS_FILTERING } from '../../constants';
-
-const MAX_OPTIONS_SHOWN = 3;
+import getNamespaceFiltersQuery from '../../graphql/queries/get_namespace_filters.query.graphql';
 
 export default {
   components: {
     GlCollapsibleListbox,
   },
-  inject: ['allGroups', 'allProjects'],
+  inject: ['groupPath'],
   props: {
     value: {
       type: Object,
@@ -23,31 +20,66 @@ export default {
       searchTerm: '',
     };
   },
-  computed: {
-    allNamespaces() {
-      return [...this.allGroups, ...this.allProjects];
+  apollo: {
+    filterTargets: {
+      query: getNamespaceFiltersQuery,
+      variables() {
+        return {
+          search: this.searchTerm,
+          fullPath: this.groupPath,
+        };
+      },
+      update(data) {
+        return {
+          groups: data.group.descendantGroups.nodes,
+          projects: data.group.projects.nodes,
+        };
+      },
     },
-    filteredNamespaces() {
-      if (this.searchTerm) {
-        return fuzzaldrinPlus.filter(this.allNamespaces, this.searchTerm, { key: 'text' });
+  },
+  computed: {
+    selectedEntry() {
+      if (!this.filterTargets) {
+        return [];
       }
 
-      return this.allNamespaces;
+      return [...this.filterTargets.groups, ...this.filterTargets.projects].find(
+        (n) => n.fullPath === this.value.namespace,
+      );
     },
+
+    selectedId() {
+      return this.selectedEntry?.id;
+    },
+
     options() {
-      const groupedNamespaces = groupBy(this.filteredNamespaces, 'type');
-      return Object.entries(groupedNamespaces).map(([type, namespaces]) => ({
-        text: type,
-        options: namespaces,
-      }));
+      const result = [];
+      if (this.filterTargets?.groups.length > 0) {
+        result.push({
+          text: __('Groups'),
+          options: this.filterTargets.groups.map((g) => ({
+            text: g.name,
+            value: g.id,
+          })),
+        });
+      }
+      if (this.filterTargets?.projects.length > 0) {
+        result.push({
+          text: __('Projects'),
+          options: this.filterTargets.projects.map((p) => ({
+            text: p.name,
+            value: p.id,
+          })),
+        });
+      }
+      return result;
     },
     toggleText() {
-      return getSelectedOptionsText({
-        options: this.allNamespaces,
-        selected: this.value.namespace,
-        placeholder: this.$options.i18n.SELECT_NAMESPACE,
-        maxOptionsShown: MAX_OPTIONS_SHOWN,
-      });
+      if (!this.value?.namespace) {
+        return this.$options.i18n.SELECT_NAMESPACE;
+      }
+
+      return this.selectedEntry?.name || this.value.namespace;
     },
   },
   methods: {
@@ -55,11 +87,14 @@ export default {
       this.searchTerm = searchTerm.toLowerCase();
     },
     selectOption($event) {
-      if (this.allGroups.find((group) => group.value === $event)) {
-        this.$emit('input', { namespace: $event, type: 'group' });
-      } else {
-        this.$emit('input', { namespace: $event, type: 'project' });
+      const group = this.filterTargets?.groups.find((g) => g.id === $event);
+      if (group) {
+        this.$emit('input', { namespace: group.fullPath, type: 'group' });
+        return;
       }
+      const project = this.filterTargets?.projects.find((p) => p.id === $event);
+
+      this.$emit('input', { namespace: project.fullPath, type: 'project' });
     },
     resetOptions() {
       this.$emit('input', { namespace: '', type: 'project' });
@@ -75,14 +110,13 @@ export default {
   <gl-collapsible-listbox
     id="audit-event-type-filter"
     :items="options"
-    :selected="value.namespace"
+    :selected="selectedId"
     :header-text="$options.i18n.SELECT_NAMESPACE"
     :show-select-all-button-label="$options.i18n.SELECT_ALL"
     :reset-button-label="$options.i18n.UNSELECT_ALL"
     :no-results-text="$options.i18n.NO_RESULT_TEXT"
     :search-placeholder="$options.i18n.SEARCH_PLACEHOLDER"
     searchable
-    infinite-scroll-loading
     toggle-class="gl-max-w-full"
     :toggle-text="toggleText"
     class="gl-max-w-full"
