@@ -79,12 +79,6 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
           expect(page).to have_selector('.board-card', count: 1)
         end
 
-        it 'displays dot highlight and tooltip' do
-          create_board_milestone(milestone.title)
-
-          expect_dot_highlight('Edit board')
-        end
-
         context 'iteration' do
           let_it_be(:cadence) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 1, title: 'one week iterations') }
           let_it_be(:iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: cadence, title: 'one test', group: group, start_date: 1.day.ago, due_date: Date.today) }
@@ -143,12 +137,6 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
             end
           end
         end
-
-        it 'displays dot highlight and tooltip' do
-          create_board_label(label_1.title)
-
-          expect_dot_highlight('Edit board')
-        end
       end
 
       context 'assignee' do
@@ -173,12 +161,6 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
 
           expect(page).not_to have_css('.gl-filtered-search-token')
           expect(page).to have_selector('.board-card', count: 3)
-        end
-
-        it 'displays dot highlight and tooltip' do
-          create_board_assignee(user.name)
-
-          expect_dot_highlight('Edit board')
         end
       end
 
@@ -218,12 +200,6 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
           create_board_weight(0)
 
           expect(page).to have_selector('.board-card', count: 1)
-        end
-
-        it 'displays dot highlight and tooltip' do
-          create_board_weight(1)
-
-          expect_dot_highlight('Edit board')
         end
       end
     end
@@ -518,10 +494,6 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
         expect(page).not_to have_button('Cancel')
       end
     end
-
-    it 'does not display dot highlight and tooltip' do
-      expect_no_dot_highlight('View scope')
-    end
   end
 
   context 'with scoped_issue_boards feature disabled' do
@@ -533,10 +505,6 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
 
       visit project_boards_path(project)
       wait_for_requests
-    end
-
-    it 'does not display dot highlight and tooltip' do
-      expect_no_dot_highlight('Edit board')
     end
 
     it "doesn't show the input when creating a board" do
@@ -551,19 +519,6 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
     it "doesn't show the button to edit scope" do
       expect(page).not_to have_button('View Scope')
     end
-  end
-
-  def expect_dot_highlight(button_title)
-    button = first('.filter-dropdown-container .btn.gl-button.dot-highlight')
-    expect(button.text).to include(button_title)
-    expect(button['title']).to include('This board\'s scope is reduced')
-  end
-
-  def expect_no_dot_highlight(button_title)
-    button = first('.filter-dropdown-container .btn.gl-button')
-    expect(button.text).to include(button_title)
-    expect(button[:class]).not_to include('dot-highlight')
-    expect(button['title']).not_to include('This board\'s scope is reduced')
   end
 
   # Create board helper methods
