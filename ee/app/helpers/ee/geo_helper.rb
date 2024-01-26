@@ -20,7 +20,7 @@ module EE
       {
         replicable_types: replicable_types.to_json,
         new_site_url: new_admin_geo_node_path,
-        geo_sites_empty_state_svg: image_path("illustrations/empty-state/geo-empty.svg")
+        geo_sites_empty_state_svg: image_path("illustrations/empty-state/empty-geo-md.svg")
       }
     end
 
