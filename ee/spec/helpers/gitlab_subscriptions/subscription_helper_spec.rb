@@ -3,46 +3,24 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::SubscriptionHelper, feature_category: :seat_cost_management do
-  describe '#gitlab_saas?' do
-    context 'when GitLab is SaaS' do
+  describe '#gitlab_com_subscription?' do
+    context 'when GitLab.com' do
       before do
-        stub_saas_features(gitlab_saas_subscriptions: true)
+        stub_saas_features(gitlab_com_subscriptions: true)
       end
 
       it 'returns true' do
-        expect(helper.gitlab_saas?).to be_truthy
+        expect(helper.gitlab_com_subscription?).to be_truthy
       end
     end
 
-    context 'when GitLab is not SaaS' do
+    context 'when not GitLab.com' do
       before do
-        stub_saas_features(gitlab_saas_subscriptions: false)
+        stub_saas_features(gitlab_com_subscriptions: false)
       end
 
       it 'returns false' do
-        expect(helper.gitlab_saas?).to be_falsy
-      end
-    end
-  end
-
-  describe '#gitlab_sm?' do
-    context 'when GitLab is self-managed' do
-      before do
-        stub_saas_features(gitlab_saas_subscriptions: false)
-      end
-
-      it 'returns true' do
-        expect(helper.gitlab_sm?).to be_truthy
-      end
-    end
-
-    context 'when GitLab is not self-managed' do
-      before do
-        stub_saas_features(gitlab_saas_subscriptions: true)
-      end
-
-      it 'returns false' do
-        expect(helper.gitlab_sm?).to be_falsy
+        expect(helper.gitlab_com_subscription?).to be_falsy
       end
     end
   end

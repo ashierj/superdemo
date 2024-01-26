@@ -22,7 +22,7 @@ module GitlabSubscriptions
       private
 
       def feature_flag_enabled?
-        if gitlab_saas?
+        if gitlab_com_subscription?
           Feature.enabled?(:bulk_add_on_assignment_refresh_worker)
         else
           Feature.enabled?(:self_managed_code_suggestions)

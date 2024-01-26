@@ -1451,7 +1451,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
       shared_examples 'successful deletion' do
         it 'deletes the member' do
-          stub_saas_features(gitlab_saas_subscriptions: true)
+          stub_saas_features(gitlab_com_subscriptions: true)
 
           expect(group.member?(user)).to be is_group_member
 

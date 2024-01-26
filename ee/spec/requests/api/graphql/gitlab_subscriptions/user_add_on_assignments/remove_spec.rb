@@ -155,7 +155,7 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
   context 'when feature flag is disabled' do
     context 'when SaaS' do
       before do
-        stub_saas_features(gitlab_saas_subscriptions: true)
+        stub_saas_features(gitlab_com_subscriptions: true)
         stub_feature_flags(hamilton_seat_management: false)
       end
 
@@ -164,7 +164,7 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
 
     context 'when self-managed' do
       before do
-        stub_saas_features(gitlab_saas_subscriptions: false)
+        stub_saas_features(gitlab_com_subscriptions: false)
         stub_feature_flags(self_managed_code_suggestions: false)
       end
 

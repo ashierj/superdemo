@@ -171,7 +171,7 @@ RSpec.describe 'UserAddOnAssignmentCreate', feature_category: :seat_cost_managem
 
   context 'on Gitlab.com/Saas' do
     before do
-      stub_saas_features(gitlab_saas_subscriptions: true)
+      stub_saas_features(gitlab_com_subscriptions: true)
     end
 
     let_it_be(:current_user) { create(:user) }
@@ -288,7 +288,7 @@ RSpec.describe 'UserAddOnAssignmentCreate', feature_category: :seat_cost_managem
 
   context 'on self managed instances' do
     before do
-      stub_saas_features(gitlab_saas_subscriptions: false)
+      stub_saas_features(gitlab_com_subscriptions: false)
     end
 
     let(:current_user) { create(:admin) }

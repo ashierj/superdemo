@@ -107,7 +107,7 @@ module EE
     def member_promotion_management_required?(new_access_level)
       return false unless ::Feature.enabled?(:member_promotion_management, type: :wip)
       return false unless ::Gitlab::CurrentSettings.enable_member_promotion_management?
-      return false unless gitlab_sm?
+      return false if gitlab_com_subscription?
       return false unless new_access_level > ::Gitlab::Access::GUEST
       return false if is_using_seat
 

@@ -130,7 +130,7 @@ module EE
       def enqueue_cleanup_add_on_seat_assignments(member)
         namespace = member.source.root_ancestor
 
-        return unless gitlab_saas? && code_suggestions_available?(namespace)
+        return unless gitlab_com_subscription? && code_suggestions_available?(namespace)
 
         member.run_after_commit_or_now do
           GitlabSubscriptions::AddOnPurchases::CleanupUserAddOnAssignmentWorker.perform_async(

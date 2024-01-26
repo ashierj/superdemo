@@ -54,7 +54,7 @@ RSpec.describe Admin::CodeSuggestionsController, :cloud_licenses, feature_catego
 
       context 'when instance is self-managed' do
         before do
-          stub_saas_features(gitlab_saas_subscriptions: false)
+          stub_saas_features(gitlab_com_subscriptions: false)
         end
 
         context 'when self_managed_code_suggestions feature flag is enabled' do
@@ -81,7 +81,7 @@ RSpec.describe Admin::CodeSuggestionsController, :cloud_licenses, feature_catego
 
         with_them do
           before do
-            stub_saas_features(gitlab_saas_subscriptions: true)
+            stub_saas_features(gitlab_com_subscriptions: true)
             stub_feature_flags(self_managed_code_suggestions: self_managed_code_suggestions)
           end
 

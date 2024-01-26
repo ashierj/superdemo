@@ -3023,7 +3023,7 @@ RSpec.describe User, feature_category: :system_access do
 
     context 'when on Saas/Gitlab.com' do
       before do
-        stub_saas_features(gitlab_saas_subscriptions: true)
+        stub_saas_features(gitlab_com_subscriptions: true)
       end
 
       it 'returns false by default' do
@@ -3033,7 +3033,7 @@ RSpec.describe User, feature_category: :system_access do
 
     context 'when on self managed' do
       before do
-        stub_saas_features(gitlab_saas_subscriptions: false)
+        stub_saas_features(gitlab_com_subscriptions: false)
         stub_licensed_features(code_suggestions: true)
       end
 

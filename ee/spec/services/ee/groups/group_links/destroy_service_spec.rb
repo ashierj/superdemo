@@ -40,7 +40,7 @@ RSpec.describe Groups::GroupLinks::DestroyService, '#execute', feature_category:
 
       context 'when on self managed' do
         before do
-          stub_saas_features(gitlab_saas_subscriptions: false)
+          stub_saas_features(gitlab_com_subscriptions: false)
         end
 
         it 'does not enqueue RefreshUserAssignmentsWorker' do
