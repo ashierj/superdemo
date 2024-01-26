@@ -42,6 +42,41 @@ RSpec.describe Gitlab::Auth::Saml::SsoState, feature_category: :system_access do
   describe '#active_since?' do
     let(:cutoff) { 1.week.ago }
 
+    context "when passed in cutoff is nil" do
+      let(:cutoff) { nil }
+
+      it 'is always active in sessionless request' do
+        is_expected.to be_active_since(cutoff)
+      end
+
+      it 'is inactive if never signed in' do
+        Gitlab::Session.with_session({}) do
+          is_expected.not_to be_active_since(cutoff)
+        end
+      end
+
+      it 'is active if any last_sign_at is present' do
+        Gitlab::Session.with_session(
+          active_instance_sso_sign_ins: { saml_provider_id => { 'last_signin_at' => Time.current + 5.days } }
+        ) do
+          is_expected.to be_active_since(cutoff)
+        end
+        Gitlab::Session.with_session(
+          active_instance_sso_sign_ins: { saml_provider_id => { 'last_signin_at' => Time.current - 4.days } }
+        ) do
+          is_expected.to be_active_since(cutoff)
+        end
+      end
+
+      it 'is nil when last_signin_at is also nil in an active session' do
+        Gitlab::Session.with_session(
+          active_instance_sso_sign_ins: { saml_provider_id => { 'last_signin_at' => nil } }
+        ) do
+          is_expected.not_to be_active_since(cutoff)
+        end
+      end
+    end
+
     it 'is always active in a sessionless request' do
       is_expected.to be_active_since(cutoff)
     end
