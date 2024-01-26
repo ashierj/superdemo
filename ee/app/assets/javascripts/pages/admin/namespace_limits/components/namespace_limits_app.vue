@@ -156,7 +156,7 @@ export default {
     <div v-if="statsDownloadLink">
       <h2>{{ $options.i18n.statsTitle }}</h2>
       <p>{{ $options.i18n.statsDescription }}</p>
-      <gl-button category="secondary" variant="info" :href="statsDownloadLink">
+      <gl-button category="secondary" variant="confirm" :href="statsDownloadLink">
         {{ $options.i18n.statsButtonTitle }}
       </gl-button>
 
