@@ -1,4 +1,4 @@
-import { GlAvatar, GlIcon, GlLabel } from '@gitlab/ui';
+import { GlBadge, GlIcon } from '@gitlab/ui';
 import { visitUrl } from '~/lib/utils/url_utility';
 import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -26,8 +26,7 @@ describe('DashboardsListItem', () => {
   let wrapper;
 
   const findIcon = () => wrapper.findComponent(GlIcon);
-  const findAvatar = () => wrapper.findComponent(GlAvatar);
-  const findLabel = () => wrapper.findComponent(GlLabel);
+  const findBadge = () => wrapper.findComponent(GlBadge);
   const findListItem = () => wrapper.findByTestId('dashboard-list-item');
   const findRedirectLink = () => wrapper.findByTestId('dashboard-redirect-link');
   const findRouterLink = () => wrapper.findByTestId('dashboard-router-link');
@@ -67,20 +66,13 @@ describe('DashboardsListItem', () => {
 
     it('renders the dashboard icon', () => {
       expect(findIcon().props()).toMatchObject({
-        name: 'project',
+        name: 'dashboard',
         size: 16,
       });
     });
 
-    it('renders the dashboard avatar', () => {
-      expect(findAvatar().props()).toMatchObject({
-        entityName: USER_DEFINED_DASHBOARD.title,
-        size: 32,
-      });
-    });
-
     it('does not render the built in label', () => {
-      expect(findLabel().exists()).toBe(false);
+      expect(findBadge().exists()).toBe(false);
     });
 
     it('routes to the dashboard when a list item is clicked', async () => {
@@ -95,8 +87,8 @@ describe('DashboardsListItem', () => {
       createWrapper(BUILT_IN_DASHBOARD);
     });
 
-    it('renders the dashboard label', () => {
-      expect(findLabel().props('title')).toBe('By GitLab');
+    it('renders the dashboard badge', () => {
+      expect(findBadge().text()).toBe('Created by GitLab');
     });
   });
 

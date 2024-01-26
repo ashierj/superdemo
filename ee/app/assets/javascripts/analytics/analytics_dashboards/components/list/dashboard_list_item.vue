@@ -1,13 +1,12 @@
 <script>
-import { GlAvatar, GlIcon, GlLabel, GlLink } from '@gitlab/ui';
+import { GlIcon, GlBadge, GlLink } from '@gitlab/ui';
 import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
 
 export default {
   name: 'DashboardsListItem',
   components: {
-    GlAvatar,
     GlIcon,
-    GlLabel,
+    GlBadge,
     GlLink,
   },
   props: {
@@ -43,8 +42,7 @@ export default {
     @click="routeToDashboard"
   >
     <div class="gl-float-left gl-mr-4 gl-display-flex gl-align-items-center">
-      <gl-icon name="project" class="gl-text-gray-200 gl-mr-3" :size="16" />
-      <gl-avatar :entity-name="dashboard.title" shape="rect" :size="32" />
+      <gl-icon name="dashboard" class="gl-text-gray-200 gl-mr-3" :size="16" />
     </div>
     <div
       class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-flex-grow-1"
@@ -72,7 +70,9 @@ export default {
         </p>
       </div>
       <div v-if="isBuiltInDashboard" class="gl-float-right">
-        <gl-label :title="s__('Analytics|By GitLab')" background-color="#D9C2EE" />
+        <gl-badge variant="muted" icon="tanuki-verified">{{
+          s__('Analytics|Created by GitLab')
+        }}</gl-badge>
       </div>
     </div>
   </li>
