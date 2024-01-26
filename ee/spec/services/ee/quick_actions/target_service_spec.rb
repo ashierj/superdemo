@@ -4,9 +4,8 @@ require 'spec_helper'
 
 RSpec.describe QuickActions::TargetService, feature_category: :team_planning do
   let(:group) { create(:group) }
-  let(:project) { create(:project, group: group) }
   let(:user) { create(:user) }
-  let(:service) { described_class.new(container: project, current_user: user, params: { group: group }) }
+  let(:service) { described_class.new(container: group, current_user: user) }
 
   before do
     group.add_maintainer(user)

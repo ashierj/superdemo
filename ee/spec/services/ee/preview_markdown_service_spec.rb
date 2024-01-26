@@ -17,12 +17,11 @@ RSpec.describe PreviewMarkdownService, feature_category: :team_planning do
       {
         text: '/title new title',
         target_type: 'Epic',
-        target_id: epic.iid,
-        group: epic.group
+        target_id: epic.iid
       }
     end
 
-    let(:service) { described_class.new(nil, user, params) }
+    let(:service) { described_class.new(container: epic.group, current_user: user, params: params) }
 
     before do
       stub_licensed_features(epics: true)
@@ -40,7 +39,7 @@ RSpec.describe PreviewMarkdownService, feature_category: :team_planning do
     let_it_be(:cadence) { create(:iterations_cadence, group: group) }
     let_it_be(:iteration) { create(:iteration, :with_due_date, iterations_cadence: cadence, start_date: 2.days.ago) }
 
-    let(:service) { described_class.new(project, user, params) }
+    let(:service) { described_class.new(container: project, current_user: user, params: params) }
     let(:quick_action_text) { '/iteration --current' }
     let(:params) do
       {
