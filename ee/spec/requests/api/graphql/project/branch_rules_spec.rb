@@ -119,6 +119,7 @@ RSpec.describe 'getting list of branch rules for a project', feature_category: :
 
       it 'includes all fields', :use_sql_query_cache, :aggregate_failures do
         expect(all_branches_rule_data).to include(
+          'id' => all_branches_rule.to_global_id.to_s,
           'name' => all_branches_rule.name,
           'isDefault' => all_branches_rule.default_branch?,
           'isProtected' => all_branches_rule.protected?,
@@ -143,6 +144,7 @@ RSpec.describe 'getting list of branch rules for a project', feature_category: :
           'externalUrl' => all_branches_external_status_check.external_url
         }])
         expect(all_protected_branches_rule_data).to include(
+          'id' => all_protected_branches_rule.to_global_id.to_s,
           'name' => all_protected_branches_rule.name,
           'isDefault' => all_protected_branches_rule.default_branch?,
           'isProtected' => all_protected_branches_rule.protected?,
@@ -162,6 +164,7 @@ RSpec.describe 'getting list of branch rules for a project', feature_category: :
         }])
 
         expect(branch_rule_a_data).to include(
+          'id' => branch_rule_a.to_global_id.to_s,
           'name' => branch_rule_a.name,
           'isDefault' => branch_rule_a.default_branch?,
           'isProtected' => branch_rule_a.protected?,
@@ -177,6 +180,7 @@ RSpec.describe 'getting list of branch rules for a project', feature_category: :
         )
 
         expect(branch_rule_b_data).to include(
+          'id' => branch_rule_b.to_global_id.to_s,
           'name' => branch_rule_b.name,
           'isDefault' => branch_rule_b.default_branch?,
           'isProtected' => branch_rule_b.protected?,
