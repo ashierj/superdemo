@@ -71,12 +71,12 @@ module QA
       context 'when populated by a Dependency Scan' do
         it 'populates licenses in the pipeline, dashboard and merge request',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/409969' do
-          merge_request = Resource::MergeRequest.fabricate_via_api! do |merge_request|
-            merge_request.source = source
-            merge_request.project = test_project
-            merge_request.source_branch = 'license-management-mr'
-            merge_request.target_branch = test_project.default_branch
-          end
+          merge_request = create(:merge_request,
+            source: source,
+            project: test_project,
+            source_branch: 'license-management-mr',
+            target_branch: test_project.default_branch)
+
           Flow::Login.sign_in_unless_signed_in
 
           merge_request.visit!
