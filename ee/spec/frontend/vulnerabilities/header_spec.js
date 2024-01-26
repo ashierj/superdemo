@@ -115,7 +115,7 @@ describe('Vulnerability Header', () => {
     dropdown.vm.$emit('change', { action });
   };
 
-  const createWrapper = ({ vulnerability = {}, apolloProvider, glAbilities }) => {
+  const createWrapper = ({ vulnerability = {}, apolloProvider, glFeatures }) => {
     wrapper = shallowMount(Header, {
       apolloProvider,
       directives: {
@@ -129,9 +129,9 @@ describe('Vulnerability Header', () => {
       },
       provide: {
         dismissalDescriptions,
-        glAbilities: {
-          resolveVulnerabilityAi: true,
-          ...glAbilities,
+        glFeatures: {
+          resolveVulnerability: true,
+          ...glFeatures,
         },
       },
     });
@@ -667,8 +667,8 @@ describe('Vulnerability Header', () => {
     describe('split button', () => {
       it('renders the create merge request and issue button as a split button', async () => {
         createWrapper({
-          glAbilities: {
-            resolveVulnerabilityAi: false,
+          glFeatures: {
+            resolveVulnerability: false,
           },
           vulnerability: getVulnerability({
             canCreateMergeRequest: true,
