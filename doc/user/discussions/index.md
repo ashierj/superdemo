@@ -173,9 +173,6 @@ A system note is added to the page details.
 
 If an issue or merge request is closed with a locked discussion, then you cannot reopen it until the discussion is unlocked.
 
-<!-- Delete when the `moved_mr_sidebar` feature flag is removed -->
-If you don't see this action on the right sidebar, your project or instance might have [moved sidebar actions](../project/merge_requests/index.md#move-sidebar-actions) enabled.
-
 ## Add an internal note
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/207473) in GitLab 13.9 [with a flag](../../administration/feature_flags.md) named `confidential_notes`. Disabled by default.

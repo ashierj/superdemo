@@ -66,17 +66,8 @@ export default {
     actionButtonText() {
       return this.isEpicOpen ? __('Close epic') : __('Reopen epic');
     },
-    isMrSidebarMoved() {
-      return this.glFeatures.movedMrSidebar;
-    },
-    showDesktopDropdown() {
-      return this.canCreate || this.canDestroy || this.isMrSidebarMoved;
-    },
-    showMobileDropdown() {
-      return this.showDesktopDropdown || this.canUpdate;
-    },
     showNotificationToggle() {
-      return this.isMrSidebarMoved && isLoggedIn();
+      return isLoggedIn();
     },
     newEpicDropdownItem() {
       return {
@@ -124,9 +115,7 @@ export default {
         items.push(this.toggleEpicStatusDropdownItem);
       }
 
-      if (this.isMrSidebarMoved) {
-        items.push(this.copyReferenceDropdownItem);
-      }
+      items.push(this.copyReferenceDropdownItem);
 
       return { items };
     },
@@ -141,9 +130,7 @@ export default {
         items.push(this.newEpicDropdownItem);
       }
 
-      if (this.isMrSidebarMoved) {
-        items.push(this.copyReferenceDropdownItem);
-      }
+      items.push(this.copyReferenceDropdownItem);
 
       return { items };
     },
@@ -186,7 +173,6 @@ export default {
 <template>
   <div class="gl-display-contents">
     <gl-disclosure-dropdown
-      v-if="showMobileDropdown"
       ref="epicActionsDropdownMobile"
       class="gl-display-block gl-md-display-none! gl-w-full gl-mt-3"
       category="secondary"
@@ -243,7 +229,6 @@ export default {
     </gl-button>
 
     <gl-disclosure-dropdown
-      v-if="showDesktopDropdown"
       ref="epicActionsDropdownDesktop"
       class="gl-display-none gl-md-display-block"
       placement="right"
