@@ -1,0 +1,19 @@
+#import "~/graphql_shared/fragments/user.fragment.graphql"
+
+fragment ApprovalSummary on Deployment {
+  iid
+  approvalSummary {
+    status
+    totalPendingApprovalCount
+    totalRequiredApprovals
+    rules {
+      approvals {
+        comment
+        status
+        user {
+          ...User
+        }
+      }
+    }
+  }
+}
