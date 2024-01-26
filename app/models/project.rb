@@ -2838,10 +2838,6 @@ class Project < ApplicationRecord
     JiraConnectSubscription.for_project(self).exists?
   end
 
-  def uses_default_ci_config?
-    ci_config_path.blank? || Gitlab::FileDetector.type_of(ci_config_path) == :gitlab_ci
-  end
-
   def limited_protected_branches(limit)
     protected_branches.limit(limit)
   end
