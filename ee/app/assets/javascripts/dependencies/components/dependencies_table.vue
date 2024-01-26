@@ -7,6 +7,7 @@ import {
   GlTable,
   GlPopover,
   GlLink,
+  GlLoadingIcon,
 } from '@gitlab/ui';
 import { cloneDeep } from 'lodash';
 import { DOCS_URL_IN_EE_DIR } from 'jh_else_ce/lib/utils/url_utility';
@@ -56,6 +57,7 @@ export default {
     GlTable,
     GlPopover,
     GlLink,
+    GlLoadingIcon,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType'],
@@ -64,6 +66,15 @@ export default {
       type: Array,
       required: true,
     },
+    vulnerabilityInfo: {
+      type: Object,
+      required: true,
+    },
+    vulnerabilityItemsLoading: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
     isLoading: {
       type: Boolean,
       required: true,
@@ -71,7 +82,7 @@ export default {
   },
   computed: {
     anyDependencyHasVulnerabilities() {
-      return this.localDependencies.some(({ vulnerabilities }) => vulnerabilities?.length > 0);
+      return this.localDependencies.some((dependency) => this.vulnerabilitiesCount(dependency));
     },
     fields() {
       return this.isProjectNamespace ? this.$options.projectFields : this.$options.groupFields;
@@ -80,9 +91,10 @@ export default {
       return this.namespaceType === NAMESPACE_PROJECT;
     },
     localDependencies() {
-      return this.isProjectNamespace
-        ? this.transformDependenciesForUI(this.dependencies)
-        : this.dependencies;
+      return this.transformDependenciesForUI(this.dependencies);
+    },
+    isGroupLevelOrWithSbomOccurrencesEnabled() {
+      return !this.isProjectNamespace || this.glFeatures.projectLevelSbomOccurrences;
     },
   },
   methods: {
@@ -104,10 +116,29 @@ export default {
     packager(dependency) {
       return dependency.packager || this.$options.i18n.unknown;
     },
+    vulnerabilitiesCount(item) {
+      if (this.isGroupLevelOrWithSbomOccurrencesEnabled) {
+        return item.vulnerabilityCount;
+      }
+      return item.vulnerabilities?.length;
+    },
+    vulnerabilities(item) {
+      if (this.isGroupLevelOrWithSbomOccurrencesEnabled) {
+        return this.vulnerabilityInfo[item.occurrenceId];
+      }
+      return item.vulnerabilities;
+    },
+    rowExpanded(showDetails, item) {
+      showDetails();
+      if (this.isGroupLevelOrWithSbomOccurrencesEnabled) {
+        this.$emit('row-click', item);
+      }
+    },
   },
   groupFields: [
     ...sharedFields,
     { key: 'projects', label: DEPENDENCIES_TABLE_I18N.projects, tdClass: tdClass() },
+    { key: 'isVulnerable', label: '', tdClass: tdClass(['gl-text-right']) },
   ],
   projectFields: [
     ...sharedFields,
@@ -153,12 +184,12 @@ export default {
       <gl-button
         v-if="anyDependencyHasVulnerabilities"
         class="d-none d-md-inline"
-        :class="{ invisible: !item.vulnerabilities.length }"
+        :class="{ invisible: !vulnerabilitiesCount(item) }"
         category="tertiary"
         size="small"
         :aria-label="$options.i18n.toggleVulnerabilityList"
         :icon="detailsShowing ? 'chevron-up' : 'chevron-down'"
-        @click="toggleDetails"
+        @click="rowExpanded(toggleDetails, item)"
       />
       <span class="bold">{{ item.name }}</span
       >&nbsp;{{ item.version }}
@@ -192,24 +223,25 @@ export default {
 
     <template #cell(isVulnerable)="{ item, toggleDetails }">
       <gl-badge
-        v-if="item.vulnerabilities.length"
+        v-if="vulnerabilitiesCount(item)"
         variant="warning"
         href="#"
-        @click.native="toggleDetails"
+        @click.native="rowExpanded(toggleDetails, item)"
       >
         <gl-icon name="warning" class="gl-text-orange-500 mr-1" />
         {{
           n__(
             'Dependencies|%d vulnerability detected',
             'Dependencies|%d vulnerabilities detected',
-            item.vulnerabilities.length,
+            vulnerabilitiesCount(item),
           )
         }}
       </gl-badge>
     </template>
 
     <template #row-details="{ item }">
-      <dependency-vulnerabilities class="ml-4" :vulnerabilities="item.vulnerabilities" />
+      <gl-loading-icon v-if="vulnerabilityItemsLoading.includes(item)" size="md" />
+      <dependency-vulnerabilities v-else class="ml-4" :vulnerabilities="vulnerabilities(item)" />
     </template>
 
     <template #table-busy>

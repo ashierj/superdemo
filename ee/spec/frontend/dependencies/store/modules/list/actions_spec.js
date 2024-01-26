@@ -701,7 +701,7 @@ describe('Dependencies actions', () => {
           getInitialState(),
           [
             {
-              type: types.SET_VULNERABILITY_ITEM,
+              type: types.TOGGLE_VULNERABILITY_ITEM_LOADING,
               payload: item,
             },
             {
@@ -709,8 +709,8 @@ describe('Dependencies actions', () => {
               payload,
             },
             {
-              type: types.SET_VULNERABILITY_ITEM,
-              payload: null,
+              type: types.TOGGLE_VULNERABILITY_ITEM_LOADING,
+              payload: item,
             },
           ],
           [],
@@ -728,12 +728,12 @@ describe('Dependencies actions', () => {
           getInitialState(),
           [
             {
-              type: types.SET_VULNERABILITY_ITEM,
+              type: types.TOGGLE_VULNERABILITY_ITEM_LOADING,
               payload: item,
             },
             {
-              type: types.SET_VULNERABILITY_ITEM,
-              payload: null,
+              type: types.TOGGLE_VULNERABILITY_ITEM_LOADING,
+              payload: item,
             },
           ],
           [],

@@ -49,7 +49,13 @@ export default {
 
 <template>
   <div>
-    <dependencies-table :dependencies="module.dependencies" :is-loading="module.isLoading" />
+    <dependencies-table
+      :dependencies="module.dependencies"
+      :vulnerability-info="module.vulnerabilityInfo"
+      :vulnerability-items-loading="module.vulnerabilityItemsLoading"
+      :is-loading="module.isLoading"
+      @row-click="fetchVulnerabilities"
+    />
 
     <table-pagination
       v-if="shouldShowPagination"

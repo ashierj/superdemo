@@ -202,7 +202,7 @@ export const fetchVulnerabilities = ({ commit }, { item, vulnerabilitiesEndpoint
     return;
   }
 
-  commit(types.SET_VULNERABILITY_ITEM, item);
+  commit(types.TOGGLE_VULNERABILITY_ITEM_LOADING, item);
 
   axios
     .get(vulnerabilitiesEndpoint, {
@@ -219,6 +219,6 @@ export const fetchVulnerabilities = ({ commit }, { item, vulnerabilitiesEndpoint
       });
     })
     .finally(() => {
-      commit(types.SET_VULNERABILITY_ITEM, null);
+      commit(types.TOGGLE_VULNERABILITY_ITEM_LOADING, item);
     });
 };
