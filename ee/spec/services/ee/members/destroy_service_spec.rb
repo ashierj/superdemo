@@ -346,6 +346,7 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
 
     context 'for members with expired access' do
       let!(:member) { create(:project_member, user: member_user, expires_at: 1.day.from_now) }
+      let(:project) { member.project }
 
       before do
         travel_to(3.days.from_now)
@@ -360,8 +361,47 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
           destroy_service.execute(member, skip_authorization: true)
           details = AuditEvent.last.details
 
-          expect(details[:system_event]).to be_truthy
+          expect(details[:system_event]).to eq(true)
           expect(details[:reason]).to include('access expired on')
+        end
+      end
+
+      context 'when member has outstanding not_accepted_invitations' do
+        let(:event) { subject.execute(member, skip_authorization: true) }
+        let!(:invite) { create(:project_member, :invited, source: project, created_by: member_user) }
+
+        it 'logs two audit events with no AuditEvents::BuildService::MissingAttributeError' do
+          expect { event }.to change { AuditEvent.count }.by(2)
+        end
+      end
+    end
+
+    context 'for members with non-expired access' do
+      let!(:member) { create(:project_member, user: member_user) }
+
+      context 'audit events' do
+        it_behaves_like 'logs an audit event' do
+          let(:event) { subject.execute(member, skip_authorization: true) }
+        end
+
+        it 'logs the audit event as a system event' do
+          destroy_service.execute(member, skip_authorization: true)
+          details = AuditEvent.last.details
+
+          expect(details[:system_event]).to eq(true)
+          expect(details[:author_name]).to eq('(System)')
+          expect(details[:author_class]).to eq(Gitlab::Audit::UnauthenticatedAuthor.name)
+        end
+      end
+
+      context 'when member has outstanding not_accepted_invitations' do
+        subject(:event) { destroy_service.execute(member, skip_authorization: true) }
+
+        let!(:invite) { create(:project_member, :invited, source: project, created_by: member_user) }
+        let(:project) { member.project }
+
+        it 'logs two audit events with no AuditEvents::BuildService::MissingAttributeError' do
+          expect { event }.to change { AuditEvent.count }.by(2)
         end
       end
     end
