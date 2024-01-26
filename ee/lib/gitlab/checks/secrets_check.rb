@@ -4,8 +4,8 @@ module Gitlab
   module Checks
     class SecretsCheck < ::Gitlab::Checks::BaseBulkChecker
       ERROR_MESSAGES = {
-        failed_to_scan_regex_error: "\n-- Failed to scan blob(id: %{blob_id}) due to regex error.\n",
-        blob_timed_out_error: "\n-- Scanning blob(id: %{blob_id}) timed out.\n",
+        failed_to_scan_regex_error: "\n    - Failed to scan blob(id: %{blob_id}) due to regex error.",
+        blob_timed_out_error: "\n    - Scanning blob(id: %{blob_id}) timed out.",
         scan_timeout_error: 'Secret detection scan timed out.',
         scan_initialization_error: 'Secret detection scan failed to initialize.',
         invalid_input_error: 'Secret detection scan failed due to invalid input.',
@@ -23,8 +23,9 @@ module Gitlab
         found_secrets_docs_link: "\nFor help with this, please refer to our documentation: %{path}",
         found_secrets_with_errors: 'Secret detection scan completed with one or more findings ' \
                                    'but some errors occured during the scan.',
-        finding_message_occurrence: "\n\nSecret leaked in commit: %{sha}" \
-                                    "\n  -- %{path}:%{line_number} | %{description}",
+        finding_message_occurrence_header: "\n\nSecrets leaked in commit: %{sha}",
+        finding_message_occurrence_path: "\n  - path: %{path}",
+        finding_message_occurrence_line: "\n    - line:%{line_number} | %{description}",
         finding_message: "\n\nSecret leaked in blob: %{blob_id}" \
                          "\n  -- line:%{line_number} | %{description}"
       }.freeze
@@ -137,7 +138,7 @@ module Gitlab
           ::Gitlab::SecretDetection::Status::FOUND_WITH_ERRORS
         ].include?(response.status)
           # TODO: filter out revisions not related to found secrets
-          collect_findings_occurrences(response)
+          results = transform_findings(response)
         end
 
         case response.status
@@ -146,7 +147,7 @@ module Gitlab
           secret_detection_logger.info(message: LOG_MESSAGES[:secrets_not_found])
         when ::Gitlab::SecretDetection::Status::FOUND
           # One or more secrets found, generate message with findings and fail check.
-          message = build_secrets_found_message(response)
+          message = build_secrets_found_message(results)
 
           secret_detection_logger.info(message: LOG_MESSAGES[:found_secrets])
 
@@ -154,7 +155,7 @@ module Gitlab
         when ::Gitlab::SecretDetection::Status::FOUND_WITH_ERRORS
           # One or more secrets found, but with scan errors, so we
           # generate a message with findings and errors, and fail the check.
-          message = build_secrets_found_with_errors_message(response)
+          message = build_secrets_found_message(results, with_errors: true)
 
           secret_detection_logger.info(message: LOG_MESSAGES[:found_secrets_with_errors])
 
@@ -181,37 +182,24 @@ module Gitlab
                         .compact
       end
 
-      def build_secrets_found_message(response)
-        message = LOG_MESSAGES[:found_secrets]
+      def build_secrets_found_message(results, with_errors: false)
+        message = with_errors ? LOG_MESSAGES[:found_secrets_with_errors] : LOG_MESSAGES[:found_secrets]
 
-        response.results.each { |finding| message += build_finding_message(finding) }
+        results[:commits].each do |sha, paths|
+          message += format(LOG_MESSAGES[:finding_message_occurrence_header], { sha: sha })
 
-        message += LOG_MESSAGES[:skip_secret_detection]
-        message += LOG_MESSAGES[:found_secrets_post_message]
-        message += format(
-          LOG_MESSAGES[:found_secrets_docs_link],
-          {
-            path: Rails.application.routes.url_helpers.help_page_url(
-              DOCUMENTATION_PATH,
-              anchor: DOCUMENTATION_PATH_ANCHOR
-            )
-          }
-        )
+          paths.each do |path, findings|
+            message += format(LOG_MESSAGES[:finding_message_occurrence_path], { path: path })
 
-        message
-      end
+            findings.each do |finding|
+              message += build_finding_message(finding, :commit)
+            end
+          end
+        end
 
-      def build_secrets_found_with_errors_message(response)
-        message = LOG_MESSAGES[:found_secrets_with_errors]
-
-        response.results.each do |finding|
-          case finding.status
-          when ::Gitlab::SecretDetection::Status::FOUND
-            message += build_finding_message(finding)
-          when ::Gitlab::SecretDetection::Status::SCAN_ERROR
-            message += format(ERROR_MESSAGES[:failed_to_scan_regex_error], finding.to_h)
-          when ::Gitlab::SecretDetection::Status::BLOB_TIMEOUT
-            message += format(ERROR_MESSAGES[:blob_timed_out_error], finding.to_h)
+        results[:blobs].compact.each do |_, findings|
+          findings.each do |finding|
+            message += build_finding_message(finding, :blob)
           end
         end
 
@@ -230,29 +218,45 @@ module Gitlab
         message
       end
 
-      def build_finding_message(finding)
-        # If no occurrences are found, we display a more generic message (using blob id).
-        return format(LOG_MESSAGES[:finding_message], finding.to_h) unless finding.occurrences.present?
-
-        # If we have found the tree entries for those findings, let's display them.
-        finding.occurrences.reduce('') do |message, occurrence|
-          message + format(
-            LOG_MESSAGES[:finding_message_occurrence],
-            {
-              sha: occurrence[:sha],
-              path: occurrence[:path],
-              line_number: finding.line_number,
-              description: finding.description
-            }
-          )
+      def build_finding_message(finding, type)
+        case finding.status
+        when ::Gitlab::SecretDetection::Status::FOUND
+          case type
+          when :commit
+            build_commit_finding_message(finding)
+          when :blob
+            build_blob_finding_message(finding)
+          end
+        when ::Gitlab::SecretDetection::Status::SCAN_ERROR
+          format(ERROR_MESSAGES[:failed_to_scan_regex_error], finding.to_h)
+        when ::Gitlab::SecretDetection::Status::BLOB_TIMEOUT
+          format(ERROR_MESSAGES[:blob_timed_out_error], finding.to_h)
         end
       end
 
-      def collect_findings_occurrences(response)
-        # Let's put aside the findings with secrets.
-        findings_with_secrets = response
-          .results
-          .select { |finding| finding.status == ::Gitlab::SecretDetection::Status::FOUND }
+      def build_commit_finding_message(finding)
+        format(
+          LOG_MESSAGES[:finding_message_occurrence_line],
+          {
+            line_number: finding.line_number,
+            description: finding.description
+          }
+        )
+      end
+
+      def build_blob_finding_message(finding)
+        format(LOG_MESSAGES[:finding_message], finding.to_h)
+      end
+
+      def transform_findings(response)
+        # Let's group the findings by the blob id.
+        findings_by_blobs = response.results.group_by(&:blob_id)
+
+        # We create an empty hash for the structure we'll create later as we pull out tree entries.
+        findings_by_commits = {}
+
+        # Let's create a set to store ids of blobs found in tree entries.
+        blobs_found_with_tree_entries = Set.new
 
         # Scanning had found secrets, let's try to look up their file path and commit id. This can be done
         # by using `GetTreeEntries()` RPC, and cross examining blobs with ones where secrets where found.
@@ -280,15 +284,31 @@ module Gitlab
             # Skip any entry that isn't a blob.
             next if entry.type != :blob
 
-            # Update response with occurrences found.
-            current_entry_finding = findings_with_secrets.find { |finding| finding.blob_id == entry.id }
+            # Skip if the blob doesn't have any findings.
+            next unless findings_by_blobs[entry.id].present?
 
-            if current_entry_finding
-              current_entry_finding.occurrences ||= []
-              current_entry_finding.occurrences << { sha: entry.commit_id, path: entry.path }
-            end
+            findings_by_commits.merge!(
+              # Put findings with tree entries inside `findings_by_commits` hash.
+              findings_by_blobs[entry.id].each_with_object({}) do |finding, hash|
+                hash[entry.commit_id] ||= {}
+                hash[entry.commit_id][entry.path] ||= []
+                hash[entry.commit_id][entry.path] << finding
+              end
+            )
+
+            # Mark as found with tree entry already.
+            blobs_found_with_tree_entries << entry.id
           end
         end
+
+        # Remove blobs that has already been found in a tree entry.
+        findings_by_blobs.delete_if { |blob_id, _| blobs_found_with_tree_entries.include?(blob_id) }
+
+        # Return the findings as a hash sorted by commits and blobs (minus ones already found).
+        {
+          commits: findings_by_commits,
+          blobs: findings_by_blobs
+        }
       end
     end
   end
