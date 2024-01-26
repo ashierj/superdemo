@@ -164,14 +164,24 @@ describe('EE Approvals MRRules', () => {
       store.modules.approvals.state.rules = [createEmptyRule(), createMRRule()];
       factory();
 
-      expect(findHeaders()).toEqual([HEADERS.name, HEADERS.members, HEADERS.approvalsRequired, '']);
+      expect(findHeaders()).toEqual([
+        HEADERS.name,
+        HEADERS.members,
+        HEADERS.approvalsRequired,
+        HEADERS.actions,
+      ]);
     });
 
     it('renders headers when there is a single any rule', () => {
       store.modules.approvals.state.rules = [createEmptyRule()];
       factory();
 
-      expect(findHeaders()).toEqual([HEADERS.members, '', HEADERS.approvalsRequired, '']);
+      expect(findHeaders()).toEqual([
+        HEADERS.members,
+        '',
+        HEADERS.approvalsRequired,
+        HEADERS.actions,
+      ]);
     });
 
     it('shows message if no approvers are visible', () => {
@@ -185,7 +195,12 @@ describe('EE Approvals MRRules', () => {
       store.modules.approvals.state.rules = [createMRRule()];
       factory();
 
-      expect(findHeaders()).toEqual([HEADERS.name, HEADERS.members, HEADERS.approvalsRequired, '']);
+      expect(findHeaders()).toEqual([
+        HEADERS.name,
+        HEADERS.members,
+        HEADERS.approvalsRequired,
+        HEADERS.actions,
+      ]);
     });
 
     describe('with sourced MR rule', () => {
@@ -270,7 +285,12 @@ describe('EE Approvals MRRules', () => {
       store.modules.approvals.state.rules = [createMRRule()];
       factory();
 
-      expect(findHeaders()).toEqual([HEADERS.name, HEADERS.members, HEADERS.approvalsRequired, '']);
+      expect(findHeaders()).toEqual([
+        HEADERS.name,
+        HEADERS.members,
+        HEADERS.approvalsRequired,
+        HEADERS.actions,
+      ]);
     });
 
     describe('with source rule', () => {
