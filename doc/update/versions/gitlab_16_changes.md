@@ -97,8 +97,8 @@ Specific information applies to Linux package installations:
   | ----------------------- | ----------------------- | -------- |
   | 16.4                    |  All                    | None     |
   | 16.5                    |  All                    | None     |
-  | 16.6                    |  All                    | None     |
-  | 16.7                    |  All                    | None     |
+  | 16.6                    |  16.6.0 - 16.6.5        | 16.6.6   |
+  | 16.7                    |  16.7.0 - 16.7.3        | 16.7.4   |
 
 ## 16.6.0
 
@@ -114,8 +114,8 @@ Specific information applies to Linux package installations:
   | ----------------------- | ----------------------- | -------- |
   | 16.4                    |  All                    | None     |
   | 16.5                    |  All                    | None     |
-  | 16.6                    |  All                    | None     |
-  | 16.7                    |  All                    | None     |
+  | 16.6                    |  16.6.0 - 16.6.5        | 16.6.6   |
+  | 16.7                    |  16.7.0 - 16.7.3        | 16.7.4   |
 
 ## 16.5.0
 
@@ -212,8 +212,8 @@ Specific information applies to installations using Geo:
   | ----------------------- | ----------------------- | -------- |
   | 16.4                    |  All                    | None     |
   | 16.5                    |  All                    | None     |
-  | 16.6                    |  All                    | None     |
-  | 16.7                    |  All                    | None     |
+  | 16.6                    |  16.6.0 - 16.6.5        | 16.6.6   |
+  | 16.7                    |  16.7.0 - 16.7.3        | 16.7.4   |
 
 ## 16.4.0
 
@@ -362,8 +362,8 @@ Specific information applies to installations using Geo:
   | ----------------------- | ----------------------- | -------- |
   | 16.4                    |  All                    | None     |
   | 16.5                    |  All                    | None     |
-  | 16.6                    |  All                    | None     |
-  | 16.7                    |  All                    | None     |
+  | 16.6                    |  16.6.0 - 16.6.5        | 16.6.6   |
+  | 16.7                    |  16.7.0 - 16.7.3        | 16.7.4   |
 
 ## 16.3.0
 
