@@ -54182,6 +54182,9 @@ msgstr ""
 msgid "VersionCheck|%{details}"
 msgstr ""
 
+msgid "VersionCheck|Additionally, there is an available stable patch for your current GitLab minor version: %{latestStableVersionOfMinor}"
+msgstr ""
+
 msgid "VersionCheck|Important notice - Critical security release"
 msgstr ""
 
