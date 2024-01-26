@@ -47334,6 +47334,9 @@ msgstr ""
 msgid "Source branch does not exist"
 msgstr ""
 
+msgid "Source branch exists and contains commits."
+msgstr ""
+
 msgid "Source branch is protected from force push"
 msgstr ""
 

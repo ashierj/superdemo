@@ -30464,6 +30464,7 @@ Detailed representation of whether a GitLab merge request can be merged.
 | <a id="detailedmergestatuschecking"></a>`CHECKING` | Currently checking for mergeability. |
 | <a id="detailedmergestatusci_must_pass"></a>`CI_MUST_PASS` | Pipeline must succeed before merging. |
 | <a id="detailedmergestatusci_still_running"></a>`CI_STILL_RUNNING` | Pipeline is still running. |
+| <a id="detailedmergestatuscommits_status"></a>`COMMITS_STATUS` | Source branch exists and contains commits. |
 | <a id="detailedmergestatusdiscussions_not_resolved"></a>`DISCUSSIONS_NOT_RESOLVED` | Discussions must be resolved before merging. |
 | <a id="detailedmergestatusdraft_status"></a>`DRAFT_STATUS` | Merge request must not be draft before merging. |
 | <a id="detailedmergestatusexternal_status_checks"></a>`EXTERNAL_STATUS_CHECKS` | Status checks must pass. |
@@ -31138,6 +31139,7 @@ Representation of mergeability check identifier.
 | ----- | ----------- |
 | <a id="mergeabilitycheckidentifierbroken_status"></a>`BROKEN_STATUS` | Checks whether the merge request is broken. |
 | <a id="mergeabilitycheckidentifierci_must_pass"></a>`CI_MUST_PASS` | Checks whether CI has passed. |
+| <a id="mergeabilitycheckidentifiercommits_status"></a>`COMMITS_STATUS` | Checks source branch exists and contains commits. |
 | <a id="mergeabilitycheckidentifierconflict"></a>`CONFLICT` | Checks whether the merge request has a conflict. |
 | <a id="mergeabilitycheckidentifierdiscussions_not_resolved"></a>`DISCUSSIONS_NOT_RESOLVED` | Checks whether the merge request has open discussions. |
 | <a id="mergeabilitycheckidentifierdraft_status"></a>`DRAFT_STATUS` | Checks whether the merge request is draft. |
