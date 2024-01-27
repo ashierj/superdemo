@@ -111,6 +111,7 @@ fragment WorkItemWidgets on WorkItemWidget {
   }
   ... on WorkItemWidgetNotes {
     type
+    discussionLocked
   }
   ... on WorkItemWidgetHealthStatus {
     type
