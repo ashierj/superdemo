@@ -10,11 +10,13 @@ import { slugify } from '~/lib/utils/text_utility';
 import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { InternalEvents } from '~/tracking';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { createCubeJsApi } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { getVisualizationOptions } from 'ee/analytics/analytics_dashboards/utils/visualization_designer_options';
 import { saveProductAnalyticsVisualization } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { NEW_DASHBOARD_SLUG } from 'ee/vue_shared/components/customizable_dashboard/constants';
+
 import {
   FILE_ALREADY_EXISTS_SERVER_RESPONSE,
   PANEL_DISPLAY_TYPES,
@@ -24,15 +26,16 @@ import {
   DEFAULT_VISUALIZATION_TITLE,
   DEFAULT_SELECTED_VISUALIZATION_TYPE,
 } from '../constants';
-
 import MeasureSelector from './visualization_designer/selectors/product_analytics/measure_selector.vue';
 import DimensionSelector from './visualization_designer/selectors/product_analytics/dimension_selector.vue';
 import VisualizationPreview from './visualization_designer/analytics_visualization_preview.vue';
 import VisualizationTypeSelector from './visualization_designer/analytics_visualization_type_selector.vue';
+import AiCubeQueryGenerator from './visualization_designer/ai_cube_query_generator.vue';
 
 export default {
   name: 'AnalyticsVisualizationDesigner',
   components: {
+    AiCubeQueryGenerator,
     QueryBuilder,
     GlButton,
     GlFormInput,
@@ -44,7 +47,7 @@ export default {
     VisualizationTypeSelector,
     VisualizationPreview,
   },
-  mixins: [InternalEvents.mixin()],
+  mixins: [InternalEvents.mixin(), glFeatureFlagMixin()],
   inject: {
     customDashboardsProject: {
       type: Object,
@@ -109,6 +112,12 @@ export default {
         !isEqual({ ...this.queryState }, DEFAULT_VISUALIZATION_QUERY_STATE())
       );
     },
+    showDimensionSelector() {
+      return Boolean(this.queryState.query?.measures?.length);
+    },
+    showDuoQueryGenerator() {
+      return this.glFeatures.generateCubeQuery;
+    },
   },
   beforeDestroy() {
     this.alert?.dismiss();
@@ -136,6 +145,7 @@ export default {
     },
     onVizStateChange(state) {
       this.hasTimeDimension = Boolean(state.query.timeDimensions?.length);
+      this.queryState.query = state.query;
     },
     measureUpdated(measureType, measureSubType) {
       this.queryState.measureType = measureType;
@@ -283,6 +293,11 @@ export default {
         captureError,
       });
     },
+    onQueryGenerated(query) {
+      this.queryState.query = {
+        ...query,
+      };
+    },
   },
   i18n: {
     saveError: s__('Analytics|Error while saving visualization.'),
@@ -352,11 +367,17 @@ export default {
         </gl-form-group>
       </div>
     </section>
+    <ai-cube-query-generator
+      v-if="showDuoQueryGenerator"
+      class="gl-mb-4"
+      @query-generated="onQueryGenerated"
+    />
     <section class="gl-border-t gl-border-b gl-mb-6">
       <query-builder
         ref="builder"
         :cubejs-api="cubejsApi"
         :initial-viz-state="queryState"
+        :query="queryState.query"
         :wrap-with-query-renderer="true"
         :disable-heuristics="true"
         data-testid="query-builder"
@@ -382,6 +403,7 @@ export default {
         >
           <div class="gl-pr-4 gl-pb-5 gl-border-r">
             <measure-selector
+              :query="queryState.query"
               :measures="measures"
               :set-measures="setMeasures"
               :filters="filters"
@@ -393,9 +415,9 @@ export default {
             />
 
             <dimension-selector
-              v-if="queryState.measureType && queryState.measureSubType"
+              v-if="showDimensionSelector"
               :measure-type="queryState.measureType"
-              :measure-sub-type="queryState.measureSubType"
+              :query="queryState.query"
               :dimensions="dimensions"
               :add-dimensions="addDimensions"
               :remove-dimension="removeDimensions"

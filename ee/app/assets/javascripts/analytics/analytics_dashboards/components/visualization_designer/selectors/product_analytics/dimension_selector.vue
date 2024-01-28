@@ -23,6 +23,11 @@ export default {
     GlDropdownItem,
   },
   props: {
+    query: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
     dimensions: {
       type: Array,
       required: true,
@@ -32,10 +37,6 @@ export default {
       required: true,
     },
     measureType: {
-      type: String,
-      required: true,
-    },
-    measureSubType: {
       type: String,
       required: true,
     },
@@ -57,8 +58,11 @@ export default {
     },
   },
   data() {
+    const noDimensionsSelected = Boolean(
+      !this.query.timeDimensions?.length && !this.query.dimensions?.length,
+    );
     return {
-      selectedDimensionMode: true,
+      selectedDimensionMode: noDimensionsSelected,
     };
   },
   computed: {
@@ -125,7 +129,7 @@ export default {
   <div>
     <div v-if="hasDimensions" data-testid="dimension-summary">
       <h3 class="gl-font-lg">{{ s__('ProductAnalytics|Dimensions') }}</h3>
-      <div v-for="dimension in dimensions" :key="dimension.index">
+      <div v-for="dimension in dimensions" :key="dimension.name">
         <gl-label
           :title="dimension.shortTitle"
           :description="dimension.title"
@@ -135,7 +139,10 @@ export default {
           @close="removeDimension(dimension)"
         />
       </div>
-      <div v-for="timeDimension in timeDimensions" :key="timeDimension.index">
+      <div
+        v-for="timeDimension in timeDimensions"
+        :key="timeDimension.dimension.name + timeDimension.granularity"
+      >
         <gl-label
           :title="timeDimensionGranularityTitle(timeDimension.granularity)"
           :description="timeDimension.title"
@@ -182,7 +189,7 @@ export default {
           </ul>
           <div
             v-for="fieldCategory in $options.ANALYTICS_FIELD_CATEGORIES"
-            :key="fieldCategory.index"
+            :key="fieldCategory.category"
           >
             <h3 class="gl-font-lg">
               {{ fieldCategory.name }}
@@ -190,7 +197,7 @@ export default {
             <ul class="content-list">
               <li
                 v-for="field in getAnalyticsFieldsByCategory(fieldCategory.category)"
-                :key="field.index"
+                :key="field.name"
               >
                 <gl-button
                   :icon="field.icon"
