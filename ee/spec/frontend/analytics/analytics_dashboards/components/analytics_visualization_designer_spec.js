@@ -15,17 +15,21 @@ import { saveProductAnalyticsVisualization } from 'ee/analytics/analytics_dashbo
 
 import AnalyticsVisualizationDesigner from 'ee/analytics/analytics_dashboards/components/analytics_visualization_designer.vue';
 import VisualizationTypeSelector from 'ee/analytics/analytics_dashboards/components/visualization_designer/analytics_visualization_type_selector.vue';
+import AiCubeQueryGenerator from 'ee/analytics/analytics_dashboards/components/visualization_designer/ai_cube_query_generator.vue';
 import {
   EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER,
   EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION,
 } from 'ee/analytics/analytics_dashboards/constants';
-
 import { NEW_DASHBOARD_SLUG } from 'ee/vue_shared/components/customizable_dashboard/constants';
 
 import { mockMetaData, TEST_CUSTOM_DASHBOARDS_PROJECT } from '../mock_data';
 import { BuilderComponent, QueryBuilder } from '../stubs';
 
 jest.mock('~/lib/utils/confirm_via_gl_modal/confirm_action');
+
+// Note: there is a circular dependency issue causing "Object.defineProperty(window, 'pendingApolloRequests'" to run multiple times, which throws an error
+// This jest.mock works around the issue by preventing the module from running at all.
+jest.mock('~/lib/graphql');
 
 const mockAlertDismiss = jest.fn();
 jest.mock('~/alert', () => ({
@@ -54,6 +58,7 @@ describe('AnalyticsVisualizationDesigner', () => {
   const findPageTitle = () => wrapper.findByTestId('page-title');
   const findPageDescription = () => wrapper.findByTestId('page-description');
   const findPageDescriptionLink = () => findPageDescription().findComponent(GlLink);
+  const findAiQueryGenerator = () => wrapper.findComponent(AiCubeQueryGenerator);
 
   const setVisualizationTitle = async (newTitle = '') => {
     await findTitleInput().vm.$emit('input', newTitle);
@@ -79,14 +84,14 @@ describe('AnalyticsVisualizationDesigner', () => {
     await waitForPromises();
   };
 
-  const createWrapper = (sourceDashboardSlug) => {
+  const createWrapper = (sourceDashboardSlug = '', options = { glFeatures: {} }) => {
     const mocks = {
       $toast: {
         show: showToast,
       },
       $route: {
         params: {
-          dashboard: sourceDashboardSlug || '',
+          dashboard: sourceDashboardSlug,
         },
       },
       $router: {
@@ -107,6 +112,9 @@ describe('AnalyticsVisualizationDesigner', () => {
       mocks,
       provide: {
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
+        glFeatures: {
+          ...options.glFeatures,
+        },
       },
     });
   };
@@ -479,5 +487,24 @@ describe('AnalyticsVisualizationDesigner', () => {
         },
       });
     });
+  });
+
+  describe('natural language querying', () => {
+    it.each`
+      featureFlagState | visibility
+      ${true}          | ${'shows'}
+      ${false}         | ${'hides'}
+    `(
+      '$visibility the AI cube query generator when the "generateCubeQuery" feature flag is "$featureFlagState"',
+      ({ featureFlagState }) => {
+        createWrapper('', {
+          glFeatures: {
+            generateCubeQuery: featureFlagState,
+          },
+        });
+
+        expect(findAiQueryGenerator().exists()).toBe(featureFlagState);
+      },
+    );
   });
 });

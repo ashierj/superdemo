@@ -18,6 +18,11 @@ export default {
     VisualizationDesignerListOption,
   },
   props: {
+    query: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
     measures: {
       type: Array,
       required: true,
@@ -49,6 +54,11 @@ export default {
       measureSubType: '',
     };
   },
+  watch: {
+    query(query) {
+      this.selectMeasureFromQuery(query);
+    },
+  },
   methods: {
     addSegment(measureSubType) {
       const segmentMap = {
@@ -75,30 +85,60 @@ export default {
         });
       }
     },
-    selectMeasure(measure, subMeasure) {
-      this.measureType = measure;
-      this.measureSubType = subMeasure;
+    selectMeasure(measureType, subMeasureType) {
+      this.measureType = measureType;
+      this.measureSubType = subMeasureType;
+
+      // Reset fresh each time to prevent duplicate filters being added when the same query is applied multiple times
+      this.setMeasures([]);
+      this.setFilters([]);
+      this.setSegments([]);
 
       if (this.measureType && this.measureSubType) {
-        const measureMap = {
-          pageViews: [`${EVENTS_TABLE_NAME}.pageViewsCount`],
-          linkClickEvents: [`${EVENTS_TABLE_NAME}.linkClicksCount`],
-          events: [`${EVENTS_TABLE_NAME}.count`],
-          uniqueUsers: [`${EVENTS_TABLE_NAME}.uniqueUsersCount`],
-          sessions: [`${SESSIONS_TABLE_NAME}.${this.measureSubType}`],
-          returningUsers: [`${RETURNING_USERS_TABLE_NAME}.${this.measureSubType}`],
-        };
+        const measure = this.$options.MEASURE_MAP[this.measureType][this.measureSubType];
+        this.setMeasures([measure]);
 
-        this.setMeasures(measureMap[this.measureType]);
         this.addSegment(this.measureSubType);
         this.addEventTypeFilter(this.measureType);
-      } else {
-        this.setMeasures([]);
-        this.setFilters([]);
-        this.setSegments([]);
       }
 
       this.$emit('measureSelected', this.measureType, this.measureSubType);
+    },
+    selectMeasureFromQuery(query) {
+      const measure = query.measures?.at(0);
+      if (!measure) return;
+
+      for (const [measureType, subTypes] of Object.entries(this.$options.MEASURE_MAP)) {
+        for (const [measureSubtype, measureVal] of Object.entries(subTypes)) {
+          if (measureVal === measure) {
+            this.selectMeasure(measureType, measureSubtype);
+            return;
+          }
+        }
+      }
+    },
+  },
+  MEASURE_MAP: {
+    pageViews: {
+      all: `${EVENTS_TABLE_NAME}.pageViewsCount`,
+    },
+    linkClickEvents: {
+      all: `${EVENTS_TABLE_NAME}.linkClicksCount`,
+    },
+    events: {
+      all: `${EVENTS_TABLE_NAME}.count`,
+    },
+    uniqueUsers: {
+      all: `${EVENTS_TABLE_NAME}.uniqueUsersCount`,
+    },
+    sessions: {
+      count: `${SESSIONS_TABLE_NAME}.count`,
+      averageDurationMinutes: `${SESSIONS_TABLE_NAME}.averageDurationMinutes`,
+      averagePerUser: `${SESSIONS_TABLE_NAME}.averagePerUser`,
+    },
+    returningUsers: {
+      allSessionsCount: `${RETURNING_USERS_TABLE_NAME}.allSessionsCount`,
+      returningUserPercentage: `${RETURNING_USERS_TABLE_NAME}.returningUserPercentage`,
     },
   },
 };
