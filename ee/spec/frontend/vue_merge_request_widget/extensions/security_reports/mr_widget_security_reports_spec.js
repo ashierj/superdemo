@@ -311,13 +311,13 @@ describe('MR Widget Security Reports', () => {
       expect(mockAxios.history.get).toHaveLength(2);
     });
 
-    it('should display the full report button', async () => {
+    it('should display the view all pipeline findings button', async () => {
       await createComponent();
 
       expect(findWidget().props('actionButtons')).toEqual([
         {
           href: '/path/to/pipeline/security',
-          text: 'Full report',
+          text: 'View all pipeline findings',
           trackFullReportClicked: true,
         },
       ]);

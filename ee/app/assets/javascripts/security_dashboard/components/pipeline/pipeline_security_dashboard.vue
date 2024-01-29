@@ -1,5 +1,5 @@
 <script>
-import { GlEmptyState, GlButton } from '@gitlab/ui';
+import { GlEmptyState, GlLink, GlSprintf } from '@gitlab/ui';
 import pipelineSecurityReportSummaryQuery from 'ee/security_dashboard/graphql/queries/pipeline_security_report_summary.query.graphql';
 import { reportTypeToSecurityReportTypeEnum } from 'ee/vue_shared/security_reports/constants';
 import { fetchPolicies } from '~/lib/graphql';
@@ -24,7 +24,8 @@ export default {
     SecurityReportsSummary,
     SecurityDashboard,
     PipelineVulnerabilityReport: () => import('./pipeline_vulnerability_report.vue'),
-    GlButton,
+    GlSprintf,
+    GlLink,
   },
   mixins: [glFeatureFlagMixin()],
   provide() {
@@ -139,7 +140,7 @@ export default {
       'SecurityReports|Check the messages generated while parsing the following security reports, as they may prevent the results from being ingested by GitLab. Ensure the security report conforms to a supported %{helpPageLinkStart}JSON schema%{helpPageLinkEnd}.',
     ),
     pageDescription: s__(
-      `SecurityReports|Results show vulnerabilities introduced by the merge request, in addition to existing vulnerabilities from the latest successful pipeline in your project's default branch.`,
+      'SecurityReports|Results show vulnerability findings from the latest successful %{helpPageLinkStart}pipeline%{helpPageLinkEnd}.',
     ),
     pageDescriptionHelpLink: helpPagePath(
       'user/application_security/vulnerability_report/pipeline.html',
@@ -150,15 +151,14 @@ export default {
 
 <template>
   <div class="gl-mt-5">
-    <p>
-      {{ $options.i18n.pageDescription }}
-      <gl-button
-        class="gl-ml-2 vertical-align-text-top"
-        icon="question-o"
-        variant="link"
-        target="_blank"
-        :href="$options.i18n.pageDescriptionHelpLink"
-      />
+    <p data-testid="page-description">
+      <gl-sprintf :message="$options.i18n.pageDescription">
+        <template #helpPageLink="{ content }">
+          <gl-link :href="$options.i18n.pageDescriptionHelpLink" target="_blank">{{
+            content
+          }}</gl-link>
+        </template>
+      </gl-sprintf>
     </p>
 
     <div v-if="hasScans" class="gl-mb-5">
