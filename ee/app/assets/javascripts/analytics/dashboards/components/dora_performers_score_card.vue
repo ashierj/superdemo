@@ -1,8 +1,7 @@
 <script>
 import { GlCard, GlAlert, GlSkeletonLoader } from '@gitlab/ui';
-import { sprintf } from '~/locale';
+import { s__, sprintf } from '~/locale';
 import {
-  VISUALIZATION_DORA_PERFORMERS_SCORE_TITLE,
   DORA_PERFORMERS_SCORE_DEFAULT_PANEL_TITLE,
   DORA_PERFORMERS_SCORE_GROUP_ERROR,
 } from 'ee/analytics/dashboards/constants';
@@ -61,15 +60,16 @@ export default {
         return DORA_PERFORMERS_SCORE_DEFAULT_PANEL_TITLE;
       }
 
-      return sprintf(VISUALIZATION_DORA_PERFORMERS_SCORE_TITLE, {
-        namespaceName: this.group?.name,
-      });
+      return sprintf(this.$options.i18n.title, { namespaceName: this.group?.name });
     },
   },
   methods: {
     handleChartError({ error }) {
       this.chartError = error;
     },
+  },
+  i18n: {
+    title: s__('Analytics|DORA performers score for %{namespaceName} group'),
   },
 };
 </script>
