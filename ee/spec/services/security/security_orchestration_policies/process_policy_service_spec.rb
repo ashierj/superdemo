@@ -173,10 +173,13 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService, fe
             build(:orchestration_policy_yaml, scan_result_policy: [build(:scan_result_policy, name: "Test Policy")])
           end
 
-          it 'replaces the policy' do
+          it 'replaces the policy and migrates it to `approval_policy` type' do
             result = service.execute
+            policy = result.dig(:policy_hash, :approval_policy).first
 
-            expect(result.dig(:policy_hash, :scan_result_policy).first[:enabled]).to be_falsey
+            expect(result.dig(:policy_hash, :scan_result_policy)).to eq([])
+            expect(policy[:name]).to eq('Test Policy')
+            expect(policy[:enabled]).to be_falsey
           end
         end
 
