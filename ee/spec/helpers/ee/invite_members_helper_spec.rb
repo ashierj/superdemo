@@ -127,6 +127,18 @@ RSpec.describe EE::InviteMembersHelper, feature_category: :onboarding do
         expect(helper.common_invite_modal_dataset(namespace)).not_to have_key(:active_trial_dataset)
       end
     end
+
+    describe 'including the manage_member_roles_path' do
+      before do
+        allow(helper).to receive(:manage_member_roles_path).with(project)
+          .and_return(admin_application_settings_roles_and_permissions_path)
+      end
+
+      it 'does not include users limit notification data' do
+        expect(helper.common_invite_modal_dataset(project))
+          .to include(manage_member_roles_path: admin_application_settings_roles_and_permissions_path)
+      end
+    end
   end
 
   describe '#users_filter_data' do

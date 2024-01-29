@@ -1,5 +1,5 @@
 <script>
-import { GlListboxItem } from '@gitlab/ui';
+import { GlButton } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
 import { s__ } from '~/locale';
@@ -7,7 +7,7 @@ import { s__ } from '~/locale';
 export default {
   name: 'LdapDropdownFooter',
   components: {
-    GlListboxItem,
+    GlButton,
   },
   inject: ['namespace'],
   props: {
@@ -36,9 +36,9 @@ export default {
 </script>
 
 <template>
-  <ul class="gl-border-t-1 gl-border-t-solid gl-border-t-gray-200 gl-new-dropdown-contents">
-    <gl-listbox-item @select="handleClick">
-      {{ s__('Members|Revert to LDAP group sync settings') }}
-    </gl-listbox-item>
-  </ul>
+  <div class="gl-border-t gl-border-gray-200 gl-p-2">
+    <gl-button category="tertiary" class="gl-w-full" @click="handleClick">
+      {{ s__('Members|Revert to LDAP synced settings') }}
+    </gl-button>
+  </div>
 </template>

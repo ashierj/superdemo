@@ -30168,6 +30168,9 @@ msgstr ""
 msgid "MemberRole|Incident manager"
 msgstr ""
 
+msgid "MemberRole|Manage roles"
+msgstr ""
+
 msgid "MemberRole|Name"
 msgstr ""
 
@@ -30373,7 +30376,7 @@ msgstr ""
 msgid "Members|Remove group"
 msgstr ""
 
-msgid "Members|Revert to LDAP group sync settings"
+msgid "Members|Revert to LDAP synced settings"
 msgstr ""
 
 msgid "Members|Reverted to LDAP group sync settings."
