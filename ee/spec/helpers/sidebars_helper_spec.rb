@@ -7,7 +7,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
   include Devise::Test::ControllerHelpers
 
   describe '#super_sidebar_context' do
-    let_it_be(:user) { build(:user) }
+    let_it_be(:user) { build_stubbed(:user) }
     let_it_be(:panel) { {} }
     let_it_be(:panel_type) { 'project' }
     let(:current_user_mode) { Gitlab::Auth::CurrentUserMode.new(user) }
@@ -95,6 +95,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
               percentage_complete: 50.0,
               plan_name: nil,
               plans_href: group_billings_path(root_group),
+              trial_discover_page_path: group_discover_path(root_group),
               trial_days_used: 15,
               trial_duration: 30
             })
@@ -112,6 +113,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
               namespace_id: nil,
               plan_name: nil,
               plans_href: group_billings_path(root_group),
+              trial_discover_page_path: group_discover_path(root_group),
               target_id: "trial-status-sidebar-widget",
               trial_end_date: root_group.trial_ends_on,
               user_name: user.username
