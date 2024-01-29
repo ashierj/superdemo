@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import NamedList from 'ee/vulnerabilities/components/generic_report/types/named_list_graphql.vue';
+import NamedList from 'ee/vulnerabilities/components/generic_report/types/report_type_named_list_graphql.vue';
 import ReportItem from 'ee/vulnerabilities/components/generic_report/report_item_graphql.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
@@ -18,7 +18,7 @@ const TEST_DATA = {
   ],
 };
 
-describe('ee/vulnerabilities/components/generic_report/types/named_list_graphql.vue', () => {
+describe('ee/vulnerabilities/components/generic_report/types/report_type_named_list_graphql.vue', () => {
   let wrapper;
 
   const createWrapper = () =>

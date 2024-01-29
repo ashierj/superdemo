@@ -1,14 +1,14 @@
 import { GlTableLite } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import ReportItem from 'ee/vulnerabilities/components/generic_report/report_item_graphql.vue';
-import Table from 'ee/vulnerabilities/components/generic_report/types/table_graphql.vue';
+import Table from 'ee/vulnerabilities/components/generic_report/types/report_type_table_graphql.vue';
 
 const TEST_DATA = {
   headers: [{ type: 'VulnerabilityDetailText', value: 'foo ' }],
   rows: [{ row: [{ type: 'VulnerabilityDetailUrl', href: 'bar' }] }],
 };
 
-describe('ee/vulnerabilities/components/generic_report/types/table_graphql.vue', () => {
+describe('ee/vulnerabilities/components/generic_report/types/report_type_table_graphql.vue', () => {
   let wrapper;
 
   const createWrapper = () => {

@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import NamedList from 'ee/vulnerabilities/components/generic_report/types/named_list.vue';
+import NamedList from 'ee/vulnerabilities/components/generic_report/types/report_type_named_list.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 const TEST_DATA = {
@@ -9,7 +9,7 @@ const TEST_DATA = {
   ],
 };
 
-describe('ee/vulnerabilities/components/generic_report/types/named_list.vue', () => {
+describe('ee/vulnerabilities/components/generic_report/types/report_type_named_list.vue', () => {
   let wrapper;
 
   const createWrapper = () =>
