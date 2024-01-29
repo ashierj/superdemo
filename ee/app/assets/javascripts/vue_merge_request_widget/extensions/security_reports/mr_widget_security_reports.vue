@@ -243,7 +243,7 @@ export default {
       return [
         {
           href: `${this.mr.pipeline.path}/security`,
-          text: this.$options.i18n.fullReport,
+          text: this.$options.i18n.viewAllPipelineFindings,
           trackFullReportClicked: true,
         },
       ];

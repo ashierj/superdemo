@@ -1,4 +1,4 @@
-import { GlEmptyState, GlButton } from '@gitlab/ui';
+import { GlEmptyState, GlLink, GlSprintf } from '@gitlab/ui';
 import { mapValues, pick } from 'lodash';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
@@ -233,15 +233,14 @@ describe('Pipeline Security Dashboard component', () => {
 
   describe('page description', () => {
     it('shows page description and help link', () => {
-      factory();
+      factory({ stubs: { GlSprintf } });
 
-      expect(wrapper.html()).toContain(PipelineSecurityDashboard.i18n.pageDescription);
-      expect(wrapper.findComponent(GlButton).attributes()).toMatchObject({
-        variant: 'link',
-        icon: 'question-o',
-        target: '_blank',
-        href: PipelineSecurityDashboard.i18n.pageDescriptionHelpLink,
-      });
+      expect(wrapper.findByTestId('page-description').text()).toBe(
+        'Results show vulnerability findings from the latest successful pipeline.',
+      );
+      expect(wrapper.findComponent(GlLink).attributes('href')).toBe(
+        '/help/user/application_security/vulnerability_report/pipeline.html',
+      );
     });
   });
 

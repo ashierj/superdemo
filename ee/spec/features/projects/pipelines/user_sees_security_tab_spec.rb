@@ -46,7 +46,7 @@ RSpec.describe "Pipeline > User sees security tab", :js, feature_category: :vuln
     sign_in(user)
 
     visit security_project_pipeline_path(project, ci_pipeline)
-    expect(page).to have_content "Results show vulnerabilities introduced by the merge request"
+    expect(page).to have_content "Results show vulnerability findings from the latest successful pipeline."
 
     # Results should be paginated
     expect(page).to have_content("Test finding", count: 20)

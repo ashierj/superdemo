@@ -45104,7 +45104,7 @@ msgstr ""
 msgid "SecurityReports|Report has expired"
 msgstr ""
 
-msgid "SecurityReports|Results show vulnerabilities introduced by the merge request, in addition to existing vulnerabilities from the latest successful pipeline in your project's default branch."
+msgid "SecurityReports|Results show vulnerability findings from the latest successful %{helpPageLinkStart}pipeline%{helpPageLinkEnd}."
 msgstr ""
 
 msgid "SecurityReports|Scan details"
@@ -58166,6 +58166,9 @@ msgid "ciReport|Used by %{packagesString}"
 msgid_plural "ciReport|Used by %{packagesString}, and %{lastPackage}"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "ciReport|View all pipeline findings"
+msgstr ""
 
 msgid "ciReport|View full report"
 msgstr ""
