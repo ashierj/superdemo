@@ -86,6 +86,13 @@ module CodeSuggestions
             "#{lib['name']}: #{lib['description']}"
           end
 
+          Gitlab::InternalEvents.track_event(
+            'include_repository_xray_data_into_code_generation_prompt',
+            project: params[:project],
+            namespace: params[:project]&.namespace,
+            user: params[:current_user]
+          )
+
           <<~LIBS
           <libs>
           #{libs.join("\n")}
