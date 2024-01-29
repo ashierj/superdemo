@@ -23043,6 +23043,9 @@ msgstr ""
 msgid "Go to parent directory"
 msgstr ""
 
+msgid "Go to permalink"
+msgstr ""
+
 msgid "Go to pipelines"
 msgstr ""
 
