@@ -41,6 +41,33 @@ RSpec.describe Repositories::GitHttpController, type: :request, feature_category
         expect(response).to have_gitlab_http_status(:unauthorized)
       end
     end
+
+    context 'when ssh certificates are enforced for the top-level group' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:project) { create(:project, :public, :repository, group: group) }
+      let_it_be(:user) { create(:user, :enterprise_user, enterprise_group: group) }
+
+      before do
+        stub_licensed_features(ssh_certificates: group)
+
+        group.namespace_settings.enforce_ssh_certificates = true
+        group.save!
+
+        group.add_developer(user)
+      end
+
+      context 'and repository is cloned from build' do
+        let_it_be(:job, reload: true) { create(:ci_build, status: :running, user: user) }
+
+        let(:env) { { user: Gitlab::Auth::CI_JOB_USER, password: job.token } }
+
+        it 'executes successfully' do
+          clone_get(path, **env)
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+    end
   end
 
   describe 'GET #info_refs' do
