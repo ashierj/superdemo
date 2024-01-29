@@ -88,6 +88,9 @@ export default {
       }
 
       this.isLoading = true;
+
+      const groupPath = this.groupFullPath ? { groupPath: this.groupFullPath } : {};
+
       this.$apollo
         .mutate({
           mutation: createMemberRoleMutation,
@@ -103,7 +106,7 @@ export default {
               name: this.name,
               description: this.description,
               permissions: this.permissions,
-              groupPath: this.groupFullPath,
+              ...groupPath,
             },
           },
           update: (_, result) => {
