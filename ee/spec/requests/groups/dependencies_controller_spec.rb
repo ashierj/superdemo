@@ -368,6 +368,23 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                 end
               end
 
+              context 'when filtered by unknown licenses' do
+                let_it_be(:sbom_occurrence_unknown) { create(:sbom_occurrence, project: project) }
+
+                let(:params) do
+                  {
+                    group_id: group.to_param,
+                    licenses: ['unknown']
+                  }
+                end
+
+                it 'returns a filtered list' do
+                  subject
+
+                  expect(json_response['dependencies'].pluck('occurrence_id')).to eq([sbom_occurrence_unknown.id])
+                end
+              end
+
               context 'when filtered by projects' do
                 let_it_be(:other_project) { create(:project, group: group) }
                 let_it_be(:occurrence_from_other_project) { create(:sbom_occurrence, project: other_project) }
