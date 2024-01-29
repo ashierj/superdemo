@@ -908,17 +908,6 @@ module EE
         .select(*select_values)
     end
 
-    def sbom_licenses(limit:)
-      columns = Sbom::Occurrence::LICENSE_COLUMNS
-      sbom_occurrences(with_totals: false)
-        .with_licenses
-        .order("sbom_licenses.spdx_identifier ASC")
-        .distinct
-        .limit(limit)
-        .pluck(*columns.map { |column| ["sbom_licenses", column].join(".") })
-        .map { |row| Hash[columns.zip(row)].with_indifferent_access }
-    end
-
     override :reached_project_access_token_limit?
     def reached_project_access_token_limit?
       actual_limits.exceeded?(:project_access_token_limit, active_project_tokens_of_root_ancestor)

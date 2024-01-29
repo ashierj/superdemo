@@ -45,9 +45,14 @@ module Groups
     def licenses
       return render_not_authorized unless filtering_allowed?
 
-      render json: ::Sbom::DependencyLicenseListEntity.represent(
-        Sbom::DependencyLicensesFinder.new(namespace: group).execute
-      )
+      catalogue = Gitlab::SPDX::Catalogue.latest
+
+      licenses = catalogue
+        .licenses
+        .append(Gitlab::SPDX::License.unknown)
+        .sort_by(&:name)
+
+      render json: ::Sbom::DependencyLicenseListEntity.represent(licenses)
     end
 
     private
