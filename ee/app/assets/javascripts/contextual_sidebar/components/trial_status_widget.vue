@@ -1,8 +1,9 @@
 <script>
-import { GlLink, GlProgressBar, GlIcon } from '@gitlab/ui';
+import { GlLink, GlProgressBar, GlIcon, GlButton } from '@gitlab/ui';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { sprintf } from '~/locale';
 import Tracking from '~/tracking';
+import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import { WIDGET } from './constants';
 
 const { i18n, trackingEvents } = WIDGET;
@@ -10,9 +11,11 @@ const trackingMixin = Tracking.mixin();
 
 export default {
   components: {
+    GitlabExperiment,
     GlLink,
     GlProgressBar,
     GlIcon,
+    GlButton,
   },
   mixins: [trackingMixin],
   inject: {
@@ -23,6 +26,7 @@ export default {
     percentageComplete: {},
     planName: {},
     plansHref: {},
+    trialDiscoverPagePath: {},
   },
   i18n,
   computed: {
@@ -77,6 +81,21 @@ export default {
         <div class="gl-display-flex gl-align-items-stretch gl-mt-2">
           <gl-progress-bar :value="percentageComplete" class="gl-flex-grow-1" aria-hidden="true" />
         </div>
+
+        <gitlab-experiment name="trial_discover_page">
+          <template #candidate>
+            <gl-button
+              :href="trialDiscoverPagePath"
+              variant="link"
+              size="small"
+              class="gl-mt-3"
+              data-testid="learn-about-features-btn"
+              :title="$options.i18n.learnAboutButtonTitle"
+            >
+              {{ $options.i18n.learnAboutButtonTitle }}
+            </gl-button>
+          </template>
+        </gitlab-experiment>
       </div>
       <div v-else class="gl-display-flex gl-gap-5 gl-w-full gl-px-2">
         <gl-icon name="information-o" class="gl-text-blue-600!" />
@@ -86,6 +105,13 @@ export default {
           </div>
           <div class="gl-mt-3">
             {{ $options.i18n.widgetBodyExpiredTrial }}
+            <gitlab-experiment name="trial_discover_page">
+              <template #candidate>
+                <a data-testid="learn-about-features-link" :href="trialDiscoverPagePath">
+                  {{ $options.i18n.learnAboutButtonTitle }}
+                </a>
+              </template>
+            </gitlab-experiment>
           </div>
         </div>
       </div>

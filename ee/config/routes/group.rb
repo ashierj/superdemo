@@ -232,5 +232,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
         delete '/descriptions/:version_id', action: :delete_description_version, as: :delete_description_version
       end
     end
+
+    resource :discover, only: [:show]
   end
 end

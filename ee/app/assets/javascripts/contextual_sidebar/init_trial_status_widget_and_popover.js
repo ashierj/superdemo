@@ -15,6 +15,7 @@ export const initTrialStatusWidget = () => {
     percentageComplete,
     planName,
     plansHref,
+    trialDiscoverPagePath,
   } = el.dataset;
 
   return new Vue({
@@ -27,6 +28,7 @@ export const initTrialStatusWidget = () => {
       percentageComplete: Number(percentageComplete),
       planName,
       plansHref,
+      trialDiscoverPagePath,
     },
     render: (createElement) => createElement(TrialStatusWidget),
   });
@@ -53,6 +55,7 @@ export const initTrialStatusPopover = () => {
     createHandRaiseLeadPath,
     trackAction,
     trackLabel,
+    trialDiscoverPagePath,
   } = el.dataset;
 
   return new Vue({
@@ -67,6 +70,7 @@ export const initTrialStatusPopover = () => {
       trialEndDate: new Date(trialEndDate),
       trackAction,
       trackLabel,
+      trialDiscoverPagePath,
       user: {
         namespaceId,
         userName,

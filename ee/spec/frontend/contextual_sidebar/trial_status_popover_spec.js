@@ -8,6 +8,7 @@ import TrialStatusPopover from 'ee/contextual_sidebar/components/trial_status_po
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { __ } from '~/locale';
+import { stubExperiments } from 'helpers/experimentation_helper';
 
 Vue.config.ignoredElements = ['gl-emoji'];
 
@@ -19,6 +20,7 @@ describe('TrialStatusPopover component', () => {
   const defaultDaysRemaining = 20;
 
   const findGlPopover = () => wrapper.findComponent(GlPopover);
+  const findLearnAboutFeaturesBtn = () => wrapper.findByTestId('learn-about-features-btn');
 
   const expectTracking = (category, { action, ...options } = {}) => {
     return expect(trackingSpy).toHaveBeenCalledWith(category, action, { category, ...options });
@@ -32,6 +34,7 @@ describe('TrialStatusPopover component', () => {
           daysRemaining: defaultDaysRemaining,
           planName: 'Ultimate',
           plansHref: 'billing/path-for/group',
+          trialDiscoverPagePath: 'discover-path',
           targetId: 'target-element-identifier',
           createHandRaiseLeadPath: '/-/subscriptions/hand_raise_leads',
           trialEndDate: new Date('2021-02-21'),
@@ -218,6 +221,35 @@ describe('TrialStatusPopover component', () => {
         findGlPopover().vm.$emit('shown');
 
         expectTracking(trackingEvents.trialEndedCategory, trackingEvents.popoverShown);
+      });
+    });
+  });
+
+  describe('trial_discover_page experiment', () => {
+    describe('when experiment is control', () => {
+      beforeEach(() => {
+        stubExperiments({ trial_discover_page: 'control' });
+      });
+
+      it('does not render link to discover page', () => {
+        wrapper = createComponent({ providers: { daysRemaining: 5 }, mountFn: mount });
+
+        expect(wrapper.text()).not.toContain(__('Learn about features'));
+        expect(findLearnAboutFeaturesBtn().exists()).toBe(false);
+      });
+    });
+
+    describe('when experiment is candidate', () => {
+      beforeEach(() => {
+        stubExperiments({ trial_discover_page: 'candidate' });
+      });
+
+      it('renders link to discover page', () => {
+        wrapper = createComponent({ providers: { daysRemaining: 5 }, mountFn: mount });
+
+        expect(wrapper.text()).toContain(__('Learn about features'));
+        expect(findLearnAboutFeaturesBtn().exists()).toBe(true);
+        expect(findLearnAboutFeaturesBtn().attributes('href')).toBe('discover-path');
       });
     });
   });

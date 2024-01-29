@@ -41,7 +41,8 @@ module TrialStatusWidgetHelper
     {
       container_id: 'trial-status-sidebar-widget',
       plan_name: group.gitlab_subscription.plan_title,
-      plans_href: group_billings_path(group)
+      plans_href: group_billings_path(group),
+      trial_discover_page_path: group_discover_path(group)
     }
   end
 end

@@ -13,6 +13,7 @@ export const WIDGET = {
     widgetRemainingDays: s__('Trials|Day %{daysUsed}/%{duration}'),
     widgetTitleExpiredTrial: s__('Trials|Your 30-day trial has ended'),
     widgetBodyExpiredTrial: s__('Trials|Looking to do more with GitLab?'),
+    learnAboutButtonTitle: s__('Trials|Learn about features'),
   },
   trackingEvents: {
     action: 'click_link',
@@ -40,6 +41,7 @@ export const POPOVER = {
     popoverContentExpiredTrial: s__(
       'Trials|Upgrade to regain access to powerful features like advanced team management for code, security, and reporting.',
     ),
+    learnAboutButtonTitle: s__('Trials|Learn about features'),
   },
   trackingEvents: {
     activeTrialCategory: ACTIVE_TRIAL_POPOVER,
