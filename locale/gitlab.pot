@@ -38335,9 +38335,6 @@ msgstr ""
 msgid "ProjectOverview|Star toggle failed. Try again later."
 msgstr ""
 
-msgid "ProjectOverview|Starrer"
-msgstr ""
-
 msgid "ProjectOverview|Starrers"
 msgstr ""
 
