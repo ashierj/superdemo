@@ -51,7 +51,6 @@ RSpec.describe Vulnerabilities::FeedbackEntity, feature_category: :vulnerability
 
         it 'does not include fields related to current user' do
           is_expected.not_to include(:issue_url)
-          is_expected.not_to include(:destroy_vulnerability_feedback_dismissal_path)
           is_expected.not_to include(:merge_request_path)
         end
       end
@@ -62,16 +61,6 @@ RSpec.describe Vulnerabilities::FeedbackEntity, feature_category: :vulnerability
 
           is_expected.not_to include(:issue_iid)
           is_expected.not_to include(:issue_url)
-        end
-      end
-
-      context 'when allowed to destroy vulnerability feedback' do
-        before do
-          project.add_developer(user)
-        end
-
-        it 'does not contain destroy vulnerability feedback dismissal path' do
-          expect(subject).not_to include(:destroy_vulnerability_feedback_dismissal_path)
         end
       end
     end
@@ -107,41 +96,6 @@ RSpec.describe Vulnerabilities::FeedbackEntity, feature_category: :vulnerability
 
           is_expected.not_to include(:merge_request_iid)
           is_expected.not_to include(:merge_request_path)
-        end
-      end
-
-      context 'when allowed to destroy vulnerability feedback' do
-        before do
-          project.add_developer(user)
-        end
-
-        it 'does not contain destroy vulnerability feedback dismissal path' do
-          expect(subject).not_to include(:destroy_vulnerability_feedback_dismissal_path)
-        end
-      end
-    end
-
-    context 'when feedback type is dismissal' do
-      let(:feedback) { build_stubbed(:vulnerability_feedback, :dismissal, project: project) }
-
-      context 'when not allowed to destroy vulnerability feedback' do
-        before do
-          project.add_guest(user)
-        end
-
-        it 'does not contain destroy vulnerability feedback dismissal path' do
-          expect(subject).not_to include(:destroy_vulnerability_feedback_dismissal_path)
-        end
-      end
-
-      context 'when allowed to destroy vulnerability feedback' do
-        before do
-          stub_licensed_features(security_dashboard: true)
-          project.add_maintainer(user)
-        end
-
-        it 'contains destroy vulnerability feedback dismissal path' do
-          expect(subject).to include(:destroy_vulnerability_feedback_dismissal_path)
         end
       end
     end
