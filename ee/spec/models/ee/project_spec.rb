@@ -61,6 +61,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
     it { is_expected.to have_one(:github_integration) }
     it { is_expected.to have_one(:zoekt_repository) }
+    it { is_expected.to have_one(:google_cloud_platform_artifact_registry_integration) }
     it { is_expected.to have_one(:git_guardian_integration) }
     it { is_expected.to have_many(:project_aliases) }
     it { is_expected.to have_many(:approval_rules) }
@@ -2025,6 +2026,30 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
           it { is_expected.to include(*disabled_integrations) }
         end
+      end
+    end
+
+    context 'artifact registry' do
+      before do
+        stub_saas_features(google_artifact_registry: true)
+      end
+
+      it { is_expected.not_to include('google_cloud_platform_artifact_registry') }
+
+      context 'when gcp_artifact_registry FF is disabled' do
+        before do
+          stub_feature_flags(gcp_artifact_registry: false)
+        end
+
+        it { is_expected.to include('google_cloud_platform_artifact_registry') }
+      end
+
+      context 'when google artifact registry feature is unavailable' do
+        before do
+          stub_saas_features(google_artifact_registry: false)
+        end
+
+        it { is_expected.to include('google_cloud_platform_artifact_registry') }
       end
     end
   end

@@ -23133,6 +23133,48 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Repository name"
 msgstr ""
 
+msgid "GoogleCloudPlatformService|Connect Google Cloud Artifact Registry to GitLab."
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Google Cloud Artifact Registry"
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Google Cloud project ID"
+msgstr ""
+
+msgid "GoogleCloudPlatformService|ID of the Google Cloud project."
+msgstr ""
+
+msgid "GoogleCloudPlatformService|ID of the Workload Identity Pool provider."
+msgstr ""
+
+msgid "GoogleCloudPlatformService|ID of the Workload Identity Pool."
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Location of Artifact Registry repository"
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Location of Artifact Registry repository."
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Project number of the Workload Identity Pool."
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Repository of Artifact Registry"
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Repository of Artifact Registry."
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Workload Identity Pool ID"
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Workload Identity Pool project number"
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Workload Identity Pool provider ID"
+msgstr ""
+
 msgid "GoogleCloud|Cancel"
 msgstr ""
 
