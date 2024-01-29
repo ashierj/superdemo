@@ -26,14 +26,16 @@ module Security
 
       idempotency_key = [build.project_id, build.id, scan_type(report, report_type), report&.scan&.start_time || ""].join("::")
 
-      ::Gitlab::Tracking.event('secure::scan',
-                               'scan',
-                               context: [context],
-                               idempotency_key: Digest::SHA256.hexdigest(idempotency_key),
-                               user: build.user,
-                               project: build.project_id,
-                               label: analyzer_id(report),
-                               property: scan_type(report, report_type))
+      ::Gitlab::Tracking.event(
+        'secure::scan',
+        'scan',
+        context: [context],
+        idempotency_key: Digest::SHA256.hexdigest(idempotency_key),
+        user: build.user,
+        project: build.project_id,
+        label: analyzer_id(report),
+        property: scan_type(report, report_type)
+      )
     end
 
     def data_to_track(report_type, report)
