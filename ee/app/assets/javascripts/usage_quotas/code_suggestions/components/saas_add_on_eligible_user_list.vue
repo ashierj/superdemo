@@ -1,4 +1,5 @@
 <script>
+import { __ } from '~/locale';
 import { DEFAULT_PER_PAGE } from '~/api';
 import { fetchPolicies } from '~/lib/graphql';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
@@ -8,10 +9,19 @@ import {
   ADD_ON_ELIGIBLE_USERS_FETCH_ERROR_CODE,
   ADD_ON_ERROR_DICTIONARY,
 } from 'ee/usage_quotas/error_constants';
+import {
+  TOKEN_TITLE_PROJECT,
+  TOKEN_TYPE_PROJECT,
+  OPERATORS_IS,
+  TOKEN_TITLE_GROUP_INVITE,
+  TOKEN_TYPE_GROUP_INVITE,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
 import { ADD_ON_CODE_SUGGESTIONS, SORT_OPTIONS } from 'ee/usage_quotas/code_suggestions/constants';
 import SearchAndSortBar from 'ee/usage_quotas/code_suggestions/components/search_and_sort_bar.vue';
+import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
+import ProjectToken from 'ee/usage_quotas/code_suggestions/tokens/project_token.vue';
 
 export default {
   name: 'SaasAddOnEligibleUserList',
@@ -63,12 +73,37 @@ export default {
     },
   },
   computed: {
+    filterTokens() {
+      if (!this.isFilteringEnabled) return [];
+      return [
+        {
+          fullPath: this.fullPath,
+          icon: 'project',
+          operators: OPERATORS_IS,
+          title: TOKEN_TITLE_PROJECT,
+          token: ProjectToken,
+          type: TOKEN_TYPE_PROJECT,
+          unique: true,
+        },
+        {
+          options: [
+            { value: 'true', title: __('Yes') },
+            { value: 'false', title: __('No') },
+          ],
+          icon: 'user',
+          operators: OPERATORS_IS,
+          title: TOKEN_TITLE_GROUP_INVITE,
+          token: BaseToken,
+          type: TOKEN_TYPE_GROUP_INVITE,
+          unique: true,
+        },
+      ];
+    },
     isFilteringEnabled() {
       return this.glFeatures.enableAddOnUsersFiltering;
     },
     sortOptions() {
       if (!this.isFilteringEnabled) return [];
-
       return SORT_OPTIONS;
     },
     queryVariables() {
@@ -135,6 +170,7 @@ export default {
     <template #search-and-sort-bar>
       <search-and-sort-bar
         :sort-options="sortOptions"
+        :tokens="filterTokens"
         @onFilter="handleFilter"
         @onSort="handleSort"
       />
