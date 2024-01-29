@@ -40787,6 +40787,9 @@ msgstr ""
 msgid "Remove %{displayReference}"
 msgstr ""
 
+msgid "Remove %{parent_ref} as this work item's parent."
+msgstr ""
+
 msgid "Remove %{ruleName}"
 msgstr ""
 
@@ -40950,6 +40953,9 @@ msgid "Remove user from project"
 msgstr ""
 
 msgid "Remove weight"
+msgstr ""
+
+msgid "Remove work item parent"
 msgstr ""
 
 msgid "Removed"
@@ -55756,6 +55762,9 @@ msgid "Work in progress (open and unassigned)"
 msgstr ""
 
 msgid "Work in progress limit"
+msgstr ""
+
+msgid "Work item parent removed successfully"
 msgstr ""
 
 msgid "Work item parent set successfully"
