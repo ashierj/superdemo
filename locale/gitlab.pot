@@ -19439,16 +19439,7 @@ msgstr ""
 msgid "Environment|Cluster agent not found."
 msgstr ""
 
-msgid "Environment|CronJobs"
-msgstr ""
-
-msgid "Environment|DaemonSets"
-msgstr ""
-
 msgid "Environment|Deployment tier"
-msgstr ""
-
-msgid "Environment|Deployments"
 msgstr ""
 
 msgid "Environment|Environment status"
@@ -19461,9 +19452,6 @@ msgid "Environment|Forbidden to access the cluster agent from this environment."
 msgstr ""
 
 msgid "Environment|Healthy"
-msgstr ""
-
-msgid "Environment|Jobs"
 msgstr ""
 
 msgid "Environment|Kubernetes overview"
@@ -19481,19 +19469,10 @@ msgstr ""
 msgid "Environment|Reconciling"
 msgstr ""
 
-msgid "Environment|ReplicaSets"
-msgstr ""
-
 msgid "Environment|Services"
 msgstr ""
 
 msgid "Environment|Stalled"
-msgstr ""
-
-msgid "Environment|StatefulSets"
-msgstr ""
-
-msgid "Environment|Summary"
 msgstr ""
 
 msgid "Environment|Sync status"
