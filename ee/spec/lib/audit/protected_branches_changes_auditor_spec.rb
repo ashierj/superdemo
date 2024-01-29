@@ -62,9 +62,8 @@ RSpec.describe Audit::ProtectedBranchesChangesAuditor, :request_store, feature_c
         it 'streams correct audit event stream' do
           protected_branch.update_attribute(setting, true)
 
-          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(expected_event_type,
-                                                                                         anything,
-                                                                                         anything)
+          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async)
+            .with(expected_event_type, anything, anything)
 
           service.execute
         end
@@ -118,9 +117,8 @@ RSpec.describe Audit::ProtectedBranchesChangesAuditor, :request_store, feature_c
         it 'streams correct audit event stream' do
           new_access_levels.new(user: user)
 
-          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with('protected_branch_updated',
-                                                                                         anything,
-                                                                                         anything)
+          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async)
+            .with('protected_branch_updated', anything, anything)
 
           service.execute
         end

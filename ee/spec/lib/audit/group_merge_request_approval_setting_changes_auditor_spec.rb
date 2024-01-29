@@ -33,13 +33,15 @@ RSpec.describe Audit::GroupMergeRequestApprovalSettingChangesAuditor do
 
   context 'when group_merge_request_approval_setting is updated' do
     let_it_be(:approval_setting) do
-      create(:group_merge_request_approval_setting,
-             group: group,
-             allow_author_approval: false,
-             allow_committer_approval: false,
-             allow_overrides_to_approver_list_per_merge_request: false,
-             retain_approvals_on_push: false,
-             require_password_to_approve: false)
+      create(
+        :group_merge_request_approval_setting,
+        group: group,
+        allow_author_approval: false,
+        allow_committer_approval: false,
+        allow_overrides_to_approver_list_per_merge_request: false,
+        retain_approvals_on_push: false,
+        require_password_to_approve: false
+      )
     end
 
     let_it_be(:subject) { described_class.new(user, approval_setting, {}) }

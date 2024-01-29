@@ -119,8 +119,10 @@ module Audit
       return unless model.previous_changes.has_key?(:merge_requests_ff_only_enabled) ||
         model.previous_changes.has_key?(:merge_requests_rebase_enabled)
 
-      merge_method_message = format(_("Changed merge method to %{merge_method}"),
-      merge_method: model.human_merge_method)
+      merge_method_message = format(
+        _("Changed merge method to %{merge_method}"),
+        merge_method: model.human_merge_method
+      )
       audit_context = {
         author: @current_user,
         scope: model,
