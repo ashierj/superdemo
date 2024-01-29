@@ -4,6 +4,7 @@ import { GlFormGroup, GlButton } from '@gitlab/ui';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
 import updateStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/update_active_step.mutation.graphql';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
+import furthestAccessedStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/furthest_accessed_step.query.graphql';
 import stepListQuery from 'ee/vue_shared/purchase_flow/graphql/queries/step_list.query.graphql';
 import { createAlert } from '~/alert';
 import { i18n, GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
@@ -48,6 +49,7 @@ export default {
   data() {
     return {
       activeStep: {},
+      furthestAccessedStep: {},
       stepList: [],
       loading: false,
     };
@@ -55,6 +57,15 @@ export default {
   apollo: {
     activeStep: {
       query: activeStepQuery,
+      error(error) {
+        this.handleError(error);
+      },
+    },
+    furthestAccessedStep: {
+      query: furthestAccessedStepQuery,
+      skip() {
+        return !gon.features?.keyContactsManagementV2;
+      },
       error(error) {
         this.handleError(error);
       },
@@ -68,12 +79,22 @@ export default {
       return this.activeStep.id === this.stepId;
     },
     isFinished() {
+      // Only mark step finished if we've already navigated to it
+      if (gon.features?.keyContactsManagementV2 && this.furthestStepIndex < 1) {
+        return false;
+      }
+
       return this.isValid && !this.isActive;
     },
     isEditable() {
       const index = this.stepList.findIndex(({ id }) => id === this.stepId);
-      const activeIndex = this.stepList.findIndex(({ id }) => id === this.activeStep.id);
-      return this.isFinished && index < activeIndex;
+      return this.isFinished && index < this.activeIndex;
+    },
+    activeIndex() {
+      return this.stepList.findIndex(({ id }) => id === this.activeStep.id);
+    },
+    furthestStepIndex() {
+      return this.stepList.findIndex(({ id }) => id === this.furthestAccessedStep.id);
     },
     shouldShowError() {
       return this.nextStepButtonText && !this.isValid && this.errorMessage;

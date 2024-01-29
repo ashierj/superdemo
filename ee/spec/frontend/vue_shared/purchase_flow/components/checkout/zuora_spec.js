@@ -26,7 +26,7 @@ describe('Zuora', () => {
   const fakePaymentMethodId = '000000000';
 
   const createComponent = (props = {}, data = {}, apolloLocalState = {}, resolvers = {}) => {
-    const apolloProvider = createMockApolloProvider(STEPS, STEPS[1], resolvers);
+    const apolloProvider = createMockApolloProvider(STEPS, 1, resolvers);
     apolloProvider.clients.defaultClient.cache.writeQuery({
       query: stateQuery,
       data: merge({}, initialStateData, apolloLocalState),
