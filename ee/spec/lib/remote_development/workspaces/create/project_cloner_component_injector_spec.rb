@@ -10,20 +10,19 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::ProjectClonerComponentInje
     create(:project, :in_group, :repository, path: "test-project", namespace: group)
   end
 
-  let(:flattened_devfile_name) { 'example.flattened-devfile.yaml' }
-  let(:processed_devfile) { YAML.safe_load(read_devfile(flattened_devfile_name)) }
-  let(:expected_processed_devfile) { YAML.safe_load(example_processed_devfile) }
+  let(:input_processed_devfile_name) { 'example.editor-injected-devfile.yaml' }
+  let(:input_processed_devfile) { YAML.safe_load(read_devfile(input_processed_devfile_name)).to_h }
+  let(:expected_processed_devfile_name) { 'example.project-cloner-injected-devfile.yaml' }
+  let(:expected_processed_devfile) { YAML.safe_load(read_devfile(expected_processed_devfile_name)).to_h }
   let(:component_name) { "gl-cloner-injector" }
-  let(:volume_name) { "gl-workspace-data" }
   let(:value) do
     {
       params: {
         project: project
       },
-      processed_devfile: processed_devfile,
+      processed_devfile: input_processed_devfile,
       volume_mounts: {
         data_volume: {
-          name: volume_name,
           path: "/projects"
         }
       }
@@ -35,12 +34,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::ProjectClonerComponentInje
   end
 
   it "injects the project cloner component" do
-    components = returned_value.dig(:processed_devfile, "components")
-    project_cloner_component = components.find { |component| component.fetch("name") == component_name }
-    expected_components = expected_processed_devfile.fetch("components")
-    expected_volume_component = expected_components.find do |component|
-      component.fetch("name") == component_name
-    end
-    expect(project_cloner_component).to eq(expected_volume_component)
+    expect(returned_value[:processed_devfile]).to eq(expected_processed_devfile)
   end
 end

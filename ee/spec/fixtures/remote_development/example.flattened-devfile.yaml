@@ -9,3 +9,11 @@ components:
       dedicatedPod: false
       mountSources: true
       image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
+  - name: database-container
+    container:
+      dedicatedPod: false
+      mountSources: true
+      image: mysql
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "my-secret-pw"
