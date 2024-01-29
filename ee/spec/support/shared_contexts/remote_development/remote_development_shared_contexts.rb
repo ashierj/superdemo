@@ -670,6 +670,49 @@ RSpec.shared_context 'with remote development shared fixtures' do
                     }
                   }
                 ]
+              },
+              {
+                env: [
+                  {
+                    name: "MYSQL_ROOT_PASSWORD",
+                    value: "my-secret-pw"
+                  },
+                  {
+                    name: "PROJECTS_ROOT",
+                    value: "/projects"
+                  },
+                  {
+                    name: "PROJECT_SOURCE",
+                    value: "/projects"
+                  }
+                ],
+                image: "mysql",
+                imagePullPolicy: "Always",
+                name: "database-container",
+                resources: default_resources_per_workspace_container,
+                volumeMounts: [
+                  {
+                    mountPath: "/projects",
+                    name: "gl-workspace-data"
+                  },
+                  {
+                    name: "gl-workspace-variables",
+                    mountPath: variables_file_mount_path.to_s
+                  }
+                ],
+                securityContext: {
+                  allowPrivilegeEscalation: false,
+                  privileged: false,
+                  runAsNonRoot: true,
+                  runAsUser: 5001
+                },
+                envFrom: [
+                  {
+                    secretRef: {
+                      name: "#{workspace_name}-env-var"
+                    }
+                  }
+                ]
               }
             ],
             initContainers: [
