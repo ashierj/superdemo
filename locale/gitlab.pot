@@ -25932,6 +25932,9 @@ msgstr ""
 msgid "InfrastructureRegistry|To authorize access to the Terraform registry:"
 msgstr ""
 
+msgid "InfrastructureRegistry|You have no Terraform modules in your group"
+msgstr ""
+
 msgid "InfrastructureRegistry|You have no Terraform modules in your project"
 msgstr ""
 
