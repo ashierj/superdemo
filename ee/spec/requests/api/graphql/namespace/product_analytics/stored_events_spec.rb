@@ -58,7 +58,7 @@ RSpec.describe 'getting a limit of stored events a namespace is permitted',
         it 'returns the correct limit' do
           post_graphql(query, current_user: current_user)
 
-          expect(graphql_data_at(*path)).to eq(4_000_000)
+          expect(graphql_data_at(*path)).to eq(5_000_000)
         end
       end
     end
@@ -90,7 +90,7 @@ RSpec.describe 'getting a limit of stored events a namespace is permitted',
         it 'returns the correct limit' do
           post_graphql(query, current_user: current_user)
 
-          expect(graphql_data_at(*path)).to eq(4_000_000)
+          expect(graphql_data_at(*path)).to eq(5_000_000)
         end
       end
     end
