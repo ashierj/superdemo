@@ -37,3 +37,6 @@ module Mutations
     end
   end
 end
+
+# JH required
+::Mutations::Epics::Update.prepend_mod
