@@ -81,7 +81,8 @@ RSpec.describe 'Groups > Members > Maintainer/Owner can override LDAP access lev
       expect(page).not_to have_selector user_action_dropdown
       expect(page).to have_button 'Guest', disabled: false
 
-      select_from_listbox('Revert to LDAP group sync settings', from: 'Guest')
+      click_button 'Guest'
+      click_button 'Revert to LDAP synced settings'
 
       wait_for_requests
 
@@ -97,7 +98,7 @@ RSpec.describe 'Groups > Members > Maintainer/Owner can override LDAP access lev
 
       click_button 'Guest'
 
-      expect(page).not_to have_content 'Revert to LDAP group sync settings'
+      expect(page).not_to have_content 'Revert to LDAP synced settings'
     end
   end
 end

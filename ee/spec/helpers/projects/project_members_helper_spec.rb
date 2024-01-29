@@ -19,6 +19,8 @@ RSpec.describe Projects::ProjectMembersHelper do
       create_schedule_with_user(project, current_user)
       allow(helper).to receive(:can_admin_project_member?).and_return(true)
       allow(helper).to receive(:can?).and_return(true)
+      allow(helper).to receive(:manage_member_roles_path).with(project)
+        .and_return(admin_application_settings_roles_and_permissions_path)
     end
 
     it 'does not execute N+1' do
@@ -35,6 +37,11 @@ RSpec.describe Projects::ProjectMembersHelper do
       expect(project.members.count).to eq(3)
 
       expect { call_project_members_app_data_json }.not_to exceed_query_limit(control).with_threshold(11) # existing n+1
+    end
+
+    it 'includes `manage_member_roles_path` data' do
+      expect(Gitlab::Json.parse(call_project_members_app_data_json))
+        .to include('manage_member_roles_path' => admin_application_settings_roles_and_permissions_path)
     end
 
     def call_project_members_app_data_json

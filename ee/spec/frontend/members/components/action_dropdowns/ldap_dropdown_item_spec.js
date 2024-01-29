@@ -1,4 +1,4 @@
-import { GlListboxItem } from '@gitlab/ui';
+import { GlButton } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
@@ -51,7 +51,7 @@ describe('LdapDropdownFooter', () => {
     beforeEach(() => {
       createComponent();
 
-      wrapper.findComponent(GlListboxItem).trigger('click');
+      wrapper.findComponent(GlButton).trigger('click');
     });
 
     it('calls `updateLdapOverride` action', () => {

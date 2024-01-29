@@ -3,6 +3,13 @@
 module EE
   module Projects
     module ProjectMembersHelper
+      extend ::Gitlab::Utils::Override
+
+      override :project_members_app_data
+      def project_members_app_data(project, ...)
+        super.merge(manage_member_roles_path: manage_member_roles_path(project))
+      end
+
       def project_member_header_subtext(project)
         if project.group &&
           ::Namespaces::FreeUserCap::Enforcement.new(project.root_ancestor).enforce_cap? &&

@@ -31,6 +31,7 @@ RSpec.describe Groups::GroupMembersHelper do
     before do
       allow(helper).to receive(:override_group_group_member_path).with(group, ':id').and_return('/groups/foo-bar/-/group_members/:id/override')
       allow(helper).to receive(:group_group_member_path).with(group, ':id').and_return('/groups/foo-bar/-/group_members/:id')
+      allow(helper).to receive(:manage_member_roles_path).with(group).and_return(admin_application_settings_roles_and_permissions_path)
       allow(helper).to receive(:can?).with(current_user, :admin_group_member, group).and_return(true)
       allow(helper).to receive(:can?).with(current_user, :admin_member_access_request, group).and_return(true)
       allow(helper).to receive(:can?).with(current_user, :export_group_memberships, group).and_return(true)
@@ -46,6 +47,10 @@ RSpec.describe Groups::GroupMembersHelper do
 
     it 'adds `export_csv_path`' do
       expect(subject[:export_csv_path]).not_to be_nil
+    end
+
+    it 'adds `manage_member_roles_path`' do
+      expect(subject[:manage_member_roles_path]).to eq(admin_application_settings_roles_and_permissions_path)
     end
 
     describe '`can_filter_by_enterprise`', :saas do

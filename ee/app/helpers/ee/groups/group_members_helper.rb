@@ -17,7 +17,8 @@ module EE::Groups::GroupMembersHelper
        can_export_members: can?(current_user, :export_group_memberships, group),
        export_csv_path: export_csv_group_group_members_path(group),
        can_filter_by_enterprise: group.domain_verification_available? && can?(current_user, :admin_group_member, group),
-       banned: group_members_list_data(group, banned)
+       banned: group_members_list_data(group, banned),
+       manage_member_roles_path: manage_member_roles_path(group)
      })
   end
 

@@ -28,6 +28,8 @@ module EE
         )
       end
 
+      dataset[:manage_member_roles_path] = manage_member_roles_path(source)
+
       dataset
     end
 
