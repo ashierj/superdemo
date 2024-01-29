@@ -56,6 +56,7 @@ module EE
       has_one :index_status
 
       has_one :github_integration, class_name: 'Integrations::Github'
+      has_one :google_cloud_platform_artifact_registry_integration, class_name: 'Integrations::GoogleCloudPlatform::ArtifactRegistry'
       has_one :git_guardian_integration, class_name: 'Integrations::GitGuardian'
 
       has_one :status_page_setting, inverse_of: :project, class_name: 'StatusPage::ProjectSetting'
@@ -910,12 +911,14 @@ module EE
 
     override :disabled_integrations
     def disabled_integrations
-      strong_memoize(:disabled_integrations) do
-        gh = github_integration_enabled? ? [] : %w[github]
+      names = []
 
-        super + gh
-      end
+      names << 'github' unless github_integration_enabled?
+      names << 'google_cloud_platform_artifact_registry' unless gcp_artifact_registry_enabled?
+
+      super + names
     end
+    strong_memoize_attr :disabled_integrations
 
     def pull_mirror_available?
       pull_mirror_available_overridden ||
@@ -1273,6 +1276,10 @@ module EE
 
     def github_integration_enabled?
       feature_available?(:github_integration)
+    end
+
+    def gcp_artifact_registry_enabled?
+      ::Feature.enabled?(:gcp_artifact_registry, self) && ::Gitlab::Saas.feature_available?(:google_artifact_registry)
     end
 
     def group_hooks
