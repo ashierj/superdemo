@@ -20,7 +20,7 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
     stub_feature_flags(model_registry: false)
     stub_feature_flags(remove_monitor_metrics: false)
     insert_package_nav
-    insert_infrastructure_registry_nav
+    insert_infrastructure_registry_nav(s_('Terraform|Terraform states'))
     insert_infrastructure_google_cloud_nav
     insert_infrastructure_aws_nav
   end
