@@ -9,7 +9,9 @@ import {
 } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { ISSUABLE_EDIT_DESCRIPTION } from '~/behaviors/shortcuts/keybindings';
+import { keysFor, ISSUABLE_EDIT_DESCRIPTION } from '~/behaviors/shortcuts/keybindings';
+import { shouldDisableShortcuts } from '~/behaviors/shortcuts/shortcuts_toggle';
+import { sanitize } from '~/lib/dompurify';
 import { TYPE_EPIC } from '~/issues/constants';
 import DeleteIssueModal from '~/issues/show/components/delete_issue_modal.vue';
 import issuesEventHub from '~/issues/show/event_hub';
@@ -141,10 +143,14 @@ export default {
       return this.author?.id;
     },
     editShortcutKey() {
-      return ISSUABLE_EDIT_DESCRIPTION.defaultKeys[0];
+      return shouldDisableShortcuts() ? null : keysFor(ISSUABLE_EDIT_DESCRIPTION)[0];
     },
     editTooltip() {
-      return `${this.$options.i18n.editTitleAndDescription} <kbd class="glat gl-ml-1" aria-hidden=true>${this.editShortcutKey}</kbd>`;
+      const description = this.$options.i18n.editTitleAndDescription;
+      const key = this.editShortcutKey;
+      return shouldDisableShortcuts()
+        ? description
+        : sanitize(`${description} <kbd class="flat gl-ml-1" aria-hidden=true>${key}</kbd>`);
     },
   },
   methods: {
