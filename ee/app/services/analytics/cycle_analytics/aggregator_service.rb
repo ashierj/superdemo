@@ -4,7 +4,7 @@ module Analytics
     class AggregatorService
       SUPPORTED_MODES = %I[incremental full].to_set
 
-      def initialize(aggregation:, mode: :incremental, runtime_limiter: Analytics::CycleAnalytics::RuntimeLimiter.new)
+      def initialize(aggregation:, mode: :incremental, runtime_limiter: Gitlab::Metrics::RuntimeLimiter.new)
         raise "Only :incremental and :full modes are supported" unless SUPPORTED_MODES.include?(mode)
 
         @aggregation = aggregation

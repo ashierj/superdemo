@@ -21,7 +21,7 @@ module Analytics
       def perform
         return unless should_perform?
 
-        runtime_limiter = Analytics::CycleAnalytics::RuntimeLimiter.new
+        runtime_limiter = Gitlab::Metrics::RuntimeLimiter.new
 
         cursor = load_cursor
         batch = Analytics::ValueStreamDashboard::Aggregation.load_batch(cursor)

@@ -7,7 +7,7 @@ module Analytics
 
       delegate :over_time?, to: :@runtime_limiter
 
-      def initialize(cursor: {}, runtime_limiter: Analytics::CycleAnalytics::RuntimeLimiter.new)
+      def initialize(cursor: {}, runtime_limiter: Gitlab::Metrics::RuntimeLimiter.new)
         @processed_records = 0
         @cursor = cursor.compact
         @runtime_limiter = runtime_limiter
