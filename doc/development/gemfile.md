@@ -80,8 +80,8 @@ For gems not listed in this table, it's still recommended but not required that 
 
 | Gem | Requires approval by |
 | ------ | ------ |
-| `doorkeeper` | [Manage:Authentication and Authorization](https://about.gitlab.com/handbook/product/categories/#authentication-and-authorization-group) |
-| `doorkeeper-openid_connect` | [Manage:Authentication and Authorization](https://about.gitlab.com/handbook/product/categories/#authentication-and-authorization-group)  |
+| `doorkeeper` | [Manage:Authentication and Authorization](https://handbook.gitlab.com/handbook/product/categories/#authentication-and-authorization-group) |
+| `doorkeeper-openid_connect` | [Manage:Authentication and Authorization](https://handbook.gitlab.com/handbook/product/categories/#authentication-and-authorization-group)  |
 
 ## Request an Appsec review
 
