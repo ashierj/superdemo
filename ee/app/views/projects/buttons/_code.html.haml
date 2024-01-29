@@ -7,6 +7,7 @@
     #js-code-dropdown{ data: {
       ssh_url: ssh_enabled? ? ssh_clone_url_to_repo(@project) : '',
       http_url: http_enabled? ? http_clone_url_to_repo(@project) : '',
+      kerberos_url: alternative_kerberos_url? ? project.kerberos_url_to_repo : '',
       xcode_url: show_xcode_link?(@project) ? xcode_uri_to_repo(@project) : '',
       directory_download_links: directory_download_links(project, ref, archive_prefix).to_json,
     } }
