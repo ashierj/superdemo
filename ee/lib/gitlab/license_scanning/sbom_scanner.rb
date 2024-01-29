@@ -45,7 +45,7 @@ module Gitlab
       def results_available?
         return false if pipeline.blank?
 
-        pipeline.complete_and_has_reports?(::Ci::JobArtifact.of_report_type(:sbom))
+        pipeline.complete_or_manual_and_has_reports?(::Ci::JobArtifact.of_report_type(:sbom))
       end
 
       def latest_build_for_default_branch

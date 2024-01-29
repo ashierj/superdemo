@@ -64,7 +64,8 @@ module EE
         }.freeze
 
         state_machine :status do
-          after_transition any => ::Ci::Pipeline.completed_statuses do |pipeline|
+          after_transition any => ::Ci::Pipeline.completed_with_manual_statuses do |pipeline|
+            next if pipeline.manual? && !pipeline.include_manual_to_pipeline_completion_enabled?
             next unless pipeline.can_store_security_reports?
 
             pipeline.run_after_commit do
@@ -80,7 +81,8 @@ module EE
             end
           end
 
-          after_transition any => ::Ci::Pipeline.completed_statuses do |pipeline|
+          after_transition any => ::Ci::Pipeline.completed_with_manual_statuses do |pipeline|
+            next if pipeline.manual? && !pipeline.include_manual_to_pipeline_completion_enabled?
             next if pipeline.can_store_security_reports?
             next if pipeline.child?
             next unless pipeline.default_branch? && pipeline.can_ingest_sbom_reports?
@@ -90,7 +92,9 @@ module EE
             end
           end
 
-          after_transition any => ::Ci::Pipeline.completed_statuses do |pipeline|
+          after_transition any => ::Ci::Pipeline.completed_with_manual_statuses do |pipeline|
+            next if pipeline.manual? && !pipeline.include_manual_to_pipeline_completion_enabled?
+
             pipeline.run_after_commit do
               ::Ci::SyncReportsToReportApprovalRulesWorker.perform_async(pipeline.id)
             end
@@ -201,7 +205,7 @@ module EE
       end
 
       def has_sbom_reports?
-        complete_and_has_reports?(::Ci::JobArtifact.of_report_type(:sbom))
+        complete_or_manual_and_has_reports?(::Ci::JobArtifact.of_report_type(:sbom))
       end
 
       def can_store_security_reports?
@@ -255,7 +259,9 @@ module EE
       end
 
       def has_security_reports?
-        complete_and_has_reports?(::Ci::JobArtifact.security_reports.or(::Ci::JobArtifact.of_report_type(:license_scanning)))
+        security_and_license_scanning_file_types = Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES | %w[license_scanning]
+
+        complete_or_manual_and_has_reports?(::Ci::JobArtifact.with_file_types(security_and_license_scanning_file_types))
       end
 
       def has_repository_xray_reports?

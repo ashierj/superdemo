@@ -65,28 +65,170 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
     end
 
     context 'when the pipeline does not have a purged security scan' do
-      it 'executes Security::StoreGroupedScansService for each group of artifacts if the feature is available' do
-        store_group_of_artifacts
+      shared_examples 'executes service and workers' do
+        context 'for Security::StoreGroupedScansService' do
+          it 'executes only for artifacts where the feature is available' do
+            store_group_of_artifacts
 
-        expect(Security::StoreGroupedScansService).to have_received(:execute).with([sast_artifact])
-        expect(Security::StoreGroupedScansService).not_to have_received(:execute).with([dast_artifact])
-      end
-
-      context 'when the pipeline is for the default branch' do
-        before do
-          allow(pipeline).to receive(:default_branch?).and_return(true)
+            expect(Security::StoreGroupedScansService).to have_received(:execute).with([sast_artifact])
+            expect(Security::StoreGroupedScansService).not_to have_received(:execute).with([dast_artifact])
+          end
         end
 
-        it 'schedules the `StoreSecurityReportsWorker`' do
+        context 'for StoreSecurityReportsWorker' do
+          context 'when the pipeline is for the default branch' do
+            before do
+              allow(pipeline).to receive(:default_branch?).and_return(true)
+            end
+
+            it 'schedules the `StoreSecurityReportsWorker`' do
+              store_group_of_artifacts
+
+              expect(StoreSecurityReportsWorker).to have_received(:perform_async).with(pipeline.id)
+            end
+          end
+
+          context 'when the pipeline is not for the default branch' do
+            before do
+              allow(pipeline).to receive(:default_branch?).and_return(false)
+            end
+
+            it 'does not schedule the `StoreSecurityReportsWorker`' do
+              store_group_of_artifacts
+
+              expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
+            end
+          end
+        end
+
+        context 'for ScanSecurityReportSecretsWorker' do
+          shared_examples 'does not revoke secret detection tokens' do
+            it 'does not schedule the `ScanSecurityReportSecretsWorker`' do
+              store_group_of_artifacts
+
+              expect(ScanSecurityReportSecretsWorker).not_to have_received(:perform_async)
+            end
+          end
+
+          describe 'scheduling the `ScanSecurityReportSecretsWorker `' do
+            context 'when no secret detection security scans exist for the pipeline' do
+              before do
+                pipeline.project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+
+                allow(Gitlab::CurrentSettings).to receive(:secret_detection_token_revocation_enabled?).and_return(true)
+              end
+
+              include_examples 'does not revoke secret detection tokens'
+            end
+
+            context 'when secret detection security scans exist for the pipeline' do
+              let_it_be(:scan) { create(:security_scan, scan_type: :secret_detection, build: sast_build) }
+              let_it_be(:finding) { create(:security_finding, :with_finding_data, scan: scan) }
+
+              context 'and the pipeline is in a private project' do
+                before do
+                  pipeline.project.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+
+                  allow(Gitlab::CurrentSettings).to receive(
+                    :secret_detection_token_revocation_enabled?).and_return(false)
+                end
+
+                include_examples 'does not revoke secret detection tokens'
+              end
+
+              context 'and secret detection token revocation setting is disabled' do
+                before do
+                  pipeline.project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+
+                  allow(Gitlab::CurrentSettings).to receive(
+                    :secret_detection_token_revocation_enabled?).and_return(false)
+                end
+
+                include_examples 'does not revoke secret detection tokens'
+              end
+
+              context 'and the pipeline is in a public project and the setting is enabled' do
+                before do
+                  pipeline.project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+
+                  allow(Gitlab::CurrentSettings).to receive(
+                    :secret_detection_token_revocation_enabled?).and_return(true)
+                end
+
+                it 'schedules the `ScanSecurityReportSecretsWorker`' do
+                  store_group_of_artifacts
+
+                  expect(ScanSecurityReportSecretsWorker).to have_received(:perform_async).with(pipeline.id)
+                end
+              end
+            end
+          end
+        end
+
+        context 'for SyncFindingsToApprovalRulesWorker with scan result policies' do
+          let(:security_orchestration_policy_configuration) do
+            create(:security_orchestration_policy_configuration, project: pipeline.project)
+          end
+
+          before do
+            allow(pipeline.project).to receive(:all_security_orchestration_policy_configurations)
+              .and_return([security_orchestration_policy_configuration])
+          end
+
+          context 'when security_orchestration_policies is not licensed' do
+            before do
+              stub_licensed_features(security_orchestration_policies: false)
+            end
+
+            it 'does not call SyncFindingsToApprovalRulesWorker' do
+              expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).not_to receive(:perform_async)
+
+              store_group_of_artifacts
+            end
+          end
+
+          context 'when security_orchestration_policies is licensed' do
+            before do
+              stub_licensed_features(security_orchestration_policies: true, sast: true)
+            end
+
+            context 'when the pipeline is not for the default branch' do
+              before do
+                allow(pipeline).to receive(:default_branch?).and_return(false)
+              end
+
+              it 'calls SyncFindingsToApprovalRulesWorker' do
+                expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker)
+                  .to receive(:perform_async).with(pipeline.id)
+
+                store_group_of_artifacts
+              end
+            end
+
+            context 'when the pipeline is for the default branch' do
+              before do
+                allow(pipeline).to receive(:default_branch?).and_return(true)
+              end
+
+              it 'does not call SyncFindingsToApprovalRulesWorker' do
+                expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).not_to receive(:perform_async)
+
+                store_group_of_artifacts
+              end
+            end
+          end
+        end
+      end
+
+      context 'when StoreGroupedScansService.execute return false' do
+        before do
+          allow(Security::StoreGroupedScansService).to receive(:execute).and_return(false)
+        end
+
+        it 'does not schedule the `ScanSecurityReportSecretsWorker`' do
           store_group_of_artifacts
 
-          expect(StoreSecurityReportsWorker).to have_received(:perform_async).with(pipeline.id)
-        end
-      end
-
-      context 'when the pipeline is not for the default branch' do
-        before do
-          allow(pipeline).to receive(:default_branch?).and_return(false)
+          expect(ScanSecurityReportSecretsWorker).not_to have_received(:perform_async)
         end
 
         it 'does not schedule the `StoreSecurityReportsWorker`' do
@@ -94,113 +236,30 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
 
           expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
         end
-      end
 
-      shared_examples 'does not revoke secret detection tokens' do
-        it 'does not schedule the `ScanSecurityReportSecretsWorker`' do
+        it 'does not schedule `SyncFindingsToApprovalRulesWorker`' do
+          allow(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).to receive(:perform_async)
+
           store_group_of_artifacts
 
-          expect(ScanSecurityReportSecretsWorker).not_to have_received(:perform_async)
+          expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).not_to have_received(:perform_async)
         end
       end
 
-      describe 'scheduling the `ScanSecurityReportSecretsWorker `' do
-        context 'when no secret detection security scans exist for the pipeline' do
-          before do
-            pipeline.project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
-
-            allow(Gitlab::CurrentSettings).to receive(:secret_detection_token_revocation_enabled?).and_return(true)
-          end
-
-          include_examples 'does not revoke secret detection tokens'
-        end
-
-        context 'when secret detection security scans exist for the pipeline' do
-          let_it_be(:scan) { create(:security_scan, scan_type: :secret_detection, build: sast_build) }
-          let_it_be(:finding) { create(:security_finding, :with_finding_data, scan: scan) }
-
-          context 'and the pipeline is in a private project' do
-            before do
-              pipeline.project.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
-
-              allow(Gitlab::CurrentSettings).to receive(:secret_detection_token_revocation_enabled?).and_return(false)
-            end
-
-            include_examples 'does not revoke secret detection tokens'
-          end
-
-          context 'and secret detection token revocation setting is disabled' do
-            before do
-              pipeline.project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
-
-              allow(Gitlab::CurrentSettings).to receive(:secret_detection_token_revocation_enabled?).and_return(false)
-            end
-
-            include_examples 'does not revoke secret detection tokens'
-          end
-
-          context 'and the pipeline is in a public project and the setting is enabled' do
-            before do
-              pipeline.project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
-
-              allow(Gitlab::CurrentSettings).to receive(:secret_detection_token_revocation_enabled?).and_return(true)
-            end
-
-            it 'schedules the `ScanSecurityReportSecretsWorker`' do
-              store_group_of_artifacts
-
-              expect(ScanSecurityReportSecretsWorker).to have_received(:perform_async).with(pipeline.id)
-            end
-          end
-        end
-      end
-    end
-
-    context 'with scan result policies' do
-      let(:security_orchestration_policy_configuration) do
-        create(:security_orchestration_policy_configuration, project: pipeline.project)
-      end
-
-      before do
-        allow(pipeline.project).to receive(:all_security_orchestration_policy_configurations)
-          .and_return([security_orchestration_policy_configuration])
-      end
-
-      context 'when security_orchestration_policies is not licensed' do
+      context 'when StoreGroupedScansService.execute return true' do
         before do
-          stub_licensed_features(security_orchestration_policies: false)
+          allow(Security::StoreGroupedScansService).to receive(:execute).and_return(true)
         end
 
-        it 'does not call SyncFindingsToApprovalRulesWorker' do
-          expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).not_to receive(:perform_async)
-
-          store_group_of_artifacts
-        end
+        it_behaves_like 'executes service and workers'
       end
 
-      context 'when security_orchestration_policies is licensed' do
+      context 'when include_manual_to_pipeline_completion is disabled' do
         before do
-          stub_licensed_features(security_orchestration_policies: true)
+          allow(pipeline).to receive(:include_manual_to_pipeline_completion_enabled?).and_return(false)
         end
 
-        it 'calls SyncFindingsToApprovalRulesWorker' do
-          expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker)
-            .to receive(:perform_async).with(pipeline.id)
-
-          store_group_of_artifacts
-        end
-
-        context 'when the pipeline is for the default branch' do
-          before do
-            allow(pipeline).to receive(:default_branch?).and_return(true)
-          end
-
-          it 'does not call SyncFindingsToApprovalRulesWorker' do
-            expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).not_to receive(:perform_async)
-
-            store_group_of_artifacts
-          end
-        end
+        it_behaves_like 'executes service and workers'
       end
     end
   end
