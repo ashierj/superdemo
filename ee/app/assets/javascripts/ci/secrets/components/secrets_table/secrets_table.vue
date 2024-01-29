@@ -4,7 +4,7 @@ import { s__ } from '~/locale';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserDate from '~/vue_shared/components/user_date.vue';
 import { LONG_DATE_FORMAT_WITH_TZ } from '~/vue_shared/constants';
-import { NEW_ROUTE_NAME, DETAILS_ROUTE_NAME } from '../../constants';
+import { NEW_ROUTE_NAME, DETAILS_ROUTE_NAME, EDIT_ROUTE_NAME } from '../../constants';
 import SecretActionsCell from './secret_actions_cell.vue';
 
 export default {
@@ -35,6 +35,7 @@ export default {
   },
   methods: {
     getDetailsRoute: (key) => ({ name: DETAILS_ROUTE_NAME, params: { key } }),
+    getEditRoute: (key) => ({ name: EDIT_ROUTE_NAME, params: { key } }),
   },
   fields: [
     {
@@ -120,7 +121,7 @@ export default {
           />
         </template>
         <template #cell(actions)="{ item: { key } }">
-          <secret-actions-cell :details-route="getDetailsRoute(key)" />
+          <secret-actions-cell :details-route="getEditRoute(key)" />
         </template>
       </gl-table-lite>
     </gl-card>
