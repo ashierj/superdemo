@@ -58,7 +58,7 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
           create(:gitlab_subscription_add_on_purchase, :product_analytics, namespace: group, add_on: add_on)
         end
 
-        it { is_expected.to eq(0) }
+        it { is_expected.to eq(1_000_000) }
       end
     end
 
@@ -67,7 +67,7 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
         create(:gitlab_subscription_add_on_purchase, :product_analytics, namespace: group, add_on: add_on, quantity: 5)
       end
 
-      it { is_expected.to eq(4000000) }
+      it { is_expected.to eq(5_000_000) }
     end
   end
 
