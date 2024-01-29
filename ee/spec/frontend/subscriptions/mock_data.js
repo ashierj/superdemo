@@ -97,6 +97,7 @@ export const stateData = {
   isSetupForCompany: true,
   stepList: STEPS,
   activeStep: STEPS[0],
+  furthestAccessedStep: STEPS[0],
 };
 
 export const mockChargeItem = {
