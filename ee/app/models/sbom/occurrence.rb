@@ -23,8 +23,6 @@ module Sbom
 
     enum highest_severity: ::Enums::Vulnerability.severity_levels
 
-    ignore_column :vulnerabilities, remove_with: '16.6', remove_after: '2023-12-16'
-
     validates :commit_sha, presence: true
     validates :uuid, presence: true, uniqueness: { case_sensitive: false }
     validates :package_manager, length: { maximum: 255 }
