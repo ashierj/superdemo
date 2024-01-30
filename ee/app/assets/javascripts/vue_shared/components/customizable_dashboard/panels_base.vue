@@ -92,6 +92,7 @@ export default {
       canRetryError: !hasValidationErrors,
       data: null,
       loading: false,
+      panelTitleTooltip: '',
       popoverId: uniqueId('panel-error-popover-'),
       dropdownItems: [
         {
@@ -196,6 +197,9 @@ export default {
     isCubeJsBadRequest(error) {
       return Boolean(error.status === HTTP_STATUS_BAD_REQUEST && error.response?.message);
     },
+    handleShowTooltip(tooltipText) {
+      this.panelTitleTooltip = tooltipText;
+    },
   },
   PANEL_POPOVER_DELAY,
   PANEL_TROUBLESHOOTING_URL,
@@ -221,7 +225,18 @@ export default {
         >
           <gl-icon v-if="showErrorState" name="warning" class="gl-text-red-500 gl-mr-1" />
           <strong class="gl-text-gray-700">{{ panelTitle }}</strong>
+          <template v-if="panelTitleTooltip">
+            <gl-icon
+              ref="titleTooltip"
+              data-testid="panel-title-tooltip-icon"
+              name="information-o"
+            />
+            <gl-popover data-testid="panel-title-popover" :target="() => $refs.titleTooltip.$el">
+              {{ panelTitleTooltip }}
+            </gl-popover>
+          </template>
         </tooltip-on-truncate>
+
         <gl-disclosure-dropdown
           v-if="editing"
           :items="dropdownItems"
@@ -262,6 +277,7 @@ export default {
           :data="data"
           :options="visualization.options"
           @error="handleError"
+          @showTooltip="handleShowTooltip"
         />
       </div>
 

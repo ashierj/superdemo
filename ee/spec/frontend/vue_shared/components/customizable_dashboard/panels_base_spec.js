@@ -50,6 +50,8 @@ describe('PanelsBase', () => {
   const findVisualization = () => wrapper.findComponent(LineChart);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findPanelTitle = () => wrapper.findComponent(TooltipOnTruncate);
+  const findPanelTitleTooltipIcon = () => wrapper.findByTestId('panel-title-tooltip-icon');
+  const findPanelTitlePopover = () => wrapper.findByTestId('panel-title-popover');
   const findPanelErrorPopover = () => wrapper.findComponent(GlPopover);
   const findPanelRetryButton = () => wrapper.findComponent(GlButton);
   const findPanelActionsDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
@@ -356,6 +358,30 @@ describe('PanelsBase', () => {
       await nextTick();
 
       expect(wrapper.emitted('delete')).toHaveLength(1);
+    });
+  });
+
+  describe('panel title tooltip', () => {
+    const mockData = [{ name: 'foo' }];
+
+    beforeEach(() => {
+      jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(mockData);
+      createWrapper();
+      return waitForPromises();
+    });
+
+    it('does not render by default', () => {
+      expect(findPanelTitleTooltipIcon().exists()).toBe(false);
+    });
+
+    it('renders when the visualization emits a `showTooltip` event', async () => {
+      const tooltipText = 'BOO';
+      findVisualization().vm.$emit('showTooltip', tooltipText);
+
+      await nextTick();
+
+      expect(findPanelTitleTooltipIcon().exists()).toBe(true);
+      expect(findPanelTitlePopover().text()).toContain(tooltipText);
     });
   });
 });

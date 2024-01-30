@@ -583,25 +583,25 @@ export const mockUsageMetricsQueryResponse = {
       __typename: 'ValueStreamDashboardCount',
       identifier: 'PROJECTS',
       count: 97,
-      recordedAt: '2023-11-27T23:59:59Z',
+      recordedAt: '2023-11-27T21:59:59Z',
     },
     issues: {
       __typename: 'ValueStreamDashboardCount',
       identifier: 'ISSUES',
       count: 123,
-      recordedAt: '2023-11-27T23:59:59Z',
+      recordedAt: '2023-11-26T23:59:59Z',
     },
     pipelines: {
       __typename: 'ValueStreamDashboardCount',
       identifier: 'PIPELINES',
       count: 123,
-      recordedAt: '2023-11-27T23:59:59Z',
+      recordedAt: undefined,
     },
     merge_requests: {
       __typename: 'ValueStreamDashboardCount',
       identifier: 'MERGE_REQUESTS',
       count: 183,
-      recordedAt: '2023-11-27T23:59:59Z',
+      recordedAt: '2022-11-27T23:59:59Z',
     },
   },
 };
@@ -610,6 +610,7 @@ export const mockUsageMetrics = [
   {
     identifier: 'groups',
     value: 58,
+    recordedAt: '2023-11-27T23:59:59Z',
     options: {
       title: 'Groups',
       titleIcon: 'group',
@@ -618,6 +619,7 @@ export const mockUsageMetrics = [
   {
     identifier: 'projects',
     value: 97,
+    recordedAt: '2023-11-27T21:59:59Z',
     options: {
       title: 'Projects',
       titleIcon: 'project',
@@ -626,6 +628,7 @@ export const mockUsageMetrics = [
   {
     identifier: 'issues',
     value: 123,
+    recordedAt: '2023-11-26T23:59:59Z',
     options: {
       title: 'Issues',
       titleIcon: 'issues',
@@ -634,6 +637,7 @@ export const mockUsageMetrics = [
   {
     identifier: 'merge_requests',
     value: 183,
+    recordedAt: '2022-11-27T23:59:59Z',
     options: {
       title: 'Merge requests',
       titleIcon: 'merge-request',
@@ -642,6 +646,7 @@ export const mockUsageMetrics = [
   {
     identifier: 'pipelines',
     value: 123,
+    recordedAt: undefined,
     options: {
       title: 'Pipelines',
       titleIcon: 'pipeline',
@@ -653,26 +658,31 @@ export const mockUsageMetricsNoData = [
   {
     identifier: 'groups',
     value: 0,
+    recordedAt: undefined,
     options: { title: 'Groups', titleIcon: 'group' },
   },
   {
     identifier: 'projects',
     value: 0,
+    recordedAt: undefined,
     options: { title: 'Projects', titleIcon: 'project' },
   },
   {
     identifier: 'issues',
     value: 0,
+    recordedAt: undefined,
     options: { title: 'Issues', titleIcon: 'issues' },
   },
   {
     identifier: 'merge_requests',
     value: 0,
+    recordedAt: undefined,
     options: { title: 'Merge requests', titleIcon: 'merge-request' },
   },
   {
     identifier: 'pipelines',
     value: 0,
+    recordedAt: undefined,
     options: { title: 'Pipelines', titleIcon: 'pipeline' },
   },
 ];
