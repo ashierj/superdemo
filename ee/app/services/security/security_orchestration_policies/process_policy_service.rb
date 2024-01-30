@@ -49,8 +49,13 @@ module Security
       def replace_in_policy_hash(policy_hash, name, policy, type)
         raise Error, "Policy already exists with same name" if name && name != policy[:name] && policy_exists?(policy_hash, policy[:name], type)
 
-        existing_policy_index, type = check_if_policy_exists!(policy_hash, name || policy[:name], type)
-        policy_hash[type][existing_policy_index] = policy
+        existing_policy_index, existing_type = check_if_policy_exists!(policy_hash, name || policy[:name], type)
+        if migrate_policy?(type, existing_type)
+          remove_from_policy_hash(policy_hash, policy.dup.tap { |p| p[:name] = name }, existing_type)
+          append_to_policy_hash(policy_hash, policy, type)
+        else
+          policy_hash[existing_type][existing_policy_index] = policy
+        end
       end
 
       def remove_from_policy_hash(policy_hash, policy, type)
@@ -81,6 +86,10 @@ module Security
 
       def policy_index(policy_hash, policy_name, type)
         policy_hash[type]&.find_index { |p| p[:name] == policy_name }
+      end
+
+      def migrate_policy?(new_type, existing_type)
+        new_type == :approval_policy && existing_type == :scan_result_policy
       end
 
       attr_reader :policy_configuration, :params
