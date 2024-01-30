@@ -16,7 +16,7 @@ components:
           else
             echo "'sshd' not found in path. Not starting SSH server."
           fi
-          /projects/.gl-editor/start_server.sh
+          ${GL_TOOLS_DIR}/init_tools.sh
       command:
         - "/bin/sh"
         - "-c"
@@ -24,8 +24,8 @@ components:
         - name: gl-workspace-data
           path: /projects
       env:
-        - name: GL_EDITOR_VOLUME_DIR
-          value: "/projects/.gl-editor"
+        - name: GL_TOOLS_DIR
+          value: "/projects/.gl-tools"
         - name: GL_EDITOR_LOG_LEVEL
           value: "info"
         - name: GL_EDITOR_PORT
@@ -49,15 +49,15 @@ components:
   - name: gl-workspace-data
     volume:
       size: 15Gi
-  - name: gl-editor-injector
+  - name: gl-tools-injector
     container:
-      image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:6
+      image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:7
       volumeMounts:
         - name: gl-workspace-data
           path: /projects
       env:
-        - name: GL_EDITOR_VOLUME_DIR
-          value: "/projects/.gl-editor"
+        - name: GL_TOOLS_DIR
+          value: "/projects/.gl-tools"
       memoryLimit: 256Mi
       memoryRequest: 128Mi
       cpuLimit: 500m
@@ -83,12 +83,12 @@ components:
       cpuRequest: 100m
 events:
   preStart:
-    - gl-editor-injector-command
+    - gl-tools-injector-command
     - gl-cloner-injector-command
 commands:
-  - id: gl-editor-injector-command
+  - id: gl-tools-injector-command
     apply:
-      component: gl-editor-injector
+      component: gl-tools-injector
   - id: gl-cloner-injector-command
     apply:
       component: gl-cloner-injector

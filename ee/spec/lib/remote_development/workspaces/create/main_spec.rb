@@ -19,7 +19,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
   let(:post_flatten_devfile_validator_class) { RemoteDevelopment::Workspaces::Create::PostFlattenDevfileValidator }
   let(:volume_definer_class) { RemoteDevelopment::Workspaces::Create::VolumeDefiner }
   let(:volume_component_injector_class) { RemoteDevelopment::Workspaces::Create::VolumeComponentInjector }
-  let(:editor_component_injector_class) { RemoteDevelopment::Workspaces::Create::EditorComponentInjector }
+  let(:tools_component_injector_class) { RemoteDevelopment::Workspaces::Create::ToolsComponentInjector }
   let(:project_cloner_component_injector_class) { RemoteDevelopment::Workspaces::Create::ProjectClonerComponentInjector }
   let(:creator_class) { RemoteDevelopment::Workspaces::Create::Creator }
 
@@ -32,7 +32,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
   let(:post_flatten_devfile_validator_method) { post_flatten_devfile_validator_class.singleton_method(:validate) }
   let(:volume_definer_method) { volume_definer_class.singleton_method(:define) }
   let(:volume_component_injector_method) { volume_component_injector_class.singleton_method(:inject) }
-  let(:editor_component_injector_method) { editor_component_injector_class.singleton_method(:inject) }
+  let(:tools_component_injector_method) { tools_component_injector_class.singleton_method(:inject) }
   let(:project_cloner_component_injector_method) { project_cloner_component_injector_class.singleton_method(:inject) }
   let(:creator_method) { creator_class.singleton_method(:create) }
   # rubocop:enable Layout/LineLength
@@ -49,7 +49,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
     allow(post_flatten_devfile_validator_class).to(receive(:method)) { post_flatten_devfile_validator_method }
     allow(volume_definer_class).to(receive(:method)) { volume_definer_method }
     allow(volume_component_injector_class).to(receive(:method)) { volume_component_injector_method }
-    allow(editor_component_injector_class).to(receive(:method)) { editor_component_injector_method }
+    allow(tools_component_injector_class).to(receive(:method)) { tools_component_injector_method }
     allow(project_cloner_component_injector_class).to(receive(:method)) { project_cloner_component_injector_method }
     allow(creator_class).to receive(:method) { creator_method }
   end
@@ -177,7 +177,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
       stub_methods_to_return_value(
         volume_definer_method,
         volume_component_injector_method,
-        editor_component_injector_method,
+        tools_component_injector_method,
         project_cloner_component_injector_method
       )
       stub_methods_to_return_err_result(
@@ -212,7 +212,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
       stub_methods_to_return_value(
         volume_definer_method,
         volume_component_injector_method,
-        editor_component_injector_method,
+        tools_component_injector_method,
         project_cloner_component_injector_method
       )
       allow(creator_method).to receive(:call).with(value) do
@@ -242,7 +242,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
       stub_methods_to_return_value(
         volume_definer_method,
         volume_component_injector_method,
-        editor_component_injector_method,
+        tools_component_injector_method,
         project_cloner_component_injector_method
       )
       allow(creator_method).to receive(:call).with(value) do
