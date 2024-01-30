@@ -43,16 +43,8 @@ RSpec.describe Epics::CloseService, feature_category: :portfolio_management do
           end
 
           context 'with a synced work item' do
-            let_it_be(:work_item, reload: true) do
-              create(:work_item, :epic, namespace: group,
-                title: epic.title, description: epic.description, created_at: epic.created_at,
-                updated_at: epic.updated_at, author: epic.author, iid: epic.iid, updated_by: epic.updated_by
-              )
-            end
-
-            before do
-              epic.update!(issue_id: work_item.id)
-            end
+            let_it_be(:epic) { create(:epic, :with_synced_work_item, group: group) }
+            let(:work_item) { epic.work_item }
 
             subject { described_class.new(group: group, current_user: user).execute(epic) }
 

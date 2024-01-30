@@ -37,5 +37,27 @@ FactoryBot.define do
         epic.update!(labels: evaluator.labels)
       end
     end
+
+    trait :with_synced_work_item do
+      work_item do
+        association(:work_item,
+          :epic,
+          namespace: group,
+          title: title,
+          description: description,
+          created_at: created_at,
+          updated_at: updated_at,
+          author: author,
+          iid: iid,
+          updated_by: updated_by,
+          state: state,
+          confidential: confidential
+        )
+      end
+
+      after(:create) do |epic, _|
+        epic.work_item.update!(iid: epic.iid, created_at: epic.created_at)
+      end
+    end
   end
 end

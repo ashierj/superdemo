@@ -756,16 +756,11 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
 
     context 'work item sync' do
       let_it_be(:group) { create(:group) }
-      let_it_be_with_reload(:epic) { create(:epic, group: group) }
       let_it_be(:labels) { create_pair(:group_label, group: group) }
-      let_it_be(:work_item) do
-        create(:work_item, :epic, namespace: group, iid: epic.iid, author: epic.author, created_at: epic.created_at)
-      end
 
       context 'when epic has a synced work item' do
-        before do
-          epic.update!(issue_id: work_item.id)
-        end
+        let_it_be_with_reload(:epic) { create(:epic, :with_synced_work_item, group: group) }
+        let(:work_item) { epic.work_item }
 
         context 'multiple values update' do
           let_it_be(:synced_parent_work_item) { create(:work_item, :epic, namespace: group) }
@@ -829,6 +824,8 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
       end
 
       context 'when epic has no synced work item' do
+        let_it_be_with_reload(:epic) { create(:epic, group: group) }
+
         it 'does not call WorkItems::UpdateService' do
           expect(WorkItems::UpdateService).not_to receive(:new)
 
