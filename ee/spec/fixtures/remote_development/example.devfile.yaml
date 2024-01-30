@@ -6,3 +6,10 @@ components:
       gl/inject-editor: true
     container:
       image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
+  - name: database-container
+    container:
+      image: mysql
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "my-secret-pw"
+

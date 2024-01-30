@@ -15,31 +15,25 @@ module RemoteDevelopment
             params: Hash => params
           }
           volume_mounts => { data_volume: Hash => data_volume }
-          data_volume => {
-            name: String => volume_name,
-            path: String => volume_path,
-          }
-
-          params => {
-            agent: Clusters::Agent => agent
-          }
+          data_volume => { path: String => volume_path }
+          params => { agent: Clusters::Agent => agent }
 
           editor_port = WorkspaceCreator::WORKSPACE_PORT
           ssh_port = 60022
+          tools_dir = "#{volume_path}/.gl-tools"
           enable_marketplace = Feature.enabled?(
             :allow_extensions_marketplace_in_workspace,
             agent.project.root_namespace,
             type: :beta
           )
 
-          inject_tools_component(processed_devfile, volume_name, volume_path)
+          inject_tools_component(processed_devfile, tools_dir)
           tools_component = processed_devfile['components'].find { |c| c.dig('attributes', 'gl/inject-editor') }
 
           if tools_component
             override_main_container(
               tools_component,
-              volume_name,
-              volume_path,
+              tools_dir,
               editor_port,
               ssh_port,
               enable_marketplace
@@ -50,13 +44,12 @@ module RemoteDevelopment
         end
 
         # @param [Hash] component
-        # @param [String] volume_name
-        # @param [String] volume_path
+        # @param [String] tools_dir
         # @param [Integer] editor_port
         # @param [Integer] ssh_port
         # @param [Boolean] enable_marketplace
         # @return [Hash]
-        def self.override_main_container(component, volume_name, volume_path, editor_port, ssh_port, enable_marketplace)
+        def self.override_main_container(component, tools_dir, editor_port, ssh_port, enable_marketplace)
           # This overrides the main container's command
           # Open issue to support both starting the editor and running the default command:
           # https://gitlab.com/gitlab-org/gitlab/-/issues/392853
@@ -72,17 +65,11 @@ module RemoteDevelopment
           SH
           component['container']['command'] = %w[/bin/sh -c]
           component['container']['args'] = [container_args]
-
-          component['container']['volumeMounts'] = [] if component['container']['volumeMounts'].nil?
-
-          component['container']['volumeMounts'] += [{ 'name' => volume_name, 'path' => volume_path }]
-
           component['container']['env'] = [] if component['container']['env'].nil?
-
           component['container']['env'] += [
             {
               'name' => 'GL_TOOLS_DIR',
-              'value' => "#{volume_path}/.gl-tools"
+              'value' => tools_dir
             },
             {
               'name' => 'GL_EDITOR_LOG_LEVEL',
@@ -103,7 +90,6 @@ module RemoteDevelopment
           ]
 
           component['container']['endpoints'] = [] if component['container']['endpoints'].nil?
-
           component['container']['endpoints'].append(
             {
               'name' => 'editor-server',
@@ -123,11 +109,10 @@ module RemoteDevelopment
         end
 
         # @param [Hash] processed_devfile
-        # @param [String] volume_name
-        # @param [String] volume_path
+        # @param [String] tools_dir
         # @return [Array]
-        def self.inject_tools_component(processed_devfile, volume_name, volume_path)
-          processed_devfile['components'] += tools_components(volume_name, volume_path)
+        def self.inject_tools_component(processed_devfile, tools_dir)
+          processed_devfile['components'] += tools_components(tools_dir)
 
           processed_devfile['commands'] = [] if processed_devfile['commands'].nil?
           processed_devfile['commands'] += [{
@@ -142,10 +127,9 @@ module RemoteDevelopment
           processed_devfile['events']['preStart'] += ['gl-tools-injector-command']
         end
 
-        # @param [String] volume_name
-        # @param [String] volume_path
+        # @param [String] tools_dir
         # @return [Array]
-        def self.tools_components(volume_name, volume_path)
+        def self.tools_components(tools_dir)
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409775 - choose image based on which editor is passed.
           image_name = 'registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector'
           image_tag = '7'
@@ -155,11 +139,10 @@ module RemoteDevelopment
               'name' => 'gl-tools-injector',
               'container' => {
                 'image' => "#{image_name}:#{image_tag}",
-                'volumeMounts' => [{ 'name' => volume_name, 'path' => volume_path }],
                 'env' => [
                   {
                     'name' => 'GL_TOOLS_DIR',
-                    'value' => "#{volume_path}/.gl-tools"
+                    'value' => tools_dir
                   }
                 ],
                 'memoryLimit' => '256Mi',

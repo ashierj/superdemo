@@ -20,9 +20,6 @@ components:
       command:
         - "/bin/sh"
         - "-c"
-      volumeMounts:
-        - name: gl-workspace-data
-          path: /projects
       env:
         - name: GL_TOOLS_DIR
           value: "/projects/.gl-tools"
@@ -33,7 +30,7 @@ components:
         - name: GL_SSH_PORT
           value: "60022"
         - name: GL_EDITOR_ENABLE_MARKETPLACE
-          value: "true"
+          value: "false"
       endpoints:
         - name: editor-server
           targetPort: 60001
@@ -49,9 +46,6 @@ components:
   - name: database-container
     container:
       image: mysql
-      volumeMounts:
-        - name: gl-workspace-data
-          path: /projects
       env:
         - name: MYSQL_ROOT_PASSWORD
           value: "my-secret-pw"
@@ -60,9 +54,6 @@ components:
   - name: gl-tools-injector
     container:
       image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:7
-      volumeMounts:
-        - name: gl-workspace-data
-          path: /projects
       env:
         - name: GL_TOOLS_DIR
           value: "/projects/.gl-tools"
@@ -70,36 +61,10 @@ components:
       memoryRequest: 128Mi
       cpuLimit: 500m
       cpuRequest: 100m
-  - name: gl-cloner-injector
-    container:
-      image: alpine/git:2.36.3
-      volumeMounts:
-        - name: gl-workspace-data
-          path: "/projects"
-      args:
-        - |-
-          if [ ! -d '/projects/test-project' ];
-          then
-            git clone --branch master http://localhost/test-group/test-project.git /projects/test-project;
-          fi
-      command:
-        - "/bin/sh"
-        - "-c"
-      memoryLimit: 256Mi
-      memoryRequest: 128Mi
-      cpuLimit: 500m
-      cpuRequest: 100m
-  - name: gl-workspace-data
-    volume:
-      size: 15Gi
 events:
   preStart:
     - gl-tools-injector-command
-    - gl-cloner-injector-command
 commands:
   - id: gl-tools-injector-command
     apply:
       component: gl-tools-injector
-  - id: gl-cloner-injector-command
-    apply:
-      component: gl-cloner-injector

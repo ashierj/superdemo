@@ -46,9 +46,17 @@ components:
           secure: true
       dedicatedPod: false
       mountSources: true
-  - name: gl-workspace-data
-    volume:
-      size: 15Gi
+  - name: database-container
+    container:
+      image: mysql
+      volumeMounts:
+        - name: gl-workspace-data
+          path: /projects
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "my-secret-pw"
+      dedicatedPod: false
+      mountSources: true
   - name: gl-tools-injector
     container:
       image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:7
@@ -81,6 +89,9 @@ components:
       memoryRequest: 128Mi
       cpuLimit: 500m
       cpuRequest: 100m
+  - name: gl-workspace-data
+    volume:
+      size: 15Gi
 events:
   preStart:
     - gl-tools-injector-command
