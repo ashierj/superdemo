@@ -99,6 +99,7 @@ module EE
             attrs = { user: user }
             attrs[:email] = ldap_email if ldap_email.present?
             attrs.merge!(name: ldap_name, force_name_change: true) if ldap_name.present? && sync_ldap_name?
+            attrs[:ldap_sync] = true
 
             ::Users::UpdateService.new(user, attrs).execute do |user|
               user.skip_reconfirmation!
