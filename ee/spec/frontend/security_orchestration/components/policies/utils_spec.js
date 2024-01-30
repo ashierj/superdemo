@@ -34,7 +34,7 @@ describe('validateTypeFilter', () => {
     value                                                            | valid
     ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}                          | ${true}
     ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value}               | ${true}
-    ${POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT.value}                  | ${true}
+    ${POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value}                     | ${true}
     ${''}                                                            | ${true}
     ${'invalid key'}                                                 | ${false}
     ${undefined}                                                     | ${false}
@@ -43,7 +43,7 @@ describe('validateTypeFilter', () => {
     ${0}                                                             | ${false}
     ${POLICY_TYPE_FILTER_OPTIONS.ALL.value.toLowerCase()}            | ${true}
     ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value.toLowerCase()} | ${true}
-    ${POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT.value.toLowerCase()}    | ${true}
+    ${POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value.toLowerCase()}       | ${true}
   `('should validate type filters', ({ value, valid }) => {
     expect(validateTypeFilter(value)).toBe(valid);
   });
@@ -54,7 +54,7 @@ describe('extractTypeParameter', () => {
     type                                                             | output
     ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}                          | ${''}
     ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value}               | ${'SCAN_EXECUTION'}
-    ${POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT.value}                  | ${'SCAN_RESULT'}
+    ${POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value}                     | ${'APPROVAL'}
     ${''}                                                            | ${''}
     ${'invalid key'}                                                 | ${''}
     ${undefined}                                                     | ${''}
@@ -63,7 +63,8 @@ describe('extractTypeParameter', () => {
     ${0}                                                             | ${''}
     ${POLICY_TYPE_FILTER_OPTIONS.ALL.value.toLowerCase()}            | ${''}
     ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value.toLowerCase()} | ${'SCAN_EXECUTION'}
-    ${POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT.value.toLowerCase()}    | ${'SCAN_RESULT'}
+    ${POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value.toLowerCase()}       | ${'APPROVAL'}
+    ${'scan_result'}                                                 | ${'APPROVAL'}
   `('should extract valid type parameter', ({ type, output }) => {
     expect(extractTypeParameter(type)).toBe(output);
   });

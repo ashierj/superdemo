@@ -23,6 +23,8 @@ import {
   mockBlockAndForceSettingsManifest,
   mockDefaultBranchesScanResultManifest,
   mockDefaultBranchesScanResultObject,
+  mockDeprecatedScanResultManifest,
+  mockDeprecatedScanResultObject,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
 import { unsupportedManifest } from 'ee_jest/security_orchestration/mocks/mock_data';
 import { visitUrl } from '~/lib/utils/url_utility';
@@ -216,6 +218,28 @@ describe('EditorComponent', () => {
         expect(emptyState.props('primaryButtonLink')).toMatch(scanPolicyDocumentationPath);
         expect(emptyState.props('primaryButtonLink')).toMatch('scan-result-policy-editor');
         expect(emptyState.props('svgPath')).toBe(policyEditorEmptyStateSvgPath);
+      });
+    });
+
+    describe('existing policy', () => {
+      it('displays an approval policy', () => {
+        factoryWithExistingPolicy();
+        expect(findEmptyActionsAlert().exists()).toBe(false);
+        expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
+          mockDefaultBranchesScanResultManifest,
+        );
+        expect(findAllRuleSections()).toHaveLength(1);
+        expect(findAllActionSections()).toHaveLength(1);
+      });
+
+      it('displays a scan result policy', () => {
+        factoryWithExistingPolicy({ policy: mockDeprecatedScanResultObject });
+        expect(findPolicyEditorLayout().props('hasParsingError')).toBe(false);
+        expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
+          mockDeprecatedScanResultManifest,
+        );
+        expect(findAllRuleSections()).toHaveLength(1);
+        expect(findAllActionSections()).toHaveLength(1);
       });
     });
   });

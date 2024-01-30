@@ -25,7 +25,7 @@ describe('Policy Editor', () => {
   };
 
   const findSelectScanResultPolicyButton = () =>
-    wrapper.findByTestId('select-policy-scan_result_policy');
+    wrapper.findByTestId('select-policy-approval_policy');
   const findYamlPreview = () => wrapper.findByTestId('rule-editor-preview');
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findActionSection = () => wrapper.findComponent(ActionSection);

@@ -12,9 +12,9 @@ import {
   DEFAULT_ASSIGNED_POLICY_PROJECT,
 } from 'ee/security_orchestration/constants';
 import {
-  mockGroupApproversScanResultManifest,
-  mockRoleApproversScanResultManifest,
-  mockUserApproversScanResultManifest,
+  mockGroupApproversApprovalManifest,
+  mockRoleApproversApprovalManifest,
+  mockUserApproversApprovalManifest,
   USER,
   GROUP,
 } from '../mocks/action_mocks';
@@ -91,7 +91,7 @@ describe('Scan result policy actions', () => {
       await findRoleSelect().vm.$emit('updateSelectedApprovers', [DEVELOPER]);
       await findApprovalsInput().vm.$emit('update', 2);
 
-      await verify({ manifest: mockRoleApproversScanResultManifest, verifyRuleMode, wrapper });
+      await verify({ manifest: mockRoleApproversApprovalManifest, verifyRuleMode, wrapper });
     });
   });
 
@@ -111,7 +111,7 @@ describe('Scan result policy actions', () => {
       await findUserSelect().vm.$emit('updateSelectedApprovers', [USER]);
       await findApprovalsInput().vm.$emit('update', 2);
 
-      await verify({ manifest: mockUserApproversScanResultManifest, verifyRuleMode, wrapper });
+      await verify({ manifest: mockUserApproversApprovalManifest, verifyRuleMode, wrapper });
     });
   });
 
@@ -131,7 +131,7 @@ describe('Scan result policy actions', () => {
       await findGroupSelect().vm.$emit('updateSelectedApprovers', [GROUP]);
       await findApprovalsInput().vm.$emit('update', 2);
 
-      await verify({ manifest: mockGroupApproversScanResultManifest, verifyRuleMode, wrapper });
+      await verify({ manifest: mockGroupApproversApprovalManifest, verifyRuleMode, wrapper });
     });
   });
 });

@@ -13,7 +13,7 @@ import { humanizeRules } from './utils';
 export default {
   i18n: {
     summary: SUMMARY_TITLE,
-    scanResult: s__('SecurityOrchestration|Scan result'),
+    scanResult: s__('SecurityOrchestration|Merge request approval'),
   },
   components: {
     ToggleList,

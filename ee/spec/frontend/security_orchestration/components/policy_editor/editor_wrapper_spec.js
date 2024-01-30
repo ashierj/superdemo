@@ -71,7 +71,7 @@ describe('EditorWrapper component', () => {
       it.each`
         policyTypeId                                         | findComponent
         ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value} | ${findScanExecutionPolicyEditor}
-        ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value}    | ${findScanResultPolicyEditor}
+        ${POLICY_TYPE_COMPONENT_OPTIONS.approval.value}      | ${findScanResultPolicyEditor}
       `(
         'renders the policy editor of type $policyType when selected',
         async ({ findComponent, policyTypeId }) => {

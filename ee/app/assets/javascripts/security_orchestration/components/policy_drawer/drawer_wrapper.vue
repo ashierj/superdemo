@@ -22,6 +22,7 @@ import ScanResultDrawer from './scan_result/details_drawer.vue';
 const policyComponent = {
   [POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value]: ScanExecutionDrawer,
   [POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value]: ScanResultDrawer,
+  [POLICY_TYPE_COMPONENT_OPTIONS.approval.value]: ScanResultDrawer,
 };
 
 export default {

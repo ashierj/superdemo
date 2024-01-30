@@ -49,12 +49,8 @@ export default {
       ];
     },
     title() {
-      if (this.existingPolicy) {
+      if (this.existingPolicy || this.selectedPolicy) {
         return this.$options.i18n.editTitles[this.selectedPolicy.value];
-      }
-
-      if (this.selectedPolicy) {
-        return this.$options.i18n.titles[this.selectedPolicy.value];
       }
 
       return this.$options.i18n.titles.default;
@@ -85,8 +81,8 @@ export default {
   },
   i18n: {
     titles: {
-      [POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value]: s__(
-        'SecurityOrchestration|New scan result policy',
+      [POLICY_TYPE_COMPONENT_OPTIONS.approval.value]: s__(
+        'SecurityOrchestration|New merge request approval policy',
       ),
       [POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value]: s__(
         'SecurityOrchestration|New scan execution policy',
@@ -95,7 +91,10 @@ export default {
     },
     editTitles: {
       [POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value]: s__(
-        'SecurityOrchestration|Edit scan result policy',
+        'SecurityOrchestration|Edit merge request approval policy',
+      ),
+      [POLICY_TYPE_COMPONENT_OPTIONS.approval.value]: s__(
+        'SecurityOrchestration|Edit merge request approval policy',
       ),
       [POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value]: s__(
         'SecurityOrchestration|Edit scan execution policy',
@@ -110,7 +109,7 @@ export default {
 <template>
   <div>
     <header class="gl-border-b-none gl-mb-4">
-      <h3>{{ title }}</h3>
+      <h3 data-testid="title">{{ title }}</h3>
       <gl-path v-if="enableWizard" :items="glPathItems" @selected="handlePathSelection" />
     </header>
     <policy-type-selector v-if="!selectedPolicy" @select="policyFromUrl" />

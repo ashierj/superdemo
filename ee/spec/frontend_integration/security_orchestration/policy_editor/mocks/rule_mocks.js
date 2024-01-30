@@ -1,4 +1,4 @@
-export const mockSecurityScanResultManifest = `type: scan_result_policy
+export const mockSecurityApprovalManifest = `type: approval_policy
 name: ''
 description: ''
 enabled: true
@@ -16,7 +16,7 @@ approval_settings:
   prevent_pushing_and_force_pushing: true
 `;
 
-export const mockLicenseScanResultManifest = `type: scan_result_policy
+export const mockLicenseApprovalManifest = `type: approval_policy
 name: ''
 description: ''
 enabled: true
@@ -33,7 +33,7 @@ approval_settings:
   prevent_pushing_and_force_pushing: true
 `;
 
-export const mockAnyMergeRequestScanResultManifest = `type: scan_result_policy
+export const mockAnyMergeRequestApprovalManifest = `type: approval_policy
 name: ''
 description: ''
 enabled: true

@@ -44256,6 +44256,9 @@ msgstr ""
 msgid "SecurityOrchestration|Don't show the alert anymore"
 msgstr ""
 
+msgid "SecurityOrchestration|Edit merge request approval policy"
+msgstr ""
+
 msgid "SecurityOrchestration|Edit policy"
 msgstr ""
 
@@ -44263,9 +44266,6 @@ msgid "SecurityOrchestration|Edit policy project"
 msgstr ""
 
 msgid "SecurityOrchestration|Edit scan execution policy"
-msgstr ""
-
-msgid "SecurityOrchestration|Edit scan result policy"
 msgstr ""
 
 msgid "SecurityOrchestration|Empty policy name"
@@ -44322,7 +44322,7 @@ msgstr ""
 msgid "SecurityOrchestration|Hide extra projects"
 msgstr ""
 
-msgid "SecurityOrchestration|If any scanner finds a newly detected critical vulnerability in an open merge request targeting the master branch, then require two approvals from any member of App security."
+msgid "SecurityOrchestration|If any scanner finds a newly detected critical vulnerability in an open merge request targeting the main branch, then require two approvals from any two members of the application security team are required."
 msgstr ""
 
 msgid "SecurityOrchestration|Individual users"
@@ -44358,13 +44358,22 @@ msgstr ""
 msgid "SecurityOrchestration|Logic error"
 msgstr ""
 
+msgid "SecurityOrchestration|Merge request approval"
+msgstr ""
+
+msgid "SecurityOrchestration|Merge request approval policies can only be created by project owners."
+msgstr ""
+
+msgid "SecurityOrchestration|Merge request approval policy"
+msgstr ""
+
+msgid "SecurityOrchestration|New merge request approval policy"
+msgstr ""
+
 msgid "SecurityOrchestration|New policy"
 msgstr ""
 
 msgid "SecurityOrchestration|New scan execution policy"
-msgstr ""
-
-msgid "SecurityOrchestration|New scan result policy"
 msgstr ""
 
 msgid "SecurityOrchestration|No actions defined - policy will not run."
@@ -44480,12 +44489,6 @@ msgstr ""
 msgid "SecurityOrchestration|Save changes"
 msgstr ""
 
-msgid "SecurityOrchestration|Scan Execution"
-msgstr ""
-
-msgid "SecurityOrchestration|Scan Result"
-msgstr ""
-
 msgid "SecurityOrchestration|Scan execution"
 msgstr ""
 
@@ -44493,15 +44496,6 @@ msgid "SecurityOrchestration|Scan execution policies can only be created by proj
 msgstr ""
 
 msgid "SecurityOrchestration|Scan execution policy"
-msgstr ""
-
-msgid "SecurityOrchestration|Scan result"
-msgstr ""
-
-msgid "SecurityOrchestration|Scan result policies can only be created by project owners."
-msgstr ""
-
-msgid "SecurityOrchestration|Scan result policy"
 msgstr ""
 
 msgid "SecurityOrchestration|Scan will automatically choose a runner to run on because there are no tags exist on runners. You can %{linkStart}create a new tag in settings%{linkEnd}."
@@ -44639,10 +44633,10 @@ msgstr ""
 msgid "SecurityOrchestration|Update scan policies"
 msgstr ""
 
-msgid "SecurityOrchestration|Use a scan execution policy to create rules which enforce security scans for particular branches at a certain time. Supported types are SAST, SAST IaC, DAST, Secret detection, Container scanning, and Dependency scanning."
+msgid "SecurityOrchestration|Use a merge request approval policy to create rules that check for security vulnerabilities and license compliance before merging a merge request."
 msgstr ""
 
-msgid "SecurityOrchestration|Use a scan result policy to create rules that check for security vulnerabilities and license compliance before merging a merge request."
+msgid "SecurityOrchestration|Use a scan execution policy to create rules which enforce security scans for particular branches at a certain time. Supported types are SAST, SAST IaC, DAST, Secret detection, Container scanning, and Dependency scanning."
 msgstr ""
 
 msgid "SecurityOrchestration|View policy project"

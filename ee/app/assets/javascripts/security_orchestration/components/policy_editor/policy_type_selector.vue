@@ -11,12 +11,12 @@ const i18n = {
   cancel: __('Cancel'),
   examples: __('Examples'),
   selectPolicy: s__('SecurityOrchestration|Select policy'),
-  scanResultPolicyTitle: s__('SecurityOrchestration|Scan result policy'),
+  scanResultPolicyTitle: s__('SecurityOrchestration|Merge request approval policy'),
   scanResultPolicyDesc: s__(
-    'SecurityOrchestration|Use a scan result policy to create rules that check for security vulnerabilities and license compliance before merging a merge request.',
+    'SecurityOrchestration|Use a merge request approval policy to create rules that check for security vulnerabilities and license compliance before merging a merge request.',
   ),
   scanResultPolicyExample: s__(
-    'SecurityOrchestration|If any scanner finds a newly detected critical vulnerability in an open merge request targeting the master branch, then require two approvals from any member of App security.',
+    'SecurityOrchestration|If any scanner finds a newly detected critical vulnerability in an open merge request targeting the main branch, then require two approvals from any two members of the application security team are required.',
   ),
   scanExecutionPolicyTitle: s__('SecurityOrchestration|Scan execution policy'),
   scanExecutionPolicyDesc: s__(
@@ -53,7 +53,7 @@ export default {
       return [
         {
           text: POLICY_TYPE_COMPONENT_OPTIONS.scanResult.text.toLowerCase(),
-          urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter,
+          urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter,
           title: i18n.scanResultPolicyTitle,
           description: i18n.scanResultPolicyDesc,
           example: i18n.scanResultPolicyExample,

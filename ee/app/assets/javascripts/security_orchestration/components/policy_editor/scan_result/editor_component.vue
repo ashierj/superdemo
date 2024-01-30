@@ -61,7 +61,7 @@ export default {
     createMergeRequest: __('Configure with a merge request'),
     notOwnerButtonText: __('Learn more'),
     notOwnerDescription: s__(
-      'SecurityOrchestration|Scan result policies can only be created by project owners.',
+      'SecurityOrchestration|Merge request approval policies can only be created by project owners.',
     ),
     settingsTitle: s__('ScanResultPolicy|Override project approval settings'),
     yamlPreview: s__('SecurityOrchestration|.yaml preview'),
