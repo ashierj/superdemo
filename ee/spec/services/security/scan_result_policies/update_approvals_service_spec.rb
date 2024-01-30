@@ -465,9 +465,16 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         context 'when vulnerability_states are empty array' do
           let(:vulnerability_states) { [] }
 
-          it_behaves_like 'sets approvals_required to 0'
+          it_behaves_like 'does not update approvals_required'
 
-          it_behaves_like 'triggers policy bot comment', :scan_finding, false
+          context 'when security_policies_sync_preexisting_state is disabled' do
+            before do
+              stub_feature_flags(security_policies_sync_preexisting_state: false)
+            end
+
+            it_behaves_like 'sets approvals_required to 0'
+            it_behaves_like 'triggers policy bot comment', :scan_finding, false
+          end
         end
 
         context 'when vulnerability_states has new_needs_triage' do
@@ -496,16 +503,32 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
         context 'when vulnerabilities count exceeds the allowed limit' do
           it_behaves_like 'does not update approvals_required'
+          it_behaves_like 'does not trigger policy bot comment'
 
-          it_behaves_like 'triggers policy bot comment', :scan_finding, true
+          context 'when security_policies_sync_preexisting_state is disabled' do
+            before do
+              stub_feature_flags(security_policies_sync_preexisting_state: false)
+            end
+
+            it_behaves_like 'does not update approvals_required'
+            it_behaves_like 'triggers policy bot comment', :scan_finding, true
+          end
         end
 
         context 'when vulnerabilities count does not exceed the allowed limit' do
           let(:vulnerabilities_allowed) { 6 }
 
-          it_behaves_like 'sets approvals_required to 0'
+          it_behaves_like 'does not update approvals_required'
+          it_behaves_like 'does not trigger policy bot comment'
 
-          it_behaves_like 'triggers policy bot comment', :scan_finding, false
+          context 'when security_policies_sync_preexisting_state is disabled' do
+            before do
+              stub_feature_flags(security_policies_sync_preexisting_state: false)
+            end
+
+            it_behaves_like 'sets approvals_required to 0'
+            it_behaves_like 'triggers policy bot comment', :scan_finding, false
+          end
         end
       end
 
@@ -515,8 +538,16 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         end
 
         it_behaves_like 'does not update approvals_required'
-
         it_behaves_like 'triggers policy bot comment', :scan_finding, true
+
+        context 'when security_policies_sync_preexisting_state is disabled' do
+          before do
+            stub_feature_flags(security_policies_sync_preexisting_state: false)
+          end
+
+          it_behaves_like 'does not update approvals_required'
+          it_behaves_like 'triggers policy bot comment', :scan_finding, true
+        end
       end
     end
 

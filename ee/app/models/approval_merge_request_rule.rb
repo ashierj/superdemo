@@ -145,9 +145,10 @@ class ApprovalMergeRequestRule < ApplicationRecord
   end
 
   def vulnerability_states_for_branch
-    return self.vulnerability_states if merge_request.target_default_branch?
+    states = self.vulnerability_states
+    return states if merge_request.target_default_branch?
 
-    vulnerability_states.include?(NEWLY_DETECTED) ? [NEWLY_DETECTED] : []
+    states & NEWLY_DETECTED_STATUSES
   end
 
   private

@@ -35,6 +35,11 @@ module EE
           ::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker.perform_async(merge_request.id)
         end
 
+        if ::Feature.enabled?(:security_policies_sync_preexisting_state, project, type: :gitlab_com_derisk) &&
+            merge_request.approval_rules.scan_finding.any?
+          ::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker.perform_async(merge_request.id)
+        end
+
         pipeline_id = merge_request.head_pipeline_id
 
         if pipeline_id

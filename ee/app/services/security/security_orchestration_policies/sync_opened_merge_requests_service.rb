@@ -16,6 +16,7 @@ module Security
           merge_request.sync_project_approval_rules_for_policy_configuration(@policy_configuration.id)
 
           sync_any_merge_request_approval_rules(merge_request)
+          sync_preexisting_state_approval_rules(merge_request)
           notify_for_policy_violations(merge_request)
 
           head_pipeline = merge_request.actual_head_pipeline
@@ -32,6 +33,15 @@ module Security
         return unless merge_request.approval_rules.any_merge_request.any?
 
         ::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker.perform_async(merge_request.id)
+      end
+
+      def sync_preexisting_state_approval_rules(merge_request)
+        return if ::Feature.disabled?(:security_policies_sync_preexisting_state, merge_request.project,
+          type: :gitlab_com_derisk)
+
+        return unless merge_request.approval_rules.scan_finding.any?
+
+        ::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker.perform_async(merge_request.id)
       end
 
       def notify_for_policy_violations(merge_request)

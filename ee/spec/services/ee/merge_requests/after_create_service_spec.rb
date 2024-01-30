@@ -15,6 +15,7 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
       allow(Ci::SyncReportsToReportApprovalRulesWorker).to receive(:perform_async)
       allow(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).to receive(:perform_async)
       allow(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).to receive(:perform_async)
+      allow(Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).to receive(:perform_async)
       allow(::Security::UnenforceablePolicyRulesNotificationWorker).to receive(:perform_async)
       allow(::MergeRequests::NotifyApproversWorker).to receive(:perform_in)
     end
@@ -62,6 +63,34 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
 
         expect(::Security::UnenforceablePolicyRulesNotificationWorker).to have_received(:perform_async)
                                                                             .with(merge_request.id)
+      end
+
+      context 'when security_policies_sync_preexisting_state is disabled' do
+        before do
+          stub_feature_flags(security_policies_sync_preexisting_state: false)
+        end
+
+        it 'does not schedule SyncPreexistingStatesApprovalRulesWorker' do
+          execute
+
+          expect(::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).not_to(
+            have_received(:perform_async)
+          )
+        end
+      end
+
+      context 'when merge request has scan_finding rules' do
+        before do
+          create(:report_approver_rule, :scan_finding, merge_request: merge_request)
+        end
+
+        it 'enqueues SyncPreexistingStatesApprovalRulesWorker worker' do
+          execute
+
+          expect(Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).to(
+            have_received(:perform_async).with(merge_request.id)
+          )
+        end
       end
 
       context 'when feature flag "security_policies_unenforceable_rules_notification" is disabled' do
