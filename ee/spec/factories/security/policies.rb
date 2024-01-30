@@ -57,7 +57,8 @@ FactoryBot.define do
   end
 
   factory :scan_result_policy,
-    class: Struct.new(:name, :description, :enabled, :actions, :rules, :approval_settings, :policy_scope) do
+    class: Struct.new(:name, :description, :enabled, :actions, :rules, :approval_settings, :policy_scope),
+    aliases: %i[approval_policy] do
     skip_create
 
     initialize_with do
@@ -158,14 +159,16 @@ FactoryBot.define do
     end
   end
 
-  factory :orchestration_policy_yaml, class: Struct.new(:scan_execution_policy, :scan_result_policy) do
+  factory :orchestration_policy_yaml,
+    class: Struct.new(:scan_execution_policy, :scan_result_policy, :approval_policy) do
     skip_create
 
     initialize_with do
       scan_execution_policy = attributes[:scan_execution_policy]
       scan_result_policy = attributes[:scan_result_policy]
+      approval_policy = attributes[:approval_policy]
 
-      YAML.dump(new(scan_execution_policy, scan_result_policy).to_h.compact.deep_stringify_keys)
+      YAML.dump(new(scan_execution_policy, scan_result_policy, approval_policy).to_h.compact.deep_stringify_keys)
     end
   end
 end

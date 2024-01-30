@@ -84,7 +84,7 @@ module EE
     end
 
     def code_suggestions_usage_app_data(group)
-      data = { full_path: group.full_path, group_id: group.id }
+      data = { full_path: group.full_path, group_id: group.id, add_duo_pro_href: duo_pro_url(group) }
 
       return data unless ::Feature.enabled?(:cs_connect_with_sales, group)
 
@@ -139,7 +139,7 @@ module EE
     end
 
     def show_code_suggestions_tab?(group)
-      gitlab_saas? && code_suggestions_available?(group) && !group.has_free_or_no_subscription?
+      gitlab_com_subscription? && code_suggestions_available?(group) && !group.has_free_or_no_subscription?
     end
 
     def saml_sso_settings_generate_helper_text(display_none:, text:)

@@ -72,11 +72,13 @@ module Security
           dismissal_reason: @dismissal_reason
         }
 
-        ::Vulnerabilities::FindOrCreateFromSecurityFindingService.new(project: @project,
-                                                                      current_user: @current_user,
-                                                                      params: security_finding_params,
-                                                                      state: :dismissed,
-                                                                      present_on_default_branch: false).execute
+        ::Vulnerabilities::FindOrCreateFromSecurityFindingService.new(
+          project: @project,
+          current_user: @current_user,
+          params: security_finding_params,
+          state: :dismissed,
+          present_on_default_branch: false
+        ).execute
       end
 
       def feedback_params

@@ -4,7 +4,11 @@ group: IDE
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Workspaces **(PREMIUM ALL)**
+# Workspaces
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/112397) in GitLab 15.11 [with a flag](../../administration/feature_flags.md) named `remote_development_feature_flag`. Disabled by default.
 > - [Enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/391543) in GitLab 16.0.
@@ -29,20 +33,21 @@ When you [create a workspace](configuration.md#set-up-a-workspace), you must:
 The workspace can interact with the GitLab API, with the access level defined by current user permissions.
 A running workspace remains accessible even if user permissions are later revoked.
 
-### Open and manage workspaces from a project
+### Manage workspaces from a project
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/125331) in GitLab 16.2.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/125331) in GitLab 16.2.
 
-To open a workspace from a file or the repository file list:
+To manage workspaces from a project:
 
 1. On the left sidebar, select **Search or go to** and find your project.
 1. In the upper right, select **Edit**.
-1. From the dropdown list, under **Your workspaces**, select the workspace.
+1. From the dropdown list, under **Your workspaces**, you can:
+   - Restart, stop, or terminate an existing workspace.
+   - Create a new workspace.
 
-From the dropdown list, you can also:
-
-- Restart, stop, or terminate an existing workspace.
-- Create a new workspace.
+WARNING:
+When you terminate a workspace, any unsaved or uncommitted data
+in that workspace is deleted and cannot be recovered.
 
 ### Deleting data associated with a workspace
 
@@ -57,35 +62,30 @@ To clean up orphaned resources, an administrator must manually delete the worksp
 
 ## Manage workspaces at the agent level
 
-Prerequisites:
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/419281) in GitLab 16.8.
 
-- You must be a Kubernetes administrator.
-
-As a Kubernetes administrator, you might have to manage workspaces that you do not own. To see a list of all workspaces running on a particular agent:
+To manage all workspaces associated with an agent:
 
 1. On the left sidebar, select **Search or go to** and find your project.
 1. Select **Operate > Kubernetes clusters**.
-1. Select **Agent** tab to view clusters connected to GitLab through the agent.
 1. Select the agent configured for remote development.
-1. Select **Workspaces** to view all active workspaces on the agent.
+1. Select the **Workspaces** tab.
+1. From the list, you can restart, stop, or terminate an existing workspace.
 
-From this list, you can terminate a workspace.
+WARNING:
+When you terminate a workspace, any unsaved or uncommitted data
+in that workspace is deleted and cannot be recovered.
 
-NOTE:
-Terminating a workspace is a destructive and irreversible action. Any unsaved or uncommitted data in the workspace is immediately deleted and cannot be recovered.
+### Identify an agent from a running workspace
 
-### Identify the agent from a running workspace
+In deployments that contain multiple agents, you might want to identify an agent from a running workspace.
 
-Prerequisites:
+To identify an agent associated with a running workspace, use one of the following GraphQL endpoints:
 
-- You must be a Kubernetes administrator.
-
-In larger deployments that contain multiple agents, it might be difficult to identify the agent responsible for running the workspace with information provided at the workspace level. To identify the agent and view its status page, use one of the following GraphQL API endpoints:
-
-- `agent-id` to inspect the project the agent belongs to.
-- [`Query.workspaces`](../../api/graphql/reference/index.md#queryworkspaces) to search for workspaces and find their associated [cluster agent](../../api/graphql/reference/index.md#clusteragent) and the project the agent belongs to.
-
-You can then use the resulting project ID to view and manage the correct project.
+- `agent-id` to return the project the agent belongs to.
+- [`Query.workspaces`](../../api/graphql/reference/index.md#queryworkspaces) to return:
+  - The [cluster agent](../../api/graphql/reference/index.md#clusteragent) associated with the workspace.
+  - The project the agent belongs to.
 
 ## Devfile
 
@@ -169,7 +169,7 @@ For more information, see [Web IDE](../project/web_ide/index.md).
 
 ## Personal access token
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129715) in GitLab 16.4.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129715) in GitLab 16.4.
 
 When you [create a workspace](configuration.md#set-up-a-workspace), you get a personal access token with `write_repository` permission.
 This token is used to initially clone the project while starting the workspace.

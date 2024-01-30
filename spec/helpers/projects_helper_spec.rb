@@ -671,7 +671,7 @@ RSpec.describe ProjectsHelper, feature_category: :source_code_management do
       before do
         stub_application_setting(auto_devops_enabled: global_setting)
 
-        allow_any_instance_of(Repository).to receive(:gitlab_ci_yml).and_return(gitlab_ci_yml)
+        allow(project).to receive(:has_ci_config_file?).and_return(gitlab_ci_yml)
 
         grant_user_access(project, user, user_access)
         project.project_feature.update_attribute(:builds_access_level, feature_visibilities[builds_visibility])
@@ -855,6 +855,16 @@ RSpec.describe ProjectsHelper, feature_category: :source_code_management do
       expect(helper).to receive(:push_to_schema_breadcrumb).with(project.name, project_path(project))
 
       subject
+    end
+
+    context 'with malicious owner name' do
+      before do
+        allow_any_instance_of(User).to receive(:name).and_return('a<a class="fixed-top" href=/api/v4')
+      end
+
+      it 'escapes the malicious owner name' do
+        expect(subject).not_to include('<a class="fixed-top" href="/api/v4"></a>')
+      end
     end
   end
 

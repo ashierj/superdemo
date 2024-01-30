@@ -1,7 +1,7 @@
 import { GlTableLite } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import ReportItem from 'ee/vulnerabilities/components/generic_report/report_item.vue';
-import Table from 'ee/vulnerabilities/components/generic_report/types/table.vue';
+import Table from 'ee/vulnerabilities/components/generic_report/types/report_type_table.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 const TEST_DATA = {
@@ -13,7 +13,7 @@ const TEST_DATA = {
   ],
 };
 
-describe('ee/vulnerabilities/components/generic_report/types/table.vue', () => {
+describe('ee/vulnerabilities/components/generic_report/types/report_type_table.vue', () => {
   let wrapper;
 
   const createWrapper = () => {

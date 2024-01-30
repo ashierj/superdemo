@@ -4,7 +4,11 @@ group: Geo
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Geo for multiple nodes **(PREMIUM SELF)**
+# Geo for multiple nodes
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 This document describes a minimal reference architecture for running Geo
 in a multi-node configuration. If your multi-node setup differs from the one
@@ -131,11 +135,10 @@ recommended.
 
 ### Step 2: Configure the Geo tracking database on the Geo **secondary** site
 
-If you want to run the Geo tracking database in a multi-node PostgreSQL cluster,
-then follow [Configuring Patroni cluster for the tracking PostgreSQL database](../setup/database.md#configuring-patroni-cluster-for-the-tracking-postgresql-database).
+The Geo tracking database cannot be run in a multi-node PostgreSQL cluster,
+see [Configuring Patroni cluster for the tracking PostgreSQL database](../setup/database.md#configuring-patroni-cluster-for-the-tracking-postgresql-database).
 
-If you want to run the Geo tracking database on a single node, then follow
-the instructions below.
+You can run the Geo tracking database on a single node as follows:
 
 1. Generate an MD5 hash of the desired password for the database user that the
    GitLab application uses to access the tracking database:

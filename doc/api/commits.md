@@ -4,7 +4,11 @@ group: Source Code
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Commits API **(FREE ALL)**
+# Commits API
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 This API operates on [repository commits](https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository). Read more about [GitLab-specific information](../user/project/repository/index.md#commit-changes-to-a-repository) for commits.
 
@@ -20,7 +24,7 @@ information:
 
 ## List repository commits
 
-> Commits by author [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/114417) in GitLab 15.10.
+> - Commits by author [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/114417) in GitLab 15.10.
 
 Get a list of repository commits in a project.
 
@@ -305,6 +309,41 @@ Example response:
   {"type": "tag", "name": "v1.1.0"}
  ]
 
+```
+
+## Get the sequence of a commit
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/438151) in GitLab 16.9.
+
+Get the sequence number of a commit in a project by following the parent links from the given commit.
+
+This API provides essentially the same features as the `git rev-list --count` command for a given commit SHA.
+
+```plaintext
+GET /projects/:id/repository/commits/:sha/sequence
+```
+
+Parameters:
+
+| Attribute      | Type           | Required | Description |
+| -------------- | -------------- | -------- | ----------- |
+| `id`           | integer/string | yes      | The ID or [URL-encoded path of the project](rest/index.md#namespaced-path-encoding) owned by the authenticated user. |
+| `sha`          | string         | yes      | The commit hash. |
+| `first_parent` | boolean        | no       | Follow only the first parent commit upon seeing a merge commit. |
+
+Example request:
+
+```shell
+curl --header "PRIVATE-TOKEN: <your_access_token>" \
+  --url "https://gitlab.example.com/api/v4/projects/5/repository/commits/5937ac0a7beb003549fc5fd26fc247adbce4a52e/sequence"
+```
+
+Example response:
+
+```json
+{
+  "count": 632
+}
 ```
 
 ## Cherry-pick a commit

@@ -15,13 +15,13 @@ module Elastic
       mappings dynamic: 'strict' do
         indexes :id, type: :integer
         indexes :iid, type: :integer
-        indexes :group_id, type: :integer
+        indexes :group_id, type: :long
 
         indexes :created_at, type: :date
         indexes :updated_at, type: :date
 
         indexes :title, type: :text, index_options: 'positions'
-        indexes :description, type: :text, index_options: 'positions', analyzer: :code_analyzer
+        indexes :description, type: :text, index_options: 'positions'
         indexes :state, type: :keyword
         indexes :confidential, type: :boolean
         indexes :author_id, type: :integer

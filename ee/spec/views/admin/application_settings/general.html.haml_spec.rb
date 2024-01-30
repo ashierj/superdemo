@@ -39,6 +39,25 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
     end
   end
 
+  describe 'SAML group locks settings' do
+    let(:saml_group_sync_enabled) { false }
+    let(:settings_text) { 'SAML group membership settings' }
+
+    before do
+      allow(view).to receive(:saml_group_sync_enabled?).and_return(saml_group_sync_enabled)
+
+      render
+    end
+
+    it { is_expected.not_to match(settings_text) }
+
+    context 'when one or multiple SAML providers are group-sync-enabled' do
+      let(:saml_group_sync_enabled) { true }
+
+      it { is_expected.to match(settings_text) }
+    end
+  end
+
   describe 'prompt user about registration features' do
     context 'with no license and service ping disabled' do
       before do

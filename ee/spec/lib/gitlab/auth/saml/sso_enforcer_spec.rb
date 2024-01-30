@@ -105,7 +105,7 @@ RSpec.describe Gitlab::Auth::Saml::SsoEnforcer, feature_category: :system_access
             expect(enforcer).not_to be_access_restricted
           end
 
-          it 'returns false after timeout elapses' do
+          it 'returns true after timeout elapses' do
             update_session
 
             travel_to(2.hours.from_now) do

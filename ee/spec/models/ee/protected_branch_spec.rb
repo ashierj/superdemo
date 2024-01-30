@@ -9,6 +9,7 @@ RSpec.describe ProtectedBranch, feature_category: :source_code_management do
   let(:user) { create(:user) }
 
   describe 'associations' do
+    it { is_expected.to have_many(:unprotect_access_levels).inverse_of(:protected_branch) }
     it { is_expected.to have_many(:required_code_owners_sections).class_name('ProtectedBranch::RequiredCodeOwnersSection') }
     it { is_expected.to have_and_belong_to_many(:approval_project_rules) }
 

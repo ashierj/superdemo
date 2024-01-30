@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/dom';
 import { shallowMount } from '@vue/test-utils';
-import List from 'ee/vulnerabilities/components/generic_report/types/list.vue';
+import List from 'ee/vulnerabilities/components/generic_report/types/report_type_list.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 const TEST_DATA = {
@@ -10,7 +10,7 @@ const TEST_DATA = {
   ],
 };
 
-describe('ee/vulnerabilities/components/generic_report/types/list.vue', () => {
+describe('ee/vulnerabilities/components/generic_report/types/report_type_list.vue', () => {
   let wrapper;
 
   const createWrapper = () =>

@@ -4,7 +4,11 @@ group: Security Policies
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Scan result policies **(ULTIMATE ALL)**
+# Scan result policies
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, Self-managed
 
 > Group-level scan result policies [introduced](https://gitlab.com/groups/gitlab-org/-/epics/7622) in GitLab 15.6.
 
@@ -90,7 +94,7 @@ the following sections and tables provide an alternative.
 
 ## Scan result policy schema
 
-> The `approval_settings` fields were [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/418752) in GitLab 16.4 [with flags](../../../administration/feature_flags.md) named `scan_result_policies_block_unprotecting_branches`, `scan_result_any_merge_request`, or `scan_result_policies_block_force_push`. See the `approval_settings` section below for more information.
+> - The `approval_settings` fields were [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/418752) in GitLab 16.4 [with flags](../../../administration/feature_flags.md) named `scan_result_policies_block_unprotecting_branches`, `scan_result_any_merge_request`, or `scan_result_policies_block_force_push`. See the `approval_settings` section below for more information.
 
 | Field               | Type               | Required | Possible values | Description                                              |
 |---------------------|--------------------|----------|-----------------|----------------------------------------------------------|
@@ -295,7 +299,7 @@ actions:
 
 ## Understanding scan result policy approvals
 
-> The branch comparison logic for `scan_finding` was [changed](https://gitlab.com/gitlab-org/gitlab/-/issues/428518) in GitLab 16.8 [with a flag](../../../administration/feature_flags.md) named `scan_result_policy_merge_base_pipeline`. Disabled by default.
+> - The branch comparison logic for `scan_finding` was [changed](https://gitlab.com/gitlab-org/gitlab/-/issues/428518) in GitLab 16.8 [with a flag](../../../administration/feature_flags.md) named `scan_result_policy_merge_base_pipeline`. Disabled by default.
 
 FLAG:
 On self-managed GitLab, by default this feature is not available. To make it available, an administrator can [enable the feature flag](../../../administration/feature_flags.md) named `scan_result_policy_merge_base_pipeline`.
@@ -357,17 +361,28 @@ We have identified in [epic 11020](https://gitlab.com/groups/gitlab-org/-/epics/
 - Findings or errors that cause approval to be required on a scan result policy may not be evident in the Security MR Widget. By using `merge base` in [issue 428518](https://gitlab.com/gitlab-org/gitlab/-/issues/428518) some cases will be addressed. We will additionally be [displaying more granular details](https://gitlab.com/groups/gitlab-org/-/epics/11185) about what caused security policy violations.
 - Security policy violations are distinct compared to findings displayed in the MR widgets. Some violations may not be present in the MR widget. We are working to harmonize our features in [epic 11020](https://gitlab.com/groups/gitlab-org/-/epics/11020) and to display policy violations explicitly in merge requests in [epic 11185](https://gitlab.com/groups/gitlab-org/-/epics/11185).
 
-## Experimental features **(EXPERIMENT)**
+## Experimental features
+
+DETAILS:
+**Status:** Experiment
 
 ### Security policy scopes
 
-To enable these experimental features, a Group owner or administrator must toggle the experimental features by visiting `Settings > General > Permissions and group features`.
+Prerequisites:
 
-![Enabling experimental security policy features](img/experimental-features-policies.png)
+- To enable these experimental features, a group owner or administrator must enable the experimental
+  features:
+  1. On the left sidebar, select **Search or go to** and find your group.
+  1. Select **Settings > General**.
+  1. Expand **Permissions and group features**.
+  1. Select the **Security Policy Scopes** checkbox.
+  1. Optional. Select **Enforce for all subgroups**.
 
-Have feedback on our experimental features? We'd love to hear it! Please share your thoughts in our [feedback issue](https://gitlab.com/gitlab-org/gitlab/-/issues/434425).
+Have feedback on our experimental features? We'd love to hear it! Please share your thoughts in our
+[feedback issue](https://gitlab.com/gitlab-org/gitlab/-/issues/434425).
 
-Security policy enforcement depends first on establishing a link between the group, subgroup, or project on which you want to enforce policies, and the security policy project that contains the
+Security policy enforcement depends first on establishing a link between the group, subgroup, or
+project on which you want to enforce policies, and the security policy project that contains the
 policies. For example, if you are linking policies to a group, a group owner must create the link to
 the security policy project. Then, all policies in the security policy project are inherited by all
 projects in the group.
@@ -428,7 +443,11 @@ scan_result_policy:
 
 ## Troubleshooting
 
-### Merge request rules widget shows a scan result policy is invalid or duplicated **(ULTIMATE SELF)**
+### Merge request rules widget shows a scan result policy is invalid or duplicated
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** Self-managed
 
 On GitLab self-managed from 15.0 to 16.4, the most likely cause is that the project was exported from a group and imported into another, and had scan result policy rules. These rules are stored in a separate project to the one that was exported. As a result, the project contains policy rules that reference entities that don't exist in the imported project's group. The result is policy rules that are invalid, duplicated, or both.
 

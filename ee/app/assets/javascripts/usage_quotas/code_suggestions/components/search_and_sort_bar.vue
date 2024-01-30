@@ -1,17 +1,10 @@
 <script>
-import { __ } from '~/locale';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import {
   FILTERED_SEARCH_TERM,
-  TOKEN_TITLE_PROJECT,
   TOKEN_TYPE_PROJECT,
-  OPERATORS_IS,
-  TOKEN_TITLE_GROUP_INVITE,
   TOKEN_TYPE_GROUP_INVITE,
 } from '~/vue_shared/components/filtered_search_bar/constants';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
-import ProjectToken from 'ee/usage_quotas/code_suggestions/tokens/project_token.vue';
 import { processFilters } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 
 export default {
@@ -19,10 +12,14 @@ export default {
   components: {
     FilteredSearchBar,
   },
-  mixins: [glFeatureFlagMixin()],
   inject: { fullPath: { default: '' } },
   props: {
     sortOptions: {
+      type: Array,
+      default: () => [],
+      required: false,
+    },
+    tokens: {
       type: Array,
       default: () => [],
       required: false,
@@ -32,38 +29,6 @@ export default {
     return {
       search: undefined,
     };
-  },
-  computed: {
-    isFilteringEnabled() {
-      return this.glFeatures.enableAddOnUsersFiltering;
-    },
-    tokens() {
-      if (!this.isFilteringEnabled) return [];
-
-      return [
-        {
-          fullPath: this.fullPath,
-          icon: 'project',
-          operators: OPERATORS_IS,
-          title: TOKEN_TITLE_PROJECT,
-          token: ProjectToken,
-          type: TOKEN_TYPE_PROJECT,
-          unique: true,
-        },
-        {
-          options: [
-            { value: 'true', title: __('Yes') },
-            { value: 'false', title: __('No') },
-          ],
-          icon: 'user',
-          operators: OPERATORS_IS,
-          title: TOKEN_TITLE_GROUP_INVITE,
-          token: BaseToken,
-          type: TOKEN_TYPE_GROUP_INVITE,
-          unique: true,
-        },
-      ];
-    },
   },
   methods: {
     handleFilter(filterOptions) {

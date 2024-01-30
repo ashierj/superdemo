@@ -27,7 +27,7 @@ RSpec.describe Analytics::ValueStreamDashboard::TopLevelGroupCounterService, fea
 
   let(:raw_cursor) { { top_level_namespace_id: aggregation.id } }
   let(:cursor) { described_class.load_cursor(raw_cursor: raw_cursor) }
-  let(:runtime_limiter) { Analytics::CycleAnalytics::RuntimeLimiter.new }
+  let(:runtime_limiter) { Gitlab::Metrics::RuntimeLimiter.new }
   let(:group_namespace_ids) { group.self_and_descendant_ids.pluck(:id) }
   let(:project_namespace_ids) { group.all_projects.pluck(:project_namespace_id) }
 

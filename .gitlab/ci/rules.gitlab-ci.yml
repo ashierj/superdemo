@@ -2534,7 +2534,7 @@
 
 .static-analysis:rules:trigger-depsaster:
   rules:
-    - if: $ENABLE_DEPSASTER != 'true'
+    - if: "$ENABLE_DEPSASTER != 'true'"
       when: never
     - <<: *if-fork-merge-request
       when: never
@@ -2565,9 +2565,11 @@
   rules:
     # Requiring $DEPENDENCY_REVIEW_PAT prevents the bot from running on forks or CE
     # Without it the script would fail too.
-    - if: $ENABLE_DEPSCORE != 'true'
+    - if: "$ENABLE_DEPSCORE != 'true'"
       when: never
     - if: "$DEPENDENCY_REVIEW_PAT == null"
+      when: never
+    - <<: *if-fork-merge-request
       when: never
     - <<: *if-not-ee
       when: never
@@ -2725,7 +2727,8 @@
     - <<: *if-merge-request
       changes:
         - '{,ee/}app/**/*.{js,vue,rb,haml}'
-    - <<: *if-default-refs
+    - <<: *if-default-branch-refs
+      allow_failure: true
 
 ################
 # Review rules #
@@ -2935,6 +2938,11 @@
   rules:
     - <<: *if-default-refs
       changes: *code-patterns
+
+.preflight:rules:ruby_syntax:
+  rules:
+    - <<: *if-default-refs
+      changes: *backend-patterns
 
 .preflight:rules:no-ee-check:
   rules:

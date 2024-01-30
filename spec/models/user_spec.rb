@@ -1755,6 +1755,53 @@ RSpec.describe User, feature_category: :user_profile do
     end
   end
 
+  context 'when after_update_commit :update_default_organization_user on default organization' do
+    let_it_be(:default_organization) { create(:organization, :default) }
+
+    context 'when user is changed to an instance admin' do
+      let_it_be(:user) { create(:user) }
+
+      it 'changes user to owner in the organization' do
+        expect(default_organization.owner?(user)).to be(false)
+
+        expect { user.update!(admin: true) }.not_to change { Organizations::OrganizationUser.count }
+        expect(default_organization.owner?(user)).to be(true)
+      end
+
+      context 'when non admin attribute is updated' do
+        it 'does not change the organization_user' do
+          expect(default_organization.owner?(user)).to be(false)
+
+          expect { user.update!(name: 'Bob') }.not_to change { Organizations::OrganizationUser.count }
+          expect(default_organization.owner?(user)).to be(false)
+        end
+      end
+    end
+
+    context 'when user is changed from admin to regular user' do
+      let_it_be(:user) { create(:admin) }
+
+      it 'changes user to default access_level in organization' do
+        expect(default_organization.owner?(user)).to be(true)
+
+        expect { user.update!(admin: false) }.not_to change { Organizations::OrganizationUser.count }
+        expect(default_organization.owner?(user)).to be(false)
+        expect(default_organization.user?(user)).to be(true)
+      end
+    end
+
+    context 'when user did not already exist in the default organization' do
+      let_it_be(:user) { create(:user, :without_default_org) }
+
+      it 'changes user to owner in the organization' do
+        expect(default_organization.user?(user)).to be(false)
+
+        expect { user.update!(admin: true) }.to change { Organizations::OrganizationUser.count }
+        expect(default_organization.owner?(user)).to be(true)
+      end
+    end
+  end
+
   context 'when after_create_commit :create_default_organization_user on default organization' do
     let_it_be(:default_organization) { create(:organization, :default) }
     let(:user) { create(:user) }
@@ -4152,28 +4199,55 @@ RSpec.describe User, feature_category: :user_profile do
   end
 
   describe '#sanitize_attrs' do
-    let(:user) { build(:user, name: 'test <& user', skype: 'test&user') }
+    let(:user) { build(:user, name: 'test & user', skype: 'test&user') }
 
     it 'does not encode HTML entities in the name attribute' do
       expect { user.sanitize_attrs }.not_to change { user.name }
     end
 
-    it 'sanitizes attr from html tags' do
-      user = create(:user, name: '<a href="//example.com">Test<a>')
+    context 'for name attribute' do
+      subject { user.name }
 
-      expect(user.name).to eq('Test')
-    end
+      before do
+        user.name = input_name
+        user.sanitize_attrs
+      end
 
-    it 'sanitizes attr from js scripts' do
-      user = create(:user, name: '<script>alert("Test")</script>')
+      context 'from html tags' do
+        let(:input_name) { '<a href="//example.com">Test<a>' }
 
-      expect(user.name).to eq("alert(\"Test\")")
-    end
+        it { is_expected.to eq('-Test-') }
+      end
 
-    it 'sanitizes attr from iframe scripts' do
-      user = create(:user, name: 'User"><iframe src=javascript:alert()><iframe>')
+      context 'from unclosed html tags' do
+        let(:input_name) { 'a<a class="js-evil" href=/api/v4' }
 
-      expect(user.name).to eq('User">')
+        it { is_expected.to eq('a-a class="js-evil" href=/api/v4') }
+      end
+
+      context 'from closing html brackets' do
+        let(:input_name) { 'alice some> tag' }
+
+        it { is_expected.to eq('alice some- tag') }
+      end
+
+      context 'from self-closing tags' do
+        let(:input_name) { '</link>alice' }
+
+        it { is_expected.to eq('-alice') }
+      end
+
+      context 'from js scripts' do
+        let(:input_name) { '<script>alert("Test")</script>' }
+
+        it { is_expected.to eq('-alert("Test")-') }
+      end
+
+      context 'from iframe scripts' do
+        let(:input_name) { 'User"><iframe src=javascript:alert()><iframe>' }
+
+        it { is_expected.to eq('User"---') }
+      end
     end
   end
 

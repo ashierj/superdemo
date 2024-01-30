@@ -47,7 +47,7 @@ to AI that you think could benefit from being in this list, add it!
   embeddings are stored in the `vertex_gitlab_docs` database table in the
   `embeddings` database. The embeddings search is done in Postgres using the
   `vector` extension. The vertex embeddings database is updated based on the
-  latest version of GitLab documentation on daily basis by running `Llm::Embedding::GitlabDocumentation::CreateEmptyEmbeddingsRecordsWorker` as a cronjob. 
+  latest version of GitLab documentation on daily basis by running `Llm::Embedding::GitlabDocumentation::CreateEmptyEmbeddingsRecordsWorker` as a cronjob.
 - **Golden Questions**: a small subset of the types of questions we think a user
   should be able to ask GitLab Duo Chat. Used to generate data for Chat evaluation.
   [Questions for Chat Beta](https://gitlab.com/groups/gitlab-org/-/epics/10550#what-the-user-can-ask).
@@ -56,7 +56,7 @@ to AI that you think could benefit from being in this list, add it!
   learn and predict. Ground truth data is usually human-annotated.
 - **Model Validation**: group within the AI-powered Stage working on the Prompt
   Library and researching AI/ML models to support other use-cases for AI at GitLab.
-  [Team handbook section](https://about.gitlab.com/handbook/product/categories/features/#ai-poweredai-model-validation-group).
+  [Team handbook section](https://handbook.gitlab.com/handbook/product/categories/features/#ai-powered-ai-model-validation-group).
 - **Prompt library**: The ["Prompt Library"](https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/prompt-library) is a Python library that provides a CLI for testing different prompting techniques with LLMs. It enables data-driven improvements to LLM applications by facilitating hypothesis testing. Key features include the ability to manage and run dataflow pipelines using Apache Beam, and the execution of multiple evaluation experiments in a single pipeline run.
   on prompts with various third-party AI Services.
   [Code](https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/prompt-library).

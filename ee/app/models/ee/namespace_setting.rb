@@ -179,7 +179,6 @@ module EE
         allow_merge_on_skipped_pipeline
         only_allow_merge_if_all_discussions_are_resolved
         experiment_features_enabled
-        third_party_ai_features_enabled
         service_access_tokens_expiration_enforced
       ].freeze
 

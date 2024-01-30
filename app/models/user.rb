@@ -73,9 +73,10 @@ class User < MainClusterwide::ApplicationRecord
   FEED_TOKEN_PREFIX = 'glft-'
 
   # lib/tasks/tokens.rake needs to be updated when changing mail and feed tokens
-  add_authentication_token_field :incoming_email_token, token_generator: -> { self.generate_incoming_mail_token }
+  add_authentication_token_field :incoming_email_token, token_generator: -> { self.generate_incoming_mail_token } # rubocop:disable Gitlab/TokenWithoutPrefix -- wontfix: the prefix is in the generator
   add_authentication_token_field :feed_token, format_with_prefix: :prefix_for_feed_token
-  add_authentication_token_field :static_object_token, encrypted: :optional
+  # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/439294
+  add_authentication_token_field :static_object_token, encrypted: :optional # rubocop:todo Gitlab/TokenWithoutPrefix -- https://gitlab.com/gitlab-org/gitlab/-/issues/439294
 
   attribute :admin, default: false
   attribute :external, default: -> { Gitlab::CurrentSettings.user_default_external }
@@ -374,6 +375,7 @@ class User < MainClusterwide::ApplicationRecord
   end
 
   after_create_commit :create_default_organization_user
+  after_update_commit :update_default_organization_user, if: -> { saved_change_to_admin }
 
   # User's Layout preference
   enum layout: { fixed: 0, fluid: 1 }
@@ -1486,7 +1488,7 @@ class User < MainClusterwide::ApplicationRecord
   def sanitize_name
     return unless self.name
 
-    self.name = self.name.gsub(%r{</?[^>]*>}, '')
+    self.name = self.name.gsub(%r{(?:</?[^>]*>|<|>)}, '-')
   end
 
   def unset_secondary_emails_matching_deleted_email!(deleted_email)
@@ -2607,20 +2609,19 @@ class User < MainClusterwide::ApplicationRecord
   def create_default_organization_user
     return unless Feature.enabled?(:update_default_organization_users, self, type: :gitlab_com_derisk)
 
-    organization_access_level = if admin?
-                                  :owner
-                                else
-                                  :default
-                                end
-
-    Organizations::OrganizationUser
-      .create_default_organization_record_for(id, organization_access_level)
+    Organizations::OrganizationUser.create_default_organization_record_for(id, user_is_admin: admin?)
   end
 
-  # method overriden in EE
+  def update_default_organization_user
+    return unless Feature.enabled?(:update_default_organization_users, self, type: :gitlab_com_derisk)
+
+    Organizations::OrganizationUser.update_default_organization_record_for(id, user_is_admin: admin?)
+  end
+
+  # method overridden in EE
   def audit_lock_access(reason: nil); end
 
-  # method overriden in EE
+  # method overridden in EE
   def audit_unlock_access(author: self); end
 end
 

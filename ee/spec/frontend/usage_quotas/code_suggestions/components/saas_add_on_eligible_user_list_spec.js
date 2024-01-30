@@ -14,6 +14,15 @@ import {
 } from 'ee/usage_quotas/error_constants';
 import SearchAndSortBar from 'ee/usage_quotas/code_suggestions/components/search_and_sort_bar.vue';
 import { SORT_OPTIONS } from 'ee/usage_quotas/code_suggestions/constants';
+import {
+  TOKEN_TITLE_PROJECT,
+  TOKEN_TYPE_PROJECT,
+  OPERATORS_IS,
+  TOKEN_TITLE_GROUP_INVITE,
+  TOKEN_TYPE_GROUP_INVITE,
+} from '~/vue_shared/components/filtered_search_bar/constants';
+import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
+import ProjectToken from 'ee/usage_quotas/code_suggestions/tokens/project_token.vue';
 
 Vue.use(VueApollo);
 
@@ -103,6 +112,32 @@ describe('Add On Eligible User List', () => {
 
       it('passes the correct sort options to <search-and-sort-bar>', () => {
         expect(findSearchAndSortBar().props('sortOptions')).toStrictEqual(SORT_OPTIONS);
+      });
+
+      it('passes the correct tokens to <search-and-sort-bar>', () => {
+        expect(findSearchAndSortBar().props('tokens')).toStrictEqual([
+          {
+            fullPath,
+            icon: 'project',
+            operators: OPERATORS_IS,
+            title: TOKEN_TITLE_PROJECT,
+            token: ProjectToken,
+            type: TOKEN_TYPE_PROJECT,
+            unique: true,
+          },
+          {
+            options: [
+              { value: 'true', title: 'Yes' },
+              { value: 'false', title: 'No' },
+            ],
+            icon: 'user',
+            operators: OPERATORS_IS,
+            title: TOKEN_TITLE_GROUP_INVITE,
+            token: BaseToken,
+            type: TOKEN_TYPE_GROUP_INVITE,
+            unique: true,
+          },
+        ]);
       });
     });
 

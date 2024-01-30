@@ -269,6 +269,7 @@ RSpec.describe EE::IssuesHelper, feature_category: :team_planning do
           blocked_issues: true,
           issuable_health_status: true,
           issue_weights: true,
+          okrs: true,
           scoped_labels: true
         )
       end
@@ -278,6 +279,7 @@ RSpec.describe EE::IssuesHelper, feature_category: :team_planning do
           has_blocked_issues_feature: 'true',
           has_issuable_health_status_feature: 'true',
           has_issue_weights_feature: 'true',
+          has_okrs_feature: 'true',
           has_scoped_labels_feature: 'true'
         }
 
@@ -291,6 +293,7 @@ RSpec.describe EE::IssuesHelper, feature_category: :team_planning do
           blocked_issues: false,
           issuable_health_status: false,
           issue_weights: false,
+          okrs: false,
           scoped_labels: false
         )
       end
@@ -300,6 +303,7 @@ RSpec.describe EE::IssuesHelper, feature_category: :team_planning do
           has_blocked_issues_feature: 'false',
           has_issuable_health_status_feature: 'false',
           has_issue_weights_feature: 'false',
+          has_okrs_feature: 'false',
           has_scoped_labels_feature: 'false'
         }
 

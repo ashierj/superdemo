@@ -2112,6 +2112,18 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
 
       expect(projects).to eq([project3, project1, project2])
     end
+
+    it 'reorders the input relation by path asc' do
+      projects = described_class.sort_by_attribute(:path_asc)
+
+      expect(projects).to eq([project1, project2, project3].sort_by(&:path))
+    end
+
+    it 'reorders the input relation by path desc' do
+      projects = described_class.sort_by_attribute(:path_desc)
+
+      expect(projects).to eq([project1, project2, project3].sort_by(&:path).reverse)
+    end
   end
 
   describe '.with_shared_runners_enabled' do
@@ -3032,8 +3044,53 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
 
           expect(project.project_repository).to have_attributes(
             disk_path: project.disk_path,
-            shard_name: project.repository_storage
+            shard_name: project.repository_storage,
+            object_format: 'sha1'
           )
+        end
+
+        context 'when repository is missing' do
+          let(:project) { create(:project) }
+
+          it 'sets a default sha1 object format' do
+            project.track_project_repository
+
+            expect(project.project_repository).to have_attributes(
+              disk_path: project.disk_path,
+              shard_name: project.repository_storage,
+              object_format: 'sha1'
+            )
+          end
+        end
+
+        context 'when repository has sha256 object format' do
+          let(:project) { create(:project, :empty_repo, object_format: 'sha256') }
+
+          it 'tracks a correct object format' do
+            project.track_project_repository
+
+            expect(project.project_repository).to have_attributes(
+              disk_path: project.disk_path,
+              shard_name: project.repository_storage,
+              object_format: 'sha256'
+            )
+          end
+
+          context 'when feature flag "store_object_format" is disabled' do
+            before do
+              stub_feature_flags(store_object_format: false)
+            end
+
+            it 'tracks a SHA1 object format' do
+              project.track_project_repository
+
+              expect(project.project_repository).to have_attributes(
+                disk_path: project.disk_path,
+                shard_name: project.repository_storage,
+                object_format: 'sha1'
+              )
+            end
+          end
         end
       end
 
@@ -3048,12 +3105,14 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
         it 'updates the project storage location' do
           allow(project).to receive(:disk_path).and_return('fancy/new/path')
           allow(project).to receive(:repository_storage).and_return('foo')
+          allow(project.repository).to receive(:object_format).and_return('sha1')
 
           project.track_project_repository
 
           expect(project.project_repository).to have_attributes(
             disk_path: 'fancy/new/path',
-            shard_name: 'foo'
+            shard_name: 'foo',
+            object_format: 'sha1'
           )
         end
 
@@ -3062,6 +3121,7 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
 
           allow(project).to receive(:disk_path).and_return('fancy/new/path')
           allow(project).to receive(:repository_storage).and_return('foo')
+          allow(project.repository).to receive(:object_format).and_return('sha1')
 
           project.track_project_repository
 
@@ -3071,13 +3131,13 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
     end
 
     context 'with projects on legacy storage' do
-      let(:project) { create(:project, :legacy_storage) }
+      let_it_be_with_reload(:project) { create(:project, :empty_repo, :legacy_storage) }
 
       it_behaves_like 'tracks storage location'
     end
 
     context 'with projects on hashed storage' do
-      let(:project) { create(:project) }
+      let_it_be_with_reload(:project) { create(:project, :empty_repo) }
 
       it_behaves_like 'tracks storage location'
     end
@@ -3353,28 +3413,6 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
       it 'returns the correct path' do
         expect(project.ci_config_path.presence || :default).to eq(expected_ci_config_path)
       end
-    end
-  end
-
-  describe '#uses_default_ci_config?' do
-    let(:project) { build(:project) }
-
-    it 'has a custom ci config path' do
-      project.ci_config_path = 'something_custom'
-
-      expect(project.uses_default_ci_config?).to be_falsey
-    end
-
-    it 'has a blank ci config path' do
-      project.ci_config_path = ''
-
-      expect(project.uses_default_ci_config?).to be_truthy
-    end
-
-    it 'does not have a custom ci config path' do
-      project.ci_config_path = nil
-
-      expect(project.uses_default_ci_config?).to be_truthy
     end
   end
 
@@ -5275,15 +5313,9 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
   describe '#has_ci?' do
     let_it_be(:project, reload: true) { create(:project) }
 
-    let(:repository) { double }
-
-    before do
-      expect(project).to receive(:repository) { repository }
-    end
-
     context 'when has .gitlab-ci.yml' do
       before do
-        expect(repository).to receive(:gitlab_ci_yml) { 'content' }
+        expect(project).to receive(:has_ci_config_file?) { true }
       end
 
       it "CI is available" do
@@ -5293,7 +5325,7 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
 
     context 'when there is no .gitlab-ci.yml' do
       before do
-        expect(repository).to receive(:gitlab_ci_yml) { nil }
+        expect(project).to receive(:has_ci_config_file?) { false }
       end
 
       it "CI is available" do
@@ -5308,6 +5340,63 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
         it "CI is not available" do
           expect(project).not_to have_ci
         end
+      end
+    end
+  end
+
+  describe '#has_ci_config_file?' do
+    subject(:has_ci_config_file) { project.has_ci_config_file? }
+
+    # Extract these from `shared_examples` when the FF ci_refactor_has_ci_config_file is removed.
+    shared_examples '#has_ci_config_file?' do
+      context 'when the repository does not exist' do
+        let_it_be(:project) { create(:project) }
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when the repository has a .gitlab-ci.yml file' do
+        let_it_be(:project) { create(:project, :small_repo, files: { '.gitlab-ci.yml' => 'test' }) }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when the repository does not have a .gitlab-ci.yml file' do
+        let_it_be(:project) { create(:project, :small_repo, files: { 'README.md' => 'hello' }) }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+
+    context 'when the FF ci_refactor_has_ci_config_file is enabled' do
+      it_behaves_like '#has_ci_config_file?'
+
+      context 'when the repository has a custom CI config file' do
+        let_it_be(:project) { create(:project, :small_repo, files: { 'my_ci_file.yml' => 'test' }) }
+
+        before do
+          project.ci_config_path = 'my_ci_file.yml'
+        end
+
+        it { is_expected.to be_truthy }
+      end
+    end
+
+    context 'when the FF ci_refactor_has_ci_config_file is disabled' do
+      before do
+        stub_feature_flags(ci_refactor_has_ci_config_file: false)
+      end
+
+      it_behaves_like '#has_ci_config_file?'
+
+      context 'when the repository has a custom CI config file' do
+        let_it_be(:project) { create(:project, :small_repo, files: { 'my_ci_file.yml' => 'test' }) }
+
+        before do
+          project.ci_config_path = 'my_ci_file.yml'
+        end
+
+        it { is_expected.to be_falsey }
       end
     end
   end

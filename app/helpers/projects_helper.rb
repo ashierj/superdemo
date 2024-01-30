@@ -752,7 +752,7 @@ module ProjectsHelper
     Ability.allowed?(user, :admin_project, project) &&
       project.has_auto_devops_implicitly_enabled? &&
       project.builds_enabled? &&
-      !project.repository.gitlab_ci_yml
+      !project.has_ci_config_file?
   end
 
   def show_visibility_confirm_modal?(project)
@@ -800,7 +800,7 @@ module ProjectsHelper
       group_title(project.group)
     else
       owner = project.namespace.owner
-      name = simple_sanitize(owner.name)
+      name = sanitize(owner.name, tags: [])
       url = user_path(owner)
 
       push_to_schema_breadcrumb(name, url)

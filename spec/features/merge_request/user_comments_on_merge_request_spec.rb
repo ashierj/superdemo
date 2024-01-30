@@ -33,7 +33,9 @@ RSpec.describe 'User comments on a merge request', :js, feature_category: :code_
     end
   end
 
-  it_behaves_like 'edits content using the content editor'
+  context 'with content editor', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/439368' do
+    it_behaves_like 'edits content using the content editor'
+  end
 
   it 'replys to a new comment' do
     page.within('.js-main-target-form') do
@@ -92,7 +94,9 @@ RSpec.describe 'User comments on a merge request', :js, feature_category: :code_
     end
 
     wait_for_requests
-    expect(page.html).to include('Are you sure you want to cancel creating this comment?')
+    page.within('.modal-dialog') do
+      expect(page).to have_content('Are you sure you want to cancel creating this comment?')
+    end
   end
 
   it 'loads new comment' do

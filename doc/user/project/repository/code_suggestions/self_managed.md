@@ -4,7 +4,11 @@ group: Code Creation
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Code Suggestions on self-managed GitLab **(PREMIUM SELF)**
+# Code Suggestions on self-managed GitLab
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 > - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10653) in GitLab 16.1 as [Beta](../../../../policy/experiment-beta-support.md#beta) on self-managed GitLab.
 > - [Introduced support for Google Vertex AI Codey APIs](https://gitlab.com/groups/gitlab-org/-/epics/10562) in GitLab 16.1.
@@ -23,12 +27,12 @@ GitLab Duo Code Suggestions are available on GitLab Enterprise Edition.
 
 Code Suggestions are not available for GitLab Community Edition.
 
-> In GitLab 16.3 and later, to participate in the free trial of Code Suggestions on self-managed GitLab, you must:
->
-> - Be a Premium or Ultimate customer.
-> - Have activated cloud licensing.
+In GitLab 16.3 and later, to participate in the free trial of Code Suggestions on self-managed GitLab, you must:
 
-Usage of Code Suggestions is governed by the [GitLab Testing Agreement](https://about.gitlab.com/handbook/legal/testing-agreement/).
+- Be a Premium or Ultimate customer.
+- Have activated cloud licensing.
+
+Usage of Code Suggestions is governed by the [GitLab Testing Agreement](https://handbook.gitlab.com/handbook/legal/testing-agreement/).
 Learn about [data usage when using Code Suggestions](index.md#code-suggestions-data-usage).
 
 ## Enable Code Suggestions on self-managed GitLab
@@ -38,7 +42,7 @@ Learn about [data usage when using Code Suggestions](index.md#code-suggestions-d
 
 When you enable Code Suggestions for your self-managed instance, you:
 
-- Agree to the [GitLab testing agreement](https://about.gitlab.com/handbook/legal/testing-agreement/).
+- Agree to the [GitLab testing agreement](https://handbook.gitlab.com/handbook/legal/testing-agreement/).
 - Acknowledge that GitLab sends data from the instance, including personal data, to GitLab.com infrastructure.
 
 How you enable Code Suggestions for your instance differs depending on your

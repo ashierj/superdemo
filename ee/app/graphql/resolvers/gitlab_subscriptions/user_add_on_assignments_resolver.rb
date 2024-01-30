@@ -25,11 +25,11 @@ module Resolvers
                     .for_user_ids(user_ids)
                     .for_active_add_on_purchase_ids(args[:add_on_purchase_ids])
 
-          query = query.with_namespaces if gitlab_saas?
+          query = query.with_namespaces if gitlab_com_subscription?
 
           user_assignments = apply_lookahead(query)
 
-          if gitlab_saas?
+          if gitlab_com_subscription?
             namespaces_for_auth = user_assignments.map { |assignment| assignment.add_on_purchase.namespace }
             Preloaders::GroupPolicyPreloader.new(namespaces_for_auth, current_user).execute
           end

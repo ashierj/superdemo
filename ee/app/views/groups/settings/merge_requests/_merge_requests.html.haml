@@ -1,4 +1,4 @@
-- if Feature.enabled?(:support_group_level_merge_checks_setting, @group) && @group.licensed_feature_available?(:group_level_merge_checks_setting)
+- if @group.licensed_feature_available?(:group_level_merge_checks_setting)
   %section.settings.no-animate#js-merge-requests-settings{ class: ('expanded' if expanded) }
     .settings-header
       %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only{ role: 'button' }

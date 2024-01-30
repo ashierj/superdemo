@@ -5,7 +5,11 @@ description: Recommended deployments at scale.
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Reference architectures **(FREE SELF)**
+# Reference architectures
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** Self-managed
 
 The GitLab Reference Architectures have been designed and tested by the
 GitLab Quality Engineering and Support teams to provide recommended deployments at scale.
@@ -359,7 +363,7 @@ Additionally, the following cloud provider services are recommended for use as p
     <td>Redis</td>
     <td>🟢 &nbsp; <a href="https://cloud.google.com/memorystore" target="_blank" rel="noopener noreferrer">Memorystore</a></td>
     <td>🟢 &nbsp; <a href="https://aws.amazon.com/elasticache/" target="_blank" rel="noopener noreferrer">ElastiCache</a></td>
-    <td>🟢 &nbsp; <a href="https://azure.microsoft.com/en-gb/products/cache" target="_blank" rel="noopener noreferrer">Azure Cache for Redis (Premium)</a></td>
+    <td>🟡 &nbsp; <a href="https://azure.microsoft.com/en-gb/products/cache" target="_blank" rel="noopener noreferrer">Azure Cache for Redis (Premium).</a> From GitLab 16.8, GitLab requires Redis 6.2 or higher, which is not supported by Azure Cache for Redis.</td>
     <td></td>
   </tr>
 </tbody>
@@ -447,7 +451,7 @@ For deploying GitLab over multiple data centers or regions we offer [GitLab Geo]
 
 ## Validation and test results
 
-The [Quality Engineering team](https://about.gitlab.com/handbook/engineering/quality/quality-engineering/)
+The [Quality Engineering team](https://handbook.gitlab.com/handbook/engineering/quality/)
 does regular smoke and performance tests for the reference architectures to ensure they
 remain compliant.
 
@@ -457,7 +461,7 @@ The Quality Department has a focus on measuring and improving the performance
 of GitLab, as well as creating and validating reference architectures that
 self-managed customers can rely on as performant configurations.
 
-For more information, see our [handbook page](https://about.gitlab.com/handbook/engineering/quality/performance-and-scalability/).
+For more information, see our [handbook page](https://handbook.gitlab.com/handbook/engineering/infrastructure/test-platform/performance-and-scalability/).
 
 ### How we perform the tests
 

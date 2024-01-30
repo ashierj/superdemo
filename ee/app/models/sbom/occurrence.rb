@@ -63,11 +63,19 @@ module Sbom
     end
 
     scope :by_licenses, ->(licenses, depth: 1) do
-      query_parts = (0..depth).map do |index|
+      unknown, ids = licenses.partition { |id| id.casecmp?("unknown") }
+
+      id_filters = (0..depth).map do |index|
         "(licenses#>'{#{index},spdx_identifier}' ?| array[:licenses])"
       end
 
-      where(query_parts.join(' OR '), licenses: Array(licenses))
+      query_parts = []
+      query_parts.append(*id_filters) if ids.present?
+      query_parts.append("licenses = '[]'") if unknown.present?
+
+      return none unless query_parts.present?
+
+      where(query_parts.join(' OR '), licenses: Array(ids))
     end
 
     scope :by_project_ids, ->(project_ids) { where(project_id: project_ids) }

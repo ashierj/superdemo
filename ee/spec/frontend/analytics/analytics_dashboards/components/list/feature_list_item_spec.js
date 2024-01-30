@@ -1,4 +1,4 @@
-import { GlAvatar, GlIcon, GlBadge, GlButton } from '@gitlab/ui';
+import { GlIcon, GlBadge, GlButton } from '@gitlab/ui';
 import FeatureListItem from 'ee/analytics/analytics_dashboards/components/list/feature_list_item.vue';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import { __ } from '~/locale';
@@ -8,7 +8,6 @@ describe('FeatureListItem', () => {
   let wrapper;
 
   const findIcon = () => wrapper.findComponent(GlIcon);
-  const findAvatar = () => wrapper.findComponent(GlAvatar);
   const findBadge = () => wrapper.findComponent(GlBadge);
   const findButton = () => wrapper.findComponent(GlButton);
   const findButtonLink = () => findButton().find('a');
@@ -48,14 +47,6 @@ describe('FeatureListItem', () => {
       });
     });
 
-    it('renders the setup avatar', () => {
-      expect(findAvatar().props()).toMatchObject({
-        entityName: '💡',
-        entityId: 1,
-        size: 32,
-      });
-    });
-
     it('renders the button with default text', () => {
       expect(findButton().text()).toBe(__('Set up'));
     });
@@ -88,16 +79,6 @@ describe('FeatureListItem', () => {
 
     it('renders a badge with the badge text', () => {
       expect(findButton().text()).toBe('do something');
-    });
-  });
-
-  describe('avatar name', () => {
-    beforeEach(() => {
-      createWrapper({ avatarName: 'foobar' });
-    });
-
-    it('sets the avatar name', () => {
-      expect(findAvatar().props('entityName')).toBe('foobar');
     });
   });
 });

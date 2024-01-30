@@ -288,7 +288,7 @@ export default {
               class="gl-font-weight-bold gl-text-gray-900"
               >{{ item.title }}</gl-link
             >
-            <ul class="horizontal-list gl-mb-0">
+            <ul class="horizontal-list gl-mt-2 gl-mb-0">
               <li class="gl-mr-3">{{ formatMergeRequestId(item.iid) }}</li>
               <li v-if="hasPipelineNodes(item) && item.pipelines.nodes.length" class="gl-mr-3">
                 <gl-icon

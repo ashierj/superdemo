@@ -4,7 +4,11 @@ group: Import and Integrate
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Import your project from Bitbucket Server **(FREE ALL)**
+# Import your project from Bitbucket Server
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 > - Ability to re-import projects [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/23905) in GitLab 15.9.
 > - Ability to import reviewers [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/416611) in GitLab 16.3.
@@ -17,7 +21,7 @@ This process is different than [importing from Bitbucket Cloud](bitbucket.md).
 
 ## Prerequisites
 
-> Requirement for Maintainer role instead of Developer role introduced in GitLab 16.0 and backported to GitLab 15.11.1 and GitLab 15.10.5.
+> - Requirement for Maintainer role instead of Developer role introduced in GitLab 16.0 and backported to GitLab 15.11.1 and GitLab 15.10.5.
 
 - [Bitbucket Server import source](../../../administration/settings/import_and_export_settings.md#configure-allowed-import-sources)
   must be enabled. If not enabled, ask your GitLab administrator to enable it. The Bitbucket Server import source is enabled
@@ -145,3 +149,15 @@ for Bitbucket Cloud.
 If the project import completes but LFS objects can't be downloaded or cloned, you may be using a
 password or personal access token containing special characters. For more information, see
 [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/337769).
+
+### Import fails due to invalid/unresolved host address, or the import URL is blocked
+
+If a project import fails with an error message such as `Importing the project failed: Import url is blocked`, even though the initial connection to the Bitbucket
+server succeeded, the Bitbucket server or a reverse proxy might not be configured correctly.
+
+To troubleshoot this problem, use the [Projects API](../../../api/projects.md) to check for the newly-created project and locate the `import_url` value of the project.
+
+This value indicates the URL provided by the Bitbucket server to use for the import. If this URL isn't publicly resolvable, you can get unresolvable address errors.
+
+To fix this problem, ensure that the Bitbucket server is aware of any proxy servers because proxy servers can impact how Bitbucket constructs and uses URLs.
+For more information, see [Atlassian's documentation](https://confluence.atlassian.com/bitbucketserver/proxy-and-secure-bitbucket-776640099.html).

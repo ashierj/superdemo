@@ -1,8 +1,10 @@
 import { GlLink } from '@gitlab/ui';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { WIDGET } from 'ee/contextual_sidebar/components/constants';
 import TrialStatusWidget from 'ee/contextual_sidebar/components/trial_status_widget.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
+import { stubExperiments } from 'helpers/experimentation_helper';
+import { __ } from '~/locale';
 
 describe('TrialStatusWidget component', () => {
   let wrapper;
@@ -12,9 +14,11 @@ describe('TrialStatusWidget component', () => {
   const trialDuration = 30;
 
   const findGlLink = () => wrapper.findComponent(GlLink);
+  const findLearnAboutFeaturesBtn = () => wrapper.findByTestId('learn-about-features-btn');
+  const findLearnAboutFeaturesLink = () => wrapper.findByTestId('learn-about-features-link');
 
   const createComponent = (providers = {}) => {
-    return shallowMountExtended(TrialStatusWidget, {
+    return mountExtended(TrialStatusWidget, {
       provide: {
         trialDaysUsed,
         trialDuration,
@@ -22,8 +26,10 @@ describe('TrialStatusWidget component', () => {
         percentageComplete: 10,
         planName: 'Ultimate',
         plansHref: 'billing/path-for/group',
+        trialDiscoverPagePath: 'discover-path',
         ...providers,
       },
+      stubs: { GlLink: true },
     });
   };
 
@@ -114,6 +120,58 @@ describe('TrialStatusWidget component', () => {
 
     it('renders with the given id', () => {
       expect(findGlLink().attributes('id')).toBe('some-id');
+    });
+  });
+
+  describe('trial_discover_page experiment', () => {
+    describe('when experiment is control', () => {
+      beforeEach(() => {
+        stubExperiments({ trial_discover_page: 'control' });
+      });
+
+      describe('when trial is active', () => {
+        it('does not render link to discover page', () => {
+          wrapper = createComponent();
+
+          expect(wrapper.text()).not.toContain(__('Learn about features'));
+          expect(findLearnAboutFeaturesBtn().exists()).toBe(false);
+        });
+      });
+
+      describe('when trial is expired', () => {
+        it('does not render link to discover page', () => {
+          wrapper = createComponent({ percentageComplete: 110 });
+
+          expect(wrapper.text()).not.toContain(__('Learn about features'));
+          expect(findLearnAboutFeaturesLink().exists()).toBe(false);
+        });
+      });
+    });
+
+    describe('when experiment is candidate', () => {
+      beforeEach(() => {
+        stubExperiments({ trial_discover_page: 'candidate' });
+      });
+
+      describe('when trial is active', () => {
+        it('renders link to discover page', () => {
+          wrapper = createComponent();
+
+          expect(wrapper.text()).toContain(__('Learn about features'));
+          expect(findLearnAboutFeaturesBtn().exists()).toBe(true);
+          expect(findLearnAboutFeaturesBtn().attributes('href')).toBe('discover-path');
+        });
+      });
+
+      describe('when trial is expired', () => {
+        it('renders link to discover page', () => {
+          wrapper = createComponent({ percentageComplete: 110 });
+
+          expect(wrapper.text()).toContain(__('Learn about features'));
+          expect(findLearnAboutFeaturesLink().exists()).toBe(true);
+          expect(findLearnAboutFeaturesLink().attributes('href')).toBe('discover-path');
+        });
+      });
     });
   });
 });

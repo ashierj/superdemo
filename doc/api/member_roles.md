@@ -4,7 +4,11 @@ group: Authentication
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Member roles API **(ULTIMATE ALL)**
+# Member roles API
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96996) in GitLab 15.4. [Deployed behind the `customizable_roles` flag](../administration/feature_flags.md), disabled by default.
 > - [Enabled by default](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/110810) in GitLab 15.9.
@@ -107,7 +111,7 @@ Example response:
 
 ## Add a member role to a group
 
-> Ability to add a name and description when creating a custom role [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/126423) in GitLab 16.3.
+> - Ability to add a name and description when creating a custom role [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/126423) in GitLab 16.3.
 
 Adds a member role to a group.
 

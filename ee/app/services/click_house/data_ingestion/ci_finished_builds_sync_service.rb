@@ -19,7 +19,7 @@ module ClickHouse
       end
 
       def initialize(worker_index: 0, total_workers: 1)
-        @runtime_limiter = Analytics::CycleAnalytics::RuntimeLimiter.new(MAX_RUNTIME)
+        @runtime_limiter = Gitlab::Metrics::RuntimeLimiter.new(MAX_RUNTIME)
         @worker_index = worker_index
         @total_workers = total_workers
       end

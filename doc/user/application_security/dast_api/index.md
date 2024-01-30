@@ -4,7 +4,11 @@ group: Dynamic Analysis
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# DAST API analyzer **(ULTIMATE ALL)**
+# DAST API analyzer
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, Self-managed
 
 > DAST API analyzer [became the default analyzer for on-demand DAST API scans](https://gitlab.com/groups/gitlab-org/-/epics/4254) in GitLab 15.6.
 
@@ -205,7 +209,7 @@ This example is a minimal configuration for DAST API. From here you can:
 
 ### GraphQL Schema
 
-> Support for GraphQL Schema was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/352780) in GitLab 15.4.
+> - Support for GraphQL Schema was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/352780) in GitLab 15.4.
 
 GraphQL is a query language for your API and an alternative to REST APIs.
 DAST API supports testing GraphQL endpoints multiple ways:
@@ -1342,7 +1346,7 @@ variables:
 
 ### Debugging overrides
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/334578) in GitLab 14.8.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/334578) in GitLab 14.8.
 
 By default the output of the overrides command is hidden. If the overrides command returns a non zero exit code, the command is displayed as part of your job output. Optionally, you can set the variable `DAST_API_OVERRIDES_CMD_VERBOSE` to any value to display overrides command output as it is generated. This is useful when testing your overrides script, but should be disabled afterwards as it slows down testing.
 
@@ -1376,7 +1380,7 @@ working_directory = os.environ.get( 'CI_PROJECT_DIR')
 overrides_file_name = os.environ.get('DAST_API_OVERRIDES_FILE', 'dast-api-overrides.json')
 overrides_file_path = os.path.join(working_directory, overrides_file_name)
 
-# [2] File name should match the pattern: gl-*.log
+# [2] Filename should match the pattern: gl-*.log
 log_file_path = os.path.join(working_directory, 'gl-user-overrides.log')
 
 # Set up logger
@@ -1556,7 +1560,7 @@ Consider using `DAST_API_REQUEST_HEADERS_BASE64`  when storing secret header val
 
 ## Exclude Paths
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/211892) in GitLab 14.0.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/211892) in GitLab 14.0.
 
 When testing an API it can be useful to exclude certain paths. For example, you might exclude testing of an authentication service or an older version of the API. To exclude paths, use the `DAST_API_EXCLUDE_PATHS` CI/CD variable . This variable is specified in your `.gitlab-ci.yml` file. To exclude multiple paths, separate entries using the `;` character. In the provided paths you can use a single character wildcard `?` and `*` for a multiple character wildcard.
 
@@ -1610,7 +1614,7 @@ variables:
 
 ### Exclude parameters
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/292196) in GitLab 14.10.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/292196) in GitLab 14.10.
 
 While testing an API you may might want to exclude a parameter (query string, header, or body element) from testing. This may be needed because a parameter always causes a failure, slows down testing, or for other reasons. To exclude parameters, you can set one of the following variables: `DAST_API_EXCLUDE_PARAMETER_ENV` or `DAST_API_EXCLUDE_PARAMETER_FILE`.
 
@@ -1839,7 +1843,7 @@ The `dast-api-exclude-parameters.json` is a JSON document that follows the struc
 
 ### Exclude URLs
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/357195) in GitLab 14.10.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/357195) in GitLab 14.10.
 
 As an alternative to excluding by paths, you can filter by any other component in the URL by using the `DAST_API_EXCLUDE_URLS` CI/CD variable. This variable can be set in your `.gitlab-ci.yml` file. The variable can store multiple values, separated by commas (`,`). Each value is a regular expression. Because each entry is a regular expression, an entry like `.*` excludes all URLs because it is a regular expression that matches everything.
 
@@ -2639,7 +2643,7 @@ The following example uses the [statically defined credentials](../../../ci/dock
 To get support for your particular problem, use the [getting help channels](https://about.gitlab.com/get-help/).
 
 The [GitLab issue tracker on GitLab.com](https://gitlab.com/gitlab-org/gitlab/-/issues) is the right place for bugs and feature proposals about API Security and DAST API.
-Use `~"Category:API Security"` [label](../../../development/labels/index.md) when opening a new issue regarding DAST API to ensure it is quickly reviewed by the right people. Refer to our [review response SLO](https://about.gitlab.com/handbook/engineering/workflow/code-review/#review-response-slo) to understand when you should receive a response.
+Use `~"Category:API Security"` [label](../../../development/labels/index.md) when opening a new issue regarding DAST API to ensure it is quickly reviewed by the right people. Refer to our [review response SLO](https://handbook.gitlab.com/handbook/engineering/workflow/code-review/#review-response-slo) to understand when you should receive a response.
 
 [Search the issue tracker](https://gitlab.com/gitlab-org/gitlab/-/issues) for similar entries before submitting your own, there's a good chance somebody else had the same issue or feature proposal. Show your support with an emoji reaction or join the discussion.
 

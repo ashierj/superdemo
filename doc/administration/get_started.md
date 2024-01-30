@@ -5,7 +5,11 @@ description: Administration overview.
 info: For assistance with this tutorial, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments-to-other-projects-and-subjects.
 ---
 
-# Get started administering GitLab **(FREE SELF)**
+# Get started administering GitLab
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** Self-managed
 
 Get started with GitLab administration. Configure your organization and its authentication, then secure, monitor,
 and back up GitLab.
@@ -159,7 +163,7 @@ Backups of GitLab databases and file systems are taken every 24 hours, and are k
   - Labels
   - Additional items
 
-For more information about GitLab SaaS backups, see our [Backup FAQ page](https://about.gitlab.com/handbook/engineering/infrastructure/faq/#gitlabcom-backups).
+For more information about GitLab SaaS backups, see our [Backup FAQ page](https://handbook.gitlab.com/handbook/engineering/infrastructure/faq/#gitlabcom-backups).
 
 ### Alternative backup strategies
 
@@ -181,7 +185,11 @@ The EC2 instance meets the requirements for an application data backup by taking
 In general, if you're running GitLab on a virtualized server, you can create VM snapshots of the entire GitLab server.
 It is common for a VM snapshot to require you to power down the server.
 
-#### Option 2: GitLab Geo **(PREMIUM SELF)**
+#### Option 2: GitLab Geo
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 Geo provides local, read-only instances of your GitLab instances.
 

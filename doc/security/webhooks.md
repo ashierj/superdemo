@@ -4,7 +4,11 @@ group: Authentication
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Filtering outbound requests **(FREE SELF)**
+# Filtering outbound requests
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** Self-managed
 
 To protect against the risk of data loss and exposure, GitLab administrators can now use outbound request filtering controls to restrict certain outbound requests made by the GitLab instance.
 
@@ -67,9 +71,22 @@ Prerequisites:
 1. Expand **Outbound requests**.
 1. Clear the **Allow requests to the local network from system hooks** checkbox.
 
+### Enforce DNS rebinding attack protection
+
+Prerequisites:
+
+- You must have administrator access to the instance.
+
+[DNS rebinding](https://en.wikipedia.org/wiki/DNS_rebinding) is a technique to make a malicious domain name resolve to an internal network resource to bypass local network access restrictions. GitLab has protection against this attack enabled by default. To disable this protection:
+
+1. On the left sidebar, at the bottom, select **Admin Area**.
+1. Select **Settings > Network**.
+1. Expand **Outbound requests**.
+1. Clear the **Enforce DNS-rebinding attack protection** checkbox.
+
 ## Filter requests
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/377371) in GitLab 15.10.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/377371) in GitLab 15.10.
 
 Prerequisites:
 
@@ -94,7 +111,7 @@ rules.
 
 ## Allow outbound requests to certain IP addresses and domains
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/44496) in GitLab 12.2.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/44496) in GitLab 12.2.
 
 Prerequisites:
 
@@ -129,6 +146,80 @@ example.com;gitlab.example.com
 127.0.0.1:8080
 example.com:8080
 ```
+
+## Configure webhooks to support mutual TLS
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/27450) in GitLab 16.9.
+
+You can configure webhooks to support mutual TLS by configuring a client
+certificate in PEM format. This certificate is set globally and
+presented to the server during a TLS handshake. The certificate can also
+be protected with a PEM passphrase.
+
+To configure the certificate, follow the instructions:
+
+::Tabs
+
+:::TabTitle Linux package (Omnibus)
+
+1. Edit `/etc/gitlab/gitlab.rb`:
+
+   ```ruby
+   gitlab_rails['http_client']['tls_client_cert_file'] = '<PATH TO CLIENT PEM FILE>'
+   gitlab_rails['http_client']['tls_client_cert_password'] = '<OPTIONAL PASSWORD>'
+   ```
+
+1. Save the file and reconfigure GitLab:
+
+   ```shell
+   sudo gitlab-ctl reconfigure
+   ```
+
+:::TabTitle Docker
+
+1. Edit `docker-compose.yml`:
+
+   ```yaml
+   version: "3.6"
+   services:
+     gitlab:
+       image: 'gitlab/gitlab-ee:latest'
+       restart: always
+       hostname: 'gitlab.example.com'
+       environment:
+         GITLAB_OMNIBUS_CONFIG: |
+            gitlab_rails['http_client']['tls_client_cert_file'] = '<PATH TO CLIENT PEM FILE>'
+            gitlab_rails['http_client']['tls_client_cert_password'] = '<OPTIONAL PASSWORD>'
+   ```
+
+1. Save the file and restart GitLab:
+
+   ```shell
+   docker compose up -d
+   ```
+
+:::TabTitle Self-compiled (source)
+
+1. Edit `/home/git/gitlab/config/gitlab.yml`:
+
+   ```yaml
+   production: &base
+     http_client:
+       tls_client_cert_file: '<PATH TO CLIENT PEM FILE>'
+       tls_client_cert_password: '<OPTIONAL PASSWORD>'
+   ```
+
+1. Save the file and restart GitLab:
+
+   ```shell
+   # For systems running systemd
+   sudo systemctl restart gitlab.target
+
+   # For systems running SysV init
+   sudo service gitlab restart
+   ```
+
+::EndTabs
 
 ## Troubleshooting
 

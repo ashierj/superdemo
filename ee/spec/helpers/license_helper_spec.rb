@@ -22,7 +22,7 @@ RSpec.describe LicenseHelper, feature_category: :subscription_management do
         license = double('License', plan: nil)
         allow(License).to receive(:current).and_return(license)
 
-        expect(current_license_title).to eq('BillingPlans|Free')
+        expect(current_license_title).to eq('Free')
       end
     end
 
@@ -30,7 +30,7 @@ RSpec.describe LicenseHelper, feature_category: :subscription_management do
       it 'returns the default title' do
         allow(License).to receive(:current).and_return(nil)
 
-        expect(current_license_title).to eq('BillingPlans|Free')
+        expect(current_license_title).to eq('Free')
       end
     end
   end

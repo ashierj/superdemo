@@ -4,7 +4,11 @@ group: Tenant Scale
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Projects API **(FREE ALL)**
+# Projects API
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 Interact with [projects](../user/project/index.md) by using the REST API.
 
@@ -41,7 +45,7 @@ The `merge_method` can use these options:
 
 ## List all projects
 
-> The `_links.cluster_agents` attribute in the response was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 15.0.
+> - The `_links.cluster_agents` attribute in the response was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 15.0.
 
 Get a list of all visible projects across GitLab for the authenticated user.
 When accessed without authentication, only public projects with _simple_ fields
@@ -270,6 +274,7 @@ When the user is authenticated and `simple` is not set this returns something li
     "requirements_access_level": "enabled",
     "security_and_compliance_enabled": false,
     "compliance_frameworks": [],
+    "warn_about_potentially_unwanted_characters": true,
     "permissions": {
       "project_access": null,
       "group_access": null
@@ -307,7 +312,7 @@ Keyset pagination supports only `order_by=id`. Other sorting options aren't avai
 
 ## List user projects
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Get a list of visible projects owned by the given user. When accessed without
 authentication, only public projects are returned.
@@ -446,7 +451,8 @@ GET /users/:user_id/projects
       "pipeline_artifacts_size": 0,
       "packages_size": 0,
       "snippets_size": 0,
-      "uploads_size": 0
+      "uploads_size": 0,
+      "container_registry_size": 0
     },
     "container_registry_image_prefix": "registry.example.com/diaspora/diaspora-client",
     "_links": {
@@ -577,7 +583,8 @@ GET /users/:user_id/projects
       "pipeline_artifacts_size": 0,
       "packages_size": 0,
       "snippets_size": 0,
-      "uploads_size": 0
+      "uploads_size": 0,
+      "container_registry_size": 0
     },
     "container_registry_image_prefix": "registry.example.com/brightbox/puppet",
     "_links": {
@@ -699,7 +706,8 @@ Example response:
       "pipeline_artifacts_size": 0,
       "packages_size": 0,
       "snippets_size": 0,
-      "uploads_size": 0
+      "uploads_size": 0,
+      "container_registry_size": 0
     },
     "container_registry_image_prefix": "registry.example.com/diaspora/diaspora-client",
     "_links": {
@@ -819,7 +827,8 @@ Example response:
       "pipeline_artifacts_size": 0,
       "packages_size": 0,
       "snippets_size": 0,
-      "uploads_size": 0
+      "uploads_size": 0,
+      "container_registry_size": 0
     },
     "container_registry_image_prefix": "registry.example.com/brightbox/puppet",
     "_links": {
@@ -838,7 +847,7 @@ Example response:
 
 ## List projects starred by a user
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Get a list of visible projects starred by the given user. When accessed without
 authentication, only public projects are returned.
@@ -957,7 +966,8 @@ Example response:
       "pipeline_artifacts_size": 0,
       "packages_size": 0,
       "snippets_size": 0,
-      "uploads_size": 0
+      "uploads_size": 0,
+      "container_registry_size": 0
     },
     "container_registry_image_prefix": "registry.example.com/diaspora/diaspora-client",
     "_links": {
@@ -1077,7 +1087,8 @@ Example response:
       "pipeline_artifacts_size": 0,
       "packages_size": 0,
       "snippets_size": 0,
-      "uploads_size": 0
+      "uploads_size": 0,
+      "container_registry_size": 0
     },
     "container_registry_image_prefix": "registry.example.com/brightbox/puppet",
     "_links": {
@@ -1096,7 +1107,7 @@ Example response:
 
 ## Get single project
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Get a specific project. This endpoint can be accessed without authentication if
 the project is publicly accessible.
@@ -1255,6 +1266,7 @@ GET /projects/:id
   "marked_for_deletion_at": "2020-04-03", // Deprecated and will be removed in API v5 in favor of marked_for_deletion_on
   "marked_for_deletion_on": "2020-04-03",
   "compliance_frameworks": [ "sox" ],
+  "warn_about_potentially_unwanted_characters": true,
   "statistics": {
     "commit_count": 37,
     "storage_size": 1038090,
@@ -1265,7 +1277,8 @@ GET /projects/:id
     "pipeline_artifacts_size": 0,
     "packages_size": 0,
     "snippets_size": 0,
-    "uploads_size": 0
+    "uploads_size": 0,
+    "container_registry_size": 0
   },
   "container_registry_image_prefix": "registry.example.com/diaspora/diaspora-client",
   "_links": {
@@ -1348,9 +1361,13 @@ target the upstream project by default.
 }
 ```
 
-### Templates for issues and merge requests **(PREMIUM ALL)**
+### Templates for issues and merge requests
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/55718) in GitLab 13.10.
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/55718) in GitLab 13.10.
 
 Users of [GitLab Premium or Ultimate](https://about.gitlab.com/pricing/)
 can also see the `issues_template` and `merge_requests_template` parameters for managing
@@ -1549,12 +1566,13 @@ curl --request POST --header "PRIVATE-TOKEN: <your-token>" \
 | `monitor_access_level`                                            | string  | No                             | One of `disabled`, `private`, or `enabled`. |
 | `namespace_id`                                                    | integer | No                             | Namespace for the new project (defaults to the current user's namespace). |
 | `only_allow_merge_if_all_discussions_are_resolved`                | boolean | No                             | Set whether merge requests can only be merged when all the discussions are resolved. |
-| `only_allow_merge_if_all_status_checks_passed` **(ULTIMATE ALL)** | boolean | No                             | Indicates that merges of merge requests should be blocked unless all status checks have passed. Defaults to false. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/369859) in GitLab 15.5 with feature flag `only_allow_merge_if_all_status_checks_passed` disabled by default. |
+| `only_allow_merge_if_all_status_checks_passed`                    | boolean | No                             | Indicates that merges of merge requests should be blocked unless all status checks have passed. Defaults to false. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/369859) in GitLab 15.5 with feature flag `only_allow_merge_if_all_status_checks_passed` disabled by default. Ultimate only. |
 | `only_allow_merge_if_pipeline_succeeds`                           | boolean | No                             | Set whether merge requests can only be merged with successful pipelines. This setting is named [**Pipelines must succeed**](../user/project/merge_requests/merge_when_pipeline_succeeds.md#require-a-successful-pipeline-for-merge) in the project settings. |
 | `packages_enabled`                                                | boolean | No                             | Enable or disable packages repository feature. |
 | `pages_access_level`                                              | string  | No                             | One of `disabled`, `private`, `enabled`, or `public`. |
 | `printing_merge_request_link_enabled`                             | boolean | No                             | Show link to create/view merge request when pushing from the command line. |
-| `public_builds`                                                   | boolean | No                             | If `true`, jobs can be viewed by non-project members. |
+| `public_builds`                                                   | boolean | No                             | _(Deprecated)_ If `true`, jobs can be viewed by non-project members. Use `public_jobs` instead. |
+| `public_jobs`                                                     | boolean | No                             | If `true`, jobs can be viewed by non-project members. |
 | `releases_access_level`                                           | string  | No                             | One of `disabled`, `private`, or `enabled`. |
 | `remove_source_branch_after_merge`                                | boolean | No                             | Enable `Delete source branch` option by default for all new merge requests. |
 | `repository_access_level`                                         | string  | No                             | One of `disabled`, `private`, or `enabled`. |
@@ -1574,6 +1592,7 @@ curl --request POST --header "PRIVATE-TOKEN: <your-token>" \
 | `topics`                                                          | array   | No                             | The list of topics for a project; put array of topics, that should be finally assigned to a project. _([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/328226) in GitLab 14.0.)_ |
 | `use_custom_template`                                             | boolean | No                             | Use either custom [instance](../administration/custom_project_templates.md) or [group](../user/group/custom_project_templates.md) (with `group_with_project_templates_id`) project template. Premium and Ultimate only. |
 | `visibility`                                                      | string  | No                             | See [project visibility level](#project-visibility-level). |
+| `warn_about_potentially_unwanted_characters`                      | boolean | No                             | Enable warnings about usage of potentially unwanted characters in this project. |
 | `wiki_access_level`                                               | string  | No                             | One of `disabled`, `private`, or `enabled`. |
 | `wiki_enabled`                                                    | boolean | No                             | _(Deprecated)_ Enable wiki for this project. Use `wiki_access_level` instead. |
 
@@ -1640,13 +1659,14 @@ POST /projects/user/:user_id
 | `monitor_access_level`                                            | string  | No       | One of `disabled`, `private`, or `enabled`. |
 | `namespace_id`                                                    | integer | No       | Namespace for the new project (defaults to the current user's namespace). |
 | `only_allow_merge_if_all_discussions_are_resolved`                | boolean | No       | Set whether merge requests can only be merged when all the discussions are resolved. |
-| `only_allow_merge_if_all_status_checks_passed` **(ULTIMATE ALL)** | boolean | No       | Indicates that merges of merge requests should be blocked unless all status checks have passed. Defaults to false. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/369859) in GitLab 15.5 with feature flag `only_allow_merge_if_all_status_checks_passed` disabled by default. |
+| `only_allow_merge_if_all_status_checks_passed`                    | boolean | No       | Indicates that merges of merge requests should be blocked unless all status checks have passed. Defaults to false. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/369859) in GitLab 15.5 with feature flag `only_allow_merge_if_all_status_checks_passed` disabled by default. Ultimate only. |
 | `only_allow_merge_if_pipeline_succeeds`                           | boolean | No       | Set whether merge requests can only be merged with successful jobs. |
 | `packages_enabled`                                                | boolean | No       | Enable or disable packages repository feature. |
 | `pages_access_level`                                              | string  | No       | One of `disabled`, `private`, `enabled`, or `public`. |
 | `path`                                                            | string  | No       | Custom repository name for new project. By default generated based on name. |
 | `printing_merge_request_link_enabled`                             | boolean | No       | Show link to create/view merge request when pushing from the command line. |
-| `public_builds`                                                   | boolean | No       | If `true`, jobs can be viewed by non-project-members. |
+| `public_builds`                                                   | boolean | No       | _(Deprecated)_ If `true`, jobs can be viewed by non-project members. Use `public_jobs` instead. |
+| `public_jobs`                                                     | boolean | No       | If `true`, jobs can be viewed by non-project members. |
 | `releases_access_level`                                           | string  | No       | One of `disabled`, `private`, or `enabled`. |
 | `remove_source_branch_after_merge`                                | boolean | No       | Enable `Delete source branch` option by default for all new merge requests. |
 | `repository_access_level`                                         | string  | No       | One of `disabled`, `private`, or `enabled`. |
@@ -1667,6 +1687,7 @@ POST /projects/user/:user_id
 | `topics`                                                          | array   | No       | The list of topics for the project. _([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/328226) in GitLab 14.0.)_ |
 | `use_custom_template`                                             | boolean | No       | Use either custom [instance](../administration/custom_project_templates.md) or [group](../user/group/custom_project_templates.md) (with `group_with_project_templates_id`) project template. Premium and Ultimate only. |
 | `visibility`                                                      | string  | No       | See [project visibility level](#project-visibility-level). |
+| `warn_about_potentially_unwanted_characters`                      | boolean | No       | Enable warnings about usage of potentially unwanted characters in this project. |
 | `wiki_access_level`                                               | string  | No       | One of `disabled`, `private`, or `enabled`. |
 | `wiki_enabled`                                                    | boolean | No       | _(Deprecated)_ Enable wiki for this project. Use `wiki_access_level` instead. |
 
@@ -1701,7 +1722,7 @@ Supported attributes:
 | `id`                                                              | integer or string | Yes      | The ID or [URL-encoded path of the project](rest/index.md#namespaced-path-encoding). |
 | `allow_merge_on_skipped_pipeline`                                 | boolean           | No       | Set whether or not merge requests can be merged with skipped jobs. |
 | `allow_pipeline_trigger_approve_deployment`                       | boolean           | No       | Set whether or not a pipeline triggerer is allowed to approve deployments. Premium and Ultimate only. |
-| `only_allow_merge_if_all_status_checks_passed` **(ULTIMATE ALL)** | boolean           | No       | Indicates that merges of merge requests should be blocked unless all status checks have passed. Defaults to false.<br/><br/>[Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/369859) in GitLab 15.5 with feature flag `only_allow_merge_if_all_status_checks_passed` disabled by default. The feature flag was enabled by default in GitLab 15.9. |
+| `only_allow_merge_if_all_status_checks_passed`                    | boolean           | No       | Indicates that merges of merge requests should be blocked unless all status checks have passed. Defaults to false.<br/><br/>[Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/369859) in GitLab 15.5 with feature flag `only_allow_merge_if_all_status_checks_passed` disabled by default. The feature flag was enabled by default in GitLab 15.9. Ultimate only. |
 | `analytics_access_level`                                          | string            | No       | One of `disabled`, `private` or `enabled` |
 | `approvals_before_merge`                                          | integer           | No       | How many approvers should approve merge requests by default. [Deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/353097) in GitLab 16.0. To configure approval rules, see [Merge request approvals API](merge_request_approvals.md). Premium and Ultimate only. |
 | `auto_cancel_pending_pipelines`                                   | string            | No       | Auto-cancel pending pipelines. This action toggles between an enabled state and a disabled state; it is not a boolean. |
@@ -1758,7 +1779,8 @@ Supported attributes:
 | `path`                                                            | string            | No       | Custom repository name for the project. By default generated based on name. |
 | `prevent_merge_without_jira_issue`                                | boolean           | No       | Set whether merge requests require an associated issue from Jira. Premium and Ultimate only. |
 | `printing_merge_request_link_enabled`                             | boolean           | No       | Show link to create/view merge request when pushing from the command line. |
-| `public_builds`                                                   | boolean           | No       | If `true`, jobs can be viewed by non-project members. |
+| `public_builds`                                                   | boolean           | No       | _(Deprecated)_ If `true`, jobs can be viewed by non-project members. Use `public_jobs` instead. |
+| `public_jobs`                                                     | boolean           | No       | If `true`, jobs can be viewed by non-project members. |
 | `releases_access_level`                                           | string            | No       | One of `disabled`, `private`, or `enabled`. |
 | `environments_access_level`                                       | string            | No       | One of `disabled`, `private`, or `enabled`. |
 | `feature_flags_access_level`                                      | string            | No       | One of `disabled`, `private`, or `enabled`. |
@@ -1786,6 +1808,7 @@ Supported attributes:
 | `tag_list`                                                        | array             | No       | _([Deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/328226) in GitLab 14.0)_ The list of tags for a project; put array of tags, that should be finally assigned to a project. Use `topics` instead. |
 | `topics`                                                          | array             | No       | The list of topics for the project. This replaces any existing topics that are already added to the project. _([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/328226) in GitLab 14.0.)_ |
 | `visibility`                                                      | string            | No       | See [project visibility level](#project-visibility-level). |
+| `warn_about_potentially_unwanted_characters`                      | boolean           | No       | Enable warnings about usage of potentially unwanted characters in this project. |
 | `wiki_access_level`                                               | string            | No       | One of `disabled`, `private`, or `enabled`. |
 | `wiki_enabled`                                                    | boolean           | No       | _(Deprecated)_ Enable wiki for this project. Use `wiki_access_level` instead. |
 
@@ -1816,7 +1839,7 @@ POST /projects/:id/fork
 
 ## List forks of a project
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 List the projects accessible to the calling user that have an established,
 forked relationship with the specified project
@@ -1935,7 +1958,7 @@ Example responses:
 
 ## Star a project
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Stars a given project. Returns status code `304` if the project is already
 starred.
@@ -2044,7 +2067,7 @@ Example response:
 
 ## Unstar a project
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Unstars a given project. Returns status code `304` if the project is not starred.
 
@@ -2225,7 +2248,7 @@ Example response:
 
 ## Archive a project
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Archives the project if the user is either an administrator or the owner of this
 project. This action is idempotent, thus archiving an already archived project
@@ -2358,7 +2381,7 @@ Example response:
 
 ## Unarchive a project
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 Unarchives the project if the user is either an administrator or the owner of
 this project. This action is idempotent, thus unarchiving a non-archived project
@@ -2491,7 +2514,7 @@ Example response:
 
 ## Delete project
 
-> The default behavior of [Delayed project deletion](https://gitlab.com/gitlab-org/gitlab/-/issues/32935) in GitLab 12.6 was changed to [Immediate deletion](https://gitlab.com/gitlab-org/gitlab/-/issues/220382) in GitLab 13.2.
+> - The default behavior of [Delayed project deletion](https://gitlab.com/gitlab-org/gitlab/-/issues/32935) in GitLab 12.6 was changed to [Immediate deletion](https://gitlab.com/gitlab-org/gitlab/-/issues/220382) in GitLab 13.2.
 
 This endpoint:
 
@@ -2522,9 +2545,13 @@ DELETE /projects/:id
 | `full_path`                            | string            | no       | Full path of project to use with `permanently_remove`. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/396500) in GitLab 15.11. To find the project path, use `path_with_namespace` from [get single project](projects.md#get-single-project). Premium and Ultimate only. |
 | `permanently_remove`                   | boolean/string    | no       | Immediately deletes a project if it is marked for deletion. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/396500) in GitLab 15.11. Premium and Ultimate only. |
 
-## Restore project marked for deletion **(PREMIUM ALL)**
+## Restore project marked for deletion
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/32935) in GitLab 12.6.
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/32935) in GitLab 12.6.
 
 Restores project marked for deletion.
 
@@ -2614,7 +2641,7 @@ Returned object:
 
 ## Remove a project avatar
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92604) in GitLab 15.4.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92604) in GitLab 15.4.
 
 To remove a project avatar, use a blank value for the `avatar` attribute.
 
@@ -2901,7 +2928,11 @@ POST /projects/:id/housekeeping
 | `id`      | integer or string | Yes      | The ID or [URL-encoded path of the project](rest/index.md#namespaced-path-encoding). |
 | `task`    | string            | No       | `prune` to trigger manual prune of unreachable objects or `eager` to trigger eager housekeeping. |
 
-## Push rules **(PREMIUM ALL)**
+## Push rules
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 ### Get project push rules
 
@@ -2954,7 +2985,7 @@ POST /projects/:id/push_rule
 | `commit_message_negative_regex` | string            | No       | No commit message is allowed to match this, for example `ssh\:\/\/`. |
 | `commit_message_regex`          | string            | No       | All commit messages must match this, for example `Fixed \d+\..*`. |
 | `deny_delete_tag`               | boolean           | No       | Deny deleting a tag. |
-| `file_name_regex`               | string            | No       | All committed file names must **not** match this, for example `(jar|exe)$`. |
+| `file_name_regex`               | string            | No       | All committed filenames must **not** match this, for example `(jar|exe)$`. |
 | `max_file_size`                 | integer           | No       | Maximum file size (MB). |
 | `member_check`                  | boolean           | No       | Restrict commits by author (email) to existing GitLab users. |
 | `prevent_secrets`               | boolean           | No       | GitLab rejects any files that are likely to contain secrets. |
@@ -2978,7 +3009,7 @@ PUT /projects/:id/push_rule
 | `commit_message_negative_regex` | string            | No       | No commit message is allowed to match this, for example `ssh\:\/\/`. |
 | `commit_message_regex`          | string            | No       | All commit messages must match this, for example `Fixed \d+\..*`. |
 | `deny_delete_tag`               | boolean           | No       | Deny deleting a tag. |
-| `file_name_regex`               | string            | No       | All committed file names must **not** match this, for example `(jar|exe)$`. |
+| `file_name_regex`               | string            | No       | All committed filenames must **not** match this, for example `(jar|exe)$`. |
 | `max_file_size`                 | integer           | No       | Maximum file size (MB). |
 | `member_check`                  | boolean           | No       | Restrict commits by author (email) to existing GitLab users. |
 | `prevent_secrets`               | boolean           | No       | GitLab rejects any files that are likely to contain secrets. |
@@ -2986,7 +3017,7 @@ PUT /projects/:id/push_rule
 
 ### Delete project push rule
 
-> Moved to GitLab Premium in 13.9.
+> - Moved to GitLab Premium in 13.9.
 
 Removes a push rule from a project.
 
@@ -3000,7 +3031,7 @@ DELETE /projects/:id/push_rule
 
 ## Get groups to which a user can transfer a project
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/371006) in GitLab 15.4
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/371006) in GitLab 15.4
 
 Retrieve a list of groups to which the user can transfer a project.
 
@@ -3044,7 +3075,7 @@ Example response:
 
 ## Transfer a project to a new namespace
 
-> The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
+> - The `_links.cluster_agents` attribute in the response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/347047) in GitLab 14.10.
 
 See the [Project documentation](../user/project/settings/migrate_projects.md#transfer-a-project-to-another-namespace)
 for prerequisites to transfer a project.
@@ -3172,7 +3203,8 @@ Example response:
   "autoclose_referenced_issues": true,
   "approvals_before_merge": 0, // Deprecated. Use merge request approvals API instead.
   "mirror": false,
-  "compliance_frameworks": []
+  "compliance_frameworks": [],
+  "warn_about_potentially_unwanted_characters": true
 }
 ```
 
@@ -3192,9 +3224,13 @@ Read more in the [Project members](members.md) documentation.
 
 Read more in the [Project vulnerabilities](project_vulnerabilities.md) documentation.
 
-## Get a project's pull mirror details **(PREMIUM ALL)**
+## Get a project's pull mirror details
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/354506) in GitLab 15.6.
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/354506) in GitLab 15.6.
 
 Returns the details of the project's pull mirror.
 
@@ -3228,7 +3264,11 @@ Example response:
 }
 ```
 
-## Configure pull mirroring for a project **(PREMIUM ALL)**
+## Configure pull mirroring for a project
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 > - Field `mirror_branch_regex` [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/381667) in GitLab 15.8 [with a flag](../administration/feature_flags.md) named `mirror_only_branches_match_regex`. Disabled by default.
 > - [Enabled by default](https://gitlab.com/gitlab-org/gitlab/-/issues/381667) in GitLab 16.0.
@@ -3282,9 +3322,13 @@ curl --request PUT --header "PRIVATE-TOKEN: <your_access_token>" \
  --data "mirror=false"
 ```
 
-## Start the pull mirroring process for a Project **(PREMIUM ALL)**
+## Start the pull mirroring process for a Project
 
-> Moved to GitLab Premium in 13.9.
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+
+> - Moved to GitLab Premium in 13.9.
 
 ```plaintext
 POST /projects/:id/mirror/pull
@@ -3324,7 +3368,7 @@ GET /projects/:id/snapshot
 
 ## Get the path to repository storage
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/29861) in GitLab 14.0.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/29861) in GitLab 14.0.
 
 Get the path to repository storage for specified project if Gitaly Cluster is not being used. If Gitaly Cluster is being used, see
 [Praefect-generated replica paths (GitLab 15.0 and later)](../administration/gitaly/index.md#praefect-generated-replica-paths-gitlab-150-and-later).

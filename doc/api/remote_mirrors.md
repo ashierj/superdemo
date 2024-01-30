@@ -4,7 +4,11 @@ group: Source Code
 info: "To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments"
 ---
 
-# Project remote mirrors API **(FREE ALL)**
+# Project remote mirrors API
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 [Push mirrors](../user/project/repository/mirror/push.md)
 defined on a project's repository settings are called "remote mirrors". You
@@ -53,7 +57,7 @@ Example response:
 
 ## Get a single project's remote mirror
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82770) in GitLab 14.10.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82770) in GitLab 14.10.
 
 Returns a remote mirror and its statuses:
 
@@ -93,6 +97,7 @@ Learn how to [configure a pull mirror](projects.md#configure-pull-mirroring-for-
 > - Field `mirror_branch_regex` [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/381667) in GitLab 15.8 [with a flag](../administration/feature_flags.md) named `mirror_only_branches_match_regex`. Disabled by default.
 > - [Enabled by default](https://gitlab.com/gitlab-org/gitlab/-/issues/381667) in GitLab 16.0.
 > - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/410354) in GitLab 16.2. Feature flag `mirror_only_branches_match_regex` removed.
+
 Push mirroring is disabled by default. To enable it, include the optional parameter
 `enabled` when you create the mirror:
 
@@ -174,7 +179,7 @@ Example response:
 
 ## Delete a remote mirror
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82778) in GitLab 14.10.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82778) in GitLab 14.10.
 
 Delete a remote mirror.
 

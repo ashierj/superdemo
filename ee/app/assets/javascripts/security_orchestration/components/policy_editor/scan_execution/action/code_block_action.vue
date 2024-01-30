@@ -9,10 +9,7 @@ import { THOUSAND } from '~/lib/utils/constants';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import { parseCustomFileConfiguration } from 'ee/security_orchestration/components/policy_editor/utils';
-import {
-  buildCustomCodeAction,
-  toYaml,
-} from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
+import { buildCustomCodeAction } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import SectionLayout from '../../section_layout.vue';
 import { ACTION_AND_LABEL } from '../../constants';
 import {
@@ -125,7 +122,7 @@ export default {
   },
   methods: {
     resetActionToDefault() {
-      this.$emit('changed', buildCustomCodeAction());
+      this.$emit('changed', buildCustomCodeAction(this.initAction.id));
     },
     resetValidation() {
       if (!this.doesFileExist) {
@@ -140,10 +137,9 @@ export default {
     },
     updateYaml(val) {
       this.yamlEditorValue = val;
-      const yaml = toYaml(val);
 
       this.triggerChanged({
-        ci_configuration: yaml,
+        ci_configuration: val,
       });
     },
     setSelectedRef(ref) {
@@ -270,6 +266,7 @@ export default {
           <yaml-editor
             data-testid="custom-yaml-editor"
             policy-type="scan_execution_policy"
+            :file-global-id="initAction.id"
             :disable-schema="true"
             :value="yamlEditorValue"
             :read-only="false"

@@ -12,21 +12,25 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 GitLab is creating AI-assisted features across our DevSecOps platform. These features aim to help increase velocity and solve key pain points across the software development lifecycle.
 
+Some features are still in development. View details about [support for each status](../policy/experiment-beta-support.md#experiment) (Experiment, Beta, Generally Available).
+
+ As features become Generally Available, GitLab is [transparent](https://about.gitlab.com/handbook/content/handbook/values/index.md/#transparency) and updates the documentation to clearly state how and where you can access these capabilities.
+
 | Goal | Feature | Tier/Offering/Status |
 |---|---|---|
-| Helps you discover or recall Git commands when and where you need them. | [Git suggestions](https://gitlab.com/gitlab-org/gitlab/-/issues/409636) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
+| Helps you write code more efficiently by showing code suggestions as you type. <br><br><i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=hCAyCTacdAQ) | [Code Suggestions](project/repository/code_suggestions/index.md) | **Free Open Access** subject to the [Testing Agreement](https://handbook.gitlab.com/handbook/legal/testing-agreement/) available through February 14, 2024:<br>- SaaS, All subscription tiers <br>- Self-managed, Premium and Ultimate tiers<br><br> **Generally Available** starting Feburary 15, 2024: <br> - SaaS, self-managed <br>- Premium and Ultimate tiers as part of [GitLab Duo Pro](https://about.gitlab.com/press/releases/2024-01-17-gitlab-announces-pricing-of-gitLab-duo-pro.html/) |
+| Processes and generates text and code in a conversational manner. Helps you quickly identify useful information in large volumes of text in issues, epics, code, and GitLab documentation. | [Chat](gitlab_duo_chat.md) | **Free Open Access** subject to the [Testing Agreement](https://handbook.gitlab.com/handbook/legal/testing-agreement/) available through February 14, 2024:<br>- SaaS, self-managed <br>- Ultimate tier<br><br> **Starting Feburary 15, 2024**: <br> - SaaS, self-managed <br>- Premium and Ultimate tiers as part of [GitLab Duo Pro](https://about.gitlab.com/press/releases/2024-01-17-gitlab-announces-pricing-of-gitLab-duo-pro.html/)<br><br>**Status:** Beta |
+| Helps you discover or recall Git commands when and where you need them. | [Git suggestions](../editor_extensions/gitlab_cli/index.md#gitlab-duo-commands) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
 | Assists with quickly getting everyone up to speed on lengthy conversations to help ensure you are all on the same page. | [Discussion summary](#summarize-issue-discussions-with-discussion-summary) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
-| Generates issue descriptions. | [Issue description generation](#summarize-an-issue-with-issue-description-generation) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
-| Helps you write code more efficiently by viewing code suggestions as you type. <br><br><i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=hCAyCTacdAQ) | [Code Suggestions](project/repository/code_suggestions/index.md) | **Offering:** SaaS **Tier:** Free <br><br>**Offering:** Self-managed **Tier:** Premium and Ultimate |
+| Generates issue descriptions. | [Issue description generation](#summarize-an-issue-with-issue-description-generation) | **Tier:** Ultimate<br>**Offering:** SaaS <br>**Status:** Experiment |
 | Automates repetitive tasks and helps catch bugs early. | [Test generation](gitlab_duo_chat.md#write-tests-in-the-ide) | **Tier:** Ultimate <br>**Offering:** SaaS, self-managed <br>**Status:** Beta |
-| Generates a description for the merge request based on the contents of the template. | [Merge request template population](project/merge_requests/ai_in_merge_requests.md#fill-in-merge-request-templates) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
-| Assists in creating faster and higher-quality reviews by automatically suggesting reviewers for your merge request. <br><br><i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=ivwZQgh4Rxw) | [Suggested Reviewers](project/merge_requests/reviews/index.md#gitlab-duo-suggested-reviewers) | **Tier:** Ultimate <br>**Offering:** SaaS |
+| Generates a description for the merge request based on the contents of the template. | [Merge request template population](project/merge_requests/ai_in_merge_requests.md#fill-in-merge-request-templates) | **Tier:** Ultimate<br>**Offering:** SaaS <br>**Status:** Experiment |
+| Assists in creating faster and higher-quality reviews by automatically suggesting reviewers for your merge request. <br><br><i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=ivwZQgh4Rxw) | [Suggested Reviewers](project/merge_requests/reviews/index.md#gitlab-duo-suggested-reviewers) | **Tier:** Ultimate <br>**Offering:** SaaS<br>**Status:** Generally Available  |
 | Efficiently communicates the impact of your merge request changes. | [Merge request summary](project/merge_requests/ai_in_merge_requests.md#summarize-merge-request-changes) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
 | Helps ease merge request handoff between authors and reviewers and help reviewers efficiently understand suggestions. | [Code review summary](project/merge_requests/ai_in_merge_requests.md#summarize-my-merge-request-review) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
 | Helps you remediate vulnerabilities more efficiently, boost your skills, and write more secure code. <br><br><i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=6sDf73QOav8) | [Vulnerability summary](application_security/vulnerabilities/index.md#explaining-a-vulnerability) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Beta |
 | Generates a merge request containing the changes required to mitigate a vulnerability. | [Vulnerability resolution](application_security/vulnerabilities/index.md#explaining-a-vulnerability) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
 | Helps you understand code by explaining it in English language. <br><br><i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=1izKaLmmaCA) | [Code explanation](#explain-code-in-the-web-ui-with-code-explanation) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
-| Processes and generates text and code in a conversational manner. Helps you quickly identify useful information in large volumes of text in issues, epics, code, and GitLab documentation. | [GitLab Duo Chat](gitlab_duo_chat.md) | **Tier:** Ultimate <br>**Offering:** SaaS, self-managed<br>**Status:** Beta |
 | Assists you in determining the root cause for a pipeline failure and failed CI/CD build. | [Root cause analysis](#root-cause-analysis) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
 | Assists you with predicting productivity metrics and identifying anomalies across your software development lifecycle. | [Value stream forecasting](#forecast-deployment-frequency-with-value-stream-forecasting) | **Tier:** Ultimate <br>**Offering:** SaaS, self-managed <br>**Status:** Experiment |
 | Processes and responds to your questions about your application's usage data. | [Product Analytics](product_analytics/index.md) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
@@ -40,7 +44,7 @@ GitLab is creating AI-assisted features across our DevSecOps platform. These fea
     (besides Code Suggestions) require that this setting is enabled at the group
     level.
   - Their usage is subject to the
-    [Testing Terms of Use](https://about.gitlab.com/handbook/legal/testing-agreement/).
+    [Testing Terms of Use](https://handbook.gitlab.com/handbook/legal/testing-agreement/).
   - Experiment and Beta features are disabled by default.
   - This setting is available to Ultimate groups on SaaS and can be set by a user
     who has the Owner role in the group.
@@ -53,9 +57,14 @@ GitLab is creating AI-assisted features across our DevSecOps platform. These fea
 
 The following subsections describe the experimental AI features in more detail.
 
-### Explain code in the Web UI with Code explanation **(ULTIMATE SAAS EXPERIMENT)**
+### Explain code in the Web UI with Code explanation
 
-> Introduced in GitLab 15.11 as an [Experiment](../policy/experiment-beta-support.md#experiment) on GitLab.com.
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS
+**Status:** Experiment
+
+> - Introduced in GitLab 15.11 as an [Experiment](../policy/experiment-beta-support.md#experiment) on GitLab.com.
 
 To use this feature:
 
@@ -98,9 +107,14 @@ code in a merge request:
 
 We cannot guarantee that the large language model produces results that are correct. Use the explanation with caution.
 
-### Summarize issue discussions with Discussion summary **(ULTIMATE SAAS EXPERIMENT)**
+### Summarize issue discussions with Discussion summary
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10344) in GitLab 16.0 as an [Experiment](../policy/experiment-beta-support.md#experiment).
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS
+**Status:** Experiment
+
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10344) in GitLab 16.0 as an [Experiment](../policy/experiment-beta-support.md#experiment).
 
 To use this feature:
 
@@ -121,9 +135,14 @@ Provide feedback on this experimental feature in [issue 407779](https://gitlab.c
 **Data usage**: When you use this feature, the text of public comments on the issue are sent to the large
 language model referenced above.
 
-### Forecast deployment frequency with Value stream forecasting **(ULTIMATE ALL EXPERIMENT)**
+### Forecast deployment frequency with Value stream forecasting
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10228) in GitLab 16.2 as an [Experiment](../policy/experiment-beta-support.md#experiment).
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
+**Status:** Experiment
+
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10228) in GitLab 16.2 as an [Experiment](../policy/experiment-beta-support.md#experiment).
 
 To use this feature:
 
@@ -146,9 +165,14 @@ For example, if you select a 30-day range, a forecast for the following 15 days 
 
 Provide feedback on this experimental feature in [issue 416833](https://gitlab.com/gitlab-org/gitlab/-/issues/416833).
 
-### Root cause analysis **(ULTIMATE SAAS EXPERIMENT)**
+### Root cause analysis
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/123692) in GitLab 16.2 as an [Experiment](../policy/experiment-beta-support.md#experiment).
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS
+**Status:** Experiment
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/123692) in GitLab 16.2 as an [Experiment](../policy/experiment-beta-support.md#experiment).
 
 To use this feature:
 
@@ -160,9 +184,14 @@ When the feature is available, the "Root cause analysis" button will appears on
 a failed CI/CD job. Selecting this button generates an analysis regarding the
 reason for the failure.
 
-### Summarize an issue with Issue description generation **(ULTIMATE SAAS EXPERIMENT)**
+### Summarize an issue with Issue description generation
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10762) in GitLab 16.3 as an [Experiment](../policy/experiment-beta-support.md#experiment).
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS
+**Status:** Experiment
+
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10762) in GitLab 16.3 as an [Experiment](../policy/experiment-beta-support.md#experiment).
 
 To use this feature:
 
@@ -183,7 +212,12 @@ Provide feedback on this experimental feature in [issue 409844](https://gitlab.c
 **Data usage**: When you use this feature, the text you enter is sent to the large
 language model referenced above.
 
-### GitLab Duo Chat **(ULTIMATE SAAS BETA)**
+### GitLab Duo Chat
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS
+**Status:** Beta
 
 For details about this Beta feature, see [GitLab Duo Chat](gitlab_duo_chat.md).
 
@@ -227,8 +261,8 @@ GitLab Duo AI features are powered by a generative AI models. The processing of 
 
 The below reflects the current retention periods of GitLab AI model [Sub-Processors](https://about.gitlab.com/privacy/subprocessors/#third-party-sub-processors):
 
-- Anthropic retains input and output data for 30 days.
-- Google discards input and output data immediately after the output is provided. Google currently does not store data for abuse monitoring.
+- Anthropic discards model input and output data immediately after the output is provided. Anthropic currently does not store data for abuse monitoring. Model input and output is not used to train models.
+- Google discards model input and output data immediately after the output is provided. Google currently does not store data for abuse monitoring. Model input and output is not used to train models.
 
 All of these AI providers are under data protection agreements with GitLab that prohibit the use of Customer Content for their own purposes, except to perform their independent legal obligations.
 

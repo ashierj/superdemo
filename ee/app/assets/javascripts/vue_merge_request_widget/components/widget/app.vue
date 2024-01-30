@@ -3,6 +3,8 @@ import CEWidgetApp from '~/vue_merge_request_widget/components/widget/app.vue';
 
 export default {
   components: {
+    MrBrowserPerformanceWidget: () =>
+      import('ee/vue_merge_request_widget/extensions/browser_performance/index.vue'),
     MrMetricsWidget: () => import('ee/vue_merge_request_widget/extensions/metrics/index.vue'),
     MrSecurityWidgetEE: () =>
       import(
@@ -25,6 +27,10 @@ export default {
       return this.mr?.enabledReports?.licenseScanning ? 'MrLicenseComplianceWidget' : undefined;
     },
 
+    browserPerformanceWidget() {
+      return this.mr.browserPerformance ? 'MrBrowserPerformanceWidget' : undefined;
+    },
+
     metricsWidget() {
       return this.mr.metricsReportsPath ? 'MrMetricsWidget' : undefined;
     },
@@ -43,6 +49,7 @@ export default {
       return [
         this.licenseComplianceWidget,
         this.codeQualityWidget,
+        this.browserPerformanceWidget,
         this.testReportWidget,
         this.metricsWidget,
         this.statusChecksWidget,

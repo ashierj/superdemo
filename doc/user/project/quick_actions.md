@@ -4,7 +4,11 @@ group: Project Management
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# GitLab quick actions **(FREE ALL)**
+# GitLab quick actions
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 Quick actions are text-based shortcuts for common actions that are usually done
 by selecting buttons or dropdowns in the GitLab user interface. You can enter
@@ -132,7 +136,7 @@ To auto-format this table, use the VS Code Markdown Table formatter: `https://do
 
 ## Work items
 
-> Executing quick actions from comments [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/391282) in GitLab 15.10.
+> - Executing quick actions from comments [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/391282) in GitLab 15.10.
 
 Work items in GitLab include [tasks](../tasks.md) and [OKRs](../okrs.md).
 The following quick actions can be applied through the description field when editing or commenting on work items.
@@ -163,6 +167,7 @@ To auto-format this table, use the VS Code Markdown Table formatter: `https://do
 | `/reassign @user1 @user2`                                     | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | Replace current assignees with those specified. |
 | `/relabel ~label1 ~label2`                                    | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | Replace current labels with those specified. |
 | `/remove_due_date`                                            | **{check-circle}** Yes | **{dotted-circle}** No | **{check-circle}** Yes | Remove due date. |
+| `/remove_parent`                                     | **{check-circle}** Yes | **{dotted-circle}** No | **{check-circle}** Yes | Removes the parent work item. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/434344) in GitLab 16.9. |
 | `/reopen`                                                     | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | Reopen. |
 | `/set_parent <work_item>`                                     | **{check-circle}** Yes | **{dotted-circle}** No | **{check-circle}** Yes | Set parent work item to `<work_item>`. The `<work_item>` value should be in the format of `#iid`, `group/project#iid`, or a URL to a work item. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/420798) in GitLab 16.5. |
 | `/shrug <comment>`                                            | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | Append the comment with `¯\＿(ツ)＿/¯`. |

@@ -634,6 +634,8 @@ class Project < ApplicationRecord
   scope :sorted_by_updated_desc, -> { reorder(self.arel_table['updated_at'].desc) }
   scope :sorted_by_stars_desc, -> { reorder(self.arel_table['star_count'].desc) }
   scope :sorted_by_stars_asc, -> { reorder(self.arel_table['star_count'].asc) }
+  scope :sorted_by_path_asc, -> { reorder(self.arel_table['path'].asc) }
+  scope :sorted_by_path_desc, -> { reorder(self.arel_table['path'].desc) }
   # Sometimes queries (e.g. using CTEs) require explicit disambiguation with table name
   scope :projects_order_id_asc, -> { reorder(self.arel_table['id'].asc) }
   scope :projects_order_id_desc, -> { reorder(self.arel_table['id'].desc) }
@@ -956,6 +958,10 @@ class Project < ApplicationRecord
         sorted_by_updated_desc
       when 'latest_activity_asc'
         sorted_by_updated_asc
+      when 'path_asc'
+        sorted_by_path_asc
+      when 'path_desc'
+        sorted_by_path_desc
       when 'stars_desc'
         sorted_by_stars_desc
       when 'stars_asc'
@@ -1942,8 +1948,17 @@ class Project < ApplicationRecord
   end
 
   def track_project_repository
-    repository = project_repository || build_project_repository
-    repository.update!(shard_name: repository_storage, disk_path: disk_path)
+    (project_repository || build_project_repository).tap do |proj_repo|
+      attributes = { shard_name: repository_storage, disk_path: disk_path }
+
+      if Feature.enabled?(:store_object_format, namespace, type: :gitlab_com_derisk)
+        object_format = repository.object_format
+
+        attributes[:object_format] = object_format if object_format.present?
+      end
+
+      proj_repo.update!(**attributes)
+    end
 
     cleanup
   end
@@ -2371,7 +2386,17 @@ class Project < ApplicationRecord
   end
 
   def has_ci?
-    repository.gitlab_ci_yml || auto_devops_enabled?
+    has_ci_config_file? || auto_devops_enabled?
+  end
+
+  def has_ci_config_file?
+    if ::Feature.enabled?(:ci_refactor_has_ci_config_file, self, type: :gitlab_com_derisk)
+      strong_memoize(:has_ci_config_file) do
+        ci_config_for('HEAD').present?
+      end
+    else
+      repository.gitlab_ci_yml.present?
+    end
   end
 
   def predefined_variables
@@ -2826,10 +2851,6 @@ class Project < ApplicationRecord
 
   def jira_subscription_exists?
     JiraConnectSubscription.for_project(self).exists?
-  end
-
-  def uses_default_ci_config?
-    ci_config_path.blank? || Gitlab::FileDetector.type_of(ci_config_path) == :gitlab_ci
   end
 
   def limited_protected_branches(limit)

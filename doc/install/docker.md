@@ -4,7 +4,11 @@ group: Distribution
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Install GitLab using Docker **(FREE SELF)**
+# Install GitLab using Docker
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** Self-managed
 
 The GitLab Docker images are monolithic images of GitLab running all the
 necessary services in a single container.
@@ -154,7 +158,7 @@ Once you've set up the `GITLAB_HOME` variable, you can run the image:
 ```shell
 sudo docker run --detach \
   --hostname gitlab.example.com \
-  --env GITLAB_OMNIBUS_CONFIG="external_url 'http://gitlab.example.com" \
+  --env GITLAB_OMNIBUS_CONFIG="external_url 'http://gitlab.example.com'" \
   --publish 443:443 --publish 80:80 --publish 22:22 \
   --name gitlab \
   --restart always \
@@ -175,7 +179,7 @@ If you are on SELinux, then run this instead:
 ```shell
 sudo docker run --detach \
   --hostname gitlab.example.com \
-  --env GITLAB_OMNIBUS_CONFIG="external_url 'http://gitlab.example.com" \
+  --env GITLAB_OMNIBUS_CONFIG="external_url 'http://gitlab.example.com'" \
   --publish 443:443 --publish 80:80 --publish 22:22 \
   --name gitlab \
   --restart always \
@@ -414,7 +418,7 @@ the container:
 ```shell
 sudo docker run --detach \
   --hostname gitlab.example.com \
-  --env GITLAB_OMNIBUS_CONFIG="external_url 'http://gitlab.example.com; gitlab_rails['lfs_enabled'] = true;" \
+  --env GITLAB_OMNIBUS_CONFIG="external_url 'http://gitlab.example.com'; gitlab_rails['lfs_enabled'] = true;" \
   --publish 443:443 --publish 80:80 --publish 22:22 \
   --name gitlab \
   --restart always \
@@ -439,7 +443,7 @@ To expose GitLab on IP `198.51.100.1`:
 ```shell
 sudo docker run --detach \
   --hostname gitlab.example.com \
-  --env GITLAB_OMNIBUS_CONFIG="external_url 'http://gitlab.example.com" \
+  --env GITLAB_OMNIBUS_CONFIG="external_url 'http://gitlab.example.com'" \
   --publish 198.51.100.1:443:443 \
   --publish 198.51.100.1:80:80 \
   --publish 198.51.100.1:22:22 \

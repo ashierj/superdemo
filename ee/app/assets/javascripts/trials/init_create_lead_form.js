@@ -18,6 +18,7 @@ export const initTrialCreateLeadForm = () => {
     country,
     state,
     phoneNumber,
+    formSubmitText,
   } = el.dataset;
 
   return new Vue({
@@ -34,6 +35,7 @@ export const initTrialCreateLeadForm = () => {
         phoneNumber,
       },
       submitPath,
+      formSubmitText,
     },
     render(createElement) {
       return createElement(TrialCreateLeadForm);

@@ -12,7 +12,7 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::SelfManaged::CreateSer
   end
 
   before do
-    stub_saas_features(gitlab_saas_subscriptions: false)
+    stub_saas_features(gitlab_com_subscriptions: false)
   end
 
   describe '#execute' do

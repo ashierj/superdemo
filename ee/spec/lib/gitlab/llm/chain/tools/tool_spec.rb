@@ -120,4 +120,31 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
       expect(described_class.new(context: context, options: options).group_from_context).to eq(group)
     end
   end
+
+  describe '.full_definition' do
+    let(:definition) do
+      <<~XML
+       <tool_description>
+       <tool_name>TEST_TOOL</tool_name>
+       <description>
+       TEST
+       </description>
+       <example>
+       Here is an example of using this tool:
+       EXAMPLE
+       </example>
+       </tool_description>
+      XML
+    end
+
+    before do
+      stub_const("#{described_class.name}::NAME", 'TEST_TOOL')
+      stub_const("#{described_class.name}::DESCRIPTION", 'TEST')
+      stub_const("#{described_class.name}::EXAMPLE", 'EXAMPLE')
+    end
+
+    it 'returns definition of the tool' do
+      expect(described_class.full_definition).to eq(definition)
+    end
+  end
 end

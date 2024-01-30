@@ -16,6 +16,12 @@ describe('ProductAnalyticsDimensionSelector', () => {
   const findBackButton = () => wrapper.findByTestId('dimension-back-button');
   const findDimensionLabel = () => wrapper.findComponent(GlLabel);
 
+  const expectOverviewAndSelectPageAreVisible = () => {
+    expect(wrapper.findByTestId('pages-pageUrl-button').exists()).toBe(true);
+    expect(findDimensionSummary().exists()).toBe(true);
+    expect(wrapper.findByTestId('another-dimension-button').exists()).toBe(false);
+  };
+
   const addDimensions = jest.fn();
   const removeDimension = jest.fn();
   const setTimeDimensions = jest.fn();
@@ -37,12 +43,39 @@ describe('ProductAnalyticsDimensionSelector', () => {
   };
 
   describe('when mounted', () => {
-    beforeEach(() => {
+    it('should not render back button on overview', () => {
       createWrapper();
+      expect(findBackButton().exists()).toBe(false);
     });
 
-    it('should not render back button on overview', () => {
-      expect(findBackButton().exists()).toBe(false);
+    it('should render overview and select page when provided with an initial dimension', () => {
+      createWrapper({
+        dimensions: [
+          {
+            name: `${EVENTS_TABLE_NAME}.pageUrl`,
+            title: 'Test',
+            type: 'string',
+            shortTitle: `${EVENTS_TABLE_NAME}.pageUrl`,
+            suggestFilterValues: true,
+            isVisible: true,
+          },
+        ],
+      });
+
+      expectOverviewAndSelectPageAreVisible();
+    });
+
+    it('should render overview and select page when provided with an initial timeDimension', () => {
+      createWrapper({
+        timeDimensions: [
+          {
+            dimension: `${EVENTS_TABLE_NAME}.utcTime`,
+            granularity: 'seconds',
+          },
+        ],
+      });
+
+      expectOverviewAndSelectPageAreVisible();
     });
   });
 
@@ -128,7 +161,7 @@ describe('ProductAnalyticsDimensionSelector', () => {
       createWrapper({
         dimensions: [
           {
-            name: selectMethod,
+            name: selectMethod[0],
             title: 'Test',
             type: 'string',
             shortTitle: selectMethod[0],
@@ -263,9 +296,7 @@ describe('ProductAnalyticsDimensionSelector', () => {
 
       await wrapper.findByTestId('another-dimension-button').vm.$emit('click');
 
-      expect(wrapper.findByTestId('pages-pageUrl-button').exists()).toBe(true);
-      expect(findDimensionSummary().exists()).toBe(true);
-      expect(wrapper.findByTestId('another-dimension-button').exists()).toBe(false);
+      expectOverviewAndSelectPageAreVisible();
     });
   });
 });

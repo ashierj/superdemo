@@ -1,19 +1,19 @@
 <script>
 const GRAPHQL_TYPENAME_TO_COMPONENT_MAP = {
-  VulnerabilityDetailUrl: () => import('./types/url.vue'),
-  VulnerabilityDetailDiff: () => import('./types/diff.vue'),
-  VulnerabilityDetailCode: () => import('./types/code.vue'),
-  VulnerabilityDetailFileLocation: () => import('./types/file_location.vue'),
-  VulnerabilityDetailModuleLocation: () => import('./types/module_location.vue'),
-  VulnerabilityDetailCommit: () => import('./types/commit.vue'),
-  VulnerabilityDetailValue: () => import('./types/value.vue'),
-  VulnerabilityDetailText: () => import('./types/value.vue'),
-  VulnerabilityDetailMarkdown: () => import('./types/markdown.vue'),
-  VulnerabilityDetailBoolean: () => import('./types/value.vue'),
-  VulnerabilityDetailInt: () => import('./types/value.vue'),
-  VulnerabilityDetailList: () => import('./types/list_graphql.vue'),
-  VulnerabilityDetailNamedList: () => import('./types/named_list_graphql.vue'),
-  VulnerabilityDetailTable: () => import('./types/table_graphql.vue'),
+  VulnerabilityDetailUrl: () => import('./types/report_type_url.vue'),
+  VulnerabilityDetailDiff: () => import('./types/report_type_diff.vue'),
+  VulnerabilityDetailCode: () => import('./types/report_type_code.vue'),
+  VulnerabilityDetailFileLocation: () => import('./types/report_type_file_location.vue'),
+  VulnerabilityDetailModuleLocation: () => import('./types/report_type_module_location.vue'),
+  VulnerabilityDetailCommit: () => import('./types/report_type_commit.vue'),
+  VulnerabilityDetailValue: () => import('./types/report_type_value.vue'),
+  VulnerabilityDetailText: () => import('./types/report_type_value.vue'),
+  VulnerabilityDetailMarkdown: () => import('./types/report_type_markdown.vue'),
+  VulnerabilityDetailBoolean: () => import('./types/report_type_value.vue'),
+  VulnerabilityDetailInt: () => import('./types/report_type_value.vue'),
+  VulnerabilityDetailList: () => import('./types/report_type_list_graphql.vue'),
+  VulnerabilityDetailNamedList: () => import('./types/report_type_named_list_graphql.vue'),
+  VulnerabilityDetailTable: () => import('./types/report_type_table_graphql.vue'),
 };
 
 export const GRAPHQL_TYPENAMES = Object.keys(GRAPHQL_TYPENAME_TO_COMPONENT_MAP);

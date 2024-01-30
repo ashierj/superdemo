@@ -4,7 +4,11 @@ group: unassigned
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# GitLab Appearance **(FREE SELF)**
+# GitLab Appearance
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** Self-managed
 
 You can update your settings to change the look and feel of your GitLab self-managed instance.
 
@@ -45,12 +49,12 @@ To change the favicon:
 
 ## Add system header and footer messages
 
-> **Enable header and footer in emails** checkbox [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/344819) in GitLab 15.9.
+> - **Enable header and footer in emails** checkbox [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/344819) in GitLab 15.9.
 
 Add a small header message, a small footer message, or both, to the interface of your GitLab instance. These messages show on all projects and pages of the instance, such as the sign-in and register pages.
 
 - You can italicize, bold, or add links to your message with Markdown.
-- Markdown lists, images, and quotes are not supported because system messages must be a single line. 
+- Markdown lists, images, and quotes are not supported because system messages must be a single line.
 
 To add a system header, footer message, or both:
 
@@ -92,7 +96,7 @@ You can add also add a [customized help message](settings/help_page.md) below th
 
 ## Customize the Progressive Web App
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/375708) in GitLab 15.9.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/375708) in GitLab 15.9.
 
 Customize the icon, display name, short name, and description for your Progessive Web App (PWA). For more information, see [Progressive Web App](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps).
 

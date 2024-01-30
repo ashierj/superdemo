@@ -4,18 +4,15 @@ module TrialsHelper
   TRIAL_ONBOARDING_SOURCE_URLS = %w[about.gitlab.com docs.gitlab.com learn.gitlab.com].freeze
 
   def create_lead_form_data
-    {
+    _lead_form_data.merge(
       submit_path: trials_path(
         step: GitlabSubscriptions::Trials::CreateService::LEAD, **params.permit(:namespace_id).merge(glm_params)
-      ),
-      first_name: current_user.first_name,
-      last_name: current_user.last_name,
-      company_name: current_user.organization
-    }.merge(
-      params.permit(
-        :first_name, :last_name, :company_name, :company_size, :phone_number, :country, :state
-      ).to_h.symbolize_keys
+      )
     )
+  end
+
+  def create_duo_pro_lead_form_data
+    _lead_form_data.merge(submit_path: trials_duo_pro_path(namespace_id: params[:namespace_id]))
   end
 
   def create_company_form_data
@@ -60,7 +57,11 @@ module TrialsHelper
   end
 
   def show_tier_badge_for_new_trial?(namespace, user)
-    !namespace.paid? && can?(user, :read_billing, namespace)
+    ::Gitlab::Saas.feature_available?(:subscriptions_trials) &&
+      !namespace.paid? &&
+      namespace.private? &&
+      namespace.never_had_trial? &&
+      can?(user, :read_billing, namespace)
   end
 
   def namespace_options_for_listbox
@@ -100,5 +101,17 @@ module TrialsHelper
 
   def any_trial_eligible_namespaces?
     trial_eligible_namespaces.any?
+  end
+
+  def _lead_form_data
+    {
+      first_name: current_user.first_name,
+      last_name: current_user.last_name,
+      company_name: current_user.organization
+    }.merge(
+      params.permit(
+        :first_name, :last_name, :company_name, :company_size, :phone_number, :country, :state
+      ).to_h.symbolize_keys
+    )
   end
 end

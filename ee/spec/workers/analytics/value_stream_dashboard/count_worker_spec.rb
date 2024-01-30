@@ -112,7 +112,7 @@ RSpec.describe Analytics::ValueStreamDashboard::CountWorker, :clean_gitlab_redis
           expect(Analytics::ValueStreamDashboard::TopLevelGroupCounterService).to receive(:new).with(
             aggregation: aggregation,
             cursor: an_instance_of(Gitlab::Analytics::ValueStreamDashboard::NamespaceCursor),
-            runtime_limiter: an_instance_of(Analytics::CycleAnalytics::RuntimeLimiter)
+            runtime_limiter: an_instance_of(Gitlab::Metrics::RuntimeLimiter)
           ).and_return(service)
         end
 
@@ -148,7 +148,7 @@ RSpec.describe Analytics::ValueStreamDashboard::CountWorker, :clean_gitlab_redis
 
           expect_service_invocation_for(second, { cursor: cursor2, result: :interrupted })
 
-          expect_next_instance_of(Analytics::CycleAnalytics::RuntimeLimiter) do |runtime_limiter|
+          expect_next_instance_of(Gitlab::Metrics::RuntimeLimiter) do |runtime_limiter|
             # first aggregation, trigger no overtime
             expect(runtime_limiter).to receive(:over_time?).and_return(false)
           end
@@ -165,7 +165,7 @@ RSpec.describe Analytics::ValueStreamDashboard::CountWorker, :clean_gitlab_redis
         it 'stops the processing' do
           create_list(:value_stream_dashboard_aggregation, 3, last_run_at: nil)
 
-          expect_next_instance_of(Analytics::CycleAnalytics::RuntimeLimiter) do |runtime_limiter|
+          expect_next_instance_of(Gitlab::Metrics::RuntimeLimiter) do |runtime_limiter|
             allow(runtime_limiter).to receive(:over_time?).and_return(true)
           end
 

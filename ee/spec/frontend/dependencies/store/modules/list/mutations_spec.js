@@ -149,13 +149,17 @@ describe('Dependencies mutations', () => {
     });
   });
 
-  describe(types.SET_VULNERABILITY_ITEM, () => {
+  describe(types.TOGGLE_VULNERABILITY_ITEM_LOADING, () => {
     const item = { occurrenceId: 1 };
 
-    it('sets the selected item', () => {
-      mutations[types.SET_VULNERABILITY_ITEM](state, item);
+    it('toggles the selected item', () => {
+      mutations[types.TOGGLE_VULNERABILITY_ITEM_LOADING](state, item);
 
-      expect(state.vulnerabilityItem).toBe(item);
+      expect(state.vulnerabilityItemsLoading).toEqual([item]);
+
+      mutations[types.TOGGLE_VULNERABILITY_ITEM_LOADING](state, item);
+
+      expect(state.vulnerabilityItemsLoading).toEqual([]);
     });
   });
 

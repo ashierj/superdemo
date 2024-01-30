@@ -4,7 +4,11 @@ group: Import and Integrate
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Integrations API **(FREE ALL)**
+# Integrations API
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 This API enables you to work with external services that integrate with GitLab.
 
@@ -17,7 +21,7 @@ This API requires an access token with the Maintainer or Owner role.
 
 ## List all active integrations
 
-> `vulnerability_events` field [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/131831) in GitLab 16.4.
+> - `vulnerability_events` field [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/131831) in GitLab 16.4.
 
 Get a list of all active project integrations. The `vulnerability_events` field is only available for GitLab Enterprise Edition.
 
@@ -94,7 +98,7 @@ Parameters:
 | --------- | ---- | -------- | ----------- |
 | `app_store_issuer_id` | string | true | Apple App Store Connect issuer ID. |
 | `app_store_key_id` | string | true | Apple App Store Connect key ID. |
-| `app_store_private_key_file_name` | string | true | Apple App Store Connect private key file name. |
+| `app_store_private_key_file_name` | string | true | Apple App Store Connect private key filename. |
 | `app_store_private_key` | string | true | Apple App Store Connect private key. |
 | `app_store_protected_refs` | boolean | false | Set variables on protected branches and tags only. |
 
@@ -325,7 +329,7 @@ GET /projects/:id/integrations/campfire
 
 ## ClickUp
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/120732) in GitLab 16.1.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/120732) in GitLab 16.1.
 
 ### Set up ClickUp
 
@@ -500,7 +504,7 @@ GET /projects/:id/integrations/diffblue-cover
 
 ### Set up Discord Notifications
 
-> `_channel` parameters [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/125621) in GitLab 16.3.
+> - `_channel` parameters [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/125621) in GitLab 16.3.
 
 Set up Discord Notifications for a project.
 
@@ -696,7 +700,11 @@ Get the external wiki settings for a project.
 GET /projects/:id/integrations/external-wiki
 ```
 
-## GitHub **(PREMIUM ALL)**
+## GitHub
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 ### Set up GitHub
 
@@ -822,6 +830,52 @@ Get the Google Chat integration settings for a project.
 
 ```plaintext
 GET /projects/:id/integrations/hangouts-chat
+```
+
+## Google Cloud Artifact Registry
+
+DETAILS:
+**Offering:** SaaS
+**Status:** Beta
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/425066) in GitLab 16.9 as a [Beta](../policy/experiment-beta-support.md) feature [with a flag](../administration/feature_flags.md) named `gcp_artifact_registry`. Disabled by default.
+
+FLAG:
+On GitLab.com, this feature is not available. The feature is not ready for production use.
+
+### Set up Google Cloud Artifact Registry
+
+Set up the Google Cloud Artifact Registry integration for a project.
+
+```plaintext
+PUT /projects/:id/integrations/google-cloud-platform-artifact-registry
+```
+
+Parameters:
+
+| Parameter | Type | Required | Description |
+| --------- | ---- | -------- | ----------- |
+| `workload_identity_pool_project_number` | string | true | Project number of the Workload Identity Pool. |
+| `workload_identity_pool_id` | string | true | ID of the Workload Identity Pool. |
+| `workload_identity_pool_provider_id` | string | true | ID of the Workload Identity Pool provider. |
+| `artifact_registry_project_id` | string | true | ID of the Google Cloud project. |
+| `artifact_registry_location` | string | true | Location of the Artifact Registry repository. |
+| `artifact_registry_repositories` | string | true | Repository of Artifact Registry. |
+
+### Disable Google Cloud Artifact Registry
+
+Disable the Google Cloud Artifact Registry integration for a project. Integration settings are reset.
+
+```plaintext
+DELETE /projects/:id/integrations/google-cloud-platform-artifact-registry
+```
+
+### Get Google Cloud Artifact Registry settings
+
+Get the Google Cloud Artifact Registry integration settings for a project.
+
+```plaintext
+GET /projects/:id/integrations/google-cloud-platform-artifact-registry
 ```
 
 ## Google Play
@@ -1566,7 +1620,7 @@ Example response:
 
 ## Squash TM
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/337855) in GitLab 15.10.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/337855) in GitLab 15.10.
 
 ### Set up Squash TM
 

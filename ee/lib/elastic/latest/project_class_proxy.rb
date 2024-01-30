@@ -44,16 +44,56 @@ module Elastic
           end
 
           if options[:project_ids]
-            filters << {
-              bool: project_ids_query(options[:current_user], options[:project_ids], options[:public_and_internal_projects], no_join_project: options[:no_join_project], project_id_field: options[:project_id_field])
-            }
+            namespace = namespace_for_traversal_ids_filter(options)
+
+            if namespace.present?
+              prefix_filter = prefix_traversal_id_query(namespace, options)
+
+              filters << prefix_filter unless prefix_filter == {}
+              must_not = rejected_project_filter(namespace, options)
+            else
+              filters << {
+                bool: project_ids_query(options[:current_user], options[:project_ids], options[:public_and_internal_projects], no_join_project: options[:no_join_project], project_id_field: options[:project_id_field])
+              }
+            end
           end
 
           query_hash[:query][:bool][:filter] ||= []
           query_hash[:query][:bool][:filter] += filters
+          query_hash[:query][:bool][:must_not] = must_not if must_not
         end
 
         search(query_hash, options)
+      end
+
+      def namespace_for_traversal_ids_filter(options)
+        return unless traversal_ids_flag_enabled?(options)
+        return if should_use_project_ids_filter?(options)
+
+        group = Group.find(options[:group_id])
+        group if options[:current_user].authorized_groups.include?(group)
+      end
+
+      def traversal_ids_flag_enabled?(options)
+        options[:current_user] &&
+          Feature.enabled?(:advanced_search_project_traversal_ids_query, options[:current_user], type: :gitlab_com_derisk)
+      end
+
+      def prefix_traversal_id_query(namespace, options)
+        ancestry_filter(options[:current_user], [namespace.elastic_namespace_ancestry], prefix: :traversal_ids)
+      end
+
+      def rejected_project_filter(namespace, options)
+        project_ids_public_or_visibile_to_user = Project.public_or_visible_to_user(options[:current_user]).pluck_primary_key
+        rejected_ids = namespace.all_project_ids_except(project_ids_public_or_visibile_to_user).pluck_primary_key
+
+        return unless rejected_ids.any?
+
+        {
+          terms: {
+            id: rejected_ids
+          }
+        }
       end
 
       # rubocop: disable CodeReuse/ActiveRecord

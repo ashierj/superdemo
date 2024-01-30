@@ -39,7 +39,6 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
 
   before_action only: [:show, :diffs] do
     push_frontend_feature_flag(:core_security_mr_widget_counts, project)
-    push_frontend_feature_flag(:moved_mr_sidebar, project)
     push_frontend_feature_flag(:mr_experience_survey, project)
     push_frontend_feature_flag(:ci_job_failures_in_mr, project)
     push_frontend_feature_flag(:mr_pipelines_graphql, project)
@@ -49,6 +48,7 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     push_frontend_feature_flag(:mention_autocomplete_backend_filtering, project)
     push_frontend_feature_flag(:pinned_file, project)
     push_frontend_feature_flag(:merge_request_diff_generated_subscription, project)
+    push_frontend_feature_flag(:preload_autocomplete_members_issues_mrs, current_user)
   end
 
   around_action :allow_gitaly_ref_name_caching, only: [:index, :show, :diffs, :discussions]
@@ -156,7 +156,9 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
         .represent(
           @pipelines,
           preload: true,
-          disable_failed_builds: true
+          disable_failed_builds: true,
+          disable_coverage: Feature.enabled?(:merge_request_pipelines_list_disable_coverage, @project,
+            type: :gitlab_com_derisk)
         ),
       count: {
         all: @pipelines.count
@@ -176,12 +178,12 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     # Get commits from repository
     # or from cache if already merged
     commits = ContextCommitsFinder.new(project, @merge_request, {
-                                         search: params[:search],
-                                         author: params[:author],
-                                         committed_before: convert_date_to_epoch(params[:committed_before]),
-                                         committed_after: convert_date_to_epoch(params[:committed_after]),
-                                         limit: params[:limit]
-                                       }).execute
+      search: params[:search],
+      author: params[:author],
+      committed_before: convert_date_to_epoch(params[:committed_before]),
+      committed_after: convert_date_to_epoch(params[:committed_after]),
+      limit: params[:limit]
+    }).execute
     render json: CommitEntity.represent(commits, { type: :full, request: merge_request })
   end
 
@@ -274,9 +276,7 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
   end
 
   def cancel_auto_merge
-    unless @merge_request.can_cancel_auto_merge?(current_user)
-      return access_denied!
-    end
+    return access_denied! unless @merge_request.can_cancel_auto_merge?(current_user)
 
     AutoMergeService.new(project, current_user).cancel(@merge_request)
 
@@ -351,8 +351,8 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     IssuableExportCsvWorker.perform_async(:merge_request, current_user.id, project.id, finder_options.to_h) # rubocop:disable CodeReuse/Worker
 
     index_path = project_merge_requests_path(project)
-    message = _('Your CSV export has started. It will be emailed to %{email} when complete.') %
-      { email: current_user.notification_email_or_default }
+    message = format(_('Your CSV export has started. It will be emailed to %{email} when complete.'),
+      email: current_user.notification_email_or_default)
     redirect_to(index_path, notice: message)
   end
 
@@ -451,7 +451,7 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     @update_current_user_path = expose_path(api_v4_user_preferences_path)
     @endpoint_metadata_url = endpoint_metadata_url(@project, @merge_request)
     @endpoint_diff_batch_url = endpoint_diff_batch_url(@project, @merge_request)
-    if params[:pin] && Feature.enabled?(:pinned_file)
+    if params[:pin] && Feature.enabled?(:pinned_file, @project)
       @pinned_file_url = diff_by_file_hash_namespace_project_merge_request_path(
         format: 'json',
         id: merge_request.iid,
@@ -484,11 +484,10 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
   end
 
   def head_pipeline
-    strong_memoize(:head_pipeline) do
-      pipeline = @merge_request.head_pipeline
-      pipeline if can?(current_user, :read_pipeline, pipeline)
-    end
+    pipeline = @merge_request.head_pipeline
+    pipeline if can?(current_user, :read_pipeline, pipeline)
   end
+  strong_memoize_attr :head_pipeline
 
   def ci_environments_status_on_merge_result?
     params[:environment_target] == 'merge_commit'
@@ -506,9 +505,7 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
       auto_merge_strategy: params[:auto_merge_strategy]
     )
 
-    unless @merge_request.mergeable?(**skipped_checks)
-      return :failed
-    end
+    return :failed unless @merge_request.mergeable?(**skipped_checks)
 
     squashing = params.fetch(:squash, false)
     merge_service = ::MergeRequests::MergeService
@@ -616,7 +613,7 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
   end
 
   def authorize_read_actual_head_pipeline!
-    return render_404 unless can?(current_user, :read_build, merge_request.actual_head_pipeline)
+    render_404 unless can?(current_user, :read_build, merge_request.actual_head_pipeline)
   end
 
   def show_whitespace

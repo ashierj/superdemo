@@ -41,4 +41,7 @@ query State {
   stepList @client {
     id
   }
+  furthestAccessedStep @client {
+    id
+  }
 }

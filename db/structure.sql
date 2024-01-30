@@ -23,6 +23,19 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION assign_p_ci_pipeline_variables_id_value() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."id" IS NOT NULL THEN
+  RAISE WARNING 'Manually assigning ids is not allowed, the value will be ignored';
+END IF;
+NEW."id" := nextval('ci_pipeline_variables_id_seq'::regclass);
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION delete_associated_project_namespace() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -14439,7 +14452,8 @@ CREATE TABLE ci_job_artifacts (
     accessibility smallint DEFAULT 0 NOT NULL,
     file_final_path text,
     CONSTRAINT check_27f0f6dbab CHECK ((file_store IS NOT NULL)),
-    CONSTRAINT check_9f04410cf4 CHECK ((char_length(file_final_path) <= 1024))
+    CONSTRAINT check_9f04410cf4 CHECK ((char_length(file_final_path) <= 1024)),
+    CONSTRAINT partitioning_constraint CHECK ((partition_id = ANY (ARRAY[(100)::bigint, (101)::bigint])))
 );
 
 CREATE SEQUENCE ci_job_artifacts_id_seq
@@ -14722,15 +14736,6 @@ CREATE TABLE p_ci_pipeline_variables (
 )
 PARTITION BY LIST (partition_id);
 
-CREATE SEQUENCE ci_pipeline_variables_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE ci_pipeline_variables_id_seq OWNED BY p_ci_pipeline_variables.id;
-
 CREATE TABLE ci_pipeline_variables (
     key character varying NOT NULL,
     value text,
@@ -14740,9 +14745,18 @@ CREATE TABLE ci_pipeline_variables (
     variable_type smallint DEFAULT 1 NOT NULL,
     partition_id bigint NOT NULL,
     raw boolean DEFAULT false NOT NULL,
-    id bigint DEFAULT nextval('ci_pipeline_variables_id_seq'::regclass) NOT NULL,
+    id bigint NOT NULL,
     pipeline_id bigint NOT NULL
 );
+
+CREATE SEQUENCE ci_pipeline_variables_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE ci_pipeline_variables_id_seq OWNED BY p_ci_pipeline_variables.id;
 
 CREATE TABLE ci_pipelines (
     id integer NOT NULL,
@@ -23558,7 +23572,6 @@ CREATE TABLE sbom_occurrences (
     component_name text,
     input_file_path text,
     licenses jsonb DEFAULT '[]'::jsonb,
-    vulnerabilities jsonb DEFAULT '[]'::jsonb,
     highest_severity smallint,
     vulnerability_count integer DEFAULT 0 NOT NULL,
     source_package_id bigint,
@@ -24484,14 +24497,14 @@ CREATE SEQUENCE system_access_microsoft_graph_access_tokens_id_seq
 ALTER SEQUENCE system_access_microsoft_graph_access_tokens_id_seq OWNED BY system_access_microsoft_graph_access_tokens.id;
 
 CREATE TABLE system_note_metadata (
-    id integer NOT NULL,
+    id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     commit_count integer,
     action character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     description_version_id bigint,
     note_id bigint NOT NULL,
-    id_convert_to_bigint bigint DEFAULT 0 NOT NULL
+    id bigint NOT NULL
 );
 
 CREATE SEQUENCE system_note_metadata_id_seq
@@ -24907,8 +24920,10 @@ CREATE TABLE user_credit_card_validations (
     holder_name_hash text,
     expiration_date_hash text,
     network_hash text,
+    zuora_payment_method_xid text,
     CONSTRAINT check_7721e1961a CHECK ((char_length(network_hash) <= 44)),
     CONSTRAINT check_83f1e2ace3 CHECK ((char_length(expiration_date_hash) <= 44)),
+    CONSTRAINT check_9a15d14e37 CHECK ((char_length(zuora_payment_method_xid) <= 50)),
     CONSTRAINT check_aca7c2607c CHECK ((char_length(holder_name_hash) <= 44)),
     CONSTRAINT check_f5c35b1a6e CHECK ((char_length(last_digits_hash) <= 44))
 );
@@ -25952,7 +25967,9 @@ CREATE TABLE work_item_dates_sources (
     start_date_sourcing_work_item_id bigint,
     start_date_sourcing_milestone_id bigint,
     due_date_sourcing_work_item_id bigint,
-    due_date_sourcing_milestone_id bigint
+    due_date_sourcing_milestone_id bigint,
+    start_date_fixed date,
+    due_date_fixed date
 );
 
 CREATE TABLE work_item_hierarchy_restrictions (
@@ -26316,6 +26333,27 @@ CREATE SEQUENCE zoekt_nodes_id_seq
     CACHE 1;
 
 ALTER SEQUENCE zoekt_nodes_id_seq OWNED BY zoekt_nodes.id;
+
+CREATE TABLE zoekt_repositories (
+    id bigint NOT NULL,
+    zoekt_index_id bigint NOT NULL,
+    project_id bigint,
+    project_identifier bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    indexed_at timestamp with time zone,
+    state smallint DEFAULT 0 NOT NULL,
+    CONSTRAINT c_zoekt_repositories_on_project_id_and_project_identifier CHECK (((project_id IS NULL) OR (project_identifier = project_id)))
+);
+
+CREATE SEQUENCE zoekt_repositories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE zoekt_repositories_id_seq OWNED BY zoekt_repositories.id;
 
 CREATE TABLE zoekt_shards (
     id bigint NOT NULL,
@@ -27552,8 +27590,6 @@ ALTER TABLE ONLY p_ci_builds_metadata ALTER COLUMN id SET DEFAULT nextval('ci_bu
 
 ALTER TABLE ONLY p_ci_job_annotations ALTER COLUMN id SET DEFAULT nextval('p_ci_job_annotations_id_seq'::regclass);
 
-ALTER TABLE ONLY p_ci_pipeline_variables ALTER COLUMN id SET DEFAULT nextval('ci_pipeline_variables_id_seq'::regclass);
-
 ALTER TABLE ONLY packages_build_infos ALTER COLUMN id SET DEFAULT nextval('packages_build_infos_id_seq'::regclass);
 
 ALTER TABLE ONLY packages_composer_cache_files ALTER COLUMN id SET DEFAULT nextval('packages_composer_cache_files_id_seq'::regclass);
@@ -28025,6 +28061,8 @@ ALTER TABLE ONLY zoekt_indexed_namespaces ALTER COLUMN id SET DEFAULT nextval('z
 ALTER TABLE ONLY zoekt_indices ALTER COLUMN id SET DEFAULT nextval('zoekt_indices_id_seq'::regclass);
 
 ALTER TABLE ONLY zoekt_nodes ALTER COLUMN id SET DEFAULT nextval('zoekt_nodes_id_seq'::regclass);
+
+ALTER TABLE ONLY zoekt_repositories ALTER COLUMN id SET DEFAULT nextval('zoekt_repositories_id_seq'::regclass);
 
 ALTER TABLE ONLY zoekt_shards ALTER COLUMN id SET DEFAULT nextval('zoekt_shards_id_seq'::regclass);
 
@@ -29099,7 +29137,7 @@ ALTER TABLE ONLY ci_job_artifact_states
     ADD CONSTRAINT ci_job_artifact_states_pkey PRIMARY KEY (job_artifact_id);
 
 ALTER TABLE ONLY ci_job_artifacts
-    ADD CONSTRAINT ci_job_artifacts_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT ci_job_artifacts_pkey PRIMARY KEY (id, partition_id);
 
 ALTER TABLE ONLY ci_job_token_project_scope_links
     ADD CONSTRAINT ci_job_token_project_scope_links_pkey PRIMARY KEY (id);
@@ -30319,6 +30357,9 @@ ALTER TABLE ONLY project_wiki_repositories
 ALTER TABLE ONLY projects
     ADD CONSTRAINT projects_pkey PRIMARY KEY (id);
 
+ALTER TABLE projects
+    ADD CONSTRAINT projects_star_count_positive CHECK ((star_count >= 0)) NOT VALID;
+
 ALTER TABLE ONLY projects_sync_events
     ADD CONSTRAINT projects_sync_events_pkey PRIMARY KEY (id);
 
@@ -30861,6 +30902,9 @@ ALTER TABLE ONLY zoekt_indices
 
 ALTER TABLE ONLY zoekt_nodes
     ADD CONSTRAINT zoekt_nodes_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY zoekt_repositories
+    ADD CONSTRAINT zoekt_repositories_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY zoekt_shards
     ADD CONSTRAINT zoekt_shards_pkey PRIMARY KEY (id);
@@ -32384,6 +32428,8 @@ CREATE INDEX idx_pkgs_installable_package_files_on_package_id_id_file_name ON pa
 
 CREATE INDEX idx_pkgs_npm_metadata_caches_on_id_and_project_id_and_status ON packages_npm_metadata_caches USING btree (id) WHERE ((project_id IS NULL) AND (status = 0));
 
+CREATE INDEX idx_pkgs_nuget_symbols_on_lowercase_signature_and_file_name ON packages_nuget_symbols USING btree (lower(signature), lower(file));
+
 CREATE INDEX idx_pkgs_on_project_id_name_version_on_installable_terraform ON packages_packages USING btree (project_id, name, version, id) WHERE ((package_type = 12) AND (status = ANY (ARRAY[0, 1])));
 
 CREATE INDEX idx_proj_feat_usg_on_jira_dvcs_cloud_last_sync_at_and_proj_id ON project_feature_usages USING btree (jira_dvcs_cloud_last_sync_at, project_id) WHERE (jira_dvcs_cloud_last_sync_at IS NOT NULL);
@@ -32419,6 +32465,8 @@ CREATE INDEX idx_repository_states_on_repository_failure_partial ON project_repo
 CREATE INDEX idx_repository_states_on_wiki_failure_partial ON project_repository_states USING btree (last_wiki_verification_failure) WHERE (last_wiki_verification_failure IS NOT NULL);
 
 CREATE INDEX idx_repository_states_outdated_checksums ON project_repository_states USING btree (project_id) WHERE (((repository_verification_checksum IS NULL) AND (last_repository_verification_failure IS NULL)) OR ((wiki_verification_checksum IS NULL) AND (last_wiki_verification_failure IS NULL)));
+
+CREATE INDEX idx_sbom_occurr_on_project_component_version_input_file_path ON sbom_occurrences USING btree (project_id, component_version_id, input_file_path);
 
 CREATE INDEX idx_sbom_occurrences_on_project_id_and_source_id ON sbom_occurrences USING btree (project_id, source_id);
 
@@ -32963,8 +33011,6 @@ CREATE INDEX index_ci_job_artifacts_on_file_final_path ON ci_job_artifacts USING
 CREATE INDEX index_ci_job_artifacts_on_file_store ON ci_job_artifacts USING btree (file_store);
 
 CREATE INDEX index_ci_job_artifacts_on_file_type_for_devops_adoption ON ci_job_artifacts USING btree (file_type, project_id, created_at) WHERE (file_type = ANY (ARRAY[5, 6, 8, 23]));
-
-CREATE UNIQUE INDEX index_ci_job_artifacts_on_id_partition_id_unique ON ci_job_artifacts USING btree (id, partition_id);
 
 CREATE INDEX index_ci_job_artifacts_on_id_project_id_and_created_at ON ci_job_artifacts USING btree (project_id, created_at, id);
 
@@ -34402,6 +34448,8 @@ CREATE INDEX index_ml_experiments_on_user_id ON ml_experiments USING btree (user
 
 CREATE INDEX index_ml_model_version_metadata_on_project_id ON ml_model_version_metadata USING btree (project_id);
 
+CREATE INDEX index_ml_model_versions_on_created_at_on_model_id ON ml_model_versions USING btree (model_id, created_at);
+
 CREATE INDEX index_ml_model_versions_on_package_id ON ml_model_versions USING btree (package_id);
 
 CREATE INDEX index_ml_model_versions_on_project_id ON ml_model_versions USING btree (project_id);
@@ -35282,8 +35330,6 @@ CREATE UNIQUE INDEX index_sbom_components_on_component_type_name_and_purl_type O
 
 CREATE INDEX index_sbom_occurr_on_project_id_and_component_version_id_and_id ON sbom_occurrences USING btree (project_id, component_version_id, id);
 
-CREATE INDEX index_sbom_occurrences_for_input_file_path_search ON sbom_occurrences USING btree (project_id, component_id, input_file_path);
-
 CREATE INDEX index_sbom_occurrences_on_component_id_and_id ON sbom_occurrences USING btree (component_id, id);
 
 CREATE INDEX index_sbom_occurrences_on_component_version_id ON sbom_occurrences USING btree (component_version_id);
@@ -35523,8 +35569,6 @@ CREATE UNIQUE INDEX index_system_access_microsoft_applications_on_namespace_id O
 CREATE UNIQUE INDEX index_system_note_metadata_on_description_version_id ON system_note_metadata USING btree (description_version_id) WHERE (description_version_id IS NOT NULL);
 
 CREATE UNIQUE INDEX index_system_note_metadata_on_note_id ON system_note_metadata USING btree (note_id);
-
-CREATE UNIQUE INDEX index_system_note_metadata_pkey_on_id_convert_to_bigint ON system_note_metadata USING btree (id_convert_to_bigint);
 
 CREATE INDEX index_taggings_on_tag_id ON taggings USING btree (tag_id);
 
@@ -36042,6 +36086,10 @@ CREATE INDEX index_zoekt_nodes_on_last_seen_at ON zoekt_nodes USING btree (last_
 
 CREATE UNIQUE INDEX index_zoekt_nodes_on_uuid ON zoekt_nodes USING btree (uuid);
 
+CREATE INDEX index_zoekt_repositories_on_project_id ON zoekt_repositories USING btree (project_id);
+
+CREATE INDEX index_zoekt_repositories_on_state ON zoekt_repositories USING btree (state);
+
 CREATE UNIQUE INDEX index_zoekt_shard_and_namespace ON zoekt_indexed_namespaces USING btree (zoekt_shard_id, namespace_id);
 
 CREATE UNIQUE INDEX index_zoekt_shards_on_index_base_url ON zoekt_shards USING btree (index_base_url);
@@ -36170,6 +36218,8 @@ CREATE UNIQUE INDEX u_project_compliance_standards_adherence_for_reporting ON pr
 
 CREATE UNIQUE INDEX u_zoekt_indices_zoekt_enabled_namespace_id_and_zoekt_node_id ON zoekt_indices USING btree (zoekt_enabled_namespace_id, zoekt_node_id);
 
+CREATE UNIQUE INDEX u_zoekt_repositories_zoekt_index_id_and_project_id ON zoekt_repositories USING btree (zoekt_index_id, project_id);
+
 CREATE UNIQUE INDEX uniq_google_cloud_logging_configuration_namespace_id_and_name ON audit_events_google_cloud_logging_configurations USING btree (namespace_id, name);
 
 CREATE UNIQUE INDEX uniq_idx_packages_packages_on_project_id_name_version_ml_model ON packages_packages USING btree (project_id, name, version) WHERE (package_type = 14);
@@ -36217,6 +36267,8 @@ CREATE UNIQUE INDEX unique_google_cloud_logging_configurations_on_namespace_id O
 CREATE UNIQUE INDEX unique_idx_namespaces_storage_limit_exclusions_on_namespace_id ON namespaces_storage_limit_exclusions USING btree (namespace_id);
 
 CREATE UNIQUE INDEX unique_index_ci_build_pending_states_on_partition_id_build_id ON ci_build_pending_states USING btree (partition_id, build_id);
+
+CREATE UNIQUE INDEX unique_index_for_credit_card_validation_payment_method_xid ON user_credit_card_validations USING btree (zuora_payment_method_xid) WHERE (zuora_payment_method_xid IS NOT NULL);
 
 CREATE UNIQUE INDEX unique_index_for_project_pages_unique_domain ON project_settings USING btree (pages_unique_domain) WHERE (pages_unique_domain IS NOT NULL);
 
@@ -38014,6 +38066,8 @@ ALTER INDEX p_ci_builds_token_encrypted_partition_id_idx ATTACH PARTITION unique
 
 CREATE TRIGGER assign_p_ci_builds_id_trigger BEFORE INSERT ON p_ci_builds FOR EACH ROW EXECUTE FUNCTION assign_p_ci_builds_id_value();
 
+CREATE TRIGGER assign_p_ci_pipeline_variables_id_trigger BEFORE INSERT ON p_ci_pipeline_variables FOR EACH ROW EXECUTE FUNCTION assign_p_ci_pipeline_variables_id_value();
+
 CREATE TRIGGER chat_names_loose_fk_trigger AFTER DELETE ON chat_names REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
 CREATE TRIGGER ci_builds_loose_fk_trigger AFTER DELETE ON ci_builds REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
@@ -38261,6 +38315,9 @@ ALTER TABLE ONLY project_ci_cd_settings
 ALTER TABLE ONLY agent_activity_events
     ADD CONSTRAINT fk_256c631779 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL;
 
+ALTER TABLE ONLY zoekt_repositories
+    ADD CONSTRAINT fk_25a92aeccd FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL;
+
 ALTER TABLE ONLY epics
     ADD CONSTRAINT fk_25b99c1be3 FOREIGN KEY (parent_id) REFERENCES epics(id) ON DELETE CASCADE;
 
@@ -38359,6 +38416,9 @@ ALTER TABLE ONLY ml_model_versions
 
 ALTER TABLE p_ci_builds
     ADD CONSTRAINT fk_3a9eaa254d FOREIGN KEY (stage_id) REFERENCES ci_stages(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY ci_builds
+    ADD CONSTRAINT fk_3a9eaa254d_p FOREIGN KEY (partition_id, stage_id) REFERENCES ci_stages(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
 
 ALTER TABLE ONLY agent_activity_events
     ADD CONSTRAINT fk_3af186389b FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE SET NULL;
@@ -38722,6 +38782,9 @@ ALTER TABLE ONLY zoekt_indexed_namespaces
 
 ALTER TABLE ONLY dast_site_profiles_builds
     ADD CONSTRAINT fk_94e80df60e FOREIGN KEY (dast_site_profile_id) REFERENCES dast_site_profiles(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY zoekt_repositories
+    ADD CONSTRAINT fk_94edfec0da FOREIGN KEY (zoekt_index_id) REFERENCES zoekt_indices(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY vulnerability_feedback
     ADD CONSTRAINT fk_94f7c8a81e FOREIGN KEY (comment_author_id) REFERENCES users(id) ON DELETE SET NULL;
@@ -41107,9 +41170,6 @@ ALTER TABLE ONLY integrations
 
 ALTER TABLE ONLY merge_requests
     ADD CONSTRAINT fk_source_project FOREIGN KEY (source_project_id) REFERENCES projects(id) ON DELETE SET NULL;
-
-ALTER TABLE ONLY resource_link_events
-    ADD CONSTRAINT fk_system_note_metadata_id_convert_to_bigint FOREIGN KEY (system_note_metadata_id) REFERENCES system_note_metadata(id_convert_to_bigint) ON DELETE CASCADE NOT VALID;
 
 ALTER TABLE ONLY timelogs
     ADD CONSTRAINT fk_timelogs_issues_issue_id FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE;

@@ -40,6 +40,7 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
   it { is_expected.to delegate_method(:eligible_for_temporary_storage_increase?).to(:namespace_limit) }
   it { is_expected.to delegate_method(:experiment_features_enabled).to(:namespace_settings).allow_nil }
   it { is_expected.to delegate_method(:experiment_features_enabled=).to(:namespace_settings).with_arguments(:args).allow_nil }
+  it { is_expected.to delegate_method(:security_policy_management_project).to(:security_orchestration_policy_configuration) }
 
   shared_examples 'plan helper' do |namespace_plan|
     let(:namespace) { create(:namespace_with_plan, plan: "#{plan_name}_plan") }
@@ -1255,25 +1256,6 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
       end
 
       it { is_expected.to eq(result) }
-    end
-  end
-
-  describe '#top_most_excess_storage_projects' do
-    let_it_be(:namespace) { create(:namespace) }
-
-    it 'returns the top 5 projects with excess storage' do
-      create_project(repository_size: 100, lfs_objects_size: 0, repository_size_limit: nil)
-      project2 = create_project(repository_size: 75, lfs_objects_size: 0, repository_size_limit: 30)
-      project3 = create_project(repository_size: 120, lfs_objects_size: 0, repository_size_limit: 60)
-      create_project(repository_size: 50, lfs_objects_size: 0, repository_size_limit: 25)
-      project5 = create_project(repository_size: 60, lfs_objects_size: 0, repository_size_limit: 30)
-      project6 = create_project(repository_size: 90, lfs_objects_size: 0, repository_size_limit: 45)
-      project7 = create_project(repository_size: 100, lfs_objects_size: 0, repository_size_limit: 50)
-
-      result = namespace.top_most_excess_storage_projects
-
-      expect(result).to eq([project3, project7, project6, project2, project5])
-      expect(result.size).to eq(5)
     end
   end
 

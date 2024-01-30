@@ -2325,8 +2325,8 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
-  describe '#saml_group_links_enabled?' do
-    subject { group.saml_group_links_enabled? }
+  describe '#saml_group_links_exists?' do
+    subject { group.saml_group_links_exists? }
 
     context 'with group saml disabled' do
       it { is_expected.to eq(false) }
@@ -3310,70 +3310,6 @@ RSpec.describe Group, feature_category: :groups_and_projects do
           an_object_having_attributes(component_name: caddy.name, component_version_id: caddy_v1.id, occurrence_count: 1),
           an_object_having_attributes(component_name: webpack.name, component_version_id: webpack_v4.id, occurrence_count: 1)
         ])
-      end
-    end
-  end
-
-  describe "#sbom_licenses" do
-    let_it_be(:group) { create(:group) }
-    let(:limit) { 10 }
-
-    subject { group.sbom_licenses(limit: limit) }
-
-    it { is_expected.to be_empty }
-
-    context 'with project' do
-      let_it_be(:project) { create(:project, group: group) }
-
-      it { is_expected.to be_empty }
-
-      context 'with occurrences' do
-        let_it_be(:occurrence_1) { create(:sbom_occurrence, :mit, project: project) }
-        let_it_be(:occurrence_2) { create(:sbom_occurrence, :mpl_2, project: project) }
-        let_it_be(:occurrence_3) { create(:sbom_occurrence, :apache_2, project: project) }
-        let_it_be(:occurrence_4) { create(:sbom_occurrence, :apache_2, :mpl_2, project: project) }
-        let_it_be(:occurrence_5) { create(:sbom_occurrence, :mit, :mpl_2, project: project) }
-        let_it_be(:occurrence_6) { create(:sbom_occurrence, :apache_2, :mit, project: project) }
-        let_it_be(:occurrence_7) { create(:sbom_occurrence, project: project) }
-
-        it 'returns each unique license' do
-          expect(subject).to eq([
-            {
-              "spdx_identifier" => "Apache-2.0",
-              "name" => "Apache 2.0 License",
-              "url" => "https://spdx.org/licenses/Apache-2.0.html"
-            },
-            {
-              "spdx_identifier" => "MIT",
-              "name" => "MIT License",
-              "url" => "https://spdx.org/licenses/MIT.html"
-            },
-            {
-              "spdx_identifier" => "MPL-2.0",
-              "name" => "Mozilla Public License 2.0",
-              "url" => "https://spdx.org/licenses/MPL-2.0.html"
-            }
-          ])
-        end
-
-        context 'with a limit below the total' do
-          let(:limit) { 2 }
-
-          it 'returns returns the limited number of licenses' do
-            expect(subject).to eq([
-              {
-                "spdx_identifier" => "Apache-2.0",
-                "name" => "Apache 2.0 License",
-                "url" => "https://spdx.org/licenses/Apache-2.0.html"
-              },
-              {
-                "spdx_identifier" => "MIT",
-                "name" => "MIT License",
-                "url" => "https://spdx.org/licenses/MIT.html"
-              }
-            ])
-          end
-        end
       end
     end
   end

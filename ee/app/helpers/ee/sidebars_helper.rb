@@ -81,6 +81,8 @@ module EE
           ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
           show_trial_status_widget?(root_namespace) &&
           can?(current_user, :admin_namespace, root_namespace)
+
+        experiment(:trial_discover_page, actor: current_user).publish
         trial_status = trial_status(root_namespace)
 
         return {

@@ -4,13 +4,17 @@ group: Import and Integrate
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Jira issue integration **(FREE ALL)**
+# Jira issue integration
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 The Jira issue integration connects one or more GitLab projects to a Jira instance. You can host the Jira instance yourself or in [Jira Cloud](https://www.atlassian.com/migration/assess/why-cloud). The supported Jira versions are `6.x`, `7.x`, `8.x`, and `9.x`.
 
 ## Configure the integration
 
-> Authentication with Jira personal access tokens [introduced](https://gitlab.com/groups/gitlab-org/-/epics/8222) in GitLab 16.0.
+> - Authentication with Jira personal access tokens [introduced](https://gitlab.com/groups/gitlab-org/-/epics/8222) in GitLab 16.0.
 
 Prerequisites:
 
@@ -79,7 +83,11 @@ To configure your project settings in GitLab:
 Your GitLab project can now interact with all Jira projects in your instance, and the project
 displays a Jira link that opens the Jira project.
 
-## Create a Jira issue for a vulnerability **(ULTIMATE ALL)**
+## Create a Jira issue for a vulnerability
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, self-managed
 
 Prerequisites:
 

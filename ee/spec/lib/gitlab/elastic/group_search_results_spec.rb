@@ -186,6 +186,48 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
         ensure_elasticsearch_index!
       end
     end
+
+    context 'if the user is authorized to view the group' do
+      it 'has a traversal_ids prefix filter' do
+        group.add_owner(user)
+
+        results.objects(scope)
+
+        assert_named_queries('project:ancestry_filter:descendants', without: ['project:membership:id'])
+      end
+    end
+
+    context 'if the user is not authorized to view the group' do
+      it 'has a project id inclusion filter' do
+        results.objects(scope)
+
+        assert_named_queries('project:membership:id', without: ['project:ancestry_filter:descendants'])
+      end
+    end
+
+    context 'if the advanced_search_project_traversal_ids_query flag is disabled' do
+      before do
+        stub_feature_flags(advanced_search_project_traversal_ids_query: false)
+      end
+
+      context 'if the user is authorized to view the group' do
+        it 'has a project id inclusion filter' do
+          group.add_owner(user)
+
+          results.objects(scope)
+
+          assert_named_queries('project:membership:id', without: ['project:ancestry_filter:descendants'])
+        end
+      end
+
+      context 'if the user is not authorized to view the group' do
+        it 'has a project id inclusion filter' do
+          results.objects(scope)
+
+          assert_named_queries('project:membership:id', without: ['project:ancestry_filter:descendants'])
+        end
+      end
+    end
   end
 
   context 'epics search', :sidekiq_inline do
@@ -215,26 +257,6 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     context 'when the user is a developer on the group' do
       before_all do
         group.add_developer(user)
-      end
-
-      include_context 'with code examples' do
-        before do
-          code_examples.values.uniq.each do |description|
-            sha = Digest::SHA256.hexdigest(description)
-            create :epic, group: group, title: sha, description: description
-          end
-
-          ensure_elasticsearch_index!
-        end
-
-        it 'finds all examples' do
-          code_examples.each do |query, description|
-            sha = Digest::SHA256.hexdigest(description)
-
-            epics = described_class.new(user, query, [], group: group, filters: filters).objects('epics')
-            expect(epics.map(&:title)).to include(sha)
-          end
-        end
       end
 
       it 'returns matching epics belonging to the group or its descendants, including confidential epics' do

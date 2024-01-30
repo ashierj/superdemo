@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import Diff from 'ee/vulnerabilities/components/generic_report/types/diff.vue';
+import Diff from 'ee/vulnerabilities/components/generic_report/types/report_type_diff.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 const TEST_DATA = {
@@ -7,7 +7,7 @@ const TEST_DATA = {
   after: `afterText`,
 };
 
-describe('ee/vulnerabilities/components/generic_report/types/diff.vue', () => {
+describe('ee/vulnerabilities/components/generic_report/types/report_type_diff.vue', () => {
   let wrapper;
 
   const createWrapper = () => {

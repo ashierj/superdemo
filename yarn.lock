@@ -1316,10 +1316,10 @@
     stylelint-declaration-strict-value "1.10.4"
     stylelint-scss "6.0.0"
 
-"@gitlab/svgs@3.75.0":
-  version "3.75.0"
-  resolved "https://registry.yarnpkg.com/@gitlab/svgs/-/svgs-3.75.0.tgz#31e4a3ab66cab3e405c4cff1f065ee3924fe7a98"
-  integrity sha512-TAmlxByyZcZvr/hxipfI53XLNlzpVZCf5izRdoIhR4QFHjZ56HIwQfoVCGYRNLDV8eTnO4ljNBFLZCfyipdPoQ==
+"@gitlab/svgs@3.79.0":
+  version "3.79.0"
+  resolved "https://registry.yarnpkg.com/@gitlab/svgs/-/svgs-3.79.0.tgz#ba15db14ba175579ca1fef8290acf5102e3d9a69"
+  integrity sha512-5h4+wRTFhMLolSzm7UUENn9yRVIWICB0Urbl25H9BBQV3WxBRktbe9c052AvUwNNUTEdWqUYu7yiAKI5ZwqRzQ==
 
 "@gitlab/ui@^72.12.1":
   version "72.12.1"
@@ -1339,10 +1339,10 @@
   resolved "https://registry.yarnpkg.com/@gitlab/visual-review-tools/-/visual-review-tools-1.7.3.tgz#9ea641146436da388ffbad25d7f2abe0df52c235"
   integrity sha512-NMV++7Ew1FSBDN1xiZaauU9tfeSfgDHcOLpn+8bGpP+O5orUPm2Eu66R5eC5gkjBPaXosNAxNWtriee+aFk4+g==
 
-"@gitlab/web-ide@^0.0.1-dev-20231211152737":
-  version "0.0.1-dev-20231211152737"
-  resolved "https://registry.yarnpkg.com/@gitlab/web-ide/-/web-ide-0.0.1-dev-20231211152737.tgz#849c6f9256b5a5bd340a3b140d4192c6f5aafc35"
-  integrity sha512-1bIUvO3Lhdc8hftmfKPjGKMqoI6NBv20noZxpgLtXx+aOF8NsF+bJcBMl12HifDI4w8UAjTmHPMzj+RZfEJLJw==
+"@gitlab/web-ide@^0.0.1-dev-20240125064919":
+  version "0.0.1-dev-20240125064919"
+  resolved "https://registry.yarnpkg.com/@gitlab/web-ide/-/web-ide-0.0.1-dev-20240125064919.tgz#9527cf0a8615343b4f675b43ed1ea1586288c06f"
+  integrity sha512-8y9mKhoHdTrNXSk/9O4K91wMAJu0P8QyxuSRi691b/45gFjEF8Uh54upGyJfACV1Uo2ntWesx+lPeuKHf3eaow==
 
 "@graphql-eslint/eslint-plugin@3.20.1":
   version "3.20.1"

@@ -4,7 +4,11 @@ group: Pipeline Execution
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Pipelines API **(FREE ALL)**
+# Pipelines API
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 ## Pipelines pagination
 
@@ -225,7 +229,7 @@ Sample response:
 
 ### Get a pipeline's test report summary
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65471) in GitLab 14.2.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65471) in GitLab 14.2.
 
 NOTE:
 This API route is part of the [Unit test report](../ci/testing/unit_test_reports.md) feature.
@@ -343,7 +347,7 @@ Example of response
 
 ## Create a new pipeline
 
-> `iid` in response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/342223) in GitLab 14.6.
+> - `iid` in response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/342223) in GitLab 14.6.
 
 ```plaintext
 POST /projects/:id/pipeline
@@ -394,7 +398,7 @@ Example of response
 
 ## Retry jobs in a pipeline
 
-> `iid` in response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/342223) in GitLab 14.6.
+> - `iid` in response [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/342223) in GitLab 14.6.
 
 ```plaintext
 POST /projects/:id/pipelines/:pipeline_id/retry

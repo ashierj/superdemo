@@ -20,6 +20,7 @@ module EE
 
         trigger_suggested_reviewers_fetch
         sync_any_merge_request_approval_rules
+        sync_preexiting_states_approval_rules
       end
 
       def trigger_suggested_reviewers_fetch
@@ -68,6 +69,16 @@ module EE
         merge_requests_for_source_branch.each do |merge_request|
           if merge_request.approval_rules.any_merge_request.any?
             ::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker.perform_async(merge_request.id)
+          end
+        end
+      end
+
+      def sync_preexiting_states_approval_rules
+        return if ::Feature.disabled?(:security_policies_sync_preexisting_state, project, type: :gitlab_com_derisk)
+
+        merge_requests_for_source_branch.each do |merge_request|
+          if merge_request.approval_rules.scan_finding.any?
+            ::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker.perform_async(merge_request.id)
           end
         end
       end

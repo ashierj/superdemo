@@ -6,6 +6,12 @@ module EE
       extend ::Gitlab::Utils::Override
 
       ALLOWED_PARAMS_EE = [
+        :workload_identity_pool_project_number,
+        :workload_identity_pool_id,
+        :workload_identity_pool_provider_id,
+        :artifact_registry_project_id,
+        :artifact_registry_location,
+        :artifact_registry_repositories,
         :issues_enabled,
         :multiproject_enabled,
         :pass_unstable,

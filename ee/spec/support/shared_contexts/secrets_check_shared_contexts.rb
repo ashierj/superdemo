@@ -99,87 +99,87 @@ RSpec.shared_context 'secrets check context' do
 end
 
 RSpec.shared_context 'secret detection error and log messages context' do
-  # Error messsages
+  let(:error_messages) { ::Gitlab::Checks::SecretsCheck::ERROR_MESSAGES }
+  let(:log_messages) { ::Gitlab::Checks::SecretsCheck::LOG_MESSAGES }
+
+  # Error messsages with formatting
   let(:failed_to_scan_regex_error) do
-    format(
-      "\n-- Failed to scan blob(id: %{blob_id}) due to regex error.\n",
-      { blob_id: failed_to_scan_blob_reference }
-    )
+    format(error_messages[:failed_to_scan_regex_error], { blob_id: failed_to_scan_blob_reference })
   end
 
   let(:blob_timed_out_error) do
+    format(error_messages[:blob_timed_out_error], { blob_id: timed_out_blob_reference })
+  end
+
+  let(:too_many_tree_entries_error) do
+    format(error_messages[:too_many_tree_entries_error], { sha: new_commit })
+  end
+
+  # Log messages with formatting
+  let(:finding_path) { '.env' }
+  let(:finding_line_number) { 1 }
+  let(:finding_description) { 'GitLab Personal Access Token' }
+  let(:finding_message_header) { format(log_messages[:finding_message_occurrence_header], { sha: new_commit }) }
+  let(:finding_message_path) { format(log_messages[:finding_message_occurrence_path], { path: finding_path }) }
+  let(:finding_message_occurrence_line) do
     format(
-      "\n-- Scanning blob(id: %{blob_id}) timed out.\n",
-      { blob_id: timed_out_blob_reference }
+      log_messages[:finding_message_occurrence_line],
+      {
+        line_number: finding_line_number,
+        description: finding_description
+      }
     )
   end
 
-  let(:error_messages) do
-    {
-      scan_timeout_error: 'Secret detection scan timed out.',
-      scan_initialization_error: 'Secret detection scan failed to initialize.',
-      invalid_input_error: 'Secret detection scan failed due to invalid input.',
-      invalid_scan_status_code_error: 'Invalid secret detection scan status, check passed.',
-      too_many_tree_entries_error: format('Too many tree entries exist for commit(sha: %{sha}).', { sha: new_commit })
+  let(:finding_message_multiple_occurrence_lines) do
+    variables = {
+      line_number: finding_line_number,
+      description: finding_description
     }
+
+    format(log_messages[:finding_message_occurrence_line], variables) +
+      format(log_messages[:finding_message_occurrence_line], variables.merge(line_number: finding_line_number + 1))
   end
 
-  # Log messages
-  let(:skip_secret_detection) do
-    "\n\nIf you wish to skip secret detection, please include [skip secret detection] " \
-      "in one of the commit messages for your changes."
+  let(:finding_message_same_blob_in_multiple_commits_header_path_and_lines) do
+    message = finding_message_header
+    message += finding_message_path
+    message += finding_message_occurrence_line
+    message += format(log_messages[:finding_message_occurrence_header], { sha: commit_with_same_blob })
+    message += finding_message_path
+    message += finding_message_occurrence_line
+    message
   end
 
-  let(:secrets_not_found) { 'Secret detection scan completed with no findings.' }
-  let(:found_secrets) { 'Secret detection scan completed with one or more findings.' }
-  let(:found_secrets_post_message) { "\n\nPlease remove the identified secrets in your commits and try again." }
-  let(:found_secrets_docs_link) do
-    message = "\nFor help with this, please refer to our documentation: %{path}"
+  let(:finding_message_multiple_findings_on_same_line) do
+    variables = {
+      line_number: finding_line_number,
+      description: finding_description
+    }
 
+    format(log_messages[:finding_message_occurrence_line], variables) +
+      format(log_messages[:finding_message_occurrence_line], variables.merge(description: second_finding_description))
+  end
+
+  let(:finding_message_with_blob) do
     format(
-      message,
+      log_messages[:finding_message],
+      {
+        blob_id: new_blob_reference,
+        line_number: finding_line_number,
+        description: finding_description
+      }
+    )
+  end
+
+  let(:found_secrets_docs_link) do
+    format(
+      log_messages[:found_secrets_docs_link],
       {
         path: Rails.application.routes.url_helpers.help_page_url(
           Gitlab::Checks::SecretsCheck::DOCUMENTATION_PATH,
           anchor: Gitlab::Checks::SecretsCheck::DOCUMENTATION_PATH_ANCHOR
         )
-      }
-    )
-  end
-
-  let(:found_secrets_with_errors) do
-    'Secret detection scan completed with one or more findings but some errors occured during the scan.'
-  end
-
-  let(:found_secret_path) { '.env' }
-  let(:found_secret_line_number) { '1' }
-  let(:found_secret_description) { 'GitLab Personal Access Token' }
-
-  let(:found_message_occurrence) do
-    message = "\n\nSecret leaked in commit: %{sha}" \
-              "\n  -- %{path}:%{line_number} | %{description}"
-
-    format(
-      message,
-      {
-        sha: new_commit,
-        path: found_secret_path,
-        line_number: found_secret_line_number,
-        description: found_secret_description
-      }
-    )
-  end
-
-  let(:found_message) do
-    message = "\n\nSecret leaked in blob: %{blob_id}" \
-              "\n  -- line:%{line_number} | %{description}"
-
-    format(
-      message,
-      {
-        blob_id: new_blob_reference,
-        line_number: found_secret_line_number,
-        description: found_secret_description
       }
     )
   end

@@ -27,7 +27,7 @@ module EE
       self.reactive_cache_refresh_interval = 10.minutes
       self.reactive_cache_lifetime = 1.hour
 
-      add_authentication_token_field :saml_discovery_token, unique: false, token_generator: -> { Devise.friendly_token(8) }
+      add_authentication_token_field :saml_discovery_token, unique: false, token_generator: -> { Devise.friendly_token(8) } # rubocop:disable Gitlab/TokenWithoutPrefix -- wontfix; not used for authentication
 
       has_many :epics
       has_many :epic_boards, class_name: 'Boards::EpicBoard', inverse_of: :group
@@ -439,8 +439,8 @@ module EE
       saml_provider.persisted? && saml_provider.enabled?
     end
 
-    def saml_group_links_enabled?
-      group_saml_enabled? && saml_group_links.exists?
+    def saml_group_links_exists?
+      saml_group_links.exists?
     end
 
     def global_saml_enabled?
@@ -906,17 +906,6 @@ module EE
         .with(our_occurrences.to_arel)
         .from(our_occurrences.alias_to(Sbom::Occurrence.arel_table))
         .select(*select_values)
-    end
-
-    def sbom_licenses(limit:)
-      columns = Sbom::Occurrence::LICENSE_COLUMNS
-      sbom_occurrences(with_totals: false)
-        .with_licenses
-        .order("sbom_licenses.spdx_identifier ASC")
-        .distinct
-        .limit(limit)
-        .pluck(*columns.map { |column| ["sbom_licenses", column].join(".") })
-        .map { |row| Hash[columns.zip(row)].with_indifferent_access }
     end
 
     override :reached_project_access_token_limit?

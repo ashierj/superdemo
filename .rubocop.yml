@@ -27,8 +27,8 @@ inherit_mode:
     - AllowedPatterns
 
 AllCops:
-  # Target the current Ruby version. For example, "3.0" or "3.1".
-  TargetRubyVersion: <%= RUBY_VERSION[/^\d+\.\d+/, 0] %>
+  # The oldest supported Ruby version.
+  TargetRubyVersion: 3.0
   TargetRailsVersion: 7.0
   Exclude:
     - 'gems/**/*'
@@ -1132,3 +1132,11 @@ Gitlab/LicenseAvailableUsage:
     - 'app/models/application_setting.rb'
     - 'ee/app/models/ee/application_setting.rb'
     - 'lib/gitlab/current_settings.rb'
+
+Gitlab/TokenWithoutPrefix:
+  Enabled: true
+  Include:
+    - 'app/**/*'
+    - 'lib/**/*'
+    - 'ee/app/**/*'
+    - 'ee/lib/**/*'

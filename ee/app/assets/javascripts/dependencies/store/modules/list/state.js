@@ -4,7 +4,7 @@ export default () => ({
   endpoint: '',
   exportEndpoint: '',
   vulnerabilityInfo: {},
-  vulnerabilityItem: null,
+  vulnerabilityItemsLoading: [],
   fetchingInProgress: false,
   initialized: false,
   isLoading: false,

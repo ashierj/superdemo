@@ -127,6 +127,40 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsS
       end
     end
 
+    context 'when merge request has scan_finding rules' do
+      before do
+        create(:approval_project_rule, :any_merge_request,
+          project: project,
+          security_orchestration_policy_configuration: policy_configuration
+        )
+      end
+
+      context 'when security_policies_sync_preexisting_state is disabled' do
+        before do
+          stub_feature_flags(security_policies_sync_preexisting_state: false)
+        end
+
+        it 'does not enqueue SyncPreexistingStatesApprovalRulesWorker' do
+          expect(::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).not_to(
+            receive(:perform_async)
+          )
+
+          subject
+        end
+      end
+
+      it "enqueues SyncPreexistingStatesApprovalRulesWorker with opened merge requests" do
+        expect(::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).to(
+          receive(:perform_async).with(opened_merge_request.id)
+        )
+        expect(::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).to(
+          receive(:perform_async).with(draft_merge_request.id)
+        )
+
+        subject
+      end
+    end
+
     it "does not synchronize rules to merged or closed requests" do
       subject
 

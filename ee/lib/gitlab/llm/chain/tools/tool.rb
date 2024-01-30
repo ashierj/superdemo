@@ -24,6 +24,20 @@ module Gitlab
             self::EXAMPLE
           end
 
+          def self.full_definition
+            [
+              "<tool_description>",
+              "<tool_name>#{self::NAME}</tool_name>",
+              "<description>",
+              self::DESCRIPTION,
+              "</description>",
+              "<example>",
+              full_example,
+              "</example>",
+              "</tool_description>\n"
+            ].join("\n")
+          end
+
           def initialize(context:, options:, stream_response_handler: nil, command: nil)
             @context = context
             @options = options

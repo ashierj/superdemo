@@ -382,9 +382,6 @@ WARNING:
 If there is a sustained workload over the limit, the `LIST` is going to grow until the limit is disabled or
 the workload drops under the limit.
 
-FLAG:
-The feature is currently behind a default-disabled feature flag `sidekiq_concurrency_limit_middleware`.
-
 You should use a lambda to define the limit. If it returns `nil`, `0`, or a negative value, the limit won't be applied.
 
 ```ruby
@@ -410,7 +407,13 @@ end
 ## Skip execution of workers in Geo secondary
 
 On Geo secondary sites, database writes are disabled.
-You must skip execution of workers that attempt database writes from Geo secondary sites.
+You must skip execution of workers that attempt database writes from Geo secondary sites,
+if those workers get enqueued on Geo secondary sites.
+Conveniently, most workers do not get enqueued on Geo secondary sites, because
+[most non-GET HTTP requests get proxied to the Geo primary site](https://gitlab.com/gitlab-org/gitlab/-/blob/v16.8.0-ee/workhorse/internal/upstream/routes.go#L382-L431),
+and because Geo secondary sites
+[disable most Sidekiq-Cron jobs](https://gitlab.com/gitlab-org/gitlab/-/blob/v16.8.0-ee/ee/lib/gitlab/geo/cron_manager.rb#L6-L26).
+Ask a Geo engineer if you are unsure.
 To skip execution, prepend the `::Geo::SkipSecondary` module to the worker class.
 
 ```ruby

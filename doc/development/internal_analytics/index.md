@@ -83,7 +83,7 @@ WHERE metrics_path = 'counts.users_visiting_dashboard_weekly' --set to metric of
 ORDER BY ping_created_at DESC
 ```
 
-For a list of other metrics tables refer to the [Data Models Cheat Sheet](https://about.gitlab.com/handbook/product/product-analysis/data-model-cheat-sheet/#commonly-used-data-models).
+For a list of other metrics tables refer to the [Data Models Cheat Sheet](https://handbook.gitlab.com/handbook/product/product-analysis/data-model-cheat-sheet/#commonly-used-data-models).
 
 ### Querying events
 
@@ -100,7 +100,7 @@ AND app_id='gitlab' -- use gitlab for production events and gitlab-staging for e
 GROUP BY 1 ORDER BY 1 desc
 ```
 
-For a list of other event tables refer to the [Data Models Cheat Sheet](https://about.gitlab.com/handbook/product/product-analysis/data-model-cheat-sheet/#commonly-used-data-models-2).
+For a list of other event tables refer to the [Data Models Cheat Sheet](https://handbook.gitlab.com/handbook/product/product-analysis/data-model-cheat-sheet/#commonly-used-data-models-2).
 
 ## Data flow
 
@@ -138,4 +138,4 @@ flowchart LR;
 ## Data Privacy
 
 GitLab only receives event counts or similarly aggregated information from self-managed instances. User identifiers for individual events on the SaaS version of GitLab are [pseudonymized](https://metrics.gitlab.com/identifiers).
-An exact description on what kind of data is being collected through the Internal Analytics system is given in our [handbook](https://about.gitlab.com/handbook/legal/privacy/customer-product-usage-information/).
+An exact description on what kind of data is being collected through the Internal Analytics system is given in our [handbook](https://handbook.gitlab.com/handbook/legal/privacy/customer-product-usage-information/).

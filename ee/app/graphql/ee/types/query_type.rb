@@ -28,8 +28,8 @@ module EE
           description: 'Fields related to the current license.'
         field :devops_adoption_enabled_namespaces,
           null: true,
-          description: 'Get configured DevOps adoption namespaces. **BETA** This endpoint is subject to change ' \
-                       'without notice.',
+          description: 'Get configured DevOps adoption namespaces. **Status:** Beta. This endpoint is subject to ' \
+                       'change without notice.',
           resolver: ::Resolvers::Analytics::DevopsAdoption::EnabledNamespacesResolver
         field :epic_board_list, ::Types::Boards::EpicListType,
           null: true,
@@ -115,6 +115,12 @@ module EE
           description: 'Time it took for ci job to be picked up by runner in percentiles.',
           resolver: ::Resolvers::Ci::QueueingHistoryResolver,
           extras: [:lookahead]
+        field :runner_usage_by_project,
+          [::Types::Ci::RunnerUsageByProjectType],
+          null: true,
+          alpha: { milestone: '16.9' },
+          description: 'Runner usage by project.',
+          resolver: ::Resolvers::Ci::RunnerUsageByProjectResolver
 
         field :instance_google_cloud_logging_configurations,
           ::Types::AuditEvents::Instance::GoogleCloudLoggingConfigurationType.connection_type,

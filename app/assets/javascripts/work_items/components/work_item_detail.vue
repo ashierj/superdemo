@@ -22,6 +22,7 @@ import {
   WORK_ITEM_TYPE_VALUE_EPIC,
   WIDGET_TYPE_NOTES,
   WIDGET_TYPE_LINKED_ITEMS,
+  LINKED_ITEMS_ANCHOR,
 } from '../constants';
 
 import workItemUpdatedSubscription from '../graphql/work_item_updated.subscription.graphql';
@@ -174,6 +175,9 @@ export default {
     canAssignUnassignUser() {
       return this.workItemAssignees && this.canSetWorkItemMetadata;
     },
+    isDiscussionLocked() {
+      return this.workItemNotes?.discussionLocked;
+    },
     workItemsMvc2Enabled() {
       return this.glFeatures.workItemsMvc2;
     },
@@ -261,6 +265,9 @@ export default {
         'gl-display-block gl-md-display-flex! gl-align-items-flex-start gl-flex-direction-column gl-md-flex-direction-row gl-gap-3 gl-pt-3': true,
       };
     },
+    shouldShowEditButton() {
+      return this.workItemsMvc2Enabled && !this.editMode && this.canUpdate;
+    },
   },
   mounted() {
     if (this.modalWorkItemIid) {
@@ -325,8 +332,8 @@ export default {
         replace: true,
       });
     },
-    openInModal({ event, modalWorkItem }) {
-      if (!this.workItemsMvc2Enabled) {
+    openInModal({ event, modalWorkItem, context }) {
+      if (!this.workItemsMvc2Enabled || context === LINKED_ITEMS_ANCHOR) {
         return;
       }
 
@@ -467,7 +474,7 @@ export default {
             class="detail-page-header-actions gl-display-flex gl-align-self-start gl-ml-auto gl-gap-3"
           >
             <gl-button
-              v-if="workItemsMvc2Enabled && !editMode"
+              v-if="shouldShowEditButton"
               category="secondary"
               data-testid="work-item-edit-form-button"
               @click="enableEditMode"
@@ -491,6 +498,7 @@ export default {
               :can-delete="canDelete"
               :can-update="canUpdate"
               :is-confidential="workItem.confidential"
+              :is-discussion-locked="isDiscussionLocked"
               :is-parent-confidential="parentWorkItemConfidentiality"
               :work-item-reference="workItem.reference"
               :work-item-create-note-email="workItem.createNoteEmail"
@@ -624,6 +632,7 @@ export default {
               :assignees="workItemAssignees && workItemAssignees.assignees.nodes"
               :can-set-work-item-metadata="canAssignUnassignUser"
               :report-abuse-path="reportAbusePath"
+              :is-discussion-locked="isDiscussionLocked"
               :is-work-item-confidential="workItem.confidential"
               class="gl-pt-5"
               :use-h2="!isModal"

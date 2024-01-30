@@ -2,10 +2,7 @@ import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import Api from 'ee/api';
-import {
-  buildCustomCodeAction,
-  toYaml,
-} from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
+import { buildCustomCodeAction } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import CodeBlockAction from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_action.vue';
 import CodeBlockFilePath from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_file_path.vue';
@@ -64,6 +61,47 @@ describe('CodeBlockAction', () => {
       expect(findCodeBlockSourceSelector().props('selectedType')).toBe(INSERTED_CODE_BLOCK);
       expect(findCodeBlockImport().props('hasExistingCode')).toBe(false);
     });
+
+    it('should change code source type', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findCodeBlockSourceSelector().props('selectedType')).toBe(INSERTED_CODE_BLOCK);
+
+      await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
+
+      expect(findCodeBlockSourceSelector().exists()).toBe(false);
+      expect(findCodeBlockFilePath().props('selectedType')).toBe(LINKED_EXISTING_FILE);
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            scan: 'custom',
+            id: 'action_0',
+          },
+        ],
+      ]);
+
+      await findCodeBlockFilePath().vm.$emit('select-type', INSERTED_CODE_BLOCK);
+      expect(findCodeBlockSourceSelector().props('selectedType')).toBe(INSERTED_CODE_BLOCK);
+      expect(findCodeBlockFilePath().exists()).toBe(false);
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            scan: 'custom',
+            id: 'action_0',
+          },
+        ],
+        [
+          {
+            scan: 'custom',
+            id: 'action_0',
+          },
+        ],
+      ]);
+    });
   });
 
   describe('code block', () => {
@@ -75,7 +113,7 @@ describe('CodeBlockAction', () => {
       await findYamlEditor().vm.$emit('input', fileContents);
       expect(findCodeBlockImport().props('hasExistingCode')).toBe(true);
       expect(wrapper.emitted('changed')).toEqual([
-        [{ ...buildCustomCodeAction(), ci_configuration: toYaml(fileContents) }],
+        [{ ...buildCustomCodeAction(), ci_configuration: fileContents }],
       ]);
     });
 
@@ -86,7 +124,7 @@ describe('CodeBlockAction', () => {
       expect(findYamlEditor().props('value')).toBe(fileContents);
       expect(findCodeBlockImport().props('hasExistingCode')).toBe(true);
       expect(wrapper.emitted('changed')).toEqual([
-        [{ ...buildCustomCodeAction(), ci_configuration: toYaml(fileContents) }],
+        [{ ...buildCustomCodeAction(), ci_configuration: fileContents }],
       ]);
     });
 

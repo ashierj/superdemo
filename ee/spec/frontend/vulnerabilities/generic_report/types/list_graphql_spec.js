@@ -1,5 +1,5 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import List from 'ee/vulnerabilities/components/generic_report/types/list_graphql.vue';
+import List from 'ee/vulnerabilities/components/generic_report/types/report_type_list_graphql.vue';
 
 const TEST_DATA = {
   items: [
@@ -9,7 +9,7 @@ const TEST_DATA = {
   listItem: { type: 'VulnerabilityDetailList', items: [] },
 };
 
-describe('ee/vulnerabilities/components/generic_report/types/list_graphql.vue', () => {
+describe('ee/vulnerabilities/components/generic_report/types/report_type_list_graphql.vue', () => {
   let wrapper;
 
   const createWrapper = (options = {}) =>

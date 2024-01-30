@@ -4,7 +4,11 @@ group: Code Review
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# GitLab CLI - `glab` **(FREE ALL)**
+# GitLab CLI - `glab`
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 GLab is an open source GitLab CLI tool. It brings GitLab to your terminal:
 next to where you are already working with Git and your code, without
@@ -61,6 +65,15 @@ glab mr merge
 - [`glab ssh-key`](https://gitlab.com/gitlab-org/cli/-/tree/main/docs/source/ssh-key)
 - [`glab user`](https://gitlab.com/gitlab-org/cli/-/tree/main/docs/source/user)
 - [`glab variable`](https://gitlab.com/gitlab-org/cli/-/tree/main/docs/source/variable)
+
+## GitLab Duo commands
+
+The GitLab CLI also provides support for GitLab Duo AI/ML powered features. These include:
+
+- [`glab ask`](https://gitlab.com/gitlab-org/cli/-/tree/main/docs/source/ask)
+
+Use `glab ask` to ask questions about `git` commands. It can help you remember a
+command you forgot, or provide suggestions on how to run commands to perform other tasks.
 
 ## Install the CLI
 

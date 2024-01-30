@@ -1,6 +1,6 @@
 export const MOCK_NEW_SITE_URL = 'http://localhost:3000/admin/geo/sites/new';
 
-export const MOCK_EMPTY_STATE_SVG = 'illustrations/empty-state/geo-empty.svg';
+export const MOCK_EMPTY_STATE_SVG = 'illustrations/empty-state/empty-geo-md.svg';
 
 export const MOCK_UNSORTED_REPLICABLE_TYPES = [
   {

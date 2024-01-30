@@ -204,7 +204,6 @@ describe('CreateMemberRole', () => {
           name: 'My role name',
           description: 'My description',
           permissions: ['READ_CODE'],
-          groupPath: null,
         },
       });
     });

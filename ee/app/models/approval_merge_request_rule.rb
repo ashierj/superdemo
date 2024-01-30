@@ -46,7 +46,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
   before_update :compare_with_project_rule
 
   validate :validate_approval_project_rule
-  validate :merge_request_not_merged, unless: proc { merge_request.blank? || Feature.disabled?(:prevent_modifications_of_mr_rules_post_merge, project, type: :gitlab_com_derisk) || merge_request.finalizing_rules.present? }
+  validate :merge_request_not_merged, unless: proc { merge_request.blank? || merge_request.finalizing_rules.present? }
 
   enum rule_type: {
     regular: 1,
@@ -145,9 +145,10 @@ class ApprovalMergeRequestRule < ApplicationRecord
   end
 
   def vulnerability_states_for_branch
-    return self.vulnerability_states if merge_request.target_default_branch?
+    states = self.vulnerability_states
+    return states if merge_request.target_default_branch?
 
-    vulnerability_states.include?(NEWLY_DETECTED) ? [NEWLY_DETECTED] : []
+    states & NEWLY_DETECTED_STATUSES
   end
 
   private

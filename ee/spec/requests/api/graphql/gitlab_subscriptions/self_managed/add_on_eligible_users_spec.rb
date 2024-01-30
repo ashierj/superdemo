@@ -46,7 +46,7 @@ RSpec.describe 'Query.selfManagedAddOnEligibleUsers', feature_category: :seat_co
   describe 'authorization' do
     context 'on a self-managed instance' do
       before do
-        stub_saas_features(gitlab_saas_subscriptions: false)
+        stub_saas_features(gitlab_com_subscriptions: false)
       end
 
       context 'with owner access' do
@@ -67,7 +67,7 @@ RSpec.describe 'Query.selfManagedAddOnEligibleUsers', feature_category: :seat_co
       let_it_be(:current_user) { create(:admin) }
 
       before do
-        stub_saas_features(gitlab_saas_subscriptions: true)
+        stub_saas_features(gitlab_com_subscriptions: true)
       end
 
       include_examples 'not authorized'
@@ -82,7 +82,7 @@ RSpec.describe 'Query.selfManagedAddOnEligibleUsers', feature_category: :seat_co
     let_it_be(:active_user_2) { create(:user, name: 'GitlabX') }
 
     before do
-      stub_saas_features(gitlab_saas_subscriptions: false)
+      stub_saas_features(gitlab_com_subscriptions: false)
     end
 
     before_all do

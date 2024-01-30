@@ -597,14 +597,14 @@ RSpec.shared_context 'with remote development shared fixtures' do
                     else
                       echo "'sshd' not found in path. Not starting SSH server."
                     fi
-                    /projects/.gl-editor/start_server.sh
+                    ${GL_TOOLS_DIR}/init_tools.sh
                   SH
                 ],
                 command: %w[/bin/sh -c],
                 env: [
                   {
-                    name: "GL_EDITOR_VOLUME_DIR",
-                    value: "/projects/.gl-editor"
+                    name: "GL_TOOLS_DIR",
+                    value: "/projects/.gl-tools"
                   },
                   {
                     name: "GL_EDITOR_LOG_LEVEL",
@@ -646,6 +646,49 @@ RSpec.shared_context 'with remote development shared fixtures' do
                     protocol: "TCP"
                   }
                 ],
+                resources: default_resources_per_workspace_container,
+                volumeMounts: [
+                  {
+                    mountPath: "/projects",
+                    name: "gl-workspace-data"
+                  },
+                  {
+                    name: "gl-workspace-variables",
+                    mountPath: variables_file_mount_path.to_s
+                  }
+                ],
+                securityContext: {
+                  allowPrivilegeEscalation: false,
+                  privileged: false,
+                  runAsNonRoot: true,
+                  runAsUser: 5001
+                },
+                envFrom: [
+                  {
+                    secretRef: {
+                      name: "#{workspace_name}-env-var"
+                    }
+                  }
+                ]
+              },
+              {
+                env: [
+                  {
+                    name: "MYSQL_ROOT_PASSWORD",
+                    value: "my-secret-pw"
+                  },
+                  {
+                    name: "PROJECTS_ROOT",
+                    value: "/projects"
+                  },
+                  {
+                    name: "PROJECT_SOURCE",
+                    value: "/projects"
+                  }
+                ],
+                image: "mysql",
+                imagePullPolicy: "Always",
+                name: "database-container",
                 resources: default_resources_per_workspace_container,
                 volumeMounts: [
                   {
@@ -733,8 +776,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
               {
                 env: [
                   {
-                    name: "GL_EDITOR_VOLUME_DIR",
-                    value: "/projects/.gl-editor"
+                    name: "GL_TOOLS_DIR",
+                    value: "/projects/.gl-tools"
                   },
                   {
                     name: "PROJECTS_ROOT",
@@ -745,9 +788,9 @@ RSpec.shared_context 'with remote development shared fixtures' do
                     value: "/projects"
                   }
                 ],
-                image: "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:6",
+                image: "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:7",
                 imagePullPolicy: "Always",
-                name: "gl-editor-injector-gl-editor-injector-command-2",
+                name: "gl-tools-injector-gl-tools-injector-command-2",
                 resources: {
                   limits: {
                     cpu: "500m",

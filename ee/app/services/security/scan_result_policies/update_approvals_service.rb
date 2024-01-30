@@ -5,6 +5,7 @@ module Security
     class UpdateApprovalsService
       include Gitlab::Utils::StrongMemoize
       include PolicyViolationCommentGenerator
+      include VulnerabilityStatesHelper
 
       attr_reader :pipeline, :merge_request, :violations
 
@@ -19,6 +20,10 @@ module Security
         return unless pipeline.can_store_security_reports?
 
         approval_rules = merge_request.approval_rules.scan_finding
+
+        if security_policies_sync_preexisting_state_enabled?
+          approval_rules = approval_rules.select { |rule| include_newly_detected?(rule) }
+        end
 
         return if approval_rules.empty?
 
@@ -151,21 +156,12 @@ module Security
       end
 
       def preexisting_findings_count_violated?(approval_rule, target_pipeline_uuids)
+        return false if security_policies_sync_preexisting_state_enabled?
         return false if target_pipeline_uuids.empty? || include_newly_detected?(approval_rule)
 
         vulnerabilities_count = vulnerabilities_count_for_uuids(target_pipeline_uuids, approval_rule)
 
         vulnerabilities_count[:exceeded_allowed_count]
-      end
-
-      def include_newly_detected?(approval_rule)
-        (approval_rule.vulnerability_states_for_branch & ApprovalProjectRule::NEWLY_DETECTED_STATUSES).any?
-      end
-
-      def only_newly_detected?(approval_rule)
-        approval_rule.vulnerability_states_for_branch.all? do |state|
-          state.in?(ApprovalProjectRule::NEWLY_DETECTED_STATUSES)
-        end
       end
 
       def related_pipeline_sources
@@ -221,14 +217,14 @@ module Security
         VulnerabilitiesCountService.new(
           project: project,
           uuids: uuids,
-          states: states_without_newly_detected(approval_rule.vulnerability_states),
+          states: states_without_newly_detected(approval_rule.vulnerability_states_for_branch),
           allowed_count: approval_rule.vulnerabilities_allowed,
           vulnerability_age: approval_rule.scan_result_policy_read&.vulnerability_age
         ).execute
       end
 
-      def states_without_newly_detected(vulnerability_states)
-        vulnerability_states.reject { |state| ApprovalProjectRule::NEWLY_DETECTED_STATUSES.include?(state) }
+      def security_policies_sync_preexisting_state_enabled?
+        Feature.enabled?(:security_policies_sync_preexisting_state, merge_request.project, type: :gitlab_com_derisk)
       end
     end
   end

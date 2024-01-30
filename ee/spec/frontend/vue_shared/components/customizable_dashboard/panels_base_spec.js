@@ -184,14 +184,17 @@ describe('PanelsBase', () => {
   });
 
   describe('when there was an error while fetching the data', () => {
+    let captureExceptionSpy;
+
+    beforeEach(() => {
+      captureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+    });
+
     describe('generic or unknown error', () => {
       const mockGenericError = new Error('foo');
 
-      let captureExceptionSpy;
-
       beforeEach(() => {
         jest.spyOn(dataSources.cube_analytics(), 'fetch').mockRejectedValue(mockGenericError);
-        captureExceptionSpy = jest.spyOn(Sentry, 'captureException');
 
         createWrapper();
 
@@ -242,6 +245,38 @@ describe('PanelsBase', () => {
         await waitForPromises();
 
         expect(dataSources.cube_analytics().fetch).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('visualization error', () => {
+      const error = 'test error';
+      const mockData = [{ name: 'foo' }];
+
+      describe.each([true, false])('can be retried: %s', (canRetry) => {
+        beforeEach(async () => {
+          jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(mockData);
+          createWrapper();
+
+          await waitForPromises();
+
+          findVisualization().vm.$emit('error', { error, canRetry });
+        });
+
+        it('should hide the visualization', () => {
+          expect(findVisualization().exists()).toBe(false);
+        });
+
+        it('should render the error state', () => {
+          expect(wrapper.text()).toContain('Something went wrong.');
+        });
+
+        it('should log the error to Sentry', () => {
+          expect(captureExceptionSpy).toHaveBeenCalledWith(error);
+        });
+
+        it(`${canRetry ? 'renders' : 'does not render'} a retry button`, () => {
+          expect(findPanelRetryButton().exists()).toBe(canRetry);
+        });
       });
     });
 
@@ -297,6 +332,16 @@ describe('PanelsBase', () => {
     });
   });
 
+  describe('when the title includes %{namespaceName}', () => {
+    beforeEach(() => {
+      createWrapper({ title: 'title for %{namespaceName}' });
+    });
+
+    it('replaces the token with the root namespace name', () => {
+      expect(findPanelTitle().text()).toBe('title for MEOW');
+    });
+  });
+
   describe('when editing', () => {
     beforeEach(() => {
       createWrapper({ editing: true }, mountExtended);
@@ -311,36 +356,6 @@ describe('PanelsBase', () => {
       await nextTick();
 
       expect(wrapper.emitted('delete')).toHaveLength(1);
-    });
-  });
-
-  describe('usage overview visualization type', () => {
-    beforeEach(() => {
-      createWrapper({
-        visualization: {
-          ...panelConfig.visualization,
-          type: 'usage_overview',
-        },
-      });
-    });
-
-    it('should render title with the root namespace name', () => {
-      expect(findPanelTitle().text()).toBe('Usage overview for MEOW group');
-    });
-  });
-
-  describe('dora performers score visualization type', () => {
-    beforeEach(() => {
-      createWrapper({
-        visualization: {
-          ...panelConfig.visualization,
-          type: 'dora_performers_score',
-        },
-      });
-    });
-
-    it('should render title with the root namespace name', () => {
-      expect(findPanelTitle().text()).toBe('DORA performers score for MEOW group');
     });
   });
 });

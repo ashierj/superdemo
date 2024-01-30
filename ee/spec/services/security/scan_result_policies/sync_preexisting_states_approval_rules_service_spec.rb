@@ -1,0 +1,134 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.describe Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesService, feature_category: :security_policy_management do
+  include RepoHelpers
+  using RSpec::Parameterized::TableSyntax
+
+  let_it_be(:project) { create(:project, :repository) }
+  let(:service) { described_class.new(merge_request) }
+  let_it_be(:merge_request, reload: true) do
+    create(:ee_merge_request, :simple, source_project: project)
+  end
+
+  let_it_be(:scan_result_policy_read, reload: true) { create(:scan_result_policy_read, project: project) }
+
+  before do
+    stub_licensed_features(security_orchestration_policies: true)
+  end
+
+  describe '#execute' do
+    subject(:execute) { service.execute }
+
+    let(:approvals_required) { 1 }
+
+    let!(:approval_project_rule) do
+      create(:approval_project_rule, :scan_finding, project: project, approvals_required: approvals_required)
+    end
+
+    let!(:approver_rule) do
+      create(:report_approver_rule, :scan_finding,
+        merge_request: merge_request, vulnerability_states: ['detected'],
+        approval_project_rule: approval_project_rule, approvals_required: approvals_required)
+    end
+
+    shared_examples_for 'does not update approval rules' do
+      it 'does not update approval rules' do
+        expect { execute }.not_to change { approver_rule.reload.approvals_required }
+      end
+    end
+
+    shared_examples_for 'sets approvals_required to 0' do
+      it 'sets approvals_required to 0' do
+        expect { execute }.to change { approver_rule.reload.approvals_required }.to(0)
+      end
+    end
+
+    shared_examples_for 'does not log violations' do
+      it 'does not log violations' do
+        expect(Gitlab::AppJsonLogger).not_to receive(:info)
+
+        execute
+      end
+    end
+
+    context 'when merge_request is merged' do
+      before do
+        merge_request.update!(state: 'merged')
+      end
+
+      it_behaves_like 'does not update approval rules'
+      it_behaves_like 'does not trigger policy bot comment'
+      it_behaves_like 'does not log violations'
+    end
+
+    context 'when approvals are optional' do
+      let(:approvals_required) { 0 }
+
+      it_behaves_like 'does not update approval rules'
+      it_behaves_like 'triggers policy bot comment', :scan_finding, false, requires_approval: false
+      it_behaves_like 'does not log violations'
+    end
+
+    context 'when rules does not contain pre-existing states' do
+      let!(:approver_rule) do
+        create(:report_approver_rule, :scan_finding, merge_request: merge_request,
+          approval_project_rule: approval_project_rule, approvals_required: approvals_required,
+          vulnerability_states: ['new_needs_triage']
+        )
+      end
+
+      it_behaves_like 'does not update approval rules'
+      it_behaves_like 'does not trigger policy bot comment'
+      it_behaves_like 'merge request without scan result violations', previous_violation: false
+      it_behaves_like 'does not log violations'
+    end
+
+    context 'when rules contain pre-existing states' do
+      let!(:approver_rule) do
+        create(:report_approver_rule, :scan_finding, merge_request: merge_request,
+          approval_project_rule: approval_project_rule, approvals_required: approvals_required,
+          vulnerability_states: ['detected'])
+      end
+
+      context 'when vulnerabilities count matches the pre-existing states' do
+        before do
+          create_list(:vulnerability, 5, :with_finding,
+            severity: :low,
+            report_type: :sast,
+            state: :detected,
+            project: project
+          )
+        end
+
+        it_behaves_like 'does not update approval rules'
+        it_behaves_like 'triggers policy bot comment', :scan_finding, false, requires_approval: true
+        it_behaves_like 'merge request without scan result violations', previous_violation: false
+
+        it 'logs update' do
+          expect(::Gitlab::AppJsonLogger)
+            .to receive(:info).once.ordered
+            .with(
+              event: 'update_approvals',
+              message: 'Updating MR approval rule with pre_existing states',
+              approval_rule_id: approver_rule.id,
+              approval_rule_name: approver_rule.name,
+              merge_request_id: merge_request.id,
+              merge_request_iid: merge_request.iid,
+              reason: 'pre_existing scan_finding_rule violated',
+              project_path: project.full_path
+            ).and_call_original
+
+          execute
+        end
+      end
+
+      context 'when vulnerabilities count does not match the pre-existing states' do
+        it_behaves_like 'sets approvals_required to 0'
+        it_behaves_like 'triggers policy bot comment', :scan_finding, false
+        it_behaves_like 'does not log violations'
+      end
+    end
+  end
+end

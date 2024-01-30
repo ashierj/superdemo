@@ -150,6 +150,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::Streaming::HTTP::NamespaceFilters::Create
         mount_mutation ::Mutations::AuditEvents::Streaming::HTTP::NamespaceFilters::Delete
         mount_mutation ::Mutations::Ai::Agents::Create, alpha: { milestone: '16.8' }
+        mount_mutation ::Mutations::ComplianceManagement::Standards::RefreshAdherenceChecks
 
         prepend(Types::DeprecatedMutations)
       end

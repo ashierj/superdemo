@@ -24,11 +24,11 @@ Blueprints:
 
 This document is the subject of continued work as part of an epic to [improve internal usage of feature flags](https://gitlab.com/groups/gitlab-org/-/epics/3551). Raise any suggestions as new issues and attach them to the epic.
 
-For an [overview of the feature flag lifecycle](https://about.gitlab.com/handbook/product-development-flow/feature-flag-lifecycle/#feature-flag-lifecycle), or if you need help deciding [if you should use a feature flag](https://about.gitlab.com/handbook/product-development-flow/feature-flag-lifecycle/#when-to-use-feature-flags) or not, see the [feature flag lifecycle](https://about.gitlab.com/handbook/product-development-flow/feature-flag-lifecycle/) handbook page.
+For an [overview of the feature flag lifecycle](https://about.gitlab.com/handbook/product-development-flow/feature-flag-lifecycle/#feature-flag-lifecycle), or if you need help deciding [if you should use a feature flag](https://handbook.gitlab.com/handbook/product-development-flow/feature-flag-lifecycle/#when-to-use-feature-flags) or not, see the [feature flag lifecycle](https://about.gitlab.com/handbook/product-development-flow/feature-flag-lifecycle/) handbook page.
 
 ## When to use feature flags
 
-Moved to the ["When to use feature flags"](https://about.gitlab.com/handbook/product-development-flow/feature-flag-lifecycle/#when-to-use-feature-flags) section in the handbook.
+Moved to the ["When to use feature flags"](https://handbook.gitlab.com/handbook/product-development-flow/feature-flag-lifecycle/#when-to-use-feature-flags) section in the handbook.
 
 ## Feature flags in GitLab development
 
@@ -75,7 +75,7 @@ problems, such as outages.**
 ## Risk of a broken default branch
 
 Feature flags must be used in the MR that introduces them. Not doing so causes a
-[broken default branch](https://about.gitlab.com/handbook/engineering/workflow/#broken-master) scenario due
+[broken default branch](https://handbook.gitlab.com/handbook/engineering/workflow/#broken-master) scenario due
 to the `rspec:feature-flags` job that only runs on the default branch.
 
 ## Types of feature flags
@@ -161,7 +161,7 @@ push_frontend_feature_flag(:my_wip_flag, project, type: :wip)
 ### `beta` type
 
 We might
-[not be confident we'll be able to scale, support, and maintain a feature](https://about.gitlab.com/handbook/product/gitlab-the-product/#experiment-beta-ga)
+[not be confident we'll be able to scale, support, and maintain a feature](https://handbook.gitlab.com/handbook/product/gitlab-the-product/#experiment-beta-ga)
 in its current form for every designed use case ([example](https://gitlab.com/gitlab-org/gitlab/-/issues/336070#note_1523983444)).
 There are also scenarios where a feature is not complete enough to be considered an MVC.
 Providing a flag in this case allows engineers and customers to disable the new feature until it's performant enough.
@@ -202,12 +202,12 @@ instance/group/project/user setting.
 
 #### Constraints
 
-- `default_enabled`: Can be set to `true` so that a feature can be "released" to everyone in Beta with the
-  possibility to disable it in the case of scalability issues (ideally it should only be disabled for this
-  reason on specific on-premise installations)
-- Maximum Lifespan: Unlimited
+- `default_enabled`: Should be set to `false` in most cases, and only enabled to resolve temporary scalability
+  issues or help debug production issues.
+- Maximum Lifespan: 12 months
 - Documentation: This type of feature flag **must** be documented in the
-  [All feature flags in GitLab](../../user/feature_flags.md) page
+  [All feature flags in GitLab](../../user/feature_flags.md) page as well as be associated with an operational
+  runbook describing the circumstances when it can be used.
 - Rollout issue: Likely no need for a rollout issues, as it is hard to predict when they are enabled or disabled
 
 #### Usage
@@ -250,7 +250,7 @@ The `development` type is deprecated in favor of the `gitlab_com_derisk`, `wip`,
 
 ## Feature flag definition and validation
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/229161) in GitLab 13.3.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/229161) in GitLab 13.3.
 
 During development (`RAILS_ENV=development`) or testing (`RAILS_ENV=test`) all feature flag usage is being strictly validated.
 
@@ -275,7 +275,7 @@ Each feature flag is defined in a separate YAML file consisting of a number of f
 | `default_enabled`   | yes      | The default state of the feature flag.                         |
 | `introduced_by_url` | yes      | The URL to the merge request that introduced the feature flag. |
 | `milestone`         | yes      | Milestone in which the feature flag was created. |
-| `group`             | yes      | The [group](https://about.gitlab.com/handbook/product/categories/#devops-stages) that owns the feature flag. |
+| `group`             | yes      | The [group](https://handbook.gitlab.com/handbook/product/categories/#devops-stages) that owns the feature flag. |
 | `feature_issue_url` | no       | The URL to the original feature issue.                         |
 | `rollout_issue_url` | no       | The URL to the Issue covering the feature flag rollout.        |
 | `log_state_changes` | no       | Used to log the state of the feature flag                      |
@@ -347,7 +347,7 @@ When choosing a name for a new feature flag, consider the following guidelines:
 
 WARNING:
 Feature flags **must** be used in the MR that introduces them. Not doing so causes a
-[broken master](https://about.gitlab.com/handbook/engineering/workflow/#broken-master) scenario due
+[broken master](https://handbook.gitlab.com/handbook/engineering/workflow/#broken-master) scenario due
 to the `rspec:feature-flags` job that only runs on the `master` branch.
 
 ## List all the feature flags
@@ -538,7 +538,7 @@ to selectively enable or disable feature flags in GitLab-provided environments, 
 
 #### Current request actor
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/132078) in GitLab 16.5
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/132078) in GitLab 16.5
 
 It is not recommended to use percentage of time rollout, as each call may return
 inconsistent results.

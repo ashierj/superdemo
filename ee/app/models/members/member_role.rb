@@ -146,8 +146,8 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     errors.add(
       :base,
       s_(
-        "MemberRole|cannot be deleted because it is already assigned to a user. " \
-        "Please disassociate the member role from all users before deletion."
+        "MemberRole|Role is assigned to one or more group members. " \
+        "Remove role from all group members, then delete role."
       )
     )
 

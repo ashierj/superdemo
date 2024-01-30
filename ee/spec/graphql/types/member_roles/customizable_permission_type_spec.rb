@@ -2,14 +2,21 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['CustomizablePermission'], feature_category: :system_access do
+RSpec.describe GitlabSchema.types['CustomizablePermission'], feature_category: :permissions do
   include GraphqlHelpers
 
   it { expect(described_class.graphql_name).to eq('CustomizablePermission') }
 
   it 'has the expected fields' do
-    expected_fields = %w[availableFor description requirements name value]
+    expected_fields = %i[
+      available_for
+      description
+      name
+      requirements
+      value
+      available_from_access_level
+    ]
 
-    expect(described_class).to include_graphql_fields(*expected_fields)
+    expect(described_class).to have_graphql_fields(*expected_fields)
   end
 end

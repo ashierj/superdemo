@@ -4,7 +4,11 @@ group: Geo
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Bring a demoted primary site back online **(PREMIUM SELF)**
+# Bring a demoted primary site back online
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 After a failover, it is possible to fail back to the demoted **primary** site to
 restore your original configuration. This process consists of two steps:
@@ -84,9 +88,10 @@ When a secondary site is added, if it contains data that would otherwise be sync
 - Geo's container registry sync code compares tags and only pulls missing tags.
 - [Blobs/files](#skipping-re-transfer-of-blobs-or-files) are skipped if they exist on the first sync.
 
-This behavior is useful when:
+Use-cases:
 
 - You do a planned failover and demote the old primary site by attaching it as a secondary site without rebuilding it.
+- You have multiple secondary Geo sites. You do a planned failover and reattach the other secondary Geo sites without rebuilding them.
 - You do a failover test by promoting and demoting a secondary site and reattach it without rebuilding it.
 - You restore a backup and attach the site as a secondary site.
 - You manually copy data to a secondary site to workaround a sync problem.
@@ -95,10 +100,11 @@ This behavior is useful when:
 
 ### Skipping re-transfer of blobs or files
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/352530) in GitLab 16.8 [with a flag](../../feature_flags.md) named `geo_skip_download_if_exists`. Disabled by default.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/352530) in GitLab 16.8 [with a flag](../../feature_flags.md) named `geo_skip_download_if_exists`. Disabled by default.
+> - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/435788) in GitLab 16.9. Feature flag `geo_skip_download_if_exists` removed.
 
 FLAG:
-On self-managed GitLab, by default this feature is not available. To make it available, an administrator can [enable the feature flag](../../feature_flags.md) named `geo_skip_download_if_exists`.
+On self-managed GitLab, by default this feature is available.
 On GitLab.com, this feature is not available.
 
 When you add a secondary site which has preexisting file data, then the secondary Geo site will avoid re-transferring that data. This applies to:

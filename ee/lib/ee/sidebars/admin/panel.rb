@@ -37,7 +37,7 @@ module EE
         private
 
         def insert_code_suggestions_menu
-          return unless gitlab_sm? && code_suggestions_available? && License.current&.paid?
+          return unless !gitlab_com_subscription? && code_suggestions_available? && License.current&.paid?
 
           insert_menu_after(
             ::Sidebars::Admin::Menus::SubscriptionMenu,

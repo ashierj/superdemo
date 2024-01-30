@@ -115,7 +115,7 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
       it 'processes the builds of the first batch' do
         over_time = false
 
-        expect_next_instance_of(Analytics::CycleAnalytics::RuntimeLimiter) do |limiter|
+        expect_next_instance_of(Gitlab::Metrics::RuntimeLimiter) do |limiter|
           expect(limiter).to receive(:over_time?).at_least(1) { over_time }
         end
 

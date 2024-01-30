@@ -22,6 +22,14 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
 
     subject(:get_task) { described_class.new(current_user, params: params).task }
 
+    shared_examples 'correct task initializer' do
+      it 'creates task with correct params' do
+        expect(expected_class).to receive(:new).with(**expected_params)
+
+        get_task
+      end
+    end
+
     it 'calls instructions extractor with expected params' do
       expect(CodeSuggestions::InstructionsExtractor)
         .to receive(:new)
@@ -31,18 +39,36 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
       get_task
     end
 
+    context 'when code completion' do
+      let(:expected_class) { ::CodeSuggestions::Tasks::CodeCompletion }
+      let(:expected_project) { nil }
+      let(:expected_params) do
+        {
+          params: params,
+          unsafe_passthrough_params: {}
+        }
+      end
+
+      before do
+        allow_next_instance_of(CodeSuggestions::InstructionsExtractor) do |instance|
+          allow(instance).to receive(:extract).and_return({})
+        end
+      end
+
+      it_behaves_like 'correct task initializer'
+    end
+
     context 'when code generation' do
       let(:expected_class) { ::CodeSuggestions::Tasks::CodeGeneration }
-      let(:expected_family) { described_class::VERTEX_AI }
       let(:expected_project) { nil }
       let(:expected_params) do
         {
           params: params.merge(
-            code_generation_model_family: expected_family,
             instruction: 'instruction',
             prefix: 'trimmed prefix',
             project: expected_project,
-            model_name: described_class::ANTHROPIC_MODEL
+            model_name: described_class::ANTHROPIC_MODEL,
+            current_user: current_user
           ),
           unsafe_passthrough_params: {}
         }
@@ -55,6 +81,8 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
             .and_return({ instruction: 'instruction', prefix: 'trimmed prefix' })
         end
       end
+
+      it_behaves_like 'correct task initializer'
 
       context 'with project' do
         let_it_be(:expected_project) { create(:project) }

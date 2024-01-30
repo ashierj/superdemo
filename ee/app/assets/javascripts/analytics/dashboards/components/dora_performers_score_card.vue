@@ -1,13 +1,12 @@
 <script>
 import { GlCard, GlAlert, GlSkeletonLoader } from '@gitlab/ui';
-import { sprintf } from '~/locale';
+import { s__, sprintf } from '~/locale';
 import {
-  VISUALIZATION_DORA_PERFORMERS_SCORE_TITLE,
   DORA_PERFORMERS_SCORE_DEFAULT_PANEL_TITLE,
   DORA_PERFORMERS_SCORE_GROUP_ERROR,
 } from 'ee/analytics/dashboards/constants';
 import getDoraPerformersGroup from 'ee/analytics/dashboards/graphql/get_dora_performers_group.query.graphql';
-import DoraPerformersScore from './dora_performers_score.vue';
+import DoraPerformersScoreChart from './dora_performers_score_chart.vue';
 
 export default {
   name: 'DoraPerformersScoreCard',
@@ -15,7 +14,7 @@ export default {
     GlCard,
     GlAlert,
     GlSkeletonLoader,
-    DoraPerformersScore,
+    DoraPerformersScoreChart,
   },
   props: {
     data: {
@@ -24,7 +23,7 @@ export default {
     },
   },
   data() {
-    return { group: null };
+    return { group: null, chartError: null };
   },
   apollo: {
     group: {
@@ -50,6 +49,7 @@ export default {
       return this.$apollo.queries.group.loading;
     },
     errorMessage() {
+      if (this.chartError) return this.chartError;
       if (this.isLoading || this.group) return '';
 
       const { fullPath } = this;
@@ -60,10 +60,16 @@ export default {
         return DORA_PERFORMERS_SCORE_DEFAULT_PANEL_TITLE;
       }
 
-      return sprintf(VISUALIZATION_DORA_PERFORMERS_SCORE_TITLE, {
-        namespaceName: this.group?.name,
-      });
+      return sprintf(this.$options.i18n.title, { namespaceName: this.group?.name });
     },
+  },
+  methods: {
+    handleChartError({ error }) {
+      this.chartError = error;
+    },
+  },
+  i18n: {
+    title: s__('Analytics|DORA performers score for %{namespaceName} group'),
   },
 };
 </script>
@@ -85,6 +91,6 @@ export default {
     <gl-alert v-if="errorMessage" variant="danger" :dismissible="false">
       {{ errorMessage }}
     </gl-alert>
-    <dora-performers-score v-else-if="!isLoading" :data="data" />
+    <dora-performers-score-chart v-else-if="!isLoading" :data="data" @error="handleChartError" />
   </gl-card>
 </template>

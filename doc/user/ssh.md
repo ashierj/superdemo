@@ -4,7 +4,11 @@ group: Authentication
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Use SSH keys to communicate with GitLab **(FREE ALL)**
+# Use SSH keys to communicate with GitLab
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 Git is a distributed version control system, which means you can work locally,
 then share or *push* your changes to a server. In this case, the server you push to is GitLab.
@@ -60,21 +64,21 @@ operating systems.
 
 ### ED25519_SK SSH keys
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78934) in GitLab 14.8.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78934) in GitLab 14.8.
 
 To use ED25519_SK SSH keys on GitLab, your local client and GitLab server
 must have [OpenSSH 8.2](https://www.openssh.com/releasenotes.html#8.2) or later installed.
 
 ### ECDSA_SK SSH keys
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78934) in GitLab 14.8.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78934) in GitLab 14.8.
 
 To use ECDSA_SK SSH keys on GitLab, your local client and GitLab server
 must have [OpenSSH 8.2](https://www.openssh.com/releasenotes.html#8.2) or later installed.
 
 ### RSA SSH keys
 
-> Maximum RSA key length [changed](https://gitlab.com/groups/gitlab-org/-/epics/11186) in GitLab 16.3.
+> - Maximum RSA key length [changed](https://gitlab.com/groups/gitlab-org/-/epics/11186) in GitLab 16.3.
 
 Available documentation suggests ED25519 is more secure than RSA.
 
@@ -133,7 +137,7 @@ If you do not have an existing SSH key pair, generate a new one:
    Enter file in which to save the key (/home/user/.ssh/id_ed25519):
    ```
 
-1. Accept the suggested file name and directory, unless you are generating a [deploy key](project/deploy_keys/index.md)
+1. Accept the suggested filename and directory, unless you are generating a [deploy key](project/deploy_keys/index.md)
    or want to save in a specific directory where you store other keys.
 
    You can also dedicate the SSH key pair to a [specific host](#configure-ssh-to-point-to-a-different-directory).
@@ -254,7 +258,7 @@ To generate ED25519_SK or ECDSA_SK SSH keys, you must use OpenSSH 8.2 or later:
 
 1. Touch the button on the hardware security key.
 
-1. Accept the suggested file name and directory:
+1. Accept the suggested filename and directory:
 
    ```plaintext
    Enter file in which to save the key (/home/user/.ssh/id_ed25519_sk):
@@ -325,7 +329,7 @@ To use SSH with GitLab, copy your public key to your GitLab account:
    cat ~/.ssh/id_ed25519.pub | clip
    ```
 
-   Replace `id_ed25519.pub` with your file name. For example, use `id_rsa.pub` for RSA.
+   Replace `id_ed25519.pub` with your filename. For example, use `id_rsa.pub` for RSA.
 
 1. Sign in to GitLab.
 1. On the left sidebar, select your avatar.

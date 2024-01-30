@@ -5,7 +5,7 @@ require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::AggregationContext do
   let(:cursor) { {} }
-  let(:runtime_limiter) { instance_double('Analytics::CycleAnalytics::RuntimeLimiter', over_time?: false) }
+  let(:runtime_limiter) { instance_double('Gitlab::Metrics::RuntimeLimiter', over_time?: false) }
 
   subject(:ctx) { described_class.new(cursor: cursor, runtime_limiter: runtime_limiter) }
 
@@ -29,7 +29,7 @@ RSpec.describe Analytics::CycleAnalytics::AggregationContext do
     it { is_expected.not_to be_over_time }
 
     context 'when runtime limiter is over time' do
-      let(:runtime_limiter) { instance_double('Analytics::CycleAnalytics::RuntimeLimiter', over_time?: true) }
+      let(:runtime_limiter) { instance_double('Gitlab::Metrics::RuntimeLimiter', over_time?: true) }
 
       it { is_expected.to be_over_time }
     end

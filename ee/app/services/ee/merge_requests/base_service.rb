@@ -47,9 +47,11 @@ module EE
           merge_request.policy_approval_settings.fetch(:remove_approvals_with_new_commit, false)
       end
 
-      def delete_approvals(merge_request, patch_id_sha: nil)
+      def delete_approvals(merge_request, patch_id_sha: nil, cause: nil)
         approvals = merge_request.approvals
         approvals = filter_approvals(approvals, patch_id_sha) if patch_id_sha.present?
+        approver_ids = approvals.map(&:user_id)
+
         approvals.delete_all
 
         # In case there is still a temporary flag on the MR
@@ -57,6 +59,7 @@ module EE
 
         trigger_merge_request_merge_status_updated(merge_request)
         trigger_merge_request_approval_state_updated(merge_request)
+        publish_approvals_reset_event(merge_request, cause, approver_ids)
       end
 
       def filter_approvals(approvals, patch_id_sha)
@@ -65,6 +68,22 @@ module EE
 
       def all_approvers(merge_request)
         merge_request.overall_approvers(exclude_code_owners: true)
+      end
+
+      def publish_approvals_reset_event(merge_request, cause, approver_ids)
+        return if cause.nil?
+        return if approver_ids.empty?
+
+        ::Gitlab::EventStore.publish(
+          ::MergeRequests::ApprovalsResetEvent.new(
+            data: {
+              current_user_id: current_user.id,
+              merge_request_id: merge_request.id,
+              cause: cause.to_s,
+              approver_ids: approver_ids
+            }
+          )
+        )
       end
 
       override :capture_suggested_reviewers_accepted

@@ -4,6 +4,7 @@ import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import LdapDropdownFooter from 'ee/members/components/action_dropdowns/ldap_dropdown_footer.vue';
+import ManageRolesDropdownFooter from 'ee/members/components/action_dropdowns/manage_roles_dropdown_footer.vue';
 import { guestOverageConfirmAction } from 'ee/members/guest_overage_confirm_action';
 import waitForPromises from 'helpers/wait_for_promises';
 import MaxRole from '~/members/components/table/max_role.vue';
@@ -154,6 +155,12 @@ describe('MaxRole', () => {
 
       expect(wrapper.findComponent(LdapDropdownFooter).exists()).toBe(false);
     });
+  });
+
+  it('renders the ManageRolesDropdownFooter component', () => {
+    createComponent();
+
+    expect(wrapper.findComponent(ManageRolesDropdownFooter).exists()).toBe(true);
   });
 
   describe('when member has custom roles', () => {

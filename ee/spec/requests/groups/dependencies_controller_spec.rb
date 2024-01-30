@@ -368,6 +368,23 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                 end
               end
 
+              context 'when filtered by unknown licenses' do
+                let_it_be(:sbom_occurrence_unknown) { create(:sbom_occurrence, project: project) }
+
+                let(:params) do
+                  {
+                    group_id: group.to_param,
+                    licenses: ['unknown']
+                  }
+                end
+
+                it 'returns a filtered list' do
+                  subject
+
+                  expect(json_response['dependencies'].pluck('occurrence_id')).to eq([sbom_occurrence_unknown.id])
+                end
+              end
+
               context 'when filtered by projects' do
                 let_it_be(:other_project) { create(:project, group: group) }
                 let_it_be(:occurrence_from_other_project) { create(:sbom_occurrence, project: other_project) }
@@ -533,43 +550,16 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
           expect(response).to have_gitlab_http_status(:ok)
         end
 
-        it 'returns empty array' do
+        it 'returns licenses from Gitlab::SPDX::Catalogue sorted by name' do
+          expect_next_instance_of(Gitlab::SPDX::Catalogue) do |catalogue|
+            expect(catalogue).to receive(:licenses).and_call_original
+          end
+
           subject
 
-          expect(json_response['licenses']).to be_empty
-        end
-
-        context 'with detected licenses' do
-          let_it_be(:occurrence_1) { create(:sbom_occurrence, :mit, project: project) }
-          let_it_be(:occurrence_2) { create(:sbom_occurrence, :apache_2, project: project) }
-          let_it_be(:occurrence_3) { create(:sbom_occurrence, :mpl_2, project: project) }
-          let_it_be(:occurrence_4) { create(:sbom_occurrence, :apache_2, project: project) }
-
-          let(:expected_response) do
-            [
-              {
-                'spdx_identifier' => 'Apache-2.0',
-                'name' => 'Apache 2.0 License',
-                'url' => 'https://spdx.org/licenses/Apache-2.0.html'
-              },
-              {
-                'spdx_identifier' => 'MIT',
-                'name' => 'MIT License',
-                'url' => 'https://spdx.org/licenses/MIT.html'
-              },
-              {
-                'spdx_identifier' => 'MPL-2.0',
-                'name' => 'Mozilla Public License 2.0',
-                'url' => 'https://spdx.org/licenses/MPL-2.0.html'
-              }
-            ]
-          end
-
-          it 'returns the list of detected licenses' do
-            subject
-
-            expect(json_response['licenses']).to eq(expected_response)
-          end
+          expect(json_response['licenses']).not_to be_empty
+          license_names = json_response['licenses'].pluck('name')
+          expect(license_names.sort).to eq(license_names)
         end
 
         context 'when feature flag `group_level_dependencies_filtering` is disabled' do

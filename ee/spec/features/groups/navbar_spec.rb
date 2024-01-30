@@ -16,10 +16,12 @@ RSpec.describe 'Group navbar', :js, feature_category: :groups_and_projects do
     before do
       group.add_maintainer(user)
       stub_group_wikis(false)
+      stub_config(registry: { enabled: false })
       sign_in(user)
 
       create_package_nav(_('Operate'))
       insert_after_nav_item(_('Analyze'), new_nav_item: settings_for_maintainer_nav_item)
+      insert_infrastructure_registry_nav(_('Kubernetes'))
     end
 
     context 'when devops adoption analytics is available' do
@@ -98,7 +100,7 @@ RSpec.describe 'Group navbar', :js, feature_category: :groups_and_projects do
 
     context 'when packages are available' do
       before do
-        stub_config(packages: { enabled: true }, registry: { enabled: false })
+        stub_config(packages: { enabled: true })
 
         visit group_path(group)
       end
@@ -173,7 +175,7 @@ RSpec.describe 'Group navbar', :js, feature_category: :groups_and_projects do
       before do
         group.update!(harbor_integration: harbor_integration)
 
-        insert_harbor_registry_nav(_('Kubernetes'))
+        insert_harbor_registry_nav(_('Terraform modules'))
 
         visit group_path(group)
       end
@@ -185,10 +187,12 @@ RSpec.describe 'Group navbar', :js, feature_category: :groups_and_projects do
   context 'for owners', :saas do
     before do
       group.add_owner(user)
+      stub_config(registry: { enabled: false })
       stub_group_wikis(false)
       stub_licensed_features(domain_verification: true)
       sign_in(user)
       create_package_nav(_('Operate'))
+      insert_infrastructure_registry_nav(_('Kubernetes'))
     end
 
     describe 'structure' do

@@ -56,6 +56,8 @@ module EE
       has_one :index_status
 
       has_one :github_integration, class_name: 'Integrations::Github'
+      has_one :google_cloud_platform_artifact_registry_integration, class_name: 'Integrations::GoogleCloudPlatform::ArtifactRegistry'
+      has_one :git_guardian_integration, class_name: 'Integrations::GitGuardian'
 
       has_one :status_page_setting, inverse_of: :project, class_name: 'StatusPage::ProjectSetting'
       has_one :compliance_framework_setting, class_name: 'ComplianceManagement::ComplianceFramework::ProjectSettings', inverse_of: :project
@@ -64,6 +66,7 @@ module EE
       has_one :vulnerability_statistic, class_name: 'Vulnerabilities::Statistic'
 
       has_one :dependency_proxy_packages_setting, class_name: '::DependencyProxy::Packages::Setting', inverse_of: :project
+      has_one :zoekt_repository, class_name: '::Search::Zoekt::Repository', inverse_of: :project
 
       has_many :approvers, as: :target, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
       has_many :approver_users, through: :approvers, source: :user
@@ -369,6 +372,8 @@ module EE
 
       delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :project_state)
 
+      delegate :security_policy_management_project, to: :security_orchestration_policy_configuration, allow_nil: true
+
       validates :repository_size_limit,
         numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true }
       validates :max_pages_size,
@@ -440,7 +445,7 @@ module EE
       end
 
       define_method("#{attribute}?") do |inherit_group_setting: false|
-        return super() unless licensed_feature_available?(:group_level_merge_checks_setting) && ::Feature.enabled?(:support_group_level_merge_checks_setting, self)
+        return super() unless licensed_feature_available?(:group_level_merge_checks_setting)
 
         if inherit_group_setting
           result = self.public_send(attribute) || public_send("#{attribute}_of_parent_group") # rubocop:disable GitlabSecurity/PublicSend
@@ -452,7 +457,7 @@ module EE
       end
 
       define_method("#{attribute}_locked?") do
-        return super() unless licensed_feature_available?(:group_level_merge_checks_setting) && ::Feature.enabled?(:support_group_level_merge_checks_setting, self)
+        return super() unless licensed_feature_available?(:group_level_merge_checks_setting)
 
         public_send("#{attribute}_of_parent_group") # rubocop:disable GitlabSecurity/PublicSend
       end
@@ -906,12 +911,14 @@ module EE
 
     override :disabled_integrations
     def disabled_integrations
-      strong_memoize(:disabled_integrations) do
-        gh = github_integration_enabled? ? [] : %w[github]
+      names = []
 
-        super + gh
-      end
+      names << 'github' unless github_integration_enabled?
+      names << 'google_cloud_platform_artifact_registry' unless gcp_artifact_registry_enabled?
+
+      super + names
     end
+    strong_memoize_attr :disabled_integrations
 
     def pull_mirror_available?
       pull_mirror_available_overridden ||
@@ -1271,6 +1278,10 @@ module EE
       feature_available?(:github_integration)
     end
 
+    def gcp_artifact_registry_enabled?
+      ::Feature.enabled?(:gcp_artifact_registry, self) && ::Gitlab::Saas.feature_available?(:google_artifact_registry)
+    end
+
     def group_hooks
       GroupHook.where(group_id: group.self_and_ancestors)
     end
@@ -1311,7 +1322,7 @@ module EE
     def requirements_ci_variables
       strong_memoize(:requirements_ci_variables) do
         ::Gitlab::Ci::Variables::Collection.new.tap do |variables|
-          if requirements.opened.any?
+          if licensed_feature_available?(:requirements) && requirements.opened.any?
             variables.append(key: 'CI_HAS_OPEN_REQUIREMENTS', value: 'true')
           end
         end

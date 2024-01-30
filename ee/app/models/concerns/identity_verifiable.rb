@@ -70,13 +70,6 @@ module IdentityVerifiable
     credit_card_validation.present? && !credit_card_validation.used_by_banned_user?
   end
 
-  def arkose_risk_band
-    risk_band_attr = custom_attributes.by_key(UserCustomAttribute::ARKOSE_RISK_BAND).first
-    return unless risk_band_attr.present?
-
-    risk_band_attr.value.downcase
-  end
-
   def create_phone_number_exemption!
     custom_attributes.create!(
       key: UserCustomAttribute::IDENTITY_VERIFICATION_PHONE_EXEMPT,
@@ -119,19 +112,15 @@ module IdentityVerifiable
 
   def offer_phone_number_exemption?
     return false unless credit_card_verification_enabled?
+    return true if medium_risk?
 
-    case arkose_risk_band
-    when Arkose::VerifyResponse::RISK_BAND_MEDIUM.downcase
-      true
-    when Arkose::VerifyResponse::RISK_BAND_LOW.downcase
-      if phone_number_verification_enabled?
-        experiment(:phone_verification_for_low_risk_users, user: self) do |e|
-          e.candidate { true }
-        end.run
-      end
-    else
-      false
+    if low_risk? && phone_number_verification_enabled?
+      return experiment(:phone_verification_for_low_risk_users, user: self) do |e|
+        e.candidate { true }
+      end.run
     end
+
+    false
   end
 
   def verification_method_allowed?(method:)
@@ -151,29 +140,24 @@ module IdentityVerifiable
     prerequisite_methods_state.values.all?
   end
 
-  def assumed_high_risk?
-    custom_attributes.by_key(UserCustomAttribute::ASSUMED_HIGH_RISK_REASON).exists?
-  end
-
-  def assume_high_risk(reason:)
-    UserCustomAttribute.set_assumed_high_risk_reason(user: self, reason: reason)
-  end
+  delegate :arkose_verified?, :assume_high_risk!, :assumed_high_risk?, to: :risk_profile
+  delegate :high_risk?, :medium_risk?, :low_risk?, to: :risk_profile, private: true
 
   private
+
+  def risk_profile
+    @risk_profile ||= IdentityVerification::UserRiskProfile.new(self)
+  end
 
   def risk_band_based_methods
     methods = [email_method]
 
-    case arkose_risk_band
-    when Arkose::VerifyResponse::RISK_BAND_HIGH.downcase
-      methods.append phone_number_method, credit_card_method
-    when Arkose::VerifyResponse::RISK_BAND_MEDIUM.downcase
-      methods.append phone_number_method
-    when Arkose::VerifyResponse::RISK_BAND_LOW.downcase
-      if phone_number_verification_enabled?
-        experiment(:phone_verification_for_low_risk_users, user: self) do |e|
-          e.candidate { methods.append VERIFICATION_METHODS[:PHONE_NUMBER] }
-        end
+    methods.append phone_number_method, credit_card_method if high_risk?
+    methods.append phone_number_method if medium_risk?
+
+    if low_risk? && phone_number_verification_enabled?
+      experiment(:phone_verification_for_low_risk_users, user: self) do |e|
+        e.candidate { methods.append VERIFICATION_METHODS[:PHONE_NUMBER] }
       end
     end
 
@@ -204,10 +188,6 @@ module IdentityVerifiable
     [email_method, credit_card_method].compact
   end
 
-  def arkose_high_risk?
-    arkose_risk_band == Arkose::VerifyResponse::RISK_BAND_HIGH.downcase
-  end
-
   def affected_by_phone_verifications_limit?
     # All users will be required to verify 1. email 2. credit card
     return true if PhoneVerification::Users::RateLimitService.daily_transaction_hard_limit_exceeded?
@@ -215,7 +195,7 @@ module IdentityVerifiable
     # Actual high risk users will be subject to the same order of required steps
     # as users assumed high risk when the daily phone verification transaction
     # limit is exceeded until it is reset
-    return arkose_high_risk? if PhoneVerification::Users::RateLimitService.daily_transaction_soft_limit_exceeded?
+    return high_risk? if PhoneVerification::Users::RateLimitService.daily_transaction_soft_limit_exceeded?
 
     false
   end

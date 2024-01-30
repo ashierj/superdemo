@@ -4,7 +4,11 @@ group: Global Search
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Elasticsearch **(PREMIUM ALL)**
+# Elasticsearch
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 This page describes how to enable advanced search. When enabled,
 advanced search provides faster search response times and [improved search features](../../user/search/advanced_search.md).
@@ -13,7 +17,7 @@ advanced search provides faster search response times and [improved search featu
 
 ### Elasticsearch version requirements
 
-> Support for Elasticsearch 6.8 [removed](https://gitlab.com/gitlab-org/gitlab/-/issues/350275) in GitLab 15.0.
+> - Support for Elasticsearch 6.8 [removed](https://gitlab.com/gitlab-org/gitlab/-/issues/350275) in GitLab 15.0.
 
 Advanced search works with the following versions of Elasticsearch.
 
@@ -65,7 +69,7 @@ The search index updates after you:
 
 ## Upgrade to a new Elasticsearch major version
 
-> Support for Elasticsearch 6.8 [removed](https://gitlab.com/gitlab-org/gitlab/-/issues/350275) in GitLab 15.0.
+> - Support for Elasticsearch 6.8 [removed](https://gitlab.com/gitlab-org/gitlab/-/issues/350275) in GitLab 15.0.
 
 You don't have to change the GitLab configuration when you upgrade Elasticsearch.
 
@@ -546,7 +550,7 @@ advanced search, which means adding or changing the way content is indexed.
 
 ### Migration dictionary files
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/414674) in GitLab 16.3.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/414674) in GitLab 16.3.
 
 Every migration has a corresponding dictionary file in the `ee/elastic/docs/` folder with the following information:
 

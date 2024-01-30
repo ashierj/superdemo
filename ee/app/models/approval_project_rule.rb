@@ -124,7 +124,7 @@ class ApprovalProjectRule < ApplicationRecord
     if applies_to_branch?(branch)
       self.vulnerability_states
     else
-      self.vulnerability_states.select { |state| NEWLY_DETECTED == state }
+      self.vulnerability_states & NEWLY_DETECTED_STATUSES
     end
   end
 

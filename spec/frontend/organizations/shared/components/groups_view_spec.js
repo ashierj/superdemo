@@ -1,20 +1,25 @@
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
-import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
+import { GlEmptyState, GlLoadingIcon, GlKeysetPagination } from '@gitlab/ui';
 import GroupsView from '~/organizations/shared/components/groups_view.vue';
 import { formatGroups } from '~/organizations/shared/utils';
-import resolvers from '~/organizations/shared/graphql/resolvers';
+import groupsQuery from '~/organizations/shared/graphql/queries/groups.query.graphql';
 import GroupsList from '~/vue_shared/components/groups_list/groups_list.vue';
 import { createAlert } from '~/alert';
+import { DEFAULT_PER_PAGE } from '~/api';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { organizationGroups } from '~/organizations/mock_data';
+import {
+  organizationGroups as nodes,
+  pageInfo,
+  pageInfoEmpty,
+  pageInfoOnePage,
+} from '~/organizations/mock_data';
 
 jest.mock('~/alert');
 
 Vue.use(VueApollo);
-jest.useFakeTimers();
 
 describe('GroupsView', () => {
   let wrapper;
@@ -23,14 +28,29 @@ describe('GroupsView', () => {
   const defaultProvide = {
     groupsEmptyStateSvgPath: 'illustrations/empty-state/empty-groups-md.svg',
     newGroupPath: '/groups/new',
+    organizationGid: 'gid://gitlab/Organizations::Organization/1',
   };
 
   const defaultPropsData = {
     listItemClass: 'gl-px-5',
   };
 
-  const createComponent = ({ mockResolvers = resolvers, propsData = {} } = {}) => {
-    mockApollo = createMockApollo([], mockResolvers);
+  const groups = {
+    nodes,
+    pageInfo,
+  };
+
+  const successHandler = jest.fn().mockResolvedValue({
+    data: {
+      organization: {
+        id: defaultProvide.organizationGid,
+        groups,
+      },
+    },
+  });
+
+  const createComponent = ({ handler = successHandler, propsData = {} } = {}) => {
+    mockApollo = createMockApollo([[groupsQuery, handler]]);
 
     wrapper = shallowMountExtended(GroupsView, {
       apolloProvider: mockApollo,
@@ -42,39 +62,37 @@ describe('GroupsView', () => {
     });
   };
 
+  const findPagination = () => wrapper.findComponent(GlKeysetPagination);
+
   afterEach(() => {
     mockApollo = null;
   });
 
   describe('when API call is loading', () => {
-    beforeEach(() => {
-      const mockResolvers = {
-        Query: {
-          organization: jest.fn().mockReturnValueOnce(new Promise(() => {})),
-        },
-      };
-
-      createComponent({ mockResolvers });
-    });
-
     it('renders loading icon', () => {
+      createComponent();
+
       expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
     });
   });
 
   describe('when API call is successful', () => {
     describe('when there are no groups', () => {
-      it('renders empty state without buttons by default', async () => {
-        const mockResolvers = {
-          Query: {
-            organization: jest.fn().mockResolvedValueOnce({
-              groups: { nodes: [] },
-            }),
+      const emptyHandler = jest.fn().mockResolvedValue({
+        data: {
+          organization: {
+            id: defaultProvide.organizationGid,
+            groups: {
+              nodes: [],
+              pageInfo: pageInfoEmpty,
+            },
           },
-        };
-        createComponent({ mockResolvers });
+        },
+      });
 
-        jest.runAllTimers();
+      it('renders empty state without buttons by default', async () => {
+        createComponent({ handler: emptyHandler });
+
         await waitForPromises();
 
         expect(wrapper.findComponent(GlEmptyState).props()).toMatchObject({
@@ -90,16 +108,11 @@ describe('GroupsView', () => {
 
       describe('when `shouldShowEmptyStateButtons` is `true` and `groupsEmptyStateSvgPath` is set', () => {
         it('renders empty state with buttons', async () => {
-          const mockResolvers = {
-            Query: {
-              organization: jest.fn().mockResolvedValueOnce({
-                groups: { nodes: [] },
-              }),
-            },
-          };
-          createComponent({ mockResolvers, propsData: { shouldShowEmptyStateButtons: true } });
+          createComponent({
+            handler: emptyHandler,
+            propsData: { shouldShowEmptyStateButtons: true },
+          });
 
-          jest.runAllTimers();
           await waitForPromises();
 
           expect(wrapper.findComponent(GlEmptyState).props()).toMatchObject({
@@ -116,13 +129,145 @@ describe('GroupsView', () => {
       });
 
       it('renders `GroupsList` component and passes correct props', async () => {
-        jest.runAllTimers();
         await waitForPromises();
 
-        expect(wrapper.findComponent(GroupsList).props()).toEqual({
-          groups: formatGroups(organizationGroups.nodes),
+        expect(wrapper.findComponent(GroupsList).props()).toMatchObject({
+          groups: formatGroups(nodes),
           showGroupIcon: true,
           listItemClass: defaultPropsData.listItemClass,
+        });
+      });
+    });
+
+    describe('when there is one page of groups', () => {
+      beforeEach(async () => {
+        createComponent({
+          handler: jest.fn().mockResolvedValue({
+            data: {
+              organization: {
+                id: defaultProvide.organizationGid,
+                groups: {
+                  nodes,
+                  pageInfo: pageInfoOnePage,
+                },
+              },
+            },
+          }),
+        });
+        await waitForPromises();
+      });
+
+      it('does not render pagination', () => {
+        expect(findPagination().exists()).toBe(false);
+      });
+    });
+
+    describe('when there is a next page of groups', () => {
+      const mockEndCursor = 'mockEndCursor';
+      const handler = jest.fn().mockResolvedValue({
+        data: {
+          organization: {
+            id: defaultProvide.organizationGid,
+            groups: {
+              nodes,
+              pageInfo: {
+                ...pageInfo,
+                hasNextPage: true,
+                hasPreviousPage: false,
+              },
+            },
+          },
+        },
+      });
+
+      beforeEach(async () => {
+        createComponent({ handler });
+        await waitForPromises();
+      });
+
+      it('renders pagination', () => {
+        expect(findPagination().exists()).toBe(true);
+      });
+
+      describe('when next button is clicked', () => {
+        beforeEach(async () => {
+          findPagination().vm.$emit('next', mockEndCursor);
+          await waitForPromises();
+        });
+
+        it('calls query with correct variables', () => {
+          expect(handler).toHaveBeenCalledWith({
+            after: mockEndCursor,
+            before: null,
+            first: DEFAULT_PER_PAGE,
+            id: defaultProvide.organizationGid,
+            last: null,
+          });
+        });
+
+        it('emits `page-change` event', () => {
+          expect(wrapper.emitted('page-change')[1]).toEqual([
+            {
+              endCursor: mockEndCursor,
+              startCursor: null,
+              hasPreviousPage: false,
+            },
+          ]);
+        });
+      });
+    });
+
+    describe('when there is a previous page of groups', () => {
+      const mockStartCursor = 'mockStartCursor';
+      const handler = jest.fn().mockResolvedValue({
+        data: {
+          organization: {
+            id: defaultProvide.organizationGid,
+            groups: {
+              nodes,
+              pageInfo: {
+                ...pageInfo,
+                hasNextPage: false,
+                hasPreviousPage: true,
+              },
+            },
+          },
+        },
+      });
+
+      beforeEach(async () => {
+        createComponent({ handler });
+        await waitForPromises();
+      });
+
+      it('renders pagination', () => {
+        expect(findPagination().exists()).toBe(true);
+      });
+
+      describe('when previous button is clicked', () => {
+        beforeEach(async () => {
+          findPagination().vm.$emit('prev', mockStartCursor);
+          await waitForPromises();
+        });
+
+        it('calls query with correct variables', () => {
+          expect(handler).toHaveBeenCalledWith({
+            after: null,
+            before: mockStartCursor,
+            first: null,
+            id: defaultProvide.organizationGid,
+            last: DEFAULT_PER_PAGE,
+          });
+        });
+
+        it('emits `page-change` event', () => {
+          expect(wrapper.emitted('page-change')[1]).toEqual([
+            {
+              endCursor: null,
+              startCursor: mockStartCursor,
+              hasPreviousPage: true,
+            },
+          ]);
         });
       });
     });
@@ -132,13 +277,7 @@ describe('GroupsView', () => {
     const error = new Error();
 
     beforeEach(() => {
-      const mockResolvers = {
-        Query: {
-          organization: jest.fn().mockRejectedValueOnce(error),
-        },
-      };
-
-      createComponent({ mockResolvers });
+      createComponent({ handler: jest.fn().mockRejectedValue(error) });
     });
 
     it('displays error alert', async () => {

@@ -1,11 +1,20 @@
-query getOrganizationGroups {
-  organization @client {
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
+query getOrganizationGroups(
+  $id: OrganizationsOrganizationID!
+  $first: Int
+  $last: Int
+  $before: String
+  $after: String
+) {
+  organization(id: $id) {
     id
-    groups {
+    groups(first: $first, last: $last, before: $before, after: $after) {
       nodes {
         id
         fullName
-        parent
+        parent {
+          id
+        }
         webUrl
         descriptionHtml
         avatarUrl
@@ -13,9 +22,9 @@ query getOrganizationGroups {
         projectsCount
         groupMembersCount
         visibility
-        accessLevel {
-          integerValue
-        }
+      }
+      pageInfo {
+        ...PageInfo
       }
     }
   }

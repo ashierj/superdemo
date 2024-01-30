@@ -180,6 +180,20 @@ describe('Cube Analytics Data Source', () => {
 
           expect(result).toBe(0);
         });
+
+        it('returns 0 when data is empty', async () => {
+          mockLoad.mockImplementationOnce(() => ({
+            rawData: () => [],
+          }));
+
+          const result = await fetch({
+            projectId,
+            visualizationType: 'SingleStat',
+            query,
+          });
+
+          expect(result).toBe(0);
+        });
       });
     });
   });

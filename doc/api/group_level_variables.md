@@ -4,7 +4,11 @@ group: Pipeline Security
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Group-level Variables API **(FREE ALL)**
+# Group-level Variables API
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 ## List group variables
 
@@ -49,7 +53,7 @@ curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/a
 
 ## Show variable details
 
-> The `filter` parameter was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/340185) in GitLab 16.9.
+> - The `filter` parameter was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/340185) in GitLab 16.9.
 
 Get the details of a group's specific variable. If there are multiple variables with the same key,
 use `filter` to select the correct `environment_scope`.
@@ -121,7 +125,7 @@ curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" \
 
 ## Update variable
 
-> The `filter` parameter was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/340185) in GitLab 16.9.
+> - The `filter` parameter was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/340185) in GitLab 16.9.
 
 Update a group's variable. If there are multiple variables with the same key,
 use `filter` to select the correct `environment_scope`.
@@ -163,7 +167,7 @@ curl --request PUT --header "PRIVATE-TOKEN: <your_access_token>" \
 
 ## Remove variable
 
-> The `filter` parameter was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/340185) in GitLab 16.9.
+> - The `filter` parameter was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/340185) in GitLab 16.9.
 
 Remove a group's variable. If there are multiple variables with the same key,
 use `filter` to select the correct `environment_scope`.
@@ -183,9 +187,13 @@ curl --request DELETE --header "PRIVATE-TOKEN: <your_access_token>" \
      "https://gitlab.example.com/api/v4/groups/1/variables/VARIABLE_1"
 ```
 
-## The `filter` parameter **(PREMIUM ALL)**
+## The `filter` parameter
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/340185) in GitLab 16.9.
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/340185) in GitLab 16.9.
 
 When multiple variables have the same `key`, [GET](#show-variable-details), [PUT](#update-variable),
 or [DELETE](#remove-variable) requests might return:

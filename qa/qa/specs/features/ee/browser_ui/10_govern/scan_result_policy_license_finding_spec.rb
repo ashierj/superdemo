@@ -98,7 +98,7 @@ module QA
         # Create MR after creating the scan result policy
         merge_request = create_test_mr
 
-        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed', wait: 90)
         merge_request.visit!
 
         Page::MergeRequest::Show.perform do |mr|
@@ -108,22 +108,20 @@ module QA
       end
 
       def create_test_mr
-        Resource::MergeRequest.fabricate_via_api! do |merge_request|
-          merge_request.no_preparation = true
-          merge_request.project = project
-          merge_request.target_new_branch = false
-          merge_request.source_branch = commit_branch
-        end
+        create(:merge_request,
+          :no_preparation,
+          project: project,
+          target_new_branch: false,
+          source_branch: commit_branch)
       end
 
       def create_scan_result_policy
         branch_name = scan_result_policy_commit.api_response[:branch]
-        Resource::MergeRequest.fabricate_via_api! do |merge_request|
-          merge_request.no_preparation = true
-          merge_request.project = policy_project
-          merge_request.target_new_branch = false
-          merge_request.source_branch = branch_name
-        end.merge_via_api!
+        create(:merge_request,
+          :no_preparation,
+          project: policy_project,
+          target_new_branch: false,
+          source_branch: branch_name).merge_via_api!
       end
     end
   end

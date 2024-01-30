@@ -190,6 +190,8 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
       end
 
       context 'with XRay data available' do
+        let_it_be(:current_user) { create(:user) }
+
         let(:xray) { create(:xray_report, payload: payload) }
         let(:payload) do
           {
@@ -209,6 +211,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
         let(:params) do
           {
             project: xray.project,
+            current_user: current_user,
             prefix: prefix,
             instruction: instruction,
             current_file: unsafe_params['current_file'].with_indifferent_access
@@ -281,6 +284,17 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
         before do
           allow(::Projects::XrayReport).to receive(:for_project).and_call_original
           allow(::Projects::XrayReport).to receive(:for_lang).and_return([xray])
+        end
+
+        describe 'internal events tracking' do
+          subject { described_class.new(params).request_params }
+
+          it_behaves_like 'internal event tracking' do
+            let(:event) { 'include_repository_xray_data_into_code_generation_prompt' }
+            let(:project) { xray.project }
+            let(:namespace) { project.namespace }
+            let(:user) { current_user }
+          end
         end
 
         it 'fetches xray data' do

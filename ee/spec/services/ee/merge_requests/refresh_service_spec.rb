@@ -212,6 +212,48 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
       end
     end
 
+    describe '#sync_preexiting_states_approval_rules' do
+      let(:irrelevant_merge_request) { another_merge_request }
+      let(:relevant_merge_request) { merge_request }
+
+      let!(:scan_finding_rule) do
+        create(:report_approver_rule, :scan_finding, merge_request: relevant_merge_request)
+      end
+
+      it 'enqueues SyncPreexistingStatesApprovalRulesWorker' do
+        expect(Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).to(
+          receive(:perform_async).with(relevant_merge_request.id)
+        )
+        expect(Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).not_to(
+          receive(:perform_async).with(irrelevant_merge_request.id)
+        )
+
+        subject
+      end
+
+      context 'when security_policies_sync_preexisting_state is disabled' do
+        before do
+          stub_feature_flags(security_policies_sync_preexisting_state: false)
+        end
+
+        it 'does not enqueue SyncPreexistingStatesApprovalRulesWorker' do
+          expect(Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).not_to receive(:perform_async)
+
+          subject
+        end
+      end
+
+      context 'without scan_finding rule' do
+        let!(:scan_finding_rule) { nil }
+
+        it 'enqueues SyncPreexistingStatesApprovalRulesWorker' do
+          expect(Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).not_to receive(:perform_async)
+
+          subject
+        end
+      end
+    end
+
     describe '#update_approvers_for_source_branch_merge_requests' do
       let(:owner) { create(:user, username: 'default-codeowner') }
       let(:current_user) { merge_request.author }

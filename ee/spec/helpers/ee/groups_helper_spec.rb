@@ -310,7 +310,8 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     let(:data) do
       {
         full_path: group.full_path,
-        group_id: group.id
+        group_id: group.id,
+        add_duo_pro_href: ::Gitlab::Routing.url_helpers.subscription_portal_add_duo_pro_seats_url(group.id)
       }
     end
 
@@ -454,7 +455,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
   describe '#show_code_suggestions_tab?' do
     context 'on saas' do
       before do
-        stub_saas_features(gitlab_saas_subscriptions: true)
+        stub_saas_features(gitlab_com_subscriptions: true)
         allow(group).to receive(:has_free_or_no_subscription?) { has_free_or_no_subscription? }
       end
 
@@ -486,7 +487,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
 
     context 'on self managed' do
       before do
-        stub_saas_features(gitlab_saas_subscriptions: false)
+        stub_saas_features(gitlab_com_subscriptions: false)
         stub_feature_flags(self_managed_code_suggestions: true)
       end
 

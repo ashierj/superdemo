@@ -163,6 +163,7 @@ export default {
           :iid="activeBoardCard.iid"
           :full-path="fullPath"
           :issuable-type="issuableType"
+          :show-in-dropdown="false"
         />
       </template>
     </gl-drawer>

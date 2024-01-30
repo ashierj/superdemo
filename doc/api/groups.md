@@ -4,7 +4,11 @@ group: Tenant Scale
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Groups API **(FREE ALL)**
+# Groups API
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 Interact with [groups](../user/group/index.md) by using the REST API.
 
@@ -12,7 +16,7 @@ The fields returned in responses vary based on the [permissions](../user/permiss
 
 ## List groups
 
-> Support for keyset pagination introduced in GitLab 14.3.
+> - Support for keyset pagination introduced in GitLab 14.3.
 
 Get a list of visible groups for the authenticated user. When accessed without
 authentication, only public groups are returned.
@@ -120,7 +124,8 @@ GET /groups?statistics=true
       "pipeline_artifacts_size": 0,
       "packages_size": 0,
       "snippets_size": 50,
-      "uploads_size": 0
+      "uploads_size": 0,
+      "container_registry_size": 0
     },
     "wiki_access_level": "private"
   }
@@ -204,7 +209,7 @@ Users of [GitLab Premium or Ultimate](https://about.gitlab.com/pricing/) also se
 
 ## List a group's descendant groups
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/217115) in GitLab 13.5
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/217115) in GitLab 13.5
 
 Get a list of visible descendant groups of this group.
 When accessed without authentication, only public groups are returned.
@@ -319,7 +324,7 @@ Parameters:
 | `include_subgroups`                    | boolean        | no       | Include projects in subgroups of this group. Default is `false` |
 | `min_access_level`                     | integer        | no       | Limit to projects where current user has at least this [role (`access_level`)](members.md#roles) |
 | `with_custom_attributes`               | boolean        | no       | Include [custom attributes](custom_attributes.md) in response (administrators only) |
-| `with_security_reports` **(ULTIMATE ALL)** | boolean    | no       | Return only projects that have security reports artifacts present in any of their builds. This means "projects with security reports enabled". Default is `false` |
+| `with_security_reports`                | boolean    | no       | Return only projects that have security reports artifacts present in any of their builds. This means "projects with security reports enabled". Default is `false`. Ultimate only. |
 
 <html>
 <small>Footnotes:
@@ -516,7 +521,7 @@ Example response:
 
 ## Details of a group
 
-> The `membership_lock` field was [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82271) in GitLab 14.10.
+> - The `membership_lock` field was [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82271) in GitLab 14.10.
 
 Get all details of a group. This endpoint can be accessed without authentication
 if the group is publicly accessible. In case the user that requests is an administrator
@@ -792,7 +797,11 @@ curl --header "PRIVATE-TOKEN: $GITLAB_LOCAL_TOKEN" \
   "https://gitlab.example.com/api/v4/groups/4/avatar"
 ```
 
-### Disable the results limit **(FREE SELF)**
+### Disable the results limit
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** Self-managed
 
 The 100 results limit can break integrations developed using GitLab 12.4 and earlier.
 
@@ -910,7 +919,7 @@ curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" \
 
 ## Get groups to which a user can transfer a group
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/371117) in GitLab 15.4
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/371117) in GitLab 15.4
 
 Retrieve a list of groups to which the user can transfer a group.
 
@@ -954,7 +963,7 @@ Example response:
 
 ## Transfer a group to a new parent group / Turn a subgroup to a top-level group
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/23831) in GitLab 14.6.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/23831) in GitLab 14.6.
 
 Transfer a group to a new parent group or turn a subgroup to a top-level group. Available to administrators and users:
 
@@ -980,7 +989,7 @@ curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" \
 
 ## Update group
 
-> `unique_project_download_limit`, `unique_project_download_limit_interval_in_seconds`, and `unique_project_download_limit_allowlist` [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92970) in GitLab 15.3 [with a flag](../administration/feature_flags.md) named `limit_unique_project_downloads_per_namespace_user`. Disabled by default.
+> - `unique_project_download_limit`, `unique_project_download_limit_interval_in_seconds`, and `unique_project_download_limit_allowlist` [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92970) in GitLab 15.3 [with a flag](../administration/feature_flags.md) named `limit_unique_project_downloads_per_namespace_user`. Disabled by default.
 
 FLAG:
 On self-managed GitLab, by default `unique_project_download_limit`, `unique_project_download_limit_interval_in_seconds`, `unique_project_download_limit_allowlist` and `auto_ban_user_on_excessive_projects_download` are not available.
@@ -1115,7 +1124,11 @@ The `prevent_sharing_groups_outside_hierarchy` attribute is present in the respo
 
 Users of [GitLab Premium or Ultimate](https://about.gitlab.com/pricing/) also see the `wiki_access_level` attribute.
 
-### Disable the results limit **(FREE SELF)**
+### Disable the results limit
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** Self-managed
 
 The 100 results limit can break integrations developed using GitLab 12.4 and earlier.
 
@@ -1143,7 +1156,7 @@ The `shared_runners_setting` attribute determines whether shared runners are ena
 
 ### Upload a group avatar
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/36681) in GitLab 12.9.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/36681) in GitLab 12.9.
 
 To upload an avatar file from your file system, use the `--form` argument. This causes
 curl to post data using the header `Content-Type: multipart/form-data`. The
@@ -1157,7 +1170,7 @@ curl --request PUT --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab
 
 ### Remove a group avatar
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96421) in GitLab 15.4.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96421) in GitLab 15.4.
 
 To remove a group avatar, use a blank value for the `avatar` attribute.
 
@@ -1200,9 +1213,13 @@ The response is `202 Accepted` if the user has authorization.
 NOTE:
 A GitLab.com group can't be removed if it is linked to a subscription. To remove such a group, first [link the subscription](../subscriptions/gitlab_com/index.md#change-the-linked-namespace) with a different group.
 
-## Restore group marked for deletion **(PREMIUM ALL)**
+## Restore group marked for deletion
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/33257) in GitLab 12.8.
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/33257) in GitLab 12.8.
 
 Restores a group marked for deletion.
 
@@ -1235,9 +1252,13 @@ GET /groups?search=foobar
 ]
 ```
 
-## List provisioned users **(PREMIUM ALL)**
+## List provisioned users
 
-> Introduced in GitLab 14.8.
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+
+> - Introduced in GitLab 14.8.
 
 Get a list of users provisioned by a given group. Does not include subgroups.
 
@@ -1308,9 +1329,14 @@ Example response:
 ]
 ```
 
-## List group users **(PREMIUM ALL EXPERIMENT)**
+## List group users
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/424505) in GitLab 16.6. This feature is an [Experiment](../policy/experiment-beta-support.md).
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+**Status:** Experiment
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/424505) in GitLab 16.6. This feature is an [Experiment](../policy/experiment-beta-support.md).
 
 Get a list of users for a group. This endpoint returns users that are related to a top-level group regardless
 of their current membership. For example, users that have a SAML identity connected to the group, or service accounts created
@@ -1389,11 +1415,15 @@ Example response:
 ]
 ```
 
-## Service Accounts **(PREMIUM ALL)**
+## Service Accounts
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 ### Create Service Account User
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/407775) in GitLab 16.1.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/407775) in GitLab 16.1.
 
 Creates a service account user with an auto-generated email address and username.
 
@@ -1417,7 +1447,7 @@ Example response:
 
 ### Create Personal Access Token for Service Account User
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/406781) in GitLab 16.1.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/406781) in GitLab 16.1.
 
 ```plaintext
 POST /groups/:id/service_accounts/:user_id/personal_access_tokens
@@ -1450,7 +1480,7 @@ Example response:
 
 ### Rotate a Personal Access Token for Service Account User
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/406781) in GitLab 16.1.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/406781) in GitLab 16.1.
 
 ```plaintext
 POST /groups/:id/service_accounts/:user_id/personal_access_tokens/:token_id/rotate
@@ -1477,7 +1507,11 @@ Example response:
 }
 ```
 
-## Hooks **(PREMIUM ALL)**
+## Hooks
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 Also called Group Hooks and Webhooks.
 These are different from [System Hooks](system_hooks.md) that are system wide and [Project Hooks](projects.md#hooks) that are limited to one project.
@@ -1609,11 +1643,19 @@ DELETE /groups/:id/hooks/:hook_id
 | `id`      | integer/string | yes      | The ID or [URL-encoded path of the group](rest/index.md#namespaced-path-encoding) |
 | `hook_id` | integer        | yes      | The ID of the group hook. |
 
-## Group Audit Events **(PREMIUM ALL)**
+## Group Audit Events
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 Group audit events can be accessed via the [Group Audit Events API](audit_events.md#group-audit-events)
 
-## Sync group with LDAP **(PREMIUM SELF)**
+## Sync group with LDAP
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 Syncs the group with its linked LDAP group. Only available to group owners and administrators.
 
@@ -1633,7 +1675,11 @@ See the [Group Members](members.md) documentation.
 
 List, add, and delete LDAP group links.
 
-### List LDAP group links **(PREMIUM SELF)**
+### List LDAP group links
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 Lists LDAP group links.
 
@@ -1645,7 +1691,11 @@ GET /groups/:id/ldap_group_links
 | --------- | -------------- | -------- | ----------- |
 | `id`      | integer/string | yes      | The ID or [URL-encoded path of the group](rest/index.md#namespaced-path-encoding) |
 
-### Add LDAP group link with CN or filter **(PREMIUM SELF)**
+### Add LDAP group link with CN or filter
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 Adds an LDAP group link using a CN or filter. Adding a group link by filter is only supported in the Premium tier and above.
 
@@ -1664,7 +1714,11 @@ POST /groups/:id/ldap_group_links
 NOTE:
 To define the LDAP group link, provide either a `cn` or a `filter`, but not both.
 
-### Delete LDAP group link **(PREMIUM SELF)**
+### Delete LDAP group link
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 Deletes an LDAP group link. Deprecated. Scheduled for removal in a future release.
 
@@ -1689,7 +1743,11 @@ DELETE /groups/:id/ldap_group_links/:provider/:cn
 | `cn`      | string         | yes      | The CN of an LDAP group |
 | `provider` | string        | yes      | LDAP provider for the LDAP group link |
 
-### Delete LDAP group link with CN or filter **(PREMIUM SELF)**
+### Delete LDAP group link with CN or filter
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 Deletes an LDAP group link using a CN or filter. Deleting by filter is only supported in the Premium tier and above.
 
@@ -1707,7 +1765,11 @@ DELETE /groups/:id/ldap_group_links
 NOTE:
 To delete the LDAP group link, provide either a `cn` or a `filter`, but not both.
 
-## SAML Group Links **(PREMIUM ALL)**
+## SAML Group Links
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/290367) in GitLab 15.3.0.
 > - `access_level` type [changed](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/95607) from `string` to `integer` in GitLab 15.3.3.
@@ -1922,9 +1984,13 @@ DELETE /groups/:id/share/:group_id
 | `id`      | integer/string | yes      | The ID or [URL-encoded path of the group](rest/index.md#namespaced-path-encoding) |
 | `group_id` | integer | yes | The ID of the group to share with |
 
-## Push Rules **(PREMIUM ALL)**
+## Push Rules
 
-> Introduced in GitLab 13.4.
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
+
+> - Introduced in GitLab 13.4.
 
 ### Get group push rules
 

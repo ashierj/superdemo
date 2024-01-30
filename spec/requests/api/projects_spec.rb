@@ -439,7 +439,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
 
         statistics = json_response.find { |p| p['id'] == project.id }['statistics']
         expect(statistics).to be_present
-        expect(statistics).to include('commit_count', 'storage_size', 'repository_size', 'wiki_size', 'lfs_objects_size', 'job_artifacts_size', 'pipeline_artifacts_size', 'snippets_size', 'packages_size', 'uploads_size')
+        expect(statistics).to include('commit_count', 'storage_size', 'repository_size', 'wiki_size', 'lfs_objects_size', 'job_artifacts_size', 'pipeline_artifacts_size', 'snippets_size', 'packages_size', 'uploads_size', 'container_registry_size')
       end
 
       it "does not include license by default" do
@@ -2679,6 +2679,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
         expect(json_response['feature_flags_access_level']).to be_present
         expect(json_response['infrastructure_access_level']).to be_present
         expect(json_response['monitor_access_level']).to be_present
+        expect(json_response['warn_about_potentially_unwanted_characters']).to be_present
         expect(json_response).to have_key('emails_disabled')
         expect(json_response).to have_key('emails_enabled')
       end
@@ -2792,6 +2793,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
         expect(json_response['readme_url']).to eq(project.readme_url)
         expect(json_response).to have_key 'packages_enabled'
         expect(json_response['keep_latest_artifact']).to be_present
+        expect(json_response['warn_about_potentially_unwanted_characters']).to be_present
       end
 
       it 'returns a group link with expiration date' do
@@ -4159,6 +4161,28 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
         project_param.each_pair do |k, v|
           expect(json_response[k.to_s]).to eq(v)
         end
+      end
+
+      it 'updates public_builds (deprecated)' do
+        project3.update!({ public_builds: false })
+        project_param = { public_builds: 'true' }
+
+        put api("/projects/#{project3.id}", user), params: project_param
+
+        expect(response).to have_gitlab_http_status(:ok)
+
+        expect(json_response['public_jobs']).to be_truthy
+      end
+
+      it 'updates public_jobs' do
+        project3.update!({ public_builds: false })
+        project_param = { public_jobs: 'true' }
+
+        put api("/projects/#{project3.id}", user), params: project_param
+
+        expect(response).to have_gitlab_http_status(:ok)
+
+        expect(json_response['public_jobs']).to be_truthy
       end
 
       context 'with changes to the avatar' do

@@ -15,7 +15,7 @@ First of all, you have to gather information and decide which are the different
 limits that are set for the different GitLab tiers. Coordinate with others to [document](../administration/instance_limits.md)
 and communicate those limits.
 
-There is a guide about [introducing application limits](https://about.gitlab.com/handbook/product/product-processes/#introducing-application-limits).
+There is a guide about [introducing application limits](https://handbook.gitlab.com/handbook/product/product-processes/#introducing-application-limits).
 
 ## Implement plan limits
 
@@ -139,7 +139,7 @@ end
 
 ### Subscription Plans
 
-> The `opensource` plan was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/346399) in GitLab 14.7.
+> - The `opensource` plan was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/346399) in GitLab 14.7.
 
 Self-managed:
 

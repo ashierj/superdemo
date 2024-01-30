@@ -59,13 +59,13 @@ For a walkthrough of the contribution process, see [Tutorial: Make a GitLab cont
 ### Best practices
 
 - If the change is non-trivial, we encourage you to start a discussion with
-  [a product manager or a member of the team](https://about.gitlab.com/handbook/product/categories/).
+  [a product manager or a member of the team](https://handbook.gitlab.com/handbook/product/categories/).
   You can do this by tagging them in an MR before submitting the code for review. Talking
   to team members can be helpful when making design decisions. Communicating the
   intent behind your changes can also help expedite merge request reviews.
 
 - Consider placing your code behind a feature flag if you think it might affect production availability.
-  Not sure? Read [When to use feature flags](https://about.gitlab.com/handbook/product-development-flow/feature-flag-lifecycle/#when-to-use-feature-flags).
+  Not sure? Read [When to use feature flags](https://handbook.gitlab.com/handbook/product-development-flow/feature-flag-lifecycle/#when-to-use-feature-flags).
 
 - If you would like quick feedback on your merge request feel free to mention someone
   from the [core team](https://about.gitlab.com/community/core-team/) or one of the
@@ -210,7 +210,7 @@ requirements.
 ### Functionality
 
 1. Working and clean code that is commented where needed.
-1. The change is evaluated to [limit the impact of far-reaching work](https://about.gitlab.com/handbook/engineering/development/#reducing-the-impact-of-far-reaching-work).
+1. The change is evaluated to [limit the impact of far-reaching work](https://handbook.gitlab.com/handbook/engineering/core-development/#reducing-the-impact-of-far-reaching-work).
 1. [Performance guidelines](../merge_request_concepts/performance.md) have been followed.
 1. [Secure coding guidelines](../secure_coding_guidelines.md) have been followed.
 1. [Application and rate limit guidelines](../merge_request_concepts/rate_limits.md) have been followed.
@@ -256,14 +256,14 @@ requirements.
 1. [Unit, integration, and system tests](../testing_guide/index.md) that all pass
    on the CI server.
 1. Peer member testing is optional but recommended when the risk of a change is high.
-   This includes when the changes are [far-reaching](https://about.gitlab.com/handbook/engineering/development/#reducing-the-impact-of-far-reaching-work)
+   This includes when the changes are [far-reaching](https://handbook.gitlab.com/handbook/engineering/core-development/#reducing-the-impact-of-far-reaching-work)
    or are for [components critical for security](../code_review.md#security).
 1. Regressions and bugs are covered with tests that reduce the risk of the issue happening
    again.
 1. For tests that use Capybara, read
    [how to write reliable, asynchronous integration tests](https://thoughtbot.com/blog/write-reliable-asynchronous-integration-tests-with-capybara).
 1. [Black-box tests/end-to-end tests](../testing_guide/testing_levels.md#black-box-tests-at-the-system-level-aka-end-to-end-tests)
-   added if required. Contact [the quality team](https://about.gitlab.com/handbook/engineering/quality/#teams)
+   added if required. Contact [the quality team](https://handbook.gitlab.com/handbook/engineering/quality/)
    with any questions.
 1. The change is tested in a review app where possible and if appropriate.
 1. Code affected by a feature flag is covered by [automated tests with the feature flag enabled and disabled](../feature_flags/index.md#feature-flags-in-tests), or both
@@ -296,7 +296,7 @@ requirements.
 
 1. The MR was evaluated against the [MR acceptance checklist](../code_review.md#acceptance-checklist).
 1. Create an issue in the [infrastructure issue tracker](https://gitlab.com/gitlab-com/gl-infra/reliability/-/issues) to inform the Infrastructure department when your contribution is changing default settings or introduces a new setting, if relevant.
-1. An agreed-upon [rollout plan](https://about.gitlab.com/handbook/engineering/development/processes/rollout-plans/).
+1. An agreed-upon [rollout plan](https://handbook.gitlab.com/handbook/engineering/development/processes/rollout-plans/).
 1. Reviewed by relevant reviewers, and all concerns are addressed for Availability, Regressions, and Security. Documentation reviews should take place as soon as possible, but they should not block a merge request.
 1. Your merge request has at least 1 approval, but depending on your changes
    you might need additional approvals. Refer to the [Approval guidelines](../code_review.md#approval-guidelines).
@@ -309,8 +309,8 @@ requirements.
 The following items are checked after the merge request has been merged:
 
 1. Confirmed to be working in staging before implementing the change in production, where possible.
-1. Confirmed to be working in the production with no new [Sentry](https://about.gitlab.com/handbook/engineering/monitoring/#sentry) errors after the contribution is deployed.
-1. Confirmed that the [rollout plan](https://about.gitlab.com/handbook/engineering/development/processes/rollout-plans/) has been completed.
+1. Confirmed to be working in the production with no new [Sentry](https://handbook.gitlab.com/handbook/engineering/monitoring/#sentry) errors after the contribution is deployed.
+1. Confirmed that the [rollout plan](https://handbook.gitlab.com/handbook/engineering/development/processes/rollout-plans/) has been completed.
 1. If there is a performance risk in the change, you have analyzed the performance of the system before and after the change.
 1. *If the merge request uses feature flags, per-project or per-group enablement, and a staged rollout:*
    - Confirmed to be working on GitLab projects.

@@ -8,9 +8,13 @@ module Arkose
   class DataExchangePayload
     USE_CASE_SIGN_UP = 'SIGN_UP'
 
-    def initialize(request, use_case:)
+    # Transparent mode - no challenge shown to the user. Inverse of interactive
+    # mode where the user is required to solve a challenge.
+    # See https://developer.arkoselabs.com/docs/verify-api-v4-response-fields
+    def initialize(request, use_case:, require_challenge: false)
       @request = request
       @use_case = use_case
+      @require_challenge = require_challenge
     end
 
     def build
@@ -21,7 +25,7 @@ module Arkose
 
     private
 
-    attr_reader :request, :use_case
+    attr_reader :request, :use_case, :require_challenge
 
     def shared_key
       @shared_key ||= Settings.data_exchange_key
@@ -30,7 +34,7 @@ module Arkose
     def json_data
       now = Time.current.to_i
 
-      {
+      data = {
         timestamp: now.to_s, # required to be a string
         "HEADER_user-agent" => request.user_agent,
         "HEADER_origin" => request.origin,
@@ -43,7 +47,12 @@ module Arkose
           timestamp: now,
           token: SecureRandom.uuid
         }
-      }.compact.to_json
+      }
+
+      # Arkose expects the value to be a string instead of a boolean
+      data[:interactive] = 'true' if require_challenge
+
+      data.compact.to_json
     end
 
     def encrypted_data

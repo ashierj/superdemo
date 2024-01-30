@@ -4,7 +4,11 @@ group: Distribution
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# GitLab 16 changes **(FREE SELF)**
+# GitLab 16 changes
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** Self-managed
 
 This page contains upgrade information for minor and patch versions of GitLab 16.
 Ensure you review these instructions for:
@@ -93,8 +97,13 @@ Specific information applies to Linux package installations:
   | ----------------------- | ----------------------- | -------- |
   | 16.4                    |  All                    | None     |
   | 16.5                    |  All                    | None     |
-  | 16.6                    |  All                    | None     |
-  | 16.7                    |  All                    | None     |
+  | 16.6                    |  16.6.0 - 16.6.5        | 16.6.6   |
+  | 16.7                    |  16.7.0 - 16.7.3        | 16.7.4   |
+
+## 16.8.0
+
+- Redis 6.2 or later is now required by Sidekiq. For installations that use an external Redis service, you should upgrade your Redis service to 6.2 - 7.x
+before upgrading to GitLab 16.8.
 
 ## 16.6.0
 
@@ -110,8 +119,8 @@ Specific information applies to Linux package installations:
   | ----------------------- | ----------------------- | -------- |
   | 16.4                    |  All                    | None     |
   | 16.5                    |  All                    | None     |
-  | 16.6                    |  All                    | None     |
-  | 16.7                    |  All                    | None     |
+  | 16.6                    |  16.6.0 - 16.6.5        | 16.6.6   |
+  | 16.7                    |  16.7.0 - 16.7.3        | 16.7.4   |
 
 ## 16.5.0
 
@@ -208,8 +217,8 @@ Specific information applies to installations using Geo:
   | ----------------------- | ----------------------- | -------- |
   | 16.4                    |  All                    | None     |
   | 16.5                    |  All                    | None     |
-  | 16.6                    |  All                    | None     |
-  | 16.7                    |  All                    | None     |
+  | 16.6                    |  16.6.0 - 16.6.5        | 16.6.6   |
+  | 16.7                    |  16.7.0 - 16.7.3        | 16.7.4   |
 
 ## 16.4.0
 
@@ -358,8 +367,8 @@ Specific information applies to installations using Geo:
   | ----------------------- | ----------------------- | -------- |
   | 16.4                    |  All                    | None     |
   | 16.5                    |  All                    | None     |
-  | 16.6                    |  All                    | None     |
-  | 16.7                    |  All                    | None     |
+  | 16.6                    |  16.6.0 - 16.6.5        | 16.6.6   |
+  | 16.7                    |  16.7.0 - 16.7.3        | 16.7.4   |
 
 ## 16.3.0
 
@@ -593,7 +602,11 @@ Workaround: A possible workaround is to [disable proxying](../../administration/
   [removed](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118645). For more information, see the
   [`puma.rb.example`](https://gitlab.com/gitlab-org/gitlab/-/blob/16-0-stable-ee/config/puma.rb.example) file.
 
-### Geo installations **(PREMIUM SELF)**
+### Geo installations
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 Specific information applies to installations using Geo:
 
@@ -656,9 +669,8 @@ Specific information applies to Linux package installations:
   Prior to upgrading, administrators of Linux package installations must ensure the installation is using
   [PostgreSQL 13](https://docs.gitlab.com/omnibus/settings/database.html#upgrade-packaged-postgresql-server).
 
-- Grafana that was bundled with GitLab is deprecated and is no longer supported. It is
-  [removed](../../administration/monitoring/performance/grafana_configuration.md#grafana-bundled-with-gitlab-removed) in
-  GitLab 16.3.
+- Grafana that was bundled with GitLab is deprecated and is no longer supported.
+  It is removed in GitLab 16.3.
 - This upgrades `openssh-server` to `1:8.9p1-3`.
 
   Using `ssh-keyscan -t rsa` with older OpenSSH clients to obtain public key information is no longer viable because of
@@ -672,7 +684,11 @@ Specific information applies to Linux package installations:
 - [Migrate your Gitaly configuration to the new structure](#gitaly-configuration-structure-change)
   to ensure all your `gitaly['..']` settings continue to work in GitLab 16.0 and later.
 
-### Geo installations **(PREMIUM SELF)**
+### Geo installations
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 Specific information applies to installations using Geo:
 

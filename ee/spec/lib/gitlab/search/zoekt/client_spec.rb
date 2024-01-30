@@ -48,19 +48,10 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     end
 
     it 'send request to the correct URL' do
-      case method
-      when :post
-        expect(client).to receive(:post_request)
-          .with((custom_node.index_base_url + expected_path), anything, anything)
-          .and_return(success)
-      when :delete
-        expect(client).to receive(:delete_request)
-          .with((custom_node.index_base_url + expected_path))
-          .and_return(success)
-      else
-        raise "Unknown method"
-      end
+      raise 'Unknown method' if %i[delete post].exclude?(method)
 
+      requested_url = custom_node.index_base_url + expected_path
+      expect(Gitlab::HTTP).to receive(method).with(requested_url, anything).and_return(success)
       make_request
     end
   end
@@ -259,7 +250,13 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       expect(search_results[:Result][:Files].to_a.size).to eq(0)
 
       client.index(project_1, node_id)
+      # Add delay to allow Zoekt wbeserver to finish the indexing
+      10.times do
+        results = client.search('.*', num: 1, project_ids: [project_1.id], node_id: node_id, search_mode: :regex)
+        break if results[:Result][:FileCount] > 0
 
+        sleep 0.01
+      end
       search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node_id,
         search_mode: :regex)
       expect(search_results[:Result][:Files].to_a.size).to be > 0

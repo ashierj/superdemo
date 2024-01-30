@@ -4,7 +4,11 @@ group: Distribution
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Reference architecture: up to 3,000 users **(PREMIUM SELF)**
+# Reference architecture: up to 3,000 users
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 This page describes the GitLab reference architecture designed for the load of up to 3,000 users
 with notable headroom.
@@ -914,9 +918,6 @@ in the second step, do not supply the `EXTERNAL_URL` value.
    patroni['username'] = '<patroni_api_username>'
    patroni['password'] = '<patroni_api_password>'
 
-   # Replace 10.6.0.0/24 with Network Addresses for your other patroni nodes
-   patroni['allowlist'] = %w(10.6.0.0/24 127.0.0.1/32)
-
    # Replace 10.6.0.0/24 with Network Address
    postgresql['trust_auth_cidr_addresses'] = %w(10.6.0.0/24 127.0.0.1/32)
 
@@ -1319,11 +1320,11 @@ To configure the Praefect nodes, on each one:
    NOTE:
    You can't remove the `default` entry from `virtual_storages` because [GitLab requires it](../gitaly/configure_gitaly.md#gitlab-requires-a-default-repository-storage).
 
-<!--
-Updates to example must be made at:
-- https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/administration/gitaly/praefect.md
-- all reference architecture pages
--->
+   <!--
+   Updates to example must be made at:
+   - https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/administration/gitaly/praefect.md
+   - all reference architecture pages
+   -->
 
    ```ruby
    # Avoid running unnecessary services on the Praefect server
@@ -1483,12 +1484,12 @@ On each node:
 1. Edit the Gitaly server node's `/etc/gitlab/gitlab.rb` file to configure
    storage paths, enable the network listener, and to configure the token:
 
-<!--
-Updates to example must be made at:
-- https://gitlab.com/gitlab-org/charts/gitlab/blob/master/doc/advanced/external-gitaly/external-omnibus-gitaly.md#configure-omnibus-gitlab
-- https://gitlab.com/gitlab-org/gitlab/blob/master/doc/administration/gitaly/index.md#gitaly-server-configuration
-- all reference architecture pages
--->
+   <!--
+   Updates to example must be made at:
+   - https://gitlab.com/gitlab-org/charts/gitlab/blob/master/doc/advanced/external-gitaly/external-omnibus-gitaly.md#configure-omnibus-gitlab
+   - https://gitlab.com/gitlab-org/gitlab/blob/master/doc/administration/gitaly/index.md#gitaly-server-configuration
+   - all reference architecture pages
+   -->
 
    ```ruby
    # Avoid running unnecessary services on the Gitaly server
@@ -1709,7 +1710,7 @@ The following IPs will be used as an example:
 - `10.6.0.71`: Sidekiq 1
 - `10.6.0.72`: Sidekiq 2
 
-To configure the Sidekiq nodes, one each one:
+To configure the Sidekiq nodes, on each one:
 
 1. SSH in to the Sidekiq server.
 1. [Download and install](https://about.gitlab.com/install/) the Linux
@@ -1717,11 +1718,11 @@ To configure the Sidekiq nodes, one each one:
    on the page.
 1. Create or edit `/etc/gitlab/gitlab.rb` and use the following configuration:
 
-<!--
-Updates to example must be made at:
-- https://gitlab.com/gitlab-org/gitlab/blob/master/doc/administration/sidekiq.md
-- all reference architecture pages
--->
+   <!--
+   Updates to example must be made at:
+   - https://gitlab.com/gitlab-org/gitlab/blob/master/doc/administration/sidekiq.md
+   - all reference architecture pages
+   -->
 
    ```ruby
    # https://docs.gitlab.com/omnibus/roles/#sidekiq-roles

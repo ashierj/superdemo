@@ -9,6 +9,7 @@ module EE
     prepended do
       include Elastic::ApplicationVersionedSearch
       include MemberRoles::MemberRoleRelation
+      include ::GitlabSubscriptions::SubscriptionHelper
 
       base_access_level_attr :access_level
 
@@ -100,6 +101,18 @@ module EE
       return unless user
 
       ::Elastic::ProcessBookkeepingService.track!(user)
+    end
+
+    # returns true if setting is required and if SM and Ultimate tier, and user is NonBillable
+    def member_promotion_management_required?(new_access_level)
+      return false unless ::Feature.enabled?(:member_promotion_management, type: :wip)
+      return false unless ::Gitlab::CurrentSettings.enable_member_promotion_management?
+      return false if gitlab_com_subscription?
+      return false unless new_access_level > ::Gitlab::Access::GUEST
+      return false if is_using_seat
+
+      License.current.present? &&
+        License.current.exclude_guests_from_active_count?
     end
 
     def sso_enforcement

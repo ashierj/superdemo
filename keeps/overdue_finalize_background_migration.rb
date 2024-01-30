@@ -3,6 +3,7 @@
 require_relative '../config/environment'
 require_relative '../lib/generators/post_deployment_migration/post_deployment_migration_generator'
 require_relative './helpers/postgres_ai'
+require 'rubocop'
 
 module Keeps
   # This is an implementation of a ::Gitlab::Housekeeper::Keep. This keep will locate any old batched background
@@ -19,7 +20,6 @@ module Keeps
   #
   # ```
   # bundle exec gitlab-housekeeper -d \
-  #   -r keeps/overdue_finalize_background_migration.rb \
   #   -k Keeps::OverdueFinalizeBackgroundMigration
   # ```
   class OverdueFinalizeBackgroundMigration < ::Gitlab::Housekeeper::Keep
@@ -40,15 +40,16 @@ module Keeps
         next unless migration_record
 
         # Finalize the migration
-        title = "Finalize migration #{job_name}"
+        change = ::Gitlab::Housekeeper::Change.new
+        change.title = "Finalize migration #{job_name}"
 
-        identifiers = [self.class.name.demodulize, job_name]
+        change.identifiers = [self.class.name.demodulize, job_name]
 
         last_migration_file = last_migration_for_job(job_name)
         next unless last_migration_file
 
         # rubocop:disable Gitlab/DocUrl -- Not running inside rails application
-        description = <<~MARKDOWN
+        change.description = <<~MARKDOWN
         This migration was finished at `#{migration_record.finished_at || migration_record.updated_at}`, you can confirm
         the status using our
         [batched background migration chatops commands](https://docs.gitlab.com/ee/development/database/batched_background_migrations.html#monitor-the-progress-and-status-of-a-batched-background-migration).
@@ -78,7 +79,7 @@ module Keeps
           .source_root('generator_templates/post_deployment_migration/post_deployment_migration/')
         generator = ::PostDeploymentMigration::PostDeploymentMigrationGenerator.new([migration_name], force: true)
         migration_file = generator.invoke_all.first
-        changed_files = [migration_file]
+        change.changed_files = [migration_file]
 
         add_ensure_call_to_migration(migration_file, queue_method_node, job_name)
         ::Gitlab::Housekeeper::Shell.execute('rubocop', '-a', migration_file)
@@ -89,11 +90,10 @@ module Keeps
 
         add_finalized_by_to_yaml(migration_yaml_file, generator.migration_number)
 
-        changed_files << digest_file
-        changed_files << migration_yaml_file
+        change.changed_files << digest_file
+        change.changed_files << migration_yaml_file
 
-        to_create = ::Gitlab::Housekeeper::Change.new(identifiers, title, description, changed_files)
-        yield(to_create)
+        yield(change)
       end
     end
 

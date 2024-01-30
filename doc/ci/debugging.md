@@ -4,7 +4,11 @@ group: Pipeline Authoring
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Debugging CI/CD pipelines **(FREE ALL)**
+# Debugging CI/CD pipelines
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 GitLab provides several tools to help make it easier to debug your CI/CD configuration.
 
@@ -261,7 +265,7 @@ Ensure that included configuration files do not create a loop of references to e
 
 ### `Failed to pull image` messages
 
-> **Allow access to this project with a CI_JOB_TOKEN** setting [renamed to **Limit access _to_ this project**](https://gitlab.com/gitlab-org/gitlab/-/issues/411406) in GitLab 16.3.
+> - **Allow access to this project with a CI_JOB_TOKEN** setting [renamed to **Limit access _to_ this project**](https://gitlab.com/gitlab-org/gitlab/-/issues/411406) in GitLab 16.3.
 
 A runner might return a `Failed to pull image` message when trying to pull a container image
 in a CI/CD job.

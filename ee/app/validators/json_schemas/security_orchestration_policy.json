@@ -13,6 +13,11 @@
       "required": [
         "scan_result_policy"
       ]
+    },
+    {
+      "required": [
+        "approval_policy"
+      ]
     }
   ],
   "properties": {
@@ -389,6 +394,15 @@
       }
     },
     "scan_result_policy": {
+      "$ref": "#/$defs/approval_policy"
+    },
+    "approval_policy": {
+      "$ref": "#/$defs/approval_policy"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "approval_policy": {
       "type": "array",
       "description": "Declares actions to be enforced based on scan results.",
       "additionalItems": false,
@@ -907,6 +921,5 @@
         "additionalProperties": false
       }
     }
-  },
-  "additionalProperties": false
+  }
 }

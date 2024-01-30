@@ -23,6 +23,7 @@ module Registrations
 
       if onboarding_status.trial?
         experiment(:free_trial_registration_redesign, actor: user).track(:assignment, namespace: group)
+        experiment(:trial_discover_page, actor: user).track(:assignment, namespace: group)
       end
 
       apply_trial if onboarding_status.trial_onboarding_flow?

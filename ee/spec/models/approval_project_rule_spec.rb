@@ -698,13 +698,13 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
     describe '#vulnerability_states_for_branch' do
       let(:project) { create(:project, :repository) }
       let(:branch_name) { project.default_branch }
-      let!(:rule) { build(:approval_project_rule, project: project, protected_branches: protected_branches, vulnerability_states: %w[newly_detected resolved]) }
+      let!(:rule) { build(:approval_project_rule, project: project, protected_branches: protected_branches, vulnerability_states: %w[new_needs_triage resolved]) }
 
       context 'with protected branch set to any' do
         let(:protected_branches) { [] }
 
         it 'returns all content of vulnerability states' do
-          expect(rule.vulnerability_states_for_branch).to contain_exactly('newly_detected', 'resolved')
+          expect(rule.vulnerability_states_for_branch).to contain_exactly('new_needs_triage', 'resolved')
         end
       end
 
@@ -712,7 +712,7 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
         let(:protected_branches) { [create(:protected_branch, project: project, name: 'custom_branch')] }
 
         it 'returns only the content of vulnerability states' do
-          expect(rule.vulnerability_states_for_branch).to contain_exactly('newly_detected')
+          expect(rule.vulnerability_states_for_branch).to contain_exactly('new_needs_triage')
         end
       end
     end

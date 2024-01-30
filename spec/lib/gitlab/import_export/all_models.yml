@@ -332,6 +332,7 @@ ci_pipelines:
 - daily_build_group_report_results
 - latest_builds
 - latest_successful_jobs
+- latest_finished_jobs
 - daily_report_results
 - latest_builds_report_results
 - messages
@@ -568,6 +569,7 @@ project:
 - incident_hooks_integrations
 - vulnerability_hooks_integrations
 - apple_app_store_integration
+- google_cloud_platform_artifact_registry_integration
 - campfire_integration
 - confluence_integration
 - datadog_integration
@@ -705,6 +707,7 @@ project:
 - error_tracking_setting
 - gitlab_slack_application_integration
 - github_integration
+- git_guardian_integration
 - protected_environments
 - mirror_user
 - push_rule
@@ -841,6 +844,7 @@ project:
 - dora_performance_scores
 - xray_reports
 - member_approvals
+- zoekt_repository
 award_emoji:
 - awardable
 - user

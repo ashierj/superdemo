@@ -4,7 +4,11 @@ group: Pipeline Security
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# GitLab CI/CD job token **(FREE ALL)**
+# GitLab CI/CD job token
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 When a pipeline job is about to run, GitLab generates a unique token and injects it as the
 [`CI_JOB_TOKEN` predefined variable](../variables/predefined_variables.md).
@@ -51,20 +55,20 @@ You can't use a job token to push to a repository, but [issue 389060](https://gi
 
 ## GitLab CI/CD job token security
 
-To make sure that this token doesn't leak, GitLab:
+To prevent the CI/CD job token from leaking, GitLab:
 
 - Masks the job token in job logs.
 - Grants permissions to the job token only when the job is running.
 
-To make sure that this token doesn't leak, you should also configure
-your [runners](../runners/index.md) to be secure. Avoid:
+To prevent leaking the deploy token, you should also configure your [runners](../runners/index.md)
+to be secure:
 
-- Using Docker `privileged` mode if the machines are re-used.
-- Using the [`shell` executor](https://docs.gitlab.com/runner/executors/shell.html) when jobs
+- Avoid using Docker `privileged` mode if the machines are re-used.
+- Avoid using the [`shell` executor](https://docs.gitlab.com/runner/executors/shell.html) when jobs
   run on the same machine.
 
-If you have an insecure GitLab Runner configuration, you increase the risk that someone
-tries to steal tokens from other jobs.
+An insecure GitLab Runner configuration increases the risk that someone can steal tokens from other
+jobs.
 
 ## Configure CI/CD job token access
 
@@ -135,7 +139,7 @@ Triggering pipelines and fetching Terraform plans is not affected by feature vis
 
 ### Disable the job token scope allowlist
 
-> **Allow access to this project with a CI_JOB_TOKEN** setting [renamed to **Limit access _to_ this project**](https://gitlab.com/gitlab-org/gitlab/-/issues/411406) in GitLab 16.3.
+> - **Allow access to this project with a CI_JOB_TOKEN** setting [renamed to **Limit access _to_ this project**](https://gitlab.com/gitlab-org/gitlab/-/issues/411406) in GitLab 16.3.
 
 WARNING:
 It is a security risk to disable the allowlist. A malicious user could try to compromise
@@ -161,7 +165,7 @@ You can also disable the allowlist [with the API](../../api/graphql/reference/in
 
 ### Add a project to the job token scope allowlist
 
-> **Allow access to this project with a CI_JOB_TOKEN** setting [renamed to **Limit access _to_ this project**](https://gitlab.com/gitlab-org/gitlab/-/issues/411406) in GitLab 16.3.
+> - **Allow access to this project with a CI_JOB_TOKEN** setting [renamed to **Limit access _to_ this project**](https://gitlab.com/gitlab-org/gitlab/-/issues/411406) in GitLab 16.3.
 
 You can add projects to the allowlist for a project. Projects added to the allowlist
 can make API calls from running pipelines by using the CI/CD job token.
@@ -208,7 +212,7 @@ to make an API request to project `B`, then `B` must be added to the allowlist f
 
 ### Configure the job token scope
 
-> **Limit CI_JOB_TOKEN access** setting [renamed to **Limit access _from_ this project**](https://gitlab.com/gitlab-org/gitlab/-/issues/411406) in GitLab 16.3.
+> - **Limit CI_JOB_TOKEN access** setting [renamed to **Limit access _from_ this project**](https://gitlab.com/gitlab-org/gitlab/-/issues/411406) in GitLab 16.3.
 
 Prerequisites:
 
@@ -223,7 +227,11 @@ To configure the job token scope:
 1. Optional. Add existing projects to the token's access scope. The user adding a
    project must have the Maintainer role in both projects.
 
-## Download an artifact from a different pipeline **(PREMIUM ALL)**
+## Download an artifact from a different pipeline
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 You can use the CI/CD job token to authenticate with the [jobs artifacts API endpoint](../../api/job_artifacts.md)
 and fetch artifacts from a different pipeline. You must specify which job to retrieve artifacts from:

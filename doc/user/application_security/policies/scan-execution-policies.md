@@ -4,7 +4,11 @@ group: Security Policies
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Scan execution policies **(ULTIMATE ALL)**
+# Scan execution policies
+
+DETAILS:
+**Tier:** Ultimate
+**Offering:** SaaS, Self-managed
 
 > - Group-level security policies [introduced](https://gitlab.com/groups/gitlab-org/-/epics/4425) in GitLab 15.2.
 > - Group-level security policies [enabled on GitLab.com](https://gitlab.com/gitlab-org/gitlab/-/issues/356258) in GitLab 15.4.
@@ -200,7 +204,7 @@ The keys for a schedule rule are:
 
 ## `scan` action type
 
-> Scan Execution Policies variable precedence was [changed](https://gitlab.com/gitlab-org/gitlab/-/issues/424028) in GitLab 16.7 [with a flag](../../../administration/feature_flags.md) named `security_policies_variables_precedence`. Enabled by default. [Feature flag removed in GitLab 16.8](https://gitlab.com/gitlab-org/gitlab/-/issues/435727).
+> - Scan Execution Policies variable precedence was [changed](https://gitlab.com/gitlab-org/gitlab/-/issues/424028) in GitLab 16.7 [with a flag](../../../administration/feature_flags.md) named `security_policies_variables_precedence`. Enabled by default. [Feature flag removed in GitLab 16.8](https://gitlab.com/gitlab-org/gitlab/-/issues/435727).
 
 This action executes the selected `scan` with additional parameters when conditions for at least one
 rule in the defined policy are met.
@@ -318,7 +322,10 @@ If you want to avoid running duplicate scans, you can either remove the scans fr
 local jobs by setting `SAST_DISABLED: "true"`. Disabling jobs this way does not prevent the security jobs defined by scan execution
 policies from running.
 
-## Experimental features **(EXPERIMENT)**
+## Experimental features
+
+DETAILS:
+**Status:** Experiment
 
 These experimental features have limitations:
 
@@ -326,13 +333,21 @@ These experimental features have limitations:
    without a `.gitlab-ci.yml` is not supported.
 1. The pipeline execution action cannot be used with a scheduled trigger type.
 
-To enable these experimental features, a Group owner or administrator must toggle the experimental features by visiting `Settings > General > Permissions and group features`.
-
-![Enabling experimental security policy features](img/experimental-features-policies.png)
- 
-Have feedback on our experimental features? We'd love to hear it! Please share your thoughts in our [feedback issue](https://gitlab.com/gitlab-org/gitlab/-/issues/434425).
+Have feedback on our experimental features? We'd love to hear it! Please share your thoughts in our
+[feedback issue](https://gitlab.com/gitlab-org/gitlab/-/issues/434425).
 
 ### Pipeline execution policy action
+
+Prerequisites:
+
+- To enable the pipeline execution policy action feature, a Group owner or administrator must enable
+  the experimental feature:
+
+  1. On the left sidebar, select **Search or go to** and find your project or group.
+  1. Select **Settings > General**.
+  1. Expand **Permissions and group features**.
+  1. Select the **Run customized CI YAML as security policy actions** checkbox.
+  1. Optional. Select **Enforce for all subgroups**.
 
 The pipeline execution policy action introduces a new scan action type into
 scan execution policies for creating and enforcing custom CI in your target
@@ -348,7 +363,7 @@ enforced by the policy.
 | Field     | Type                | Required | Description |
 |-----------|---------------------|----------|-------------|
 | `project` | `string`            | true     | A project namespace path. |
-| `file`    | `string`            | true     | The file name of the CI/CD YAML file. |
+| `file`    | `string`            | true     | The filename of the CI/CD YAML file. |
 | `ref`     | `string`            | false    | The branch name, tag name, or commit SHA. If not specified, uses the default branch. |
 
 #### `scan` action type
@@ -360,7 +375,7 @@ conditions for at least one rule in the defined policy are met.
 |-------------------------|----------|-----------------|-------------|
 | `scan`                  | `string` | `custom`        | The action's type. |
 | `ci_configuration`      | `string` |                 | GitLab CI YAML as formatted as string. |
-| `ci_configuration_path` | object   |                 | Object with project path and file name pointing to a CI configuration. |
+| `ci_configuration_path` | object   |                 | Object with project path and filename pointing to a CI configuration. |
 
 Note the following:
 
@@ -395,6 +410,17 @@ scan_execution_policy:
 In this example a `test job` is injected into the `test` stage of the pipeline, printing `Hello World`.
 
 ### Security policy scopes
+
+Prerequisites:
+
+- To enable the pipeline execution policy action feature, a group owner or administrator must enable
+  the experimental feature:
+
+  1. On the left sidebar, select **Search or go to** and find your group.
+  1. Select **Settings > General**.
+  1. Expand **Permissions and group features**.
+  1. Select the **Security Policy Scopes** checkbox.
+  1. Optional. Select **Enforce for all subgroups**.
 
 Security policy enforcement depends first on establishing a link between the group, subgroup, or
 project on which you want to enforce policies, and the security policy project that contains the

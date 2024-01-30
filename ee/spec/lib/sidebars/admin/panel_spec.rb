@@ -35,7 +35,7 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
 
     context 'when instance is self-managed' do
       before do
-        stub_saas_features(gitlab_saas_subscriptions: false)
+        stub_saas_features(gitlab_com_subscriptions: false)
       end
 
       context 'when self_managed_code_suggestions feature flag is enabled' do
@@ -90,7 +90,7 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
 
       with_them do
         before do
-          stub_saas_features(gitlab_saas_subscriptions: true)
+          stub_saas_features(gitlab_com_subscriptions: true)
           stub_feature_flags(self_managed_code_suggestions: self_managed_code_suggestions)
         end
 

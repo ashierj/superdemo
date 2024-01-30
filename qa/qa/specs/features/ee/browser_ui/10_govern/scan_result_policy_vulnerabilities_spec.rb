@@ -76,7 +76,7 @@ module QA
           report_path: premade_report_path, severity: "Critical")
 
         merge_request = create_test_mr
-        Flow::Pipeline.wait_for_latest_pipeline(status: 'Passed')
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'Passed', wait: 90)
         merge_request.visit!
 
         Page::MergeRequest::Show.perform do |mr|

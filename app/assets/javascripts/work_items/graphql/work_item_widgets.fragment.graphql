@@ -67,6 +67,7 @@ fragment WorkItemWidgets on WorkItemWidget {
         createdAt
         closedAt
         webUrl
+        reference(full: true)
         widgets {
           ... on WorkItemWidgetHierarchy {
             type
@@ -85,6 +86,7 @@ fragment WorkItemWidgets on WorkItemWidget {
   }
   ... on WorkItemWidgetNotes {
     type
+    discussionLocked
   }
   ... on WorkItemWidgetNotifications {
     type
@@ -101,7 +103,6 @@ fragment WorkItemWidgets on WorkItemWidget {
   ... on WorkItemWidgetAwardEmoji {
     type
   }
-
   ... on WorkItemWidgetLinkedItems {
     type
     linkedItems {
@@ -122,6 +123,7 @@ fragment WorkItemWidgets on WorkItemWidget {
           createdAt
           closedAt
           webUrl
+          reference(full: true)
           widgets {
             ...WorkItemMetadataWidgets
           }

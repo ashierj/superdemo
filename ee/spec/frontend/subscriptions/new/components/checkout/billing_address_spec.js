@@ -35,8 +35,8 @@ describe('Billing Address', () => {
     fetchStates: jest.fn(),
   };
 
-  function activateNextStep() {
-    return mockApolloProvider.clients.defaultClient.mutate({
+  async function activateNextStep() {
+    await mockApolloProvider.clients.defaultClient.mutate({
       mutation: activateNextStepMutation,
     });
   }
@@ -84,103 +84,55 @@ describe('Billing Address', () => {
   });
 
   describe('mounted', () => {
-    describe('when keyContactsManagement flag is true', () => {
-      beforeEach(() => {
-        gon.features = { keyContactsManagement: true };
-      });
+    describe.each`
+      billingAccountExists | billingAccountData    | stepTitle                | showAddress
+      ${true}              | ${mockBillingAccount} | ${'Contact information'} | ${false}
+      ${false}             | ${null}               | ${'Billing address'}     | ${true}
+    `(
+      'when billingAccount exists is $billingAccountExists',
+      ({ billingAccountData, stepTitle, showAddress }) => {
+        const handler = jest
+          .fn()
+          .mockResolvedValue({ data: { billingAccount: billingAccountData } });
 
-      describe.each`
-        billingAccountExists | billingAccountData    | stepTitle                | showAddress
-        ${true}              | ${mockBillingAccount} | ${'Contact information'} | ${false}
-        ${false}             | ${null}               | ${'Billing address'}     | ${true}
-      `(
-        'when billingAccount exists is $billingAccountExists',
-        ({ billingAccountData, stepTitle, showAddress }) => {
-          beforeEach(async () => {
-            mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
-              [
-                getBillingAccountQuery,
-                jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-              ],
-            ]);
+        beforeEach(async () => {
+          mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
+            [getBillingAccountQuery, handler],
+          ]);
 
-            wrapper = createComponent({ store, apolloProvider: mockApolloProvider });
-            await waitForPromises();
-          });
+          wrapper = createComponent({ store, apolloProvider: mockApolloProvider });
+          await waitForPromises();
+        });
 
-          it('should load the countries', () => {
-            expect(actionMocks.fetchCountries).toHaveBeenCalled();
-          });
+        it('calls getBillingAccountQuery', () => {
+          expect(handler).toHaveBeenCalled();
+        });
 
-          it('shows step component', () => {
-            expect(findStep().exists()).toBe(true);
-          });
+        it('should load the countries', () => {
+          expect(actionMocks.fetchCountries).toHaveBeenCalled();
+        });
 
-          it('passes correct step title', () => {
-            expect(findStep().props('title')).toEqual(stepTitle);
-          });
+        it('shows step component', () => {
+          expect(findStep().exists()).toBe(true);
+        });
 
-          it(`${showAddress ? 'shows' : 'does not show'} address form`, () => {
-            expect(findAddressForm().exists()).toBe(showAddress);
-          });
+        it('passes correct step title', () => {
+          expect(findStep().props('title')).toEqual(stepTitle);
+        });
 
-          it(`${showAddress ? 'does not show' : 'shows'} manage contact message`, () => {
-            expect(findManageContacts().exists()).toBe(!showAddress);
-          });
-        },
-      );
-    });
-    describe('when keyContactsManagement flag is false', () => {
-      beforeEach(() => {
-        gon.features = { keyContactsManagement: false };
-      });
+        it(`${showAddress ? 'shows' : 'does not show'} address form`, () => {
+          expect(findAddressForm().exists()).toBe(showAddress);
+        });
 
-      describe.each`
-        billingAccountExists | billingAccountData    | stepTitle            | showAddress
-        ${true}              | ${mockBillingAccount} | ${'Billing address'} | ${true}
-        ${false}             | ${null}               | ${'Billing address'} | ${true}
-      `(
-        'when billingAccount exists is $billingAccountExists',
-        ({ billingAccountData, stepTitle, showAddress }) => {
-          beforeEach(async () => {
-            mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
-              [
-                getBillingAccountQuery,
-                jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-              ],
-            ]);
-
-            wrapper = createComponent({ store, apolloProvider: mockApolloProvider });
-            await waitForPromises();
-          });
-
-          it('should load the countries', () => {
-            expect(actionMocks.fetchCountries).toHaveBeenCalled();
-          });
-
-          it('shows step component', () => {
-            expect(findStep().exists()).toBe(true);
-          });
-
-          it('passes correct step title', () => {
-            expect(findStep().props('title')).toEqual(stepTitle);
-          });
-
-          it(`${showAddress ? 'shows' : 'does not show'} address form`, () => {
-            expect(findAddressForm().exists()).toBe(showAddress);
-          });
-
-          it(`${showAddress ? 'does not show' : 'shows'} manage contact message`, () => {
-            expect(findManageContacts().exists()).toBe(!showAddress);
-          });
-        },
-      );
-    });
+        it(`${showAddress ? 'does not show' : 'shows'} manage contact message`, () => {
+          expect(findManageContacts().exists()).toBe(!showAddress);
+        });
+      },
+    );
   });
 
   describe('manage contacts', () => {
     beforeEach(async () => {
-      gon.features = { keyContactsManagement: true };
       mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
         [
           getBillingAccountQuery,
@@ -282,7 +234,6 @@ describe('Billing Address', () => {
 
     describe('with a billing account', () => {
       beforeEach(async () => {
-        gon.features = { keyContactsManagement: true };
         mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
           [
             getBillingAccountQuery,
@@ -371,55 +322,14 @@ describe('Billing Address', () => {
   });
 
   describe('summary', () => {
-    describe('when keyContactsManagement flag is true', () => {
-      beforeEach(() => {
-        gon.features = { keyContactsManagement: true };
-      });
-
-      describe.each`
-        billingAccountExists | billingAccountData    | showSummary
-        ${true}              | ${mockBillingAccount} | ${false}
-        ${true}              | ${null}               | ${true}
-        ${false}             | ${null}               | ${true}
-      `(
-        'when billingAccount exists is $billingAccountExists',
-        ({ billingAccountData, showSummary }) => {
-          beforeEach(async () => {
-            mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
-              [
-                getBillingAccountQuery,
-                jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-              ],
-            ]);
-
-            wrapper = createComponent({ store, apolloProvider: mockApolloProvider });
-
-            await waitForPromises();
-
-            setupAllFormFields();
-            await activateNextStep();
-            await activateNextStep();
-          });
-
-          it(`${showSummary ? 'renders' : 'does not render'}`, () => {
-            expect(findAddressSummary().exists()).toBe(showSummary);
-          });
-        },
-      );
-    });
-
-    describe('when keyContactsManagement flag is false', () => {
-      beforeEach(() => {
-        gon.features = { keyContactsManagement: false };
-      });
-
-      describe.each`
-        billingAccountExists | billingAccountData
-        ${true}              | ${mockBillingAccount}
-        ${true}              | ${null}
-        ${false}             | ${null}
-        ${false}             | ${mockBillingAccount}
-      `('when billingAccount exists is $billingAccountExists', ({ billingAccountData }) => {
+    describe.each`
+      billingAccountExists | billingAccountData    | showSummary
+      ${true}              | ${mockBillingAccount} | ${false}
+      ${true}              | ${null}               | ${true}
+      ${false}             | ${null}               | ${true}
+    `(
+      'when billingAccount exists is $billingAccountExists',
+      ({ billingAccountData, showSummary }) => {
         beforeEach(async () => {
           mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
             [
@@ -437,11 +347,11 @@ describe('Billing Address', () => {
           await activateNextStep();
         });
 
-        it('shows address summary', () => {
-          expect(findAddressSummary().exists()).toBe(true);
+        it(`${showSummary ? 'renders' : 'does not render'}`, () => {
+          expect(findAddressSummary().exists()).toBe(showSummary);
         });
-      });
-    });
+      },
+    );
 
     describe('without a billing account', () => {
       beforeEach(async () => {
@@ -469,7 +379,6 @@ describe('Billing Address', () => {
     const error = new Error('oh no!');
 
     beforeEach(async () => {
-      gon.features = { keyContactsManagement: true };
       jest.spyOn(Sentry, 'captureException');
 
       mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([

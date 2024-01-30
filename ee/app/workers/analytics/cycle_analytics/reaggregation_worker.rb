@@ -17,7 +17,7 @@ module Analytics
 
       def perform
         current_time = Time.current
-        runtime_limiter = Analytics::CycleAnalytics::RuntimeLimiter.new
+        runtime_limiter = Gitlab::Metrics::RuntimeLimiter.new
         over_time = false
 
         loop do

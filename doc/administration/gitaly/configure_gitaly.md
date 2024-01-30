@@ -4,7 +4,11 @@ group: Gitaly
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Configure Gitaly **(FREE SELF)**
+# Configure Gitaly
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** Self-managed
 
 Configure Gitaly in one of two ways:
 
@@ -878,7 +882,11 @@ result as you did at the start. For example:
 
 `enforced="true"` means that authentication is being enforced.
 
-## Pack-objects cache **(FREE SELF)**
+## Pack-objects cache
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** Self-managed
 
 [Gitaly](index.md), the service that provides storage for Git
 repositories, can be configured to cache a short rolling window of Git
@@ -969,7 +977,7 @@ By default, the cache storage directory is set to a subdirectory of the first Gi
 defined in the configuration file.
 
 Multiple Gitaly processes can use the same directory for cache storage. Each Gitaly process
-uses a unique random string as part of the cache file names it creates. This means:
+uses a unique random string as part of the cache filenames it creates. This means:
 
 - They do not collide.
 - They do not reuse another process's files.
@@ -1008,7 +1016,7 @@ the deleted file have closed it.
 
 #### Minimum key occurrences `min_occurrences`
 
-> [Introduced](https://gitlab.com/gitlab-com/gl-infra/scalability/-/issues/2222) in GitLab 15.11.
+> - [Introduced](https://gitlab.com/gitlab-com/gl-infra/scalability/-/issues/2222) in GitLab 15.11.
 
 The `min_occurrences` setting controls how often an identical request
 must occur before we create a new cache entry. The default value is `1`,
@@ -1027,7 +1035,7 @@ the cache hit rate.
 
 ### Observe the cache
 
-> Logs for pack-objects caching was [changed](https://gitlab.com/gitlab-org/gitaly/-/merge_requests/5719) in GitLab 16.0.
+> - Logs for pack-objects caching was [changed](https://gitlab.com/gitlab-org/gitaly/-/merge_requests/5719) in GitLab 16.0.
 
 You can observe the cache [using metrics](monitoring.md#pack-objects-cache) and in the following logged information. These logs are part of the gRPC logs and can
 be discovered when a call is executed.
@@ -1356,7 +1364,7 @@ Configure Gitaly to sign commits made with the GitLab UI in one of two ways:
 
 ## Generate configuration using an external command
 
-> [Introduced](https://gitlab.com/gitlab-org/gitaly/-/issues/4828) in GitLab 15.11.
+> - [Introduced](https://gitlab.com/gitlab-org/gitaly/-/issues/4828) in GitLab 15.11.
 
 You can generate parts of the Gitaly configuration using an external command. You might do this:
 

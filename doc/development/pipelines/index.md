@@ -12,7 +12,7 @@ which itself includes files under
 [`.gitlab/ci/`](https://gitlab.com/gitlab-org/gitlab/-/tree/master/.gitlab/ci)
 for easier maintenance.
 
-We're striving to [dogfood](https://about.gitlab.com/handbook/engineering/development/principles/#dogfooding)
+We're striving to [dogfood](https://handbook.gitlab.com/handbook/engineering/development/principles/#dogfooding)
 GitLab [CI/CD features and best-practices](../../ci/index.md)
 as much as possible.
 
@@ -230,7 +230,7 @@ There was a proposal from a contributor, but the approach is not without some do
 
 ### Broken Master Fixes
 
-When you need to [fix a broken `master`](https://about.gitlab.com/handbook/engineering/workflow/#resolution-of-broken-master), you can add the `pipeline:expedite` label to expedite the pipelines that run on the merge request.
+When you need to [fix a broken `master`](https://handbook.gitlab.com/handbook/engineering/workflow/#resolution-of-broken-master), you can add the `pipeline:expedite` label to expedite the pipelines that run on the merge request.
 
 Note that the merge request also needs to have the `master:broken` or `master:foss-broken` label set.
 
@@ -548,7 +548,7 @@ are no longer concerns.
 
 ### `rspec:undercoverage` job
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/74859) in GitLab 14.6.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/74859) in GitLab 14.6.
 
 The `rspec:undercoverage` job runs [`undercover`](https://rubygems.org/gems/undercover)
 to detect, and fail if any changes introduced in the merge request has zero coverage.
@@ -573,6 +573,14 @@ test causing the failure:
 1. Run `scripts/undercoverage`.
 
 If these commands return `undercover: ✅ No coverage is missing in latest changes` then you can apply `pipeline:skip-undercoverage` to bypass pipeline failures.
+
+### `pajamas_adoption` job
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/141368) in GitLab 16.8.
+
+The `pajamas_adoption` job runs the [Pajamas Adoption Scanner](https://gitlab-org.gitlab.io/frontend/pajamas-adoption-scanner/) in merge requests to prevent regressions in the adoption of the [Pajamas Design System](https://design.gitlab.com/).
+
+The job fails if the scanner detects regressions caused by a merge request. If the regressions cannot be fixed in the merge request, add the `pipeline:skip-pajamas-adoption` label to the merge request, then retry the job.
 
 ## Test suite parallelization
 

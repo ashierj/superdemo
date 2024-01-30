@@ -156,8 +156,8 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
         expect(member_role.errors.messages[:base])
           .to(
             include(s_(
-              "MemberRole|cannot be deleted because it is already assigned to a user. " \
-              "Please disassociate the member role from all users before deletion."
+              "MemberRole|Role is assigned to one or more group members. " \
+              "Remove role from all group members, then delete role."
             ))
           )
       end
@@ -249,6 +249,55 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
       member_role = build_stubbed(:member_role, read_code: true, read_vulnerability: true, read_dependency: false)
 
       expect(member_role.enabled_permissions).to match_array([:read_code, :read_vulnerability])
+    end
+  end
+
+  shared_examples 'ability with the correct `available_from_access_level` attribute' do |policy_class|
+    where(:role, :level) { Gitlab::Access.sym_options_with_owner.to_a }
+
+    with_them do
+      before do
+        stub_member_access_level(object, role => user)
+        stub_licensed_features(security_dashboard: true)
+      end
+
+      let(:policy) { policy_class.new(user, object) }
+
+      it 'gives access from the specified access level' do
+        abilities.each do |ability|
+          if ability[:available_from_access_level] > level
+            expect(policy).to be_disallowed(ability[:name])
+          else
+            expect(policy).to be_allowed(ability[:name])
+          end
+        end
+      end
+    end
+  end
+
+  describe 'available_from_access_level for abilities' do
+    let_it_be(:user) { build_stubbed(:user) }
+
+    context 'for group abilities' do
+      let_it_be(:object) { build_stubbed(:group) }
+      let_it_be(:abilities) do
+        described_class.all_customizable_permissions.select do |_k, v|
+          v[:group_ability] && v[:available_from_access_level]
+        end.values
+      end
+
+      it_behaves_like 'ability with the correct `available_from_access_level` attribute', GroupPolicy
+    end
+
+    context 'for project abilities' do
+      let_it_be(:object) { build_stubbed(:project) }
+      let_it_be(:abilities) do
+        described_class.all_customizable_permissions.select do |_k, v|
+          v[:project_ability] && v[:available_from_access_level]
+        end.values
+      end
+
+      it_behaves_like 'ability with the correct `available_from_access_level` attribute', ProjectPolicy
     end
   end
 end

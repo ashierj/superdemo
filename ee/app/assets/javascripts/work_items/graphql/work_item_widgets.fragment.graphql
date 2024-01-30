@@ -77,6 +77,7 @@ fragment WorkItemWidgets on WorkItemWidget {
         createdAt
         closedAt
         webUrl
+        reference(full: true)
         widgets {
           ... on WorkItemWidgetHierarchy {
             type
@@ -96,6 +97,7 @@ fragment WorkItemWidgets on WorkItemWidget {
       startDate
       dueDate
       webUrl
+      updatedAt
       iterationCadence {
         id
         title
@@ -111,6 +113,7 @@ fragment WorkItemWidgets on WorkItemWidget {
   }
   ... on WorkItemWidgetNotes {
     type
+    discussionLocked
   }
   ... on WorkItemWidgetHealthStatus {
     type
@@ -151,6 +154,7 @@ fragment WorkItemWidgets on WorkItemWidget {
           createdAt
           closedAt
           webUrl
+          reference(full: true)
           widgets {
             ...WorkItemMetadataWidgets
           }

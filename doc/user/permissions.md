@@ -4,7 +4,11 @@ group: Authentication
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Permissions and roles **(FREE ALL)**
+# Permissions and roles
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 When you add a user to a project or group, you assign them a role.
 The role determines which actions they can take in GitLab.
@@ -356,68 +360,68 @@ The following table lists group permissions available for each role:
 
 | Action                                                                                  | Guest | Reporter | Developer | Maintainer | Owner |
 |-----------------------------------------------------------------------------------------|-------|----------|-----------|------------|-------|
-| Add/remove [child epics](group/epics/manage_epics.md#multi-level-child-epics)           | ✓ (8) | ✓        | ✓         | ✓          | ✓     |
 | Add an issue to an [epic](group/epics/index.md)                                         | ✓ (7) | ✓ (7)    | ✓ (7)     | ✓ (7)      | ✓ (7) |
+| Add/remove [child epics](group/epics/manage_epics.md#multi-level-child-epics)        | ✓ (8) | ✓        | ✓         | ✓          | ✓     |
 | Browse group                                                                            | ✓     | ✓        | ✓         | ✓          | ✓     |
 | Pull a container image using the dependency proxy                                       | ✓     | ✓        | ✓         | ✓          | ✓     |
-| View Contribution analytics                                                             | ✓     | ✓        | ✓         | ✓          | ✓     |
-| View group [epic](group/epics/index.md)                                                 | ✓     | ✓        | ✓         | ✓          | ✓     |
+| Pull a container registry image                                                         | ✓ (6) | ✓        | ✓         | ✓          | ✓     |
 | View [group wiki](project/wiki/group.md) pages                                          | ✓ (5) | ✓        | ✓         | ✓          | ✓     |
 | View [Insights](project/insights/index.md)                                              | ✓     | ✓        | ✓         | ✓          | ✓     |
 | View [Insights](project/insights/index.md) charts                                       | ✓     | ✓        | ✓         | ✓          | ✓     |
 | View [Issue analytics](analytics/issue_analytics.md)                                    | ✓     | ✓        | ✓         | ✓          | ✓     |
+| View Contribution analytics                                                             | ✓     | ✓        | ✓         | ✓          | ✓     |
+| View group [epic](group/epics/index.md)                                                 | ✓     | ✓        | ✓         | ✓          | ✓     |
 | View value stream analytics                                                             | ✓     | ✓        | ✓         | ✓          | ✓     |
 | Create/edit group [epic](group/epics/index.md)                                          |       | ✓        | ✓         | ✓          | ✓     |
 | Create/edit/delete [epic boards](group/epics/epic_boards.md)                            |       | ✓        | ✓         | ✓          | ✓     |
-| Manage group labels                                                                     |       | ✓        | ✓         | ✓          | ✓     |
-| Publish [packages](packages/index.md)                                                   |       |          | ✓         | ✓          | ✓     |
-| Pull [packages](packages/index.md)                                                      |       | ✓        | ✓         | ✓          | ✓     |
-| Delete [packages](packages/index.md)                                                    |       |          |           | ✓          | ✓     |
-| Create/edit/delete [Maven and generic package duplicate settings](packages/generic_packages/index.md#do-not-allow-duplicate-generic-packages)                                                    |       |          |           | ✓          | ✓     |
-| Enable/disable package request forwarding                                               |       |          |           | ✓          | ✓     |
-| Pull a container registry image                                                         | ✓ (6) | ✓        | ✓         | ✓          | ✓     |
-| Remove a container registry image                                                       |       |          | ✓         | ✓          | ✓     |
-| View [Group DevOps Adoption](group/devops_adoption/index.md)                            |       | ✓        | ✓         | ✓          | ✓     |
-| View metrics dashboard annotations                                                      |       | ✓        | ✓         | ✓          | ✓     |
-| View [Productivity analytics](analytics/productivity_analytics.md)                      |       | ✓        | ✓         | ✓          | ✓     |
-| Create and edit [group wiki](project/wiki/group.md) pages                               |       |          | ✓         | ✓          | ✓     |
-| Create project in group                                                                 |       |          | ✓ (2)(4)  | ✓ (2)      | ✓ (2) |
-| Fork project into a group                                                               |       |          |           | ✓          | ✓     |
 | Create/edit/delete group milestones                                                     |       | ✓        | ✓         | ✓          | ✓     |
 | Create/edit/delete iterations                                                           |       | ✓        | ✓         | ✓          | ✓     |
+| Manage group labels                                                                     |       | ✓        | ✓         | ✓          | ✓     |
+| Pull [packages](packages/index.md)                                                      |       | ✓        | ✓         | ✓          | ✓     |
+| View [Group DevOps Adoption](group/devops_adoption/index.md)                            |       | ✓        | ✓         | ✓          | ✓     |
+| View [Productivity analytics](analytics/productivity_analytics.md)                      |       | ✓        | ✓         | ✓          | ✓     |
+| View metrics dashboard annotations                                                      |       | ✓        | ✓         | ✓          | ✓     |
+| Publish [packages](packages/index.md)                                                   |       |          | ✓         | ✓          | ✓     |
+| Remove a container registry image                                                       |       |          | ✓         | ✓          | ✓     |
+| Create and edit [group wiki](project/wiki/group.md) pages                               |       |          | ✓         | ✓          | ✓     |
+| Create project in group                                                                 |       |          | ✓ (2)(4)  | ✓ (2)      | ✓ (2) |
 | Create/edit/delete metrics dashboard annotations                                        |       |          | ✓         | ✓          | ✓     |
-| Enable/disable a dependency proxy                                                       |       |          |           | ✓          | ✓     |
-| Purge the dependency proxy for a group                                                  |       |          |           |            | ✓     |
-| Create/edit/delete dependency proxy [cleanup policies](packages/dependency_proxy/reduce_dependency_proxy_storage.md#cleanup-policies)                                                  |       |          |           | ✓          | ✓     |
 | Use [security dashboard](application_security/security_dashboard/index.md)              |       |          | ✓         | ✓          | ✓     |
 | View group Audit Events                                                                 |       |          | ✓ (6)     | ✓ (6)      | ✓     |
-| Create subgroup                                                                         |       |          |           | ✓ (1)      | ✓     |
 | Delete [group wiki](project/wiki/group.md) pages                                        |       |          | ✓         | ✓          | ✓     |
+| Create subgroup                                                                         |       |          |           | ✓ (1)      | ✓     |
+| Create/edit/delete [Maven and generic package duplicate settings](packages/generic_packages/index.md#do-not-allow-duplicate-generic-packages)                                                    |       |          |           | ✓          | ✓     |
+| Create/edit/delete dependency proxy [cleanup policies](packages/dependency_proxy/reduce_dependency_proxy_storage.md#cleanup-policies)                                                  |       |          |           | ✓          | ✓     |
+| Delete [packages](packages/index.md)                                                    |       |          |           | ✓          | ✓     |
 | Edit [epic](group/epics/index.md) comments (posted by any user)                         |       |          |           | ✓          | ✓     |
+| Enable/disable a dependency proxy                                                       |       |          |           | ✓          | ✓     |
+| Enable/disable package request forwarding                                               |       |          |           | ✓          | ✓     |
+| Fork project into a group                                                               |       |          |           | ✓          | ✓     |
 | List group deploy tokens                                                                |       |          |           | ✓          | ✓     |
+| Manage [group approval rules](project/merge_requests/approvals/settings.md) (group settings) |          |          |           | ✓          | ✓        |
 | Manage [group push rules](group/access_and_permissions.md#group-push-rules)             |       |          |           | ✓          | ✓     |
+| View group runners                                                                      |       |          |           | ✓          | ✓     |
 | View/manage group-level Kubernetes cluster                                              |       |          |           | ✓          | ✓     |
+| Change group visibility level                                                           |       |          |           |            | ✓     |
 | Create and manage compliance frameworks                                                 |       |          |           |            | ✓     |
 | Create/Delete group deploy tokens                                                       |       |          |           |            | ✓     |
-| Change group visibility level                                                           |       |          |           |            | ✓     |
 | Delete group                                                                            |       |          |           |            | ✓     |
 | Delete group [epic](group/epics/index.md)                                               |       |          |           |            | ✓     |
 | Disable notification emails                                                             |       |          |           |            | ✓     |
-| Edit group settings                                                                     |       |          |           |            | ✓     |
 | Edit [SAML SSO](group/saml_sso/index.md)                                                |       |          |           |            | ✓ (3) |
+| Edit group settings                                                                     |       |          |           |            | ✓     |
 | Filter members by 2FA status                                                            |       |          |           |            | ✓     |
+| Manage [subscriptions, and purchase storage and compute minutes](../subscriptions/gitlab_com/index.md) |    |    |    |            | ✓     |
 | Manage group level CI/CD variables                                                      |       |          |           |            | ✓     |
 | Manage group members                                                                    |       |          |           |            | ✓     |
-| Share (invite) groups with groups                                                       |       |          |           |            | ✓     |
-| View 2FA status of members                                                              |       |          |           |            | ✓     |
-| View [Billing](../subscriptions/gitlab_com/index.md#view-your-gitlab-saas-subscription) |       |          |           |            | ✓ (3) |
-| View group [Usage Quotas](usage_quotas.md) page                                         |       |          |           |            | ✓ (3) |
-| View group runners                                                                      |       |          |           | ✓          | ✓     |
 | Manage group runners                                                                    |       |          |           |            | ✓     |
-| [Migrate groups](group/import/index.md)                                                 |       |          |           |            | ✓     |
-| Manage [subscriptions, and purchase storage and compute minutes](../subscriptions/gitlab_com/index.md) |    |    |    |            | ✓     |
 | Manage group-level custom roles                                                         |       |          |           |            | ✓     |
-| Manage [group approval rules](project/merge_requests/approvals/settings.md) (group settings) |          |          |           | ✓          | ✓        |
+| [Migrate groups](group/import/index.md)                                                 |       |          |           |            | ✓     |
+| Purge the dependency proxy for a group                                                  |       |          |           |            | ✓     |
+| Share (invite) groups with groups                                                       |       |          |           |            | ✓     |
+| View [Billing](../subscriptions/gitlab_com/index.md#view-your-gitlab-saas-subscription) |       |          |           |            | ✓ (3) |
+| View 2FA status of members                                                              |       |          |           |            | ✓     |
+| View group [Usage Quotas](usage_quotas.md) page                                         |       |          |           |            | ✓ (3) |
 
 <!-- markdownlint-disable MD029 -->
 
@@ -443,7 +447,11 @@ nested groups if you have membership in one of its parents.
 For more information, see
 [subgroup memberships](group/subgroups/index.md#subgroup-membership).
 
-## Users with Minimal Access **(PREMIUM ALL)**
+## Users with Minimal Access
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/40942) in GitLab 13.4.
 > - Support for inviting users with Minimal Access role [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106438) in GitLab 15.9.
@@ -471,7 +479,7 @@ To work around the issue, give these users the Guest role or higher to any proje
 ## Related topics
 
 - [Custom roles](custom_roles.md)
-- [The GitLab principles behind permissions](https://about.gitlab.com/handbook/product/gitlab-the-product/#permissions-in-gitlab)
+- [The GitLab principles behind permissions](https://handbook.gitlab.com/handbook/product/gitlab-the-product/#permissions-in-gitlab)
 - [Members](project/members/index.md)
 - Customize permissions on [protected branches](project/protected_branches.md)
 - [LDAP user permissions](group/access_and_permissions.md#manage-group-memberships-via-ldap)

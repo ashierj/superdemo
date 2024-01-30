@@ -5,7 +5,11 @@ description: Calculations, quotas, purchase information.
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Compute quota **(PREMIUM ALL)**
+# Compute quota
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 > [Renamed](https://gitlab.com/groups/gitlab-com/-/epics/2150) from "CI/CD minutes" to "compute quota" or "compute minutes" in GitLab 16.1.
 
@@ -47,7 +51,7 @@ The triggered downstream pipeline consumes compute minutes the same as other pip
 
 ## Set the compute quota for all namespaces
 
-> [Moved](https://about.gitlab.com/blog/2021/01/26/new-gitlab-product-subscription-model/) to GitLab Premium in 13.9.
+> - [Moved](https://about.gitlab.com/blog/2021/01/26/new-gitlab-product-subscription-model/) to GitLab Premium in 13.9.
 
 By default, GitLab instances do not have a compute quota.
 The default value for the quota is `0`, which is unlimited.
@@ -69,7 +73,7 @@ If a quota is already defined for a specific namespace, this value does not chan
 
 ## Set the compute quota for a specific namespace
 
-> [Moved](https://about.gitlab.com/blog/2021/01/26/new-gitlab-product-subscription-model/) to GitLab Premium in 13.9.
+> - [Moved](https://about.gitlab.com/blog/2021/01/26/new-gitlab-product-subscription-model/) to GitLab Premium in 13.9.
 
 You can override the global value and set a compute quota
 for a specific namespace.
@@ -102,7 +106,7 @@ Prerequisites:
 
 ### View Usage Quota Reports for a group
 
-> Displaying shared runners duration per project [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/355666) in GitLab 15.0.
+> - Displaying shared runners duration per project [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/355666) in GitLab 15.0.
 
 Prerequisites:
 
@@ -121,7 +125,7 @@ subgroups, sorted in descending order of compute usage.
 
 ### View Usage Quota reports for a personal namespace
 
-> Displaying shared runners duration [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/345795) in GitLab 15.0.
+> - Displaying shared runners duration [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/345795) in GitLab 15.0.
 
 Prerequisites:
 
@@ -137,7 +141,11 @@ The projects list shows [personal projects](../../user/project/working_with_proj
 with compute usage or shared runners usage in the current month only. The list
 is sorted in descending order of compute usage.
 
-## Purchase additional compute minutes **(FREE SAAS)**
+## Purchase additional compute minutes
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS
 
 If you're using GitLab SaaS, you can purchase additional packs of compute minutes.
 These additional compute minutes:
@@ -160,7 +168,11 @@ Additional compute minutes bought on a trial subscription are available after th
 You can find pricing for additional compute minutes on the
 [GitLab Pricing page](https://about.gitlab.com/pricing/).
 
-### Purchase compute minutes for a group **(FREE SAAS)**
+### Purchase compute minutes for a group
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS
 
 Prerequisites:
 
@@ -179,7 +191,11 @@ so be sure to select the correct group.
 After your payment is processed, the additional compute minutes are added to your group
 namespace.
 
-### Purchase compute minutes for a personal namespace **(FREE SAAS)**
+### Purchase compute minutes for a personal namespace
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS
 
 Prerequisites:
 
@@ -242,7 +258,7 @@ The cost factors on self-managed instances are:
 #### Cost factor for community contributions to GitLab projects
 
 Community contributors can use up to 300,000 minutes on shared runners when contributing to open source projects
-maintained by GitLab. The maximum of 300,000 minutes would only be possible if contributing exclusively to projects [part of the GitLab product](https://about.gitlab.com/handbook/engineering/metrics/#projects-that-are-part-of-the-product). The total number of minutes available on shared runners
+maintained by GitLab. The maximum of 300,000 minutes would only be possible if contributing exclusively to projects [part of the GitLab product](https://handbook.gitlab.com/handbook/engineering/metrics/#projects-that-are-part-of-the-product). The total number of minutes available on shared runners
 is reduced by the compute minutes used by pipelines from other projects.
 The 300,000 minutes applies to all SaaS tiers, and the cost factor calculation is:
 
@@ -357,7 +373,11 @@ consumption for contributor fork projects, enabling more contributions.
 
 See our [pipeline efficiency guide](pipeline_efficiency.md) for more details.
 
-## Reset compute usage **(PREMIUM SELF)**
+## Reset compute usage
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 An administrator can reset the compute usage for a namespace for the current month.
 

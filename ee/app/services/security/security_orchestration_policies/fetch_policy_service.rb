@@ -8,7 +8,11 @@ module Security
       def initialize(policy_configuration:, name:, type:)
         @policy_configuration = policy_configuration
         @name = name
-        @type = type
+        @types = if Security::ScanResultPolicy::SCAN_RESULT_POLICY_TYPES.include?(type)
+                   Security::ScanResultPolicy::SCAN_RESULT_POLICY_TYPES
+                 else
+                   [type]
+                 end
       end
 
       def execute
@@ -17,11 +21,11 @@ module Security
 
       private
 
-      attr_reader :policy_configuration, :type, :name
+      attr_reader :policy_configuration, :types, :name
 
       def policy
         policy_configuration
-          .policy_by_type(type)
+          .policy_by_type(types)
           .find { |policy| policy[:name] == name }
       end
     end

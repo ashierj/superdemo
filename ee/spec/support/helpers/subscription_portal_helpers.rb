@@ -160,6 +160,48 @@ module SubscriptionPortalHelpers
       }.to_json)
   end
 
+  def stub_get_billing_account(has_billing_account: false)
+    contact = {
+      "id": 1,
+      "workEmail": "example@gitlab.com",
+      "firstName": "Lucille",
+      "lastName": "Bluth",
+      "address1": "1 Lucille Lane",
+      "address2": "",
+      "city": "Newport Coast",
+      "state": "California",
+      "postalCode": "92606",
+      "country": "United States"
+    }
+
+    billing_account = if has_billing_account
+                        {
+                          "zuoraAccountName": "My Account",
+                          "zuoraAccountVatId": "A012345",
+                          "vatFieldVisible": true,
+                          "billingAccountCustomers": [{
+                            "id": contact['id'],
+                            "firstName": contact['firstName'],
+                            "lastName": contact['lastName'],
+                            "fullName": "#{contact['firstName']} #{contact['lastName']}",
+                            "email": contact['workEmail']
+                          }],
+                          "soldToContact": contact,
+                          "billToContact": contact
+                        }
+                      else
+                        {}
+                      end
+
+    stub_full_request(graphql_url, method: :post)
+      .with(body: /getBillingAccount/)
+      .to_return(status: 200, body: {
+        "data": {
+          "billingAccount": billing_account
+        }
+      }.to_json)
+  end
+
   private
 
   def plans_fixture

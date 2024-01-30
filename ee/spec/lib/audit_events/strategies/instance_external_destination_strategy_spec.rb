@@ -93,12 +93,9 @@ RSpec.describe AuditEvents::Strategies::InstanceExternalDestinationStrategy, fea
               instance_external_audit_event_destination: destination
             )
 
-            # rubocop:disable Lint/DuplicateHashKey
             expected_hash = {
-              /key-\d/ => "bar",
               /key-\d/ => "bar"
             }
-            # rubocop:enable Lint/DuplicateHashKey
 
             expect(Gitlab::HTTP).to receive(:post).with(
               an_instance_of(String), a_hash_including(headers: a_hash_including(expected_hash))

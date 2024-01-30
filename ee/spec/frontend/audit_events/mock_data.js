@@ -772,26 +772,6 @@ export const destinationInstanceFilterUpdateMutationPopulator = (
   },
 });
 
-export const createAllProjects = (count) => {
-  return Array(count)
-    .fill(null)
-    .map((_, id) => ({
-      value: `gitlab-org/project-${id}`,
-      text: `project ${id}`,
-      type: `Projects`,
-    }));
-};
-
-export const createAllGroups = (count) => {
-  return Array(count)
-    .fill(null)
-    .map((_, id) => ({
-      value: `gitlab-org/sub-group-${id}`,
-      text: `sub group ${id}`,
-      type: `Groups`,
-    }));
-};
-
 export const mockNamespaceFilter = (namespace) => {
   return { namespace, type: 'project' };
 };
@@ -814,6 +794,49 @@ export const destinationNamespaceFilterAddMutationPopulator = (
     auditEventsStreamingHttpNamespaceFiltersAdd: {
       errors,
       namespaceFilter,
+    },
+  },
+});
+
+export const getMockNamespaceFilters = () => ({
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/1',
+      projects: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Project/1',
+            name: 'project 1',
+            fullPath: 'gitlab-org/project-1',
+            __typename: 'Project',
+          },
+          {
+            id: 'gid://gitlab/Project/2',
+            name: 'project 2',
+            fullPath: 'gitlab-org/project-2',
+            __typename: 'Project',
+          },
+        ],
+        __typename: 'ProjectConnection',
+      },
+      descendantGroups: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Group/104',
+            name: 'group-sub-1',
+            fullPath: 'gitlab-org/group-sub-1',
+            __typename: 'Group',
+          },
+          {
+            id: 'gid://gitlab/Group/111',
+            name: 'group-sub-2',
+            fullPath: 'gitlab-org/group-sub-2',
+            __typename: 'Group',
+          },
+        ],
+        __typename: 'GroupConnection',
+      },
+      __typename: 'Group',
     },
   },
 });

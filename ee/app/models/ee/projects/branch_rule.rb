@@ -5,7 +5,7 @@ module EE
     module BranchRule
       extend Forwardable
 
-      def_delegators(:protected_branch, :external_status_checks, :can_unprotect?)
+      def_delegators(:protected_branch, :external_status_checks)
 
       def approval_project_rules
         protected_branch.approval_project_rules_with_unique_policies

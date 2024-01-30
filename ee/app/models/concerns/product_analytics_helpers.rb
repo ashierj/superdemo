@@ -29,9 +29,7 @@ module ProductAnalyticsHelpers
                                  .by_namespace_id(id)
                                  .sum(:quantity)
 
-    return 0 if analytics_addon_quantity < 1
-
-    (analytics_addon_quantity - 1) * EVENTS_PER_ADD_ON_PURCHASE
+    analytics_addon_quantity * EVENTS_PER_ADD_ON_PURCHASE
   end
 
   def project_value_streams_dashboards_enabled?

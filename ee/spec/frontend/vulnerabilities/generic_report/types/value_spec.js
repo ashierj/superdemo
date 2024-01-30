@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
-import Text from 'ee/vulnerabilities/components/generic_report/types/value.vue';
+import Text from 'ee/vulnerabilities/components/generic_report/types/report_type_value.vue';
 
-describe('ee/vulnerabilities/components/generic_report/types/value.vue', () => {
+describe('ee/vulnerabilities/components/generic_report/types/report_type_value.vue', () => {
   let wrapper;
 
   describe.each`

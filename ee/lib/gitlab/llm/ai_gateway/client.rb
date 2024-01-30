@@ -94,15 +94,7 @@ module Gitlab
         end
 
         def access_token
-          if Gitlab.org_or_com? # rubocop:disable Gitlab/AvoidGitlabInstanceChecks -- To align with ee/lib/api/code_suggestions.rb.
-            Gitlab::Ai::AccessToken.new(
-              user,
-              scopes: [:duo_chat],
-              gitlab_realm: gitlab_realm
-            ).encoded
-          else
-            ::CloudConnector::ServiceAccessToken.active.last&.token
-          end
+          ::CloudConnector::AccessService.new.access_token([:duo_chat], gitlab_realm)
         end
         strong_memoize_attr :access_token
 
@@ -117,7 +109,7 @@ module Gitlab
               payload: {
                 content: prompt,
                 provider: DEFAULT_PROVIDER,
-                model: options.fetch(:model, DEFAULT_MODEL)
+                model: options.fetch(:model, model)
               }.merge(payload_params(options))
             }],
             stream: options.fetch(:stream, false)
@@ -137,6 +129,14 @@ module Gitlab
           # instead we estimate the number of tokens based on typical token size -
           # one token is roughly 4 chars.
           content.to_s.size / 4
+        end
+
+        def model
+          if Feature.enabled?(:ai_claude_2_1, user)
+            'claude-2.1'
+          else
+            DEFAULT_MODEL
+          end
         end
       end
     end

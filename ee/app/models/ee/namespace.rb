@@ -156,6 +156,8 @@ module EE
         allow_nil: true
       )
 
+      delegate :security_policy_management_project, to: :security_orchestration_policy_configuration, allow_nil: true
+
       before_create :sync_membership_lock_with_parent
 
       # Changing the plan or other details may invalidate this cache
@@ -272,12 +274,6 @@ module EE
 
         projects_for_repository_size_excess.pick(total_excess) || 0
       end
-    end
-
-    def top_most_excess_storage_projects
-      projects_for_repository_size_excess
-        .order_by_storage_size('desc')
-        .limit(5)
     end
 
     def repository_size_excess_project_count

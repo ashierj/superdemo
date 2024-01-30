@@ -541,9 +541,9 @@ Settings.cron_jobs['trending_projects_worker']['job_class'] = 'TrendingProjectsW
 Settings.cron_jobs['remove_unreferenced_lfs_objects_worker'] ||= {}
 Settings.cron_jobs['remove_unreferenced_lfs_objects_worker']['cron'] ||= '20 0 * * *'
 Settings.cron_jobs['remove_unreferenced_lfs_objects_worker']['job_class'] = 'RemoveUnreferencedLfsObjectsWorker'
-Settings.cron_jobs['bulk_imports_stuck_import_worker'] ||= {}
-Settings.cron_jobs['bulk_imports_stuck_import_worker']['cron'] ||= '0 */4 * * *'
-Settings.cron_jobs['bulk_imports_stuck_import_worker']['job_class'] = 'BulkImports::StuckImportWorker'
+Settings.cron_jobs['bulk_imports_stale_import_worker'] ||= {}
+Settings.cron_jobs['bulk_imports_stale_import_worker']['cron'] ||= '0 */4 * * *'
+Settings.cron_jobs['bulk_imports_stale_import_worker']['job_class'] = 'BulkImports::StaleImportWorker'
 Settings.cron_jobs['import_stuck_project_import_jobs'] ||= {}
 Settings.cron_jobs['import_stuck_project_import_jobs']['cron'] ||= '15 * * * *'
 Settings.cron_jobs['import_stuck_project_import_jobs']['job_class'] = 'Gitlab::Import::StuckProjectImportJobsWorker'
@@ -706,6 +706,9 @@ Settings.cron_jobs['ci_schedule_unlock_pipelines_in_queue_worker']['job_class'] 
 Settings.cron_jobs['ci_catalog_resources_process_sync_events_worker'] ||= {}
 Settings.cron_jobs['ci_catalog_resources_process_sync_events_worker']['cron'] ||= '*/1 * * * *'
 Settings.cron_jobs['ci_catalog_resources_process_sync_events_worker']['job_class'] = 'Ci::Catalog::Resources::ProcessSyncEventsWorker'
+Settings.cron_jobs['namespaces_process_outdated_namespace_descendants_cron_worker'] ||= {}
+Settings.cron_jobs['namespaces_process_outdated_namespace_descendants_cron_worker']['cron'] ||= '*/1 * * * *'
+Settings.cron_jobs['namespaces_process_outdated_namespace_descendants_cron_worker']['job_class'] = 'Namespaces::ProcessOutdatedNamespaceDescendantsCronWorker'
 
 Gitlab.ee do
   Settings.cron_jobs['analytics_devops_adoption_create_all_snapshots_worker'] ||= {}

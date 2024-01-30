@@ -4,7 +4,11 @@ group: Distribution
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Reference architecture: up to 2,000 users **(FREE SELF)**
+# Reference architecture: up to 2,000 users
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** Self-managed
 
 This page describes the GitLab reference architecture designed for the load of up to 2,000 users
 with notable headroom (non-HA).
@@ -451,12 +455,12 @@ To configure the Gitaly server, on the server node you want to use for Gitaly:
    NOTE:
    You can't remove the `default` entry from `gitaly['configuration'][:storage]` because [GitLab requires it](../gitaly/configure_gitaly.md#gitlab-requires-a-default-repository-storage).
 
-<!--
-Updates to example must be made at:
-- https://gitlab.com/gitlab-org/charts/gitlab/blob/master/doc/advanced/external-gitaly/external-omnibus-gitaly.md#configure-omnibus-gitlab
-- https://gitlab.com/gitlab-org/gitlab/blob/master/doc/administration/gitaly/index.md#gitaly-server-configuration
-- all reference architecture pages
--->
+   <!--
+   Updates to example must be made at:
+   - https://gitlab.com/gitlab-org/charts/gitlab/blob/master/doc/advanced/external-gitaly/external-omnibus-gitaly.md#configure-omnibus-gitlab
+   - https://gitlab.com/gitlab-org/gitlab/blob/master/doc/administration/gitaly/index.md#gitaly-server-configuration
+   - all reference architecture pages
+   -->
 
    ```ruby
    # Avoid running unnecessary services on the Gitaly server
@@ -618,11 +622,11 @@ To configure the Sidekiq server, on the server node you want to use for Sidekiq:
    on the page.
 1. Create or edit `/etc/gitlab/gitlab.rb` and use the following configuration:
 
-<!--
-Updates to example must be made at:
-- https://gitlab.com/gitlab-org/gitlab/blob/master/doc/administration/sidekiq.md
-- all reference architecture pages
--->
+   <!--
+   Updates to example must be made at:
+   - https://gitlab.com/gitlab-org/gitlab/blob/master/doc/administration/sidekiq.md
+   - all reference architecture pages
+   -->
 
    ```ruby
    # https://docs.gitlab.com/omnibus/roles/#sidekiq-roles
@@ -1057,7 +1061,11 @@ GitLab Runner returns job logs in chunks which the Linux package caches temporar
 
 While sharing the job logs through NFS is supported, it's recommended to avoid the need to use NFS by enabling [incremental logging](../job_logs.md#incremental-logging-architecture) (required when no NFS node has been deployed). Incremental logging uses Redis instead of disk space for temporary caching of job logs.
 
-## Configure advanced search **(PREMIUM SELF)**
+## Configure advanced search
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 You can leverage Elasticsearch and [enable advanced search](../../integration/advanced_search/elasticsearch.md)
 for faster, more advanced code search across your entire GitLab instance.

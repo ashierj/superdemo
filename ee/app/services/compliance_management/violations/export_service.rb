@@ -23,7 +23,7 @@ module ComplianceManagement
       end
 
       def email_export
-        ViolationExportMailerWorker.perform_async(user.id, namespace.id, filters, sort) if feature_enabled?
+        ViolationExportMailerWorker.perform_async(user.id, namespace.id, filters, sort)
 
         ServiceResponse.success
       end
@@ -31,10 +31,6 @@ module ComplianceManagement
       private
 
       attr_reader :user, :namespace, :filters, :sort
-
-      def feature_enabled?
-        Feature.enabled?(:compliance_violation_csv_export, namespace)
-      end
 
       def allowed?
         Ability.allowed?(user, :read_group_compliance_dashboard, namespace)

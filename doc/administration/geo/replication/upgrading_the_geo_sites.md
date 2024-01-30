@@ -4,7 +4,11 @@ group: Geo
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Upgrading the Geo sites **(PREMIUM SELF)**
+# Upgrading the Geo sites
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 WARNING:
 Read these sections carefully before updating your Geo sites. Not following
@@ -22,9 +26,8 @@ Upgrading Geo sites involves performing:
 ## General upgrade steps
 
 NOTE:
-These general upgrade steps are not intended for multi-site deployments,
-and cause downtime. If you want to avoid downtime, consider using
-[zero downtime upgrades](../../../update/zero_downtime.md#multi-node--ha-deployment-with-geo).
+These general upgrade steps require downtime in a multi-node setup.
+If you want to avoid downtime, consider using [zero downtime upgrades](../../../update/zero_downtime.md#multi-node--ha-deployment-with-geo).
 
 To upgrade the Geo sites when a new GitLab version is released, upgrade **primary**
 and all **secondary** sites:

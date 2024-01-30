@@ -7,6 +7,7 @@ import { shouldHandRaiseLeadButtonMount } from 'ee/hand_raise_leads/hand_raise_l
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { n__, sprintf } from '~/locale';
 import Tracking from '~/tracking';
+import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import { POPOVER, RESIZE_EVENT } from './constants';
 
 const {
@@ -23,6 +24,7 @@ export default {
     GlButton,
     GlPopover,
     GlSprintf,
+    GitlabExperiment,
   },
   mixins: [trackingMixin],
   inject: {
@@ -36,6 +38,7 @@ export default {
     trackAction: {},
     trackLabel: {},
     user: {},
+    trialDiscoverPagePath: {},
   },
   data() {
     return {
@@ -176,6 +179,22 @@ export default {
           :data-track-label="trackLabel"
         ></div>
       </div>
+
+      <gitlab-experiment name="trial_discover_page">
+        <template #candidate>
+          <gl-button
+            :href="trialDiscoverPagePath"
+            variant="link"
+            size="small"
+            class="gl-mt-3"
+            block
+            data-testid="learn-about-features-btn"
+            :title="$options.i18n.learnAboutButtonTitle"
+          >
+            <span class="gl-font-sm">{{ $options.i18n.learnAboutButtonTitle }}</span>
+          </gl-button>
+        </template>
+      </gitlab-experiment>
     </div>
   </gl-popover>
 </template>

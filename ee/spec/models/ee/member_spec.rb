@@ -172,6 +172,79 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#member_promotion_management_required?' do
+    let_it_be(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
+
+    shared_examples_for 'member_promotion_management_required? returns false' do
+      before do
+        allow(::Gitlab::CurrentSettings).to receive(:enable_member_promotion_management?).and_return(promotion_setting)
+        allow(License).to receive(:current).and_return(license)
+        allow(user).to receive(:using_license_seat?).and_return(false)
+      end
+
+      subject { member.member_promotion_management_required?(::Gitlab::Access::DEVELOPER) }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when enable_member_promotion FF is disabled' do
+      let(:promotion_setting) { false }
+
+      before do
+        stub_feature_flags(member_promotion_management: false)
+      end
+
+      it_behaves_like 'member_promotion_management_required? returns false'
+    end
+
+    context 'when enable_member_promotion_management? setting is enabled' do
+      context 'when saas', :saas do
+        let(:promotion_setting) { true }
+
+        it_behaves_like 'member_promotion_management_required? returns false'
+      end
+
+      context 'when self-managed' do
+        using RSpec::Parameterized::TableSyntax
+
+        where(:license_plan, :using_seat, :new_access_level, :answer) do
+          nil                    | true  | ::Gitlab::Access::DEVELOPER | false
+          nil                    | true  | ::Gitlab::Access::GUEST     | false
+          nil                    | false | ::Gitlab::Access::DEVELOPER | false
+          nil                    | false | ::Gitlab::Access::GUEST     | false
+          License::STARTER_PLAN  | true  | ::Gitlab::Access::DEVELOPER | false
+          License::STARTER_PLAN  | true  | ::Gitlab::Access::GUEST     | false
+          License::STARTER_PLAN  | false | ::Gitlab::Access::DEVELOPER | false
+          License::STARTER_PLAN  | false | ::Gitlab::Access::GUEST     | false
+          License::ULTIMATE_PLAN | true  | ::Gitlab::Access::DEVELOPER | false
+          License::ULTIMATE_PLAN | true  | ::Gitlab::Access::GUEST     | false
+          License::ULTIMATE_PLAN | false | ::Gitlab::Access::DEVELOPER | true
+          License::ULTIMATE_PLAN | false | ::Gitlab::Access::GUEST     | false
+        end
+
+        with_them do
+          subject { member.member_promotion_management_required?(new_access_level) }
+
+          let(:license) { create(:license, plan: license_plan) if license_plan }
+
+          before do
+            allow(::Gitlab::CurrentSettings).to receive(:enable_member_promotion_management?).and_return(true)
+            allow(License).to receive(:current).and_return(license)
+            allow(user).to receive(:using_license_seat?).and_return(using_seat)
+          end
+
+          it { is_expected.to eq(answer) }
+        end
+      end
+    end
+
+    context 'when enable_member_promotion_management? setting is disabled' do
+      let(:promotion_setting) { false }
+
+      it_behaves_like 'member_promotion_management_required? returns false'
+    end
+  end
+
   describe '#is_using_seat', :aggregate_failures do
     context 'when hosted on GL.com', :saas do
       it 'calls users check for using the gitlab_com seat method' do

@@ -17,8 +17,21 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
   # the table name to remove this once a decision has been made.
   let(:allowed_to_be_missing_not_null) do
     [
+      *tables_with_alternative_not_null_constraint,
       'labels.project_id', # https://gitlab.com/gitlab-org/gitlab/-/issues/434356
       'labels.group_id' # https://gitlab.com/gitlab-org/gitlab/-/issues/434356
+    ]
+  end
+
+  # The following tables have multiple sharding keys and a check constraint that
+  # correctly ensures at least one of the keys must be set, however the constraint
+  # definition is written in a way that is difficult to verify using these specs.
+  # For example:
+  #   `CONSTRAINT example_constraint CHECK (((project_id IS NULL) <> (namespace_id IS NULL)))`
+  let(:tables_with_alternative_not_null_constraint) do
+    [
+      'security_orchestration_policy_configurations.project_id',
+      'security_orchestration_policy_configurations.namespace_id'
     ]
   end
 
@@ -29,7 +42,9 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
     [
       'p_catalog_resource_sync_events.project_id',
       'zoekt_indices.namespace_id',
-      'namespace_descendants.namespace_id'
+      'zoekt_repositories.project_identifier',
+      'namespace_descendants.namespace_id',
+      'value_stream_dashboard_counts.namespace_id' # https://gitlab.com/gitlab-org/gitlab/-/issues/439555
     ]
   end
 
@@ -76,7 +91,7 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
 
         if allowed_to_be_missing_not_null.include?("#{table_name}.#{column_name}")
           expect(not_nullable || has_null_check_constraint).to eq(false),
-            "You must remove `#{table_name}.#{column_name}` from allowed_to_be_missing_not_null" \
+            "You must remove `#{table_name}.#{column_name}` from allowed_to_be_missing_not_null " \
             "since it now has a valid constraint."
         else
           expect(not_nullable || has_null_check_constraint).to eq(true),
@@ -93,6 +108,30 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
       expect(tables_missing_sharding_key(starting_from_milestone: starting_from_milestone)).to include(exempted_table),
         "`#{exempted_table}` is not missing a `sharding_key`. " \
         "You must remove this table from the `allowed_to_be_missing_sharding_key` list."
+    end
+  end
+
+  it 'only allows `allowed_to_be_missing_not_null` to include sharding keys',
+    :aggregate_failures do
+    allowed_to_be_missing_not_null.each do |exemption|
+      table, column = exemption.split('.')
+      entry = ::Gitlab::Database::Dictionary.entry(table)
+
+      expect(entry&.sharding_key&.keys).to include(column),
+        "`#{exemption}` is not a `sharding_key`. " \
+        "You must remove this entry from the `allowed_to_be_missing_not_null` list."
+    end
+  end
+
+  it 'only allows `allowed_to_be_missing_foreign_key` to include sharding keys',
+    :aggregate_failures do
+    allowed_to_be_missing_foreign_key.each do |exemption|
+      table, column = exemption.split('.')
+      entry = ::Gitlab::Database::Dictionary.entry(table)
+
+      expect(entry&.sharding_key&.keys).to include(column),
+        "`#{exemption}` is not a `sharding_key`. " \
+        "You must remove this entry from the `allowed_to_be_missing_foreign_key` list."
     end
   end
 

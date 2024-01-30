@@ -59,7 +59,7 @@ export default {
     <td class="js-approvals-required" :data-label="__('Approvals required')">
       <rule-input :rule="rule" :is-mr-edit="isMrEdit" />
     </td>
-    <td class="gl-md-pl-0! gl-md-pr-0!">
+    <td class="gl-md-pl-0! gl-md-pr-0!" :data-label="__('Actions')">
       <gl-button
         v-if="!allowMultiRule && canEdit"
         category="secondary"

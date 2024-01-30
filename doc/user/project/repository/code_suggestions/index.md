@@ -4,17 +4,12 @@ group: Code Creation
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Code Suggestions **(FREE ALL)**
+# Code Suggestions
 
 > - [Introduced support for Google Vertex AI Codey APIs](https://gitlab.com/groups/gitlab-org/-/epics/10562) in GitLab 16.1.
 > - [Removed support for GitLab native model](https://gitlab.com/groups/gitlab-org/-/epics/10752) in GitLab 16.2.
 > - [Introduced support for Code Generation](https://gitlab.com/gitlab-org/gitlab/-/issues/415583) in GitLab 16.3.
 > - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/435271) in GitLab 16.7.
-
-NOTE:
-Starting in February 2024, Code Suggestions will be part of
-[GitLab Duo Pro](https://about.gitlab.com/gitlab-duo/),
-available to Premium and Ultimate users for purchase now.
 
 Write code more efficiently by using generative AI to suggest code while you're developing.
 
@@ -26,6 +21,20 @@ With [GitLab Duo Code Suggestions](https://about.gitlab.com/solutions/code-sugge
   appropriate code, based on the context of your comment and the rest of your code.
   - Algorithms or large code blocks may take more than 10 seconds to generate.
   - Streaming of code generation responses is supported in VS Code, leading to faster average response times. Other supported IDEs offer slower response times and will return the generated code in a single block.
+
+## Code Suggestions access
+
+Code Suggestions availability is changing.
+
+Free Open Access subject to the [Testing Agreement](https://handbook.gitlab.com/handbook/legal/testing-agreement/)
+is available through February 14, 2024:
+
+- For SaaS, on all subscription tiers (Free, Premium, and Ultimate).
+- For self-managed, on Premium and Ultimate tiers.
+
+Code Suggestions will be part of [GitLab Duo Pro](https://about.gitlab.com/gitlab-duo/) starting February 15, 2024:
+
+- GitLab Duo Pro is available for both SaaS and self-managed, on Premium and Ultimate tiers.
 
 ## Start using Code Suggestions
 
@@ -45,9 +54,9 @@ GitLab Duo Code Suggestions are available:
 Code Suggestions is available and free to use until February 15, 2024:
 
 - Before February 15, 2024, usage of Code Suggestions is governed by the
-  [GitLab Testing Agreement](https://about.gitlab.com/handbook/legal/testing-agreement/).
+  [GitLab Testing Agreement](https://handbook.gitlab.com/handbook/legal/testing-agreement/).
 - On February 15, 2024, Code Suggestions becomes a paid add-on and will be governed by our
-  [AI Functionality Terms](https://about.gitlab.com/handbook/legal/ai-functionality-terms/).
+  [AI Functionality Terms](https://handbook.gitlab.com/handbook/legal/ai-functionality-terms/).
 
 ## Supported languages
 
@@ -130,7 +139,7 @@ For self-managed instances that have enabled Code Suggestions and SaaS accounts,
 
 ### Inference window context
 
-Code Suggestions inferences against the currently opened file, the content before and after the cursor, the file name, and the extension type. For more information on possible future context expansion to improve the quality of suggestions, see [epic 11669](https://gitlab.com/groups/gitlab-org/-/epics/11669).
+Code Suggestions inferences against the currently opened file, the content before and after the cursor, the filename, and the extension type. For more information on possible future context expansion to improve the quality of suggestions, see [epic 11669](https://gitlab.com/groups/gitlab-org/-/epics/11669).
 
 ### Training data
 

@@ -98,7 +98,7 @@ module Gitlab
         def request_body(prompt:, options: {})
           {
             prompt: prompt,
-            model: DEFAULT_MODEL,
+            model: model,
             max_tokens_to_sample: DEFAULT_MAX_TOKENS,
             temperature: DEFAULT_TEMPERATURE
           }.merge(options)
@@ -117,6 +117,14 @@ module Gitlab
         # we can assume that the JSON we're looking comes after `data: `
         def parse_sse_events(fragment)
           fragment.scan(/(?:data): (\{.*\})/i).flatten.map { |data| Gitlab::Json.parse(data) }
+        end
+
+        def model
+          if Feature.enabled?(:ai_claude_2_1, user)
+            'claude-2.1'
+          else
+            DEFAULT_MODEL
+          end
         end
       end
     end

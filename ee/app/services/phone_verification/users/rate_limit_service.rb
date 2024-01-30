@@ -43,7 +43,7 @@ module PhoneVerification
         return unless user
         return unless daily_transaction_soft_limit_exceeded?
 
-        user.assume_high_risk(reason: 'Phone verification daily transaction limit exceeded')
+        user.assume_high_risk!(reason: 'Phone verification daily transaction limit exceeded')
       end
     end
   end

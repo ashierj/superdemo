@@ -364,17 +364,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
       expect(results.issues_count).to eq 0
     end
 
-    it 'handles plural words through algorithmic stemming', :aggregate_failures do
-      issue1 = create(:issue, project: project_1, title: 'remove :title attribute from submit buttons to prevent un-styled tooltips')
-      issue2 = create(:issue, project: project_1, title: 'smarter submit behavior for buttons groups')
-
-      ensure_elasticsearch_index!
-
-      results = described_class.new(user, 'button', limit_project_ids)
-
-      expect(results.objects('issues')).to contain_exactly(issue1, issue2)
-      expect(results.issues_count).to eq 2
-    end
+    it_behaves_like 'can search by title for miscellaneous cases', 'issues'
 
     it 'executes count only queries' do
       results = described_class.new(user, query, limit_project_ids)
@@ -484,6 +474,26 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
       expect(notes).to include @note_2
       expect(notes).not_to include @note_3
       expect(results.notes_count).to eq 2
+    end
+
+    context 'when comment has some code snippet' do
+      before do
+        code_examples.values.uniq.each do |note|
+          sha = Digest::SHA256.hexdigest(note)
+          create(:note_on_issue, noteable: issue, project: project_1, commit_id: sha, note: note)
+        end
+        ensure_elasticsearch_index!
+      end
+
+      include_context 'with code examples' do
+        it 'finds all examples' do
+          code_examples.each do |query, description|
+            sha = Digest::SHA256.hexdigest(description)
+            notes = described_class.new(user, query, limit_project_ids).objects('notes')
+            expect(notes.map(&:commit_id)).to include(sha)
+          end
+        end
+      end
     end
 
     it 'returns empty list when notes are not found' do

@@ -19,7 +19,7 @@ describe('TierBadge', () => {
       const trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
 
       createComponent();
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'render_badge', { label: 'tier-badge' });
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'render_badge', { label: 'tier_badge' });
     });
 
     it('tracks when popover shown', () => {
@@ -27,7 +27,7 @@ describe('TierBadge', () => {
       createComponent();
 
       findBadge().trigger('mouseover');
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'render_flyout', { label: 'tier-badge' });
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'render_flyout', { label: 'tier_badge' });
     });
   });
 

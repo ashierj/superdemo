@@ -1,6 +1,5 @@
 import { __, s__, sprintf } from '~/locale';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
-import { ASC, DESC } from '~/notes/constants';
 
 export const STATE_OPEN = 'OPEN';
 export const STATE_CLOSED = 'CLOSED';
@@ -266,14 +265,15 @@ export const WORK_ITEM_ACTIVITY_FILTER_OPTIONS = [
 ];
 
 export const WORK_ITEM_ACTIVITY_SORT_OPTIONS = [
-  { value: DESC, text: __('Newest first') },
-  { value: ASC, text: __('Oldest first') },
+  { value: 'desc', text: __('Newest first') },
+  { value: 'asc', text: __('Oldest first') },
 ];
 
 export const TEST_ID_CONFIDENTIALITY_TOGGLE_ACTION = 'confidentiality-toggle-action';
 export const TEST_ID_NOTIFICATIONS_TOGGLE_FORM = 'notifications-toggle-form';
 export const TEST_ID_DELETE_ACTION = 'delete-action';
 export const TEST_ID_PROMOTE_ACTION = 'promote-action';
+export const TEST_ID_LOCK_ACTION = 'lock-action';
 export const TEST_ID_COPY_REFERENCE_ACTION = 'copy-reference-action';
 export const TEST_ID_COPY_CREATE_NOTE_EMAIL_ACTION = 'copy-create-note-email-action';
 export const TEST_ID_TOGGLE_ACTION = 'state-toggle-action';
@@ -319,3 +319,7 @@ export const SUPPORTED_PARENT_TYPE_MAP = {
   [WORK_ITEM_TYPE_VALUE_KEY_RESULT]: [WORK_ITEM_TYPE_ENUM_OBJECTIVE],
   [WORK_ITEM_TYPE_VALUE_TASK]: [WORK_ITEM_TYPE_ENUM_ISSUE],
 };
+
+export const LINKED_ITEMS_ANCHOR = 'linkeditems';
+export const CHILD_ITEMS_ANCHOR = 'childitems';
+export const TASKS_ANCHOR = 'tasks';

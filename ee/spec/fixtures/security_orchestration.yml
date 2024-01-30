@@ -83,7 +83,7 @@ scan_execution_policy:
     - scan: dast
       site_profile: Site Profile
       scanner_profile: Scanner Profile
-scan_result_policy:
+approval_policy:
 - name: critical vulnerability CS approvals
   description: critical severity level only for container scanning
   enabled: true
@@ -233,6 +233,9 @@ scan_result_policy:
     approvers:
     - admin
     - developer.local
+# Deprecated policy type to be replaced by approval_policy in 17.0
+# https://gitlab.com/groups/gitlab-org/-/epics/9850
+scan_result_policy:
 - name: Enabled secret detection policy
   description: disabled police with unknown severity levels only for secret detection
   enabled: true

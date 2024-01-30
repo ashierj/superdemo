@@ -38,7 +38,8 @@ RSpec.describe 'Querying user code suggestions access',
 
     context 'when user has access to code suggestions' do
       it 'returns true' do
-        expect(GitlabSubscriptions::UserAddOnAssignment).to receive(:by_user).and_return([true])
+        expect(GitlabSubscriptions::UserAddOnAssignment)
+          .to receive_message_chain(:by_user, :for_active_code_suggestions_purchase).and_return([true])
 
         post_graphql(query, current_user: current_user)
 
@@ -48,7 +49,8 @@ RSpec.describe 'Querying user code suggestions access',
 
     context 'when user does not have access to code suggestions' do
       it 'returns false' do
-        expect(GitlabSubscriptions::UserAddOnAssignment).to receive(:by_user).and_return([])
+        expect(GitlabSubscriptions::UserAddOnAssignment)
+          .to receive_message_chain(:by_user, :for_active_code_suggestions_purchase).and_return([])
 
         post_graphql(query, current_user: current_user)
 

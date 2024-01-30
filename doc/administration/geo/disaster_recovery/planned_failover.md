@@ -4,7 +4,11 @@ group: Geo
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Disaster recovery for planned failover **(PREMIUM SELF)**
+# Disaster recovery for planned failover
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
 
 The primary use-case of Disaster Recovery is to ensure business continuity in
 the event of unplanned outage, but it can be used in conjunction with a planned
@@ -60,7 +64,7 @@ the container registry on the primary site and restore it onto the secondary
 site:
 
 1. On your primary site, back up only the registry and
-   [exclude specific directories from the backup](../../../administration/backup_restore/backup_gitlab.md#excluding-specific-directories-from-the-backup):
+   [exclude specific directories from the backup](../../../administration/backup_restore/backup_gitlab.md#excluding-specific-data-from-the-backup):
 
    ```shell
    # Create a backup in the /var/opt/gitlab/backups folder

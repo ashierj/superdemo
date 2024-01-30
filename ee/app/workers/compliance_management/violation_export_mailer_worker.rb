@@ -19,8 +19,6 @@ module ComplianceManagement
       @filters = filters
       @sort = sort
 
-      return unless feature_enabled?
-
       raise ExportFailedError, 'An error occurred generating the violation export' unless csv_export&.success?
 
       Notify.compliance_violations_csv_email(
@@ -34,10 +32,6 @@ module ComplianceManagement
     end
 
     private
-
-    def feature_enabled?
-      Feature.enabled?(:compliance_violation_csv_export, @namespace)
-    end
 
     def csv_export
       @csv_export ||= ComplianceManagement::Violations::ExportService.new(

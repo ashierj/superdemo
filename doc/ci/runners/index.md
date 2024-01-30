@@ -4,7 +4,11 @@ group: Runner SaaS
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Runner SaaS **(FREE SAAS)**
+# Runner SaaS
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS
 
 You can run your CI/CD jobs on GitLab.com using SaaS runners hosted by GitLab to seamlessly build, test and deploy
 your application on different environments.
@@ -50,7 +54,7 @@ GitLab SaaS runners on Linux and Windows run on Google Compute Platform.
 The [Google Infrastructure Security Design Overview whitepaper](https://cloud.google.com/docs/security/infrastructure/design/resources/google_infrastructure_whitepaper_fa.pdf)
 provides an overview of how Google designs security into its technical infrastructure.
 The GitLab [Trust Center](https://about.gitlab.com/security/) and
-[GitLab Security Compliance Controls](https://about.staging.gitlab.com/handbook/engineering/security/security-assurance/security-compliance/sec-controls.html)
+[GitLab Security Compliance Controls](https://handbook.gitlab.com/handbook/security/security-assurance/security-compliance/sec-controls/)
 pages provide an overview of the security and compliance controls that govern the GitLab SaaS runners.
 
 The following section provides an overview of the additional built-in layers that harden the security of the GitLab Runner SaaS CI build environment.

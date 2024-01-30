@@ -1,8 +1,10 @@
 <script>
-import { GlCard, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlButton, GlCard, GlLink, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import UsageStatistics from 'ee/usage_quotas/components/usage_statistics.vue';
 import { codeSuggestionsLearnMoreLink } from 'ee/usage_quotas/code_suggestions/constants';
+import { addSeatsText } from 'ee/usage_quotas/seats/constants';
+import Tracking from '~/tracking';
 
 export default {
   name: 'CodeSuggestionsUsageInfoCard',
@@ -14,12 +16,29 @@ export default {
       `CodeSuggestions|%{linkStart}Code Suggestions%{linkEnd} uses generative AI to suggest code while you're developing.`,
     ),
     title: s__('CodeSuggestions|Duo Pro add-on'),
+    addSeatsText,
   },
   components: {
+    GlButton,
     GlCard,
     GlLink,
     GlSprintf,
     UsageStatistics,
+  },
+  mixins: [Tracking.mixin()],
+  inject: ['addDuoProHref', 'isSaaS'],
+  computed: {
+    trackingPreffix() {
+      return this.isSaaS ? 'saas' : 'sm';
+    },
+  },
+  methods: {
+    handleAddDuoProClick() {
+      this.track('click_button', {
+        label: `add_duo_pro_${this.trackingPreffix}`,
+        property: 'usage_quotas_page',
+      });
+    },
   },
 };
 </script>
@@ -39,6 +58,18 @@ export default {
             </template>
           </gl-sprintf>
         </p>
+      </template>
+      <template #actions>
+        <gl-button
+          v-if="addDuoProHref"
+          category="primary"
+          variant="confirm"
+          target="_blank"
+          :href="addDuoProHref"
+          @click="handleAddDuoProClick"
+        >
+          {{ $options.i18n.addSeatsText }}
+        </gl-button>
       </template>
     </usage-statistics>
   </gl-card>

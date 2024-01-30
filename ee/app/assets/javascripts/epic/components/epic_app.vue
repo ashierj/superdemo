@@ -4,10 +4,10 @@ import { mapState } from 'vuex';
 import initRelatedItemsTree from 'ee/related_items_tree/related_items_tree_bundle';
 import IssuableBody from '~/issues/show/components/app.vue';
 import { PathIdSeparator } from '~/related_issues/constants';
+import EpicSidebar from 'jh_else_ee/epic/components/epic_sidebar.vue';
 import SidebarContext from '../sidebar_context';
 import EpicHeader from './epic_header.vue';
 import EpicHeaderActions from './epic_header_actions.vue';
-import EpicSidebar from './epic_sidebar.vue';
 
 export default {
   PathIdSeparator,

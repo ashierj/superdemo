@@ -6,6 +6,10 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
   include AdminModeHelper
   include LoginHelpers
 
+  def stub_group_saml_config(enabled)
+    allow(::Gitlab::Auth::GroupSaml::Config).to receive_messages(enabled?: enabled)
+  end
+
   include_context 'GroupPolicy context'
   # Can't move to GroupPolicy context because auditor trait is not present
   # outside of EE context and foss-impact will fail on this
@@ -536,10 +540,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
   end
 
   describe 'per group SAML' do
-    def stub_group_saml_config(enabled)
-      allow(::Gitlab::Auth::GroupSaml::Config).to receive_messages(enabled?: enabled)
-    end
-
     context 'when group_saml is unavailable' do
       let(:current_user) { owner }
 
@@ -1111,14 +1111,29 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
   end
 
   context 'when memberships locked to SAML' do
+    let(:saml_with_group_sync) do
+      {
+        name: 'saml',
+        groups_attribute: 'groups',
+        external_groups: [],
+        args: {}
+      }
+    end
+
+    before do
+      stub_application_setting(lock_memberships_to_saml: true)
+      stub_licensed_features(saml_group_sync: true)
+    end
+
     context 'when group is a root group' do
       before do
-        stub_application_setting(lock_memberships_to_saml: true)
+        stub_omniauth_config(providers: [saml_with_group_sync])
+        allow(Devise).to receive(:omniauth_providers).and_return([:saml])
       end
 
       context 'when SAML group link sync is enabled' do
         before do
-          allow(group).to receive(:saml_group_links_enabled?).and_return(true)
+          create(:saml_group_link, group: group)
         end
 
         context 'admin' do
@@ -1148,7 +1163,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
       context 'when no SAML sync is enabled' do
         before do
-          allow(group).to receive(:saml_group_links_enabled?).and_return(false)
+          allow(group).to receive(:saml_group_links_exists?).and_return(false)
         end
 
         context 'admin' do
@@ -1170,14 +1185,16 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       let(:group) { create(:group, :private, parent: parent_group) }
 
       before do
+        stub_omniauth_config(providers: [saml_with_group_sync])
+        allow(Devise).to receive(:omniauth_providers).and_return([:saml])
+
         group.add_owner(owner)
         parent_group.add_owner(owner)
-        stub_application_setting(lock_memberships_to_saml: true)
       end
 
       context 'when SAML group link sync is enabled' do
         before do
-          allow(group.root_ancestor).to receive(:saml_group_links_enabled?).and_return(true)
+          create(:saml_group_link, group: parent_group)
         end
 
         context 'admin' do
@@ -1218,7 +1235,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
       context 'when no SAML group link sync is enabled' do
         before do
-          allow(group).to receive(:saml_group_links_enabled?).and_return(false)
+          allow(group).to receive(:saml_group_links_exists?).and_return(false)
         end
 
         context 'admin' do
@@ -1237,6 +1254,62 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
           let(:current_user) { maintainer }
 
           it { is_expected.to be_disallowed(:admin_group_member) }
+        end
+      end
+    end
+
+    context 'when group is synced via GroupSaml', :saas do
+      before do
+        stub_licensed_features(group_saml: true, saml_group_sync: true)
+        stub_group_saml_config(true)
+        create(:saml_provider, group: group.root_ancestor, enabled: true)
+      end
+
+      context 'when SAML group link is configured' do
+        before do
+          create(:saml_group_link, group: group)
+        end
+
+        context 'admin' do
+          let(:current_user) { admin }
+
+          context 'when admin mode is enabled', :enable_admin_mode do
+            it { is_expected.to be_allowed(:admin_group_member) }
+          end
+
+          context 'when admin mode is disabled' do
+            it { is_expected.not_to be_allowed(:admin_group_member) }
+          end
+        end
+
+        context 'owner' do
+          let(:current_user) { owner }
+
+          it { is_expected.not_to be_allowed(:admin_group_member) }
+        end
+
+        context 'maintainer' do
+          let(:current_user) { maintainer }
+
+          it { is_expected.not_to be_allowed(:admin_group_member) }
+        end
+      end
+
+      context 'when SAML group link is not configured' do
+        before do
+          allow(group).to receive(:saml_group_links_exists?).and_return(false)
+        end
+
+        context 'admin' do
+          let(:current_user) { admin }
+
+          it { is_expected.not_to be_allowed(:admin_group_member) }
+        end
+
+        context 'owner' do
+          let(:current_user) { owner }
+
+          it { is_expected.to be_allowed(:admin_group_member) }
         end
       end
     end

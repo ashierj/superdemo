@@ -4,7 +4,11 @@ group: Tutorials
 info: For assistance with this tutorial, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments-to-other-projects-and-subjects.
 ---
 
-# Tutorial: Automate runner creation and registration **(FREE ALL)**
+# Tutorial: Automate runner creation and registration
+
+DETAILS:
+**Tier:** Free, Premium, Ultimate
+**Offering:** SaaS, self-managed
 
 This tutorial describes how to automate runner creation and registration.
 
@@ -150,7 +154,7 @@ REST endpoint to create a runner:
 1. Save the returned `token` value in a secure location or your secrets management
    solution. The `token` value is returned only once in the API response.
 
-## With the `gitlab_user_runner` Terraform resource
+### With the `gitlab_user_runner` Terraform resource
 
 To create the runner configuration with Terraform, use the
 [`gitlab_user_runner` Terraform resource](https://gitlab.com/gitlab-org/terraform-provider-gitlab/-/blob/main/docs/resources/user_runner.md?ref_type=heads)

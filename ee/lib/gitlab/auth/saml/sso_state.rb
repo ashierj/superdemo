@@ -18,11 +18,10 @@ module Gitlab
         end
 
         def active_since?(cutoff)
-          return active? unless cutoff
           return true if sessionless?
-          return false unless last_signin_at
+          return false unless active?
 
-          last_signin_at.after? cutoff
+          cutoff ? last_signin_at.after?(cutoff) : active?
         end
 
         def update_active(time: Time.current)
