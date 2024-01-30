@@ -14,7 +14,8 @@ import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.
 import { createMockClient } from 'helpers/mock_apollo_helper';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
-import { namespace, defaultNamespaceProvideValues } from '../mock_data';
+import { namespace } from 'jest/usage_quotas/storage/mock_data';
+import { defaultNamespaceProvideValues } from '../mock_data';
 
 Vue.use(VueApollo);
 

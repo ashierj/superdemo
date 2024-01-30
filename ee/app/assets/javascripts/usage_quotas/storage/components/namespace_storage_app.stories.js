@@ -4,9 +4,9 @@ import {
   mockGetProjectListStorageGraphQLResponse,
 } from 'jest/usage_quotas/storage/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import getNamespaceStorageQuery from 'ee_else_ce/usage_quotas/storage/queries/namespace_storage.query.graphql';
-import getProjectListStorageQuery from 'ee_else_ce/usage_quotas/storage/queries/project_list_storage.query.graphql';
-import NamespaceStorageApp from './namespace_storage_app.vue';
+import getNamespaceStorageQuery from 'ee/usage_quotas/storage/queries/namespace_storage.query.graphql';
+import getProjectListStorageQuery from 'ee/usage_quotas/storage/queries/project_list_storage.query.graphql';
+import NamespaceStorageApp from '~/usage_quotas/storage/components/namespace_storage_app.vue';
 
 const meta = {
   title: 'ee/usage_quotas/storage/namespace_storage_app',
@@ -68,6 +68,7 @@ export const SaasWithProjectLimits = {
       isUsingProjectEnforcementWithLimits: true,
       isUsingProjectEnforcementWithNoLimits: false,
       totalRepositorySizeExcess: 3 * GIBIBYTE,
+      customSortKey: 'STORAGE',
     },
   }),
 };
@@ -111,6 +112,7 @@ export const SaasWithProjectLimitsLoading = {
         isUsingProjectEnforcementWithLimits: true,
         isUsingProjectEnforcementWithNoLimits: false,
         totalRepositorySizeExcess: 3 * GIBIBYTE,
+        customSortKey: 'STORAGE',
       },
     })(...args);
   },

@@ -1,11 +1,4 @@
 import { storageTypeHelpPaths } from '~/usage_quotas/storage/constants';
-import {
-  mockGetNamespaceStorageGraphQLResponse,
-  mockGetProjectListStorageGraphQLResponse,
-} from 'jest/usage_quotas/storage/mock_data';
-
-export const { namespace } = mockGetNamespaceStorageGraphQLResponse.data;
-export const projectList = mockGetProjectListStorageGraphQLResponse.data.namespace.projects.nodes;
 
 export const defaultNamespaceProvideValues = {
   namespaceId: '0',
@@ -22,11 +15,6 @@ export const defaultNamespaceProvideValues = {
   isUsingProjectEnforcementWithLimits: false,
   isUsingProjectEnforcementWithNoLimits: false,
   isUsingNamespaceEnforcement: true,
+  customSortKey: null,
   helpLinks: storageTypeHelpPaths,
-};
-
-export const statisticsCardDefaultProps = {
-  purchasedStorage: 0,
-  usedStorage: namespace.rootStorageStatistics.storageSize,
-  loading: false,
 };
