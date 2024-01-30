@@ -45,7 +45,7 @@ RSpec.describe SystemNotes::MergeRequestsService, feature_category: :code_review
 
     it 'sets the note text' do
       expect(approvals_reset_note.note)
-        .to eq("revoked approvals from #{approvers.map(&:to_reference).to_sentence} by pushing to the branch")
+        .to eq("reset approvals from #{approvers.map(&:to_reference).to_sentence} by pushing to the branch")
     end
 
     context 'when cause is not new_push' do
