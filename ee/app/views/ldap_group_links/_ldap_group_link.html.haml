@@ -1,5 +1,5 @@
 %li
-  .float-right
+  .gl-float-right
     = link_button_to group_ldap_group_link_path(group, ldap_group_link), method: :delete, variant: :danger, size: :small, icon: 'unlink' do
       = _('Remove')
   %strong= ldap_group_link.cn ? "Group: #{ldap_group_link.cn}" : "Filter: #{ldap_group_link.filter}"

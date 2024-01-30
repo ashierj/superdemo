@@ -176,7 +176,7 @@ export default {
         v-if="canEdit"
         category="tertiary"
         size="small"
-        class="edit-link float-right"
+        class="edit-link gl-float-right"
         data-testid="labels-edit-button"
         @click="toggleEdit"
       >
