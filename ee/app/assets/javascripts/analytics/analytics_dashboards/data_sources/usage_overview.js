@@ -34,6 +34,7 @@ export const extractUsageMetrics = (data) => {
       {
         identifier,
         value: data[identifier]?.count || 0,
+        recordedAt: data[identifier]?.recordedAt,
         ...USAGE_OVERVIEW_METADATA[identifier],
       },
     ];

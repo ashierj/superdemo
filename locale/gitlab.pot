@@ -5544,6 +5544,9 @@ msgstr ""
 msgid "Analytics settings"
 msgstr ""
 
+msgid "Analytics| Last updated: %{recordedAt}"
+msgstr ""
+
 msgid "Analytics|A dashboard with that name already exists."
 msgstr ""
 
@@ -5791,6 +5794,9 @@ msgid "Analytics|Something went wrong."
 msgstr ""
 
 msgid "Analytics|Start by choosing a metric"
+msgstr ""
+
+msgid "Analytics|Statistics on top-level namespace usage. Usage data is a cumulative count, and updated monthly."
 msgstr ""
 
 msgid "Analytics|Tables"
