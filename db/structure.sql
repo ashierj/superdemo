@@ -14465,6 +14465,23 @@ CREATE SEQUENCE ci_job_artifacts_id_seq
 
 ALTER SEQUENCE ci_job_artifacts_id_seq OWNED BY ci_job_artifacts.id;
 
+CREATE TABLE ci_job_token_group_scope_links (
+    id bigint NOT NULL,
+    source_project_id bigint NOT NULL,
+    target_group_id bigint NOT NULL,
+    added_by_id bigint,
+    created_at timestamp with time zone NOT NULL
+);
+
+CREATE SEQUENCE ci_job_token_group_scope_links_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE ci_job_token_group_scope_links_id_seq OWNED BY ci_job_token_group_scope_links.id;
+
 CREATE TABLE ci_job_token_project_scope_links (
     id bigint NOT NULL,
     source_project_id bigint NOT NULL,
@@ -27043,6 +27060,8 @@ ALTER TABLE ONLY ci_instance_variables ALTER COLUMN id SET DEFAULT nextval('ci_i
 
 ALTER TABLE ONLY ci_job_artifacts ALTER COLUMN id SET DEFAULT nextval('ci_job_artifacts_id_seq'::regclass);
 
+ALTER TABLE ONLY ci_job_token_group_scope_links ALTER COLUMN id SET DEFAULT nextval('ci_job_token_group_scope_links_id_seq'::regclass);
+
 ALTER TABLE ONLY ci_job_token_project_scope_links ALTER COLUMN id SET DEFAULT nextval('ci_job_token_project_scope_links_id_seq'::regclass);
 
 ALTER TABLE ONLY ci_job_variables ALTER COLUMN id SET DEFAULT nextval('ci_job_variables_id_seq'::regclass);
@@ -29117,6 +29136,9 @@ ALTER TABLE ONLY ci_job_artifact_states
 
 ALTER TABLE ONLY ci_job_artifacts
     ADD CONSTRAINT ci_job_artifacts_pkey PRIMARY KEY (id, partition_id);
+
+ALTER TABLE ONLY ci_job_token_group_scope_links
+    ADD CONSTRAINT ci_job_token_group_scope_links_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY ci_job_token_project_scope_links
     ADD CONSTRAINT ci_job_token_project_scope_links_pkey PRIMARY KEY (id);
@@ -32198,6 +32220,8 @@ CREATE UNIQUE INDEX i_bulk_import_export_batches_id_batch_number ON bulk_import_
 
 CREATE UNIQUE INDEX i_bulk_import_trackers_id_batch_number ON bulk_import_batch_trackers USING btree (tracker_id, batch_number);
 
+CREATE UNIQUE INDEX i_ci_job_token_group_scope_links_on_source_and_target_project ON ci_job_token_group_scope_links USING btree (source_project_id, target_group_id);
+
 CREATE INDEX i_compliance_frameworks_on_id_and_created_at ON compliance_management_frameworks USING btree (id, created_at, pipeline_configuration_full_path);
 
 CREATE INDEX i_compliance_standards_adherence_on_namespace_id_and_proj_id ON project_compliance_standards_adherence USING btree (namespace_id, project_id DESC, id DESC);
@@ -32999,6 +33023,10 @@ CREATE INDEX index_ci_job_artifacts_on_project_id ON ci_job_artifacts USING btre
 CREATE INDEX index_ci_job_artifacts_on_project_id_and_id ON ci_job_artifacts USING btree (project_id, id);
 
 CREATE INDEX index_ci_job_artifacts_on_project_id_for_security_reports ON ci_job_artifacts USING btree (project_id) WHERE (file_type = ANY (ARRAY[5, 6, 7, 8]));
+
+CREATE INDEX index_ci_job_token_group_scope_links_on_added_by_id ON ci_job_token_group_scope_links USING btree (added_by_id);
+
+CREATE INDEX index_ci_job_token_group_scope_links_on_target_group_id ON ci_job_token_group_scope_links USING btree (target_group_id);
 
 CREATE INDEX index_ci_job_token_project_scope_links_on_added_by_id ON ci_job_token_project_scope_links USING btree (added_by_id);
 
