@@ -35,7 +35,15 @@ module Search
         raise NotImplementedError
       end
 
+      def item_to_preload
+        raise NotImplementedError
+      end
+
       private
+
+      def limit_indexing?
+        respect_limited_indexing? && ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
+      end
 
       def limit_per_iteration
         DEFAULT_LIMIT_PER_ITERATION
@@ -56,14 +64,18 @@ module Search
       def backfill_documents
         [].tap do |documents|
           number_of_iteration_per_run.times do
-            documents = Array.wrap(documents_after_current_id.limit(limit_per_iteration))
+            documents = documents_after_current_id.limit(limit_per_iteration)
+
+            if limit_indexing?
+              documents = documents.preload(item_to_preload) # rubocop: disable CodeReuse/ActiveRecord -- Avoid N+1
+            end
+
+            documents = documents.to_a
             break if documents.blank?
 
             max_id = documents.maximum(:id).to_i
 
-            if respect_limited_indexing? && ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
-              documents.select!(&:maintaining_elasticsearch?)
-            end
+            documents.select!(&:maintaining_elasticsearch?) if limit_indexing?
 
             ::Elastic::ProcessInitialBookkeepingService.track!(*documents)
             set_migration_state(current_id: max_id)

@@ -13,4 +13,8 @@ class ReindexAllEpics < Elastic::Migration
   def respect_limited_indexing?
     true
   end
+
+  def item_to_preload
+    :group
+  end
 end
