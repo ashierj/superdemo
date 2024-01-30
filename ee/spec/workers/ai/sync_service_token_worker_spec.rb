@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# TODO: remove alongside the described class starting 16.11. Refer to https://gitlab.com/groups/gitlab-org/-/epics/12544.
 RSpec.describe Ai::SyncServiceTokenWorker, type: :worker, feature_category: :cloud_connector do
   describe '#perform' do
     let(:service_response) { ServiceResponse.success }

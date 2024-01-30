@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 # !!! WARNING !!!
-# We keep it for compatibility during 16.9. Planned for removal in future releases.
+# We keep it for compatibility. Planned for removal in 16.11.
 # Starting 16.10, apply all changes to Cloud::SyncServiceTokenWorker instead.
-# Refer to https://gitlab.com/groups/gitlab-org/-/epics/12544.
+# Refer to https://gitlab.com/groups/gitlab-org/-/epics/12544 to track the status.
 module Ai
   class SyncServiceTokenWorker
     include ApplicationWorker
