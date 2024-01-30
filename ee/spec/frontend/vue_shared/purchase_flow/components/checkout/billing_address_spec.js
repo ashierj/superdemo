@@ -74,11 +74,14 @@ describe('Billing Address', () => {
   `(
     'when billingAccount exists is $billingAccountExists',
     ({ billingAccountData, stepTitle, showAddress }) => {
+      const handler = jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } });
+
       beforeEach(async () => {
-        await createComponent(
-          {},
-          jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-        );
+        await createComponent({}, handler);
+      });
+
+      it('calls getBillingAccountQuery', () => {
+        expect(handler).toHaveBeenCalled();
       });
 
       it('shows step component', () => {
