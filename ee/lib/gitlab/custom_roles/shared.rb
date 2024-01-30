@@ -14,6 +14,7 @@ module Gitlab
         project_ability
         requirements
         skip_seat_consumption
+        available_from_access_level
       ].freeze
     end
   end

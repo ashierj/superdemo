@@ -7,3 +7,4 @@ feature_category: code_review_workflow
 milestone: '16.4'
 group_ability: false
 project_ability: true
+available_from_access_level: 30

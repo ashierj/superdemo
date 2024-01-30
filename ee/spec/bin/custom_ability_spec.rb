@@ -10,7 +10,15 @@ RSpec.describe 'bin/custom-ability', feature_category: :permissions do
 
   describe CustomAbilityCreator do
     let(:argv) do
-      %w[test_custom_ability -d test -c vulnerability_management -r other_ability -g -p -i https://url -m http://url]
+      %w[test_custom_ability
+        -d test
+        -c vulnerability_management
+        -r other_ability
+        -g
+        -p
+        -i https://url
+        -m http://url
+        -a 10]
     end
 
     let(:options) { CustomAbilityOptionParser.parse(argv) }
@@ -69,30 +77,32 @@ RSpec.describe 'bin/custom-ability', feature_category: :permissions do
   describe CustomAbilityOptionParser do
     describe '.parse' do
       where(:param, :argv, :result) do
-        :name                | %w[foo]                                   | 'foo'
-        :amend               | %w[foo --amend]                           | true
-        :force               | %w[foo -f]                                | true
-        :force               | %w[foo --force]                           | true
-        :description         | %w[foo -d desc]                           | 'desc'
-        :description         | %w[foo --description desc]                | 'desc'
-        :feature_category    | %w[foo -c abilities]                    | 'abilities'
-        :feature_category    | %w[foo --feature-category abilities]    | 'abilities'
-        :requirements        | %w[foo -r other,abilities]               | %w[other abilities]
-        :requirements        | %w[foo --requirements other,abilities]   | %w[other abilities]
-        :milestone           | %w[foo -M 15.6]                           | '15.6'
-        :milestone           | %w[foo --milestone 15.6]                  | '15.6'
-        :group_ability    | %w[foo -g] | true
-        :group_ability    | %w[foo --group_ability]                | true
-        :group_ability    | %w[foo --no-group_ability]             | false
-        :project_ability  | %w[foo -p] | true
-        :project_ability  | %w[foo --project_ability]              | true
-        :project_ability  | %w[foo --no-project_ability]           | false
-        :dry_run             | %w[foo -n]                                | true
-        :dry_run             | %w[foo --dry-run]                         | true
-        :introduced_by_mr    | %w[foo -m https://url]                    | 'https://url'
-        :introduced_by_mr    | %w[foo --introduced-by-mr https://url]    | 'https://url'
-        :introduced_by_issue | %w[foo -i https://url]                    | 'https://url'
-        :introduced_by_issue | %w[foo --introduced-by-issue https://url] | 'https://url'
+        :name                        | %w[foo]                                   | 'foo'
+        :amend                       | %w[foo --amend]                           | true
+        :force                       | %w[foo -f]                                | true
+        :force                       | %w[foo --force]                           | true
+        :description                 | %w[foo -d desc]                           | 'desc'
+        :description                 | %w[foo --description desc]                | 'desc'
+        :feature_category            | %w[foo -c abilities]                      | 'abilities'
+        :feature_category            | %w[foo --feature-category abilities]      | 'abilities'
+        :requirements                | %w[foo -r other,abilities]                | %w[other abilities]
+        :requirements                | %w[foo --requirements other,abilities]    | %w[other abilities]
+        :milestone                   | %w[foo -M 15.6]                           | '15.6'
+        :milestone                   | %w[foo --milestone 15.6]                  | '15.6'
+        :group_ability               | %w[foo -g]                                | true
+        :group_ability               | %w[foo --group_ability]                   | true
+        :group_ability               | %w[foo --no-group_ability]                | false
+        :project_ability             | %w[foo -p]                                | true
+        :project_ability             | %w[foo --project_ability]                 | true
+        :project_ability             | %w[foo --no-project_ability]              | false
+        :dry_run                     | %w[foo -n]                                | true
+        :dry_run                     | %w[foo --dry-run]                         | true
+        :introduced_by_mr            | %w[foo -m https://url]                    | 'https://url'
+        :introduced_by_mr            | %w[foo --introduced-by-mr https://url]    | 'https://url'
+        :introduced_by_issue         | %w[foo -i https://url]                    | 'https://url'
+        :introduced_by_issue         | %w[foo --introduced-by-issue https://url] | 'https://url'
+        :available_from_access_level | %w[foo -a 10]                             | 10
+        :available_from_access_level | %w[foo --available_from 10]               | 10
       end
 
       with_them do
@@ -299,6 +309,49 @@ RSpec.describe 'bin/custom-ability', feature_category: :permissions do
         expect do
           expect(described_class.read_requirements).to match_array(%w[ability_a ability_b])
         end.to output(/Specify requirements for enabling this ability/).to_stdout
+      end
+    end
+
+    describe '.read_available_from_access_level' do
+      let(:available_from_access_level) { '10' }
+
+      context 'when `fzf` is available' do
+        before do
+          allow(described_class).to receive(:fzf_available?).and_return(true)
+          allow(described_class).to receive(:prompt_fzf).and_return(available_from_access_level.to_i)
+        end
+
+        it 'returns the available_from_access_level' do
+          expect(described_class.read_available_from_access_level).to eq(available_from_access_level.to_i)
+        end
+      end
+
+      context 'when `fzf` is not available' do
+        before do
+          allow(described_class).to receive(:fzf_available?).and_return(false)
+        end
+
+        it 'reads available_from_access_level from stdin' do
+          expect(Readline).to receive(:readline).and_return(available_from_access_level)
+
+          expect do
+            expect(described_class.read_available_from_access_level).to eq(available_from_access_level.to_i)
+          end.to output(/Specify the access level from which this ability is available/).to_stdout
+        end
+
+        context 'when available_from_access_level is invalid' do
+          let(:available_from_access_level) { '11' }
+
+          it 'shows error message and retries' do
+            expect(Readline).to receive(:readline).and_return(available_from_access_level)
+            expect(Readline).to receive(:readline).and_raise('EOF')
+
+            expect do
+              expect { described_class.read_available_from_access_level }.to raise_error(/EOF/)
+            end.to output(/Specify the access level from which this ability is available/)
+              .to_stdout.and output(/The access level needs to be one of/).to_stderr
+          end
+        end
       end
     end
   end

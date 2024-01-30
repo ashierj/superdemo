@@ -16,6 +16,17 @@ require 'readline'
 require 'gitlab/utils/all'
 
 require_relative '../lib/gitlab/custom_roles/shared' unless defined?(::Gitlab::CustomRoles::Shared)
+require_relative '../../lib/gitlab/popen'
+
+LEVELS = {
+  'Not applicable' => 0,
+  'Guest' => 10,
+  'Reporter' => 20,
+  'Developer' => 30,
+  'Maintainer' => 40,
+  'Owner' => 50,
+  'Admin' => 60
+}.freeze
 
 module CustomAbilityHelpers
   Abort = Class.new(StandardError)
@@ -47,7 +58,8 @@ class CustomAbilityOptionParser
     :introduced_by_mr,
     :group_ability,
     :project_ability,
-    :requirements
+    :requirements,
+    :available_from_access_level
   )
 
   class << self
@@ -109,6 +121,11 @@ class CustomAbilityOptionParser
         opts.on('-r', '--requirements [string]', Array,
           'The custom abilities that need to be enabled for this ability.') do |value|
           options.requirements = value
+        end
+
+        opts.on('-a', '--available_from [number]', Integer,
+          "The access level from which this ability is available, one of: #{LEVELS.values}, if applicable.") do |value|
+          options.available_from_access_level = value
         end
 
         opts.on('-h', '--help', 'Print help message') do
@@ -219,6 +236,40 @@ class CustomAbilityOptionParser
       milestone = File.read('VERSION')
       milestone.gsub(/^(\d+\.\d+).*$/, '\1').chomp
     end
+
+    def read_available_from_access_level
+      levels = LEVELS.map { |role, value| "#{value} (#{role})" }
+      prompt = 'Specify the access level from which this ability is available'
+
+      unless fzf_available?
+        $stdout.puts
+        $stdout.puts ">> #{prompt} :"
+        $stdout.puts ">> #{levels.join(', ')}"
+      end
+
+      loop do
+        value = if fzf_available?
+                  prompt_fzf(list: levels, prompt: prompt)
+                else
+                  Readline.readline('?> ', false)&.strip.to_i
+                end
+
+        return if value == 0
+        return value if value.in?(LEVELS.values)
+
+        warn "The access level needs to be one of: #{LEVELS.values}"
+      end
+    end
+
+    def fzf_available?
+      Gitlab::Popen.popen(%w[which fzf])[1] == 0
+    end
+
+    def prompt_fzf(list:, prompt:)
+      arr = list.join("\n")
+      selection = IO.popen("echo \"#{arr}\" | fzf --tac --prompt=\"#{prompt}\"", &:readlines).join.strip
+      selection.match(/(\d+)/)[1].to_i
+    end
   end
 end
 
@@ -243,6 +294,7 @@ class CustomAbilityCreator
     options.introduced_by_mr ||= CustomAbilityOptionParser.read_introduced_by_mr
     options.introduced_by_issue ||= CustomAbilityOptionParser.read_introduced_by_issue
     options.requirements ||= CustomAbilityOptionParser.read_requirements
+    options.available_from_access_level ||= CustomAbilityOptionParser.read_available_from_access_level
     options.milestone ||= CustomAbilityOptionParser.read_milestone
 
     $stdout.puts "\e[32mcreate\e[0m #{file_path}"
@@ -276,7 +328,8 @@ class CustomAbilityCreator
       'project_ability' => options.project_ability,
       'introduced_by_mr' => options.introduced_by_mr,
       'introduced_by_issue' => options.introduced_by_issue,
-      'requirements' => options.requirements
+      'requirements' => options.requirements,
+      'available_from_access_level' => options.available_from_access_level
     }
   end
 
