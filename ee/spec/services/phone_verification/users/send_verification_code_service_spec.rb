@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_category: :system_access do
+RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_category: :instance_resiliency do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be_with_reload(:user) { create(:user) }
