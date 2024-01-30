@@ -26272,25 +26272,6 @@ CREATE SEQUENCE zoekt_enabled_namespaces_id_seq
 
 ALTER SEQUENCE zoekt_enabled_namespaces_id_seq OWNED BY zoekt_enabled_namespaces.id;
 
-CREATE TABLE zoekt_indexed_namespaces (
-    id bigint NOT NULL,
-    zoekt_shard_id bigint,
-    namespace_id bigint NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    search boolean DEFAULT true NOT NULL,
-    zoekt_node_id bigint
-);
-
-CREATE SEQUENCE zoekt_indexed_namespaces_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE zoekt_indexed_namespaces_id_seq OWNED BY zoekt_indexed_namespaces.id;
-
 CREATE TABLE zoekt_indices (
     id bigint NOT NULL,
     zoekt_enabled_namespace_id bigint,
@@ -28055,8 +28036,6 @@ ALTER TABLE ONLY xray_reports ALTER COLUMN id SET DEFAULT nextval('xray_reports_
 ALTER TABLE ONLY zentao_tracker_data ALTER COLUMN id SET DEFAULT nextval('zentao_tracker_data_id_seq'::regclass);
 
 ALTER TABLE ONLY zoekt_enabled_namespaces ALTER COLUMN id SET DEFAULT nextval('zoekt_enabled_namespaces_id_seq'::regclass);
-
-ALTER TABLE ONLY zoekt_indexed_namespaces ALTER COLUMN id SET DEFAULT nextval('zoekt_indexed_namespaces_id_seq'::regclass);
 
 ALTER TABLE ONLY zoekt_indices ALTER COLUMN id SET DEFAULT nextval('zoekt_indices_id_seq'::regclass);
 
@@ -30893,9 +30872,6 @@ ALTER TABLE ONLY zentao_tracker_data
 
 ALTER TABLE ONLY zoekt_enabled_namespaces
     ADD CONSTRAINT zoekt_enabled_namespaces_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY zoekt_indexed_namespaces
-    ADD CONSTRAINT zoekt_indexed_namespaces_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY zoekt_indices
     ADD CONSTRAINT zoekt_indices_pkey PRIMARY KEY (id);
@@ -36074,13 +36050,9 @@ CREATE UNIQUE INDEX index_xray_reports_on_project_id_and_lang ON xray_reports US
 
 CREATE INDEX index_zentao_tracker_data_on_integration_id ON zentao_tracker_data USING btree (integration_id);
 
-CREATE INDEX index_zoekt_indexed_namespaces_on_namespace_id ON zoekt_indexed_namespaces USING btree (namespace_id);
-
 CREATE INDEX index_zoekt_indices_on_state ON zoekt_indices USING btree (state);
 
 CREATE INDEX index_zoekt_indices_on_zoekt_node_id ON zoekt_indices USING btree (zoekt_node_id);
-
-CREATE UNIQUE INDEX index_zoekt_node_and_namespace ON zoekt_indexed_namespaces USING btree (zoekt_node_id, namespace_id);
 
 CREATE INDEX index_zoekt_nodes_on_last_seen_at ON zoekt_nodes USING btree (last_seen_at);
 
@@ -36089,8 +36061,6 @@ CREATE UNIQUE INDEX index_zoekt_nodes_on_uuid ON zoekt_nodes USING btree (uuid);
 CREATE INDEX index_zoekt_repositories_on_project_id ON zoekt_repositories USING btree (project_id);
 
 CREATE INDEX index_zoekt_repositories_on_state ON zoekt_repositories USING btree (state);
-
-CREATE UNIQUE INDEX index_zoekt_shard_and_namespace ON zoekt_indexed_namespaces USING btree (zoekt_shard_id, namespace_id);
 
 CREATE UNIQUE INDEX index_zoekt_shards_on_index_base_url ON zoekt_shards USING btree (index_base_url);
 
@@ -38426,9 +38396,6 @@ ALTER TABLE ONLY agent_activity_events
 ALTER TABLE ONLY issues
     ADD CONSTRAINT fk_3b8c72ea56 FOREIGN KEY (sprint_id) REFERENCES sprints(id) ON DELETE SET NULL;
 
-ALTER TABLE ONLY zoekt_indexed_namespaces
-    ADD CONSTRAINT fk_3bebdb4efc FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY epics
     ADD CONSTRAINT fk_3c1fd1cccc FOREIGN KEY (due_date_sourcing_milestone_id) REFERENCES milestones(id) ON DELETE SET NULL;
 
@@ -38776,9 +38743,6 @@ ALTER TABLE ONLY merge_request_review_llm_summaries
 
 ALTER TABLE ONLY todos
     ADD CONSTRAINT fk_91d1f47b13 FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY zoekt_indexed_namespaces
-    ADD CONSTRAINT fk_9267f4de0c FOREIGN KEY (zoekt_node_id) REFERENCES zoekt_nodes(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY dast_site_profiles_builds
     ADD CONSTRAINT fk_94e80df60e FOREIGN KEY (dast_site_profile_id) REFERENCES dast_site_profiles(id) ON DELETE CASCADE;
@@ -39904,9 +39868,6 @@ ALTER TABLE ONLY geo_repository_renamed_events
 
 ALTER TABLE ONLY aws_roles
     ADD CONSTRAINT fk_rails_4ed56f4720 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY zoekt_indexed_namespaces
-    ADD CONSTRAINT fk_rails_4f6006e94c FOREIGN KEY (zoekt_shard_id) REFERENCES zoekt_shards(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY packages_debian_publications
     ADD CONSTRAINT fk_rails_4fc8ebd03e FOREIGN KEY (distribution_id) REFERENCES packages_debian_project_distributions(id) ON DELETE CASCADE;
