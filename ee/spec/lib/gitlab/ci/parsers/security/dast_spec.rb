@@ -11,18 +11,20 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Dast do
     let(:artifact) { create(:ee_ci_job_artifact, :dast) }
     let(:report) { Gitlab::Ci::Reports::Security::Report.new(artifact.file_type, pipeline, 2.weeks.ago) }
 
-    where(:report_format,
-          :occurrence_count,
-          :identifier_count,
-          :evidence_count,
-          :scanner_count,
-          :scanned_resources_count,
-          :last_occurrence_hostname,
-          :last_occurrence_method_name,
-          :last_occurrence_path,
-          :last_occurrence_severity,
-          :last_occurrence_confidence,
-          :last_occurrence_evidence_summary) do
+    where(
+      :report_format,
+      :occurrence_count,
+      :identifier_count,
+      :evidence_count,
+      :scanner_count,
+      :scanned_resources_count,
+      :last_occurrence_hostname,
+      :last_occurrence_method_name,
+      :last_occurrence_path,
+      :last_occurrence_severity,
+      :last_occurrence_confidence,
+      :last_occurrence_evidence_summary
+    ) do
       :dast                             | 24 | 15 | 2 | 1 | 6 | 'http://goat:8080' | 'GET' | '/WebGoat/plugins/bootstrap/css/bootstrap.min.css' | 'info' | 'low' | nil
       :dast_multiple_sites              | 25 | 15 | 1 | 1 | 0 | 'http://goat:8080' | 'GET' | '/WebGoat/plugins/bootstrap/css/bootstrap.min.css' | 'info' | 'low' | nil
     end

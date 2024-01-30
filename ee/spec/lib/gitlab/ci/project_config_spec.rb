@@ -20,8 +20,13 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
   end
 
   subject(:config) do
-    described_class.new(project: project, sha: sha,
-                        custom_content: content, pipeline_source: source, pipeline_source_bridge: bridge)
+    described_class.new(
+      project: project,
+      sha: sha,
+      custom_content: content,
+      pipeline_source: source,
+      pipeline_source_bridge: bridge
+    )
   end
 
   shared_examples 'does not include compliance pipeline configuration content' do
@@ -42,9 +47,11 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
 
       context 'when compliance pipeline configuration is defined' do
         let(:framework) do
-          create(:compliance_framework,
-                 namespace: compliance_group,
-                 pipeline_configuration_full_path: ".compliance-gitlab-ci.yml@compliance/hippa")
+          create(
+            :compliance_framework,
+            namespace: compliance_group,
+            pipeline_configuration_full_path: ".compliance-gitlab-ci.yml@compliance/hippa"
+          )
         end
 
         let!(:framework_project_setting) do
