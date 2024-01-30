@@ -112,7 +112,7 @@ export default {
         </h3>
         <div
           v-if="parentIsEpic"
-          class="gl-display-inline-flex lh-100 gl-vertical-align-middle gl-ml-3 gl-flex-wrap"
+          class="gl-display-inline-flex gl-line-height-1 gl-vertical-align-middle gl-ml-3 gl-flex-wrap"
         >
           <gl-popover :target="() => $refs.countBadge">
             <p v-if="allowSubEpics" class="gl-font-weight-bold gl-m-0">
@@ -178,7 +178,7 @@ export default {
         </div>
       </div>
       <div
-        class="gl-display-flex gl-sm-display-inline-flex lh-100 gl-vertical-align-middle gl-sm-ml-2 gl-ml-0 gl-flex-wrap gl-mt-2 gl-sm-mt-0"
+        class="gl-display-flex gl-sm-display-inline-flex gl-line-height-1 gl-vertical-align-middle gl-sm-ml-2 gl-ml-0 gl-flex-wrap gl-mt-2 gl-sm-mt-0"
       >
         <epic-health-status v-if="showHealthStatus" :health-status="healthStatus" />
       </div>
@@ -186,7 +186,7 @@ export default {
 
     <div
       v-if="parentIsEpic"
-      class="gl-display-flex gl-sm-display-inline-flex gl-sm-ml-auto lh-100 gl-vertical-align-middle gl-mt-3 gl-sm-mt-0 gl-pl-0 gl-sm-pl-7"
+      class="gl-display-flex gl-sm-display-inline-flex gl-sm-ml-auto gl-line-height-1 gl-vertical-align-middle gl-mt-3 gl-sm-mt-0 gl-pl-0 gl-sm-pl-7"
     >
       <div
         class="gl-flex-grow-1 gl-flex-direction-column gl-sm-flex-direction-row js-button-container"
