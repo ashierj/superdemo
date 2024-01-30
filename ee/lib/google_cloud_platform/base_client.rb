@@ -5,7 +5,7 @@ module GoogleCloudPlatform
     GLGO_BASE_URL = if Gitlab.staging?
                       'https://glgo.staging.runway.gitlab.net'
                     else
-                      'https://glgo.runway.gitlab.net'
+                      'https://auth.gcp.gitlab.com'
                     end
 
     GLGO_TOKEN_ENDPOINT_URL = "#{GLGO_BASE_URL}/token".freeze
