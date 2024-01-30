@@ -459,7 +459,7 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep, feature_categor
   end
 
   describe '#vulnerability_states_for_branch' do
-    let(:vulnerability_states) { [:detected, :newly_detected] }
+    let(:vulnerability_states) { [:detected, :new_needs_triage] }
     let(:approval_rule) { create(:approval_merge_request_rule, :scan_finding, vulnerability_states: vulnerability_states, merge_request: merge_request) }
 
     subject { approval_rule.vulnerability_states_for_branch }
@@ -470,13 +470,13 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep, feature_categor
       end
 
       it 'returns all vulnerability states' do
-        expect(subject).to contain_exactly('detected', described_class::NEWLY_DETECTED)
+        expect(subject).to contain_exactly('detected', 'new_needs_triage')
       end
     end
 
     context 'with target branch different from project default branch' do
       it 'returns only newly detected' do
-        expect(subject).to contain_exactly(described_class::NEWLY_DETECTED)
+        expect(subject).to contain_exactly('new_needs_triage')
       end
 
       context 'without newly_detected' do
