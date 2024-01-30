@@ -7,12 +7,13 @@ module EE
       include ::Gitlab::Utils::StrongMemoize
       include ::Audit::Changes
 
-      attr_reader :group_id_for_saml
+      attr_reader :group_id_for_saml, :ldap_sync
 
       override :initialize
       def initialize(current_user, params = {})
         super
         @group_id_for_saml = params.delete(:group_id_for_saml)
+        @ldap_sync = params.delete(:ldap_sync)
         @params = params.dup
       end
 
@@ -49,6 +50,14 @@ module EE
 
         discard_name unless name_updatable?
         discard_private_profile if params[:private_profile] && !can_make_profile_private?
+      end
+
+      override :synced_attributes
+      def synced_attributes
+        return super unless ldap_sync
+
+        # User email can be updated during LDAP sync if the email is updated on the LDAP server
+        super - [:email]
       end
 
       def discard_name

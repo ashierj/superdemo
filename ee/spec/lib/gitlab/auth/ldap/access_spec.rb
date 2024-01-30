@@ -159,6 +159,21 @@ RSpec.describe Gitlab::Auth::Ldap::Access, feature_category: :system_access do
         it 'does not update the name if the user email is different' do
           expect { access.update_user }.not_to change(user, :name)
         end
+
+        context 'when the email is synced' do
+          before do
+            user.create_user_synced_attributes_metadata(email_synced: true, provider: 'ldapmain')
+          end
+
+          it 'updates the email if the user email is different' do
+            expect { access.update_user }.to change { user.reload.email }.to('new_email@example.com')
+          end
+
+          it 'does not update if the new email is in use' do
+            create(:user, email: 'new_email@example.com')
+            expect { access.update_user }.not_to change { user.reload.email }
+          end
+        end
       end
     end
 
