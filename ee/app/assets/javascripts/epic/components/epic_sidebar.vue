@@ -8,6 +8,7 @@ import { TYPENAME_EPIC } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_EPIC, WORKSPACE_GROUP } from '~/issues/constants';
 import notesEventHub from '~/notes/event_hub';
+import SubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue';
 import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar_participants_widget.vue';
@@ -30,6 +31,7 @@ export default {
     SidebarParticipantsWidget,
     SidebarConfidentialityWidget,
     SidebarTodoWidget,
+    SubscriptionsWidget,
     LabelsSelectWidget,
     ColorSelectDropdown,
   },
@@ -120,7 +122,7 @@ export default {
           :full-path="fullPath"
           :issuable-type="issuableType"
         />
-        <sidebar-subscriptions-widget
+        <subscriptions-widget
           v-if="glFeatures.notificationsTodosButtons"
           class="btn-icon"
           :iid="String(iid)"
