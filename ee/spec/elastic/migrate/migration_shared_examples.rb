@@ -483,6 +483,19 @@ RSpec.shared_examples 'migration reindexes all data' do
     ensure_elasticsearch_index!
   end
 
+  describe 'QueryRecorder to check N+1' do
+    it 'avoids N+1 queries' do
+      allow(migration).to receive(:limit_per_iteration).and_return(1)
+
+      control = ActiveRecord::QueryRecorder.new(skip_cached: false) { migration.migrate }
+
+      create_list(klass.name.downcase.to_sym, objects.size)
+      ensure_elasticsearch_index!
+
+      expect { migration.migrate }.to issue_same_number_of_queries_as(control)
+    end
+  end
+
   describe 'migration_options' do
     it 'has migration options set', :aggregate_failures do
       expect(migration).to be_batched

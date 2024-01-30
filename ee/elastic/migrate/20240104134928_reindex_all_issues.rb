@@ -13,4 +13,8 @@ class ReindexAllIssues < Elastic::Migration
   def respect_limited_indexing?
     true
   end
+
+  def item_to_preload
+    :project
+  end
 end
