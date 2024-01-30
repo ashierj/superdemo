@@ -144,7 +144,7 @@ export default {
         <!-- Rollout Instances -->
         <div
           v-else-if="hasInstances(row.item.rolloutStatus)"
-          class="d-flex flex-wrap flex-row justify-content-end justify-content-md-start"
+          class="d-flex gl-flex-wrap flex-row justify-content-end justify-content-md-start"
         >
           <template v-for="(instance, i) in row.item.rolloutStatus.instances">
             <deployment-instance
