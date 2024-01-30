@@ -13,6 +13,6 @@ export const buildScannerAction = ({ scanner, siteProfile = '', scannerProfile =
   return action;
 };
 
-export const buildCustomCodeAction = () => {
-  return { scan: CUSTOM_ACTION_KEY, id: uniqueId('action_') };
+export const buildCustomCodeAction = (id) => {
+  return { scan: CUSTOM_ACTION_KEY, id: id || uniqueId('action_') };
 };

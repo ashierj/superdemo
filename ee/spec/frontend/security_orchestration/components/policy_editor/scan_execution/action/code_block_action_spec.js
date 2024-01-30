@@ -61,6 +61,47 @@ describe('CodeBlockAction', () => {
       expect(findCodeBlockSourceSelector().props('selectedType')).toBe(INSERTED_CODE_BLOCK);
       expect(findCodeBlockImport().props('hasExistingCode')).toBe(false);
     });
+
+    it('should change code source type', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findCodeBlockSourceSelector().props('selectedType')).toBe(INSERTED_CODE_BLOCK);
+
+      await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
+
+      expect(findCodeBlockSourceSelector().exists()).toBe(false);
+      expect(findCodeBlockFilePath().props('selectedType')).toBe(LINKED_EXISTING_FILE);
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            scan: 'custom',
+            id: 'action_0',
+          },
+        ],
+      ]);
+
+      await findCodeBlockFilePath().vm.$emit('select-type', INSERTED_CODE_BLOCK);
+      expect(findCodeBlockSourceSelector().props('selectedType')).toBe(INSERTED_CODE_BLOCK);
+      expect(findCodeBlockFilePath().exists()).toBe(false);
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            scan: 'custom',
+            id: 'action_0',
+          },
+        ],
+        [
+          {
+            scan: 'custom',
+            id: 'action_0',
+          },
+        ],
+      ]);
+    });
   });
 
   describe('code block', () => {
