@@ -8,6 +8,7 @@ import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
 import MetricsChart from 'ee/metrics/details/metrics_chart.vue';
 import FilteredSearch from 'ee/metrics/details/filter_bar/metrics_filtered_search.vue';
 import { ingestedAtTimeAgo } from 'ee/metrics/utils';
+import { prepareTokens } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 
 jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
@@ -108,7 +109,11 @@ describe('MetricsDetails', () => {
 
     it('fetches data', () => {
       expect(observabilityClientMock.isObservabilityEnabled).toHaveBeenCalled();
-      expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(METRIC_ID, METRIC_TYPE);
+      expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(
+        METRIC_ID,
+        METRIC_TYPE,
+        expect.any(Object),
+      );
       expect(observabilityClientMock.fetchMetricSearchMetadata).toHaveBeenCalledWith(
         METRIC_ID,
         METRIC_TYPE,
@@ -116,22 +121,118 @@ describe('MetricsDetails', () => {
     });
 
     it('renders the metrics details', () => {
+      expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(
+        METRIC_ID,
+        METRIC_TYPE,
+        expect.any(Object),
+      );
       expect(findLoadingIcon().exists()).toBe(false);
       expect(findMetricDetails().exists()).toBe(true);
     });
 
-    it('renders the FilteredSearch component', () => {
-      const filteredSearch = findMetricDetails().findComponent(FilteredSearch);
-      expect(filteredSearch.exists()).toBe(true);
-      // TODO get searchConfig from API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2488
-      expect(Object.keys(filteredSearch.props('searchConfig'))).toEqual(
-        expect.arrayContaining([
-          'dimensions',
-          'groupByFunctions',
-          'defaultGroupByFunction',
-          'defaultGroupByDimensions',
-        ]),
-      );
+    describe('filtered search', () => {
+      const findFilteredSearch = () => findMetricDetails().findComponent(FilteredSearch);
+      it('renders the FilteredSearch component', () => {
+        expect(findFilteredSearch().exists()).toBe(true);
+        // TODO get searchConfig from API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2488
+        expect(Object.keys(findFilteredSearch().props('searchConfig'))).toEqual(
+          expect.arrayContaining([
+            'dimensions',
+            'groupByFunctions',
+            'defaultGroupByFunction',
+            'defaultGroupByDimensions',
+          ]),
+        );
+      });
+
+      it('sets the default date range', () => {
+        expect(findFilteredSearch().props('dateRangeFilter')).toEqual({
+          endDate: new Date('2020-07-06T00:00:00.000Z'),
+          startDarte: new Date('2020-07-05T23:00:00.000Z'),
+          value: '1h',
+        });
+      });
+
+      it('fetches metrics with filters', () => {
+        expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(METRIC_ID, METRIC_TYPE, {
+          filters: {
+            dimensions: [],
+            dateRange: {
+              endDate: new Date('2020-07-06T00:00:00.000Z'),
+              startDarte: new Date('2020-07-05T23:00:00.000Z'),
+              value: '1h',
+            },
+          },
+        });
+      });
+
+      describe('on search submit', () => {
+        const setFilters = async (dimensions, dateRange, groupBy) => {
+          findFilteredSearch().vm.$emit('filter', {
+            dimensions: prepareTokens(dimensions),
+            dateRange,
+            groupBy,
+          });
+          await waitForPromises();
+        };
+
+        beforeEach(async () => {
+          await setFilters(
+            {
+              'key.one': [{ operator: '=', value: '12h' }],
+            },
+            {
+              endDate: new Date('2020-07-06T00:00:00.000Z'),
+              startDarte: new Date('2020-07-05T23:00:00.000Z'),
+              value: '30d',
+            },
+            {
+              func: 'avg',
+              dimensions: ['attr_1', 'attr_2'],
+            },
+          );
+        });
+
+        it('fetches traces with updated filters', () => {
+          expect(observabilityClientMock.fetchMetric).toHaveBeenLastCalledWith(
+            METRIC_ID,
+            METRIC_TYPE,
+            {
+              filters: {
+                dimensions: {
+                  'key.one': [{ operator: '=', value: '12h' }],
+                },
+                dateRange: {
+                  endDate: new Date('2020-07-06T00:00:00.000Z'),
+                  startDarte: new Date('2020-07-05T23:00:00.000Z'),
+                  value: '30d',
+                },
+                groupBy: {
+                  func: 'avg',
+                  dimensions: ['attr_1', 'attr_2'],
+                },
+              },
+            },
+          );
+        });
+
+        it('updates FilteredSearch props', () => {
+          expect(findFilteredSearch().props('dateRangeFilter')).toEqual({
+            endDate: new Date('2020-07-06T00:00:00.000Z'),
+            startDarte: new Date('2020-07-05T23:00:00.000Z'),
+            value: '30d',
+          });
+          expect(findFilteredSearch().props('dimensionFilters')).toEqual(
+            prepareTokens({
+              'key.one': [{ operator: '=', value: '12h' }],
+            }),
+          );
+          expect(findFilteredSearch().props('groupByFilter')).toEqual({
+            func: 'avg',
+            dimensions: ['attr_1', 'attr_2'],
+          });
+        });
+      });
     });
 
     it('renders the details chart', () => {

@@ -15,16 +15,11 @@ describe('MetricsFilteredSearch', () => {
     groupByFunctions: ['avg', 'sum', 'p50'],
   };
 
-  const defaultDateRange = {
-    endDate: new Date('2020-07-06T00:00:00.000Z'),
-    startDarte: new Date('2020-07-05T23:00:00.000Z'),
-    value: '1h',
-  };
-
-  const mount = (searchConfig = {}) => {
+  const mount = (props = {}, searchConfig = {}) => {
     wrapper = shallowMountExtended(MetricsFilteredSearch, {
       propsData: {
         searchConfig: { ...defaultSearchConfig, ...searchConfig },
+        ...props,
       },
     });
   };
@@ -50,10 +45,23 @@ describe('MetricsFilteredSearch', () => {
     });
   });
 
-  it('renders the date range picker dropdown with the default date range', () => {
+  it('renders the filtered search component with with initial tokens', () => {
+    const filters = [{ type: 'key.name', value: 'foo' }];
+    mount({ dimensionFilters: filters });
+
+    expect(findFilteredSearch().props('initialFilterValue')).toEqual(filters);
+  });
+
+  it('renders the date range picker dropdown with the selected date range', () => {
+    const date = {
+      endDate: new Date('2020-07-06T00:00:00.000Z'),
+      startDarte: new Date('2020-07-05T23:00:00.000Z'),
+      value: '1h',
+    };
+    mount({ dateRangeFilter: date });
     const dateRangesDropdown = findDateRangeFilter();
     expect(dateRangesDropdown.exists()).toBe(true);
-    expect(dateRangesDropdown.props('selected')).toEqual(defaultDateRange);
+    expect(dateRangesDropdown.props('selected')).toEqual(date);
   });
 
   describe('group-by filter', () => {
@@ -66,10 +74,13 @@ describe('MetricsFilteredSearch', () => {
     });
 
     it('renders the group-by filter with defaults', () => {
-      mount({
-        defaultGroupByFunction: 'avg',
-        defaultGroupByDimensions: ['dimension_one', 'dimension_two'],
-      });
+      mount(
+        {},
+        {
+          defaultGroupByFunction: 'avg',
+          defaultGroupByDimensions: ['dimension_one', 'dimension_two'],
+        },
+      );
       const groupBy = findGroupByFilter();
 
       expect(groupBy.props('searchConfig')).toEqual({
@@ -81,6 +92,25 @@ describe('MetricsFilteredSearch', () => {
       expect(groupBy.props('selectedFunction')).toBe('avg');
       expect(groupBy.props('selectedDimensions')).toEqual(['dimension_one', 'dimension_two']);
     });
+
+    it('renders the group-by filter with specified prop', () => {
+      mount(
+        {
+          groupByFilter: {
+            func: 'sum',
+            dimensions: ['attr_1'],
+          },
+        },
+        {
+          defaultGroupByFunction: 'avg',
+          defaultGroupByDimensions: ['dimension_one', 'dimension_two'],
+        },
+      );
+      const groupBy = findGroupByFilter();
+
+      expect(groupBy.props('selectedFunction')).toBe('sum');
+      expect(groupBy.props('selectedDimensions')).toEqual(['attr_1']);
+    });
   });
 
   it('emits the filter event when the dimensions filter is changed', async () => {
@@ -91,9 +121,6 @@ describe('MetricsFilteredSearch', () => {
       [
         {
           dimensions: [{ dimension: 'namespace', operator: 'is not', value: 'test' }],
-          dateRange: {
-            ...defaultDateRange,
-          },
           groupBy: {
             dimensions: [],
             func: '',
@@ -131,10 +158,13 @@ describe('MetricsFilteredSearch', () => {
   });
 
   it('emits the filter event with default group-by when onFilter is emitted', async () => {
-    mount({
-      defaultGroupByFunction: 'avg',
-      defaultGroupByDimensions: ['dimension_one', 'dimension_two'],
-    });
+    mount(
+      {},
+      {
+        defaultGroupByFunction: 'avg',
+        defaultGroupByDimensions: ['dimension_one', 'dimension_two'],
+      },
+    );
 
     await findFilteredSearch().vm.$emit('onFilter', []);
 
@@ -142,9 +172,6 @@ describe('MetricsFilteredSearch', () => {
       [
         {
           dimensions: [],
-          dateRange: {
-            ...defaultDateRange,
-          },
           groupBy: {
             dimensions: ['dimension_one', 'dimension_two'],
             func: 'avg',
@@ -169,9 +196,6 @@ describe('MetricsFilteredSearch', () => {
       [
         {
           dimensions: [],
-          dateRange: {
-            ...defaultDateRange,
-          },
           groupBy,
         },
       ],

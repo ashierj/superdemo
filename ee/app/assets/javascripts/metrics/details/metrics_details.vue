@@ -4,9 +4,16 @@ import EMPTY_CHART_SVG from '@gitlab/svgs/dist/illustrations/chart-empty-state.s
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
+import {
+  prepareTokens,
+  processFilters as processFilteredSearchFilters,
+} from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
+import { periodToDate } from '~/observability/utils';
 import { ingestedAtTimeAgo } from '../utils';
 import MetricsChart from './metrics_chart.vue';
 import FilteredSearch from './filter_bar/metrics_filtered_search.vue';
+
+const DEFAULT_TIME_RANGE = '1h';
 
 export default {
   i18n: {
@@ -43,9 +50,19 @@ export default {
     },
   },
   data() {
+    const defaultRange = periodToDate(DEFAULT_TIME_RANGE);
     return {
       metricData: [],
       searchConfig: null,
+      // TODO get filters from query params https://gitlab.com/gitlab-org/opstrace/opstrace/-/work_items/2605
+      filters: {
+        dimensions: [],
+        dateRange: {
+          value: DEFAULT_TIME_RANGE,
+          startDarte: defaultRange.min,
+          endDate: defaultRange.max,
+        },
+      },
       loading: false,
       searchMetadata: null,
     };
@@ -58,6 +75,10 @@ export default {
         lastIngested: ingestedAtTimeAgo(this.searchMetadata?.last_ingested_at),
         description: this.searchMetadata?.description,
       };
+    },
+    dimensionFiltersValue() {
+      // only dimensions are used by the filtered_search component, so only those needs processing
+      return prepareTokens(this.filters.dimensions);
     },
   },
   created() {
@@ -108,6 +129,7 @@ export default {
         this.metricData = await this.observabilityClient.fetchMetric(
           this.metricId,
           this.metricType,
+          { filters: this.filters },
         );
         // TODO fetch config from API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2488
         this.searchConfig = {
@@ -126,6 +148,15 @@ export default {
     },
     goToMetricsIndex() {
       visitUrl(this.metricsIndexUrl);
+    },
+    onFilter({ dimensions, dateRange, groupBy }) {
+      this.filters = {
+        // only dimensions are used by the filtered_search component, so only those needs processing
+        dimensions: processFilteredSearchFilters(dimensions),
+        dateRange,
+        groupBy,
+      };
+      this.fetchMetricData();
     },
   },
   EMPTY_CHART_SVG,
@@ -150,7 +181,14 @@ export default {
     </div>
 
     <div class="gl-my-6">
-      <filtered-search v-if="searchConfig" :search-config="searchConfig" />
+      <filtered-search
+        v-if="searchConfig"
+        :search-config="searchConfig"
+        :dimension-filters="dimensionFiltersValue"
+        :date-range-filter="filters.dateRange"
+        :group-by-filter="filters.groupBy"
+        @filter="onFilter"
+      />
       <metrics-chart v-if="metricData.length > 0" :metric-data="metricData" />
       <gl-empty-state v-else :svg-path="$options.EMPTY_CHART_SVG">
         <template #title>
