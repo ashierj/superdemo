@@ -606,7 +606,6 @@
                   "items": {
                     "type": "string",
                     "enum": [
-                      "newly_detected",
                       "detected",
                       "confirmed",
                       "resolved",

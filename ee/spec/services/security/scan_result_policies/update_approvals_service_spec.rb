@@ -7,7 +7,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     let(:scanners) { %w[dependency_scanning] }
     let(:vulnerabilities_allowed) { 1 }
     let(:severity_levels) { %w[high unknown] }
-    let(:vulnerability_states) { %w[detected newly_detected] }
+    let(:vulnerability_states) { %w[detected new_needs_triage new_dismissed] }
     let(:approvals_required) { 2 }
 
     let_it_be(:project) { create(:project, :repository) }
@@ -348,7 +348,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
           uuid: existing_uuid)
       end
 
-      let(:vulnerability_states) { %w[newly_detected] }
+      let(:vulnerability_states) { %w[new_needs_triage new_dismissed] }
       let(:vulnerabilities_allowed) { uuids.count - 1 }
       let(:existing_uuid) { uuids.first }
 
@@ -379,7 +379,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     end
 
     context 'when there are findings in the current pipeline exceed the allowed limit' do
-      it_behaves_like 'new vulnerability_states', ['newly_detected']
       it_behaves_like 'new vulnerability_states', ['new_needs_triage']
       it_behaves_like 'new vulnerability_states', ['new_dismissed']
       it_behaves_like 'new vulnerability_states', %w[new_dismissed new_needs_triage]
@@ -620,7 +619,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
           let(:base_states) { %w[detected] }
 
           [
-            %w[newly_detected],
             %w[new_needs_triage],
             %w[new_dismissed],
             %w[new_needs_triage new_dismissed]
