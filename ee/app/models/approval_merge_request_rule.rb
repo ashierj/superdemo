@@ -151,10 +151,6 @@ class ApprovalMergeRequestRule < ApplicationRecord
     states & NEWLY_DETECTED_STATUSES
   end
 
-  def hook_attrs
-    attributes
-  end
-
   private
 
   def compare_with_project_rule
