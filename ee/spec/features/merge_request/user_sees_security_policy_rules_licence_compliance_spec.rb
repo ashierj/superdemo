@@ -29,13 +29,14 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
     end
 
     let(:ee_merge_request_path) { project_merge_request_path(project, ee_merge_request) }
+    let(:policy_branch_names) { %w[master] }
 
     shared_examples 'a merge request without violations' do
       it 'does not block the MR' do
         visit(ee_merge_request_path)
         wait_for_requests
 
-        expect(page).not_to have_content 'Policy violation(s) detected'
+        expect(page).not_to have_content 'Merge blocked'
         expect(page).to have_content 'Ready to merge!'
         expect(page).to have_button('Merge', exact: true)
       end
@@ -74,7 +75,7 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
             visit(ee_merge_request_path)
             wait_for_requests
 
-            expect(page).to have_content 'Requires 1 approval from eligible users'
+            expect(page).to have_content "Requires 1 approval from #{policy_name}"
             expect(page).to have_content 'Policy violation(s) detected'
             expect(page).to have_content 'Merge blocked'
             expect(page).not_to have_button('Merge', exact: true)
@@ -127,10 +128,24 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
         it 'requires approval for detected', :aggregate_failures do
           visit(ee_merge_request_path)
           wait_for_requests
-          expect(page).to have_content 'Requires 1 approval from eligible users'
+
+          expect(page).to have_content "Requires 1 approval from #{policy_name}"
           expect(page).to have_content 'Policy violation(s) detected'
           expect(page).to have_content 'Merge blocked'
         end
+      end
+
+      context 'when policy branch is different MR target branch' do
+        let(:license_type) { 'MIT' }
+        let(:policy_branch_names) { %w[spooky-stuff] }
+        let(:license_states) { %w[newly_detected] }
+        let!(:protected_branch) { create(:protected_branch, name: policy_branch_names.first, project: project) }
+
+        before do
+          create_policy_setup
+        end
+
+        it_behaves_like 'a merge request without violations'
       end
     end
 
