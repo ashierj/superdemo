@@ -13,6 +13,7 @@ describe('App component', () => {
   const findPolicySelection = () => wrapper.findComponent(PolicyTypeSelector);
   const findPolicyEditor = () => wrapper.findComponent(EditorWrapper);
   const findPath = () => wrapper.findComponent(GlPath);
+  const findTitle = () => wrapper.findByTestId('title').text();
 
   const factory = ({ provide = {} } = {}) => {
     wrapper = shallowMountExtended(App, {
@@ -32,19 +33,19 @@ describe('App component', () => {
       });
 
       it('should display the title correctly', () => {
-        expect(wrapper.findByText(App.i18n.titles.default).exists()).toBe(true);
+        expect(findTitle()).toBe('New policy');
       });
 
       it('should display the path items correctly', () => {
         expect(findPath().props('items')).toMatchObject([
           {
             selected: true,
-            title: App.i18n.choosePolicyType,
+            title: 'Step 1: Choose a policy type',
           },
           {
             disabled: true,
             selected: false,
-            title: App.i18n.policyDetails,
+            title: 'Step 2: Policy details',
           },
         ]);
       });
@@ -61,7 +62,7 @@ describe('App component', () => {
       });
 
       it('should display the title correctly', () => {
-        expect(wrapper.findByText(App.i18n.titles.default).exists()).toBe(true);
+        expect(findTitle()).toBe('New policy');
       });
 
       it('should display the correct view', () => {
@@ -73,12 +74,12 @@ describe('App component', () => {
         expect(findPath().props('items')).toMatchObject([
           {
             selected: true,
-            title: App.i18n.choosePolicyType,
+            title: 'Step 1: Choose a policy type',
           },
           {
             disabled: true,
             selected: false,
-            title: App.i18n.policyDetails,
+            title: 'Step 2: Policy details',
           },
         ]);
       });
@@ -86,36 +87,81 @@ describe('App component', () => {
   });
 
   describe('when there is a type query parameter', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(urlUtils, 'getParameterByName')
-        .mockReturnValue(POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter);
-      factory({
-        provide: {
-          namespaceType: NAMESPACE_TYPES.PROJECT,
-          existingPolicy: {
-            id: 'policy-id',
+    describe('approval', () => {
+      beforeEach(() => {
+        jest
+          .spyOn(urlUtils, 'getParameterByName')
+          .mockReturnValue(POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter);
+        factory({
+          provide: {
+            namespaceType: NAMESPACE_TYPES.PROJECT,
+            existingPolicy: {
+              id: 'policy-id',
+              value: 'approval',
+            },
           },
-        },
+        });
+      });
+
+      it('should display the title correctly', () => {
+        expect(findTitle()).toBe('Edit merge request approval policy');
+      });
+
+      it('should not display the GlPath component when there is an existing policy', () => {
+        expect(findPath().exists()).toBe(false);
+      });
+
+      it('should display the correct view according to the selected policy', () => {
+        expect(findPolicySelection().exists()).toBe(false);
+        expect(findPolicyEditor().exists()).toBe(true);
       });
     });
 
-    it('should display the title correctly', () => {
-      expect(wrapper.findByText(App.i18n.editTitles.scanResult).exists()).toBe(true);
+    describe('scan execution', () => {
+      beforeEach(() => {
+        jest
+          .spyOn(urlUtils, 'getParameterByName')
+          .mockReturnValue(POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter);
+        factory({
+          provide: {
+            namespaceType: NAMESPACE_TYPES.PROJECT,
+            existingPolicy: {
+              id: 'policy-id',
+              value: 'scanExecution',
+            },
+          },
+        });
+      });
+
+      it('should display the title correctly', () => {
+        expect(findTitle()).toBe('Edit scan execution policy');
+      });
     });
 
-    it('should not display the GlPath component when there is an existing policy', () => {
-      expect(findPath().exists()).toBe(false);
-    });
+    describe('scan result', () => {
+      beforeEach(() => {
+        jest
+          .spyOn(urlUtils, 'getParameterByName')
+          .mockReturnValue(POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter);
+        factory({
+          provide: {
+            namespaceType: NAMESPACE_TYPES.PROJECT,
+            existingPolicy: {
+              id: 'policy-id',
+              value: 'scanResult',
+            },
+          },
+        });
+      });
 
-    it('should display the correct view according to the selected policy', () => {
-      expect(findPolicySelection().exists()).toBe(false);
-      expect(findPolicyEditor().exists()).toBe(true);
+      it('should display the title correctly', () => {
+        expect(findTitle()).toBe('Edit merge request approval policy');
+      });
     });
   });
 
   it.each([
-    POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter,
+    POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter,
     POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
   ])('should update url without page refresh when policy is selected', (parameter) => {
     document.title = 'Test title';

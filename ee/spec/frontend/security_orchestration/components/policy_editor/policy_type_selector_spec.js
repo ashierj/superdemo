@@ -49,11 +49,11 @@ describe('PolicyTypeSelector component', () => {
       });
 
       it('displays the button for policy types that have not reached their max number allowed', () => {
+        expect(findPolicyButton(POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter).exists()).toBe(
+          true,
+        );
         expect(
-          findPolicyButton(POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter).exists(),
-        ).toBe(true);
-        expect(
-          findMaxAllowedPolicyText(POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter).exists(),
+          findMaxAllowedPolicyText(POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter).exists(),
         ).toBe(false);
       });
 
@@ -79,7 +79,7 @@ describe('PolicyTypeSelector component', () => {
   });
 
   it.each([
-    POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter,
+    POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter,
     POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
   ])('should emit selected policy type', (parameter) => {
     factory({

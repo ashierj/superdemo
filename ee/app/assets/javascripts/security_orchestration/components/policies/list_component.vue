@@ -138,7 +138,7 @@ export default {
     allPolicyTypes() {
       return {
         [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]: this.scanExecutionPolicies,
-        [POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT.value]: this.scanResultPolicies,
+        [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: this.scanResultPolicies,
       };
     },
     policies() {
@@ -189,9 +189,7 @@ export default {
           key: 'status',
           label: '',
           thClass: 'gl-w-3',
-          tdAttr: {
-            'data-testid': 'policy-status-cell',
-          },
+          tdAttr: { 'data-testid': 'policy-status-cell' },
         },
         {
           key: 'name',
@@ -203,17 +201,13 @@ export default {
           key: 'policyType',
           label: s__('SecurityOrchestration|Policy type'),
           sortable: true,
-          tdAttr: {
-            'data-testid': 'policy-type-cell',
-          },
+          tdAttr: { 'data-testid': 'policy-type-cell' },
         },
         {
           key: 'source',
           label: s__('SecurityOrchestration|Source'),
           sortable: true,
-          tdAttr: {
-            'data-testid': 'policy-source-cell',
-          },
+          tdAttr: { 'data-testid': 'policy-source-cell' },
         },
         {
           key: 'updatedAt',

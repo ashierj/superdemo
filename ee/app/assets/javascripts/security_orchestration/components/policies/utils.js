@@ -38,8 +38,13 @@ export const validateSourceFilter = (value) => validateFilter(POLICY_SOURCE_OPTI
  * @param type
  * @returns {string|undefined|string}
  */
-export const extractTypeParameter = (type) =>
-  validateTypeFilter(type) ? type?.toUpperCase() : POLICY_TYPE_FILTER_OPTIONS.ALL.value;
+export const extractTypeParameter = (type) => {
+  // necessary for bookmarks of /-/security/policies?type=scan_result
+  const updatedType = type === 'scan_result' ? 'approval' : type;
+  return validateTypeFilter(updatedType)
+    ? updatedType?.toUpperCase()
+    : POLICY_TYPE_FILTER_OPTIONS.ALL.value;
+};
 
 /**
  * Conversion between lower case url params and policies

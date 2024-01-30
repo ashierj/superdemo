@@ -10,7 +10,7 @@
  */
 import { actionId, ruleId } from './mock_data';
 
-export const mockForcePushSettingsManifest = `type: scan_result_policy
+export const mockForcePushSettingsManifest = `type: approval_policy
 name: ''
 description: ''
 enabled: true
@@ -23,7 +23,7 @@ approval_settings:
   prevent_pushing_and_force_pushing: true
 `;
 
-export const mockBlockAndForceSettingsManifest = `type: scan_result_policy
+export const mockBlockAndForceSettingsManifest = `type: approval_policy
 name: ''
 description: ''
 enabled: true
@@ -37,7 +37,7 @@ approval_settings:
   prevent_pushing_and_force_pushing: true
 `;
 
-export const mockDefaultBranchesScanResultManifest = `type: scan_result_policy
+export const mockDefaultBranchesScanResultManifest = `type: approval_policy
 name: critical vulnerability CS approvals
 description: This policy enforces critical vulnerability CS approvals
 enabled: true
@@ -59,6 +59,53 @@ actions:
 `;
 
 export const mockDefaultBranchesScanResultObject = {
+  type: 'approval_policy',
+  name: 'critical vulnerability CS approvals',
+  description: 'This policy enforces critical vulnerability CS approvals',
+  enabled: true,
+  rules: [
+    {
+      type: 'scan_finding',
+      branches: [],
+      scanners: ['container_scanning'],
+      vulnerabilities_allowed: 1,
+      severity_levels: ['critical'],
+      vulnerability_states: ['newly_detected'],
+      id: ruleId,
+    },
+  ],
+  actions: [
+    {
+      type: 'require_approval',
+      approvals_required: 1,
+      user_approvers: ['the.one'],
+      id: actionId,
+    },
+  ],
+};
+
+export const mockDeprecatedScanResultManifest = `type: scan_result_policy
+name: critical vulnerability CS approvals
+description: This policy enforces critical vulnerability CS approvals
+enabled: true
+rules:
+  - type: scan_finding
+    branches: []
+    scanners:
+      - container_scanning
+    vulnerabilities_allowed: 1
+    severity_levels:
+      - critical
+    vulnerability_states:
+      - newly_detected
+actions:
+  - type: require_approval
+    approvals_required: 1
+    user_approvers:
+      - the.one
+`;
+
+export const mockDeprecatedScanResultObject = {
   type: 'scan_result_policy',
   name: 'critical vulnerability CS approvals',
   description: 'This policy enforces critical vulnerability CS approvals',
@@ -89,7 +136,7 @@ export const mockProjectScanResultPolicy = {
   name: mockDefaultBranchesScanResultObject.name,
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDefaultBranchesScanResultManifest,
-  editPath: '/policies/policy-name/edit?type="scan_result_policy"',
+  editPath: '/policies/policy-name/edit?type="approval_policy"',
   enabled: false,
   userApprovers: [],
   allGroupApprovers: [],
@@ -107,7 +154,7 @@ export const mockGroupScanResultPolicy = {
   name: mockDefaultBranchesScanResultObject.name,
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDefaultBranchesScanResultManifest,
-  editPath: '/policies/policy-name/edit?type="scan_result_policy"',
+  editPath: '/policies/policy-name/edit?type="approval_policy"',
   enabled: mockDefaultBranchesScanResultObject.enabled,
   userApprovers: [],
   allGroupApprovers: [],
@@ -124,7 +171,7 @@ export const mockGroupScanResultPolicy = {
   },
 };
 
-export const mockApprovalSettingsScanResultManifest = `type: scan_result_policy
+export const mockApprovalSettingsScanResultManifest = `type: approval_policy
 name: critical vulnerability CS approvals
 description: This policy enforces critical vulnerability CS approvals
 enabled: true
@@ -148,7 +195,7 @@ approval_settings:
   prevent_pushing_and_force_pushing: true
 `;
 
-export const mockApprovalSettingsPermittedInvalidScanResultManifest = `type: scan_result_policy
+export const mockApprovalSettingsPermittedInvalidScanResultManifest = `type: approval_policy
 name: critical vulnerability CS approvals
 description: This policy enforces critical vulnerability CS approvals
 enabled: true
@@ -172,7 +219,7 @@ approval_settings:
     enabled: true
 `;
 
-export const mockPolicyScopeScanResultManifest = `type: scan_result_policy
+export const mockPolicyScopeScanResultManifest = `type: approval_policy
 name: policy scope
 description: This policy enforces policy scope
 enabled: true
@@ -184,7 +231,7 @@ policy_scope:
 `;
 
 export const mockPolicyScopeScanResultObject = {
-  type: 'scan_result_policy',
+  type: 'approval_policy',
   name: 'policy scope',
   description: 'This policy enforces policy scope',
   enabled: true,
@@ -196,7 +243,7 @@ export const mockPolicyScopeScanResultObject = {
 };
 
 export const mockApprovalSettingsScanResultObject = {
-  type: 'scan_result_policy',
+  type: 'approval_policy',
   name: 'critical vulnerability CS approvals',
   description: 'This policy enforces critical vulnerability CS approvals',
   enabled: true,
@@ -230,7 +277,7 @@ export const mockApprovalSettingsScanResultPolicy = {
   name: 'low vulnerability SAST approvals',
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockApprovalSettingsScanResultManifest,
-  editPath: '/policies/policy-name/edit?type="scan_result_policy"',
+  editPath: '/policies/policy-name/edit?type="approval_policy"',
   enabled: true,
   userApprovers: [{ name: 'the.one' }],
   allGroupApprovers: [],
@@ -245,7 +292,7 @@ export const mockApprovalSettingsScanResultPolicy = {
 };
 
 export const mockApprovalSettingsPermittedInvalidScanResultObject = {
-  type: 'scan_result_policy',
+  type: 'approval_policy',
   name: 'critical vulnerability CS approvals',
   description: 'This policy enforces critical vulnerability CS approvals',
   enabled: true,
@@ -292,7 +339,7 @@ actions:
     approvals_required: 1
 `;
 
-export const mockWithBranchesScanResultManifest = `type: scan_result_policy
+export const mockWithBranchesScanResultManifest = `type: approval_policy
 name: low vulnerability SAST approvals
 description: This policy enforces low vulnerability SAST approvals
 enabled: true
@@ -319,7 +366,7 @@ export const mockProjectWithBranchesScanResultPolicy = {
   name: 'low vulnerability SAST approvals',
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockWithBranchesScanResultManifest,
-  editPath: '/policies/policy-name/edit?type="scan_result_policy"',
+  editPath: '/policies/policy-name/edit?type="approval_policy"',
   enabled: true,
   userApprovers: [{ name: 'the.one' }],
   allGroupApprovers: [],
@@ -337,7 +384,7 @@ export const mockProjectWithAllApproverTypesScanResultPolicy = {
   name: mockDefaultBranchesScanResultObject.name,
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDefaultBranchesScanResultManifest,
-  editPath: '/policies/policy-name/edit?type="scan_result_policy"',
+  editPath: '/policies/policy-name/edit?type="approval_policy"',
   enabled: false,
   userApprovers: [{ name: 'the.one' }],
   allGroupApprovers: [{ fullPath: 'the.one.group' }],

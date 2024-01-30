@@ -5,17 +5,24 @@ export const NEW_POLICY_BUTTON_TEXT = s__('SecurityOrchestration|New policy');
 export const POLICY_TYPE_COMPONENT_OPTIONS = {
   scanExecution: {
     component: 'scan-execution-policy-editor',
-    text: s__('SecurityOrchestration|Scan Execution'),
+    text: s__('SecurityOrchestration|Scan execution'),
     typeName: 'ScanExecutionPolicy',
     urlParameter: 'scan_execution_policy',
     value: 'scanExecution',
   },
   scanResult: {
     component: 'scan-result-policy-editor',
-    text: s__('SecurityOrchestration|Scan Result'),
+    text: s__('SecurityOrchestration|Merge request approval'),
     typeName: 'ScanResultPolicy',
     urlParameter: 'scan_result_policy',
     value: 'scanResult',
+  },
+  approval: {
+    component: 'scan-result-policy-editor',
+    text: s__('SecurityOrchestration|Merge request approval'),
+    typeName: 'ScanResultPolicy',
+    urlParameter: 'approval_policy',
+    value: 'approval',
   },
 };
 

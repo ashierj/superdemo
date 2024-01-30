@@ -17,7 +17,7 @@ export const GROUP = {
   type: GROUP_TYPE,
 };
 
-export const mockRoleApproversScanResultManifest = `type: scan_result_policy
+export const mockRoleApproversApprovalManifest = `type: approval_policy
 name: ''
 description: ''
 enabled: true
@@ -32,7 +32,7 @@ approval_settings:
   prevent_pushing_and_force_pushing: true
 `;
 
-export const mockUserApproversScanResultManifest = `type: scan_result_policy
+export const mockUserApproversApprovalManifest = `type: approval_policy
 name: ''
 description: ''
 enabled: true
@@ -47,7 +47,7 @@ approval_settings:
   prevent_pushing_and_force_pushing: true
 `;
 
-export const mockGroupApproversScanResultManifest = `type: scan_result_policy
+export const mockGroupApproversApprovalManifest = `type: approval_policy
 name: ''
 description: ''
 enabled: true

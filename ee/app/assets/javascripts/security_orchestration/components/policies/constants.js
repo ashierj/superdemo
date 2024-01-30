@@ -24,15 +24,15 @@ export const POLICY_TYPE_FILTER_OPTIONS = {
     value: 'SCAN_EXECUTION',
     text: s__('SecurityOrchestration|Scan execution'),
   },
-  SCAN_RESULT: {
-    value: 'SCAN_RESULT',
-    text: s__('SecurityOrchestration|Scan result'),
+  APPROVAL: {
+    value: 'APPROVAL',
+    text: s__('SecurityOrchestration|Merge request approval'),
   },
 };
 
 export const POLICY_TYPES_WITH_INHERITANCE = [
   POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value,
-  POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT.value,
+  POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value,
 ];
 
 export const EMPTY_LIST_DESCRIPTION = s__(

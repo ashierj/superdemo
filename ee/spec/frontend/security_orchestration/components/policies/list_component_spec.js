@@ -147,7 +147,7 @@ describe('List component', () => {
     describe.each`
       rowIndex | expectedPolicyName                           | expectedPolicyType
       ${1}     | ${mockScanExecutionPoliciesResponse[0].name} | ${'Scan execution'}
-      ${3}     | ${mockScanResultPoliciesResponse[0].name}    | ${'Scan result'}
+      ${3}     | ${mockScanResultPoliciesResponse[0].name}    | ${'Merge request approval'}
     `('policy in row #$rowIndex', ({ rowIndex, expectedPolicyName, expectedPolicyType }) => {
       let row;
 
@@ -166,8 +166,8 @@ describe('List component', () => {
 
     it.each`
       description         | filterBy                                     | hiddenTypes
-      ${'scan execution'} | ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION} | ${[POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT]}
-      ${'scan result'}    | ${POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT}    | ${[POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION]}
+      ${'scan execution'} | ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION} | ${[POLICY_TYPE_FILTER_OPTIONS.APPROVAL]}
+      ${'scan result'}    | ${POLICY_TYPE_FILTER_OPTIONS.APPROVAL}       | ${[POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION]}
     `('policies filtered by $description type', async ({ filterBy, hiddenTypes }) => {
       findPolicyTypeFilter().vm.$emit('input', filterBy.value);
       await nextTick();
@@ -385,7 +385,7 @@ describe('List component', () => {
 
     it('displays inherited scan result policies', () => {
       expect(trimText(findPolicyTypeCells().at(1).text())).toBe(
-        POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT.text,
+        POLICY_TYPE_FILTER_OPTIONS.APPROVAL.text,
       );
     });
   });

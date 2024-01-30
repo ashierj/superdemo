@@ -16,9 +16,9 @@ import {
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib';
 import { DEFAULT_PROVIDE } from '../mocks/mocks';
 import {
-  mockSecurityScanResultManifest,
-  mockLicenseScanResultManifest,
-  mockAnyMergeRequestScanResultManifest,
+  mockSecurityApprovalManifest,
+  mockLicenseApprovalManifest,
+  mockAnyMergeRequestApprovalManifest,
 } from '../mocks/rule_mocks';
 import { verify } from '../utils';
 
@@ -72,7 +72,7 @@ describe('Scan result policy rules', () => {
 
       await findScanTypeSelect().vm.$emit('select', SCAN_FINDING);
       await verify({
-        manifest: mockSecurityScanResultManifest,
+        manifest: mockSecurityApprovalManifest,
         verifyRuleMode,
         wrapper,
       });
@@ -84,14 +84,14 @@ describe('Scan result policy rules', () => {
       createWrapper();
     });
 
-    it('should select licence rule', async () => {
+    it('should select license rule', async () => {
       const verifyRuleMode = () => {
         expect(findDefaultRuleBuilder().exists()).toBe(false);
         expect(findLicenseScanRuleBuilder().exists()).toBe(true);
         expect(findSettingsSection().exists()).toBe(true);
       };
       await findScanTypeSelect().vm.$emit('select', LICENSE_FINDING);
-      await verify({ manifest: mockLicenseScanResultManifest, verifyRuleMode, wrapper });
+      await verify({ manifest: mockLicenseApprovalManifest, verifyRuleMode, wrapper });
     });
   });
 
@@ -109,7 +109,7 @@ describe('Scan result policy rules', () => {
       };
 
       await findScanTypeSelect().vm.$emit('select', ANY_MERGE_REQUEST);
-      await verify({ manifest: mockAnyMergeRequestScanResultManifest, verifyRuleMode, wrapper });
+      await verify({ manifest: mockAnyMergeRequestApprovalManifest, verifyRuleMode, wrapper });
     });
   });
 });
