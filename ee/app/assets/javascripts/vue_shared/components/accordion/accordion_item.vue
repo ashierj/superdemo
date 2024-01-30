@@ -98,7 +98,7 @@ export default {
           :disabled="isDisabled"
           :aria-expanded="isExpanded"
           :aria-controls="contentContainerId"
-          class="gl-bg-transparent border-0 rounded-0 w-100 p-0 text-left"
+          class="gl-bg-transparent border-0 rounded-0 gl-w-full p-0 text-left"
           :class="{ 'cursor-default': isDisabled, 'list-group-item-action': !isDisabled }"
           @click="handleClick"
         >

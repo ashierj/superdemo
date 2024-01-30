@@ -193,7 +193,7 @@ export default {
       >
         <epic-actions-split-button
           :allow-sub-epics="allowSubEpics"
-          class="js-add-epics-issues-button w-100"
+          class="js-add-epics-issues-button gl-w-full"
           @showAddIssueForm="showAddIssueForm"
           @showCreateIssueForm="showCreateIssueForm"
           @showAddEpicForm="showAddEpicForm"

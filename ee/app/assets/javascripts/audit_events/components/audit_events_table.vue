@@ -111,7 +111,7 @@ export default {
       :next-page="nextPage"
       :link-gen="generateLink"
       align="center"
-      class="w-100"
+      class="gl-w-full"
     />
   </div>
 </template>
