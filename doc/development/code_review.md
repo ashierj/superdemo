@@ -725,13 +725,13 @@ author.
   well. Building abstractions and good design is what makes it possible to hide
   complexity and makes future changes easier.
 - Enforcing and improving [code style](contributing/style_guides.md) should be primarily done through
-  [automation](https://about.gitlab.com/handbook/values/#cleanup-over-sign-off)
+  [automation](https://handbook.gitlab.com/handbook/values/#cleanup-over-sign-off)
   instead of review comments.
 - Asking the author to change the design sometimes means the complete rewrite
   of the contributed code. It's usually a good idea to ask another maintainer or
   reviewer before doing it, but have the courage to do it when you believe it is
   important.
-- In the interest of [Iteration](https://about.gitlab.com/handbook/values/#iteration),
+- In the interest of [Iteration](https://handbook.gitlab.com/handbook/values/#iteration),
   if your review suggestions are non-blocking changes, or personal preference
   (not a documented or agreed requirement), consider approving the merge request
   before passing it back to the author. This allows them to implement your suggestions
@@ -803,7 +803,7 @@ Properties of customer critical merge requests:
 - The DRI applies the `customer-critical-merge-request` label to the merge request.
 - It is required that the reviewers and maintainers involved with a customer critical merge request are engaged as soon as this decision is made.
 - It is required to prioritize work for those involved on a customer critical merge request so that they have the time available necessary to focus on it.
-- It is required to adhere to GitLab [values](https://about.gitlab.com/handbook/values/) and processes when working on customer critical merge requests, taking particular note of family and friends first/work second, definition of done, iteration, and release when it's ready.
+- It is required to adhere to GitLab [values](https://handbook.gitlab.com/handbook/values/) and processes when working on customer critical merge requests, taking particular note of family and friends first/work second, definition of done, iteration, and release when it's ready.
 - Customer critical merge requests are required to not reduce security, introduce data-loss risk, reduce availability, nor break existing functionality per the process for [prioritizing technical decisions](https://handbook.gitlab.com/handbook/engineering/development/principles/#prioritizing-technical-decisions).
 - On customer critical requests, it is _recommended_ that those involved _consider_ coordinating synchronously (Zoom, Slack) in addition to asynchronously (merge requests comments) if they believe this may reduce the elapsed time to merge even though this _may_ sacrifice [efficiency](https://about.gitlab.com/company/culture/all-remote/asynchronous/#evaluating-efficiency.md).
 - After a customer critical merge request is merged, a retrospective must be completed with the intention of reducing the frequency of future customer critical merge requests.
