@@ -189,7 +189,7 @@ export default {
       <div ref="labelsListContainer" class="dropdown-content" data-testid="dropdown-content">
         <gl-loading-icon
           v-if="labelsFetchInProgress"
-          class="labels-fetch-loading gl-align-items-center w-100 h-100"
+          class="labels-fetch-loading gl-align-items-center w-100 gl-h-full"
           size="lg"
         />
         <ul v-else class="list-unstyled gl-mb-0 gl-word-break-word">
