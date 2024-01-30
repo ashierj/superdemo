@@ -14,11 +14,8 @@ FactoryBot.modify do
   end
 end
 
-# There is another factory called :requirement for RequirementManagement::Requirement.
-# We are converting that class into an issue type. We can rename this as :requirement
-# when migration is completed. More information at https://gitlab.com/gitlab-org/gitlab/-/issues/323779
 FactoryBot.define do
-  factory :requirement_issue, parent: :issue do
+  factory :requirement, parent: :issue do
     association :work_item_type, :default, :requirement
   end
 end
