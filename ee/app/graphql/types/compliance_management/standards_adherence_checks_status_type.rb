@@ -17,8 +17,7 @@ module Types
 
       field :total_checks, GraphQL::Types::Int,
         null: false,
-        description: 'Total number of adherence checks. ' \
-                     '(Adherence checks multiplied by the number of projects in the group).'
+        description: 'Number of adherence checks multiplied by the number of projects in the group.'
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end
