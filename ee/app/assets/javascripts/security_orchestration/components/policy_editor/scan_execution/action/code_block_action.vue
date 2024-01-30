@@ -125,7 +125,7 @@ export default {
   },
   methods: {
     resetActionToDefault() {
-      this.$emit('changed', buildCustomCodeAction());
+      this.$emit('changed', buildCustomCodeAction(this.initAction.id));
     },
     resetValidation() {
       if (!this.doesFileExist) {
@@ -270,6 +270,7 @@ export default {
           <yaml-editor
             data-testid="custom-yaml-editor"
             policy-type="scan_execution_policy"
+            :file-global-id="initAction.id"
             :disable-schema="true"
             :value="yamlEditorValue"
             :read-only="false"
