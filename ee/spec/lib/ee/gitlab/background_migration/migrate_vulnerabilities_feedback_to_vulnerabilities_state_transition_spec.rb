@@ -48,8 +48,16 @@ RSpec.describe(
   end
 
   let!(:membership) do
-    members.create!(access_level: 50, source_id: project.id, source_type: "Project", user_id: user.id, state: 0,
-                    notification_level: 3, type: "ProjectMember", member_namespace_id: namespace.id)
+    members.create!(
+      access_level: 50,
+      source_id: project.id,
+      source_type: "Project",
+      user_id: user.id,
+      state: 0,
+      notification_level: 3,
+      type: "ProjectMember",
+      member_namespace_id: namespace.id
+    )
   end
 
   let(:migration_attrs) do

@@ -52,7 +52,7 @@ module EE
 
           belongs_to :vulnerability, class_name: 'Vulnerability'
           has_many :feedbacks, class_name: 'Feedback', inverse_of: :finding, primary_key: 'uuid',
-                               foreign_key: 'finding_uuid'
+            foreign_key: 'finding_uuid'
         end
 
         class SecurityFinding < ::ApplicationRecord
@@ -63,15 +63,15 @@ module EE
           self.ignored_columns = [:partition_number]
 
           partitioned_by :partition_number,
-                         strategy: :sliding_list,
-                         next_partition_if: ->(_) { false },
-                         detach_partition_if: ->(_) { false }
+            strategy: :sliding_list,
+            next_partition_if: ->(_) { false },
+            detach_partition_if: ->(_) { false }
 
           has_many :feedbacks,
-                   class_name: 'Feedback',
-                   inverse_of: :security_finding,
-                   primary_key: 'uuid',
-                   foreign_key: 'finding_uuid'
+            class_name: 'Feedback',
+            inverse_of: :security_finding,
+            primary_key: 'uuid',
+            foreign_key: 'finding_uuid'
 
           validates :finding_data, json_schema: { filename: "filename" }, if: false
         end
@@ -83,16 +83,16 @@ module EE
           belongs_to :project, class_name: 'Project'
           belongs_to :author, class_name: 'User'
           belongs_to :finding,
-                     primary_key: :uuid,
-                     foreign_key: :finding_uuid,
-                     class_name: 'Finding',
-                     inverse_of: :feedbacks
+            primary_key: :uuid,
+            foreign_key: :finding_uuid,
+            class_name: 'Finding',
+            inverse_of: :feedbacks
 
           belongs_to :security_finding,
-                     primary_key: :uuid,
-                     foreign_key: :finding_uuid,
-                     class_name: 'SecurityFinding',
-                     inverse_of: :feedbacks
+            primary_key: :uuid,
+            foreign_key: :finding_uuid,
+            class_name: 'SecurityFinding',
+            inverse_of: :feedbacks
 
           def self.match_on_finding_uuid_or_security_finding_or_project_fingerprint
             where('EXISTS (SELECT 1 FROM vulnerability_occurrences WHERE vulnerability_occurrences.uuid =

@@ -24,9 +24,12 @@ RSpec.describe Gitlab::BackgroundMigration::PopulateApprovalMergeRequestRulesWit
 
     let(:namespace_2) { namespaces.create!(name: 'name_2', path: 'path_2') }
     let(:security_project) do
-      projects
-        .create!(name: "security_project", path: "security_project", namespace_id: namespace_2.id,
-                 project_namespace_id: namespace_2.id)
+      projects.create!(
+        name: "security_project",
+        path: "security_project",
+        namespace_id: namespace_2.id,
+        project_namespace_id: namespace_2.id
+      )
     end
 
     let!(:security_orchestration_policy_configuration) do
@@ -59,19 +62,23 @@ RSpec.describe Gitlab::BackgroundMigration::PopulateApprovalMergeRequestRulesWit
     end
 
     let!(:approval_merge_request_rule_source) do
-      approval_merge_request_rule_sources.create!(approval_merge_request_rule_id: merge_request_rule.id,
-                                                  approval_project_rule_id: project_rule.id)
+      approval_merge_request_rule_sources.create!(
+        approval_merge_request_rule_id: merge_request_rule.id, approval_project_rule_id: project_rule.id
+      )
     end
 
     let!(:approval_merge_request_rule_source_other_report_type) do
-      approval_merge_request_rule_sources
-        .create!(approval_merge_request_rule_id: merge_request_rule_other_report_type.id,
-                 approval_project_rule_id: project_rule.id)
+      approval_merge_request_rule_sources.create!(
+        approval_merge_request_rule_id: merge_request_rule_other_report_type.id,
+        approval_project_rule_id: project_rule.id
+      )
     end
 
     let!(:approval_merge_request_rule_source_last) do
-      approval_merge_request_rule_sources.create!(approval_merge_request_rule_id: merge_request_rule_last.id,
-                                                  approval_project_rule_id: project_rule_unrelated.id)
+      approval_merge_request_rule_sources.create!(
+        approval_merge_request_rule_id: merge_request_rule_last.id,
+        approval_project_rule_id: project_rule_unrelated.id
+      )
     end
 
     subject do
