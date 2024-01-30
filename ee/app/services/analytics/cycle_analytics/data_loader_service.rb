@@ -66,7 +66,7 @@ module Analytics
       def iterator
         opts = {
           in_operator_optimization_options: {
-            array_scope: group.all_projects.select(:id),
+            array_scope: group.all_project_ids,
             array_mapping_scope: -> (id_expression) {
                                    model.where(model.arel_table[event_model.project_column].eq(id_expression))
                                  }
