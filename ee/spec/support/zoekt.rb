@@ -37,6 +37,14 @@ module Zoekt
       zoekt_ensure_namespace_indexed!(project.namespace)
 
       project.repository.update_zoekt_index!
+      # Add delay to allow Zoekt wbeserver to finish the indexing
+      10.times do
+        results = Gitlab::Search::Zoekt::Client.new.search('.*', num: 1, project_ids: [project.id],
+          node_id: zoekt_node.id, search_mode: :regex)
+        break if results[:Result][:FileCount] > 0
+
+        sleep 0.01
+      end
     end
   end
 end

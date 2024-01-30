@@ -39,12 +39,7 @@ module Gitlab
           raise 'Node can not be found' unless target_node
 
           with_node_exception_handling(target_node) do
-            response = post_request(
-              join_url(target_node.search_base_url, path),
-              payload,
-              allow_local_requests: true,
-              basic_auth: basic_auth_params
-            )
+            response = post_request(join_url(target_node.search_base_url, path), payload)
 
             log_error('Zoekt search failed', status: response.code, response: response.body) unless response.success?
 
@@ -91,7 +86,7 @@ module Gitlab
 
         def post_request(url, payload = {}, **options)
           defaults = {
-            headers: { "Content-Type" => "application/json" },
+            headers: { 'Content-Type' => 'application/json' },
             body: payload.to_json,
             allow_local_requests: true,
             basic_auth: basic_auth_params
