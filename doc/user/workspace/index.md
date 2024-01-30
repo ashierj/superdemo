@@ -79,6 +79,7 @@ in that workspace is deleted and cannot be recovered.
 ### Identify an agent from a running workspace
 
 In deployments that contain multiple agents, you might want to identify an agent from a running workspace.
+
 To identify an agent associated with a running workspace, use one of the following GraphQL endpoints:
 
 - `agent-id` to return the project the agent belongs to.
