@@ -36,7 +36,7 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
       end
 
       context 'when running out of allotted time' do
-        let(:runtime_limiter) { instance_double('Analytics::CycleAnalytics::RuntimeLimiter') }
+        let(:runtime_limiter) { instance_double('Gitlab::Metrics::RuntimeLimiter') }
 
         subject(:service_response) { service.execute(runtime_limiter: runtime_limiter) }
 

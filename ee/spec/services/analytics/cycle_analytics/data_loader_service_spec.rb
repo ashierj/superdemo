@@ -217,7 +217,7 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :
       context 'when runtime limit is reached' do
         it 'finishes with limit_reached reason' do
           first_monotonic_time = 100
-          second_monotonic_time = first_monotonic_time + Analytics::CycleAnalytics::RuntimeLimiter::DEFAULT_MAX_RUNTIME.to_i + 10
+          second_monotonic_time = first_monotonic_time + Gitlab::Metrics::RuntimeLimiter::DEFAULT_MAX_RUNTIME.to_i + 10
 
           # 1. when initializing the runtime limiter
           # 2. when start the processing

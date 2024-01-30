@@ -22,7 +22,7 @@ RSpec.shared_examples 'aggregator worker examples' do
       .with(
         aggregation: aggregation,
         mode: expected_mode,
-        runtime_limiter: instance_of(Analytics::CycleAnalytics::RuntimeLimiter)
+        runtime_limiter: instance_of(Gitlab::Metrics::RuntimeLimiter)
       )
       .and_call_original
 
@@ -33,7 +33,7 @@ RSpec.shared_examples 'aggregator worker examples' do
     create_list(:cycle_analytics_aggregation, 2)
 
     first_monotonic_time = 100
-    default_max_runtime = Analytics::CycleAnalytics::RuntimeLimiter::DEFAULT_MAX_RUNTIME.to_i
+    default_max_runtime = Gitlab::Metrics::RuntimeLimiter::DEFAULT_MAX_RUNTIME.to_i
     second_monotonic_time = first_monotonic_time + default_max_runtime + 10
 
     expect(Gitlab::Metrics::System).to receive(:monotonic_time).and_return(first_monotonic_time, second_monotonic_time)
