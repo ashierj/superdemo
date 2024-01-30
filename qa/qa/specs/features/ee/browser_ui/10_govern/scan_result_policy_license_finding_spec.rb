@@ -109,7 +109,7 @@ module QA
 
       def create_test_mr
         create(:merge_request,
-          :no_preperation,
+          :no_preparation,
           project: project,
           target_new_branch: false,
           source_branch: commit_branch)
