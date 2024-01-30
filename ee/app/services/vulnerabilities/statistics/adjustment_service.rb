@@ -24,7 +24,12 @@ module Vulnerabilities
 
       STATS_SQL = <<~SQL
         WITH project_ids AS (
-          SELECT unnest(ARRAY[%{project_ids}]::bigint[]) AS project_id
+          SELECT
+            id AS project_id
+          FROM
+            projects
+          WHERE
+            projects.id IN (%{project_ids})
         )
         SELECT
           project_ids.project_id AS project_id,

@@ -28,6 +28,20 @@ RSpec.describe Vulnerabilities::Statistics::AdjustmentService, feature_category:
 
     subject(:adjust_statistics) { described_class.new(project_ids).execute }
 
+    shared_examples_for 'ignoring the non-existing project IDs' do
+      let(:project_ids) { [non_existing_record_id, project.id] }
+
+      it 'does not raise an exception' do
+        expect { adjust_statistics }.not_to raise_error
+      end
+
+      it 'adjusts the statistics for the project with existing IDs' do
+        adjust_statistics
+
+        expect(statistics).to eq(expected_statistics)
+      end
+    end
+
     context 'when more than 1000 projects is provided' do
       let(:project_ids) { (1..1001).to_a }
 
@@ -66,6 +80,8 @@ RSpec.describe Vulnerabilities::Statistics::AdjustmentService, feature_category:
 
           expect(statistics).to eq(expected_statistics)
         end
+
+        it_behaves_like 'ignoring the non-existing project IDs'
       end
 
       context 'when there is already a vulnerability_statistic record for project' do
@@ -82,6 +98,8 @@ RSpec.describe Vulnerabilities::Statistics::AdjustmentService, feature_category:
 
           expect(statistics).to eq(expected_statistics)
         end
+
+        it_behaves_like 'ignoring the non-existing project IDs'
       end
     end
 
@@ -113,6 +131,8 @@ RSpec.describe Vulnerabilities::Statistics::AdjustmentService, feature_category:
 
           expect(statistics).to eq(expected_statistics)
         end
+
+        it_behaves_like 'ignoring the non-existing project IDs'
       end
 
       context 'when there is already a vulnerability_statistic record for project' do
@@ -129,6 +149,8 @@ RSpec.describe Vulnerabilities::Statistics::AdjustmentService, feature_category:
 
           expect(statistics).to eq(expected_statistics)
         end
+
+        it_behaves_like 'ignoring the non-existing project IDs'
       end
     end
   end
