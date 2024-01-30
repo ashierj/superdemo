@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$id": "https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/audit_events/types/type_schema.json",
+  "$id": "https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/config/custom_abilities/type_schema.json",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -52,6 +52,18 @@
     "skip_seat_consumption": {
       "type": "boolean",
       "description": "Indicate wheter this ability should be skiped when counting licensed users"
+    },
+    "available_from_access_level": {
+      "type": "integer",
+      "description": "The access level from which this ability is available.",
+      "enum": [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60
+      ]
     }
   },
   "required": [

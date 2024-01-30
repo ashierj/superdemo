@@ -17324,6 +17324,7 @@ Represents a product analytics dashboard visualization.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="customizablepermissionavailablefor"></a>`availableFor` | [`[String!]!`](#string) | Objects the permission is available for. |
+| <a id="customizablepermissionavailablefromaccesslevel"></a>`availableFromAccessLevel` | [`AccessLevel`](#accesslevel) | Access level from which the permission is available. |
 | <a id="customizablepermissiondescription"></a>`description` | [`String`](#string) | Description of the permission. |
 | <a id="customizablepermissionname"></a>`name` | [`String!`](#string) | Localized name of the permission. |
 | <a id="customizablepermissionrequirements"></a>`requirements` | [`[MemberRolePermission!]`](#memberrolepermission) | Requirements of the permission. |

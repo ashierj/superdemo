@@ -10,3 +10,4 @@ project_ability: false
 feature_flag: admin_group_member
 feature_flag_enabled_milestone: '16.6'
 feature_flag_enabled_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/136247
+available_from_access_level: 50

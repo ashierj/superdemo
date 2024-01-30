@@ -6,6 +6,8 @@ module Types
     class CustomizablePermissionType < BaseObject
       graphql_name 'CustomizablePermission'
 
+      include Gitlab::Utils::StrongMemoize
+
       field :available_for,
         type: [GraphQL::Types::String],
         null: false,
@@ -32,6 +34,11 @@ module Types
         description: 'Value of the permission.',
         method: :itself
 
+      field :available_from_access_level,
+        type: Types::AccessLevelType,
+        null: true,
+        description: 'Access level from which the permission is available.'
+
       def available_for
         result = []
         result << :project if MemberRole.all_customizable_project_permissions.include?(object)
@@ -52,9 +59,14 @@ module Types
         permission[:requirements].presence&.map(&:to_sym)
       end
 
+      def available_from_access_level
+        permission[:available_from_access_level]
+      end
+
       def permission
         MemberRole.all_customizable_permissions[object]
       end
+      strong_memoize_attr :permission
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end
