@@ -1,16 +1,21 @@
 import { GlProgressBar, GlLink } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
+import { namespace } from 'jest/usage_quotas/storage/mock_data';
 import NamespaceLimitsStorageUsageOverviewCard from 'ee/usage_quotas/storage/components/namespace_limits_storage_usage_overview_card.vue';
 import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import { STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE } from 'ee/usage_quotas/storage/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { statisticsCardDefaultProps, defaultNamespaceProvideValues } from '../mock_data';
+import { defaultNamespaceProvideValues } from '../mock_data';
 
 describe('NamespaceLimitsStorageUsageOverviewCard', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
-  const defaultProps = statisticsCardDefaultProps;
+  const defaultProps = {
+    purchasedStorage: 0,
+    usedStorage: namespace.rootStorageStatistics.storageSize,
+    loading: false,
+  };
 
   const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(NamespaceLimitsStorageUsageOverviewCard, {

@@ -2,9 +2,9 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import { storageTypeHelpPaths as helpLinks } from '~/usage_quotas/storage/constants';
+import NamespaceStorageApp from '~/usage_quotas/storage/components/namespace_storage_app.vue';
 import apolloProvider from 'ee/usage_quotas/shared/provider';
 import { NAMESPACE_ENFORCEMENT_TYPE, PROJECT_ENFORCEMENT_TYPE } from './constants';
-import NamespaceStorageApp from './components/namespace_storage_app.vue';
 
 Vue.use(VueApollo);
 
@@ -60,6 +60,7 @@ export default () => {
       isUsingNamespaceEnforcement,
       isUsingProjectEnforcementWithLimits,
       isUsingProjectEnforcementWithNoLimits,
+      customSortKey: isUsingProjectEnforcementWithLimits ? 'STORAGE' : null,
       helpLinks,
     },
     render(createElement) {
