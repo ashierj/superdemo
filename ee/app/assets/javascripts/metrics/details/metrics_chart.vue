@@ -102,8 +102,8 @@ export default {
 
     <template #tooltip-content>
       <div
-        v-for="metric in tooltipContent"
-        :key="metric.seriesId"
+        v-for="(metric, index) in tooltipContent"
+        :key="`${metric.seriesId}_${index}`"
         data-testid="metric-tooltip-content"
         class="gl-display-flex gl-justify-content-space-between gl-font-sm gl-mb-1"
       >

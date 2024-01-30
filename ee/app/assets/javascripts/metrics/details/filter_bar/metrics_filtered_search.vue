@@ -4,11 +4,8 @@ import { s__ } from '~/locale';
 import { OPERATORS_IS_NOT } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import { OPERATORS_LIKE_NOT } from '~/observability/constants';
-import { periodToDate } from '~/observability/utils';
 import DateRangeFilter from './date_range_filter.vue';
 import GroupByFilter from './groupby_filter.vue';
-
-const DEFAULT_TIME_RANGE = '1h';
 
 export default {
   components: {
@@ -24,18 +21,27 @@ export default {
       type: Object,
       required: true,
     },
+    dimensionFilters: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    dateRangeFilter: {
+      type: Object,
+      required: false,
+      default: () => {},
+    },
+    groupByFilter: {
+      type: Object,
+      required: false,
+      default: () => {},
+    },
   },
   data() {
-    const defaultRange = periodToDate(DEFAULT_TIME_RANGE);
     return {
       shouldShowDateRangePicker: false,
-      dimensionFilters: [],
-      dateRange: {
-        value: DEFAULT_TIME_RANGE,
-        startDarte: defaultRange.min,
-        endDate: defaultRange.max,
-      },
-      groupBy: {
+      dateRange: this.dateRangeFilter,
+      groupBy: this.groupByFilter ?? {
         dimensions: this.searchConfig.defaultGroupByDimensions ?? [],
         func: this.searchConfig.defaultGroupByFunction ?? '',
       },
@@ -53,10 +59,8 @@ export default {
   },
   methods: {
     onFilter(filters) {
-      this.dimensionFilters = filters;
-
       this.$emit('filter', {
-        dimensions: this.dimensionFilters,
+        dimensions: filters,
         dateRange: this.dateRange,
         groupBy: this.groupBy,
       });
@@ -81,6 +85,7 @@ export default {
       namespace="metrics-details-filtered-search"
       :search-input-placeholder="$options.i18n.searchInputPlaceholder"
       :tokens="availableTokens"
+      :initial-filter-value="dimensionFilters"
       terms-as-tokens
       @onFilter="onFilter"
     />
