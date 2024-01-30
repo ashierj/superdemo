@@ -87,7 +87,7 @@ export default {
 </script>
 <template>
   <div class="gl-mb-2">
-    <div class="flex align-items-center">
+    <div class="flex gl-align-items-center">
       <span v-if="value.completed" class="gl-text-green-500">
         <gl-icon name="check-circle-filled" :size="16" data-testid="completed-icon" />
         {{ actionLabelValue('title') }}

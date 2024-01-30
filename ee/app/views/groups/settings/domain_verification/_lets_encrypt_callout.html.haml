@@ -3,7 +3,7 @@
     - if domain_presenter.show_auto_ssl_failed_warning?
       .form-group.gl-form-group.js-shown-if-auto-ssl{ class: ("gl-display-none" unless auto_ssl_available_and_enabled) }
         .bs-callout.bs-callout-warning.gl-mt-0
-          .row.align-items-center.gl-mx-2
+          .row.gl-align-items-center.gl-mx-2
             = sprite_icon('warning-solid', css_class: 'gl-mr-2 gl-text-orange-600')
             = _("Something went wrong while obtaining the Let's Encrypt certificate.")
           .row.gl-mx-0.gl-mt-3

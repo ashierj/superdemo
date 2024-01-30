@@ -129,7 +129,7 @@ export default {
 
 <template>
   <div data-testid="burndown-chart">
-    <div v-if="showTitle" class="burndown-header d-flex align-items-center">
+    <div v-if="showTitle" class="burndown-header d-flex gl-align-items-center">
       <h3>{{ __('Burndown chart') }}</h3>
     </div>
     <gl-line-chart

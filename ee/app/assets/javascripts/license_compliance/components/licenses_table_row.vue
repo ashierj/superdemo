@@ -67,7 +67,7 @@ export default {
       <!-- Component -->
       <div class="table-section section-70 section-wrap pr-md-3">
         <div class="table-mobile-header" role="rowheader">{{ s__('Licenses|Component') }}</div>
-        <div class="table-mobile-content d-md-flex justify-content-between align-items-center">
+        <div class="table-mobile-content d-md-flex justify-content-between gl-align-items-center">
           <license-component-links :components="license.components" :title="license.name" />
           <div v-if="isDenied" class="d-inline-block">
             <gl-badge variant="warning" icon="warning">

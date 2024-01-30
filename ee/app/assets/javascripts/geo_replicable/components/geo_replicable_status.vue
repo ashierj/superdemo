@@ -38,7 +38,7 @@ export default {
 
 <template>
   <div
-    class="gl-display-flex align-items-center"
+    class="gl-display-flex gl-align-items-center"
     :class="styleProperties.cssClass"
     data-testid="replicable-item-status"
   >
