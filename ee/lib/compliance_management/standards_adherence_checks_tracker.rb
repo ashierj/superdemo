@@ -50,7 +50,7 @@ module ComplianceManagement
     # @return [Hash]
     def progress
       Gitlab::Redis::SharedState.with do |redis|
-        redis.hgetall(redis_key)
+        redis.hgetall(redis_key).transform_keys(&:to_sym)
       end
     end
   end
