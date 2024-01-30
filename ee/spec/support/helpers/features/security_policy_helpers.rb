@@ -13,6 +13,7 @@ module Features
     def create_policy_setup
       stub_feature_flags(merge_when_checks_pass: false)
       stub_licensed_features(security_dashboard: true,
+        multiple_approval_rules: true,
         security_orchestration_policies: true)
       policy_management_project.add_developer(user)
 
@@ -50,7 +51,7 @@ module Features
     def policy_rule
       {
         type: 'license_finding',
-        branches: %w[master],
+        branches: policy_branch_names,
         match_on_inclusion: true,
         license_types: [license_type],
         license_states: license_states
