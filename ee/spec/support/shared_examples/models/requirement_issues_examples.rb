@@ -9,7 +9,7 @@ RSpec.shared_examples 'a model with a requirement issue association' do
       requirement
     end
 
-    let(:requirement_issue) { build(:requirement_issue) }
+    let(:requirement_issue) { build(:requirement) }
 
     context 'when the requirement issue is of type requirement' do
       let(:requirement_issue_arg) { requirement_issue }
