@@ -11,6 +11,7 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     it { is_expected.to belong_to(:project).required }
     it { is_expected.to belong_to(:pipeline) }
     it { is_expected.to belong_to(:source) }
+    it { is_expected.to belong_to(:source_package) }
     it { is_expected.to have_many(:occurrences_vulnerabilities) }
     it { is_expected.to have_many(:vulnerabilities) }
   end

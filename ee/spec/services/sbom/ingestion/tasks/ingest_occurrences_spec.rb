@@ -49,6 +49,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
           'commit_sha' => pipeline.sha,
           'package_manager' => occurrence_map.packager,
           'input_file_path' => occurrence_map.input_file_path,
+          'source_package_id' => occurrence_map.source_package_id,
           'licenses' => [
             {
               'spdx_identifier' => 'Apache-2.0',
@@ -110,6 +111,15 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
         ingest_occurrences
 
         expect(Sbom::Occurrence.pluck(:licenses)).to all(be_empty)
+      end
+    end
+
+    context 'when there is no source package' do
+      let(:occurrence_maps) { create_list(:sbom_occurrence_map, 4, :for_occurrence_ingestion, source_package: nil) }
+
+      it 'inserts records without the source package' do
+        expect { ingest_occurrences }.to change(Sbom::Occurrence, :count).by(4)
+        expect(occurrence_maps).to all(have_attributes(occurrence_id: Integer))
       end
     end
 

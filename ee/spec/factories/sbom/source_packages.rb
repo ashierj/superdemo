@@ -3,6 +3,6 @@
 FactoryBot.define do
   factory :sbom_source_package, class: 'Sbom::SourcePackage' do
     purl_type { 'deb' }
-    name { 'perl' }
+    sequence(:name) { |n| "component-#{n}" }
   end
 end

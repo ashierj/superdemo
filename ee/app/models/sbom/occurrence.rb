@@ -12,6 +12,7 @@ module Sbom
     belongs_to :project, optional: false
     belongs_to :pipeline, class_name: 'Ci::Pipeline'
     belongs_to :source
+    belongs_to :source_package, optional: true
 
     has_many :occurrences_vulnerabilities,
       class_name: 'Sbom::OccurrencesVulnerability',
