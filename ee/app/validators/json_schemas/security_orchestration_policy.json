@@ -652,6 +652,10 @@
                   "type": "boolean",
                   "description": "Specifies whether to match licenses on inclusion or exclusion."
                 },
+                "match_on_inclusion_license": {
+                  "type": "boolean",
+                  "description": "Specifies whether to match licenses on inclusion or exclusion."
+                },
                 "license_types": {
                   "type": "array",
                   "description": "Specifies the licenses to match.",
@@ -726,11 +730,23 @@
                     }
                   },
                   "then": {
-                    "required": [
-                      "type",
-                      "match_on_inclusion",
-                      "license_types",
-                      "license_states"
+                    "oneOf": [
+                      {
+                        "required": [
+                          "type",
+                          "match_on_inclusion",
+                          "license_types",
+                          "license_states"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "type",
+                          "match_on_inclusion_license",
+                          "license_types",
+                          "license_states"
+                        ]
+                      }
                     ]
                   }
                 },

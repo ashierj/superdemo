@@ -62,11 +62,12 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
 
     context 'with license_finding security policy' do
       let(:license_states) { ['newly_detected'] }
-      let(:match_on_inclusion) { true }
+      let(:match_on_inclusion_license) { true }
       let(:approvals_required) { 1 }
 
       let(:scan_result_policy_read) do
-        create(:scan_result_policy_read, license_states: license_states, match_on_inclusion: match_on_inclusion)
+        create(:scan_result_policy_read, license_states: license_states,
+          match_on_inclusion_license: match_on_inclusion_license)
       end
 
       let!(:license_finding_rule) do
@@ -211,7 +212,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
       end
 
       with_them do
-        let(:match_on_inclusion) { policy_state == :denied }
+        let(:match_on_inclusion_license) { policy_state == :denied }
         let(:target_branch_report) { create(:ci_reports_license_scanning_report) }
         let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
         let(:license_states) { states }

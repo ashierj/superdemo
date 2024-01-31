@@ -46,7 +46,7 @@ class SoftwareLicensePolicy < ApplicationRecord
 
   scope :exclusion_allowed, -> do
     joins(:scan_result_policy_read)
-      .where(scan_result_policy_read: { match_on_inclusion: false })
+      .where(scan_result_policy_read: { match_on_inclusion_license: false })
   end
 
   scope :with_license_by_name, -> (license_name) do

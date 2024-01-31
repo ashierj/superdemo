@@ -64,11 +64,11 @@ module Security
     ## Checks if a policy rule violates the following conditions:
     ##   - If license_states has `newly_detected`, check for newly detected dependency
     ##     with license type violating the policy.
-    ##   - If match_on_inclusion is false, any detected licenses that does not match
+    ##   - If match_on_inclusion_license is false, any detected licenses that does not match
     ##     the licenses from `license_types` should require approval
     def violates_policy?(merge_request, rule)
       scan_result_policy_read = rule.scan_result_policy_read
-      check_denied_licenses = scan_result_policy_read.match_on_inclusion
+      check_denied_licenses = scan_result_policy_read.match_on_inclusion_license
       target_branch_report = target_branch_report(merge_request)
 
       license_ids, license_names = licenses_to_check(target_branch_report, scan_result_policy_read)
@@ -82,7 +82,7 @@ module Security
         denied_licenses = license_names_from_policy
         violates_license_policy = report.violates_for_licenses?(license_policies, license_ids, license_names)
       else
-        # when match_on_inclusion is false, only allowed licenses are mentioned in policy
+        # when match_on_inclusion_license is false, only allowed licenses are mentioned in policy
         denied_licenses = (license_names_from_report - license_names_from_policy).uniq
         license_names_from_ids = license_names_from_ids(license_ids, license_names)
         violates_license_policy = (license_names_from_ids - license_names_from_policy).present?

@@ -92,7 +92,7 @@ module SCA
       end
     end
 
-    # Constructs license to policy map for policy with `match_on_inclusion` as false
+    # Constructs license to policy map for policy with `match_on_inclusion_license` as false
     # by setting the `approval_status` as denied for all licenses from report except
     # for the one mentioned in the policy.
     def denied_license_policies
