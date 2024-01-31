@@ -133,16 +133,15 @@ describe('MetricsDetails', () => {
     describe('filtered search', () => {
       const findFilteredSearch = () => findMetricDetails().findComponent(FilteredSearch);
       it('renders the FilteredSearch component', () => {
-        expect(findFilteredSearch().exists()).toBe(true);
-        // TODO get searchConfig from API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2488
-        expect(Object.keys(findFilteredSearch().props('searchConfig'))).toEqual(
-          expect.arrayContaining([
-            'dimensions',
-            'groupByFunctions',
-            'defaultGroupByFunction',
-            'defaultGroupByDimensions',
-          ]),
-        );
+        const filteredSearch = findFilteredSearch();
+        expect(filteredSearch.exists()).toBe(true);
+        expect(filteredSearch.props('searchMetadata')).toBe(mockSearchMetadata);
+      });
+
+      it('does not render the filtered search component if fetching metadata fails', async () => {
+        observabilityClientMock.fetchMetricSearchMetadata.mockRejectedValueOnce('error');
+        await mountComponent();
+        expect(findFilteredSearch().exists()).toBe(false);
       });
 
       it('sets the default date range', () => {
@@ -156,7 +155,7 @@ describe('MetricsDetails', () => {
       it('fetches metrics with filters', () => {
         expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(METRIC_ID, METRIC_TYPE, {
           filters: {
-            dimensions: [],
+            attributes: [],
             dateRange: {
               endDate: new Date('2020-07-06T00:00:00.000Z'),
               startDarte: new Date('2020-07-05T23:00:00.000Z'),
@@ -167,9 +166,9 @@ describe('MetricsDetails', () => {
       });
 
       describe('on search submit', () => {
-        const setFilters = async (dimensions, dateRange, groupBy) => {
+        const setFilters = async (attributes, dateRange, groupBy) => {
           findFilteredSearch().vm.$emit('filter', {
-            dimensions: prepareTokens(dimensions),
+            attributes: prepareTokens(attributes),
             dateRange,
             groupBy,
           });
@@ -188,7 +187,7 @@ describe('MetricsDetails', () => {
             },
             {
               func: 'avg',
-              dimensions: ['attr_1', 'attr_2'],
+              attributes: ['attr_1', 'attr_2'],
             },
           );
         });
@@ -199,7 +198,7 @@ describe('MetricsDetails', () => {
             METRIC_TYPE,
             {
               filters: {
-                dimensions: {
+                attributes: {
                   'key.one': [{ operator: '=', value: '12h' }],
                 },
                 dateRange: {
@@ -209,7 +208,7 @@ describe('MetricsDetails', () => {
                 },
                 groupBy: {
                   func: 'avg',
-                  dimensions: ['attr_1', 'attr_2'],
+                  attributes: ['attr_1', 'attr_2'],
                 },
               },
             },
@@ -222,14 +221,14 @@ describe('MetricsDetails', () => {
             startDarte: new Date('2020-07-05T23:00:00.000Z'),
             value: '30d',
           });
-          expect(findFilteredSearch().props('dimensionFilters')).toEqual(
+          expect(findFilteredSearch().props('attributeFilters')).toEqual(
             prepareTokens({
               'key.one': [{ operator: '=', value: '12h' }],
             }),
           );
           expect(findFilteredSearch().props('groupByFilter')).toEqual({
             func: 'avg',
-            dimensions: ['attr_1', 'attr_2'],
+            attributes: ['attr_1', 'attr_2'],
           });
         });
       });
@@ -316,12 +315,6 @@ describe('MetricsDetails', () => {
         expect(findHeader().exists()).toBe(true);
         expect(findChart().exists()).toBe(false);
       });
-    });
-
-    it('does not fetch metric data if fetching search metadata fails', async () => {
-      observabilityClientMock.fetchMetricSearchMetadata.mockRejectedValueOnce('error');
-      await mountComponent();
-      expect(observabilityClientMock.fetchMetric).not.toHaveBeenCalled();
     });
 
     it('renders an alert if metricId is missing', async () => {

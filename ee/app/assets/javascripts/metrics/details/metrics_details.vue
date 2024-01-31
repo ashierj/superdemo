@@ -53,10 +53,10 @@ export default {
     const defaultRange = periodToDate(DEFAULT_TIME_RANGE);
     return {
       metricData: [],
-      searchConfig: null,
+      searchMetadata: null,
       // TODO get filters from query params https://gitlab.com/gitlab-org/opstrace/opstrace/-/work_items/2605
       filters: {
-        dimensions: [],
+        attributes: [],
         dateRange: {
           value: DEFAULT_TIME_RANGE,
           startDarte: defaultRange.min,
@@ -64,7 +64,6 @@ export default {
         },
       },
       loading: false,
-      searchMetadata: null,
     };
   },
   computed: {
@@ -76,9 +75,9 @@ export default {
         description: this.searchMetadata?.description,
       };
     },
-    dimensionFiltersValue() {
-      // only dimensions are used by the filtered_search component, so only those needs processing
-      return prepareTokens(this.filters.dimensions);
+    attributeFiltersValue() {
+      // only attributes are used by the filtered_search component, so only those needs processing
+      return prepareTokens(this.filters.attributes);
     },
   },
   created() {
@@ -96,10 +95,7 @@ export default {
       try {
         const enabled = await this.observabilityClient.isObservabilityEnabled();
         if (enabled) {
-          await this.fetchMetricSearchMetadata();
-          if (this.searchMetadata) {
-            await this.fetchMetricData();
-          }
+          await Promise.all([this.fetchMetricSearchMetadata(), await this.fetchMetricData()]);
         } else {
           this.goToMetricsIndex();
         }
@@ -131,13 +127,6 @@ export default {
           this.metricType,
           { filters: this.filters },
         );
-        // TODO fetch config from API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2488
-        this.searchConfig = {
-          dimensions: ['dimension_one', 'dimension_two'],
-          groupByFunctions: ['avg', 'sum', 'p50'],
-          defaultGroupByFunction: 'avg',
-          defaultGroupByDimensions: ['dimension_one', 'dimension_two'],
-        };
       } catch (e) {
         createAlert({
           message: this.$options.i18n.error,
@@ -149,10 +138,10 @@ export default {
     goToMetricsIndex() {
       visitUrl(this.metricsIndexUrl);
     },
-    onFilter({ dimensions, dateRange, groupBy }) {
+    onFilter({ attributes, dateRange, groupBy }) {
       this.filters = {
-        // only dimensions are used by the filtered_search component, so only those needs processing
-        dimensions: processFilteredSearchFilters(dimensions),
+        // only attributes are used by the filtered_search component, so only those needs processing
+        attributes: processFilteredSearchFilters(attributes),
         dateRange,
         groupBy,
       };
@@ -182,9 +171,9 @@ export default {
 
     <div class="gl-my-6">
       <filtered-search
-        v-if="searchConfig"
-        :search-config="searchConfig"
-        :dimension-filters="dimensionFiltersValue"
+        v-if="searchMetadata"
+        :search-metadata="searchMetadata"
+        :attribute-filters="attributeFiltersValue"
         :date-range-filter="filters.dateRange"
         :group-by-filter="filters.groupBy"
         @filter="onFilter"

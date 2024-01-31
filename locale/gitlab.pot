@@ -33588,7 +33588,7 @@ msgstr ""
 msgid "ObservabilityMetrics|Failed to load metrics."
 msgstr ""
 
-msgid "ObservabilityMetrics|Filter dimensions..."
+msgid "ObservabilityMetrics|Filter attributes..."
 msgstr ""
 
 msgid "ObservabilityMetrics|Last ingested"
