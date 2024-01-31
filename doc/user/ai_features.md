@@ -50,7 +50,7 @@ Some features are still in development. View details about [support for each sta
     who has the Owner role in the group.
   - View [how to enable this setting](group/manage.md#enable-experiment-and-beta-features).
 - Code Suggestions
-  - View [how to enable for self-managed](project/repository/code_suggestions/self_managed.md#enable-code-suggestions-on-self-managed-gitlab).
+  - View [how to enable for self-managed](project/repository/code_suggestions/self_managed.md#enable-code-suggestions).
   - View [how to enable for SaaS](project/repository/code_suggestions/saas.md#enable-code-suggestions).
 
 ## Experimental AI features and how to use them

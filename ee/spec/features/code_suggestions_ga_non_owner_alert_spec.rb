@@ -43,7 +43,7 @@ RSpec.describe 'Code suggestions GA notify non-owner alert', :saas, :js, feature
       visit group_path(group)
 
       expect(page).to have_link('Learn more',
-        href: help_page_path('user/project/repository/code_suggestions/saas', anchor: 'use-code-suggestions'))
+        href: help_page_path('user/project/repository/code_suggestions/saas'))
 
       click_on 'Learn more'
 
