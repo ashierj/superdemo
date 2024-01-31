@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules, feature_category: :code_review_workflow do
-  let_it_be(:merge_request) { create(:merge_request) }
+  let_it_be_with_reload(:merge_request) { create(:merge_request) }
   let_it_be(:rb_owners) { create_list(:user, 2) }
   let_it_be(:doc_owners) { create_list(:user, 2) }
   let_it_be(:rb_group_owners) { create_list(:group, 2) }
@@ -59,6 +59,24 @@ RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules, feature_category: :cod
 
       expect(merge_request.approval_rules).not_to include(other_rule)
       expect { other_rule.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    context 'when an outdated rule has the same pattern as the section' do
+      let(:entries) { [section_code_owner_rule] }
+      let(:section_code_owner_rule) { build_entry('*', rb_owners, rb_group_owners, 'Rb owners') }
+
+      it 'deletes rules that are not relevant anymore' do
+        default_section_rule = create(:code_owner_rule, merge_request: merge_request, name: '*')
+
+        service.execute
+
+        new_approval_rule = merge_request.approval_rules.first
+        expect(new_approval_rule.name).to eq('*')
+        expect(new_approval_rule.section).to eq('Rb owners')
+
+        expect(merge_request.approval_rules.count).to eq(1)
+        expect { default_section_rule.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
     end
 
     it 'updates rules for which the users changed' do

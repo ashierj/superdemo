@@ -5,7 +5,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
   include ApprovalRuleLike
   include UsageStatistics
 
-  scope :not_matching_pattern, -> (pattern) { code_owner.where.not(name: pattern) }
+  scope :not_matching_id, -> (ids) { code_owner.where.not(id: ids) }
   scope :matching_pattern, -> (pattern) { code_owner.where(name: pattern) }
 
   scope :from_project_rule, -> (project_rule) do

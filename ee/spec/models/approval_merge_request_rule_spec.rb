@@ -168,9 +168,9 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep, feature_categor
     let!(:coverage_rule) { create(:report_approver_rule, :code_coverage) }
     let!(:license_rule) { create(:report_approver_rule, :license_scanning) }
 
-    describe '.not_matching_pattern' do
+    describe '.not_matching_id' do
       it 'returns the correct rules' do
-        expect(described_class.not_matching_pattern(['*.rb', '*.js']))
+        expect(described_class.not_matching_id([rb_rule.id, js_rule.id]))
           .to contain_exactly(css_rule)
       end
     end

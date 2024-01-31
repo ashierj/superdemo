@@ -12,24 +12,27 @@ module MergeRequests
     def execute
       return already_merged if merge_request.merged?
 
-      delete_outdated_code_owner_rules
-
       rules_by_pattern_and_section =
         merge_request.approval_rules.matching_pattern(patterns).index_by do |rule|
           [rule.name, rule.section]
         end
 
-      code_owner_entries.each do |entry|
-        rule = rules_by_pattern_and_section.fetch([entry.pattern, entry.section]) do
-          create_rule(entry)
+      matched_rule_ids =
+        code_owner_entries.filter_map do |entry|
+          rule = rules_by_pattern_and_section.fetch([entry.pattern, entry.section]) do
+            create_rule(entry)
+          end
+
+          rule.users = entry.users
+          rule.groups = entry.groups
+          rule.approvals_required = entry.approvals_required
+
+          rule.save
+
+          rule.id
         end
 
-        rule.users = entry.users
-        rule.groups = entry.groups
-        rule.approvals_required = entry.approvals_required
-
-        rule.save
-      end
+      delete_outdated_code_owner_rules(matched_rule_ids)
     end
 
     private
@@ -40,8 +43,8 @@ module MergeRequests
       ApprovalMergeRequestRule.find_or_create_code_owner_rule(merge_request, entry)
     end
 
-    def delete_outdated_code_owner_rules
-      merge_request.approval_rules.not_matching_pattern(patterns).delete_all
+    def delete_outdated_code_owner_rules(matched_rule_ids)
+      merge_request.approval_rules.not_matching_id(matched_rule_ids).delete_all
     end
 
     def patterns
