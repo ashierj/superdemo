@@ -11,8 +11,6 @@ RSpec.describe Geo::EventLog, type: :model, feature_category: :geo_replication d
     it { is_expected.to belong_to(:repository_renamed_event).class_name('Geo::RepositoryRenamedEvent').with_foreign_key('repository_renamed_event_id') }
     it { is_expected.to belong_to(:repository_updated_event).class_name('Geo::RepositoryUpdatedEvent').with_foreign_key('repository_updated_event_id') }
     it { is_expected.to belong_to(:reset_checksum_event).class_name('Geo::ResetChecksumEvent').with_foreign_key('reset_checksum_event_id') }
-    it { is_expected.to belong_to(:hashed_storage_migrated_event).class_name('Geo::HashedStorageMigratedEvent').with_foreign_key('hashed_storage_migrated_event_id') }
-    it { is_expected.to belong_to(:hashed_storage_attachments_event).class_name('Geo::HashedStorageAttachmentsEvent').with_foreign_key('hashed_storage_attachments_event_id') }
   end
 
   describe '.next_unprocessed_event' do
@@ -82,20 +80,6 @@ RSpec.describe Geo::EventLog, type: :model, feature_category: :geo_replication d
       subject.repositories_changed_event = repositories_changed_event
 
       expect(subject.event).to eq repositories_changed_event
-    end
-
-    it 'returns hashed_storage_migrated_event when set' do
-      hashed_storage_migrated_event = build(:geo_hashed_storage_migrated_event)
-      subject.hashed_storage_migrated_event = hashed_storage_migrated_event
-
-      expect(subject.event).to eq hashed_storage_migrated_event
-    end
-
-    it 'returns hashed_storage_attachments_event when set' do
-      hashed_storage_attachments_event = build(:geo_hashed_storage_attachments_event)
-      subject.hashed_storage_attachments_event = hashed_storage_attachments_event
-
-      expect(subject.event).to eq hashed_storage_attachments_event
     end
 
     it 'returns reset_checksum_event when set' do

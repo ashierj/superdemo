@@ -18,14 +18,6 @@ FactoryBot.define do
       repository_renamed_event factory: :geo_repository_renamed_event
     end
 
-    trait :hashed_storage_migration_event do
-      hashed_storage_migrated_event factory: :geo_hashed_storage_migrated_event
-    end
-
-    trait :hashed_storage_attachments_event do
-      hashed_storage_attachments_event factory: :geo_hashed_storage_attachments_event
-    end
-
     trait :reset_checksum_event do
       reset_checksum_event factory: :geo_reset_checksum_event
     end
@@ -78,24 +70,6 @@ FactoryBot.define do
     new_wiki_path_with_namespace { "#{project.wiki.path_with_namespace}_new" }
     old_path { project.path }
     new_path { "#{project.path}_new" }
-  end
-
-  factory :geo_hashed_storage_migrated_event, class: 'Geo::HashedStorageMigratedEvent' do
-    project { association(:project, :repository) }
-
-    repository_storage_name { project.repository_storage }
-    old_disk_path { project.path_with_namespace }
-    new_disk_path { "#{project.path_with_namespace}_new" }
-    old_wiki_disk_path { project.wiki.path_with_namespace }
-    new_wiki_disk_path { "#{project.wiki.path_with_namespace}_new" }
-    new_storage_version { Project::HASHED_STORAGE_FEATURES[:repository] }
-  end
-
-  factory :geo_hashed_storage_attachments_event, class: 'Geo::HashedStorageAttachmentsEvent' do
-    project { association(:project, :repository) }
-
-    old_attachments_path { Storage::LegacyProject.new(project).disk_path }
-    new_attachments_path { Storage::Hashed.new(project).disk_path }
   end
 
   factory :geo_reset_checksum_event, class: 'Geo::ResetChecksumEvent' do
