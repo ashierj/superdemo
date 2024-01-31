@@ -98,7 +98,10 @@ describe('Duo Pro Usage', () => {
 
   describe('with code suggestions data', () => {
     beforeEach(() => {
-      return createComponent({ handler: noAssignedAddonDataHandler });
+      return createComponent({
+        handler: noAssignedAddonDataHandler,
+        provideProps: { groupId: '289561' },
+      });
     });
 
     it('does not render code suggestions intro', () => {
@@ -121,6 +124,7 @@ describe('Duo Pro Usage', () => {
 
     it('renders code suggestions info card', () => {
       expect(findCodeSuggestionsInfo().exists()).toBe(true);
+      expect(findCodeSuggestionsInfo().props()).toEqual({ groupId: '289561' });
     });
   });
 

@@ -113,7 +113,7 @@ export default {
           class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5 gl-bg-gray-10 gl-p-5"
         >
           <code-suggestions-statistics-card :total-value="totalValue" :usage-value="usageValue" />
-          <code-suggestions-info-card />
+          <code-suggestions-info-card :group-id="groupId" />
         </section>
         <saas-add-on-eligible-user-list v-if="isSaaS" :add-on-purchase-id="addOnPurchase.id" />
         <self-managed-add-on-eligible-user-list v-else :add-on-purchase-id="addOnPurchase.id" />

@@ -81,7 +81,12 @@ describe('StatisticsSeatsCard', () => {
     beforeEach(() => {
       subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
         data: {
-          subscription: { canAddSeats: true, canRenew: true, communityPlan: false },
+          subscription: {
+            canAddSeats: true,
+            canRenew: true,
+            communityPlan: false,
+            canAddDuoProSeats: true,
+          },
           userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
         },
       });
@@ -288,7 +293,12 @@ describe('StatisticsSeatsCard', () => {
       beforeEach(async () => {
         subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
           data: {
-            subscription: { canAddSeats: false, canRenew: true, communityPlan: false },
+            subscription: {
+              canAddSeats: false,
+              canRenew: true,
+              communityPlan: false,
+              canAddDuoProSeats: true,
+            },
             userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
           },
         });
@@ -322,7 +332,12 @@ describe('StatisticsSeatsCard', () => {
         beforeEach(() => {
           subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
             data: {
-              subscription: { canAddSeats: false, canRenew: true, communityPlan: true },
+              subscription: {
+                canAddSeats: false,
+                canRenew: true,
+                communityPlan: true,
+                canAddDuoProSeats: true,
+              },
               userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
             },
           });
@@ -352,7 +367,12 @@ describe('StatisticsSeatsCard', () => {
         beforeEach(async () => {
           subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
             data: {
-              subscription: { canAddSeats: false, canRenew: true, communityPlan: false },
+              subscription: {
+                canAddSeats: false,
+                canRenew: true,
+                communityPlan: false,
+                canAddDuoProSeats: true,
+              },
               userActionAccess,
             },
           });
@@ -380,7 +400,12 @@ describe('StatisticsSeatsCard', () => {
           beforeEach(async () => {
             subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
               data: {
-                subscription: { canAddSeats, canRenew: true, communityPlan: false },
+                subscription: {
+                  canAddSeats,
+                  canRenew: true,
+                  communityPlan: false,
+                  canAddDuoProSeats: true,
+                },
                 userActionAccess: { limitedAccessReason },
               },
             });
@@ -420,7 +445,12 @@ describe('StatisticsSeatsCard', () => {
           beforeEach(async () => {
             subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
               data: {
-                subscription: { canAddSeats, canRenew: true, communityPlan: false },
+                subscription: {
+                  canAddSeats,
+                  canRenew: true,
+                  communityPlan: false,
+                  canAddDuoProSeats: true,
+                },
                 userActionAccess: { limitedAccessReason },
               },
             });

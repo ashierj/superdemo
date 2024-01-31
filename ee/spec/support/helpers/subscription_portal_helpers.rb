@@ -89,15 +89,16 @@ module SubscriptionPortalHelpers
       }.to_json)
   end
 
-  def stub_subscription_permissions_data(namespace_id, can_add_seats: true, can_renew: true, community_plan: false, reason: 'MANAGED_BY_RESELLER')
+  def stub_subscription_permissions_data(namespace_id, can_add_seats: true, can_add_duo_pro_seats: true, can_renew: true, community_plan: false, reason: 'MANAGED_BY_RESELLER')
     stub_full_request(graphql_url, method: :post)
       .with(
-        body: "{\"operationName\":\"getSubscriptionPermissionsData\",\"variables\":{\"namespaceId\":#{namespace_id}},\"query\":\"query getSubscriptionPermissionsData($namespaceId: ID!) {\\n  subscription(namespaceId: $namespaceId) {\\n    canAddSeats\\n    canRenew\\n    communityPlan\\n    __typename\\n  }\\n  userActionAccess(namespaceId: $namespaceId) {\\n    limitedAccessReason\\n    __typename\\n  }\\n}\\n\"}"
+        body: "{\"operationName\":\"getSubscriptionPermissionsData\",\"variables\":{\"namespaceId\":#{namespace_id}},\"query\":\"query getSubscriptionPermissionsData($namespaceId: ID!) {\\n  subscription(namespaceId: $namespaceId) {\\n    canAddSeats\\n    canAddDuoProSeats\\n    canRenew\\n    communityPlan\\n    __typename\\n  }\\n  userActionAccess(namespaceId: $namespaceId) {\\n    limitedAccessReason\\n    __typename\\n  }\\n}\\n\"}"
       )
       .to_return(status: 200, body: {
         "data": {
           "subscription": {
             "canAddSeats": can_add_seats,
+            "canAddDuoProSeats": can_add_duo_pro_seats,
             "canRenew": can_renew,
             "communityPlan": community_plan
           },
