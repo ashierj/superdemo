@@ -10537,9 +10537,6 @@ msgstr ""
 msgid "CiCatalog|No result found"
 msgstr ""
 
-msgid "CiCatalog|Page %{currentPage} of %{totalPage}"
-msgstr ""
-
 msgid "CiCatalog|Readme"
 msgstr ""
 
