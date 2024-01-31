@@ -5,6 +5,6 @@ class AddArchivedAndTraversalIdsColumnsToSbomOccurrences < Gitlab::Database::Mig
 
   def change
     add_column :sbom_occurrences, :archived, :boolean, default: false, null: false
-    add_column :sbom_occurrences, :traversal_ids, 'bigint[]'
+    add_column :sbom_occurrences, :traversal_ids, 'bigint[]', default: [], null: false
   end
 end

@@ -23576,7 +23576,7 @@ CREATE TABLE sbom_occurrences (
     vulnerability_count integer DEFAULT 0 NOT NULL,
     source_package_id bigint,
     archived boolean DEFAULT false NOT NULL,
-    traversal_ids bigint[],
+    traversal_ids bigint[] DEFAULT '{}'::bigint[] NOT NULL,
     CONSTRAINT check_3f2d2c7ffc CHECK ((char_length(package_manager) <= 255)),
     CONSTRAINT check_9b29021fa8 CHECK ((char_length(component_name) <= 255)),
     CONSTRAINT check_bd1367d4c1 CHECK ((char_length(input_file_path) <= 255))
