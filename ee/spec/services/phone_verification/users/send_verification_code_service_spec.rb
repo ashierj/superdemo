@@ -57,16 +57,6 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         expect { service.execute }.to change { [record.reload.sms_send_count, record.reload.sms_sent_at] }.to([0, nil])
       end
 
-      context 'when sms_send_wait_time feature flag is disabled' do
-        before do
-          stub_feature_flags(sms_send_wait_time: false)
-        end
-
-        it 'does not reset sms_send_count and sms_sent_at' do
-          expect { service.execute }.not_to change { [record.reload.sms_send_count, record.reload.sms_sent_at] }
-        end
-      end
-
       it 'returns an error', :aggregate_failures do
         response = service.execute
 
@@ -373,19 +363,6 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         it 'sets sms_send_count to 1' do
           record = user.phone_number_validation
           expect { service.execute }.to change { record.reload.sms_send_count }.from(2).to(1)
-        end
-      end
-
-      context 'when sms_send_wait_time feature flag is disabled' do
-        before do
-          stub_feature_flags(sms_send_wait_time: false)
-        end
-
-        it 'does not update sms_send_count and sms_sent_at', :freeze_time, :aggregate_failures do
-          service.execute
-          record = user.phone_number_validation
-          expect(record.sms_send_count).to eq(0)
-          expect(record.sms_sent_at).to be_nil
         end
       end
 

@@ -91,8 +91,6 @@ module PhoneVerification
       end
 
       def reset_sms_send_data
-        return unless Feature.enabled?(:sms_send_wait_time, user)
-
         record.update!(sms_send_count: 0, sms_sent_at: nil)
       end
 
@@ -171,17 +169,14 @@ module PhoneVerification
           log_limit_exceeded_event(:hard_phone_verification_transactions_limit)
         end
 
-        attrs = { telesign_reference_xid: send_code_result[:telesign_reference_xid] }
+        last_sms_sent_today = record.sms_sent_at&.today?
+        sms_send_count = last_sms_sent_today ? record.sms_send_count + 1 : 1
 
-        if Feature.enabled?(:sms_send_wait_time, user)
-          last_sms_sent_today = record.sms_sent_at&.today?
-          sms_send_count = last_sms_sent_today ? record.sms_send_count + 1 : 1
-
-          attrs.merge!({
-            sms_sent_at: Time.current,
-            sms_send_count: sms_send_count
-          })
-        end
+        attrs = {
+          sms_sent_at: Time.current,
+          sms_send_count: sms_send_count,
+          telesign_reference_xid: send_code_result[:telesign_reference_xid]
+        }
 
         attrs[:risk_score] = risk_result[:risk_score] if Feature.enabled?(:telesign_intelligence, type: :ops)
 
