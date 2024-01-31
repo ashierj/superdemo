@@ -10,11 +10,11 @@ export default {
     groupByPlaceholderMultipleSelect: s__('ObservabilityMetrics|multiple'),
   },
   props: {
-    searchConfig: {
+    searchMetadata: {
       type: Object,
       required: true,
     },
-    selectedDimensions: {
+    selectedAttributes: {
       type: Array,
       required: true,
     },
@@ -25,24 +25,24 @@ export default {
   },
   data() {
     return {
-      groupByDimensions: this.selectedDimensions,
+      groupByAttributes: this.selectedAttributes,
       groupByFunction: this.selectedFunction,
     };
   },
   computed: {
     availableGroupByFunctions() {
-      return this.searchConfig.groupByFunctions.map((func) => ({ value: func, text: func }));
+      return this.searchMetadata.supported_functions.map((func) => ({ value: func, text: func }));
     },
-    availableGroupByDimensions() {
-      return this.searchConfig.dimensions.map((d) => ({ value: d, text: d }));
+    availableGroupByAttributes() {
+      return this.searchMetadata.attribute_keys.map((d) => ({ value: d, text: d }));
     },
     groupByLabel() {
-      return this.groupByDimensions.length > 1 ? this.groupByDimensions.join(', ') : '';
+      return this.groupByAttributes.length > 1 ? this.groupByAttributes.join(', ') : '';
     },
     groupByToggleText() {
-      if (this.groupByDimensions.length > 0) {
-        if (this.groupByDimensions.length === 1) {
-          return this.groupByDimensions[0];
+      if (this.groupByAttributes.length > 0) {
+        if (this.groupByAttributes.length === 1) {
+          return this.groupByAttributes[0];
         }
         return this.$options.i18n.groupByPlaceholderMultipleSelect;
       }
@@ -52,7 +52,7 @@ export default {
   methods: {
     onSelect() {
       this.$emit('groupBy', {
-        dimensions: this.groupByDimensions,
+        attributes: this.groupByAttributes,
         func: this.groupByFunction,
       });
     },
@@ -70,11 +70,11 @@ export default {
     />
     <span>{{ __('by') }}</span>
     <gl-collapsible-listbox
-      v-model="groupByDimensions"
-      data-testid="group-by-dimensions-dropdown"
+      v-model="groupByAttributes"
+      data-testid="group-by-attributes-dropdown"
       :toggle-text="groupByToggleText"
       multiple
-      :items="availableGroupByDimensions"
+      :items="availableGroupByAttributes"
       @select="onSelect"
     />
     <span data-testid="group-by-label">{{ groupByLabel }}</span>

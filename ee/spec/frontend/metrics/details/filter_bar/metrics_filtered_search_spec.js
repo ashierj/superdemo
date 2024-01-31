@@ -10,15 +10,22 @@ import { OPERATORS_LIKE_NOT } from '~/observability/constants';
 describe('MetricsFilteredSearch', () => {
   let wrapper;
 
-  const defaultSearchConfig = {
-    dimensions: ['dimension_one', 'dimension_two'],
-    groupByFunctions: ['avg', 'sum', 'p50'],
+  const defaultSearchMetadata = {
+    name: 'cpu_seconds_total',
+    type: 'sum',
+    description: 'some_description',
+    last_ingested_at: 1705374438711900000,
+    attribute_keys: ['attribute_one', 'attribute_two'],
+    supported_aggregations: ['1m', '1h'],
+    supported_functions: ['avg', 'sum', 'p50'],
+    default_group_by_attributes: ['host.name'],
+    default_group_by_function: 'avg',
   };
 
-  const mount = (props = {}, searchConfig = {}) => {
+  const mount = (props = {}, searchMetadata = {}) => {
     wrapper = shallowMountExtended(MetricsFilteredSearch, {
       propsData: {
-        searchConfig: { ...defaultSearchConfig, ...searchConfig },
+        searchMetadata: { ...defaultSearchMetadata, ...searchMetadata },
         ...props,
       },
     });
@@ -32,14 +39,14 @@ describe('MetricsFilteredSearch', () => {
   const findDateRangeFilter = () => wrapper.findComponent(DateRangeFilter);
   const findGroupByFilter = () => wrapper.findComponent(GroupByFilter);
 
-  it('renders the filtered search component with tokens based on dimensions', () => {
+  it('renders the filtered search component with tokens based on attributes', () => {
     const filteredSeach = findFilteredSearch();
     expect(filteredSeach.exists()).toBe(true);
     const tokens = filteredSeach.props('tokens');
-    expect(tokens.length).toBe(defaultSearchConfig.dimensions.length);
+    expect(tokens.length).toBe(defaultSearchMetadata.attribute_keys.length);
     tokens.forEach((token, index) => {
-      expect(token.type).toBe(defaultSearchConfig.dimensions[index]);
-      expect(token.title).toBe(defaultSearchConfig.dimensions[index]);
+      expect(token.type).toBe(defaultSearchMetadata.attribute_keys[index]);
+      expect(token.title).toBe(defaultSearchMetadata.attribute_keys[index]);
       expect(token.token).toBe(GlFilteredSearchToken);
       expect(token.operators).toEqual([...OPERATORS_IS_NOT, ...OPERATORS_LIKE_NOT]);
     });
@@ -47,7 +54,7 @@ describe('MetricsFilteredSearch', () => {
 
   it('renders the filtered search component with with initial tokens', () => {
     const filters = [{ type: 'key.name', value: 'foo' }];
-    mount({ dimensionFilters: filters });
+    mount({ attributeFilters: filters });
 
     expect(findFilteredSearch().props('initialFilterValue')).toEqual(filters);
   });
@@ -65,32 +72,36 @@ describe('MetricsFilteredSearch', () => {
   });
 
   describe('group-by filter', () => {
-    it('renders the group-by filter with search config', () => {
+    it('renders the group-by filter with search metadata', () => {
       const groupBy = findGroupByFilter();
       expect(groupBy.exists()).toBe(true);
-      expect(groupBy.props('searchConfig')).toEqual(defaultSearchConfig);
-      expect(groupBy.props('selectedFunction')).toBe('');
-      expect(groupBy.props('selectedDimensions')).toEqual([]);
+      expect(groupBy.props('searchMetadata')).toEqual(defaultSearchMetadata);
+      expect(groupBy.props('selectedFunction')).toBe(
+        defaultSearchMetadata.default_group_by_function,
+      );
+      expect(groupBy.props('selectedAttributes')).toEqual(
+        defaultSearchMetadata.default_group_by_attributes,
+      );
     });
 
     it('renders the group-by filter with defaults', () => {
       mount(
         {},
         {
-          defaultGroupByFunction: 'avg',
-          defaultGroupByDimensions: ['dimension_one', 'dimension_two'],
+          default_group_by_function: 'avg',
+          default_group_by_attributes: ['attribute_one', 'attribute_two'],
         },
       );
       const groupBy = findGroupByFilter();
 
-      expect(groupBy.props('searchConfig')).toEqual({
-        ...defaultSearchConfig,
-        defaultGroupByFunction: 'avg',
-        defaultGroupByDimensions: ['dimension_one', 'dimension_two'],
+      expect(groupBy.props('searchMetadata')).toEqual({
+        ...defaultSearchMetadata,
+        default_group_by_function: 'avg',
+        default_group_by_attributes: ['attribute_one', 'attribute_two'],
       });
 
       expect(groupBy.props('selectedFunction')).toBe('avg');
-      expect(groupBy.props('selectedDimensions')).toEqual(['dimension_one', 'dimension_two']);
+      expect(groupBy.props('selectedAttributes')).toEqual(['attribute_one', 'attribute_two']);
     });
 
     it('renders the group-by filter with specified prop', () => {
@@ -98,32 +109,32 @@ describe('MetricsFilteredSearch', () => {
         {
           groupByFilter: {
             func: 'sum',
-            dimensions: ['attr_1'],
+            attributes: ['attr_1'],
           },
         },
         {
-          defaultGroupByFunction: 'avg',
-          defaultGroupByDimensions: ['dimension_one', 'dimension_two'],
+          default_group_by_function: 'avg',
+          default_group_by_attributes: ['attribute_one', 'attribute_two'],
         },
       );
       const groupBy = findGroupByFilter();
 
       expect(groupBy.props('selectedFunction')).toBe('sum');
-      expect(groupBy.props('selectedDimensions')).toEqual(['attr_1']);
+      expect(groupBy.props('selectedAttributes')).toEqual(['attr_1']);
     });
   });
 
-  it('emits the filter event when the dimensions filter is changed', async () => {
-    const filters = [{ dimension: 'namespace', operator: 'is not', value: 'test' }];
+  it('emits the filter event when the attributes filter is changed', async () => {
+    const filters = [{ attribute: 'namespace', operator: 'is not', value: 'test' }];
     await findFilteredSearch().vm.$emit('onFilter', filters);
 
     expect(wrapper.emitted('filter')).toEqual([
       [
         {
-          dimensions: [{ dimension: 'namespace', operator: 'is not', value: 'test' }],
+          attributes: [{ attribute: 'namespace', operator: 'is not', value: 'test' }],
           groupBy: {
-            dimensions: [],
-            func: '',
+            attributes: defaultSearchMetadata.default_group_by_attributes,
+            func: defaultSearchMetadata.default_group_by_function,
           },
         },
       ],
@@ -145,11 +156,11 @@ describe('MetricsFilteredSearch', () => {
     expect(wrapper.emitted('filter')).toEqual([
       [
         {
-          dimensions: [],
+          attributes: [],
           dateRange,
           groupBy: {
-            dimensions: [],
-            func: '',
+            attributes: defaultSearchMetadata.default_group_by_attributes,
+            func: defaultSearchMetadata.default_group_by_function,
           },
         },
       ],
@@ -161,8 +172,8 @@ describe('MetricsFilteredSearch', () => {
     mount(
       {},
       {
-        defaultGroupByFunction: 'avg',
-        defaultGroupByDimensions: ['dimension_one', 'dimension_two'],
+        default_group_by_function: 'avg',
+        default_group_by_attributes: ['attribute_one', 'attribute_two'],
       },
     );
 
@@ -171,9 +182,9 @@ describe('MetricsFilteredSearch', () => {
     expect(wrapper.emitted('filter')).toEqual([
       [
         {
-          dimensions: [],
+          attributes: [],
           groupBy: {
-            dimensions: ['dimension_one', 'dimension_two'],
+            attributes: ['attribute_one', 'attribute_two'],
             func: 'avg',
           },
         },
@@ -183,7 +194,7 @@ describe('MetricsFilteredSearch', () => {
 
   it('emits the filter event when the group-by is changed and the filtered-search onFilter is emitted', async () => {
     const groupBy = {
-      dimensions: ['dimension_one'],
+      attributes: ['attribute_one'],
       func: 'sum',
     };
 
@@ -195,12 +206,12 @@ describe('MetricsFilteredSearch', () => {
     expect(wrapper.emitted('filter')).toEqual([
       [
         {
-          dimensions: [],
+          attributes: [],
           groupBy,
         },
       ],
     ]);
     expect(findGroupByFilter().props('selectedFunction')).toBe(groupBy.func);
-    expect(findGroupByFilter().props('selectedDimensions')).toEqual(groupBy.dimensions);
+    expect(findGroupByFilter().props('selectedAttributes')).toEqual(groupBy.attributes);
   });
 });

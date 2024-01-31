@@ -14,14 +14,14 @@ export default {
     GroupByFilter,
   },
   i18n: {
-    searchInputPlaceholder: s__('ObservabilityMetrics|Filter dimensions...'),
+    searchInputPlaceholder: s__('ObservabilityMetrics|Filter attributes...'),
   },
   props: {
-    searchConfig: {
+    searchMetadata: {
       type: Object,
       required: true,
     },
-    dimensionFilters: {
+    attributeFilters: {
       type: Array,
       required: false,
       default: () => [],
@@ -42,16 +42,16 @@ export default {
       shouldShowDateRangePicker: false,
       dateRange: this.dateRangeFilter,
       groupBy: this.groupByFilter ?? {
-        dimensions: this.searchConfig.defaultGroupByDimensions ?? [],
-        func: this.searchConfig.defaultGroupByFunction ?? '',
+        attributes: this.searchMetadata.default_group_by_attributes ?? [],
+        func: this.searchMetadata.default_group_by_function ?? '',
       },
     };
   },
   computed: {
     availableTokens() {
-      return this.searchConfig.dimensions.map((dimension) => ({
-        title: dimension,
-        type: dimension,
+      return this.searchMetadata.attribute_keys.map((attribute) => ({
+        title: attribute,
+        type: attribute,
         token: GlFilteredSearchToken,
         operators: [...OPERATORS_IS_NOT, ...OPERATORS_LIKE_NOT],
       }));
@@ -60,7 +60,7 @@ export default {
   methods: {
     onFilter(filters) {
       this.$emit('filter', {
-        dimensions: filters,
+        attributes: filters,
         dateRange: this.dateRange,
         groupBy: this.groupBy,
       });
@@ -68,8 +68,8 @@ export default {
     onDateRangeSelected({ value, startDate, endDate }) {
       this.dateRange = { value, startDate, endDate };
     },
-    onGroupBy({ dimensions, func }) {
-      this.groupBy = { dimensions, func };
+    onGroupBy({ attributes, func }) {
+      this.groupBy = { attributes, func };
     },
   },
 };
@@ -85,7 +85,7 @@ export default {
       namespace="metrics-details-filtered-search"
       :search-input-placeholder="$options.i18n.searchInputPlaceholder"
       :tokens="availableTokens"
-      :initial-filter-value="dimensionFilters"
+      :initial-filter-value="attributeFilters"
       terms-as-tokens
       @onFilter="onFilter"
     />
@@ -97,8 +97,8 @@ export default {
     <hr class="gl-my-3" />
 
     <group-by-filter
-      :search-config="searchConfig"
-      :selected-dimensions="groupBy.dimensions"
+      :search-metadata="searchMetadata"
+      :selected-attributes="groupBy.attributes"
       :selected-function="groupBy.func"
       @groupBy="onGroupBy"
     />
