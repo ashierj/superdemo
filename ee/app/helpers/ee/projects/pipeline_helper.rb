@@ -17,7 +17,7 @@ module EE
           expose_security_dashboard: pipeline.expose_security_dashboard?.to_json,
           is_full_codequality_report_available: project.licensed_feature_available?(:full_codequality_report).to_json,
           license_management_api_url: license_management_api_url(project),
-          license_scan_count: license_scan_count(project, pipeline),
+          license_scan_count: nil, # Restore license_scan_count(project, pipeline) after #435272 is resolved
           licenses_api_path: licenses_api_path(project, pipeline),
           security_policies_path: security_policies_path(project),
           vulnerability_report_data: vulnerability_report_data(project, pipeline, user).to_json,
