@@ -12,6 +12,10 @@ module Admin
 
     before_action :ensure_feature_available!
 
+    def index
+      @subscription_name = License.current.subscription_name
+    end
+
     private
 
     def ensure_feature_available!
