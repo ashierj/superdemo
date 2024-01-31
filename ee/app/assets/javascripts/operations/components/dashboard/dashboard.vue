@@ -160,7 +160,7 @@ export default {
       />
     </gl-modal>
 
-    <div class="page-title-holder flex-fill d-flex align-items-center">
+    <div class="page-title-holder flex-fill d-flex gl-align-items-center">
       <h1 class="js-dashboard-title page-title gl-font-size-h-display text-nowrap flex-fill">
         {{ s__('OperationsDashboard|Operations Dashboard') }}
       </h1>

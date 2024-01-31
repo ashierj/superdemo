@@ -32,7 +32,7 @@ exports[`dashboard should match the snapshot 1`] = `
     />
   </gl-modal-stub>
   <div
-    class="align-items-center d-flex flex-fill page-title-holder"
+    class="d-flex flex-fill gl-align-items-center page-title-holder"
   >
     <h1
       class="flex-fill gl-font-size-h-display js-dashboard-title page-title text-nowrap"

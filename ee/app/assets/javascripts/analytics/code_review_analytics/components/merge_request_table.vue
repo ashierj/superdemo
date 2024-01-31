@@ -56,41 +56,41 @@ export default {
       key: 'mr_details',
       label: __('Merge Request'),
       thClass: 'w-30p',
-      tdClass: 'table-col d-flex align-items-center d-sm-table-cell',
+      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
     },
     {
       key: 'review_time',
       label: __('Review time'),
       class: 'text-right',
-      tdClass: 'table-col d-flex align-items-center d-sm-table-cell',
+      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
     },
     {
       key: 'author',
       label: __('Author'),
-      tdClass: 'table-col d-flex align-items-center d-sm-table-cell',
+      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
     },
     {
       key: 'approved_by',
       label: __('Approvers'),
-      tdClass: 'table-col d-flex align-items-center d-sm-table-cell',
+      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
     },
     {
       key: 'notes_count',
       label: __('Comments'),
       class: 'text-right',
-      tdClass: 'table-col d-flex align-items-center d-sm-table-cell',
+      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
     },
     {
       key: 'diff_stats',
       label: __('Commits'),
       class: 'text-right',
-      tdClass: 'table-col d-flex align-items-center d-sm-table-cell',
+      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
     },
     {
       key: 'line_changes',
       label: __('Line changes'),
       class: 'text-right',
-      tdClass: 'table-col d-flex align-items-center d-sm-table-cell',
+      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
     },
   ],
 };
@@ -114,7 +114,7 @@ export default {
           <li>!{{ items.item.iid }}</li>
           <li>{{ getTimeAgoString(items.item.created_at) }}</li>
           <li v-if="items.item.milestone">
-            <span class="d-flex align-items-center">
+            <span class="d-flex gl-align-items-center">
               <gl-icon name="clock" class="gl-mr-2" />
               {{ items.item.milestone.title }}
             </span>

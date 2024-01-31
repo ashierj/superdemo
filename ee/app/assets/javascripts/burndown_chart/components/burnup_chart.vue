@@ -118,7 +118,7 @@ export default {
 
 <template>
   <div data-testid="burnup-chart">
-    <div class="burndown-header d-flex align-items-center">
+    <div class="burndown-header d-flex gl-align-items-center">
       <h3>{{ __('Burnup chart') }}</h3>
     </div>
     <gl-line-chart
