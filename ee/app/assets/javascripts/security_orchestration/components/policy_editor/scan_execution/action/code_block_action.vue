@@ -9,7 +9,11 @@ import { THOUSAND } from '~/lib/utils/constants';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import { parseCustomFileConfiguration } from 'ee/security_orchestration/components/policy_editor/utils';
-import { buildCustomCodeAction } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
+import {
+  buildCustomCodeAction,
+  fromYaml,
+  toYaml,
+} from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import SectionLayout from '../../section_layout.vue';
 import { ACTION_AND_LABEL } from '../../constants';
 import {
@@ -65,7 +69,7 @@ export default {
   },
   data() {
     const { project: selectedProject, showLinkedFile } = parseCustomFileConfiguration(
-      this.initAction?.ci_configuration_path,
+      fromYaml({ manifest: this.initAction?.ci_configuration || '' })?.include,
     );
 
     const yamlEditorValue = (this.initAction?.ci_configuration || '').trim();
@@ -79,7 +83,10 @@ export default {
   },
   computed: {
     ciConfigurationPath() {
-      return this.initAction?.ci_configuration_path || {};
+      return this.ciConfigurationParsed?.include || {};
+    },
+    ciConfigurationParsed() {
+      return fromYaml({ manifest: this.initAction?.ci_configuration || '' });
     },
     filePath() {
       return this.ciConfigurationPath.file;
@@ -143,11 +150,9 @@ export default {
       });
     },
     setSelectedRef(ref) {
-      this.triggerChanged({
-        ci_configuration_path: {
-          ...this.ciConfigurationPath,
-          ref,
-        },
+      this.setCiConfigurationPath({
+        ...this.ciConfigurationPath,
+        ref,
       });
     },
     setSelectedProject(project) {
@@ -167,15 +172,13 @@ export default {
           delete config.id;
         }
 
-        this.triggerChanged({ ci_configuration_path: config });
+        this.setCiConfigurationPath({ ...config });
       });
     },
     updatedFilePath(path) {
-      this.triggerChanged({
-        ci_configuration_path: {
-          ...this.ciConfigurationPath,
-          file: path,
-        },
+      this.setCiConfigurationPath({
+        ...this.ciConfigurationPath,
+        file: path,
       });
     },
     async validateFilePath() {
@@ -196,6 +199,15 @@ export default {
       } catch {
         this.doesFileExist = false;
       }
+    },
+    setCiConfigurationPath(pathConfig) {
+      this.triggerChanged({
+        ci_configuration: toYaml({
+          include: {
+            ...pathConfig,
+          },
+        }),
+      });
     },
     triggerChanged(value) {
       this.$emit('changed', { ...this.initAction, ...value });

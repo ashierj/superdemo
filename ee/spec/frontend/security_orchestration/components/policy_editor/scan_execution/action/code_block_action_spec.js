@@ -2,7 +2,10 @@ import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import Api from 'ee/api';
-import { buildCustomCodeAction } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
+import {
+  buildCustomCodeAction,
+  toYaml,
+} from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import CodeBlockAction from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_action.vue';
 import CodeBlockFilePath from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_file_path.vue';
@@ -178,7 +181,12 @@ describe('CodeBlockAction', () => {
 
       expect(wrapper.emitted('changed')).toEqual([
         [buildCustomCodeAction()],
-        [{ ...buildCustomCodeAction(), ci_configuration_path: { file: 'file/path' } }],
+        [
+          {
+            ...buildCustomCodeAction(),
+            ci_configuration: toYaml({ include: { file: 'file/path' } }),
+          },
+        ],
       ]);
     });
 
@@ -198,9 +206,11 @@ describe('CodeBlockAction', () => {
       createComponent({
         propsData: {
           initAction: {
-            ci_configuration_path: {
-              file: 'file',
-            },
+            ci_configuration: toYaml({
+              include: {
+                file: 'file',
+              },
+            }),
           },
         },
       });
@@ -213,9 +223,11 @@ describe('CodeBlockAction', () => {
       createComponent({
         propsData: {
           initAction: {
-            ci_configuration_path: {
-              project: 'file',
-            },
+            ci_configuration: toYaml({
+              include: {
+                project: 'file',
+              },
+            }),
           },
         },
       });
@@ -228,9 +240,11 @@ describe('CodeBlockAction', () => {
       createComponent({
         propsData: {
           initAction: {
-            ci_configuration_path: {
-              id: 1,
-            },
+            ci_configuration: toYaml({
+              include: {
+                id: 1,
+              },
+            }),
           },
         },
       });
@@ -245,9 +259,11 @@ describe('CodeBlockAction', () => {
       createComponent({
         propsData: {
           initAction: {
-            ci_configuration_path: {
-              ref: 'ref',
-            },
+            ci_configuration: toYaml({
+              include: {
+                ref: 'ref',
+              },
+            }),
           },
         },
       });
@@ -269,7 +285,7 @@ describe('CodeBlockAction', () => {
       findCodeBlockFilePath().vm.$emit('select-ref', 'ref');
 
       expect(wrapper.emitted('changed')[1]).toEqual([
-        { ...buildCustomCodeAction(), ci_configuration_path: { ref: 'ref' } },
+        { ...buildCustomCodeAction(), ci_configuration: toYaml({ include: { ref: 'ref' } }) },
       ]);
     });
 
@@ -288,17 +304,21 @@ describe('CodeBlockAction', () => {
       findCodeBlockFilePath().vm.$emit('update-file-path', 'file-path');
 
       expect(wrapper.emitted('changed')[1]).toEqual([
-        { ...buildCustomCodeAction(), ci_configuration_path: { file: 'file-path' } },
+        {
+          ...buildCustomCodeAction(),
+          ci_configuration: toYaml({ include: { file: 'file-path' } }),
+        },
       ]);
     });
 
     it('updates project', async () => {
       await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
       await findCodeBlockFilePath().vm.$emit('select-project', project);
+
       expect(wrapper.emitted('changed')[1]).toEqual([
         {
           ...buildCustomCodeAction(),
-          ci_configuration_path: { id: 29, project: project.fullPath },
+          ci_configuration: toYaml({ include: { project: project.fullPath, id: 29 } }),
         },
       ]);
     });
@@ -309,7 +329,7 @@ describe('CodeBlockAction', () => {
       await findCodeBlockFilePath().vm.$emit('select-project', undefined);
 
       expect(wrapper.emitted('changed')[1]).toEqual([
-        { ...buildCustomCodeAction(), ci_configuration_path: {} },
+        { ...buildCustomCodeAction(), ci_configuration: toYaml({ include: {} }) },
       ]);
     });
 
@@ -333,9 +353,11 @@ describe('CodeBlockAction', () => {
           createComponent({
             propsData: {
               initAction: {
-                ci_configuration_path: {
-                  id: 1,
-                },
+                ci_configuration: toYaml({
+                  include: {
+                    id: 1,
+                  },
+                }),
               },
             },
           });
@@ -350,10 +372,12 @@ describe('CodeBlockAction', () => {
           createComponent({
             propsData: {
               initAction: {
-                ci_configuration_path: {
-                  id: 1,
-                  ref: 'main',
-                },
+                ci_configuration: toYaml({
+                  include: {
+                    id: 1,
+                    ref: 'main',
+                  },
+                }),
               },
             },
           });
@@ -367,10 +391,12 @@ describe('CodeBlockAction', () => {
           createComponent({
             propsData: {
               initAction: {
-                ci_configuration_path: {
-                  id: 1,
-                  ref: 'not-main',
-                },
+                ci_configuration: toYaml({
+                  include: {
+                    id: 1,
+                    ref: 'not-main',
+                  },
+                }),
               },
             },
           });
@@ -385,10 +411,12 @@ describe('CodeBlockAction', () => {
           createComponent({
             propsData: {
               initAction: {
-                ci_configuration_path: {
-                  id: 1,
-                  ref: 'main',
-                },
+                ci_configuration: toYaml({
+                  include: {
+                    id: 1,
+                    ref: 'main',
+                  },
+                }),
               },
             },
           });
@@ -396,7 +424,9 @@ describe('CodeBlockAction', () => {
 
         it('verifies on file path change', async () => {
           await wrapper.setProps({
-            initAction: { ci_configuration_path: { ref: 'main', file: 'new-path' } },
+            initAction: {
+              ci_configuration: toYaml({ include: { ref: 'main', file: 'new-path' } }),
+            },
           });
           await waitForPromises();
           expect(Api.getFile).toHaveBeenCalledTimes(2);
@@ -411,7 +441,9 @@ describe('CodeBlockAction', () => {
         });
 
         it('verifies on ref change', async () => {
-          await wrapper.setProps({ initAction: { ci_configuration_path: { ref: 'new-ref' } } });
+          await wrapper.setProps({
+            initAction: { ci_configuration: toYaml({ include: { ref: 'new-ref' } }) },
+          });
           await waitForPromises();
           expect(Api.getFile).toHaveBeenCalledTimes(2);
           expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
@@ -424,14 +456,18 @@ describe('CodeBlockAction', () => {
           createComponent({
             propsData: {
               initAction: {
-                ci_configuration_path: {
-                  id: 1,
-                  ref: 'not-main',
-                },
+                ci_configuration: toYaml({
+                  include: {
+                    id: 1,
+                    ref: 'not-main',
+                  },
+                }),
               },
             },
           });
-          await wrapper.setProps({ initAction: { ci_configuration_path: { ref: 'new-ref' } } });
+          await wrapper.setProps({
+            initAction: { ci_configuration: toYaml({ include: { ref: 'new-ref' } }) },
+          });
           await waitForPromises();
           expect(Api.getFile).toHaveBeenCalledTimes(2);
           expect(findCodeBlockFilePath().props('doesFileExist')).toBe(false);
@@ -450,10 +486,12 @@ describe('CodeBlockAction', () => {
           createComponent({
             propsData: {
               initAction: {
-                ci_configuration_path: {
-                  id: 1,
-                  ref: 'main',
-                },
+                ci_configuration: toYaml({
+                  include: {
+                    id: 1,
+                    ref: 'main',
+                  },
+                }),
               },
             },
           });
