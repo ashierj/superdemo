@@ -35,6 +35,9 @@
         },
         "show_status": {
           "type": "boolean"
+        },
+        "bot": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false,
@@ -45,7 +48,8 @@
         "avatar_url",
         "path",
         "name",
-        "username"
+        "username",
+        "bot"
       ]
     }
   ]
