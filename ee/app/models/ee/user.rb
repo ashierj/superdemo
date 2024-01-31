@@ -252,6 +252,14 @@ module EE
       end
     end
 
+    def pending_billable_invitations
+      if ::License.current.exclude_guests_from_active_count?
+        pending_invitations.where('access_level > ?', ::Gitlab::Access::GUEST)
+      else
+        pending_invitations
+      end
+    end
+
     def external?
       return true if security_policy_bot?
 

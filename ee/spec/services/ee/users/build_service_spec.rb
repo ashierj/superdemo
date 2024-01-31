@@ -158,6 +158,56 @@ RSpec.describe Users::BuildService, feature_category: :user_management do
               expect(user).to be_active
             end
           end
+
+          context 'with an ultimate license' do
+            let_it_be(:group) { create(:group) }
+            let_it_be(:billable_users) { create_list(:user, 3) }
+
+            before_all do
+              billable_users.each { |u| group.add_developer(u) }
+            end
+
+            before do
+              license = create(:license, plan: License::ULTIMATE_PLAN)
+              allow(License).to receive(:current).and_return(license)
+            end
+
+            it 'sets a new billable user state to blocked pending approval' do
+              member = create(:group_member, :developer, :invited)
+              params.merge!(email: member.invite_email, skip_confirmation: true)
+
+              user = service.execute
+
+              expect(user).to be_blocked_pending_approval
+            end
+
+            it 'sets a new non-billable user state to active' do
+              user = service.execute
+
+              expect(user).to be_active
+            end
+
+            context 'when the feature flag is disabled' do
+              before do
+                stub_feature_flags(activate_nonbillable_users_over_instance_user_cap: false)
+              end
+
+              it 'sets a new billable user state to blocked pending approval' do
+                member = create(:group_member, :developer, :invited)
+                params.merge!(email: member.invite_email, skip_confirmation: true)
+
+                user = service.execute
+
+                expect(user).to be_blocked_pending_approval
+              end
+
+              it 'sets a new non-billable user state to blocked pending approval' do
+                user = service.execute
+
+                expect(user).to be_blocked_pending_approval
+              end
+            end
+          end
         end
 
         context 'when user signup cap is not set' do
