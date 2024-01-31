@@ -402,12 +402,15 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
 
         it_behaves_like 'it returns a success response'
 
-        it 'increments sms_send_count and sets sms_sent_at' do
-          old_values = [1, old_sms_sent_at.to_i]
-          new_values = [2, (old_sms_sent_at + 5.minutes).to_i]
+        it 'increments sms_send_count and sets sms_sent_at', :aggregate_failures do
+          expect(record.sms_send_count).to eq 1
+          expect(record.sms_sent_at).to be_within(1.second).of(old_sms_sent_at)
 
-          expect { service.execute }.to change { [record.reload.sms_send_count, record.reload.sms_sent_at.to_i] }
-            .from(old_values).to(new_values)
+          service.execute
+          record.reload
+
+          expect(record.sms_send_count).to eq 2
+          expect(record.sms_sent_at).to be_within(1.second).of(old_sms_sent_at + 5.minutes)
         end
       end
 
