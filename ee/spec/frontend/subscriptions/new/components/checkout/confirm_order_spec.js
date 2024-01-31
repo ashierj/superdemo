@@ -20,6 +20,7 @@ import {
 import waitForPromises from 'helpers/wait_for_promises';
 import createStore from 'ee/subscriptions/new/store';
 import { mockInvoicePreviewBronze } from 'ee_jest/subscriptions/mock_data';
+import PrivacyAndTermsConfirm from 'ee/subscriptions/shared/components/privacy_and_terms_confirm.vue';
 
 jest.mock('~/alert');
 jest.mock('uuid');
@@ -102,6 +103,7 @@ describe('Confirm Order', () => {
 
   const findConfirmButton = () => wrapper.findComponent(GlButton);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findPrivacyAndTermsConfirm = () => wrapper.findComponent(PrivacyAndTermsConfirm);
 
   describe('Active', () => {
     afterEach(() => {
@@ -525,32 +527,56 @@ describe('Confirm Order', () => {
       });
     });
 
-    describe('Button state', () => {
+    describe('Submit button', () => {
       const mockApolloProvider = createMockApolloProvider(STEPS, 3);
 
-      it('should be enabled when not confirming and has valid price details', () => {
-        wrapper = createComponent({ apolloProvider: mockApolloProvider });
+      describe('with terms not accepted', () => {
+        it('should be disabled', () => {
+          wrapper = createComponent({ apolloProvider: mockApolloProvider });
 
-        expect(findConfirmButton().attributes('disabled')).toBe(undefined);
+          expect(findConfirmButton().attributes('disabled')).toBeDefined();
+        });
       });
 
-      it('should be disabled when confirming and has valid price details', async () => {
-        // Return unresolved promise to simulate loading state
-        Api.confirmOrder = jest.fn().mockReturnValue(new Promise(() => {}));
-        wrapper = createComponent({ apolloProvider: mockApolloProvider });
+      describe('with terms accepted', () => {
+        describe('with valid price details', () => {
+          describe('when not confirming', () => {
+            it('should be enabled', async () => {
+              wrapper = createComponent({ apolloProvider: mockApolloProvider });
+              findPrivacyAndTermsConfirm().vm.$emit('input', true);
 
-        findConfirmButton().vm.$emit('click');
-        await nextTick();
+              await nextTick();
 
-        expect(findConfirmButton().attributes('disabled')).toBeDefined();
-      });
+              expect(findConfirmButton().attributes('disabled')).toBe(undefined);
+            });
+          });
 
-      it('should be disabled when not confirming and has invalid price details', async () => {
-        wrapper = createComponent({ apolloProvider: mockApolloProvider });
-        store.state.invoicePreview = null;
-        await nextTick();
+          describe('when confirming', () => {
+            it('should be disabled', async () => {
+              // Return unresolved promise to simulate loading state
+              Api.confirmOrder = jest.fn().mockReturnValue(new Promise(() => {}));
+              wrapper = createComponent({ apolloProvider: mockApolloProvider });
 
-        expect(findConfirmButton().attributes('disabled')).toBeDefined();
+              findPrivacyAndTermsConfirm().vm.$emit('input', true);
+              findConfirmButton().vm.$emit('click');
+              await nextTick();
+
+              expect(findConfirmButton().attributes('disabled')).toBeDefined();
+            });
+          });
+        });
+
+        describe('with invalid price details', () => {
+          it('should be disabled', async () => {
+            wrapper = createComponent({ apolloProvider: mockApolloProvider });
+            store.state.invoicePreview = null;
+            findPrivacyAndTermsConfirm().vm.$emit('input', true);
+
+            await nextTick();
+
+            expect(findConfirmButton().attributes('disabled')).toBeDefined();
+          });
+        });
       });
     });
   });

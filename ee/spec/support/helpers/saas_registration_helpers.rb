@@ -51,6 +51,14 @@ module SaasRegistrationHelpers
     expect_verification_completed
   end
 
+  def accept_privacy_and_terms
+    checkbox = find('[data-testid="privacy-and-terms-confirm"] > input')
+
+    expect(checkbox).not_to be_checked
+
+    checkbox.set(true)
+  end
+
   def regular_sign_up(params = {}, password: User.random_password)
     perform_enqueued_jobs do
       user_signs_up(params, password: password)
@@ -552,6 +560,8 @@ module SaasRegistrationHelpers
     page.execute_script <<~JS
       document.querySelector('[data-testid="subscription_app"]').__vue__.$store.dispatch('fetchPaymentMethodDetailsSuccess')
     JS
+
+    accept_privacy_and_terms
 
     click_button 'Confirm purchase'
   end

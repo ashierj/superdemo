@@ -48169,6 +48169,9 @@ msgstr ""
 msgid "Subscriptions|End date:"
 msgstr ""
 
+msgid "Subscriptions|I accept the %{privacyLinkStart}Privacy Statement%{privacyLinkEnd} and %{termsLinkStart}Terms of Service%{termsLinkEnd}."
+msgstr ""
+
 msgid "Subscriptions|Last sync"
 msgstr ""
 
