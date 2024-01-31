@@ -35233,6 +35233,8 @@ CREATE INDEX index_releases_on_author_id_id_created_at ON releases USING btree (
 
 CREATE INDEX index_releases_on_project_id_and_released_at_and_id ON releases USING btree (project_id, released_at, id);
 
+CREATE INDEX index_releases_on_project_id_and_updated_at_and_released_at ON releases USING btree (project_id, updated_at, released_at);
+
 CREATE INDEX index_releases_on_project_id_id ON releases USING btree (project_id, id);
 
 CREATE UNIQUE INDEX index_releases_on_project_tag_unique ON releases USING btree (project_id, tag);
