@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Api from 'ee/api';
 import { STEPS } from 'ee/subscriptions/constants';
@@ -15,6 +15,7 @@ import * as UrlUtility from '~/lib/utils/url_utility';
 import waitForPromises from 'helpers/wait_for_promises';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import PrivacyAndTermsConfirm from 'ee/subscriptions/shared/components/privacy_and_terms_confirm.vue';
 
 jest.mock('uuid');
 jest.mock('~/lib/utils/url_utility');
@@ -34,6 +35,7 @@ describe('Confirm Order', () => {
   const findRootElement = () => wrapper.findByTestId('confirm-order-root');
   const findConfirmButton = () => wrapper.findComponent(GlButton);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findPrivacyAndTermsConfirm = () => wrapper.findComponent(PrivacyAndTermsConfirm);
 
   const createComponent = (options = {}) => {
     wrapper = extendedWrapper(
@@ -61,6 +63,19 @@ describe('Confirm Order', () => {
 
       it('the loading indicator should not be visible', () => {
         expect(findLoadingIcon().exists()).toBe(false);
+      });
+
+      it('disables the confirm button', () => {
+        expect(findConfirmButton().attributes('disabled')).toBeDefined();
+      });
+
+      describe('when accepting the terms', () => {
+        it('enables the confirm button', async () => {
+          findPrivacyAndTermsConfirm().vm.$emit('input', true);
+          await nextTick();
+
+          expect(findConfirmButton().attributes('disabled')).toBeUndefined();
+        });
       });
     });
 
@@ -188,6 +203,13 @@ describe('Confirm Order', () => {
 
       it('the loading indicator should be visible', () => {
         expect(findLoadingIcon().exists()).toBe(true);
+      });
+
+      it('disables the confirm button', async () => {
+        findPrivacyAndTermsConfirm().vm.$emit('input', true);
+        await nextTick();
+
+        expect(findConfirmButton().attributes('disabled')).toBeDefined();
       });
 
       describe('when confirm order succeeds', () => {
