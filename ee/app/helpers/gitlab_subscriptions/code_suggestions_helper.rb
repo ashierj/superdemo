@@ -11,5 +11,11 @@ module GitlabSubscriptions
         Feature.enabled?(:self_managed_code_suggestions)
       end
     end
+
+    def add_duo_pro_seats_url(subscription_name)
+      return unless code_suggestions_available?
+
+      ::Gitlab::Routing.url_helpers.subscription_portal_add_duo_pro_seats_url(subscription_name)
+    end
   end
 end
