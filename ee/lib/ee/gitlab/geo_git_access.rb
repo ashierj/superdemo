@@ -18,8 +18,8 @@ module EE
           'data' => {
             'api_endpoints' => custom_action_api_endpoints_for(cmd),
             'primary_repo' => primary_http_repo_internal_url,
-            'geo_proxy_direct_to_primary' => ::Feature.enabled?(:geo_proxy_direct_to_primary),
-            'geo_proxy_fetch_direct_to_primary' => ::Feature.enabled?(:geo_proxy_fetch_direct_to_primary),
+            'geo_proxy_direct_to_primary' => true,
+            'geo_proxy_fetch_direct_to_primary' => true,
             'geo_proxy_fetch_direct_to_primary_with_options' => ::Feature.enabled?(
               :geo_proxy_fetch_direct_to_primary_with_options
             ),
