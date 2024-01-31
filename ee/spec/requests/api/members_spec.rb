@@ -261,7 +261,8 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
               put_member
 
               expect(response).to have_gitlab_http_status(:bad_request)
-              expect(json_response['message']['member_role']).to contain_exactly('not found')
+              expect(json_response['message']['member_namespace'])
+                .to contain_exactly("must be in same hierarchy as custom role's namespace")
             end
           end
 

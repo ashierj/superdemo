@@ -123,6 +123,25 @@ RSpec.describe Members::UpdateService, feature_category: :groups_and_projects do
         it_behaves_like 'correct member role assignement'
       end
 
+      context 'when the user does not have access to the member role' do
+        let(:initial_member_role) { nil }
+        let(:target_member_role) { create(:member_role, :guest, namespace: create(:group)) }
+
+        it 'returns error' do
+          expect(update_member[:status]).to eq(:error)
+          expect(update_member[:message]).to eq(
+            'Member namespace must be in same hierarchy as custom role\'s namespace'
+          )
+        end
+      end
+
+      context 'when assigning the user to an instance-level member role' do
+        let(:initial_member_role) { nil }
+        let(:target_member_role) { create(:member_role, :guest, :instance) }
+
+        it_behaves_like 'correct member role assignement'
+      end
+
       context 'when the member has a member role assigned' do
         before do
           member.update!(member_role: initial_member_role)

@@ -11,6 +11,7 @@ module Mutations
         ::Types::MemberAccessLevelEnum,
         required: true,
         description: 'Base access level for the custom role.'
+
       argument :group_path, GraphQL::Types::ID,
         required: false,
         description: 'Group the member role to mutate is in. Required for SaaS.'

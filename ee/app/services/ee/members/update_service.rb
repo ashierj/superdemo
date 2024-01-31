@@ -26,7 +26,9 @@ module EE
 
         return unless params[:member_role_id]
 
-        member_role = top_level_group.member_roles.find_by_id(params[:member_role_id])
+        # TODO: scope to group/instance based on saas? mode when
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/429281 is merged
+        member_role = MemberRole.find_by_id(params[:member_role_id])
 
         unless member_role
           member.errors.add(:member_role, "not found")
