@@ -67,6 +67,16 @@ module EE
       (::WorkItems::Progress.where(work_item: children).sum(:progress).to_i / child_count).to_i
     end
 
+    override :skip_description_version?
+    def skip_description_version?
+      super || epic_work_item?
+    end
+
+    override :skip_metrics?
+    def skip_metrics?
+      super || epic_work_item?
+    end
+
     private
 
     def unlicensed_widgets
@@ -96,6 +106,10 @@ module EE
       linked_issues_select
         .joins("INNER JOIN issue_links ON issue_links.#{columns[0]} = issues.id")
         .where(issue_links: { columns[1] => id, link_type: link_class.link_types[link_class::TYPE_BLOCKS] })
+    end
+
+    def epic_work_item?
+      work_item_type.base_type == ::WorkItems::Type.default_by_type(:epic)&.base_type
     end
   end
 end

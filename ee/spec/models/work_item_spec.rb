@@ -454,4 +454,44 @@ RSpec.describe WorkItem do
 
     it { is_expected.to contain_exactly(work_item_without_progress, work_item_with_stale_reminder) }
   end
+
+  describe 'versioned descriptions' do
+    it_behaves_like 'versioned description'
+
+    context 'when it is a work item of type epic' do
+      let(:type) { create(:work_item_type, :epic) }
+      let(:work_item) do
+        create(:work_item, description: 'Original description', work_item_type: type, project: reusable_project)
+      end
+
+      it 'does not create a versioned description' do
+        expect { work_item.update!(description: 'Another description') }
+          .not_to change { work_item.description_versions.count }
+      end
+    end
+  end
+
+  describe '#ensure_metrics!' do
+    subject(:create_work_item) { create(:work_item, project: reusable_project, work_item_type: type) }
+
+    context 'when it is not a work item of type epic' do
+      let(:type) { create(:work_item_type, :issue) }
+
+      it 'creates metrics after saving' do
+        expect(create_work_item).to be_persisted
+
+        expect(Issue::Metrics.count).to eq(1)
+      end
+    end
+
+    context 'when it is a work item of type epic' do
+      let(:type) { create(:work_item_type, :epic) }
+
+      it 'does not create metrics after saving' do
+        expect(create_work_item).to be_persisted
+
+        expect(Issue::Metrics.count).to eq(0)
+      end
+    end
+  end
 end

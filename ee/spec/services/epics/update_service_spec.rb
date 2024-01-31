@@ -753,5 +753,88 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
         end
       end
     end
+
+    context 'work item sync' do
+      let_it_be(:group) { create(:group) }
+      let_it_be_with_reload(:epic) { create(:epic, group: group) }
+      let_it_be(:labels) { create_pair(:group_label, group: group) }
+      let_it_be(:work_item) do
+        create(:work_item, :epic, namespace: group, iid: epic.iid, author: epic.author, created_at: epic.created_at)
+      end
+
+      context 'when epic has a synced work item' do
+        before do
+          epic.update!(issue_id: work_item.id)
+        end
+
+        context 'multiple values update' do
+          let_it_be(:synced_parent_work_item) { create(:work_item, :epic, namespace: group) }
+          let_it_be(:parent_epic) { create(:epic, group: group, issue_id: synced_parent_work_item.id) }
+
+          context 'when changes are valid' do
+            let(:opts) do
+              {
+                title: 'New title',
+                description: 'New description',
+                confidential: true,
+                external_key: 'external_test_key'
+              }
+            end
+
+            subject { update_epic(opts) }
+
+            it_behaves_like 'syncs all data from an epic to a work item'
+
+            context 'when feature flag is disabled' do
+              before do
+                stub_feature_flags(epic_creation_with_synced_work_item: false)
+              end
+
+              it 'does not propagate changes' do
+                expect { subject }.to change { epic.reload.title }.and not_change { work_item.reload.title }
+              end
+            end
+          end
+
+          context 'when changes are invalid', :aggregate_failures do
+            it 'does not propagate the title change to the work item' do
+              expect { update_epic({ title: '' }) }.to not_change { work_item.reload }
+
+              expect(work_item.reload).to be_valid
+            end
+          end
+        end
+
+        context 'when work item update errors' do
+          let(:error_message) { "error 1, error 2" }
+
+          before do
+            allow_next_instance_of(WorkItems::UpdateService) do |instance|
+              allow(instance).to receive(:execute).and_return(
+                ServiceResponse.error(message: 'error', payload: {
+                  errors: instance_double(ActiveModel::Errors, full_messages: error_message.split(", "))
+                })
+              )
+            end
+          end
+
+          it 'does not propagate the update to the work item and resets the epic udpates' do
+            expect(Gitlab::AppLogger).to receive(:error)
+              .with("Unable to sync work item: #{error_message}. Group ID: #{group.id}")
+            expect { update_epic({ title: 'New title' }) }.to raise_error(StandardError)
+              .and not_change { work_item.reload }
+              .and not_change { epic.reload }
+          end
+        end
+      end
+
+      context 'when epic has no synced work item' do
+        it 'does not call WorkItems::UpdateService' do
+          expect(WorkItems::UpdateService).not_to receive(:new)
+
+          update_epic({ title: 'New title' })
+        end
+      end
+    end
   end
 end
