@@ -52,9 +52,11 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content, feature_category:
 
       context 'when compliance pipeline configuration is defined' do
         let(:framework) do
-          create(:compliance_framework,
-                 namespace: compliance_group,
-                 pipeline_configuration_full_path: ".compliance-gitlab-ci.yml@compliance/hippa")
+          create(
+            :compliance_framework,
+            namespace: compliance_group,
+            pipeline_configuration_full_path: ".compliance-gitlab-ci.yml@compliance/hippa"
+          )
         end
 
         let!(:framework_project_setting) do

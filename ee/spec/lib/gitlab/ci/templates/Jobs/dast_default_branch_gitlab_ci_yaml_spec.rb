@@ -168,9 +168,11 @@ RSpec.describe 'Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml' do
 
         context 'default branch' do
           it 'includes the DAST environment jobs by default', :aggregate_failures do
-            expect(build_names).to contain_exactly(*other_jobs,
-                                                   'dast_ecs_environment_deploy',
-                                                   'stop_dast_ecs_environment')
+            expect(build_names).to contain_exactly(
+              *other_jobs,
+              'dast_ecs_environment_deploy',
+              'stop_dast_ecs_environment'
+            )
             expect(pipeline.builds.find_by(name: 'stop_dast_ecs_environment').when).to eq('always')
           end
 
