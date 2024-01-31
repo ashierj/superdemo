@@ -205,5 +205,28 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
         create_user
       end
     end
+
+    describe 'user signup cap' do
+      before do
+        stub_application_setting(require_admin_approval_after_user_signup: false)
+      end
+
+      context 'when user signup cap is exceeded on an ultimate license' do
+        before do
+          allow(Gitlab::CurrentSettings).to receive(:new_user_signups_cap).and_return(1)
+          create(:group_member, :developer)
+
+          license = create(:license, plan: License::ULTIMATE_PLAN)
+          allow(License).to receive(:current).and_return(license)
+        end
+
+        it 'sets a new non-billable user state to active' do
+          create_user
+
+          user = User.find_by(email: user_attrs[:email])
+          expect(user).to be_active
+        end
+      end
+    end
   end
 end

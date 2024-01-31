@@ -1296,6 +1296,37 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
+  describe '#pending_billable_invitations' do
+    let_it_be(:user) { described_class.new(confirmed_at: Time.zone.now, email: 'test@example.com') }
+
+    it 'returns pending billable invitations for the user' do
+      invitation = create(:group_member, :guest, :invited, invite_email: user.email)
+
+      expect(user.pending_billable_invitations).to eq([invitation])
+    end
+
+    it 'returns both project and group invitations' do
+      project_invitation = create(:project_member, :maintainer, :invited, invite_email: user.email)
+      group_invitation = create(:group_member, :developer, :invited, invite_email: user.email)
+
+      expect(user.pending_billable_invitations).to contain_exactly(project_invitation, group_invitation)
+    end
+
+    context 'with an ultimate license' do
+      before do
+        license = create(:license, plan: License::ULTIMATE_PLAN)
+        allow(License).to receive(:current).and_return(license)
+      end
+
+      it 'excludes pending non-billable invitations for the user' do
+        create(:group_member, :guest, :invited, invite_email: user.email)
+        developer_invitation = create(:group_member, :developer, :invited, invite_email: user.email)
+
+        expect(user.pending_billable_invitations).to eq([developer_invitation])
+      end
+    end
+  end
+
   describe '#group_managed_account?' do
     subject { user.group_managed_account? }
 

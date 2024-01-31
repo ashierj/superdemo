@@ -117,9 +117,22 @@ module EE
 
       def set_pending_approval_state
         return unless ::User.user_cap_reached?
-        return unless user.human?
+
+        if ::Feature.enabled?(:activate_nonbillable_users_over_instance_user_cap, type: :wip)
+          return unless will_be_billable?(user)
+        else
+          return unless user.human?
+        end
 
         user.state = ::User::BLOCKED_PENDING_APPROVAL_STATE
+      end
+
+      def will_be_billable?(user)
+        user.human? && (all_humans_are_billable? || user.pending_billable_invitations.any?)
+      end
+
+      def all_humans_are_billable?
+        !::License.current.exclude_guests_from_active_count?
       end
     end
   end
