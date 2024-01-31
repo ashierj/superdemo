@@ -3,6 +3,7 @@
 module Epics
   class UpdateService < Epics::BaseService
     include Gitlab::Utils::StrongMemoize
+    include SyncAsWorkItem
 
     EPIC_DATE_FIELDS = %I[
       start_date_fixed
@@ -91,6 +92,14 @@ module Epics
     end
 
     private
+
+    def transaction_update(epic, opts = {})
+      super.tap do |save_result|
+        break save_result unless save_result
+
+        update_work_item_for!(epic)
+      end
+    end
 
     def track_fixed_dates_updated_events(epic)
       fixed_start_date_updated = epic.saved_change_to_attribute?(:start_date_fixed)

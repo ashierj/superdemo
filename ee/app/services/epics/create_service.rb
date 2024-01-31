@@ -58,9 +58,5 @@ module Epics
         params[:end_date] = params[:due_date_fixed]
       end
     end
-
-    def work_item_sync_enabled?
-      ::Feature.enabled?(:epic_creation_with_synced_work_item, group, type: :wip)
-    end
   end
 end

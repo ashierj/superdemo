@@ -69,27 +69,17 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
     end
 
     context 'when syncing work item' do
+      subject do
+        described_class.new(group: group, current_user: user, params: params.merge(external_key: "test-external-key"))
+          .execute
+      end
+
       it 'creates an epic work item' do
         expect { subject }.to change { Epic.count }.by(1).and(change { WorkItem.count }.by(1))
       end
 
-      it 'creates epic work item with same attributes' do
-        subject
-
-        epic = Epic.last
-        work_item = WorkItem.last
-
-        expect(work_item.work_item_type.name).to eq('Epic')
-        expect(epic.attributes.with_indifferent_access.slice(*base_attrs))
-          .to eq(work_item.attributes.with_indifferent_access.slice(*base_attrs))
-
-        expect(epic.issue_id).to eq(work_item.id)
-        expect(epic.iid).to eq(work_item.iid)
-        expect(epic.created_at).to eq(work_item.created_at)
-        expect(epic.author).to eq(work_item.author)
-        expect(epic.parent.work_item).to eq(work_item.work_item_parent)
-        expect(epic.labels).to eq(work_item.labels)
-        expect(epic.state).to eq(work_item.state)
+      it_behaves_like 'syncs all data from an epic to a work item' do
+        let(:epic) { Epic.last }
       end
 
       context 'when work item creation fails' do
