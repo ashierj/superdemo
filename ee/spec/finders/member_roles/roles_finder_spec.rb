@@ -186,6 +186,20 @@ RSpec.describe MemberRoles::RolesFinder, feature_category: :system_access do
           end
         end
       end
+
+      context 'when requesting roles for the whole instance and group' do
+        let(:params) { { instance_roles: true, parent: group } }
+
+        context 'when a user is an instance admin', :enable_admin_mode do
+          let(:current_user) { admin }
+
+          context 'when on self-managed' do
+            it 'returns both instance member roles and group member roles' do
+              expect(find_member_roles).to eq([member_role_instance, member_role_2, member_role_1])
+            end
+          end
+        end
+      end
     end
   end
 end

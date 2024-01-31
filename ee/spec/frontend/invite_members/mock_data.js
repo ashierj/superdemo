@@ -61,7 +61,7 @@ export const mockGroupMemberRoles = {
               __typename: 'AccessLevel',
             },
             id: 'gid://gitlab/MemberRole/100',
-            name: 'My role 1',
+            name: 'My role group 1',
             enabledPermissions: {
               nodes: [
                 {
@@ -79,7 +79,7 @@ export const mockGroupMemberRoles = {
               __typename: 'AccessLevel',
             },
             id: 'gid://gitlab/MemberRole/101',
-            name: 'My role 2',
+            name: 'My role group 2',
             enabledPermissions: {
               nodes: [
                 {
@@ -103,9 +103,56 @@ export const mockProjectMemberRoles = {
     namespace: {
       id: 'gid://gitlab/Project/12',
       memberRoles: {
-        nodes: [],
+        nodes: [
+          {
+            baseAccessLevel: {
+              integerValue: 10,
+              stringValue: 'GUEST',
+              __typename: 'AccessLevel',
+            },
+            id: 'gid://gitlab/MemberRole/103',
+            name: 'My role project 1',
+            enabledPermissions: {
+              nodes: [
+                {
+                  name: 'Read code',
+                  value: 'READ_CODE',
+                },
+              ],
+            },
+            __typename: 'MemberRole',
+          },
+        ],
         __typename: 'MemberRoleConnection',
       },
+    },
+  },
+};
+
+export const mockInstanceMemberRoles = {
+  data: {
+    memberRoles: {
+      nodes: [
+        {
+          baseAccessLevel: {
+            integerValue: 10,
+            stringValue: 'GUEST',
+            __typename: 'AccessLevel',
+          },
+          id: 'gid://gitlab/MemberRole/104',
+          name: 'My role instance 1',
+          enabledPermissions: {
+            nodes: [
+              {
+                name: 'Read code',
+                value: 'READ_CODE',
+              },
+            ],
+          },
+          __typename: 'MemberRole',
+        },
+      ],
+      __typename: 'MemberRoleConnection',
     },
   },
 };

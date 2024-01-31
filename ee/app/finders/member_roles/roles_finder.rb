@@ -37,7 +37,7 @@ module MemberRoles
     end
 
     def valid_params
-      params.delete(:instance_roles) unless can_read_instance_roles?
+      params.delete(:instance_roles) unless allowed_read_member_role?(root_ancestor)
       params.slice(*VALID_PARAMS)
     end
 
@@ -68,7 +68,11 @@ module MemberRoles
     def for_instance(items)
       return items if params[:instance_roles].blank?
 
-      items.by_namespace(nil)
+      # TODO: only return instance-level custom roles when
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/429281 is merged
+      return items.or(MemberRole.for_instance) if params[:parent].present?
+
+      items.for_instance
     end
 
     def root_ancestor
@@ -76,7 +80,6 @@ module MemberRoles
     end
 
     def can_read_instance_roles?
-      # for SaaS only group level roles are allowed
       return false if saas?
 
       Ability.allowed?(current_user, :admin_member_role)
@@ -88,9 +91,8 @@ module MemberRoles
 
     def allowed_read_member_role?(group)
       return Ability.allowed?(current_user, :admin_member_role, group) if group
-      return false if saas? # roles without group are not allowed for SaaS
 
-      Ability.allowed?(current_user, :admin_member_role)
+      can_read_instance_roles?
     end
 
     def saas?

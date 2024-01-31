@@ -113,16 +113,34 @@ RSpec.describe 'Groups > Members > List members', feature_category: :groups_and_
   end
 
   context 'when user has a custom role', :js do
-    it 'shows that the role is custom' do
-      owner = create(:user)
-      group.add_member(owner, :owner)
-      member_role = create(:member_role, :guest, namespace: group, name: 'guest plus')
-      create(:group_member, :guest, group: group, user: user1, member_role: member_role)
-      sign_in(owner)
+    let_it_be(:group) { create(:group) }
+    let_it_be(:owner) { create(:user) }
 
+    let_it_be(:group_member_role) { create(:member_role, :guest, namespace: group, name: 'guest plus') }
+    let_it_be(:instance_member_role) { create(:member_role, :guest, :instance, name: 'guest plus (instance-level)') }
+
+    before_all do
+      create(:group_member, :guest, group: group, user: user1, member_role: group_member_role)
+      create(:group_member, :guest, group: group, user: user2, member_role: instance_member_role)
+
+      group.add_owner(owner)
+      sign_in(owner)
+    end
+
+    before do
+      stub_licensed_features(custom_roles: true)
+    end
+
+    it 'shows the group-level custom role is assigned to the user' do
       visit group_group_members_path(group)
 
       expect(find_member_row(user1)).to have_content('guest plus')
+    end
+
+    it 'shows the instance-level custom role is assigned to the user' do
+      visit group_group_members_path(group)
+
+      expect(find_member_row(user2)).to have_content('guest plus (instance-level)')
     end
   end
 end

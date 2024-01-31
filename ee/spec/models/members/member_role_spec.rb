@@ -203,6 +203,14 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
       end
     end
 
+    describe 'for_instance' do
+      let_it_be(:instance_member_role) { create(:member_role, :instance, name: 'Manager') }
+
+      it 'returns member roles created on the instance' do
+        expect(described_class.for_instance).to match_array([instance_member_role])
+      end
+    end
+
     describe '.with_members_count' do
       let_it_be(:member_role_1_members) do
         create_list(:group_member, 3, :developer, {
