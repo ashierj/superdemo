@@ -58,6 +58,8 @@ describe('remote_development/pages/list.vue', () => {
   const findTable = () => wrapper.findComponent(WorkspacesTable);
   const findPagination = () => wrapper.findComponent(WorkspacesListPagination);
   const findNewWorkspaceButton = () => wrapper.findComponent(GlButton);
+  const findAllConfirmButtons = () =>
+    wrapper.findAllComponents(GlButton).filter((button) => button.props().variant === 'confirm');
 
   beforeEach(() => {
     buildMockApollo();
@@ -74,6 +76,10 @@ describe('remote_development/pages/list.vue', () => {
 
     it('renders empty state when no workspaces are available', () => {
       expect(wrapper.findComponent(WorkspaceEmptyState).exists()).toBe(true);
+    });
+
+    it('renders only one confirm button when empty state is present', () => {
+      expect(findAllConfirmButtons().length).toBe(1);
     });
 
     it('does not render the workspaces table', () => {

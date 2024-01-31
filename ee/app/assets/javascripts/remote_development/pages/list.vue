@@ -107,7 +107,7 @@ export default {
     @error="onError"
     @page="onPaginationInput"
   >
-    <template #header>
+    <template v-if="!isEmpty" #header>
       <gl-button variant="confirm" :to="$options.ROUTES.new" data-testid="list-new-workspace-button"
         >{{ $options.i18n.newWorkspaceButton }}
       </gl-button>
