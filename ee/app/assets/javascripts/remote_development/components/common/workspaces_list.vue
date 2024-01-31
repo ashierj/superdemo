@@ -70,14 +70,15 @@ export default {
       {{ error }}
     </gl-alert>
     <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between">
-      <div class="gl-display-flex gl-align-items-center">
+      <div v-if="!isEmpty" class="gl-display-flex gl-align-items-center">
         <h2>{{ $options.i18n.heading }}</h2>
       </div>
       <div
         class="gl-display-flex gl-align-items-center gl-flex-direction-column gl-md-flex-direction-row"
       >
         <gl-link
-          class="gl-mr-5 workspace-preview-link gl-sm-display-none"
+          v-if="!isEmpty"
+          class="gl-mr-5 workspace-preview-link gl-display-none gl-sm-display-block"
           :href="$options.workspacesHelpPath"
           >{{ $options.i18n.learnMoreHelpLink }}</gl-link
         >

@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
-import { GlAlert, GlLink, GlSkeletonLoader } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLink, GlSkeletonLoader } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -62,6 +62,8 @@ describe('remote_development/components/agent_admin_ui/agent_workspaces_list.vue
   const findHelpLink = () => wrapper.findComponent(GlLink);
   const findTable = () => wrapper.findComponent(WorkspacesTable);
   const findPagination = () => wrapper.findComponent(WorkspacesListPagination);
+  const findAllConfirmButtons = () =>
+    wrapper.findAllComponents(GlButton).filter((button) => button.props().variant === 'confirm');
 
   beforeEach(() => {
     buildMockApollo();
@@ -80,6 +82,10 @@ describe('remote_development/components/agent_admin_ui/agent_workspaces_list.vue
 
     it('renders empty state when no workspaces are available', () => {
       expect(wrapper.findComponent(WorkspaceEmptyState).exists()).toBe(true);
+    });
+
+    it('renders only one confirm button when empty state is present', () => {
+      expect(findAllConfirmButtons().length).toBe(1);
     });
 
     it('does not render the workspaces table', () => {
