@@ -16,7 +16,8 @@ module EE
             super.deep_merge(
               {
                 options: {
-                  dast_configuration: job[:dast_configuration]
+                  dast_configuration: job[:dast_configuration],
+                  identity_provider: job[:identity_provider]
                 }.compact,
                 secrets: job[:secrets]
               }.compact

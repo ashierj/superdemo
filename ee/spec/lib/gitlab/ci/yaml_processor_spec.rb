@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::YamlProcessor do
+RSpec.describe Gitlab::Ci::YamlProcessor, feature_category: :pipeline_composition do
+  subject(:result) { described_class.new(YAML.dump(config)).execute }
+
   describe 'Bridge Needs' do
     let(:config) do
       {
@@ -11,14 +13,12 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
       }
     end
 
-    subject { described_class.new(YAML.dump(config)).execute }
-
-    context 'needs upstream pipeline' do
+    context 'when needs upstream pipeline' do
       let(:needs) { { pipeline: 'some/project' } }
 
       it 'creates jobs with valid specification' do
-        expect(subject.builds.size).to eq(2)
-        expect(subject.builds[0]).to eq(
+        expect(result.builds.size).to eq(2)
+        expect(result.builds[0]).to eq(
           stage: "build",
           stage_idx: 1,
           name: "build",
@@ -32,7 +32,7 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
           root_variables_inheritance: true,
           scheduling_type: :stage
         )
-        expect(subject.builds[1]).to eq(
+        expect(result.builds[1]).to eq(
           stage: "test",
           stage_idx: 2,
           name: "bridge",
@@ -49,12 +49,12 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
       end
     end
 
-    context 'needs both job and pipeline' do
+    context 'when needs both job and pipeline' do
       let(:needs) { ['build', { pipeline: 'some/project' }] }
 
       it 'creates jobs with valid specification' do
-        expect(subject.builds.size).to eq(2)
-        expect(subject.builds[0]).to eq(
+        expect(result.builds.size).to eq(2)
+        expect(result.builds[0]).to eq(
           stage: "build",
           stage_idx: 1,
           name: "build",
@@ -68,7 +68,7 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
           root_variables_inheritance: true,
           scheduling_type: :stage
         )
-        expect(subject.builds[1]).to eq(
+        expect(result.builds[1]).to eq(
           stage: "test",
           stage_idx: 2,
           name: "bridge",
@@ -88,7 +88,7 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
       end
     end
 
-    context 'needs cross projects artifacts' do
+    context 'when needs cross projects artifacts' do
       let(:config) do
         {
           build: { stage: 'build', script: 'test' },
@@ -121,9 +121,9 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
       end
 
       it 'creates jobs with valid specification' do
-        expect(subject.builds.size).to eq(3)
+        expect(result.builds.size).to eq(3)
 
-        expect(subject.builds[1]).to eq(
+        expect(result.builds[1]).to eq(
           stage: 'test',
           stage_idx: 2,
           name: 'test1',
@@ -163,7 +163,7 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
       end
     end
 
-    context 'needs cross projects artifacts and pipelines' do
+    context 'when needs cross projects artifacts and pipelines' do
       let(:needs) do
         [
           {
@@ -179,7 +179,7 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
       end
 
       it 'returns errors' do
-        expect(subject.errors).to include(
+        expect(result.errors).to include(
           'jobs:bridge config should contain either a trigger or a needs:pipeline')
       end
     end
@@ -202,12 +202,12 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
       end
 
       it 'returns errors' do
-        expect(subject.errors).to contain_exactly(
+        expect(result.errors).to contain_exactly(
           'jobs:test:needs:need ref should be a string')
       end
     end
 
-    describe 'cross pipeline needs' do
+    describe 'with cross pipeline needs' do
       context 'when job is not present' do
         let(:config) do
           {
@@ -222,10 +222,10 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
         end
 
         it 'returns an error' do
-          expect(subject).not_to be_valid
+          expect(result).not_to be_valid
           # This currently shows a confusing error message because a conflict of syntax
           # with upstream pipeline status mirroring: https://gitlab.com/gitlab-org/gitlab/-/issues/280853
-          expect(subject.errors).to include(/:needs config uses invalid types: bridge/)
+          expect(result.errors).to include(/:needs config uses invalid types: bridge/)
         end
       end
     end
@@ -245,9 +245,9 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
       end
 
       it 'returns a valid specification' do
-        expect(subject).to be_valid
+        expect(result).to be_valid
 
-        rspec = subject.builds.last
+        rspec = result.builds.last
         expect(rspec.dig(:options, :cross_dependencies)).to eq(
           [
             { pipeline: '$UPSTREAM_PIPELINE_ID', job: 'test', artifacts: true },
@@ -258,17 +258,25 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
 
     describe 'dast configuration' do
       let(:config) do
-        { build: { stage: 'build', dast_configuration: { site_profile: 'Site profile', scanner_profile: 'Scanner profile' }, script: 'test' } }
+        {
+          build: {
+            stage: 'build',
+            dast_configuration: { site_profile: 'Site profile', scanner_profile: 'Scanner profile' },
+            script: 'test'
+          }
+        }
       end
 
       it 'creates a job with a valid specification' do
-        expect(subject.builds[0][:options]).to include(dast_configuration: { site_profile: 'Site profile', scanner_profile: 'Scanner profile' })
+        expect(result.builds[0][:options]).to include(
+          dast_configuration: { site_profile: 'Site profile', scanner_profile: 'Scanner profile' }
+        )
       end
     end
   end
 
   describe 'secrets' do
-    context 'hashicorp vault' do
+    context 'on hashicorp vault' do
       let(:secrets) do
         {
           DATABASE_PASSWORD: {
@@ -278,8 +286,6 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
       end
 
       let(:config) { { deploy_to_production: { stage: 'deploy', script: ['echo'], secrets: secrets } } }
-
-      subject(:result) { described_class.new(YAML.dump(config)).execute }
 
       it "returns secrets info" do
         secrets = result.builds.first.fetch(:secrets)
@@ -296,7 +302,7 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
       end
     end
 
-    context 'azure key vault' do
+    context 'on azure key vault' do
       let(:secrets) do
         {
           DATABASE_PASSWORD: {
@@ -310,8 +316,6 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
 
       let(:config) { { deploy_to_production: { stage: 'deploy', script: ['echo'], secrets: secrets } } }
 
-      subject(:result) { described_class.new(YAML.dump(config)).execute }
-
       it "returns secrets info" do
         secrets = result.builds.first.fetch(:secrets)
 
@@ -324,6 +328,27 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
           }
         })
       end
+    end
+  end
+
+  describe 'identity_provider', feature_category: :secrets_management do
+    let(:config) do
+      {
+        build: {
+          stage: 'build', script: 'test',
+          identity_provider: 'google_cloud'
+        }
+      }
+    end
+
+    before do
+      stub_saas_features(google_artifact_registry: true)
+    end
+
+    it 'includes identity provider-related values' do
+      identity_provider = result.builds.first.dig(:options, :identity_provider)
+
+      expect(identity_provider).to eq('google_cloud')
     end
   end
 end

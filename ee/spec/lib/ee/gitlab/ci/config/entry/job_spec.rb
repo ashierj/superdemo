@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Config::Entry::Job do
+RSpec.describe Gitlab::Ci::Config::Entry::Job, feature_category: :pipeline_composition do
   let(:entry) { described_class.new(config, name: :rspec) }
 
   describe '.nodes' do
     context 'when filtering all the entry/node names' do
       subject { described_class.nodes.keys }
 
-      let(:result) { %i[dast_configuration secrets] }
+      let(:result) { %i[dast_configuration identity_provider secrets] }
 
       it { is_expected.to include(*result) }
     end
@@ -47,7 +47,9 @@ RSpec.describe Gitlab::Ci::Config::Entry::Job do
       end
 
       context 'when has dast_configuration' do
-        let(:config) { { script: 'echo', dast_configuration: { site_profile: 'Site profile', scanner_profile: 'Scanner profile' } } }
+        let(:config) do
+          { script: 'echo', dast_configuration: { site_profile: 'Site profile', scanner_profile: 'Scanner profile' } }
+        end
 
         it_behaves_like 'a valid entry'
       end
@@ -73,11 +75,19 @@ RSpec.describe Gitlab::Ci::Config::Entry::Job do
 
         it_behaves_like 'an invalid entry', 'secrets config should be a hash'
       end
+
+      context 'when entry has unknown identity provider' do
+        let(:config) { { script: 'rspec', identity_provider: 'unknown' } }
+
+        it_behaves_like 'an invalid entry', 'identity_provider config should be one of: google_cloud'
+      end
     end
   end
 
   describe 'dast_configuration' do
-    let(:config) { { script: 'echo', dast_configuration: { site_profile: 'Site profile', scanner_profile: 'Scanner profile' } } }
+    let(:config) do
+      { script: 'echo', dast_configuration: { site_profile: 'Site profile', scanner_profile: 'Scanner profile' } }
+    end
 
     before do
       entry.compose!
@@ -134,6 +144,44 @@ RSpec.describe Gitlab::Ci::Config::Entry::Job do
           }
         }
       })
+    end
+  end
+
+  describe 'identity_provider', :aggregate_failures, feature_category: :secrets_management do
+    let(:feature_flag_enabled) { true }
+    let(:saas_feature_enabled) { true }
+    let(:config) do
+      {
+        script: 'rspec',
+        identity_provider: 'google_cloud'
+      }
+    end
+
+    before do
+      stub_feature_flags(ci_yaml_support_for_identity_provider: feature_flag_enabled)
+      stub_saas_features(google_artifact_registry: saas_feature_enabled)
+
+      entry.compose!
+    end
+
+    it 'includes identity provider-related values' do
+      expect(entry.value).to include(identity_provider: 'google_cloud')
+    end
+
+    context 'when ci_yaml_support_for_identity_provider FF is disabled' do
+      let(:feature_flag_enabled) { false }
+
+      it 'does not include identity provider-related values' do
+        expect(entry.value).not_to match(a_hash_including(identity_provider: anything))
+      end
+    end
+
+    context 'when feature is disabled' do
+      let(:saas_feature_enabled) { false }
+
+      it 'does not include identity provider-related values' do
+        expect(entry.value).not_to match(a_hash_including(identity_provider: anything))
+      end
     end
   end
 end
