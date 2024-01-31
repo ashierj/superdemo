@@ -1005,6 +1005,67 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     end
   end
 
+  describe 'build identity_provider' do
+    let_it_be(:user) { create(:user) }
+
+    let(:identity_provider) { 'google_cloud' }
+    let(:build) do
+      create(:ci_build, pipeline: pipeline, user: user, options: { identity_provider: identity_provider })
+    end
+
+    subject(:variables) { build.variables }
+
+    before do
+      rsa_key = OpenSSL::PKey::RSA.generate(3072)
+      stub_application_setting(ci_jwt_signing_key: rsa_key.to_s)
+    end
+
+    it 'does not include the gcloud file variables' do
+      runner_vars = variables.to_runner_variables.index_by { |v| v[:key] }
+      runner_var_names = runner_vars.keys
+
+      expect(runner_var_names).not_to include('CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE')
+      expect(runner_var_names).not_to include('GOOGLE_APPLICATION_CREDENTIALS')
+    end
+
+    context 'with integration active' do
+      let!(:project) { create(:project) }
+      let!(:integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
+      let!(:pipeline) { create(:ci_pipeline, project: project, status: 'success') }
+
+      it 'includes the gcloud file variables' do
+        runner_vars = variables.to_runner_variables.index_by { |v| v[:key] }
+        runner_var_names = runner_vars.keys
+
+        expect(runner_var_names).to include('CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE')
+        expect(runner_var_names).to include('GOOGLE_APPLICATION_CREDENTIALS')
+        expect(runner_vars['GOOGLE_APPLICATION_CREDENTIALS']).to include(file: true)
+        expect(runner_vars['GOOGLE_APPLICATION_CREDENTIALS'].except(:key)).to eq(
+          runner_vars['CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE'].except(:key))
+
+        json = Gitlab::Json.parse(runner_vars['CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE'][:value])
+        expect(json).to match(
+          'type' => 'external_account',
+          'audience' => an_instance_of(String),
+          'subject_token_type' => 'urn:ietf:params:oauth:token-type:jwt',
+          'token_url' => 'https://sts.googleapis.com/v1/token',
+          'credential_source' => {
+            'url' => 'https://auth.gcp.gitlab.com/token',
+            'headers' => { 'Authorization' => an_instance_of(String) },
+            'format' => { 'type' => 'json', 'subject_token_field_name' => 'token' }
+          })
+      end
+
+      context 'when identity_provider is unknown' do
+        let(:identity_provider) { 'unknown' }
+
+        it 'raises an error' do
+          expect { subject }.to raise_error ArgumentError, "Unknown identity_provider value: #{identity_provider}"
+        end
+      end
+    end
+  end
+
   context 'with loose foreign keys for partitioned tables' do
     before do
       create(:security_scan, build: job)

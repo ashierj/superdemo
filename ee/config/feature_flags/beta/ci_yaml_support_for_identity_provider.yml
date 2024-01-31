@@ -1,0 +1,9 @@
+---
+name: ci_yaml_support_for_identity_provider
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/438546
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/142054
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/438420
+milestone: '16.9'
+group: group::pipeline security
+type: beta
+default_enabled: false
