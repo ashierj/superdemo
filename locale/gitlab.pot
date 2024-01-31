@@ -34741,6 +34741,9 @@ msgstr ""
 msgid "Package type must be RubyGems"
 msgstr ""
 
+msgid "Package type must be Terraform Module"
+msgstr ""
+
 msgid "PackageRegistry|%{name} version %{version} was first created %{datetime}"
 msgstr ""
 
@@ -58845,6 +58848,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "mergedCommitsAdded| (commits were squashed)"
+msgstr ""
+
+msgid "metadata is too large (maximum is %{max_size} characters)"
 msgstr ""
 
 msgid "milestone"
