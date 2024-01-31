@@ -49,6 +49,11 @@ module EE
       end
     end
 
+    delegator_override :member_role_description
+    def member_role_description
+      member_role&.description
+    end
+
     private
 
     def override_member_permission
