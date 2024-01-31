@@ -1257,6 +1257,38 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
             expect(errors).to contain_exactly(
               "property '/#{type}/0/rules/0/license_types/0' is invalid: error_type=minLength")
           end
+
+          context "when too long" do
+            before do
+              rule[:license_types] = ["a" * 256]
+            end
+
+            specify do
+              expect(errors).to contain_exactly("property '/#{type}/0/rules/0/license_types/0' is invalid: error_type=maxLength")
+            end
+          end
+
+          context "with repeated licenses" do
+            before do
+              rule[:license_types] = ["a"] * 2
+            end
+
+            specify do
+              expect(errors).to contain_exactly("property '/#{type}/0/rules/0/license_types' is invalid: error_type=uniqueItems")
+            end
+          end
+
+          context "with too many licenses" do
+            before do
+              licenses = []
+              1001.times { |i| licenses << "License #{i}" }
+              rule[:license_types] = licenses
+            end
+
+            specify do
+              expect(errors).to contain_exactly("property '/#{type}/0/rules/0/license_types' is invalid: error_type=maxItems")
+            end
+          end
         end
 
         describe "license_states" do
