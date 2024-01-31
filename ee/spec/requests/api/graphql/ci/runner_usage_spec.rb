@@ -61,7 +61,7 @@ RSpec.describe 'Query.ciRunnerUsageByProject', :click_house, feature_category: :
     stub_licensed_features(runner_performance_insights: licensed_feature_available)
   end
 
-  shared_examples "returns unauthorized error" do
+  shared_examples "returns unauthorized or unavailable error" do
     it 'returns error' do
       execute_query
 
@@ -75,25 +75,25 @@ RSpec.describe 'Query.ciRunnerUsageByProject', :click_house, feature_category: :
       allow(ClickHouse::Client).to receive(:database_configured?).and_return(false)
     end
 
-    include_examples "returns unauthorized error"
+    include_examples "returns unauthorized or unavailable error"
   end
 
   context "when runner_performance_insights feature is disabled" do
     let(:licensed_feature_available) { false }
 
-    include_examples "returns unauthorized error"
+    include_examples "returns unauthorized or unavailable error"
   end
 
   context "when user is nil" do
     let(:current_user) { nil }
 
-    include_examples "returns unauthorized error"
+    include_examples "returns unauthorized or unavailable error"
   end
 
   context "when user is not admin" do
     let(:current_user) { create(:user) }
 
-    include_examples "returns unauthorized error"
+    include_examples "returns unauthorized or unavailable error"
   end
 
   context "when service returns an error" do

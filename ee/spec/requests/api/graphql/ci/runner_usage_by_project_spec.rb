@@ -62,40 +62,53 @@ RSpec.describe 'Query.ciRunnerUsageByProject', :click_house, feature_category: :
     stub_licensed_features(runner_performance_insights: licensed_feature_available)
   end
 
+  shared_examples "returns unauthorized or unavailable error" do
+    it 'returns error' do
+      execute_query
+
+      expect_graphql_errors_to_include("The resource that you are attempting to access does not exist " \
+                                       "or you don't have permission to perform this action")
+    end
+  end
+
   context "when ClickHouse database is not configured" do
     before do
       allow(ClickHouse::Client).to receive(:database_configured?).and_return(false)
     end
 
-    it 'returns error' do
-      execute_query
-      expect_graphql_errors_to_include('ClickHouse database is not configured')
-    end
-  end
-
-  shared_examples "returns unauthorized error" do
-    it 'returns error' do
-      execute_query
-      expect_graphql_errors_to_include("You don't have permissions to view CI jobs statistics")
-    end
+    include_examples "returns unauthorized or unavailable error"
   end
 
   context "when runner_performance_insights feature is disabled" do
     let(:licensed_feature_available) { false }
 
-    include_examples "returns unauthorized error"
+    include_examples "returns unauthorized or unavailable error"
   end
 
   context "when user is nil" do
     let(:current_user) { nil }
 
-    include_examples "returns unauthorized error"
+    include_examples "returns unauthorized or unavailable error"
   end
 
   context "when user is not admin" do
     let(:current_user) { create(:user) }
 
-    include_examples "returns unauthorized error"
+    include_examples "returns unauthorized or unavailable error"
+  end
+
+  context "when service returns an error" do
+    before do
+      allow_next_instance_of(::Ci::Runners::GetUsageByProjectService) do |service|
+        allow(service).to receive(:execute).and_return(ServiceResponse.error(message: 'error 123'))
+      end
+    end
+
+    it 'returns this error' do
+      execute_query
+
+      expect_graphql_errors_to_include("error 123")
+    end
   end
 
   it 'returns empty runner_usage_by_project with no data' do

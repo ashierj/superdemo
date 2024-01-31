@@ -6,7 +6,7 @@ module Types
       graphql_name 'CiRunnerUsageByProject'
       description 'Runner usage in minutes by project.'
 
-      authorize :read_jobs_statistics
+      authorize :read_runner_usage
 
       field :project, ::Types::ProjectType,
         null: true, description: 'Project that the usage refers to. Null means "Other projects".'
