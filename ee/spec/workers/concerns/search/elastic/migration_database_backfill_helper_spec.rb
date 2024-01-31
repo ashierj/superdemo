@@ -18,6 +18,12 @@ RSpec.describe Search::Elastic::MigrationDatabaseBackfillHelper, :elastic, featu
       end
     end
 
+    describe '#item_to_preload' do
+      it 'raises a NotImplementedError' do
+        expect { migration.item_to_preload }.to raise_error(NotImplementedError)
+      end
+    end
+
     describe '#document_type' do
       it 'raises a NotImplementedError' do
         expect { migration.document_type }.to raise_error(NotImplementedError)
@@ -34,6 +40,10 @@ RSpec.describe Search::Elastic::MigrationDatabaseBackfillHelper, :elastic, featu
         batched!
         throttle_delay 1.minute
         retry_on_failure
+
+        def item_to_preload
+          :project
+        end
 
         def respect_limited_indexing?
           false
