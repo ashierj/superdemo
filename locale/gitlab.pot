@@ -38316,9 +38316,6 @@ msgstr ""
 msgid "ProjectActivityRSS|Subscribe"
 msgstr ""
 
-msgid "ProjectCreationLevel|Allowed to create projects"
-msgstr ""
-
 msgid "ProjectCreationLevel|Default project creation protection"
 msgstr ""
 
@@ -47933,9 +47930,6 @@ msgid "Subgroup navigation"
 msgstr ""
 
 msgid "SubgroupCreationLevel|Roles allowed to create subgroups"
-msgstr ""
-
-msgid "SubgroupCreationlevel|Allowed to create subgroups"
 msgstr ""
 
 msgid "SubgroupCreationlevel|Maintainers"
