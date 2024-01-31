@@ -12,6 +12,7 @@ query groupMergeRequests(
       mergedAfter: $startDate
       state: $state
       labels: $labelNames
+      includeSubgroups: true
     ) {
       merge_request_throughput: count
     }
