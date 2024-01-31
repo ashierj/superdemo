@@ -43,10 +43,10 @@ module Gitlab
           # rubocop: enable CodeReuse/ActiveRecord
 
           # rubocop: disable CodeReuse/ActiveRecord
-          def include_in(query)
+          def include_in(query, include_all_timestamps_as_array: false)
             query
               .from(Arel::Nodes::Grouping.new(Arel.sql(object_type.all.to_sql)).as(object_type.table_name))
-              .joins("LEFT JOIN LATERAL (#{subquery.to_sql}) #{join_expression_name} ON TRUE")
+              .joins("LEFT JOIN LATERAL (#{subquery(include_all_timestamps_as_array: include_all_timestamps_as_array).to_sql}) #{join_expression_name} ON TRUE")
           end
           # rubocop: enable CodeReuse/ActiveRecord
 
@@ -78,14 +78,20 @@ module Gitlab
           #    order: :asc or :desc
 
           # rubocop: disable CodeReuse/ActiveRecord
-          def resource_label_events_with_subquery(foreign_key, label, action, order)
-            ResourceLabelEvent
-              .select(:created_at)
+          def resource_label_events_with_subquery(foreign_key, label, action, order, include_all_timestamps_as_array: false)
+            base_scope = ResourceLabelEvent
               .where(action: action)
               .where(label_id: label.id)
               .where(ResourceLabelEvent.arel_table[foreign_key].eq(object_type.arel_table[:id]))
-              .order(order_expression(order))
-              .limit(1)
+
+            if include_all_timestamps_as_array
+              base_scope.select("ARRAY_AGG(created_at ORDER BY #{order_expression(order).to_sql}) AS created_at")
+            else
+              base_scope
+                .select(:created_at)
+                .order(order_expression(order))
+                .limit(1)
+            end
           end
           # rubocop: enable CodeReuse/ActiveRecord
 

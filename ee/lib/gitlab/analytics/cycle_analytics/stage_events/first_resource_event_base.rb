@@ -26,7 +26,7 @@ module Gitlab
           end
 
           override :include_in
-          def include_in(query)
+          def include_in(query, **)
             query
               .joins("LEFT JOIN LATERAL (#{subquery.to_sql}) #{event_model.quoted_table_name} ON TRUE")
           end

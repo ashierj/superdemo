@@ -21,8 +21,8 @@ module Gitlab
             Issue
           end
 
-          def subquery
-            resource_label_events_with_subquery(:issue_id, label, ::ResourceLabelEvent.actions[:remove], :desc)
+          def subquery(include_all_timestamps_as_array: false)
+            resource_label_events_with_subquery(:issue_id, label, ::ResourceLabelEvent.actions[:remove], :desc, include_all_timestamps_as_array: include_all_timestamps_as_array)
           end
         end
       end
