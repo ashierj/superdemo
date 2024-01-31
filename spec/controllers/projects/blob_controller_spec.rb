@@ -403,16 +403,9 @@ RSpec.describe Projects::BlobController, feature_category: :source_code_manageme
 
       subject(:request) { put :update, params: default_params }
 
-      it_behaves_like 'tracking unique hll events' do
-        let(:expected_value) { instance_of(Integer) }
-      end
-
-      it_behaves_like 'Snowplow event tracking with RedisHLL context' do
-        let(:action) { 'perform_sfe_action' }
-        let(:category) { described_class.to_s }
+      it_behaves_like 'internal event tracking' do
         let(:namespace) { project.namespace.reload }
-        let(:property) { target_event }
-        let(:label) { 'usage_activity_by_stage_monthly.create.action_monthly_active_users_sfe_edit' }
+        let(:event) { target_event }
       end
     end
   end
@@ -566,16 +559,9 @@ RSpec.describe Projects::BlobController, feature_category: :source_code_manageme
 
     subject(:request) { post :create, params: default_params }
 
-    it_behaves_like 'tracking unique hll events' do
-      let(:expected_value) { instance_of(Integer) }
-    end
-
-    it_behaves_like 'Snowplow event tracking with RedisHLL context' do
-      let(:action) { 'perform_sfe_action' }
-      let(:category) { described_class.to_s }
-      let(:namespace) { project.namespace }
-      let(:property) { target_event }
-      let(:label) { 'usage_activity_by_stage_monthly.create.action_monthly_active_users_sfe_edit' }
+    it_behaves_like 'internal event tracking' do
+      let(:namespace) { project.namespace.reload }
+      let(:event) { target_event }
     end
 
     it 'redirects to blob' do
