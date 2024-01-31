@@ -256,10 +256,9 @@ rules:
 actions:
   - scan: sast
   - scan: custom
-    ci_configuration_path:
-      file: file
     ci_configuration:
-      file: file
+      include:
+        file: file
 `;
 
 export const mockCodeBlockFilePathScanExecutionObject = {
@@ -271,11 +270,10 @@ export const mockCodeBlockFilePathScanExecutionObject = {
     { scan: 'sast', id: actionId },
     {
       scan: 'custom',
-      ci_configuration_path: {
-        file: 'file',
-      },
       ci_configuration: {
-        file: 'file',
+        include: {
+          file: 'file',
+        },
       },
       id: actionId,
     },
