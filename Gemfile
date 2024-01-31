@@ -198,6 +198,7 @@ gem 'google-apis-androidpublisher_v3', '~> 0.34.0' # rubocop:todo Gemfile/Missin
 
 gem 'googleauth', '~> 1.8.1', feature_category: :shared
 gem 'google-cloud-artifact_registry-v1', '~> 0.11.0', feature_category: :shared
+gem 'google-cloud-compute-v1', '~> 2.6.0', feature_category: :shared
 
 # Seed data
 gem 'seed-fu', '~> 2.3.7' # rubocop:todo Gemfile/MissingFeatureCategory
