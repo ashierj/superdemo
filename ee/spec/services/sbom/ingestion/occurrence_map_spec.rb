@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_management do
-  let_it_be(:report_component) { build_stubbed(:ci_reports_sbom_component) }
+  let_it_be(:report_component) { build_stubbed(:ci_reports_sbom_component, source_package_name: 'source-package-name') }
   let_it_be(:report_source) { build_stubbed(:ci_reports_sbom_source) }
 
   let(:vulnerability_info) { create(:sbom_vulnerabilities) }
@@ -17,6 +17,8 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
       source: report_source.data,
       source_id: nil,
       source_type: report_source.source_type,
+      source_package_id: nil,
+      source_package_name: report_component.source_package_name,
       version: report_component.version
     }
   end
@@ -33,7 +35,8 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
         {
           component_id: 1,
           component_version_id: 2,
-          source_id: 3
+          source_id: 3,
+          source_package_id: 4
         }
       end
 
@@ -41,6 +44,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
         occurrence_map.component_id = ids[:component_id]
         occurrence_map.component_version_id = ids[:component_version_id]
         occurrence_map.source_id = ids[:source_id]
+        occurrence_map.source_package_id = ids[:source_package_id]
       end
 
       it 'returns a hash with ids and base data' do
@@ -62,6 +66,8 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
             source: nil,
             source_id: nil,
             source_type: nil,
+            source_package_id: nil,
+            source_package_name: report_component.source_package_name,
             version: report_component.version
           }
         )
@@ -82,6 +88,8 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
             source: report_source.data,
             source_id: nil,
             source_type: report_source.source_type,
+            source_package_id: nil,
+            source_package_name: report_component.source_package_name,
             version: report_component.version
           }
         )
@@ -105,6 +113,8 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
             source: report_source.data,
             source_id: nil,
             source_type: report_source.source_type,
+            source_package_id: nil,
+            source_package_name: report_component.source_package_name,
             version: report_component.version
           }
         )
@@ -135,6 +145,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
     it { is_expected.to delegate_method(:input_file_path).to(:report_source).allow_nil }
     it { is_expected.to delegate_method(:name).to(:report_component) }
     it { is_expected.to delegate_method(:version).to(:report_component) }
+    it { is_expected.to delegate_method(:source_package_name).to(:report_component) }
   end
 
   context 'without vulnerability data' do

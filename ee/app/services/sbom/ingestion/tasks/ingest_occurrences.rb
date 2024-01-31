@@ -28,6 +28,7 @@ module Sbom
               component_id: occurrence_map.component_id,
               component_version_id: occurrence_map.component_version_id,
               source_id: occurrence_map.source_id,
+              source_package_id: occurrence_map.source_package_id,
               commit_sha: pipeline.sha,
               uuid: uuid(occurrence_map),
               package_manager: occurrence_map.packager,
