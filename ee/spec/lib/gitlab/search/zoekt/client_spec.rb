@@ -59,7 +59,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
   shared_examples 'without node backoffs' do |method|
     context 'and an exception occurs' do
       it 'does not backoff current node and exception is still raised' do
-        expect(node.backoff).not_to receive(:backoff!)
+        expect(::Search::Zoekt::NodeBackoff).not_to receive(:new)
         expect(::Gitlab::HTTP).to receive(method).and_raise 'boom'
         expect { make_request }.to raise_error 'boom'
       end
@@ -76,13 +76,14 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
 
   shared_examples 'with node backoffs' do |method|
     before do
-      allow(::Search::Zoekt::Node).to receive(:find_by_id).with(node.id).and_return(node)
       node.backoff.remove_backoff!
     end
 
     context 'when an exception occurs' do
       it 'backs off current node and re-raises the exception' do
-        expect(node.backoff).to receive(:backoff!)
+        expect_next_instance_of(::Search::Zoekt::NodeBackoff) do |backoff|
+          expect(backoff).to receive(:backoff!)
+        end
         expect(::Gitlab::HTTP).to receive(method).and_raise 'boom'
         expect { make_request }.to raise_error 'boom'
       end
@@ -133,7 +134,9 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     let(:node_id) { node.id }
     let(:search_mode) { 'regex' }
 
-    subject { client.search(query, num: 10, project_ids: project_ids, node_id: node_id, search_mode: search_mode) }
+    subject(:search) do
+      client.search(query, num: 10, project_ids: project_ids, node_id: node_id, search_mode: search_mode)
+    end
 
     before do
       zoekt_ensure_project_indexed!(project_1)
@@ -142,11 +145,11 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     end
 
     it 'returns the matching files from all searched projects' do
-      expect(subject[:Result][:Files].pluck(:FileName)).to include(
+      expect(search[:Result][:Files].pluck(:FileName)).to include(
         "files/ruby/regex.rb", "files/markdown/ruby-style-guide.md"
       )
 
-      expect(subject[:Result][:Files].map { |r| r[:Repository].to_i }.uniq).to contain_exactly(
+      expect(search[:Result][:Files].map { |r| r[:Repository].to_i }.uniq).to contain_exactly(
         project_1.id, project_2.id
       )
     end
@@ -155,7 +158,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       let(:project_ids) { [] }
 
       it 'raises an error if there are somehow no project_id in the filter' do
-        expect { subject }.to raise_error('Not possible to search without at least one project specified')
+        expect { search }.to raise_error('Not possible to search without at least one project specified')
       end
     end
 
@@ -163,7 +166,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       let(:project_ids) { :any }
 
       it 'raises an error if somehow :any is sent as project_ids' do
-        expect { subject }.to raise_error('Global search is not supported')
+        expect { search }.to raise_error('Global search is not supported')
       end
     end
 
@@ -171,7 +174,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       let(:query) { 'lots code do a' }
 
       it 'performs regex search and result is not empty' do
-        expect(subject[:Result][:Files]).not_to be_nil
+        expect(search[:Result][:Files]).not_to be_nil
       end
     end
 
@@ -180,7 +183,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       let(:search_mode) { 'exact' }
 
       it 'performs exact search and result is empty' do
-        expect(subject[:Result][:Files]).to be_nil
+        expect(search[:Result][:Files]).to be_nil
       end
     end
 
@@ -188,7 +191,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       let(:search_mode) { 'dummy' }
 
       it 'raises an error' do
-        expect { subject }.to raise_error(ArgumentError, 'Not a valid search_mode')
+        expect { search }.to raise_error(ArgumentError, 'Not a valid search_mode')
       end
     end
 
@@ -207,21 +210,21 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
         expect(::Zoekt::Logger).to receive(:build).and_return(logger)
         expect(logger).to receive(:error).with(hash_including('status' => 400))
 
-        expect(subject[:Error]).to include('error parsing regexp')
+        expect(search[:Error]).to include('error parsing regexp')
       end
     end
 
     it_behaves_like 'an authenticated zoekt request' do
-      let(:make_request) { subject }
+      let(:make_request) { search }
     end
 
     it_behaves_like 'with relative base_url', :post do
-      let(:make_request) { subject }
+      let(:make_request) { search }
       let(:expected_path) { '/api/search' }
     end
 
     it_behaves_like 'with node backoffs', :post do
-      let(:make_request) { subject }
+      let(:make_request) { search }
     end
 
     it_behaves_like 'with connection errors', :post
@@ -242,14 +245,15 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       )
     end
 
-    subject { client.index(project_1, node_id) }
+    subject(:index) { client.index(project_1, node_id) }
 
     it 'indexes the project to make it searchable' do
       search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node_id,
         search_mode: :regex)
       expect(search_results[:Result][:Files].to_a.size).to eq(0)
 
-      client.index(project_1, node_id)
+      index
+
       # Add delay to allow Zoekt wbeserver to finish the indexing
       10.times do
         results = client.search('.*', num: 1, project_ids: [project_1.id], node_id: node_id, search_mode: :regex)
@@ -257,6 +261,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
 
         sleep 0.01
       end
+
       search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node_id,
         search_mode: :regex)
       expect(search_results[:Result][:Files].to_a.size).to be > 0
@@ -268,9 +273,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       it 'raises an exception when indexing errors out' do
         allow(::Gitlab::HTTP).to receive(:post).and_return(response)
 
-        expect do
-          client.index(project_1, node_id)
-        end.to raise_error(RuntimeError, 'command failed: exit status 128')
+        expect { index }.to raise_error(RuntimeError, 'command failed: exit status 128')
       end
     end
 
@@ -280,7 +283,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       it 'raises an exception when response is not successful' do
         allow(::Gitlab::HTTP).to receive(:post).and_return(response)
 
-        expect { client.index(project_1, node_id) }.to raise_error(RuntimeError, /Request failed with/)
+        expect { index }.to raise_error(RuntimeError, /Request failed with/)
       end
     end
 
@@ -289,7 +292,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
                                 .with(anything, hash_including(timeout: described_class::INDEXING_TIMEOUT_S))
                                 .and_return(response)
 
-      client.index(project_1, node_id)
+      index
     end
 
     it 'sets force flag' do
@@ -301,7 +304,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     end
 
     it_behaves_like 'an authenticated zoekt request' do
-      let(:make_request) { client.index(project_1, node_id) }
+      let(:make_request) { index }
     end
 
     it_behaves_like 'with relative base_url', :post do
@@ -310,7 +313,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     end
 
     it_behaves_like 'without node backoffs', :post do
-      let(:make_request) { subject }
+      let(:make_request) { index }
     end
 
     it_behaves_like 'with connection errors', :post
@@ -318,12 +321,11 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
 
   describe '#delete' do
     let(:node) { zoekt_node }
+    let(:node_id) { node.id }
 
-    subject { described_class.delete(node_id: node.id, project_id: project_1.id) }
+    subject(:delete) { described_class.delete(node_id: node_id, project_id: project_1.id) }
 
     context 'when project is indexed' do
-      let(:node_id) { ::Search::Zoekt::Node.last.id }
-
       before do
         zoekt_ensure_project_indexed!(project_1)
       end
@@ -333,7 +335,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
           node_id: node_id, search_mode: :regex)
         expect(search_results[:Result][:Files].to_a.size).to eq(2)
 
-        subject
+        delete
 
         search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id],
           node_id: node_id, search_mode: :regex)
@@ -351,7 +353,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       end
 
       it 'raises and exception' do
-        expect { subject }.to raise_error(StandardError, /Request failed/)
+        expect { delete }.to raise_error(StandardError, /Request failed/)
       end
     end
 
@@ -361,7 +363,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     end
 
     it_behaves_like 'without node backoffs', :delete do
-      let(:make_request) { subject }
+      let(:make_request) { delete }
     end
 
     it_behaves_like 'with connection errors', :delete
