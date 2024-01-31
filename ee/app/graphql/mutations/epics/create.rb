@@ -40,3 +40,6 @@ module Mutations
     end
   end
 end
+
+# JH required
+::Mutations::Epics::Create.prepend_mod
