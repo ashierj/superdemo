@@ -16,11 +16,11 @@ RSpec.describe 'Kerberos clone instructions', :js, feature_category: :system_acc
   it 'shows Kerberos clone url' do
     visit_project
 
-    find_by_testid('code-dropdown').click
+    find('.clone-dropdown-btn').click
 
     expect(page).to have_content(project.kerberos_url_to_repo)
 
-    within_testid('code-dropdown') do
+    within('.git-clone-holder') do
       expect(page).to have_content('Clone with KRB5')
     end
   end
