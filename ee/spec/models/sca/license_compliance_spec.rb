@@ -96,7 +96,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
           allow(license_compliance).to receive(:license_scanning_report).and_return(report)
 
           input.each do |policy|
-            scan_result_policy_read = policy[:scan_result_policy] ? create(:scan_result_policy_read, match_on_inclusion: policy[:classification] == 'denied') : nil
+            scan_result_policy_read = policy[:scan_result_policy] ? create(:scan_result_policy_read, match_on_inclusion_license: policy[:classification] == 'denied') : nil
             create(:software_license_policy, policy[:classification],
               project: project,
               software_license: license_map[policy[:id]],
@@ -447,8 +447,8 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
       let(:base_report) { create(:ci_reports_license_scanning_report) }
       let(:report) { create(:ci_reports_license_scanning_report) }
 
-      let(:scan_result_policy_read_with_inclusion) { create(:scan_result_policy_read, match_on_inclusion: true) }
-      let(:scan_result_policy_read_without_inclusion) { create(:scan_result_policy_read, match_on_inclusion: false) }
+      let(:scan_result_policy_read_with_inclusion) { create(:scan_result_policy_read, match_on_inclusion_license: true) }
+      let(:scan_result_policy_read_without_inclusion) { create(:scan_result_policy_read, match_on_inclusion_license: false) }
 
       context 'when base_report has new denied licenses' do
         before do
@@ -563,7 +563,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
         end
 
         let(:scan_result_policy_read) do
-          create(:scan_result_policy_read, license_states: ['newly_detected'], match_on_inclusion: true,
+          create(:scan_result_policy_read, license_states: ['newly_detected'], match_on_inclusion_license: true,
             role_approvers: [Gitlab::Access::MAINTAINER], project: project)
         end
 

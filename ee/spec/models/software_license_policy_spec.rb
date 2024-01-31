@@ -55,8 +55,8 @@ RSpec.describe SoftwareLicensePolicy, feature_category: :software_composition_an
 
   describe '.exclusion_allowed' do
     let_it_be(:mit) { create(:software_license, :mit) }
-    let_it_be(:scan_result_policy_read_with_inclusion) { create(:scan_result_policy_read, match_on_inclusion: true) }
-    let_it_be(:scan_result_policy_read_without_inclusion) { create(:scan_result_policy_read, match_on_inclusion: false) }
+    let_it_be(:scan_result_policy_read_with_inclusion) { create(:scan_result_policy_read, match_on_inclusion_license: true) }
+    let_it_be(:scan_result_policy_read_without_inclusion) { create(:scan_result_policy_read, match_on_inclusion_license: false) }
     let!(:mit_policy) { create(:software_license_policy, software_license: mit) }
     let!(:mit_policy_with_inclusion) { create(:software_license_policy, software_license: mit, scan_result_policy_read: scan_result_policy_read_with_inclusion) }
     let!(:mit_policy_without_inclusion) { create(:software_license_policy, software_license: mit, scan_result_policy_read: scan_result_policy_read_without_inclusion) }

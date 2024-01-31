@@ -543,76 +543,88 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
     context 'with license_finding rule_type' do
       let(:policy) { build(:scan_result_policy, :license_finding) }
 
-      it 'creates scan_result_policy_read' do
-        subject
+      shared_examples 'license_finding_rule_type' do
+        it 'creates scan_result_policy_read' do
+          subject
 
-        scan_result_policy_read = project.approval_rules.first.scan_result_policy_read
-        expect(scan_result_policy_read).to eq(Security::ScanResultPolicyRead.first)
-        expect(scan_result_policy_read.match_on_inclusion).to be_truthy
-        expect(scan_result_policy_read.license_states).to match_array(%w[newly_detected detected])
-        expect(scan_result_policy_read.rule_idx).to be(0)
-      end
-
-      it 'creates software_license_policies' do
-        expect { subject }.to change { project.software_license_policies.count }.by(2)
-      end
-
-      it 'creates approval_rules with valid params' do
-        subject
-
-        approval_rule = project.approval_rules.first
-
-        expect(approval_rule.severity_levels).to be_empty
-      end
-
-      it 'calls SoftwareLicensePolicies::BulkCreateScanResultPolicyService' do
-        expect(SoftwareLicensePolicies::BulkCreateScanResultPolicyService).to receive(:new).with(
-          project,
-          [
-            {
-              name: 'BSD',
-              approval_status: 'denied',
-              scan_result_policy_read: anything
-            },
-            {
-              name: 'MIT',
-              approval_status: 'denied',
-              scan_result_policy_read: anything
-            }
-          ]
-        ).and_call_original
-
-        subject
-      end
-
-      context 'with bulk_create_scan_result_policies feature flag disabled' do
-        before do
-          stub_feature_flags(bulk_create_scan_result_policies: false)
+          scan_result_policy_read = project.approval_rules.first.scan_result_policy_read
+          expect(scan_result_policy_read).to eq(Security::ScanResultPolicyRead.first)
+          expect(scan_result_policy_read.match_on_inclusion_license).to be_truthy
+          expect(scan_result_policy_read.license_states).to match_array(%w[newly_detected detected])
+          expect(scan_result_policy_read.rule_idx).to be(0)
         end
 
-        it 'calls SoftwareLicensePolicies::CreateService' do
-          expect(SoftwareLicensePolicies::CreateService).to receive(:new).with(
-            project,
-            anything,
-            {
-              name: 'BSD',
-              approval_status: 'denied',
-              scan_result_policy_read: anything
-            }
-          ).and_call_original
+        it 'creates software_license_policies' do
+          expect { subject }.to change { project.software_license_policies.count }.by(2)
+        end
 
-          expect(SoftwareLicensePolicies::CreateService).to receive(:new).with(
+        it 'creates approval_rules with valid params' do
+          subject
+
+          approval_rule = project.approval_rules.first
+
+          expect(approval_rule.severity_levels).to be_empty
+        end
+
+        it 'calls SoftwareLicensePolicies::BulkCreateScanResultPolicyService' do
+          expect(SoftwareLicensePolicies::BulkCreateScanResultPolicyService).to receive(:new).with(
             project,
-            anything,
-            {
-              name: 'MIT',
-              approval_status: 'denied',
-              scan_result_policy_read: anything
-            }
+            [
+              {
+                name: 'BSD',
+                approval_status: 'denied',
+                scan_result_policy_read: anything
+              },
+              {
+                name: 'MIT',
+                approval_status: 'denied',
+                scan_result_policy_read: anything
+              }
+            ]
           ).and_call_original
 
           subject
         end
+
+        context 'with bulk_create_scan_result_policies feature flag disabled' do
+          before do
+            stub_feature_flags(bulk_create_scan_result_policies: false)
+          end
+
+          it 'calls SoftwareLicensePolicies::CreateService' do
+            expect(SoftwareLicensePolicies::CreateService).to receive(:new).with(
+              project,
+              anything,
+              {
+                name: 'BSD',
+                approval_status: 'denied',
+                scan_result_policy_read: anything
+              }
+            ).and_call_original
+
+            expect(SoftwareLicensePolicies::CreateService).to receive(:new).with(
+              project,
+              anything,
+              {
+                name: 'MIT',
+                approval_status: 'denied',
+                scan_result_policy_read: anything
+              }
+            ).and_call_original
+
+            subject
+          end
+        end
+      end
+
+      context 'when the policy has the YAML has the match_on_inclusion_license attribute' do
+        it_behaves_like 'license_finding_rule_type'
+      end
+
+      context 'when the policy has the YAML has the match_on_inclusion attribute' do
+        let(:policy) { build(:scan_result_policy, :license_finding_with_match_on_inclusion) }
+
+        it_behaves_like 'license_finding_rule_type'
       end
     end
 

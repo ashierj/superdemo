@@ -52,7 +52,7 @@ module Features
       {
         type: 'license_finding',
         branches: policy_branch_names,
-        match_on_inclusion: true,
+        match_on_inclusion_license: true,
         license_types: [license_type],
         license_states: license_states
       }

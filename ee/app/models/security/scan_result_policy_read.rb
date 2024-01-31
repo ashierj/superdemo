@@ -6,6 +6,8 @@ module Security
 
     self.table_name = 'scan_result_policies'
 
+    alias_attribute :match_on_inclusion_license, :match_on_inclusion
+
     enum age_operator: { greater_than: 0, less_than: 1 }
     enum age_interval: { day: 0, week: 1, month: 2, year: 3 }
     enum commits: { any: 0, unsigned: 1 }, _prefix: true
@@ -17,7 +19,7 @@ module Security
     has_many :violations, foreign_key: 'scan_result_policy_id', class_name: 'Security::ScanResultPolicyViolation',
       inverse_of: :scan_result_policy_read
 
-    validates :match_on_inclusion, inclusion: { in: [true, false], message: 'must be a boolean value' }
+    validates :match_on_inclusion_license, inclusion: { in: [true, false], message: 'must be a boolean value' }
     validates :role_approvers, inclusion: { in: Gitlab::Access.all_values }
     validates :age_value, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
     validates :vulnerability_attributes, json_schema: { filename: 'scan_result_policy_vulnerability_attributes' },

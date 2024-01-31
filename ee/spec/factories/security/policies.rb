@@ -106,6 +106,20 @@ FactoryBot.define do
           {
             type: 'license_finding',
             branches: branches,
+            match_on_inclusion_license: true,
+            license_types: %w[BSD MIT],
+            license_states: %w[newly_detected detected]
+          }
+        ]
+      end
+    end
+
+    trait :license_finding_with_match_on_inclusion do
+      rules do
+        [
+          {
+            type: 'license_finding',
+            branches: branches,
             match_on_inclusion: true,
             license_types: %w[BSD MIT],
             license_states: %w[newly_detected detected]
