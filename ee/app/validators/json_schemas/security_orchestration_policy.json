@@ -660,11 +660,13 @@
                   "type": "array",
                   "description": "Specifies the licenses to match.",
                   "minItems": 1,
+                  "maxItems": 1000,
                   "uniqueItems": true,
                   "additionalItems": false,
                   "items": {
                     "type": "string",
-                    "minLength": 1
+                    "minLength": 1,
+                    "maxLength": 255
                   }
                 },
                 "license_states": {
