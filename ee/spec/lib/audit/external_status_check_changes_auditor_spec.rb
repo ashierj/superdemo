@@ -8,10 +8,12 @@ RSpec.describe Audit::ExternalStatusCheckChangesAuditor do
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, group: group) }
     let_it_be(:external_status_check) do
-      create(:external_status_check,
-             name: 'QA',
-             external_url: 'http://examplev1.com',
-             project: project)
+      create(
+        :external_status_check,
+        name: 'QA',
+        external_url: 'http://examplev1.com',
+        project: project
+      )
     end
 
     let_it_be(:external_status_check_changes_auditor) do
@@ -32,23 +34,17 @@ RSpec.describe Audit::ExternalStatusCheckChangesAuditor do
       it 'creates an event when the name changes' do
         external_status_check.update!(name: 'QAv2')
 
-        expect { external_status_check_changes_auditor.execute }.to change {
-                                                                      AuditEvent.count
-                                                                    }.by(1)
+        expect { external_status_check_changes_auditor.execute }
+          .to change { AuditEvent.count }.by(1)
 
-        expect(AuditEvent.last.details).to include({
-                                                     change: 'name',
-                                                     from: 'QA',
-                                                     to: 'QAv2'
-                                                   })
+        expect(AuditEvent.last.details).to include({ change: 'name', from: 'QA', to: 'QAv2' })
       end
 
       it 'creates an event when the external url changes' do
         external_status_check.update!(external_url: 'http://examplev2.com')
 
-        expect { external_status_check_changes_auditor.execute }.to change {
-                                                                      AuditEvent.count
-                                                                    }.by(1)
+        expect { external_status_check_changes_auditor.execute }
+          .to change { AuditEvent.count }.by(1)
 
         expect(AuditEvent.last.details).to include(
           {
@@ -79,12 +75,13 @@ RSpec.describe Audit::ExternalStatusCheckChangesAuditor do
 
     context 'when there is no audit change' do
       it 'does not create audit event if no change in updated values' do
-        external_status_check.update!(name: external_status_check.name,
-                                      external_url: external_status_check.external_url)
+        external_status_check.update!(
+          name: external_status_check.name,
+          external_url: external_status_check.external_url
+        )
 
-        expect { external_status_check_changes_auditor.execute }.to change {
-          AuditEvent.count
-        }.by(0)
+        expect { external_status_check_changes_auditor.execute }
+          .to change { AuditEvent.count }.by(0)
       end
     end
   end
