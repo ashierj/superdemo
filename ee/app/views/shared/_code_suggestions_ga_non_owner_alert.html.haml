@@ -18,6 +18,6 @@
       - c.with_body do
         = alert_body
       - c.with_actions do
-        = render Pajamas::ButtonComponent.new(href: help_page_path('user/project/repository/code_suggestions/saas', anchor: 'use-code-suggestions'), variant: :confirm,
+        = render Pajamas::ButtonComponent.new(href: help_page_path('user/project/repository/code_suggestions/saas'), variant: :confirm,
           button_options: { class: 'js-close-and-follow-link' }) do
           = s_('CodeSuggestionsGAAlert|Learn more')
