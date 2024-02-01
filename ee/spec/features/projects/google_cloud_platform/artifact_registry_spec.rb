@@ -62,6 +62,19 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
     end
   end
 
+  describe 'details page' do
+    it 'has a page title set' do
+      visit project_google_cloud_platform_artifact_registry_image_path(project, {
+        image: 'alpine@sha256:6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
+        project: 'dev-package-container-96a3ff34',
+        repository: 'myrepo',
+        location: 'us-east1'
+      })
+
+      expect(page).to have_text _('alpine@6a0657acfef7')
+    end
+  end
+
   private
 
   def visit_page

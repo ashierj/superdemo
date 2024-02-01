@@ -13,6 +13,7 @@ module EE
 
     def google_artifact_registry_data(project)
       {
+        endpoint: project_google_cloud_platform_artifact_registry_index_path(project),
         full_path: project.full_path,
 
         settings_path: if show_google_cloud_artifact_registry_settings?(project)
