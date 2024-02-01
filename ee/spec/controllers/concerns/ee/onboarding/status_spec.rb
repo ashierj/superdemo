@@ -200,15 +200,17 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
   end
 
   describe '#trial?' do
-    where(:params, :enabled?, :expected_result) do
-      { trial: 'true' } | false | false
-      { trial: 'false' } | true | false
-      { trial: 'true' } | true | true
-      { trial: 'false' } | false | false
-      {} | true | false
-      {} | false | false
-      { trial: '' } | false | false
-      { trial: '' } | true | false
+    where(:params, :redirect_to_trial?, :enabled?, :expected_result) do
+      { trial: 'true' } | false | false | false
+      { trial: 'false' } | false | true | false
+      { trial: 'true' } | false | true | true
+      { trial: 'false' } | true | false | false
+      { trial: 'false' } | true | true | true
+      { trial: 'true' } | true | true | true
+      {} | false | true | false
+      {} | false | false | false
+      { trial: '' } | false | false | false
+      { trial: '' } | false | true | false
     end
 
     with_them do
@@ -218,6 +220,7 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
 
       before do
         allow(instance).to receive(:enabled?).and_return(enabled?)
+        allow(instance).to receive(:redirect_to_trial?).and_return(redirect_to_trial?)
       end
 
       it { is_expected.to eq(expected_result) }
@@ -326,12 +329,13 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
 
   describe '#company_lead_product_interaction' do
     let(:params) { { trial: true } }
+    let(:session) { { some_key: 'some_value' } }
 
     before do
       stub_saas_features(onboarding: true)
     end
 
-    subject { described_class.new(params, nil, nil).company_lead_product_interaction }
+    subject { described_class.new(params, session, nil).company_lead_product_interaction }
 
     context 'with a trial registration' do
       it { is_expected.to eq('SaaS Trial') }
@@ -401,6 +405,29 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
       let(:session) { {} }
 
       it { is_expected.to be_nil }
+    end
+  end
+
+  describe '#redirect_to_trial?' do
+    let(:instance) { described_class.new(nil, nil, nil) }
+
+    subject { instance.send(:redirect_to_trial?) }
+
+    where(:stored_redirect_location, :expected_result) do
+      nil | false
+      '' | false
+      '/some/path' | false
+      '/some/path?query=true' | false
+      '/some/path?trial=false' | false
+      '/some/path?trial=true' | true
+    end
+
+    with_them do
+      before do
+        allow(instance).to receive(:stored_redirect_location).and_return(stored_redirect_location)
+      end
+
+      it { is_expected.to eq(expected_result) }
     end
   end
 end

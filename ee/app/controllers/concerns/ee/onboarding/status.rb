@@ -47,7 +47,7 @@ module EE
       end
 
       def trial?
-        enabled? && ::Gitlab::Utils.to_boolean(params[:trial], default: false)
+        enabled? && (::Gitlab::Utils.to_boolean(params[:trial], default: false) || redirect_to_trial?)
       end
 
       def oauth?
@@ -138,6 +138,23 @@ module EE
         return unless stored_user_location
 
         URI.parse(stored_user_location).path
+      end
+
+      def stored_redirect_location
+        return unless session
+
+        # side effect free look at devise stored_location_for(:redirect)
+        session['redirect_return_to']
+      end
+
+      def redirect_to_trial?
+        return false unless stored_redirect_location
+
+        uri = URI.parse(stored_redirect_location)
+
+        return false unless uri.query
+
+        URI.decode_www_form(uri.query).to_h['trial'] == 'true'
       end
     end
   end

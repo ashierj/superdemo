@@ -9,6 +9,9 @@ module Users
     include IdentityVerificationHelper
     include ::Gitlab::RackLoadBalancingHelpers
     include Recaptcha::Adapters::ControllerMethods
+    include ::Gitlab::Utils::StrongMemoize
+
+    helper_method :onboarding_status
 
     EVENT_CATEGORIES = %i[email phone credit_card error toggle_phone_exemption].freeze
     PHONE_VERIFICATION_ACTIONS = %i[send_phone_verification_code verify_phone_verification_code].freeze
@@ -139,7 +142,7 @@ module Users
       set_redirect_url
       experiment(:phone_verification_for_low_risk_users, user: @user).track(:registration_completed)
 
-      render 'devise/sessions/successful_verification'
+      render 'devise/sessions/successful_verification', locals: { tracking_label: onboarding_status.tracking_label }
     end
 
     def verify_credit_card
@@ -195,8 +198,12 @@ module Users
 
     private
 
+    def onboarding_status
+      Onboarding::Status.new(params.to_unsafe_h.deep_symbolize_keys, session, @user)
+    end
+    strong_memoize_attr :onboarding_status
+
     def set_redirect_url
-      onboarding_status = ::Onboarding::Status.new(params.to_unsafe_h.deep_symbolize_keys, session, @user)
       @redirect_url = if onboarding_status.subscription?
                         # Since we need this value to stay in the stored_location_for(user) in order for
                         # us to be properly redirected for subscription signups.
