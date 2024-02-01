@@ -42,7 +42,7 @@ module API
 
           def dependency_proxy_setting
             setting = project.dependency_proxy_packages_setting
-            return unless setting&.enabled
+            return unless setting&.enabled && setting&.maven_external_registry_url
 
             return setting if can?(current_user, :read_package, setting)
             # guest users can have :read_project but not :read_package
