@@ -36,7 +36,8 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::AdvisoryIngestionTask, feat
         expected_advisory_map = {}
         PackageMetadata::Advisory.all.each do |advisory|
           expected_advisory_map[advisory.advisory_xid] =
-            Hashie::Mash.new({ id: advisory.id, published_date: advisory.published_date })
+            Hashie::Mash.new({ id: advisory.id, source_xid: advisory.source_xid,
+published_date: advisory.published_date })
         end
         expect(actual_advisory_map).to eq(expected_advisory_map)
       end
