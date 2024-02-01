@@ -19,6 +19,7 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
     stub_feature_flags(ml_experiment_tracking: false)
     stub_feature_flags(model_registry: false)
     stub_feature_flags(remove_monitor_metrics: false)
+    stub_feature_flags(combined_analytics_dashboards: false)
     insert_package_nav
     insert_infrastructure_registry_nav(s_('Terraform|Terraform states'))
     insert_infrastructure_google_cloud_nav
@@ -212,18 +213,40 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
   context 'when analytics dashboards is available' do
     before do
       stub_feature_flags(combined_analytics_dashboards: true)
-      stub_licensed_features(combined_project_analytics_dashboards: true)
-
-      insert_before_sub_nav_item(
-        _('Value stream analytics'),
-        within: _('Analyze'),
-        new_sub_nav_item_name: _('Analytics dashboards')
-      )
-
+      stub_licensed_features({ combined_project_analytics_dashboards: true, iterations: false })
       visit project_path(project)
     end
 
-    it_behaves_like 'verified navigation bar'
+    context 'when project is namespaced to a user' do
+      it_behaves_like 'verified navigation bar'
+    end
+
+    context 'when project is namespaced to a group' do
+      let_it_be_with_reload(:group) { create(:group) }
+      let_it_be_with_reload(:project) { create(:project, :repository, group: group) }
+
+      before_all do
+        project.add_maintainer(user)
+      end
+
+      before do
+        insert_before_sub_nav_item(
+          _('Value stream analytics'),
+          within: _('Analyze'),
+          new_sub_nav_item_name: _('Analytics dashboards')
+        )
+
+        insert_after_sub_nav_item(
+          _('Monitor'),
+          within: _('Settings'),
+          new_sub_nav_item_name: _('Analytics')
+        )
+
+        visit project_path(project)
+      end
+
+      it_behaves_like 'verified navigation bar'
+    end
   end
 
   context 'when model experiments is available' do

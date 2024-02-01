@@ -17,7 +17,7 @@ module EE
           end
 
           def analytics_menu_item
-            unless ::Feature.enabled?(:combined_analytics_dashboards, context.project)
+            unless ::Feature.enabled?(:combined_analytics_dashboards, context.project) && !context.project.personal?
               return ::Sidebars::NilMenuItem.new(item_id: :analytics)
             end
 
