@@ -11,6 +11,10 @@ import SelfManagedAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/c
 import CodeSuggestionsUsage from 'ee/usage_quotas/code_suggestions/components/code_suggestions_usage.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import {
+  ADD_ON_ERROR_DICTIONARY,
+  ADD_ON_PURCHASE_FETCH_ERROR_CODE,
+} from 'ee/usage_quotas/error_constants';
 import { noAssignedAddonData, noPurchasedAddonData, purchasedAddonFuzzyData } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -38,6 +42,7 @@ describe('Duo Pro Usage', () => {
   const findSaasAddOnEligibleUserList = () => wrapper.findComponent(SaasAddOnEligibleUserList);
   const findSelfManagedAddOnEligibleUserList = () =>
     wrapper.findComponent(SelfManagedAddOnEligibleUserList);
+  const findErrorAlert = () => wrapper.findByTestId('add-on-purchase-fetch-error');
 
   const createComponent = ({ handler, provideProps } = {}) => {
     wrapper = shallowMountExtended(CodeSuggestionsUsage, {
@@ -79,52 +84,103 @@ describe('Duo Pro Usage', () => {
   });
 
   describe('with no code suggestions data', () => {
-    beforeEach(() => {
-      return createComponent();
+    describe('when instance is SaaS', () => {
+      beforeEach(() => {
+        return createComponent();
+      });
+
+      it('does not render code suggestions title', () => {
+        expect(findCodeSuggestionsTitle().exists()).toBe(false);
+      });
+
+      it('does not render code suggestions subtitle', () => {
+        expect(findCodeSuggestionsSubtitle().exists()).toBe(false);
+      });
+
+      it('renders code suggestions intro', () => {
+        expect(findCodeSuggestionsIntro().exists()).toBe(true);
+      });
     });
 
-    it('renders code suggestions intro', () => {
-      expect(findCodeSuggestionsIntro().exists()).toBe(true);
-    });
+    describe('when instance is SM', () => {
+      beforeEach(() => {
+        return createComponent({ provideProps: { isSaaS: false } });
+      });
 
-    it('does not render code suggestions title', () => {
-      expect(findCodeSuggestionsTitle().exists()).toBe(false);
-    });
+      it('does not render code suggestions title', () => {
+        expect(findCodeSuggestionsTitle().exists()).toBe(false);
+      });
 
-    it('does not render code suggestions subtitle', () => {
-      expect(findCodeSuggestionsSubtitle().exists()).toBe(false);
+      it('does not render code suggestions subtitle', () => {
+        expect(findCodeSuggestionsSubtitle().exists()).toBe(false);
+      });
+
+      it('renders code suggestions intro', () => {
+        expect(findCodeSuggestionsIntro().exists()).toBe(true);
+      });
     });
   });
 
   describe('with code suggestions data', () => {
-    beforeEach(() => {
-      return createComponent({
-        handler: noAssignedAddonDataHandler,
-        provideProps: { groupId: '289561' },
+    describe('when instance is SaaS', () => {
+      beforeEach(() => {
+        return createComponent({
+          handler: noAssignedAddonDataHandler,
+          provideProps: { groupId: '289561' },
+        });
+      });
+
+      it('does not render code suggestions title', () => {
+        expect(findCodeSuggestionsTitle().exists()).toBe(false);
+      });
+
+      it('does not render code suggestions subtitle', () => {
+        expect(findCodeSuggestionsSubtitle().exists()).toBe(false);
+      });
+
+      it('does not render code suggestions intro', () => {
+        expect(findCodeSuggestionsIntro().exists()).toBe(false);
+      });
+
+      it('renders code suggestions statistics card', () => {
+        expect(findCodeSuggestionsStatistics().props()).toEqual({ usageValue: 0, totalValue: 20 });
+      });
+
+      it('renders code suggestions info card', () => {
+        expect(findCodeSuggestionsInfo().exists()).toBe(true);
+        expect(findCodeSuggestionsInfo().props()).toEqual({ groupId: '289561' });
       });
     });
 
-    it('does not render code suggestions intro', () => {
-      expect(findCodeSuggestionsIntro().exists()).toBe(false);
-    });
+    describe('when instance is SM', () => {
+      beforeEach(() => {
+        return createComponent({
+          handler: noAssignedAddonDataHandler,
+          provideProps: { isSaaS: false },
+        });
+      });
 
-    it('renders code suggestions title', () => {
-      expect(findCodeSuggestionsTitle().text()).toBe('Duo Pro');
-    });
+      it('renders code suggestions title', () => {
+        expect(findCodeSuggestionsTitle().text()).toBe('Duo Pro');
+      });
 
-    it('renders code suggestions subtitle', () => {
-      expect(findCodeSuggestionsSubtitle().text()).toBe(
-        'Manage seat assignments for Duo Pro across your instance.',
-      );
-    });
+      it('renders code suggestions subtitle', () => {
+        expect(findCodeSuggestionsSubtitle().text()).toBe(
+          'Manage seat assignments for Duo Pro across your instance.',
+        );
+      });
 
-    it('renders code suggestions statistics card', () => {
-      expect(findCodeSuggestionsStatistics().props()).toEqual({ usageValue: 0, totalValue: 20 });
-    });
+      it('does not render code suggestions intro', () => {
+        expect(findCodeSuggestionsIntro().exists()).toBe(false);
+      });
 
-    it('renders code suggestions info card', () => {
-      expect(findCodeSuggestionsInfo().exists()).toBe(true);
-      expect(findCodeSuggestionsInfo().props()).toEqual({ groupId: '289561' });
+      it('renders code suggestions statistics card', () => {
+        expect(findCodeSuggestionsStatistics().props()).toEqual({ usageValue: 0, totalValue: 20 });
+      });
+
+      it('renders code suggestions info card', () => {
+        expect(findCodeSuggestionsInfo().exists()).toBe(true);
+      });
     });
   });
 
@@ -159,17 +215,70 @@ describe('Duo Pro Usage', () => {
   });
 
   describe('with errors', () => {
-    beforeEach(() => {
-      return createComponent({ handler: purchasedAddonErrorHandler });
+    describe('when instance is SaaS', () => {
+      beforeEach(() => {
+        return createComponent({ handler: purchasedAddonErrorHandler });
+      });
+
+      it('does not render code suggestions title', () => {
+        expect(findCodeSuggestionsTitle().exists()).toBe(false);
+      });
+
+      it('does not render code suggestions subtitle', () => {
+        expect(findCodeSuggestionsSubtitle().exists()).toBe(false);
+      });
+
+      it('does not render code suggestions intro', () => {
+        expect(findCodeSuggestionsIntro().exists()).toBe(false);
+      });
+
+      it('captures the error', () => {
+        expect(Sentry.captureException).toHaveBeenCalledWith(error, {
+          tags: { vue_component: wrapper.vm.$options.name },
+        });
+      });
+
+      it('shows an error alert', () => {
+        expect(findErrorAlert().props()).toMatchObject({
+          error: ADD_ON_PURCHASE_FETCH_ERROR_CODE,
+          errorDictionary: ADD_ON_ERROR_DICTIONARY,
+        });
+      });
     });
 
-    it('renders code suggestions intro', () => {
-      expect(findCodeSuggestionsIntro().exists()).toBe(true);
-    });
+    describe('when instance is SM', () => {
+      beforeEach(() => {
+        return createComponent({
+          handler: purchasedAddonErrorHandler,
+          provideProps: { isSaaS: false },
+        });
+      });
 
-    it('captures the error', () => {
-      expect(Sentry.captureException).toHaveBeenCalledWith(error, {
-        tags: { vue_component: wrapper.vm.$options.name },
+      it('renders code suggestions title', () => {
+        expect(findCodeSuggestionsTitle().text()).toBe('Duo Pro');
+      });
+
+      it('renders code suggestions subtitle', () => {
+        expect(findCodeSuggestionsSubtitle().text()).toBe(
+          'Manage seat assignments for Duo Pro across your instance.',
+        );
+      });
+
+      it('does not render code suggestions intro', () => {
+        expect(findCodeSuggestionsIntro().exists()).toBe(false);
+      });
+
+      it('captures the error', () => {
+        expect(Sentry.captureException).toHaveBeenCalledWith(error, {
+          tags: { vue_component: wrapper.vm.$options.name },
+        });
+      });
+
+      it('shows an error alert', () => {
+        expect(findErrorAlert().props()).toMatchObject({
+          error: ADD_ON_PURCHASE_FETCH_ERROR_CODE,
+          errorDictionary: ADD_ON_ERROR_DICTIONARY,
+        });
       });
     });
   });
