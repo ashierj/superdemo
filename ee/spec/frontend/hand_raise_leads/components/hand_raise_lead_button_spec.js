@@ -170,6 +170,7 @@ describe('HandRaiseLeadButton', () => {
   });
 
   describe('when provided with CTA tracking options', () => {
+    const category = 'category';
     const action = 'click_button';
     const label = 'contact sales';
     const experiment = 'some_experiment';
@@ -180,48 +181,40 @@ describe('HandRaiseLeadButton', () => {
 
       beforeEach(() => {
         wrapper = createComponent({
-          ctaTracking: { action, label, property, value, experiment },
+          ctaTracking: { category, action, label, property, value, experiment },
         });
-        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+        trackingSpy = mockTracking(category, wrapper.element, jest.spyOn);
       });
 
       it('sets up tracking on the CTA button', () => {
         const button = findButton();
 
-        expect(button.attributes()).toMatchObject({
-          'data-track-action': action,
-          'data-track-label': label,
-          'data-track-property': property,
-          'data-track-value': value,
-          'data-track-experiment': experiment,
+        button.vm.$emit('click');
+
+        expect(trackingSpy).toHaveBeenCalledWith(category, action, {
+          category,
+          label,
+          property,
+          value,
+          experiment,
         });
-
-        button.trigger('click');
-
-        expect(trackingSpy).toHaveBeenCalledWith('_category_', action, { label, property, value });
       });
     });
 
     describe('when provided with some of the CTA tracking options', () => {
       beforeEach(() => {
         wrapper = createComponent({
-          ctaTracking: { action, label, experiment },
+          ctaTracking: { category, action, label, experiment },
         });
-        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+        trackingSpy = mockTracking(category, wrapper.element, jest.spyOn);
       });
 
       it('sets up tracking on the CTA button', () => {
         const button = findButton();
 
-        expect(button.attributes()).toMatchObject({
-          'data-track-action': action,
-          'data-track-label': label,
-          'data-track-experiment': experiment,
-        });
+        button.vm.$emit('click');
 
-        button.trigger('click');
-
-        expect(trackingSpy).toHaveBeenCalledWith('_category_', action, { label });
+        expect(trackingSpy).toHaveBeenCalledWith(category, action, { label, experiment, category });
       });
     });
 
@@ -230,15 +223,13 @@ describe('HandRaiseLeadButton', () => {
         wrapper = createComponent({
           ctaTracking: { label },
         });
-        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+        trackingSpy = mockTracking(category, wrapper.element, jest.spyOn);
       });
 
       it('does not track when action is missing', () => {
         const button = findButton();
 
-        expect(button.attributes()).toMatchObject({ 'data-track-label': label });
-
-        button.trigger('click');
+        button.vm.$emit('click');
 
         expect(trackingSpy).not.toHaveBeenCalled();
       });

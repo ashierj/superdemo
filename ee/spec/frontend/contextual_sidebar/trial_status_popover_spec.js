@@ -38,8 +38,6 @@ describe('TrialStatusPopover component', () => {
           targetId: 'target-element-identifier',
           createHandRaiseLeadPath: '/-/subscriptions/hand_raise_leads',
           trialEndDate: new Date('2021-02-21'),
-          trackAction: trackingEvents.contactSalesBtnClick.action,
-          trackLabel: trackingEvents.contactSalesBtnClick.label,
           user: {
             namespaceId: 'namespaceId',
             userName: 'userName',
@@ -118,8 +116,8 @@ describe('TrialStatusPopover component', () => {
     });
   });
 
-  it('tracks when the contact sales button is clicked', async () => {
-    expect(wrapper.findByTestId('contact-sales-block').attributes()).toMatchObject({
+  it('sets correct attributes to the contact sales button', () => {
+    expect(wrapper.findByTestId('contact-sales-btn').attributes()).toMatchObject({
       'data-create-hand-raise-lead-path': '/-/subscriptions/hand_raise_leads',
       'data-namespace-id': 'namespaceId',
       'data-user-name': 'userName',
@@ -127,13 +125,10 @@ describe('TrialStatusPopover component', () => {
       'data-last-name': 'lastName',
       'data-company-name': 'companyName',
       'data-glm-content': 'glmContent',
+      'data-track-category': trackingEvents.activeTrialCategory,
       'data-track-action': trackingEvents.contactSalesBtnClick.action,
       'data-track-label': trackingEvents.contactSalesBtnClick.label,
     });
-
-    await wrapper.findByTestId('contact-sales-btn').trigger('click');
-
-    expectTracking(trackingEvents.activeTrialCategory, trackingEvents.contactSalesBtnClick);
   });
 
   it('tracks when the compare button is clicked', () => {
@@ -147,10 +142,19 @@ describe('TrialStatusPopover component', () => {
       wrapper = createComponent({ providers: { daysRemaining: -5 } });
     });
 
-    it('tracks when the contact sales button is clicked', async () => {
-      await wrapper.findByTestId('contact-sales-btn').trigger('click');
-
-      expectTracking(trackingEvents.trialEndedCategory, trackingEvents.contactSalesBtnClick);
+    it('sets correct attributes to the contact sales button', () => {
+      expect(wrapper.findByTestId('contact-sales-btn').attributes()).toMatchObject({
+        'data-create-hand-raise-lead-path': '/-/subscriptions/hand_raise_leads',
+        'data-namespace-id': 'namespaceId',
+        'data-user-name': 'userName',
+        'data-first-name': 'firstName',
+        'data-last-name': 'lastName',
+        'data-company-name': 'companyName',
+        'data-glm-content': 'glmContent',
+        'data-track-category': trackingEvents.trialEndedCategory,
+        'data-track-action': trackingEvents.contactSalesBtnClick.action,
+        'data-track-label': trackingEvents.contactSalesBtnClick.label,
+      });
     });
 
     it('tracks when the compare button is clicked', () => {

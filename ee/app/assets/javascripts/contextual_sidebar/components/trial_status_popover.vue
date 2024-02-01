@@ -35,8 +35,6 @@ export default {
     targetId: {},
     createHandRaiseLeadPath: {},
     trialEndDate: {},
-    trackAction: {},
-    trackLabel: {},
     user: {},
     trialDiscoverPagePath: {},
   },
@@ -89,6 +87,19 @@ export default {
 
       return classList;
     },
+    trialPopoverCategory() {
+      return this.isTrialActive
+        ? trackingEvents.activeTrialCategory
+        : trackingEvents.trialEndedCategory;
+    },
+    handRaiseLeadBtnTracking() {
+      const { action, label } = trackingEvents.contactSalesBtnClick;
+      return {
+        category: this.trialPopoverCategory,
+        action,
+        label,
+      };
+    },
   },
   created() {
     this.debouncedResize = debounce(() => this.updateDisabledState(), resizeEventDebounceMS);
@@ -103,9 +114,7 @@ export default {
   methods: {
     trackPageAction(eventName) {
       const { action, ...options } = trackingEvents[eventName];
-      const category = this.isTrialActive
-        ? trackingEvents.activeTrialCategory
-        : trackingEvents.trialEndedCategory;
+      const category = this.trialPopoverCategory;
 
       this.track(action, { category, ...options });
     },
@@ -163,22 +172,21 @@ export default {
         <span class="gl-font-sm">{{ $options.i18n.compareAllButtonTitle }}</span>
       </gl-button>
 
-      <div data-testid="contact-sales-btn" @click="trackPageAction('contactSalesBtnClick')">
-        <div
-          class="js-hand-raise-lead-button"
-          data-testid="contact-sales-block"
-          :data-create-hand-raise-lead-path="createHandRaiseLeadPath"
-          :data-button-attributes="JSON.stringify($options.handRaiseLeadAttributes)"
-          :data-namespace-id="user.namespaceId"
-          :data-user-name="user.userName"
-          :data-first-name="user.firstName"
-          :data-last-name="user.lastName"
-          :data-company-name="user.companyName"
-          :data-glm-content="user.glmContent"
-          :data-track-action="trackAction"
-          :data-track-label="trackLabel"
-        ></div>
-      </div>
+      <div
+        class="js-hand-raise-lead-button"
+        data-testid="contact-sales-btn"
+        :data-create-hand-raise-lead-path="createHandRaiseLeadPath"
+        :data-button-attributes="JSON.stringify($options.handRaiseLeadAttributes)"
+        :data-namespace-id="user.namespaceId"
+        :data-user-name="user.userName"
+        :data-first-name="user.firstName"
+        :data-last-name="user.lastName"
+        :data-company-name="user.companyName"
+        :data-glm-content="user.glmContent"
+        :data-track-category="handRaiseLeadBtnTracking.category"
+        :data-track-action="handRaiseLeadBtnTracking.action"
+        :data-track-label="handRaiseLeadBtnTracking.label"
+      ></div>
 
       <gitlab-experiment name="trial_discover_page">
         <template #candidate>
