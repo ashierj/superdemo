@@ -20,9 +20,6 @@ components:
       command:
         - "/bin/sh"
         - "-c"
-      volumeMounts:
-        - name: gl-workspace-data
-          path: /projects
       env:
         - name: GL_EDITOR_VOLUME_DIR
           value: "/projects/.gl-editor"
@@ -47,9 +44,6 @@ components:
   - name: database-container
     container:
       image: mysql
-      volumeMounts:
-        - name: gl-workspace-data
-          path: /projects
       env:
         - name: MYSQL_ROOT_PASSWORD
           value: "my-secret-pw"
@@ -58,9 +52,6 @@ components:
   - name: gl-editor-injector
     container:
       image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:5
-      volumeMounts:
-        - name: gl-workspace-data
-          path: /projects
       env:
         - name: GL_EDITOR_VOLUME_DIR
           value: "/projects/.gl-editor"
@@ -68,36 +59,10 @@ components:
       memoryRequest: 128Mi
       cpuLimit: 500m
       cpuRequest: 100m
-  - name: gl-cloner-injector
-    container:
-      image: alpine/git:2.36.3
-      volumeMounts:
-        - name: gl-workspace-data
-          path: "/projects"
-      args:
-        - |-
-          if [ ! -d '/projects/test-project' ];
-          then
-            git clone --branch master http://localhost/test-group/test-project.git /projects/test-project;
-          fi
-      command:
-        - "/bin/sh"
-        - "-c"
-      memoryLimit: 256Mi
-      memoryRequest: 128Mi
-      cpuLimit: 500m
-      cpuRequest: 100m
-  - name: gl-workspace-data
-    volume:
-      size: 15Gi
 events:
   preStart:
     - gl-editor-injector-command
-    - gl-cloner-injector-command
 commands:
   - id: gl-editor-injector-command
     apply:
       component: gl-editor-injector
-  - id: gl-cloner-injector-command
-    apply:
-      component: gl-cloner-injector

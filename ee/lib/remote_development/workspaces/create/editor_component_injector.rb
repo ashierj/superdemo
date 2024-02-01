@@ -15,10 +15,7 @@ module RemoteDevelopment
             # params: Hash => params # NOTE: Params is currently unused until we use the editor entry
           }
           volume_mounts => { data_volume: Hash => data_volume }
-          data_volume => {
-            name: String => volume_name,
-            path: String => volume_path,
-          }
+          data_volume => { path: String => volume_path }
 
           # NOTE: Editor is currently unused
           # editor = params[:editor]
@@ -27,19 +24,18 @@ module RemoteDevelopment
           ssh_port = 60022
 
           editor_component = processed_devfile['components'].find { |c| c.dig('attributes', 'gl/inject-editor') }
-          override_main_container(editor_component, volume_name, volume_path, editor_port, ssh_port) if editor_component
-          inject_editor_component(processed_devfile, volume_name, volume_path)
+          override_main_container(editor_component, volume_path, editor_port, ssh_port) if editor_component
+          inject_editor_component(processed_devfile, volume_path)
 
           value
         end
 
         # @param [Hash] component
-        # @param [String] volume_name
         # @param [String] volume_path
         # @param [Integer] editor_port
         # @param [Integer] ssh_port
         # @return [Hash]
-        def self.override_main_container(component, volume_name, volume_path, editor_port, ssh_port)
+        def self.override_main_container(component, volume_path, editor_port, ssh_port)
           # This overrides the main container's command
           # Open issue to support both starting the editor and running the default command:
           # https://gitlab.com/gitlab-org/gitlab/-/issues/392853
@@ -55,13 +51,7 @@ module RemoteDevelopment
           SH
           component['container']['command'] = %w[/bin/sh -c]
           component['container']['args'] = [container_args]
-
-          component['container']['volumeMounts'] = [] if component['container']['volumeMounts'].nil?
-
-          component['container']['volumeMounts'] += [{ 'name' => volume_name, 'path' => volume_path }]
-
           component['container']['env'] = [] if component['container']['env'].nil?
-
           component['container']['env'] += [
             {
               'name' => 'GL_EDITOR_VOLUME_DIR',
@@ -82,7 +72,6 @@ module RemoteDevelopment
           ]
 
           component['container']['endpoints'] = [] if component['container']['endpoints'].nil?
-
           component['container']['endpoints'].append(
             {
               'name' => 'editor-server',
@@ -102,11 +91,10 @@ module RemoteDevelopment
         end
 
         # @param [Hash] processed_devfile
-        # @param [String] volume_name
         # @param [String] volume_path
         # @return [Array]
-        def self.inject_editor_component(processed_devfile, volume_name, volume_path)
-          processed_devfile['components'] += editor_components(volume_name, volume_path)
+        def self.inject_editor_component(processed_devfile, volume_path)
+          processed_devfile['components'] += editor_components(volume_path)
 
           processed_devfile['commands'] = [] if processed_devfile['commands'].nil?
           processed_devfile['commands'] += [{
@@ -121,10 +109,9 @@ module RemoteDevelopment
           processed_devfile['events']['preStart'] += ['gl-editor-injector-command']
         end
 
-        # @param [String] volume_name
         # @param [String] volume_path
         # @return [Array]
-        def self.editor_components(volume_name, volume_path)
+        def self.editor_components(volume_path)
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409775 - choose image based on which editor is passed.
           image_name = 'registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector'
           image_tag = '5'
@@ -134,7 +121,6 @@ module RemoteDevelopment
               'name' => 'gl-editor-injector',
               'container' => {
                 'image' => "#{image_name}:#{image_tag}",
-                'volumeMounts' => [{ 'name' => volume_name, 'path' => volume_path }],
                 'env' => [
                   {
                     'name' => 'GL_EDITOR_VOLUME_DIR',
