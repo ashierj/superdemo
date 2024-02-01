@@ -8,9 +8,9 @@ module QA
       let(:branch_name) { 'protected-branch' }
       let(:commit_message) { 'Protected push commit message' }
 
-      shared_examples 'unselected maintainer' do |testcase|
-        it 'user fails to push', testcase: testcase do
-          expect { push_new_file(branch_name, as_user: user_maintainer) }.to raise_error(
+      shared_examples 'user without push access' do |user, testcase|
+        it 'fails to push', testcase: testcase do
+          expect { push_new_file(branch_name, as_user: send(user)) }.to raise_error(
             QA::Support::Run::CommandError,
             /You are not allowed to push code to protected branches on this project\.([\s\S]+)\[remote rejected\] #{branch_name} -> #{branch_name} \(pre-receive hook declined\)/)
         end
@@ -61,7 +61,7 @@ module QA
           project.remove_via_api!
         end
 
-        it_behaves_like 'unselected maintainer', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347775'
+        it_behaves_like 'user without push access', :user_maintainer, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347775'
         it_behaves_like 'selected developer', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347774'
       end
 
@@ -95,8 +95,43 @@ module QA
           group.remove_via_api!
         end
 
-        it_behaves_like 'unselected maintainer', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347772'
+        it_behaves_like 'user without push access', :user_maintainer, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347772'
         it_behaves_like 'selected developer', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347773'
+      end
+
+      context 'when a sub-group has push access, a developer in the parent group does not have push access' do
+        let(:parent_group) { create(:group, path: "access-to-protected-branch-#{SecureRandom.hex(8)}") }
+        let(:sub_group) { create(:group, path: "sub-group-with-push-#{SecureRandom.hex(8)}", sandbox: parent_group) }
+        let(:project) { create(:project, :with_readme, name: 'project-with-subgroup-with-push-access', group: parent_group) }
+
+        before do
+          login
+
+          parent_group.add_member(user_developer, Resource::Members::AccessLevel::DEVELOPER)
+
+          project.invite_group(sub_group, Resource::Members::AccessLevel::DEVELOPER)
+
+          Resource::ProtectedBranch.fabricate_via_browser_ui! do |protected_branch|
+            protected_branch.branch_name = branch_name
+            protected_branch.project = project
+            protected_branch.allowed_to_merge = {
+              roles: Resource::ProtectedBranch::Roles::MAINTAINERS,
+              groups: [sub_group]
+            }
+            protected_branch.allowed_to_push = {
+              roles: Resource::ProtectedBranch::Roles::MAINTAINERS,
+              groups: [sub_group]
+            }
+          end
+        end
+
+        after do
+          project.remove_via_api!
+          parent_group.remove_via_api!
+          sub_group.remove_via_api!
+        end
+
+        it_behaves_like 'user without push access', :user_developer, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/436937'
       end
 
       def login(as_user: Runtime::User)
