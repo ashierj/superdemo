@@ -15,7 +15,6 @@ RSpec.describe 'Issues sub nav EE', :js, feature_category: :team_planning do
 
   it 'has a `Issue boards` item' do
     within_testid 'super-sidebar' do
-      click_button 'Plan'
       expect(page).to have_link 'Issue boards'
     end
   end
