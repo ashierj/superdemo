@@ -1,8 +1,0 @@
----
-name: scan_result_policy_merge_base_pipeline
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/140348
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/435297
-milestone: '16.8'
-type: development
-group: group::security policies
-default_enabled: false

@@ -25,21 +25,6 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
 
       execute
     end
-
-    context 'with feature disabled' do
-      before do
-        stub_feature_flags(scan_result_policy_merge_base_pipeline: false)
-      end
-
-      it do
-        expect(Security::ScanResultPolicies::UpdateApprovalsService).to receive(:new).with(
-          merge_request: merge_request,
-          pipeline: pipeline
-        ).and_call_original
-
-        execute
-      end
-    end
   end
 
   shared_examples 'does not update approvals' do
@@ -47,18 +32,6 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
       expect(Security::ScanResultPolicies::SyncMergeRequestApprovalsWorker).not_to receive(:perform_async)
 
       execute
-    end
-
-    context 'with feature disabled' do
-      before do
-        stub_feature_flags(scan_result_policy_merge_base_pipeline: false)
-      end
-
-      it do
-        expect(Security::ScanResultPolicies::UpdateApprovalsService).not_to receive(:new)
-
-        execute
-      end
     end
   end
 
