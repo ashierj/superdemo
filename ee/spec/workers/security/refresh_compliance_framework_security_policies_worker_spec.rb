@@ -3,21 +3,32 @@
 require 'spec_helper'
 
 RSpec.describe ::Security::RefreshComplianceFrameworkSecurityPoliciesWorker, feature_category: :security_policy_management do
-  let_it_be(:namespace) { create(:namespace) }
+  let_it_be(:root_namespace) { create(:group) }
+  let_it_be(:namespace) { create(:group, parent: root_namespace) }
+  let_it_be(:other_namespace) { create(:group, parent: root_namespace) }
   let_it_be(:project) { create(:project, namespace: namespace) }
   let_it_be(:project_policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
   let_it_be(:policy_configuration) do
     create(:security_orchestration_policy_configuration, project: nil, namespace: namespace)
   end
 
-  let_it_be(:compliance_framework_security_policy) do
-    create(:compliance_framework_security_policy, policy_configuration: policy_configuration)
+  let_it_be(:other_policy_configuration) do
+    create(:security_orchestration_policy_configuration, project: nil, namespace: other_namespace)
   end
 
-  let_it_be(:compliance_framework) { compliance_framework_security_policy.framework }
+  let_it_be(:compliance_framework) { create(:compliance_framework, namespace: root_namespace) }
+  let_it_be(:compliance_framework_security_policy) do
+    create(:compliance_framework_security_policy,
+      policy_configuration: policy_configuration,
+      framework: compliance_framework
+    )
+  end
+
   let_it_be(:project_compliance_framework_security_policy) do
-    create(:compliance_framework_security_policy, policy_configuration: project_policy_configuration,
-      framework: compliance_framework)
+    create(:compliance_framework_security_policy,
+      policy_configuration: project_policy_configuration,
+      framework: compliance_framework
+    )
   end
 
   let(:compliance_framework_changed_event) do
@@ -26,6 +37,12 @@ RSpec.describe ::Security::RefreshComplianceFrameworkSecurityPoliciesWorker, fea
       compliance_framework_id: compliance_framework.id,
       event_type: ::Projects::ComplianceFrameworkChangedEvent::EVENT_TYPES[:added]
     })
+  end
+
+  before do
+    allow_next_found_instance_of(Security::OrchestrationPolicyConfiguration) do |configuration|
+      allow(configuration).to receive(:policy_configuration_valid?).and_return(true)
+    end
   end
 
   it_behaves_like 'subscribes to event' do
@@ -44,6 +61,8 @@ RSpec.describe ::Security::RefreshComplianceFrameworkSecurityPoliciesWorker, fea
         policy_configuration.id)
       expect(Security::ProcessScanResultPolicyWorker).not_to receive(:perform_async).with(project.id,
         project_policy_configuration.id)
+      expect(Security::ProcessScanResultPolicyWorker).not_to receive(:perform_async).with(project.id,
+        other_policy_configuration.id)
 
       consume_event(subscriber: described_class, event: compliance_framework_changed_event)
     end
