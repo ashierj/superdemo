@@ -13,7 +13,7 @@ class Admin::PushRulesController < Admin::ApplicationController
   end
 
   def update
-    @push_rule.update(push_rule_params)
+    @push_rule.update(push_rule_params.merge(organization_id: Organizations::Organization::DEFAULT_ORGANIZATION_ID))
 
     if @push_rule.valid?
       link_push_rule_to_application_settings

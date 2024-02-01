@@ -10,8 +10,14 @@ RSpec.describe PushRule, :saas, feature_category: :source_code_management do
   let(:user) { create(:user) }
   let(:project) { Projects::CreateService.new(user, { name: 'test', namespace: user.namespace }).execute }
 
+  it_behaves_like 'cleanup by a loose foreign key' do
+    let!(:parent) { create(:organization) }
+    let!(:model) { create(:push_rule, organization: parent) }
+  end
+
   describe "Associations" do
     it { is_expected.to belong_to(:project).inverse_of(:push_rule) }
+    it { is_expected.to belong_to(:organization) }
     it { is_expected.to have_one(:group).inverse_of(:push_rule).autosave(true) }
   end
 

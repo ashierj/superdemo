@@ -1028,6 +1028,7 @@ issuable_sla:
   - issue
 push_rule:
   - group
+  - organization
 bulk_import_export:
   - group
 service_desk_setting:
