@@ -17,10 +17,10 @@ module PackageMetadata
 
         def execute
           results = PackageMetadata::Advisory.bulk_upsert!(valid_advisories, unique_by: %w[advisory_xid source_xid],
-            returns: %w[advisory_xid id published_date])
+            returns: %w[advisory_xid source_xid id published_date])
 
-          map = results.each_with_object({}) do |(advisory_xid, id, published_date), acc|
-            acc[advisory_xid] = Hashie::Mash.new({ id: id, published_date: published_date })
+          map = results.each_with_object({}) do |(advisory_xid, source_xid, id, published_date), acc|
+            acc[advisory_xid] = Hashie::Mash.new({ id: id, source_xid: source_xid, published_date: published_date })
           end
           advisory_map.merge!(map)
         end

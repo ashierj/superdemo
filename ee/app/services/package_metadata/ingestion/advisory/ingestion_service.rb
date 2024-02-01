@@ -34,9 +34,12 @@ module PackageMetadata
         end
 
         def publish!
-          return unless Feature.enabled?(:dependency_scanning_on_advisory_ingestion)
-
           publishable_advisories.each do |data_object|
+            next if data_object.source_xid == 'glad' && !Feature.enabled?(:dependency_scanning_on_advisory_ingestion)
+            next if data_object.source_xid == 'trivy-db' &&
+              !Feature.enabled?(:container_scanning_continuous_vulnerability_scans,
+                Feature.current_request, type: :beta)
+
             Gitlab::EventStore.publish(
               PackageMetadata::IngestedAdvisoryEvent.new(data: { advisory_id: data_object.id }))
           end
