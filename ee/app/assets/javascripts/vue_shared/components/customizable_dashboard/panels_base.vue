@@ -215,7 +215,10 @@ export default {
     }"
   >
     <div class="gl-h-full gl-display-flex gl-flex-direction-column">
-      <div class="gl-display-flex gl-align-items-flex-start gl-justify-content-space-between">
+      <div
+        class="gl-display-flex gl-align-items-flex-start gl-justify-content-space-between"
+        data-testid="panel-title"
+      >
         <tooltip-on-truncate
           v-if="title"
           :title="title"

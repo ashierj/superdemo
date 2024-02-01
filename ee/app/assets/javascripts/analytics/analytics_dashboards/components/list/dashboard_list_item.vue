@@ -69,7 +69,7 @@ export default {
           {{ dashboard.description }}
         </p>
       </div>
-      <div v-if="isBuiltInDashboard" class="gl-float-right">
+      <div v-if="isBuiltInDashboard" class="gl-float-right" data-testid="dashboard-by-gitlab">
         <gl-badge variant="muted" icon="tanuki-verified">{{
           s__('Analytics|Created by GitLab')
         }}</gl-badge>

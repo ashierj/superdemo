@@ -61,11 +61,21 @@ export default {
       this.trackEvent('value_streams_dashboard_metric_link_clicked');
       this.trackEvent(`value_streams_dashboard_${identifier}_link_clicked`);
     },
+    rowAttributes({ metric: { identifier } }) {
+      return {
+        'data-testid': `dora-chart-metric-${identifier.replaceAll('_', '-')}`,
+      };
+    },
   },
 };
 </script>
 <template>
-  <gl-table-lite :fields="dashboardTableFields" :items="tableData" table-class="gl-my-0">
+  <gl-table-lite
+    :fields="dashboardTableFields"
+    :items="tableData"
+    table-class="gl-my-0"
+    :tbody-tr-attr="rowAttributes"
+  >
     <template #head()="{ field: { label, start, end } }">
       <template v-if="!start || !end">
         {{ label }}
