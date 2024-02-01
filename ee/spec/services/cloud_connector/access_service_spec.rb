@@ -9,7 +9,7 @@ RSpec.describe CloudConnector::AccessService, feature_category: :cloud_connector
     let(:scopes) { [:code_suggestions, :duo_chat] }
 
     context 'when Self-managed' do
-      let(:gitlab_realm) { Gitlab::Ai::AccessToken::GITLAB_REALM_SELF_MANAGED }
+      let(:gitlab_realm) { Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SELF_MANAGED }
       let_it_be(:older_active_token) { create(:service_access_token, :active) }
       let_it_be(:newer_active_token) { create(:service_access_token, :active) }
       let_it_be(:inactive_token) { create(:service_access_token, :expired) }
@@ -18,12 +18,12 @@ RSpec.describe CloudConnector::AccessService, feature_category: :cloud_connector
     end
 
     context 'when SaaS', :saas do
-      let(:gitlab_realm) { Gitlab::Ai::AccessToken::GITLAB_REALM_SAAS }
+      let(:gitlab_realm) { Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SAAS }
       let(:encoded_token_string) { 'token_string' }
 
       it 'returns the constructed token' do
-        expect(Gitlab::Ai::AccessToken).to receive(:new).with(nil, scopes: scopes,
-          gitlab_realm: gitlab_realm).and_return(instance_double('Gitlab::Ai::AccessToken',
+        expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(nil, scopes: scopes,
+          gitlab_realm: gitlab_realm).and_return(instance_double('Gitlab::CloudConnector::SelfIssuedToken',
             encoded: encoded_token_string))
 
         expect(access_token).to eq(encoded_token_string)

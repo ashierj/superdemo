@@ -60,7 +60,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       let(:response_body) do
         {
           'access_token' => kind_of(String),
-          'expires_in' => Gitlab::Ai::AccessToken::EXPIRES_IN,
+          'expires_in' => Gitlab::CloudConnector::SelfIssuedToken::EXPIRES_IN,
           'created_at' => Time.now.to_i
         }
       end
@@ -164,10 +164,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           it_behaves_like 'an endpoint authenticated with token'
 
           it 'sets the access token realm to SaaS' do
-            expect(Gitlab::Ai::AccessToken).to receive(:new).with(
+            expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(
               current_user,
               scopes: [:code_suggestions],
-              gitlab_realm: Gitlab::Ai::AccessToken::GITLAB_REALM_SAAS
+              gitlab_realm: Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SAAS
             )
 
             post_api
@@ -187,10 +187,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             end
 
             it 'sets the access token realm to self-managed' do
-              expect(Gitlab::Ai::AccessToken).to receive(:new).with(
+              expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(
                 current_user,
                 scopes: [:code_suggestions],
-                gitlab_realm: Gitlab::Ai::AccessToken::GITLAB_REALM_SELF_MANAGED
+                gitlab_realm: Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SELF_MANAGED
               )
 
               post_api
@@ -472,7 +472,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       end
 
       before do
-        allow_next_instance_of(Gitlab::Ai::AccessToken) do |instance|
+        allow_next_instance_of(Gitlab::CloudConnector::SelfIssuedToken) do |instance|
           allow(instance).to receive(:encoded).and_return(token)
         end
       end

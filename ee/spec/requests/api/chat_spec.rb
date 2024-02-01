@@ -29,7 +29,7 @@ RSpec.describe API::Chat, :saas, feature_category: :duo_chat do
     allow(SecureRandom).to receive(:uuid).and_return('uuid')
 
     # Bypass actual requests of AI Gateway client
-    allow_next_instance_of(Gitlab::Ai::AccessToken) do |access_token|
+    allow_next_instance_of(Gitlab::CloudConnector::SelfIssuedToken) do |access_token|
       allow(access_token).to receive(:encoded).and_return(nil)
     end
   end

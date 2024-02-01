@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Gitlab
-  module Ai
-    class AccessToken
+  module CloudConnector
+    class SelfIssuedToken
       JWT_AUDIENCE = 'gitlab-ai-gateway'
       NOT_BEFORE_TIME = 5.seconds.to_i.freeze
       EXPIRES_IN = 1.hour.to_i.freeze

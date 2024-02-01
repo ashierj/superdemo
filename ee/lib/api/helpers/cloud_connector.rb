@@ -16,9 +16,9 @@ module API
       end
 
       def gitlab_realm
-        return Gitlab::Ai::AccessToken::GITLAB_REALM_SAAS if Gitlab.org_or_com? # rubocop:disable Gitlab/AvoidGitlabInstanceChecks -- To align with ee/lib/api/code_suggestions.rb.
+        return Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SAAS if Gitlab.org_or_com? # rubocop:disable Gitlab/AvoidGitlabInstanceChecks -- To align with ee/lib/api/code_suggestions.rb.
 
-        Gitlab::Ai::AccessToken::GITLAB_REALM_SELF_MANAGED
+        Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SELF_MANAGED
       end
     end
   end

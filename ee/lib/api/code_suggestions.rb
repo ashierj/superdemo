@@ -70,7 +70,7 @@ module API
       def gitlab_realm
         # NOTE: This code path is being phased out as part of working towards GA for code suggestions.
         # See https://gitlab.com/groups/gitlab-org/-/epics/11114
-        return Gitlab::Ai::AccessToken::GITLAB_REALM_SELF_MANAGED if proxied?
+        return Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SELF_MANAGED if proxied?
 
         super
       end
@@ -101,7 +101,8 @@ module API
             user: current_user
           )
 
-          token = Gitlab::Ai::AccessToken.new(current_user, scopes: [:code_suggestions], gitlab_realm: gitlab_realm)
+          token = Gitlab::CloudConnector::SelfIssuedToken.new(
+            current_user, scopes: [:code_suggestions], gitlab_realm: gitlab_realm)
           present token, with: Entities::CodeSuggestionsAccessToken
         end
       end
