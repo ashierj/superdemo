@@ -22,10 +22,10 @@
       border-bottom-width: $gl-border-size-1;
       display: flex;
       padding-bottom: $gl-spacing-scale-3;
-      @include gl-align-items-flex-start;
+      align-items: flex-start;
 
       .title {
-        @include gl-font-size-markdown-h2;
+        font-size: $gl-font-size-markdown-h2;
         margin-bottom: 0;
         padding-bottom: 0;
         flex-grow: 1;
@@ -44,7 +44,7 @@
       }
 
       .detail-page-description {
-        @include gl-border-none;
+        border-style: none;
       }
 
       .description {

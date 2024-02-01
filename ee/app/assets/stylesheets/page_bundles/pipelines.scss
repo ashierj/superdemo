@@ -5,7 +5,7 @@
     &:active,
     &:focus,
     &:focus:active {
-      @include gl-bg-transparent;
+      background-color: transparent;
       @include gl-focus;
     }
 
