@@ -16,14 +16,15 @@
       'analytics_storage': 'denied',
       'ad_storage': 'denied',
       'functionality_storage': 'denied',
-      'region': ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'PE', 'RU'],
+      'region': ['CA-QC', 'CO', 'EU', 'GB', 'IS', 'KR', 'LI', 'NO', 'PE', 'RU'],
       'wait_for_update': 500
     });
 
      window.geofeed = (options) => {
         dataLayer.push({
-          'event' : 'OneTrustCountryLoad',
-          'oneTrustCountryId': options.country.toString()
+          'event': 'OneTrustCountryLoad',
+          'oneTrustCountryId': options.country.toString(),
+          'oneTrustStateId': options.state?.toString()
         })
       }
 
