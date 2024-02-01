@@ -3,7 +3,7 @@
 module Types
   module Ci
     class RunnerUsageByProjectType < BaseObject
-      graphql_name 'RunnerUsageByProject'
+      graphql_name 'CiRunnerUsageByProject'
       description 'Runner usage in minutes by project.'
 
       authorize :read_jobs_statistics

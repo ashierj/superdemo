@@ -804,6 +804,25 @@ Returns [`RunnerSetup`](#runnersetup).
 | <a id="queryrunnersetupplatform"></a>`platform` | [`String!`](#string) | Platform to generate the instructions for. |
 | <a id="queryrunnersetupprojectid"></a>`projectId` **{warning-solid}** | [`ProjectID`](#projectid) | **Deprecated** in 13.11. No longer used. |
 
+### `Query.runnerUsage`
+
+Runner usage by runner.
+
+NOTE:
+**Introduced** in 16.9.
+**Status**: Experiment.
+
+Returns [`[CiRunnerUsage!]`](#cirunnerusage).
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="queryrunnerusagefromdate"></a>`fromDate` | [`Date`](#date) | Start of the requested date frame. Defaults to the start of the previous calendar month. |
+| <a id="queryrunnerusagerunnertype"></a>`runnerType` | [`CiRunnerType`](#cirunnertype) | Filter runners by the type. |
+| <a id="queryrunnerusagerunnerslimit"></a>`runnersLimit` | [`Int`](#int) | Maximum number of runners to return. Other runners will be aggregated to a `runner: null` entry. Defaults to 5 if unspecified. Maximum of 500. |
+| <a id="queryrunnerusagetodate"></a>`toDate` | [`Date`](#date) | End of the requested date frame. Defaults to the end of the previous calendar month. |
+
 ### `Query.runnerUsageByProject`
 
 Runner usage by project.
@@ -812,14 +831,14 @@ NOTE:
 **Introduced** in 16.9.
 **Status**: Experiment.
 
-Returns [`[RunnerUsageByProject!]`](#runnerusagebyproject).
+Returns [`[CiRunnerUsageByProject!]`](#cirunnerusagebyproject).
 
 #### Arguments
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="queryrunnerusagebyprojectfromdate"></a>`fromDate` | [`Date`](#date) | Start of the requested date frame. Defaults to the start of the previous calendar month. |
-| <a id="queryrunnerusagebyprojectprojectslimit"></a>`projectsLimit` | [`Int`](#int) | Maximum number of projects to return.Other projects will be aggregated to a `project: null` entry.Can not be larger than 500. Defaults to 5. |
+| <a id="queryrunnerusagebyprojectprojectslimit"></a>`projectsLimit` | [`Int`](#int) | Maximum number of projects to return.Other projects will be aggregated to a `project: null` entry. Defaults to 5 if unspecified. Maximum of 500. |
 | <a id="queryrunnerusagebyprojectrunnertype"></a>`runnerType` | [`CiRunnerType`](#cirunnertype) | Filter jobs by the type of runner that executed them. |
 | <a id="queryrunnerusagebyprojecttodate"></a>`toDate` | [`Date`](#date) | End of the requested date frame. Defaults to the end of the previous calendar month. |
 
@@ -16187,6 +16206,30 @@ Returns [`CiRunnerStatus!`](#cirunnerstatus).
 | <a id="cirunnermanagerupgradestatus"></a>`upgradeStatus` **{warning-solid}** | [`CiRunnerUpgradeStatus`](#cirunnerupgradestatus) | **Introduced** in 16.1. **Status**: Experiment. Availability of upgrades for the runner manager. |
 | <a id="cirunnermanagerversion"></a>`version` | [`String`](#string) | Version of the runner. |
 
+### `CiRunnerUsage`
+
+Runner usage.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="cirunnerusagecibuildcount"></a>`ciBuildCount` | [`Int!`](#int) | Amount of builds executed during the selected period. |
+| <a id="cirunnerusageciminutesused"></a>`ciMinutesUsed` | [`Int!`](#int) | Amount of minutes used during the selected period. |
+| <a id="cirunnerusagerunner"></a>`runner` | [`CiRunner`](#cirunner) | Runner that the usage refers to. Null means "Other runners". |
+
+### `CiRunnerUsageByProject`
+
+Runner usage in minutes by project.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="cirunnerusagebyprojectcibuildcount"></a>`ciBuildCount` | [`Int!`](#int) | Amount of builds executed during the selected period. |
+| <a id="cirunnerusagebyprojectciminutesused"></a>`ciMinutesUsed` | [`Int!`](#int) | Amount of minutes used during the selected period. |
+| <a id="cirunnerusagebyprojectproject"></a>`project` | [`Project`](#project) | Project that the usage refers to. Null means "Other projects". |
+
 ### `CiSecureFileRegistry`
 
 Represents the Geo replication and verification state of a ci_secure_file.
@@ -26941,18 +26984,6 @@ Counts of requirements by their state.
 | ---- | ---- | ----------- |
 | <a id="runnersetupinstallinstructions"></a>`installInstructions` | [`String!`](#string) | Instructions for installing the runner on the specified architecture. |
 | <a id="runnersetupregisterinstructions"></a>`registerInstructions` | [`String`](#string) | Instructions for registering the runner. The actual registration tokens are not included in the commands. Instead, a placeholder `$REGISTRATION_TOKEN` is shown. |
-
-### `RunnerUsageByProject`
-
-Runner usage in minutes by project.
-
-#### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="runnerusagebyprojectcibuildcount"></a>`ciBuildCount` | [`Int!`](#int) | Amount of builds executed during the selected period. |
-| <a id="runnerusagebyprojectciminutesused"></a>`ciMinutesUsed` | [`Int!`](#int) | Amount of minutes used during the selected period. |
-| <a id="runnerusagebyprojectproject"></a>`project` | [`Project`](#project) | Project that the usage refers to. Null means "Other projects". |
 
 ### `SastCiConfiguration`
 

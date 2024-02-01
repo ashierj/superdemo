@@ -25,6 +25,7 @@ RSpec.describe GitlabSchema.types['Query'], feature_category: :shared do
       :ml_model,
       :organization,
       :runner_usage_by_project,
+      :runner_usage,
       :subscription_future_entries,
       :vulnerabilities,
       :vulnerabilities_count_by_day,
