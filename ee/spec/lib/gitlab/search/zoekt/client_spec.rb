@@ -337,6 +337,14 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
 
         delete
 
+        # Add delay to allow Zoekt wbeserver to finish the deletion
+        10.times do
+          results = client.search('.*', num: 1, project_ids: [project_1.id], node_id: node_id, search_mode: :regex)
+          break if results[:Result][:FileCount] == 0
+
+          sleep 0.01
+        end
+
         search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id],
           node_id: node_id, search_mode: :regex)
         expect(search_results[:Result][:Files].to_a).to be_empty
@@ -387,6 +395,16 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       expect(search_results[:Result][:Files].to_a.size).to be > 0
 
       client.truncate
+
+      # Add delay to allow Zoekt wbeserver to finish the truncation
+      project_ids = [project_1, project_2].pluck(:id)
+      10.times do
+        results = client.search('.*', num: 1, project_ids: project_ids, node_id: node.id, search_mode: :regex)
+        break if results[:Result][:FileCount] == 0
+
+        sleep 0.01
+      end
+
       search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node.id,
         search_mode: :regex)
       expect(search_results[:Result][:Files].to_a.size).to eq(0)
