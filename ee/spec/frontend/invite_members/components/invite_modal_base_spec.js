@@ -158,8 +158,18 @@ describe('EEInviteModalBase', () => {
         await waitForPromises();
 
         expect(findCEBase().props('accessLevels').customRoles).toMatchObject([
-          { baseAccessLevel: 10, memberRoleId: 103, name: 'My role project 1' },
-          { baseAccessLevel: 10, memberRoleId: 104, name: 'My role instance 1' },
+          {
+            baseAccessLevel: 10,
+            memberRoleId: 103,
+            name: 'My role project 1',
+            description: 'My role project 1 description',
+          },
+          {
+            baseAccessLevel: 10,
+            memberRoleId: 104,
+            name: 'My role instance 1',
+            description: 'My role instance 1 description',
+          },
         ]);
       });
     });
@@ -170,9 +180,24 @@ describe('EEInviteModalBase', () => {
         await waitForPromises();
 
         expect(findCEBase().props('accessLevels').customRoles).toMatchObject([
-          { baseAccessLevel: 10, memberRoleId: 100, name: 'My role group 1' },
-          { baseAccessLevel: 20, memberRoleId: 101, name: 'My role group 2' },
-          { baseAccessLevel: 10, memberRoleId: 104, name: 'My role instance 1' },
+          {
+            baseAccessLevel: 10,
+            memberRoleId: 100,
+            name: 'My role group 1',
+            description: 'My role group 1 description',
+          },
+          {
+            baseAccessLevel: 20,
+            memberRoleId: 101,
+            name: 'My role group 2',
+            description: 'My role group 2 description',
+          },
+          {
+            baseAccessLevel: 10,
+            memberRoleId: 104,
+            name: 'My role instance 1',
+            description: 'My role instance 1 description',
+          },
         ]);
       });
     });

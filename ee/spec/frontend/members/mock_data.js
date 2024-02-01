@@ -9,7 +9,12 @@ export const bannedMember = {
 
 export const customRoles = [
   { baseAccessLevel: 20, name: 'custom role 3', memberRoleId: 103 },
-  { baseAccessLevel: 10, name: 'custom role 1', memberRoleId: 101 },
+  {
+    baseAccessLevel: 10,
+    name: 'custom role 1',
+    description: 'custom role 1 description',
+    memberRoleId: 101,
+  },
   { baseAccessLevel: 10, name: 'custom role 2', memberRoleId: 102 },
 ];
 
@@ -17,7 +22,12 @@ export const customPermissions = [{ name: 'Read code' }, { name: 'Read vulnerabi
 
 export const upgradedMember = {
   ...member,
-  accessLevel: { integerValue: 10, stringValue: 'custom role 1', memberRoleId: 101 },
+  accessLevel: {
+    integerValue: 10,
+    stringValue: 'custom role 1',
+    memberRoleId: 101,
+    description: 'custom role 1 description',
+  },
   customPermissions,
   customRoles,
 };

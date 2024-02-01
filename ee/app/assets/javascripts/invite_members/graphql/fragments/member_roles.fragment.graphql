@@ -6,6 +6,7 @@ fragment MemberRoles on MemberRoleConnection {
     }
     id
     name
+    description
     enabledPermissions {
       nodes {
         name
