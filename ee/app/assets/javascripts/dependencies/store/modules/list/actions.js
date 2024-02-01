@@ -153,7 +153,9 @@ export const setSearchFilterParameters = ({ state, commit }, searchFilters = [])
   searchFilters.forEach((searchFilter) => {
     let filterData = searchFilter.value.data;
 
-    if (!filterData?.length) {
+    // If a user types to filter available options the filter data will be a string and we just ignore it
+    // as filters can only be applied via selecting an option from the dropdown
+    if (!Array.isArray(filterData) || !filterData.length) {
       return;
     }
 
@@ -171,8 +173,9 @@ export const setSearchFilterParameters = ({ state, commit }, searchFilters = [])
   commit(types.SET_SEARCH_FILTER_PARAMETERS, searchFilterParameters);
 };
 
-export const fetchLicenses = async ({ commit }, licensesEndpoint) => {
-  if (!licensesEndpoint) {
+export const fetchLicenses = async ({ commit, state }, licensesEndpoint) => {
+  // if there are already licenses there is no need to re-fetch, as they are a static list
+  if (state.licenses.length || !licensesEndpoint) {
     return;
   }
 
@@ -183,11 +186,13 @@ export const fetchLicenses = async ({ commit }, licensesEndpoint) => {
       data: { licenses },
     } = await axios.get(licensesEndpoint);
 
-    const camelCasedLicenses = licenses.map((license) =>
-      convertObjectPropsToCamelCase(license, { deep: true }),
+    const camelCasedLicensesWithId = licenses.map((license, index) =>
+      // we currently don't get the id from the API, so we need to add it manually
+      // this will be removed once https://gitlab.com/gitlab-org/gitlab/-/issues/439886 has been implemented
+      convertObjectPropsToCamelCase({ ...license, id: index }, { deep: true }),
     );
 
-    commit(types.SET_LICENSES, camelCasedLicenses);
+    commit(types.SET_LICENSES, camelCasedLicensesWithId);
   } catch (e) {
     createAlert({
       message: LICENSES_FETCH_ERROR_MESSAGE,
