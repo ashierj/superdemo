@@ -338,6 +338,28 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
         end
       end
     end
+
+    it_behaves_like 'can search by title for miscellaneous cases', 'epics'
+
+    include_context 'with code examples' do
+      before do
+        code_examples.values.uniq.each do |description|
+          sha = Digest::SHA256.hexdigest(description)
+          create :epic, group: public_parent_group, title: sha, description: description
+        end
+
+        ensure_elasticsearch_index!
+      end
+
+      it 'finds all examples' do
+        code_examples.each do |query, description|
+          sha = Digest::SHA256.hexdigest(description)
+
+          epics = described_class.new(user, query, [], group: public_parent_group, filters: filters).objects(scope)
+          expect(epics.map(&:title)).to include(sha)
+        end
+      end
+    end
   end
 
   describe 'users' do
