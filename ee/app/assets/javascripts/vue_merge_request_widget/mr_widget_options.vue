@@ -189,13 +189,15 @@ export default {
       <blocking-merge-requests-report :mr="mr" />
 
       <div class="mr-widget-section">
-        <mr-widget-auto-merge-enabled
-          v-if="autoMergeStateVisible"
-          :mr="mr"
-          :service="service"
-          class="gl-border-b-1 gl-border-b-solid gl-border-gray-100"
-        />
-        <merge-checks v-if="mergeBlockedComponentEnabled" :mr="mr" :service="service" />
+        <template v-if="mergeBlockedComponentEnabled">
+          <mr-widget-auto-merge-enabled
+            v-if="mr.autoMergeEnabled"
+            :mr="mr"
+            :service="service"
+            class="gl-border-b-1 gl-border-b-solid gl-border-gray-100"
+          />
+          <merge-checks :mr="mr" :service="service" />
+        </template>
         <component :is="componentName" v-else :mr="mr" :service="service" />
         <ready-to-merge
           v-if="mr.commitsCount"
