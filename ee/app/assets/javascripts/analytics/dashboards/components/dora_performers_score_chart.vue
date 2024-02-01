@@ -213,7 +213,7 @@ export default {
     <gl-skeleton-loader v-if="isLoading" :lines="1" :width="450" />
     <div v-else class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
       <div
-        data-testid="dora-performers-score-chart-title"
+        data-testid="dora-performers-score-panel-title"
         class="gl-my-0 gl-display-flex gl-gap-3 gl-align-items-center"
       >
         {{ panelTitle }}
