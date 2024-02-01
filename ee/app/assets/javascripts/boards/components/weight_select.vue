@@ -94,7 +94,7 @@ export default {
         v-if="canEdit"
         category="tertiary"
         size="small"
-        class="edit-link float-right"
+        class="edit-link gl-float-right"
         @click="toggleEdit"
       >
         {{ $options.i18n.edit }}
