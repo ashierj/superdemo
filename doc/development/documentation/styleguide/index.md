@@ -1713,8 +1713,8 @@ SaaS will be changing to GitLab.com and we will be adding GitLab Dedicated. We w
 
 For tier, choose one:
 
-- Free, Premium, and Ultimate
-- Premium and Ultimate
+- Free, Premium, Ultimate
+- Premium, Ultimate
 - Ultimate
 
 For status, choose one:
