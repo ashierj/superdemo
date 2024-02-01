@@ -115,10 +115,11 @@ module EE
       sm_billable_role_change?(role: new_access_level, member_role_id: member_role_id)
     end
 
-    def queue_for_approval(new_access_level, requested_by)
+    def queue_for_approval(new_access_level, requested_by, member_role_id = nil)
       member_approvals.find_or_create_by(
         member_namespace: member_namespace,
         new_access_level: new_access_level,
+        member_role_id: member_role_id,
         status: ::Members::MemberApproval.statuses[:pending]
       ) do |new_approval|
         new_approval.old_access_level = access_level
@@ -129,6 +130,7 @@ module EE
       member_approvals.find_by(
         member_namespace: member_namespace,
         new_access_level: new_access_level,
+        member_role_id: member_role_id,
         status: ::Members::MemberApproval.statuses[:pending]
       )
     end
