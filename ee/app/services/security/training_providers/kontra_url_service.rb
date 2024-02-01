@@ -12,7 +12,7 @@ module Security
 
       # To improve the authentication/integration
       # https://gitlab.com/gitlab-org/gitlab/-/issues/354070
-      BEARER_TOKEN = "sbdMsxcgW2Xs75Q2uHc9FhUCZSEV3fSg"
+      BEARER_TOKEN = "5f78366e82fbf0b6dab63e521340a4e7"
 
       def calculate_reactive_cache(full_url)
         response = Gitlab::HTTP.try_get(
