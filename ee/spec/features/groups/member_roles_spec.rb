@@ -66,35 +66,19 @@ RSpec.describe 'Member Roles', :saas, :js, feature_category: :permissions do
       let(:requirement) { permissions[permission][:requirements].first }
       let(:requirement_name) { requirement.to_s.humanize }
 
-      context 'when the requirement has not been met' do
-        it 'show an error message' do
-          create_role(access_level, name, [permission_name])
+      it 'creates the custom role' do
+        create_role(access_level, name, [permission_name])
 
-          created_member_role = MemberRole.find_by(
-            name: name,
-            base_access_level: Gitlab::Access.options[access_level],
-            permission => true)
+        created_member_role = MemberRole.find_by(
+          name: name,
+          base_access_level: Gitlab::Access.options[access_level],
+          permission => true,
+          requirement => true)
 
-          expect(created_member_role).to be_nil
-          expect(page).to have_content("#{requirement_name} has to be enabled in order to enable #{permission_name}")
-        end
-      end
+        expect(created_member_role).not_to be_nil
 
-      context 'when the requirement has been met' do
-        it 'creates the custom role' do
-          create_role(access_level, name, [permission_name, requirement_name])
-
-          created_member_role = MemberRole.find_by(
-            name: name,
-            base_access_level: Gitlab::Access.options[access_level],
-            permission => true,
-            requirement => true)
-
-          expect(created_member_role).not_to be_nil
-
-          role = created_role(name, created_member_role.id, access_level, [permission_name, requirement_name])
-          expect(page).to have_content(role)
-        end
+        role = created_role(name, created_member_role.id, access_level, [permission_name, requirement_name])
+        expect(page).to have_content(role)
       end
     end
   end

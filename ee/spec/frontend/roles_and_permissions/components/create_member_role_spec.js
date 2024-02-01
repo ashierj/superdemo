@@ -1,4 +1,10 @@
-import { GlFormInput, GlFormSelect, GlFormTextarea, GlFormCheckbox } from '@gitlab/ui';
+import {
+  GlFormInput,
+  GlFormSelect,
+  GlFormTextarea,
+  GlFormCheckbox,
+  GlFormCheckboxGroup,
+} from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { createAlert, VARIANT_DANGER } from '~/alert';
@@ -255,5 +261,73 @@ describe('CreateMemberRole', () => {
 
       expect(mockAlertDismiss).toHaveBeenCalledTimes(1);
     });
+  });
+
+  describe('dependent permissions', () => {
+    const availablePermissions = [
+      { value: 'A' },
+      { value: 'B', requirements: ['A'] },
+      { value: 'C', requirements: ['B'] }, // Nested dependency: C -> B -> A
+      { value: 'D', requirements: ['C'] }, // Nested dependency: D -> C -> B -> A
+      { value: 'E', requirements: ['F'] }, // Circular dependency
+      { value: 'F', requirements: ['E'] }, // Circular dependency
+      { value: 'G', requirements: ['A', 'B', 'C'] }, // Multiple dependencies
+    ];
+
+    const checkPermissions = (permissions) => {
+      wrapper.findComponent(GlFormCheckboxGroup).vm.$emit('input', permissions);
+    };
+
+    const expectCheckedPermissions = (expected) => {
+      const selectedValues = wrapper
+        .findComponent(GlFormCheckboxGroup)
+        .attributes('checked')
+        .split(',')
+        .sort();
+
+      expect(selectedValues).toEqual(expected.sort());
+    };
+
+    beforeEach(() => {
+      createComponent({ availablePermissions, stubs: { GlFormCheckboxGroup: true } });
+    });
+
+    it.each`
+      permission | expected
+      ${'A'}     | ${['A']}
+      ${'B'}     | ${['A', 'B']}
+      ${'C'}     | ${['A', 'B', 'C']}
+      ${'D'}     | ${['A', 'B', 'C', 'D']}
+      ${'E'}     | ${['E', 'F']}
+      ${'F'}     | ${['E', 'F']}
+      ${'G'}     | ${['A', 'B', 'C', 'G']}
+    `('selects $expected when $permission is selected', async ({ permission, expected }) => {
+      await checkPermissions([permission]);
+
+      expectCheckedPermissions(expected);
+    });
+
+    it.each`
+      permission | expected
+      ${'A'}     | ${['E', 'F']}
+      ${'B'}     | ${['A', 'E', 'F']}
+      ${'C'}     | ${['A', 'B', 'E', 'F']}
+      ${'D'}     | ${['A', 'B', 'C', 'E', 'F', 'G']}
+      ${'E'}     | ${['A', 'B', 'C', 'D', 'G']}
+      ${'F'}     | ${['A', 'B', 'C', 'D', 'G']}
+      ${'G'}     | ${['A', 'B', 'C', 'D', 'E', 'F']}
+    `(
+      'selects $expected when all permissions are selected and $permission is unselected',
+      async ({ permission, expected }) => {
+        const allPermissions = availablePermissions.map((p) => p.value);
+        const selectedPermissions = allPermissions.filter((v) => v !== permission);
+        // Start by checking all the permissions.
+        await checkPermissions(allPermissions);
+        // Uncheck the permission by removing it from all permissions.
+        await checkPermissions(selectedPermissions);
+
+        expectCheckedPermissions(expected);
+      },
+    );
   });
 });
