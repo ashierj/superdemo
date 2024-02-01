@@ -108,7 +108,7 @@ export default {
       <template v-else>
         <gl-filtered-search-suggestion
           v-for="license in filteredLicenses"
-          :key="license.spdxIdentifier"
+          :key="license.id"
           :value="license.name"
         >
           <div class="gl-display-flex gl-align-items-center">
