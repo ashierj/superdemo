@@ -71,8 +71,8 @@ describe('DoraPerformersScoreChart', () => {
   };
 
   const findDoraPerformersScoreChart = () => wrapper.findComponent(GlStackedColumnChart);
-  const findDoraPerformersScoreChartTitle = () =>
-    wrapper.findByTestId('dora-performers-score-chart-title');
+  const findDoraPerformersScorePanelTitle = () =>
+    wrapper.findByTestId('dora-performers-score-panel-title');
   const findChartSkeletonLoader = () => wrapper.findComponent(ChartSkeletonLoader);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findPanelTitleHelpIcon = () => wrapper.findComponent(GlIcon);
@@ -89,7 +89,7 @@ describe('DoraPerformersScoreChart', () => {
     });
 
     it('renders panel title with total project count', () => {
-      expect(findDoraPerformersScoreChartTitle().text()).toBe(panelTitleWithProjectsCount());
+      expect(findDoraPerformersScorePanelTitle().text()).toBe(panelTitleWithProjectsCount());
     });
 
     it('does not render panel title tooltip', () => {
@@ -127,7 +127,7 @@ describe('DoraPerformersScoreChart', () => {
         });
 
         it('renders panel title with correct total projects count with DORA data', () => {
-          expect(findDoraPerformersScoreChartTitle().text()).toBe(
+          expect(findDoraPerformersScorePanelTitle().text()).toBe(
             panelTitleWithProjectsCount(projectsCountWithDoraData),
           );
         });
@@ -150,7 +150,7 @@ describe('DoraPerformersScoreChart', () => {
 
     it('renders skeleton loader instead of panel title', () => {
       expect(findSkeletonLoader().exists()).toBe(true);
-      expect(findDoraPerformersScoreChartTitle().exists()).toBe(false);
+      expect(findDoraPerformersScorePanelTitle().exists()).toBe(false);
     });
   });
 
@@ -169,7 +169,7 @@ describe('DoraPerformersScoreChart', () => {
     });
 
     it('renders panel title with `0` projects with DORA data', () => {
-      expect(findDoraPerformersScoreChartTitle().text()).toBe(panelTitleWithProjectsCount(0));
+      expect(findDoraPerformersScorePanelTitle().text()).toBe(panelTitleWithProjectsCount(0));
     });
 
     it('does not render panel title tooltip', () => {

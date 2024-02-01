@@ -434,9 +434,6 @@ export default {
     closeVisualizationDrawer() {
       this.visualizationDrawerOpen = false;
     },
-    panelTestId({ visualization: { slug = '' } }) {
-      return `panel-${slug.replaceAll('_', '-')}`;
-    },
   },
   HISTORY_REPLACE_UPDATE_METHOD,
   FORM_GROUP_CLASS: 'gl-w-full gl-sm-w-30p gl-min-w-20 gl-m-0',
@@ -595,7 +592,6 @@ export default {
                 :query-overrides="panel.queryOverrides || undefined"
                 :filters="filters"
                 :editing="editing"
-                :data-testid="panelTestId(panel)"
                 @delete="deletePanel(panel)"
               />
             </div>
