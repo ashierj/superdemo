@@ -9,7 +9,7 @@ import {
   GlFormSelect,
   GlFormTextarea,
 } from '@gitlab/ui';
-
+import { difference, pull } from 'lodash';
 import { createAlert } from '~/alert';
 import { sprintf, s__ } from '~/locale';
 import { ACCESS_LEVEL_GUEST_INTEGER, ACCESS_LEVEL_LABELS } from '~/access_level/constants';
@@ -68,8 +68,59 @@ export default {
     refetchMemberRolesQuery() {
       return this.groupFullPath ? groupMemberRolesQuery : instanceMemberRolesQuery;
     },
+    parentPermissionsLookup() {
+      return this.availablePermissions.reduce((acc, { value, requirements }) => {
+        if (requirements) {
+          acc[value] = requirements;
+        }
+
+        return acc;
+      }, {});
+    },
+    childPermissionsLookup() {
+      return this.availablePermissions.reduce((acc, { value, requirements }) => {
+        requirements?.forEach((requirement) => {
+          // Create the array if it doesn't exist, then add the requirement to it.
+          acc[requirement] = acc[requirement] || [];
+          acc[requirement].push(value);
+        });
+
+        return acc;
+      }, {});
+    },
+  },
+  watch: {
+    permissions(newPermissions, oldPermissions) {
+      const added = difference(newPermissions, oldPermissions);
+      const removed = difference(oldPermissions, newPermissions);
+
+      added.forEach((permission) => this.selectParentPermissions(permission));
+      removed.forEach((permission) => this.deselectChildPermissions(permission));
+    },
   },
   methods: {
+    selectParentPermissions(permission) {
+      const parentPermissions = this.parentPermissionsLookup[permission];
+
+      parentPermissions?.forEach((parentPermission) => {
+        // Only select the parent permission if it's not already selected.
+        if (!this.permissions.includes(parentPermission)) {
+          this.permissions.push(parentPermission);
+          this.selectParentPermissions(parentPermission);
+        }
+      });
+    },
+    deselectChildPermissions(permission) {
+      const childPermissions = this.childPermissionsLookup[permission];
+
+      childPermissions?.forEach((childPermission) => {
+        // Only remove the child permission if it's selected.
+        if (this.permissions.includes(childPermission)) {
+          pull(this.permissions, childPermission);
+          this.deselectChildPermissions(childPermission);
+        }
+      });
+    },
     validateFields() {
       this.baseRoleValid = this.baseRole !== null;
       this.nameValid = Boolean(this.name);

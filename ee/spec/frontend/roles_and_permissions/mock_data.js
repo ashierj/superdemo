@@ -1,7 +1,22 @@
 export const mockDefaultPermissions = [
-  { name: 'Permission A', description: 'Description A', value: 'READ_CODE' },
-  { name: 'Permission B', description: 'Description B', value: 'READ_VULNERABILITY' },
-  { name: 'Permission C', description: 'Description C', value: 'ADMIN_VULNERABILITY' },
+  {
+    name: 'Permission A',
+    description: 'Description A',
+    value: 'READ_CODE',
+    requirements: null,
+  },
+  {
+    name: 'Permission B',
+    description: 'Description B',
+    value: 'READ_VULNERABILITY',
+    requirements: null,
+  },
+  {
+    name: 'Permission C',
+    description: 'Description C',
+    value: 'ADMIN_VULNERABILITY',
+    requirements: null,
+  },
 ];
 
 export const mockPermissions = {
