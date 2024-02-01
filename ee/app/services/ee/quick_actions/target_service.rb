@@ -13,12 +13,9 @@ module EE
 
       # rubocop: disable CodeReuse/ActiveRecord
       def epic(type_iid)
-        # Some services still pass a group to this service as a param
-        # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/435902
-        epic_group = group || params[:group]
-        return epic_group.epics.build if type_iid.nil?
+        return group.epics.build if type_iid.nil?
 
-        EpicsFinder.new(current_user, group_id: epic_group.id).find_by(iid: type_iid) || epic_group.epics.build
+        EpicsFinder.new(current_user, group_id: group.id).find_by(iid: type_iid) || group.epics.build
       end
       # rubocop: enable CodeReuse/ActiveRecord
     end
