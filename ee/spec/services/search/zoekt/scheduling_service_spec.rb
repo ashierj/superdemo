@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe ::Search::Zoekt::SchedulingService, feature_category: :global_search do
   let(:logger) { instance_double('Logger') }
-  let(:service) { described_class.new(task) }
+  let(:service) { described_class.new(task.to_s) }
   let_it_be(:node) { create(:zoekt_node, :enough_free_space) }
 
   subject(:execute_task) { service.execute }
@@ -35,6 +35,10 @@ RSpec.describe ::Search::Zoekt::SchedulingService, feature_category: :global_sea
       stub_const('::Search::Zoekt::SchedulingService::TASKS', [:foo])
 
       expect { service.execute }.to raise_error(NotImplementedError)
+    end
+
+    it 'converts string task to symbol' do
+      expect(described_class.new(task.to_s).task).to eq(task.to_sym)
     end
   end
 
