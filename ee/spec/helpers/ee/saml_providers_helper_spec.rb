@@ -36,14 +36,12 @@ RSpec.describe EE::SamlProvidersHelper, feature_category: :system_access do
     end
   end
 
-  describe '#saml_membership_role_selector_data', feature_category: :permissions do
+  describe '#saml_membership_role_selector_data', :saas, feature_category: :permissions do
     let(:access_level) { Gitlab::Access::DEVELOPER }
-    # rubocop:disable RSpec/FactoryBot/AvoidCreate -- we need these objects to be persisted
-    let(:member_role) { create(:member_role, namespace: group, base_access_level: access_level) }
+    let(:member_role) { create_default(:member_role, namespace: group, base_access_level: access_level) }
     let!(:saml_provider) do
-      create(:saml_provider, group: group, member_role: member_role, default_membership_role: access_level)
+      create_default(:saml_provider, group: group, member_role: member_role, default_membership_role: access_level)
     end
-    # rubocop:enable RSpec/FactoryBot/AvoidCreate
 
     let(:expected_standard_role_data) do
       {
@@ -52,7 +50,11 @@ RSpec.describe EE::SamlProvidersHelper, feature_category: :system_access do
       }
     end
 
-    subject(:data) { helper.saml_membership_role_selector_data(group) }
+    before_all do
+      group.add_owner(current_user)
+    end
+
+    subject(:data) { helper.saml_membership_role_selector_data(group, current_user) }
 
     it 'returns a hash with the expected standard role data' do
       expect(data).to eq(expected_standard_role_data)

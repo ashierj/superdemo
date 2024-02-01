@@ -4,10 +4,11 @@ require "spec_helper"
 
 RSpec.describe SamlGroupLinksHelper, feature_category: :system_access do
   let_it_be(:group) { create_default(:group) }
+  let_it_be(:user) { create_default(:user) }
   let_it_be(:member_role) { create_default(:member_role, namespace: group) }
   let_it_be(:saml_group_link) { create_default(:saml_group_link, group: group, member_role: member_role) }
 
-  describe '#saml_group_link_role_selector_data', feature_category: :permissions do
+  describe '#saml_group_link_role_selector_data', :saas, feature_category: :permissions do
     let(:expected_standard_role_data) { { standard_roles: group.access_level_roles } }
     let(:expected_custom_role_data) do
       { custom_roles: [{ member_role_id: member_role.id,
@@ -15,7 +16,11 @@ RSpec.describe SamlGroupLinksHelper, feature_category: :system_access do
                          base_access_level: member_role.base_access_level }] }
     end
 
-    subject(:data) { helper.saml_group_link_role_selector_data(group) }
+    subject(:data) { helper.saml_group_link_role_selector_data(group, user) }
+
+    before_all do
+      group.add_owner(user)
+    end
 
     before do
       stub_licensed_features(custom_roles: true)

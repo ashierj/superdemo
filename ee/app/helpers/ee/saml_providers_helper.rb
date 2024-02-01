@@ -33,17 +33,20 @@ module EE
       }
     end
 
-    def saml_membership_role_selector_data(group)
+    def saml_membership_role_selector_data(group, current_user)
       data = {
         standard_roles: group.access_level_roles,
         current_standard_role: group.saml_provider.default_membership_role
       }
 
       if group.custom_roles_enabled?
-        data.merge!(
-          custom_roles: group.member_roles.map do |role|
+        custom_roles = MemberRoles::RolesFinder.new(current_user, { parent: group, instance_roles: true })
+          .execute.map do |role|
             { member_role_id: role.id, name: role.name, base_access_level: role.base_access_level }
-          end,
+          end
+
+        data.merge!(
+          custom_roles: custom_roles,
           current_custom_role_id: group.saml_provider.member_role_id
         )
       end
