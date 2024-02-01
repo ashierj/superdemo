@@ -69,8 +69,8 @@ module Billing
       plan_purchase_url(namespace, plan)
     end
 
-    def cta_classes
-      "gl-mb-5 btn gl-button #{plan.fetch(:cta_classes, 'btn-confirm-secondary')}"
+    def cta_category
+      plan.fetch(:cta_category, :secondary)
     end
 
     def cta_data
@@ -148,7 +148,7 @@ module Billing
             }
           ],
           "cta_text": s_("BillingPlans|Upgrade to Premium"),
-          "cta_classes": "btn-purple",
+          "cta_category": :primary,
           "cta_data": {
             "testid": "upgrade-to-premium"
           }
