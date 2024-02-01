@@ -6,6 +6,7 @@ RSpec.describe Sidebars::Projects::Menus::SettingsMenu, feature_category: :navig
   let_it_be(:project) { create(:project) }
 
   let(:user) { project.first_owner }
+
   let(:show_promotions) { true }
   let(:show_discover_project_security) { true }
   let(:context) do
@@ -29,12 +30,27 @@ RSpec.describe Sidebars::Projects::Menus::SettingsMenu, feature_category: :navig
     describe 'Analytics' do
       let(:item_id) { :analytics }
 
-      it_behaves_like 'access rights checks'
+      context 'for group projects' do
+        let_it_be(:user) { create(:user) }
+        let_it_be(:group) { create(:group) }
+        let_it_be_with_reload(:project) { create(:project, group: group) }
 
-      it 'is nil when combined_analytics_dashboards feature flag is disabled' do
-        stub_feature_flags(combined_analytics_dashboards: false)
+        before_all do
+          project.add_maintainer(user)
+        end
 
-        expect(subject).to be_nil
+        it_behaves_like 'access rights checks'
+
+        it 'is nil when combined_analytics_dashboards feature flag is disabled' do
+          stub_feature_flags(combined_analytics_dashboards: false)
+          expect(subject).to be_nil
+        end
+      end
+
+      context 'for personal projects' do
+        it 'is nil for personal namespace projects' do
+          is_expected.to be_nil
+        end
       end
     end
 

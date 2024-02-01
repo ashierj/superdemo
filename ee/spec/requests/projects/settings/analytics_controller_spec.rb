@@ -191,4 +191,27 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
       end
     end
   end
+
+  describe 'for personal namespace projects' do
+    let_it_be_with_reload(:project) { create(:project) }
+    let_it_be(:user) { project.first_owner }
+
+    before_all do
+      project.add_maintainer(user)
+    end
+
+    before do
+      sign_in(user)
+    end
+
+    subject do
+      get project_settings_analytics_path(project)
+    end
+
+    it 'returns a 404 on rendering analytics settings' do
+      subject
+
+      expect(response).to have_gitlab_http_status(:not_found)
+    end
+  end
 end

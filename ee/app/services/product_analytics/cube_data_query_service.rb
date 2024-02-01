@@ -70,7 +70,8 @@ module ProductAnalytics
       Gitlab::CurrentSettings.product_analytics_enabled? &&
         product_analytics_settings.cube_api_base_url.present? &&
         product_analytics_settings.cube_api_key.present? &&
-        project.product_analytics_enabled?
+        project.product_analytics_enabled? &&
+        !project.personal?
     end
 
     def has_access?
