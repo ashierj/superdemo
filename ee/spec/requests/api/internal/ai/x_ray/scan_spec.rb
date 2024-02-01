@@ -217,7 +217,7 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
       context 'with code suggestions enabled on namespace level' do
         before do
           namespace.namespace_settings.update!(code_suggestions: true)
-          allow_next_instance_of(Gitlab::Ai::AccessToken) do |instance|
+          allow_next_instance_of(Gitlab::CloudConnector::SelfIssuedToken) do |instance|
             allow(instance).to receive(:encoded).and_return(ai_gateway_token)
           end
         end

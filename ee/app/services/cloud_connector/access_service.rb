@@ -16,7 +16,7 @@ module CloudConnector
     end
 
     def saas_token(scopes, gitlab_realm)
-      Gitlab::Ai::AccessToken.new(
+      Gitlab::CloudConnector::SelfIssuedToken.new(
         nil,
         scopes: scopes,
         gitlab_realm: gitlab_realm

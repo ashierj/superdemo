@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ai::AccessToken, feature_category: :code_suggestions do
+RSpec.describe Gitlab::CloudConnector::SelfIssuedToken, feature_category: :cloud_connector do
   let_it_be(:user) { create(:user) }
 
   subject(:token) { described_class.new(user, scopes: [:code_suggestions]) }
