@@ -117,7 +117,7 @@ RSpec.describe EE::AuthHelper do
     end
   end
 
-  describe 'smartcard_login_button_classes' do
+  describe 'smartcard_login_button_category' do
     let(:provider_name) { 'ldapmain' }
     let(:ldap_server_config) do
       {
@@ -130,7 +130,7 @@ RSpec.describe EE::AuthHelper do
       }
     end
 
-    subject { smartcard_login_button_classes(provider_name) }
+    subject { smartcard_login_button_category(provider_name) }
 
     before do
       allow(::Gitlab::Auth::Smartcard).to receive(:enabled?).and_return(true)
@@ -140,16 +140,16 @@ RSpec.describe EE::AuthHelper do
     context 'when smartcard auth is optional' do
       let(:smartcard_auth_status) { 'optional' }
 
-      it 'returns the correct CSS classes' do
-        expect(subject).to eql('btn btn-success btn-inverted')
+      it 'returns the correct button category' do
+        expect(subject).to eq(:secondary)
       end
     end
 
     context 'when smartcard auth is required' do
       let(:smartcard_auth_status) { 'required' }
 
-      it 'returns the correct CSS classes' do
-        expect(subject).to eql('btn btn-success')
+      it 'returns the correct button category' do
+        expect(subject).to eq(:primary)
       end
     end
   end
