@@ -49,7 +49,7 @@ module Mutations
       end
 
       def authorize_group_member_roles!(group)
-        raise_resource_not_available_error! unless saas?
+        raise_resource_not_available_error! if restrict_member_roles? && !saas?
         raise_resource_not_available_error! unless Ability.allowed?(current_user, :admin_member_role, group)
         raise_resource_not_available_error! unless group.custom_roles_enabled?
       end
@@ -74,6 +74,10 @@ module Mutations
         permissions.each_with_object(args) do |permission, new_args|
           new_args[permission.downcase] = true
         end
+      end
+
+      def restrict_member_roles?
+        Feature.enabled?(:restrict_member_roles, type: :beta)
       end
     end
   end
