@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::BackgroundMigration::FixApprovalProjectRulesWithoutProtectedBranches,
-feature_category: :security_policy_management do
+  feature_category: :security_policy_management do
   describe '#perform' do
     let(:batch_table) { :approval_project_rules }
     let(:batch_column) { :id }
@@ -44,8 +44,9 @@ feature_category: :security_policy_management do
     end
 
     let!(:project_rule_last) do
-      approval_project_rules.create!(name: 'rule 3', project_id: project.id, report_type: 4,
-                                     applies_to_all_protected_branches: true)
+      approval_project_rules.create!(
+        name: 'rule 3', project_id: project.id, report_type: 4, applies_to_all_protected_branches: true
+      )
     end
 
     let(:migration) do

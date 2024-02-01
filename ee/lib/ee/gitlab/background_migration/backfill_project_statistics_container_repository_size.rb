@@ -45,7 +45,7 @@ module EE
           self.inheritance_column = :_type_disabled
 
           belongs_to :parent,
-          class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::Namespace'
+            class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::Namespace'
 
           def self.polymorphic_name
             'Namespace'
@@ -67,7 +67,7 @@ module EE
           self.table_name = 'projects'
 
           belongs_to :namespace,
-          class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::Namespace'
+            class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::Namespace'
 
           alias_method :parent, :namespace
           alias_attribute :parent_id, :namespace_id
@@ -76,10 +76,10 @@ module EE
 
           # rubocop:disable Layout/LineLength
           has_many :container_repositories,
-          class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::ContainerRepository'
+            class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::ContainerRepository'
 
           has_one :statistics,
-          class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::ProjectStatistics'
+            class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::ProjectStatistics'
 
           def container_repositories_size
             strong_memoize(:container_repositories_size) do
@@ -99,7 +99,7 @@ module EE
           self.table_name = 'container_repositories'
 
           belongs_to :project,
-          class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::Project'
+            class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::Project'
 
           def self.all_migrated?
             # check that the set of non migrated repositories is empty
@@ -115,7 +115,7 @@ module EE
           self.table_name = 'project_statistics'
 
           belongs_to :project,
-          class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::Project'
+            class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::Project'
 
           def refresh_container_registry_size!
             log_line = 'No need to update project_statistics as container_repositories_size is non-zero'

@@ -41,23 +41,33 @@ RSpec.describe Gitlab::BackgroundMigration::DeleteInvalidEpicIssues do
   end
 
   let!(:project_root) do
-    projects.create!(namespace_id: root_group.id, project_namespace_id: root_group.id,
-                     name: 'root group project', path: 'root-group-project')
+    projects.create!(
+      namespace_id: root_group.id,
+      project_namespace_id: root_group.id,
+      name: 'root group project',
+      path: 'root-group-project'
+    )
   end
 
   let!(:project) do
-    projects.create!(namespace_id: group.id, project_namespace_id: group.id,
-                     name: 'group project', path: 'group-project')
+    projects.create!(
+      namespace_id: group.id, project_namespace_id: group.id, name: 'group project', path: 'group-project'
+    )
   end
 
   let!(:project_sub) do
-    projects.create!(namespace_id: sub_group.id, project_namespace_id: sub_group.id,
-                     name: 'subgroup project', path: 'subgroup-project')
+    projects.create!(
+      namespace_id: sub_group.id, project_namespace_id: sub_group.id, name: 'subgroup project', path: 'subgroup-project'
+    )
   end
 
   let!(:project_other) do
-    projects.create!(namespace_id: other_group.id, project_namespace_id: other_group.id,
-                     name: 'other group project', path: 'other-group-project')
+    projects.create!(
+      namespace_id: other_group.id,
+      project_namespace_id: other_group.id,
+      name: 'other group project',
+      path: 'other-group-project'
+    )
   end
 
   describe '#perform' do
@@ -67,33 +77,39 @@ RSpec.describe Gitlab::BackgroundMigration::DeleteInvalidEpicIssues do
     let(:pause_ms) { 0 }
     let(:connection) { ApplicationRecord.connection }
     let!(:epic_before) do
-      epics.create!(iid: 1, title: 'epic-before', title_html: 'epic before',
-                    group_id: group.id, author_id: user.id)
+      epics.create!(
+        iid: 1, title: 'epic-before', title_html: 'epic before', group_id: group.id, author_id: user.id
+      )
     end
 
     let!(:epic) do
-      epics.create!(iid: 2, title: 'group-epic', title_html: 'group-epic',
-                    group_id: group.id, author_id: user.id)
+      epics.create!(
+        iid: 2, title: 'group-epic', title_html: 'group-epic', group_id: group.id, author_id: user.id
+      )
     end
 
     let!(:epic_root) do
-      epics.create!(iid: 3, title: 'root-group-epic', title_html: 'root-group-epic',
-                    group_id: root_group.id, author_id: user.id)
+      epics.create!(
+        iid: 3, title: 'root-group-epic', title_html: 'root-group-epic', group_id: root_group.id, author_id: user.id
+      )
     end
 
     let!(:epic_sub) do
-      epics.create!(iid: 4, title: 'subgroup-epic', title_html: 'subgroup-epic',
-                    group_id: sub_group.id, author_id: user.id)
+      epics.create!(
+        iid: 4, title: 'subgroup-epic', title_html: 'subgroup-epic', group_id: sub_group.id, author_id: user.id
+      )
     end
 
     let!(:epic_other) do
-      epics.create!(iid: 5, title: 'other-group-epic', title_html: 'other-group-epic',
-                    group_id: other_group.id, author_id: user.id)
+      epics.create!(
+        iid: 5, title: 'other-group-epic', title_html: 'other-group-epic', group_id: other_group.id, author_id: user.id
+      )
     end
 
     let!(:epic_last) do
-      epics.create!(iid: 6, title: 'epic_last', title_html: 'epic_last',
-                    group_id: group.id, author_id: user.id)
+      epics.create!(
+        iid: 6, title: 'epic_last', title_html: 'epic_last', group_id: group.id, author_id: user.id
+      )
     end
 
     let!(:issue) { create_issue(iid: 1, project: project, title: 'issue 1', author: user) }

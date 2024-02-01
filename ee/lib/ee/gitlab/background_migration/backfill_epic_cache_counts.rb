@@ -48,9 +48,11 @@ module EE
 
           def issues_weight_and_count
             state_sums = Issue
-              .select('issues.state_id AS issues_state_id',
-                      'SUM(COALESCE(issues.weight, 0)) AS issues_weight_sum',
-                      'COUNT(issues.id) AS issues_count')
+              .select(
+                'issues.state_id AS issues_state_id',
+                'SUM(COALESCE(issues.weight, 0)) AS issues_weight_sum',
+                'COUNT(issues.id) AS issues_count'
+              )
               .joins('INNER JOIN "epic_issues" ON "issues"."id" = "epic_issues"."issue_id"')
               .where('epic_issues.epic_id': id)
               .reorder(nil)

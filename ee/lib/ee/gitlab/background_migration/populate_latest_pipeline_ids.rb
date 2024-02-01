@@ -233,10 +233,12 @@ module EE
           end
 
           def initialize_raw_repository
-            ::Gitlab::Git::Repository.new(shard,
-                                        disk_path + '.git',
-                                        repo_type.identifier_for_container(container),
-                                        container.full_path)
+            ::Gitlab::Git::Repository.new(
+              shard,
+              disk_path + '.git',
+              repo_type.identifier_for_container(container),
+              container.full_path
+            )
           end
         end
 

@@ -8,7 +8,7 @@ module EE
           self.table_name = 'projects'
 
           has_one :statistics,
-          class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsStorageSizeWithoutUploadsSize::ProjectStatistics' # rubocop:disable Layout/LineLength
+            class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsStorageSizeWithoutUploadsSize::ProjectStatistics' # rubocop:disable Layout/LineLength
         end
 
         class ProjectStatistics < ::ApplicationRecord
@@ -17,7 +17,7 @@ module EE
           self.table_name = 'project_statistics'
 
           belongs_to :project,
-          class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsStorageSizeWithoutUploadsSize::Project' # rubocop:disable Layout/LineLength
+            class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsStorageSizeWithoutUploadsSize::Project' # rubocop:disable Layout/LineLength
 
           def get_storage_size
             repository_size +

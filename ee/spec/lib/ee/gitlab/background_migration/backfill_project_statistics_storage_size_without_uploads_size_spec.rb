@@ -112,10 +112,15 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsStorageSize
     end
 
     let(:migration) do
-      described_class.new(start_id: 1, end_id: proj4.id,
-                          batch_table: 'project_statistics', batch_column: 'project_id',
-                          sub_batch_size: 1_000, pause_ms: 0,
-                          connection: ApplicationRecord.connection)
+      described_class.new(
+        start_id: 1,
+        end_id: proj4.id,
+        batch_table: 'project_statistics',
+        batch_column: 'project_id',
+        sub_batch_size: 1_000,
+        pause_ms: 0,
+        connection: ApplicationRecord.connection
+      )
     end
 
     let(:default_projects) do
