@@ -15,13 +15,16 @@ import {
 import SearchAndSortBar from 'ee/usage_quotas/code_suggestions/components/search_and_sort_bar.vue';
 import { SORT_OPTIONS } from 'ee/usage_quotas/code_suggestions/constants';
 import {
-  TOKEN_TITLE_PROJECT,
-  TOKEN_TYPE_PROJECT,
   OPERATORS_IS,
+  TOKEN_TITLE_GROUP,
   TOKEN_TITLE_GROUP_INVITE,
+  TOKEN_TITLE_PROJECT,
+  TOKEN_TYPE_GROUP,
   TOKEN_TYPE_GROUP_INVITE,
+  TOKEN_TYPE_PROJECT,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
+import GroupToken from 'ee/usage_quotas/code_suggestions/tokens/group_token.vue';
 import ProjectToken from 'ee/usage_quotas/code_suggestions/tokens/project_token.vue';
 
 Vue.use(VueApollo);
@@ -123,6 +126,15 @@ describe('Add On Eligible User List', () => {
             title: TOKEN_TITLE_PROJECT,
             token: ProjectToken,
             type: TOKEN_TYPE_PROJECT,
+            unique: true,
+          },
+          {
+            fullPath,
+            icon: 'group',
+            operators: OPERATORS_IS,
+            title: TOKEN_TITLE_GROUP,
+            token: GroupToken,
+            type: TOKEN_TYPE_GROUP,
             unique: true,
           },
           {

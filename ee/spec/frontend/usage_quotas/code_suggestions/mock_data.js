@@ -109,6 +109,54 @@ export const mockPaginatedAddOnEligibleUsers = {
   },
 };
 
+export const mockNoGroups = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/95',
+      name: 'Code Suggestions Group',
+      fullName: 'Code Suggestions Group',
+      fullPath: 'code-suggestions-group',
+      __typename: 'Group',
+      descendantGroups: {
+        nodes: [],
+        pageInfo: {},
+        __typename: 'GroupConnection',
+      },
+    },
+  },
+};
+
+export const mockGroups = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/95',
+      name: 'Code Suggestions Group',
+      fullName: 'Code Suggestions Group',
+      fullPath: 'code-suggestions-group',
+      __typename: 'Group',
+      descendantGroups: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Group/99',
+            name: 'Code Suggestions Subgroup',
+            fullName: 'Code Suggestions Group / Code Suggestions Subgroup',
+            fullPath: 'code-suggestions-group/code-suggestions-subgroup',
+            __typename: 'Group',
+          },
+        ],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: null,
+          endCursor: null,
+          __typename: 'PageInfo',
+        },
+        __typename: 'GroupConnection',
+      },
+    },
+  },
+};
+
 export const mockNoProjects = {
   data: {
     group: {
