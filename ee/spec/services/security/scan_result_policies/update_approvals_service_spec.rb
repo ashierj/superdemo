@@ -250,31 +250,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
           it_behaves_like 'triggers policy bot comment', :scan_finding, true
         end
       end
-
-      context 'with feature disabled' do
-        before do
-          stub_feature_flags(scan_result_policy_merge_base_pipeline: false)
-        end
-
-        context 'when most recent security orchestration pipeline lacks SBOM' do
-          let_it_be(:pipeline_without_sbom) do
-            create(
-              :ee_ci_pipeline,
-              :success,
-              source: :security_orchestration_policy,
-              project: project,
-              merge_requests_as_head_pipeline: [merge_request],
-              ref: merge_request.target_branch,
-              sha: merge_request.diff_base_sha)
-          end
-
-          let(:existing_uuid) { SecureRandom.uuid }
-
-          it_behaves_like 'sets approvals_required to 0'
-
-          it_behaves_like 'triggers policy bot comment', :scan_finding, false
-        end
-      end
     end
 
     context 'when the number of findings in current pipeline exceed the allowed limit' do

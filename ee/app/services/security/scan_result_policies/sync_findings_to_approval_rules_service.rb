@@ -26,8 +26,6 @@ module Security
           update_approvals(merge_request)
         end
 
-        return unless merge_base_feature_enabled?
-
         # Ensure that approvals are in sync when the source branch pipeline
         # finishes before the target branch pipeline
         merge_requests_targeting_pipeline_ref.each do |merge_request|
@@ -40,16 +38,6 @@ module Security
       end
 
       def update_approvals(merge_request)
-        return update_approvals_async(merge_request) if merge_base_feature_enabled?
-
-        update_approvals_sync(merge_request)
-      end
-
-      def update_approvals_sync(merge_request)
-        UpdateApprovalsService.new(merge_request: merge_request, pipeline: pipeline).execute
-      end
-
-      def update_approvals_async(merge_request)
         Security::ScanResultPolicies::SyncMergeRequestApprovalsWorker.perform_async(pipeline.id, merge_request.id)
       end
 
@@ -67,10 +55,6 @@ module Security
           .merge_requests
           .opened
           .by_target_branch(pipeline.ref)
-      end
-
-      def merge_base_feature_enabled?
-        Feature.enabled?(:scan_result_policy_merge_base_pipeline, pipeline.project)
       end
     end
   end
