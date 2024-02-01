@@ -24079,6 +24079,12 @@ msgstr ""
 msgid "GroupSettings|Group path cannot be longer than %{length} characters."
 msgstr ""
 
+msgid "GroupSettings|How do I manage group SSH certificates?"
+msgstr ""
+
+msgid "GroupSettings|If enabled, individual user accounts will be able to use only issued SSH certificates for Git access. It doesn't apply to service accounts, deploy keys, and other types of internal accounts."
+msgstr ""
+
 msgid "GroupSettings|If not specified at the group or instance level, the default is %{default_initial_branch_name}. Does not affect existing repositories."
 msgstr ""
 
