@@ -321,42 +321,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           )
         end
 
-        context 'when use_cloud_connector_lb ff is disabled' do
-          before do
-            stub_feature_flags(use_cloud_connector_lb: false)
-          end
-
-          context 'when service base URL is not set' do
-            before do
-              stub_env('CODE_SUGGESTIONS_BASE_URL', nil)
-            end
-
-            it 'sends requests to this URL instead' do
-              post_api
-
-              _, params = workhorse_send_data
-              expect(params).to include({
-                'URL' => 'https://codesuggestions.gitlab.com/v2/code/completions'
-              })
-            end
-          end
-
-          context 'when overriding service base URL' do
-            before do
-              stub_env('CODE_SUGGESTIONS_BASE_URL', 'http://test.com')
-            end
-
-            it 'sends requests to this URL instead' do
-              post_api
-
-              _, params = workhorse_send_data
-              expect(params).to include({
-                'URL' => 'http://test.com/v2/code/completions'
-              })
-            end
-          end
-        end
-
         context 'with telemetry headers' do
           let(:headers) do
             {
@@ -604,34 +568,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               post_api
             end
 
-            context  'when use_cloud_connector_lb is disabled' do
-              before do
-                stub_feature_flags(use_cloud_connector_lb: false)
-              end
-
-              it 'sends requests to the code generation endpoint' do
-                expected_body = body.merge(
-                  model_provider: 'anthropic',
-                  prompt_version: 2,
-                  prompt: prompt,
-                  current_file: {
-                    file_name: file_name,
-                    content_above_cursor: prefix,
-                    content_below_cursor: ''
-                  },
-                  model_name: 'claude-2.1'
-                )
-                expect(Gitlab::Workhorse)
-                  .to receive(:send_url)
-                    .with(
-                      'https://codesuggestions.gitlab.com/v2/code/generations',
-                      hash_including(body: expected_body.to_json)
-                    )
-
-                post_api
-              end
-            end
-
             it 'includes additional headers for SaaS' do
               add_on_purchase.namespace.namespace_settings.update_attribute(:code_suggestions, true)
 
@@ -789,35 +725,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                 )
 
               post_api
-            end
-
-            context  'when use_cloud_connector_lb is disabled' do
-              before do
-                stub_feature_flags(use_cloud_connector_lb: false)
-              end
-
-              it 'sends requests to the code generation endpoint' do
-                expected_body = body.merge(
-                  model_provider: 'anthropic',
-                  prompt_version: 2,
-                  prompt: prompt,
-                  current_file: {
-                    file_name: file_name,
-                    content_above_cursor: prefix,
-                    content_below_cursor: ''
-                  },
-                  model_name: 'claude-2.1'
-                )
-
-                expect(Gitlab::Workhorse)
-                  .to receive(:send_url)
-                        .with(
-                          'https://codesuggestions.gitlab.com/v2/code/generations',
-                          hash_including(body: expected_body.to_json)
-                        )
-
-                post_api
-              end
             end
 
             context 'when body is too big' do
