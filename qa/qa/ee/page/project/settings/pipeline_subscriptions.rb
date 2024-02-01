@@ -16,6 +16,11 @@ module QA
               element 'add-new-subscription-btn'
             end
 
+            view 'ee/app/assets/javascripts/ci/pipeline_subscriptions/components/pipeline_subscriptions_form.vue' do
+              element 'upstream-project-path-field'
+              element 'subscribe-button'
+            end
+
             def subscribe(project_path)
               click_element('add-new-subscription-btn')
               fill_element('upstream-project-path-field', project_path)

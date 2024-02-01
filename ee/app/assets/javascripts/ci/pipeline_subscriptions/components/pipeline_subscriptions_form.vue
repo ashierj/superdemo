@@ -94,6 +94,7 @@ export default {
           v-model="upstreamPath"
           type="text"
           :placeholder="$options.i18n.inputPlaceholder"
+          data-testid="upstream-project-path-field"
         />
       </gl-form-group>
 
