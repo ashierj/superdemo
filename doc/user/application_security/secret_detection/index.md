@@ -520,7 +520,7 @@ variables:
   SECRET_DETECTION_RULESET_GIT_REFERENCE: "gitlab.com/example-group/example-ruleset-project"
 ```
 
-For more information on the syntax of remote configurations, see the
+For more information on the syntax of remote configurations and how to troubleshoot, see the
 [specify a private remote configuration example](../sast/customize_rulesets.md#specify-a-private-remote-configuration)
 on the SAST customize rulesets page.
 
