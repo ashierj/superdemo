@@ -50,7 +50,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
       class="col-lg-3 col-mb-6 col-sm-12 gl-mt-5"
     >
       <div
-        class="gl-card gl-pt-0 h-100"
+        class="gl-card gl-h-full gl-pt-0"
       >
         <div
           class="gl-bg-white gl-border-0 gl-card-header gl-pb-0"
@@ -115,7 +115,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
       class="col-lg-4 col-mb-6 col-sm-12 gl-mt-5"
     >
       <div
-        class="gl-card gl-pt-0 h-100"
+        class="gl-card gl-h-full gl-pt-0"
       >
         <div
           class="gl-bg-white gl-border-0 gl-card-header gl-pb-0"
@@ -287,7 +287,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
       class="col-lg-4 col-mb-6 col-sm-12 gl-mt-5"
     >
       <div
-        class="gl-card gl-pt-0 h-100"
+        class="gl-card gl-h-full gl-pt-0"
       >
         <div
           class="gl-bg-white gl-border-0 gl-card-header gl-pb-0"
@@ -400,7 +400,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
       class="col-lg-4 col-mb-6 col-sm-12 gl-mt-5"
     >
       <div
-        class="gl-card gl-pt-0 h-100"
+        class="gl-card gl-h-full gl-pt-0"
       >
         <div
           class="gl-bg-white gl-border-0 gl-card-header gl-pb-0"

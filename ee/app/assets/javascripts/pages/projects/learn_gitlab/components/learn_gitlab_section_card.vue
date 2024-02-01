@@ -35,7 +35,7 @@ export default {
 </script>
 <template>
   <gl-card
-    class="gl-pt-0 h-100"
+    class="gl-pt-0 gl-h-full"
     header-class="gl-bg-white gl-border-0 gl-pb-0"
     body-class="gl-pt-0"
   >

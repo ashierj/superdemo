@@ -2,7 +2,7 @@
 
 exports[`Learn GitLab Section Card renders correctly 1`] = `
 <div
-  class="gl-card gl-pt-0 h-100"
+  class="gl-card gl-h-full gl-pt-0"
 >
   <div
     class="gl-bg-white gl-border-0 gl-card-header gl-pb-0"
