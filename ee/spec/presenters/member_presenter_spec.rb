@@ -48,7 +48,9 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
 
   describe '#valid_member_roles' do
     let_it_be(:member_role_guest) { create(:member_role, :guest, name: 'guest plus', namespace: root_group) }
-    let_it_be(:member_role_reporter) { create(:member_role, :reporter, name: 'reporter plus', namespace: root_group) }
+    let_it_be(:member_role_reporter) do
+      create(:member_role, :reporter, name: 'reporter plus', namespace: root_group, description: 'My custom role')
+    end
 
     let_it_be(:member_role_instance) do
       create(:member_role, :guest, :instance, name: 'guest plus (instance-level)')
@@ -70,7 +72,8 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
             {
               base_access_level: Gitlab::Access::REPORTER,
               member_role_id: member_role_reporter.id,
-              name: 'reporter plus'
+              name: 'reporter plus',
+              description: 'My custom role'
             }
           ]
         )
@@ -82,17 +85,20 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
             {
               base_access_level: Gitlab::Access::REPORTER,
               member_role_id: member_role_reporter.id,
-              name: 'reporter plus'
+              name: 'reporter plus',
+              description: 'My custom role'
             },
             {
               base_access_level: Gitlab::Access::GUEST,
               member_role_id: member_role_guest.id,
-              name: 'guest plus'
+              name: 'guest plus',
+              description: nil
             },
             {
               base_access_level: Gitlab::Access::GUEST,
               member_role_id: member_role_instance.id,
-              name: 'guest plus (instance-level)'
+              name: 'guest plus (instance-level)',
+              description: nil
             }
           ]
         )

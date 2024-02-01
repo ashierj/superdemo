@@ -41,6 +41,7 @@ export const mockMemberRoles = {
             },
             id: 'gid://gitlab/MemberRole/1',
             name: 'Test',
+            description: 'Test description',
             enabledPermissions: {
               nodes: [
                 {
@@ -75,6 +76,7 @@ export const mockInstanceMemberRoles = {
           },
           id: 'gid://gitlab/MemberRole/2',
           name: 'Instance Test',
+          description: 'Instance Test description',
           enabledPermissions: {
             nodes: [
               {

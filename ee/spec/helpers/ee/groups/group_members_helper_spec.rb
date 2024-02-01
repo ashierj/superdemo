@@ -113,7 +113,7 @@ RSpec.describe Groups::GroupMembersHelper do
   end
 
   context 'when member has custom role' do
-    let(:member_role) { create(:member_role, :guest, name: 'guest plus', namespace: group, read_code: true) }
+    let(:member_role) { create(:member_role, :guest, name: 'guest plus', namespace: group, read_code: true, description: 'My custom role') }
     let(:user) { create(:user) }
     let(:banned) { present_members(create_list(:group_member, 1, :guest, group: group, user: user, member_role: member_role)) }
 

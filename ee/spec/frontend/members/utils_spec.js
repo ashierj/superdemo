@@ -107,6 +107,7 @@ describe('Members Utils', () => {
         expect(flatten).toContainEqual({
           text: 'custom role 1',
           value: 'role-custom-0',
+          description: 'custom role 1 description',
           accessLevel: 10,
           memberRoleId: 101,
         });
@@ -115,13 +116,11 @@ describe('Members Utils', () => {
       it('returns properly formatted dropdowns', () => {
         const { formatted } = roleDropdownItems({ ...memberMock, customRoles });
 
-        expect(formatted).toHaveLength(3);
+        expect(formatted).toHaveLength(2);
         expect(formatted[0].text).toBe('Standard roles');
         expect(formatted[0].options).toHaveLength(0);
-        expect(formatted[1].text).toBe('Custom roles based on Guest');
-        expect(formatted[1].options).toHaveLength(2);
-        expect(formatted[2].text).toBe('Custom roles based on Reporter');
-        expect(formatted[2].options).toHaveLength(1);
+        expect(formatted[1].text).toBe('Custom roles');
+        expect(formatted[1].options).toHaveLength(3);
       });
     });
   });

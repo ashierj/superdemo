@@ -37,7 +37,8 @@ module EE
         {
           base_access_level: member_role.base_access_level,
           member_role_id: member_role.id,
-          name: member_role.name
+          name: member_role.name,
+          description: member_role.description
         }
       end
     end

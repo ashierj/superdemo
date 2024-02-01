@@ -108,9 +108,10 @@ export default {
       update(data) {
         const memberRoles = data?.memberRoles?.nodes || [];
 
-        return memberRoles.map(({ id, name, baseAccessLevel }) => ({
+        return memberRoles.map(({ id, name, description, baseAccessLevel }) => ({
           baseAccessLevel: baseAccessLevel.integerValue,
           name,
+          description,
           memberRoleId: getIdFromGraphQLId(id),
         }));
       },
@@ -133,10 +134,10 @@ export default {
       },
       update(data) {
         const memberRoles = data?.namespace?.memberRoles?.nodes || [];
-
-        return memberRoles.map(({ id, name, baseAccessLevel }) => ({
+        return memberRoles.map(({ id, name, description, baseAccessLevel }) => ({
           baseAccessLevel: baseAccessLevel.integerValue,
           name,
+          description,
           memberRoleId: getIdFromGraphQLId(id),
         }));
       },

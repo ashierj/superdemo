@@ -1,8 +1,8 @@
-import { GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
+import { GlCollapsibleListbox, GlListboxItem, GlBadge } from '@gitlab/ui';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import LdapDropdownFooter from 'ee/members/components/action_dropdowns/ldap_dropdown_footer.vue';
 import ManageRolesDropdownFooter from 'ee/members/components/action_dropdowns/manage_roles_dropdown_footer.vue';
 import { guestOverageConfirmAction } from 'ee/members/guest_overage_confirm_action';
@@ -10,6 +10,8 @@ import waitForPromises from 'helpers/wait_for_promises';
 import MaxRole from '~/members/components/table/max_role.vue';
 import { MEMBER_TYPES } from '~/members/constants';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import { s__ } from '~/locale';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { upgradedMember as member } from '../../mock_data';
 
 Vue.use(Vuex);
@@ -39,7 +41,7 @@ describe('MaxRole', () => {
   };
 
   const createComponent = (propsData = {}, store = createStore()) => {
-    wrapper = mount(MaxRole, {
+    wrapper = mountExtended(MaxRole, {
       provide: {
         namespace: MEMBER_TYPES.user,
         group: {
@@ -56,22 +58,41 @@ describe('MaxRole', () => {
       stubs: {
         CustomPermissions: CustomPermissionsStub,
       },
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
+      },
     });
 
     return waitForPromises();
   };
 
-  const findCustomPermissions = () => wrapper.findComponent(CustomPermissionsStub);
+  const findBadge = () => wrapper.findComponent(GlBadge);
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findListboxItems = () => wrapper.findAllComponents(GlListboxItem);
   const findListboxItemByText = (text) =>
     findListboxItems().wrappers.find((item) => item.text() === text);
+  const findRoleText = () => wrapper.findByTestId('role-text');
 
   describe('when a member has custom permissions', () => {
-    it('renders an initial list', async () => {
-      await createComponent();
+    beforeEach(() => {
+      createComponent({
+        permissions: {
+          canUpdate: false,
+        },
+      });
+    });
 
-      expect(findCustomPermissions().exists()).toBe(true);
+    it('renders role text and a custom role badge', () => {
+      expect(findRoleText().text()).toBe('custom role 1');
+
+      expect(findBadge().exists()).toBe(true);
+      expect(findBadge().text()).toBe(s__('MemberRole|Custom role'));
+    });
+
+    it('renders a tooltip', () => {
+      const tooltip = getBinding(findRoleText().element, 'gl-tooltip');
+      expect(tooltip).toBeDefined();
+      expect(tooltip.value).toBe('custom role 1 description');
     });
   });
 
@@ -91,8 +112,8 @@ describe('MaxRole', () => {
       );
     });
 
-    it('does not render a list', () => {
-      expect(findCustomPermissions().exists()).toBe(false);
+    it('does not render a custom role badge', () => {
+      expect(findBadge().exists()).toBe(false);
     });
 
     describe('after unsuccessful role assignment', () => {
@@ -109,8 +130,8 @@ describe('MaxRole', () => {
         expect(findListbox().find('[aria-selected=true]').text()).toBe('Owner');
       });
 
-      it('resets list of permissions', () => {
-        expect(findCustomPermissions().exists()).toBe(false);
+      it('resets custom role badge', () => {
+        expect(findBadge().exists()).toBe(false);
       });
     });
   });
@@ -169,10 +190,8 @@ describe('MaxRole', () => {
 
       expect(findListbox().props('items')[0].text).toBe('Standard roles');
       expect(findListbox().props('items')[0].options).toHaveLength(6);
-      expect(findListbox().props('items')[1].text).toBe('Custom roles based on Guest');
-      expect(findListbox().props('items')[1].options).toHaveLength(2);
-      expect(findListbox().props('items')[2].text).toBe('Custom roles based on Reporter');
-      expect(findListbox().props('items')[2].options).toHaveLength(1);
+      expect(findListbox().props('items')[1].text).toBe('Custom roles');
+      expect(findListbox().props('items')[1].options).toHaveLength(3);
     });
 
     it('calls `updateMemberRole` Vuex action', async () => {

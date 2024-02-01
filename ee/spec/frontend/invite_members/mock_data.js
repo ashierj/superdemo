@@ -62,6 +62,7 @@ export const mockGroupMemberRoles = {
             },
             id: 'gid://gitlab/MemberRole/100',
             name: 'My role group 1',
+            description: 'My role group 1 description',
             enabledPermissions: {
               nodes: [
                 {
@@ -80,6 +81,7 @@ export const mockGroupMemberRoles = {
             },
             id: 'gid://gitlab/MemberRole/101',
             name: 'My role group 2',
+            description: 'My role group 2 description',
             enabledPermissions: {
               nodes: [
                 {
@@ -112,6 +114,7 @@ export const mockProjectMemberRoles = {
             },
             id: 'gid://gitlab/MemberRole/103',
             name: 'My role project 1',
+            description: 'My role project 1 description',
             enabledPermissions: {
               nodes: [
                 {
@@ -141,6 +144,7 @@ export const mockInstanceMemberRoles = {
           },
           id: 'gid://gitlab/MemberRole/104',
           name: 'My role instance 1',
+          description: 'My role instance 1 description',
           enabledPermissions: {
             nodes: [
               {
