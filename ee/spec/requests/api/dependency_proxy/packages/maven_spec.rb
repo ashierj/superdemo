@@ -454,6 +454,17 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
         it_behaves_like 'returning response status', :not_found
       end
 
+      context 'with url not set in the dependency proxy setting' do
+        before do
+          dependency_proxy_setting.update!(
+            maven_external_registry_url: nil,
+            npm_external_registry_url: 'http://sandbox.test'
+          )
+        end
+
+        it_behaves_like 'returning response status', :not_found
+      end
+
       %i[packages dependency_proxy].each do |configuration_field|
         context "with #{configuration_field} disabled" do
           before do

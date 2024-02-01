@@ -42,7 +42,8 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
     stub_licensed_features(dependency_proxy_for_packages: true)
     stub_config(dependency_proxy: { enabled: true })
 
-    dependency_proxy_setting.update!(maven_external_registry_url: remote_server.base_url)
+    # avoid restriction on localhost url
+    dependency_proxy_setting.update_column(:maven_external_registry_url, remote_server.base_url)
   end
 
   shared_examples 'pulling and caching the remote file' do
