@@ -1,12 +1,14 @@
 <script>
 import { GlFilteredSearchSuggestion } from '@gitlab/ui';
+import { pick } from 'lodash';
 import { createAlert } from '~/alert';
 import { __ } from '~/locale';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
-import getNamespaceProjects from 'ee/graphql_shared/queries/get_namespace_projects.query.graphql';
+import searchGroupsQuery from 'ee/boards/graphql/sub_groups.query.graphql';
 import { OPTIONS_NONE_ANY } from '~/vue_shared/components/filtered_search_bar/constants';
 
 export default {
+  defaultGroups: OPTIONS_NONE_ANY,
   separator: '::',
   components: {
     BaseToken,
@@ -28,49 +30,39 @@ export default {
   },
   data() {
     return {
+      groups: [],
       loading: false,
-      projects: [],
     };
   },
-  computed: {
-    defaultProjects() {
-      return OPTIONS_NONE_ANY;
-    },
-    fetchProjectsQuery() {
-      return this.config.fetchProjects ? this.config.fetchProjects : this.fetchProjectsBySearchTerm;
-    },
-  },
   methods: {
-    fetchProjects(searchTerm) {
+    fetchGroups(search = '') {
       this.loading = true;
-      this.fetchProjectsQuery({ fullPath: this.config.fullPath, search: searchTerm })
-        .then(({ data }) => {
-          this.projects = data.group?.projects?.nodes || [];
+      this.$apollo
+        .query({
+          query: searchGroupsQuery,
+          variables: { fullPath: this.config.fullPath, search },
         })
-        .catch(() => {
-          createAlert({ message: __('There was a problem fetching projects.') });
+        .then(({ data }) => data)
+        .then(({ group }) => {
+          const parentGroup = pick(group, ['id', 'name', 'fullName', 'fullPath']) || {};
+          this.groups = [parentGroup, ...(group?.descendantGroups?.nodes || [])];
         })
+        .catch(() => createAlert({ message: __('There was a problem fetching groups.') }))
         .finally(() => {
           this.loading = false;
         });
     },
-    fetchProjectsBySearchTerm({ fullPath, search }) {
-      return this.$apollo.query({
-        query: getNamespaceProjects,
-        variables: { fullPath, search },
-      });
-    },
-    getActiveProject(projects, data) {
-      if (!data) {
-        return undefined;
+    getActiveGroup(groups, data) {
+      if (data && groups.length) {
+        return groups.find((group) => this.getValue(group) === data);
       }
-      return projects.find((project) => this.getValue(project) === data);
+      return undefined;
     },
-    getValue(project) {
-      return project.id;
+    getValue(group) {
+      return group.id;
     },
-    displayValue(project) {
-      return project?.name;
+    displayValue(group) {
+      return group?.fullName;
     },
   },
 };
@@ -82,24 +74,24 @@ export default {
     :config="config"
     :value="value"
     :active="active"
-    :default-suggestions="defaultProjects"
+    :default-suggestions="$options.defaultGroups"
     :suggestions-loading="loading"
-    :suggestions="projects"
-    :get-active-token-value="getActiveProject"
+    :suggestions="groups"
+    :get-active-token-value="getActiveGroup"
     search-by="title"
     v-on="$listeners"
-    @fetch-suggestions="fetchProjects"
+    @fetch-suggestions="fetchGroups"
   >
     <template #view="{ viewTokenProps: { inputValue, activeTokenValue } }">
       {{ activeTokenValue ? displayValue(activeTokenValue) : inputValue }}
     </template>
     <template #suggestions-list="{ suggestions }">
       <gl-filtered-search-suggestion
-        v-for="project in suggestions"
-        :key="project.id"
-        :value="getValue(project)"
+        v-for="group in suggestions"
+        :key="group.id"
+        :value="getValue(group)"
       >
-        {{ project.name }}
+        {{ group.fullName }}
       </gl-filtered-search-suggestion>
     </template>
   </base-token>
