@@ -9,43 +9,6 @@ module GoogleCloudPlatform
 
       COMPUTE_API_ENDPOINT = 'https://compute.googleapis.com'
 
-      GCP_SUBJECT_TOKEN_ERROR_MESSAGE = 'Unable to retrieve Identity Pool subject token'
-      GCP_TOKEN_EXCHANGE_ERROR_MESSAGE = 'Token exchange failed'
-
-      AuthenticationError = Class.new(StandardError)
-      ApiError = Class.new(StandardError)
-
-      BLANK_PARAMETERS_ERROR_MESSAGE = 'All GCP parameters are required'
-      SAAS_ONLY_ERROR_MESSAGE = "This is a saas only feature that can't run here"
-
-      # Initialize and build a new Compute client.
-      # This will use glgo and a workload identity federation instance to exchange
-      # a JWT from GitLab for an access token to be used with the GCP API.
-      #
-      # +project+ The Project instance.
-      # +user+ The User instance.
-      # +gcp_project_id+ The Google project_id as a string. Example: 'my-project'.
-      # +gcp_wlif+ The Google workload identity federation string. Similar to a URL but without the
-      #            protocol. Example:
-      #            '//iam.googleapis.com/projects/555/locations/global/workloadIdentityPools/pool/providers/sandbox'.
-      #
-      # All parameters are required.
-      #
-      # Possible exceptions:
-      #
-      # +ArgumentError+ if one or more of the parameters is blank.
-      # +RuntimeError+ if this is used outside the Saas instance.
-      def initialize(project:, user:, gcp_project_id:, gcp_wlif:)
-        raise SAAS_ONLY_ERROR_MESSAGE unless Gitlab::Saas.feature_available?(:google_artifact_registry)
-
-        super(project: project, user: user)
-
-        raise ArgumentError, BLANK_PARAMETERS_ERROR_MESSAGE if gcp_project_id.blank? || gcp_wlif.blank?
-
-        @gcp_project_id = gcp_project_id
-        @gcp_wlif = gcp_wlif
-      end
-
       # Retrieves the list of region resources available to the specified project.
       #
       # It will call the REST version of https://cloud.google.com/compute/docs/reference/rest/v1/region/list.
@@ -69,8 +32,9 @@ module GoogleCloudPlatform
       #
       # Possible exceptions:
       #
-      # +GoogleCloudPlatform::Compute::Client::AuthenticationError+ if an error occurs during the authentication.
-      # +GoogleCloudPlatform::Compute::Client::ApiError+ if an error occurs when interacting with the GCP API.
+      # +GoogleCloudPlatform::Compute::BaseClient::AuthenticationError+ if an error occurs during the authentication.
+      # +GoogleCloudPlatform::Compute::BaseClient::ApiError+ if an error occurs when interacting with the
+      # Google Cloud API.
       def regions(filter: nil, max_results: 500, order_by: nil, page_token: nil)
         request = ::Google::Cloud::Compute::V1::ListRegionsRequest.new(
           project: @gcp_project_id,
@@ -107,8 +71,9 @@ module GoogleCloudPlatform
       #
       # Possible exceptions:
       #
-      # +GoogleCloudPlatform::Compute::Client::AuthenticationError+ if an error occurs during the authentication.
-      # +GoogleCloudPlatform::Compute::Client::ApiError+ if an error occurs when interacting with the GCP API.
+      # +GoogleCloudPlatform::Compute::BaseClient::AuthenticationError+ if an error occurs during the authentication.
+      # +GoogleCloudPlatform::Compute::BaseClient::ApiError+ if an error occurs when interacting with the
+      # Google Cloud API.
       def zones(filter: nil, max_results: 500, order_by: nil, page_token: nil)
         request = ::Google::Cloud::Compute::V1::ListZonesRequest.new(
           project: @gcp_project_id,
@@ -146,8 +111,9 @@ module GoogleCloudPlatform
       #
       # Possible exceptions:
       #
-      # +GoogleCloudPlatform::Compute::Client::AuthenticationError+ if an error occurs during the authentication.
-      # +GoogleCloudPlatform::Compute::Client::ApiError+ if an error occurs when interacting with the GCP API.
+      # +GoogleCloudPlatform::Compute::BaseClient::AuthenticationError+ if an error occurs during the authentication.
+      # +GoogleCloudPlatform::Compute::BaseClient::ApiError+ if an error occurs when interacting with the
+      # Google Cloud API.
       def machine_types(zone:, filter: nil, max_results: 500, order_by: nil, page_token: nil)
         request = ::Google::Cloud::Compute::V1::ListMachineTypesRequest.new(
           project: @gcp_project_id,
@@ -187,7 +153,7 @@ module GoogleCloudPlatform
       end
 
       def external_credentials
-        json_key_io = StringIO.new(::Gitlab::Json.dump(credentials(wlif: @gcp_wlif)))
+        json_key_io = StringIO.new(::Gitlab::Json.dump(credentials))
         ext_credentials = Google::Auth::ExternalAccount::Credentials.make_creds(
           json_key_io: json_key_io,
           scope: CLOUD_PLATFORM_SCOPE
@@ -195,18 +161,6 @@ module GoogleCloudPlatform
         ::Google::Cloud::Compute::V1::Instances::Credentials.new(ext_credentials)
       end
       strong_memoize_attr :external_credentials
-
-      def handling_errors
-        yield
-      rescue RuntimeError => e
-        if e.message.include?(GCP_SUBJECT_TOKEN_ERROR_MESSAGE) || e.message.include?(GCP_TOKEN_EXCHANGE_ERROR_MESSAGE)
-          raise AuthenticationError, e.message
-        end
-
-        raise
-      rescue ::Google::Cloud::Error => e
-        raise ApiError, e.message
-      end
     end
   end
 end

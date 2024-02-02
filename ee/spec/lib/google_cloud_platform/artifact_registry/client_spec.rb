@@ -58,12 +58,12 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
     it_behaves_like 'transforming the error',
       message: "test #{described_class::GCP_SUBJECT_TOKEN_ERROR_MESSAGE} test",
       from_klass: RuntimeError,
-      to_klass: described_class::AuthenticationError
+      to_klass: ::GoogleCloudPlatform::AuthenticationError
 
     it_behaves_like 'transforming the error',
       message: "test #{described_class::GCP_TOKEN_EXCHANGE_ERROR_MESSAGE} test",
       from_klass: RuntimeError,
-      to_klass: described_class::AuthenticationError
+      to_klass: ::GoogleCloudPlatform::AuthenticationError
 
     it_behaves_like 'transforming the error',
       message: "test",
@@ -73,7 +73,7 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
     it_behaves_like 'transforming the error',
       message: "test",
       from_klass: ::Google::Cloud::Error,
-      to_klass: described_class::ApiError
+      to_klass: ::GoogleCloudPlatform::ApiError
   end
 
   describe 'validations' do
@@ -212,9 +212,9 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
   end
 
   def stub_authentication_requests
-    stub_request(:get, ::GoogleCloudPlatform::BaseClient::GLGO_TOKEN_ENDPOINT_URL)
+    stub_request(:get, ::GoogleCloudPlatform::GLGO_TOKEN_ENDPOINT_URL)
       .to_return(status: 200, body: ::Gitlab::Json.dump(token: 'token'))
-    stub_request(:post, ::GoogleCloudPlatform::BaseClient::STS_URL)
+    stub_request(:post, ::GoogleCloudPlatform::STS_URL)
       .to_return(status: 200, body: ::Gitlab::Json.dump(token: 'token'))
   end
 end
