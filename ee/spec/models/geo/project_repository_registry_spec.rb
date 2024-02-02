@@ -135,20 +135,17 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
               context 'when last_synced_at is set', :freeze_time do
                 using RSpec::Parameterized::TableSyntax
 
-                let_it_be(:project_repository_state) { create(:repository_state, project: project) }
-
-                where(:project_last_updated, :project_state_last_updated, :project_registry_last_synced, :expected) do
-                  (Time.current - 3.minutes) | nil                        | (Time.current - 5.minutes) | true
-                  (Time.current - 3.minutes) | nil                        | (Time.current - 1.minute)  | false
-                  (Time.current - 3.minutes) | Time.current               | (Time.current - 1.minute)  | true
-                  (Time.current - 3.minutes) | (Time.current - 2.minutes) | (Time.current - 1.minute)  | false
-                  (Time.current - 3.minutes) | Time.current               | (Time.current - 5.minutes) | true
+                where(:project_last_updated, :project_registry_last_synced, :expected) do
+                  Time.current               | (Time.current - 1.minute)  | true
+                  (Time.current - 2.minutes) | (Time.current - 1.minute)  | false
+                  (Time.current - 3.minutes) | (Time.current - 1.minute)  | false
+                  (Time.current - 3.minutes) | (Time.current - 5.minutes) | true
                 end
 
                 with_them do
                   before do
                     project.update!(last_repository_updated_at: project_last_updated)
-                    project_repository_state.update!(last_repository_updated_at: project_state_last_updated)
+
                     create(:geo_project_repository_registry, :verification_succeeded,
                       project: project, last_synced_at: project_registry_last_synced)
                   end

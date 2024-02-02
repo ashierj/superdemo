@@ -26,7 +26,6 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     it { is_expected.to belong_to(:deleting_user) }
 
     it { is_expected.to have_one(:import_state).class_name('ProjectImportState') }
-    it { is_expected.to have_one(:repository_state).class_name('ProjectRepositoryState').inverse_of(:project) }
     it { is_expected.to have_one(:wiki_repository).class_name('Projects::WikiRepository').inverse_of(:project) }
     it { is_expected.to have_one(:push_rule).inverse_of(:project) }
     it { is_expected.to have_one(:status_page_setting).class_name('StatusPage::ProjectSetting') }
