@@ -25,6 +25,8 @@ describe('Rule Input', () => {
     });
   };
 
+  const findInput = () => wrapper.find('input');
+
   beforeEach(() => {
     store = createStoreOptions({ approvals: MREditModule() });
     store.state.settings.canEdit = true;
@@ -40,20 +42,20 @@ describe('Rule Input', () => {
 
   it('has value equal to the approvalsRequired', () => {
     createComponent();
-    expect(Number(wrapper.element.value)).toBe(wrapper.props().rule.approvalsRequired);
+    expect(Number(findInput().element.value)).toBe(9);
   });
 
   it('is disabled when settings cannot edit', () => {
     store.state.settings.canEdit = false;
     createComponent();
 
-    expect(wrapper.attributes().disabled).toBe('disabled');
+    expect(findInput().attributes().disabled).toBe('disabled');
   });
 
   it('is disabled when settings can edit', () => {
     createComponent();
 
-    expect(wrapper.attributes().disabled).not.toBe('disabled');
+    expect(findInput().attributes().disabled).not.toBe('disabled');
   });
 
   it('has min equal to the minApprovalsRequired', () => {
@@ -63,20 +65,20 @@ describe('Rule Input', () => {
       },
     });
 
-    expect(Number(wrapper.attributes().min)).toBe(wrapper.props().rule.minApprovalsRequired);
+    expect(Number(findInput().attributes().min)).toBe(4);
   });
 
   it('defaults min approvals required input to 0', () => {
     createComponent();
     delete wrapper.props().rule.approvalsRequired;
-    expect(Number(wrapper.attributes('min'))).toEqual(0);
+    expect(Number(findInput().attributes('min'))).toEqual(0);
   });
 
   it('dispatches putRule on change', async () => {
     const action = store.modules.approvals.actions.putRule;
     createComponent();
-    wrapper.element.value = wrapper.props().rule.approvalsRequired + 1;
-    wrapper.trigger('input');
+    findInput().element.value = wrapper.props().rule.approvalsRequired + 1;
+    findInput().trigger('input');
 
     jest.runAllTimers();
 

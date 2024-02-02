@@ -6222,6 +6222,11 @@ msgstr ""
 msgid "Approval rejected."
 msgstr ""
 
+msgid "Approval required"
+msgid_plural "Approvals required"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Approval rules"
 msgstr ""
 
@@ -6299,9 +6304,6 @@ msgstr ""
 msgid "ApprovalRule|More than"
 msgstr ""
 
-msgid "ApprovalRule|Name"
-msgstr ""
-
 msgid "ApprovalRule|Need triage"
 msgstr ""
 
@@ -6318,6 +6320,9 @@ msgid "ApprovalRule|Reduce your time to merge."
 msgstr ""
 
 msgid "ApprovalRule|Resolved"
+msgstr ""
+
+msgid "ApprovalRule|Rule"
 msgstr ""
 
 msgid "ApprovalRule|Rule name"
@@ -42014,6 +42019,9 @@ msgid "Root cause analysis is a feature that analyzes your logs to determine why
 msgstr ""
 
 msgid "Ruby"
+msgstr ""
+
+msgid "Rule"
 msgstr ""
 
 msgid "Rule name is already taken."
