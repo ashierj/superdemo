@@ -52052,6 +52052,9 @@ msgstr ""
 msgid "Tracing|Error"
 msgstr ""
 
+msgid "Tracing|Error rate (%%)"
+msgstr ""
+
 msgid "Tracing|Error: Failed to load trace details. Try reloading the page."
 msgstr ""
 
@@ -52077,6 +52080,9 @@ msgid "Tracing|Operation"
 msgstr ""
 
 msgid "Tracing|Refresh the page, or edit your search filter and try again"
+msgstr ""
+
+msgid "Tracing|Request rate (req/s)"
 msgstr ""
 
 msgid "Tracing|Resource attributes"
