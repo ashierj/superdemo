@@ -479,6 +479,14 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep, feature_categor
         expect(subject).to contain_exactly('new_needs_triage')
       end
 
+      context 'when vulnerabilty_states is empty' do
+        let(:vulnerability_states) { [] }
+
+        it 'returns only default states' do
+          expect(subject).to contain_exactly('new_needs_triage', 'new_dismissed')
+        end
+      end
+
       context 'without newly_detected' do
         let(:vulnerability_states) { [:detected, :confirmed] }
 

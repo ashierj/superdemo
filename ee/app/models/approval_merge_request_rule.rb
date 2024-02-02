@@ -145,7 +145,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
   end
 
   def vulnerability_states_for_branch
-    states = self.vulnerability_states
+    states = self.vulnerability_states.presence || DEFAULT_VULNERABILITY_STATUSES
     return states if merge_request.target_default_branch?
 
     states & NEWLY_DETECTED_STATUSES

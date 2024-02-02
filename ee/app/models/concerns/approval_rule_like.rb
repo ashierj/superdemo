@@ -15,6 +15,7 @@ module ApprovalRuleLike
   NEW_DISMISSED = 'new_dismissed'
 
   NEWLY_DETECTED_STATUSES = [NEWLY_DETECTED, NEW_NEEDS_TRIAGE, NEW_DISMISSED].freeze
+  DEFAULT_VULNERABILITY_STATUSES = [NEW_NEEDS_TRIAGE, NEW_DISMISSED].freeze
 
   included do
     has_and_belongs_to_many :users,
