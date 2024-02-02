@@ -80,6 +80,61 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
           expect(ingested_occurrence.highest_severity).to be_nil
         end
       end
+
+      context 'when sbom occurrence was found by trivy' do
+        let(:report_source) do
+          build_stubbed(:ci_reports_sbom_source, data: {
+            'category' => 'development',
+            'image' => {
+              'name' => 'docker.io/library/alpine',
+              'tag' => '3.12'
+            },
+            'operating_system' => {
+              'name' => 'Alpine',
+              'version' => '3.12'
+            }
+          })
+        end
+
+        let(:report_component) { build_stubbed(:ci_reports_sbom_component, :with_trivy_properties) }
+
+        let(:occurrence_map) do
+          create(:sbom_occurrence_map, :for_occurrence_ingestion, report_source: report_source,
+            report_component: report_component, vulnerabilities: vulnerability_info)
+        end
+
+        let(:occurrence_maps) { [occurrence_map] }
+
+        it 'sets the correct attributes for the occurrence' do
+          ingest_occurrences
+
+          expect(ingested_occurrence.attributes).to include(
+            'project_id' => pipeline.project.id,
+            'pipeline_id' => pipeline.id,
+            'component_id' => occurrence_map.component_id,
+            'component_version_id' => occurrence_map.component_version_id,
+            'source_id' => occurrence_map.source_id,
+            'commit_sha' => pipeline.sha,
+            'package_manager' => report_component.properties.packager,
+            'input_file_path' => 'container-image:docker.io/library/alpine:3.12',
+            'licenses' => [
+              {
+                'spdx_identifier' => 'Apache-2.0',
+                'name' => 'Apache 2.0 License',
+                'url' => 'https://spdx.org/licenses/Apache-2.0.html'
+              },
+              {
+                'spdx_identifier' => 'MIT',
+                'name' => 'MIT',
+                'url' => 'https://spdx.org/licenses/MIT.html'
+              }
+            ],
+            'component_name' => occurrence_map.name,
+            'vulnerability_count' => 1,
+            'highest_severity' => 'high'
+          )
+        end
+      end
     end
 
     context 'when there is an existing occurrence' do
