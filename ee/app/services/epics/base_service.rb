@@ -196,5 +196,9 @@ module Epics
 
       ::Gitlab::Audit::Auditor.audit(audit_context)
     end
+
+    def sync_as_work_item?(group)
+      ::Feature.enabled?(:epic_creation_with_synced_work_item, group, type: :wip)
+    end
   end
 end

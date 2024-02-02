@@ -42,6 +42,68 @@ RSpec.describe Epics::CloseService, feature_category: :portfolio_management do
             expect { subject.execute(epic) }.to change { epic.closed_at }
           end
 
+          context 'with a synced work item' do
+            let_it_be(:work_item, reload: true) do
+              create(:work_item, :epic, namespace: group,
+                title: epic.title, description: epic.description, created_at: epic.created_at,
+                updated_at: epic.updated_at, author: epic.author, iid: epic.iid, updated_by: epic.updated_by
+              )
+            end
+
+            before do
+              epic.update!(issue_id: work_item.id)
+            end
+
+            subject { described_class.new(group: group, current_user: user).execute(epic) }
+
+            it_behaves_like 'syncs all data from an epic to a work item'
+
+            it 'syncs the state to the work item' do
+              expect { subject }.to change { epic.reload.state }.from('opened').to('closed')
+                .and change { work_item.reload.state }.from('opened').to('closed')
+
+              expect(work_item.closed_by).to eq(epic.closed_by)
+              expect(work_item.closed_at).to eq(epic.closed_at)
+            end
+
+            context 'when epic and work item was already closed' do
+              before do
+                epic.update!(state: :closed)
+                work_item.update!(state: :closed)
+              end
+
+              it 'does not change the state' do
+                expect { subject }.to not_change { epic.reload.state }
+                  .and not_change { work_item.reload.state }
+              end
+            end
+
+            context 'when closing the work item fails' do
+              before do
+                work_item.update!(state: :closed)
+              end
+
+              it 'rolls back updating the epic' do
+                subject
+
+                expect(epic.reload.state).to eq('opened')
+              end
+            end
+
+            context 'when feature flag is disabled' do
+              before do
+                stub_feature_flags(epic_creation_with_synced_work_item: false)
+              end
+
+              it 'does not change the work item' do
+                subject
+
+                expect(epic.reload.state).to eq('closed')
+                expect(work_item.reload.state).to eq('opened')
+              end
+            end
+          end
+
           it 'creates a resource state event' do
             expect { subject.execute(epic) }.to change { epic.resource_state_events.count }.by(1)
 
