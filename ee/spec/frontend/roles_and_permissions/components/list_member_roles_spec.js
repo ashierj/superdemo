@@ -47,7 +47,7 @@ describe('ListMemberRoles', () => {
     instanceRolesQueryHandler = instanceRolesSuccessQueryHandler,
     permissionsQueryHandler = permissionsSuccessQueryHandler,
     deleteMutationHandler = deleteMutationSuccessHandler,
-    props = {},
+    groupFullPath = 'test-group',
   } = {}) => {
     wrapper = mountFn(ListMemberRoles, {
       apolloProvider: createMockApollo([
@@ -56,10 +56,7 @@ describe('ListMemberRoles', () => {
         [memberRolePermissionsQuery, permissionsQueryHandler],
         [deleteMemberRoleMutation, deleteMutationHandler],
       ]),
-      propsData: {
-        groupFullPath: 'test-group',
-        ...props,
-      },
+      propsData: { groupFullPath },
       stubs: { GlCard, GlTable },
       mocks: {
         $toast: {
@@ -137,7 +134,7 @@ describe('ListMemberRoles', () => {
 
   describe('instance-level member roles', () => {
     beforeEach(() => {
-      createComponent({ props: { groupFullPath: null } });
+      createComponent({ groupFullPath: null });
     });
 
     it('fetches member roles', async () => {
@@ -146,10 +143,21 @@ describe('ListMemberRoles', () => {
       expect(instanceRolesSuccessQueryHandler).toHaveBeenCalled();
     });
 
+    it('refetches roles when a member role is created', async () => {
+      findAddRoleButton().vm.$emit('click');
+      await waitForPromises();
+
+      expect(instanceRolesSuccessQueryHandler).toHaveBeenCalledTimes(1);
+
+      findCreateMemberRole().vm.$emit('success');
+
+      expect(instanceRolesSuccessQueryHandler).toHaveBeenCalledTimes(2);
+    });
+
     describe('when there is an error fetching roles', () => {
       beforeEach(() => {
         createComponent({
-          props: { groupFullPath: null },
+          groupFullPath: null,
           instanceRolesQueryHandler: failedQueryHandler,
         });
       });
@@ -188,6 +196,21 @@ describe('ListMemberRoles', () => {
         findCreateMemberRole().vm.$emit('success');
 
         expect(mockToastShow).toHaveBeenCalledWith('Role successfully created.');
+      });
+
+      it('hides form', async () => {
+        findCreateMemberRole().vm.$emit('success');
+        await nextTick();
+
+        expect(findCreateMemberRole().exists()).toBe(false);
+      });
+
+      it('refetches roles', () => {
+        expect(groupRolesSuccessQueryHandler).toHaveBeenCalledTimes(1);
+
+        findCreateMemberRole().vm.$emit('success');
+
+        expect(groupRolesSuccessQueryHandler).toHaveBeenCalledTimes(2);
       });
     });
   });
@@ -266,7 +289,7 @@ describe('ListMemberRoles', () => {
 
     describe('deleting instance-level member role', () => {
       beforeEach(() => {
-        createComponent({ mountFn: mountExtended, props: { groupFullPath: null } });
+        createComponent({ mountFn: mountExtended, groupFullPath: null });
         return waitForPromises();
       });
 

@@ -7,16 +7,14 @@ import {
 } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { createAlert, VARIANT_DANGER } from '~/alert';
+import { createAlert } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import groupMemberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
-import instanceMemberRolesQuery from 'ee/roles_and_permissions/graphql/instance_member_roles.query.graphql';
 import createMemberRoleMutation from 'ee/roles_and_permissions/graphql/create_member_role.mutation.graphql';
 import CreateMemberRole from 'ee/roles_and_permissions/components/create_member_role.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { stubComponent } from 'helpers/stub_component';
-import { mockDefaultPermissions, mockMemberRoles, mockInstanceMemberRoles } from '../mock_data';
+import { mockDefaultPermissions } from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -32,33 +30,18 @@ describe('CreateMemberRole', () => {
 
   const mutationSuccessHandler = jest
     .fn()
-    .mockResolvedValue({ data: { memberRoleCreate: { errors: null, memberRole: { id: '1' } } } });
-
-  const groupRolesQueryHandler = jest.fn().mockResolvedValue(mockMemberRoles);
-  const instanceRolesQueryHandler = jest.fn().mockResolvedValue(mockInstanceMemberRoles);
-
-  const createMockApolloProvider = (resolverMock) => {
-    return createMockApollo([
-      [groupMemberRolesQuery, groupRolesQueryHandler],
-      [instanceMemberRolesQuery, instanceRolesQueryHandler],
-      [createMemberRoleMutation, resolverMock],
-    ]);
-  };
+    .mockResolvedValue({ data: { memberRoleCreate: { errors: [] } } });
 
   const createComponent = ({
     availablePermissions = mockDefaultPermissions,
     stubs = {},
     mutationMock = mutationSuccessHandler,
-    props = {},
+    groupFullPath = 'test-group',
   } = {}) => {
     wrapper = mountExtended(CreateMemberRole, {
-      propsData: {
-        groupFullPath: 'test-group',
-        availablePermissions,
-        ...props,
-      },
+      propsData: { groupFullPath, availablePermissions },
       stubs,
-      apolloProvider: createMockApolloProvider(mutationMock),
+      apolloProvider: createMockApollo([[createMemberRoleMutation, mutationMock]]),
     });
   };
 
@@ -70,10 +53,17 @@ describe('CreateMemberRole', () => {
   const findTextArea = () => wrapper.findComponent(GlFormTextarea);
 
   const fillForm = () => {
-    findSelect().setValue('10');
+    findSelect().setValue('GUEST');
     findNameField().setValue('My role name');
     findTextArea().setValue('My description');
     findCheckboxes().at(0).find('input').setChecked();
+
+    return nextTick();
+  };
+
+  const submitForm = (waitFn = nextTick) => {
+    findButtonSubmit().trigger('submit');
+    return waitFn();
   };
 
   it('shows the role dropdown with the expected options', () => {
@@ -82,11 +72,11 @@ describe('CreateMemberRole', () => {
     createComponent({ stubs });
 
     expect(findSelect().props('options')).toEqual([
-      { value: '10', text: 'Guest' },
-      { value: '20', text: 'Reporter' },
-      { value: '30', text: 'Developer' },
-      { value: '40', text: 'Maintainer' },
-      { value: '50', text: 'Owner' },
+      { value: 'GUEST', text: 'Guest' },
+      { value: 'REPORTER', text: 'Reporter' },
+      { value: 'DEVELOPER', text: 'Developer' },
+      { value: 'MAINTAINER', text: 'Maintainer' },
+      { value: 'OWNER', text: 'Owner' },
     ]);
   });
 
@@ -115,7 +105,7 @@ describe('CreateMemberRole', () => {
     expect(checkbox.text()).toContain('Manage tokens description');
   });
 
-  it('emits cancel event', () => {
+  it('emits cancel event when the cancel button is clicked', () => {
     createComponent();
 
     expect(wrapper.emitted('cancel')).toBeUndefined();
@@ -131,8 +121,7 @@ describe('CreateMemberRole', () => {
     it('shows a warning if no base role is selected', async () => {
       expect(findSelect().classes()).not.toContain('is-invalid');
 
-      findButtonSubmit().trigger('submit');
-      await nextTick();
+      await submitForm();
 
       expect(findSelect().classes()).toContain('is-invalid');
     });
@@ -140,8 +129,7 @@ describe('CreateMemberRole', () => {
     it('shows a warning if name field is empty', async () => {
       expect(findNameField().classes()).toContain('is-valid');
 
-      findButtonSubmit().trigger('submit');
-      await nextTick();
+      await submitForm();
 
       expect(findNameField().classes()).toContain('is-invalid');
     });
@@ -149,117 +137,100 @@ describe('CreateMemberRole', () => {
     it('shows a warning if permissions are unchecked', async () => {
       expect(findCheckboxes().at(0).find('input').classes()).not.toContain('is-invalid');
 
-      findButtonSubmit().trigger('submit');
-      await nextTick();
+      await submitForm();
 
       expect(findCheckboxes().at(0).find('input').classes()).toContain('is-invalid');
     });
   });
 
-  describe('when a group-level member-role is created successfully', () => {
+  describe('when create role form is submitted', () => {
+    it('disables the submit and cancel buttons', async () => {
+      createComponent();
+      await fillForm();
+      // Verify that the buttons don't start off as disabled.
+      expect(findButtonSubmit().props('loading')).toBe(false);
+      expect(findButtonCancel().props('disabled')).toBe(false);
+
+      await submitForm();
+
+      expect(findButtonSubmit().props('loading')).toBe(true);
+      expect(findButtonCancel().props('disabled')).toBe(true);
+    });
+
+    it('dismisses any previous alert', async () => {
+      createComponent({ mutationMock: jest.fn().mockRejectedValue() });
+      await fillForm();
+      await submitForm(waitForPromises);
+
+      // Verify that the first alert was created and not dismissed.
+      expect(createAlert).toHaveBeenCalledTimes(1);
+      expect(mockAlertDismiss).toHaveBeenCalledTimes(0);
+
+      await submitForm(waitForPromises);
+
+      // Verify that the second alert was created and the first was dismissed.
+      expect(createAlert).toHaveBeenCalledTimes(2);
+      expect(mockAlertDismiss).toHaveBeenCalledTimes(1);
+    });
+
+    it.each(['group-path', null])(
+      'calls the mutation with the correct data when groupFullPath is %s',
+      async (groupFullPath) => {
+        createComponent({ groupFullPath });
+        await fillForm();
+        await submitForm();
+
+        const input = {
+          baseAccessLevel: 'GUEST',
+          name: 'My role name',
+          description: 'My description',
+          permissions: ['READ_CODE'],
+          ...(groupFullPath ? { groupPath: groupFullPath } : {}),
+        };
+
+        expect(mutationSuccessHandler).toHaveBeenCalledWith({ input });
+      },
+    );
+  });
+
+  describe('when create role succeeds', () => {
     beforeEach(() => {
       createComponent();
       fillForm();
     });
 
-    it('sends the correct data', async () => {
-      findButtonSubmit().trigger('submit');
-      await waitForPromises();
-
-      expect(mutationSuccessHandler).toHaveBeenCalledWith({
-        input: {
-          baseAccessLevel: 'GUEST',
-          name: 'My role name',
-          description: 'My description',
-          permissions: ['READ_CODE'],
-          groupPath: 'test-group',
-        },
-      });
-    });
-
     it('emits success event', async () => {
       expect(wrapper.emitted('success')).toBeUndefined();
 
-      findButtonSubmit().trigger('submit');
-      await waitForPromises();
+      await submitForm(waitForPromises);
 
       expect(wrapper.emitted('success')).toHaveLength(1);
-    });
-
-    it('refetches roles', async () => {
-      findButtonSubmit().trigger('submit');
-      await waitForPromises();
-
-      expect(groupRolesQueryHandler).toHaveBeenCalled();
-    });
-  });
-
-  describe('when an instance-level member-role is created successfully', () => {
-    beforeEach(() => {
-      createComponent({ props: { groupFullPath: null } });
-      fillForm();
-    });
-
-    it('sends the correct data', async () => {
-      findButtonSubmit().trigger('submit');
-      await waitForPromises();
-
-      expect(mutationSuccessHandler).toHaveBeenCalledWith({
-        input: {
-          baseAccessLevel: 'GUEST',
-          name: 'My role name',
-          description: 'My description',
-          permissions: ['READ_CODE'],
-        },
-      });
-    });
-
-    it('emits success event', async () => {
-      expect(wrapper.emitted('success')).toBeUndefined();
-
-      findButtonSubmit().trigger('submit');
-      await waitForPromises();
-
-      expect(wrapper.emitted('success')).toHaveLength(1);
-    });
-
-    it('refetches roles', async () => {
-      findButtonSubmit().trigger('submit');
-      await waitForPromises();
-
-      expect(instanceRolesQueryHandler).toHaveBeenCalled();
     });
   });
 
   describe('when there is an error creating the role', () => {
     const mutationMock = jest
       .fn()
-      .mockResolvedValue({ data: { memberRoleCreate: { errors: ['reason'], memberRole: null } } });
+      .mockResolvedValue({ data: { memberRoleCreate: { errors: ['reason'] } } });
 
     beforeEach(() => {
       createComponent({ mutationMock });
       fillForm();
     });
 
-    it('shows alert', async () => {
-      findButtonSubmit().trigger('submit');
-      await waitForPromises();
+    it('shows an error alert', async () => {
+      await submitForm(waitForPromises);
 
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Failed to create role: reason',
-        variant: VARIANT_DANGER,
-      });
+      expect(createAlert).toHaveBeenCalledWith({ message: 'Failed to create role: reason' });
     });
 
-    it('dismisses previous alert', async () => {
-      findButtonSubmit().trigger('submit');
-      await waitForPromises();
+    it('enables the submit and cancel buttons', () => {
+      expect(findButtonSubmit().props('loading')).toBe(false);
+      expect(findButtonCancel().props('disabled')).toBe(false);
+    });
 
-      expect(mockAlertDismiss).toHaveBeenCalledTimes(0);
-
-      findButtonSubmit().trigger('submit');
-
-      expect(mockAlertDismiss).toHaveBeenCalledTimes(1);
+    it('does not emit the success event', () => {
+      expect(wrapper.emitted('success')).toBeUndefined();
     });
   });
 
