@@ -1,5 +1,6 @@
 import { pick } from 'lodash';
 
+import { INSIGHTS_DATA_SOURCE_DORA } from 'ee/insights/constants';
 import { transformChartDataForGlCharts } from './helpers';
 import * as types from './mutation_types';
 
@@ -23,14 +24,25 @@ export default {
   [types.RECEIVE_CHART_SUCCESS](state, { chart, data }) {
     const { type, description, query } = chart;
 
-    const { issuable_type: issuableType, metric } = query.params || {};
+    const { data_source: dataSource } = query;
+
+    const {
+      issuable_type: issuableType,
+      metric,
+      filter_labels: filterLabels = [],
+      collection_labels: collectionLabels = [],
+      group_by: groupBy,
+    } = query.params || {};
 
     state.chartData[chart.title] = {
       type,
       description,
       data: transformChartDataForGlCharts(chart, data),
-      dataSourceType: issuableType ?? metric,
+      dataSourceType: dataSource === INSIGHTS_DATA_SOURCE_DORA ? metric : issuableType,
       loaded: true,
+      filterLabels,
+      collectionLabels,
+      groupBy,
     };
   },
   [types.RECEIVE_CHART_ERROR](state, { chart, error }) {

@@ -29,6 +29,7 @@ export const INSIGHTS_REPORT_DROPDOWN_EMPTY_TEXT = __('Select report');
 
 export const ISSUABLE_TYPES = {
   ISSUE: 'issue',
+  MERGE_REQUEST: 'merge_request',
 };
 
 export const INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES = {
@@ -36,9 +37,13 @@ export const INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES = {
     groupPathSuffix: '-/issues_analytics',
     projectPathSuffix: '-/analytics/issues_analytics',
   },
+  [ISSUABLE_TYPES.MERGE_REQUEST]: {
+    groupPathSuffix: '-/analytics/productivity_analytics',
+    projectPathSuffix: '-/analytics/merge_request_analytics',
+  },
 };
 
 export const INSIGHTS_CHARTS_SUPPORT_DRILLDOWN = [
-  __('Bugs created per month by Priority'),
-  __('Bugs created per month by Severity'),
+  ISSUABLE_TYPES.ISSUE,
+  ISSUABLE_TYPES.MERGE_REQUEST,
 ];
