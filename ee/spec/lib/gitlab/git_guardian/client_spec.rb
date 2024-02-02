@@ -10,6 +10,7 @@ RSpec.describe ::Gitlab::GitGuardian::Client, feature_category: :source_code_man
   let_it_be(:token) { 'test-token' }
 
   let(:file_paths) { [] }
+  let(:request_body) { [] }
 
   let(:stubbed_response) do
     # see doc https://api.gitguardian.com/docs#operation/multiple_scan to know more about the response structure
@@ -31,9 +32,11 @@ RSpec.describe ::Gitlab::GitGuardian::Client, feature_category: :source_code_man
   let(:status) { 200 }
 
   let(:stub_guardian_request) do
-    stub_request(:post, guardian_url).to_return(
+    stub_request(:post, guardian_url).with(
+      body: request_body.to_json,
+      headers: { 'Content-Type' => 'application/json', Authorization: "Token #{token}" }
+    ).to_return(
       status: status,
-      headers: { 'Content-Type' => 'application/json', Authorization: "Token #{token}" },
       body: stubbed_response
     )
   end
@@ -63,8 +66,26 @@ RSpec.describe ::Gitlab::GitGuardian::Client, feature_category: :source_code_man
       end
     end
 
+    context 'when a blob without path' do
+      let(:blobs) { [fake_blob(path: nil)] }
+      let(:request_body) { [{ document: 'foo' }] }
+
+      it 'returns an empty array' do
+        expect(client_response).to eq []
+        expect(guardian_api_request).to have_been_requested
+      end
+    end
+
     context 'with blobs without policy breaks' do
       let(:file_paths) { %w[README.md test_path/file.md test.yml] }
+
+      let(:request_body) do
+        [
+          { document: 'foo', filename: 'README.md' },
+          { document: 'foo', filename: 'file.md' },
+          { document: 'foo', filename: 'test.yml' }
+        ]
+      end
 
       it 'returns an empty array' do
         expect(client_response).to eq []
@@ -74,6 +95,13 @@ RSpec.describe ::Gitlab::GitGuardian::Client, feature_category: :source_code_man
 
     context 'with errors' do
       let(:file_paths) { %w[test_path/file.md lib/.env] }
+
+      let(:request_body) do
+        [
+          { document: 'foo', filename: 'file.md' },
+          { document: 'foo', filename: '.env' }
+        ]
+      end
 
       context 'when an API respond with an error' do
         # see doc https://api.gitguardian.com/docs#operation/multiple_scan to know more about possible error responses
@@ -99,6 +127,13 @@ RSpec.describe ::Gitlab::GitGuardian::Client, feature_category: :source_code_man
 
     context 'with policy breaking blobs' do
       let(:file_paths) { %w[test_path/file.md lib/.env] }
+
+      let(:request_body) do
+        [
+          { document: 'foo', filename: 'file.md' },
+          { document: 'foo', filename: '.env' }
+        ]
+      end
 
       let(:stubbed_response) do
         # see doc https://api.gitguardian.com/docs#operation/multiple_scan to know more about the response structure
