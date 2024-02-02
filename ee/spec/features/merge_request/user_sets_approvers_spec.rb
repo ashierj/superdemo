@@ -206,11 +206,14 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         find('.detail-page-header-actions').click_on 'Edit'
         open_modal
 
-        expect(page).to have_field 'Approvals required', with: '2'
+        within('.modal-content') do
+          expect(page).to have_field 'Approvals required', with: '2'
 
-        fill_in 'Approvals required', with: '3'
+          fill_in 'Approvals required', with: '3'
 
-        click_button 'Update approval rule'
+          click_button 'Update approval rule'
+        end
+
         click_on('Save changes')
         wait_for_all_requests
 
