@@ -105,7 +105,10 @@ module RuboCop
               # helper is introduced and warn the author so that it can be
               # added in TABLE_METHODS
               table_name = 'unknown'
-              add_offense(block_node, message: 'Unknown table create/change helper')
+              add_offense(
+                block_node.send_node.loc.selector,
+                message: 'Unknown table method. Please tweak `MigrationHelpers::TABLE_METHODS`.'
+              )
             end
 
             attribute_name = node.children[2].value
