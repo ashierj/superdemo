@@ -866,25 +866,6 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
 
             expect_snowplow_event(**params)
           end
-
-          context 'with usage_data_i_ci_secrets_management_vault_build_created FF disabled' do
-            before do
-              stub_feature_flags(usage_data_i_ci_secrets_management_vault_build_created: false)
-            end
-
-            it 'does not track RedisHLL secrets management event' do
-              expect(::Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
-                .with('i_ci_secrets_management_id_tokens_build_created', values: user.id)
-
-              ci_build.save!
-            end
-
-            it 'does not track Snowplow event' do
-              ci_build.save!
-
-              expect_no_snowplow_event
-            end
-          end
         end
 
         context 'on update' do
