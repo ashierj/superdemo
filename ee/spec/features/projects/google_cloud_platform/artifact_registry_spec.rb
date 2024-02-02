@@ -38,6 +38,30 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
     expect(page).to have_link _('Open in Google Cloud')
   end
 
+  describe 'link to settings' do
+    context 'when user is not a group owner' do
+      it 'does not show group settings link' do
+        visit_page
+
+        expect(page).not_to have_link('Configure in settings',
+          href: edit_project_settings_integration_path(project, ::Integrations::GoogleCloudPlatform::ArtifactRegistry))
+      end
+    end
+
+    context 'when user is a group maintainer' do
+      before_all do
+        project.add_maintainer(user)
+      end
+
+      it 'shows group settings link' do
+        visit_page
+
+        expect(page).to have_link('Configure in settings',
+          href: edit_project_settings_integration_path(project, ::Integrations::GoogleCloudPlatform::ArtifactRegistry))
+      end
+    end
+  end
+
   private
 
   def visit_page

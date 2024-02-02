@@ -1233,6 +1233,10 @@ module EE
       ::Gitlab::FIPS.enabled? ? ::Feature.enabled?(:dast_ods_browser_based_scanner, self) : true
     end
 
+    def gcp_artifact_registry_enabled?
+      ::Feature.enabled?(:gcp_artifact_registry, self) && ::Gitlab::Saas.feature_available?(:google_artifact_registry)
+    end
+
     private
 
     def latest_ingested_sbom_pipeline_id_redis_key
@@ -1276,10 +1280,6 @@ module EE
 
     def github_integration_enabled?
       feature_available?(:github_integration)
-    end
-
-    def gcp_artifact_registry_enabled?
-      ::Feature.enabled?(:gcp_artifact_registry, self) && ::Gitlab::Saas.feature_available?(:google_artifact_registry)
     end
 
     def group_hooks

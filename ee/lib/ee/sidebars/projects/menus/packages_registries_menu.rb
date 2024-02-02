@@ -19,8 +19,7 @@ module EE
           private
 
           def google_artifact_registry_menu_item
-            if !::Gitlab::Saas.feature_available?(:google_artifact_registry) ||
-                ::Feature.disabled?(:gcp_artifact_registry, context.project) ||
+            if !context.project.gcp_artifact_registry_enabled? ||
                 container_registry_unavailable?
               return ::Sidebars::NilMenuItem.new(item_id: :google_artifact_registry)
             end

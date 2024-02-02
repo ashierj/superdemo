@@ -1,7 +1,4 @@
 - page_title _("Google Artifact Registry")
 
 %div
-  #js-google-artifact-registry{ data: {
-    "full_path": @project.full_path,
-  }
-}
+  #js-google-artifact-registry{ data: google_artifact_registry_data(@project) }
