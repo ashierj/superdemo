@@ -121,10 +121,12 @@ class ApprovalProjectRule < ApplicationRecord
   end
 
   def vulnerability_states_for_branch(branch = project.default_branch)
+    states = self.vulnerability_states.presence || DEFAULT_VULNERABILITY_STATUSES
+
     if applies_to_branch?(branch)
-      self.vulnerability_states
+      states
     else
-      self.vulnerability_states & NEWLY_DETECTED_STATUSES
+      states & NEWLY_DETECTED_STATUSES
     end
   end
 

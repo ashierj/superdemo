@@ -465,7 +465,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         context 'when vulnerability_states are empty array' do
           let(:vulnerability_states) { [] }
 
-          it_behaves_like 'does not update approvals_required'
+          it_behaves_like 'sets approvals_required to 0'
 
           context 'when security_policies_sync_preexisting_state is disabled' do
             before do
