@@ -13,11 +13,7 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import { __, s__ } from '~/locale';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
 import { NAMESPACE_PROJECT } from '../constants';
-import {
-  REPORT_STATUS,
-  SORT_FIELD_SEVERITY,
-  SORT_FIELD_PACKAGER,
-} from '../store/modules/list/constants';
+import { REPORT_STATUS, SORT_FIELD_SEVERITY } from '../store/modules/list/constants';
 import DependenciesActions from './dependencies_actions.vue';
 import DependencyListIncompleteAlert from './dependency_list_incomplete_alert.vue';
 import DependencyListJobFailedAlert from './dependency_list_job_failed_alert.vue';
@@ -124,7 +120,7 @@ export default {
   created() {
     this.setDependenciesEndpoint(this.endpoint);
     this.setExportDependenciesEndpoint(this.exportEndpoint);
-    this.setSortField(this.isProjectNamespace ? SORT_FIELD_SEVERITY : SORT_FIELD_PACKAGER);
+    this.setSortField(SORT_FIELD_SEVERITY);
   },
   methods: {
     ...mapActions([
