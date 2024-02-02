@@ -17,6 +17,7 @@
 
 module DuoPro
   class BulkUserAssignment
+    include ::GitlabSubscriptions::SubscriptionHelper
     attr_reader :usernames, :add_on_purchase, :successful_assignments, :failed_assignments
 
     def initialize(usernames, add_on_purchase)
@@ -57,10 +58,13 @@ module DuoPro
     end
 
     def assign(user)
-      ::GitlabSubscriptions::UserAddOnAssignments::SelfManaged::CreateService.new(
-        add_on_purchase: add_on_purchase,
-        user: user
-      ).execute
+      service_class = if gitlab_com_subscription?
+                        ::GitlabSubscriptions::UserAddOnAssignments::Saas::CreateService
+                      else
+                        ::GitlabSubscriptions::UserAddOnAssignments::SelfManaged::CreateService
+                      end
+
+      service_class.new(add_on_purchase: add_on_purchase, user: user).execute
     end
 
     def log_no_seats_available(result, username)
