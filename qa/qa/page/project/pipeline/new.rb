@@ -10,6 +10,9 @@ module QA
             element 'ci-variable-row-container'
             element 'pipeline-form-ci-variable-key-field'
             element 'pipeline-form-ci-variable-value-field'
+          end
+
+          view 'app/assets/javascripts/ci/pipeline_new/components/variable_values_listbox.vue' do
             element 'pipeline-form-ci-variable-value-dropdown'
           end
 

@@ -51,6 +51,7 @@ export default {
     searchable
     block
     fluid-width
+    data-testid="pipeline-form-ci-variable-value-dropdown"
     @search="onSearch"
     @select="$emit('select', $event)"
   >
@@ -58,7 +59,9 @@ export default {
       {{ searchSummary }}
     </template>
     <template #list-item="{ item: { text } }">
-      <span data-testid="ci-variable-value-dropdown-item">{{ text }}</span>
+      <span data-testid="ci-variable-value-dropdown-item">
+        <p class="gl-m-0">{{ text }}</p>
+      </span>
     </template>
   </gl-collapsible-listbox>
 </template>
