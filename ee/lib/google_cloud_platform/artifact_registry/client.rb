@@ -9,18 +9,9 @@ module GoogleCloudPlatform
 
       DEFAULT_PAGE_SIZE = 10
 
-      GCP_SUBJECT_TOKEN_ERROR_MESSAGE = 'Unable to retrieve Identity Pool subject token'
-      GCP_TOKEN_EXCHANGE_ERROR_MESSAGE = 'Token exchange failed'
-
-      AuthenticationError = Class.new(StandardError)
-      ApiError = Class.new(StandardError)
-
-      BLANK_PARAMETERS_ERROR_MESSAGE = 'All GCP parameters are required'
-      SAAS_ONLY_ERROR_MESSAGE = "This is a saas only feature that can't run here"
-
       # Initialize and build a new ArtifactRegistry client.
       # This will use glgo and a workload identity federation instance to exchange
-      # a JWT from GitLab for an access token to be used with the GCP API.
+      # a JWT from GitLab for an access token to be used with the Google Cloud API.
       #
       # +project+ The Project instance.
       # +user+ The User instance.
@@ -38,18 +29,12 @@ module GoogleCloudPlatform
       # +ArgumentError+ if one or more of the parameters is blank.
       # +RuntimeError+ if this is used outside the Saas instance.
       def initialize(project:, user:, gcp_project_id:, gcp_location:, gcp_repository:, gcp_wlif:)
-        raise SAAS_ONLY_ERROR_MESSAGE unless Gitlab::Saas.feature_available?(:google_artifact_registry)
+        super(project: project, user: user, gcp_project_id: gcp_project_id, gcp_wlif: gcp_wlif)
 
-        super(project: project, user: user)
+        raise ArgumentError, BLANK_PARAMETERS_ERROR_MESSAGE if gcp_location.blank? || gcp_repository.blank?
 
-        if gcp_project_id.blank? || gcp_location.blank? || gcp_repository.blank? || gcp_wlif.blank?
-          raise ArgumentError, BLANK_PARAMETERS_ERROR_MESSAGE
-        end
-
-        @gcp_project_id = gcp_project_id
         @gcp_location = gcp_location
         @gcp_repository = gcp_repository
-        @gcp_wlif = gcp_wlif
       end
 
       # Get the Artifact Registry repository object and return it.
@@ -61,9 +46,10 @@ module GoogleCloudPlatform
       #
       # Possible exceptions:
       #
-      # +GoogleCloudPlatform::ArtifactRegistry::Client::AuthenticationError+ if an error occurs during the
+      # +GoogleCloudPlatform::AuthenticationError+ if an error occurs during the
       # authentication.
-      # +GoogleCloudPlatform::ArtifactRegistry::Client::ApiError+ if an error occurs when interacting with the GCP API.
+      # +GoogleCloudPlatform::ApiError+ if an error occurs when interacting with the
+      # Google Cloud API.
       def repository
         request = ::Google::Cloud::ArtifactRegistry::V1::GetRepositoryRequest.new(name: repository_full_name)
 
@@ -94,9 +80,10 @@ module GoogleCloudPlatform
       #
       # Possible exceptions:
       #
-      # +GoogleCloudPlatform::ArtifactRegistry::Client::AuthenticationError+ if an error occurs during the
+      # +GoogleCloudPlatform::AuthenticationError+ if an error occurs during the
       # authentication.
-      # +GoogleCloudPlatform::ArtifactRegistry::Client::ApiError+ if an error occurs when interacting with the GCP API.
+      # +GoogleCloudPlatform::ApiError+ if an error occurs when interacting with the
+      # Google Cloud API.
       def docker_images(page_size: nil, page_token: nil, order_by: nil)
         page_size = DEFAULT_PAGE_SIZE if page_size.blank?
         request = ::Google::Cloud::ArtifactRegistry::V1::ListDockerImagesRequest.new(
@@ -115,15 +102,16 @@ module GoogleCloudPlatform
       # It will call the gRPC version of
       # https://cloud.google.com/artifact-registry/docs/reference/rest/v1/projects.locations.repositories.dockerImages/get
       #
-      # +name+ Name of the docker image as returned by the GCP API when using +docker_images+
+      # +name+ Name of the docker image as returned by the Google Cloud API when using +docker_images+
       #
       # Return an instance of +Google::Cloud::ArtifactRegistry::V1::DockerImage+.
       #
       # Possible exceptions:
       #
-      # +GoogleCloudPlatform::ArtifactRegistry::Client::AuthenticationError+ if an error occurs during the
+      # +GoogleCloudPlatform::AuthenticationError+ if an error occurs during the
       # authentication.
-      # +GoogleCloudPlatform::ArtifactRegistry::Client::ApiError+ if an error occurs when interacting with the GCP API.
+      # +GoogleCloudPlatform::ApiError+ if an error occurs when interacting with the
+      # Google Cloud API.
       def docker_image(name:)
         request = ::Google::Cloud::ArtifactRegistry::V1::GetDockerImageRequest.new(name: name)
 
@@ -136,7 +124,7 @@ module GoogleCloudPlatform
 
       def gcp_client
         ::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Client.new do |config|
-          json_key_io = StringIO.new(::Gitlab::Json.dump(credentials(wlif: @gcp_wlif)))
+          json_key_io = StringIO.new(::Gitlab::Json.dump(credentials))
           ext_credentials = Google::Auth::ExternalAccount::Credentials.make_creds(
             json_key_io: json_key_io,
             scope: CLOUD_PLATFORM_SCOPE
@@ -146,20 +134,8 @@ module GoogleCloudPlatform
       end
       strong_memoize_attr :gcp_client
 
-      def handling_errors
-        yield
-      rescue RuntimeError => e
-        if e.message.include?(GCP_SUBJECT_TOKEN_ERROR_MESSAGE) || e.message.include?(GCP_TOKEN_EXCHANGE_ERROR_MESSAGE)
-          raise AuthenticationError, e.message
-        end
-
-        raise
-      rescue ::Google::Cloud::Error => e
-        raise ApiError, e.message
-      end
-
       def repository_full_name
-        "projects/#{@gcp_project_id}/locations/#{@gcp_location}/repositories/#{@gcp_repository}"
+        "projects/#{gcp_project_id}/locations/#{@gcp_location}/repositories/#{@gcp_repository}"
       end
       strong_memoize_attr :repository_full_name
     end

@@ -14,11 +14,7 @@ module Gitlab
         def execute
           return [] unless @integration&.active
 
-          config_json = ::GoogleCloudPlatform::BaseClient.credentials(
-            audience: @integration.wlif,
-            encoded_jwt: encoded_jwt
-          ).to_json
-
+          config_json = ::GoogleCloudPlatform.credentials(audience: @integration.wlif, encoded_jwt: encoded_jwt).to_json
           var_attributes = { value: config_json, public: false, masked: true, file: true }
 
           [
@@ -30,7 +26,7 @@ module Gitlab
         private
 
         def encoded_jwt
-          JwtV2.for_build(@build, aud: ::GoogleCloudPlatform::BaseClient::GLGO_BASE_URL, wlif: @integration.wlif)
+          JwtV2.for_build(@build, aud: ::GoogleCloudPlatform::GLGO_BASE_URL, wlif: @integration.wlif)
         end
       end
     end
