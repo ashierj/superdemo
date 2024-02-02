@@ -16,7 +16,7 @@ import {
 } from './filter_bar/filters';
 import TracingTableList from './tracing_table.vue';
 import FilteredSearch from './filter_bar/tracing_filtered_search.vue';
-import ScatterChart from './tracing_scatter_chart.vue';
+import TracingAnalytics from './tracing_analytics.vue';
 
 const PAGE_SIZE = 500;
 const TRACING_LIST_VERTICAL_PADDING = 140; // Accounts for the search bar height + the legend height + some more v padding
@@ -28,7 +28,7 @@ export default {
     FilteredSearch,
     UrlSync,
     GlInfiniteScroll,
-    ScatterChart,
+    TracingAnalytics,
   },
   props: {
     observabilityClient: {
@@ -171,13 +171,8 @@ export default {
         @submit="handleFilters"
         @sort="onSort"
       />
-      <scatter-chart
-        :height="chartHeight"
-        :traces="traces"
-        @chart-item-selected="chartItemSelected"
-        @chart-item-over="debouncedChartItemOver"
-        @chart-item-out="chartItemOut"
-      />
+
+      <tracing-analytics v-if="analytics && analytics.length" :analytics="analytics" />
 
       <gl-infinite-scroll
         ref="infiniteScroll"

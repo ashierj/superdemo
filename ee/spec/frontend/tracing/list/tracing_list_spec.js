@@ -1,8 +1,8 @@
 import { GlLoadingIcon, GlInfiniteScroll } from '@gitlab/ui';
 import { nextTick } from 'vue';
+import TracingAnalytics from 'ee/tracing/list/tracing_analytics.vue';
 import { filterObjToFilterToken } from 'ee/tracing/list/filter_bar/filters';
 import FilteredSearch from 'ee/tracing/list/filter_bar/tracing_filtered_search.vue';
-import ScatterChart from 'ee/tracing/list/tracing_scatter_chart.vue';
 import TracingTableList from 'ee/tracing/list/tracing_table.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import TracingList from 'ee/tracing/list/tracing_list.vue';
@@ -12,7 +12,6 @@ import * as urlUtility from '~/lib/utils/url_utility';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { createMockClient } from 'helpers/mock_observability_client';
-import * as commonUtils from '~/lib/utils/common_utils';
 
 jest.mock('~/alert');
 
@@ -25,7 +24,7 @@ describe('TracingList', () => {
   const findFilteredSearch = () => wrapper.findComponent(FilteredSearch);
   const findUrlSync = () => wrapper.findComponent(UrlSync);
   const findInfiniteScrolling = () => wrapper.findComponent(GlInfiniteScroll);
-  const findScatterChart = () => wrapper.findComponent(ScatterChart);
+  const findAnalytics = () => wrapper.findComponent(TracingAnalytics);
   const bottomReached = async () => {
     findInfiniteScrolling().vm.$emit('bottomReached');
     await waitForPromises();
@@ -40,6 +39,27 @@ describe('TracingList', () => {
     next_page_token: 'page-2',
   };
 
+  const mockAnalytics = [
+    {
+      interval: 1706456580,
+      count: 272,
+      p90_duration_nano: 79431434,
+      p95_duration_nano: 172512624,
+      p75_duration_nano: 33666014,
+      p50_duration_nano: 13540992,
+      trace_rate: 4.533333333333333,
+    },
+    {
+      interval: 1706456640,
+      count: 322,
+      p90_duration_nano: 245701137,
+      p95_duration_nano: 410402110,
+      p75_duration_nano: 126097516,
+      p50_duration_nano: 26955796,
+      trace_rate: 5.366666666666666,
+    },
+  ];
+
   const mountComponent = async () => {
     wrapper = shallowMountExtended(TracingList, {
       propsData: {
@@ -53,6 +73,7 @@ describe('TracingList', () => {
     observabilityClientMock = createMockClient();
 
     observabilityClientMock.fetchTraces.mockResolvedValue(mockResponse);
+    observabilityClientMock.fetchTracesAnalytics.mockResolvedValue(mockAnalytics);
   });
 
   describe('fetching data', () => {
@@ -68,6 +89,25 @@ describe('TracingList', () => {
       expect(findFilteredSearch().exists()).toBe(true);
       expect(findUrlSync().exists()).toBe(true);
       expect(findTableList().props('traces')).toEqual(mockResponse.traces);
+    });
+
+    describe('analytics', () => {
+      it('renders the analytics component', () => {
+        expect(findAnalytics().exists()).toBe(true);
+        expect(findAnalytics().props('analytics')).toEqual(mockAnalytics);
+      });
+
+      it('does not render the analytics component if there is no data', async () => {
+        observabilityClientMock.fetchTracesAnalytics.mockResolvedValue([]);
+        await mountComponent();
+        expect(findAnalytics().exists()).toBe(false);
+      });
+
+      it('does not render the analytics component if the call fails', async () => {
+        observabilityClientMock.fetchTracesAnalytics.mockRejectedValue('error');
+        await mountComponent();
+        expect(findAnalytics().exists()).toBe(false);
+      });
     });
 
     describe('traces and analytics API requests', () => {
@@ -581,69 +621,6 @@ describe('TracingList', () => {
       expect(observabilityClientMock.fetchTracesAnalytics).not.toHaveBeenCalled();
 
       expect(findTableList().props('traces')).toEqual(mockResponse.traces);
-    });
-  });
-
-  describe('scatter chart', () => {
-    beforeEach(async () => {
-      await mountComponent();
-
-      wrapper.vm.$refs.tableList.$el.querySelector = jest
-        .fn()
-        .mockReturnValue({ querySelectorAll: jest.fn().mockReturnValue([]) });
-
-      wrapper.vm.$refs.infiniteScroll.scrollTo = jest.fn();
-    });
-
-    it('renders the chart', () => {
-      const chart = findScatterChart();
-      expect(chart.exists()).toBe(true);
-      expect(chart.props('traces')).toEqual(mockResponse.traces);
-    });
-
-    it('sets the chart height to 30% of the container height', async () => {
-      jest.spyOn(commonUtils, 'contentTop').mockReturnValue(100);
-      window.innerHeight = 1000;
-
-      await mountComponent();
-
-      const chart = findScatterChart();
-      expect(chart.props('height')).toBe(270);
-    });
-
-    it('goes to the trace details page on item selection', () => {
-      setWindowLocation('base_path');
-      const visitUrlMock = jest.spyOn(urlUtility, 'visitUrl').mockReturnValue({});
-
-      findScatterChart().vm.$emit('chart-item-selected', { traceId: 'test-trace-id' });
-
-      expect(visitUrlMock).toHaveBeenCalledTimes(1);
-      expect(visitUrlMock).toHaveBeenCalledWith('/base_path/test-trace-id', false);
-    });
-
-    it('highlight and scroll to the trace row when over a chart point', async () => {
-      wrapper.vm.$refs.tableList.$el.querySelector.mockReturnValueOnce({
-        querySelectorAll: jest.fn().mockReturnValue([{ offsetTop: 1234 }]),
-      });
-      await findScatterChart().vm.$emit('chart-item-over', {
-        traceId: mockResponse.traces[0].trace_id,
-      });
-
-      expect(findTableList().props('highlightedTraceId')).toBe(mockResponse.traces[0].trace_id);
-      expect(wrapper.vm.$refs.infiniteScroll.scrollTo).toHaveBeenCalledWith({
-        behavior: 'smooth',
-        top: 1234,
-      });
-    });
-
-    it('stop highlighting the trace row when not over a chart point', async () => {
-      await findScatterChart().vm.$emit('chart-item-over', {
-        traceId: mockResponse.traces[1].trace_id,
-      });
-
-      await findScatterChart().vm.$emit('chart-item-out');
-
-      expect(findTableList().props('highlightedTraceId')).toBeNull();
     });
   });
 
