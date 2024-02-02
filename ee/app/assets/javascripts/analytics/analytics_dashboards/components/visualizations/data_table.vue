@@ -1,8 +1,10 @@
 <script>
 import { GlIcon, GlLink, GlTableLite } from '@gitlab/ui';
-import { __, formatNumber } from '~/locale';
+
+import { __ } from '~/locale';
 import { isExternal } from '~/lib/utils/url_utility';
-import { isNumeric } from '~/lib/utils/number_utils';
+
+import { formatVisualizationValue } from './utils';
 
 export default {
   name: 'DataTable',
@@ -44,13 +46,7 @@ export default {
     isExternalLink(href) {
       return isExternal(href);
     },
-    formatValue(value) {
-      if (isNumeric(value)) {
-        return formatNumber(parseInt(value, 10));
-      }
-
-      return value;
-    },
+    formatVisualizationValue,
   },
   i18n: {
     externalLink: __('external link'),
@@ -63,7 +59,7 @@ export default {
     <gl-table-lite :fields="fields" :items="data" hover responsive class="gl-mt-4">
       <template #cell()="{ value }">
         <gl-link v-if="isLink(value)" :href="value.href" is-unsafe-link
-          >{{ formatValue(value.text) }}
+          >{{ formatVisualizationValue(value.text) }}
           <gl-icon
             v-if="isExternalLink(value.href)"
             name="external-link"
@@ -73,7 +69,7 @@ export default {
           />
         </gl-link>
         <template v-else>
-          {{ formatValue(value) }}
+          {{ formatVisualizationValue(value) }}
         </template>
       </template>
     </gl-table-lite>
