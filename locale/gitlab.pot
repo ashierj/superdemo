@@ -23141,6 +23141,9 @@ msgstr ""
 msgid "GoogleArtifactRegistry|An error occurred while fetching the artifacts."
 msgstr ""
 
+msgid "GoogleArtifactRegistry|Configure in settings"
+msgstr ""
+
 msgid "GoogleArtifactRegistry|Open in Google Cloud"
 msgstr ""
 

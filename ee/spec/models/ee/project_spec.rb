@@ -4416,4 +4416,32 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       end
     end
   end
+
+  describe '#gcp_artifact_registry_enabled?' do
+    subject { project.gcp_artifact_registry_enabled? }
+
+    let_it_be(:project) { build_stubbed(:project) }
+
+    before do
+      stub_saas_features(google_artifact_registry: true)
+    end
+
+    it { is_expected.to eq(true) }
+
+    context 'when feature is unavailable' do
+      before do
+        stub_saas_features(google_artifact_registry: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when gcp_artifact_registry feature is disabled' do
+      before do
+        stub_feature_flags(gcp_artifact_registry: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+  end
 end

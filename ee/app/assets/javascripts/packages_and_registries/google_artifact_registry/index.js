@@ -7,7 +7,7 @@ Vue.use(Translate);
 
 export default () => {
   const el = document.getElementById('js-google-artifact-registry');
-  const { fullPath } = el.dataset;
+  const { fullPath, settingsPath } = el.dataset;
 
   const attachMainComponent = () =>
     new Vue({
@@ -16,6 +16,7 @@ export default () => {
       apolloProvider,
       provide: {
         fullPath,
+        settingsPath,
       },
       render(createElement) {
         return createElement(GoogleArtifactRegistryListPage);

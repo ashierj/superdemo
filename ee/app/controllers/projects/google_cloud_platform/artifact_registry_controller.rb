@@ -15,8 +15,7 @@ module Projects
       private
 
       def ensure_feature!
-        render_404 unless Feature.enabled?(:gcp_artifact_registry, @project) &&
-          ::Gitlab::Saas.feature_available?(:google_artifact_registry)
+        render_404 unless project.gcp_artifact_registry_enabled?
       end
     end
   end

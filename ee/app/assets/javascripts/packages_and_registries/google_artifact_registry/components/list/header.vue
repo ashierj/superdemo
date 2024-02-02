@@ -1,5 +1,6 @@
 <script>
-import { GlAlert, GlButton } from '@gitlab/ui';
+import { GlAlert, GlButton, GlTooltipDirective } from '@gitlab/ui';
+import { s__ } from '~/locale';
 import MetadataItem from '~/vue_shared/components/registry/metadata_item.vue';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 
@@ -11,6 +12,10 @@ export default {
     MetadataItem,
     TitleArea,
   },
+  directives: {
+    GlTooltip: GlTooltipDirective,
+  },
+  inject: ['settingsPath'],
   props: {
     data: {
       type: Object,
@@ -36,6 +41,9 @@ export default {
       return !this.isLoading && !this.showError;
     },
   },
+  i18n: {
+    settingsText: s__('GoogleArtifactRegistry|Configure in settings'),
+  },
 };
 </script>
 
@@ -51,6 +59,14 @@ export default {
       >
         {{ s__('GoogleArtifactRegistry|Open in Google Cloud') }}
       </gl-button>
+      <gl-button
+        v-if="settingsPath"
+        v-gl-tooltip="$options.i18n.settingsText"
+        icon="settings"
+        data-testid="settings-link"
+        :href="settingsPath"
+        :aria-label="$options.i18n.settingsText"
+      />
     </template>
     <template v-if="showMetadata" #metadata-repository>
       <metadata-item
