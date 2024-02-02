@@ -29508,6 +29508,19 @@ Represents a test reports widget.
 | <a id="workitemwidgettestreportstestreports"></a>`testReports` | [`TestReportConnection`](#testreportconnection) | Test reports of the work item. (see [Connections](#connections)) |
 | <a id="workitemwidgettestreportstype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
+### `WorkItemWidgetTimeTracking`
+
+Represents a time tracking widget.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemwidgettimetrackingtimeestimate"></a>`timeEstimate` | [`Int!`](#int) | Time estimate of the work item. |
+| <a id="workitemwidgettimetrackingtimelogs"></a>`timelogs` | [`TimelogConnection!`](#timelogconnection) | Timelogs on the work item. (see [Connections](#connections)) |
+| <a id="workitemwidgettimetrackingtotaltimespent"></a>`totalTimeSpent` | [`Int!`](#int) | Total time (in seconds) reported as spent on the work item. |
+| <a id="workitemwidgettimetrackingtype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
+
 ### `WorkItemWidgetWeight`
 
 Represents a weight widget.
@@ -32441,6 +32454,7 @@ Type of a work item widget.
 | <a id="workitemwidgettypestart_and_due_date"></a>`START_AND_DUE_DATE` | Start And Due Date widget. |
 | <a id="workitemwidgettypestatus"></a>`STATUS` | Status widget. |
 | <a id="workitemwidgettypetest_reports"></a>`TEST_REPORTS` | Test Reports widget. |
+| <a id="workitemwidgettypetime_tracking"></a>`TIME_TRACKING` | Time Tracking widget. |
 | <a id="workitemwidgettypeweight"></a>`WEIGHT` | Weight widget. |
 
 ## Scalar types
@@ -34135,6 +34149,7 @@ Implementations:
 - [`WorkItemWidgetStartAndDueDate`](#workitemwidgetstartandduedate)
 - [`WorkItemWidgetStatus`](#workitemwidgetstatus)
 - [`WorkItemWidgetTestReports`](#workitemwidgettestreports)
+- [`WorkItemWidgetTimeTracking`](#workitemwidgettimetracking)
 - [`WorkItemWidgetWeight`](#workitemwidgetweight)
 
 ##### Fields
