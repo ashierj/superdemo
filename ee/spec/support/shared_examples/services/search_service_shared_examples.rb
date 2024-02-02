@@ -126,10 +126,14 @@ RSpec.shared_examples 'can search by title for miscellaneous cases' do |type|
 
   def create_records!(type)
     case type
-    when 'issues'
-      create_list(:issue, records_count, project: searched_project)
     when 'epics'
       create_list(:epic, records_count, group: searched_group)
+    when 'issues'
+      create_list(:issue, records_count, project: searched_project)
+    when 'merge_requests'
+      records = []
+      records_count.times { |i| records << create(:merge_request, source_branch: i, source_project: searched_project) }
+      records
     end
   end
 
