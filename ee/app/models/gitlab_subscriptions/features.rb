@@ -128,6 +128,7 @@ module GitlabSubscriptions
       merge_trains
       metrics_reports
       metrics_observability
+      logs_observability
       multiple_alert_http_integrations
       multiple_approval_rules
       multiple_group_issue_boards

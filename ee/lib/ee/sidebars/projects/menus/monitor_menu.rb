@@ -13,6 +13,7 @@ module EE
 
             insert_item_before(:error_tracking, tracing_menu_item)
             insert_item_after(:tracing, metrics_menu_item)
+            insert_item_after(:logs, logs_menu_item)
             insert_item_after(:incidents, on_call_schedules_menu_item)
             insert_item_after(:on_call_schedules, escalation_policies_menu_item)
 
@@ -74,6 +75,20 @@ module EE
               super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::MonitorMenu,
               active_routes: { controller: :metrics },
               item_id: :metrics
+            )
+          end
+
+          def logs_menu_item
+            unless can?(context.current_user, :read_observability_logs, context.project)
+              return ::Sidebars::NilMenuItem.new(item_id: :logs)
+            end
+
+            ::Sidebars::MenuItem.new(
+              title: s_('ObservabilityLogs|Logs'),
+              link: project_logs_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::MonitorMenu,
+              active_routes: { controller: :logs },
+              item_id: :logs
             )
           end
         end
