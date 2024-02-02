@@ -107,6 +107,23 @@ describe('Merge Requests Artifacts list app', () => {
     });
   });
 
+  describe('with 0 artifacts', () => {
+    beforeEach(() => {
+      createComponent();
+      mock.onGet(FAKE_ENDPOINT).reply(HTTP_STATUS_OK, [], {});
+      store.dispatch('receiveArtifactsSuccess', {
+        data: [],
+        status: HTTP_STATUS_OK,
+      });
+      return nextTick();
+    });
+
+    it('does not render', () => {
+      expect(findTitle().exists()).toBe(false);
+      expect(findButtons().exists()).toBe(false);
+    });
+  });
+
   describe('with error', () => {
     beforeEach(() => {
       createComponent();
