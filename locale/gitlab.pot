@@ -30185,7 +30185,7 @@ msgstr ""
 msgid "MemberRole|Failed to create role."
 msgstr ""
 
-msgid "MemberRole|Failed to create role: %{message}"
+msgid "MemberRole|Failed to create role: %{error}"
 msgstr ""
 
 msgid "MemberRole|Failed to delete role."

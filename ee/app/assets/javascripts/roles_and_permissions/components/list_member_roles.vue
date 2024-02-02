@@ -152,6 +152,7 @@ export default {
     onCreatedMemberRole() {
       this.$toast.show(this.$options.i18n.createSuccess);
       this.showCreateMemberForm = false;
+      this.$apollo.queries.memberRoles.refetch();
     },
     onModalHide() {
       this.memberRoleToDelete = null;
