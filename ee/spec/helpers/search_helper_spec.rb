@@ -191,7 +191,7 @@ RSpec.describe SearchHelper, feature_category: :global_search do
           expect(results.first).to include({
             category: 'Settings',
             label: 'User settings',
-            url: Gitlab::Routing.url_helpers.profile_path
+            url: Gitlab::Routing.url_helpers.user_settings_profile_path
           })
         end
       end

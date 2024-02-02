@@ -9,7 +9,7 @@ export const GENERAL_ERROR_MESSAGE = s__(
 export const licensingAndRenewalsProblemsLink =
   'https://support.gitlab.com/hc/en-us/requests/new?ticket_form_id=360000071293';
 export const salesLink = `${PROMO_URL}/sales/`;
-export const userProfileLink = `https://${DOMAIN}/-/profile`;
+export const userProfileLink = `https://${DOMAIN}/-/user_settings/profile`;
 export const linkCustomersPortalHelpLink = helpPagePath('subscriptions/customers_portal', {
   anchor: '#change-the-linked-account',
 });

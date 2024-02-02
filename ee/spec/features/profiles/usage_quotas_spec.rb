@@ -18,7 +18,7 @@ RSpec.describe 'Profile > Usage Quota', :js, feature_category: :consumables_cost
   end
 
   it 'is linked within the profile page' do
-    visit profile_path
+    visit user_settings_profile_path
 
     within_testid('super-sidebar') do
       expect(page).to have_selector(:link_or_button, 'Usage Quotas')
