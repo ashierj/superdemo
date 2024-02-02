@@ -7,9 +7,7 @@ import { createAlert } from '~/alert';
 import { initMergeRequestMergeChecksApp } from 'ee/merge_checks';
 import { __ } from '~/locale';
 
-if (gon.features.saasUserCapsAutoApprovePendingUsersOnCapIncrease) {
-  initGroupPermissionsFormSubmit();
-}
+initGroupPermissionsFormSubmit();
 
 initAccessRestrictionField({
   selector: '.js-allowed-email-domains',
