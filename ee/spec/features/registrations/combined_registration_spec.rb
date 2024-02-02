@@ -82,7 +82,7 @@ RSpec.describe 'Registration group and project creation flow', :saas, :js, featu
 
     click_on 'GitHub'
 
-    expect(page).to have_content('To connect GitHub repositories, you first need to authorize GitLab to')
+    expect(page).to have_content('To import GitHub repositories, you must first authorize GitLab to')
   end
 
   context 'with readme status honored on failures' do

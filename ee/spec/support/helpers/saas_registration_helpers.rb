@@ -252,8 +252,8 @@ module SaasRegistrationHelpers
 
   def expect_to_be_in_import_process
     expect(page).to have_content <<~MESSAGE.tr("\n", ' ')
-      To connect GitHub repositories, you first need to authorize
-      GitLab to access the list of your GitHub repositories.
+      To import GitHub repositories, you must first authorize
+      GitLab to access your GitHub repositories.
     MESSAGE
   end
 
