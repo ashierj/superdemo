@@ -396,4 +396,40 @@ RSpec.describe EE::Users::CalloutsHelper do
       it { is_expected.to eq(expected_result) }
     end
   end
+
+  describe '.show_transition_to_jihu_callout?', :do_not_mock_admin_mode_setting do
+    let_it_be(:admin) { create(:user, :admin) }
+    let_it_be(:user) { create(:user) }
+
+    subject { helper.show_transition_to_jihu_callout? }
+
+    using RSpec::Parameterized::TableSyntax
+
+    where(:gitlab_com, :gitlab_jh, :has_active_license, :current_user, :timezone, :user_dismissed, :expected_result) do
+      false | false | false | ref(:admin) | 'Asia/Hong_Kong'      | false | true
+      false | false | false | ref(:admin) | 'Asia/Shanghai'       | false | true
+      false | false | false | ref(:admin) | 'Asia/Macau'          | false | true
+      false | false | false | ref(:admin) | 'Asia/Chongqing'      | false | true
+
+      true  | false | false | ref(:admin) | 'Asia/Shanghai'       | false | false
+      false | true  | false | ref(:admin) | 'Asia/Shanghai'       | false | false
+      false | false | true  | ref(:admin) | 'Asia/Shanghai'       | false | false
+      false | false | false | ref(:user)  | 'Asia/Shanghai'       | false | false
+      false | false | false | ref(:admin) | 'America/Los_Angeles' | false | false
+      false | false | false | ref(:admin) | 'Asia/Shanghai'       | true  | false
+    end
+
+    with_them do
+      before do
+        allow(::Gitlab).to receive(:com?).and_return(gitlab_com)
+        allow(::Gitlab).to receive(:jh?).and_return(gitlab_jh)
+        allow(helper).to receive(:has_active_license?).and_return(has_active_license)
+        allow(helper).to receive(:current_user).and_return(current_user)
+        allow(helper).to receive(:user_dismissed?).with(::Users::CalloutsHelper::TRANSITION_TO_JIHU_CALLOUT) { user_dismissed }
+        allow(current_user).to receive(:timezone).and_return(timezone)
+      end
+
+      it { is_expected.to be expected_result }
+    end
+  end
 end
