@@ -2,7 +2,7 @@
 
 module Sbom
   class Source < ApplicationRecord
-    include Gitlab::Ci::Reports::Sbom::SourceHelper
+    include ::Sbom::SourceHelper
 
     enum source_type: {
       dependency_scanning: 0,

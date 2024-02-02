@@ -37,7 +37,8 @@ module Sbom
     delegate :component_type, to: :component
     delegate :version, to: :component_version, allow_nil: true
     delegate :source_package_name, to: :component_version, allow_nil: true
-    delegate :packager, to: :source, allow_nil: true
+
+    alias_attribute :packager, :package_manager
 
     scope :order_by_id, -> { order(id: :asc) }
 
