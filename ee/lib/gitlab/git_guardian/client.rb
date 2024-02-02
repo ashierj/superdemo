@@ -22,13 +22,14 @@ module Gitlab
       def execute(blobs = [])
         blobs.each_slice(BATCH_SIZE).with_object([]) do |blobs_batch, _|
           params = blobs_batch.map do |blob|
-            {
-              filename: File.basename(blob.path),
-              document: blob.data
-            }
+            blob_params = { document: blob.data }
+
             # GitGuardian limits filename field to 256 characters.
             # That is why we only pass file name, which is sufficient for Git Guardian to perform its checks.
             # See: https://api.gitguardian.com/docs#operation/multiple_scan
+            blob_params[:filename] = File.basename(blob.path) if blob.path.present?
+
+            blob_params
           end
 
           response = perform_request(params)
@@ -74,8 +75,9 @@ module Gitlab
             violation_match = policy_break['matches'].first
             match_type = violation_match['type']
             match_value = violation_match['match']
+            file_path_substring = file_path.present? ? " at '#{file_path}'" : ''
 
-            "#{policy_break['policy']} policy violated at '#{file_path}' for #{match_type} '#{match_value}'"
+            "#{policy_break['policy']} policy violated#{file_path_substring} for #{match_type} '#{match_value}'"
           end
         end.compact.flatten
       rescue JSON::ParserError

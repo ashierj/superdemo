@@ -13,6 +13,7 @@ module EE
 
           PushRuleCheck.new(self).validate!
           ::Gitlab::Checks::SecretsCheck.new(self).validate!
+          ::Gitlab::Checks::IntegrationsCheck.new(self).validate!
         end
       end
     end
