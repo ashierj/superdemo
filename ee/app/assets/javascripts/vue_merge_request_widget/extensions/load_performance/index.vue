@@ -1,6 +1,8 @@
+<script>
 import { s__, sprintf, n__ } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
 import { formattedChangeInPercent } from '~/lib/utils/number_utils';
+import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 
 export default {
@@ -9,10 +11,24 @@ export default {
     label: s__('ciReport|Load Performance'),
     loading: s__('ciReport|Load performance test metrics results are being parsed'),
   },
-  props: ['loadPerformance'],
+  components: {
+    MrWidget,
+  },
+  props: {
+    mr: {
+      type: Object,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      headMetrics: [],
+      baseMetrics: [],
+    };
+  },
   computed: {
     summary() {
-      const { improved, degraded, same } = this.collapsedData;
+      const { improved = [], degraded = [], same = [] } = this.compareLoadPerformanceMetrics();
       const changesFound = improved.length + degraded.length + same.length;
       const text = sprintf(
         n__(
@@ -35,34 +51,43 @@ export default {
       );
 
       return {
-        subject: text,
-        meta: reportNumbersText,
+        title: text,
+        subtitle: reportNumbersText,
       };
     },
     statusIcon() {
-      if (this.collapsedData.degraded.length || this.collapsedData.same.length) {
-        return EXTENSION_ICONS.warning;
-      }
-      return EXTENSION_ICONS.success;
+      const { degraded = [], same = [] } = this.compareLoadPerformanceMetrics();
+      return degraded.length > 0 || same.length > 0
+        ? EXTENSION_ICONS.warning
+        : EXTENSION_ICONS.success;
+    },
+    shouldCollapse() {
+      return this.content.length > 0;
+    },
+    content() {
+      const { improved = [], degraded = [], same = [] } = this.compareLoadPerformanceMetrics();
+      return [...improved, ...degraded, ...same];
     },
   },
   methods: {
-    fetchCollapsedData() {
-      return Promise.all([
-        this.fetchReport(this.loadPerformance?.head_path),
-        this.fetchReport(this.loadPerformance?.base_path),
-      ]).then((values) => {
-        return this.compareLoadPerformanceMetrics(values[0], values[1]);
+    fetchHeadAndBaseReports() {
+      const { head_path: headPath, base_path: basePath } = this.mr.loadPerformance;
+
+      return [headPath, basePath].map((endpoint) => () => {
+        return axios.get(endpoint).then((response) => {
+          if (endpoint === headPath) {
+            this.headMetrics = response.data;
+          } else if (endpoint === basePath) {
+            this.baseMetrics = response.data;
+          }
+
+          return response;
+        });
       });
     },
-    fetchFullData() {
-      const { improved, degraded, same } = this.collapsedData;
-
-      return Promise.resolve([...improved, ...degraded, ...same]);
-    },
-    compareLoadPerformanceMetrics(headMetrics, baseMetrics) {
-      const headMetricsIndexed = this.normalizeLoadPerformanceMetrics(headMetrics);
-      const baseMetricsIndexed = this.normalizeLoadPerformanceMetrics(baseMetrics);
+    compareLoadPerformanceMetrics() {
+      const headMetricsIndexed = this.normalizeLoadPerformanceMetrics(this.headMetrics);
+      const baseMetricsIndexed = this.normalizeLoadPerformanceMetrics(this.baseMetrics);
       const improved = [];
       const degraded = [];
       const same = [];
@@ -163,8 +188,18 @@ export default {
       }
       return value;
     },
-    fetchReport(endpoint) {
-      return axios.get(endpoint).then((res) => res.data);
-    },
   },
 };
+</script>
+<template>
+  <mr-widget
+    :status-icon-name="statusIcon"
+    :loading-text="$options.i18n.loading"
+    :widget-name="$options.name"
+    :is-collapsible="shouldCollapse"
+    :fetch-collapsed-data="fetchHeadAndBaseReports"
+    :summary="summary"
+    :content="content"
+    multi-polling
+  />
+</template>

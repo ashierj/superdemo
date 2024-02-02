@@ -3,13 +3,11 @@ import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
-import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
-import loadPerformanceExtension from 'ee/vue_merge_request_widget/extensions/load_performance';
+import LoadPerformanceWidget from 'ee/vue_merge_request_widget/extensions/load_performance/index.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { baseLoadPerformance, headLoadPerformance } from '../../mock_data';
 
-describe('Load performance extension', () => {
+describe('Load performance widget', () => {
   let wrapper;
   let mock;
 
@@ -19,7 +17,7 @@ describe('Load performance extension', () => {
   };
 
   const createComponent = () => {
-    wrapper = mount(extensionsContainer, {
+    wrapper = mount(LoadPerformanceWidget, {
       propsData: {
         mr: {
           loadPerformance: {
@@ -31,28 +29,21 @@ describe('Load performance extension', () => {
   };
 
   beforeEach(() => {
-    createComponent();
-
     mock = new MockAdapter(axios);
   });
 
   describe('summary', () => {
-    it('should render loading text', async () => {
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, headLoadPerformance);
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, baseLoadPerformance);
-
-      registerExtension(loadPerformanceExtension);
-
-      await nextTick();
+    it('should render loading text', () => {
+      createComponent();
 
       expect(wrapper.text()).toContain('Load performance test metrics results are being parsed');
     });
 
     it('should render info about all issues', async () => {
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, headLoadPerformance);
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, baseLoadPerformance);
+      createComponent();
 
-      registerExtension(loadPerformanceExtension);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, headLoadPerformance, {});
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, baseLoadPerformance, {});
 
       await waitForPromises();
 
@@ -80,10 +71,10 @@ describe('Load performance extension', () => {
         },
       };
 
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, head);
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, base);
+      createComponent();
 
-      registerExtension(loadPerformanceExtension);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, head, {});
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, base, {});
 
       await waitForPromises();
 
@@ -111,10 +102,10 @@ describe('Load performance extension', () => {
         },
       };
 
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, head);
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, base);
+      createComponent();
 
-      registerExtension(loadPerformanceExtension);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, head, {});
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, base, {});
 
       await waitForPromises();
       expect(wrapper.text()).toContain('Load performance test metrics detected 1 change');
@@ -124,10 +115,10 @@ describe('Load performance extension', () => {
 
   describe('expanded data', () => {
     beforeEach(async () => {
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, headLoadPerformance);
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, baseLoadPerformance);
+      createComponent();
 
-      registerExtension(loadPerformanceExtension);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, headLoadPerformance, {});
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, baseLoadPerformance, {});
 
       await waitForPromises();
 
