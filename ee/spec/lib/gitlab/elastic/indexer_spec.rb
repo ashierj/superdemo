@@ -505,7 +505,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               '--skip-commits',
               "--wiki-access-level=#{project.wiki_access_level}",
               "--archived=false",
-              "--schema-version-wiki=2310",
+              "--schema-version-wiki=#{described_class::WIKI_SCHEMA_VERSION}",
               "--traversal-ids=#{project.namespace_ancestry}",
               "#{project.wiki.repository.disk_path}.git"
             ],
@@ -535,7 +535,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
             '--skip-commits',
             "--wiki-access-level=#{project.wiki_access_level}",
             "--archived=false",
-            "--schema-version-wiki=2310",
+            "--schema-version-wiki=#{described_class::WIKI_SCHEMA_VERSION}",
             "--traversal-ids=#{project.namespace_ancestry}",
             "#{project.wiki.repository.disk_path}.git"
           ],
@@ -595,7 +595,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               '--blob-type=wiki_blob',
               '--skip-commits',
               "--wiki-access-level=#{project.wiki_access_level}",
-              "--schema-version-wiki=2310",
+              "--schema-version-wiki=#{described_class::WIKI_SCHEMA_VERSION}",
               "--traversal-ids=#{project.namespace_ancestry}",
               "#{project.wiki.repository.disk_path}.git"
             ],
@@ -639,7 +639,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           '--blob-type=wiki_blob',
           '--skip-commits',
           "--wiki-access-level=#{group.wiki_access_level}",
-          "--schema-version-wiki=2310",
+          "--schema-version-wiki=#{described_class::WIKI_SCHEMA_VERSION}",
           "--traversal-ids=#{group.elastic_namespace_ancestry}",
           "#{group.wiki.repository.disk_path}.git"
         ], nil, hash_including('ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json, 'RAILS_ENV' => Rails.env)
