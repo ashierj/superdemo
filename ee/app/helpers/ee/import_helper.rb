@@ -59,33 +59,7 @@ module EE
     override :import_github_authorize_message
     def import_github_authorize_message
       if has_ci_cd_only_params?
-        _('To connect GitHub repositories, you first need to authorize GitLab to access the list of your GitHub repositories:')
-      else
-        super
-      end
-    end
-
-    override :import_github_personal_access_token_message
-    def import_github_personal_access_token_message
-      if has_ci_cd_only_params?
-        personal_access_token_link = link_to _('Personal Access Token'), 'https://github.com/settings/tokens'
-
-        ERB::Util.html_escape(_('To connect GitHub repositories, you can use a %{personal_access_token_link}. When you create your Personal Access Token, you will need to select the %{code_open}repo%{code_close} scope, so we can display a list of your public and private repositories which are available to connect.')) % { personal_access_token_link: personal_access_token_link, code_open: '<code>'.html_safe, code_close: '</code>'.html_safe }
-      else
-        super
-      end
-    end
-
-    override :import_configure_github_admin_message
-    def import_configure_github_admin_message
-      if has_ci_cd_only_params?
-        github_integration_link = link_to 'GitHub integration', help_page_path('integration/github')
-
-        if current_user.can_admin_all_resources?
-          _('Note: As an administrator you may like to configure %{github_integration_link}, which will allow login via GitHub and allow connecting repositories without generating a Personal Access Token.').html_safe % { github_integration_link: github_integration_link }
-        else
-          _('Note: Consider asking your GitLab administrator to configure %{github_integration_link}, which will allow login via GitHub and allow connecting repositories without generating a Personal Access Token.').html_safe % { github_integration_link: github_integration_link }
-        end
+        s_('GithubImport|To connect to GitHub repositories, you must first authorize GitLab to access your GitHub repositories.')
       else
         super
       end
