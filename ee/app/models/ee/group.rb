@@ -255,6 +255,11 @@ module EE
       ::License.feature_available?(:usage_quotas) || ::Feature.enabled?(:usage_quotas_for_all_editions, self)
     end
 
+    override :supports_saved_replies?
+    def supports_saved_replies?
+      ::Feature.enabled?(:group_saved_replies_flag, self, type: :wip) && licensed_feature_available?(:group_saved_replies)
+    end
+
     class_methods do
       def groups_user_can(groups, user, action, same_root: false)
         # If :use_traversal_ids is enabled we can use filter optmization
