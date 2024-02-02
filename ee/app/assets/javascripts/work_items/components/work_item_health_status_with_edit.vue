@@ -139,7 +139,7 @@ export default {
         data-testid="edit-health-status"
         category="tertiary"
         size="small"
-        class="gl-ml-auto"
+        class="gl-ml-auto gl-mr-2"
         :disabled="updateInProgress"
         @click="isEditing = true"
         >{{ __('Edit') }}</gl-button
