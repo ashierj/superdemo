@@ -53,6 +53,15 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
           template: `<div><slot name="view"></slot><slot name="suggestions"></slot></div>`,
         }),
         GlIntersperse,
+        DynamicScroller: stubComponent(
+          {
+            props: ['items'],
+          },
+          {
+            template: `<div><slot :item="license" :active="false"></slot></div>`,
+            data: () => ({ license: TEST_LICENSES[0] }),
+          },
+        ),
       },
     });
   };
@@ -71,6 +80,7 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
     findFilteredSearchToken().vm.$emit('input', { data: searchTerm });
     return waitForPromises();
   };
+  const findDynamicScroller = () => wrapper.findByTestId('dynamic-scroller');
 
   describe('when the component is initially rendered', () => {
     it('shows a loading indicator while fetching the list of licenses', () => {
@@ -89,12 +99,21 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
       );
     });
 
+    it('correctly sets up a dynamic-scroller to enhance the render-performance of the licenses list', () => {
+      createComponent();
+
+      expect(findDynamicScroller().attributes()).toMatchObject({
+        'key-field': 'id',
+        'min-item-size': '32',
+        style: 'max-height: 170px;',
+      });
+    });
+
     it('shows the full list of licenses once the fetch is completed', () => {
       store.state.allDependencies.licenses = TEST_LICENSES;
       createComponent();
 
-      expect(wrapper.text()).toContain(TEST_LICENSES[0].name);
-      expect(wrapper.text()).toContain(TEST_LICENSES[1].name);
+      expect(findDynamicScroller().props('items')).toEqual(TEST_LICENSES);
     });
 
     it.each([
@@ -127,8 +146,7 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
       it('shows the filtered list of suggestions', async () => {
         await searchForLicense(TEST_LICENSES[0].name);
 
-        expect(wrapper.text()).toContain(TEST_LICENSES[0].name);
-        expect(wrapper.text()).not.toContain(TEST_LICENSES[1].name);
+        expect(findDynamicScroller().props('items')).toEqual([TEST_LICENSES[0]]);
       });
     });
 

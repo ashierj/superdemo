@@ -8,6 +8,7 @@ import {
   GlLoadingIcon,
   GlIntersperse,
 } from '@gitlab/ui';
+import { DynamicScroller, DynamicScrollerItem } from 'vendor/vue-virtual-scroller';
 
 export default {
   components: {
@@ -16,6 +17,8 @@ export default {
     GlFilteredSearchSuggestion,
     GlLoadingIcon,
     GlIntersperse,
+    DynamicScroller,
+    DynamicScrollerItem,
   },
   inject: ['licensesEndpoint'],
   props: {
@@ -105,26 +108,34 @@ export default {
     </template>
     <template #suggestions>
       <gl-loading-icon v-if="fetchingLicensesInProgress" size="sm" />
-      <template v-else>
-        <gl-filtered-search-suggestion
-          v-for="license in filteredLicenses"
-          :key="license.id"
-          :value="license.name"
+      <div v-else>
+        <dynamic-scroller
+          :items="filteredLicenses"
+          :min-item-size="32"
+          :style="{ maxHeight: '170px' }"
+          key-field="id"
+          data-testid="dynamic-scroller"
         >
-          <div class="gl-display-flex gl-align-items-center">
-            <gl-icon
-              v-if="config.multiSelect"
-              data-testid="check-icon"
-              name="check"
-              class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
-              :class="{
-                'gl-visibility-hidden': !selectedLicenseNames.includes(license.name),
-              }"
-            />
-            <span>{{ license.name }}</span>
-          </div>
-        </gl-filtered-search-suggestion>
-      </template>
+          <template #default="{ item: license, active: itemActive }">
+            <dynamic-scroller-item :item="license" :active="itemActive">
+              <gl-filtered-search-suggestion :value="license.name">
+                <div class="gl-display-flex gl-align-items-center">
+                  <gl-icon
+                    v-if="config.multiSelect"
+                    data-testid="check-icon"
+                    name="check"
+                    class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
+                    :class="{
+                      'gl-visibility-hidden': !selectedLicenseNames.includes(license.name),
+                    }"
+                  />
+                  <span>{{ license.name }}</span>
+                </div>
+              </gl-filtered-search-suggestion>
+            </dynamic-scroller-item>
+          </template>
+        </dynamic-scroller>
+      </div>
     </template>
   </gl-filtered-search-token>
 </template>
