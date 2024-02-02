@@ -2,13 +2,13 @@
 
 require('spec_helper')
 
-RSpec.describe ProfilesController, :request_store do
+RSpec.describe UserSettings::ProfilesController, :request_store, feature_category: :user_profile do
   let_it_be(:user) { create(:user) }
   let_it_be(:admin) { create(:admin) }
 
   describe 'PUT update', feature_category: :user_profile do
-    context 'updating name' do
-      subject { put :update, params: { user: { name: 'New Name' } } }
+    context 'on updating name' do
+      subject(:perform_update) { put :update, params: { user: { name: 'New Name' } } }
 
       shared_examples_for 'a user can update their name' do
         before do
@@ -16,7 +16,7 @@ RSpec.describe ProfilesController, :request_store do
         end
 
         it 'updates their name' do
-          subject
+          perform_update
 
           expect(response).to have_gitlab_http_status(:found)
           expect(current_user.reload.name).to eq('New Name')
@@ -53,7 +53,7 @@ RSpec.describe ProfilesController, :request_store do
             end
 
             it 'does not update their name' do
-              subject
+              perform_update
 
               expect(response).to have_gitlab_http_status(:found)
               expect(user.reload.name).not_to eq('New Name')
@@ -84,8 +84,8 @@ RSpec.describe ProfilesController, :request_store do
     end
   end
 
-  context 'updating public profile to private' do
-    subject { put :update, params: { user: { private_profile: true } } }
+  context 'on updating public profile to private' do
+    subject(:perform_update) { put :update, params: { user: { private_profile: true } } }
 
     shared_examples_for 'a user can make their profile private' do
       before do
@@ -93,7 +93,7 @@ RSpec.describe ProfilesController, :request_store do
       end
 
       it 'updates their profile to private' do
-        subject
+        perform_update
 
         expect(response).to have_gitlab_http_status(:found)
         expect(current_user.reload.private_profile).to be true
@@ -106,7 +106,7 @@ RSpec.describe ProfilesController, :request_store do
       end
 
       it 'does not update their profile to private' do
-        subject
+        perform_update
         expect(current_user.reload.private_profile).not_to be true
       end
     end

@@ -30,7 +30,7 @@ RSpec.describe 'User visits their profile', feature_category: :user_profile do
       end
 
       it 'displays the banner in the profile page' do
-        visit(profile_path)
+        visit(user_settings_profile_path)
         expect(page).to have_text storage_banner_text
       end
     end
@@ -41,7 +41,7 @@ RSpec.describe 'User visits their profile', feature_category: :user_profile do
       end
 
       it 'does not display the banner in the group page' do
-        visit(profile_path)
+        visit(user_settings_profile_path)
         expect(page).not_to have_text storage_banner_text
       end
     end
