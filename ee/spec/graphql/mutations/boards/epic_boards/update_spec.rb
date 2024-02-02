@@ -25,7 +25,7 @@ RSpec.describe ::Mutations::Boards::EpicBoards::Update do
 
     specify do
       is_expected.to have_graphql_arguments(
-        :id, :name, :hideBacklogList, :hideClosedList, :labels, :labelIds, :displayColors)
+        :clientMutationId, :id, :name, :hideBacklogList, :hideClosedList, :labels, :labelIds, :displayColors)
     end
 
     it { is_expected.to have_graphql_fields(:epic_board).at_least }
