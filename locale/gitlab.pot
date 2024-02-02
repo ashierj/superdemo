@@ -52282,13 +52282,13 @@ msgstr ""
 msgid "Trigger token was created successfully."
 msgstr ""
 
+msgid "Trigger token was successfully updated."
+msgstr ""
+
 msgid "Trigger token:"
 msgstr ""
 
 msgid "Trigger variables"
-msgstr ""
-
-msgid "Trigger was successfully updated."
 msgstr ""
 
 msgid "Triggerer"
