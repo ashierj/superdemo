@@ -35167,6 +35167,9 @@ msgstr ""
 msgid "PackageRegistry|Target SHA: %{sha}"
 msgstr ""
 
+msgid "PackageRegistry|Terraform module"
+msgstr ""
+
 msgid "PackageRegistry|There are no other versions of this package."
 msgstr ""
 
