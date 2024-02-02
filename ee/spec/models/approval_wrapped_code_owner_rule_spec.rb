@@ -33,24 +33,8 @@ RSpec.describe ApprovalWrappedCodeOwnerRule, feature_category: :code_review_work
         merge_request.mark_as_merged!
       end
 
-      context 'when use_new_rule_finalize_approach flag is on' do
-        before do
-          stub_feature_flags(use_new_rule_finalize_approach: true)
-        end
-
-        it 'returns 0' do
-          expect(subject.approvals_required).to eq(5)
-        end
-      end
-
-      context 'when use_new_rule_finalize_approach flag is off' do
-        before do
-          stub_feature_flags(use_new_rule_finalize_approach: false)
-        end
-
-        it 'returns 0' do
-          expect(subject.approvals_required).to eq(0)
-        end
+      it 'returns 0' do
+        expect(subject.approvals_required).to eq(5)
       end
     end
 
