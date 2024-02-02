@@ -708,6 +708,16 @@ RSpec.describe 'Edit group settings', :js, feature_category: :groups_and_project
         group.namespace_settings.update!(new_user_signups_cap: group.group_members.count)
       end
 
+      context 'if user cap changes from limited to unlimited' do
+        before do
+          visit edit_group_path(group, anchor: 'js-permissions-settings')
+        end
+
+        it_behaves_like 'confirmation modal before submit' do
+          let(:new_user_signups_cap_value) { nil }
+        end
+      end
+
       context 'when the auto approve pending users feature flag is enabled' do
         before do
           stub_feature_flags(saas_user_caps_auto_approve_pending_users_on_cap_increase: true)
@@ -723,12 +733,6 @@ RSpec.describe 'Edit group settings', :js, feature_category: :groups_and_project
           context 'if user cap increases' do
             it_behaves_like 'confirmation modal before submit' do
               let(:new_user_signups_cap_value) { group.namespace_settings.new_user_signups_cap + 1 }
-            end
-          end
-
-          context 'if user cap changes from limited to unlimited' do
-            it_behaves_like 'confirmation modal before submit' do
-              let(:new_user_signups_cap_value) { nil }
             end
           end
         end
@@ -767,12 +771,6 @@ RSpec.describe 'Edit group settings', :js, feature_category: :groups_and_project
           context 'if user cap increases' do
             it_behaves_like 'successful form submit' do
               let(:new_user_signups_cap_value) { group.namespace_settings.new_user_signups_cap + 1 }
-            end
-          end
-
-          context 'if user cap changes from limited to unlimited' do
-            it_behaves_like 'successful form submit' do
-              let(:new_user_signups_cap_value) { nil }
             end
           end
 
