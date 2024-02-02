@@ -18117,6 +18117,9 @@ msgstr ""
 msgid "Display blame info"
 msgstr ""
 
+msgid "Display by"
+msgstr ""
+
 msgid "Display milestones"
 msgstr ""
 
@@ -21179,9 +21182,6 @@ msgid "Filter"
 msgstr ""
 
 msgid "Filter activity"
-msgstr ""
-
-msgid "Filter by"
 msgstr ""
 
 msgid "Filter by %{page_context_word} that are currently open."
@@ -26905,6 +26905,9 @@ msgid "Issue boards"
 msgstr ""
 
 msgid "Issue cannot be found."
+msgstr ""
+
+msgid "Issue count"
 msgstr ""
 
 msgid "Issue created from vulnerability %{vulnerability_link}"

@@ -303,7 +303,7 @@ export default {
     },
   },
   filterByOptions: [
-    { value: FILTER_BY_ISSUES, text: __('Issues'), props: { 'data-testid': 'issue-button' } },
+    { value: FILTER_BY_ISSUES, text: __('Issue count'), props: { 'data-testid': 'issue-button' } },
     {
       value: FILTER_BY_ISSUE_WEIGHT,
       text: __('Issue weight'),
@@ -315,8 +315,8 @@ export default {
 
 <template>
   <div>
-    <div class="burndown-header gl-display-flex gl-align-items-center gl-flex-wrap">
-      <strong ref="filterLabel">{{ __('Filter by') }}</strong>
+    <div class="burndown-header gl-display-flex gl-align-items-center gl-flex-wrap gl-gap-2">
+      <strong ref="filterLabel">{{ __('Display by') }}</strong>
       <segmented-control-button-group
         :value="filterBySelectedValue"
         :options="$options.filterByOptions"

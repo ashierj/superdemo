@@ -99,7 +99,7 @@ describe('burndown_chart', () => {
     createComponent();
 
     expect(findFilterByControl().props('options')).toEqual([
-      { value: 'issues', text: 'Issues', props: { 'data-testid': 'issue-button' } },
+      { value: 'issues', text: 'Issue count', props: { 'data-testid': 'issue-button' } },
       { value: 'issue_weight', text: 'Issue weight', props: { 'data-testid': 'weight-button' } },
     ]);
   });
@@ -129,7 +129,7 @@ describe('burndown_chart', () => {
   it('sets section title and chart title correctly', () => {
     createComponent();
 
-    expect(findFilterLabel().text()).toBe('Filter by');
+    expect(findFilterLabel().text()).toBe('Display by');
     expect(findBurndownChart().props().showTitle).toBe(true);
   });
 
