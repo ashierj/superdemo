@@ -2,6 +2,8 @@
 
 require 'fast_spec_helper'
 
+PatternsList = Struct.new(:name, :patterns)
+
 RSpec.describe '.gitlab/ci/rules.gitlab-ci.yml', feature_category: :tooling do
   config = YAML.safe_load_file(
     File.expand_path('../../.gitlab/ci/rules.gitlab-ci.yml', __dir__),
@@ -61,63 +63,107 @@ RSpec.describe '.gitlab/ci/rules.gitlab-ci.yml', feature_category: :tooling do
 
   describe 'patterns' do
     foss_context = !Gitlab.ee?
-    no_coverage_needed = (
+    no_matching_needed_files = (
       [
-        ".editorconfig",
-        ".foreman",
-        ".git-blame-ignore-revs",
-        ".gitlab/CODEOWNERS",
-        ".gitleaksignore",
-        ".license_encryption_key.pub",
-        ".mailmap",
-        ".prettierignore",
-        ".projections.json.example",
-        ".rubocop_revert_ignores.txt",
-        ".ruby-version",
-        ".test_license_encryption_key.pub",
-        ".tool-versions",
-        ".vale.ini",
-        ".vscode/extensions.json",
-        "Gemfile.checksum",
-        "Guardfile",
-        "INSTALLATION_TYPE",
-        "LICENSE",
-        "Pipfile.lock",
-        "ee/LICENSE"
+        '.byebug_history',
+        '.editorconfig',
+        '.eslintcache',
+        '.foreman',
+        '.git-blame-ignore-revs',
+        '.gitlab_kas_secret',
+        '.gitlab_shell_secret',
+        '.gitlab_workhorse_secret',
+        '.gitlab/agents/review-apps/config.yaml',
+        '.gitlab/changelog_config.yml',
+        '.gitlab/CODEOWNERS',
+        '.gitleaksignore',
+        '.gitpod.yml',
+        '.license_encryption_key.pub',
+        '.mailmap',
+        '.prettierignore',
+        '.projections.json.example',
+        '.rubocop_revert_ignores.txt',
+        '.ruby-version',
+        '.solargraph.yml.example',
+        '.solargraph.yml',
+        '.test_license_encryption_key.pub',
+        '.tool-versions',
+        '.vale.ini',
+        '.vscode/extensions.json',
+        'ee/lib/ee/gitlab/background_migration/.rubocop.yml',
+        'ee/LICENSE',
+        'Gemfile.checksum',
+        'gems/error_tracking_open_api/.openapi-generator/FILES',
+        'gems/error_tracking_open_api/.openapi-generator/VERSION',
+        'Guardfile',
+        'INSTALLATION_TYPE',
+        'lib/gitlab/background_migration/.rubocop.yml',
+        'lib/gitlab/ci/templates/.yamllint',
+        'LICENSE',
+        'Pipfile.lock',
+        'storybook/.env.template',
+        'yarn-error.log'
       ] +
-      Dir.glob('.github/*', File::FNM_DOTMATCH) +
-      Dir.glob('.gitlab/{issue,merge_request}_templates/**/*', File::FNM_DOTMATCH) +
-      Dir.glob('.gitlab/*.toml', File::FNM_DOTMATCH) +
-      Dir.glob('.lefthook/**/*', File::FNM_DOTMATCH) +
-      Dir.glob('changelogs/*', File::FNM_DOTMATCH) +
-      Dir.glob('file_hooks/**/*', File::FNM_DOTMATCH) +
-      Dir.glob('patches/*', File::FNM_DOTMATCH) +
-      Dir.glob('tmp/**/*', File::FNM_DOTMATCH) +
-      Dir.glob('{,**/}.gitkeep', File::FNM_DOTMATCH) +
-      Dir.glob('{,**/}.gitignore', File::FNM_DOTMATCH) +
-      Dir.glob('*.md', File::FNM_DOTMATCH)
+      Dir.glob('.bundle/**/*') +
+      Dir.glob('.github/*') +
+      Dir.glob('.gitlab/{issue,merge_request}_templates/**/*') +
+      Dir.glob('.gitlab/*.toml') +
+      Dir.glob('{,**/}.{DS_Store,eslintrc.yml,gitignore,gitkeep,keep}', File::FNM_DOTMATCH) +
+      Dir.glob('{,vendor/}gems/*/.*') +
+      Dir.glob('{.git,.lefthook,.ruby-lsp}/**/*') +
+      Dir.glob('{file_hooks,log}/**/*') +
+      Dir.glob('{metrics_server,sidekiq_cluster}/*') +
+      Dir.glob('{spec/fixtures,tmp}/**/*', File::FNM_DOTMATCH) +
+      Dir.glob('*.md') +
+      Dir.glob('changelogs/*') +
+      Dir.glob('doc/.{markdownlint,vale}/**/*') +
+      Dir.glob('keeps/**/*') +
+      Dir.glob('node_modules/**/*', File::FNM_DOTMATCH) +
+      Dir.glob('patches/*') +
+      Dir.glob('public/assets/**/.*') +
+      Dir.glob('qa/.{,**/}*') +
+      Dir.glob('qa/**/.gitlab-ci.yml') +
+      Dir.glob('shared/**/*') +
+      Dir.glob('workhorse/.*')
     ).freeze
-    expected_missing_coverage = (
-      Dir.glob("keeps/**/*") +
-      Dir.glob("metrics_server/*") +
-      Dir.glob("sidekiq_cluster/*") +
-      ["\"workhorse/testdata/file-\\303\\244.pdf\""]
+    no_matching_needed_files_ci_specific = (
+      [
+        'metrics.txt'
+      ] +
+      Dir.glob('{auto_explain,crystalball,knapsack,rspec}/**/*') +
+      Dir.glob('coverage/**/*', File::FNM_DOTMATCH) +
+      Dir.glob('vendor/ruby/**/*', File::FNM_DOTMATCH)
     ).freeze
-    all_files = `git ls-files`.split("\n") - no_coverage_needed
-    all_files -= Dir.glob('ee/**/*') if foss_context
+    all_files = Dir.glob('{,**/}*', File::FNM_DOTMATCH) -
+      no_matching_needed_files -
+      no_matching_needed_files_ci_specific
+    all_files -= Dir.glob('ee/**/*', File::FNM_DOTMATCH) if foss_context
+    all_files.reject! { |f| File.directory?(f) }
 
-    all_patterns_files = Set.new
-
-    config.each do |name, patterns|
+    # One loop to construct the data we need as
+    # { pattern => [pattern_files] }
+    patterns_lists = config.each_with_object([]) do |(name, patterns), memo|
       next unless name.start_with?('.')
       next unless name.end_with?('patterns')
       # Ignore EE-only patterns list when in FOSS context
       next if foss_context && patterns.all? { |pattern| pattern =~ %r|{?ee/| }
 
-      describe "patterns list `#{name}`" do
-        patterns.each do |pattern|
-          pattern_files = Dir.glob(pattern, File::FNM_DOTMATCH)
-          all_patterns_files.merge(pattern_files)
+      memo << PatternsList.new(name, patterns)
+    end
+
+    patterns_files = patterns_lists.each_with_object({}) do |patterns_list, memo|
+      patterns_list.patterns.each do |pattern|
+        next if memo.key?(pattern)
+
+        memo[pattern] = Dir.glob(pattern)
+      end
+    end
+
+    # Example: '.ci-patterns': [".gitlab-ci.yml", ".gitlab/ci/**/*", "scripts/rspec_helpers.sh"]
+    patterns_lists.each do |patterns_list|
+      describe "patterns list `#{patterns_list.name}`" do
+        patterns_list.patterns.each do |pattern|
+          pattern_files = patterns_files.fetch(pattern)
 
           it "detects `#{pattern}` as a matching pattern" do
             matching_files = (all_files & pattern_files)
@@ -128,14 +174,15 @@ RSpec.describe '.gitlab/ci/rules.gitlab-ci.yml', feature_category: :tooling do
       end
     end
 
-    describe 'missed coverage', :aggregate_failures do
-      it 'does not miss coverage' do
-        missed_files = (all_files - all_patterns_files.to_a)
-        missed_files_without_expected_missing_coverage = (missed_files - expected_missing_coverage)
+    describe 'missed matched files' do
+      all_matching_files = Set.new
 
-        expect(missed_files).not_to be_empty
-        expect(missed_files_without_expected_missing_coverage).to be_empty
-        p(missed_files_without_expected_missing_coverage) unless missed_files_without_expected_missing_coverage.empty?
+      patterns_files.each_value do |files|
+        all_matching_files.merge(files)
+      end
+
+      it 'does not miss files to match' do
+        expect(all_files - all_matching_files.to_a).to be_empty
       end
     end
   end
