@@ -30,463 +30,220 @@ RSpec.describe ApprovalRules::FinalizeService do
       project_rule.groups << group1
     end
 
-    context 'when use_new_rule_finalize_approach is on' do
-      context 'when approval rules are overwritten' do
-        before do
-          rule = create(:approval_merge_request_rule, merge_request: merge_request, name: 'applicable', approvals_required: 32)
-          rule.users = [user2, user3]
-          rule.groups << group2
-
-          rule_2 = create(:approval_merge_request_rule, merge_request: merge_request, name: 'not applicable', approvals_required: 2)
-          rule_2.groups << group2
-
-          protected_rule = create(:approval_project_rule, project: project, name: 'not applicable', approvals_required: 2)
-
-          create(:approval_project_rules_protected_branch, approval_project_rule: protected_rule)
-
-          create(:approval_merge_request_rule_source, approval_merge_request_rule: rule_2, approval_project_rule:
-                 protected_rule)
-
-          project.update!(disable_overriding_approvers_per_merge_request: false)
-        end
-
-        context 'when mr is not merged' do
-          it 'does nothing' do
-            expect do
-              subject.execute
-            end.not_to change { ApprovalMergeRequestRule.count }
-          end
-        end
-
-        context 'when mr is merged' do
-          context 'when the code owner rule is required' do
-            let!(:mr_code_owner_rule) { create(:code_owner_rule, merge_request: merge_request, approvals_required: 5) }
-
-            it 'updates the approvals_required accordingly' do
-              merge_request.mark_as_merged!
-
-              expect { subject.execute }.to change { mr_code_owner_rule.reload.approvals_required }.from(5).to(0)
-            end
-          end
-
-          it 'does not copy project rules, and updates approval mapping with MR rules' do
-            merge_request.mark_as_merged!
-
-            expect do
-              subject.execute
-            end.not_to change { ApprovalMergeRequestRule.count }
-
-            expect(merge_request.approval_rules.regular.count).to eq(2)
-
-            applicable_rule = merge_request.approval_rules.regular.first
-
-            expect(applicable_rule.name).to eq('applicable')
-            expect(applicable_rule.approvals_required).to eq(32)
-            expect(applicable_rule.users).to contain_exactly(user2, user3, group2_user)
-            expect(applicable_rule.groups).to contain_exactly(group2)
-            expect(applicable_rule.rule_type).not_to be_nil
-            expect(applicable_rule.applicable_post_merge).to be_truthy
-            expect(applicable_rule.approved_approvers).to contain_exactly(user3, group2_user)
-
-            non_applicable_rule = merge_request.approval_rules.regular.second
-
-            expect(non_applicable_rule.name).to eq('not applicable')
-            expect(non_applicable_rule.approvals_required).to eq(2)
-            expect(non_applicable_rule.users).to contain_exactly(group2_user)
-            expect(non_applicable_rule.groups).to contain_exactly(group2)
-            expect(non_applicable_rule.rule_type).not_to be_nil
-            expect(non_applicable_rule.applicable_post_merge).to be_falsey
-            expect(non_applicable_rule.approved_approvers).to contain_exactly(group2_user)
-          end
-
-          # Test for https://gitlab.com/gitlab-org/gitlab/issues/13488
-          it 'gracefully merges duplicate users' do
-            merge_request.mark_as_merged!
-
-            group2.add_developer(user2)
-
-            expect do
-              subject.execute
-            end.not_to change { ApprovalMergeRequestRule.count }
-
-            rule = merge_request.approval_rules.regular.first
-
-            expect(rule.name).to eq('applicable')
-            expect(rule.users).to contain_exactly(user2, user3, group2_user)
-          end
-        end
-      end
-
-      context 'when approval rules are not overwritten' do
-        let!(:any_approver) { create(:approval_project_rule, project: project, name: 'hallo', approvals_required: 45, rule_type: :any_approver) }
-        let!(:protected_branch) { create(:approval_project_rules_protected_branch, approval_project_rule: protected_rule) }
-        let(:protected_rule) { create(:approval_project_rule, project: project, name: 'other_branch', approvals_required: 32) }
-        let!(:reporter_rule) { create(:approval_project_rule, :license_scanning, project: project, name: 'reporter_branch', approvals_required: 21) }
-
-        let!(:mr_code_owner_rule) { create(:code_owner_rule, merge_request: merge_request) }
-        let!(:non_appl_report_rule) do
-          rule = create(:report_approver_rule, :license_scanning, merge_request: merge_request, name: 'not applicable', approvals_required: 2)
-
-          protected_rule = create(:approval_project_rule, :license_scanning, project: project, name: 'not applicable', approvals_required: 2)
-
-          create(:approval_project_rules_protected_branch, approval_project_rule: protected_rule)
-
-          create(:approval_merge_request_rule_source, approval_merge_request_rule: rule, approval_project_rule:
-                 protected_rule)
-
-          rule
-        end
-
-        before do
-          project.update!(disable_overriding_approvers_per_merge_request: true)
-        end
-
-        context 'when mr is not merged' do
-          it 'does nothing' do
-            expect do
-              subject.execute
-            end.not_to change { ApprovalMergeRequestRule.count }
-          end
-        end
-
-        context 'when mr is merged' do
-          let(:expected_rules) do
-            {
-              regular: {
-                required: 12,
-                name: "foo",
-                users: [user1, user2, group1_user],
-                groups: [group1],
-                approvers: [user1, group1_user],
-                rule_type: 'regular',
-                report_type: nil,
-                applicable_post_merge: true
-              },
-              any_approver: {
-                required: 45,
-                name: "hallo",
-                users: [],
-                groups: [],
-                approvers: [user1, user3, group1_user, group2_user],
-                rule_type: 'any_approver',
-                report_type: nil,
-                applicable_post_merge: true
-              },
-              non_applicable: {
-                required: 32,
-                name: "other_branch",
-                users: [],
-                groups: [],
-                approvers: [],
-                rule_type: 'regular',
-                applicable_post_merge: false
-              }
-            }
-          end
-
-          context 'when the code owner rule is required' do
-            let!(:mr_code_owner_rule) { create(:code_owner_rule, merge_request: merge_request, approvals_required: 5) }
-
-            it 'updates the approvals_required accordingly' do
-              merge_request.mark_as_merged!
-
-              expect { subject.execute }.to change { mr_code_owner_rule.reload.approvals_required }.from(5).to(0)
-            end
-          end
-
-          it 'copies the expected rules with expected params' do
-            expect(mr_code_owner_rule.applicable_post_merge).to eq(nil)
-            expect(non_appl_report_rule.applicable_post_merge).to eq(nil)
-
-            merge_request.mark_as_merged!
-
-            expect do
-              subject.execute
-            end.to change { ApprovalMergeRequestRule.count }.by(3)
-
-            expect(mr_code_owner_rule.reload.applicable_post_merge).to eq(true)
-            expect(mr_code_owner_rule.approvals_required).to eq(0)
-            expect(non_appl_report_rule.reload.applicable_post_merge).to eq(false)
-            expect(merge_request.approval_rules.size).to eq(5)
-
-            expected_rules.each do |_key, hash|
-              rule = merge_request.approval_rules.find_by(name: hash[:name])
-
-              expect(rule).to be_truthy
-              expect(rule.rule_type).to eq(hash[:rule_type])
-              expect(rule.approvals_required).to eq(hash[:required])
-              expect(rule.report_type).to eq(hash[:report_type])
-              expect(rule.applicable_post_merge).to eq(hash[:applicable_post_merge])
-              expect(rule.users).to contain_exactly(*hash[:users])
-              expect(rule.groups).to contain_exactly(*hash[:groups])
-              expect(rule.approved_approvers).to contain_exactly(*hash[:approvers])
-            end
-          end
-
-          context 'when the same merge request rule exists in the project rules' do
-            it 'logs the validation error and sets the merge rule to not applicable post merge' do
-              rule_2 = create(:approval_merge_request_rule, merge_request: merge_request, name: 'not applicable')
-
-              protected_rule = create(:approval_project_rule, project: project, name: 'not applicable')
-
-              create(:approval_project_rules_protected_branch, approval_project_rule: protected_rule)
-
-              create(:approval_merge_request_rule_source, approval_merge_request_rule: rule_2, approval_project_rule:
-                     protected_rule)
-
-              merge_request.mark_as_merged!
-
-              expect(Gitlab::AppLogger).to receive(:debug).with(/Failed to persist approval rule:/)
-
-              expect(rule_2.applicable_post_merge).to eq(nil)
-
-              expect do
-                subject.execute
-              end.to change { ApprovalMergeRequestRule.count }.by(3)
-
-              expect(rule_2.reload.applicable_post_merge).to eq(false)
-            end
-          end
-        end
-      end
-    end
-
-    context 'when use_new_rule_finalize_approach is off' do
+    context 'when approval rules are overwritten' do
       before do
-        stub_feature_flags(use_new_rule_finalize_approach: false)
+        rule = create(:approval_merge_request_rule, merge_request: merge_request, name: 'applicable', approvals_required: 32)
+        rule.users = [user2, user3]
+        rule.groups << group2
+
+        rule_2 = create(:approval_merge_request_rule, merge_request: merge_request, name: 'not applicable', approvals_required: 2)
+        rule_2.groups << group2
+
+        protected_rule = create(:approval_project_rule, project: project, name: 'not applicable', approvals_required: 2)
+
+        create(:approval_project_rules_protected_branch, approval_project_rule: protected_rule)
+
+        create(:approval_merge_request_rule_source, approval_merge_request_rule: rule_2, approval_project_rule:
+               protected_rule)
+
+        project.update!(disable_overriding_approvers_per_merge_request: false)
       end
 
-      shared_examples 'skipping when unmerged' do
-        it 'does nothing if unmerged' do
+      context 'when mr is not merged' do
+        it 'does nothing' do
           expect do
             subject.execute
           end.not_to change { ApprovalMergeRequestRule.count }
         end
       end
 
-      context 'when there is no merge request rules' do
-        it_behaves_like 'skipping when unmerged'
+      context 'when mr is merged' do
+        context 'when the code owner rule is required' do
+          let!(:mr_code_owner_rule) { create(:code_owner_rule, merge_request: merge_request, approvals_required: 5) }
 
-        context 'when merged' do
-          before do
-            merge_request.approval_rules.code_owner.create!(name: 'Code Owner', rule_type: :code_owner)
+          it 'updates the approvals_required accordingly' do
+            merge_request.mark_as_merged!
+
+            expect { subject.execute }.to change { mr_code_owner_rule.reload.approvals_required }.from(5).to(0)
           end
+        end
 
-          context 'when copying the rules' do
-            let!(:any_approver) { create(:approval_project_rule, project: project, name: 'hallo', approvals_required: 45, rule_type: :any_approver) }
-            let!(:protected_branch) { create(:approval_project_rules_protected_branch, approval_project_rule: protected_rule) }
-            let(:protected_rule) { create(:approval_project_rule, project: project, name: 'other_branch', approvals_required: 32) }
-            let!(:reporter_rule) { create(:approval_project_rule, :license_scanning, project: project, name: 'reporter_branch', approvals_required: 21) }
+        it 'does not copy project rules, and updates approval mapping with MR rules' do
+          merge_request.mark_as_merged!
 
-            let(:expected_rules) do
-              {
-                regular: {
-                  required: 12,
-                  name: "foo",
-                  users: [user1, user2, group1_user],
-                  groups: [group1],
-                  approvers: [user1, group1_user],
-                  rule_type: 'regular',
-                  report_type: nil
-                },
-                code_owner: {
-                  required: 0,
-                  name: "Code Owner",
-                  users: [],
-                  groups: [],
-                  approvers: [],
-                  rule_type: 'code_owner',
-                  report_type: nil
-                },
-                any_approver: {
-                  required: 45,
-                  name: "hallo",
-                  users: [],
-                  groups: [],
-                  approvers: [user1, user3, group1_user, group2_user],
-                  rule_type: 'any_approver',
-                  report_type: nil
-                },
-                report_approver: {
-                  required: 21,
-                  name: "reporter_branch",
-                  users: [],
-                  groups: [],
-                  approvers: [],
-                  rule_type: 'report_approver',
-                  report_type: 'license_scanning'
-                },
-                non_applicable: {
-                  required: 32,
-                  name: "other_branch",
-                  users: [],
-                  groups: [],
-                  approvers: [],
-                  rule_type: 'regular'
-                }
-              }
-            end
+          expect do
+            subject.execute
+          end.not_to change { ApprovalMergeRequestRule.count }
 
-            context 'when copy_additional_properties_approval_rules is on' do
-              context 'when one of the rules is invalid with the new attributes' do
-                it 'retries with simplified attributes' do
-                  project.approval_rules.each(&:destroy!)
-                  project_rule = create(:approval_project_rule, :license_scanning, project: project, name: 'reporter_branch', approvals_required: 21)
-                  project.approval_rules.reload
-                  rule_double = instance_double(
-                    ApprovalMergeRequestRule,
-                    valid?: false,
-                    errors: ActiveModel::Errors.new(project_rule))
+          expect(merge_request.approval_rules.regular.count).to eq(2)
 
-                  rules = merge_request.approval_rules
-                  allow(merge_request).to receive(:approval_rules).and_return(rules)
-                  expect(rules).to receive(:new).with(hash_including('approvals_required', 'name', 'rule_type', 'report_type')).and_return(rule_double)
-                  expect(rules).to receive(:create!).with(hash_not_including('rule_type', 'report_type')).and_call_original
-                  expect(Gitlab::AppLogger).to receive(:debug)
+          applicable_rule = merge_request.approval_rules.regular.first
 
-                  merge_request.mark_as_merged!
+          expect(applicable_rule.name).to eq('applicable')
+          expect(applicable_rule.approvals_required).to eq(32)
+          expect(applicable_rule.users).to contain_exactly(user2, user3, group2_user)
+          expect(applicable_rule.groups).to contain_exactly(group2)
+          expect(applicable_rule.rule_type).not_to be_nil
+          expect(applicable_rule.applicable_post_merge).to be_truthy
+          expect(applicable_rule.approved_approvers).to contain_exactly(user3, group2_user)
 
-                  expect do
-                    subject.execute
-                  end.to change { ApprovalMergeRequestRule.count }.by(1)
+          non_applicable_rule = merge_request.approval_rules.regular.second
 
-                  rule = merge_request.approval_rules.find_by(name: 'reporter_branch')
+          expect(non_applicable_rule.name).to eq('not applicable')
+          expect(non_applicable_rule.approvals_required).to eq(2)
+          expect(non_applicable_rule.users).to contain_exactly(group2_user)
+          expect(non_applicable_rule.groups).to contain_exactly(group2)
+          expect(non_applicable_rule.rule_type).not_to be_nil
+          expect(non_applicable_rule.applicable_post_merge).to be_falsey
+          expect(non_applicable_rule.approved_approvers).to contain_exactly(group2_user)
+        end
 
-                  expect(rule.approvals_required).to eq(21)
-                  expect(rule.report_type).to eq(nil)
-                  expect(rule.rule_type).to eq('regular')
-                end
-              end
+        # Test for https://gitlab.com/gitlab-org/gitlab/issues/13488
+        it 'gracefully merges duplicate users' do
+          merge_request.mark_as_merged!
 
-              it 'copies the expected rules with expected params' do
-                merge_request.mark_as_merged!
+          group2.add_developer(user2)
 
-                expect do
-                  subject.execute
-                end.to change { ApprovalMergeRequestRule.count }.by(4)
+          expect do
+            subject.execute
+          end.not_to change { ApprovalMergeRequestRule.count }
 
-                expect(merge_request.approval_rules.size).to be(5)
+          rule = merge_request.approval_rules.regular.first
 
-                expected_rules.each do |_key, hash|
-                  rule = merge_request.approval_rules.find_by(name: hash[:name])
+          expect(rule.name).to eq('applicable')
+          expect(rule.users).to contain_exactly(user2, user3, group2_user)
+        end
+      end
+    end
 
-                  expect(rule).to be_truthy
-                  expect(rule.rule_type).to eq(hash[:rule_type])
-                  expect(rule.approvals_required).to eq(hash[:required])
-                  expect(rule.report_type).to eq(hash[:report_type])
-                  expect(rule.users).to contain_exactly(*hash[:users])
-                  expect(rule.groups).to contain_exactly(*hash[:groups])
-                  expect(rule.approved_approvers).to contain_exactly(*hash[:approvers])
-                end
-              end
-            end
+    context 'when approval rules are not overwritten' do
+      let!(:any_approver) { create(:approval_project_rule, project: project, name: 'hallo', approvals_required: 45, rule_type: :any_approver) }
+      let!(:protected_branch) { create(:approval_project_rules_protected_branch, approval_project_rule: protected_rule) }
+      let(:protected_rule) { create(:approval_project_rule, project: project, name: 'other_branch', approvals_required: 32) }
+      let!(:reporter_rule) { create(:approval_project_rule, :license_scanning, project: project, name: 'reporter_branch', approvals_required: 21) }
 
-            context 'when copy_additional_properties_approval_rules is off' do
-              it 'copies the expected rules with expected params - including non-applicable' do
-                merge_request.mark_as_merged!
+      let!(:mr_code_owner_rule) { create(:code_owner_rule, merge_request: merge_request) }
+      let!(:non_appl_report_rule) do
+        rule = create(:report_approver_rule, :license_scanning, merge_request: merge_request, name: 'not applicable', approvals_required: 2)
 
-                stub_feature_flags(copy_additional_properties_approval_rules: false)
+        protected_rule = create(:approval_project_rule, :license_scanning, project: project, name: 'not applicable', approvals_required: 2)
 
-                expected_rules[:regular][:rule_type] = 'regular'
-                expected_rules[:any_approver][:rule_type] = 'regular'
-                expected_rules[:any_approver][:approvers] = []
-                expected_rules[:report_approver][:rule_type] = 'regular'
+        create(:approval_project_rules_protected_branch, approval_project_rule: protected_rule)
 
-                expect do
-                  subject.execute
-                end.to change { ApprovalMergeRequestRule.count }.by(4)
+        create(:approval_merge_request_rule_source, approval_merge_request_rule: rule, approval_project_rule:
+               protected_rule)
 
-                expect(merge_request.approval_rules.size).to be(5)
+        rule
+      end
 
-                expected_rules.each do |_key, hash|
-                  rule = merge_request.approval_rules.find_by(name: hash[:name])
+      before do
+        project.update!(disable_overriding_approvers_per_merge_request: true)
+      end
 
-                  expect(rule).to be_truthy
-                  expect(rule.rule_type).to eq(hash[:rule_type])
-                  expect(rule.report_type).to be_nil
-                  expect(rule.approvals_required).to eq(hash[:required])
-                  expect(rule.users).to contain_exactly(*hash[:users])
-                  expect(rule.groups).to contain_exactly(*hash[:groups])
-                  expect(rule.approved_approvers).to contain_exactly(*hash[:approvers])
-                end
-              end
-            end
-          end
-
-          shared_examples 'idempotent approval tests' do |rule_type|
-            before do
-              project_rule.destroy!
-
-              rule = create(:approval_project_rule, project: project, name: 'another rule', approvals_required: 2, rule_type: rule_type)
-              rule.users = [user1]
-              rule.groups << group1
-
-              # Emulate merge requests approval rules synced with project rule
-              mr_rule = create(:approval_merge_request_rule, merge_request: merge_request, name: rule.name, approvals_required: 2, rule_type: rule_type)
-              mr_rule.users = rule.users
-              mr_rule.groups = rule.groups
-            end
-
-            it 'does not create a new rule if one exists' do
-              merge_request.mark_as_merged!
-
-              expect do
-                2.times { subject.execute }
-              end.not_to change { ApprovalMergeRequestRule.count }
-            end
-          end
-
-          ApprovalProjectRule.rule_types.except(:code_owner, :report_approver).each do |rule_type, _value|
-            it_behaves_like 'idempotent approval tests', rule_type
-          end
+      context 'when mr is not merged' do
+        it 'does nothing' do
+          expect do
+            subject.execute
+          end.not_to change { ApprovalMergeRequestRule.count }
         end
       end
 
-      context 'when there is a regular merge request rule' do
-        before do
-          rule = create(:approval_merge_request_rule, merge_request: merge_request, name: 'bar', approvals_required: 32)
-          rule.users = [user2, user3]
-          rule.groups << group2
+      context 'when mr is merged' do
+        let(:expected_rules) do
+          {
+            regular: {
+              required: 12,
+              name: "foo",
+              users: [user1, user2, group1_user],
+              groups: [group1],
+              approvers: [user1, group1_user],
+              rule_type: 'regular',
+              report_type: nil,
+              applicable_post_merge: true
+            },
+            any_approver: {
+              required: 45,
+              name: "hallo",
+              users: [],
+              groups: [],
+              approvers: [user1, user3, group1_user, group2_user],
+              rule_type: 'any_approver',
+              report_type: nil,
+              applicable_post_merge: true
+            },
+            non_applicable: {
+              required: 32,
+              name: "other_branch",
+              users: [],
+              groups: [],
+              approvers: [],
+              rule_type: 'regular',
+              applicable_post_merge: false
+            }
+          }
         end
 
-        it_behaves_like 'skipping when unmerged'
+        context 'when the code owner rule is required' do
+          let!(:mr_code_owner_rule) { create(:code_owner_rule, merge_request: merge_request, approvals_required: 5) }
 
-        context 'when merged' do
-          it 'does not copy project rules, and updates approval mapping with MR rules' do
-            allow(subject).to receive(:copy_project_approval_rules)
-
+          it 'updates the approvals_required accordingly' do
             merge_request.mark_as_merged!
 
-            expect do
-              subject.execute
-            end.not_to change { ApprovalMergeRequestRule.count }
-
-            rule = merge_request.approval_rules.regular.first
-
-            expect(rule.name).to eq('bar')
-            expect(rule.approvals_required).to eq(32)
-            expect(rule.users).to contain_exactly(user2, user3, group2_user)
-            expect(rule.groups).to contain_exactly(group2)
-            expect(rule.rule_type).not_to be_nil
-
-            expect(rule.approved_approvers).to contain_exactly(user3, group2_user)
-            expect(subject).not_to have_received(:copy_project_approval_rules)
+            expect { subject.execute }.to change { mr_code_owner_rule.reload.approvals_required }.from(5).to(0)
           end
+        end
 
-          # Test for https://gitlab.com/gitlab-org/gitlab/issues/13488
-          it 'gracefully merges duplicate users' do
+        it 'copies the expected rules with expected params' do
+          expect(mr_code_owner_rule.applicable_post_merge).to eq(nil)
+          expect(non_appl_report_rule.applicable_post_merge).to eq(nil)
+
+          merge_request.mark_as_merged!
+
+          expect do
+            subject.execute
+          end.to change { ApprovalMergeRequestRule.count }.by(3)
+
+          expect(mr_code_owner_rule.reload.applicable_post_merge).to eq(true)
+          expect(mr_code_owner_rule.approvals_required).to eq(0)
+          expect(non_appl_report_rule.reload.applicable_post_merge).to eq(false)
+          expect(merge_request.approval_rules.size).to eq(5)
+
+          expected_rules.each do |_key, hash|
+            rule = merge_request.approval_rules.find_by(name: hash[:name])
+
+            expect(rule).to be_truthy
+            expect(rule.rule_type).to eq(hash[:rule_type])
+            expect(rule.approvals_required).to eq(hash[:required])
+            expect(rule.report_type).to eq(hash[:report_type])
+            expect(rule.applicable_post_merge).to eq(hash[:applicable_post_merge])
+            expect(rule.users).to contain_exactly(*hash[:users])
+            expect(rule.groups).to contain_exactly(*hash[:groups])
+            expect(rule.approved_approvers).to contain_exactly(*hash[:approvers])
+          end
+        end
+
+        context 'when the same merge request rule exists in the project rules' do
+          it 'logs the validation error and sets the merge rule to not applicable post merge' do
+            rule_2 = create(:approval_merge_request_rule, merge_request: merge_request, name: 'not applicable')
+
+            protected_rule = create(:approval_project_rule, project: project, name: 'not applicable')
+
+            create(:approval_project_rules_protected_branch, approval_project_rule: protected_rule)
+
+            create(:approval_merge_request_rule_source, approval_merge_request_rule: rule_2, approval_project_rule:
+                   protected_rule)
+
             merge_request.mark_as_merged!
 
-            group2.add_developer(user2)
+            expect(Gitlab::AppLogger).to receive(:debug).with(/Failed to persist approval rule:/)
+
+            expect(rule_2.applicable_post_merge).to eq(nil)
 
             expect do
               subject.execute
-            end.not_to change { ApprovalMergeRequestRule.count }
+            end.to change { ApprovalMergeRequestRule.count }.by(3)
 
-            rule = merge_request.approval_rules.regular.first
-
-            expect(rule.name).to eq('bar')
-            expect(rule.users).to contain_exactly(user2, user3, group2_user)
+            expect(rule_2.reload.applicable_post_merge).to eq(false)
           end
         end
       end
