@@ -174,9 +174,9 @@ describe('DependenciesApp component', () => {
         factory({ provide: { namespaceType: 'group' } });
       });
 
-      it('dispatches setSortField with packager', () => {
+      it('dispatches setSortField with severity', () => {
         expect(store.dispatch.mock.calls).toEqual(
-          expect.arrayContaining([['setSortField', 'packager']]),
+          expect.arrayContaining([['setSortField', 'severity']]),
         );
       });
     });
