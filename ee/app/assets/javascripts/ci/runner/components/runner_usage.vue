@@ -1,29 +1,59 @@
 <script>
-import { GlButton } from '@gitlab/ui';
+import { GlAvatar, GlButton, GlLink, GlTableLite } from '@gitlab/ui';
 import { createAlert } from '~/alert';
-import { s__ } from '~/locale';
+import { s__, formatNumber } from '~/locale';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import { INSTANCE_TYPE } from '~/ci/runner/constants';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 
+import RunnerUsageQuery from '../graphql/performance/runner_usage.query.graphql';
+import RunnerUsageByProjectQuery from '../graphql/performance/runner_usage_by_project.query.graphql';
 import RunnerUsageExportMutation from '../graphql/performance/runner_usage_export.mutation.graphql';
+
+const thClass = ['gl-font-sm!', 'gl-text-secondary!'];
 
 export default {
   name: 'RunnerUsage',
   components: {
+    GlAvatar,
     GlButton,
-  },
-  inject: {
-    clickhouseCiAnalyticsAvailable: {
-      default: false,
-    },
+    GlLink,
+    GlTableLite,
   },
   data() {
     return {
       loading: false,
     };
   },
+  apollo: {
+    topProjects: {
+      query: RunnerUsageByProjectQuery,
+      update(data) {
+        return data.runnerUsageByProject;
+      },
+    },
+    topRunners: {
+      query: RunnerUsageQuery,
+      update(data) {
+        return data.runnerUsage;
+      },
+    },
+  },
   methods: {
+    formatNumber,
+    runnerName(runner) {
+      const { id: graphqlId, shortSha, description } = runner;
+      const id = getIdFromGraphQLId(graphqlId);
+
+      if (description) {
+        return `#${id} (${shortSha}) - ${description}`;
+      }
+      return `#${id} (${shortSha})`;
+    },
+    findClosestTd(el) {
+      return el.closest('td');
+    },
     async onClick() {
       const confirmed = await confirmAction(
         s__(
@@ -76,16 +106,79 @@ export default {
       }
     },
   },
+  topRunnersFields: [
+    {
+      key: 'runner',
+      label: s__('Runners|Most used instance runners'),
+      thClass: [...thClass, 'gl-width-full'],
+    },
+    {
+      key: 'ciMinutesUsed',
+      label: s__('Runners|Usage (min)'),
+      thClass: [...thClass, 'gl-text-right'],
+      tdClass: 'gl-text-right',
+    },
+  ],
+  topProjectsFields: [
+    {
+      key: 'project',
+      label: s__('Runners|Top projects consuming runners'),
+      thClass: [...thClass, 'gl-width-full'],
+    },
+    {
+      key: 'ciMinutesUsed',
+      label: s__('Runners|Usage (min)'),
+      thClass: [...thClass, 'gl-text-right'],
+      tdClass: 'gl-text-right',
+    },
+  ],
 };
 </script>
 <template>
-  <div v-if="clickhouseCiAnalyticsAvailable" class="gl-border gl-rounded-base gl-p-5">
-    <div class="gl-display-flex gl-align-items-center">
-      <h2 class="gl-font-lg gl-m-0 gl-flex-grow-1">{{ s__('Runners|Runner Usage') }}</h2>
-
+  <div class="gl-border gl-rounded-base gl-p-5">
+    <div class="gl-display-flex gl-align-items-center gl-mb-4">
+      <h2 class="gl-font-lg gl-flex-grow-1 gl-m-0">
+        {{ s__('Runners|Runner Usage (previous month)') }}
+      </h2>
       <gl-button :loading="loading" size="small" @click="onClick">
         {{ s__('Runners|Export as CSV') }}
       </gl-button>
+    </div>
+
+    <div
+      class="gl-md-display-flex gl-justify-content-space-between gl-align-items-flex-start gl-gap-4"
+    >
+      <gl-table-lite
+        :fields="$options.topProjectsFields"
+        :items="topProjects"
+        class="runners-top-result-table runners-dashboard-half-gap-4"
+        data-testid="top-projects-table"
+      >
+        <template #cell(project)="{ value }">
+          <gl-avatar
+            :label="value.name"
+            :src="value.avatarUrl"
+            shape="rect"
+            :size="16"
+            :entity-name="value.name"
+          />
+          <gl-link :href="value.webUrl" class="gl-text-body!">{{ value.name }}</gl-link>
+        </template>
+
+        <template #cell(ciMinutesUsed)="{ value }">{{ formatNumber(value) }}</template>
+      </gl-table-lite>
+
+      <gl-table-lite
+        :fields="$options.topRunnersFields"
+        :items="topRunners"
+        class="runners-top-result-table runners-dashboard-half-gap-4"
+        data-testid="top-runners-table"
+      >
+        <template #cell(runner)="{ value }">
+          <gl-link :href="value.adminUrl" class="gl-text-body!">{{ runnerName(value) }}</gl-link>
+        </template>
+        <template #cell(ciMinutesUsed)="{ value }">{{ formatNumber(value) }}</template>
+      </gl-table-lite>
     </div>
   </div>
 </template>
