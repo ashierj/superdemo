@@ -1,10 +1,16 @@
 <script>
-import { GlButton, GlCard, GlTableLite, GlSprintf, GlLink, GlBadge, GlLabel } from '@gitlab/ui';
+import { GlButton, GlCard, GlTableLite, GlSprintf, GlLink, GlLabel } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserDate from '~/vue_shared/components/user_date.vue';
 import { LONG_DATE_FORMAT_WITH_TZ } from '~/vue_shared/constants';
-import { NEW_ROUTE_NAME, DETAILS_ROUTE_NAME, EDIT_ROUTE_NAME } from '../../constants';
+import {
+  NEW_ROUTE_NAME,
+  DETAILS_ROUTE_NAME,
+  EDIT_ROUTE_NAME,
+  SCOPED_LABEL_COLOR,
+  UNSCOPED_LABEL_COLOR,
+} from '../../constants';
 import SecretActionsCell from './secret_actions_cell.vue';
 
 export default {
@@ -15,7 +21,6 @@ export default {
     GlTableLite,
     GlSprintf,
     GlLink,
-    GlBadge,
     GlLabel,
     TimeAgo,
     UserDate,
@@ -47,8 +52,8 @@ export default {
       label: s__('Secrets|Last accessed'),
     },
     {
-      key: 'createdOn',
-      label: s__('Secrets|Created on'),
+      key: 'createdAt',
+      label: s__('Secrets|Created at'),
     },
     {
       key: 'actions',
@@ -56,8 +61,10 @@ export default {
       tdClass: 'gl-py-3! gl-px-0!',
     },
   ],
-  createdOnFormat: LONG_DATE_FORMAT_WITH_TZ,
+  LONG_DATE_FORMAT_WITH_TZ,
   NEW_ROUTE_NAME,
+  SCOPED_LABEL_COLOR,
+  UNSCOPED_LABEL_COLOR,
 };
 </script>
 <template>
@@ -77,21 +84,25 @@ export default {
       </gl-sprintf>
     </p>
 
-    <gl-card body-class="gl-p-0">
+    <gl-card
+      class="gl-new-card"
+      header-class="gl-new-card-header"
+      body-class="gl-new-card-body gl-px-0"
+    >
       <template #header>
-        <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
-          <strong>
+        <div class="gl-new-card-title-wrapper">
+          <h3 class="gl-new-card-title">
             {{ s__('Secrets|Stored secrets') }}
-            <gl-badge size="sm" class="gl-ml-3" data-testid="secrets-count">
-              {{ secretsCount }}
-            </gl-badge>
-          </strong>
+            <span class="gl-new-card-count" data-testid="secrets-count">{{ secretsCount }}</span>
+          </h3>
+        </div>
+        <div class="gl-new-card-actions">
           <gl-button size="small" :to="$options.NEW_ROUTE_NAME" data-testid="new-secret-button">
             {{ s__('Secrets|New secret') }}
           </gl-button>
         </div>
       </template>
-      <gl-table-lite :fields="$options.fields" :items="secrets">
+      <gl-table-lite :fields="$options.fields" :items="secrets" stacked="md" class="gl-mb-0">
         <template #cell(name)="{ item: { key, name, labels } }">
           <router-link
             data-testid="secret-details-link"
@@ -102,10 +113,12 @@ export default {
           </router-link>
           <gl-label
             v-for="label in labels"
-            :key="label.title"
-            :title="label.title"
-            :background-color="label.color"
-            :scoped="label.title.includes('::')"
+            :key="label"
+            :title="label"
+            :background-color="
+              label.includes('::') ? $options.SCOPED_LABEL_COLOR : $options.UNSCOPED_LABEL_COLOR
+            "
+            :scoped="label.includes('::')"
             size="sm"
             class="gl-mt-3 gl-mr-3"
           />
@@ -113,11 +126,11 @@ export default {
         <template #cell(lastAccessed)="{ item: { lastAccessed } }">
           <time-ago :time="lastAccessed" data-testid="secret-last-accessed" />
         </template>
-        <template #cell(createdOn)="{ item: { createdOn } }">
+        <template #cell(createdAt)="{ item: { createdAt } }">
           <user-date
-            :date="createdOn"
-            :date-format="$options.createdOnFormat"
-            data-testid="secret-created-on"
+            :date="createdAt"
+            :date-format="$options.LONG_DATE_FORMAT_WITH_TZ"
+            data-testid="secret-created-at"
           />
         </template>
         <template #cell(actions)="{ item: { key } }">

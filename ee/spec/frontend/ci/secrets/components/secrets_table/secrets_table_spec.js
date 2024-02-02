@@ -16,7 +16,7 @@ describe('SecretsTable component', () => {
   const findSecretDetailsLink = () => wrapper.findByTestId('secret-details-link');
   const findSecretLabels = () => findSecretsTableRows().at(0).findAllComponents(GlLabel);
   const findSecretLastAccessed = () => wrapper.findByTestId('secret-last-accessed');
-  const findSecretCreatedOn = () => wrapper.findByTestId('secret-created-on');
+  const findSecretCreatedAt = () => wrapper.findByTestId('secret-created-at');
   const findSecretActionsCell = () => wrapper.findComponent(SecretActionsCell);
 
   const createComponent = (props) => {
@@ -64,8 +64,7 @@ describe('SecretsTable component', () => {
 
     it.each([0, 1])('shows the labels for a secret', (labelIndex) => {
       expect(findSecretLabels().at(labelIndex).props()).toMatchObject({
-        title: secret.labels[labelIndex].title,
-        backgroundColor: secret.labels[labelIndex].color,
+        title: secret.labels[labelIndex],
       });
     });
 
@@ -74,7 +73,7 @@ describe('SecretsTable component', () => {
     });
 
     it('shows when the secret was created', () => {
-      expect(findSecretCreatedOn().props('date')).toBe(secret.createdOn);
+      expect(findSecretCreatedAt().props('date')).toBe(secret.createdAt);
     });
 
     it('passes correct props to actions cell', () => {

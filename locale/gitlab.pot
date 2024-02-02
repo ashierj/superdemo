@@ -44254,7 +44254,7 @@ msgstr ""
 msgid "Secrets|Audit log"
 msgstr ""
 
-msgid "Secrets|Created on"
+msgid "Secrets|Created at"
 msgstr ""
 
 msgid "Secrets|Delete"
