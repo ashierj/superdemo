@@ -348,6 +348,11 @@ module EE
           @subject.licensed_feature_available?(:metrics_observability)
       end
 
+      condition(:observability_logs_enabled) do
+        ::Feature.enabled?(:observability_logs, @subject.root_namespace, type: :wip) &&
+          @subject.licensed_feature_available?(:logs_observability)
+      end
+
       # We are overriding the already defined condition in CE version
       # to allow Guest users with member roles to access the merge requests.
       condition(:merge_requests_disabled) do
@@ -869,6 +874,10 @@ module EE
 
       rule { can?(:reporter_access) & observability_metrics_enabled }.policy do
         enable :read_observability_metrics
+      end
+
+      rule { can?(:reporter_access) & observability_logs_enabled }.policy do
+        enable :read_observability_logs
       end
 
       rule { ci_cancellation_maintainers_only & ~can?(:maintainer_access) }.policy do

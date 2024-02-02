@@ -153,6 +153,8 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
 
         resources :metrics, only: [:index, :show], constraints: { id: %r{[^/]+}, type: /\w+/ }, controller: :metrics
 
+        resources :logs, only: [:index], controller: :logs
+
         namespace :ml do
           resources :agents, only: [:index, :new, :show], controller: 'agents', param: :agent_id
         end

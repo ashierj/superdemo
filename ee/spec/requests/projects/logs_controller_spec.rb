@@ -2,12 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::TracingController, feature_category: :tracing do
+RSpec.describe Projects::LogsController, feature_category: :metrics do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:user) { create(:user) }
   let(:path) { nil }
-  let(:observability_tracing_ff) { true }
+  let(:observability_logs_ff) { true }
   let(:expected_api_config) do
     {
       oauthUrl: Gitlab::Observability.oauth_url,
@@ -23,18 +23,18 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
     }
   end
 
-  subject do
+  subject(:html_response) do
     get path
     response
   end
 
   before do
-    stub_licensed_features(tracing: true)
-    stub_feature_flags(observability_tracing: observability_tracing_ff)
+    stub_licensed_features(logs_observability: true)
+    stub_feature_flags(observability_logs: observability_logs_ff)
     sign_in(user)
   end
 
-  shared_examples 'tracing route request' do
+  shared_examples 'logs route request' do
     it_behaves_like 'observability csp policy' do
       before_all do
         project.add_reporter(user)
@@ -49,7 +49,7 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
       end
 
       it 'returns 404' do
-        expect(subject).to have_gitlab_http_status(:not_found)
+        expect(html_response).to have_gitlab_http_status(:not_found)
       end
     end
 
@@ -59,59 +59,35 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
       end
 
       it 'returns 200' do
-        expect(subject).to have_gitlab_http_status(:ok)
+        expect(html_response).to have_gitlab_http_status(:ok)
       end
 
       context 'when feature is disabled' do
-        let(:observability_tracing_ff) { false }
+        let(:observability_logs_ff) { false }
 
         it 'returns 404' do
-          expect(subject).to have_gitlab_http_status(:not_found)
+          expect(html_response).to have_gitlab_http_status(:not_found)
         end
       end
     end
   end
 
   describe 'GET #index' do
-    let(:path) { project_tracing_index_path(project) }
+    let(:path) { project_logs_path(project) }
 
-    it_behaves_like 'tracing route request'
+    it_behaves_like 'logs route request'
 
     describe 'html response' do
       before_all do
         project.add_reporter(user)
       end
 
-      it 'renders the js-tracing element correctly' do
-        element = Nokogiri::HTML.parse(subject.body).at_css('#js-tracing')
+      it 'renders the js-logs element correctly' do
+        element = Nokogiri::HTML.parse(html_response.body).at_css('#js-observability-logs')
 
         expected_view_model = {
           apiConfig: expected_api_config
         }.to_json
-        expect(element.attributes['data-view-model'].value).to eq(expected_view_model)
-      end
-    end
-  end
-
-  describe 'GET #show' do
-    let(:path) { project_tracing_path(project, id: "test-trace-id") }
-
-    it_behaves_like 'tracing route request'
-
-    describe 'html response' do
-      before_all do
-        project.add_reporter(user)
-      end
-
-      it 'renders the js-tracing element correctly' do
-        element = Nokogiri::HTML.parse(subject.body).at_css('#js-tracing-details')
-
-        expected_view_model = {
-          apiConfig: expected_api_config,
-          traceId: 'test-trace-id',
-          tracingIndexUrl: project_tracing_index_path(project)
-        }.to_json
-
         expect(element.attributes['data-view-model'].value).to eq(expected_view_model)
       end
     end

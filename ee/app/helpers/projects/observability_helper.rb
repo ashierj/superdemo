@@ -25,6 +25,10 @@ module Projects
       end
     end
 
+    def observability_logs_view_model(project)
+      generate_model(project)
+    end
+
     private
 
     def generate_model(project)
@@ -46,7 +50,8 @@ module Projects
           operationsUrl: ::Gitlab::Observability.operations_url(project),
           metricsUrl: ::Gitlab::Observability.metrics_url(project),
           metricsSearchUrl: ::Gitlab::Observability.metrics_search_url(project),
-          metricsSearchMetadataUrl: ::Gitlab::Observability.metrics_search_metadata_url(project)
+          metricsSearchMetadataUrl: ::Gitlab::Observability.metrics_search_metadata_url(project),
+          logsSearchUrl: ::Gitlab::Observability.logs_search_url(project)
         }
       }
     end

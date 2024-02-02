@@ -111,5 +111,40 @@ RSpec.describe Sidebars::Projects::Menus::MonitorMenu do
         it { is_expected.to be_nil }
       end
     end
+
+    describe 'Logs', feature_category: :metrics do
+      let(:item_id) { :logs }
+      let(:user) { build(:user) }
+      let(:role) { :reporter }
+
+      before do
+        stub_licensed_features(logs_observability: true)
+        stub_member_access_level(project, role => user)
+      end
+
+      it { is_expected.not_to be_nil }
+
+      describe 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(observability_logs: false)
+        end
+
+        it { is_expected.to be_nil }
+      end
+
+      describe 'when unlicensed' do
+        before do
+          stub_licensed_features(logs_observability: false)
+        end
+
+        it { is_expected.to be_nil }
+      end
+
+      describe 'when user does not have permissions' do
+        let(:role) { :guest }
+
+        it { is_expected.to be_nil }
+      end
+    end
   end
 end
