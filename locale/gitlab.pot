@@ -33573,6 +33573,48 @@ msgstr ""
 msgid "Object does not exist on the server or you don't have permissions to access it"
 msgstr ""
 
+msgid "ObservabilityLogs|Check again"
+msgstr ""
+
+msgid "ObservabilityLogs|Date"
+msgstr ""
+
+msgid "ObservabilityLogs|Debug"
+msgstr ""
+
+msgid "ObservabilityLogs|Error"
+msgstr ""
+
+msgid "ObservabilityLogs|Failed to load logs."
+msgstr ""
+
+msgid "ObservabilityLogs|Fatal"
+msgstr ""
+
+msgid "ObservabilityLogs|Info"
+msgstr ""
+
+msgid "ObservabilityLogs|Level"
+msgstr ""
+
+msgid "ObservabilityLogs|Logs"
+msgstr ""
+
+msgid "ObservabilityLogs|Message"
+msgstr ""
+
+msgid "ObservabilityLogs|No logs to display."
+msgstr ""
+
+msgid "ObservabilityLogs|Service"
+msgstr ""
+
+msgid "ObservabilityLogs|Trace"
+msgstr ""
+
+msgid "ObservabilityLogs|Warning"
+msgstr ""
+
 msgid "ObservabilityMetrics|Date"
 msgstr ""
 
