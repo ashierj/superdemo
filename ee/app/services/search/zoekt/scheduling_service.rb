@@ -15,11 +15,11 @@ module Search
       attr_reader :task
 
       def initialize(task)
-        @task = task
+        @task = task.to_sym
       end
 
       def execute
-        raise ArgumentError, "Unknown task: #{task}" unless TASKS.include?(task)
+        raise ArgumentError, "Unknown task: #{task.inspect}" unless TASKS.include?(task)
         raise NotImplementedError unless respond_to?(task, true)
 
         send(task) # rubocop:disable GitlabSecurity/PublicSend -- We control the list of tasks in the source code
