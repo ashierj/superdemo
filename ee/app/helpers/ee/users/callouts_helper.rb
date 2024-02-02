@@ -97,6 +97,11 @@ module EE
         !user_dismissed?(JOINING_A_PROJECT_ALERT)
       end
 
+      override :show_transition_to_jihu_callout?
+      def show_transition_to_jihu_callout?
+        !::Gitlab::Saas.enabled? && !has_active_license? && super
+      end
+
       private
 
       override :dismissed_callout?
