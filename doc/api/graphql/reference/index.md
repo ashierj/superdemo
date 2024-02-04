@@ -17392,6 +17392,21 @@ Represents a product analytics dashboard visualization.
 | <a id="customizablepermissionrequirements"></a>`requirements` | [`[MemberRolePermission!]`](#memberrolepermission) | Requirements of the permission. |
 | <a id="customizablepermissionvalue"></a>`value` | [`MemberRolePermission!`](#memberrolepermission) | Value of the permission. |
 
+### `CvssType`
+
+Represents a vulnerability's CVSS score.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="cvsstypebasescore"></a>`baseScore` | [`Float!`](#float) | Base score of the CVSS. |
+| <a id="cvsstypeoverallscore"></a>`overallScore` | [`Float!`](#float) | Overall score of the CVSS. |
+| <a id="cvsstypeseverity"></a>`severity` | [`CvssSeverity!`](#cvssseverity) | Severity calculated from the overall score. |
+| <a id="cvsstypevector"></a>`vector` | [`String!`](#string) | CVSS vector string. |
+| <a id="cvsstypevendor"></a>`vendor` | [`String!`](#string) | Vendor who assigned the CVSS score. |
+| <a id="cvsstypeversion"></a>`version` | [`Float!`](#float) | Version of the CVSS. |
+
 ### `DastPreScanVerification`
 
 Represents a DAST Pre Scan Verification.
@@ -28425,6 +28440,7 @@ Represents a vulnerability.
 | <a id="vulnerabilitycommenters"></a>`commenters` | [`UserCoreConnection!`](#usercoreconnection) | All commenters on this noteable. (see [Connections](#connections)) |
 | <a id="vulnerabilityconfirmedat"></a>`confirmedAt` | [`Time`](#time) | Timestamp of when the vulnerability state was changed to confirmed. |
 | <a id="vulnerabilityconfirmedby"></a>`confirmedBy` | [`UserCore`](#usercore) | User that confirmed the vulnerability. |
+| <a id="vulnerabilitycvss"></a>`cvss` | [`[CvssType!]!`](#cvsstype) | CVSS information for the vulnerability. |
 | <a id="vulnerabilitydescription"></a>`description` | [`String`](#string) | Description of the vulnerability. |
 | <a id="vulnerabilitydescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | GitLab Flavored Markdown rendering of `description`. |
 | <a id="vulnerabilitydetails"></a>`details` | [`[VulnerabilityDetail!]!`](#vulnerabilitydetail) | Details of the vulnerability. |
@@ -30357,6 +30373,18 @@ Categories for customizable dashboards.
 | Value | Description |
 | ----- | ----------- |
 | <a id="customizabledashboardcategoryanalytics"></a>`ANALYTICS` | Analytics category for customizable dashboards. |
+
+### `CvssSeverity`
+
+Values for a CVSS severity.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="cvssseveritycritical"></a>`CRITICAL` | Critical severity. |
+| <a id="cvssseverityhigh"></a>`HIGH` | High severity. |
+| <a id="cvssseveritylow"></a>`LOW` | Low severity. |
+| <a id="cvssseveritymedium"></a>`MEDIUM` | Medium severity. |
+| <a id="cvssseveritynone"></a>`NONE` | Not a vulnerability. |
 
 ### `DastPreScanVerificationCheckType`
 
