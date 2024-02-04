@@ -23,9 +23,6 @@
         "can_read_vulnerability_feedback": {
           "type": "boolean"
         },
-        "vulnerability_feedback_path": {
-          "type": "string"
-        },
         "create_vulnerability_feedback_issue_path": {
           "type": "string"
         },

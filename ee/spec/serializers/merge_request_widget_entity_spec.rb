@@ -224,9 +224,6 @@ RSpec.describe MergeRequestWidgetEntity, feature_category: :code_review_workflow
   end
 
   it 'has vulnerability feedback paths' do
-    expect(subject.as_json[:vulnerability_feedback_path]).to eq(
-      "/#{merge_request.project.full_path}/-/vulnerability_feedback"
-    )
     expect(subject.as_json).to include(:create_vulnerability_feedback_issue_path)
     expect(subject.as_json).to include(:create_vulnerability_feedback_merge_request_path)
     expect(subject.as_json).to include(:create_vulnerability_feedback_dismissal_path)

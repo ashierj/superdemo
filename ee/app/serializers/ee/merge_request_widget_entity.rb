@@ -77,10 +77,6 @@ module EE
         can?(current_user, :read_vulnerability_feedback, merge_request.project)
       end
 
-      expose :vulnerability_feedback_path do |merge_request|
-        project_vulnerability_feedback_index_path(merge_request.project)
-      end
-
       expose :create_vulnerability_feedback_issue_path do |merge_request|
         presenter(merge_request).create_vulnerability_feedback_issue_path(merge_request.project)
       end
