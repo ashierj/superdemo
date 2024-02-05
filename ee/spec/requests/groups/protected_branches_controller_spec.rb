@@ -144,6 +144,56 @@ RSpec.describe Groups::ProtectedBranchesController, feature_category: :source_co
         expect(response).to have_gitlab_http_status(:unprocessable_entity)
       end
     end
+
+    context 'with blocking scan result policy' do
+      shared_examples 'prevents update of protected branch' do
+        let(:branch_name) { protected_branch.name }
+        let(:policy_configuration) do
+          create(:security_orchestration_policy_configuration, :namespace, namespace_id: group.id)
+        end
+
+        before do
+          stub_licensed_features(group_protected_branches: true, security_orchestration_policies: true)
+        end
+
+        it 'does not rename' do
+          expect { patch member_path, params: update_params }.not_to change { protected_branch.reload.name }
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+
+        it 'responds with 403' do
+          patch member_path, params: update_params
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+
+        context 'with feature disabled' do
+          before do
+            stub_feature_flags(scan_result_policy_block_group_branch_modification: false)
+          end
+
+          it 'renames' do
+            expect { patch member_path, params: update_params }.to change {
+                                                                     protected_branch.reload.name
+                                                                   }.to(update_params.dig(:protected_branch, :name))
+          end
+
+          it 'responds with 200' do
+            patch member_path, params: update_params
+
+            expect(response).to have_gitlab_http_status(:success)
+          end
+        end
+      end
+
+      include_context 'with scan result policy blocking protected branches' do
+        include_examples 'prevents update of protected branch'
+      end
+
+      include_context 'with scan result policy blocking group-level protected branches' do
+        include_examples 'prevents update of protected branch'
+      end
+    end
   end
 
   describe "DELETE #destroy" do
