@@ -46,6 +46,7 @@ module EE
         mount ::API::ServiceAccounts
         mount ::API::ManagedLicenses
         mount ::API::ProjectApprovals
+        mount ::API::ProjectGoogleCloudIntegration
         mount ::API::Vulnerabilities
         mount ::API::VulnerabilityFindings
         mount ::API::VulnerabilityIssueLinks
