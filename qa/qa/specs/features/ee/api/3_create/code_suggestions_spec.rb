@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'ModelOps', product_group: :code_creation do
+  RSpec.describe 'Create', product_group: :code_creation do
     include Support::API
 
     # These tests require several feature flags, user settings, and instance configurations.
