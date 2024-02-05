@@ -1,8 +1,8 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import RunnerListHeader from '~/ci/runner/components/runner_list_header.vue';
-import RunnerDashboardStatusOnline from '../components/runner_dashboard_stat_online.vue';
-import RunnerDashboardStatusOffline from '../components/runner_dashboard_stat_offline.vue';
+import RunnerDashboardStatOnline from '../components/runner_dashboard_stat_online.vue';
+import RunnerDashboardStatOffline from '../components/runner_dashboard_stat_offline.vue';
 import RunnerUsage from '../components/runner_usage.vue';
 import RunnerJobFailures from '../components/runner_job_failures.vue';
 import RunnerActiveList from '../components/runner_active_list.vue';
@@ -12,8 +12,8 @@ export default {
   components: {
     GlButton,
     RunnerListHeader,
-    RunnerDashboardStatusOnline,
-    RunnerDashboardStatusOffline,
+    RunnerDashboardStatOnline,
+    RunnerDashboardStatOffline,
     RunnerUsage,
     RunnerJobFailures,
     RunnerActiveList,
@@ -26,10 +26,6 @@ export default {
     },
     newRunnerPath: {
       type: String,
-      required: true,
-    },
-    clickhouseCiAnalyticsAvailable: {
-      type: Boolean,
       required: true,
     },
   },
@@ -53,21 +49,23 @@ export default {
       {{ s__('Runners|Use the dashboard to view performance statistics of your runner fleet.') }}
     </p>
 
-    <div class="runners-dashboard-grid">
-      <!-- 1st row -->
-      <runner-dashboard-status-online />
-      <runner-dashboard-status-offline />
-      <runner-usage />
+    <div>
+      <div class="gl-sm-display-flex gl-gap-4 gl-justify-content-space-between">
+        <runner-dashboard-stat-online
+          class="runners-dashboard-third-gap-4 gl-flex-grow-1 gl-mb-4"
+        />
+        <runner-dashboard-stat-offline
+          class="runners-dashboard-third-gap-4 gl-flex-grow-1 gl-mb-4"
+        />
+        <runner-usage class="runners-dashboard-third-gap-4 gl-flex-grow-1 gl-mb-4" />
+      </div>
 
-      <!-- 2nd row -->
-      <runner-job-failures class="runners-dashboard-failures" />
-      <runner-active-list class="runners-dashboard-active-list" />
+      <div class="gl-md-display-flex gl-gap-4 gl-justify-content-space-between">
+        <runner-job-failures class="runners-dashboard-two-thirds-gap-4 gl-flex-grow-1 gl-mb-4" />
+        <runner-active-list class="runners-dashboard-third-gap-4 gl-flex-grow-1 gl-mb-4" />
+      </div>
 
-      <!-- 3rd row -->
-      <runner-wait-times
-        class="runners-dashboard-wait-times"
-        :clickhouse-ci-analytics-available="clickhouseCiAnalyticsAvailable"
-      />
+      <runner-wait-times class="runners-dashboard-wait-times" />
     </div>
   </div>
 </template>

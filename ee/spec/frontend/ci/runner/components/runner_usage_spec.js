@@ -42,7 +42,7 @@ describe('RunnerUsage', () => {
         $toast: { show: mockToast },
       },
       provide: {
-        glFeatures: { clickhouseCiAnalytics: true },
+        clickhouseCiAnalyticsAvailable: true,
         ...provide,
       },
     });
@@ -58,7 +58,7 @@ describe('RunnerUsage', () => {
 
   it('does not render when clickhouseCiAnalytics is disabled', () => {
     createWrapper({
-      provide: { glFeatures: { clickhouseCiAnalytics: false } },
+      provide: { clickhouseCiAnalyticsAvailable: false },
     });
 
     expect(wrapper.html()).toBe('');

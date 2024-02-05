@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { GlToast } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import createDefaultClient from '~/lib/graphql';
 import AdminRunnersDashboardApp from './admin_runners_dashboard_app.vue';
 
@@ -19,12 +20,14 @@ export const initAdminRunnersDashboard = (selector = '#js-admin-runners-dashboar
   return new Vue({
     el,
     apolloProvider,
+    provide: {
+      clickhouseCiAnalyticsAvailable: parseBoolean(clickhouseCiAnalyticsAvailable),
+    },
     render(h) {
       return h(AdminRunnersDashboardApp, {
         props: {
           adminRunnersPath,
           newRunnerPath,
-          clickhouseCiAnalyticsAvailable,
         },
       });
     },
