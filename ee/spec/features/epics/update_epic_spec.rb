@@ -180,6 +180,31 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
     let(:epic) { create(:epic, group: group, description: markdown) }
 
     it_behaves_like 'updates epic'
+
+    context 'when group name has dot(.)' do
+      let_it_be(:group) { create(:group, :public, name: 'test.group') }
+      let(:epic) { create(:epic, group: group, description: markdown) }
+
+      it_behaves_like 'updates epic'
+
+      context 'when sub-group has dot(.)' do
+        let_it_be(:parent) { create(:group, :public) }
+        let_it_be(:group) { create(:group, :public, parent: parent, name: 'test.subgroup') }
+        let(:epic) { create(:epic, group: group, description: markdown) }
+
+        it_behaves_like 'updates epic'
+
+        # As we have used recurring regex in routes to have 1+ level sub groups
+        # tested 2 level subgroup here
+        context 'when 2 level subgroup name has dot(.)' do
+          let_it_be(:parent1) { create(:group, :public, parent: parent) }
+          let_it_be(:group) { create(:group, :public, parent: parent1, name: 'test.subgroup2') }
+          let(:epic) { create(:epic, group: group, description: markdown) }
+
+          it_behaves_like 'updates epic'
+        end
+      end
+    end
   end
 
   context 'when user with developer access displays the epic from a subgroup' do
