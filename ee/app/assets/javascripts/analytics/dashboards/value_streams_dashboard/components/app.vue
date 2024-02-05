@@ -99,7 +99,7 @@ export default {
 };
 </script>
 <template>
-  <div>
+  <div data-testid="legacy-vsd">
     <feedback-banner />
 
     <div v-if="loading" class="gl-mt-5">
@@ -129,6 +129,7 @@ export default {
         :key="index"
         :title="title"
         :data="data"
+        data-testid="panel-dora-chart"
       />
 
       <template v-if="showDoraPerformersScoreCard">
@@ -137,6 +138,7 @@ export default {
           :key="`dora-performers-score-card-${index}`"
           :data="data"
           class="gl-mt-5"
+          data-testid="panel-dora-performers-score"
         />
       </template>
     </div>
