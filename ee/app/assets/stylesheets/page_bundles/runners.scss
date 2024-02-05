@@ -1,26 +1,13 @@
 @import 'page_bundles/mixins_and_variables_and_functions';
 
-.runners-dashboard-grid {
-  display: flex;
-  flex-direction: column;
-  gap: $gl-spacing-scale-4;
-
-  @media (min-width: map-get($grid-breakpoints, md)) {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
+.runners-dashboard-third-gap-4 {
+  // Subtract the length of gl-gap-4 to show a correct gap
+  flex-basis: calc(33.33% - #{$gl-spacing-scale-4});
 }
 
-.runners-dashboard-failures {
-  grid-area: 2 / span 2;
-}
-
-.runners-dashboard-active-list {
-  grid-area: 2;
-}
-
-.runners-dashboard-wait-times {
-  grid-area: 3 / span 3;
+.runners-dashboard-two-thirds-gap-4 {
+  // Subtract half of the length of gl-gap-4 to show a correct gap
+  flex-basis: calc(66.66% - #{$gl-spacing-scale-4 / 2});
 }
 
 .runner-active-list-table tr:first-child th {

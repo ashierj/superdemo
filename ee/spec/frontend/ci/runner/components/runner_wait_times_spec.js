@@ -43,10 +43,8 @@ describe('RunnerActiveList', () => {
         [runnerWaitTimesQuery, runnerWaitTimesHandler],
         [runnerWaitTimeHistoryQuery, runnerWaitTimeHistoryHandler],
       ]),
-      propsData: {
-        clickhouseCiAnalyticsAvailable: true,
-      },
       stubs: { GlSprintf },
+      provide: { clickhouseCiAnalyticsAvailable: true },
       ...options,
     });
   };
@@ -155,7 +153,7 @@ describe('RunnerActiveList', () => {
     beforeEach(async () => {
       runnerWaitTimesHandler.mockResolvedValue(runnersWaitTimes);
 
-      createComponent({ propsData: { clickhouseCiAnalyticsAvailable: false } });
+      createComponent({ provide: { clickhouseCiAnalyticsAvailable: false } });
       await waitForPromises();
     });
 

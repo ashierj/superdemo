@@ -4,16 +4,16 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { I18N_STATUS_OFFLINE, STATUS_OFFLINE } from '~/ci/runner/constants';
 import RunnerDashboardStat from 'ee/ci/runner/components/runner_dashboard_stat.vue';
 
-import RunnerDashboardStatusOffline from 'ee/ci/runner/components/runner_dashboard_stat_offline.vue';
+import RunnerDashboardStatOffline from 'ee/ci/runner/components/runner_dashboard_stat_offline.vue';
 
-describe('RunnerDashboardStatusOffline', () => {
+describe('RunnerDashboardStatOffline', () => {
   let wrapper;
 
   const findRunnerDashboardStat = () => wrapper.findComponent(RunnerDashboardStat);
   const findIcon = () => wrapper.findComponent(GlIcon);
 
   const createComponent = (options = {}) => {
-    wrapper = shallowMountExtended(RunnerDashboardStatusOffline, {
+    wrapper = shallowMountExtended(RunnerDashboardStatOffline, {
       stubs: {
         RunnerDashboardStat: stubComponent(RunnerDashboardStat, {
           template: RENDER_ALL_SLOTS_TEMPLATE,

@@ -4,7 +4,7 @@ import { I18N_STATUS_ONLINE, STATUS_ONLINE } from '~/ci/runner/constants';
 import RunnerDashboardStat from './runner_dashboard_stat.vue';
 
 export default {
-  name: 'RunnerDashboardStatusOnline',
+  name: 'RunnerDashboardStatOnline',
   components: {
     GlIcon,
     RunnerDashboardStat,

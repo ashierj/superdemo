@@ -1,6 +1,5 @@
 <script>
 import { GlButton } from '@gitlab/ui';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
@@ -14,16 +13,15 @@ export default {
   components: {
     GlButton,
   },
-  mixins: [glFeatureFlagsMixin()],
+  inject: {
+    clickhouseCiAnalyticsAvailable: {
+      default: false,
+    },
+  },
   data() {
     return {
       loading: false,
     };
-  },
-  computed: {
-    isClickhouseCiAnalyticsEnabled() {
-      return Boolean(this.glFeatures?.clickhouseCiAnalytics);
-    },
   },
   methods: {
     async onClick() {
@@ -81,7 +79,7 @@ export default {
 };
 </script>
 <template>
-  <div v-if="isClickhouseCiAnalyticsEnabled" class="gl-border gl-rounded-base gl-p-5">
+  <div v-if="clickhouseCiAnalyticsAvailable" class="gl-border gl-rounded-base gl-p-5">
     <div class="gl-display-flex gl-align-items-center">
       <h2 class="gl-font-lg gl-m-0 gl-flex-grow-1">{{ s__('Runners|Runner Usage') }}</h2>
 
