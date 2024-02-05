@@ -131,7 +131,7 @@ export default {
       v-if="!isEditing && !updateInProgress"
       class="gl-display-flex gl-justify-content-space-between gl-align-items-center"
     >
-      <h3 class="gl-mb-0! gl-heading-scale-5">
+      <h3 class="gl-mb-0! gl-heading-5">
         {{ $options.HEALTH_STATUS_I18N_HEALTH_STATUS }}
       </h3>
       <gl-button
@@ -147,7 +147,7 @@ export default {
     </div>
     <gl-form v-if="isEditing || updateInProgress">
       <div class="gl-display-flex gl-align-items-center">
-        <h3 class="gl-sr-only gl-mb-0! gl-heading-scale-5">
+        <h3 class="gl-sr-only gl-mb-0! gl-heading-5">
           {{ $options.HEALTH_STATUS_I18N_HEALTH_STATUS }}
         </h3>
         <label :for="$options.inputId" class="gl-mb-0">{{
