@@ -295,7 +295,7 @@ module EE
       end
 
       condition(:developer_access_to_admin_vulnerability) do
-        ::Feature.disabled?(:disable_developer_access_to_admin_vulnerability, subject&.group) &&
+        ::Feature.disabled?(:disable_developer_access_to_admin_vulnerability, subject&.root_namespace) &&
           can?(:developer_access)
       end
 
