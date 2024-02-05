@@ -15,7 +15,7 @@ import { visitUrl, mergeUrlParams, joinPaths } from '~/lib/utils/url_utility';
 import {
   CHART_TYPES,
   INSIGHTS_NO_DATA_TOOLTIP,
-  INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES,
+  INSIGHTS_CHART_ITEM_SETTINGS,
   INSIGHTS_CHARTS_SUPPORT_DRILLDOWN,
 } from '../constants';
 import InsightsChartError from './insights_chart_error.vue';
@@ -198,7 +198,7 @@ export default {
       return this.isProject ? this.fullPath : joinPaths('groups', this.fullPath);
     },
     drillThroughPathSuffix() {
-      const { groupPathSuffix, projectPathSuffix } = INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES[
+      const { groupPathSuffix, projectPathSuffix } = INSIGHTS_CHART_ITEM_SETTINGS[
         this.dataSourceType
       ];
 
