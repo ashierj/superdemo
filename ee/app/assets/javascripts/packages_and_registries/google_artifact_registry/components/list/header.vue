@@ -81,7 +81,7 @@ export default {
       <metadata-item
         data-testid="project-id"
         icon="project"
-        :text="data.project"
+        :text="data.projectId"
         :text-tooltip="s__('GoogleArtifactRegistry|Project ID')"
         size="xl"
       />

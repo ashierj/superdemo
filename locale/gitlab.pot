@@ -23158,10 +23158,24 @@ msgstr ""
 msgid "Google Play service account key."
 msgstr ""
 
+msgid "GoogleArtifactRegistry|%d more tag"
+msgid_plural "GoogleArtifactRegistry|%d more tags"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "GoogleArtifactRegistry|An error occurred while fetching the artifacts."
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Configure in settings"
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Copy image name"
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Created"
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Name"
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Open in Google Cloud"
@@ -23171,6 +23185,12 @@ msgid "GoogleArtifactRegistry|Project ID"
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Repository name"
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Tags"
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Updated"
 msgstr ""
 
 msgid "GoogleCloudPlatformService|Connect Google Cloud Artifact Registry to GitLab."
