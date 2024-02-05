@@ -660,7 +660,6 @@ export default {
         :finding-uuid="modalData.vulnerability.uuid"
         :pipeline-iid="pipelineIid"
         :project-full-path="mr.targetProjectFullPath"
-        :has-create-issue-path="hasCreateIssuePath"
         @hidden="clearModalData"
         @dismissed="updateFindingState('dismissed')"
         @detected="updateFindingState('detected')"
