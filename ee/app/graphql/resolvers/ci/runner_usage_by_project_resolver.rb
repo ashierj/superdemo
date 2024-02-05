@@ -31,7 +31,7 @@ module Resolvers
                      'Other projects will be aggregated to a `project: null` entry. ' \
                      "Defaults to #{DEFAULT_PROJECTS_LIMIT} if unspecified. Maximum of #{MAX_PROJECTS_LIMIT}."
 
-      def resolve(from_date:, to_date:, runner_type:, projects_limit:)
+      def resolve(from_date: nil, to_date: nil, runner_type: nil, projects_limit: nil)
         unless current_user&.can?(:read_jobs_statistics)
           raise_resource_not_available_error!("You don't have permissions to view CI jobs statistics")
         end

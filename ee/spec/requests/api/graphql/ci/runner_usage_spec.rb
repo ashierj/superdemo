@@ -19,7 +19,10 @@ RSpec.describe 'Query.ciRunnerUsageByProject', :click_house, feature_category: :
   let(:to_date) { starting_date + 1.day }
   let(:runners_limit) { nil }
 
-  let(:params) { { runner_type: runner_type, from_date: from_date, to_date: to_date, runners_limit: runners_limit } }
+  let(:params) do
+    { runner_type: runner_type, from_date: from_date, to_date: to_date, runners_limit: runners_limit }.compact
+  end
+
   let(:query_path) do
     [
       [:runner_usage, params]
