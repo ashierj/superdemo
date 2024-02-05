@@ -184,8 +184,16 @@ module EE
               ::Types::SecurityOrchestration::ScanResultPolicyType.connection_type,
               calls_gitaly: true,
               null: true,
+              deprecated: { reason: 'Use `approvalPolicies`', milestone: '16.9' },
               description: 'Scan Result Policies of the project',
               resolver: ::Resolvers::SecurityOrchestration::ScanResultPolicyResolver
+
+        field :approval_policies,
+              ::Types::SecurityOrchestration::ApprovalPolicyType.connection_type,
+              calls_gitaly: true,
+              null: true,
+              description: 'Approval Policies of the project',
+              resolver: ::Resolvers::SecurityOrchestration::ApprovalPolicyResolver
 
         field :security_policy_project,
               ::Types::ProjectType,
