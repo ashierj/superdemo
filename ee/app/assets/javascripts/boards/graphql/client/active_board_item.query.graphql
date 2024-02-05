@@ -5,5 +5,6 @@ query activeBoardItemEE($isIssue: Boolean = true) {
   activeBoardItem @client {
     ...Issue @include(if: $isIssue)
     ...EpicDetailed @skip(if: $isIssue)
+    listId
   }
 }

@@ -132,6 +132,26 @@ describe('Sidebar Weight Widget', () => {
     });
   });
 
+  describe('updates existing weight', () => {
+    beforeEach(() => {
+      createComponent({
+        weightQueryHandler: jest.fn().mockResolvedValue(issueWeightResponse(2)),
+        weightMutationHandler: jest.fn().mockResolvedValue(setWeightResponse(3)),
+      });
+      return waitForPromises();
+    });
+
+    it('emits weight difference', async () => {
+      findEditableItem().vm.$emit('open');
+      findFormInput().vm.$emit('input', '3');
+      findForm().vm.$emit('submit', createFakeEvent());
+      await waitForPromises();
+
+      expect(findWeightValue().text()).toBe('3');
+      expect(wrapper.emitted('weightUpdated')).toEqual([[{ id: mockIssueId, weight: 1 }]]);
+    });
+  });
+
   it('displays an alert message when query is rejected', async () => {
     createComponent({
       weightQueryHandler: jest.fn().mockRejectedValue('Houston, we have a problem'),

@@ -57,6 +57,7 @@ export default {
       loading: false,
       oldIid: null,
       localWeight: '',
+      previousWeight: null,
     };
   },
   apollo: {
@@ -142,6 +143,7 @@ export default {
       const shouldRemoveWeight = remove || this.localWeight === '';
       const weight = shouldRemoveWeight ? null : this.localWeight;
       const currentIid = shouldRemoveWeight ? this.iid : this.oldIid || this.iid;
+      const previousWeight = this.hasWeight ? this.weight : 0;
       this.loading = true;
       this.$apollo
         .mutate({
@@ -161,7 +163,9 @@ export default {
             });
           } else {
             this.$emit('weightUpdated', {
-              weight: issuableSetWeight?.issuable?.weight,
+              weight: shouldRemoveWeight
+                ? null
+                : (issuableSetWeight?.issuable?.weight || 0) - previousWeight,
               id: issuableSetWeight?.issuable?.id,
             });
           }
