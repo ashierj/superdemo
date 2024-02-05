@@ -44,6 +44,13 @@ module Geo::ReplicableRegistry
     end
   end
 
+  # Overridden by Geo::VerifiableRegistry
+  def before_pending
+    self.retry_at = nil
+    self.retry_count = 0
+    self.last_synced_at = nil
+  end
+
   def before_synced
     self.retry_count = 0
     self.last_sync_failure = nil
@@ -84,9 +91,7 @@ module Geo::ReplicableRegistry
       end
 
       before_transition any => :pending do |registry, _|
-        registry.retry_at = nil
-        registry.retry_count = 0
-        registry.last_synced_at = nil
+        registry.before_pending
       end
 
       before_transition any => :failed do |registry, _|
@@ -111,7 +116,7 @@ module Geo::ReplicableRegistry
       end
 
       event :failed do
-        transition [:started, :synced] => :failed
+        transition [:pending, :started, :synced, :failed] => :failed
       end
 
       event :resync do

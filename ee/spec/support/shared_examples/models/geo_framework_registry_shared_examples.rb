@@ -181,6 +181,29 @@ RSpec.shared_examples 'a Geo framework registry' do
         expect(registry.retry_at).to be_within(10.minutes).of(4.hours.from_now)
       end
     end
+
+    it 'can transition from any state' do
+      # initial state is started
+      registry.failed!(message: message)
+
+      expect(registry.reload.failed?).to be_truthy
+
+      registry.pending!
+
+      registry.failed!(message: message)
+
+      expect(registry.reload.failed?).to be_truthy
+
+      registry.failed!(message: message)
+
+      expect(registry.reload.failed?).to be_truthy
+
+      registry.synced!
+
+      registry.failed!(message: message)
+
+      expect(registry.reload.failed?).to be_truthy
+    end
   end
 
   describe '#synced!' do
