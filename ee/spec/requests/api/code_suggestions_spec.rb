@@ -307,7 +307,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             'URL' => 'https://cloud.gitlab.com/ai/v2/code/completions',
             'AllowRedirects' => false,
             'Body' => body.merge(prompt_version: 1).to_json,
-            'Method' => 'POST'
+            'Method' => 'POST',
+            'ResponseHeaderTimeout' => '55s'
           )
           expect(params['Header']).to include(
             'X-Gitlab-Authentication-Type' => ['oidc'],
