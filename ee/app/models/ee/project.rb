@@ -1145,6 +1145,10 @@ module EE
       security_orchestration_policies_for_scope(security_policies)
     end
 
+    def all_security_orchestration_policy_configuration_ids
+      all_security_orchestration_policy_configurations.pluck(:id)
+    end
+
     def all_inherited_security_orchestration_policy_configurations
       all_parent_groups = group&.self_and_ancestor_ids
       return [] if all_parent_groups.blank?
