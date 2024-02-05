@@ -22,8 +22,8 @@ RSpec.describe GitlabSchema.types['Project'] do
       vulnerability_severities_count packages compliance_frameworks vulnerabilities_count_by_day
       security_dashboard_path iterations iteration_cadences repository_size_excess actual_repository_size_limit
       code_coverage_summary api_fuzzing_ci_configuration corpuses path_locks incident_management_escalation_policies
-      incident_management_escalation_policy scan_execution_policies security_policy_project
-      network_policies security_training_urls vulnerability_images only_allow_merge_if_all_status_checks_passed
+      incident_management_escalation_policy scan_execution_policies approval_policies network_policies
+      security_policy_project security_training_urls vulnerability_images only_allow_merge_if_all_status_checks_passed
       dependencies merge_requests_disable_committers_approval has_jira_vulnerability_issue_creation_enabled
       ci_subscriptions_projects ci_subscribed_projects ai_agents
     ]
@@ -206,7 +206,7 @@ RSpec.describe GitlabSchema.types['Project'] do
     end
   end
 
-  describe 'scan_execution_policies' do
+  describe 'scan_execution_policies', feature_category: :security_policy_management do
     let(:query) do
       %(
         query {
@@ -234,7 +234,7 @@ RSpec.describe GitlabSchema.types['Project'] do
     end
   end
 
-  describe 'scan_result_policies' do
+  describe 'scan_result_policies', feature_category: :security_policy_management do
     let(:query) do
       %(
         query {
@@ -257,6 +257,34 @@ RSpec.describe GitlabSchema.types['Project'] do
 
     it 'returns associated scan result policies' do
       policies = subject.dig('data', 'project', 'scanResultPolicies', 'nodes')
+
+      expect(policies.count).to be(8)
+    end
+  end
+
+  describe 'approval_policies', feature_category: :security_policy_management do
+    let(:query) do
+      %(
+        query {
+          project(fullPath: "#{project.full_path}") {
+            approvalPolicies {
+              nodes {
+                name
+                description
+                enabled
+                yaml
+                updatedAt
+              }
+            }
+          }
+        }
+      )
+    end
+
+    include_context 'is an orchestration policy'
+
+    it 'returns associated approval policies' do
+      policies = subject.dig('data', 'project', 'approvalPolicies', 'nodes')
 
       expect(policies.count).to be(8)
     end
