@@ -39,9 +39,9 @@ module EpicIssues
       @linkable_issues ||= begin
         return [] unless can?(current_user, :read_epic, issuable.group)
 
-        Preloaders::UserMaxAccessLevelInProjectsPreloader
-          .new(issues.map(&:project).compact, current_user)
-          .execute
+        projects = issues.map(&:project)
+        ::Preloaders::UserMaxAccessLevelInProjectsPreloader.new(projects, current_user).execute
+        ::Preloaders::GroupPolicyPreloader.new(projects.filter_map(&:group), current_user).execute
 
         issues.select do |issue|
           linkable_issue?(issue)

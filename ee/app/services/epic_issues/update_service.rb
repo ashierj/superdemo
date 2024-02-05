@@ -11,14 +11,20 @@ module EpicIssues
     end
 
     def execute
+      return error(s_('Insufficient permissions to update relation'), 403) unless permission_to_update_relation?
+
       move_issue if params[:move_after_id] || params[:move_before_id]
       epic_issue.save!
       success
     rescue ActiveRecord::RecordNotFound
-      error('Epic issue not found for given params', 404)
+      error(s_('Epic issue not found for given params'), 404)
     end
 
     private
+
+    def permission_to_update_relation?
+      can?(current_user, :admin_issue_relation, epic_issue.issue) && can?(current_user, :admin_epic_relation, epic)
+    end
 
     def move_issue
       before_epic_issue = epic.epic_issues.find(params[:move_before_id]) if params[:move_before_id]

@@ -4,9 +4,13 @@ require 'spec_helper'
 
 RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_management do
   describe '#execute' do
-    let_it_be(:user) { create(:user) }
-    let_it_be(:group, refind: true) { create(:group, :public) }
-    let_it_be(:project, refind: true) { create(:project, group: group) }
+    let_it_be(:guest) { create(:user) }
+    let_it_be(:non_member) { create(:user) }
+    let_it_be(:group, refind: true) { create(:group, :public).tap { |g| g.add_guest(guest) } }
+    let_it_be(:project, refind: true) do
+      create(:project, :public, group: create(:group, :public)).tap { |p| p.add_guest(guest) }
+    end
+
     let_it_be(:epic, reload: true) { create(:epic, group: group) }
     let_it_be(:issue, reload: true) { create(:issue, project: project) }
     let_it_be(:epic_issue, reload: true) { create(:epic_issue, epic: epic, issue: issue) }
@@ -14,10 +18,7 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
     subject { described_class.new(epic_issue, user).execute }
 
     context 'when epics feature is disabled' do
-      before do
-        project.add_guest(user)
-        group.add_guest(user)
-      end
+      let(:user) { guest }
 
       it 'returns an error' do
         is_expected.to eq(message: 'No Issue Link found', status: :error, http_status: 404)
@@ -36,10 +37,7 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
       end
 
       context 'when user has permissions to remove associations' do
-        before do
-          project.add_guest(user)
-          group.add_guest(user)
-        end
+        let(:user) { guest }
 
         it 'removes related issue' do
           expect { subject }.to change { EpicIssue.count }.from(1).to(0)
@@ -95,9 +93,24 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
             subject
           end
         end
+
+        context 'when epic_relations_for_non_members feature flag is disabled' do
+          let(:user) { non_member }
+
+          before do
+            stub_feature_flags(epic_relations_for_non_members: false)
+            group.add_guest(non_member)
+          end
+
+          it 'returns success message when user is a guest in the epic group' do
+            is_expected.to eq(message: 'Relation was removed', status: :success)
+          end
+        end
       end
 
       context 'user does not have permissions to remove associations' do
+        let(:user) { non_member }
+
         it 'does not remove relation' do
           expect { subject }.not_to change { EpicIssue.count }.from(1)
         end
