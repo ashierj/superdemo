@@ -61,12 +61,12 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
           <h2
             class="gl-font-lg gl-mb-3"
           >
-            Start with the WebIDE
+            Add code
           </h2>
           <p
             class="gl-mb-6 gl-text-gray-700"
           >
-            Use the built-in editor to create or upload files.
+            Use the built-in editor, WebIDE, or upload code using your preferred method.
           </p>
         </div>
         <div
