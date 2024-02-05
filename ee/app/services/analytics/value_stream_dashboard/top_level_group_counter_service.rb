@@ -69,6 +69,13 @@ module Analytics
           inner_namespace_query: PROJECT_SELECT_SCOPE,
           count_batching_column: :id,
           count_scope: ->(namespace) { Ci::Pipeline.where(project_id: namespace.tmp_project_id) }
+        }.freeze,
+        direct_members: {
+          metric: ::Analytics::ValueStreamDashboard::Count.metrics[:direct_members],
+          namespace_class: Group,
+          inner_namespace_query: GROUP_SELECT_SCOPE,
+          count_batching_column: :id,
+          count_scope: ->(namespace) { GroupMember.non_invite.non_request.where(source_id: namespace.id) }
         }.freeze
       }.freeze
       # rubocop: enable CodeReuse/ActiveRecord
