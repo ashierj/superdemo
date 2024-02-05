@@ -140,22 +140,20 @@ RSpec.describe '.gitlab/ci/rules.gitlab-ci.yml', feature_category: :tooling do
     all_files -= Dir.glob('ee/**/*', File::FNM_DOTMATCH) if foss_context
     all_files.reject! { |f| File.directory?(f) }
 
-    # One loop to construct the data we need as
-    # { pattern => [pattern_files] }
-    patterns_lists = config.each_with_object([]) do |(name, patterns), memo|
+    # One loop to construct an array of PatternsList objects
+    patterns_lists = config.filter_map do |name, patterns|
       next unless name.start_with?('.')
       next unless name.end_with?('patterns')
       # Ignore EE-only patterns list when in FOSS context
       next if foss_context && patterns.all? { |pattern| pattern =~ %r|{?ee/| }
 
-      memo << PatternsList.new(name, patterns)
+      PatternsList.new(name, patterns)
     end
 
+    # One loop to gather a { pattern => files } hash
     patterns_files = patterns_lists.each_with_object({}) do |patterns_list, memo|
       patterns_list.patterns.each do |pattern|
-        next if memo.key?(pattern)
-
-        memo[pattern] = Dir.glob(pattern)
+        memo[pattern] ||= Dir.glob(pattern)
       end
     end
 
@@ -165,10 +163,12 @@ RSpec.describe '.gitlab/ci/rules.gitlab-ci.yml', feature_category: :tooling do
         patterns_list.patterns.each do |pattern|
           pattern_files = patterns_files.fetch(pattern)
 
-          it "detects `#{pattern}` as a matching pattern" do
-            matching_files = (all_files & pattern_files)
+          context "with `#{pattern}`" do
+            it 'matches' do
+              matching_files = (all_files & pattern_files)
 
-            expect(matching_files).not_to be_empty
+              expect(matching_files).not_to be_empty
+            end
           end
         end
       end
