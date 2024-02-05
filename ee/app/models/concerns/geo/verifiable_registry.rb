@@ -108,6 +108,13 @@ module Geo
       end
     end
 
+    override :before_pending
+    def before_pending
+      super
+
+      self.verification_disabled
+    end
+
     override :after_synced
     def after_synced
       unless ready_to_verify?
