@@ -24,19 +24,19 @@ RSpec.describe Security::ScannedResourcesCountingService, '#execute', feature_ca
       subject { described_class.new(pipeline, %w[sast dast container_scanning dependency_scanning]).execute }
 
       it {
-        is_expected.to match(a_hash_including("sast" => 0,
-                                              "dast" => 6,
-                                              "container_scanning" => 0,
-                                              "dependency_scanning" => 0))
+        is_expected.to match(a_hash_including(
+          "sast" => 0,
+          "dast" => 6,
+          "container_scanning" => 0,
+          "dependency_scanning" => 0
+        ))
       }
     end
 
     context 'Only the report type dast is requested' do
       subject { described_class.new(pipeline, %w[dast]).execute }
 
-      it {
-        is_expected.to eq({ "dast" => 6 })
-      }
+      it { is_expected.to eq({ "dast" => 6 }) }
     end
   end
 
@@ -46,10 +46,12 @@ RSpec.describe Security::ScannedResourcesCountingService, '#execute', feature_ca
     subject { described_class.new(pipeline, %w[sast dast container_scanning dependency_scanning]).execute }
 
     it {
-      is_expected.to match(a_hash_including("sast" => 0,
-                                            "dast" => 0,
-                                            "container_scanning" => 0,
-                                            "dependency_scanning" => 0))
+      is_expected.to match(a_hash_including(
+        "sast" => 0,
+        "dast" => 0,
+        "container_scanning" => 0,
+        "dependency_scanning" => 0
+      ))
     }
   end
 end

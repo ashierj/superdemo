@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService,
-               feature_category: :security_policy_management do
+  feature_category: :security_policy_management do
   let_it_be(:configuration, refind: true) { create(:security_orchestration_policy_configuration, configured_at: nil) }
 
   describe '#execute' do

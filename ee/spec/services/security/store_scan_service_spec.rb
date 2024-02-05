@@ -48,9 +48,11 @@ RSpec.describe Security::StoreScanService, feature_category: :vulnerability_mana
     let(:deduplicate) { false }
     let(:service_object) { described_class.new(artifact, known_keys, deduplicate) }
     let(:finding_key) do
-      build(:ci_reports_security_finding_key,
-            location_fingerprint: finding_location_fingerprint,
-            identifier_fingerprint: finding_identifier_fingerprint)
+      build(
+        :ci_reports_security_finding_key,
+        location_fingerprint: finding_location_fingerprint,
+        identifier_fingerprint: finding_identifier_fingerprint
+      )
     end
 
     subject(:store_scan) { service_object.execute }
@@ -228,15 +230,11 @@ RSpec.describe Security::StoreScanService, feature_category: :vulnerability_mana
       context 'when the security scan already exists for the artifact' do
         let_it_be(:security_scan) { create(:security_scan, build: artifact.job, scan_type: :sast, status: :succeeded) }
         let_it_be(:unique_security_finding) do
-          create(:security_finding,
-                 scan: security_scan,
-                 uuid: unique_finding_uuid)
+          create(:security_finding, scan: security_scan, uuid: unique_finding_uuid)
         end
 
         let_it_be(:duplicated_security_finding) do
-          create(:security_finding,
-                 scan: security_scan,
-                 uuid: duplicate_finding_uuid)
+          create(:security_finding, scan: security_scan, uuid: duplicate_finding_uuid)
         end
 
         it 'does not create a new security scan' do

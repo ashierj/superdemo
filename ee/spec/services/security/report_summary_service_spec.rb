@@ -44,12 +44,14 @@ RSpec.describe Security::ReportSummaryService, '#execute', feature_category: :vu
 
     { artifact_cs => report_cs, artifact_dast => report_dast, artifact_ds => report_ds, artifact_sast => report_sast }.each do |artifact, report|
       report.findings.each do |finding|
-        create(:security_finding,
-              severity: finding.severity,
-              confidence: finding.confidence,
-              project_fingerprint: finding.project_fingerprint,
-              deduplicated: true,
-              scan: artifact.job.security_scans.first)
+        create(
+          :security_finding,
+          severity: finding.severity,
+          confidence: finding.confidence,
+          project_fingerprint: finding.project_fingerprint,
+          deduplicated: true,
+          scan: artifact.job.security_scans.first
+        )
       end
     end
   end
@@ -134,20 +136,20 @@ RSpec.describe Security::ReportSummaryService, '#execute', feature_category: :vu
 
     it 'returns the scanned_resources_count' do
       expect(result).to match(a_hash_including(
-                                dast: a_hash_including(scanned_resources_count: 26),
-                                sast: a_hash_including(scanned_resources_count: 0),
-                                container_scanning: a_hash_including(scanned_resources_count: 0),
-                                dependency_scanning: a_hash_including(scanned_resources_count: 0)
-                              ))
+        dast: a_hash_including(scanned_resources_count: 26),
+        sast: a_hash_including(scanned_resources_count: 0),
+        container_scanning: a_hash_including(scanned_resources_count: 0),
+        dependency_scanning: a_hash_including(scanned_resources_count: 0)
+      ))
     end
 
     it 'returns the vulnerability count' do
       expect(result).to match(a_hash_including(
-                                dast: a_hash_including(vulnerabilities_count: 20),
-                                sast: a_hash_including(vulnerabilities_count: 5),
-                                container_scanning: a_hash_including(vulnerabilities_count: 8),
-                                dependency_scanning: a_hash_including(vulnerabilities_count: 4)
-                              ))
+        dast: a_hash_including(vulnerabilities_count: 20),
+        sast: a_hash_including(vulnerabilities_count: 5),
+        container_scanning: a_hash_including(vulnerabilities_count: 8),
+        dependency_scanning: a_hash_including(vulnerabilities_count: 4)
+      ))
     end
 
     it 'returns the scanned resources limited to 20' do
