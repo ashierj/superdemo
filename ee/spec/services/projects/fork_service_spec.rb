@@ -2,21 +2,21 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::ForkService do
-  include ProjectForksHelper
-
+RSpec.describe Projects::ForkService, feature_category: :source_code_management do
   describe 'fork by user' do
+    subject(:response) { described_class.new(project, user).execute }
+
     let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, :repository, namespace: group) }
     let_it_be(:event_type) { "project_fork_operation" }
 
+    let(:fork_of_project) { response[:project] }
+
     before do
       project.add_member(user, :developer)
       group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
     end
-
-    subject(:execute) { described_class.new(project, user).execute }
 
     it 'calls auditor with correct context' do
       expect(::Gitlab::Audit::Auditor).to receive(:audit)
@@ -71,9 +71,9 @@ RSpec.describe Projects::ForkService do
         let(:service_response) { ServiceResponse.error(message: 'User has been banned') }
 
         it 'does not fork the project' do
-          forked_project = execute
+          is_expected.to be_error
 
-          expect(forked_project.saved?).to be_nil
+          expect(response.errors).to eq(['Forked from project is forbidden'])
         end
       end
 
@@ -81,10 +81,10 @@ RSpec.describe Projects::ForkService do
         let(:service_response) { ServiceResponse.success }
 
         it 'forks the project' do
-          forked_project = execute
+          is_expected.to be_success
 
-          expect(forked_project.saved?).to be(true)
-          expect(forked_project.import_in_progress?).to be(true)
+          expect(fork_of_project.saved?).to be(true)
+          expect(fork_of_project.import_in_progress?).to be(true)
         end
       end
     end
