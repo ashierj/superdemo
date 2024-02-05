@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+gcloud config set project '<%= google_cloud_project_id %>'
+
+gcloud iam workload-identity-pools create <%= google_cloud_workload_identity_pool_id %> \
+  --location="global" \
+  --display-name="<%= google_cloud_workload_identity_pool_display_name %>"
+
+# Verify the created Workload Identity Pool
+gcloud iam workload-identity-pools describe <%= google_cloud_workload_identity_pool_id %> --location="global"
+
+gcloud iam workload-identity-pools providers create-oidc "<%= google_cloud_workload_identity_pool_provider_id %>" \
+  --location="global" \
+  --workload-identity-pool="<%= google_cloud_workload_identity_pool_id %>" \
+  --issuer-uri="<%= google_cloud_workload_identity_pool_provider_issuer_uri %>" \
+  --display-name="<%= google_cloud_workload_identity_pool_provider_display_name %>" \
+  --attribute-mapping="google.subject=assertion.sub"
+
+# Verify the created OIDC provider for the Workload Identity Pool
+gcloud iam workload-identity-pools providers list \
+  --workload-identity-pool="<%= google_cloud_workload_identity_pool_id %>" \
+  --location=global
