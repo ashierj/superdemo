@@ -285,7 +285,7 @@ export default {
 };
 </script>
 <template>
-  <div>
+  <div data-testid="dora-comparison-chart">
     <gl-alert
       v-if="tableError"
       class="gl-mb-3"
