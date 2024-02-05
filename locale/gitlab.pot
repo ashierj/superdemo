@@ -31587,6 +31587,9 @@ msgid_plural "MlModelRegistry|· %d versions"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Mock an external CI integration."
+msgstr ""
+
 msgid "Modal updated"
 msgstr ""
 
@@ -38588,7 +38591,7 @@ msgstr ""
 msgid "ProjectService|Leave blank to use your current token."
 msgstr ""
 
-msgid "ProjectService|Mock service URL"
+msgid "ProjectService|Mock CI URL"
 msgstr ""
 
 msgid "ProjectService|Must have permission to trigger a manual build in TeamCity."
@@ -52492,6 +52495,9 @@ msgid "URL of the Confluence Workspace hosted on `atlassian.net`."
 msgstr ""
 
 msgid "URL of the Grafana instance to link to from the Metrics Dashboard menu item."
+msgstr ""
+
+msgid "URL of the Mock CI integration."
 msgstr ""
 
 msgid "URL of the Squash TM webhook."
