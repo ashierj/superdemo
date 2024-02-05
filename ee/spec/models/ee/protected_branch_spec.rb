@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ProtectedBranch, feature_category: :source_code_management do
-  subject { create(:protected_branch) }
+  subject(:protected_branch) { create(:protected_branch) }
 
   let(:project) { subject.project }
   let(:user) { create(:user) }
@@ -282,6 +282,63 @@ RSpec.describe ProtectedBranch, feature_category: :source_code_management do
       end
 
       it { is_expected.to be_inherited }
+    end
+  end
+
+  describe '#allow_force_push' do
+    context 'when is not protected from push by security policy' do
+      context 'when the `allow_force_push` is true' do
+        before do
+          subject.assign_attributes(allow_force_push: true)
+        end
+
+        it { is_expected.to be_allow_force_push }
+      end
+
+      context 'when the `allow_force_push` is false' do
+        before do
+          subject.assign_attributes(allow_force_push: false)
+        end
+
+        it { is_expected.not_to be_allow_force_push }
+      end
+    end
+
+    context 'when is protected from push by security policy and the `allow_force_push` is true' do
+      before do
+        subject.assign_attributes(allow_force_push: true)
+        allow_next_instance_of(::Security::SecurityOrchestrationPolicies::ProtectedBranchesPushService) do |service|
+          allow(service).to receive(:execute).and_return([protected_branch.name])
+        end
+      end
+
+      context 'when feature is not licensed' do
+        before do
+          stub_licensed_features(security_orchestration_policies: false)
+        end
+
+        it { is_expected.to be_allow_force_push }
+      end
+
+      context 'when feature is licensed' do
+        before do
+          stub_licensed_features(security_orchestration_policies: true)
+        end
+
+        context 'when protected branch is created on group level' do
+          let_it_be(:group) { create(:group) }
+
+          before do
+            subject.assign_attributes(group: group)
+          end
+
+          it { is_expected.to be_allow_force_push }
+        end
+
+        context 'when protected branch is created on project level' do
+          it { is_expected.not_to be_allow_force_push }
+        end
+      end
     end
   end
 end
