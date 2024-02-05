@@ -10,6 +10,7 @@ module Search
       return false unless ::License.feature_available?(:zoekt_code_search)
       return false if current_user && !current_user.enabled_zoekt?
       return false unless zoekt_searchable_scope?
+      return false if skip_api?
 
       zoekt_node_available_for_search?
     end
@@ -37,6 +38,11 @@ module Search
 
     def zoekt_node_available_for_search?
       ::Search::Zoekt::CircuitBreaker.new(*zoekt_nodes).operational?
+    end
+
+    def skip_api?
+      params[:source] == 'api' &&
+        Feature.disabled?(:zoekt_search_api, zoekt_searchable_scope&.root_ancestor, type: :ops)
     end
 
     def zoekt_search_results
