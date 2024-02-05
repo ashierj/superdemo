@@ -3,5 +3,6 @@ import GoogleArtifactRegistryApp from 'ee_component/packages_and_registries/goog
 const app = GoogleArtifactRegistryApp();
 
 if (app) {
+  app.attachBreadcrumb();
   app.attachMainComponent();
 }
