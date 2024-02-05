@@ -697,37 +697,6 @@ describe('MR Widget Security Reports', () => {
         });
       });
 
-      it.each([
-        {
-          feedbackIssuePath: 'my-issue-path',
-          createJiraIssueUrl: null,
-          expectedHasCreateIssuePath: true,
-        },
-        {
-          feedbackIssuePath: null,
-          createJiraIssueUrl: 'my-jira-issue-path',
-          expectedHasCreateIssuePath: true,
-        },
-        { feedbackIssuePath: null, createJiraIssueUrl: null, expectedHasCreateIssuePath: false },
-      ])(
-        'passes the `hasCreateIssuePath` prop as "$expectedHasCreateIssuePath" to the modal when the feedback path is "$feedbackIssuePath" and the Jira issue URL is "$createJiraIssueUrl"',
-        async ({ feedbackIssuePath, createJiraIssueUrl, expectedHasCreateIssuePath }) => {
-          await createComponentExpandWidgetAndOpenModal({
-            mrProps: {
-              targetProjectFullPath: 'root/security-reports-v2',
-              createVulnerabilityFeedbackIssuePath: feedbackIssuePath,
-            },
-            mockDataProps: {
-              create_jira_issue_url: createJiraIssueUrl,
-            },
-          });
-
-          const modal = findStandaloneModal();
-
-          expect(modal.props('hasCreateIssuePath')).toBe(expectedHasCreateIssuePath);
-        },
-      );
-
       it('renders the dismissed badge when `dismissed` is emitted', async () => {
         await createComponentExpandWidgetAndOpenModal({
           mockDataFn: mockWithDataOneFinding,

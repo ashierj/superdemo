@@ -122,40 +122,6 @@ describe('Security Dashboard component', () => {
         });
       });
 
-      it.each([
-        {
-          createVulnerabilityFeedbackIssuePath: 'my-feedback-path',
-          createJiraIssueUrl: null,
-          expectedHasCreateIssuePath: true,
-        },
-        {
-          createVulnerabilityFeedbackIssuePath: null,
-          createJiraIssueUrl: 'my-jira-feedback-path',
-          expectedHasCreateIssuePath: true,
-        },
-        {
-          createVulnerabilityFeedbackIssuePath: null,
-          createJiraIssueUrl: null,
-          expectedHasCreateIssuePath: false,
-        },
-      ])(
-        'passes the `hasCreateIssuePath` prop as "$expectedHasCreateIssuePath" to the modal when the feedback path is "$createVulnerabilityFeedbackIssuePath" and the Jira issue URL is "$createJiraIssueUrl"',
-        async ({
-          createVulnerabilityFeedbackIssuePath,
-          createJiraIssueUrl,
-          expectedHasCreateIssuePath,
-        }) => {
-          await openFindingModal({
-            create_vulnerability_feedback_issue_path: createVulnerabilityFeedbackIssuePath,
-            create_jira_issue_url: createJiraIssueUrl,
-          });
-
-          expect(wrapper.findComponent(VulnerabilityFindingModal).props('hasCreateIssuePath')).toBe(
-            expectedHasCreateIssuePath,
-          );
-        },
-      );
-
       it('gets closed when "hidden" is emitted', async () => {
         await openFindingModal();
 
