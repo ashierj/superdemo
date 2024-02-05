@@ -32,11 +32,6 @@ module EE
       has_many :approver_groups, as: :target, dependent: :delete_all # rubocop:disable Cop/ActiveRecordDependent
       has_many :status_check_responses, class_name: 'MergeRequests::StatusCheckResponse', inverse_of: :merge_request
       has_many :approval_rules, class_name: 'ApprovalMergeRequestRule', inverse_of: :merge_request do
-        def applicable_post_merge
-          # We will show nil (old rules) and rules that were true
-          where(applicable_post_merge: [true, nil])
-        end
-
         def applicable_to_branch(branch)
           ActiveRecord::Associations::Preloader.new(
             records: self,
@@ -51,6 +46,10 @@ module EE
           where(id: applicable_ids).update_all(applicable_post_merge: true)
         end
       end
+      has_many :applicable_post_merge_approval_rules,
+        -> { applicable_post_merge },
+        class_name: 'ApprovalMergeRequestRule',
+        inverse_of: :merge_request
       has_many :approval_merge_request_rule_sources, through: :approval_rules
       has_many :approval_project_rules, through: :approval_merge_request_rule_sources
       has_one :merge_train_car, class_name: 'MergeTrains::Car', inverse_of: :merge_request, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
@@ -132,6 +131,8 @@ module EE
       end
 
       def policy_approval_settings
+        return {} if scan_result_policy_violations.empty?
+
         scan_result_policy_violations
           .including_scan_result_policy_reads
           .pluck(:project_approval_settings)

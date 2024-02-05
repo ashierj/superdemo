@@ -204,6 +204,16 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep, feature_categor
     end
   end
 
+  describe '.applicable_post_merge' do
+    it 'returns only the rules applicable_post_merge true or nil' do
+      create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: false)
+      rule_2 = create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: true)
+      rule_3 = create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: nil)
+
+      expect(described_class.applicable_post_merge).to contain_exactly(rule_2, rule_3)
+    end
+  end
+
   describe '.find_or_create_code_owner_rule' do
     subject(:rule) { described_class.find_or_create_code_owner_rule(merge_request, entry) }
 

@@ -294,7 +294,7 @@ class ApprovalState
   def wrapped_rules
     strong_memoize(:wrapped_rules) do
       rules = if merge_request.merged?
-                merge_request.approval_rules.applicable_post_merge
+                merge_request.applicable_post_merge_approval_rules
               else
                 merge_request.approval_rules.applicable_to_branch(target_branch)
               end

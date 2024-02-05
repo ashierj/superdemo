@@ -381,6 +381,15 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
         it 'returns false when the branch name does not exist' do
           expect(rule.applies_to_branch?('this-is-not-a-real-branch')).to be false
         end
+
+        context 'when protected branches are already loaded' do
+          it 'still returns true when the branch name is a protected branch' do
+            rule.reload
+            rule.protected_branches.load
+
+            expect(rule.applies_to_branch?(protected_branch.name)).to be true
+          end
+        end
       end
 
       context 'and project has no protected branches' do

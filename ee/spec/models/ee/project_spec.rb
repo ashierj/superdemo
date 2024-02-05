@@ -266,6 +266,18 @@ RSpec.describe Project, feature_category: :groups_and_projects do
             let(:protected_branches) { [create(:protected_branch, name: branch)] }
 
             it { is_expected.to eq([rule]) }
+
+            context 'and multiple rules' do
+              it 'avoids N+1 queries' do
+                project.reload.approval_rules.applicable_to_branch(branch)
+
+                control = ActiveRecord::QueryRecorder.new { project.reload.approval_rules.applicable_to_branch(branch) }
+
+                create(:approval_project_rule, project: project, protected_branches: protected_branches)
+
+                expect { project.reload.approval_rules.applicable_to_branch(branch) }.not_to exceed_query_limit(control)
+              end
+            end
           end
 
           context 'but branch does not match anything' do
@@ -292,6 +304,18 @@ RSpec.describe Project, feature_category: :groups_and_projects do
             let(:protected_branches) { [create(:protected_branch, name: branch.reverse)] }
 
             it { is_expected.to eq([rule]) }
+
+            context 'and multiple rules' do
+              it 'avoids N+1 queries' do
+                project.reload.approval_rules.inapplicable_to_branch(branch)
+
+                control = ActiveRecord::QueryRecorder.new { project.reload.approval_rules.inapplicable_to_branch(branch) }
+
+                create(:approval_project_rule, project: project, protected_branches: protected_branches)
+
+                expect { project.reload.approval_rules.inapplicable_to_branch(branch) }.not_to exceed_query_limit(control)
+              end
+            end
           end
 
           context 'but branch matches' do
