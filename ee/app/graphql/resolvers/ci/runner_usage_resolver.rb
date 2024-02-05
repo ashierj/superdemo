@@ -34,7 +34,7 @@ module Resolvers
                      'Other runners will be aggregated to a `runner: null` entry. ' \
                      "Defaults to #{DEFAULT_RUNNERS_LIMIT} if unspecified. Maximum of #{MAX_RUNNERS_LIMIT}."
 
-      def resolve(from_date:, to_date:, runner_type:, runners_limit:)
+      def resolve(from_date: nil, to_date: nil, runner_type: nil, runners_limit: nil)
         authorize! :global
 
         from_date ||= 1.month.ago.beginning_of_month.to_date
