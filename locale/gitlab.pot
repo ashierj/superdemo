@@ -8580,9 +8580,6 @@ msgstr ""
 msgid "Bot"
 msgstr ""
 
-msgid "Bot comments"
-msgstr ""
-
 msgid "Both SSH and HTTP(S)"
 msgstr ""
 
@@ -12412,6 +12409,12 @@ msgid "Commenting on this line is not supported"
 msgstr ""
 
 msgid "Comments"
+msgstr ""
+
+msgid "Comments (from bots)"
+msgstr ""
+
+msgid "Comments (from users)"
 msgstr ""
 
 msgid "Commit"
