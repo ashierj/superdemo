@@ -1,12 +1,16 @@
 <script>
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import ListHeader from 'ee_component/packages_and_registries/google_artifact_registry/components/list/header.vue';
+import ListTable from 'ee_component/packages_and_registries/google_artifact_registry/components/list/table.vue';
 import getArtifactsQuery from 'ee_component/packages_and_registries/google_artifact_registry/graphql/queries/get_artifacts.query.graphql';
+
+const PAGE_SIZE = 20;
 
 export default {
   name: 'ArtifactRegistryListPage',
   components: {
     ListHeader,
+    ListTable,
   },
   inject: ['fullPath'],
   apollo: {
@@ -15,6 +19,7 @@ export default {
       variables() {
         return {
           fullPath: this.fullPath,
+          first: PAGE_SIZE,
         };
       },
       update(data) {
@@ -34,10 +39,10 @@ export default {
   },
   computed: {
     headerData() {
-      const { project, repository, gcpRepositoryUrl } = this.artifacts;
-      if (project && repository) {
+      const { projectId, repository, gcpRepositoryUrl } = this.artifacts;
+      if (projectId && repository) {
         return {
-          project,
+          projectId,
           repository,
           gcpRepositoryUrl,
         };
@@ -47,6 +52,12 @@ export default {
     isLoading() {
       return this.$apollo.queries.artifacts.loading;
     },
+    tableData() {
+      const { nodes = [] } = this.artifacts;
+      return {
+        nodes,
+      };
+    },
   },
 };
 </script>
@@ -54,5 +65,6 @@ export default {
 <template>
   <div data-testid="artifact-registry-list-page">
     <list-header :data="headerData" :is-loading="isLoading" :show-error="failedToLoad" />
+    <list-table v-if="!failedToLoad" :data="tableData" :is-loading="isLoading" />
   </div>
 </template>

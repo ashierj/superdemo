@@ -116,7 +116,7 @@ describe('Google Artifact Registry list page header', () => {
           createComponent();
 
           expect(findProjectIDSubHeader().props()).toMatchObject({
-            text: defaultProps.data.project,
+            text: defaultProps.data.projectId,
             textTooltip: 'Project ID',
             icon: 'project',
             size: 'xl',

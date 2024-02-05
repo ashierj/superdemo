@@ -1,10 +1,17 @@
-query getArtifacts($fullPath: ID!) {
+query getArtifacts($fullPath: ID!, $first: Int) {
   project(fullPath: $fullPath) {
     id
-    googleCloudPlatformArtifactRegistryRepositoryArtifacts @client {
-      project
+    googleCloudPlatformArtifactRegistryRepositoryArtifacts(first: $first) @client {
+      projectId
       repository
       gcpRepositoryUrl
+      nodes {
+        image
+        digest
+        tags
+        buildTime
+        updateTime
+      }
     }
   }
 }
