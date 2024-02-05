@@ -45364,6 +45364,9 @@ msgstr ""
 msgid "SecurityReports|There was an error fetching the finding. Please try again."
 msgstr ""
 
+msgid "SecurityReports|There was an error fetching the finding. The security report for this pipeline may have expired. To generate a new security report, go the %{boldStart}Pipelines%{boldEnd} tab and run a pipeline."
+msgstr ""
+
 msgid "SecurityReports|There was an error reverting the dismissal."
 msgstr ""
 
