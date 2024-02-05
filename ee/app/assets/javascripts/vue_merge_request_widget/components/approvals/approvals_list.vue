@@ -190,7 +190,7 @@ export default {
             <approved-icon class="gl-pl-2" :is-approved="rule.approved" />
           </td>
           <td :colspan="numberOfColumns(rule)" class="gl-pl-0!">
-            <div class="d-md-flex d-none js-name gl-align-items-center">
+            <div class="gl-md-display-flex! d-none js-name gl-align-items-center">
               <empty-rule-name
                 v-if="rule.type.toLowerCase() === $options.ruleTypeAnyApprover"
                 :eligible-approvers-docs-path="eligibleApproversDocsPath"
