@@ -69,6 +69,8 @@ module API
           message_attributes[:content] = safe_params[:content]
 
           prompt_message = ::Gitlab::Llm::AiMessage.for(action: action_name).new(message_attributes)
+          prompt_message.save!
+
           ai_response = Llm::Internal::CompletionService.new(prompt_message, options).execute
 
           reset_chat(action_name, message_attributes) if safe_params[:with_clean_history]
