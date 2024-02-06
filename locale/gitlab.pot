@@ -25943,9 +25943,6 @@ msgstr ""
 msgid "Infrastructure"
 msgstr ""
 
-msgid "Infrastructure Registry"
-msgstr ""
-
 msgid "Infrastructure as Code (IaC) Scanning"
 msgstr ""
 
