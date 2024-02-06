@@ -58,7 +58,8 @@ RSpec.shared_examples 'an artifact registry service handling validation errors' 
           .and_raise(::GoogleCloudPlatform::AuthenticationError, 'boom')
       end
 
-      it_behaves_like 'returning an error service response', message: described_class::GCP_AUTHENTICATION_ERROR_MESSAGE
+      it_behaves_like 'returning an error service response',
+        message: described_class::ERROR_RESPONSES[:authentication_error].message
       it_behaves_like 'logging an error', message: 'boom'
     end
 
@@ -68,7 +69,8 @@ RSpec.shared_examples 'an artifact registry service handling validation errors' 
           .and_raise(::GoogleCloudPlatform::ApiError, 'boom')
       end
 
-      it_behaves_like 'returning an error service response', message: described_class::GCP_API_ERROR_MESSAGE
+      it_behaves_like 'returning an error service response',
+        message: described_class::ERROR_RESPONSES[:api_error].message
       it_behaves_like 'logging an error', message: 'boom'
     end
   end
