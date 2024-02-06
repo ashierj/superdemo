@@ -8,8 +8,8 @@ import updateStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/up
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
-import { STEPS } from '../mock_data';
 import { createMockApolloProvider } from '../spec_helper';
+import { STEPS } from '../mock_data';
 
 Vue.use(VueApollo);
 

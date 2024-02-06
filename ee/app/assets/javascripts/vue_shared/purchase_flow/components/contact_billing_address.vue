@@ -25,6 +25,7 @@ export default {
 
       return this.contact.fullName;
     },
+    // Address fields not required by CDot backend: https://gitlab.com/gitlab-org/customers-gitlab-com/-/blob/420e698565230dd1f9361677aa89df3d5f1c7394/app/models/billing_account_contact.rb#L13-13
     hasAddress1() {
       return Boolean(this.contact.address1);
     },
@@ -39,7 +40,7 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-mb-5">
+  <div>
     <h6>{{ addressTitle }}</h6>
 
     <div data-testid="billing-contact-full-name">{{ contactName }}</div>
