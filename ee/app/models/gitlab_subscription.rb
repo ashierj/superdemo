@@ -56,6 +56,8 @@ class GitlabSubscription < ApplicationRecord
       .limit(limit)
   end
 
+  scope :not_expired, -> (before_date: Date.today) { where('end_date IS NULL OR end_date >= ?', before_date) }
+
   DAYS_AFTER_EXPIRATION_BEFORE_REMOVING_FROM_INDEX = 30
 
   # We set a threshold for expiration before removing them from
