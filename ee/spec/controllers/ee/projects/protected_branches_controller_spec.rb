@@ -11,17 +11,17 @@ RSpec.describe Projects::ProtectedBranchesController, feature_category: :source_
     project.add_maintainer(user)
   end
 
-  shared_examples "protected branch with code owner approvals feature" do |boolean|
-    it "sets code owner approvals to #{boolean} when protecting the branch" do
-      expect do
-        post(:create, params: project_params.merge(protected_branch: create_params))
-      end.to change { ProtectedBranch.count }.by(1)
-
-      expect(ProtectedBranch.last.attributes["code_owner_approval_required"]).to eq(boolean)
-    end
-  end
-
   describe "POST #create" do
+    shared_examples "protected branch with code owner approvals feature" do |boolean|
+      it "sets code owner approvals to #{boolean} when protecting the branch" do
+        expect do
+          post(:create, params: project_params.merge(protected_branch: create_params))
+        end.to change { ProtectedBranch.count }.by(1)
+
+        expect(ProtectedBranch.last.attributes["code_owner_approval_required"]).to eq(boolean)
+      end
+    end
+
     let(:maintainer_access_level) { [{ access_level: Gitlab::Access::MAINTAINER }] }
     let(:access_level_params) do
       { merge_access_levels_attributes: maintainer_access_level,
@@ -63,6 +63,69 @@ RSpec.describe Projects::ProtectedBranchesController, feature_category: :source_
         end
 
         it_behaves_like "protected branch with code owner approvals feature", false
+      end
+    end
+  end
+
+  describe "PUT/PATCH #update" do
+    let(:new_name) { "foobar" }
+
+    let(:params) do
+      { namespace_id: project.namespace.to_param,
+        project_id: project.to_param,
+        id: protected_branch.id,
+        protected_branch: { name: new_name } }
+    end
+
+    subject(:update_protected_branch) { put(:update, params: params) }
+
+    before do
+      sign_in(user)
+    end
+
+    context 'without blocking scan result policy' do
+      it 'renames' do
+        expect { update_protected_branch }.to change { protected_branch.reload.name }.to(new_name)
+      end
+    end
+
+    context 'with blocking scan result policy' do
+      let(:branch_name) { protected_branch.name }
+      let(:policy_configuration) do
+        create(:security_orchestration_policy_configuration, project: project)
+      end
+
+      include_context 'with scan result policy blocking protected branches'
+
+      before do
+        create(:scan_result_policy_read, :blocking_protected_branches, project: project,
+          security_orchestration_policy_configuration: policy_configuration)
+      end
+
+      it 'does not rename' do
+        expect { update_protected_branch }.not_to change { protected_branch.reload.name }
+      end
+
+      it 'responds with 403' do
+        update_protected_branch
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+
+      context 'with feature disabled' do
+        before do
+          stub_feature_flags(scan_result_policies_block_unprotecting_branches: false)
+        end
+
+        it 'renames' do
+          expect { update_protected_branch }.to change { protected_branch.reload.name }.to(new_name)
+        end
+
+        it 'responds with 200' do
+          update_protected_branch
+
+          expect(response).to have_gitlab_http_status(:success)
+        end
       end
     end
   end
