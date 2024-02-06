@@ -38,12 +38,19 @@ module Elastic
 
         # Schema version. The format is Date.today.strftime('%y_%m')
         # Please update if you're changing the schema of the document
-        data['schema_version'] = 23_06
+        data['schema_version'] = 24_02
 
         data['traversal_ids'] = target.elastic_namespace_ancestry
 
         if ::Elastic::DataMigrationService.migration_has_finished?(:add_ci_catalog_to_project)
           data['ci_catalog'] = target.catalog_resource.present?
+        end
+
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_fields_to_projects_index)
+          data['mirror'] = target.mirror?
+          data['forked'] = target.forked? || false
+          data['owner_id'] = target.owner.id
+          data['repository_languages'] = target.repository_languages.map(&:name)
         end
 
         unless ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
