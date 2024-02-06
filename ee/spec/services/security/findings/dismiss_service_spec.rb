@@ -33,10 +33,12 @@ RSpec.describe Security::Findings::DismissService, feature_category: :vulnerabil
 
             aggregate_failures do
               expect(finding.feedbacks.where(feedback_type: "dismissal").last)
-                .to have_attributes(comment: comment,
-                                    pipeline_id: finding.pipeline.id,
-                                    feedback_type: 'dismissal',
-                                    migrated_to_state_transition: true)
+                .to have_attributes(
+                  comment: comment,
+                  pipeline_id: finding.pipeline.id,
+                  feedback_type: 'dismissal',
+                  migrated_to_state_transition: true
+                )
             end
           end
         end
@@ -71,9 +73,11 @@ RSpec.describe Security::Findings::DismissService, feature_category: :vulnerabil
           dismiss_finding
 
           expect(finding.feedbacks.where(feedback_type: "dismissal").last)
-            .to have_attributes(dismissal_reason: dismissal_reason,
-                                feedback_type: 'dismissal',
-                                migrated_to_state_transition: true)
+            .to have_attributes(
+              dismissal_reason: dismissal_reason,
+              feedback_type: 'dismissal',
+              migrated_to_state_transition: true
+            )
         end
       end
 
@@ -142,12 +146,13 @@ RSpec.describe Security::Findings::DismissService, feature_category: :vulnerabil
 
         before do
           allow(::Vulnerabilities::FindOrCreateFromSecurityFindingService)
-            .to receive(:new).with(project: finding.project,
-                                   current_user: user,
-                                   params: security_finding_params,
-                                   state: :dismissed,
-                                   present_on_default_branch: false)
-            .and_return(service_double)
+            .to receive(:new).with(
+              project: finding.project,
+              current_user: user,
+              params: security_finding_params,
+              state: :dismissed,
+              present_on_default_branch: false
+            ).and_return(service_double)
         end
 
         it 'returns security finding with success response' do
