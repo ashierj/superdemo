@@ -1521,8 +1521,8 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
   describe 'GET /groups/:id/users' do
     let_it_be(:group) { create(:group, :private) }
     let_it_be(:regular_user) { create(:user) }
-    let_it_be(:saml_provider) { create(:saml_provider, group: group) }
-    let_it_be(:group_member_user) { create(:user) { |u| group.add_developer(u) } }
+    let_it_be_with_refind(:saml_provider) { create(:saml_provider, group: group, enforced_sso: true) }
+    let_it_be(:group_member_user) { create(:user) { |u| group.add_owner(u) } }
 
     let_it_be(:saml_user) { create(:user, :public_email) }
     let_it_be(:non_saml_user) { create(:user) { |u| group.add_maintainer(u) } }
@@ -1531,7 +1531,7 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
     subject(:get_users) { get api("/groups/#{group.to_param}/users", current_user), params: params }
 
     before do
-      create(:saml_provider, group: group)
+      stub_licensed_features(group_saml: true)
       create(:group_saml_identity, user: group_member_user, saml_provider: saml_provider)
       create(:group_saml_identity, user: saml_user, saml_provider: saml_provider)
     end
@@ -1562,7 +1562,7 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
       context 'when no include params are true' do
         let(:params) { { include_saml_users: false } }
 
-        it 'returns 404' do
+        it 'returns 400' do
           get_users
 
           expect(response).to have_gitlab_http_status(:bad_request)
@@ -1576,6 +1576,16 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
           get_users
 
           expect(json_response.pluck('id')).to match_array([group_member_user.id, saml_user.id, service_account.id])
+        end
+
+        context 'when no SAML provider exists' do
+          it 'returns 403' do
+            saml_provider.destroy!
+
+            get_users
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
         end
       end
 

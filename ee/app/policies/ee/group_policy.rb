@@ -91,6 +91,13 @@ module EE
         ::Gitlab::Auth::GroupSaml::SessionEnforcer.new(@user, @subject).access_restricted?
       end
 
+      condition(:sso_enforced, scope: :subject) do
+        saml_provider = @subject.root_ancestor.saml_provider
+        next false unless saml_provider
+
+        saml_provider.enabled? && saml_provider.enforced_sso?
+      end
+
       condition(:ip_enforcement_prevents_access, scope: :subject) do
         !::Gitlab::IpRestriction::Enforcer.new(subject).allows_current_ip?
       end
@@ -662,6 +669,10 @@ module EE
       rule { guest }.enable :read_limit_alert
 
       rule { membership_for_chat & chat_allowed_for_group & chat_available_for_user }.enable :access_duo_chat
+
+      rule { can?(:admin_group_member) & sso_enforced }.policy do
+        enable :read_saml_user
+      end
     end
 
     override :lookup_access_level!

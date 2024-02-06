@@ -283,7 +283,7 @@ module EE
           end
           # rubocop: disable CodeReuse/ActiveRecord
           get ':id/users', feature_category: :user_management do
-            authorize! :read_group_member, user_group
+            authorize! :read_saml_user, user_group
             params = declared_params(include_missing: false).except!(:id)
             bad_request!(users_params_error) unless any_allowed_filters_present?(params)
 
