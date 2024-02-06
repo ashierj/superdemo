@@ -29,6 +29,7 @@ module Telesign
 
       ::Gitlab::AppJsonLogger.info(
         class: self.class.name,
+        username: user&.username,
         message: 'IdentityVerification::Phone',
         event: 'Telesign transaction status update',
         telesign_reference_id: payload.reference_id,
@@ -40,21 +41,29 @@ module Telesign
       track_status_update_event
     end
 
+    private
+
+    def phone_number_validation_record
+      Users::PhoneNumberValidation.by_reference_id(payload.reference_id)
+    end
+    strong_memoize_attr :phone_number_validation_record
+
+    def user
+      phone_number_validation_record&.user
+    end
+
     def track_status_update_event
-      record = Users::PhoneNumberValidation.by_reference_id(payload.reference_id)
-      return unless record
+      return unless phone_number_validation_record
 
       event = payload.failed_delivery? ? 'telesign_sms_delivery_failed' : 'telesign_sms_delivery_success'
 
       Gitlab::Tracking.event(
         'IdentityVerification::Phone',
         event,
-        user: record.user,
-        extra: { country_code: record.country, status: payload.status }
+        user: user,
+        extra: { country_code: phone_number_validation_record.country, status: payload.status }
       )
     end
-
-    private
 
     def telesign_customer_id
       ::Gitlab::CurrentSettings.telesign_customer_xid
