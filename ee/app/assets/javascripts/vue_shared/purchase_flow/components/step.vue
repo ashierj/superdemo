@@ -124,6 +124,7 @@ export default {
     edit() {
       this.loading = true;
       this.$emit('stepEdit', this.stepId);
+
       return this.$apollo
         .mutate({
           mutation: updateStepMutation,
@@ -165,6 +166,7 @@ export default {
       >
         {{ nextStepButtonText }}
       </gl-button>
+      <slot name="footer"></slot>
     </div>
     <slot v-if="isFinished" name="summary"></slot>
   </div>

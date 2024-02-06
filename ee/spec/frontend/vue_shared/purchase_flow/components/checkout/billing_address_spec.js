@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
+import { GlAlert } from '@gitlab/ui';
 import getBillingAccountQuery from 'ee/vue_shared/purchase_flow/graphql/queries/get_billing_account.customer.query.graphql';
 import { gitLabResolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import { STEPS } from 'ee/subscriptions/constants';
@@ -17,6 +18,7 @@ import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constant
 import { createMockClient } from 'helpers/mock_apollo_helper';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { logError } from '~/lib/logger';
+import BillingAccountDetails from 'ee/vue_shared/purchase_flow/components/checkout/billing_account_details.vue';
 
 Vue.use(VueApollo);
 jest.mock('~/lib/logger');
@@ -29,13 +31,17 @@ describe('Billing Address', () => {
   const findCountrySelect = () => wrapper.findByTestId('country');
 
   const findStep = () => wrapper.findComponent(Step);
-  const findManageContacts = () => wrapper.findComponent(SprintfWithLinks);
+  const findManageContactsAlert = () => wrapper.findComponent(GlAlert);
+  const findManageContactsContent = () => wrapper.findComponent(SprintfWithLinks);
+  const findBillingAccountDetails = () => wrapper.findComponent(BillingAccountDetails);
   const findAddressForm = () => wrapper.findByTestId('checkout-billing-address-form');
   const findAddressSummary = () => wrapper.findByTestId('checkout-billing-address-summary');
+  const findEditOnCDotButton = () => wrapper.findByTestId('billing-address-cdot-edit');
 
   const createComponent = async (
     apolloLocalStateData = {},
     billingAccountFn = jest.fn().mockResolvedValue({ data: { billingAccount: null } }),
+    glFeatures = {},
   ) => {
     const apolloResolvers = {
       Query: {
@@ -62,6 +68,9 @@ describe('Billing Address', () => {
 
     wrapper = mountExtended(BillingAddress, {
       apolloProvider,
+      provide: {
+        glFeatures,
+      },
     });
 
     await waitForPromises();
@@ -72,12 +81,12 @@ describe('Billing Address', () => {
     ${true}              | ${mockBillingAccount} | ${'Contact information'} | ${false}
     ${false}             | ${null}               | ${'Billing address'}     | ${true}
   `(
-    'when billingAccount exists is $billingAccountExists',
+    'when billingAccount exists is $billingAccountExists and keyContactsManagementV2 flag true',
     ({ billingAccountData, stepTitle, showAddress }) => {
       const handler = jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } });
 
       beforeEach(async () => {
-        await createComponent({}, handler);
+        await createComponent({}, handler, { keyContactsManagementV2: true });
       });
 
       it('calls getBillingAccountQuery', () => {
@@ -96,8 +105,57 @@ describe('Billing Address', () => {
         expect(findAddressForm().exists()).toBe(showAddress);
       });
 
-      it(`${showAddress ? 'does not show' : 'shows'} manage contact message`, () => {
-        expect(findManageContacts().exists()).toBe(!showAddress);
+      it(`${showAddress ? 'does not show' : 'shows'} manage contact alert`, () => {
+        expect(findManageContactsAlert().exists()).toBe(!showAddress);
+      });
+
+      it(`${showAddress ? 'does not show' : 'shows'} billing account details`, () => {
+        expect(findBillingAccountDetails().exists()).toBe(!showAddress);
+      });
+
+      it(`${showAddress ? 'does not show' : 'shows'} edit on Customers Portal button`, () => {
+        expect(findEditOnCDotButton().exists()).toBe(!showAddress);
+      });
+    },
+  );
+
+  describe.each`
+    billingAccountExists | billingAccountData    | stepTitle                | showAddress
+    ${true}              | ${mockBillingAccount} | ${'Contact information'} | ${false}
+    ${false}             | ${null}               | ${'Billing address'}     | ${true}
+  `(
+    'when  billingAccount exists is $billingAccountExists',
+    ({ billingAccountData, stepTitle, showAddress }) => {
+      beforeEach(async () => {
+        await createComponent(
+          {},
+          jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
+          { keyContactsManagementV2: false },
+        );
+      });
+
+      it('shows step component', () => {
+        expect(findStep().exists()).toBe(true);
+      });
+
+      it('passes correct step title', () => {
+        expect(findStep().props('title')).toEqual(stepTitle);
+      });
+
+      it(`${showAddress ? 'shows' : 'does not show'} address form`, () => {
+        expect(findAddressForm().exists()).toBe(showAddress);
+      });
+
+      it(`${showAddress ? 'does not show' : 'shows'} manage contact alert`, () => {
+        expect(findManageContactsAlert().exists()).toBe(!showAddress);
+      });
+
+      it('does not show billing account details', () => {
+        expect(findBillingAccountDetails().exists()).toBe(false);
+      });
+
+      it('does not show edit on Customers Portal button', () => {
+        expect(findEditOnCDotButton().exists()).toBe(false);
       });
     },
   );
@@ -111,15 +169,32 @@ describe('Billing Address', () => {
     });
 
     it('shows correct message', () => {
-      expect(findManageContacts().props('message')).toEqual(
+      expect(findManageContactsContent().props('message')).toEqual(
         'Manage the subscription and billing contacts for your billing account in the %{customersPortalLinkStart}Customers Portal%{customersPortalLinkEnd}. Learn more about %{manageContactsLinkStart}how to manage your contacts%{manageContactsLinkEnd}.',
       );
     });
 
     it('renders correct number of links', () => {
-      expect(findManageContacts().props('linkObject')).toMatchObject({
-        customersPortalLink: gon.subscriptions_url,
-        manageContactsLink: '/help/subscriptions/customers_portal',
+      expect(findManageContactsContent().props('linkObject')).toMatchObject({
+        customersPortalLink: gon.billing_accounts_url,
+        manageContactsLink:
+          '/help/subscriptions/customers_portal#subscription-and-billing-contacts',
+      });
+    });
+  });
+
+  describe('billing account details', () => {
+    beforeEach(async () => {
+      await createComponent(
+        {},
+        jest.fn().mockResolvedValue({ data: { billingAccount: mockBillingAccount } }),
+        { keyContactsManagementV2: true },
+      );
+    });
+
+    it('receives correct props', () => {
+      expect(findBillingAccountDetails().props()).toMatchObject({
+        billingAccount: mockBillingAccount,
       });
     });
   });
@@ -269,6 +344,70 @@ describe('Billing Address', () => {
         expect(wrapper.find('.js-summary-line-3').text()).toBe('city, US California zip');
       });
     });
+  });
+
+  describe('edit on customers portal button', () => {
+    describe.each`
+      billingAccountExists | billingAccountData    | showButton
+      ${true}              | ${mockBillingAccount} | ${true}
+      ${true}              | ${null}               | ${false}
+      ${false}             | ${null}               | ${false}
+    `(
+      'when billingAccount exists is $billingAccountExists and billingAccountData is $billingAccountData and keyContactsManagementV2 flag is true',
+      ({ billingAccountData, showButton }) => {
+        beforeEach(async () => {
+          await createComponent(
+            {},
+            jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
+            { keyContactsManagementV2: true },
+          );
+
+          await waitForPromises();
+        });
+
+        it(`${showButton ? 'renders' : 'does not render'}`, () => {
+          expect(findEditOnCDotButton().exists()).toBe(showButton);
+        });
+      },
+    );
+
+    it('has correct attributes', async () => {
+      await createComponent(
+        {},
+        jest.fn().mockResolvedValue({ data: { billingAccount: mockBillingAccount } }),
+        { keyContactsManagementV2: true },
+      );
+
+      await waitForPromises();
+
+      expect(findEditOnCDotButton().text()).toEqual('Edit in Customers Portal');
+      expect(findEditOnCDotButton().href).toEqual(gon.billing_accounts_url);
+    });
+
+    describe.each`
+      billingAccountExists | billingAccountData
+      ${true}              | ${mockBillingAccount}
+      ${true}              | ${null}
+      ${false}             | ${null}
+      ${false}             | ${mockBillingAccount}
+    `(
+      'when billingAccount exists is $billingAccountExists and billingAccountData is $billingAccountData and keyContactsManagementV2 flag is false',
+      ({ billingAccountData }) => {
+        beforeEach(async () => {
+          await createComponent(
+            {},
+            jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
+            { keyContactsManagementV2: false },
+          );
+
+          await waitForPromises();
+        });
+
+        it('does not show edit on Customers Portal button', () => {
+          expect(findEditOnCDotButton().exists()).toBe(false);
+        });
+      },
+    );
   });
 
   describe('when the mutation fails', () => {
