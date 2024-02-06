@@ -16,7 +16,6 @@ module EE
       EOA_BRONZE_PLAN_END_DATE = '2022-01-26'
       CL_SUBSCRIPTION_ACTIVATION = 'cloud_licensing_subscription_activation_banner'
       PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY = 'profile_personal_access_token_expiry'
-      CODE_SUGGESTIONS_GA_NON_OWNER_ALERT = 'code_suggestions_ga_non_owner_alert'
       CODE_SUGGESTIONS_GA_OWNER_ALERT = 'code_suggestions_ga_owner_alert'
       JOINING_A_PROJECT_ALERT = 'joining_a_project_alert'
 
@@ -72,14 +71,6 @@ module EE
 
         failed_pipeline = current_user.pipelines.user_not_verified.last
         failed_pipeline.present? && !user_dismissed?('verification_reminder', failed_pipeline.created_at)
-      end
-
-      def show_code_suggestions_ga_non_owner_alert?(group)
-        return false unless ::Feature.enabled?(:code_suggestions_ga_non_owner_alert, group)
-        return false unless ::Namespaces::FreeUserCap.non_owner_access?(user: current_user, namespace: group)
-        return false unless show_code_suggestions_ga_alert?(group)
-
-        !user_dismissed?(CODE_SUGGESTIONS_GA_NON_OWNER_ALERT)
       end
 
       def show_code_suggestions_ga_owner_alert?(group)

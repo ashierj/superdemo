@@ -45,6 +45,58 @@ RSpec.describe 'User with read_code custom role', feature_category: :system_acce
             expect(response.body).to include('/files/markdown/ruby-style-guide.md#L452')
             expect(response.body).to include(source_code)
           end
+
+          context 'when saas', :saas do
+            let_it_be(:subscription) do
+              create(:gitlab_subscription, namespace: project.group, hosted_plan: create(:ultimate_plan))
+            end
+
+            before do
+              stub_ee_application_setting(
+                elasticsearch_indexing: true,
+                elasticsearch_search: true,
+                should_check_namespace_plan: true
+              )
+            end
+
+            it 'allows access via a custom role' do
+              get search_path, params: {
+                group_id: project.group.id,
+                scope: 'blobs',
+                search: 'Mailer.deliver'
+              }
+
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(response.body).not_to include('We couldn&#39;t find any code results matching')
+              expect(response.body).to include('/files/markdown/ruby-style-guide.md#L452')
+              expect(response.body).to include(source_code)
+            end
+
+            it 'avoids N+1 queries' do
+              get search_path, params: { group_id: project.group.id, scope: 'blobs', search: 'Mailer.deliver' } # warmup
+              expect(response.body).to include(source_code)
+
+              control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+                get search_path, params: {
+                  group_id: project.group.id,
+                  scope: 'blobs',
+                  search: 'Mailer.deliver'
+                }
+                expect(response.body).to include(source_code)
+              end
+
+              create(:project, :private, :repository, group: create(:group, parent: project.group))
+
+              expect do
+                get search_path, params: {
+                  group_id: project.group.id,
+                  scope: 'blobs',
+                  search: 'Mailer.deliver'
+                }
+                expect(response.body).to include(source_code)
+              end.to issue_same_number_of_queries_as(control).or_fewer
+            end
+          end
         end
 
         context 'when searching a project' do
