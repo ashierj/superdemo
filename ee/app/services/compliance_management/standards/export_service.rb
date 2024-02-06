@@ -18,7 +18,7 @@ module ComplianceManagement
       end
 
       def email_export
-        StandardsAdherenceExportMailerWorker.perform_async(user.id, group.id) if feature_enabled?
+        StandardsAdherenceExportMailerWorker.perform_async(user.id, group.id)
 
         ServiceResponse.success
       end
@@ -26,10 +26,6 @@ module ComplianceManagement
       private
 
       attr_reader :user, :group
-
-      def feature_enabled?
-        Feature.enabled?(:compliance_standards_adherence_csv_export, group)
-      end
 
       def csv_builder
         @csv_builder ||= CsvBuilder.new(rows, csv_header)
