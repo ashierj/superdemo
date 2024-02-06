@@ -39,11 +39,15 @@ RSpec.describe Security::AutoFixService, feature_category: :vulnerability_manage
 
     context 'when remediations' do
       let!(:vulnerability_finding) do
-        create(:vulnerabilities_finding_with_remediation, :yarn_remediation, :identifier,
-               project: project,
-               report_type: :dependency_scanning,
-               summary: 'Test remediation',
-               vulnerability: vulnerability)
+        create(
+          :vulnerabilities_finding_with_remediation,
+          :yarn_remediation,
+          :identifier,
+          project: project,
+          report_type: :dependency_scanning,
+          summary: 'Test remediation',
+          vulnerability: vulnerability
+        )
       end
 
       let(:vulnerability) { create(:vulnerability) }

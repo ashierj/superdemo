@@ -225,8 +225,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService, f
         end
 
         it "returns the pipelines" do
-          expect(payload).to eq(pipeline_scan: project.all_pipelines.find_by!(source: Enums::Ci::Pipeline.sources[:security_orchestration_policy]),
-                                on_demand: project.all_pipelines.find_by!(source: Enums::Ci::Pipeline.sources[:ondemand_dast_scan]))
+          expect(payload).to eq(
+            pipeline_scan: project.all_pipelines.find_by!(source: Enums::Ci::Pipeline.sources[:security_orchestration_policy]),
+            on_demand: project.all_pipelines.find_by!(source: Enums::Ci::Pipeline.sources[:ondemand_dast_scan])
+          )
         end
 
         it "sets the pipeline refs to the branch" do
@@ -335,11 +337,14 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService, f
         context 'with a previous scan' do
           let(:last_scan_pipeline_sha) { '0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33' }
           let(:last_scan_pipeline) do
-            create(:ci_pipeline, :success,
-                   project: project,
-                   ref: branch,
-                   source: :security_orchestration_policy,
-                   sha: last_scan_pipeline_sha)
+            create(
+              :ci_pipeline,
+              :success,
+              project: project,
+              ref: branch,
+              source: :security_orchestration_policy,
+              sha: last_scan_pipeline_sha
+            )
           end
 
           let(:most_recent_commit_sha) { project.repository.commit(branch).sha }
@@ -366,11 +371,14 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService, f
 
             let(:last_scan_pipeline_other_branch_sha) { '570e7b2abdd848b95f2f578043fc23bd6f6fd24d' }
             let(:last_scan_pipeline_other_branch) do
-              create(:ci_pipeline, :success,
-                     project: project,
-                     ref: other_branch,
-                     source: :security_orchestration_policy,
-                     sha: last_scan_pipeline_sha)
+              create(
+                :ci_pipeline,
+                :success,
+                project: project,
+                ref: other_branch,
+                source: :security_orchestration_policy,
+                sha: last_scan_pipeline_sha
+              )
             end
 
             before do

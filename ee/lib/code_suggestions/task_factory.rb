@@ -50,7 +50,7 @@ module CodeSuggestions
         prefix: instructions[:prefix],
         instruction: instructions[:instruction],
         project: project,
-        model_name: Feature.enabled?(:code_suggestions_claude21, current_user) ? ANTHROPIC_MODEL : nil,
+        model_name: ANTHROPIC_MODEL,
         current_user: current_user
       )
     end

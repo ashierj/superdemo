@@ -8,13 +8,23 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities, feature_catego
     let_it_be(:pipeline) { create(:ci_pipeline, user: user) }
     let_it_be(:identifier) { create(:vulnerabilities_identifier) }
     let_it_be(:existing_vulnerability) do
-      create(:vulnerability, :detected, :with_finding,
-                                                resolved_on_default_branch: true, present_on_default_branch: false)
+      create(
+        :vulnerability,
+        :detected,
+        :with_finding,
+        resolved_on_default_branch: true,
+        present_on_default_branch: false
+      )
     end
 
     let_it_be(:resolved_vulnerability) do
-      create(:vulnerability, :resolved, :with_finding, resolved_on_default_branch: true, present_on_default_branch:
-        false)
+      create(
+        :vulnerability,
+        :resolved,
+        :with_finding,
+        resolved_on_default_branch: true,
+        present_on_default_branch: false
+      )
     end
 
     let(:finding_maps) { create_list(:finding_map, 5, pipeline: pipeline) }

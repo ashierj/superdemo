@@ -18,6 +18,8 @@ FactoryBot.define do
     trait :os_advisory do
       purl_type { :deb }
       distro_version { 'debian 9' }
+      fixed_versions { %w[<2:7.4.052-1ubuntu3.1] }
+      solution { "Upgrade to version <2:7.4.052-1ubuntu3.1 or above" }
     end
   end
 end
