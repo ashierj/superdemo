@@ -7,7 +7,11 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:params) { { title: 'foo', confidential: true, start_date: 1.day.ago, due_date: 5.days.from_now } }
 
-  describe '#create_work_item_for' do
+  before_all do
+    group.add_developer(user)
+  end
+
+  describe '#create_work_item_for!' do
     let(:epics_create_service) do
       Class.new do
         attr_accessor :group, :current_user, :params
@@ -23,7 +27,7 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
         def execute
           epic = group.epics.new(params.merge({ group: group, author: current_user }))
           epic.save!
-          create_work_item_for(epic)
+          create_work_item_for!(epic)
         end
       end
     end
@@ -38,10 +42,6 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
     end
 
     it 'calls WorkItems::CreateService with allowed params' do
-      allow_next_instance_of(::WorkItems::CreateService) do |instance|
-        allow(instance).to receive(:execute_without_rate_limiting).and_return({ status: :success })
-      end
-
       expect(::WorkItems::CreateService).to receive(:new)
         .with(
           container: group,
@@ -55,9 +55,9 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
             work_item_type: WorkItems::Type.default_by_type(:epic),
             extra_params: { synced_work_item: true }
           }
-        )
+        ).and_call_original
 
-      service.execute
+      expect(service.execute).to eq true
     end
   end
 
@@ -102,7 +102,7 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
         expect(instance).to receive(:execute).with(epic.work_item).and_return({ status: :success })
       end
 
-      service.execute(epic)
+      expect(service.execute(epic)).to eq true
     end
   end
 end
