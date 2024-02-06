@@ -426,5 +426,38 @@ describe('ee/protected_environments/store/edit/actions', () => {
         [],
       );
     });
+
+    it('redirects to previous page after deleting if current page is empty', () => {
+      const environment = {
+        name: 'staging',
+      };
+
+      mockedState.pageInfo = {
+        page: 2,
+        nextPage: null,
+        previousPage: 1,
+        perPage: 10,
+        total: 11,
+        totalPages: 2,
+      };
+
+      mock.onDelete(url, environment).replyOnce(HTTP_STATUS_OK);
+
+      return testAction({
+        action: unprotectEnvironment,
+        payload: environment,
+        state: mockedState,
+        expectedMutations: [
+          { type: types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT },
+          { type: types.DELETE_PROTECTED_ENVIRONMENT_SUCCESS, payload: environment },
+        ],
+        expectedActions: [
+          {
+            type: 'setPage',
+            payload: 1,
+          },
+        ],
+      });
+    });
   });
 });
