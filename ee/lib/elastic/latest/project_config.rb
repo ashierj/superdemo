@@ -37,6 +37,11 @@ module Elastic
 
         indexes :ci_catalog, type: :boolean
         indexes :readme_content, type: :text
+
+        indexes :mirror, type: :boolean
+        indexes :forked, type: :boolean
+        indexes :owner_id, type: :integer
+        indexes :repository_languages, type: :keyword
       end
     end
   end

@@ -7,7 +7,7 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
 
-  let(:schema_version) { 2306 }
+  let(:schema_version) { 2402 }
 
   context 'when limited indexing is on' do
     let_it_be(:project) { create(:project, :empty_repo, name: 'main_project') }
