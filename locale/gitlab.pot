@@ -55947,6 +55947,9 @@ msgstr ""
 msgid "Work in progress limit"
 msgstr ""
 
+msgid "Work in progress limit: %{wipLimit}"
+msgstr ""
+
 msgid "Work item parent removed successfully"
 msgstr ""
 
