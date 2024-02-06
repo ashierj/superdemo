@@ -76,7 +76,7 @@ module GoogleCloudPlatform
 
     override :issuer
     def issuer
-      Feature.enabled?(:oidc_issuer_url) ? Gitlab.config.gitlab.url : Settings.gitlab.base_url
+      Gitlab.config.gitlab.url
     end
 
     override :audience
