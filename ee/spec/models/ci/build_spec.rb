@@ -986,12 +986,12 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     end
   end
 
-  describe 'build identity_provider' do
+  describe 'build identity' do
     let_it_be(:user) { create(:user) }
 
-    let(:identity_provider) { 'google_cloud' }
+    let(:identity) { 'google_cloud' }
     let(:build) do
-      create(:ci_build, pipeline: pipeline, user: user, options: { identity_provider: identity_provider })
+      create(:ci_build, pipeline: pipeline, user: user, options: { identity: identity })
     end
 
     subject(:variables) { build.variables }
@@ -1037,11 +1037,11 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
           })
       end
 
-      context 'when identity_provider is unknown' do
-        let(:identity_provider) { 'unknown' }
+      context 'when identity is unknown' do
+        let(:identity) { 'unknown' }
 
         it 'raises an error' do
-          expect { subject }.to raise_error ArgumentError, "Unknown identity_provider value: #{identity_provider}"
+          expect { subject }.to raise_error ArgumentError, "Unknown identity value: #{identity}"
         end
       end
     end

@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Ci::Config::Entry::Job, feature_category: :pipeline_compo
     context 'when filtering all the entry/node names' do
       subject { described_class.nodes.keys }
 
-      let(:result) { %i[dast_configuration identity_provider secrets] }
+      let(:result) { %i[dast_configuration identity secrets] }
 
       it { is_expected.to include(*result) }
     end
@@ -76,10 +76,10 @@ RSpec.describe Gitlab::Ci::Config::Entry::Job, feature_category: :pipeline_compo
         it_behaves_like 'an invalid entry', 'secrets config should be a hash'
       end
 
-      context 'when entry has unknown identity provider' do
-        let(:config) { { script: 'rspec', identity_provider: 'unknown' } }
+      context 'when entry has unknown identity' do
+        let(:config) { { script: 'rspec', identity: 'unknown' } }
 
-        it_behaves_like 'an invalid entry', 'identity_provider config should be one of: google_cloud'
+        it_behaves_like 'an invalid entry', 'identity config should be one of: google_cloud'
       end
     end
   end
@@ -147,13 +147,13 @@ RSpec.describe Gitlab::Ci::Config::Entry::Job, feature_category: :pipeline_compo
     end
   end
 
-  describe 'identity_provider', :aggregate_failures, feature_category: :secrets_management do
+  describe 'identity', :aggregate_failures, feature_category: :secrets_management do
     let(:feature_flag_enabled) { true }
     let(:saas_feature_enabled) { true }
     let(:config) do
       {
         script: 'rspec',
-        identity_provider: 'google_cloud'
+        identity: 'google_cloud'
       }
     end
 
@@ -164,23 +164,23 @@ RSpec.describe Gitlab::Ci::Config::Entry::Job, feature_category: :pipeline_compo
       entry.compose!
     end
 
-    it 'includes identity provider-related values' do
-      expect(entry.value).to include(identity_provider: 'google_cloud')
+    it 'includes identity-related values' do
+      expect(entry.value).to include(identity: 'google_cloud')
     end
 
     context 'when ci_yaml_support_for_identity_provider FF is disabled' do
       let(:feature_flag_enabled) { false }
 
       it 'does not include identity provider-related values' do
-        expect(entry.value).not_to match(a_hash_including(identity_provider: anything))
+        expect(entry.value).not_to match(a_hash_including(identity: anything))
       end
     end
 
     context 'when feature is disabled' do
       let(:saas_feature_enabled) { false }
 
-      it 'does not include identity provider-related values' do
-        expect(entry.value).not_to match(a_hash_including(identity_provider: anything))
+      it 'does not include identity-related values' do
+        expect(entry.value).not_to match(a_hash_including(identity: anything))
       end
     end
   end

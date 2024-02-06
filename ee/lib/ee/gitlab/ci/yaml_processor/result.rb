@@ -17,7 +17,7 @@ module EE
               {
                 options: {
                   dast_configuration: job[:dast_configuration],
-                  identity_provider: job[:identity_provider]
+                  identity: job[:identity]
                 }.compact,
                 secrets: job[:secrets]
               }.compact
