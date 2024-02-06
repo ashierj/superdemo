@@ -31,6 +31,9 @@ module Security
     scope :for_project, ->(project) { where(project: project) }
     scope :targeting_commits, -> { where.not(commits: nil) }
     scope :including_approval_merge_request_rules, -> { includes(:approval_merge_request_rules) }
+    scope :blocking_branch_modification, -> do
+      where("project_approval_settings->>'block_branch_modification' = 'true'")
+    end
 
     def newly_detected?
       license_states.include?(ApprovalProjectRule::NEWLY_DETECTED)

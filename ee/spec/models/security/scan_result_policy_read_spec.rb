@@ -62,6 +62,19 @@ RSpec.describe Security::ScanResultPolicyRead, feature_category: :security_polic
     it { is_expected.to define_enum_for(:age_interval).with_values(**age_interval_values) }
   end
 
+  describe 'scopes' do
+    describe '.blocking_branch_modification' do
+      let_it_be(:non_blocking_read) { create(:scan_result_policy_read) }
+      let_it_be(:blocking_read) do
+        create(:scan_result_policy_read, project_approval_settings: { block_branch_modification: true })
+      end
+
+      it 'returns blocking reads' do
+        expect(described_class.blocking_branch_modification).to contain_exactly(blocking_read)
+      end
+    end
+  end
+
   describe '#newly_detected?' do
     subject { scan_result_policy_read.newly_detected? }
 
