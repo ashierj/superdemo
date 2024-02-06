@@ -89,11 +89,11 @@ describe('EE approvals project settings module actions', () => {
   });
 
   describe('fetchRules', () => {
-    it('dispatches request/receive', () => {
+    it('dispatches request/receive', async () => {
       const data = [TEST_RULE_RESPONSE];
       mock.onGet(TEST_RULES_PATH).replyOnce(HTTP_STATUS_OK, data);
 
-      return testAction(
+      await testAction(
         actions.fetchRules,
         null,
         state,
@@ -102,10 +102,8 @@ describe('EE approvals project settings module actions', () => {
           { type: 'requestRules' },
           { type: 'receiveRulesSuccess', payload: mapApprovalSettingsResponse(data) },
         ],
-        () => {
-          expect(mock.history.get.map((x) => x.url)).toEqual([TEST_RULES_PATH]);
-        },
       );
+      expect(mock.history.get.map((x) => x.url)).toEqual([TEST_RULES_PATH]);
     });
 
     it('dispatches request/receive on error', () => {
@@ -134,46 +132,42 @@ describe('EE approvals project settings module actions', () => {
   });
 
   describe('postRule', () => {
-    it('dispatches success on success', () => {
+    it('dispatches success on success', async () => {
       mock.onPost(TEST_RULES_PATH).replyOnce(HTTP_STATUS_OK);
 
-      return testAction(
+      await testAction(
         actions.postRule,
         TEST_RULE_REQUEST,
         state,
         [],
         [{ type: 'postRuleSuccess' }],
-        () => {
-          expect(mock.history.post).toEqual([
-            expect.objectContaining({
-              url: TEST_RULES_PATH,
-              data: JSON.stringify(mapApprovalRuleRequest(TEST_RULE_REQUEST)),
-            }),
-          ]);
-        },
       );
+      expect(mock.history.post).toEqual([
+        expect.objectContaining({
+          url: TEST_RULES_PATH,
+          data: JSON.stringify(mapApprovalRuleRequest(TEST_RULE_REQUEST)),
+        }),
+      ]);
     });
   });
 
   describe('putRule', () => {
-    it('dispatches success on success', () => {
+    it('dispatches success on success', async () => {
       mock.onPut(`${TEST_RULES_PATH}/${TEST_RULE_ID}`).replyOnce(HTTP_STATUS_OK);
 
-      return testAction(
+      await testAction(
         actions.putRule,
         { id: TEST_RULE_ID, ...TEST_RULE_REQUEST },
         state,
         [],
         [{ type: 'postRuleSuccess' }],
-        () => {
-          expect(mock.history.put).toEqual([
-            expect.objectContaining({
-              url: `${TEST_RULES_PATH}/${TEST_RULE_ID}`,
-              data: JSON.stringify(mapApprovalRuleRequest(TEST_RULE_REQUEST)),
-            }),
-          ]);
-        },
       );
+      expect(mock.history.put).toEqual([
+        expect.objectContaining({
+          url: `${TEST_RULES_PATH}/${TEST_RULE_ID}`,
+          data: JSON.stringify(mapApprovalRuleRequest(TEST_RULE_REQUEST)),
+        }),
+      ]);
     });
   });
 
@@ -202,23 +196,21 @@ describe('EE approvals project settings module actions', () => {
   });
 
   describe('deleteRule', () => {
-    it('dispatches success on success', () => {
+    it('dispatches success on success', async () => {
       mock.onDelete(`${TEST_RULES_PATH}/${TEST_RULE_ID}`).replyOnce(HTTP_STATUS_OK);
 
-      return testAction(
+      await testAction(
         actions.deleteRule,
         TEST_RULE_ID,
         state,
         [],
         [{ type: 'deleteRuleSuccess' }],
-        () => {
-          expect(mock.history.delete).toEqual([
-            expect.objectContaining({
-              url: `${TEST_RULES_PATH}/${TEST_RULE_ID}`,
-            }),
-          ]);
-        },
       );
+      expect(mock.history.delete).toEqual([
+        expect.objectContaining({
+          url: `${TEST_RULES_PATH}/${TEST_RULE_ID}`,
+        }),
+      ]);
     });
 
     it('dispatches error on error', () => {
