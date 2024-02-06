@@ -67,6 +67,12 @@ RSpec.describe 'Custom URLs', 'Subscription Portal', feature_category: :subscrip
     it { is_expected.to eq("#{staging_customers_url}/customers/edit") }
   end
 
+  describe 'subscription_portal_billing_accounts_url' do
+    subject { subscription_portal_billing_accounts_url }
+
+    it { is_expected.to eq("#{staging_customers_url}/billing_accounts") }
+  end
+
   describe 'subscription_portal_add_extra_seats_url' do
     let(:group_id) { 153 }
 

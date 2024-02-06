@@ -17,9 +17,17 @@ export default {
 </script>
 <template>
   <div>
-    <contact-billing-address :is-sold-to-contact="true" :contact="billingAccount.soldToContact" />
-    <contact-billing-address :is-sold-to-contact="false" :contact="billingAccount.billToContact" />
+    <contact-billing-address
+      class="gl-mb-5"
+      :is-sold-to-contact="true"
+      :contact="billingAccount.soldToContact"
+    />
+    <contact-billing-address
+      class="gl-mb-5"
+      :is-sold-to-contact="false"
+      :contact="billingAccount.billToContact"
+    />
 
-    <company-information :billing-account="billingAccount" />
+    <company-information class="gl-mb-5" :billing-account="billingAccount" />
   </div>
 </template>
