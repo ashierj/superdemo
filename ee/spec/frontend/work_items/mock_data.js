@@ -103,3 +103,30 @@ export const workItemObjectiveMetadataWidgetsEE = {
     __typename: 'WorkItemWidgetStartAndDueDate',
   },
 };
+
+export const workItemColorWidget = {
+  id: 'gid://gitlab/WorkItem/1',
+  iid: '1',
+  title: 'Work item epic 5',
+  namespace: {
+    id: 'gid://gitlab/Group/1',
+    fullPath: 'gitlab-org',
+    name: 'Gitlab Org',
+    __typename: 'Namespace',
+  },
+  workItemType: {
+    id: 'gid://gitlab/WorkItems::Type/1',
+    name: 'Epic',
+    iconName: 'issue-type-epic',
+    __typename: 'WorkItemType',
+  },
+  widgets: [
+    {
+      color: '#1068bf',
+      textColor: '#FFFFFF',
+      type: 'COLOR',
+      __typename: 'WorkItemWidgetColor',
+    },
+  ],
+  __typename: 'WorkItem',
+};

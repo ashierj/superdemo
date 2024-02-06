@@ -91,4 +91,7 @@ fragment WorkItemMetadataWidgets on WorkItemWidget {
   ... on WorkItemWidgetHierarchy {
     type
   }
+  ... on WorkItemWidgetColor {
+    type
+  }
 }
