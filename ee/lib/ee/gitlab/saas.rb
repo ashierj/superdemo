@@ -22,6 +22,7 @@ module EE
           duo_chat_categorize_question
           google_artifact_registry
           duo_chat_on_saas
+          exact_code_search
         ].freeze
 
       CONFIG_FILE_ROOT = 'ee/config/saas_features'

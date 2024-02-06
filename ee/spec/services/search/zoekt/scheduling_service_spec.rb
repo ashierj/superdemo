@@ -42,6 +42,30 @@ RSpec.describe ::Search::Zoekt::SchedulingService, feature_category: :global_sea
     end
   end
 
+  describe '#remove_expired_subscriptions' do
+    let(:task) { :remove_expired_subscriptions }
+
+    it 'returns false unless saas' do
+      expect(execute_task).to eq(false)
+    end
+
+    context 'when on .com', :saas do
+      let_it_be(:expiration_date) { Date.today - Search::Zoekt::EXPIRED_SUBSCRIPTION_GRACE_PERIOD }
+      let_it_be(:zkt_enabled_namespace) { create(:zoekt_enabled_namespace) }
+      let_it_be(:zkt_enabled_namespace2) { create(:zoekt_enabled_namespace) }
+      let_it_be(:subscription) { create(:gitlab_subscription, namespace: zkt_enabled_namespace2.namespace) }
+      let_it_be(:expired_subscription) do
+        create(:gitlab_subscription, namespace: zkt_enabled_namespace.namespace, end_date: expiration_date - 1.day)
+      end
+
+      it 'destroys zoekt_namespaces with expired subscriptions' do
+        expect { execute_task }.to change { ::Search::Zoekt::EnabledNamespace.count }.by(-1)
+
+        expect(::Search::Zoekt::EnabledNamespace.pluck(:id)).to contain_exactly(zkt_enabled_namespace2.id)
+      end
+    end
+  end
+
   describe '#node_assignment' do
     let(:task) { :node_assignment }
 
