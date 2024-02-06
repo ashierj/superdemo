@@ -2,6 +2,8 @@
 
 module Search
   module Zoekt
+    EXPIRED_SUBSCRIPTION_GRACE_PERIOD = 30.days
+
     class << self
       def fetch_node_id(container)
         root_namespace_id = fetch_root_namespace_id(container)

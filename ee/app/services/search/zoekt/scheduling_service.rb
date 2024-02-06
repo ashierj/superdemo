@@ -6,6 +6,7 @@ module Search
       include Gitlab::Loggable
 
       TASKS = %i[
+        remove_expired_subscriptions
         node_assignment
       ].freeze
 
@@ -33,6 +34,12 @@ module Search
 
       def logger
         @logger ||= ::Zoekt::Logger.build
+      end
+
+      def remove_expired_subscriptions
+        return false unless ::Gitlab::Saas.feature_available?(:exact_code_search)
+
+        Search::Zoekt::EnabledNamespace.destroy_namespaces_with_expired_subscriptions!
       end
 
       def node_assignment

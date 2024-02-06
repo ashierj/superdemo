@@ -107,6 +107,16 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
         expect(described_class.requiring_seat_refresh(1).size).to eq 1
       end
     end
+
+    describe '.not_expired' do
+      let_it_be(:expired_ultimate_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan, end_date: 1.week.ago) }
+      let_it_be(:ultimate_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan) }
+      let_it_be(:free_subscription) { create(:gitlab_subscription, :free) }
+
+      it 'returns subscriptions that are not expired' do
+        expect(described_class.not_expired).to contain_exactly(ultimate_subscription, free_subscription)
+      end
+    end
   end
 
   describe '#calculate_seats_in_use' do
