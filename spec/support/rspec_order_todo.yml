@@ -6457,7 +6457,6 @@
 - './spec/lib/gitlab/multi_destination_logger_spec.rb'
 - './spec/lib/gitlab/namespaced_session_store_spec.rb'
 - './spec/lib/gitlab/nav/top_nav_menu_item_spec.rb'
-- './spec/lib/gitlab/net_http_adapter_spec.rb'
 - './spec/lib/gitlab/no_cache_headers_spec.rb'
 - './spec/lib/gitlab/noteable_metadata_spec.rb'
 - './spec/lib/gitlab/object_hierarchy_spec.rb'
