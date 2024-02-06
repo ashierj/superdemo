@@ -3,7 +3,13 @@
 module Geo
   class EventLog < ApplicationRecord
     include IgnorableColumns
+
     ignore_column :geo_event_id_convert_to_bigint, remove_with: '16.11', remove_after: '2024-03-21'
+
+    ignore_columns %i[
+      hashed_storage_migrated_event_id
+      hashed_storage_attachments_event_id
+    ], remove_with: '17.0', remove_after: '2024-05-16'
 
     include Geo::Model
     include ::EachBatch
@@ -15,8 +21,6 @@ module Geo
                        Geo::RepositoryRenamedEvent
                        Geo::RepositoriesChangedEvent
                        Geo::ResetChecksumEvent
-                       Geo::HashedStorageMigratedEvent
-                       Geo::HashedStorageAttachmentsEvent
                        Geo::Event].freeze
 
     belongs_to :cache_invalidation_event,
@@ -42,14 +46,6 @@ module Geo
     belongs_to :repositories_changed_event,
       class_name: 'Geo::RepositoriesChangedEvent',
       foreign_key: :repositories_changed_event_id
-
-    belongs_to :hashed_storage_migrated_event,
-      class_name: 'Geo::HashedStorageMigratedEvent',
-      foreign_key: :hashed_storage_migrated_event_id
-
-    belongs_to :hashed_storage_attachments_event,
-      class_name: 'Geo::HashedStorageAttachmentsEvent',
-      foreign_key: :hashed_storage_attachments_event_id
 
     belongs_to :reset_checksum_event,
       class_name: 'Geo::ResetChecksumEvent',
@@ -86,8 +82,6 @@ module Geo
         repository_deleted_event ||
         repository_renamed_event ||
         repositories_changed_event ||
-        hashed_storage_migrated_event ||
-        hashed_storage_attachments_event ||
         reset_checksum_event ||
         cache_invalidation_event ||
         geo_event
