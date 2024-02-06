@@ -1,8 +1,9 @@
 .gl-mb-3
   = yield :omniauth_providers_top if social_signin_enabled?
-  .gl-max-w-75.gl-mb-3.gl-p-6.gl-border-gray-100.gl-border-1.gl-border-solid.gl-rounded-base
+  .gl-max-w-75.gl-mb-3.gl-p-6.gl-border-gray-100.gl-border-1.gl-border-solid.gl-rounded-base.gl-bg-white
     = render 'devise/shared/signup_box_form',
       url: trial_registrations_path(glm_tracking_params),
       button_text: _('Continue'),
+      button_class: 'black-btn',
       show_omniauth_providers: social_signin_enabled?,
       tracking_label: registration_tracking_label(trial: true)
