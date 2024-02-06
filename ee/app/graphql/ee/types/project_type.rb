@@ -201,6 +201,16 @@ module EE
               method: :security_policy_management_project,
               description: 'Security policy project assigned to the project, absent if assigned to a parent group.'
 
+        field :security_policy_project_linked_projects,
+              ::Types::ProjectType.connection_type,
+              null: true,
+              description: 'Projects linked to the project, when used as Security Policy Project.'
+
+        field :security_policy_project_linked_namespaces,
+              ::Types::NamespaceType.connection_type,
+              null: true,
+              description: 'Namespaces linked to the project, when used as Security Policy Project.'
+
         field :network_policies,
               ::Types::NetworkPolicyType.connection_type,
               null: true,
