@@ -108,7 +108,7 @@ export default {
     </template>
     <template #suggestions>
       <gl-loading-icon v-if="fetchingLicensesInProgress" size="sm" />
-      <div v-else>
+      <div v-else-if="filteredLicenses.length">
         <dynamic-scroller
           :items="filteredLicenses"
           :min-item-size="32"

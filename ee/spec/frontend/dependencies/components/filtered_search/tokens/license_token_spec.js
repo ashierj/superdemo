@@ -99,22 +99,21 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
       );
     });
 
-    it('correctly sets up a dynamic-scroller to enhance the render-performance of the licenses list', () => {
-      createComponent();
+    it.each([
+      { licenses: TEST_LICENSES, expectDynamicScroller: true },
+      {
+        licenses: [],
+        expectDynamicScroller: false,
+      },
+    ])(
+      'with $licenses.length licenses it contains a dynamic-scroller is "$expectDynamicScroller"',
+      ({ licenses, expectDynamicScroller }) => {
+        store.state.allDependencies.licenses = licenses;
+        createComponent();
 
-      expect(findDynamicScroller().attributes()).toMatchObject({
-        'key-field': 'id',
-        'min-item-size': '32',
-        style: 'max-height: 170px;',
-      });
-    });
-
-    it('shows the full list of licenses once the fetch is completed', () => {
-      store.state.allDependencies.licenses = TEST_LICENSES;
-      createComponent();
-
-      expect(findDynamicScroller().props('items')).toEqual(TEST_LICENSES);
-    });
+        expect(findDynamicScroller().exists()).toBe(expectDynamicScroller);
+      },
+    );
 
     it.each([
       { active: true, expectedValue: null },
@@ -140,6 +139,18 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
     beforeEach(() => {
       store.state.allDependencies.licenses = TEST_LICENSES;
       createComponent();
+    });
+
+    it('correctly sets up a dynamic-scroller to enhance the render-performance of the licenses list', () => {
+      expect(findDynamicScroller().attributes()).toMatchObject({
+        'key-field': 'id',
+        'min-item-size': '32',
+        style: 'max-height: 170px;',
+      });
+    });
+
+    it('shows the full list of licenses once the fetch is completed', () => {
+      expect(findDynamicScroller().props('items')).toEqual(TEST_LICENSES);
     });
 
     describe('when a user enters a search term', () => {
