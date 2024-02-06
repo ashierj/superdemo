@@ -25530,13 +25530,16 @@ msgstr ""
 msgid "InProductMarketing|%{strong_start}GitLab Inc.%{strong_end} 268 Bush Street, #350, San Francisco, CA 94104, USA"
 msgstr ""
 
-msgid "InProductMarketing|%{upper_start}Start your 30-day free trial of%{upper_end} %{lower_start}GitLab Ultimate%{lower_end}"
+msgid "InProductMarketing|%{upper_start}Free 30-day trial%{upper_end} %{lower_start}GitLab Ultimate%{lower_end}"
 msgstr ""
 
-msgid "InProductMarketing|Accelerate your digital transform"
+msgid "InProductMarketing|Accelerate your digital transformation"
 msgstr ""
 
 msgid "InProductMarketing|Blog"
+msgstr ""
+
+msgid "InProductMarketing|Build in security"
 msgstr ""
 
 msgid "InProductMarketing|Built-in security"
@@ -25582,6 +25585,9 @@ msgid "InProductMarketing|Team members collaborating"
 msgstr ""
 
 msgid "InProductMarketing|To opt out of these onboarding emails, %{unsubscribe_link}."
+msgstr ""
+
+msgid "InProductMarketing|Trusted by"
 msgstr ""
 
 msgid "InProductMarketing|Twitter"
@@ -34376,7 +34382,7 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
-msgid "Or create your own GitLab account:"
+msgid "Or create your own GitLab account"
 msgstr ""
 
 msgid "Ordered list"
@@ -46668,10 +46674,10 @@ msgstr ""
 msgid "Sign-up restrictions"
 msgstr ""
 
-msgid "SignUp|By clicking %{button_text} or registering through a third party you accept the GitLab%{link_start} Terms of Use and acknowledge the Privacy Statement and Cookie Policy%{link_end}"
+msgid "SignUp|By clicking %{button_text} or registering through a third party you accept the %{link_start}Terms of Use and acknowledge the Privacy Statement and Cookie Policy%{link_end}."
 msgstr ""
 
-msgid "SignUp|By clicking %{button_text} or registering through a third party you accept the%{link_start} Terms of Use and acknowledge the Privacy Statement and Cookie Policy%{link_end}"
+msgid "SignUp|By clicking %{button_text} or registering through a third party you accept the GitLab %{link_start}Terms of Use and acknowledge the Privacy Statement and Cookie Policy%{link_end}."
 msgstr ""
 
 msgid "SignUp|By signing in you accept the %{link_start}Terms of Use and acknowledge the Privacy Statement and Cookie Policy%{link_end}."
