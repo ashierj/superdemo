@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-module Users
+module Groups
   class SavedReply < ApplicationRecord
     def self.namespace_foreign_key
-      :user_id
+      :group_id
     end
-    self.table_name = 'saved_replies'
+    self.table_name = :group_saved_replies
 
     include SavedReplyConcern
 
-    belongs_to :user
+    belongs_to :group
   end
 end
