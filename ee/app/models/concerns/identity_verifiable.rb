@@ -112,15 +112,17 @@ module IdentityVerifiable
 
   def offer_phone_number_exemption?
     return false unless credit_card_verification_enabled?
-    return true if medium_risk?
+    return false unless phone_number_verification_enabled?
 
-    if low_risk? && phone_number_verification_enabled?
-      return experiment(:phone_verification_for_low_risk_users, user: self) do |e|
-        e.candidate { true }
-      end.run
-    end
+    phone_required = verification_method_required?(method: VERIFICATION_METHODS[:PHONE_NUMBER])
+    cc_required = verification_method_required?(method: VERIFICATION_METHODS[:CREDIT_CARD])
 
-    false
+    return false if phone_required && cc_required
+
+    # If phone verification is not required but a phone exemption exists it means the user toggled from
+    # verifying with a phone to verifying with a credit card. Returning true if a phone exemption exists
+    # will allow the user to toggle back to using phone verification from the credit card form.
+    phone_required || exempt_from_phone_number_verification?
   end
 
   def verification_method_allowed?(method:)

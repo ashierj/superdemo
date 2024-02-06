@@ -667,39 +667,25 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
   end
 
   describe '#offer_phone_number_exemption?' do
-    subject(:offer_phone_number_exemption?) { !!user.offer_phone_number_exemption? }
+    subject(:offer_phone_number_exemption?) { user.offer_phone_number_exemption? }
 
-    where(:credit_card, :risk_band, :phone_number, :experiment_group, :result) do
-      true  | 'Low'         | true  | :candidate | true
-      true  | 'Low'         | true  | :control   | false
-      true  | 'Low'         | false | :candidate | false
-      true  | 'Low'         | false | :control   | false
-      true  | 'Medium'      | true  | :candidate | true
-      true  | 'Medium'      | true  | :control   | true
-      true  | 'Medium'      | false | :candidate | true
-      true  | 'Medium'      | false | :control   | true
-      true  | 'High'        | true  | :control   | false
-      true  | 'Unavailable' | true  | :control   | false
-      true  | nil           | true  | :control   | false
-      false | 'Low'         | true  | :candidate | false
-      false | 'Low'         | true  | :control   | false
-      false | 'Low'         | false | :candidate | false
-      false | 'Low'         | false | :control   | false
-      false | 'Medium'      | true  | :candidate | false
-      false | 'Medium'      | true  | :control   | false
-      false | 'Medium'      | false | :candidate | false
-      false | 'Medium'      | false | :control   | false
-      false | 'High'        | true  | :control   | false
-      false | 'Unavailable' | true  | :control   | false
-      false | nil           | true  | :control   | false
+    where(:credit_card, :phone_number, :phone_exempt, :required_verification_methods, :result) do
+      true   | true  | false | %w[email]                   | false
+      false  | true  | false | %w[email phone]             | false
+      true   | true  | false | %w[email phone]             | true
+      true   | false | false | %w[email credit_card]       | false
+      true   | true  | false | %w[email credit_card]       | false
+      true   | true  | true  | %w[email credit_card]       | true
+      true   | true  | false | %w[email phone credit_card] | false
     end
 
     with_them do
       before do
-        add_user_risk_band(risk_band) if risk_band
         stub_feature_flags(identity_verification_credit_card: credit_card)
         stub_feature_flags(identity_verification_phone_number: phone_number)
-        stub_experiments(phone_verification_for_low_risk_users: experiment_group)
+
+        allow(user).to receive(:required_identity_verification_methods).and_return(required_verification_methods)
+        allow(user).to receive(:exempt_from_phone_number_verification?).and_return(phone_exempt)
       end
 
       it { is_expected.to eq(result) }
