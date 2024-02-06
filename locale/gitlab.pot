@@ -12109,9 +12109,6 @@ msgstr ""
 msgid "CodeOwner|Pattern"
 msgstr ""
 
-msgid "CodeSuggestionsGAAlert| (Code Suggestions transitions to a paid feature on %{date}.)"
-msgstr ""
-
 msgid "CodeSuggestionsGAAlert|Code Suggestions is now part of Duo Pro. Free access is ending soon."
 msgstr ""
 
@@ -12122,15 +12119,6 @@ msgid "CodeSuggestionsGAAlert|Continue accelerating your development with GitLab
 msgstr ""
 
 msgid "CodeSuggestionsGAAlert|Dismiss Code Suggestions banner"
-msgstr ""
-
-msgid "CodeSuggestionsGAAlert|Learn more"
-msgstr ""
-
-msgid "CodeSuggestionsGAAlert|Quickly and securely author code by getting suggestions in %{link_start}your IDE%{link_end} while you type. Available in multiple languages. Try Code Suggestions today."
-msgstr ""
-
-msgid "CodeSuggestionsGAAlert|Try GitLab Duo Code Suggestions today"
 msgstr ""
 
 msgid "CodeSuggestionsSM|Code Suggestions"
