@@ -30,6 +30,8 @@ describe('IssuesLaneList', () => {
   let wrapper;
   let mockApollo;
 
+  const maxIssueCountWarningClass = '.gl-bg-red-50';
+
   const findNewIssueForm = () => wrapper.findComponent(BoardNewIssue);
 
   const listIssuesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupIssuesResponse());
@@ -231,19 +233,19 @@ describe('IssuesLaneList', () => {
 
   describe('max issue count warning', () => {
     describe('when issue count exceeds max issue count', () => {
-      it('sets background to red-100', () => {
+      it('sets background to warning color', () => {
         createComponent({ listProps: { maxIssueCount: 3 }, totalIssuesCount: 4 });
-        const block = wrapper.find('.gl-bg-red-100');
+        const block = wrapper.find(maxIssueCountWarningClass);
         expect(block.exists()).toBe(true);
         expect(block.attributes('class')).toContain('gl-rounded-base');
       });
     });
 
     describe('when list issue count does NOT exceed list max issue count', () => {
-      it('does not set background to red-100', () => {
+      it('does not set background to warning color', () => {
         createComponent({ listProps: { maxIssueCount: 3 }, totalIssuesCount: 2 });
 
-        expect(wrapper.find('.gl-bg-red-100').exists()).toBe(false);
+        expect(wrapper.find(maxIssueCountWarningClass).exists()).toBe(false);
       });
     });
   });
