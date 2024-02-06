@@ -801,22 +801,30 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
         end
 
         context 'when work item update errors' do
-          let(:error_message) { "error 1, error 2" }
+          let(:error_message) { ["error 1", "error 2"] }
 
           before do
             allow_next_instance_of(WorkItems::UpdateService) do |instance|
               allow(instance).to receive(:execute).and_return(
-                ServiceResponse.error(message: 'error', payload: {
-                  errors: instance_double(ActiveModel::Errors, full_messages: error_message.split(", "))
-                })
+                {
+                  status: :error,
+                  message: error_message
+                }
               )
             end
           end
 
           it 'does not propagate the update to the work item and resets the epic udpates' do
-            expect(Gitlab::AppLogger).to receive(:error)
-              .with("Unable to sync work item: #{error_message}. Group ID: #{group.id}")
-            expect { update_epic({ title: 'New title' }) }.to raise_error(StandardError)
+            expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
+              .with({
+                message: "Not able to update epic work item",
+                error_message: error_message,
+                group_id: group.id,
+                epic_id: epic.id
+              })
+
+            expect { update_epic({ title: 'New title' }) }
+              .to raise_error(Epics::SyncAsWorkItem::SyncAsWorkItemError)
               .and not_change { work_item.reload }
               .and not_change { epic.reload }
           end

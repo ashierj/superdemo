@@ -7,6 +7,7 @@ import WorkItemHealthStatusInline from 'ee/work_items/components/work_item_healt
 import WorkItemWeight from 'ee/work_items/components/work_item_weight_with_edit.vue';
 import WorkItemWeightInline from 'ee/work_items/components/work_item_weight_inline.vue';
 import WorkItemIterationInline from 'ee/work_items/components/work_item_iteration_inline.vue';
+import WorkItemColorInline from 'ee/work_items/components/work_item_color_inline.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { workItemResponseFactory } from 'jest/work_items/mock_data';
@@ -32,6 +33,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
   const findWorkItemWeight = () => wrapper.findComponent(WorkItemWeight);
   const findWorkItemWeightInline = () => wrapper.findComponent(WorkItemWeightInline);
   const findWorkItemProgress = () => wrapper.findComponent(WorkItemProgress);
+  const findWorkItemColorInline = () => wrapper.findComponent(WorkItemColorInline);
   const findWorkItemHealthStatus = () => wrapper.findComponent(WorkItemHealthStatus);
   const findWorkItemHealthStatusInline = () => wrapper.findComponent(WorkItemHealthStatusInline);
 
@@ -206,6 +208,33 @@ describe('EE WorkItemAttributesWrapper component', () => {
       const updateError = 'Failed to update';
 
       findWorkItemProgress().vm.$emit('error', updateError);
+      await nextTick();
+
+      expect(wrapper.emitted('error')).toEqual([[updateError]]);
+    });
+  });
+
+  describe('color widget', () => {
+    describe.each`
+      description                               | colorWidgetPresent | exists
+      ${'when widget is returned from API'}     | ${true}            | ${true}
+      ${'when widget is not returned from API'} | ${false}           | ${false}
+    `('$description', ({ colorWidgetPresent, exists }) => {
+      it(`${colorWidgetPresent ? 'renders' : 'does not render'} progress component`, () => {
+        const response = workItemResponseFactory({ colorWidgetPresent });
+
+        createComponent({ workItem: response.data.workItem });
+
+        expect(findWorkItemColorInline().exists()).toBe(exists);
+      });
+    });
+
+    it('emits an error event to the wrapper', async () => {
+      const response = workItemResponseFactory({ colorWidgetPresent: true });
+      createComponent({ workItem: response.data.workItem });
+      const updateError = 'Failed to update';
+
+      findWorkItemColorInline().vm.$emit('error', updateError);
       await nextTick();
 
       expect(wrapper.emitted('error')).toEqual([[updateError]]);

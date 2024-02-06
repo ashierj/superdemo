@@ -170,4 +170,10 @@ fragment WorkItemWidgets on WorkItemWidget {
       }
     }
   }
+
+  ... on WorkItemWidgetColor {
+    color
+    textColor
+    type
+  }
 }
