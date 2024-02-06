@@ -696,56 +696,6 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
               expect(response.payload).to include(expected_payload)
               expect(response.console_messages).to eq(expected_console_messages)
             end
-
-            context 'with the feature flag geo_proxy_direct_to_primary disabled' do
-              it 'returns a custom action' do
-                stub_feature_flags(geo_proxy_direct_to_primary: false)
-
-                expected_payload = {
-                  "action" => "geo_proxy_to_primary",
-                  "data" => {
-                    "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_upload_pack", "/api/v4/geo/proxy_git_ssh/upload_pack"],
-                    "primary_repo" => geo_primary_http_internal_url_to_repo(project_no_repo),
-                    "geo_proxy_direct_to_primary" => false,
-                    "geo_proxy_fetch_direct_to_primary" => true,
-                    "geo_proxy_fetch_direct_to_primary_with_options" => true,
-                    "request_headers" => include('Authorization')
-                  }
-                }
-                expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
-
-                response = pull_changes
-
-                expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
-                expect(response.payload).to include(expected_payload)
-                expect(response.console_messages).to eq(expected_console_messages)
-              end
-            end
-
-            context 'with the feature flag geo_proxy_fetch_direct_to_primary disabled' do
-              it 'returns a custom action' do
-                stub_feature_flags(geo_proxy_fetch_direct_to_primary: false)
-
-                expected_payload = {
-                  "action" => "geo_proxy_to_primary",
-                  "data" => {
-                    "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_upload_pack", "/api/v4/geo/proxy_git_ssh/upload_pack"],
-                    "primary_repo" => geo_primary_http_internal_url_to_repo(project_no_repo),
-                    "geo_proxy_direct_to_primary" => true,
-                    "geo_proxy_fetch_direct_to_primary" => false,
-                    "geo_proxy_fetch_direct_to_primary_with_options" => true,
-                    "request_headers" => include('Authorization')
-                  }
-                }
-                expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
-
-                response = pull_changes
-
-                expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
-                expect(response.payload).to include(expected_payload)
-                expect(response.console_messages).to eq(expected_console_messages)
-              end
-            end
           end
         end
       end
@@ -842,56 +792,6 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
             expect(response.payload).to include(expected_payload)
             expect(response.console_messages).to eq(expected_console_messages)
           end
-
-          context 'with the feature flag geo_proxy_direct_to_primary disabled' do
-            it 'returns a custom action' do
-              stub_feature_flags(geo_proxy_direct_to_primary: false)
-
-              expected_payload = {
-                "action" => "geo_proxy_to_primary",
-                "data" => {
-                  "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_receive_pack", "/api/v4/geo/proxy_git_ssh/receive_pack"],
-                  "primary_repo" => geo_primary_http_internal_url_to_repo(project),
-                  "geo_proxy_direct_to_primary" => false,
-                  "geo_proxy_fetch_direct_to_primary" => true,
-                  "geo_proxy_fetch_direct_to_primary_with_options" => true,
-                  "request_headers" => include('Authorization')
-                }
-              }
-              expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
-
-              response = push_changes
-
-              expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
-              expect(response.payload).to include(expected_payload)
-              expect(response.console_messages).to eq(expected_console_messages)
-            end
-          end
-
-          context 'with the feature flag geo_proxy_fetch_direct_to_primary disabled' do
-            it 'returns a custom action' do
-              stub_feature_flags(geo_proxy_fetch_direct_to_primary: false)
-
-              expected_payload = {
-                "action" => "geo_proxy_to_primary",
-                "data" => {
-                  "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_receive_pack", "/api/v4/geo/proxy_git_ssh/receive_pack"],
-                  "primary_repo" => geo_primary_http_internal_url_to_repo(project),
-                  "geo_proxy_direct_to_primary" => true,
-                  "geo_proxy_fetch_direct_to_primary" => false,
-                  "geo_proxy_fetch_direct_to_primary_with_options" => true,
-                  "request_headers" => include('Authorization')
-                }
-              }
-              expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
-
-              response = push_changes
-
-              expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
-              expect(response.payload).to include(expected_payload)
-              expect(response.console_messages).to eq(expected_console_messages)
-            end
-          end
         end
 
         context 'when the actor is a user' do
@@ -916,56 +816,6 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
             expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
             expect(response.payload).to include(expected_payload)
             expect(response.console_messages).to eq(expected_console_messages)
-          end
-
-          context 'with the feature flag geo_proxy_direct_to_primary disabled' do
-            it 'returns a custom action' do
-              stub_feature_flags(geo_proxy_direct_to_primary: false)
-
-              expected_payload = {
-                "action" => "geo_proxy_to_primary",
-                "data" => {
-                  "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_receive_pack", "/api/v4/geo/proxy_git_ssh/receive_pack"],
-                  "primary_repo" => geo_primary_http_internal_url_to_repo(project),
-                  "geo_proxy_direct_to_primary" => false,
-                  "geo_proxy_fetch_direct_to_primary" => true,
-                  "geo_proxy_fetch_direct_to_primary_with_options" => true,
-                  "request_headers" => include('Authorization')
-                }
-              }
-              expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
-
-              response = push_changes
-
-              expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
-              expect(response.payload).to include(expected_payload)
-              expect(response.console_messages).to eq(expected_console_messages)
-            end
-          end
-
-          context 'with the feature flag geo_proxy_fetch_direct_to_primary disabled' do
-            it 'returns a custom action' do
-              stub_feature_flags(geo_proxy_fetch_direct_to_primary: false)
-
-              expected_payload = {
-                "action" => "geo_proxy_to_primary",
-                "data" => {
-                  "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_receive_pack", "/api/v4/geo/proxy_git_ssh/receive_pack"],
-                  "primary_repo" => geo_primary_http_internal_url_to_repo(project),
-                  "geo_proxy_direct_to_primary" => true,
-                  "geo_proxy_fetch_direct_to_primary" => false,
-                  "geo_proxy_fetch_direct_to_primary_with_options" => true,
-                  "request_headers" => include('Authorization')
-                }
-              }
-              expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
-
-              response = push_changes
-
-              expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
-              expect(response.payload).to include(expected_payload)
-              expect(response.console_messages).to eq(expected_console_messages)
-            end
           end
         end
       end
