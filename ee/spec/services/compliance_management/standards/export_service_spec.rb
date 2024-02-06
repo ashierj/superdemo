@@ -81,22 +81,10 @@ RSpec.describe ComplianceManagement::Standards::ExportService, feature_category:
   describe '#email_export' do
     let(:worker) { ComplianceManagement::StandardsAdherenceExportMailerWorker }
 
-    context "with compliance_standards_adherence_csv_export ff implicitly enabled" do
-      it 'enqueues a worker' do
-        expect(worker).to receive(:perform_async).with(user.id, group.id)
+    it 'enqueues a worker' do
+      expect(worker).to receive(:perform_async).with(user.id, group.id)
 
-        expect(service.email_export).to be_success
-      end
-    end
-
-    context "with compliance_standards_adherence_csv_export ff disabled" do
-      it 'skips enqueue of a worker' do
-        stub_feature_flags compliance_standards_adherence_csv_export: false
-
-        expect(worker).not_to receive(:perform_async)
-
-        expect(service.email_export).to be_success
-      end
+      expect(service.email_export).to be_success
     end
   end
 end

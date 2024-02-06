@@ -7,6 +7,15 @@ describe('formatVisualizationValue', () => {
     });
   });
 
+  describe('when the value is a date string', () => {
+    it.each(['2023-11-15T00:00:00.000', '2023-11-15'])(
+      'returns the value without modification',
+      (value) => {
+        expect(formatVisualizationValue(value)).toBe(value);
+      },
+    );
+  });
+
   describe('when the value is numeric', () => {
     it.each([
       [123, '123'],
