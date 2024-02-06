@@ -154,12 +154,16 @@ export const updateApproverInheritance = ({ commit }, { rule, value }) => {
 
 export const editRule = ({ commit }, rule) => commit(types.EDIT_RULE, rule);
 
-export const unprotectEnvironment = ({ state, commit }, environment) => {
+export const unprotectEnvironment = ({ state, commit, dispatch }, environment) => {
   commit(types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT);
 
   return Api.deleteProtectedEnvironment(state.projectId, environment)
     .then(() => {
       commit(types.DELETE_PROTECTED_ENVIRONMENT_SUCCESS, environment);
+
+      if (!state.protectedEnvironments.length && state.pageInfo.page > 1) {
+        dispatch('setPage', state.pageInfo.page - 1);
+      }
     })
     .catch((error) => {
       commit(types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR, error);
