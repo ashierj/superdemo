@@ -10,7 +10,6 @@ RSpec.describe API::UsageData, feature_category: :service_ping do
 
     context 'with authentication' do
       before do
-        stub_feature_flags(usage_data_api: true)
         stub_application_setting(usage_ping_enabled: true)
         allow(Gitlab::RequestForgeryProtection).to receive(:verified?).and_return(true)
       end
@@ -25,7 +24,6 @@ RSpec.describe API::UsageData, feature_category: :service_ping do
 
         before do
           stub_application_setting(usage_ping_enabled: true)
-          stub_feature_flags(usage_data_api: true)
           allow(Gitlab::RequestForgeryProtection).to receive(:verified?).and_return(true)
         end
 
