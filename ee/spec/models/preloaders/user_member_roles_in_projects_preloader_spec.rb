@@ -49,10 +49,43 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
           create_member_role(ability, project_member)
         end
 
-        context 'when custom role has ability: true' do
+        context "when custom role has #{ability}: true" do
           context 'when Array of project passed' do
             it 'returns the project_id with a value array that includes the ability' do
               expect(result[project.id]).to match_array(expected_abilities)
+            end
+
+            context 'when saas', :saas do
+              let_it_be(:subscription) do
+                create(:gitlab_subscription, namespace: project.group, hosted_plan: create(:ultimate_plan))
+              end
+
+              before do
+                stub_ee_application_setting(should_check_namespace_plan: true)
+              end
+
+              it 'avoids N+1 queries' do
+                projects = [project]
+                control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+                  described_class.new(projects: projects, user: user).execute
+                end
+
+                projects << create(:project, :private, group: create(:group, parent: project.group))
+
+                expect do
+                  described_class.new(projects: projects, user: user).execute
+                end.to issue_same_number_of_queries_as(control).or_fewer
+              end
+
+              context 'with the `search_filter_by_ability` feature flag disabled' do
+                before do
+                  stub_feature_flags(search_filter_by_ability: false)
+                end
+
+                it 'returns the expect results' do
+                  expect(result[project.id]).to match_array(expected_abilities)
+                end
+              end
             end
           end
 
