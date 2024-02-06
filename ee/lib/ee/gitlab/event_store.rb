@@ -54,6 +54,10 @@ module EE
 
           store.subscribe ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler,
             to: ::WorkItems::WorkItemCreatedEvent
+          store.subscribe ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler,
+            to: ::WorkItems::WorkItemUpdatedEvent, if: ->(event) {
+              ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler.can_handle_update?(event)
+            }
 
           register_threat_insights_subscribers(store)
 

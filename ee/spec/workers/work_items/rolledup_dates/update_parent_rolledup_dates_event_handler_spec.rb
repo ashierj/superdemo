@@ -3,6 +3,37 @@
 require "spec_helper"
 
 RSpec.describe WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler, feature_category: :portfolio_management do
+  describe '.can_handle_update?', :aggregate_failures do
+    it 'returns false if no expected widget or attribute changed' do
+      event = ::WorkItems::WorkItemCreatedEvent.new(data: { id: 1, namespace_id: 2 })
+      expect(described_class.can_handle_update?(event)).to eq(false)
+    end
+
+    it 'returns true when expected attribute changed' do
+      described_class::UPDATE_TRIGGER_ATTRIBUTES.each do |attribute|
+        event = ::WorkItems::WorkItemCreatedEvent.new(data: {
+          id: 1,
+          namespace_id: 2,
+          updated_attributes: [attribute]
+        })
+
+        expect(described_class.can_handle_update?(event)).to eq(true)
+      end
+    end
+
+    it 'returns true when expected widget changed' do
+      described_class::UPDATE_TRIGGER_WIDGETS.each do |widget|
+        event = ::WorkItems::WorkItemCreatedEvent.new(data: {
+          id: 1,
+          namespace_id: 2,
+          updated_widgets: [widget]
+        })
+
+        expect(described_class.can_handle_update?(event)).to eq(true)
+      end
+    end
+  end
+
   describe "handle_event" do
     context "when work item has a parent" do
       it "updates the work_item hierarchy" do
