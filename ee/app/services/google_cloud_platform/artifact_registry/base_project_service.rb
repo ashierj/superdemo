@@ -8,11 +8,12 @@ module GoogleCloudPlatform
         feature_flag_disabled: ServiceResponse.error(message: 'Feature flag not enabled'),
         access_denied: ServiceResponse.error(message: 'Access denied'),
         no_project_integration: ServiceResponse.error(message: 'Project Artifact Registry integration not set'),
-        project_integration_disabled: ServiceResponse.error(message: 'Project Artifact Registry integration not active')
+        project_integration_disabled: ServiceResponse.error(
+          message: 'Project Artifact Registry integration not active'
+        ),
+        authentication_error: ServiceResponse.error(message: 'Unable to authenticate against Google Cloud'),
+        api_error: ServiceResponse.error(message: 'Unsuccessful Google Cloud API request')
       }.freeze
-
-      GCP_AUTHENTICATION_ERROR_MESSAGE = 'Unable to authenticate against Google Cloud'
-      GCP_API_ERROR_MESSAGE = 'Unsuccessful Google Cloud API request'
 
       def execute
         validation_response = validate_before_execute
@@ -71,10 +72,10 @@ module GoogleCloudPlatform
         yield
       rescue ::GoogleCloudPlatform::AuthenticationError => e
         log_error_with_project_id(message: e.message)
-        ServiceResponse.error(message: GCP_AUTHENTICATION_ERROR_MESSAGE)
+        ERROR_RESPONSES[:authentication_error]
       rescue ::GoogleCloudPlatform::ApiError => e
         log_error_with_project_id(message: e.message)
-        ServiceResponse.error(message: GCP_API_ERROR_MESSAGE)
+        ERROR_RESPONSES[:api_error]
       end
 
       def log_error_with_project_id(message:)
