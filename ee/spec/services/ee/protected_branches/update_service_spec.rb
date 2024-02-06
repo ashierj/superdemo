@@ -38,4 +38,33 @@ RSpec.describe ProtectedBranches::UpdateService, feature_category: :compliance_m
       end
     end
   end
+
+  context 'with blocking scan result policy' do
+    let(:params) { { name: branch_name.reverse } }
+
+    let(:policy_configuration) do
+      create(:security_orchestration_policy_configuration, project: project)
+    end
+
+    include_context 'with scan result policy blocking protected branches'
+
+    before do
+      create(:scan_result_policy_read, :blocking_protected_branches, project: project,
+        security_orchestration_policy_configuration: policy_configuration)
+    end
+
+    it 'raises' do
+      expect { service.execute(protected_branch) }.to raise_error(::Gitlab::Access::AccessDeniedError)
+    end
+
+    context 'with feature disabled' do
+      before do
+        stub_feature_flags(scan_result_policies_block_unprotecting_branches: false)
+      end
+
+      it 'renames' do
+        expect { service.execute(protected_branch) }.to change { protected_branch.reload.name }.to(branch_name.reverse)
+      end
+    end
+  end
 end
