@@ -1751,10 +1751,6 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
       context 'delayed project deletion is enabled for group' do
         let(:group) { create(:group) }
 
-        before do
-          group.namespace_settings.update!(delayed_project_removal: true)
-        end
-
         it_behaves_like 'marks project for deletion'
 
         context 'when permanently_remove param is true' do
@@ -1801,14 +1797,6 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
 
           expect(response).to have_gitlab_http_status(:bad_request)
           expect(json_response["message"]).to eq(message)
-        end
-
-        context 'when delayed project deletion is disabled on the application' do
-          before do
-            stub_application_setting(lock_delayed_project_removal: true, delayed_project_removal: false)
-          end
-
-          it_behaves_like 'marks project for deletion'
         end
 
         context 'when deletion adjourned period is 0' do

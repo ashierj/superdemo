@@ -40,7 +40,6 @@ module EE
         unless current_user&.admin?
           params.delete(:shared_runners_minutes_limit)
           params.delete(:extra_shared_runners_minutes_limit)
-          params.delete(:delayed_project_removal)
         end
 
         params.delete(:repository_size_limit) unless current_user&.can_admin_all_resources?

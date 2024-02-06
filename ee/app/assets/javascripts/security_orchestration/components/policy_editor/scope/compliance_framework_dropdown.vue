@@ -170,6 +170,7 @@ export default {
     },
     onComplianceFrameworkCreated() {
       this.$refs.formModal.hide();
+      this.$refs.listbox.open();
     },
     extractProjects(framework) {
       return framework?.projects?.nodes || [];
@@ -207,6 +208,7 @@ export default {
       :invalid-feedback="$options.i18n.errorMessage"
     >
       <gl-collapsible-listbox
+        ref="listbox"
         block
         multiple
         searchable

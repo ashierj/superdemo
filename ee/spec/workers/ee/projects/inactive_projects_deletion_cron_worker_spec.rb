@@ -123,75 +123,29 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker, feature_category: :
         stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
       end
 
-      shared_examples_for 'invokes Projects::DestroyService' do
-        it 'invokes Projects::DestroyService' do
-          Gitlab::Redis::SharedState.with do |redis|
-            redis.hset(
-              'inactive_projects_deletion_warning_email_notified',
-              "project:#{inactive_large_project.id}",
-              15.months.ago.to_date.to_s
-            )
-          end
-
-          expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_async)
-          expect(::Projects::MarkForDeletionService).not_to receive(:perform_in)
-          expect(::Projects::DestroyService).to receive(:new).with(inactive_large_project, admin_bot, {})
-                                                             .at_least(:once).and_call_original
-
-          worker.perform
-
-          expect(inactive_large_project.reload.pending_delete).to eq(true)
-          expect(inactive_large_project.reload.marked_for_deletion_at).to be_nil
-
-          Gitlab::Redis::SharedState.with do |redis|
-            expect(
-              redis.hget('inactive_projects_deletion_warning_email_notified', "project:#{inactive_large_project.id}")
-            ).to be_nil
-          end
-        end
-      end
-
-      shared_examples_for 'invokes Projects::MarkForDeletionService' do
-        it 'invokes Projects::MarkForDeletionService' do
-          Gitlab::Redis::SharedState.with do |redis|
-            redis.hset(
-              'inactive_projects_deletion_warning_email_notified',
-              "project:#{inactive_large_project.id}",
-              15.months.ago.to_date.to_s
-            )
-          end
-
-          expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_async)
-          expect(::Projects::MarkForDeletionService).to receive(:new).with(inactive_large_project, admin_bot, {})
-                                                                     .and_call_original
-
-          worker.perform
-
-          expect(inactive_large_project.reload.pending_delete).to eq(false)
-          expect(inactive_large_project.reload.marked_for_deletion_at).not_to be_nil
-
-          Gitlab::Redis::SharedState.with do |redis|
-            expect(
-              redis.hget('inactive_projects_deletion_warning_email_notified', "project:#{inactive_large_project.id}")
-            ).to be_nil
-          end
-        end
-      end
-
-      context 'when adjourned_deletion_configured is not configured for the project' do
-        before do
-          group.namespace_settings.update!(delayed_project_removal: false)
+      it 'invokes Projects::MarkForDeletionService' do
+        Gitlab::Redis::SharedState.with do |redis|
+          redis.hset(
+            'inactive_projects_deletion_warning_email_notified',
+            "project:#{inactive_large_project.id}",
+            15.months.ago.to_date.to_s
+          )
         end
 
-        it_behaves_like 'invokes Projects::MarkForDeletionService'
-      end
+        expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_async)
+        expect(::Projects::MarkForDeletionService).to receive(:new).with(inactive_large_project, admin_bot, {})
+                                                                    .and_call_original
 
-      context 'when adjourned_deletion_configured is configured for the project' do
-        before do
-          group.namespace_settings.update!(delayed_project_removal: true)
+        worker.perform
+
+        expect(inactive_large_project.reload.pending_delete).to eq(false)
+        expect(inactive_large_project.reload.marked_for_deletion_at).not_to be_nil
+
+        Gitlab::Redis::SharedState.with do |redis|
+          expect(
+            redis.hget('inactive_projects_deletion_warning_email_notified', "project:#{inactive_large_project.id}")
+          ).to be_nil
         end
-
-        it_behaves_like 'invokes Projects::MarkForDeletionService'
       end
     end
   end
