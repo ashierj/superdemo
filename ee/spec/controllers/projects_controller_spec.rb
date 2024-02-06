@@ -840,77 +840,62 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
         stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
       end
 
-      context 'when feature is enabled for group' do
-        before do
-          allow(group.namespace_settings).to receive(:delayed_project_removal?).and_return(true)
-        end
+      it_behaves_like 'marks project for deletion'
 
-        it_behaves_like 'marks project for deletion'
+      it 'does not mark project for deletion because of error' do
+        message = 'Error'
 
-        it 'does not mark project for deletion because of error' do
-          message = 'Error'
+        expect(::Projects::MarkForDeletionService).to receive_message_chain(:new, :execute).and_return({ status: :error, message: message })
 
-          expect(::Projects::MarkForDeletionService).to receive_message_chain(:new, :execute).and_return({ status: :error, message: message })
+        delete :destroy, params: { namespace_id: project.namespace, id: project }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to render_template(:edit)
+        expect(flash[:alert]).to include(message)
+      end
+
+      context 'when instance setting is set to 0 days' do
+        it 'deletes project right away' do
+          stub_ee_application_setting(deletion_adjourned_period: 0)
 
           delete :destroy, params: { namespace_id: project.namespace, id: project }
 
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(response).to render_template(:edit)
-          expect(flash[:alert]).to include(message)
+          expect(project.marked_for_deletion?).to be_falsey
+          expect(response).to have_gitlab_http_status(:found)
+          expect(response).to redirect_to(dashboard_projects_path)
         end
+      end
 
-        context 'when instance setting is set to 0 days' do
+      context 'when project is already marked for deletion' do
+        let_it_be(:project) { create(:project, group: group, marked_for_deletion_at: Date.current) }
+
+        context 'when permanently_delete param is set' do
           it 'deletes project right away' do
-            stub_ee_application_setting(deletion_adjourned_period: 0)
+            expect(ProjectDestroyWorker).to receive(:perform_async)
 
-            delete :destroy, params: { namespace_id: project.namespace, id: project }
+            delete :destroy, params: { namespace_id: project.namespace, id: project, permanently_delete: true }
 
-            expect(project.marked_for_deletion?).to be_falsey
+            expect(project.reload.pending_delete).to eq(true)
             expect(response).to have_gitlab_http_status(:found)
             expect(response).to redirect_to(dashboard_projects_path)
           end
         end
 
-        context 'when project is already marked for deletion' do
-          let(:project) { create(:project, group: group, marked_for_deletion_at: Date.current) }
+        context 'when permanently_delete param is not set' do
+          it 'does nothing' do
+            expect(ProjectDestroyWorker).not_to receive(:perform_async)
 
-          context 'when permanently_delete param is set' do
-            it 'deletes project right away' do
-              expect(ProjectDestroyWorker).to receive(:perform_async)
+            delete :destroy, params: { namespace_id: project.namespace, id: project }
 
-              delete :destroy, params: { namespace_id: project.namespace, id: project, permanently_delete: true }
-
-              expect(project.reload.pending_delete).to eq(true)
-              expect(response).to have_gitlab_http_status(:found)
-              expect(response).to redirect_to(dashboard_projects_path)
-            end
-          end
-
-          context 'when permanently_delete param is not set' do
-            it 'does nothing' do
-              expect(ProjectDestroyWorker).not_to receive(:perform_async)
-
-              delete :destroy, params: { namespace_id: project.namespace, id: project }
-
-              expect(project.reload.pending_delete).to eq(false)
-              expect(response).to have_gitlab_http_status(:found)
-              expect(response).to redirect_to(project_path(project))
-            end
+            expect(project.reload.pending_delete).to eq(false)
+            expect(response).to have_gitlab_http_status(:found)
+            expect(response).to redirect_to(project_path(project))
           end
         end
-      end
-
-      context 'when feature is disabled for group' do
-        before do
-          allow(group.namespace_settings).to receive(:delayed_project_removal?).and_return(false)
-        end
-
-        it_behaves_like 'marks project for deletion'
       end
 
       context 'when feature is not available for the project' do
         before do
-          allow(group.namespace_settings).to receive(:delayed_project_removal?).and_return(true)
           allow(project).to receive(:licensed_feature_available?).and_call_original
           allow(project).to receive(:licensed_feature_available?).with(:adjourned_deletion_for_projects_and_groups).and_return(false)
           allow(project).to receive(:feature_available?).and_call_original
