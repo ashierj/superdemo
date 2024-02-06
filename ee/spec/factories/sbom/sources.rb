@@ -7,6 +7,7 @@ FactoryBot.define do
     transient do
       sequence(:input_file_path) { |n| "subproject-#{n}/package-lock.json" }
       sequence(:source_file_path) { |n| "subproject-#{n}/package.json" }
+      sequence(:image_name) { |n| "image-#{n}" }
       packager_name { 'npm' }
       operating_system { { 'name' => 'Photon OS', 'version' => '5.0' } }
     end
@@ -23,7 +24,7 @@ FactoryBot.define do
       else
         {
           'category' => 'development',
-          'image' => { 'name' => 'image', 'tag' => 'v1' },
+          'image' => { 'name' => image_name, 'tag' => 'v1' },
           'operating_system' => operating_system
         }
       end
