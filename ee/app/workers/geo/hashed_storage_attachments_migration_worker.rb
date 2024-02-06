@@ -10,12 +10,8 @@ module Geo
 
     loggable_arguments 1, 2
 
-    def perform(project_id, old_attachments_path, new_attachments_path)
-      Geo::HashedStorageAttachmentsMigrationService.new(
-        project_id,
-        old_attachments_path: old_attachments_path,
-        new_attachments_path: new_attachments_path
-      ).execute
+    def perform(_project_id, _old_attachments_path, _new_attachments_path)
+      # no-op
     end
   end
 end
