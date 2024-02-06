@@ -49,7 +49,7 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
         parent_association = model.reflect_on_association(belongs_to)
         expect(parent_association).not_to be_nil,
           "Invalid backfil_via.parent.belongs_to: #{belongs_to} in db/docs for #{entry.table_name}"
-        parent_columns = parent_association.class_name.constantize.columns.map(&:name)
+        parent_columns = parent_association.klass.columns.map(&:name)
 
         expect(parent_columns).to include(parent_sharding_key)
       end
