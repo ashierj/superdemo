@@ -5,7 +5,6 @@ import Draggable from 'vuedraggable';
 import BoardListHeader from 'ee_else_ce/boards/components/board_list_header.vue';
 import { isListDraggable } from '~/boards/boards_util';
 import { setError } from '~/boards/graphql/cache_updates';
-import eventHub from '~/boards/eventhub';
 import { s__, __ } from '~/locale';
 import { defaultSortableOptions } from '~/sortable/constants';
 import {
@@ -154,12 +153,6 @@ export default {
   mounted() {
     this.bufferSize = calculateSwimlanesBufferSize(this.$el.offsetTop);
   },
-  created() {
-    eventHub.$on('open-unassigned-lane', this.openUnassignedLane);
-  },
-  beforeDestroy() {
-    eventHub.$off('open-unassigned-lane', this.openUnassignedLane);
-  },
   methods: {
     async fetchMoreEpics() {
       this.isLoadingMore = true;
@@ -254,6 +247,7 @@ export default {
             :is-swimlanes-header="true"
             :board-id="boardId"
             @setActiveList="$emit('setActiveList', $event)"
+            @openUnassignedLane="openUnassignedLane"
             @setTotalIssuesCount="setTotalIssuesCount"
           />
         </div>
