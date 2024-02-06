@@ -70,34 +70,6 @@ RSpec.describe EE::GeoHelper, feature_category: :geo_replication do
     end
   end
 
-  describe '#geo_registry_status_text' do
-    where(:synchronization_state, :pending_synchronization, :pending_verification, :result) do
-      [
-        [:never, false, false, 'Never'],
-        [:failed, false, false, 'Failed'],
-        [:pending, true, false, 'Pending synchronization'],
-        [:pending, false, true, 'Pending verification'],
-        [:pending, false, false, 'Unknown'],
-        [:synced, false, false, 'Synced'],
-        [:fake, false, false, 'Unknown']
-      ]
-    end
-
-    with_them do
-      let(:registry) do
-        Struct.new(
-          :synchronization_state,
-          :pending_synchronization?,
-          :pending_verification?
-        ).new(synchronization_state, pending_synchronization, pending_verification)
-      end
-
-      it 'returns the correct result' do
-        expect(helper.geo_registry_status_text(registry)).to eq(result)
-      end
-    end
-  end
-
   describe '#format_file_size_for_checksum' do
     context 'when file size is of even length' do
       it 'returns same file size string' do
