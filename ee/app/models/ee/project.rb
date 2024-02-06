@@ -135,7 +135,13 @@ module EE
       has_many :incident_management_oncall_rotations, class_name: 'IncidentManagement::OncallRotation', through: :incident_management_oncall_schedules, source: :rotations
       has_many :incident_management_escalation_policies, class_name: 'IncidentManagement::EscalationPolicy', inverse_of: :project
 
+      # one project can be linked to single Securty Policy Project, this relation describes that
       has_one :security_orchestration_policy_configuration, class_name: 'Security::OrchestrationPolicyConfiguration', foreign_key: :project_id, inverse_of: :project
+
+      # one project can be used multiple times as Security Policy Project, this relation describes all such usages
+      has_many :security_policy_management_project_linked_configurations, class_name: 'Security::OrchestrationPolicyConfiguration', foreign_key: :security_policy_management_project_id, inverse_of: :security_policy_management_project
+      has_many :security_policy_project_linked_projects, through: :security_policy_management_project_linked_configurations, source: :project
+      has_many :security_policy_project_linked_namespaces, through: :security_policy_management_project_linked_configurations, source: :namespace
 
       has_many :security_scans, class_name: 'Security::Scan', inverse_of: :project
       has_many :security_trainings, class_name: 'Security::Training', inverse_of: :project
