@@ -10,5 +10,7 @@ module Groups
     include SavedReplyConcern
 
     belongs_to :group
+
+    scope :for_groups, ->(group_ids) { where(group_id: group_ids) }
   end
 end

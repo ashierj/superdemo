@@ -217,12 +217,11 @@ module EE
         field :saved_replies,
           ::Types::Groups::SavedReplyType.connection_type,
           null: true,
+          resolver: ::Resolvers::Groups::SavedRepliesResolver,
           description: 'Saved replies available to the group. Available only when feature flag ' \
                        '`group_saved_replies_flag` is enabled. This field can only be resolved ' \
                        'for one group in any single request.',
-          alpha: { milestone: '16.10' } do
-            extension ::Gitlab::Graphql::Limit::FieldCallCount, limit: 1
-          end
+          alpha: { milestone: '16.10' }
 
         field :saved_reply,
           resolver: ::Resolvers::Groups::SavedReplyResolver,

@@ -20008,7 +20008,6 @@ GPG signature for a signed commit.
 | <a id="grouprequestaccessenabled"></a>`requestAccessEnabled` | [`Boolean`](#boolean) | Indicates if users can request access to namespace. |
 | <a id="grouprequiretwofactorauthentication"></a>`requireTwoFactorAuthentication` | [`Boolean`](#boolean) | Indicates if all users in this group are required to set up two-factor authentication. |
 | <a id="grouprootstoragestatistics"></a>`rootStorageStatistics` | [`RootStorageStatistics`](#rootstoragestatistics) | Aggregated storage statistics of the namespace. Only available for root namespaces. |
-| <a id="groupsavedreplies"></a>`savedReplies` **{warning-solid}** | [`GroupSavedReplyConnection`](#groupsavedreplyconnection) | **Introduced** in 16.10. **Status**: Experiment. Saved replies available to the group. Available only when feature flag `group_saved_replies_flag` is enabled. This field can only be resolved for one group in any single request. |
 | <a id="groupsecuritypolicyproject"></a>`securityPolicyProject` | [`Project`](#project) | Security policy project assigned to the namespace. |
 | <a id="groupsharewithgrouplock"></a>`shareWithGroupLock` | [`Boolean`](#boolean) | Indicates if sharing a project with another group within this group is prevented. |
 | <a id="groupsharedrunnerssetting"></a>`sharedRunnersSetting` | [`SharedRunnersSetting`](#sharedrunnerssetting) | Shared runners availability for the namespace and its descendants. |
@@ -20891,6 +20890,26 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="grouprunnerstype"></a>`type` | [`CiRunnerType`](#cirunnertype) | Filter runners by type. |
 | <a id="grouprunnersupgradestatus"></a>`upgradeStatus` | [`CiRunnerUpgradeStatus`](#cirunnerupgradestatus) | Filter by upgrade status. |
 | <a id="grouprunnersversionprefix"></a>`versionPrefix` **{warning-solid}** | [`String`](#string) | **Introduced** in 16.6. **Status**: Experiment. Filter runners by version. Runners that contain runner managers with the version at the start of the search term are returned. For example, the search term '14.' returns runner managers with versions '14.11.1' and '14.2.3'. |
+
+##### `Group.savedReplies`
+
+Saved replies available to the group. Available only when feature flag `group_saved_replies_flag` is enabled. This field can only be resolved for one group in any single request.
+
+NOTE:
+**Introduced** in 16.10.
+**Status**: Experiment.
+
+Returns [`GroupSavedReplyConnection`](#groupsavedreplyconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="groupsavedrepliesincludeancestorgroups"></a>`includeAncestorGroups` | [`Boolean`](#boolean) | Include saved replies from parent groups. |
 
 ##### `Group.savedReply`
 
