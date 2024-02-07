@@ -46,7 +46,6 @@ export default {
   },
   data() {
     return {
-      searchTerm: '',
       selectedStatuses: [...DEFAULT_VALUES],
     };
   },
@@ -78,12 +77,6 @@ export default {
     },
   },
   methods: {
-    setSearchTerm(token) {
-      // the data can be either a string or an array, in which case we don't want to perform the search
-      if (typeof token.data === 'string') {
-        this.searchTerm = token.data.toLowerCase();
-      }
-    },
     toggleSelectedStatus(selectedValue) {
       const allStatusSelected = selectedValue === ALL_STATUS_VALUE;
       const allDismissedSelected = selectedValue === ALL_DISMISSED_VALUE;
@@ -143,7 +136,6 @@ export default {
     :value="tokenValue"
     v-on="$listeners"
     @select="toggleSelectedStatus"
-    @input="setSearchTerm"
   >
     <template #view>
       {{ toggleText }}
