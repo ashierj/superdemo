@@ -1246,8 +1246,6 @@ module Ci
     end
 
     def track_ci_build_created_event
-      return unless Feature.enabled?(:track_ci_build_created_internal_event, project, type: :gitlab_com_derisk)
-
       Gitlab::InternalEvents.track_event('create_ci_build', project: project, user: user)
     end
 
