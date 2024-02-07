@@ -70,6 +70,7 @@ export default {
         mutation: setActiveBoardItemMutation,
         variables: {
           boardItem: null,
+          listId: null,
         },
       });
     },

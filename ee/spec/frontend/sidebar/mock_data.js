@@ -367,20 +367,20 @@ export const issueNoWeightResponse = () => ({
   },
 });
 
-export const issueWeightResponse = () => ({
+export const issueWeightResponse = (weight = 0) => ({
   data: {
     workspace: {
       id: '1',
-      issuable: { id: mockIssueId, weight: 0, __typename: 'Issue' },
+      issuable: { id: mockIssueId, weight, __typename: 'Issue' },
       __typename: 'Project',
     },
   },
 });
 
-export const setWeightResponse = () => ({
+export const setWeightResponse = (weight = 2) => ({
   data: {
     issuableSetWeight: {
-      issuable: { id: mockIssueId, weight: 2, __typename: 'Issue' },
+      issuable: { id: mockIssueId, weight, __typename: 'Issue' },
       errors: [],
       __typename: 'Project',
     },

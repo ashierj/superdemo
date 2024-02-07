@@ -40,7 +40,7 @@ describe('EpicBoardContentSidebar', () => {
         isIssue: false,
       },
       data: {
-        activeBoardItem: issuable,
+        activeBoardItem: { ...issuable, listId: 'gid://gitlab/List/1' },
       },
     });
 
@@ -149,6 +149,7 @@ describe('EpicBoardContentSidebar', () => {
         {},
         {
           boardItem: null,
+          listId: null,
         },
         expect.anything(),
         expect.anything(),
