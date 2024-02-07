@@ -1174,6 +1174,24 @@ settings for the group using either the GitLab UI or GraphQL API.
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### Min concurrency and max concurrency in Sidekiq options
+
+<div class="deprecation-notes">
+- Announced in GitLab <span class="milestone">16.9</span>
+- Removal in GitLab <span class="milestone">17.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/439687).
+</div>
+
+The [`sidekiq['min_concurrency']` and `sidekiq['max_concurrency']`](https://docs.gitlab.com/ee/administration/sidekiq/extra_sidekiq_processes.html#manage-thread-counts-explicitly) settings are deprecated in GitLab 16.9 and will be removed in GitLab 17.0.
+
+You can use `sidekiq['concurrency']` in GitLab 16.9 and later to set thread counts explicitly in each process.
+
+This change only applies to Linux package (Omnibus) installations.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### Offset pagination for `/users` REST API endpoint is deprecated
 
 <div class="deprecation-notes">
