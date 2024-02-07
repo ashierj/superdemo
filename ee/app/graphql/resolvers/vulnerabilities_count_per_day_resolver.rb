@@ -4,6 +4,8 @@ module Resolvers
   class VulnerabilitiesCountPerDayResolver < VulnerabilitiesBaseResolver
     include Gitlab::Graphql::Authorize::AuthorizeResource
 
+    MAX_DATE_RANGE_DAYS = 1.year.in_days.floor.freeze
+
     type Types::VulnerabilitiesCountByDayType, null: true
     authorize :read_security_resource
 
@@ -19,6 +21,8 @@ module Resolvers
       # Instance security dashboard does not have an object to authorize against.
       authorize!(object) unless resolve_vulnerabilities_for_instance_security_dashboard?
 
+      validate_date_range!(args)
+
       return [] unless vulnerable
 
       vulnerable
@@ -31,6 +35,14 @@ module Resolvers
     end
 
     private
+
+    def validate_date_range!(args)
+      # GraphQL::Types::ISO8601Date is instantiated as Date and the difference between
+      # two dates is the number of days between them.
+      return unless (args[:end_date] - args[:start_date]) > MAX_DATE_RANGE_DAYS
+
+      raise Gitlab::Graphql::Errors::ArgumentError, "maximum date range is #{MAX_DATE_RANGE_DAYS} days"
+    end
 
     def generate_missing_dates(calendar_entries, start_date, end_date)
       severities = ::Enums::Vulnerability.severity_levels.keys
