@@ -177,7 +177,7 @@ describe('Vulnerability Header', () => {
   });
 
   describe('status description', () => {
-    it('the status description is rendered and passed the correct data', () => {
+    it('the status description is rendered and passed the correct data', async () => {
       const user = createRandomUser();
 
       const vulnerability = {
@@ -187,61 +187,56 @@ describe('Vulnerability Header', () => {
       };
 
       createWrapper({ vulnerability });
-      return waitForPromises().then(() => {
-        expect(findStatusDescription().exists()).toBe(true);
-        expect(findStatusDescription().props()).toEqual({
-          vulnerability,
-          user,
-          isLoadingVulnerability: false,
-          isLoadingUser: false,
-          isStatusBolded: false,
-        });
+
+      await waitForPromises();
+      expect(findStatusDescription().exists()).toBe(true);
+      expect(findStatusDescription().props()).toEqual({
+        vulnerability,
+        user,
+        isLoadingVulnerability: false,
+        isLoadingUser: false,
+        isStatusBolded: false,
       });
     });
 
     it.each(vulnerabilityStateEntries)(
       `loads the correct user for the vulnerability state "%s"`,
-      (state) => {
+      async (state) => {
         const user = createRandomUser();
         createWrapper({ vulnerability: { state, [`${state}ById`]: user.id } });
 
-        return waitForPromises().then(() => {
-          expect(mockAxios.history.get).toHaveLength(1);
-          expect(findStatusDescription().props('user')).toEqual(user);
-        });
+        await waitForPromises();
+        expect(mockAxios.history.get).toHaveLength(1);
+        expect(findStatusDescription().props('user')).toEqual(user);
       },
     );
 
-    it('does not load a user if there is no user ID', () => {
+    it('does not load a user if there is no user ID', async () => {
       createWrapper({ vulnerability: { state: 'detected' } });
 
-      return waitForPromises().then(() => {
-        expect(mockAxios.history.get).toHaveLength(0);
-        expect(findStatusDescription().props('user')).toBeUndefined();
-      });
+      await waitForPromises();
+      expect(mockAxios.history.get).toHaveLength(0);
+      expect(findStatusDescription().props('user')).toBeUndefined();
     });
 
-    it('will show an error when the user cannot be loaded', () => {
+    it('will show an error when the user cannot be loaded', async () => {
       createWrapper({ vulnerability: { state: 'confirmed', confirmedById: 1 } });
 
       mockAxios.onGet().replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
-
-      return waitForPromises().then(() => {
-        expect(createAlert).toHaveBeenCalledTimes(1);
-        expect(mockAxios.history.get).toHaveLength(1);
-      });
+      await waitForPromises();
+      expect(createAlert).toHaveBeenCalledTimes(1);
+      expect(mockAxios.history.get).toHaveLength(1);
     });
 
-    it('will set the isLoadingUser property correctly when the user is loading and finished loading', () => {
+    it('will set the isLoadingUser property correctly when the user is loading and finished loading', async () => {
       const user = createRandomUser();
       createWrapper({ vulnerability: { state: 'confirmed', confirmedById: user.id } });
 
       expect(findStatusDescription().props('isLoadingUser')).toBe(true);
 
-      return waitForPromises().then(() => {
-        expect(mockAxios.history.get).toHaveLength(1);
-        expect(findStatusDescription().props('isLoadingUser')).toBe(false);
-      });
+      await waitForPromises();
+      expect(mockAxios.history.get).toHaveLength(1);
+      expect(findStatusDescription().props('isLoadingUser')).toBe(false);
     });
   });
 
@@ -482,12 +477,11 @@ describe('Vulnerability Header', () => {
             .onPost(defaultVulnerability.create_mr_url)
             .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
           await clickButton(splitButtonEventName);
+          await waitForPromises();
 
-          return waitForPromises().then(() => {
-            expect(mockAxios.history.post).toHaveLength(1);
-            expect(createAlert).toHaveBeenCalledWith({
-              message: 'There was an error creating the merge request. Please try again.',
-            });
+          expect(mockAxios.history.post).toHaveLength(1);
+          expect(createAlert).toHaveBeenCalledWith({
+            message: 'There was an error creating the merge request. Please try again.',
           });
         },
       );
