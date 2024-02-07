@@ -4,6 +4,7 @@ module IdentityVerification
   class UserRiskProfile
     attr_reader :user
 
+    ASSUMED_LOW_RISK_ATTR_KEY = 'assumed_low_risk_reason'
     ASSUMED_HIGH_RISK_ATTR_KEY = 'assumed_high_risk_reason'
     ARKOSE_RISK_BAND_KEY = ::UserCustomAttribute::ARKOSE_RISK_BAND
 
@@ -15,7 +16,13 @@ module IdentityVerification
     end
 
     def arkose_verified?
+      return true if assumed_low_risk?
+
       arkose_risk_band.in?(::Arkose::VerifyResponse::ARKOSE_RISK_BANDS.map(&:downcase))
+    end
+
+    def assume_low_risk!(reason:)
+      ::UserCustomAttribute.upsert_custom_attribute(user_id: user.id, key: ASSUMED_LOW_RISK_ATTR_KEY, value: reason)
     end
 
     def assume_high_risk!(reason:)
@@ -39,6 +46,10 @@ module IdentityVerification
     end
 
     private
+
+    def assumed_low_risk?
+      user.custom_attributes.by_key(ASSUMED_LOW_RISK_ATTR_KEY).exists?
+    end
 
     def arkose_risk_band
       risk_band_attr = user.custom_attributes.by_key(ARKOSE_RISK_BAND_KEY).first

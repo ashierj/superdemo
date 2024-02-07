@@ -1,5 +1,6 @@
 <script>
 import { GlForm, GlLoadingIcon } from '@gitlab/ui';
+import { logError } from '~/lib/logger';
 import csrf from '~/lib/utils/csrf';
 import { initArkoseLabsScript } from '../init_arkose_labs_script';
 import { VERIFICATION_TOKEN_INPUT_NAME, CHALLENGE_CONTAINER_CLASS } from '../constants';
@@ -28,8 +29,13 @@ export default {
       arkoseToken: '',
     };
   },
-  mounted() {
-    this.initArkoseLabs();
+  async mounted() {
+    try {
+      await this.initArkoseLabs();
+    } catch (error) {
+      logError('ArkoseLabs initialization error', error);
+      this.submit();
+    }
   },
   methods: {
     onArkoseLabsIframeShown() {
@@ -45,10 +51,10 @@ export default {
         mode: 'inline',
         selector: `.${this.$options.CHALLENGE_CONTAINER_CLASS}`,
         onShown: this.onArkoseLabsIframeShown,
-        onCompleted: this.passArkoseLabsChallenge,
+        onCompleted: this.submit,
       });
     },
-    passArkoseLabsChallenge({ token }) {
+    submit({ token } = { token: '' }) {
       this.arkoseToken = token;
 
       this.$nextTick(() => {

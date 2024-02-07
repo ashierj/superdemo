@@ -11,12 +11,22 @@ feature_category: :system_access do
   let_it_be(:confirmed_user) { create(:user, :low_risk) }
   let_it_be(:invalid_verification_user_id) { non_existing_record_id }
 
-  let(:verify_response_json) do
-    Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json')))
+  let(:successful_verification_response) do
+    json = Gitlab::Json.parse(
+      File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json'))
+    )
+    response = Arkose::VerifyResponse.new(json)
+    ServiceResponse.success(payload: { response: response })
   end
 
-  let(:verify_response) { Arkose::VerifyResponse.new(verify_response_json) }
-  let(:token_verification_service_success_response) { ServiceResponse.success(payload: { response: verify_response }) }
+  let(:failed_verification_response) do
+    json = Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/invalid_token.json')))
+    response = Arkose::VerifyResponse.new(json)
+    ServiceResponse.error(message: response.error)
+  end
+
+  let(:verification_service_response) { successful_verification_response }
+  let(:status_service_response) { ServiceResponse.success }
   let(:is_arkose_enabled) { true }
 
   before do
@@ -29,11 +39,13 @@ feature_category: :system_access do
     allow(::Arkose::Settings).to receive(:enabled?).and_return(is_arkose_enabled)
 
     allow_next_instance_of(::Arkose::StatusService) do |instance|
-      allow(instance).to receive(:execute).and_return(ServiceResponse.success)
+      allow(instance).to receive(:execute).and_return(status_service_response)
     end
   end
 
-  shared_examples 'it requires a valid verification_user_id' do
+  shared_examples 'it requires a valid verification_user_id' do |expected_response_code|
+    let(:response_code) { expected_response_code || :ok }
+
     context 'when session contains an invalid `verification_user_id`' do
       before do
         stub_session(verification_user_id: invalid_verification_user_id)
@@ -74,7 +86,7 @@ feature_category: :system_access do
       end
 
       it 'renders identity verification page' do
-        expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to have_gitlab_http_status(response_code)
       end
     end
 
@@ -96,8 +108,10 @@ feature_category: :system_access do
     end
   end
 
-  shared_examples 'it requires an unconfirmed user' do
+  shared_examples 'it requires an unconfirmed user' do |expected_response_code|
     subject { response }
+
+    let(:response_code) { expected_response_code || :ok }
 
     before do
       stub_session(verification_user_id: user.id)
@@ -114,7 +128,7 @@ feature_category: :system_access do
     context 'when session contains a `verification_user_id` from an unconfirmed user' do
       let_it_be(:user) { unconfirmed_user }
 
-      it { is_expected.to have_gitlab_http_status(:ok) }
+      it { is_expected.to have_gitlab_http_status(response_code) }
     end
   end
 
@@ -246,16 +260,27 @@ feature_category: :system_access do
       end
 
       context 'when phone verification challenge rate-limit has been reached' do
+        let(:params) do
+          { arkose_labs_token: 'verification-token', identity_verification: { phone_number: '555' } }
+        end
+
         before do
           allow(::Gitlab::ApplicationRateLimiter)
             .to receive(:peek)
             .with(:phone_verification_challenge, scope: user)
             .and_return(true)
+
+          verification_params = { session_token: params[:arkose_labs_token], user: nil }
+          allow_next_instance_of(Arkose::TokenVerificationService, verification_params) do |instance|
+            allow(instance).to receive(:execute).and_return(verification_service_response)
+          end
         end
 
         it_behaves_like 'logs and tracks the event', :phone, :arkose_challenge_shown
 
-        context 'when arkose_labs_token param is not present' do
+        context 'when token verification fails' do
+          let(:verification_service_response) { failed_verification_response }
+
           it 'returns a 400 with an error message', :aggregate_failures do
             do_request
 
@@ -265,39 +290,11 @@ feature_category: :system_access do
           end
         end
 
-        context 'when arkose_labs_token param is present' do
-          let(:params) do
-            { arkose_labs_token: 'verification-token', identity_verification: { phone_number: '555' } }
-          end
+        context 'when token verification succeeds' do
+          it 'returns a 200' do
+            do_request
 
-          before do
-            verification_params = { session_token: params[:arkose_labs_token], user: nil }
-
-            allow_next_instance_of(Arkose::TokenVerificationService, verification_params) do |instance|
-              allow(instance).to receive(:execute).and_return(service_response)
-            end
-          end
-
-          context 'and token verification fails' do
-            let(:service_response) { ServiceResponse.error(message: 'captcha was not solved') }
-
-            it 'returns a 400 with an error message', :aggregate_failures do
-              do_request
-
-              expect(response).to have_gitlab_http_status(:bad_request)
-              expect(response.body).to eq(
-                { message: s_('IdentityVerification|Complete verification to sign up.') }.to_json)
-            end
-          end
-
-          context 'and token verification succeeds' do
-            let(:service_response) { token_verification_service_success_response }
-
-            it 'returns a 200' do
-              do_request
-
-              expect(response).to have_gitlab_http_status(:ok)
-            end
+            expect(response).to have_gitlab_http_status(:ok)
           end
         end
       end
@@ -808,74 +805,67 @@ feature_category: :system_access do
   end
 
   describe 'POST verify_arkose_labs_session' do
-    let_it_be(:user) { create(:user, :unconfirmed, :low_risk) }
+    let_it_be(:user) { create(:user, :unconfirmed) }
 
-    let(:params) { {} }
+    let(:params) { { arkose_labs_token: 'fake-token' } }
     let(:do_request) { post verify_arkose_labs_session_identity_verification_path, params: params }
+    let(:service_response) { successful_verification_response }
 
     before do
       stub_session(verification_user_id: user.id)
-    end
 
-    it_behaves_like 'it requires a valid verification_user_id'
-    it_behaves_like 'it requires an unconfirmed user'
-
-    shared_examples 'renders arkose_labs_challenge with the correct alert flash' do
-      it 'renders arkose_labs_challenge with the correct alert flash' do
-        expect(flash[:alert]).to include(s_('IdentityVerification|Complete verification to sign up.'))
-        expect(response).to render_template('arkose_labs_challenge')
+      allow_next_instance_of(Arkose::TokenVerificationService) do |instance|
+        allow(instance).to receive(:execute).and_return(service_response)
       end
     end
 
-    context 'when arkose_labs_token param is not present' do
-      before do
-        do_request
-      end
+    it_behaves_like 'it requires a valid verification_user_id', :redirect
+    it_behaves_like 'it requires an unconfirmed user', :redirect
 
-      it_behaves_like 'renders arkose_labs_challenge with the correct alert flash'
-    end
-
-    context 'when arkose_labs_token param is present' do
-      let(:params) { { arkose_labs_token: 'fake-token' } }
-
+    describe 'token verification' do
       before do
         init_params = { session_token: params[:arkose_labs_token], user: user }
         allow_next_instance_of(Arkose::TokenVerificationService, init_params) do |instance|
           allow(instance).to receive(:execute).and_return(service_response)
         end
-
-        do_request
       end
 
-      context 'when token verification fails' do
+      context 'when it fails' do
         let(:service_response) { ServiceResponse.error(message: 'Captcha was not solved') }
 
-        it_behaves_like 'renders arkose_labs_challenge with the correct alert flash'
+        it 'renders arkose_labs_challenge with the correct alert flash' do
+          do_request
+
+          expect(flash[:alert]).to include(s_('IdentityVerification|Complete verification to sign up.'))
+          expect(response).to render_template('arkose_labs_challenge')
+        end
+
+        context 'when Arkose is down' do
+          let(:status_service_response) { ServiceResponse.error(message: 'Arkose outage') }
+
+          it 'marks the user as Arkose-verified' do
+            expect { do_request }.to change { user.arkose_verified? }.from(false).to(true)
+
+            expect(response).to redirect_to(identity_verification_path)
+          end
+        end
       end
 
-      context 'when token verification succeeds' do
-        let(:service_response) { token_verification_service_success_response }
-
+      context 'when it succeeds' do
         it 'redirects to show action' do
+          do_request
+
           expect(response).to redirect_to(identity_verification_path)
         end
-      end
-    end
 
-    describe 'phone verification service daily transaction limit check' do
-      let(:params) { { arkose_labs_token: 'fake-token' } }
+        describe 'phone verification service daily transaction limit check' do
+          it 'is executed' do
+            service = PhoneVerification::Users::RateLimitService
+            expect(service).to receive(:assume_user_high_risk_if_daily_limit_exceeded!).with(user)
 
-      before do
-        allow_next_instance_of(Arkose::TokenVerificationService) do |instance|
-          allow(instance).to receive(:execute).and_return(token_verification_service_success_response)
+            do_request
+          end
         end
-      end
-
-      it 'is executed' do
-        service = PhoneVerification::Users::RateLimitService
-        expect(service).to receive(:assume_user_high_risk_if_daily_limit_exceeded!).with(user)
-
-        do_request
       end
     end
   end
