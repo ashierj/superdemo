@@ -519,6 +519,18 @@ entry.
 - [Bump the finalize_after date of backfill migration](gitlab-org/gitlab@770ab7faa2048bfeb8bddd506e6f37fe18bb4d06) ([merge request](gitlab-org/gitlab!140109))
 - [Remove code_suggestions_completion_api feature](gitlab-org/gitlab@988e2f57f9635ed9cc3896b15965b608fce54756) ([merge request](gitlab-org/gitlab!138174)) **GitLab Enterprise Edition**
 
+## 16.7.5 (2024-02-07)
+
+### Fixed (1 change)
+
+- [Update dependency prometheus-client-mmap to '~> 1.1', '>= 1.1.1'](gitlab-org/security/gitlab@41326f12836b409735f0745d57b135fd952b54e0)
+
+### Security (3 changes)
+
+- [Fix CI component input Regexp](gitlab-org/security/gitlab@7b29c348a90b3311c5661b57572cbedf6160d02a) ([merge request](gitlab-org/security/gitlab!3855))
+- [Make scan result policies block renaming branches](gitlab-org/security/gitlab@5f8202c849059e28370d79aa79cd94a851abd61a) ([merge request](gitlab-org/security/gitlab!3838))
+- [Limit vulnerabilitiesCountByDay date range to 1 year](gitlab-org/security/gitlab@95c1de1c1c297ba59e7e52485e9703b01d8ad552) ([merge request](gitlab-org/security/gitlab!3827))
+
 ## 16.7.4 (2024-01-24)
 
 ### Fixed (1 change)
