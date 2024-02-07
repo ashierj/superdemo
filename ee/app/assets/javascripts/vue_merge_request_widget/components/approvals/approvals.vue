@@ -47,6 +47,9 @@ export default {
     requirePasswordToApprove() {
       return !this.isBasic && this.mr.requirePasswordToApprove;
     },
+    hasAllApprovals() {
+      return (this.approvals.approvalsLeft || 0) === 0;
+    },
   },
   methods: {
     toggleCollapsed() {
@@ -63,6 +66,7 @@ export default {
     :require-password-to-approve="requirePasswordToApprove"
     :modal-id="modalId"
     :collapsed="collapsed"
+    :has-all-approvals="hasAllApprovals"
     @toggle="toggleCollapsed"
   >
     <template v-if="!isBasic" #default="{ isApproving, approveWithAuth, hasApprovalAuthError }">
