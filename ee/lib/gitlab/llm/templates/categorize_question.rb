@@ -7,7 +7,7 @@ module Gitlab
         include Gitlab::Utils::StrongMemoize
 
         PROMPT = <<~PROMPT
-          \n\nHuman: You are helpful assistant, ready to give as accurate answer as possible in JSON format.
+          \n\nHuman: You are helpful assistant, ready to give as accurate answer as possible, in JSON format (i.e. starts with "{" and ends with "}").
 
           Based on the information below (user input, categories, labels, language, %<previous_answer_prefix>s), classify user input's category, detailed_category, labels. There may be multiple labels. Don't provide clarification or explanation. Always return only a JSON hash, e.g.:
           <example>{"category": "Write, improve, or explain code", "detailed_category": "What are the potential security risks in this code?", "labels": ["contains_credentials", "contains_rejection_previous_answer_incorrect"], "language": "en"}</example>
