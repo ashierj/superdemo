@@ -1320,7 +1320,7 @@ PostgreSQL 14 will also be supported for instances that want to upgrade prior to
 - To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/430966).
 </div>
 
-As of GitLab 17.0, Proxy-based DAST will not be supported. Please migrate to Browser-based DAST to continue analyzing your projects for security findings via dynamic analysis.
+As of GitLab 17.0, Proxy-based DAST will not be supported. Please migrate to Browser-based DAST to continue analyzing your projects for security findings via dynamic analysis.  [Breach and Attack Simulation](https://docs.gitlab.com/ee/user/application_security/breach_and_attack_simulation/), an incubating feature which is built on top of Proxy-based DAST, is also included in this deprecation and will not be supported after 17.0.
 
 </div>
 
