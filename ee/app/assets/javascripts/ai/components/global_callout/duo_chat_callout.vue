@@ -1,5 +1,5 @@
 <script>
-import { GlPopover, GlLink, GlBadge, GlOutsideDirective as Outside } from '@gitlab/ui';
+import { GlPopover, GlLink, GlBadge } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
 import DUO_CHAT_ILLUSTRATION from './callout_illustration.svg?url';
@@ -24,7 +24,6 @@ export default {
     GlBadge,
     UserCalloutDismisser,
   },
-  directives: { Outside },
   beforeMount() {
     const allButtons = Array.from(
       document.querySelectorAll(`.${DUO_CHAT_GLOBAL_BUTTON_CSS_CLASS}`),
@@ -81,36 +80,34 @@ export default {
         data-testid="duo-chat-promo-callout-popover"
         @close-button-clicked="dismissCallout(dismiss)"
       >
-        <div v-outside="() => dismissCallout(dismiss)">
-          <img
-            :src="$options.DUO_CHAT_ILLUSTRATION"
-            :alt="''"
-            class="gl-absolute gl-top-0 gl-left-0 gl-w-full gl-pointer-events-none"
-          />
-          <h5 class="gl-my-3 gl-mr-3">
-            {{ $options.i18n.POPOVER_LABEL }}
-            <gl-badge size="sm" variant="muted" href="" icon-size="sm">
-              {{ __('Beta') }}
-            </gl-badge>
-          </h5>
-          <p class="gl-m-0 gl-w-70p" data-testid="duo-chat-callout-description">
-            {{ $options.i18n.POPOVER_DESCRIPTION }}
-          </p>
-          <ul class="gl-pt-3 gl-pl-5">
-            <li v-for="item in $options.i18n.POPOVER_LIST_ITEMS" :key="item">{{ item }}</li>
-          </ul>
-          <gl-link
-            ref="popoverLink"
-            class="gl-button btn btn-confirm block gl-mb-2 gl-mt-4"
-            variant="confirm"
-            category="primary"
-            target="_blank"
-            block
-            @click="dismissAndNotify(dismiss)"
-          >
-            {{ $options.i18n.POPOVER_BUTTON }}
-          </gl-link>
-        </div>
+        <img
+          :src="$options.DUO_CHAT_ILLUSTRATION"
+          :alt="''"
+          class="gl-absolute gl-top-0 gl-left-0 gl-w-full gl-pointer-events-none"
+        />
+        <h5 class="gl-my-3 gl-mr-3">
+          {{ $options.i18n.POPOVER_LABEL }}
+          <gl-badge size="sm" variant="muted" href="" icon-size="sm">
+            {{ __('Beta') }}
+          </gl-badge>
+        </h5>
+        <p class="gl-m-0 gl-w-70p" data-testid="duo-chat-callout-description">
+          {{ $options.i18n.POPOVER_DESCRIPTION }}
+        </p>
+        <ul class="gl-pt-3 gl-pl-5">
+          <li v-for="item in $options.i18n.POPOVER_LIST_ITEMS" :key="item">{{ item }}</li>
+        </ul>
+        <gl-link
+          ref="popoverLink"
+          class="gl-button btn btn-confirm block gl-mb-2 gl-mt-4"
+          variant="confirm"
+          category="primary"
+          target="_blank"
+          block
+          @click="dismissAndNotify(dismiss)"
+        >
+          {{ $options.i18n.POPOVER_BUTTON }}
+        </gl-link>
       </gl-popover>
     </template>
   </user-callout-dismisser>
