@@ -26,6 +26,8 @@ module Gitlab
             return @config if valid_security_orchestration_policy_configurations.blank?
             return @config unless extend_configuration?
 
+            @config[:workflow] = { rules: [{ when: 'always' }] } if @config.empty?
+
             merged_config = @config.deep_merge(merged_security_policy_config)
 
             if custom_scan_actions_enabled? && active_scan_custom_actions.any?
