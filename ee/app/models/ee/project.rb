@@ -285,16 +285,6 @@ module EE
         order.apply_cursor_conditions(joins(:statistics)).order(order)
       end
 
-      scope :order_by_storage_size, -> (direction) do
-        build_keyset_order_on_joined_column(
-          scope: joins(:statistics),
-          attribute_name: 'project_statistics_storage_size',
-          column: ::ProjectStatistics.arel_table[:storage_size],
-          direction: direction,
-          nullable: :nulls_first
-        )
-      end
-
       scope :with_project_setting, -> { includes(:project_setting) }
 
       scope :compliance_framework_id_in, -> (ids) do

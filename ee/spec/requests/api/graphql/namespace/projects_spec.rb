@@ -28,7 +28,7 @@ RSpec.describe 'Namespace.projects', feature_category: :groups_and_projects do
         query_nodes(:projects, :name, include_pagination_info: true, args: params + project_args))
     end
 
-    context 'when sorting by STORAGE' do
+    context 'when sorting by STORAGE_SIZE_DESC' do
       before do
         project_4.statistics.update!(lfs_objects_size: 1, repository_size: 4.gigabytes)
         project_2.statistics.update!(lfs_objects_size: 1, repository_size: 2.gigabytes)
@@ -37,7 +37,7 @@ RSpec.describe 'Namespace.projects', feature_category: :groups_and_projects do
 
       it_behaves_like 'sorted paginated query' do
         let(:node_path) { %w[name] }
-        let(:sort_param) { :STORAGE }
+        let(:sort_param) { :STORAGE_SIZE_DESC }
         let(:first_param) { 2 }
         let(:all_records) { [project_4, project_2, project_3].map(&:name) }
       end

@@ -7,13 +7,14 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
-          # Storage size
           value 'STORAGE', 'Sort by excess repository storage size, descending order.',
+            value: :excess_repo_storage_size_desc,
+            deprecated: {
+              reason: 'Please use EXCESS_REPO_STORAGE_SIZE_DESC',
+              milestone: '16.9'
+            }
+          value 'EXCESS_REPO_STORAGE_SIZE_DESC', 'Sort by excess repository storage size, descending order.',
             value: :excess_repo_storage_size_desc
-
-          # project_statistics columns
-          value 'STORAGE_SIZE_ASC',  'Sort by total storage size, ascending order.', value: :storage_size_asc
-          value 'STORAGE_SIZE_DESC', 'Sort by total storage size, descending order.', value: :storage_size_desc
         end
       end
     end
