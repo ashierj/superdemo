@@ -16,12 +16,13 @@ const mockNewRunnerPath = '/runners/new';
 describe('AdminRunnersDashboardApp', () => {
   let wrapper;
 
-  const createComponent = () => {
+  const createComponent = (options) => {
     wrapper = shallowMountExtended(AdminRunnersDashboardApp, {
       propsData: {
         adminRunnersPath: mockAdminRunnersPath,
         newRunnerPath: mockNewRunnerPath,
       },
+      ...options,
     });
   };
 
@@ -42,9 +43,39 @@ describe('AdminRunnersDashboardApp', () => {
   it('shows dashboard panels', () => {
     expect(wrapper.findComponent(RunnerDashboardStatOnline).exists()).toBe(true);
     expect(wrapper.findComponent(RunnerDashboardStatOffline).exists()).toBe(true);
-    expect(wrapper.findComponent(RunnerUsage).exists()).toBe(true);
-    expect(wrapper.findComponent(RunnerJobFailures).exists()).toBe(true);
     expect(wrapper.findComponent(RunnerActiveList).exists()).toBe(true);
     expect(wrapper.findComponent(RunnerWaitTimes).exists()).toBe(true);
+  });
+
+  describe('when clickhouse is available', () => {
+    beforeEach(() => {
+      createComponent({
+        provide: { clickhouseCiAnalyticsAvailable: true },
+      });
+    });
+
+    it('shows runner usage', () => {
+      expect(wrapper.findComponent(RunnerUsage).exists()).toBe(true);
+    });
+
+    it('does not show job failures', () => {
+      expect(wrapper.findComponent(RunnerJobFailures).exists()).toBe(false);
+    });
+  });
+
+  describe('when clickhouse is not available', () => {
+    beforeEach(() => {
+      createComponent({
+        provide: { clickhouseCiAnalyticsAvailable: false },
+      });
+    });
+
+    it('does not runner usage', () => {
+      expect(wrapper.findComponent(RunnerUsage).exists()).toBe(false);
+    });
+
+    it('shows job failures', () => {
+      expect(wrapper.findComponent(RunnerJobFailures).exists()).toBe(true);
+    });
   });
 });

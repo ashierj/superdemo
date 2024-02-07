@@ -19,6 +19,11 @@ export default {
     RunnerActiveList,
     RunnerWaitTimes,
   },
+  inject: {
+    clickhouseCiAnalyticsAvailable: {
+      default: false,
+    },
+  },
   props: {
     adminRunnersPath: {
       type: String,
@@ -49,23 +54,22 @@ export default {
       {{ s__('Runners|Use the dashboard to view performance statistics of your runner fleet.') }}
     </p>
 
-    <div>
-      <div class="gl-sm-display-flex gl-gap-4 gl-justify-content-space-between">
-        <runner-dashboard-stat-online
-          class="runners-dashboard-third-gap-4 gl-flex-grow-1 gl-mb-4"
-        />
-        <runner-dashboard-stat-offline
-          class="runners-dashboard-third-gap-4 gl-flex-grow-1 gl-mb-4"
-        />
-        <runner-usage class="runners-dashboard-third-gap-4 gl-flex-grow-1 gl-mb-4" />
-      </div>
+    <div class="gl-sm-display-flex gl-column-gap-4 gl-justify-content-space-between">
+      <div class="gl-sm-display-flex gl-column-gap-4 gl-justify-content-space-between gl-w-full">
+        <div
+          class="runners-dashboard-two-thirds-gap-4 gl-display-flex gl-gap-4 gl-justify-content-space-between gl-mb-4 gl-flex-wrap"
+        >
+          <runner-dashboard-stat-online class="runners-dashboard-half-gap-4" />
+          <runner-dashboard-stat-offline class="runners-dashboard-half-gap-4" />
 
-      <div class="gl-md-display-flex gl-gap-4 gl-justify-content-space-between">
-        <runner-job-failures class="runners-dashboard-two-thirds-gap-4 gl-flex-grow-1 gl-mb-4" />
-        <runner-active-list class="runners-dashboard-third-gap-4 gl-flex-grow-1 gl-mb-4" />
-      </div>
+          <!-- we use job failures as fallback, when clickhouse is not available -->
+          <runner-usage v-if="clickhouseCiAnalyticsAvailable" class="gl-flex-basis-full" />
+          <runner-job-failures v-else class="gl-flex-basis-full" />
+        </div>
 
-      <runner-wait-times class="runners-dashboard-wait-times" />
+        <runner-active-list class="runners-dashboard-third-gap-4 gl-mb-4" />
+      </div>
     </div>
+    <runner-wait-times class="gl-mb-4" />
   </div>
 </template>
