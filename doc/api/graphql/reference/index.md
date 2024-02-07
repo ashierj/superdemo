@@ -29387,6 +29387,17 @@ Represents a description widget.
 | <a id="workitemwidgetdescriptionlasteditedby"></a>`lastEditedBy` | [`UserCore`](#usercore) | User that made the last edit to the work item's description. |
 | <a id="workitemwidgetdescriptiontype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
+### `WorkItemWidgetDesigns`
+
+Represents designs widget.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemwidgetdesignsdesigncollection"></a>`designCollection` | [`DesignCollection`](#designcollection) | Collection of design images associated with the issue. |
+| <a id="workitemwidgetdesignstype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
+
 ### `WorkItemWidgetHealthStatus`
 
 Represents a health status widget.
@@ -32545,6 +32556,7 @@ Type of a work item widget.
 | <a id="workitemwidgettypecolor"></a>`COLOR` | Color widget. |
 | <a id="workitemwidgettypecurrent_user_todos"></a>`CURRENT_USER_TODOS` | Current User Todos widget. |
 | <a id="workitemwidgettypedescription"></a>`DESCRIPTION` | Description widget. |
+| <a id="workitemwidgettypedesigns"></a>`DESIGNS` | Designs widget. |
 | <a id="workitemwidgettypehealth_status"></a>`HEALTH_STATUS` | Health Status widget. |
 | <a id="workitemwidgettypehierarchy"></a>`HIERARCHY` | Hierarchy widget. |
 | <a id="workitemwidgettypeiteration"></a>`ITERATION` | Iteration widget. |
@@ -34241,6 +34253,7 @@ Implementations:
 - [`WorkItemWidgetColor`](#workitemwidgetcolor)
 - [`WorkItemWidgetCurrentUserTodos`](#workitemwidgetcurrentusertodos)
 - [`WorkItemWidgetDescription`](#workitemwidgetdescription)
+- [`WorkItemWidgetDesigns`](#workitemwidgetdesigns)
 - [`WorkItemWidgetHealthStatus`](#workitemwidgethealthstatus)
 - [`WorkItemWidgetHierarchy`](#workitemwidgethierarchy)
 - [`WorkItemWidgetIteration`](#workitemwidgetiteration)
