@@ -10,7 +10,6 @@ import epicBoardQuery from 'ee/boards/graphql/epic_board.query.graphql';
 import { mockList } from 'jest/boards/mock_data';
 
 import BoardNewItem from '~/boards/components/board_new_item.vue';
-import eventHub from '~/boards/eventhub';
 
 import { mockEpicBoardResponse } from '../mock_data';
 
@@ -66,7 +65,6 @@ describe('Epic boards new epic form', () => {
     expect(boardNewItem.exists()).toBe(true);
     expect(boardNewItem.props()).toEqual({
       list: mockList,
-      formEventPrefix: 'toggle-epic-form-',
       submitButtonTitle: 'Create epic',
       disableSubmit: false,
     });
@@ -79,11 +77,10 @@ describe('Epic boards new epic form', () => {
     expect(groupSelect.exists()).toBe(true);
   });
 
-  it('emits event `toggle-epic-form` with current list Id suffix on eventHub when `board-new-item` emits form-cancel event', async () => {
-    jest.spyOn(eventHub, '$emit').mockImplementation();
+  it('emits event `toggleNewForm` when `board-new-item` emits form-cancel event', async () => {
     findBoardNewItem().vm.$emit('form-cancel');
 
     await nextTick();
-    expect(eventHub.$emit).toHaveBeenCalledWith(`toggle-epic-form-${mockList.id}`);
+    expect(wrapper.emitted('toggleNewForm')).toHaveLength(1);
   });
 });

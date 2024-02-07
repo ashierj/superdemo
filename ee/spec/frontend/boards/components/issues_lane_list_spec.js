@@ -7,7 +7,6 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { DraggableItemTypes } from 'ee_else_ce/boards/constants';
 import listQuery from 'ee_else_ce/boards/graphql/board_lists_deferred.query.graphql';
 import IssuesLaneList from 'ee/boards/components/issues_lane_list.vue';
-import eventHub from '~/boards/eventhub';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardNewIssue from '~/boards/components/board_new_issue.vue';
 import { ListType } from '~/boards/constants';
@@ -49,6 +48,7 @@ describe('IssuesLaneList', () => {
     canAdminEpic = false,
     highlightedLists = [],
     totalIssuesCount = 2,
+    showNewForm = false,
     listsIssuesQueryHandler = listIssuesQueryHandlerSuccess,
     moveIssueMutationHandler = moveIssueMutationHandlerSuccess,
     createIssueMutationHandler = createIssueMutationHandlerSuccess,
@@ -118,6 +118,7 @@ describe('IssuesLaneList', () => {
         lists: mockLists,
         highlightedLists,
         totalIssuesCount,
+        showNewForm,
       },
       provide: {
         fullPath: 'gitlab-org',
@@ -329,12 +330,11 @@ describe('IssuesLaneList', () => {
         },
         isUnassignedIssuesLane: true,
         canAdminEpic: true,
+        showNewForm: true,
       });
 
       await waitForPromises();
 
-      eventHub.$emit(`toggle-issue-form-${mockList.id}`);
-      await nextTick();
       expect(findNewIssueForm().exists()).toBe(true);
       findNewIssueForm().vm.$emit('addNewIssue', { title: 'Foo' });
 
@@ -350,13 +350,12 @@ describe('IssuesLaneList', () => {
         },
         isUnassignedIssuesLane: true,
         canAdminEpic: true,
+        showNewForm: true,
         createIssueMutationHandler: queryHandlerFailure,
       });
 
       await waitForPromises();
 
-      eventHub.$emit(`toggle-issue-form-${mockList.id}`);
-      await nextTick();
       expect(findNewIssueForm().exists()).toBe(true);
       findNewIssueForm().vm.$emit('addNewIssue', { title: 'Foo' });
 

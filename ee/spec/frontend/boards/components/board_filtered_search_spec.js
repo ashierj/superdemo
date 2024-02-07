@@ -17,6 +17,7 @@ describe('ee/BoardFilteredSearch', () => {
       propsData: {
         tokens: [],
         board: {},
+        filters: {},
       },
       provide: {
         boardBaseUrl: 'root',

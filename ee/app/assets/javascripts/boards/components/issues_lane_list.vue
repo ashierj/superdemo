@@ -4,7 +4,6 @@ import Draggable from 'vuedraggable';
 import { __, s__ } from '~/locale';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardNewIssue from '~/boards/components/board_new_issue.vue';
-import eventHub from '~/boards/eventhub';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { STATUS_CLOSED } from '~/issues/constants';
 import {
@@ -82,10 +81,14 @@ export default {
       required: false,
       default: 0,
     },
+    showNewForm: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
-      showIssueForm: false,
       toListId: null,
     };
   },
@@ -183,7 +186,7 @@ export default {
       return this.list.maxIssueCount > 0 && this.totalIssuesCount > this.list.maxIssueCount;
     },
     showNewIssue() {
-      return this.list.type !== STATUS_CLOSED && this.showIssueForm && this.isUnassignedIssuesLane;
+      return this.list.type !== STATUS_CLOSED && this.showNewForm && this.isUnassignedIssuesLane;
     },
   },
   watch: {
@@ -203,19 +206,7 @@ export default {
       }
     },
   },
-  created() {
-    eventHub.$on(`toggle-issue-form-${this.list.id}`, this.toggleForm);
-  },
-  beforeDestroy() {
-    eventHub.$off(`toggle-issue-form-${this.list.id}`, this.toggleForm);
-  },
   methods: {
-    toggleForm() {
-      this.showIssueForm = !this.showIssueForm;
-      if (this.showIssueForm && this.isUnassignedIssuesLane) {
-        this.$el.scrollIntoView(false);
-      }
-    },
     handleDragOnStart() {
       document.body.classList.add('is-dragging');
     },
@@ -391,7 +382,7 @@ export default {
       });
     },
     async addListItem(input) {
-      this.toggleForm();
+      this.$emit('toggleNewForm');
       try {
         await this.$apollo.mutate({
           mutation: listIssuablesQueries.issue.createMutation,
@@ -448,6 +439,7 @@ export default {
         v-if="showNewIssue"
         :list="list"
         :board-id="boardId"
+        @toggleNewForm="$emit('toggleNewForm')"
         @addNewIssue="addListItem"
       />
       <component
@@ -472,6 +464,7 @@ export default {
             :list="list"
             :item="issue"
             :can-admin="canAdminEpic"
+            @setFilters="$emit('setFilters', $event)"
           />
         </template>
         <gl-loading-icon

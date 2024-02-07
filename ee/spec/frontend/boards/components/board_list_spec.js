@@ -11,7 +11,6 @@ import listIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import issueCreateMutation from '~/boards/graphql/issue_create.mutation.graphql';
 import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import { TYPE_EPIC, TYPE_ISSUE, WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
-import eventHub from '~/boards/eventhub';
 import issueMoveListMutation from 'ee/boards/graphql/issue_move_list.mutation.graphql';
 import epicMoveListMutation from 'ee/boards/graphql/epic_move_list.mutation.graphql';
 import epicCreateMutation from 'ee/boards/graphql/epic_create.mutation.graphql';
@@ -100,6 +99,7 @@ describe('BoardList Component', () => {
           isGroupBoard: true,
           isEpicBoard,
         },
+        componentProps: { showNewForm: true },
         stubs: {
           BoardNewIssue,
           BoardNewEpic,
@@ -108,9 +108,6 @@ describe('BoardList Component', () => {
 
       await waitForPromises();
 
-      eventHub.$emit(`toggle-${issuableType}-form-${mockList.id}`);
-
-      await nextTick();
       expect(wrapper.findComponent(formComponent).exists()).toBe(true);
       expect(wrapper.findComponent(notRenderedFormComponent).exists()).toBe(false);
     },
@@ -395,6 +392,7 @@ describe('BoardList Component', () => {
           listProps: {
             id: listId,
           },
+          componentProps: { showNewForm: true },
           provide: {
             boardType: WORKSPACE_GROUP,
             issuableType,
@@ -412,8 +410,6 @@ describe('BoardList Component', () => {
 
         await waitForPromises();
 
-        eventHub.$emit(`toggle-${issuableType}-form-${listId}`);
-        await nextTick();
         expect(wrapper.findComponent(component).exists()).toBe(true);
         wrapper.findComponent(component).vm.$emit(event, { title: 'Foo' });
 
@@ -435,6 +431,7 @@ describe('BoardList Component', () => {
           listProps: {
             id: listId,
           },
+          componentProps: { showNewForm: true },
           provide: {
             boardType: WORKSPACE_GROUP,
             issuableType,
@@ -457,8 +454,6 @@ describe('BoardList Component', () => {
 
         await waitForPromises();
 
-        eventHub.$emit(`toggle-${issuableType}-form-${listId}`);
-        await nextTick();
         expect(wrapper.findComponent(component).exists()).toBe(true);
         wrapper.findComponent(component).vm.$emit(event, { title: 'Foo' });
 

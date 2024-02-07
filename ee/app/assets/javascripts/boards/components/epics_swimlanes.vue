@@ -69,6 +69,7 @@ export default {
       hasMoreUnassignedIssuables: {},
       isLoadingMoreIssues: false,
       totalIssuesCountByListId: {},
+      showNewForm: [],
     };
   },
   apollo: {
@@ -209,6 +210,13 @@ export default {
     setTotalIssuesCount(listId, count) {
       this.totalIssuesCountByListId[listId] = count;
     },
+    toggleNewForm(listId) {
+      if (this.showNewForm.includes(listId)) {
+        this.showNewForm.splice(this.showNewForm.indexOf(listId), 1);
+      } else {
+        this.showNewForm = [...this.showNewForm, listId];
+      }
+    },
   },
 };
 </script>
@@ -246,6 +254,7 @@ export default {
             :filter-params="filters"
             :is-swimlanes-header="true"
             :board-id="boardId"
+            @toggleNewForm="toggleNewForm(list.id)"
             @setActiveList="$emit('setActiveList', $event)"
             @openUnassignedLane="openUnassignedLane"
             @setTotalIssuesCount="setTotalIssuesCount"
@@ -259,10 +268,22 @@ export default {
           :remain="bufferSize"
           :bench="bufferSize"
           :scrollelement="$refs.scrollableContainer"
-          :item="$options.EpicLane"
-          :itemcount="epics.length"
-          :itemprops="getEpicLaneProps"
-        />
+        >
+          <epic-lane
+            v-for="epic in epics"
+            :key="epic.id"
+            :epic="epic"
+            :lists="lists"
+            :disabled="disabled"
+            :can-admin-list="canAdminList"
+            :board-id="boardId"
+            :filter-params="filters"
+            :highlighted-lists="highlightedLists"
+            :can-admin-epic="canAdminEpic"
+            :total-issues-count-by-list-id="totalIssuesCountByListId"
+            @setFilters="$emit('setFilters', $event)"
+          />
+        </virtual-list>
         <div v-if="hasMoreEpicsToLoad" class="swimlanes-button gl-pb-3 gl-pl-3 gl-sticky gl-left-0">
           <gl-button
             category="tertiary"
@@ -321,8 +342,11 @@ export default {
                 :can-admin-epic="canAdminEpic"
                 :lists="lists"
                 :total-issues-count="totalIssuesCountByListId[list.id]"
+                :show-new-form="showNewForm.indexOf(list.id) > -1"
+                @toggleNewForm="toggleNewForm(list.id)"
                 @updatePageInfo="updatePageInfo"
                 @issuesLoaded="isLoadingMoreIssues = false"
+                @setFilters="$emit('setFilters', $event)"
               />
             </div>
           </div>
