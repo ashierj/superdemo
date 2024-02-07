@@ -3,6 +3,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
 import ActionButtons from '~/vue_merge_request_widget/components/widget/action_buttons.vue';
+import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
 
 import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/license_compliance/index.vue';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
@@ -36,6 +37,7 @@ describe('License Compliance extension', () => {
     mock.onGet(endpoint).reply(statusCode, data, {});
   };
 
+  const findWidget = () => wrapper.findComponent(Widget);
   const findToggleCollapsedButton = () => wrapper.findByTestId('toggle-button');
   const findAllExtensionListItems = () => wrapper.findAllByTestId('extension-list-item');
   const findActionButtons = () => wrapper.findComponent(ActionButtons);
@@ -112,6 +114,23 @@ describe('License Compliance extension', () => {
         expect(findToggleCollapsedButton().exists()).toBe(isExpandable);
       },
     );
+
+    it('displays the help popover', () => {
+      mockApi(licenseComparisonPathCollapsed, HTTP_STATUS_OK, licenseComplianceNewLicenses);
+
+      createComponent();
+
+      expect(findWidget().props('helpPopover')).toEqual({
+        content: {
+          learnMorePath:
+            '/help/user/compliance/license_approval_policies#criteria-comparing-licenses-detected-in-the-merge-request-branch-to-licenses-detected-in-the-default-branch',
+          text: 'Detects known vulnerabilities in your software dependencies.',
+        },
+        options: {
+          title: 'License scan results',
+        },
+      });
+    });
   });
 
   describe('actions buttons', () => {
