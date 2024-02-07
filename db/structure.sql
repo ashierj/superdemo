@@ -12082,8 +12082,11 @@ CREATE TABLE appearances (
     pwa_icon text,
     pwa_name text,
     pwa_description text,
+    member_guidelines text,
+    member_guidelines_html text,
     CONSTRAINT appearances_profile_image_guidelines CHECK ((char_length(profile_image_guidelines) <= 4096)),
     CONSTRAINT check_13b2165eca CHECK ((char_length(pwa_name) <= 255)),
+    CONSTRAINT check_50e9b69ab6 CHECK ((char_length(member_guidelines) <= 4096)),
     CONSTRAINT check_5c3fd63577 CHECK ((char_length(pwa_short_name) <= 255)),
     CONSTRAINT check_5e0e6f24ed CHECK ((char_length(pwa_description) <= 2048)),
     CONSTRAINT check_5e5b7ac344 CHECK ((char_length(pwa_icon) <= 1024))

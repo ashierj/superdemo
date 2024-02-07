@@ -30183,6 +30183,9 @@ msgstr ""
 msgid "Member"
 msgstr ""
 
+msgid "Member guidelines"
+msgstr ""
+
 msgid "Member since"
 msgstr ""
 
@@ -50433,6 +50436,9 @@ msgid "These examples show common methods of triggering a pipeline with a pipeli
 msgstr ""
 
 msgid "These existing issues have a similar title. It might be better to comment there instead of creating another similar issue."
+msgstr ""
+
+msgid "These guidelines are displayed on the group's or project's members page, and are visible to users who can manage team member permissions."
 msgstr ""
 
 msgid "These guidelines for public avatars are displayed on the user settings page."
