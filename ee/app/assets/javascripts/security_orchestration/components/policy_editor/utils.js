@@ -241,9 +241,10 @@ const ONE_ITEM_SELECTED = 1;
  * @param selected items
  * @param items items used to render list
  * @param itemTypeName
+ * @param useAllSelected all selected option can be disabled
  * @returns {*}
  */
-export const renderMultiSelectText = (selected, items, itemTypeName) => {
+export const renderMultiSelectText = ({ selected, items, itemTypeName, useAllSelected = true }) => {
   const itemsKeys = Object.keys(items);
 
   const defaultPlaceholder = sprintf(
@@ -270,18 +271,30 @@ export const renderMultiSelectText = (selected, items, itemTypeName) => {
     return defaultPlaceholder;
   }
 
+  const multiSelectLabel = sprintf(MULTIPLE_SELECTED_LABEL, {
+    firstLabel: items[commonItems[0]],
+    numberOfAdditionalLabels: commonItems.length - 1,
+  });
+
+  const oneItemLabel = items[commonItems[0]] || defaultPlaceholder;
+
+  if (commonItems.length === itemsKeys.length && !useAllSelected) {
+    if (itemsKeys.length === 1) {
+      return oneItemLabel;
+    }
+
+    return multiSelectLabel;
+  }
+
   switch (commonItems.length) {
     case itemsKeys.length:
       return sprintf(ALL_SELECTED_LABEL, { itemTypeName }, false);
     case NO_ITEM_SELECTED:
       return defaultPlaceholder;
     case ONE_ITEM_SELECTED:
-      return items[commonItems[0]] || defaultPlaceholder;
+      return oneItemLabel;
     default:
-      return sprintf(MULTIPLE_SELECTED_LABEL, {
-        firstLabel: items[commonItems[0]],
-        numberOfAdditionalLabels: commonItems.length - 1,
-      });
+      return multiSelectLabel;
   }
 };
 

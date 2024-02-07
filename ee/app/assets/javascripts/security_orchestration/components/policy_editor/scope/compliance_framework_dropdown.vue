@@ -112,11 +112,12 @@ export default {
       }, {});
     },
     dropdownPlaceholder() {
-      return renderMultiSelectText(
-        this.formattedSelectedFrameworkIds,
-        this.complianceFrameworkItems,
-        this.$options.i18n.complianceFrameworkTypeName,
-      );
+      return renderMultiSelectText({
+        selected: this.formattedSelectedFrameworkIds,
+        items: this.complianceFrameworkItems,
+        itemTypeName: this.$options.i18n.complianceFrameworkTypeName,
+        useAllSelected: false,
+      });
     },
     listBoxItems() {
       return (
