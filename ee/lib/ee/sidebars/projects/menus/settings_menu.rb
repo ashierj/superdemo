@@ -44,6 +44,7 @@ module EE
 
             items << general_menu_item if custom_roles_general_menu_item?
             items << access_tokens_menu_item if custom_roles_access_token_menu_item?
+            items << ci_cd_menu_item if custom_roles_ci_cd_menu_item?
 
             items
           end
@@ -54,6 +55,10 @@ module EE
 
           def custom_roles_access_token_menu_item?
             can?(context.current_user, :manage_resource_access_tokens, context.project)
+          end
+
+          def custom_roles_ci_cd_menu_item?
+            can?(context.current_user, :admin_cicd_variables, context.project)
           end
         end
       end
