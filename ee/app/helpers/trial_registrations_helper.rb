@@ -35,7 +35,7 @@ module TrialRegistrationsHelper
   ].freeze
 
   def social_signin_enabled?
-    ::Gitlab.com? &&
+    ::Onboarding::Status.enabled? &&
       omniauth_enabled? &&
       devise_mapping.omniauthable? &&
       button_based_providers_enabled?
