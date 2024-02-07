@@ -186,6 +186,14 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
     context 'when policy is applicable on branch from the pipeline' do
       let(:ref) { 'refs/heads/master' }
 
+      context 'and the project does not have a CI configuration' do
+        let_it_be(:config) { {} }
+
+        it 'adds a workflow rule' do
+          expect(subject).to include({ workflow: { rules: [when: 'always'] } })
+        end
+      end
+
       context 'when DAST profiles are not found' do
         it 'does not modify the config' do
           expect(subject[:'dast-on-demand-0']).to eq({ allow_failure: true, script: 'echo "Error during On-Demand Scan execution: Dast site profile was not provided" && false' })
