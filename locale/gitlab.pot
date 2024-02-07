@@ -30183,6 +30183,9 @@ msgstr ""
 msgid "Member"
 msgstr ""
 
+msgid "Member guidelines"
+msgstr ""
+
 msgid "Member since"
 msgstr ""
 
@@ -50435,6 +50438,9 @@ msgstr ""
 msgid "These existing issues have a similar title. It might be better to comment there instead of creating another similar issue."
 msgstr ""
 
+msgid "These guidelines are displayed on the group's or project's members page, and are visible to users who can manage team member permissions."
+msgstr ""
+
 msgid "These guidelines for public avatars are displayed on the user settings page."
 msgstr ""
 
@@ -59432,6 +59438,9 @@ msgid "must contain only a discord user ID."
 msgstr ""
 
 msgid "must contain only a mastodon username."
+msgstr ""
+
+msgid "must follow semantic version"
 msgstr ""
 
 msgid "must have a repository"

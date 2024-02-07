@@ -20,7 +20,7 @@ module Search
 
       attribute :metadata, :ind_jsonb # for indifferent access
 
-      scope :descending_order_by_free_bytes, -> { order(Arel.sql('total_bytes - used_bytes').desc) }
+      scope :online, -> { where(last_seen_at: 1.minute.ago..) }
 
       def self.find_or_initialize_by_task_request(params)
         params = params.with_indifferent_access
