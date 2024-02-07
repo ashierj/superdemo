@@ -36586,6 +36586,9 @@ msgstr ""
 msgid "Pipeline|Failed"
 msgstr ""
 
+msgid "Pipeline|File"
+msgstr ""
+
 msgid "Pipeline|Manual"
 msgstr ""
 
@@ -36701,6 +36704,9 @@ msgid "Pipeline|To see the remaining jobs, go to the %{boldStart}Jobs%{boldEnd} 
 msgstr ""
 
 msgid "Pipeline|Trigger author"
+msgstr ""
+
+msgid "Pipeline|Variable"
 msgstr ""
 
 msgid "Pipeline|Variables"
