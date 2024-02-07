@@ -405,4 +405,16 @@ describe('Add On Eligible User List', () => {
       expect(findTable().attributes('empty-text')).toBe('No users to display.');
     });
   });
+
+  describe('user cell slot', () => {
+    it('correctly displays the content', () => {
+      createComponent({
+        slots: {
+          'user-cell': '<div class="user-cell">A user cell content</div>',
+        },
+      });
+
+      expect(wrapper.find('.user-cell').text()).toBe('A user cell content');
+    });
+  });
 });

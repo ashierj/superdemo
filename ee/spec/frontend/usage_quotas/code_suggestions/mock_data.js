@@ -30,7 +30,7 @@ export const purchasedAddonFuzzyData = {
   },
 };
 
-export const mockUserWithAddOnAssignment = {
+export const mockSMUserWithAddOnAssignment = {
   id: 'gid://gitlab/User/1',
   username: 'userone',
   name: 'User One',
@@ -46,7 +46,7 @@ export const mockUserWithAddOnAssignment = {
   __typename: 'AddOnUser',
 };
 
-export const mockUserWithNoAddOnAssignment = {
+export const mockSMUserWithNoAddOnAssignment = {
   id: 'gid://gitlab/User/2',
   username: 'usertwo',
   name: 'User Two',
@@ -59,7 +59,18 @@ export const mockUserWithNoAddOnAssignment = {
   __typename: 'AddOnUser',
 };
 
+export const mockUserWithAddOnAssignment = {
+  ...mockSMUserWithAddOnAssignment,
+  membershipType: null,
+};
+
+export const mockUserWithNoAddOnAssignment = {
+  ...mockSMUserWithNoAddOnAssignment,
+  membershipType: null,
+};
+
 export const eligibleUsers = [mockUserWithAddOnAssignment, mockUserWithNoAddOnAssignment];
+export const eligibleSMUsers = [mockSMUserWithAddOnAssignment, mockSMUserWithNoAddOnAssignment];
 export const eligibleUsersWithMaxRole = eligibleUsers.map((user) => ({
   ...user,
   maxRole: 'developer',
@@ -103,6 +114,18 @@ export const mockPaginatedAddOnEligibleUsers = {
       id: 'gid://gitlab/Group/1',
       addOnEligibleUsers: {
         nodes: eligibleUsers,
+        pageInfo: pageInfoWithMorePages,
+      },
+    },
+  },
+};
+
+export const mockPaginatedAddOnEligibleUsersWithMembershipType = {
+  data: {
+    namespace: {
+      id: 'gid://gitlab/Group/1',
+      addOnEligibleUsers: {
+        nodes: eligibleUsers.map((user) => ({ ...user, membershipType: 'group_invite' })),
         pageInfo: pageInfoWithMorePages,
       },
     },

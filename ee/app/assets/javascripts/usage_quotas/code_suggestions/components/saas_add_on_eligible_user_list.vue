@@ -1,5 +1,6 @@
 <script>
-import { __ } from '~/locale';
+import { GlAvatarLabeled, GlAvatarLink, GlBadge } from '@gitlab/ui';
+import { s__, __ } from '~/locale';
 import { DEFAULT_PER_PAGE } from '~/api';
 import { fetchPolicies } from '~/lib/graphql';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
@@ -28,10 +29,14 @@ import ProjectToken from 'ee/usage_quotas/code_suggestions/tokens/project_token.
 
 export default {
   name: 'SaasAddOnEligibleUserList',
+  avatarSize: 32,
   components: {
-    SearchAndSortBar,
-    ErrorAlert,
+    GlAvatarLabeled,
+    GlAvatarLink,
+    GlBadge,
     AddOnEligibleUserList,
+    ErrorAlert,
+    SearchAndSortBar,
   },
   mixins: [glFeatureFlagMixin()],
   inject: ['fullPath'],
@@ -165,6 +170,18 @@ export default {
     handleSort(sort) {
       this.sort = sort;
     },
+    isGroupInvite(user) {
+      return user.membershipType === 'group_invite';
+    },
+    isProjectInvite(user) {
+      return user.membershipType === 'project_invite';
+    },
+    userMembershipType(user) {
+      if (this.isProjectInvite(user)) {
+        return s__('Billing|Project invite');
+      }
+      return this.isGroupInvite(user) ? s__('Billing|Group invite') : null;
+    },
   },
 };
 </script>
@@ -196,6 +213,24 @@ export default {
         :dismissible="true"
         @dismiss="clearAddOnEligibleUsersFetchError"
       />
+    </template>
+    <template #user-cell="{ item }">
+      <div class="gl-display-flex">
+        <gl-avatar-link target="_blank" :href="item.webUrl" :alt="item.name">
+          <gl-avatar-labeled
+            :src="item.avatarUrl"
+            :size="$options.avatarSize"
+            :label="item.name"
+            :sub-label="item.username"
+          >
+            <template #meta>
+              <gl-badge v-if="userMembershipType(item)" size="sm" variant="muted">
+                {{ userMembershipType(item) }}
+              </gl-badge>
+            </template>
+          </gl-avatar-labeled>
+        </gl-avatar-link>
+      </div>
     </template>
   </add-on-eligible-user-list>
 </template>
