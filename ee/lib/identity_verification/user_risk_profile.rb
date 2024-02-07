@@ -7,6 +7,9 @@ module IdentityVerification
     ASSUMED_HIGH_RISK_ATTR_KEY = 'assumed_high_risk_reason'
     ARKOSE_RISK_BAND_KEY = ::UserCustomAttribute::ARKOSE_RISK_BAND
 
+    # https://developer.telesign.com/enterprise/docs/intelligence-get-started#score-scales
+    TELESIGN_HIGH_RISK_THRESHOLD = 600
+
     def initialize(user)
       @user = user
     end

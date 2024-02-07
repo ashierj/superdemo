@@ -82,7 +82,7 @@ module Users
       result = ::PhoneVerification::Users::SendVerificationCodeService.new(@user, phone_verification_params).execute
 
       unless result.success?
-        log_event(:phone, :failed_attempt, result.reason)
+        log_event(:phone, :failed_attempt, result.reason) unless result.reason == :related_to_high_risk_user
 
         # Do not pass the `related_to_banned_user` reason to the frontend if the `identity_verification_auto_ban`
         # feature flag is disabled, to allow re-submitting the form.

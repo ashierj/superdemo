@@ -706,6 +706,16 @@ feature_category: :system_access do
           expect(response.body).to eq({ message: service_response.message }.to_json)
         end
       end
+
+      context 'when the error is related to a high risk user' do
+        let(:service_response) { ServiceResponse.error(message: 'message', reason: :related_to_high_risk_user) }
+
+        it 'does not log an error' do
+          expect(Gitlab::AppLogger).not_to receive(:info)
+
+          do_request
+        end
+      end
     end
   end
 
