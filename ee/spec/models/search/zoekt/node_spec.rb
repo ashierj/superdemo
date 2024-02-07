@@ -23,12 +23,12 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
   end
 
   describe 'scopes' do
-    describe '.descending_order_by_free_bytes' do
-      let_it_be(:node_with_more_free_space) { create(:zoekt_node, used_bytes: node.used_bytes.pred) }
+    describe '.online' do
+      let_it_be(:online_node) { create(:zoekt_node, last_seen_at: 1.second.ago) }
+      let_it_be(:offline_node) { create(:zoekt_node, last_seen_at: 10.minutes.ago) }
 
-      it 'returns node by the descending order of free bytes' do
-        expect(described_class.descending_order_by_free_bytes.pluck(:id)).to eq [node_with_more_free_space.id, node.id]
-        expect(described_class.pluck(:id)).to eq [node.id, node_with_more_free_space.id]
+      it 'returns nodes considered to be online' do
+        expect(described_class.online).to contain_exactly(node, online_node)
       end
     end
   end
