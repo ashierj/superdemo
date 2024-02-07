@@ -84,6 +84,17 @@ RSpec.describe ::Search::Zoekt::SchedulingService, feature_category: :global_sea
         allow(::Zoekt::Logger).to receive(:build).and_return(logger)
       end
 
+      context 'when there are no online nodes' do
+        before do
+          allow(Search::Zoekt::Node).to receive(:online).and_return(Search::Zoekt::Node.none)
+        end
+
+        it 'returns false and does nothing' do
+          expect(execute_task).to eq(false)
+          expect(Search::Zoekt::EnabledNamespace).not_to receive(:with_missing_indices)
+        end
+      end
+
       context 'when there is not enough space in any nodes' do
         before do
           node.update_column(:total_bytes, 100)
@@ -94,7 +105,7 @@ RSpec.describe ::Search::Zoekt::SchedulingService, feature_category: :global_sea
           expect(namespace_statistics.repository_size).to be > node_free_space
           expect(zkt_enabled_namespace.indices).to be_empty
           expect(zkt_enabled_namespace2.indices).to be_empty
-          expect(Search::Zoekt::Node).to receive(:descending_order_by_free_bytes).and_call_original
+          expect(Search::Zoekt::Node).to receive(:online).and_call_original
           expect(logger).to receive(:error).with({ 'class' => described_class.to_s, 'task' => task,
                                                           'message' => "RootStorageStatistics isn't available",
                                                           'zoekt_enabled_namespace_id' => zkt_enabled_namespace.id }
@@ -121,7 +132,7 @@ RSpec.describe ::Search::Zoekt::SchedulingService, feature_category: :global_sea
             expect(namespace_statistics.repository_size * described_class::BUFFER_FACTOR).to eq node_free_space
             expect(zkt_enabled_namespace.indices).to be_empty
             expect(zkt_enabled_namespace2.indices).to be_empty
-            expect(Search::Zoekt::Node).to receive(:descending_order_by_free_bytes).and_call_original
+            expect(Search::Zoekt::Node).to receive(:online).and_call_original
             expect(logger).to receive(:error).with({ 'class' => described_class.to_s, 'task' => task,
                                                     'message' => "RootStorageStatistics isn't available",
                                                     'zoekt_enabled_namespace_id' => zkt_enabled_namespace.id }
@@ -143,7 +154,7 @@ RSpec.describe ::Search::Zoekt::SchedulingService, feature_category: :global_sea
           it 'logs error' do
             expect(zkt_enabled_namespace.indices).to be_empty
             expect(zkt_enabled_namespace2.indices).to be_empty
-            expect(Search::Zoekt::Node).to receive(:descending_order_by_free_bytes).and_call_original
+            expect(Search::Zoekt::Node).to receive(:online).and_call_original
             expect(logger).to receive(:error).with({ 'class' => described_class.to_s, 'task' => task,
                                                     'message' => "RootStorageStatistics isn't available",
                                                     'zoekt_enabled_namespace_id' => zkt_enabled_namespace.id }
@@ -162,7 +173,7 @@ RSpec.describe ::Search::Zoekt::SchedulingService, feature_category: :global_sea
         it 'creates a record of Search::Zoekt::Index for the namespace which has statistics' do
           expect(zkt_enabled_namespace.indices).to be_empty
           expect(zkt_enabled_namespace2.indices).to be_empty
-          expect(Search::Zoekt::Node).to receive(:descending_order_by_free_bytes).and_call_original
+          expect(Search::Zoekt::Node).to receive(:online).and_call_original
           expect(logger).to receive(:error).with({ 'class' => described_class.to_s, 'task' => task,
                                                   'message' => "RootStorageStatistics isn't available",
                                                   'zoekt_enabled_namespace_id' => zkt_enabled_namespace.id }
