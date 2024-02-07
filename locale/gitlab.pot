@@ -924,9 +924,6 @@ msgstr ""
 msgid "%{mergeLength}/%{usersLength} can merge"
 msgstr ""
 
-msgid "%{message} showing first %{warnings_displayed}"
-msgstr ""
-
 msgid "%{milestone} (expired)"
 msgstr ""
 
@@ -1283,9 +1280,6 @@ msgid "%{totalIssueWeight} total weight"
 msgstr ""
 
 msgid "%{totalMemory} (%{freeSpacePercentage}%{percentSymbol} free)"
-msgstr ""
-
-msgid "%{total_warnings} warning(s) found:"
 msgstr ""
 
 msgid "%{total}"
@@ -15197,6 +15191,9 @@ msgstr ""
 msgid "Custom range"
 msgstr ""
 
+msgid "Custom role"
+msgstr ""
+
 msgid "Customer experience improvement and third-party offers"
 msgstr ""
 
@@ -16378,6 +16375,9 @@ msgid "Default language for users who are not logged in."
 msgstr ""
 
 msgid "Default projects limit"
+msgstr ""
+
+msgid "Default role"
 msgstr ""
 
 msgid "Default timeout"

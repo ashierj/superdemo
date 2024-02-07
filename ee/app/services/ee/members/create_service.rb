@@ -104,7 +104,7 @@ module EE
           message: 'Membership created',
           additional_details: {
             add: 'user_access',
-            as: ::Gitlab::Access.options_with_owner.key(member.access_level.to_i),
+            as: member.human_access_labeled,
             member_id: member.id
           }
         }

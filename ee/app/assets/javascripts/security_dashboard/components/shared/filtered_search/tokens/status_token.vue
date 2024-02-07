@@ -116,6 +116,7 @@ export default {
       }
 
       // Otherwise select the item. Make sure to unselect ALL_STATUS_VALUE anyways because
+      // selecting any value will deselect the `All statuses` option.
       this.selectedStatuses = this.selectedStatuses.filter((s) => s !== ALL_STATUS_VALUE);
       this.selectedStatuses.push(selectedValue);
     },

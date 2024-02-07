@@ -58,7 +58,7 @@ RSpec.describe 'Groups > Audit Events', :js, feature_category: :audit_events do
       end
 
       page.within('.audit-log-table') do
-        expect(page).to have_content 'Changed access level from Developer to Maintainer'
+        expect(page).to have_content 'Changed access level from Default role: Developer to Default role: Maintainer'
         expect(page).to have_content(user.name)
         expect(page).to have_content('Alex')
       end

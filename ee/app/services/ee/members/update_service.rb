@@ -53,10 +53,10 @@ module EE
           additional_details: {
             change: 'access_level',
             from: old_access_level,
-            to: member.human_access,
+            to: member.human_access_labeled,
             expiry_from: old_expiry,
             expiry_to: member.expires_at,
-            as: ::Gitlab::Access.options_with_owner.key(member.access_level.to_i),
+            as: member.human_access_labeled,
             member_id: member.id
           }
         }

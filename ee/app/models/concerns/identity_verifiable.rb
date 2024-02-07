@@ -142,7 +142,7 @@ module IdentityVerifiable
     prerequisite_methods_state.values.all?
   end
 
-  delegate :arkose_verified?, :assume_high_risk!, :assumed_high_risk?, to: :risk_profile
+  delegate :arkose_verified?, :assume_low_risk!, :assume_high_risk!, :assumed_high_risk?, to: :risk_profile
   delegate :high_risk?, :medium_risk?, :low_risk?, to: :risk_profile, private: true
 
   private
