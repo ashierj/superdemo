@@ -18,7 +18,7 @@ export default {
 <template>
   <gl-disclosure-dropdown
     icon="ellipsis_v"
-    toggle-text="Actions"
+    :toggle-text="s__('Secrets|Actions')"
     text-sr-only
     category="tertiary"
     no-caret

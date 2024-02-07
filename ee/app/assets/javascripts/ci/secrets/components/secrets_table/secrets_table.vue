@@ -41,6 +41,12 @@ export default {
   methods: {
     getDetailsRoute: (key) => ({ name: DETAILS_ROUTE_NAME, params: { key } }),
     getEditRoute: (key) => ({ name: EDIT_ROUTE_NAME, params: { key } }),
+    isScopedLabel(label) {
+      return label.includes('::');
+    },
+    getLabelBackgroundColor(label) {
+      return this.isScopedLabel(label) ? SCOPED_LABEL_COLOR : UNSCOPED_LABEL_COLOR;
+    },
   },
   fields: [
     {
@@ -63,8 +69,6 @@ export default {
   ],
   LONG_DATE_FORMAT_WITH_TZ,
   NEW_ROUTE_NAME,
-  SCOPED_LABEL_COLOR,
-  UNSCOPED_LABEL_COLOR,
 };
 </script>
 <template>
@@ -115,10 +119,8 @@ export default {
             v-for="label in labels"
             :key="label"
             :title="label"
-            :background-color="
-              label.includes('::') ? $options.SCOPED_LABEL_COLOR : $options.UNSCOPED_LABEL_COLOR
-            "
-            :scoped="label.includes('::')"
+            :background-color="getLabelBackgroundColor(label)"
+            :scoped="isScopedLabel(label)"
             size="sm"
             class="gl-mt-3 gl-mr-3"
           />
