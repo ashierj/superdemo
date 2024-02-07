@@ -924,9 +924,6 @@ msgstr ""
 msgid "%{mergeLength}/%{usersLength} can merge"
 msgstr ""
 
-msgid "%{message} showing first %{warnings_displayed}"
-msgstr ""
-
 msgid "%{milestone} (expired)"
 msgstr ""
 
@@ -1283,9 +1280,6 @@ msgid "%{totalIssueWeight} total weight"
 msgstr ""
 
 msgid "%{totalMemory} (%{freeSpacePercentage}%{percentSymbol} free)"
-msgstr ""
-
-msgid "%{total_warnings} warning(s) found:"
 msgstr ""
 
 msgid "%{total}"
