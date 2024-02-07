@@ -35,6 +35,22 @@ module EE
     end
     alias_method :code_owner_approval_required?, :code_owner_approval_required
 
+    def allow_force_push
+      return false if protected_from_push_by_security_policy?
+
+      super
+    end
+
+    def protected_from_push_by_security_policy?
+      return false unless entity.licensed_feature_available?(:security_orchestration_policies)
+      return false unless project_level?
+
+      ::Security::SecurityOrchestrationPolicies::ProtectedBranchesPushService
+        .new(project: project)
+        .execute
+        .include?(name)
+    end
+
     def can_unprotect?(user)
       return true if unprotect_access_levels.empty?
 
