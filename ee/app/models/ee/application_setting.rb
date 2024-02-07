@@ -109,10 +109,6 @@ module EE
         user_id_existence: true,
         if: :git_rate_limit_users_alertlist_changed?
 
-      validates :delayed_project_removal,
-        exclusion: { in: [true], message: -> (object, data) { _("can't be enabled when delayed group deletion is disabled") } },
-        if: ->(setting) { !setting.delayed_group_deletion? }
-
       validates :dashboard_limit,
         :repository_size_limit,
         :elasticsearch_indexed_field_length_limit,
@@ -179,9 +175,6 @@ module EE
         allow_nil: false,
         inclusion: { in: [true, false], message: N_('must be a boolean value') }
 
-      alias_attribute :delayed_project_deletion, :delayed_project_removal
-
-      before_save :update_lock_delayed_project_removal, if: :delayed_group_deletion_changed?
       after_commit :update_personal_access_tokens_lifetime, if: :saved_change_to_max_personal_access_token_lifetime?
       after_commit :resume_elasticsearch_indexing
     end
@@ -553,12 +546,6 @@ module EE
       end
     rescue ::Gitlab::HTTP_V2::UrlBlocker::BlockedUrlError
       errors.add(:elasticsearch_url, "only supports valid HTTP(S) URLs.")
-    end
-
-    def update_lock_delayed_project_removal
-      # This is the only way to update lock_delayed_project_removal and it is used to
-      # enforce the cascading setting when delayed deletion is disabled on a instance.
-      self.lock_delayed_project_removal = !self.delayed_group_deletion
     end
   end
 end
