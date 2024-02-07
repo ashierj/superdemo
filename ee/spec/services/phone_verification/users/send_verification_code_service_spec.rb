@@ -5,8 +5,13 @@ require 'spec_helper'
 RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_category: :system_access do
   using RSpec::Parameterized::TableSyntax
 
+  let_it_be(:low_risk_score) { 100 }
+  let_it_be(:high_risk_score) { 750 }
+
   let_it_be_with_reload(:user) { create(:user) }
   let(:params) { { country: 'US', international_dial_code: 1, phone_number: '555' } }
+  let(:risk_score) { low_risk_score }
+  let(:risk_service_response) { ServiceResponse.success(payload: { risk_score: risk_score }) }
 
   subject(:service) { described_class.new(user, params) }
 
@@ -29,6 +34,15 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
 
       allow_next_instance_of(PhoneVerification::TelesignClient::SendVerificationCodeService) do |instance|
         allow(instance).to receive(:execute).and_return(send_verification_code_response)
+      end
+    end
+
+    shared_examples 'it returns a success response' do
+      it 'returns a success response', :aggregate_failures do
+        response = service.execute
+
+        expect(response).to be_a(ServiceResponse)
+        expect(response).to be_success
       end
     end
 
@@ -164,7 +178,94 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
       end
     end
 
+    context 'when intelligence score has already been determined' do
+      let(:phone_number) { params[:phone_number] }
+
+      before do
+        create(:phone_number_validation, phone_number: phone_number, risk_score: low_risk_score, user: user)
+      end
+
+      it 'does not execute the risk score service' do
+        expect(::PhoneVerification::TelesignClient::RiskScoreService).not_to receive(:new)
+
+        service.execute
+      end
+
+      context 'when the phone number has changed' do
+        let(:phone_number) { '12345' }
+
+        it 'executes the risk score service' do
+          expect(::PhoneVerification::TelesignClient::RiskScoreService).to receive(:new)
+
+          service.execute
+        end
+      end
+    end
+
+    context 'when intelligence API returns a score of 0' do
+      let(:risk_score) { 0 }
+      let_it_be(:send_verification_code_response) { ServiceResponse.success }
+
+      it 'sets the risk score to 1' do
+        service.execute
+        record = user.phone_number_validation
+
+        expect(record.risk_score).to eq 1
+      end
+    end
+
     context 'when phone number is high risk' do
+      let(:risk_score) { high_risk_score }
+      let_it_be(:send_verification_code_response) { ServiceResponse.success }
+
+      it 'returns an error', :aggregate_failures do
+        response = service.execute
+
+        expect(response).to be_a(ServiceResponse)
+        expect(response).to be_error
+        expect(response.message).to eq('Telesign high-risk user')
+        expect(response.reason).to eq(:related_to_high_risk_user)
+      end
+
+      it 'saves the phone number validation' do
+        service.execute
+        record = user.phone_number_validation
+
+        expect(record.risk_score).to eq risk_score
+      end
+
+      context 'when telesign_high_risk_cc_validation feature flag is disabled' do
+        before do
+          stub_feature_flags(telesign_high_risk_cc_validation: false)
+        end
+
+        it_behaves_like 'it returns a success response'
+      end
+
+      context 'when the user is already assumed high risk' do
+        before do
+          ::IdentityVerification::UserRiskProfile.new(user).assume_high_risk!(reason: 'High Risk')
+        end
+
+        it_behaves_like 'it returns a success response'
+      end
+
+      context 'when the user has already validated a credit card' do
+        before do
+          allow(user).to receive(:credit_card_verified?).and_return(true)
+        end
+
+        it_behaves_like 'it returns a success response'
+
+        it 'does not mark the user as high risk' do
+          service.execute
+
+          expect(user.assumed_high_risk?).to eq(false)
+        end
+      end
+    end
+
+    context 'when phone number is invalid' do
       let_it_be(:risk_service_response) do
         ServiceResponse.error(message: 'Downstream error message', reason: :invalid_phone_number)
       end
@@ -180,8 +281,6 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
     end
 
     context 'when there is a client error in sending the verification code' do
-      let_it_be(:risk_service_response) { ServiceResponse.success }
-
       let_it_be(:send_verification_code_response) do
         ServiceResponse.error(message: 'Downstream error message', reason: :bad_request)
       end
@@ -221,8 +320,6 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
     end
 
     context 'when there is a TeleSign error in sending the verification code' do
-      let_it_be(:risk_service_response) { ServiceResponse.success }
-
       let_it_be(:send_verification_code_response) do
         ServiceResponse.error(message: 'Downstream error message', reason: :unknown_telesign_error)
       end
@@ -247,8 +344,6 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
     end
 
     context 'when there is a server error in sending the verification code' do
-      let_it_be(:risk_service_response) { ServiceResponse.success }
-
       let_it_be(:send_verification_code_response) do
         ServiceResponse.error(message: 'Downstream error message', reason: :internal_server_error)
       end
@@ -291,22 +386,8 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
       end
     end
 
-    shared_examples 'it returns a success response' do
-      it 'returns a success response', :aggregate_failures do
-        response = service.execute
-
-        expect(response).to be_a(ServiceResponse)
-        expect(response).to be_success
-      end
-    end
-
     context 'when verification code is sent successfully' do
-      let_it_be(:risk_score) { 10 }
       let_it_be(:telesign_reference_xid) { '123' }
-
-      let_it_be(:risk_service_response) do
-        ServiceResponse.success(payload: { risk_score: risk_score })
-      end
 
       let_it_be(:send_verification_code_response) do
         ServiceResponse.success(payload: { telesign_reference_xid: telesign_reference_xid })
@@ -428,10 +509,6 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
     end
 
     context 'when telesign_intelligence feature flag is disabled' do
-      let_it_be(:risk_service_response) do
-        ServiceResponse.success(payload: { risk_score: 1 })
-      end
-
       let_it_be(:send_verification_code_response) do
         ServiceResponse.success(payload: { telesign_reference_xid: '123' })
       end

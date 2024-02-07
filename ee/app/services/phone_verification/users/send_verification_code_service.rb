@@ -38,12 +38,8 @@ module PhoneVerification
         return error_send_not_allowed unless send_allowed?
         return error_high_risk_number if related_to_banned_user?
 
-        risk_result = ::PhoneVerification::TelesignClient::RiskScoreService.new(
-          phone_number: phone_number,
-          user: user
-        ).execute
-
-        return error_downstream_service(risk_result) unless risk_result.success?
+        risk_result = query_intelligence_api
+        return risk_result unless risk_result.success?
 
         send_code_result = ::PhoneVerification::TelesignClient::SendVerificationCodeService.new(
           phone_number: phone_number,
@@ -52,9 +48,7 @@ module PhoneVerification
 
         return error_downstream_service(send_code_result) unless send_code_result.success?
 
-        store_risk_score(risk_result[:risk_score])
-
-        success(risk_result, send_code_result)
+        success(send_code_result)
       rescue StandardError => e
         Gitlab::ErrorTracking.track_exception(e, user_id: user.id)
         error
@@ -159,7 +153,7 @@ module PhoneVerification
         )
       end
 
-      def success(risk_result, send_code_result)
+      def success(send_code_result)
         rate_limit_service = PhoneVerification::Users::RateLimitService
         rate_limit_service.increase_daily_attempts
 
@@ -183,17 +177,9 @@ module PhoneVerification
           })
         end
 
-        attrs[:risk_score] = risk_result[:risk_score] if Feature.enabled?(:telesign_intelligence, type: :ops)
-
         record.update!(attrs)
 
         ServiceResponse.success(payload: { send_allowed_after: record.sms_send_allowed_after })
-      end
-
-      def store_risk_score(risk_score)
-        return unless Feature.enabled?(:telesign_intelligence, type: :ops)
-
-        Abuse::TrustScoreWorker.perform_async(user.id, :telesign, risk_score.to_f)
       end
 
       def log_limit_exceeded_event(rate_limit_key)
@@ -203,6 +189,30 @@ module PhoneVerification
           event: 'Phone verification daily transaction limit exceeded',
           exceeded_limit: rate_limit_key.to_s
         )
+      end
+
+      def query_intelligence_api?
+        return false unless Feature.enabled?(:telesign_intelligence, type: :ops)
+        return true if record.phone_number_changed?
+
+        record.risk_score == 0
+      end
+
+      def query_intelligence_api
+        return ServiceResponse.success unless query_intelligence_api?
+
+        risk_result = ::PhoneVerification::TelesignClient::RiskScoreService.new(
+          phone_number: phone_number,
+          user: user
+        ).execute
+
+        return error_downstream_service(risk_result) unless risk_result.success?
+
+        ::PhoneVerification::Users::RecordUserDataService.new(
+          user: user,
+          phone_verification_record: record,
+          risk_result: risk_result
+        ).execute
       end
     end
   end

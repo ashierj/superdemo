@@ -22,6 +22,7 @@ import {
   I18N_GENERIC_ERROR,
   UNKNOWN_TELESIGN_ERROR,
   RELATED_TO_BANNED_USER,
+  RELATED_TO_HIGH_RISK_USER,
 } from '../constants';
 
 export default {
@@ -198,6 +199,11 @@ export default {
 
       if (reason === UNKNOWN_TELESIGN_ERROR) {
         this.$emit('skip-verification');
+        return;
+      }
+
+      if (reason === RELATED_TO_HIGH_RISK_USER) {
+        window.location.reload();
         return;
       }
 

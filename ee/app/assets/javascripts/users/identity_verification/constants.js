@@ -33,4 +33,5 @@ export const REDIRECT_TIMEOUT = 1500;
 
 // reasons for errors
 export const UNKNOWN_TELESIGN_ERROR = 'unknown_telesign_error';
+export const RELATED_TO_HIGH_RISK_USER = 'related_to_high_risk_user';
 export const RELATED_TO_BANNED_USER = 'related_to_banned_user';
