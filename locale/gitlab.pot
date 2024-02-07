@@ -17053,9 +17053,6 @@ msgstr ""
 msgid "DeployTokens|Active deploy tokens"
 msgstr ""
 
-msgid "DeployTokens|Allows read and write access to registry images."
-msgstr ""
-
 msgid "DeployTokens|Allows read and write access to the package registry."
 msgstr ""
 
@@ -17072,6 +17069,9 @@ msgid "DeployTokens|Allows read-only access to the repository."
 msgstr ""
 
 msgid "DeployTokens|Allows write access to registry images."
+msgstr ""
+
+msgid "DeployTokens|Allows write access to registry images. You need both read and write access to push images."
 msgstr ""
 
 msgid "DeployTokens|Cancel"
