@@ -34,7 +34,7 @@ describe('ee/BoardContentSidebar', () => {
     mockApollo.clients.defaultClient.cache.writeQuery({
       query: activeBoardItemQuery,
       data: {
-        activeBoardItem: issuable,
+        activeBoardItem: { ...issuable, listId: 'gid://gitlab/List/1' },
       },
     });
 
