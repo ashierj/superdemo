@@ -203,28 +203,6 @@ RSpec.describe API::Entities::Member, feature_category: :groups_and_projects do
         end
       end
     end
-
-    context 'when members_api_expose_enterprise_users_emails_only FF is disabled' do
-      before do
-        stub_feature_flags(members_api_expose_enterprise_users_emails_only: false)
-      end
-
-      context 'when the current_user is a group owner' do
-        before do
-          create(:group_member, :owner, user: current_user, group: group)
-        end
-
-        include_examples "does not expose the user's email"
-
-        context 'when member user is provisioned by the group' do
-          before do
-            member.user.provisioned_by_group = group
-          end
-
-          include_examples "exposes the user's email"
-        end
-      end
-    end
   end
 
   context 'with state' do

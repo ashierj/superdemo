@@ -15,11 +15,7 @@ module EE
           expose(
             :email,
             if: ->(member, options) {
-              options[:current_user]&.can_admin_all_resources? || member.user&.managed_by_user?(options[:current_user], group: member.source&.root_ancestor) ||
-                (
-                  ::Feature.disabled?(:members_api_expose_enterprise_users_emails_only, type: :gitlab_com_derisk) &&
-                    Ability.allowed?(options[:current_user], :admin_group_member, member.user&.provisioned_by_group)
-                )
+              options[:current_user]&.can_admin_all_resources? || member.user&.managed_by_user?(options[:current_user], group: member.source&.root_ancestor)
             }
           ) do |member, _options|
             member.user&.email
