@@ -250,6 +250,20 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
       end
     end
 
+    context 'when node_id is 0' do
+      let(:node_id) { 0 }
+
+      it 'creates only Search::Zoekt::EnabledNamespace with search enabled for the namespace' do
+        expect { put api(path, admin, admin_mode: true) }
+          .to change { Search::Zoekt::EnabledNamespace.count }.by(1).and change { Search::Zoekt::Index.count }.by(0)
+        expect(response).to have_gitlab_http_status(:ok)
+        np = Search::Zoekt::EnabledNamespace.find_by(namespace: namespace)
+        expect(json_response['id']).to eq(np.id)
+        expect(np.search).to eq(true)
+        expect(json_response['zoekt_node_id']).to eq(nil)
+      end
+    end
+
     context 'with missing namespace_id' do
       it_behaves_like 'an API that returns 404 for missing ids', :put do
         let(:namespace_id) { non_existing_record_id }
@@ -259,9 +273,9 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
 
   describe 'DELETE /admin/zoekt/shards/:node_id/indexed_namespaces/:namespace_id' do
     let(:path) { "/admin/zoekt/shards/#{node_id}/indexed_namespaces/#{namespace_id}" }
+    let_it_be(:enabled_namespace) { create(:zoekt_enabled_namespace, namespace: namespace) }
 
     before do
-      enabled_namespace = create(:zoekt_enabled_namespace, namespace: namespace)
       create(:zoekt_index, node: node, zoekt_enabled_namespace: enabled_namespace, namespace_id: namespace.id)
     end
 
@@ -292,6 +306,21 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
     context 'with missing node_id' do
       it_behaves_like 'an API that returns 404 for missing ids', :delete do
         let(:node_id) { non_existing_record_id }
+      end
+    end
+
+    context 'when node_id is 0' do
+      let(:node_id) { 0 }
+
+      before do
+        node2 = create(:zoekt_node, search_base_url: node.search_base_url, index_base_url: node.index_base_url)
+        create(:zoekt_index, node: node2, zoekt_enabled_namespace: enabled_namespace, namespace_id: namespace.id)
+      end
+
+      it 'removes Search::Zoekt::EnabledNamespace and all associated Search::Zoekt::Index records' do
+        expect { delete api(path, admin, admin_mode: true) }
+          .to change { Search::Zoekt::EnabledNamespace.count }.by(-1).and change { Search::Zoekt::Index.count }.by(-2)
+        expect(response).to have_gitlab_http_status(:no_content)
       end
     end
 

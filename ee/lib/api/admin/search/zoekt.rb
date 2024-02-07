@@ -106,7 +106,7 @@ module API
                 end
                 put do
                   ensure_zoekt_indexing_enabled!
-                  node = ::Search::Zoekt::Node.find(params[:node_id])
+                  node = ::Search::Zoekt::Node.find(params[:node_id]) if params[:node_id] > 0
                   namespace = Namespace.find(params[:namespace_id])
                   root_namespace = namespace.root_ancestor
 
@@ -118,17 +118,19 @@ module API
                     zoekt_enabled_namespace.update(search: search)
                   end
 
-                  attributes = {
-                    zoekt_node_id: node.id,
-                    zoekt_enabled_namespace_id: zoekt_enabled_namespace.id,
-                    namespace_id: zoekt_enabled_namespace.root_namespace_id
-                  }
-                  zoekt_index = ::Search::Zoekt::Index.create_or_find_by(attributes) do |record| # rubocop:disable Performance/ActiveRecordSubtransactionMethods -- only be called from this API
-                    record.state = ::Search::Zoekt::Index.states[:ready]
+                  if node
+                    attributes = {
+                      zoekt_node_id: node.id,
+                      zoekt_enabled_namespace_id: zoekt_enabled_namespace.id,
+                      namespace_id: zoekt_enabled_namespace.root_namespace_id
+                    }
+                    ::Search::Zoekt::Index.create_or_find_by(attributes) do |record| # rubocop:disable Performance/ActiveRecordSubtransactionMethods -- only be called from this API
+                      record.state = ::Search::Zoekt::Index.states[:ready]
+                    end
                   end
 
                   present zoekt_enabled_namespace,
-                    with: ::API::Entities::Search::Zoekt::IndexedNamespace, zoekt_node_id: zoekt_index.node.id
+                    with: ::API::Entities::Search::Zoekt::IndexedNamespace, zoekt_node_id: node&.id
                 end
 
                 desc 'Remove a namespace from a node for Zoekt indexing' do
@@ -147,12 +149,17 @@ module API
                     desc: 'The id of the namespace you want to remove from this node'
                 end
                 delete do
-                  node = ::Search::Zoekt::Node.find(params[:node_id])
+                  node = ::Search::Zoekt::Node.find(params[:node_id]) if params[:node_id] > 0
                   namespace = Namespace.find(params[:namespace_id])
                   zoekt_enabled_namespace = namespace.zoekt_enabled_namespace
 
                   if zoekt_enabled_namespace.present?
-                    zoekt_indices = zoekt_enabled_namespace.indices.for_node(node)
+                    zoekt_indices = if node
+                                      zoekt_enabled_namespace.indices.for_node(node)
+                                    else
+                                      zoekt_enabled_namespace.indices
+                                    end
+
                     zoekt_indices.map(&:destroy!)
 
                     zoekt_enabled_namespace.destroy!
