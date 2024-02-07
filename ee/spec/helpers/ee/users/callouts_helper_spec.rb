@@ -405,7 +405,7 @@ RSpec.describe EE::Users::CalloutsHelper do
 
     using RSpec::Parameterized::TableSyntax
 
-    where(:gitlab_com, :gitlab_jh, :has_active_license, :current_user, :timezone, :user_dismissed, :expected_result) do
+    where(:gitlab_com_subscriptions_enabled, :gitlab_jh, :has_active_license, :current_user, :timezone, :user_dismissed, :expected_result) do
       false | false | false | ref(:admin) | 'Asia/Hong_Kong'      | false | true
       false | false | false | ref(:admin) | 'Asia/Shanghai'       | false | true
       false | false | false | ref(:admin) | 'Asia/Macau'          | false | true
@@ -421,7 +421,7 @@ RSpec.describe EE::Users::CalloutsHelper do
 
     with_them do
       before do
-        allow(::Gitlab).to receive(:com?).and_return(gitlab_com)
+        stub_saas_features(gitlab_com_subscriptions: gitlab_com_subscriptions_enabled)
         allow(::Gitlab).to receive(:jh?).and_return(gitlab_jh)
         allow(helper).to receive(:has_active_license?).and_return(has_active_license)
         allow(helper).to receive(:current_user).and_return(current_user)

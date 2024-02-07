@@ -99,7 +99,7 @@ module EE
 
       override :show_transition_to_jihu_callout?
       def show_transition_to_jihu_callout?
-        !::Gitlab::Saas.enabled? && !has_active_license? && super
+        !gitlab_com_subscription? && !has_active_license? && super
       end
 
       private
