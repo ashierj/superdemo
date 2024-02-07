@@ -16,13 +16,6 @@ module EE
 
     EPIC_ACTIONS = [:created, :closed, :reopened].freeze
 
-    override :set_last_repository_updated_at
-    def set_last_repository_updated_at
-      super
-
-      ProjectRepositoryState.where(project_id: project_id).touch_all(:last_repository_updated_at, time: created_at)
-    end
-
     override :capabilities
     def capabilities
       super.merge(

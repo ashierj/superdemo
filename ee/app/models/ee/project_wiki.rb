@@ -5,13 +5,6 @@ module EE
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
 
-    override :after_wiki_activity
-    def after_wiki_activity
-      super
-
-      project.repository_state&.touch(:last_wiki_updated_at)
-    end
-
     # TODO: This method may be removed once we implement Group Wikis
     class_methods do
       extend ::Gitlab::Utils::Override
