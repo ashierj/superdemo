@@ -1142,33 +1142,6 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
     end
   end
 
-  describe 'delayed deletion', feature_category: :groups_and_projects do
-    context 'when delayed_group_deletion is set to false' do
-      before do
-        setting.update!(delayed_group_deletion: false)
-      end
-
-      it 'unlocks the delayed_project_removal setting' do
-        expect(setting.lock_delayed_project_removal).to be true
-      end
-
-      it { is_expected.not_to allow_value(true).for(:delayed_project_removal) }
-      it { is_expected.to allow_value(false).for(:delayed_project_removal) }
-    end
-
-    context 'when delayed_group_deletion is set to true' do
-      before do
-        setting.update!(delayed_group_deletion: true)
-      end
-
-      it 'locks the delayed_project_removal setting' do
-        expect(setting.lock_delayed_project_removal).to be false
-      end
-
-      it { is_expected.to validate_inclusion_of(:delayed_project_removal).in_array([true, false]) }
-    end
-  end
-
   describe '#personal_access_tokens_disabled?', feature_category: :user_management do
     subject { setting.personal_access_tokens_disabled? }
 

@@ -57993,9 +57993,6 @@ msgstr ""
 msgid "can't be blank"
 msgstr ""
 
-msgid "can't be enabled when delayed group deletion is disabled"
-msgstr ""
-
 msgid "can't be nil"
 msgstr ""
 

@@ -70,8 +70,6 @@ RSpec.describe EE::ApplicationSettingsHelper do
 
     before do
       application_setting.deletion_adjourned_period = 1
-      application_setting.delayed_group_deletion = false
-      application_setting.delayed_project_deletion = false
 
       helper.instance_variable_set(:@application_setting, application_setting)
     end
