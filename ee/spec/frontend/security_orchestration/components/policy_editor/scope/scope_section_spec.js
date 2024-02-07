@@ -71,6 +71,7 @@ describe('PolicyScope', () => {
 
     expect(findExceptionTypeDropdown().exists()).toBe(false);
     expect(findGroupProjectsDropdown().exists()).toBe(true);
+    expect(wrapper.text()).toBe('Apply this policy to');
     expect(wrapper.emitted('changed')).toEqual([
       [
         {
@@ -170,6 +171,7 @@ describe('PolicyScope', () => {
 
       expect(findExceptionTypeDropdown().exists()).toBe(false);
       expect(findGroupProjectsDropdown().exists()).toBe(false);
+      expect(wrapper.text()).toBe('Apply this policy to named');
     });
 
     it('should render existing excluding projects', () => {
@@ -208,6 +210,7 @@ describe('PolicyScope', () => {
       expect(findComplianceFrameworkDropdown().exists()).toBe(false);
       expect(findExceptionTypeDropdown().exists()).toBe(false);
       expect(findGroupProjectsDropdown().exists()).toBe(true);
+      expect(wrapper.text()).toBe('Apply this policy to');
       expect(findGroupProjectsDropdown().props('selected')).toEqual([
         convertToGraphQLId(TYPENAME_PROJECT, 'id1'),
         convertToGraphQLId(TYPENAME_PROJECT, 'id2'),

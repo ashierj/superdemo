@@ -274,7 +274,7 @@ describe('ComplianceFrameworkDropdown', () => {
 
     it('renders all frameworks selected text', async () => {
       await waitForPromises();
-      expect(findDropdown().props('toggleText')).toBe('All compliance frameworks');
+      expect(findDropdown().props('toggleText')).toBe('A1 +2 more');
     });
 
     it('should reset all frameworks', async () => {

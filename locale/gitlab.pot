@@ -44361,10 +44361,10 @@ msgstr ""
 msgid "SecurityOrchestration|Any merge request"
 msgstr ""
 
-msgid "SecurityOrchestration|Apply this policy to all projects %{projectScopeType} %{exceptionType} %{projectSelector}"
+msgid "SecurityOrchestration|Apply this policy to %{projectScopeType} %{exceptionType} %{projectSelector}"
 msgstr ""
 
-msgid "SecurityOrchestration|Apply this policy to all projects %{projectScopeType} named %{frameworkSelector}"
+msgid "SecurityOrchestration|Apply this policy to %{projectScopeType}named %{frameworkSelector}"
 msgstr ""
 
 msgid "SecurityOrchestration|Are you sure you want to delete this policy? This action cannot be undone."

@@ -29,10 +29,10 @@ export default {
   EXCEPTION_TYPE_LISTBOX_ITEMS,
   i18n: {
     policyScopeFrameworkCopy: s__(
-      `SecurityOrchestration|Apply this policy to all projects %{projectScopeType} named %{frameworkSelector}`,
+      `SecurityOrchestration|Apply this policy to %{projectScopeType}named %{frameworkSelector}`,
     ),
     policyScopeProjectCopy: s__(
-      `SecurityOrchestration|Apply this policy to all projects %{projectScopeType} %{exceptionType} %{projectSelector}`,
+      `SecurityOrchestration|Apply this policy to %{projectScopeType} %{exceptionType} %{projectSelector}`,
     ),
     groupProjectErrorDescription: s__('SecurityOrchestration|Failed to load group projects'),
     complianceFrameworkErrorDescription: s__(
