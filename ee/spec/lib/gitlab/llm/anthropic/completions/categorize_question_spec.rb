@@ -38,7 +38,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::CategorizeQuestion, feature_
         allow(template).to receive(:to_prompt).and_return(prompt)
       end
       allow_next_instance_of(::Gitlab::Llm::Anthropic::Client) do |ai_client|
-        allow(ai_client).to receive(:complete).with(prompt: prompt).and_return(response)
+        allow(ai_client).to receive(:complete).with(prompt: prompt, max_tokens_to_sample: 200).and_return(response)
       end
       allow_next_instance_of(::Gitlab::Llm::ChatStorage, user) do |storage|
         allow(storage).to receive(:messages_up_to).with(chat_message.id).and_return(messages)
