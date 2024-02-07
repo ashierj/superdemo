@@ -101,45 +101,97 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
           params.merge!(sort: 'duration', direction: 'asc')
         end
 
-        it 'accepts sort params' do
-          travel_to DateTime.new(2019, 1, 5) do
-            event_1 = create(
-              :cycle_analytics_merge_request_stage_event,
-              stage_event_hash_id: stage.stage_event_hash_id,
-              group_id: stage.namespace.id,
-              merge_request_id: 1,
-              start_event_timestamp: Time.current,
-              end_event_timestamp: 20.days.from_now
-            )
+        context 'when feature flag vsa_duration_from_db is enabled' do
+          it 'accepts sort params and orders the items (by duration in database)' do
+            travel_to DateTime.new(2019, 1, 5) do
+              event_1 = create(
+                :cycle_analytics_merge_request_stage_event,
+                stage_event_hash_id: stage.stage_event_hash_id,
+                group_id: stage.namespace.id,
+                merge_request_id: 1,
+                start_event_timestamp: Time.current,
+                end_event_timestamp: 20.days.from_now,
+                duration_in_milliseconds: 5000
+              )
 
-            event_2 = create(
-              :cycle_analytics_merge_request_stage_event,
-              stage_event_hash_id: stage.stage_event_hash_id,
-              group_id: stage.namespace.id,
-              merge_request_id: 2,
-              start_event_timestamp: Time.current,
-              end_event_timestamp: 1.day.from_now
-            )
+              event_2 = create(
+                :cycle_analytics_merge_request_stage_event,
+                stage_event_hash_id: stage.stage_event_hash_id,
+                group_id: stage.namespace.id,
+                merge_request_id: 2,
+                start_event_timestamp: Time.current,
+                end_event_timestamp: 1.day.from_now,
+                duration_in_milliseconds: 3000
+              )
 
-            event_3 = create(
-              :cycle_analytics_merge_request_stage_event,
-              stage_event_hash_id: stage.stage_event_hash_id,
-              group_id: stage.namespace.id,
-              merge_request_id: 3,
-              start_event_timestamp: Time.current,
-              end_event_timestamp: 3.days.from_now
-            )
+              event_3 = create(
+                :cycle_analytics_merge_request_stage_event,
+                stage_event_hash_id: stage.stage_event_hash_id,
+                group_id: stage.namespace.id,
+                merge_request_id: 3,
+                start_event_timestamp: Time.current,
+                end_event_timestamp: 3.days.from_now,
+                duration_in_milliseconds: 15000
+              )
 
-            expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher) do |records_fetcher|
-              records_fetcher.serialized_records do |raw_active_record_scope|
-                expect(raw_active_record_scope.pluck(:merge_request_id)).to eq([event_2.merge_request_id, event_3.merge_request_id, event_1.merge_request_id])
+              expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher) do |records_fetcher|
+                records_fetcher.serialized_records do |raw_active_record_scope|
+                  expect(raw_active_record_scope.pluck(:merge_request_id)).to eq([event_2.merge_request_id, event_1.merge_request_id, event_3.merge_request_id])
+                end
               end
             end
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+          end
+        end
+
+        context 'when feature flag vsa_duration_from_db is disabled' do
+          before do
+            stub_feature_flags(vsa_duration_from_db: false)
           end
 
-          subject
+          it 'accepts sort params and orders the items (by duration calculated by end event time - start event time)' do
+            travel_to DateTime.new(2019, 1, 5) do
+              event_1 = create(
+                :cycle_analytics_merge_request_stage_event,
+                stage_event_hash_id: stage.stage_event_hash_id,
+                group_id: stage.namespace.id,
+                merge_request_id: 1,
+                start_event_timestamp: Time.current,
+                end_event_timestamp: 20.days.from_now
+              )
 
-          expect(response).to have_gitlab_http_status(:ok)
+              event_2 = create(
+                :cycle_analytics_merge_request_stage_event,
+                stage_event_hash_id: stage.stage_event_hash_id,
+                group_id: stage.namespace.id,
+                merge_request_id: 2,
+                start_event_timestamp: Time.current,
+                end_event_timestamp: 1.day.from_now
+              )
+
+              event_3 = create(
+                :cycle_analytics_merge_request_stage_event,
+                stage_event_hash_id: stage.stage_event_hash_id,
+                group_id: stage.namespace.id,
+                merge_request_id: 3,
+                start_event_timestamp: Time.current,
+                end_event_timestamp: 3.days.from_now
+              )
+
+              expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher) do |records_fetcher|
+                records_fetcher.serialized_records do |raw_active_record_scope|
+                  expect(raw_active_record_scope.pluck(:merge_request_id)).to eq([event_2.merge_request_id, event_3.merge_request_id, event_1.merge_request_id])
+                end
+              end
+            end
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+          end
         end
       end
 
