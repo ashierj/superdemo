@@ -1471,6 +1471,14 @@ entry.
 
 - [Move export buttons next to each other](gitlab-org/gitlab@106bea7a6246cd153cf66d133936a09d46369ae3) ([merge request](gitlab-org/gitlab!137461))
 
+## 16.6.7 (2024-02-07)
+
+### Security (3 changes)
+
+- [Fix CI component input Regexp](gitlab-org/security/gitlab@4aea3a2d7f371d57a00eef647f84dce2b6963dc6) ([merge request](gitlab-org/security/gitlab!3856))
+- [Make scan result policies block renaming branches](gitlab-org/security/gitlab@6ea7b750df3a5c2505717555db0875be6b0b3cd0) ([merge request](gitlab-org/security/gitlab!3840))
+- [Limit vulnerabilitiesCountByDay date range to 1 year](gitlab-org/security/gitlab@4896b80a35e3a31b2cf0df28a3545ba5caf9cc6f) ([merge request](gitlab-org/security/gitlab!3831))
+
 ## 16.6.6 (2024-01-24)
 
 ### Fixed (1 change)
