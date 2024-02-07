@@ -246,7 +246,7 @@ module QA
 
           def has_security_finding_dismissed?(reason, project_path)
             within_element('vulnerability-modal-content') do
-              has_element?('event-item-content', text: "Dismissed at #{project_path.gsub('/', ' / ')}") &&
+              has_element?('event-item-content', text: /Dismissed.* at #{project_path.gsub('/', ' / ')}/) &&
                 has_element?('event-item-content', text: reason)
             end
           end
