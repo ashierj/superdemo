@@ -47,7 +47,9 @@ RSpec.describe Sbom::SyncTraversalIdsService, feature_category: :dependency_mana
       describe 'parallel execution' do
         include ExclusiveLeaseHelpers
 
-        let(:lease_key) { 'sync_sbom_occurrences_traversal_ids' }
+        let_it_be(:other_project) { create(:project) }
+
+        let(:lease_key) { "sync_sbom_occurrences_traversal_ids:projects:#{project.id}" }
         let(:lease_ttl) { 5.minutes }
 
         before do
@@ -55,9 +57,13 @@ RSpec.describe Sbom::SyncTraversalIdsService, feature_category: :dependency_mana
           stub_exclusive_lease_taken(lease_key, timeout: lease_ttl)
         end
 
-        it 'does not permit parallel execution of the logic' do
+        it 'does not permit parallel execution on the same project' do
           expect { update_traversal_ids }.to raise_error(Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError)
             .and not_change { sbom_occurrence.reload.traversal_ids }.from(old_namespace.traversal_ids)
+        end
+
+        it 'allows parallel execution on different projects' do
+          expect { described_class.new(other_project.id).execute }.not_to raise_error
         end
       end
 
