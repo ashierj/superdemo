@@ -1418,6 +1418,9 @@ the GitLab 17.0 release:
 
 - Container Scanning: version 6
 - Dependency Scanning: version 4
+- DAST: version 4
+- DAST API: version 3
+- Fuzz API: version 3
 
 </div>
 
