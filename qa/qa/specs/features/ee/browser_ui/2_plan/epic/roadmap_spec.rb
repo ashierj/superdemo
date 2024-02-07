@@ -10,13 +10,12 @@ module QA
       include Support::Dates
 
       let(:epic) do
-        EE::Resource::Epic.fabricate_via_api! do |epic|
-          epic.title = 'Epic created via API to test roadmap'
-          epic.start_date_is_fixed = true
-          epic.start_date_fixed = current_date_yyyy_mm_dd
-          epic.due_date_is_fixed = true
-          epic.due_date_fixed = next_month_yyyy_mm_dd
-        end
+        create(:epic,
+          title: 'Epic created via API to test roadmap',
+          start_date_is_fixed: true,
+          start_date_fixed: current_date_yyyy_mm_dd,
+          due_date_is_fixed: true,
+          due_date_fixed: next_month_yyyy_mm_dd)
       end
 
       before do
@@ -27,7 +26,7 @@ module QA
         page.visit("#{epic.group.web_url}/-/roadmap")
 
         EE::Page::Group::Roadmap.perform do |roadmap|
-          expect(roadmap.epic_present?(epic)).to be_truthy
+          expect(roadmap).to have_epic(epic)
         end
       end
     end

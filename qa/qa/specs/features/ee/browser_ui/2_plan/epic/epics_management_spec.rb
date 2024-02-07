@@ -94,10 +94,7 @@ module QA
         end
 
         def create_epic_resource(group)
-          EE::Resource::Epic.fabricate_via_api! do |epic|
-            epic.group = group
-            epic.title = 'Epic created via API'
-          end
+          create(:epic, group: group, title: 'Epic created via API')
         end
       end
     end

@@ -15,11 +15,10 @@ module QA
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
       let(:issue) { create(:issue, title: 'Issue for note index test') }
       let(:note) do
-        Resource::ProjectIssueNote.fabricate_via_api! do |project_issue_note|
-          project_issue_note.project = issue.project
-          project_issue_note.issue = issue
-          project_issue_note.body = "This is a comment with a unique number #{SecureRandom.hex(8)}"
-        end
+        create(:issue_note,
+          project: issue.project,
+          issue: issue,
+          body: "This is a comment with a unique number #{SecureRandom.hex(8)}")
       end
 
       it(

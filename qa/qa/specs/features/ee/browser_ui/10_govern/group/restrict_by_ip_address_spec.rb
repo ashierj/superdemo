@@ -69,10 +69,7 @@ module QA
         # See: https://gitlab.com/gitlab-org/gitlab-qa/blob/master/docs/run_qa_against_gdk.md
         context 'with SSH', :requires_sshd, except: { job: 'review-qa-*' } do
           let(:key) do
-            Resource::SSHKey.fabricate_via_api! do |ssh_key|
-              ssh_key.api_client = api_client
-              ssh_key.title = "ssh key for allowed ip restricted access #{Time.now.to_f}"
-            end
+            create(:ssh_key, api_client: api_client, title: "ssh key for allowed ip restricted access #{Time.now.to_f}")
           end
 
           after do
@@ -118,10 +115,7 @@ module QA
         # See: https://gitlab.com/gitlab-org/gitlab-qa/blob/master/docs/run_qa_against_gdk.md
         context 'with SSH', :requires_sshd, except: { job: 'review-qa-*' } do
           let(:key) do
-            Resource::SSHKey.fabricate_via_api! do |ssh_key|
-              ssh_key.api_client = api_client
-              ssh_key.title = "ssh key for allowed ip restricted access #{Time.now.to_f}"
-            end
+            create(:ssh_key, api_client: api_client, title: "ssh key for allowed ip restricted access #{Time.now.to_f}")
           end
 
           after do
