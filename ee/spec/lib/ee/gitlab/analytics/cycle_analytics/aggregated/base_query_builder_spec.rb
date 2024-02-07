@@ -39,7 +39,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, 
            start_event_timestamp: 4.weeks.ago,
            end_event_timestamp: 1.week.ago,
            sprint_id: iteration.id,
-           issue_id: issue_with_iteration.id
+           issue_id: issue_with_iteration.id,
+           duration_in_milliseconds: 3000
           )
   end
 
@@ -53,7 +54,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, 
            end_event_timestamp: 1.week.ago,
            milestone_id: milestone.id,
            weight: 5,
-           issue_id: issue_with_epic.id
+           issue_id: issue_with_epic.id,
+           duration_in_milliseconds: 57000
           )
   end
 
@@ -62,7 +64,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, 
            stage_event_hash_id: stage.stage_event_hash_id,
            group_id: other_group.id,
            project_id: other_project.id,
-           issue_id: create(:issue, project: other_project).id
+           issue_id: create(:issue, project: other_project).id,
+           duration_in_milliseconds: 5000
           )
   end
 
@@ -237,10 +240,24 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, 
       expect(issue_ids).to eq([stage_event_2.issue_id, stage_event_1.issue_id])
     end
 
-    it 'returns the items in order (by duration)' do
-      params[:sort] = :duration
+    context 'when feature flag vsa_duration_from_db is disabled' do
+      before do
+        stub_feature_flags(vsa_duration_from_db: false)
+      end
 
-      expect(issue_ids).to eq([stage_event_1.issue_id, stage_event_2.issue_id])
+      it 'returns the items in order (by duration calculated by end event time - start event time)' do
+        params[:sort] = :duration
+
+        expect(issue_ids).to eq([stage_event_1.issue_id, stage_event_2.issue_id])
+      end
+    end
+
+    context 'when feature flag vsa_duration_from_db is enabled' do
+      it 'returns the items in order (by db duration value)' do
+        params[:sort] = :duration
+
+        expect(issue_ids).to eq([stage_event_2.issue_id, stage_event_1.issue_id])
+      end
     end
 
     it 'handles the project_ids filter' do
