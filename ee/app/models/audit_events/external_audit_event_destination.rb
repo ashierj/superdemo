@@ -29,7 +29,7 @@ module AuditEvents
     private
 
     def entity_allowed_to_stream?(audit_event)
-      if Feature.enabled?(:audit_events_streaming_namespace_filter, group) && namespace_filter.present?
+      if namespace_filter.present?
         audit_event_entity = audit_event.entity
 
         audit_event_entity = audit_event_entity.project_namespace if audit_event_entity.is_a?(::Project)
