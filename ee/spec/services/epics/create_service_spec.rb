@@ -82,6 +82,35 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
         let(:epic) { Epic.last }
       end
 
+      it 'does not create work item metrics' do
+        expect { subject }.to change { Epic.count }.by(1)
+          .and(change { WorkItem.count }.by(1))
+          .and(not_change { Issue::Metrics.count })
+      end
+
+      it 'does not duplicate system notes' do
+        expect { subject }.to change { Epic.count }.by(1).and(change { WorkItem.count }.by(1))
+
+        expect(Epic.last.notes.size).to eq(1)
+        expect(WorkItem.last.notes.size).to eq(0)
+      end
+
+      it 'does not call run_after_commit for the work item' do
+        expect_next_instance_of(WorkItem) do |instance|
+          expect(instance).not_to receive(:run_after_commit)
+        end
+
+        subject
+      end
+
+      it 'does not call after commit workers for the work item' do
+        expect(NewIssueWorker).not_to receive(:perform_async)
+        expect(Issues::PlacementWorker).not_to receive(:perform_async)
+        expect(Onboarding::IssueCreatedWorker).not_to receive(:perform_async)
+
+        subject
+      end
+
       context 'when work item creation fails' do
         it 'does not create epic' do
           error_message = ['error 1', 'error 2']

@@ -331,12 +331,12 @@ RSpec.describe Gitlab::Ci::YamlProcessor, feature_category: :pipeline_compositio
     end
   end
 
-  describe 'identity_provider', feature_category: :secrets_management do
+  describe 'identity', feature_category: :secrets_management do
     let(:config) do
       {
         build: {
           stage: 'build', script: 'test',
-          identity_provider: 'google_cloud'
+          identity: 'google_cloud'
         }
       }
     end
@@ -345,10 +345,10 @@ RSpec.describe Gitlab::Ci::YamlProcessor, feature_category: :pipeline_compositio
       stub_saas_features(google_artifact_registry: true)
     end
 
-    it 'includes identity provider-related values' do
-      identity_provider = result.builds.first.dig(:options, :identity_provider)
+    it 'includes identity-related values' do
+      identity = result.builds.first.dig(:options, :identity)
 
-      expect(identity_provider).to eq('google_cloud')
+      expect(identity).to eq('google_cloud')
     end
   end
 end
