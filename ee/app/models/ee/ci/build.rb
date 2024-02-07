@@ -85,7 +85,7 @@ module EE
 
       override :job_jwt_variables
       def job_jwt_variables
-        super.concat(identity_provider_variables)
+        super.concat(identity_variables)
       end
 
       def cost_factor_enabled?
@@ -315,14 +315,14 @@ module EE
         variable_value('VAULT_SERVER_URL').present?
       end
 
-      def identity_provider_variables
-        return [] if options[:identity_provider].blank?
+      def identity_variables
+        return [] if options[:identity].blank?
 
-        case options[:identity_provider]
+        case options[:identity]
         when 'google_cloud'
           ::Gitlab::Ci::GoogleCloud::GenerateBuildEnvironmentVariablesService.new(self).execute
         else
-          raise ArgumentError, "Unknown identity_provider value: #{options[:identity_provider]}"
+          raise ArgumentError, "Unknown identity value: #{options[:identity]}"
         end
       end
     end

@@ -13,10 +13,10 @@ RSpec.describe Gitlab::Ci::YamlProcessor::Result, feature_category: :pipeline_co
   subject(:build) { result.builds.first }
 
   describe '#builds' do
-    context 'when a job has identity_provider', feature_category: :secrets_management do
+    context 'when a job has identity', feature_category: :secrets_management do
       let(:config_content) do
         YAML.dump(
-          test: { stage: 'test', script: 'echo', identity_provider: 'google_cloud' }
+          test: { stage: 'test', script: 'echo', identity: 'google_cloud' }
         )
       end
 
@@ -24,8 +24,8 @@ RSpec.describe Gitlab::Ci::YamlProcessor::Result, feature_category: :pipeline_co
         stub_saas_features(google_artifact_registry: true)
       end
 
-      it 'includes :identity_provider in :options' do
-        expect(build.dig(:options, :identity_provider)).to eq('google_cloud')
+      it 'includes :identity in :options' do
+        expect(build.dig(:options, :identity)).to eq('google_cloud')
       end
     end
   end

@@ -5,9 +5,9 @@ module Gitlab
     class Config
       module Entry
         ##
-        # Entry that represents identity provider settings.
+        # Entry that represents workload identity settings.
         #
-        class IdentityProvider < ::Gitlab::Config::Entry::Node
+        class Identity < ::Gitlab::Config::Entry::Node
           include ::Gitlab::Config::Entry::Validatable
 
           ALLOWED_IDENTITY_PROVIDERS = %w[google_cloud].freeze
