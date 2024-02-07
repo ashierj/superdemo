@@ -64,9 +64,6 @@ module EE
           return items.order_by_excess_repo_storage_size_desc(namespace.actual_size_limit)
         end
 
-        return items.order_by_storage_size(:asc) if params[:sort] == :storage_size_asc
-        return items.order_by_storage_size(:desc) if params[:sort] == :storage_size_desc
-
         super(items)
       end
 

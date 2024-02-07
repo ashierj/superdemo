@@ -60,7 +60,7 @@ export default () => {
       isUsingNamespaceEnforcement,
       isUsingProjectEnforcementWithLimits,
       isUsingProjectEnforcementWithNoLimits,
-      customSortKey: isUsingProjectEnforcementWithLimits ? 'STORAGE' : null,
+      customSortKey: isUsingProjectEnforcementWithLimits ? 'EXCESS_REPO_STORAGE_SIZE_DESC' : null,
       helpLinks,
     },
     render(createElement) {

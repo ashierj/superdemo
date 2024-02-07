@@ -68,7 +68,7 @@ export const SaasWithProjectLimits = {
       isUsingProjectEnforcementWithLimits: true,
       isUsingProjectEnforcementWithNoLimits: false,
       totalRepositorySizeExcess: 3 * GIBIBYTE,
-      customSortKey: 'STORAGE',
+      customSortKey: 'EXCESS_REPO_STORAGE_SIZE_DESC',
     },
   }),
 };
@@ -112,7 +112,7 @@ export const SaasWithProjectLimitsLoading = {
         isUsingProjectEnforcementWithLimits: true,
         isUsingProjectEnforcementWithNoLimits: false,
         totalRepositorySizeExcess: 3 * GIBIBYTE,
-        customSortKey: 'STORAGE',
+        customSortKey: 'EXCESS_REPO_STORAGE_SIZE_DESC',
       },
     })(...args);
   },
