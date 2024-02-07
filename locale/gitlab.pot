@@ -15197,6 +15197,9 @@ msgstr ""
 msgid "Custom range"
 msgstr ""
 
+msgid "Custom role"
+msgstr ""
+
 msgid "Customer experience improvement and third-party offers"
 msgstr ""
 
@@ -16378,6 +16381,9 @@ msgid "Default language for users who are not logged in."
 msgstr ""
 
 msgid "Default projects limit"
+msgstr ""
+
+msgid "Default role"
 msgstr ""
 
 msgid "Default timeout"

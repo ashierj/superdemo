@@ -49,7 +49,7 @@ module QA
           end
         end
 
-        it_behaves_like 'audit event', ["Added user access as Guest"]
+        it_behaves_like 'audit event', ["Added user access as Default role: Guest"]
       end
 
       context "for add deploy key", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347907' do

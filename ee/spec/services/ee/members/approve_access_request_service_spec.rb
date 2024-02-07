@@ -10,12 +10,19 @@ RSpec.describe Members::ApproveAccessRequestService, feature_category: :groups_a
   let(:access_requester) { source.requesters.find_by!(user_id: access_requester_user.id) }
   let(:opts) { {} }
   let(:params) { {} }
-  let(:custom_access_level) { Gitlab::Access::MAINTAINER }
+  let(:access_level_label) { 'Default role: Developer' }
+  let(:details) do
+    {
+      add: 'user_access',
+      as: access_level_label,
+      member_id: access_requester.id
+    }
+  end
 
   shared_examples "auditor with context" do
     it "creates audit event with name" do
       expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
-        hash_including(name: "member_created", target_details: "John Wick")
+        hash_including(name: "member_created", target_details: "John Wick", additional_details: details)
       ).and_call_original
 
       described_class.new(current_user, params).execute(access_requester, **opts)
