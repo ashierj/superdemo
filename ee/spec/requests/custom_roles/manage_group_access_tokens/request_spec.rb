@@ -25,20 +25,39 @@ RSpec.describe 'User with manage_group_access_tokens custom role', feature_categ
     end
 
     describe '#create' do
-      let_it_be(:access_token_params) { { name: 'TestToken', scopes: ['api'], expires_at: Date.today + 1.month } }
       let_it_be(:resource) { group }
+      let(:access_token_params) do
+        { name: 'TestToken', scopes: ['api'], expires_at: Date.today + 1.month, access_level: access_level }
+      end
 
       subject(:request) do
         post group_settings_access_tokens_path(group, params: { resource_access_token: access_token_params })
       end
 
-      it 'user has access via a custom role' do
-        request
+      context 'when creating a token with an access level that is lower or equal to the current users access level' do
+        let(:access_level) { 10 }
 
-        expect(response).to have_gitlab_http_status(:ok)
+        it 'user has access via a custom role' do
+          request
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+
+        it_behaves_like 'POST resource access tokens available'
       end
 
-      it_behaves_like 'POST resource access tokens available'
+      context 'when creating a token with an access level that is higher than the current users access level' do
+        let(:access_level) { 20 }
+
+        it 'renders JSON with an error' do
+          request
+
+          expect(response.parsed_body['new_token']).to be_blank
+          expect(response.parsed_body['errors'])
+            .to include("Access level of the token can't be greater the access level of the user who created the token")
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+        end
+      end
     end
 
     describe '#revoke' do
