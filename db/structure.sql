@@ -19870,6 +19870,11 @@ CREATE TABLE ml_model_versions (
     package_id bigint,
     version text NOT NULL,
     description text,
+    semver_major integer,
+    semver_minor integer,
+    semver_patch integer,
+    semver_prerelease text,
+    CONSTRAINT check_246f5048b5 CHECK ((char_length(semver_prerelease) <= 255)),
     CONSTRAINT check_28b2d892c8 CHECK ((char_length(version) <= 255)),
     CONSTRAINT check_caff7d000b CHECK ((char_length(description) <= 500))
 );
