@@ -11,12 +11,12 @@ import {
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { s__, __ } from '~/locale';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
+import ShowMore from '~/vue_shared/components/show_more.vue';
 import { ACCESS_LEVELS, DEPLOYER_RULE_KEY, APPROVER_RULE_KEY, INHERITED_GROUPS } from './constants';
 import EditProtectedEnvironmentRulesCard from './edit_protected_environment_rules_card.vue';
 import AddRuleModal from './add_rule_modal.vue';
 import AddApprovers from './add_approvers.vue';
 import ProtectedEnvironments from './protected_environments.vue';
-import ShowMore from './show_more.vue';
 
 export default {
   components: {

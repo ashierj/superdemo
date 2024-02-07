@@ -17325,6 +17325,9 @@ msgstr ""
 msgid "Deployments|You don't have any deployments right now."
 msgstr ""
 
+msgid "Deployment|Branch"
+msgstr ""
+
 msgid "Deployment|Cancelled"
 msgstr ""
 
@@ -17361,10 +17364,19 @@ msgstr ""
 msgid "Deployment|Flux sync status is unknown"
 msgstr ""
 
+msgid "Deployment|Job"
+msgstr ""
+
 msgid "Deployment|Latest Deployed"
 msgstr ""
 
 msgid "Deployment|Needs Approval"
+msgstr ""
+
+msgid "Deployment|Open URL"
+msgstr ""
+
+msgid "Deployment|Related Tags"
 msgstr ""
 
 msgid "Deployment|Running"
@@ -17380,6 +17392,9 @@ msgid "Deployment|Success"
 msgstr ""
 
 msgid "Deployment|Sync status is unknown. %{linkStart}How do I configure Flux for my deployment?%{linkEnd}"
+msgstr ""
+
+msgid "Deployment|Tag"
 msgstr ""
 
 msgid "Deployment|There was an issue fetching the deployment, please try again later."

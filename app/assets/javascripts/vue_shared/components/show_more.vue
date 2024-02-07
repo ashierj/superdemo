@@ -38,8 +38,8 @@ export default {
 </script>
 <template>
   <div>
-    <template v-for="item in listedItems">
-      <slot :item="item"></slot>
+    <template v-for="(item, i) in listedItems">
+      <slot :item="item" :is-last="i + 1 === listedItems.length"></slot>
     </template>
     <gl-button v-if="biggerThanLimit" variant="link" @click="toggle">{{
       showMore ? $options.i18n.showLess : $options.i18n.showMore

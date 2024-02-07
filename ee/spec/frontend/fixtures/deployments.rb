@@ -11,7 +11,7 @@ RSpec.describe 'Deployments (JavaScript fixtures)' do
   let_it_be(:project) { create(:project, :repository, group: group, path: 'releases-project') }
 
   let_it_be(:environment) do
-    create(:environment, project: project)
+    create(:environment, project: project, external_url: 'http://example.com')
   end
 
   let_it_be(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }

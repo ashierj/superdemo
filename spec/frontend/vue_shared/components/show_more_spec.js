@@ -1,15 +1,15 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { __ } from '~/locale';
-import ShowMore from 'ee/protected_environments/show_more.vue';
+import ShowMore from '~/vue_shared/components/show_more.vue';
 
-describe('ee/protected_environments/show_more.vue', () => {
+describe('~/vue_shared/components/show_more.vue', () => {
   let wrapper;
 
   const createWrapper = (propsData) =>
     mountExtended(ShowMore, {
       propsData,
       scopedSlots: {
-        default: '<div :data-testid="props.item">{{props.item}}</div>',
+        default: '<div :data-testid="props.item" :data-is-last="props.isLast">{{props.item}}</div>',
       },
     });
 
@@ -34,6 +34,17 @@ describe('ee/protected_environments/show_more.vue', () => {
 
     it('hides the "Show more" button', () => {
       expect(findButton().exists()).toBe(false);
+    });
+
+    it('passes the isLast prop', () => {
+      items.forEach((item, i) => {
+        const isLast = wrapper.findByTestId(item).attributes('data-is-last');
+        if (i + 1 === items.length) {
+          expect(isLast).toBe('true');
+        } else {
+          expect(isLast).toBeUndefined();
+        }
+      });
     });
   });
 
