@@ -33,7 +33,7 @@ RSpec.describe 'trial_registrations/new.html.haml', feature_category: :acquisiti
     end
 
     it { is_expected.not_to have_content(_('Start a Free Ultimate Trial')) }
-    it { is_expected.to have_content(s_('InProductMarketing|Start your 30-day free trial of')) }
+    it { is_expected.to have_content(s_('InProductMarketing|Free 30-day trial')) }
     it { is_expected.to have_content(s_('InProductMarketing|GitLab Ultimate')) }
     it { is_expected.to have_content(s_('InProductMarketing|No credit card required.')) }
 
