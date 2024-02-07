@@ -31,7 +31,7 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     it { is_expected.to validate_uniqueness_of(:uuid).case_insensitive }
     it { is_expected.to validate_length_of(:package_manager).is_at_most(255) }
     it { is_expected.to validate_length_of(:component_name).is_at_most(255) }
-    it { is_expected.to validate_length_of(:input_file_path).is_at_most(255) }
+    it { is_expected.to validate_length_of(:input_file_path).is_at_most(1024) }
 
     describe '#licenses' do
       subject { build(:sbom_occurrence, licenses: licenses) }

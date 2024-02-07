@@ -29,7 +29,7 @@ module Sbom
     validates :uuid, presence: true, uniqueness: { case_sensitive: false }
     validates :package_manager, length: { maximum: 255 }
     validates :component_name, length: { maximum: 255 }
-    validates :input_file_path, length: { maximum: 255 }
+    validates :input_file_path, length: { maximum: 1024 }
     validates :licenses, json_schema: { filename: 'sbom_occurrences-licenses' }
 
     delegate :name, to: :component
