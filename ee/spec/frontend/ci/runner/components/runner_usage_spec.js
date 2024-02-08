@@ -31,7 +31,7 @@ const mockRunnerUsage = [
       adminUrl: '/admin/runners/1',
       __typename: 'CiRunner',
     },
-    ciMinutesUsed: 1001,
+    ciMinutesUsed: 2002,
     __typename: 'CiRunnerUsage',
   },
   {
@@ -42,7 +42,12 @@ const mockRunnerUsage = [
       adminUrl: '/admin/runners/2',
       __typename: 'CiRunner',
     },
-    ciMinutesUsed: 11,
+    ciMinutesUsed: 2001,
+    __typename: 'CiRunnerUsage',
+  },
+  {
+    runner: null,
+    ciMinutesUsed: 2000,
     __typename: 'CiRunnerUsage',
   },
 ];
@@ -67,7 +72,12 @@ const mockRunnerUsageByProject = [
       webUrl: '/group1/project2',
       __typename: 'Project',
     },
-    ciMinutesUsed: 12,
+    ciMinutesUsed: 1001,
+    __typename: 'CiRunnerUsageByProject',
+  },
+  {
+    project: null,
+    ciMinutesUsed: 1000,
     __typename: 'CiRunnerUsageByProject',
   },
 ];
@@ -127,10 +137,11 @@ describe('RunnerUsage', () => {
 
   it('loads top projects', async () => {
     createWrapper({ mountFn: mountExtended });
-
     await waitForPromises();
 
-    const [header, row1, row2] = findTopProjects().wrappers;
+    expect(findTopRunners().length).toBe(4);
+
+    const [header, row1, row2, row3] = findTopProjects().wrappers;
 
     expect(header.text()).toContain('Top projects consuming runners');
     expect(header.text()).toContain('Usage (min)');
@@ -147,26 +158,31 @@ describe('RunnerUsage', () => {
       src: '/project2.png',
     });
     expect(row2.text()).toContain('Project2');
-    expect(row2.text()).toContain('12');
+    expect(row2.text()).toContain('1,001');
+
+    expect(row3.text()).toContain('Other projects');
+    expect(row3.text()).toContain('1,000');
   });
 
   it('loads top runners', async () => {
     createWrapper({ mountFn: mountExtended });
-
     await waitForPromises();
 
-    const [header, row1, row2] = findTopRunners().wrappers.map((w) => w.text());
+    expect(findTopRunners().length).toBe(4);
+
+    const [header, row1, row2, row3] = findTopRunners().wrappers.map((w) => w.text());
 
     expect(header).toContain('Most used instance runners');
     expect(header).toContain('Usage (min)');
 
-    expect(row1).toContain('#1 (sha1)');
-    expect(row1).toContain('Runner 1');
-    expect(row1).toContain('1,001');
+    expect(row1).toContain('#1 (sha1) - Runner 1');
+    expect(row1).toContain('2,002');
 
-    expect(row2).toContain('#2 (sha2)');
-    expect(row2).toContain('Runner 2');
-    expect(row2).toContain('11');
+    expect(row2).toContain('#2 (sha2) - Runner 2');
+    expect(row2).toContain('2,001');
+
+    expect(row3).toContain('Other runners');
+    expect(row3).toContain('2,000');
   });
 
   it('calls mutation on button click', async () => {

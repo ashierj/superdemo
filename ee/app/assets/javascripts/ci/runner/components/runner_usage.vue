@@ -155,14 +155,17 @@ export default {
         data-testid="top-projects-table"
       >
         <template #cell(project)="{ value }">
-          <gl-avatar
-            :label="value.name"
-            :src="value.avatarUrl"
-            shape="rect"
-            :size="16"
-            :entity-name="value.name"
-          />
-          <gl-link :href="value.webUrl" class="gl-text-body!">{{ value.name }}</gl-link>
+          <template v-if="value">
+            <gl-avatar
+              :label="value.name"
+              :src="value.avatarUrl"
+              shape="rect"
+              :size="16"
+              :entity-name="value.name"
+            />
+            <gl-link :href="value.webUrl" class="gl-text-body!"> {{ value.name }} </gl-link>
+          </template>
+          <template v-else> {{ s__('Runners|Other projects') }} </template>
         </template>
 
         <template #cell(ciMinutesUsed)="{ value }">{{ formatNumber(value) }}</template>
@@ -175,7 +178,10 @@ export default {
         data-testid="top-runners-table"
       >
         <template #cell(runner)="{ value }">
-          <gl-link :href="value.adminUrl" class="gl-text-body!">{{ runnerName(value) }}</gl-link>
+          <gl-link v-if="value" :href="value.adminUrl" class="gl-text-body!">
+            {{ runnerName(value) }}
+          </gl-link>
+          <template v-else> {{ s__('Runners|Other runners') }} </template>
         </template>
         <template #cell(ciMinutesUsed)="{ value }">{{ formatNumber(value) }}</template>
       </gl-table-lite>
