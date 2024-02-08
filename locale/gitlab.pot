@@ -34838,9 +34838,6 @@ msgstr ""
 msgid "Package type must be RPM"
 msgstr ""
 
-msgid "Package type must be RubyGems"
-msgstr ""
-
 msgid "Package type must be Terraform Module"
 msgstr ""
 
