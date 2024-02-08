@@ -7,10 +7,12 @@ RSpec.describe MergeRequests::Mergeability::CheckExternalStatusChecksPassedServi
   using RSpec::Parameterized::TableSyntax
 
   subject(:check_external_status_checks_passed_service) do
-    described_class.new(merge_request: merge_request, params: {})
+    described_class.new(merge_request: merge_request, params: params)
   end
 
   let(:merge_request) { build(:merge_request) }
+  let(:params) { { skip_external_status_check: skip_check } }
+  let(:skip_check) { false }
 
   it_behaves_like 'mergeability check service', :status_checks_must_pass,
     'Checks whether the external status checks pass'
@@ -67,8 +69,20 @@ RSpec.describe MergeRequests::Mergeability::CheckExternalStatusChecksPassedServi
   end
 
   describe "#skip?" do
-    it "returns false" do
-      expect(check_external_status_checks_passed_service.skip?).to eq false
+    context 'when skip check param is true' do
+      let(:skip_check) { true }
+
+      it 'returns true' do
+        expect(check_external_status_checks_passed_service.skip?).to eq true
+      end
+    end
+
+    context 'when skip check param is false' do
+      let(:skip_check) { false }
+
+      it 'returns false' do
+        expect(check_external_status_checks_passed_service.skip?).to eq false
+      end
     end
   end
 

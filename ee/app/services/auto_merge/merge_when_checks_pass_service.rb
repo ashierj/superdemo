@@ -48,6 +48,7 @@ module AutoMerge
         !merge_request.approved? ||
         (Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project) &&
          (merge_request.draft? ||
+          merge_request.project.any_external_status_checks_not_passed?(merge_request) ||
           merge_request.merge_blocked_by_other_mrs? ||
           !merge_request.mergeable_discussions_state?)
         )

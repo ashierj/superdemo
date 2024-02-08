@@ -1592,17 +1592,18 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       stub_feature_flags(additional_merge_when_checks_ready: feature_flag)
     end
 
-    where(:auto_merge_strategy, :skip_approved_check, :skip_draft_check, :skip_blocked_check, :skip_discussions_check, :feature_flag) do
-      ''                                                      | false | false | false | false | true
-      AutoMergeService::STRATEGY_MERGE_WHEN_PIPELINE_SUCCEEDS | false | false | false | false | true
-      AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS       | true | true | true | true | true
-      AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS       | true | false | false | false | false
+    where(:auto_merge_strategy, :skip_approved_check, :skip_draft_check, :skip_blocked_check, :skip_discussions_check, :skip_external_status_check, :feature_flag) do
+      ''                                                      | false | false | false | false | false | true
+      AutoMergeService::STRATEGY_MERGE_WHEN_PIPELINE_SUCCEEDS | false | false | false | false | false | true
+      AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS       | true | true | true | true | true | true
+      AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS       | true | false | false | false | false | false
     end
 
     with_them do
       it {
         is_expected.to include(skip_approved_check: skip_approved_check, skip_draft_check: skip_draft_check,
-          skip_blocked_check: skip_blocked_check, skip_discussions_check: skip_discussions_check)
+          skip_blocked_check: skip_blocked_check, skip_discussions_check: skip_discussions_check,
+          skip_external_status_check: skip_external_status_check)
       }
     end
   end
@@ -1664,6 +1665,44 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
         it 'is mergeable' do
           is_expected.to be_truthy
+        end
+      end
+    end
+
+    context 'when using external status checks' do
+      let(:any_external_status_checks_not_passed?) { false }
+
+      before do
+        allow(merge_request).to receive(:only_allow_merge_if_all_status_checks_passed_enabled?).and_return(true)
+        allow(merge_request.project).to receive(:only_allow_merge_if_all_status_checks_passed).and_return(true)
+        allow(merge_request.project).to receive(:any_external_status_checks_not_passed?)
+                            .and_return(any_external_status_checks_not_passed?)
+        stub_licensed_features(external_status_checks: true)
+      end
+
+      context 'when external checks pass' do
+        let!(:status_code) { create(:status_check_response, status: :passed, merge_request: merge_request) }
+
+        it 'is mergeable' do
+          is_expected.to be_truthy
+        end
+      end
+
+      context 'when external status checks are not passed' do
+        let(:any_external_status_checks_not_passed?) { true }
+
+        let!(:status_code) { create(:status_check_response, status: :failed, merge_request: merge_request) }
+
+        it 'is not mergeable' do
+          is_expected.to be_falsey
+        end
+
+        context 'when skip external status checks is true' do
+          let(:params) { { skip_external_status_check: true } }
+
+          it 'is mergeable' do
+            is_expected.to be_truthy
+          end
         end
       end
     end
