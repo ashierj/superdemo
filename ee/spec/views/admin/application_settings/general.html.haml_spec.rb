@@ -8,11 +8,16 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
   let_it_be(:user) { create(:admin) }
   let_it_be(:app_settings) { build(:application_setting) }
 
+  let(:code_suggestions_start_date) { CodeSuggestions::SelfManaged::SERVICE_START_DATE }
+  let(:duo_chat_start_date) { code_suggestions_start_date + 1.month }
+  let(:before_code_suggestions_start_date) { code_suggestions_start_date - 1.day }
+
   subject { rendered }
 
   before do
     assign(:application_setting, app_settings)
     allow(view).to receive(:current_user).and_return(user)
+    allow(CloudConnector::Access).to receive(:service_start_date_for).with('duo_chat').and_return(duo_chat_start_date)
   end
 
   describe 'maintenance mode' do
@@ -196,9 +201,9 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
             end
           end
 
-          context 'when after the service start date' do
+          context 'when at the service start date' do
             around do |example|
-              travel_to(CodeSuggestions::SelfManaged::SERVICE_START_DATE + 1.day) do
+              travel_to(CodeSuggestions::SelfManaged::SERVICE_START_DATE) do
                 example.run
               end
             end
@@ -250,9 +255,45 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
             stub_licensed_features(ai_chat: true)
           end
 
-          it 'renders AI Beta features toggle' do
-            render
-            expect(rendered).to have_field('application_setting_instance_level_ai_beta_features_enabled')
+          context 'when before the service start date' do
+            around do |example|
+              travel_to(duo_chat_start_date - 1.day) do
+                example.run
+              end
+            end
+
+            it 'renders AI Beta features toggle' do
+              render
+              expect(rendered).to have_field('application_setting_instance_level_ai_beta_features_enabled')
+            end
+          end
+
+          context 'when at the service start date' do
+            around do |example|
+              travel_to(duo_chat_start_date) do
+                example.run
+              end
+            end
+
+            it 'does not render AI Beta features toggle' do
+              render
+              expect(rendered).not_to have_field('application_setting_instance_level_ai_beta_features_enabled')
+            end
+          end
+
+          context 'when service start date is nil' do
+            let(:duo_chat_start_date) { nil }
+
+            around do |example|
+              travel_to(before_code_suggestions_start_date) do
+                example.run
+              end
+            end
+
+            it 'renders AI Beta features toggle' do
+              render
+              expect(rendered).to have_field('application_setting_instance_level_ai_beta_features_enabled')
+            end
           end
         end
 
@@ -275,15 +316,19 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
   # (internal) https://gitlab.com/gitlab-org/gitlab/-/issues/425047#note_1673643291
   # TODO: clean-up after the Code Suggestions service start date (16.9+)
   describe 'entire instance-level ai-powered menu section visibility', feature_category: :duo_chat do
-    where(:before_start_date, :ai_chat_available, :code_suggestions_available, :expect_section_is_visible) do
-      true  | false | false | false
-      true  | false | true  | true
-      true  | true  | false | true
-      true  | true  | true  | true
-      false | false | false | false
-      false | false | true  | false
-      false | true  | false | true
-      false | true  | true  | true
+    where(:current_date, :ai_chat_available, :code_suggestions_available, :expect_section_is_visible) do
+      ref(:before_code_suggestions_start_date) | false | false | false
+      ref(:before_code_suggestions_start_date) | false | true  | true
+      ref(:before_code_suggestions_start_date) | true  | false | true
+      ref(:before_code_suggestions_start_date) | true  | true  | true
+      ref(:code_suggestions_start_date)        | false | false | false
+      ref(:code_suggestions_start_date)        | false | true  | false
+      ref(:code_suggestions_start_date)        | true  | false | true
+      ref(:code_suggestions_start_date)        | true  | true  | true
+      ref(:duo_chat_start_date)               | false | false | false
+      ref(:duo_chat_start_date)               | false | true  | false
+      ref(:duo_chat_start_date)               | true  | false | false
+      ref(:duo_chat_start_date)               | true  | true  | false
     end
 
     with_them do
@@ -291,10 +336,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
         allow(::Gitlab).to receive(:org_or_com?).and_return(false)
         stub_licensed_features(ai_chat: ai_chat_available, code_suggestions: code_suggestions_available)
 
-        service_start_date = CodeSuggestions::SelfManaged::SERVICE_START_DATE
-        test_time = before_start_date ? service_start_date - 1.day : service_start_date + 1.day
-
-        travel_to(test_time) do
+        travel_to(current_date) do
           render
 
           if expect_section_is_visible
