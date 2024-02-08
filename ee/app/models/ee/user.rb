@@ -20,6 +20,9 @@ module EE
     GROUP_WITH_AI_ENABLED_CACHE_PERIOD = 1.hour
     GROUP_WITH_AI_ENABLED_CACHE_KEY = 'group_with_ai_enabled'
 
+    GROUP_WITH_AI_CHAT_ENABLED_CACHE_PERIOD = 1.hour
+    GROUP_WITH_AI_CHAT_ENABLED_CACHE_KEY = 'group_with_ai_chat_enabled'
+
     CODE_SUGGESTIONS_ADD_ON_CACHE_KEY = 'user-%{user_id}-code-suggestions-add-on-cache'
     CODE_SUGGESTIONS_ENABLED_NAMESPACES_IDS_CACHE_KEY = 'user-%{user_id}-code-suggestions-enabled-namespaces-ids-cache'
 
@@ -244,8 +247,10 @@ module EE
       end
 
       def clear_group_with_ai_available_cache(ids)
-        cache_keys = Array.wrap(ids).map { |id| ["users", id, GROUP_WITH_AI_ENABLED_CACHE_KEY] }
+        cache_keys_ai_features = Array.wrap(ids).map { |id| ["users", id, GROUP_WITH_AI_ENABLED_CACHE_KEY] }
+        cache_keys_ai_chat = Array.wrap(ids).map { |id| ["users", id, GROUP_WITH_AI_CHAT_ENABLED_CACHE_KEY] }
 
+        cache_keys = cache_keys_ai_features + cache_keys_ai_chat
         ::Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
           Rails.cache.delete_multi(cache_keys)
         end
@@ -645,6 +650,12 @@ module EE
     def any_group_with_ai_available?
       Rails.cache.fetch(['users', id, GROUP_WITH_AI_ENABLED_CACHE_KEY], expires_in: GROUP_WITH_AI_ENABLED_CACHE_PERIOD) do
         member_namespaces.namespace_settings_with_ai_features_enabled.with_ai_supported_plan.any?
+      end
+    end
+
+    def any_group_with_ai_chat_available?
+      Rails.cache.fetch(['users', id, GROUP_WITH_AI_CHAT_ENABLED_CACHE_KEY], expires_in: GROUP_WITH_AI_CHAT_ENABLED_CACHE_PERIOD) do
+        member_namespaces.namespace_settings_with_ai_features_enabled.with_ai_supported_plan(:ai_chat).any?
       end
     end
 

@@ -39,7 +39,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
         let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
 
         context 'when user present and container is not present' do
-          where(:ai_duo_chat_switch_enabled, :ai_features_available_to_user, :result) do
+          where(:ai_duo_chat_switch_enabled, :ai_chat_available_to_user, :result) do
             [
               [true, true, true],
               [true, false, false],
@@ -51,7 +51,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
           with_them do
             before do
               stub_feature_flags(ai_duo_chat_switch: ai_duo_chat_switch_enabled)
-              allow(user).to receive(:any_group_with_ai_available?).and_return(ai_features_available_to_user)
+              allow(user).to receive(:any_group_with_ai_chat_available?).and_return(ai_chat_available_to_user)
             end
 
             it 'returns correct result' do
@@ -62,7 +62,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
         context 'when user and container are both present' do
           context 'when container is a group with AI enabled' do
-            include_context 'with ai features enabled for group'
+            include_context 'with ai chat enabled for group on SaaS'
 
             context 'when user is a member of the group' do
               before_all do
@@ -91,7 +91,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
                 let_it_be(:group) { create(:group) }
 
                 it 'returns false' do
-                  allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+                  allow(user).to receive(:any_group_with_ai_chat_available?).and_return(true)
                   # add user as a member of the non-licensed group to ensure the
                   # test isn't failing at the membership check
                   group.add_guest(user)
@@ -106,7 +106,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
             context 'when user is not a member of the group' do
               context 'when the user has AI enabled via another group' do
                 it 'returns false' do
-                  allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+                  allow(user).to receive(:any_group_with_ai_chat_available?).and_return(true)
 
                   expect(
                     described_class.enabled_for?(user: user, container: group)
@@ -119,14 +119,14 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
           context 'when container is not a group with AI enabled' do
             context 'when user has AI enabled' do
               before do
-                allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+                allow(user).to receive(:any_group_with_ai_chat_available?).and_return(true)
               end
 
               context 'when container is a group' do
-                include_context 'with experiment features disabled for group'
+                include_context 'with ai features disabled and licensed chat for group on SaaS'
 
                 it 'returns false' do
-                  allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+                  allow(user).to receive(:any_group_with_ai_chat_available?).and_return(true)
 
                   expect(
                     described_class.enabled_for?(user: user, container: group)
@@ -148,7 +148,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
         end
 
         context 'when user not present, container is present' do
-          include_context 'with ai features enabled for group'
+          include_context 'with ai chat enabled for group on SaaS'
 
           it 'returns false' do
             expect(
@@ -246,114 +246,22 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
         allow(logger).to receive(:info_or_debug)
       end
 
-      context 'with the ai_tanuki_bot license not available' do
+      context 'when on Gitlab.com' do
         before do
-          allow(License).to receive(:feature_available?).with(:ai_tanuki_bot).and_return(false)
+          allow(::Gitlab).to receive(:org_or_com?).and_return(true)
         end
 
-        it 'returns an empty response message' do
-          expect(execute.response_body).to eq(empty_response_message)
-        end
-      end
+        context 'when no user is provided' do
+          let(:user) { nil }
 
-      context 'with the tanuki_bot license available' do
-        context 'when on Gitlab.com' do
+          it 'returns an empty response message' do
+            expect(execute.response_body).to eq(empty_response_message)
+          end
+        end
+
+        context 'when user has AI features disabled' do
           before do
-            allow(::Gitlab).to receive(:org_or_com?).and_return(true)
-          end
-
-          context 'when no user is provided' do
-            let(:user) { nil }
-
-            it 'returns an empty response message' do
-              expect(execute.response_body).to eq(empty_response_message)
-            end
-          end
-
-          context 'when user has AI features disabled' do
-            before do
-              allow(described_class).to receive(:enabled_for?).with(user: user).and_return(false)
-            end
-
-            it 'returns an empty response message' do
-              expect(execute.response_body).to eq(empty_response_message)
-            end
-          end
-
-          context 'when user has AI features enabled' do
-            before do
-              allow(::Gitlab::Llm::VertexAi::Client).to receive(:new).and_return(vertex_client)
-              allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(anthropic_client)
-              allow(described_class).to receive(:enabled_for?).and_return(true)
-            end
-
-            context 'when embeddings table is empty (no embeddings are stored in the table)' do
-              it 'returns an empty response message' do
-                vertex_model.connection.execute("truncate #{vertex_model.table_name}")
-
-                expect(execute.response_body).to eq(empty_response_message)
-              end
-            end
-
-            it 'executes calls through to anthropic' do
-              embeddings
-
-              expect(anthropic_client).to receive(:stream).once.and_return(completion_response)
-              expect(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
-
-              execute
-            end
-
-            it 'calls the duo_chat_documentation pipeline for the emedded content' do
-              allow(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
-              allow(Banzai).to receive(:render).and_return('absolute_links_content')
-
-              expect(anthropic_client).to receive(:stream)
-                .with(
-                  prompt: a_string_including('absolute_links_content'),
-                  options: { model: "claude-instant-1.1" }
-                ).once.and_return(completion_response)
-
-              execute
-            end
-
-            it 'yields the streamed response to the given block' do
-              embeddings
-
-              allow(anthropic_client).to receive(:stream).once
-                                           .and_yield({ "completion" => answer })
-                                           .and_return(completion_response)
-
-              expect(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
-
-              expect { |b| instance.execute(&b) }.to yield_with_args(answer)
-            end
-
-            it 'raises an error when request failed' do
-              embeddings
-
-              expect(logger).to receive(:info).with(message: "Streaming error", error: { "message" => "some error" })
-              expect(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
-              allow(anthropic_client).to receive(:stream).once.and_yield({ "error" => { "message" => "some error" } })
-
-              execute
-            end
-
-            context 'when embedding database does not exist' do
-              before do
-                allow(Embedding::Vertex::GitlabDocumentation).to receive(:table_exists?).and_return(false)
-              end
-
-              it 'returns an unsupported_response response message' do
-                expect(execute.response_body).to eq(unsupported_response_message)
-              end
-            end
-          end
-        end
-
-        context 'when ai_global_switch FF is disabled' do
-          before do
-            stub_feature_flags(ai_global_switch: false)
+            allow(described_class).to receive(:enabled_for?).with(user: user).and_return(false)
           end
 
           it 'returns an empty response message' do
@@ -361,30 +269,110 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
           end
         end
 
-        context 'when the feature flags are enabled' do
+        context 'when user has AI features enabled' do
           before do
             allow(::Gitlab::Llm::VertexAi::Client).to receive(:new).and_return(vertex_client)
             allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(anthropic_client)
-            allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+            allow(described_class).to receive(:enabled_for?).and_return(true)
           end
 
-          context 'when the question is not provided' do
-            let(:question) { nil }
-
+          context 'when embeddings table is empty (no embeddings are stored in the table)' do
             it 'returns an empty response message' do
+              vertex_model.connection.execute("truncate #{vertex_model.table_name}")
+
               expect(execute.response_body).to eq(empty_response_message)
             end
           end
 
-          context 'when no neighbors are found' do
+          it 'executes calls through to anthropic' do
+            embeddings
+
+            expect(anthropic_client).to receive(:stream).once.and_return(completion_response)
+            expect(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
+
+            execute
+          end
+
+          it 'calls the duo_chat_documentation pipeline for the emedded content' do
+            allow(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
+            allow(Banzai).to receive(:render).and_return('absolute_links_content')
+
+            expect(anthropic_client).to receive(:stream)
+              .with(
+                prompt: a_string_including('absolute_links_content'),
+                options: { model: "claude-instant-1.1" }
+              ).once.and_return(completion_response)
+
+            execute
+          end
+
+          it 'yields the streamed response to the given block' do
+            embeddings
+
+            allow(anthropic_client).to receive(:stream).once
+                                         .and_yield({ "completion" => answer })
+                                         .and_return(completion_response)
+
+            expect(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
+
+            expect { |b| instance.execute(&b) }.to yield_with_args(answer)
+          end
+
+          it 'raises an error when request failed' do
+            embeddings
+
+            expect(logger).to receive(:info).with(message: "Streaming error", error: { "message" => "some error" })
+            expect(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
+            allow(anthropic_client).to receive(:stream).once.and_yield({ "error" => { "message" => "some error" } })
+
+            execute
+          end
+
+          context 'when embedding database does not exist' do
             before do
-              allow(vertex_model).to receive(:neighbor_for).and_return(vertex_model.none)
-              allow(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
+              allow(Embedding::Vertex::GitlabDocumentation).to receive(:table_exists?).and_return(false)
             end
 
-            it 'returns an i do not know' do
-              expect(execute.response_body).to eq(empty_response_message)
+            it 'returns an unsupported_response response message' do
+              expect(execute.response_body).to eq(unsupported_response_message)
             end
+          end
+        end
+      end
+
+      context 'when ai_global_switch FF is disabled' do
+        before do
+          stub_feature_flags(ai_global_switch: false)
+        end
+
+        it 'returns an empty response message' do
+          expect(execute.response_body).to eq(empty_response_message)
+        end
+      end
+
+      context 'when the feature flags are enabled' do
+        before do
+          allow(::Gitlab::Llm::VertexAi::Client).to receive(:new).and_return(vertex_client)
+          allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(anthropic_client)
+          allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+        end
+
+        context 'when the question is not provided' do
+          let(:question) { nil }
+
+          it 'returns an empty response message' do
+            expect(execute.response_body).to eq(empty_response_message)
+          end
+        end
+
+        context 'when no neighbors are found' do
+          before do
+            allow(vertex_model).to receive(:neighbor_for).and_return(vertex_model.none)
+            allow(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
+          end
+
+          it 'returns an i do not know' do
+            expect(execute.response_body).to eq(empty_response_message)
           end
         end
       end

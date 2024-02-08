@@ -3395,10 +3395,10 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     subject { described_class.new(current_user, project) }
 
     context 'when on SaaS instance', :saas do
-      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :premium_plan) }
 
       context 'when container is a group with AI enabled' do
-        include_context 'with ai features enabled for group'
+        include_context 'with ai chat enabled for group on SaaS'
 
         context 'when user is a member of the group' do
           before do
@@ -3407,7 +3407,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
           it { is_expected.to be_allowed(:access_duo_chat) }
 
-          context 'when the group does not have an Ultimate SaaS license' do
+          context 'when the group does not have an Premium SaaS license' do
             let_it_be(:group) { create(:group) }
 
             it { is_expected.to be_disallowed(:access_duo_chat) }
@@ -3417,7 +3417,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         context 'when user is not a member of the parent group' do
           context 'when the user has AI enabled via another group' do
             it 'is disallowed' do
-              allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
+              allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(true)
 
               is_expected.to be_disallowed(:access_duo_chat)
             end
@@ -3431,7 +3431,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
           context 'when the user has AI enabled through parent group' do
             it 'is allowed' do
-              allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
+              allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(true)
 
               is_expected.to be_allowed(:access_duo_chat)
             end
@@ -3442,14 +3442,14 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       context 'when group has not AI enabled' do
         context 'when user has AI enabled' do
           before do
-            allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
+            allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(true)
           end
 
           context 'when container is a group' do
             include_context 'with experiment features disabled for group'
 
             it 'returns false' do
-              allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
+              allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(true)
 
               is_expected.to be_disallowed(:access_duo_chat)
             end

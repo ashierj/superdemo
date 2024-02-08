@@ -63,7 +63,8 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
       stub_licensed_features(
         ai_features: true,
         epics: true,
-        experimental_features: true
+        experimental_features: true,
+        ai_chat: true
       )
       group.namespace_settings.update!(experiment_features_enabled: true)
     end

@@ -94,7 +94,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor, feature_cate
       context 'when user has permission to read resource' do
         before do
           stub_application_setting(check_namespace_plan: true)
-          stub_licensed_features(summarize_notes: true, ai_features: true, epics: true, experimental_features: true)
+          stub_licensed_features(epics: true, ai_chat: true)
           # rubocop: disable RSpec/BeforeAllRoleAssignment
           group.add_guest(user)
           group.update!(experiment_features_enabled: true)

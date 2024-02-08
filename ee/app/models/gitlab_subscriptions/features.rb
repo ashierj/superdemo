@@ -73,6 +73,7 @@ module GitlabSubscriptions
     ].freeze
 
     PREMIUM_FEATURES = %i[
+      ai_chat
       adjourned_deletion_for_projects_and_groups
       admin_audit_log
       auditor_user
@@ -169,11 +170,9 @@ module GitlabSubscriptions
     ].freeze
 
     ULTIMATE_FEATURES = %i[
-      ai_chat
       ai_config_chat
       ai_features
       ai_git_command
-      ai_tanuki_bot
       ai_analyze_ci_job_failure
       ai_agents
       api_discovery

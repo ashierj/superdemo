@@ -15,7 +15,7 @@ RSpec.describe Gitlab::Llm::Chain::GitlabContext, :saas, feature_category: :duo_
     let(:content_limit) { 500 }
 
     context 'with a serializable resource' do
-      let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be(:group) { create(:group_with_plan, plan: :premium_plan) }
       let_it_be(:project) { create(:project, group: group) }
       let(:resource) { create(:issue, project: project) }
       let(:resource_xml) do
@@ -29,7 +29,7 @@ RSpec.describe Gitlab::Llm::Chain::GitlabContext, :saas, feature_category: :duo_
 
       before do
         stub_ee_application_setting(should_check_namespace_plan: true)
-        stub_licensed_features(experimental_features: true, ai_features: true)
+        stub_licensed_features(ai_chat: true)
         group.namespace_settings.update!(experiment_features_enabled: true)
       end
 

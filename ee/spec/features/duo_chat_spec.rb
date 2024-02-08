@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Duo Chat', :js, :saas, :clean_gitlab_redis_cache, feature_category: :duo_chat do
-  let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+  let_it_be_with_reload(:group) { create(:group_with_plan, plan: :premium_plan) }
   let_it_be(:user) { create(:user) }
 
   before_all do
@@ -11,7 +11,7 @@ RSpec.describe 'Duo Chat', :js, :saas, :clean_gitlab_redis_cache, feature_catego
   end
 
   before do
-    stub_licensed_features(ai_tanuki_bot: true)
+    stub_licensed_features(ai_chat: true)
     stub_application_setting(anthropic_api_key: 'somekey')
   end
 
