@@ -17,10 +17,7 @@ export default {
     artifacts: {
       query: getArtifactsQuery,
       variables() {
-        return {
-          fullPath: this.fullPath,
-          first: PAGE_SIZE,
-        };
+        return this.queryVariables;
       },
       update(data) {
         return data.project?.googleCloudPlatformArtifactRegistryRepositoryArtifacts ?? {};
@@ -34,6 +31,10 @@ export default {
   data() {
     return {
       artifacts: {},
+      sort: {
+        sortBy: 'updateTime',
+        sortDesc: true,
+      },
       failedToLoad: false,
     };
   },
@@ -52,11 +53,26 @@ export default {
     isLoading() {
       return this.$apollo.queries.artifacts.loading;
     },
+    queryVariables() {
+      return {
+        first: PAGE_SIZE,
+        fullPath: this.fullPath,
+        sort: this.sortString,
+      };
+    },
+    sortString() {
+      return this.sort.sortDesc ? 'UPDATE_TIME_DESC' : 'UPDATE_TIME_ASC';
+    },
     tableData() {
       const { nodes = [] } = this.artifacts;
       return {
         nodes,
       };
+    },
+  },
+  methods: {
+    onSort(sort) {
+      this.sort = sort;
     },
   },
 };
@@ -65,6 +81,12 @@ export default {
 <template>
   <div data-testid="artifact-registry-list-page">
     <list-header :data="headerData" :is-loading="isLoading" :show-error="failedToLoad" />
-    <list-table v-if="!failedToLoad" :data="tableData" :is-loading="isLoading" />
+    <list-table
+      v-if="!failedToLoad"
+      :data="tableData"
+      :sort="sort"
+      :is-loading="isLoading"
+      @sort-changed="onSort"
+    />
   </div>
 </template>

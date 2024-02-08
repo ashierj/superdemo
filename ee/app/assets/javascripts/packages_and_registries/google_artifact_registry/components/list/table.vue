@@ -27,6 +27,10 @@ export default {
       required: false,
       default: false,
     },
+    sort: {
+      type: Object,
+      required: true,
+    },
   },
   computed: {
     images() {
@@ -85,6 +89,7 @@ export default {
     {
       key: 'updateTime',
       label: s__('GoogleArtifactRegistry|Updated'),
+      sortable: true,
     },
   ],
 };
@@ -97,7 +102,13 @@ export default {
     :items="images"
     show-empty
     stacked="md"
+    :sort-by="sort.sortBy"
+    :sort-desc="sort.sortDesc"
+    sort-icon-left
+    no-sort-reset
+    no-local-sorting
     table-class="gl-table-layout-fixed"
+    @sort-changed="$emit('sort-changed', $event)"
   >
     <template #cell(image)="{ item }">
       <div
@@ -125,13 +136,17 @@ export default {
         ><gl-badge
           v-if="getHiddenTagCountWithTooltip(item)"
           v-gl-tooltip
+          data-testid="more-tags-badge"
           :title="getHiddenTagCountWithTooltip(item).tooltipText"
           aria-hidden="true"
           ><span>{{ getHiddenTagCountWithTooltip(item).label }}</span>
         </gl-badge>
-        <span v-if="getHiddenTagCountWithTooltip(item)" class="gl-sr-only">{{
-          getHiddenTagCountWithTooltip(item).tooltipText
-        }}</span>
+        <span
+          v-if="getHiddenTagCountWithTooltip(item)"
+          class="gl-sr-only"
+          data-testid="more-tags-badge-sr-text"
+          >{{ getHiddenTagCountWithTooltip(item).tooltipText }}</span
+        >
       </div>
     </template>
     <template #cell(buildTime)="{ item }">
