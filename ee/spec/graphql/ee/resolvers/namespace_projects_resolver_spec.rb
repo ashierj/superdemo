@@ -119,7 +119,7 @@ RSpec.describe Resolvers::NamespaceProjectsResolver do
         end
 
         context 'when sbom_component_id set' do
-          it { expect(resolve_projects(sbom_component_id: occurrence.component_id)).to eq([project_1]) }
+          it { expect(resolve_projects(sbom_component_id: occurrence.component_version_id)).to eq([project_1]) }
         end
       end
     end
