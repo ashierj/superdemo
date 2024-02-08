@@ -80,22 +80,7 @@ module Gitlab
             private
 
             def execute_streamed_request
-              streamed_answer = StreamedZeroShotAnswer.new
-
-              request do |content|
-                next unless stream_response_handler
-
-                chunk = streamed_answer.next_chunk(content)
-
-                if chunk
-                  stream_response_handler.execute(
-                    response: Gitlab::Llm::Chain::PlainResponseModifier.new(content),
-                    options: {
-                      chunk_id: chunk[:id]
-                    }
-                  )
-                end
-              end
+              request(&streamed_request_handler(StreamedZeroShotAnswer.new))
             end
 
             attr_reader :logger, :stream_response_handler

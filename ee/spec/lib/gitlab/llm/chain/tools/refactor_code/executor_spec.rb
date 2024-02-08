@@ -8,6 +8,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Executor, feature_catego
   let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
   let(:input) { 'input' }
   let(:options) { { input: input } }
+  let(:stream_response_handler) { nil }
   let(:command) { nil }
 
   let(:context) do
@@ -22,7 +23,11 @@ RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Executor, feature_catego
     )
   end
 
-  subject(:tool) { described_class.new(context: context, options: options, command: command) }
+  subject(:tool) do
+    described_class.new(
+      context: context, options: options, stream_response_handler: stream_response_handler, command: command
+    )
+  end
 
   describe '#name' do
     it 'returns tool name' do
