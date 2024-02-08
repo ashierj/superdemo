@@ -283,20 +283,24 @@ module EE
       def track_ci_secrets_management_usage
         return unless ci_secrets_management_available? && secrets?
 
-        ::Gitlab::UsageDataCounters::HLLRedisCounter.track_event('i_ci_secrets_management_vault_build_created', values: user_id)
+        providers = secrets.flat_map { |_secret, config| config.keys.map(&:to_sym) & ::Gitlab::Ci::Config::Entry::Secret::SUPPORTED_PROVIDERS }
 
-        ::Gitlab::Tracking.event(
-          self.class.to_s,
-          'create_secrets_vault',
-          namespace: namespace,
-          user: user,
-          label: 'redis_hll_counters.ci_secrets_management.i_ci_secrets_management_vault_build_created_monthly',
-          ultimate_namespace_id: namespace.root_ancestor.id,
-          context: [::Gitlab::Tracking::ServicePingContext.new(
-            data_source: :redis_hll,
-            event: 'i_ci_secrets_management_vault_build_created'
-          ).to_context]
-        )
+        providers.uniq.each do |provider|
+          ::Gitlab::UsageDataCounters::HLLRedisCounter.track_event("i_ci_secrets_management_#{provider}_build_created", values: user_id)
+
+          ::Gitlab::Tracking.event(
+            self.class.to_s,
+            "create_secrets_#{provider}",
+            namespace: namespace,
+            user: user,
+            label: "redis_hll_counters.ci_secrets_management.i_ci_secrets_management_#{provider}_build_created_monthly",
+            ultimate_namespace_id: namespace.root_ancestor.id,
+            context: [::Gitlab::Tracking::ServicePingContext.new(
+              data_source: :redis_hll,
+              event: "i_ci_secrets_management_#{provider}_build_created"
+            ).to_context]
+          )
+        end
       end
 
       def gcp_secret_manager_provider?
