@@ -434,15 +434,6 @@ module EE
           .find_by(ref: target_branch)
     end
 
-    def latest_finished_target_branch_pipeline_for_scan_result_policy
-      @latest_finished_pipeline ||= project
-          .all_pipelines
-          .ci_and_security_orchestration_sources
-          .finished
-          .order(id: :desc)
-          .find_by(ref: target_branch, tag: false)
-    end
-
     def latest_comparison_pipeline_with_sbom_reports
       find_merge_base_pipeline_with_sbom_report || find_base_pipeline_with_sbom_report
     end
