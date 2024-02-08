@@ -1730,36 +1730,6 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
-  describe '#latest_finished_target_branch_pipeline_for_scan_result_policy' do
-    context 'without pipeline' do
-      it 'return nil' do
-        expect(merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy).to be_nil
-      end
-    end
-
-    context 'with existing pipeline' do
-      let!(:target_branch_pipeline) do
-        create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch)
-      end
-
-      let!(:target_branch_tag_pipeline) do
-        create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch, tag: true)
-      end
-
-      let!(:target_branch_running_pipeline) do
-        create(:ee_ci_pipeline, :running, project: project, ref: merge_request.target_branch)
-      end
-
-      let!(:target_branch_skipped_pipeline) do
-        create(:ee_ci_pipeline, :skipped, project: project, ref: merge_request.target_branch)
-      end
-
-      it 'returns the pipeline related to the target branch' do
-        expect(merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy).to eq(target_branch_pipeline)
-      end
-    end
-  end
-
   describe '#validate_reviewer_length' do
     let(:reviewer1) { create(:user) }
     let(:reviewer2) { create(:user) }
