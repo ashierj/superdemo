@@ -28,7 +28,7 @@ class ReportListEntity < Grape::Entity
   end
 
   def project
-    request.project
+    request.try(:project)
   end
 
   def status(dependencies, build)
