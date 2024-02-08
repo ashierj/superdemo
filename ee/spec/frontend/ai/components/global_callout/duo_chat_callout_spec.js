@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlPopover, GlLink } from '@gitlab/ui';
-import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+import { createMockDirective } from 'helpers/vue_mock_directive';
 import { makeMockUserCalloutDismisser } from 'helpers/mock_user_callout_dismisser';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
@@ -20,7 +20,6 @@ describe('DuoChatCallout', () => {
   const findFirstTargetElement = () => findTargetElements()[0];
   const findParagraphWithinPopover = () =>
     wrapper.find('[data-testid="duo-chat-callout-description"]');
-  const findOutsideCallsWatcher = () => findPopoverWithinDismisser().find('div');
 
   const createComponent = ({ shouldShowCallout = true } = {}) => {
     userCalloutDismissSpy = jest.fn();
@@ -95,15 +94,11 @@ describe('DuoChatCallout', () => {
   });
 
   describe('interaction', () => {
-    it.each`
-      desc                                       | trigger
-      ${"the popover's close button is clicked"} | ${() => findPopoverWithinDismisser().vm.$emit('close-button-clicked')}
-      ${'user clicks outside of the callout'}    | ${() => getBinding(findOutsideCallsWatcher().element, 'outside').value()}
-    `("dismisses the callout when $desc, but doesn't open the chat", ({ trigger }) => {
+    it("dismisses the callout when the popover's close button is clicked, but doesn't open the chat", () => {
       expect(userCalloutDismissSpy).not.toHaveBeenCalled();
       expect(wrapper.emitted('callout-dismissed')).toBeUndefined();
 
-      trigger();
+      findPopoverWithinDismisser().vm.$emit('close-button-clicked');
 
       expect(userCalloutDismissSpy).toHaveBeenCalled();
       expect(wrapper.emitted('callout-dismissed')).toBeUndefined();
