@@ -1,25 +1,25 @@
 <script>
-import { GlAlert, GlLink, GlSkeletonLoader, GlSprintf } from '@gitlab/ui';
-import { GlAreaChart } from '@gitlab/ui/dist/charts';
+import { GlAlert, GlLink, GlSprintf } from '@gitlab/ui';
 
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { nMonthsBefore } from '~/lib/utils/datetime/date_calculation_utility';
-import { s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
-import { projectHasProductAnalyticsEnabled } from '../utils';
-import getGroupProductAnalyticsUsage from '../graphql/queries/get_group_product_analytics_usage.query.graphql';
-import { getCurrentMonth, mapMonthlyTotals } from './utils';
+import { projectHasProductAnalyticsEnabled } from '../../utils';
+import getGroupProductAnalyticsUsage from '../../graphql/queries/get_group_product_analytics_usage.query.graphql';
+import { findCurrentMonthEventsUsed, getCurrentMonth, mapMonthlyTotals } from '../utils';
+import ProductAnalyticsGroupUsageOverview from './product_analytics_group_usage_overview.vue';
+import ProductAnalyticsGroupMonthlyUsageChart from './product_analytics_group_monthly_usage_chart.vue';
 
 export default {
   name: 'ProductAnalyticsGroupUsage',
   components: {
     GlAlert,
-    GlAreaChart,
     GlLink,
-    GlSkeletonLoader,
     GlSprintf,
+    ProductAnalyticsGroupMonthlyUsageChart,
+    ProductAnalyticsGroupUsageOverview,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: {
@@ -30,24 +30,23 @@ export default {
   data() {
     return {
       error: null,
-      projectsUsageData: null,
+      monthlyTotals: null,
+      storedEventsLimit: null,
     };
   },
   computed: {
     isLoading() {
-      return this.$apollo.queries.projectsUsageData.loading;
+      return this.$apollo.queries.monthlyTotals.loading;
     },
-    chartData() {
-      return [
-        {
-          name: s__('ProductAnalytics|Analytics events by month'),
-          data: this.projectsUsageData,
-        },
-      ];
+    showUsageOverview() {
+      return this.glFeatures.productAnalyticsBilling;
+    },
+    eventsUsed() {
+      return findCurrentMonthEventsUsed(this.monthlyTotals);
     },
   },
   apollo: {
-    projectsUsageData: {
+    monthlyTotals: {
       query: getGroupProductAnalyticsUsage,
       variables() {
         return {
@@ -57,6 +56,8 @@ export default {
       },
       update(data) {
         const projects = data.group.projects.nodes.filter(projectHasProductAnalyticsEnabled);
+
+        this.storedEventsLimit = data.group.productAnalyticsStoredEventsLimit;
 
         if (projects.length === 0) {
           this.$emit('no-projects');
@@ -90,15 +91,6 @@ export default {
       });
     },
   },
-  CHART_OPTIONS: {
-    yAxis: {
-      name: s__('ProductAnalytics|Events'),
-    },
-    xAxis: {
-      name: s__('ProductAnalytics|Month'),
-      type: 'category',
-    },
-  },
   LEARN_MORE_URL: helpPagePath('/user/product_analytics/index', {
     anchor: 'product-analytics-usage-quota',
   }),
@@ -106,7 +98,7 @@ export default {
 </script>
 <template>
   <section class="gl-mt-5 gl-mb-7">
-    <h2 class="gl-font-lg">{{ s__('ProductAnalytics|Usage by month') }}</h2>
+    <h2>{{ s__('Analytics|Overview') }}</h2>
     <p>
       <gl-sprintf
         :message="
@@ -124,6 +116,7 @@ export default {
         </template>
       </gl-sprintf>
     </p>
+
     <gl-alert v-if="error" variant="danger" :dismissible="false">
       {{
         s__(
@@ -131,9 +124,19 @@ export default {
         )
       }}
     </gl-alert>
-    <gl-skeleton-loader v-else-if="isLoading" :lines="3" />
     <template v-else>
-      <gl-area-chart :data="chartData" :option="$options.CHART_OPTIONS" />
+      <product-analytics-group-usage-overview
+        v-if="showUsageOverview"
+        :events-used="eventsUsed"
+        :stored-events-limit="storedEventsLimit"
+        :is-loading="isLoading"
+      />
+
+      <h2>{{ s__('Analytics|Usage breakdown') }}</h2>
+      <product-analytics-group-monthly-usage-chart
+        :is-loading="isLoading"
+        :monthly-totals="monthlyTotals"
+      />
     </template>
   </section>
 </template>

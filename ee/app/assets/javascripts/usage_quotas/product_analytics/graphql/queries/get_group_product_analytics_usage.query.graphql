@@ -1,6 +1,7 @@
 query getGroupProductAnalyticsUsage($namespacePath: ID!, $monthSelection: [MonthSelectionInput!]!) {
   group(fullPath: $namespacePath) {
     id
+    productAnalyticsStoredEventsLimit
     projects(includeSubgroups: true) {
       nodes {
         id

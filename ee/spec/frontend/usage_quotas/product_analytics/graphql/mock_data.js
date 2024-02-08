@@ -13,6 +13,7 @@ export const getProjectUsage = ({ id, name, usage } = {}) => ({
 export const getProjectsUsageDataResponse = (projects) => ({
   group: {
     id: convertToGraphQLId(TYPENAME_GROUP, 1),
+    productAnalyticsStoredEventsLimit: 1000000,
     projects: {
       nodes: projects || [
         getProjectUsage({

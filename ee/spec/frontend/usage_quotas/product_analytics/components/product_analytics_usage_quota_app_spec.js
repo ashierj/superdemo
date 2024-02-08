@@ -2,7 +2,7 @@ import { nextTick } from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState } from '@gitlab/ui';
 import ProductAnalyticsUsageQuotaApp from 'ee/usage_quotas/product_analytics/components/product_analytics_usage_quota_app.vue';
-import ProductAnalyticsGroupUsage from 'ee/usage_quotas/product_analytics/components/product_analytics_group_usage.vue';
+import ProductAnalyticsGroupUsage from 'ee/usage_quotas/product_analytics/components/group_usage/product_analytics_group_usage.vue';
 import ProductAnalyticsProjectsUsage from 'ee/usage_quotas/product_analytics/components/projects_usage/product_analytics_projects_usage.vue';
 
 describe('ProductAnalyticsUsageQuotaApp', () => {
