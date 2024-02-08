@@ -1,5 +1,6 @@
 import { GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
 import { nextTick } from 'vue';
+import ExperimentFeaturesBanner from 'ee/security_orchestration/components/policies/experiment_features_banner.vue';
 import ListHeader from 'ee/security_orchestration/components/policies/list_header.vue';
 import ProjectModal from 'ee/security_orchestration/components/policies/project_modal.vue';
 import { NEW_POLICY_BUTTON_TEXT } from 'ee/security_orchestration/components/constants';
@@ -20,6 +21,7 @@ describe('List Header Component', () => {
   const findViewPolicyProjectButton = () => wrapper.findByTestId('view-project-policy-button');
   const findNewPolicyButton = () => wrapper.findByTestId('new-policy-button');
   const findSubheader = () => wrapper.findByTestId('policies-subheader');
+  const findExperimentFeaturesBanner = () => wrapper.findComponent(ExperimentFeaturesBanner);
 
   const linkSecurityPoliciesProject = async () => {
     findScanNewPolicyModal().vm.$emit('project-updated', {
@@ -55,6 +57,7 @@ describe('List Header Component', () => {
       expect(findNewPolicyButton().exists()).toBe(true);
       expect(findNewPolicyButton().text()).toBe(NEW_POLICY_BUTTON_TEXT);
       expect(findNewPolicyButton().attributes('href')).toBe(newPolicyPath);
+      expect(findExperimentFeaturesBanner().exists()).toBe(false);
     });
 
     it.each`
@@ -153,5 +156,29 @@ describe('List Header Component', () => {
         expect(findFn().exists()).toBe(false);
       });
     });
+  });
+
+  describe('experiments promotion banner', () => {
+    it.each`
+      securityPoliciesPolicyScope | compliancePipelineInPolicies | expectedResult
+      ${true}                     | ${true}                      | ${true}
+      ${true}                     | ${false}                     | ${true}
+      ${false}                    | ${true}                      | ${true}
+      ${false}                    | ${false}                     | ${false}
+    `(
+      'renders experiments promotion banner',
+      ({ securityPoliciesPolicyScope, compliancePipelineInPolicies, expectedResult }) => {
+        createWrapper({
+          provide: {
+            glFeatures: {
+              securityPoliciesPolicyScope,
+              compliancePipelineInPolicies,
+            },
+          },
+        });
+
+        expect(findExperimentFeaturesBanner().exists()).toBe(expectedResult);
+      },
+    );
   });
 });
