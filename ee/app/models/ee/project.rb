@@ -1243,11 +1243,30 @@ module EE
       ::Gitlab::FIPS.enabled? ? ::Feature.enabled?(:dast_ods_browser_based_scanner, self) : true
     end
 
+    override :code_suggestions_enabled?
+    def code_suggestions_enabled?
+      return super unless ::Gitlab.org_or_com? || ::License.feature_available?(:code_suggestions)
+
+      if gitlab_com_and_feature_enabled? || self_managed_and_past_service_start_date?
+        duo_features_enabled
+      else
+        root_ancestor.code_suggestions
+      end
+    end
+
     def gcp_artifact_registry_enabled?
       ::Feature.enabled?(:gcp_artifact_registry, self) && ::Gitlab::Saas.feature_available?(:google_artifact_registry)
     end
 
     private
+
+    def gitlab_com_and_feature_enabled?
+      ::Gitlab.org_or_com? && ::Feature.enabled?(:purchase_code_suggestions)
+    end
+
+    def self_managed_and_past_service_start_date?
+      ::License.feature_available?(:code_suggestions) && ::CodeSuggestions::SelfManaged::SERVICE_START_DATE.past?
+    end
 
     def latest_ingested_sbom_pipeline_id_redis_key
       "latest_ingested_sbom_pipeline_id/#{id}"

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe NamespaceSetting do
+RSpec.describe NamespaceSetting, feature_category: :groups_and_projects, type: :model do
   let(:group) { create(:group) }
   let(:setting) { group.namespace_settings }
 

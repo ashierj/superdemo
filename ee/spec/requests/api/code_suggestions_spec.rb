@@ -813,27 +813,20 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
   end
 
-  context 'when checking in project has code suggestions enabled' do
-    let_it_be(:enabled_project) { create(:project, :with_code_suggestions_enabled) }
-    let(:current_user) { authorized_user }
-    let_it_be(:disabled_project) { create(:project, :with_code_suggestions_disabled) }
-    let_it_be(:secret_project) { create(:project, :with_code_suggestions_enabled) }
+  context 'when checking if project has duo features enabled' do
+    let_it_be(:enabled_project) { create(:project, :in_group, :private, :with_duo_features_enabled) }
+    let_it_be(:disabled_project) { create(:project, :in_group, :with_duo_features_disabled) }
 
-    before_all do
-      enabled_project.add_maintainer(authorized_user)
-      disabled_project.add_maintainer(authorized_user)
-    end
+    let(:current_user) { authorized_user }
 
     subject { post api("/code_suggestions/enabled", current_user), params: { project_path: project_path } }
 
-    context 'when not logged in' do
-      let(:current_user) { nil }
-      let(:project_path) { enabled_project.full_path }
+    context 'when authorized to view project' do
+      before_all do
+        enabled_project.add_maintainer(authorized_user)
+        disabled_project.add_maintainer(authorized_user)
+      end
 
-      it { is_expected.to eq(401) }
-    end
-
-    context 'when authorized' do
       context 'when enabled' do
         let(:project_path) { enabled_project.full_path }
 
@@ -845,18 +838,25 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
         it { is_expected.to eq(403) }
       end
+    end
 
-      context 'when user cannot access project' do
-        let(:project_path) { secret_project.full_path }
+    context 'when not logged in' do
+      let(:current_user) { nil }
+      let(:project_path) { enabled_project.full_path }
 
-        it { is_expected.to eq(404) }
-      end
+      it { is_expected.to eq(401) }
+    end
 
-      context 'when does not exist' do
-        let(:project_path) { 'not_a_real_project' }
+    context 'when logged in but not authorized to view project' do
+      let(:project_path) { enabled_project.full_path }
 
-        it { is_expected.to eq(404) }
-      end
+      it { is_expected.to eq(404) }
+    end
+
+    context 'when project for project path does not exist' do
+      let(:project_path) { 'not_a_real_project' }
+
+      it { is_expected.to eq(404) }
     end
   end
 end
