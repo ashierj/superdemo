@@ -32788,9 +32788,6 @@ msgstr ""
 msgid "No credit card data for matching"
 msgstr ""
 
-msgid "No credit card required."
-msgstr ""
-
 msgid "No data"
 msgstr ""
 
@@ -52785,7 +52782,7 @@ msgstr ""
 msgid "Try again?"
 msgstr ""
 
-msgid "Try all GitLab has to offer for 30 days."
+msgid "Try all GitLab has to offer for 30 days. No credit card required."
 msgstr ""
 
 msgid "Try changing or removing filters."
