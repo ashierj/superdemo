@@ -68,7 +68,7 @@ module Elastic
 
         Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
           if queue_size == 0
-            redis.pipelined do |p|
+            Gitlab::Redis::CrossSlot::Pipeline.new(redis).pipelined do |p|
               p.del(redis_score_key)
               p.del(redis_set_key)
             end
