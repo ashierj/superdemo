@@ -57,7 +57,6 @@ describe('Merge Requests Artifacts list app', () => {
     beforeEach(() => {
       createComponent();
       store.dispatch('requestArtifacts');
-      return nextTick();
     });
 
     it('renders a loading icon', () => {
@@ -84,7 +83,6 @@ describe('Merge Requests Artifacts list app', () => {
         data: artifacts,
         status: HTTP_STATUS_OK,
       });
-      return nextTick();
     });
 
     it('renders a title with the number of artifacts', () => {
@@ -115,7 +113,6 @@ describe('Merge Requests Artifacts list app', () => {
         data: [],
         status: HTTP_STATUS_OK,
       });
-      return nextTick();
     });
 
     it('does not render', () => {
@@ -129,7 +126,6 @@ describe('Merge Requests Artifacts list app', () => {
       createComponent();
       mock.onGet(FAKE_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, {}, {});
       store.dispatch('receiveArtifactsError');
-      return nextTick();
     });
 
     it('renders the error state', () => {
