@@ -6,7 +6,7 @@ module EE
 
     private
 
-    def preloaded_relations
+    def preloaded_relations(...)
       relations = super
 
       project_relation = relations.detect { |item| item.is_a?(Hash) }
