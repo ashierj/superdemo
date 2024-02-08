@@ -85,6 +85,16 @@ module Integrations
       def testable?
         false
       end
+
+      def ci_variables
+        return [] unless project.gcp_artifact_registry_enabled? && activated?
+
+        [
+          { key: 'GOOGLE_ARTIFACT_REGISTRY_PROJECT_ID', value: artifact_registry_project_id },
+          { key: 'GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_NAME', value: artifact_registry_repository },
+          { key: 'GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_LOCATION', value: artifact_registry_location }
+        ]
+      end
     end
   end
 end
