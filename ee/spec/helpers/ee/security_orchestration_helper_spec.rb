@@ -116,7 +116,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           timezones: timezones.to_json,
           max_active_scan_execution_policies_reached: 'false',
           max_active_scan_result_policies_reached: 'false',
-          max_scan_result_policies_allowed: 5,
+          max_scan_result_policies_allowed: Gitlab::CurrentSettings.security_approval_policies_limit,
           max_scan_execution_policies_allowed: 5,
           custom_ci_toggle_enabled: 'false'
         }
@@ -238,7 +238,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           timezones: timezones.to_json,
           max_active_scan_execution_policies_reached: 'false',
           max_active_scan_result_policies_reached: 'false',
-          max_scan_result_policies_allowed: 5,
+          max_scan_result_policies_allowed: Gitlab::CurrentSettings.security_approval_policies_limit,
           max_scan_execution_policies_allowed: 5,
           custom_ci_toggle_enabled: 'false'
         }
@@ -395,7 +395,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
 
     context 'when a source reached the limited of active scan result policies' do
       before do
-        stub_const('Security::ScanResultPolicy::LIMIT', 1)
+        allow(::Gitlab::CurrentSettings).to receive(:security_approval_policies_limit).and_return(1)
       end
 
       it_behaves_like 'when source has active scan policies', limited_reached: true

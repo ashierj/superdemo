@@ -12651,6 +12651,7 @@ CREATE TABLE application_settings (
     elasticsearch_max_code_indexing_concurrency integer DEFAULT 30 NOT NULL,
     enable_member_promotion_management boolean DEFAULT false NOT NULL,
     lock_math_rendering_limits_enabled boolean DEFAULT false NOT NULL,
+    security_approval_policies_limit integer DEFAULT 5 NOT NULL,
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
     CONSTRAINT app_settings_container_registry_pre_import_tags_rate_positive CHECK ((container_registry_pre_import_tags_rate >= (0)::numeric)),
     CONSTRAINT app_settings_dep_proxy_ttl_policies_worker_capacity_positive CHECK ((dependency_proxy_ttl_group_policy_worker_capacity >= 0)),

@@ -4,8 +4,9 @@ module Security
   module ScanResultPolicy
     extend ActiveSupport::Concern
 
-    # Used for both policies and rules
-    LIMIT = 5
+    RULES_LIMIT = 5
+    # Maximum limit that can be set via ApplicationSetting
+    POLICIES_LIMIT = 20
 
     APPROVERS_LIMIT = 300
 
@@ -65,7 +66,11 @@ module Security
       end
 
       def active_scan_result_policies
-        scan_result_policies&.select { |config| config[:enabled] }&.first(LIMIT)
+        scan_result_policies&.select { |config| config[:enabled] }&.first(approval_policies_limit)
+      end
+
+      def approval_policies_limit
+        Gitlab::CurrentSettings.security_approval_policies_limit
       end
 
       def applicable_scan_result_policies_for_project(project)

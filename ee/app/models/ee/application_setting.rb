@@ -141,6 +141,13 @@ module EE
       validates :security_policy_global_group_approvers_enabled,
         inclusion: { in: [true, false], message: 'must be a boolean value' }
 
+      validates :security_approval_policies_limit,
+        numericality: {
+          only_integer: true,
+          greater_than_or_equal_to: 5,
+          less_than_or_equal_to: ::Security::ScanResultPolicy::POLICIES_LIMIT
+        }
+
       validates :product_analytics_data_collector_host,
         length: { maximum: 255 },
         addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
