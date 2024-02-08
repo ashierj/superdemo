@@ -71,15 +71,24 @@ module IdentityVerifiable
   end
 
   def create_phone_number_exemption!
+    return if phone_verified?
+    return if exempt_from_phone_number_verification?
+
     custom_attributes.create!(
       key: UserCustomAttribute::IDENTITY_VERIFICATION_PHONE_EXEMPT,
       value: true.to_s,
       user_id: id
     )
+    clear_memoization(:phone_number_exemption_attribute)
+    clear_memoization(:identity_verification_state)
   end
 
   def destroy_phone_number_exemption
-    !!phone_number_exemption_attribute && phone_number_exemption_attribute.destroy
+    return unless phone_number_exemption_attribute
+
+    phone_number_exemption_attribute.destroy
+    clear_memoization(:phone_number_exemption_attribute)
+    clear_memoization(:identity_verification_state)
   end
 
   def exempt_from_phone_number_verification?
@@ -89,8 +98,6 @@ module IdentityVerifiable
 
   def toggle_phone_number_verification
     exempt_from_phone_number_verification? ? destroy_phone_number_exemption : create_phone_number_exemption!
-    clear_memoization(:phone_number_exemption_attribute)
-    clear_memoization(:identity_verification_state)
   end
 
   def create_identity_verification_exemption

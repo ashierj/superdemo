@@ -470,10 +470,39 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
     let(:user) { create(:user) }
 
-    it 'creates an exemption' do
+    it 'creates an exemption', :aggregate_failures do
+      expect(user).to receive(:clear_memoization).with(:phone_number_exemption_attribute).and_call_original
+      expect(user).to receive(:clear_memoization).with(:identity_verification_state).and_call_original
+
       expect { subject }.to change {
         user.custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_PHONE_EXEMPT).count
       }.from(0).to(1)
+    end
+
+    shared_examples 'it does not create an exemption' do
+      it 'does not create an exemption', :aggregate_failures do
+        expect(user).not_to receive(:clear_memoization)
+
+        expect { subject }.not_to change {
+          user.custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_PHONE_EXEMPT).count
+        }
+      end
+    end
+
+    context 'when user has already verified a phone number' do
+      before do
+        create(:phone_number_validation, :validated, user: user)
+      end
+
+      it_behaves_like 'it does not create an exemption'
+    end
+
+    context 'when user is already exempt' do
+      before do
+        add_phone_exemption
+      end
+
+      it_behaves_like 'it does not create an exemption'
     end
   end
 
@@ -483,11 +512,12 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     let(:user) { create(:user) }
 
     context 'when a user has a phone number exemption' do
-      before do
+      it 'destroys the exemption', :aggregate_failures do
         add_phone_exemption
-      end
 
-      it 'destroys the exemption' do
+        expect(user).to receive(:clear_memoization).with(:phone_number_exemption_attribute).and_call_original
+        expect(user).to receive(:clear_memoization).with(:identity_verification_state).and_call_original
+
         subject
 
         expect(user.custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_PHONE_EXEMPT)).to be_empty
@@ -495,7 +525,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     end
 
     context 'when a user does not have a phone number exemption' do
-      it { is_expected.to be false }
+      it { is_expected.to be_nil }
     end
   end
 
@@ -636,6 +666,11 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
   end
 
   describe '#toggle_phone_number_verification' do
+    before do
+      allow(user).to receive(:clear_memoization).with(:phone_number_exemption_attribute).and_call_original
+      allow(user).to receive(:clear_memoization).with(:identity_verification_state).and_call_original
+    end
+
     subject(:toggle_phone_number_verification) { user.toggle_phone_number_verification }
 
     context 'when not exempt from phone number verification' do
@@ -647,20 +682,17 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     end
 
     context 'when exempt from phone number verification' do
-      before do
-        user.create_phone_number_exemption!
-      end
-
       it 'destroys the exemption' do
+        user.create_phone_number_exemption!
+
         expect(user).to receive(:destroy_phone_number_exemption)
 
         toggle_phone_number_verification
       end
     end
 
-    it 'clears memoization of phone_number_exemption_attribute and identity_verification_state', :aggregate_failures do
-      expect(user).to receive(:clear_memoization).with(:phone_number_exemption_attribute).and_call_original
-      expect(user).to receive(:clear_memoization).with(:identity_verification_state).and_call_original
+    it 'clears memoization of identity_verification_state' do
+      expect(user).to receive(:clear_memoization).with(:identity_verification_state)
 
       toggle_phone_number_verification
     end

@@ -1,8 +1,13 @@
 <script>
 import { GlButton } from '@gitlab/ui';
+import { createAlert, VARIANT_INFO } from '~/alert';
+import Poll from '~/lib/utils/poll';
+import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
 import { isValidDateString } from '~/lib/utils/datetime_range';
 import { calculateRemainingMilliseconds } from '~/lib/utils/datetime_utility';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { I18N_PHONE_NUMBER_VERIFICATION_UNAVAILABLE } from '../constants';
 import InternationalPhoneInput from './international_phone_input.vue';
 import VerifyPhoneVerificationCode from './verify_phone_verification_code.vue';
 import Captcha from './identity_verification_captcha.vue';
@@ -15,7 +20,8 @@ export default {
     VerifyPhoneVerificationCode,
     Captcha,
   },
-  inject: ['phoneNumber', 'offerPhoneNumberExemption'],
+  mixins: [glFeatureFlagsMixin()],
+  inject: ['verificationStatePath', 'phoneNumber', 'offerPhoneNumberExemption'],
   data() {
     return {
       stepIndex: 1,
@@ -24,6 +30,7 @@ export default {
       verificationAttempts: 0,
       disableSubmitButton: false,
       captchaData: {},
+      poll: null,
     };
   },
   computed: {
@@ -36,11 +43,18 @@ export default {
   mounted() {
     this.setSendAllowedOn(this.phoneNumber?.sendAllowedAfter);
   },
+  beforeDestroy() {
+    this.stopPolling();
+  },
   methods: {
+    fetchVerificationState() {
+      return axios.get(this.verificationStatePath);
+    },
     goToStepTwo({ sendAllowedAfter, ...phoneNumber }) {
       this.stepIndex = 2;
       this.latestPhoneNumber = phoneNumber;
       this.setSendAllowedOn(sendAllowedAfter);
+      this.startPolling();
     },
     goToStepOne() {
       this.stepIndex = 1;
@@ -67,6 +81,42 @@ export default {
     },
     resetTimer() {
       this.setSendAllowedOn(null);
+    },
+    startPolling() {
+      if (!this.glFeatures.autoRequestPhoneNumberVerificationExemption) return;
+
+      // Poll for possible change in required verification methods for the user.
+      // Specifically, if the user is from a country blocked by Telesign, we
+      // auto-request a phone number verification exemption for them. When this
+      // happens 'phone' is removed from the `verification_methods` array.
+      this.poll = new Poll({
+        resource: {
+          fetchData: () => this.fetchVerificationState(),
+        },
+        method: 'fetchData',
+        successCallback: ({ data }) => {
+          if (!data.verification_methods.includes('phone')) {
+            createAlert({
+              message: I18N_PHONE_NUMBER_VERIFICATION_UNAVAILABLE,
+              variant: VARIANT_INFO,
+            });
+
+            this.stopPolling();
+            this.$emit('set-verification-state', data);
+          }
+        },
+        errorCallback: () => {
+          this.stopPolling();
+        },
+      });
+
+      // Wait five seconds before first poll request to take into account the
+      // delay of receiving SMS delivery notification callback request.
+      this.poll.makeDelayedRequest(5000);
+    },
+    stopPolling() {
+      this.poll?.stop();
+      this.poll = null;
     },
   },
   i18n: {

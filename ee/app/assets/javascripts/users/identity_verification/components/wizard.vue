@@ -1,6 +1,7 @@
 <script>
 import { GlLoadingIcon, GlButton } from '@gitlab/ui';
 import { kebabCase } from 'lodash';
+import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, s__, sprintf } from '~/locale';
 import { convertArrayToCamelCase, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import axios from '~/lib/utils/axios_utils';
@@ -50,7 +51,12 @@ export default {
     async fetchVerificationState() {
       this.loading = true;
       try {
-        const { data } = await axios.get(this.verificationStatePath);
+        // Always fetch a fresh copy of the the user's identity verification
+        // state. This avoids stale data, for example, when the user completes
+        // the process, gets redirected to the success page and then uses the
+        // browser's back button.
+        const url = mergeUrlParams({ no_cache: 1 }, this.verificationStatePath);
+        const { data } = await axios.get(url);
         this.setVerificationState(data);
       } catch (error) {
         createAlert({
@@ -129,6 +135,7 @@ export default {
             :is="methodComponent(step)"
             @completed="onStepCompleted(step)"
             @exemptionRequested="exemptionRequested"
+            @set-verification-state="setVerificationState"
           />
         </verification-step>
       </template>

@@ -41,16 +41,18 @@ module Telesign
       track_status_update_event
     end
 
+    def user
+      return unless valid?
+
+      phone_number_validation_record&.user
+    end
+
     private
 
     def phone_number_validation_record
       Users::PhoneNumberValidation.by_reference_id(payload.reference_id)
     end
     strong_memoize_attr :phone_number_validation_record
-
-    def user
-      phone_number_validation_record&.user
-    end
 
     def track_status_update_event
       return unless phone_number_validation_record

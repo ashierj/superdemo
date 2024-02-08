@@ -511,6 +511,14 @@ feature_category: :system_access do
           'verification_state' => { "email" => false }
         })
       end
+
+      describe 'poll interval header' do
+        it 'is added' do
+          do_request
+
+          expect(response.headers.to_h).to include(Gitlab::PollingInterval::HEADER_NAME => '10000')
+        end
+      end
     end
 
     context 'with a verified user' do

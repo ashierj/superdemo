@@ -13,6 +13,12 @@ module EE
               'epic_realtime_changes',
               ::Groups::EpicsController,
               :realtime_changes
+            ],
+            [
+              %r{^/users/identity_verification/verification_state\z},
+              'user_identity_verification_state',
+              ::Users::IdentityVerificationController,
+              :verification_state
             ]
           ].freeze
 
