@@ -5,6 +5,7 @@ import axios from '~/lib/utils/axios_utils';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 import { LICENSE_APPROVAL_STATUS } from 'ee/vue_shared/license_compliance/constants';
 import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { parseDependencies } from './utils';
 
 const APPROVAL_STATUS_TO_ICON = {
@@ -249,6 +250,16 @@ export default {
       });
     },
   },
+  widgetHelpPopover: {
+    options: { title: s__('ciReport|License scan results') },
+    content: {
+      text: s__('ciReport|Detects known vulnerabilities in your software dependencies.'),
+      learnMorePath: helpPagePath('user/compliance/license_approval_policies', {
+        anchor:
+          'criteria-comparing-licenses-detected-in-the-merge-request-branch-to-licenses-detected-in-the-default-branch',
+      }),
+    },
+  },
 };
 </script>
 
@@ -264,5 +275,6 @@ export default {
     :summary="summary"
     :is-collapsible="shouldCollapse"
     :content="licenseComplianceData.expanded"
+    :help-popover="$options.widgetHelpPopover"
   />
 </template>
