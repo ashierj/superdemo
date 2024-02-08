@@ -30231,7 +30231,7 @@ msgstr ""
 msgid "MemberRole|Base role to use as template"
 msgstr ""
 
-msgid "MemberRole|Could not fetch available permissions: %{message}"
+msgid "MemberRole|Could not fetch available permissions."
 msgstr ""
 
 msgid "MemberRole|Create new role"
@@ -30264,7 +30264,7 @@ msgstr ""
 msgid "MemberRole|Failed to delete role. %{message}"
 msgstr ""
 
-msgid "MemberRole|Failed to fetch roles: %{message}"
+msgid "MemberRole|Failed to fetch roles."
 msgstr ""
 
 msgid "MemberRole|ID"

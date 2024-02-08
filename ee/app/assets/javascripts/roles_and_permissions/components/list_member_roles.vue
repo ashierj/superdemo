@@ -1,13 +1,11 @@
 <script>
 import { GlBadge, GlButton, GlCard, GlEmptyState, GlModal, GlTable } from '@gitlab/ui';
-import { capitalize } from 'lodash';
 import { createAlert } from '~/alert';
 import { sprintf, s__, __ } from '~/locale';
-import { TYPENAME_MEMBER_ROLE } from '~/graphql_shared/constants';
-import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { ACCESS_LEVEL_LABELS } from '~/access_level/constants';
 import groupMemberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
 import instanceMemberRolesQuery from '../graphql/instance_member_roles.query.graphql';
-import memberRolePermissionsQuery from '../graphql/member_role_permissions.query.graphql';
 import deleteMemberRoleMutation from '../graphql/delete_member_role.mutation.graphql';
 import CreateMemberRole from './create_member_role.vue';
 
@@ -26,8 +24,7 @@ export default {
     deleteRole: s__('MemberRole|Delete role'),
     emptyTitle: s__('MemberRole|No custom roles found'),
     emptyDescription: s__(`MemberRole|To add a new role select 'Add new role'.`),
-    fetchRolesError: s__('MemberRole|Failed to fetch roles: %{message}'),
-    fetchPermissionsError: s__('MemberRole|Could not fetch available permissions: %{message}'),
+    fetchRolesError: s__('MemberRole|Failed to fetch roles.'),
     deleteSuccess: s__('MemberRole|Role successfully deleted.'),
     deleteError: s__('MemberRole|Failed to delete role.'),
     deleteErrorWithReason: s__('MemberRole|Failed to delete role. %{message}'),
@@ -64,9 +61,7 @@ export default {
         return this.fetchMemberRolesQuery;
       },
       variables() {
-        return {
-          fullPath: this.groupFullPath,
-        };
+        return { fullPath: this.groupFullPath };
       },
       update(data) {
         const nodes = this.groupFullPath
@@ -76,27 +71,14 @@ export default {
         const memberRoles = nodes || [];
 
         return memberRoles.map(({ id, name, baseAccessLevel, enabledPermissions }) => ({
+          id,
           name,
-          id: getIdFromGraphQLId(id),
-          baseAccessLevel: capitalize(baseAccessLevel.stringValue),
+          baseAccessLevel: ACCESS_LEVEL_LABELS[baseAccessLevel.integerValue],
           permissions: enabledPermissions.nodes,
         }));
       },
-      error({ message }) {
-        this.alert = createAlert({
-          message: sprintf(this.$options.i18n.fetchRolesError, { message }),
-        });
-      },
-    },
-    availablePermissions: {
-      query: memberRolePermissionsQuery,
-      update(data) {
-        return data?.memberRolePermissions?.nodes || [];
-      },
-      error({ message }) {
-        this.alert = createAlert({
-          message: sprintf(this.$options.i18n.fetchPermissionsError, { message }),
-        });
+      error() {
+        this.alert = createAlert({ message: this.$options.i18n.fetchRolesError });
       },
     },
   },
@@ -105,10 +87,7 @@ export default {
       return this.groupFullPath ? groupMemberRolesQuery : instanceMemberRolesQuery;
     },
     isLoading() {
-      return (
-        this.$apollo.queries.memberRoles.loading ||
-        this.$apollo.queries.availablePermissions.loading
-      );
+      return this.$apollo.queries.memberRoles.loading;
     },
     isModalVisible() {
       return this.memberRoleToDelete !== null;
@@ -123,9 +102,7 @@ export default {
           mutation: deleteMemberRoleMutation,
           refetchQueries: [this.fetchMemberRolesQuery],
           variables: {
-            input: {
-              id: convertToGraphQLId(TYPENAME_MEMBER_ROLE, this.memberRoleToDelete),
-            },
+            input: { id: this.memberRoleToDelete },
           },
           update: (_, result) => {
             const { errors } = result.data.memberRoleDelete;
@@ -181,6 +158,7 @@ export default {
       'MemberRole|To delete the custom role make sure no group member has this custom role',
     ),
   },
+  getIdFromGraphQLId,
 };
 </script>
 
@@ -225,6 +203,9 @@ export default {
     />
 
     <gl-table v-else :fields="$options.FIELDS" :items="memberRoles" :busy="isLoading" stacked="sm">
+      <template #cell(id)="{ item }">
+        {{ $options.getIdFromGraphQLId(item.id) }}
+      </template>
       <template #cell(baseAccessLevel)="{ item: { baseAccessLevel } }">
         <gl-badge class="gl-my-n4">{{ baseAccessLevel }}</gl-badge>
       </template>
