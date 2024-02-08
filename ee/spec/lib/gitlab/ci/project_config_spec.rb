@@ -8,6 +8,7 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
   let(:content) { nil }
   let(:source) { :push }
   let(:bridge) { nil }
+  let(:triggered_for_branch) { true }
   let(:security_policies) { {} }
 
   let(:content_result) do
@@ -25,7 +26,8 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
       sha: sha,
       custom_content: content,
       pipeline_source: source,
-      pipeline_source_bridge: bridge
+      pipeline_source_bridge: bridge,
+      triggered_for_branch: triggered_for_branch
     )
   end
 
@@ -168,9 +170,7 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
           stub_licensed_features(security_orchestration_policies: licensed_security_orchestration_policies)
         end
 
-        context 'when security_orchestration_policies feature is not available' do
-          let(:licensed_security_orchestration_policies) { false }
-
+        shared_examples 'does not include security policies default pipeline configuration content' do
           context 'when auto devops is not enabled' do
             before do
               stub_application_setting(auto_devops_enabled: false)
@@ -180,6 +180,18 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
               expect(config.source).to eq(nil)
             end
           end
+        end
+
+        context 'when security_orchestration_policies feature is not available' do
+          let(:licensed_security_orchestration_policies) { false }
+
+          it_behaves_like 'does not include security policies default pipeline configuration content'
+        end
+
+        context 'when is not triggered for branch' do
+          let(:triggered_for_branch) { false }
+
+          it_behaves_like 'does not include security policies default pipeline configuration content'
         end
 
         context 'when auto devops is enabled' do
