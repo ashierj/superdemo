@@ -21,11 +21,7 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state
-    :title="$options.i18n.emptyStateHeader"
-    :svg-path="emptyStateSvgPath"
-    :svg-height="null"
-  >
+  <gl-empty-state :title="$options.i18n.emptyStateHeader" :svg-path="emptyStateSvgPath">
     <template #description>
       <gl-sprintf :message="$options.i18n.emptyStateText">
         <template #link="{ content }">
