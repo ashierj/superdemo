@@ -24,7 +24,7 @@ module EE
         collection = with_code_coverage(collection)
         collection = with_compliance_framework(collection)
         collection = by_negated_compliance_framework_filters(collection)
-        collection = with_sbom_component(collection)
+        collection = with_sbom_component_version(collection)
         by_compliance_framework_presence(collection)
       end
 
@@ -79,10 +79,10 @@ module EE
         items.with_coverage_feature_usage(default_branch: true)
       end
 
-      def with_sbom_component(items)
+      def with_sbom_component_version(items)
         return items unless params[:sbom_component_id].present?
 
-        items.with_sbom_component(params[:sbom_component_id].to_i)
+        items.with_sbom_component_version(params[:sbom_component_id].to_i)
       end
     end
   end

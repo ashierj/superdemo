@@ -35497,8 +35497,6 @@ CREATE INDEX index_sbom_occurrences_on_project_id_and_id ON sbom_occurrences USI
 
 CREATE INDEX index_sbom_occurrences_on_project_id_and_package_manager ON sbom_occurrences USING btree (project_id, package_manager);
 
-CREATE INDEX index_sbom_occurrences_on_project_id_component_id ON sbom_occurrences USING btree (project_id, component_id);
-
 CREATE INDEX index_sbom_occurrences_on_source_id ON sbom_occurrences USING btree (source_id);
 
 CREATE UNIQUE INDEX index_sbom_occurrences_on_uuid ON sbom_occurrences USING btree (uuid);

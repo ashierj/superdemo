@@ -618,11 +618,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       end
     end
 
-    describe '.with_sbom_component' do
+    describe '.with_sbom_component_version' do
       let_it_be(:project_with_occurrence) { create(:project) }
       let(:occurrence) { create(:sbom_occurrence, project: project_with_occurrence) }
 
-      subject { described_class.with_sbom_component(occurrence.component_id) }
+      subject { described_class.with_sbom_component_version(occurrence.component_version_id) }
 
       it { is_expected.to match_array([project_with_occurrence]) }
     end

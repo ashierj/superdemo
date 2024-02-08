@@ -333,8 +333,8 @@ module EE
           .where(project_states: { verification_state: verification_state_value(state) })
       }
 
-      scope :with_sbom_component, -> (id) do
-        where(id: Sbom::Occurrence.select(:project_id).where(component_id: id))
+      scope :with_sbom_component_version, -> (id) do
+        where(id: Sbom::Occurrence.select(:project_id).where(component_version_id: id))
       end
 
       scope :not_indexed_in_elasticsearch, -> {
