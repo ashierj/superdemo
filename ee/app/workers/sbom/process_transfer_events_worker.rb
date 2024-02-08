@@ -33,7 +33,7 @@ module Sbom
 
         # rubocop:disable CodeReuse/ActiveRecord -- Does not work outside this context.
         exists_subquery = Sbom::Occurrence.where(
-          "#{Sbom::Occurrence.quoted_table_name}.project_id = #{Project.quoted_table_name}.id")
+          Sbom::Occurrence.arel_table[:project_id].eq(Project.arel_table[:id]))
         # rubocop:enable CodeReuse/ActiveRecord
 
         group
