@@ -174,7 +174,7 @@ RSpec.describe Gitlab::Geo::LogCursor::Daemon, :clean_gitlab_redis_shared_state,
   end
 
   describe '#handle_single_event' do
-    let_it_be(:event_log) { create(:geo_event_log, :updated_event) }
+    let_it_be(:event_log) { create(:geo_event_log, :geo_event) }
 
     it 'skips execution when no event data is found' do
       event_log = build(:geo_event_log)

@@ -32,13 +32,4 @@ RSpec.describe Geo::CreateRepositoryUpdatedEventWorker, feature_category: :geo_r
       end.to change { ::Geo::Event.where(event_name: :updated).count }.by(1)
     end
   end
-
-  context 'on a Geo secondary site' do
-    it 'does not create a Geo::RepositoryUpdatedEvent' do
-      stub_current_geo_node(secondary_site)
-
-      expect { subject }
-        .not_to change { ::Geo::RepositoryUpdatedEvent.count }
-    end
-  end
 end
