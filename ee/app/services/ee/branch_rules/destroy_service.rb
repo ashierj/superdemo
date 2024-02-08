@@ -42,6 +42,7 @@ module EE
 
           error_accumulator << response if response[:status] == :error
         end
+
         return ::ServiceResponse.success if errors.blank?
 
         ::ServiceResponse.error(message: "Failed to delete approval #{'rule'.pluralize(errors.count)}.")
