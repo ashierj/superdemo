@@ -22,7 +22,7 @@ module EE
       override :project_specific_integration_names
       def project_specific_integration_names
         names = super + EE_PROJECT_SPECIFIC_INTEGRATION_NAMES + GOOGLE_CLOUD_PLATFORM_INTEGRATION_NAMES
-        names.append('git_guardian') if ::Feature.enabled?(:git_guardian_integration, type: :wip)
+        names.append('git_guardian') if ::Feature.enabled?(:git_guardian_integration)
 
         unless ::Gitlab::Saas.feature_available?(:google_artifact_registry)
           names.delete('google_cloud_platform_artifact_registry')
