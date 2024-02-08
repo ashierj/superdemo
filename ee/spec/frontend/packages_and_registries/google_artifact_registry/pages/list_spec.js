@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -16,7 +16,7 @@ describe('List', () => {
   let wrapper;
 
   const defaultProvide = {
-    fullPath: 'gitlab-org',
+    fullPath: 'gitlab-org/gitlab',
   };
 
   const findListHeader = () => wrapper.findComponent(ListHeader);
@@ -34,6 +34,22 @@ describe('List', () => {
       provide: defaultProvide,
     });
   };
+
+  it('calls apollo query with sort params', async () => {
+    const resolver = jest.fn().mockResolvedValue(getArtifactsQueryResponse);
+    createComponent({ resolver });
+    await waitForPromises();
+
+    expect(resolver).toHaveBeenCalledTimes(1);
+    expect(resolver).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        first: 20,
+        fullPath: 'gitlab-org/gitlab',
+        sort: 'UPDATE_TIME_DESC',
+      }),
+    );
+  });
 
   describe('list header', () => {
     beforeEach(() => {
@@ -98,6 +114,45 @@ describe('List', () => {
       await waitForPromises();
 
       expect(findListTable().exists()).toBe(false);
+    });
+
+    it('renders the list table with sort prop', () => {
+      expect(findListTable().props('sort')).toEqual({
+        sortBy: 'updateTime',
+        sortDesc: true,
+      });
+    });
+
+    describe('when table emits sort-changed event', () => {
+      const resolver = jest.fn().mockResolvedValue(getArtifactsQueryResponse);
+      beforeEach(async () => {
+        createComponent({ resolver });
+
+        await waitForPromises();
+
+        findListTable().vm.$emit('sort-changed', { sortBy: 'updateTime', sortDesc: false });
+      });
+
+      it('updates sort', async () => {
+        await nextTick();
+
+        expect(findListTable().props('sort')).toEqual({
+          sortBy: 'updateTime',
+          sortDesc: false,
+        });
+      });
+
+      it('calls apollo query with updated sort params', async () => {
+        await waitForPromises();
+
+        expect(resolver).toHaveBeenCalledTimes(2);
+        expect(resolver).toHaveBeenNthCalledWith(
+          2,
+          expect.objectContaining({
+            sort: 'UPDATE_TIME_ASC',
+          }),
+        );
+      });
     });
   });
 });

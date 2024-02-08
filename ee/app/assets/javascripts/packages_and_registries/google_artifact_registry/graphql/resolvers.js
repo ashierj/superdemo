@@ -17,7 +17,7 @@ const resolvers = {
             'alpinealpinealpinealpinealpinealpinealpinealpinealpinealpinealpinealpinealpinealpinealpinealpinealpinealpinealpinealpine',
           digest: 'sha256:6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
           tags: [
-            '6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
+            '6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf4',
             '6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
             '3.15',
             '3.15.11',
