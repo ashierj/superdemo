@@ -21,6 +21,18 @@ module Integrations
       s_('GitGuardian|Scan pushed document contents for policy breaks.')
     end
 
+    def self.help
+      docs_link = ActionController::Base.helpers.link_to(
+        _('Learn more.'),
+        Rails.application.routes.url_helpers.help_page_url('user/project/integrations/git_guardian'),
+        target: '_blank',
+        rel: 'noopener noreferrer'
+      )
+
+      format(_('Scan pushed document contents for policy breaks. %{docs_link}').html_safe, # rubocop:disable Rails/OutputSafety -- It is fine to call html_safe here
+        docs_link: docs_link.html_safe) # rubocop:disable Rails/OutputSafety -- It is fine to call html_safe here
+    end
+
     def self.to_param
       'git_guardian'
     end
@@ -30,7 +42,7 @@ module Integrations
     end
 
     def execute(blobs)
-      return unless Feature.enabled?(:git_guardian_integration, type: :wip)
+      return unless Feature.enabled?(:git_guardian_integration)
 
       ::Gitlab::GitGuardian::Client.new(token).execute(blobs) if activated?
     end

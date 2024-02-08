@@ -43331,6 +43331,9 @@ msgstr ""
 msgid "Saving project."
 msgstr ""
 
+msgid "Scan pushed document contents for policy breaks. %{docs_link}"
+msgstr ""
+
 msgid "ScanExecutionPolicy|%{boldStart}Run%{boldEnd} %{typeSelector} %{actionType}"
 msgstr ""
 
