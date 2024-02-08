@@ -33,9 +33,9 @@ describe('Variable values listbox', () => {
   });
 
   it('multiple predefined values are rendered as a dropdown', () => {
-    expect(findListboxItems().at(0).text()).toBe(valueOptions[0]);
-    expect(findListboxItems().at(1).text()).toBe(valueOptions[1]);
-    expect(findListboxItems().at(2).text()).toBe(valueOptions[2]);
+    for (let i = 0; i < valueOptions.length; i += 1) {
+      expect(findListboxItems().at(i).text()).toBe(valueOptions[i]);
+    }
   });
 
   it('variable with multiple predefined values sets value as the default', () => {
@@ -57,5 +57,16 @@ describe('Variable values listbox', () => {
     await waitForPromises();
 
     expect(findListboxItems().length).toBe(3);
+  });
+
+  it('filters options with fuzzy filtering', async () => {
+    const searchString = 'poduct';
+
+    search(searchString);
+
+    await waitForPromises();
+
+    expect(findListboxItems().length).toBe(1);
+    expect(findListboxItems().at(0).text()).toBe('production');
   });
 });

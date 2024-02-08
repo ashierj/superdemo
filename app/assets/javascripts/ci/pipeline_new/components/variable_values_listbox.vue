@@ -1,5 +1,6 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
+import fuzzaldrinPlus from 'fuzzaldrin-plus';
 import { n__ } from '~/locale';
 
 export default {
@@ -31,7 +32,12 @@ export default {
       );
     },
     filteredItems() {
-      return this.items.filter((option) => option.text.toLowerCase().includes(this.searchTerm));
+      if (this.searchTerm) {
+        return fuzzaldrinPlus.filter(this.items, this.searchTerm, {
+          key: ['text'],
+        });
+      }
+      return this.items;
     },
   },
   methods: {
