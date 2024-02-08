@@ -30,6 +30,13 @@ RSpec.shared_examples 'syncs all data from an epic to a work item' do
     expect(work_item.external_key).to eq(epic.external_key)
     expect(work_item.lock_version).to eq(epic.lock_version)
 
+    if epic.parent
+      expect(work_item.work_item_parent).to eq(epic.parent.work_item)
+      expect(work_item.parent_link.relative_position).to eq(epic.relative_position)
+    else
+      expect(work_item.work_item_parent).to be_nil
+    end
+
     # Data we do not want to sync yet
     expect(work_item.notes).to be_empty
     expect(work_item.labels).to be_empty

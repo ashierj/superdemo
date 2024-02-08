@@ -245,6 +245,10 @@ module EE
       def service_accounts
         provisioned_users.service_account
       end
+
+      def epic_synced_with_work_item_enabled?
+        ::Feature.enabled?(:epic_creation_with_synced_work_item, self, type: :wip)
+      end
     end
 
     override :usage_quotas_enabled?

@@ -3510,4 +3510,18 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       end
     end
   end
+
+  describe '#epic_synced_with_work_item_enabled?' do
+    subject { group.epic_synced_with_work_item_enabled? }
+
+    it { is_expected.to be true }
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(epic_creation_with_synced_work_item: false)
+      end
+
+      it { is_expected.to be false }
+    end
+  end
 end
