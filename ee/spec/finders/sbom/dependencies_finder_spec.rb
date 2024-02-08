@@ -3,9 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_management do
-  let_it_be(:group) { create(:group) }
+  let_it_be(:organization) { create(:organization) }
+  let_it_be(:group) { create(:group, organization: organization) }
   let_it_be(:subgroup) { create(:group, parent: group) }
-  let_it_be(:project) { create(:project, group: subgroup) }
+  let_it_be(:project) { create(:project, organization: organization, group: subgroup) }
 
   let_it_be(:occurrence_1) do
     create(:sbom_occurrence, :mit, packager_name: 'nuget', project: project, highest_severity: 'low')
@@ -247,5 +248,11 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
 
     include_examples 'filter and sorting'
     include_examples 'group with project_id filters'
+  end
+
+  context 'with organization' do
+    let(:project_or_group) { organization }
+
+    include_examples 'filter and sorting'
   end
 end

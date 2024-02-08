@@ -118,6 +118,7 @@ module Sbom
         .where.not(sbom_licenses: { spdx_identifier: nil })
     end
     scope :with_project_route, -> { includes(project: :route).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/420046") }
+    scope :with_project_namespace, -> { includes(project: [namespace: :route]) }
     scope :with_source, -> { includes(:source) }
     scope :with_version, -> { includes(:component_version) }
     scope :with_component_source_version_project_and_pipeline, -> do

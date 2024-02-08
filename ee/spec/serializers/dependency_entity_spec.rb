@@ -153,5 +153,62 @@ RSpec.describe DependencyEntity, feature_category: :dependency_management do
         end
       end
     end
+
+    context 'with an organization' do
+      let_it_be(:organization) { create(:organization, :default) }
+      let_it_be(:project) { create(:project, organization: organization) }
+      let_it_be(:dependency) { create(:sbom_occurrence, :mit, :bundler, project: project) }
+
+      before do
+        stub_licensed_features(security_dashboard: true, license_scanning: true)
+
+        allow(request).to receive(:project).and_return(nil)
+        allow(request).to receive(:group).and_return(nil)
+        allow(request).to receive(:organization).and_return(organization)
+      end
+
+      context 'with admin mode enabled', :enable_admin_mode do
+        context 'when user is admin with admin mode enabled', :enable_admin_mode do
+          let_it_be(:user) { create(:user, :admin) }
+
+          it 'renders the proper representation' do
+            expect(subject.keys).to match_array([
+              :name, :packager, :version, :licenses, :location
+            ])
+
+            expect(subject[:name]).to eq(dependency.name)
+            expect(subject[:packager]).to eq(dependency.packager)
+            expect(subject[:version]).to eq(dependency.version)
+          end
+
+          it 'renders location' do
+            expect(subject.dig(:location, :blob_path)).to eq(dependency.location[:blob_path])
+            expect(subject.dig(:location, :path)).to eq(dependency.location[:path])
+          end
+
+          it 'renders each license' do
+            dependency.licenses.each_with_index do |_license, index|
+              expect(subject.dig(:licenses, index, :name)).to eq(dependency.licenses[index]['name'])
+              expect(subject.dig(:licenses, index, :spdx_identifier)).to eq(
+                dependency.licenses[index]['spdx_identifier']
+              )
+              expect(subject.dig(:licenses, index, :url)).to eq(dependency.licenses[index]['url'])
+            end
+          end
+        end
+
+        context 'when the user is not an admin' do
+          it 'renders the proper representation' do
+            expect(subject.keys).to match_array([
+              :name, :packager, :version, :location
+            ])
+
+            expect(subject[:name]).to eq(dependency.name)
+            expect(subject[:packager]).to eq(dependency.packager)
+            expect(subject[:version]).to eq(dependency.version)
+          end
+        end
+      end
+    end
   end
 end

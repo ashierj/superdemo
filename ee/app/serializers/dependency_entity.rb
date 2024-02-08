@@ -64,23 +64,23 @@ class DependencyEntity < Grape::Entity
   private
 
   def can_read_vulnerabilities?
-    can?(request.user, :read_security_resource, request.project) && !project_level_sbom_occurrences_enabled?
+    can?(request.user, :read_security_resource, request.try(:project)) && !project_level_sbom_occurrences_enabled?
   end
 
   def can_read_licenses?
-    (group? && can?(request.user, :read_licenses, group)) ||
-      can?(request.user, :read_licenses, request.project)
-  end
-
-  def group
-    request.respond_to?(:group) ? request.group : nil
+    can?(request.user, :read_licenses, subject)
   end
 
   def group?
-    group.present?
+    request.try(:group).present?
+  end
+
+  def subject
+    request.try(:project) || request.try(:group) || request.try(:organization)
   end
 
   def project_level_sbom_occurrences_enabled?
-    Feature.enabled?(:project_level_sbom_occurrences, request.project)
+    project = request.try(:project)
+    project.present? && Feature.enabled?(:project_level_sbom_occurrences, project)
   end
 end

@@ -2,6 +2,7 @@ import { s__ } from '~/locale';
 
 export const NAMESPACE_PROJECT = 'project';
 export const NAMESPACE_GROUP = 'group';
+export const NAMESPACE_ORGANIZATION = 'organization';
 
 export const DEPENDENCIES_TABLE_I18N = {
   component: s__('Dependencies|Component'),
