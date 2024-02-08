@@ -5,7 +5,9 @@ module BranchRules
     def execute
       raise Gitlab::Access::AccessDeniedError unless can_destroy_branch_rule?
 
-      return destroy_protected_branch if branch_rule.is_a?(Projects::BranchRule)
+      return destroy_protected_branch if branch_rule.instance_of?(Projects::BranchRule)
+
+      yield if block_given?
 
       ServiceResponse.error(message: 'Unknown branch rule type.')
     end
@@ -25,3 +27,5 @@ module BranchRules
     end
   end
 end
+
+BranchRules::DestroyService.prepend_mod

@@ -13,3 +13,5 @@ module BranchRules
     end
   end
 end
+
+BranchRules::BaseService.prepend_mod
