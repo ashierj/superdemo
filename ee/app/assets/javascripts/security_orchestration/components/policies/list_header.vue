@@ -2,17 +2,21 @@
 import { GlAlert, GlButton, GlIcon, GlSprintf } from '@gitlab/ui';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NEW_POLICY_BUTTON_TEXT } from '../constants';
+import ExperimentFeaturesBanner from './experiment_features_banner.vue';
 import ProjectModal from './project_modal.vue';
 
 export default {
   components: {
+    ExperimentFeaturesBanner,
     GlAlert,
     GlButton,
     GlIcon,
     GlSprintf,
     ProjectModal,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: [
     'assignedPolicyProject',
     'disableSecurityPolicyProject',
@@ -39,6 +43,11 @@ export default {
     };
   },
   computed: {
+    feedbackBannerEnabled() {
+      return (
+        this.glFeatures.securityPoliciesPolicyScope || this.glFeatures.compliancePipelineInPolicies
+      );
+    },
     hasAssignedPolicyProject() {
       return Boolean(this.assignedPolicyProject?.id);
     },
@@ -83,48 +92,58 @@ export default {
     >
       {{ alertText }}
     </gl-alert>
-    <header class="gl-my-6 gl-display-flex gl-align-items-flex-start">
-      <div class="gl-flex-grow-1 gl-my-0">
-        <h2 class="gl-mt-0">
-          {{ $options.i18n.title }}
-        </h2>
-        <p data-testid="policies-subheader">
-          <gl-sprintf :message="$options.i18n.subtitle">
-            <template #link="{ content }">
-              <gl-button class="gl-pb-1!" variant="link" :href="documentationPath" target="_blank">
-                {{ content }}
-              </gl-button>
-            </template>
-          </gl-sprintf>
-        </p>
+    <header class="gl-my-6 gl-display-flex gl-flex-direction-column">
+      <div class="gl-display-flex gl-align-items-flex-start">
+        <div class="gl-flex-grow-1 gl-my-0">
+          <h2 class="gl-mt-0">
+            {{ $options.i18n.title }}
+          </h2>
+          <p data-testid="policies-subheader">
+            <gl-sprintf :message="$options.i18n.subtitle">
+              <template #link="{ content }">
+                <gl-button
+                  class="gl-pb-1!"
+                  variant="link"
+                  :href="documentationPath"
+                  target="_blank"
+                >
+                  {{ content }}
+                </gl-button>
+              </template>
+            </gl-sprintf>
+          </p>
+        </div>
+        <gl-button
+          v-if="!disableSecurityPolicyProject"
+          data-testid="edit-project-policy-button"
+          class="gl-mr-4"
+          :loading="projectIsBeingLinked"
+          @click="showNewPolicyModal"
+        >
+          {{ $options.i18n.editPolicyProjectButtonText }}
+        </gl-button>
+        <gl-button
+          v-else-if="hasAssignedPolicyProject"
+          data-testid="view-project-policy-button"
+          class="gl-mr-3"
+          target="_blank"
+          :href="securityPolicyProjectPath"
+        >
+          <gl-icon name="external-link" />
+          {{ $options.i18n.viewPolicyProjectButtonText }}
+        </gl-button>
+        <gl-button
+          v-if="!disableScanPolicyUpdate"
+          data-testid="new-policy-button"
+          variant="confirm"
+          :href="newPolicyPath"
+        >
+          {{ $options.i18n.newPolicyButtonText }}
+        </gl-button>
       </div>
-      <gl-button
-        v-if="!disableSecurityPolicyProject"
-        data-testid="edit-project-policy-button"
-        class="gl-mr-4"
-        :loading="projectIsBeingLinked"
-        @click="showNewPolicyModal"
-      >
-        {{ $options.i18n.editPolicyProjectButtonText }}
-      </gl-button>
-      <gl-button
-        v-else-if="hasAssignedPolicyProject"
-        data-testid="view-project-policy-button"
-        class="gl-mr-3"
-        target="_blank"
-        :href="securityPolicyProjectPath"
-      >
-        <gl-icon name="external-link" />
-        {{ $options.i18n.viewPolicyProjectButtonText }}
-      </gl-button>
-      <gl-button
-        v-if="!disableScanPolicyUpdate"
-        data-testid="new-policy-button"
-        variant="confirm"
-        :href="newPolicyPath"
-      >
-        {{ $options.i18n.newPolicyButtonText }}
-      </gl-button>
+
+      <experiment-features-banner v-if="feedbackBannerEnabled" />
+
       <project-modal
         :visible="modalVisible"
         @close="modalVisible = false"
