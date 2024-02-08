@@ -2844,7 +2844,7 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
-  describe '#code_suggestions_add_on_available_namespace_ids' do
+  describe '#duo_pro_add_on_available_namespace_ids' do
     let_it_be(:code_suggestions_add_on) { create(:gitlab_subscription_add_on) }
     let_it_be(:user) { create(:user) }
 
@@ -2858,7 +2858,7 @@ RSpec.describe User, feature_category: :system_access do
 
     let(:active_code_suggestion_purchase_namespace_id) { active_code_suggestion_purchase.namespace_id }
 
-    subject(:code_suggestions_add_on_available_namespace_ids) { user.code_suggestions_add_on_available_namespace_ids }
+    subject(:duo_pro_add_on_available_namespace_ids) { user.duo_pro_add_on_available_namespace_ids }
 
     context 'when the user has an active assigned code suggestions seat' do
       it 'returns the namespace ID' do
@@ -2868,7 +2868,7 @@ RSpec.describe User, feature_category: :system_access do
           add_on_purchase: active_code_suggestion_purchase
         )
 
-        expect(code_suggestions_add_on_available_namespace_ids).to eq([active_code_suggestion_purchase.namespace_id])
+        expect(duo_pro_add_on_available_namespace_ids).to eq([active_code_suggestion_purchase.namespace_id])
       end
     end
 
@@ -2890,7 +2890,7 @@ RSpec.describe User, feature_category: :system_access do
           add_on_purchase: active_code_suggestion_purchase_2
         )
 
-        expect(code_suggestions_add_on_available_namespace_ids)
+        expect(duo_pro_add_on_available_namespace_ids)
           .to contain_exactly(active_code_suggestion_purchase.namespace_id, active_code_suggestion_purchase_2.namespace_id)
       end
     end
@@ -2903,13 +2903,13 @@ RSpec.describe User, feature_category: :system_access do
           add_on_purchase: expired_code_suggestion_purchase
         )
 
-        expect(code_suggestions_add_on_available_namespace_ids).to be_empty
+        expect(duo_pro_add_on_available_namespace_ids).to be_empty
       end
     end
 
     context 'when the user has no add on seat assignments' do
       it 'returns empty' do
-        expect(code_suggestions_add_on_available_namespace_ids).to be_empty
+        expect(duo_pro_add_on_available_namespace_ids).to be_empty
       end
     end
 
@@ -3087,18 +3087,18 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
-  describe '#code_suggestions_add_on_available?' do
-    subject { user.code_suggestions_add_on_available? }
+  describe '#duo_pro_add_on_available?' do
+    subject { user.duo_pro_add_on_available? }
 
     context 'on saas', :saas do
       it 'returns true when the user belongs to a namespace with an add-on subscription' do
-        allow(user).to receive(:code_suggestions_add_on_available_namespace_ids).and_return([1])
+        allow(user).to receive(:duo_pro_add_on_available_namespace_ids).and_return([1])
 
         is_expected.to eq(true)
       end
 
       it 'returns false when the user does not belong to a namespace with add-on subscription' do
-        allow(user).to receive(:code_suggestions_add_on_available_namespace_ids).and_return([])
+        allow(user).to receive(:duo_pro_add_on_available_namespace_ids).and_return([])
 
         is_expected.to eq(false)
       end
@@ -3117,8 +3117,8 @@ RSpec.describe User, feature_category: :system_access do
           create(:gitlab_subscription_user_add_on_assignment, user: user, add_on_purchase: add_on_purchase)
         end
 
-        it 'returns true' do
-          expect(user.code_suggestions_add_on_available?).to be_truthy
+        it 'return true' do
+          expect(user.duo_pro_add_on_available?).to be_truthy
         end
 
         context 'when the add_on_purchase has expired' do
@@ -3127,14 +3127,14 @@ RSpec.describe User, feature_category: :system_access do
           end
 
           it 'returns false' do
-            expect(user.code_suggestions_add_on_available?).to eq(false)
+            expect(user.duo_pro_add_on_available?).to eq(false)
           end
         end
       end
 
-      context 'when the user is not assigned' do
-        it 'returns false' do
-          expect(user.code_suggestions_add_on_available?).to be_falsey
+      context "when the user is not assigned" do
+        it 'return false' do
+          expect(user.duo_pro_add_on_available?).to be_falsey
         end
       end
     end

@@ -128,7 +128,7 @@ module API
           # rubocop: disable Style/SoleNestedConditional -- Feature Flag shouldn't be checked in the same condition.
           if Gitlab.org_or_com?
             if ::Feature.enabled?(:purchase_code_suggestions)
-              not_found! unless current_user.code_suggestions_add_on_available?
+              not_found! unless current_user.duo_pro_add_on_available?
             end
           end
           # rubocop: enable Style/SoleNestedConditional
