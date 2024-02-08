@@ -2957,10 +2957,10 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     subject { described_class.new(current_user, group) }
 
     context 'when on SaaS instance', :saas do
-      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :premium_plan) }
 
       context 'when container is a group with AI enabled' do
-        include_context 'with ai features enabled for group'
+        include_context 'with ai chat enabled for group on SaaS'
 
         context 'when user is a member of the group' do
           before do
@@ -2969,7 +2969,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
           it { is_expected.to be_allowed(:access_duo_chat) }
 
-          context 'when the group does not have an Ultimate SaaS license' do
+          context 'when the group does not have an Premium SaaS license' do
             let_it_be(:group) { create(:group) }
 
             it { is_expected.to be_disallowed(:access_duo_chat) }
@@ -2992,7 +2992,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
           end
 
           context 'when container is a group' do
-            include_context 'with experiment features disabled for group'
+            include_context 'with ai features disabled and licensed chat for group on SaaS'
 
             it 'returns false' do
               allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)

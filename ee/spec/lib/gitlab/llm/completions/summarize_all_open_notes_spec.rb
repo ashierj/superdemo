@@ -127,7 +127,8 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
         summarize_notes: true,
         ai_features: true,
         epics: true,
-        experimental_features: true
+        experimental_features: true,
+        ai_chat: true
       )
       group.namespace_settings.update!(experiment_features_enabled: true)
       project.reload

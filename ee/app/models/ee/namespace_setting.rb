@@ -79,7 +79,7 @@ module EE
       def experiment_settings_allowed?
         namespace.root? &&
           ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-          namespace.feature_available?(:experimental_features)
+          (namespace.feature_available?(:experimental_features) || namespace.feature_available?(:ai_chat))
       end
 
       def product_analytics_settings_allowed?

@@ -458,11 +458,12 @@ RSpec.describe NamespaceSetting, feature_category: :groups_and_projects, type: :
   describe '.experiment_settings_allowed?' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:check_namespace_plan, :licensed_feature, :is_root, :result) do
-      true  | true  | true  | true
-      false | true  | true  | false
-      true  | false | true  | false
-      true  | true  | false | false
+    where(:check_namespace_plan, :licensed_feature, :is_root, :ai_chat, :result) do
+      true  | true  | true  | true  | true
+      false | true  | true  | true  | false
+      true  | false | true  | false | false
+      true  | true  | false | true  | false
+      true  | false | true  | true  | true
     end
 
     with_them do
@@ -472,6 +473,7 @@ RSpec.describe NamespaceSetting, feature_category: :groups_and_projects, type: :
       before do
         allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_namespace_plan)
         allow(group).to receive(:licensed_feature_available?).with(:experimental_features).and_return(licensed_feature)
+        allow(group).to receive(:licensed_feature_available?).with(:ai_chat).and_return(ai_chat)
         allow(group).to receive(:root?).and_return(is_root)
       end
 

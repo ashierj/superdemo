@@ -69,7 +69,7 @@ RSpec.describe Llm::ChatService, feature_category: :duo_chat do
   end
 
   context 'for saas', :saas do
-    let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be_with_reload(:group) { create(:group_with_plan, plan: :premium_plan) }
     let_it_be(:project) { create(:project, group: group) }
     let_it_be(:issue) { create(:issue, project: project) }
 

@@ -43,7 +43,8 @@ module Gitlab
           root_ancestor = container&.root_ancestor
           return false unless root_ancestor&.experiment_features_enabled
 
-          root_ancestor.licensed_feature_available?(:ai_features)
+          licensed_feature = feature == :chat ? :ai_chat : :ai_features
+          root_ancestor.licensed_feature_available?(licensed_feature)
         end
       end
     end

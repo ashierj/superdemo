@@ -93,7 +93,7 @@ module EE
         next false unless @user
         next true unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
 
-        user.any_group_with_ai_available?
+        user.any_group_with_ai_chat_available?
       end
 
       condition(:user_belongs_to_paid_namespace) do
