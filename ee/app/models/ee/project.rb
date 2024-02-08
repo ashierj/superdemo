@@ -18,11 +18,24 @@ module EE
 
     module FilterByBranch
       def applicable_to_branch(branch)
-        includes(:protected_branches).select { |rule| rule.applies_to_branch?(branch) }
+        preload_protected_branches
+
+        select { |rule| rule.applies_to_branch?(branch) }
       end
 
       def inapplicable_to_branch(branch)
-        includes(:protected_branches).reject { |rule| rule.applies_to_branch?(branch) }
+        preload_protected_branches
+
+        reject { |rule| rule.applies_to_branch?(branch) }
+      end
+
+      private
+
+      def preload_protected_branches
+        ActiveRecord::Associations::Preloader.new(
+          records: self,
+          associations: [:protected_branches]
+        ).call
       end
     end
 

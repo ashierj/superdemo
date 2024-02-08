@@ -27,6 +27,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
   scope :code_owner_approval_optional, -> { code_owner.where(approvals_required: 0) }
   scope :code_owner_approval_required, -> { code_owner.where('approvals_required > 0') }
   scope :with_added_approval_rules, -> { left_outer_joins(:approval_merge_request_rule_source).where(approval_merge_request_rule_sources: { approval_merge_request_rule_id: nil }) }
+  scope :applicable_post_merge, -> { where(applicable_post_merge: [true, nil]) }
 
   validates :name, uniqueness: { scope: [:merge_request_id, :rule_type, :section, :applicable_post_merge] }, unless: :scan_finding?
   validates :name, uniqueness: { scope: [:merge_request_id, :rule_type, :section, :security_orchestration_policy_configuration_id, :orchestration_policy_idx] }, if: :scan_finding?
