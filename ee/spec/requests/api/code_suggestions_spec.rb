@@ -6,12 +6,13 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   include WorkhorseHelpers
 
   let_it_be(:authorized_user) { create(:user) }
+  let_it_be(:unauthorized_user) { build(:user) }
   let_it_be(:tokens) do
     {
       api: create(:personal_access_token, scopes: %w[api], user: authorized_user),
       read_api: create(:personal_access_token, scopes: %w[read_api], user: authorized_user),
       ai_features: create(:personal_access_token, scopes: %w[ai_features], user: authorized_user),
-      unauthorized_user: create(:personal_access_token, scopes: %w[api], user: build(:user))
+      unauthorized_user: create(:personal_access_token, scopes: %w[api], user: unauthorized_user)
     }
   end
 
@@ -25,6 +26,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     allow(Ability).to receive(:allowed?).and_call_original
     allow(Ability).to receive(:allowed?).with(authorized_user, :access_code_suggestions, :global)
                                         .and_return(access_code_suggestions)
+    allow(Ability).to receive(:allowed?).with(unauthorized_user, :access_code_suggestions, :global)
+                                        .and_return(false)
 
     allow(Gitlab::InternalEvents).to receive(:track_event)
   end
@@ -124,7 +127,9 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     context 'when using token with :read_api scope but for an unauthorized user' do
       let(:access_token) { tokens[:unauthorized_user] }
 
-      it { expect(response).to have_gitlab_http_status(:unauthorized) }
+      it 'checks access_code_suggestions ability for user and return 401 unauthorized' do
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
     end
   end
 
