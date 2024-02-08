@@ -23,7 +23,7 @@ module EE
     GROUP_WITH_AI_CHAT_ENABLED_CACHE_PERIOD = 1.hour
     GROUP_WITH_AI_CHAT_ENABLED_CACHE_KEY = 'group_with_ai_chat_enabled'
 
-    CODE_SUGGESTIONS_ADD_ON_CACHE_KEY = 'user-%{user_id}-code-suggestions-add-on-cache'
+    DUO_PRO_ADD_ON_CACHE_KEY = 'user-%{user_id}-code-suggestions-add-on-cache'
     CODE_SUGGESTIONS_ENABLED_NAMESPACES_IDS_CACHE_KEY = 'user-%{user_id}-code-suggestions-enabled-namespaces-ids-cache'
 
     prepended do
@@ -602,8 +602,8 @@ module EE
       !groups.roots.joins(:namespace_settings).where(namespace_settings: { code_suggestions: true }).any?
     end
 
-    def code_suggestions_add_on_available_namespace_ids
-      cache_key = format(CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: self.id)
+    def duo_pro_add_on_available_namespace_ids
+      cache_key = format(DUO_PRO_ADD_ON_CACHE_KEY, user_id: self.id)
 
       Rails.cache.fetch(cache_key, expires_in: 1.hour) do
         if ::Feature.enabled?(:code_suggestions_user_assignments, self)
@@ -625,8 +625,8 @@ module EE
       end
     end
 
-    def code_suggestions_add_on_available?
-      return code_suggestions_add_on_available_namespace_ids.any? if gitlab_com_subscription?
+    def duo_pro_add_on_available?
+      return duo_pro_add_on_available_namespace_ids.any? if gitlab_com_subscription?
 
       GitlabSubscriptions::UserAddOnAssignment.by_user(self).for_active_code_suggestions_purchase.any?
     end

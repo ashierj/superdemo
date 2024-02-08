@@ -63,7 +63,7 @@ module EE
         next true if ::Gitlab.org_or_com?
 
         if ::CodeSuggestions::SelfManaged::SERVICE_START_DATE.past?
-          @user.code_suggestions_add_on_available?
+          @user.duo_pro_add_on_available?
         else # Before service start date
           # TODO: Remove this else branch after the service start date
           ::Gitlab::CurrentSettings.instance_level_code_suggestions_enabled
@@ -77,23 +77,26 @@ module EE
         @user.code_suggestions_disabled_by_group?
       end
 
-      condition(:duo_chat_enabled_by_instance) do
+      condition(:duo_chat_enabled) do
         next true if ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
+        next false unless ::License.feature_available?(:ai_chat)
 
-        ::Gitlab::CurrentSettings.instance_level_ai_beta_features_enabled?
-      end
-
-      condition(:duo_chat_licensed) do
-        next true if ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
-
-        ::License.feature_available?(:ai_chat)
+        if duo_chat_start_date_in_past?
+          @user.duo_pro_add_on_available?
+        else # Before service start date
+          ::Gitlab::CurrentSettings.instance_level_ai_beta_features_enabled?
+        end
       end
 
       condition(:user_allowed_to_use_chat) do
         next false unless @user
         next true unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
 
-        user.any_group_with_ai_chat_available?
+        if ::Feature.enabled?(:purchase_code_suggestions) && duo_chat_start_date_in_past?
+          @user.duo_pro_add_on_available?
+        else
+          @user.any_group_with_ai_chat_available?
+        end
       end
 
       condition(:user_belongs_to_paid_namespace) do
@@ -172,13 +175,19 @@ module EE
         .enable :access_code_suggestions
       rule { code_suggestions_disabled_by_group }.prevent :access_code_suggestions
 
-      rule { duo_chat_licensed & duo_chat_enabled_by_instance & user_allowed_to_use_chat }.enable :access_duo_chat
+      rule { user_allowed_to_use_chat & duo_chat_enabled }.enable :access_duo_chat
 
       rule { runner_upgrade_management_available | user_belongs_to_paid_namespace }.enable :read_runner_upgrade_status
 
       rule { security_policy_bot }.policy do
         enable :access_git
       end
+    end
+
+    def duo_chat_start_date_in_past?
+      start_date = CloudConnector::Access.service_start_date_for('duo_chat')
+
+      start_date && start_date.past?
     end
   end
 end
