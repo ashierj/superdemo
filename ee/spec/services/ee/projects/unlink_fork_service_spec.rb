@@ -10,6 +10,10 @@ RSpec.describe Projects::UnlinkForkService, :use_clean_rails_memory_store_cachin
   let_it_be(:project) { create(:project, :public) }
   let_it_be(:user) { create(:user) }
 
+  before do
+    stub_ee_application_setting(elasticsearch_indexing?: true)
+  end
+
   context 'when forked project is unlinked from parent' do
     let!(:forked_project) { fork_project(project, user) }
 
@@ -33,6 +37,11 @@ RSpec.describe Projects::UnlinkForkService, :use_clean_rails_memory_store_cachin
                                                      target_type: forked_project.class.name
                                                    }
                                                  })
+    end
+
+    it 'calls process bookeeping service' do
+      expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(forked_project).once
+      service.execute
     end
 
     it 'creates an audit when project statistics are not refreshed' do
@@ -73,6 +82,11 @@ RSpec.describe Projects::UnlinkForkService, :use_clean_rails_memory_store_cachin
 
     it 'does not create an audit event' do
       expect { service.execute }.not_to change(AuditEvent, :count)
+    end
+
+    it 'does not call process bookeeping service' do
+      service.execute
+      expect(::Elastic::ProcessBookkeepingService).not_to receive(:track!)
     end
   end
 end

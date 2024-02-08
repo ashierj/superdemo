@@ -8,7 +8,10 @@ module EE
       override :execute
       def execute(refresh_statistics: true)
         super.tap do |result|
-          log_audit_event if result.present?
+          if result.present?
+            log_audit_event
+            project.maintain_elasticsearch_update if project.maintaining_elasticsearch?
+          end
         end
       end
 
