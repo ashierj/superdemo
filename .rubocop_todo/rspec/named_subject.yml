@@ -3181,7 +3181,6 @@ RSpec/NamedSubject:
     - 'spec/services/ci/unlock_artifacts_service_spec.rb'
     - 'spec/services/ci/update_build_queue_service_spec.rb'
     - 'spec/services/ci/update_build_state_service_spec.rb'
-    - 'spec/services/ci/update_instance_variables_service_spec.rb'
     - 'spec/services/clusters/agent_tokens/create_service_spec.rb'
     - 'spec/services/clusters/agent_tokens/revoke_service_spec.rb'
     - 'spec/services/clusters/agent_tokens/track_usage_service_spec.rb'
