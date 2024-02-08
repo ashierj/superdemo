@@ -28,7 +28,7 @@ module SystemCheck
           'Add a new license that includes the GitLab Geo feature'
         )
 
-        for_more_information('https://about.gitlab.com/features/gitlab-geo/')
+        for_more_information('https://about.gitlab.com/solutions/geo/')
       end
     end
   end

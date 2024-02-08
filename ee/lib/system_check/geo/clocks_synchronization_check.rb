@@ -27,7 +27,7 @@ module SystemCheck
           'Enable an NTP update service on this machine to keep clocks synchronized'
         )
 
-        for_more_information('administration/geo/replication/troubleshooting#health-check-rake-task')
+        for_more_information(help_replication_check)
 
         false
       rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, SocketError
@@ -45,7 +45,11 @@ module SystemCheck
           "but make sure you have a way to keep clocks synced."
         )
 
-        for_more_information('administration/geo/replication/troubleshooting#health-check-rake-task')
+        for_more_information(help_replication_check)
+      end
+
+      def help_replication_check
+        construct_help_page_url('administration/geo/replication/troubleshooting', anchor: 'health-check-rake-task')
       end
 
       private

@@ -97,6 +97,8 @@ RSpec.describe SystemCheck::Geo::ClocksSynchronizationCheck, :silence_stdout, fe
         allow(subject).to receive(:ntp_request).and_raise(Errno::ECONNREFUSED)
 
         expect_warning('NTP Server pool.ntp.org cannot be reached')
+        expect(subject).to receive(:for_more_information).with(subject.help_replication_check)
+
         subject.multi_check
       end
     end
