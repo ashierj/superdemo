@@ -9,8 +9,7 @@ export default {
     GlAreaChart,
   },
   i18n: {
-    seriesName: s__('CICDAnalytics|Shared runner pipeline minute duration by month'),
-    noSharedRunnerMinutesUsage: s__('CICDAnalytics|No shared runner minute usage data available'),
+    seriesName: s__('CICDAnalytics|Instance runner pipeline minute duration by month'),
   },
   props: {
     selectedYear: {
