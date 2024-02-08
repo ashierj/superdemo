@@ -3,6 +3,7 @@ import {
   findCurrentMonthUsage,
   findPreviousMonthUsage,
   mapMonthlyTotals,
+  monthlyTotalsValidator,
 } from 'ee/usage_quotas/product_analytics/components/utils';
 import {
   getProjectUsage,
@@ -110,6 +111,52 @@ describe('Product analytics usage quota component utils', () => {
       const result = projectsUsageDataValidator([testCase]);
 
       expect(result).toBe(false);
+    });
+  });
+
+  describe('monthlyTotalsValidator', () => {
+    it('should return true for a valid array of monthly totals', () => {
+      const items = [
+        ['Nov 2023', 10],
+        ['Dec 2023', 12],
+        ['Jan 2024', 15],
+      ];
+
+      const isValid = monthlyTotalsValidator(items);
+
+      expect(isValid).toBe(true);
+    });
+
+    it('should return false if not given an array of arrays', () => {
+      const items = ['Nov 2023', 10];
+
+      const isValid = monthlyTotalsValidator(items);
+
+      expect(isValid).toBe(false);
+    });
+
+    it('should return false for an array that contains an invalid date label', () => {
+      const items = [
+        [false, 10],
+        ['12 2023', 12],
+        ['Jan 2024', 15],
+      ];
+
+      const isValid = monthlyTotalsValidator(items);
+
+      expect(isValid).toBe(false);
+    });
+
+    it('should return false for an array that contains an invalid count', () => {
+      const items = [
+        ['Nov 2023', 10],
+        ['Dec 2023', '12'],
+        ['Jan 2024', 15],
+      ];
+
+      const isValid = monthlyTotalsValidator(items);
+
+      expect(isValid).toBe(false);
     });
   });
 
