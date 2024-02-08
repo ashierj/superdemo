@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Integrations::Jira do
+RSpec.describe Integrations::Jira, feature_category: :integrations do
   let(:jira_integration) { build(:jira_integration, **options) }
   let(:headers) { { 'Content-Type' => 'application/json' } }
 
@@ -105,7 +105,7 @@ RSpec.describe Integrations::Jira do
 
       context 'when vulnerabilities integration is not enabled' do
         before do
-          allow(jira_integration.project).to receive(:jira_vulnerabilities_integration_enabled?).and_return(false)
+          allow(jira_integration).to receive(:jira_vulnerabilities_integration_enabled?).and_return(false)
         end
 
         it { is_expected.to eq(success: true, result: { jira: true }) }
@@ -113,7 +113,7 @@ RSpec.describe Integrations::Jira do
 
       context 'when vulnerabilities integration is enabled' do
         before do
-          allow(jira_integration.project).to receive(:jira_vulnerabilities_integration_enabled?).and_return(true)
+          allow(jira_integration).to receive(:jira_vulnerabilities_integration_enabled?).and_return(true)
         end
 
         context 'when deployment type is cloud' do
