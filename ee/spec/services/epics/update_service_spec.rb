@@ -697,6 +697,20 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
           end
         end
 
+        shared_examples 'calls correct EpicLinks service' do |service_type|
+          it 'calls correct service' do
+            service_class = "Epics::EpicLinks::#{service_type.capitalize}Service".constantize
+            params = service_type == 'create' ? [new_parent, user, { target_issuable: epic }] : [epic, user]
+
+            allow_next_instance_of(service_class) do |service|
+              allow(service).to receive(:execute).and_return({ status: :success })
+            end
+
+            expect(service_class).to receive(:new).with(*params)
+            subject
+          end
+        end
+
         it 'creates system notes' do
           expect { subject }.to change { epic.parent }.from(nil).to(new_parent)
                                                       .and change { Note.count }.by(2)
@@ -709,6 +723,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
           expect(new_parent.notes.first.note).to eq("added epic #{child_ref} as child epic")
         end
 
+        it_behaves_like 'calls correct EpicLinks service', 'create'
         it_behaves_like 'records parent changed after saving'
 
         context 'when parent is already present' do
@@ -731,12 +746,13 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
             expect(existing_parent.notes.first.note).to eq("moved child epic #{child_ref} to epic #{new_ref}")
           end
 
+          it_behaves_like 'calls correct EpicLinks service', 'create'
           it_behaves_like 'records parent changed after saving'
 
           context 'when removing parent' do
             subject { update_epic(parent: nil) }
 
-            it 'removed parent and creates system notes' do
+            it 'removes parent and creates system notes' do
               expect { subject }.to change { epic.parent }.from(existing_parent).to(nil)
                                                           .and change { Note.count }.by(2)
 
@@ -748,7 +764,27 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
               expect(existing_parent.notes.first.note).to eq("removed child epic #{child_ref}")
             end
 
+            it_behaves_like 'calls correct EpicLinks service', 'destroy'
             it_behaves_like 'records parent changed after saving'
+
+            context 'when user cannot access parent' do
+              before do
+                allow(Ability).to receive(:allowed?).and_call_original
+                allow(Ability).to receive(:allowed?)
+                                    .with(user, :read_epic_relation, existing_parent).and_return(false)
+              end
+
+              it 'does not change parent' do
+                expect { subject }.not_to change { epic.parent }
+              end
+
+              it 'does not create notes or track change' do
+                expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
+                  .not_to receive(:track_epic_parent_updated_action)
+
+                expect { subject }.not_to change { Note.count }
+              end
+            end
           end
         end
       end
@@ -772,7 +808,8 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                 title: 'New title',
                 description: 'New description',
                 confidential: true,
-                external_key: 'external_test_key'
+                external_key: 'external_test_key',
+                parent: parent_epic
               }
             end
 

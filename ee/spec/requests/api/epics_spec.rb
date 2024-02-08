@@ -719,6 +719,17 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
           expect(epic.text_color).to be_color(::EE::Epic::DEFAULT_COLOR.contrast)
         end
 
+        it 'calls EpicLinks service' do
+          allow_next_instance_of(::Epics::EpicLinks::CreateService) do |service|
+            allow(service).to receive(:execute).and_return({ status: :success })
+          end
+
+          post api(url, user), params: params
+
+          expect(::Epics::EpicLinks::CreateService)
+            .to have_received(:new).with(parent_epic, user, { target_issuable: Epic.last })
+        end
+
         context 'when we specify a color by hex code' do
           let(:params) do
             {
@@ -1006,7 +1017,9 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
           include_context 'with labels'
 
           it 'updates the epic with labels param as array' do
-            allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(112)
+            # TODO: reduce threshold after epic-work item sync
+            # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
+            allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(125)
 
             params[:labels] = ['label1', 'label2', 'foo, bar', '&,?']
 

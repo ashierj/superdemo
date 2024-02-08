@@ -36,6 +36,7 @@ module Epics
       track_changes(epic)
 
       assign_parent_epic_for(epic)
+      remove_parent_epic_for(epic)
       assign_child_epic_for(epic)
 
       epic

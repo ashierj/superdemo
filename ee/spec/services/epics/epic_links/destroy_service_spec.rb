@@ -115,6 +115,94 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
 
           include_examples 'returns not found error'
         end
+
+        context 'when epic has synced work item' do
+          let_it_be(:parent) { create(:work_item, :epic, namespace: child_epic_group) }
+          let_it_be(:child) { create(:work_item, :epic, namespace: child_epic_group) }
+          let_it_be(:parent_link) { create(:parent_link, work_item_parent: parent, work_item: child) }
+
+          before_all do
+            child_epic_group.add_reporter(user)
+            child_epic.update!(issue_id: child.id)
+            parent_epic.update!(issue_id: parent.id)
+          end
+
+          it 'removes epic relationship and destroy work item parent link' do
+            expect { remove_epic_relation(child_epic) }.to change { parent_epic.children.count }.by(-1)
+              .and(change { WorkItems::ParentLink.count }.by(-1))
+
+            expect(parent_epic.reload.children).not_to include(child_epic)
+            expect(parent.reload.work_item_children).not_to include(child)
+          end
+
+          it 'does not create resource event for the work item' do
+            expect(WorkItems::ResourceLinkEvent).not_to receive(:create)
+
+            expect { remove_epic_relation(child_epic) }.to change { parent_epic.children.count }.by(-1)
+              .and(change { WorkItems::ParentLink.count }.by(-1))
+          end
+
+          it 'creates system notes only for the epics' do
+            expect { remove_epic_relation(child_epic) }.to change { Note.system.count }.by(2)
+            expect(parent_epic.notes.last.note).to eq("removed child epic #{child_epic.to_reference(full: true)}")
+            expect(child_epic.notes.last.note).to eq("removed parent epic #{parent_epic.to_reference(full: true)}")
+          end
+
+          context 'when removing child epic fails' do
+            before do
+              allow(child_epic).to receive(:update!).and_raise(ActiveRecord::RecordInvalid.new(child_epic), 'error')
+            end
+
+            it 'raises an error and does not remove relationships' do
+              expect { remove_epic_relation(child_epic) }.to raise_error ActiveRecord::RecordInvalid
+              expect(parent_epic.reload.children).to include(child_epic)
+              expect(parent.reload.work_item_children).to include(child)
+            end
+          end
+
+          context 'when destroying work item parent link fails' do
+            before do
+              allow_next_instance_of(::WorkItems::ParentLinks::DestroyService) do |service|
+                allow(service).to receive(:execute).and_return({ status: :error, message: 'error message' })
+              end
+            end
+
+            it 'does not remove parent epic or destroy work item parent link' do
+              expect { remove_epic_relation(child_epic) }.to not_change { parent_epic.children.count }
+                .and(not_change { WorkItems::ParentLink.count })
+
+              expect(parent_epic.reload.children).to include(child_epic)
+              expect(parent.reload.work_item_children).to include(child)
+            end
+
+            it 'logs error' do
+              allow(Gitlab::EpicWorkItemSync::Logger).to receive(:error).and_call_original
+              expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error).with({
+                child_id: child_epic.id,
+                error_message: 'error message',
+                group_id: child_epic.group.id,
+                message: 'Not able to remove epic parent',
+                parent_id: parent_epic.id
+              })
+
+              remove_epic_relation(child_epic)
+            end
+          end
+
+          context 'when epic_creation_with_synced_work_item feature flag is disabled' do
+            before do
+              stub_feature_flags(epic_creation_with_synced_work_item: false)
+            end
+
+            it 'removes relationship only for the child epic' do
+              expect { remove_epic_relation(child_epic) }.to change { parent_epic.children.count }.by(-1)
+                .and(not_change { WorkItems::ParentLink.count })
+
+              expect(parent_epic.reload.children).not_to include(child_epic)
+              expect(parent.reload.work_item_children).to include(child)
+            end
+          end
+        end
       end
     end
   end

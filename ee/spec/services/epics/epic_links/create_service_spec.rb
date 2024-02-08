@@ -499,6 +499,147 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
           include_examples 'returns success'
         end
       end
+
+      context 'when child and parent epics have a synced work item' do
+        let_it_be(:parent_work_item) { create(:work_item, :epic, namespace: group) }
+        let_it_be(:child_work_item) { create(:work_item, :epic, namespace: group) }
+        let_it_be(:parent_epic) { create(:epic, group: group, issue_id: parent_work_item.id) }
+        let_it_be(:child_epic) { create(:epic, group: group, issue_id: child_work_item.id, title: 'The child epic') }
+
+        let(:params) { { issuable_references: [child_epic.to_reference] } }
+
+        subject(:create_link) { described_class.new(parent_epic, user, params).execute }
+
+        before_all do
+          group.add_reporter(user)
+        end
+
+        shared_examples 'rollback changes when creation fails' do
+          context 'when work item link creation fails' do
+            before do
+              allow_next_instance_of(WorkItems::ParentLinks::CreateService) do |service|
+                allow(service).to receive(:execute).and_return({ status: :error, message: 'error message' })
+              end
+            end
+
+            it 'does not create relationships for the epic or the work item' do
+              expect { create_link }.to not_change { parent_epic.children.count }
+                .and(not_change { WorkItems::ParentLink.count })
+            end
+
+            it 'logs error' do
+              allow(Gitlab::EpicWorkItemSync::Logger).to receive(:error).and_call_original
+              expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error).with({
+                child_id: child_epic.id,
+                error_message: 'error message',
+                group_id: group.id,
+                message: 'Not able to set epic parent',
+                parent_id: parent_epic.id
+              })
+
+              create_link
+            end
+          end
+
+          context 'when epic link creation fails' do
+            it 'does not create relationships for the epic or the work item' do
+              allow_next_found_instance_of(::Epic) do |epic_instance|
+                allow(epic_instance).to receive(:save).and_return(false)
+              end
+
+              expect { create_link }.to not_change { parent_epic.children.count }
+                .and(not_change { WorkItems::ParentLink.count })
+            end
+          end
+
+          context 'when updating relative_position fails' do
+            it 'does not create relationships for the epic or the work item' do
+              allow_next_instance_of(::WorkItems::ParentLink) do |parent_link_instance|
+                allow(parent_link_instance).to receive(:update).and_return(false)
+              end
+
+              expect { create_link }.to not_change { parent_epic.children.count }
+                .and(not_change { WorkItems::ParentLink.count })
+            end
+          end
+        end
+
+        it 'creates a new relationship for the epic and the synced work item' do
+          expect { create_link }.to change { parent_epic.children.count }.by(1)
+            .and(change { WorkItems::ParentLink.count }.by(1))
+
+          expect(parent_epic.reload.children).to include(child_epic)
+          expect(parent_work_item.reload.work_item_children).to include(child_work_item)
+          expect(child_epic.reload.relative_position).to eq(child_work_item.parent_link.reload.relative_position)
+        end
+
+        it 'does not create resource event for the work item' do
+          expect(WorkItems::ResourceLinkEvent).not_to receive(:create)
+
+          expect { create_link }.to change { parent_epic.children.count }.by(1)
+            .and(change { WorkItems::ParentLink.count }.by(1))
+        end
+
+        it 'creates system notes only for the epics' do
+          expect { create_link }.to change { Note.system.count }.by(2)
+          expect(parent_epic.notes.last.note).to eq("added epic #{child_epic.to_reference} as child epic")
+          expect(child_epic.notes.last.note).to eq("added epic #{parent_epic.to_reference} as parent epic")
+        end
+
+        it_behaves_like 'rollback changes when creation fails'
+
+        context 'with multiple children' do
+          let_it_be(:child_work_item2) { create(:work_item, :epic, namespace: group) }
+          let_it_be(:child_epic2) { create(:epic, group: group, issue_id: child_work_item2.id) }
+
+          let(:params) { { issuable_references: [child_epic.to_reference, child_epic2.to_reference] } }
+
+          it 'creates a new relationship for the epics and their synced work items' do
+            expect { create_link }.to change { parent_epic.children.count }.by(2)
+              .and(change { WorkItems::ParentLink.count }.by(2))
+
+            expect(parent_epic.reload.children).to include(child_epic, child_epic2)
+            expect(parent_work_item.reload.work_item_children).to include(child_work_item, child_work_item2)
+            expect(child_epic.reload.relative_position).to eq(child_work_item.reload.parent_link.relative_position)
+            expect(child_epic2.reload.relative_position).to eq(child_work_item2.reload.parent_link.relative_position)
+          end
+
+          it 'does not create resource event for the work item' do
+            expect(WorkItems::ResourceLinkEvent).not_to receive(:create)
+
+            expect { create_link }.to change { parent_epic.children.count }.by(2)
+              .and(change { WorkItems::ParentLink.count }.by(2))
+          end
+
+          it 'creates system notes only for the epics' do
+            child_note_text = "added epic #{parent_epic.to_reference} as parent epic"
+            expect { create_link }.to change { Note.system.count }.by(4)
+
+            expect(child_epic.notes.last.note).to eq(child_note_text)
+            expect(child_epic2.notes.last.note).to eq(child_note_text)
+            expect(parent_epic.notes.last(2).pluck(:note)).to contain_exactly(
+              "added epic #{child_epic.to_reference} as child epic",
+              "added epic #{child_epic2.to_reference} as child epic"
+            )
+          end
+
+          it_behaves_like 'rollback changes when creation fails'
+        end
+
+        context 'when epic_creation_with_synced_work_item feature flag is disabled' do
+          before do
+            stub_feature_flags(epic_creation_with_synced_work_item: false)
+          end
+
+          it 'create relationship only for the epic' do
+            expect { create_link }.to change { parent_epic.children.count }.by(1)
+              .and(not_change { WorkItems::ParentLink.count })
+
+            expect(parent_epic.reload.children).to include(child_epic)
+            expect(parent_work_item.reload.work_item_children).to be_empty
+          end
+        end
+      end
     end
   end
 end

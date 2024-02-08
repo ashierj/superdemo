@@ -72,9 +72,16 @@ module Epics
       end
 
       def set_child_epic(child_epic)
-        child_epic.parent = issuable
-        child_epic.move_to_start
-        child_epic.save
+        ::ApplicationRecord.transaction do
+          child_epic.parent = issuable
+          child_epic.move_to_start
+
+          if child_epic.save
+            create_synced_work_item_link!(child_epic)
+          else
+            false
+          end
+        end
       end
 
       def linkable_issuables(epics)
@@ -109,6 +116,37 @@ module Epics
         epic.errors.add(:parent, _("This epic cannot be added. You don't have access to perform this action."))
 
         false
+      end
+
+      def create_synced_work_item_link!(child_epic)
+        return true unless issuable.group.epic_synced_with_work_item_enabled?
+        return true unless issuable.work_item && child_epic.work_item
+
+        response = ::WorkItems::ParentLinks::CreateService
+         .new(issuable.work_item, current_user, { target_issuable: child_epic.work_item })
+         .execute
+
+        if response[:status] == :success
+          sync_relative_position!(response[:created_references].first, child_epic)
+        else
+          sync_work_item_parent_error!(child_epic, response[:message])
+        end
+      end
+
+      def sync_relative_position!(parent_link, child_epic)
+        if parent_link.update(relative_position: child_epic.relative_position)
+          true
+        else
+          sync_work_item_parent_error!(child_epic)
+        end
+      end
+
+      def sync_work_item_parent_error!(child_epic, message = "")
+        Gitlab::EpicWorkItemSync::Logger.error(
+          message: 'Not able to set epic parent', error_message: message, group_id: issuable.group.id,
+          parent_id: issuable.id, child_id: child_epic.id
+        )
+        raise ActiveRecord::Rollback
       end
     end
   end
