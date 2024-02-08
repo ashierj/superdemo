@@ -72,6 +72,7 @@ module EE
 
       condition(:code_suggestions_disabled_by_group) do
         next false unless ::Gitlab.org_or_com?
+        next false if ::Feature.enabled?(:purchase_code_suggestions)
         next false unless @user
 
         @user.code_suggestions_disabled_by_group?
