@@ -92,4 +92,16 @@ RSpec.describe Telesign::TransactionCallbackPayload, feature_category: :instance
       it { is_expected.to eq true }
     end
   end
+
+  describe '#country_blocked?' do
+    subject { response.country_blocked? }
+
+    it { is_expected.to eq false }
+
+    context 'when status code is 237' do
+      let(:json) { { status: { code: 237 } }.deep_stringify_keys }
+
+      it { is_expected.to eq true }
+    end
+  end
 end

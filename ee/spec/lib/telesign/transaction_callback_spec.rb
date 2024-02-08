@@ -179,4 +179,43 @@ RSpec.describe Telesign::TransactionCallback, feature_category: :instance_resili
       end
     end
   end
+
+  describe '#user' do
+    let(:callback_valid) { true }
+
+    subject(:user) { described_class.new(instance_double(ActionDispatch::Request), {}).user }
+
+    before do
+      allow_next_instance_of(described_class) do |callback|
+        allow(callback).to receive(:valid?).and_return(callback_valid)
+      end
+    end
+
+    context 'when callback is not valid' do
+      let(:callback_valid) { false }
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when no matching phone number validation record is found' do
+      it 'returns nil' do
+        expect_next_instance_of(Telesign::TransactionCallbackPayload, {}) do |response|
+          expect(response).to receive(:reference_id).and_return('fake-ref-id')
+        end
+
+        expect(user).to be_nil
+      end
+    end
+
+    it 'returns user associated with the matching phone number validation record' do
+      ref_id = 'abc123'
+      record = create(:phone_number_validation, telesign_reference_xid: ref_id)
+
+      expect_next_instance_of(Telesign::TransactionCallbackPayload, {}) do |response|
+        expect(response).to receive(:reference_id).and_return(ref_id)
+      end
+
+      expect(user).to eq record.user
+    end
+  end
 end

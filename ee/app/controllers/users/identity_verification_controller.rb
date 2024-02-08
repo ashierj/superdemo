@@ -31,6 +31,8 @@ module Users
     layout 'minimal'
 
     def show
+      push_frontend_feature_flag(:auto_request_phone_number_verification_exemption, type: :gitlab_com_derisk)
+
       # We to perform cookie migration for tracking from logged out to log in
       # calling this before tracking gives us access to request where the
       # signed cookie exist with the info we need for migration.
@@ -39,8 +41,10 @@ module Users
     end
 
     def verification_state
+      Gitlab::PollingInterval.set_header(response, interval: 10_000)
+
       # if the back button is pressed, don't cache the user's identity verification state
-      no_cache_headers
+      no_cache_headers if params['no_cache']
 
       render json: {
         verification_methods: @user.required_identity_verification_methods,

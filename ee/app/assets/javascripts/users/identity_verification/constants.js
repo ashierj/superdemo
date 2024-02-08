@@ -4,6 +4,9 @@ import { s__, sprintf } from '~/locale';
 export const MAX_PHONE_NUMBER_LENGTH = 12;
 export const DEFAULT_COUNTRY = 'US';
 
+export const I18N_PHONE_NUMBER_VERIFICATION_UNAVAILABLE = s__(
+  'IdentityVerification|Phone number verification is unavailable at this time. Please verify with a credit card instead.',
+);
 export const I18N_PHONE_NUMBER_BLANK_ERROR = s__('IdentityVerification|Phone number is required.');
 export const I18N_PHONE_NUMBER_NAN_ERROR = s__(
   'IdentityVerification|Phone number must contain only digits.',
