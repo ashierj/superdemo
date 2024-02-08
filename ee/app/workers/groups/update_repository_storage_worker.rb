@@ -14,11 +14,6 @@ module Groups
       ::Groups::RepositoryStorageMove.find(repository_storage_move_id)
     end
 
-    override :find_container
-    def find_container(container_id)
-      ::Group.find(container_id)
-    end
-
     override :update_repository_storage
     def update_repository_storage(repository_storage_move)
       ::Groups::UpdateRepositoryStorageService.new(repository_storage_move).execute
