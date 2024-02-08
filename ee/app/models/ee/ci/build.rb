@@ -78,7 +78,9 @@ module EE
       def variables
         strong_memoize(:variables) do
           super.tap do |collection|
-            collection.concat(dast_configuration_variables)
+            collection
+              .concat(dast_configuration_variables)
+              .concat(google_artifact_registry_variables)
           end
         end
       end
@@ -328,6 +330,12 @@ module EE
         else
           raise ArgumentError, "Unknown identity value: #{options[:identity]}"
         end
+      end
+
+      def google_artifact_registry_variables
+        ::Gitlab::Ci::Variables::Collection.new(
+          project.google_cloud_platform_artifact_registry_integration&.ci_variables || []
+        )
       end
     end
   end

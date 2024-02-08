@@ -1216,4 +1216,52 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
       it { is_expected.to eq(result) }
     end
   end
+
+  describe 'google artifact registry integration' do
+    subject(:variables) { job.variables.to_runner_variables }
+
+    shared_examples 'does not include environment variables' do
+      it 'does not include environment variables', :aggregate_failures do
+        var_names = subject.pluck(:key)
+
+        %w[
+          GOOGLE_ARTIFACT_REGISTRY_PROJECT_ID
+          GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_NAME
+          GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_LOCATION
+        ].each do |var_name|
+          expect(var_names).not_to include(var_name)
+        end
+      end
+    end
+
+    it_behaves_like "does not include environment variables"
+
+    context 'with saas only enabled' do
+      before do
+        stub_saas_features(google_artifact_registry: true)
+      end
+
+      it_behaves_like "does not include environment variables"
+
+      context 'with integration active' do
+        let_it_be(:integration) { create(:google_cloud_platform_artifact_registry_integration) }
+        let_it_be(:pipeline) { create(:ci_pipeline, project: integration.project, status: 'success') }
+
+        it 'includes the environment variables', :aggregate_failures do
+          {
+            'GOOGLE_ARTIFACT_REGISTRY_PROJECT_ID' => integration.artifact_registry_project_id,
+            'GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_NAME' => integration.artifact_registry_repository,
+            'GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_LOCATION' => integration.artifact_registry_location
+          }.each do |var_name, var_value|
+            expect(subject).to include({
+              key: var_name,
+              value: var_value,
+              public: true,
+              masked: false
+            })
+          end
+        end
+      end
+    end
+  end
 end

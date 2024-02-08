@@ -92,4 +92,35 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
 
     it { is_expected.to be_falsey }
   end
+
+  describe '#ci_variables' do
+    subject { integration.ci_variables }
+
+    it { is_expected.to eq([]) }
+
+    context 'with saas only enabled' do
+      before do
+        stub_saas_features(google_artifact_registry: true)
+      end
+
+      context 'when integration is inactive' do
+        let(:integration) { build_stubbed(:google_cloud_platform_artifact_registry_integration, :inactive) }
+
+        it { is_expected.to eq([]) }
+      end
+
+      context 'when integration is active' do
+        it do
+          is_expected.to contain_exactly(
+            { key: 'GOOGLE_ARTIFACT_REGISTRY_PROJECT_ID',
+              value: integration.artifact_registry_project_id },
+            { key: 'GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_NAME',
+              value: integration.artifact_registry_repository },
+            { key: 'GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_LOCATION',
+              value: integration.artifact_registry_location }
+          )
+        end
+      end
+    end
+  end
 end
