@@ -29344,7 +29344,7 @@ ALTER TABLE ONLY ci_sources_projects
     ADD CONSTRAINT ci_sources_projects_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY ci_stages
-    ADD CONSTRAINT ci_stages_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT ci_stages_pkey PRIMARY KEY (id, partition_id);
 
 ALTER TABLE ONLY ci_subscriptions_projects
     ADD CONSTRAINT ci_subscriptions_projects_pkey PRIMARY KEY (id);
@@ -33361,8 +33361,6 @@ CREATE INDEX index_ci_sources_pipelines_on_source_project_id ON ci_sources_pipel
 CREATE INDEX index_ci_sources_projects_on_pipeline_id ON ci_sources_projects USING btree (pipeline_id);
 
 CREATE UNIQUE INDEX index_ci_sources_projects_on_source_project_id_and_pipeline_id ON ci_sources_projects USING btree (source_project_id, pipeline_id);
-
-CREATE UNIQUE INDEX index_ci_stages_on_id_partition_id_unique ON ci_stages USING btree (id, partition_id);
 
 CREATE INDEX index_ci_stages_on_pipeline_id ON ci_stages USING btree (pipeline_id);
 
