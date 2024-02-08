@@ -76,6 +76,8 @@ module EE
         self[:unique_project_download_limit_alertlist].presence || active_owner_ids
       end
 
+      # TODO: remove :ai_chat condition after Chat goes GA
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/441099
       def experiment_settings_allowed?
         namespace.root? &&
           ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
