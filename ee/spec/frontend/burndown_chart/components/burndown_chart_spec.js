@@ -41,9 +41,8 @@ describe('burndown_chart', () => {
         openIssuesCount: [],
       });
 
-      const data = wrapper.vm.dataSeries;
-      expect(data).toHaveLength(1);
-      expect(data[0].name).not.toBe('Guideline');
+      expect(findChart().props('data')).toHaveLength(1);
+      expect(findChart().props('data')[0].name).not.toBe('Guideline');
     });
   });
 
@@ -53,9 +52,8 @@ describe('burndown_chart', () => {
         openIssuesCount: [{ '2019-08-07T00:00:00.000Z': 0 }],
       });
 
-      const data = wrapper.vm.dataSeries;
-      expect(data).toHaveLength(2);
-      expect(data[1].name).toBe('Guideline');
+      expect(findChart().props('data')).toHaveLength(2);
+      expect(findChart().props('data')[1].name).toBe('Guideline');
     });
   });
 
@@ -65,9 +63,8 @@ describe('burndown_chart', () => {
         openIssuesCount: [{ '2019-08-07T00:00:00.000Z': 100 }],
       });
 
-      const data = wrapper.vm.dataSeries;
-      expect(data).toHaveLength(2);
-      expect(data[1].name).toBe('Guideline');
+      expect(findChart().props('data')).toHaveLength(2);
+      expect(findChart().props('data')[1].name).toBe('Guideline');
     });
   });
 
@@ -83,9 +80,8 @@ describe('burndown_chart', () => {
     });
 
     it('shows guideline', () => {
-      const data = wrapper.vm.dataSeries;
-      expect(data).toHaveLength(2);
-      expect(data[1].name).toBe('Guideline');
+      expect(findChart().props('data')).toHaveLength(2);
+      expect(findChart().props('data')[1].name).toBe('Guideline');
     });
 
     it('only shows integers on axis labels', () => {
