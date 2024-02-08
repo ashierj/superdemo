@@ -114,7 +114,7 @@ export default {
       this.selectedStatuses.push(selectedValue);
     },
     isStatusSelected(name) {
-      return Boolean(this.selectedStatuses.find((s) => name === s));
+      return this.selectedStatuses.some((s) => name === s);
     },
   },
   groups: {
