@@ -1,9 +1,0 @@
----
-name: members_api_expose_enterprise_users_emails_only
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/391453
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/135873
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/439044
-milestone: '16.9'
-group: group::authentication
-type: gitlab_com_derisk
-default_enabled: false
