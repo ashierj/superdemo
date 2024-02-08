@@ -8,17 +8,20 @@ import {
   GlFormInput,
   GlFormSelect,
   GlFormTextarea,
+  GlSkeletonLoader,
 } from '@gitlab/ui';
 import { difference, pull } from 'lodash';
 import { createAlert } from '~/alert';
 import { sprintf, s__, __ } from '~/locale';
 import { BASE_ROLES } from '~/access_level/constants';
+import memberRolePermissionsQuery from 'ee/roles_and_permissions/graphql/member_role_permissions.query.graphql';
 import createMemberRoleMutation from '../graphql/create_member_role.mutation.graphql';
 
 export default {
   i18n: {
     createError: s__('MemberRole|Failed to create role.'),
     createErrorWithReason: s__('MemberRole|Failed to create role: %{error}'),
+    permissionsFetchError: s__('MemberRole|Could not fetch available permissions.'),
     createNewRole: s__('MemberRole|Create new role'),
     cancel: __('Cancel'),
     baseRoleLabel: s__('MemberRole|Base role to use as template'),
@@ -39,16 +42,13 @@ export default {
     GlFormInput,
     GlFormSelect,
     GlFormTextarea,
+    GlSkeletonLoader,
   },
   props: {
     groupFullPath: {
       type: String,
       required: false,
       default: null,
-    },
-    availablePermissions: {
-      type: Array,
-      required: true,
     },
   },
   data() {
@@ -62,9 +62,27 @@ export default {
       permissions: [],
       permissionsValid: true,
       isSubmitting: false,
+      availablePermissions: [],
     };
   },
+  apollo: {
+    availablePermissions: {
+      query: memberRolePermissionsQuery,
+      update(data) {
+        return data.memberRolePermissions?.nodes || [];
+      },
+      error() {
+        this.alert = createAlert({ message: this.$options.i18n.permissionsFetchError });
+      },
+    },
+  },
   computed: {
+    isLoadingPermissions() {
+      return this.$apollo.queries.availablePermissions.loading;
+    },
+    permissionsState() {
+      return this.permissionsValid ? null : false;
+    },
     parentPermissionsLookup() {
       return this.availablePermissions.reduce((acc, { value, requirements }) => {
         if (requirements) {
@@ -206,7 +224,8 @@ export default {
     </div>
 
     <gl-form-group :label="$options.i18n.permissionsLabel">
-      <gl-form-checkbox-group v-model="permissions" :state="permissionsValid ? null : false">
+      <gl-skeleton-loader v-if="isLoadingPermissions" />
+      <gl-form-checkbox-group v-model="permissions" :state="permissionsState">
         <gl-form-checkbox
           v-for="permission in availablePermissions"
           :key="permission.value"

@@ -1,22 +1,11 @@
 export const mockDefaultPermissions = [
-  {
-    name: 'Permission A',
-    description: 'Description A',
-    value: 'READ_CODE',
-    requirements: null,
-  },
-  {
-    name: 'Permission B',
-    description: 'Description B',
-    value: 'READ_VULNERABILITY',
-    requirements: null,
-  },
-  {
-    name: 'Permission C',
-    description: 'Description C',
-    value: 'ADMIN_VULNERABILITY',
-    requirements: null,
-  },
+  { value: 'A', name: 'A', description: 'A', requirements: null },
+  { value: 'B', name: 'B', description: 'B', requirements: ['A'] },
+  { value: 'C', name: 'C', description: 'C', requirements: ['B'] }, // Nested dependency: C -> B -> A
+  { value: 'D', name: 'D', description: 'D', requirements: ['C'] }, // Nested dependency: D -> C -> B -> A
+  { value: 'E', name: 'E', description: 'E', requirements: ['F'] }, // Circular dependency
+  { value: 'F', name: 'F', description: 'F', requirements: ['E'] }, // Circular dependency
+  { value: 'G', name: 'G', description: 'G', requirements: ['A', 'B', 'C'] }, // Multiple dependencies
 ];
 
 export const mockPermissions = {

@@ -57,7 +57,6 @@ export const mockGroupMemberRoles = {
           {
             baseAccessLevel: {
               integerValue: 10,
-              stringValue: 'GUEST',
               __typename: 'AccessLevel',
             },
             id: 'gid://gitlab/MemberRole/100',
@@ -76,7 +75,6 @@ export const mockGroupMemberRoles = {
           {
             baseAccessLevel: {
               integerValue: 20,
-              stringValue: 'REPORTER',
               __typename: 'AccessLevel',
             },
             id: 'gid://gitlab/MemberRole/101',
