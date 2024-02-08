@@ -5,6 +5,7 @@ module Gitlab
     class ProjectConfig
       class SecurityPolicyDefault < Gitlab::Ci::ProjectConfig::Source
         def content
+          return unless @triggered_for_branch
           return unless @project.licensed_feature_available?(:security_orchestration_policies)
           return unless active_scan_execution_policies?
 
