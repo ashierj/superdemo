@@ -10,6 +10,7 @@ RSpec.describe SystemCheck::Geo::GeoDatabaseConfiguredCheck, :silence_stdout, fe
       stub_database_state(subject, configured: false)
 
       expect(subject).to receive(:try_fixing_it).with(described_class::WRONG_CONFIGURATION_MESSAGE)
+      expect(subject).to receive(:for_more_information).with(subject.database_docs)
       expect(subject.multi_check).to be_falsey
     end
 
@@ -33,6 +34,7 @@ RSpec.describe SystemCheck::Geo::GeoDatabaseConfiguredCheck, :silence_stdout, fe
       stub_database_state(subject, fresh: false)
 
       expect(subject).to receive(:try_fixing_it).with(described_class::REUSING_EXISTING_DATABASE_MESSAGE)
+      expect(subject).to receive(:for_more_information).with(subject.troubleshooting_docs)
 
       expect(subject.multi_check).to be_falsey
     end
