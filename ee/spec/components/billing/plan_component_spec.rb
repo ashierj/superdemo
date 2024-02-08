@@ -56,7 +56,7 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component, fe
     end
 
     it 'has expected cta_link' do
-      expect(page).to have_link('Upgrade to Premium', href: '_purchase_url_')
+      expect(page).to have_link('Upgrade to Premium', href: '_purchase_url_', class: 'btn-confirm')
     end
 
     it 'adds testid selector to cta link' do
@@ -81,7 +81,11 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component, fe
     end
 
     it 'has expected cta_link' do
-      expect(page).to have_link('Upgrade to Ultimate', href: '_purchase_url_')
+      expect(page).to have_link(
+        'Upgrade to Ultimate',
+        href: '_purchase_url_',
+        class: 'btn-confirm btn-confirm-secondary'
+      )
     end
 
     it 'adds testid selector to cta link' do
