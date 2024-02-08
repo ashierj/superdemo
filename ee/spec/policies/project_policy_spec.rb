@@ -3325,7 +3325,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       true  | true  | ref(:owner)      | true
       true  | true  | ref(:reporter)   | true
       true  | true  | ref(:guest)      | true
-      true  | true  | ref(:non_member) | true
+      true  | true  | ref(:non_member) | false
       true  | false | ref(:owner)      | false
       true  | false | ref(:reporter)   | false
       true  | false | ref(:guest)      | false

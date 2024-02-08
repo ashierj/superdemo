@@ -894,11 +894,11 @@ module EE
 
       rule { ai_available & generate_cube_query_enabled }.enable :generate_cube_query
 
-      rule { agent_registry_enabled }.policy do
+      rule { guest & agent_registry_enabled }.policy do
         enable :read_ai_agents
       end
 
-      rule { can?(:reporter_access) & agent_registry_enabled }.policy do
+      rule { reporter & agent_registry_enabled }.policy do
         enable :write_ai_agents
       end
 
