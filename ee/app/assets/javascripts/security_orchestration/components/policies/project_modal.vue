@@ -66,9 +66,6 @@ export default {
     selectedProjectId() {
       return this.selectedProject?.id || '';
     },
-    selectedProjectName() {
-      return this.selectedProject?.name || '';
-    },
     isModalOkButtonDisabled() {
       if (this.shouldShowUnlinkWarning) {
         return false;

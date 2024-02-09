@@ -22,7 +22,6 @@ Vue.use(VueApollo);
 
 describe('ProjectModal Component', () => {
   let wrapper;
-  let projectUpdatedListener;
   const sampleProject = {
     id: 'gid://gitlab/Project/1',
     name: 'Test 1',
@@ -65,9 +64,6 @@ describe('ProjectModal Component', () => {
         ...provide,
       },
     });
-
-    projectUpdatedListener = jest.fn();
-    wrapper.vm.$on('project-updated', projectUpdatedListener);
   };
 
   const createWrapperAndSelectProject = async (data) => {
@@ -122,10 +118,13 @@ describe('ProjectModal Component', () => {
   });
 
   describe('unlinking project', () => {
+    const unlinkText =
+      'Unlinking a security project removes all policies stored in the linked security project. Save to confirm this action.';
+
     it.each`
-      mutationResult | expectedVariant | expectedText     | expectedHasPolicyProject
-      ${'success'}   | ${'success'}    | ${'okUnlink'}    | ${false}
-      ${'failure'}   | ${'danger'}     | ${'errorUnlink'} | ${true}
+      mutationResult | expectedVariant | expectedText                                                    | expectedHasPolicyProject
+      ${'success'}   | ${'success'}    | ${'Security policy project was unlinked successfully'}          | ${false}
+      ${'failure'}   | ${'danger'}     | ${'An error occurred unassigning your security policy project'} | ${true}
     `(
       'unlinks a project and handles $mutationResult case',
       async ({ mutationResult, expectedVariant, expectedText, expectedHasPolicyProject }) => {
@@ -137,24 +136,28 @@ describe('ProjectModal Component', () => {
 
         // Initial state
         expect(findModal().attributes('ok-disabled')).toBe('true');
-        expect(wrapper.findByText(wrapper.vm.$options.i18n.unlinkWarning).exists()).toBe(false);
+        expect(wrapper.findByText(unlinkText).exists()).toBe(false);
 
         // When we click on the delete button, the component should display a warning
         findUnlinkButton().trigger('click');
         await nextTick();
 
-        expect(wrapper.findByText(wrapper.vm.$options.i18n.unlinkWarning).exists()).toBe(true);
+        expect(wrapper.findByText(unlinkText).exists()).toBe(true);
         expect(findModal().attributes('ok-disabled')).toBeUndefined();
 
         // Clicking the OK button should submit a GraphQL query
         findModal().vm.$emit('ok');
         await waitForPromises();
 
-        expect(projectUpdatedListener).toHaveBeenCalledWith({
-          text: wrapper.vm.$options.i18n.save[expectedText],
-          variant: expectedVariant,
-          hasPolicyProject: expectedHasPolicyProject,
-        });
+        expect(wrapper.emitted('project-updated')).toEqual([
+          [
+            {
+              text: expectedText,
+              variant: expectedVariant,
+              hasPolicyProject: expectedHasPolicyProject,
+            },
+          ],
+        ]);
       },
     );
   });
@@ -187,11 +190,15 @@ describe('ProjectModal Component', () => {
       async ({ factoryFn, text, variant, hasPolicyProject, selectedProject }) => {
         await factoryFn();
 
-        expect(projectUpdatedListener).toHaveBeenCalledWith({
-          text,
-          variant,
-          hasPolicyProject,
-        });
+        expect(wrapper.emitted('project-updated')).toEqual([
+          [
+            {
+              text,
+              variant,
+              hasPolicyProject,
+            },
+          ],
+        ]);
 
         if (selectedProject) {
           expect(findInstanceProjectSelector().props('selectedProject')).toEqual(selectedProject);
