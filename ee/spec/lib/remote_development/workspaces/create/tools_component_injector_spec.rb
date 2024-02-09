@@ -43,4 +43,17 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::ToolsComponentInjector, fe
       expect(returned_value[:processed_devfile]).to eq(expected_processed_devfile)
     end
   end
+
+  context "when devfile attribute gl/use-vscode-1-81 is false" do
+    let(:expected_processed_devfile_name) { 'example.tools-injected-vscode-1-85-devfile.yaml' }
+
+    before do
+      tools_component = input_processed_devfile['components'].find { |c| c.dig('attributes', 'gl/inject-editor') }
+      tools_component['attributes']['gl/use-vscode-1-81'] = false
+    end
+
+    it 'injects the tools injector component' do
+      expect(returned_value[:processed_devfile]).to eq(expected_processed_devfile)
+    end
+  end
 end

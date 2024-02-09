@@ -27,8 +27,10 @@ module RemoteDevelopment
             type: :beta
           )
 
-          inject_tools_component(processed_devfile, tools_dir)
           tools_component = processed_devfile['components'].find { |c| c.dig('attributes', 'gl/inject-editor') }
+          use_vscode_1_81_attribute = tools_component.fetch('attributes', {}).fetch('gl/use-vscode-1-81', true)
+          use_vscode_1_81 = [true, "true"].include? use_vscode_1_81_attribute
+          inject_tools_component(processed_devfile, tools_dir, use_vscode_1_81)
 
           if tools_component
             override_main_container(
@@ -110,9 +112,10 @@ module RemoteDevelopment
 
         # @param [Hash] processed_devfile
         # @param [String] tools_dir
+        # @param [Boolean] use_vscode_1_81
         # @return [Array]
-        def self.inject_tools_component(processed_devfile, tools_dir)
-          processed_devfile['components'] += tools_components(tools_dir)
+        def self.inject_tools_component(processed_devfile, tools_dir, use_vscode_1_81)
+          processed_devfile['components'] += tools_components(tools_dir, use_vscode_1_81)
 
           processed_devfile['commands'] = [] if processed_devfile['commands'].nil?
           processed_devfile['commands'] += [{
@@ -128,11 +131,12 @@ module RemoteDevelopment
         end
 
         # @param [String] tools_dir
+        # @param [Boolean] use_vscode_1_81
         # @return [Array]
-        def self.tools_components(tools_dir)
+        def self.tools_components(tools_dir, use_vscode_1_81)
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409775 - choose image based on which editor is passed.
           image_name = 'registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector'
-          image_tag = '7'
+          image_tag = use_vscode_1_81 ? '7' : '8'
 
           [
             {
