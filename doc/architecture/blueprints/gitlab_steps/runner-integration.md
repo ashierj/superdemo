@@ -191,13 +191,14 @@ execution environment.
 
 ## Docker
 
-The same requirement that Step Runner is present and started is true
-for the Docker executor (and `docker-autoscaler`). However in order to
-connect to the socket inside the container, we must `exec` a bridge
-process in the container. This will be another command on the Step
-Runner binary which proxies STDIN and STDOUT to the local socket in a
-known location, allowing the caller of exec to make gRPC calls inside
-the container.
+The same requirement that Step Runner is present and the gRPC service is
+running is true for the Docker executor (and `docker-autoscaler`). However
+in order to connect to the gRPC service inside the container, we would
+`docker exec` to the container and execute the proxy command to connect to
+the gRPC service in the container. The client can then write to the
+`docker exec`'s `stdin`, which will transparently be proxied to the gRPC
+service, and read from its `stdout/stderr`, which will contain responses
+from the gRPC service.
 
 ## Kubernetes
 
