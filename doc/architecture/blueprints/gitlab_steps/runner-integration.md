@@ -118,13 +118,12 @@ all active requests in the Step Runner service (including completed but
 not `Cancel`ed jobs), and can be used by a runner to for example recover
 after a crash.
 
-Step Runner operating in gRPC mode will be able to executed multiple
-step payloads at once. That is each call to `run` will start a new
-goroutine and execute the steps until completion. Multiple calls to `run`
-may be made simultaneously. This is also why components are cached by
-`location`, `version` and `hash`. Because we cannot be changing which
-ref we are on while multiple, concurrent executions are using the
-underlying files.
+The Step Runner gRPC service will be able to execute multiple `Run`
+payloads at once. That is, each call to `Run` will start a new goroutine
+and execute the steps until completion. Multiple calls to `Run` may be
+made simultaneously. This is also why components are cached by `location`,
+`version` and `hash`. Because we cannot be changing which ref we are on
+while multiple, concurrent executions are using the underlying files.
 
 
 As steps are executed, traces are streamed back to GitLab Runner.
