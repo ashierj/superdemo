@@ -130,6 +130,13 @@ back to GitLab Runner. This allows callers to follow execution, at the
 step level for step-result traces (`Follow`), and as written for
 sub-process IO (`FollowIO`).
 
+All APIs excluding `List` are idempotent, meaning that multiple calls to
+the same API with the same parameters should return the same result. For
+example, If `Run` is called multiple times with the same arguments, only
+the first invocation should begin processing of the job request, and
+subsequent invocations return a success status but otherwise do noting.
+Similarly, multiple calls to `Cancel` should finish and remove the
+relevant job on the first call, and do nothing on subsequent calls.
 
 Here is how GitLab Runner will connect to Step Runner in each runner
 executor:
