@@ -65,8 +65,8 @@ describe('YamlEditor component', () => {
   it('initializes monaco editor with yaml language and provided value', () => {
     const editorComponent = findEditor();
     expect(editorComponent.props('value')).toBe('foo');
-    const editor = editorComponent.vm.getEditor();
-    expect(editor.getModel().getLanguageId()).toBe('yaml');
+
+    expect(findEditor().attributes('data-mode-id')).toBe('yaml');
   });
 
   it("emits input event on editor's input", async () => {
