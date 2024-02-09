@@ -1296,8 +1296,7 @@ class Repository
   end
 
   def blank_ref
-    return Gitlab::Git::SHA1_BLANK_SHA unless exists? &&
-      Feature.enabled?(:determine_blank_ref_based_on_gitaly_object_format, project, type: :gitlab_com_derisk)
+    return Gitlab::Git::SHA1_BLANK_SHA unless exists?
 
     case object_format
     when FORMAT_SHA1
