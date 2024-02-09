@@ -36,11 +36,13 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
     describe '.with_hosted_plan' do
       let_it_be(:ultimate_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan) }
       let_it_be(:premium_subscription) { create(:gitlab_subscription, hosted_plan: premium_plan) }
+      let_it_be(:gold_subscription) { create(:gitlab_subscription, hosted_plan: gold_plan, trial: nil) }
       let_it_be(:trial_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan, trial: true) }
 
       it 'scopes to the plan' do
         expect(described_class.with_hosted_plan('ultimate')).to contain_exactly(ultimate_subscription)
         expect(described_class.with_hosted_plan('premium')).to contain_exactly(premium_subscription)
+        expect(described_class.with_hosted_plan('gold')).to contain_exactly(gold_subscription)
         expect(described_class.with_hosted_plan('bronze')).to be_empty
       end
     end
