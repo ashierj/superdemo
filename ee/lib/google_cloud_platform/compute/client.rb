@@ -32,8 +32,8 @@ module GoogleCloudPlatform
       #
       # Possible exceptions:
       #
-      # +GoogleCloudPlatform::Compute::BaseClient::AuthenticationError+ if an error occurs during the authentication.
-      # +GoogleCloudPlatform::Compute::BaseClient::ApiError+ if an error occurs when interacting with the
+      # +GoogleCloudPlatform::AuthenticationError+ if an error occurs during the authentication.
+      # +GoogleCloudPlatform::ApiError+ if an error occurs when interacting with the
       # Google Cloud API.
       def regions(filter: nil, max_results: 500, order_by: nil, page_token: nil)
         request = ::Google::Cloud::Compute::V1::ListRegionsRequest.new(
@@ -71,8 +71,8 @@ module GoogleCloudPlatform
       #
       # Possible exceptions:
       #
-      # +GoogleCloudPlatform::Compute::BaseClient::AuthenticationError+ if an error occurs during the authentication.
-      # +GoogleCloudPlatform::Compute::BaseClient::ApiError+ if an error occurs when interacting with the
+      # +GoogleCloudPlatform::AuthenticationError+ if an error occurs during the authentication.
+      # +GoogleCloudPlatform::ApiError+ if an error occurs when interacting with the
       # Google Cloud API.
       def zones(filter: nil, max_results: 500, order_by: nil, page_token: nil)
         request = ::Google::Cloud::Compute::V1::ListZonesRequest.new(
@@ -111,8 +111,8 @@ module GoogleCloudPlatform
       #
       # Possible exceptions:
       #
-      # +GoogleCloudPlatform::Compute::BaseClient::AuthenticationError+ if an error occurs during the authentication.
-      # +GoogleCloudPlatform::Compute::BaseClient::ApiError+ if an error occurs when interacting with the
+      # +GoogleCloudPlatform::AuthenticationError+ if an error occurs during the authentication.
+      # +GoogleCloudPlatform::ApiError+ if an error occurs when interacting with the
       # Google Cloud API.
       def machine_types(zone:, filter: nil, max_results: 500, order_by: nil, page_token: nil)
         request = ::Google::Cloud::Compute::V1::ListMachineTypesRequest.new(
