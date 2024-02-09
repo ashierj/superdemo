@@ -39196,7 +39196,7 @@ msgstr ""
 msgid "ProjectSettings|Storage name:"
 msgstr ""
 
-msgid "ProjectSettings|Store custom configuration files."
+msgid "ProjectSettings|Store configuration files for custom dashboards and visualizations."
 msgstr ""
 
 msgid "ProjectSettings|Submit changes to be merged upstream."
