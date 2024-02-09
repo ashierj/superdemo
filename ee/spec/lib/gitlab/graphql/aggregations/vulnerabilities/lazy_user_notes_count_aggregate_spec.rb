@@ -17,11 +17,24 @@ RSpec.describe Gitlab::Graphql::Aggregations::Vulnerabilities::LazyUserNotesCoun
       expect(subject.vulnerability).to match vulnerability
     end
 
-    it 'uses lazy_user_notes_count_aggregate to collect aggregates', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/441189' do
-      subject = described_class.new({ lazy_user_notes_count_aggregate: { pending_vulnerability_ids: [10, 20, 30].to_set, loaded_objects: {} } }, vulnerability)
+    context 'when there are existing pending_vulnerability_ids' do
+      subject(:result) do
+        described_class.new(
+          { lazy_user_notes_count_aggregate: {
+            pending_vulnerability_ids: pending_ids_set,
+            loaded_objects: {}
+          } },
+          vulnerability
+        )
+      end
 
-      expect(subject.lazy_state[:pending_vulnerability_ids]).to match_array [10, 20, 30, vulnerability.id]
-      expect(subject.vulnerability).to match vulnerability
+      let(:pending_ids_set) { [10, 20, 30].to_set }
+      let(:expected_ids) { pending_ids_set.dup.add(vulnerability.id) }
+
+      it 'uses lazy_user_notes_count_aggregate to collect aggregates' do
+        expect(result.lazy_state[:pending_vulnerability_ids]).to match_array expected_ids
+        expect(result.vulnerability).to match vulnerability
+      end
     end
   end
 
