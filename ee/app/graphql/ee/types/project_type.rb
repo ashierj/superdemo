@@ -245,6 +245,11 @@ module EE
               description: 'Indicates that merges of merge requests should be blocked ' \
                            'unless all status checks have passed.'
 
+        field :duo_features_enabled, GraphQL::Types::Boolean,
+              null: true,
+              alpha: { milestone: '16.9' },
+              description: 'Indicates whether GitLab Duo features are enabled for the project.'
+
         field :gitlab_subscriptions_preview_billable_user_change,
               ::Types::GitlabSubscriptions::PreviewBillableUserChangeType,
               null: true,
