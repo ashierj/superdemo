@@ -5,6 +5,18 @@ description: Runner integration for [CI Steps](index.md).
 
 # Runner Integration
 
+## Non goals
+
+This proposal does not address deployment of the Step Runner binary into
+target environments, nor of starting the Step Runner gRPC service
+described below. The rest of the proposal assumes both that the Step
+Runner binary exists in the target environment and that the gRPC service
+is running and listening on a local socket. Similarly this proposal does
+not address the life-cycle of the `Step Runner` service, and how to handle
+things like restarting the service if it dies.
+
+## Steps Service gRPC Definition
+
 Steps are delivered to Step Runner as a YAML blob in the GitLab CI syntax.
 Runner interacts with Step Runner over a gRPC service `StepRunner`
 which is started on a local socket in the execution environment. This
