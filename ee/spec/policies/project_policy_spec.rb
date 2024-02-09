@@ -3531,4 +3531,28 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
     end
   end
+
+  describe 'read_runner_cloud_provisioning_options policy' do
+    let(:current_user) { maintainer }
+
+    it { is_expected.to be_disallowed(:read_runner_cloud_provisioning_options) }
+
+    context 'when SaaS-only feature is available' do
+      before do
+        stub_saas_features(google_artifact_registry: true)
+      end
+
+      context 'the user is a maintainer' do
+        let(:current_user) { maintainer }
+
+        it { is_expected.to be_allowed(:read_runner_cloud_provisioning_options) }
+      end
+
+      context 'the user is a guest' do
+        let(:current_user) { guest }
+
+        it { is_expected.to be_disallowed(:read_runner_cloud_provisioning_options) }
+      end
+    end
+  end
 end
