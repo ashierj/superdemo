@@ -109,9 +109,14 @@ started on a local socket in the execution environment. This is the same
 way that Nesting serves a gRPC service in a dedicated Mac instance. The
 service has five RPCs, `Run`, `Follow`, `FollowIO`, `Cancel` and `List`.
 
-Run is the initial delivery of the steps. Follow requests a streaming
-response to step traces. And Cancel stops execution and cleans up
-resources as soon as possible.
+`Run` is the initial delivery of the steps. `Follow` requests a streaming
+response of step-result traces. `FollowIO` similarly requests a streaming
+response of output (`stdout`/`stderr`) written by processes executed as
+part of running the steps. `Cancel` stops execution of the request (if
+still running) and cleans up resources as soon as possible. `List` lists
+all active requests in the Step Runner service (including completed but
+not `Cancel`ed jobs), and can be used by a runner to for example recover
+after a crash.
 
 Step Runner operating in gRPC mode will be able to executed multiple
 step payloads at once. That is each call to `run` will start a new
