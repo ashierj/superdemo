@@ -2541,7 +2541,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
 
     context 'with a public group' do
-      let_it_be(:public_group) { create(:group, :public, :crm_enabled) }
+      let_it_be(:public_group) { create(:group, :public) }
 
       subject { described_class.new(user, public_group) }
 
