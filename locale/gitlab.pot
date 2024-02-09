@@ -39525,13 +39525,13 @@ msgstr ""
 msgid "ProjectsNew|Create new project"
 msgstr ""
 
-msgid "ProjectsNew|Default hashing algorithm is SHA-1."
-msgstr ""
-
 msgid "ProjectsNew|Description format"
 msgstr ""
 
 msgid "ProjectsNew|Enable Static Application Security Testing (SAST)"
+msgstr ""
+
+msgid "ProjectsNew|Experimental settings"
 msgstr ""
 
 msgid "ProjectsNew|Group name"
@@ -39547,6 +39547,9 @@ msgid "ProjectsNew|Include a Getting Started README"
 msgstr ""
 
 msgid "ProjectsNew|Initialize repository with a README"
+msgstr ""
+
+msgid "ProjectsNew|Might break existing functionality with other repositories or APIs. It's not possible to change SHA-256 repositories back to the default SHA-1 hashing algorithm."
 msgstr ""
 
 msgid "ProjectsNew|Migrate your data from an external source like GitHub, Bitbucket, or another instance of GitLab."
@@ -39591,7 +39594,7 @@ msgstr ""
 msgid "ProjectsNew|Unable to suggest a path. Please refresh and try again."
 msgstr ""
 
-msgid "ProjectsNew|Use SHA-256 as the repository hashing algorithm"
+msgid "ProjectsNew|Use SHA-256 for repository hashing algorithm"
 msgstr ""
 
 msgid "ProjectsNew|Visibility Level"
