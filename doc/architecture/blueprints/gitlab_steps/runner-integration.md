@@ -25,6 +25,7 @@ service StepRunner {
     rpc Follow(FollowRequest) returns (stream FollowResponse);
     rpc FollowIO(FollowIORequest) returns (stream FollowIOResponse);
     rpc Cancel(CancelRequest) returns (CancelResponse);
+    rpc List(ListRequest) returns (ListResponse);
 }
 
 message RunRequest {
@@ -78,6 +79,27 @@ message CancelRequest {
 }
 
 message CancelResponse {
+}
+
+message ListRequest {
+    // nothing for now, but we could add filters here
+}
+
+message Job {
+    string id = 1;
+    // are these sufficient statuses?
+    enum JobStatus {
+        running = 0;
+        suceeded = 1;
+        failed = 2;
+    }
+    JobStatus status = 2;
+    google.protobuf.Timestamp finished_time = 3;
+    // maybe we can add runtime here?
+}
+
+message ListResponse {
+    repeated Job jobs = 1;
 }
 ```
 
