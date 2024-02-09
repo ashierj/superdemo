@@ -11,7 +11,7 @@ module CloudConnector
       return unless last_record
 
       service_data = last_record.data["available_services"].find { |s| s["name"] == service }
-      return unless service_data
+      return unless service_data && service_data["serviceStartTime"]
 
       Time.zone.parse(service_data["serviceStartTime"])
     end
