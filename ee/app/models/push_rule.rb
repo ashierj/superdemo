@@ -35,6 +35,7 @@ class PushRule < ApplicationRecord
   }.freeze
 
   belongs_to :project, inverse_of: :push_rule
+  belongs_to :organization, class_name: 'Organizations::Organization'
   has_one :group, inverse_of: :push_rule, autosave: true
 
   validates :max_file_size, numericality: { greater_than_or_equal_to: 0, only_integer: true }

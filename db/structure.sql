@@ -23209,6 +23209,7 @@ CREATE TABLE push_rules (
     commit_message_negative_regex character varying,
     reject_non_dco_commits boolean,
     commit_committer_name_check boolean DEFAULT false NOT NULL,
+    organization_id bigint,
     CONSTRAINT author_email_regex_size_constraint CHECK ((char_length((author_email_regex)::text) <= 511)),
     CONSTRAINT branch_name_regex_size_constraint CHECK ((char_length((branch_name_regex)::text) <= 511)),
     CONSTRAINT commit_message_negative_regex_size_constraint CHECK ((char_length((commit_message_negative_regex)::text) <= 2047)),
@@ -35420,6 +35421,8 @@ CREATE INDEX index_protected_tags_on_project_id ON protected_tags USING btree (p
 CREATE UNIQUE INDEX index_protected_tags_on_project_id_and_name ON protected_tags USING btree (project_id, name);
 
 CREATE INDEX index_push_rules_on_is_sample ON push_rules USING btree (is_sample) WHERE is_sample;
+
+CREATE INDEX index_push_rules_on_organization_id ON push_rules USING btree (organization_id);
 
 CREATE INDEX index_push_rules_on_project_id ON push_rules USING btree (project_id);
 

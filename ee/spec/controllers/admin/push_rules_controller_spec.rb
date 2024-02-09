@@ -32,7 +32,11 @@ RSpec.describe Admin::PushRulesController, feature_category: :source_code_manage
 
     it 'updates sample push rule' do
       expect_next_instance_of(PushRule) do |instance|
-        expect(instance).to receive(:update).with(ActionController::Parameters.new(params).permit!)
+        expect(instance).to receive(:update).with(
+          ActionController::Parameters.new(
+            params.merge(organization_id: Organizations::Organization::DEFAULT_ORGANIZATION_ID)
+          ).permit!
+        ).and_call_original
       end
 
       patch :update, params: { push_rule: params }
