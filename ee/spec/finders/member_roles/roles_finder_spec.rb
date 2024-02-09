@@ -174,7 +174,7 @@ RSpec.describe MemberRoles::RolesFinder, feature_category: :system_access do
           let(:current_user) { admin }
 
           context 'when on self-managed' do
-            it 'returns instance member roles for instance admin' do
+            it 'returns instance member roles' do
               expect(find_member_roles).to eq([member_role_instance])
             end
           end

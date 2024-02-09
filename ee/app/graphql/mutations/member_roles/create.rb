@@ -12,10 +12,16 @@ module Mutations
         required: true,
         description: 'Base access level for the custom role.'
       argument :group_path, GraphQL::Types::ID,
-        required: ::Gitlab::Saas.feature_available?(:gitlab_saas_subscriptions),
+        required: false,
         description: 'Group the member role to mutate is in. Required for SaaS.'
 
-      def resolve(args)
+      def ready?(**args)
+        raise Gitlab::Graphql::Errors::ArgumentError, 'group_path argument is required.' if missing_group_path?(args)
+
+        super
+      end
+
+      def resolve(**args)
         group = ::Gitlab::Graphql::Lazy.force(find_object(group_path: args.delete(:group_path))) if args[:group_path]
 
         authorize_admin_roles!(group)
@@ -42,14 +48,24 @@ module Mutations
       end
 
       def authorize_group_member_roles!(group)
-        raise_resource_not_available_error! unless Gitlab::Saas.feature_available?(:group_custom_roles)
+        raise_resource_not_available_error! if restrict_member_roles? && !saas?
         raise_resource_not_available_error! unless Ability.allowed?(current_user, :admin_member_role, group)
         raise_resource_not_available_error! unless group.custom_roles_enabled?
       end
 
       def authorize_instance_member_roles!
         raise_resource_not_available_error! unless Ability.allowed?(current_user, :admin_member_role)
-        raise_resource_not_available_error! if Gitlab::Saas.feature_available?(:group_custom_roles)
+        raise_resource_not_available_error! if saas?
+      end
+
+      def saas?
+        Gitlab::Saas.feature_available?(:group_custom_roles)
+      end
+
+      def missing_group_path?(args)
+        return false unless saas?
+
+        args[:group_path].blank?
       end
 
       def canonicalize(args)
@@ -57,6 +73,10 @@ module Mutations
         permissions.each_with_object(args) do |permission, new_args|
           new_args[permission.downcase] = true
         end
+      end
+
+      def restrict_member_roles?
+        Feature.enabled?(:restrict_member_roles, type: :beta)
       end
     end
   end
