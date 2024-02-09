@@ -23,6 +23,7 @@ The Step Runner service gRPC definition is as follows:
 service StepRunner {
     rpc Run(RunRequest) returns (RunResponse);
     rpc Follow(FollowRequest) returns (stream FollowResponse);
+    rpc FollowIO(FollowIORequest) returns (stream FollowIOResponse);
     rpc Cancel(CancelRequest) returns (CancelResponse);
 }
 
@@ -55,6 +56,21 @@ message FollowRequest {
 
 message FollowResponse {
     StepResult result = 1;
+}
+
+message FollowIORequest {
+    string id = 1;
+    int32 read_stdout = 2; // number of bytes previously read from stdout. i.e. offset into buffered stdout.
+    int32 read_stderr = 3; // number of bytes previously read from stderr. i.e. offset into buffered stderr.
+}
+
+message FollowIOResponse {
+    enum StreamType {
+            stdout = 0;
+            stderr = 1;
+        }
+    bytes stream = 1;
+    StreamType stream_type = 2;
 }
 
 message CancelRequest {
