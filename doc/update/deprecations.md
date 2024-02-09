@@ -69,6 +69,23 @@ next major release, GitLab 18.0. This gem sees very little use and its
 
 <div class="deprecation breaking-change" data-milestone="18.0">
 
+### Deprecate License Scanning CI/CD artifact report type
+
+<div class="deprecation-notes">
+- Announced in GitLab <span class="milestone">16.9</span>
+- Removal in GitLab <span class="milestone">18.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/439301).
+</div>
+
+The CI/CD [artifact report](https://docs.gitlab.com/ee/ci/yaml/artifacts_reports.html) type is deprecated in GitLab 16.9, and will be removed in GitLab 18.0. CI/CD configurations using this keyword will stop working in GitLab 18.0.
+
+The artifact report type is no longer used because of the removal of the legacy License Scanning CI/CD job in GitLab 16.3.
+Instead, you should use [License scanning of CycloneDX files](https://docs.gitlab.com/ee/user/compliance/license_scanning_of_cyclonedx_files/).
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="18.0">
+
 ### Deprecate Terraform CI/CD templates
 
 <div class="deprecation-notes">
