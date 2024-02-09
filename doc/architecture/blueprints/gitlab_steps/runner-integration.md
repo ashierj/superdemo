@@ -131,7 +131,8 @@ step level for step-result traces (`Follow`), and as written for
 sub-process IO (`FollowIO`).
 
 
-Here is how we will connect to Step Runner in each runner executor:
+Here is how GitLab Runner will connect to Step Runner in each runner
+executor:
 
 ## Instance
 
