@@ -288,7 +288,7 @@ RSpec.describe Namespaces::ProjectsFinder, feature_category: :groups_and_project
       end
 
       context 'when sbom_component_id is provided as part of params' do
-        let(:params) { { sbom_component_id: occurrence.component_id } }
+        let(:params) { { sbom_component_id: occurrence.component_version_id } }
 
         it { is_expected.to eq([project_1]) }
       end
