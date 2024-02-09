@@ -103,7 +103,7 @@ export default {
       <gl-sprintf
         :message="
           s__(
-            'ProductAnalytics|Product analytics usage is calculated based on the total number of events received from projects within the group. %{linkStart}Learn more%{linkEnd}.',
+            'ProductAnalytics|Product analytics usage is calculated based on the total number of events received from projects within the group. Contact your account manager if you need additional event quota. %{linkStart}Learn more%{linkEnd}.',
           )
         "
       >
