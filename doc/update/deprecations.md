@@ -573,6 +573,23 @@ Users are advised to upgrade to 3.8.8 or greater.
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### Deprecate Python 3.9 in Dependency Scanning and License Scanning
+
+<div class="deprecation-notes">
+- Announced in GitLab <span class="milestone">16.9</span>
+- Removal in GitLab <span class="milestone">17.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/441201).
+</div>
+
+From GitLab 16.9, Dependency Scanning and License Scanning support for Python 3.9 is deprecated. In GitLab 17.0, Python 3.10 is the default version for the Dependency Scanning CI/CD job.
+
+From GitLab 17.0, Dependency Scanning and License Scanning features won't support projects that require Python 3.9 without a
+[compatible lockfile](https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#obtaining-dependency-information-by-parsing-lockfiles).
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### Deprecate Windows CMD in GitLab Runner
 
 <div class="deprecation-notes">
