@@ -61,19 +61,13 @@ export default {
       this.$emit('clear', []);
     },
   },
-  i18n: {
-    placeholder: __('Filter results'),
-  },
 };
 </script>
 
 <template>
-  <div class="row-content-block gl-relative gl-border-0">
-    <gl-filtered-search
-      :placeholder="$options.i18n.placeholder"
-      :available-tokens="filterTokens"
-      @submit="onFilterSubmit"
-      @clear="handleFilterClear"
-    />
-  </div>
+  <gl-filtered-search
+    :available-tokens="filterTokens"
+    @submit="onFilterSubmit"
+    @clear="handleFilterClear"
+  />
 </template>
