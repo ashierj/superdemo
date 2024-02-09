@@ -164,6 +164,11 @@ execution environment (like other environment variables or paths). This
 includes file-type variables, which should be written to the same path as
 they would be in traditional runner job execution.
 
+The service should not assume clients will be well-behaved, and should be
+able to handle clients that prematurely disconnect from either of the
+`Follow` APIs, and also clients that never call `Cancel` on a
+corresponding `Run` request.
+
 Here is how GitLab Runner will connect to Step Runner in each runner
 executor:
 
