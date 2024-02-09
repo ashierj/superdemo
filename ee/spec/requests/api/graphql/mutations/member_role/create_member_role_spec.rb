@@ -113,7 +113,11 @@ RSpec.describe 'creating member role', feature_category: :system_access do
           end
         end
 
-        context 'when on SaaS', :saas do
+        context 'when on SaaS' do
+          before do
+            stub_saas_features(gitlab_com_subscriptions: true)
+          end
+
           context 'with valid arguments' do
             it_behaves_like 'a mutation that creates a member role'
           end
@@ -144,6 +148,10 @@ RSpec.describe 'creating member role', feature_category: :system_access do
     end
 
     context 'when creating an instance level member role' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: false)
+      end
+
       let(:input) do
         {
           base_access_level: 'GUEST',
@@ -182,8 +190,9 @@ RSpec.describe 'creating member role', feature_category: :system_access do
           end
         end
 
-        context 'when on SaaS', :saas do
+        context 'when on SaaS' do
           before do
+            stub_saas_features(gitlab_com_subscriptions: true)
             stub_feature_flags(restrict_member_roles: false)
           end
 

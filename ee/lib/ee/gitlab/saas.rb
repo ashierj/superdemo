@@ -17,7 +17,6 @@ module EE
           purchases_additional_minutes
           search_indexing_status
           subscriptions_trials
-          group_custom_roles
           gitlab_com_subscriptions
           duo_chat_categorize_question
           google_artifact_registry

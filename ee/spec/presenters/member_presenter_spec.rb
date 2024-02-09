@@ -58,7 +58,6 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
 
     before do
       stub_licensed_features(custom_roles: true)
-      stub_saas_features(group_custom_roles: false)
     end
 
     context 'when the user has permissions to manage group roles' do

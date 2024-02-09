@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Member Roles', :saas, :js, feature_category: :permissions do
+RSpec.describe 'Member Roles', :js, feature_category: :permissions do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
@@ -59,6 +59,8 @@ RSpec.describe 'Member Roles', :saas, :js, feature_category: :permissions do
 
     context 'when on SaaS' do
       before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+
         visit group_settings_roles_and_permissions_path(group)
       end
 
@@ -67,7 +69,7 @@ RSpec.describe 'Member Roles', :saas, :js, feature_category: :permissions do
 
     context 'when on self-managed' do
       before do
-        stub_saas_features(group_custom_roles: false)
+        stub_saas_features(gitlab_com_subscriptions: false)
       end
 
       context 'when restrict_member_roles feature-flag is disabled' do

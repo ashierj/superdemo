@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
+  include GitlabSubscriptions::SubscriptionHelper
+
   MAX_COUNT_PER_GROUP_HIERARCHY = 10
 
   NON_PERMISSION_COLUMNS = [
@@ -19,7 +21,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   has_many :saml_group_links
   belongs_to :namespace
 
-  validates :namespace, presence: true, if: :group_role_required?
+  validates :namespace, presence: true, if: :gitlab_com_subscription?
   validates :name, presence: true
   validates :base_access_level, presence: true, inclusion: { in: LEVELS }
   validate :belongs_to_top_level_namespace
@@ -153,9 +155,5 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     )
 
     throw :abort # rubocop:disable Cop/BanCatchThrow
-  end
-
-  def group_role_required?
-    Gitlab::Saas.feature_available?(:group_custom_roles)
   end
 end
