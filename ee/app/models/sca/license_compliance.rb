@@ -46,15 +46,9 @@ module SCA
 
       diff_project = project || other.project
 
-      widget_category_feature_enabled = Feature.enabled?(:license_compliance_widget_category, diff_project)
-
       license_scanning_report.diff_with(other_report).transform_values do |reported_licenses|
         reported_licenses.map do |reported_license|
-          if widget_category_feature_enabled
-            new_build_policy_with_denied_licenses(denied_policies_from_other_report, reported_license, diff_project)
-          else
-            current_build_policy_with_denied_licenses(denied_policies_from_other_report, reported_license)
-          end
+          build_policy_with_denied_licenses(denied_policies_from_other_report, reported_license, diff_project)
         end
       end
     end
@@ -127,7 +121,7 @@ module SCA
       end.compact.to_h
     end
 
-    def new_build_policy_with_denied_licenses(denied_policies, reported_license, diff_project)
+    def build_policy_with_denied_licenses(denied_policies, reported_license, diff_project)
       direct_license_policy = policy_from_licenses(direct_license_policies, reported_license)
       return build_policy(reported_license, direct_license_policy, nil) if direct_license_policy
 
@@ -146,15 +140,6 @@ module SCA
 
     def license_approval_policies_configured_for_project?(diff_project)
       diff_project.software_license_policies.with_scan_result_policy_read.any?
-    end
-
-    def current_build_policy_with_denied_licenses(denied_policies, reported_license)
-      direct_license_policy = policy_from_licenses(direct_license_policies, reported_license)
-
-      denied_license_policy = policy_from_licenses(denied_policies, reported_license) unless direct_license_policy
-
-      approval_status = denied_license_policy ? 'denied' : nil
-      build_policy(reported_license, direct_license_policy || denied_license_policy, approval_status)
     end
 
     # When the license found in the report doesn't match any license
