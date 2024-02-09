@@ -1,6 +1,6 @@
-import { GlCollapsibleListbox } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import waitForPromises from 'helpers/wait_for_promises';
 import VariableValuesListbox from '~/ci/pipeline_new/components/variable_values_listbox.vue';
 import { mockYamlVariables } from '../mock_data';
 
@@ -10,7 +10,7 @@ describe('Variable values listbox', () => {
   let wrapper;
 
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
-  const findListboxItems = () => wrapper.findAllByTestId('ci-variable-value-dropdown-item');
+  const findListboxItems = () => wrapper.findAllComponents(GlListboxItem);
   const search = (searchString) => findListbox().vm.$emit('search', searchString);
 
   const createComponent = () => {
@@ -47,14 +47,14 @@ describe('Variable values listbox', () => {
 
     search(searchString);
 
-    await waitForPromises();
+    await nextTick();
 
     expect(findListboxItems().length).toBe(1);
     expect(findListboxItems().at(0).text()).toContain(searchString);
 
     search('');
 
-    await waitForPromises();
+    await nextTick();
 
     expect(findListboxItems().length).toBe(3);
   });
@@ -64,7 +64,7 @@ describe('Variable values listbox', () => {
 
     search(searchString);
 
-    await waitForPromises();
+    await nextTick();
 
     expect(findListboxItems().length).toBe(1);
     expect(findListboxItems().at(0).text()).toBe('production');

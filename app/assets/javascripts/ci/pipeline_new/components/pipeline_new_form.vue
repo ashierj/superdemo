@@ -479,6 +479,7 @@ export default {
             :selected="variable.value"
             :class="$options.formElementClasses"
             class="gl-flex-grow-1 gl-mr-0!"
+            data-testid="pipeline-form-ci-variable-value-dropdown"
             @select="setVariableAttribute(variable.key, 'value', $event)"
           />
           <gl-form-textarea
