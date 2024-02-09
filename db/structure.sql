@@ -14496,7 +14496,7 @@ CREATE TABLE ci_job_artifact_states (
     CONSTRAINT check_df832b66ea CHECK ((char_length(verification_failure) <= 255))
 );
 
-CREATE TABLE ci_job_artifacts (
+CREATE TABLE p_ci_job_artifacts (
     project_id integer NOT NULL,
     file_type integer NOT NULL,
     size bigint,
@@ -14515,9 +14515,9 @@ CREATE TABLE ci_job_artifacts (
     accessibility smallint DEFAULT 0 NOT NULL,
     file_final_path text,
     CONSTRAINT check_27f0f6dbab CHECK ((file_store IS NOT NULL)),
-    CONSTRAINT check_9f04410cf4 CHECK ((char_length(file_final_path) <= 1024)),
-    CONSTRAINT partitioning_constraint CHECK ((partition_id = ANY (ARRAY[(100)::bigint, (101)::bigint])))
-);
+    CONSTRAINT check_9f04410cf4 CHECK ((char_length(file_final_path) <= 1024))
+)
+PARTITION BY LIST (partition_id);
 
 CREATE SEQUENCE ci_job_artifacts_id_seq
     START WITH 1
@@ -14526,7 +14526,29 @@ CREATE SEQUENCE ci_job_artifacts_id_seq
     NO MAXVALUE
     CACHE 1;
 
-ALTER SEQUENCE ci_job_artifacts_id_seq OWNED BY ci_job_artifacts.id;
+ALTER SEQUENCE ci_job_artifacts_id_seq OWNED BY p_ci_job_artifacts.id;
+
+CREATE TABLE ci_job_artifacts (
+    project_id integer NOT NULL,
+    file_type integer NOT NULL,
+    size bigint,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    expire_at timestamp with time zone,
+    file character varying,
+    file_store integer DEFAULT 1,
+    file_sha256 bytea,
+    file_format smallint,
+    file_location smallint,
+    id bigint DEFAULT nextval('ci_job_artifacts_id_seq'::regclass) NOT NULL,
+    job_id bigint NOT NULL,
+    locked smallint DEFAULT 2,
+    partition_id bigint NOT NULL,
+    accessibility smallint DEFAULT 0 NOT NULL,
+    file_final_path text,
+    CONSTRAINT check_27f0f6dbab CHECK ((file_store IS NOT NULL)),
+    CONSTRAINT check_9f04410cf4 CHECK ((char_length(file_final_path) <= 1024))
+);
 
 CREATE TABLE ci_job_token_group_scope_links (
     id bigint NOT NULL,
@@ -26964,6 +26986,8 @@ ALTER TABLE ONLY p_ci_builds ATTACH PARTITION ci_builds FOR VALUES IN ('100');
 
 ALTER TABLE ONLY p_ci_builds_metadata ATTACH PARTITION ci_builds_metadata FOR VALUES IN ('100');
 
+ALTER TABLE ONLY p_ci_job_artifacts ATTACH PARTITION ci_job_artifacts FOR VALUES IN ('100', '101');
+
 ALTER TABLE ONLY p_ci_pipeline_variables ATTACH PARTITION ci_pipeline_variables FOR VALUES IN ('100', '101');
 
 ALTER TABLE ONLY abuse_events ALTER COLUMN id SET DEFAULT nextval('abuse_events_id_seq'::regclass);
@@ -27179,8 +27203,6 @@ ALTER TABLE ONLY ci_freeze_periods ALTER COLUMN id SET DEFAULT nextval('ci_freez
 ALTER TABLE ONLY ci_group_variables ALTER COLUMN id SET DEFAULT nextval('ci_group_variables_id_seq'::regclass);
 
 ALTER TABLE ONLY ci_instance_variables ALTER COLUMN id SET DEFAULT nextval('ci_instance_variables_id_seq'::regclass);
-
-ALTER TABLE ONLY ci_job_artifacts ALTER COLUMN id SET DEFAULT nextval('ci_job_artifacts_id_seq'::regclass);
 
 ALTER TABLE ONLY ci_job_token_group_scope_links ALTER COLUMN id SET DEFAULT nextval('ci_job_token_group_scope_links_id_seq'::regclass);
 
@@ -27713,6 +27735,8 @@ ALTER TABLE ONLY p_catalog_resource_sync_events ALTER COLUMN id SET DEFAULT next
 ALTER TABLE ONLY p_ci_builds_metadata ALTER COLUMN id SET DEFAULT nextval('ci_builds_metadata_id_seq'::regclass);
 
 ALTER TABLE ONLY p_ci_job_annotations ALTER COLUMN id SET DEFAULT nextval('p_ci_job_annotations_id_seq'::regclass);
+
+ALTER TABLE ONLY p_ci_job_artifacts ALTER COLUMN id SET DEFAULT nextval('ci_job_artifacts_id_seq'::regclass);
 
 ALTER TABLE ONLY packages_build_infos ALTER COLUMN id SET DEFAULT nextval('packages_build_infos_id_seq'::regclass);
 
@@ -29266,6 +29290,9 @@ ALTER TABLE ONLY ci_instance_variables
 
 ALTER TABLE ONLY ci_job_artifact_states
     ADD CONSTRAINT ci_job_artifact_states_pkey PRIMARY KEY (job_artifact_id);
+
+ALTER TABLE ONLY p_ci_job_artifacts
+    ADD CONSTRAINT p_ci_job_artifacts_pkey PRIMARY KEY (id, partition_id);
 
 ALTER TABLE ONLY ci_job_artifacts
     ADD CONSTRAINT ci_job_artifacts_pkey PRIMARY KEY (id, partition_id);
@@ -32425,6 +32452,8 @@ CREATE INDEX idx_award_emoji_on_user_emoji_name_awardable_type_awardable_id ON a
 
 CREATE INDEX idx_build_artifacts_size_refreshes_state_updated_at ON project_build_artifacts_size_refreshes USING btree (state, updated_at);
 
+CREATE UNIQUE INDEX p_ci_job_artifacts_job_id_file_type_partition_id_idx ON ONLY p_ci_job_artifacts USING btree (job_id, file_type, partition_id);
+
 CREATE UNIQUE INDEX idx_ci_job_artifacts_on_job_id_file_type_and_partition_id_uniq ON ci_job_artifacts USING btree (job_id, file_type, partition_id);
 
 CREATE INDEX idx_ci_pipelines_artifacts_locked ON ci_pipelines USING btree (ci_ref_id, id) WHERE (locked = 1);
@@ -33155,29 +33184,55 @@ CREATE UNIQUE INDEX index_ci_instance_variables_on_key ON ci_instance_variables 
 
 CREATE INDEX index_ci_job_artifact_states_on_job_artifact_id_partition_id ON ci_job_artifact_states USING btree (job_artifact_id, partition_id);
 
+CREATE INDEX p_ci_job_artifacts_expire_at_idx ON ONLY p_ci_job_artifacts USING btree (expire_at) WHERE ((locked = 0) AND (file_type <> 3) AND (expire_at IS NOT NULL));
+
 CREATE INDEX index_ci_job_artifacts_expire_at_unlocked_non_trace ON ci_job_artifacts USING btree (expire_at) WHERE ((locked = 0) AND (file_type <> 3) AND (expire_at IS NOT NULL));
+
+CREATE INDEX p_ci_job_artifacts_project_id_id_idx ON ONLY p_ci_job_artifacts USING btree (project_id, id) WHERE (file_type = 18);
 
 CREATE INDEX index_ci_job_artifacts_for_terraform_reports ON ci_job_artifacts USING btree (project_id, id) WHERE (file_type = 18);
 
+CREATE INDEX p_ci_job_artifacts_id_idx ON ONLY p_ci_job_artifacts USING btree (id) WHERE (file_type = 18);
+
 CREATE INDEX index_ci_job_artifacts_id_for_terraform_reports ON ci_job_artifacts USING btree (id) WHERE (file_type = 18);
+
+CREATE INDEX p_ci_job_artifacts_expire_at_job_id_idx ON ONLY p_ci_job_artifacts USING btree (expire_at, job_id);
 
 CREATE INDEX index_ci_job_artifacts_on_expire_at_and_job_id ON ci_job_artifacts USING btree (expire_at, job_id);
 
+CREATE INDEX p_ci_job_artifacts_file_final_path_idx ON ONLY p_ci_job_artifacts USING btree (file_final_path) WHERE (file_final_path IS NOT NULL);
+
 CREATE INDEX index_ci_job_artifacts_on_file_final_path ON ci_job_artifacts USING btree (file_final_path) WHERE (file_final_path IS NOT NULL);
+
+CREATE INDEX p_ci_job_artifacts_file_store_idx ON ONLY p_ci_job_artifacts USING btree (file_store);
 
 CREATE INDEX index_ci_job_artifacts_on_file_store ON ci_job_artifacts USING btree (file_store);
 
+CREATE INDEX p_ci_job_artifacts_file_type_project_id_created_at_idx ON ONLY p_ci_job_artifacts USING btree (file_type, project_id, created_at) WHERE (file_type = ANY (ARRAY[5, 6, 8, 23]));
+
 CREATE INDEX index_ci_job_artifacts_on_file_type_for_devops_adoption ON ci_job_artifacts USING btree (file_type, project_id, created_at) WHERE (file_type = ANY (ARRAY[5, 6, 8, 23]));
+
+CREATE INDEX p_ci_job_artifacts_project_id_created_at_id_idx ON ONLY p_ci_job_artifacts USING btree (project_id, created_at, id);
 
 CREATE INDEX index_ci_job_artifacts_on_id_project_id_and_created_at ON ci_job_artifacts USING btree (project_id, created_at, id);
 
+CREATE INDEX p_ci_job_artifacts_project_id_file_type_id_idx ON ONLY p_ci_job_artifacts USING btree (project_id, file_type, id);
+
 CREATE INDEX index_ci_job_artifacts_on_id_project_id_and_file_type ON ci_job_artifacts USING btree (project_id, file_type, id);
+
+CREATE INDEX p_ci_job_artifacts_partition_id_job_id_idx ON ONLY p_ci_job_artifacts USING btree (partition_id, job_id);
 
 CREATE INDEX index_ci_job_artifacts_on_partition_id_job_id ON ci_job_artifacts USING btree (partition_id, job_id);
 
+CREATE INDEX p_ci_job_artifacts_project_id_idx ON ONLY p_ci_job_artifacts USING btree (project_id);
+
 CREATE INDEX index_ci_job_artifacts_on_project_id ON ci_job_artifacts USING btree (project_id);
 
+CREATE INDEX p_ci_job_artifacts_project_id_id_idx1 ON ONLY p_ci_job_artifacts USING btree (project_id, id);
+
 CREATE INDEX index_ci_job_artifacts_on_project_id_and_id ON ci_job_artifacts USING btree (project_id, id);
+
+CREATE INDEX p_ci_job_artifacts_project_id_idx1 ON ONLY p_ci_job_artifacts USING btree (project_id) WHERE (file_type = ANY (ARRAY[5, 6, 7, 8]));
 
 CREATE INDEX index_ci_job_artifacts_on_project_id_for_security_reports ON ci_job_artifacts USING btree (project_id) WHERE (file_type = ANY (ARRAY[5, 6, 7, 8]));
 
@@ -36297,6 +36352,8 @@ CREATE INDEX p_ci_builds_scheduled_at_idx ON ONLY p_ci_builds USING btree (sched
 
 CREATE UNIQUE INDEX p_ci_builds_token_encrypted_partition_id_idx ON ONLY p_ci_builds USING btree (token_encrypted, partition_id) WHERE (token_encrypted IS NOT NULL);
 
+CREATE INDEX p_ci_job_artifacts_expire_at_job_id_idx1 ON ONLY p_ci_job_artifacts USING btree (expire_at, job_id) WHERE ((locked = 2) AND (expire_at IS NOT NULL));
+
 CREATE INDEX package_name_index ON packages_packages USING btree (name);
 
 CREATE INDEX packages_packages_failed_verification ON packages_package_files USING btree (verification_retry_at NULLS FIRST) WHERE (verification_state = 3);
@@ -38177,7 +38234,11 @@ ALTER INDEX p_ci_builds_metadata_pkey ATTACH PARTITION ci_builds_metadata_pkey;
 
 ALTER INDEX p_ci_builds_pkey ATTACH PARTITION ci_builds_pkey;
 
+ALTER INDEX p_ci_job_artifacts_pkey ATTACH PARTITION ci_job_artifacts_pkey;
+
 ALTER INDEX p_ci_pipeline_variables_pkey ATTACH PARTITION ci_pipeline_variables_pkey;
+
+ALTER INDEX p_ci_job_artifacts_job_id_file_type_partition_id_idx ATTACH PARTITION idx_ci_job_artifacts_on_job_id_file_type_and_partition_id_uniq;
 
 ALTER INDEX p_ci_builds_commit_id_bigint_artifacts_expire_at_id_idx ATTACH PARTITION index_357cc39ca4;
 
@@ -38229,6 +38290,32 @@ ALTER INDEX p_ci_builds_project_id_status_idx ATTACH PARTITION index_ci_builds_p
 
 ALTER INDEX p_ci_builds_runner_id_idx ATTACH PARTITION index_ci_builds_runner_id_running;
 
+ALTER INDEX p_ci_job_artifacts_expire_at_idx ATTACH PARTITION index_ci_job_artifacts_expire_at_unlocked_non_trace;
+
+ALTER INDEX p_ci_job_artifacts_project_id_id_idx ATTACH PARTITION index_ci_job_artifacts_for_terraform_reports;
+
+ALTER INDEX p_ci_job_artifacts_id_idx ATTACH PARTITION index_ci_job_artifacts_id_for_terraform_reports;
+
+ALTER INDEX p_ci_job_artifacts_expire_at_job_id_idx ATTACH PARTITION index_ci_job_artifacts_on_expire_at_and_job_id;
+
+ALTER INDEX p_ci_job_artifacts_file_final_path_idx ATTACH PARTITION index_ci_job_artifacts_on_file_final_path;
+
+ALTER INDEX p_ci_job_artifacts_file_store_idx ATTACH PARTITION index_ci_job_artifacts_on_file_store;
+
+ALTER INDEX p_ci_job_artifacts_file_type_project_id_created_at_idx ATTACH PARTITION index_ci_job_artifacts_on_file_type_for_devops_adoption;
+
+ALTER INDEX p_ci_job_artifacts_project_id_created_at_id_idx ATTACH PARTITION index_ci_job_artifacts_on_id_project_id_and_created_at;
+
+ALTER INDEX p_ci_job_artifacts_project_id_file_type_id_idx ATTACH PARTITION index_ci_job_artifacts_on_id_project_id_and_file_type;
+
+ALTER INDEX p_ci_job_artifacts_partition_id_job_id_idx ATTACH PARTITION index_ci_job_artifacts_on_partition_id_job_id;
+
+ALTER INDEX p_ci_job_artifacts_project_id_idx ATTACH PARTITION index_ci_job_artifacts_on_project_id;
+
+ALTER INDEX p_ci_job_artifacts_project_id_id_idx1 ATTACH PARTITION index_ci_job_artifacts_on_project_id_and_id;
+
+ALTER INDEX p_ci_job_artifacts_project_id_idx1 ATTACH PARTITION index_ci_job_artifacts_on_project_id_for_security_reports;
+
 ALTER INDEX p_ci_builds_commit_id_bigint_type_ref_idx ATTACH PARTITION index_fc42f73fa6;
 
 ALTER INDEX p_ci_builds_commit_id_bigint_type_name_ref_idx ATTACH PARTITION index_feafb4d370;
@@ -38244,6 +38331,8 @@ ALTER INDEX p_ci_builds_user_id_name_created_at_idx ATTACH PARTITION index_secur
 ALTER INDEX p_ci_builds_name_id_idx ATTACH PARTITION index_security_ci_builds_on_name_and_id_parser_features;
 
 ALTER INDEX p_ci_builds_scheduled_at_idx ATTACH PARTITION partial_index_ci_builds_on_scheduled_at_with_scheduled_jobs;
+
+ALTER INDEX p_ci_job_artifacts_expire_at_job_id_idx1 ATTACH PARTITION tmp_index_ci_job_artifacts_on_expire_at_where_locked_unknown;
 
 ALTER INDEX p_ci_builds_token_encrypted_partition_id_idx ATTACH PARTITION unique_ci_builds_token_encrypted_and_partition_id;
 
@@ -40946,7 +41035,7 @@ ALTER TABLE ONLY related_epic_links
 ALTER TABLE ONLY boards_epic_board_recent_visits
     ADD CONSTRAINT fk_rails_c4dcba4a3e FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY ci_job_artifacts
+ALTER TABLE p_ci_job_artifacts
     ADD CONSTRAINT fk_rails_c5137cb2c1_p FOREIGN KEY (partition_id, job_id) REFERENCES p_ci_builds(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY organization_settings
