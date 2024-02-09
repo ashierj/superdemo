@@ -17,23 +17,7 @@ things like restarting the service if it dies.
 
 ## Steps Service gRPC Definition
 
-Steps are delivered to Step Runner as a YAML blob in the GitLab CI syntax.
-Runner interacts with Step Runner over a gRPC service `StepRunner`
-which is started on a local socket in the execution environment. This
-is the same way that Nesting serves a gRPC service in a dedicated
-Mac instance. The service has three RPCs, `run`, `follow` and `cancel`.
-
-Run is the initial delivery of the steps. Follow requests a streaming
-response to step traces. And Cancel stops execution and cleans up
-resources as soon as possible.
-
-Step Runner operating in gRPC mode will be able to executed multiple
-step payloads at once. That is each call to `run` will start a new
-goroutine and execute the steps until completion. Multiple calls to `run`
-may be made simultaneously. This is also why components are cached by
-`location`, `version` and `hash`. Because we cannot be changing which
-ref we are on while multiple, concurrent executions are using the
-underlying files.
+The Step Runner service gRPC definition is as follows:
 
 ```proto
 service StepRunner {
@@ -68,6 +52,25 @@ message CancelRequest {
 message CancelResponse {
 }
 ```
+
+Steps are delivered to Step Runner as a YAML blob in the GitLab CI syntax.
+Runner interacts with Step Runner over a gRPC service `StepRunner`
+which is started on a local socket in the execution environment. This
+is the same way that Nesting serves a gRPC service in a dedicated
+Mac instance. The service has three RPCs, `run`, `follow` and `cancel`.
+
+Run is the initial delivery of the steps. Follow requests a streaming
+response to step traces. And Cancel stops execution and cleans up
+resources as soon as possible.
+
+Step Runner operating in gRPC mode will be able to executed multiple
+step payloads at once. That is each call to `run` will start a new
+goroutine and execute the steps until completion. Multiple calls to `run`
+may be made simultaneously. This is also why components are cached by
+`location`, `version` and `hash`. Because we cannot be changing which
+ref we are on while multiple, concurrent executions are using the
+underlying files.
+
 
 As steps are executed, traces are streamed back to GitLab Runner.
 So execution can be followed at least at the step level. If a more
