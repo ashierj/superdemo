@@ -58,6 +58,9 @@ pipelines, each of which may contain a security scan.
 - In GitLab 16.2 and earlier, only the results of the latest completed pipeline were evaluated
   when enforcing merge request approval policies.
 
+If a project uses [merge request pipelines](../../../ci/pipelines/merge_request_pipelines.md), you must use the [`latest` security templates](../../../development/cicd/templates.md) so that the security scanning jobs are present in the pipeline.
+For more information see [Use security scanning tools with merge request pipelines](../index.md#use-security-scanning-tools-with-merge-request-pipelines).
+
 ## Merge request approval policy editor
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/77814) in GitLab 14.8.
