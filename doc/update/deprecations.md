@@ -552,6 +552,27 @@ The GraphQL fields, `isTemporaryStorageIncreaseEnabled` and `temporaryStorageInc
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### Deprecate Grype scanner for Container Scanning
+
+<div class="deprecation-notes">
+- Announced in GitLab <span class="milestone">16.9</span>
+- Removal in GitLab <span class="milestone">17.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/439164).
+</div>
+
+Support for the Grype scanner in the GitLab Container Scanning analyzer is deprecated in
+GitLab 16.9 and will be removed in GitLab 17.0.
+
+You should use the default setting for `CS_ANALYZER_IMAGE`, which uses the Trivy
+scanner.
+
+To continue to use Grype, see the [Security scanner integration documentation](https://docs.gitlab.com/ee/development/integrations/secure.html) to learn how to
+create your own integration with GitLab.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### Deprecate License Scanning CI templates
 
 <div class="deprecation-notes">
