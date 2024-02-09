@@ -21,7 +21,8 @@ module Analytics
 
         stage_event_hash_ids(cursor_data).each do |stage_event_hash_id|
           cursor = cursor_from_data(cursor_data)
-          scope = event_model.where(stage_event_hash_id: stage_event_hash_id).order_by_end_event(:asc)
+          scope = event_model
+            .where(stage_event_hash_id: stage_event_hash_id).for_consistency_check_worker(:asc)
 
           iterator(scope, cursor).each_batch(of: BATCH_LIMIT) do |relation|
             if @runtime_limiter.over_time?
@@ -35,7 +36,7 @@ module Analytics
               # rubocop: enable Cop/AvoidReturnFromBlocks
             end
 
-            ids = relation.pluck(event_model.issuable_id_column)
+            ids = relation.to_a.pluck(event_model.issuable_id_column)
 
             next if ids.empty?
 
