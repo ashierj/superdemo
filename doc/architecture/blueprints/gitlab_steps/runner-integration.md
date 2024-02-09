@@ -28,10 +28,22 @@ service StepRunner {
 
 message RunRequest {
     string id = 1;
-    oneof job_oneof {
-        string ci_job = 2;
-        Steps steps = 3;
+    string work_dir = 2;
+    map<string,string> env = 3;
+    option (buf.validate.message).cel = {
+        id: "env",
+        message: "env must be alphanumeric with underscores",
+        expression: "this.env.all(key, key.matches('^[a-zA-Z_][a-zA-Z0-9_]*$'))",
+    };
+
+    enum StepType {
+        unknown = 0;
+        step = 1;
+        script = 2;
     }
+    StepType type = 4;
+    repeated Step steps = 5;
+    string ci_script = 6;
 }
 
 message RunResponse {
