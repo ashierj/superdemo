@@ -104,10 +104,10 @@ message ListResponse {
 ```
 
 Steps are delivered to Step Runner as a YAML blob in the GitLab CI syntax.
-Runner interacts with Step Runner over a gRPC service `StepRunner`
-which is started on a local socket in the execution environment. This
-is the same way that Nesting serves a gRPC service in a dedicated
-Mac instance. The service has three RPCs, `run`, `follow` and `cancel`.
+Runner interacts with Step Runner over the above gRPC service which is
+started on a local socket in the execution environment. This is the same
+way that Nesting serves a gRPC service in a dedicated Mac instance. The
+service has five RPCs, `Run`, `Follow`, `FollowIO`, `Cancel` and `List`.
 
 Run is the initial delivery of the steps. Follow requests a streaming
 response to step traces. And Cancel stops execution and cleans up
