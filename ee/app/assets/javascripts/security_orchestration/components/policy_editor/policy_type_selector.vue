@@ -1,7 +1,7 @@
 <script>
 import shieldCheckIllustrationUrl from '@gitlab/svgs/dist/illustrations/secure-sm.svg?url';
 import magnifyingGlassIllustrationUrl from '@gitlab/svgs/dist/illustrations/search-sm.svg?url';
-import { GlButton, GlCard, GlIcon, GlSprintf } from '@gitlab/ui';
+import { GlButton, GlCard, GlIcon, GlPopover, GlSprintf } from '@gitlab/ui';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { s__, __ } from '~/locale';
@@ -12,6 +12,11 @@ const i18n = {
   examples: __('Examples'),
   selectPolicy: s__('SecurityOrchestration|Select policy'),
   scanResultPolicyTitle: s__('SecurityOrchestration|Merge request approval policy'),
+  scanResultPolicyTitlePopoverTitle: s__('SecurityOrchestration|Updated policy name'),
+  scanResultPolicyTitlePopoverDesc: s__(
+    'SecurityOrchestration|The Scan result policy is now called the Merge request approval policy to better align with its purpose. For more details, see the release notes.',
+  ),
+  scanResultPolicySubTitle: s__('SecurityOrchestraation|(Formerly Scan result policy)'),
   scanResultPolicyDesc: s__(
     'SecurityOrchestration|Use a merge request approval policy to create rules that check for security vulnerabilities and license compliance before merging a merge request.',
   ),
@@ -35,6 +40,7 @@ export default {
     GlButton,
     GlCard,
     GlIcon,
+    GlPopover,
     GlSprintf,
   },
   directives: {
@@ -55,11 +61,14 @@ export default {
           text: POLICY_TYPE_COMPONENT_OPTIONS.scanResult.text.toLowerCase(),
           urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter,
           title: i18n.scanResultPolicyTitle,
+          titlePopover: i18n.scanResultPolicyTitlePopoverTitle,
+          titlePopoverDesc: i18n.scanResultPolicyTitlePopoverDesc,
           description: i18n.scanResultPolicyDesc,
           example: i18n.scanResultPolicyExample,
           imageSrc: shieldCheckIllustrationUrl,
           hasMax: this.maxActiveScanResultPoliciesReached,
           maxPoliciesAllowed: this.maxScanResultPoliciesAllowed,
+          subtitle: i18n.scanResultPolicySubTitle,
         },
         {
           text: POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.text.toLowerCase(),
@@ -93,7 +102,27 @@ export default {
           <img :alt="option.title" aria-hidden="true" :src="option.imageSrc" />
         </div>
         <div class="gl-display-flex gl-flex-direction-column">
-          <h4 class="gl-mt-0">{{ option.title }}</h4>
+          <div>
+            <h4 class="gl-display-inline-block gl-my-0">{{ option.title }}</h4>
+            <gl-icon
+              v-if="option.titlePopover"
+              id="change-icon"
+              name="status-active"
+              :size="12"
+              class="gl-display-inline-block gl-text-blue-500"
+            />
+            <gl-popover
+              v-if="option.titlePopover"
+              triggers="hover focus"
+              :title="option.titlePopover"
+              :show-close-button="false"
+              placement="top"
+              target="change-icon"
+              :content="option.titlePopoverDesc"
+              :show="false"
+            />
+          </div>
+          <p v-if="option.subtitle" class="gl-text-gray-400">{{ option.subtitle }}</p>
           <p>{{ option.description }}</p>
           <h5>{{ $options.i18n.examples }}</h5>
           <p class="gl-flex-grow-1">{{ option.example }}</p>
