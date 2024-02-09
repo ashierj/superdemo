@@ -4,6 +4,8 @@
 module Subscriptions
   module Trials
     class DuoProController < ApplicationController
+      include OneTrustCSP
+      include GoogleAnalyticsCSP
       include RegistrationsTracking
 
       layout 'minimal'
