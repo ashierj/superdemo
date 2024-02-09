@@ -30367,6 +30367,9 @@ ALTER TABLE ONLY pages_domain_acme_orders
 ALTER TABLE ONLY pages_domains
     ADD CONSTRAINT pages_domains_pkey PRIMARY KEY (id);
 
+ALTER TABLE ci_stages
+    ADD CONSTRAINT partitioning_constraint CHECK ((partition_id = ANY (ARRAY[(100)::bigint, (101)::bigint]))) NOT VALID;
+
 ALTER TABLE ONLY path_locks
     ADD CONSTRAINT path_locks_pkey PRIMARY KEY (id);
 
