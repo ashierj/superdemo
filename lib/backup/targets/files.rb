@@ -26,7 +26,7 @@ module Backup
         FileUtils.mkdir_p(backup_basepath)
         FileUtils.rm_f(backup_tarball)
 
-        if ENV['STRATEGY'] == 'copy'
+        if options.strategy == ::Backup::Options::Strategy::COPY
           cmd = [%w[rsync -a --delete], exclude_dirs(:rsync), %W[#{storage_realpath} #{backup_basepath}]].flatten
           output, status = Gitlab::Popen.popen(cmd)
 
