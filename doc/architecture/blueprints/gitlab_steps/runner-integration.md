@@ -169,6 +169,12 @@ able to handle clients that prematurely disconnect from either of the
 `Follow` APIs, and also clients that never call `Cancel` on a
 corresponding `Run` request.
 
+Finally, to facilitate integrating steps into the below runner executors,
+it is recommended that steps provide a client library to coordinate
+execution of the `Run`/`Follow*`/`Cancel` APIs, and to handle reconnecting
+to the step-runner service in the event that the `Follow*` calls loose
+connectivity.
+
 Here is how GitLab Runner will connect to Step Runner in each runner
 executor:
 
