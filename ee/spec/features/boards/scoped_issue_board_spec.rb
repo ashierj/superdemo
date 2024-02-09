@@ -7,7 +7,7 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
   include ListboxHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, :public) }
+  let_it_be(:group) { create(:group, :public, :crm_disabled) }
   let_it_be(:project) { create(:project, :public, namespace: group) }
   let_it_be(:project_2) { create(:project, :public, namespace: group) }
   let_it_be(:project_label) { create(:label, project: project, name: 'Planning') }
