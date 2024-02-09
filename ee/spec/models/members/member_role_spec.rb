@@ -17,11 +17,19 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
     it { is_expected.to validate_presence_of(:base_access_level) }
     it { is_expected.to validate_inclusion_of(:base_access_level).in_array(described_class::LEVELS) }
 
-    context 'when running on Gitlab.com', :saas do
+    context 'when running on Gitlab.com' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+      end
+
       it { is_expected.to validate_presence_of(:namespace) }
     end
 
     context 'when running on self-managed' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: false)
+      end
+
       it { is_expected.not_to validate_presence_of(:namespace) }
     end
 

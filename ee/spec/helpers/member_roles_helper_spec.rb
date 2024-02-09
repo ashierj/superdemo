@@ -15,7 +15,11 @@ RSpec.describe MemberRolesHelper, feature_category: :permissions do
   describe '#manage_member_roles_path' do
     subject { helper.manage_member_roles_path(source) }
 
-    context 'when on saas', :saas do
+    context 'when on SaaS' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+      end
+
       it { is_expected.to be_nil }
 
       context 'as owner' do
@@ -36,6 +40,10 @@ RSpec.describe MemberRolesHelper, feature_category: :permissions do
     end
 
     context 'when in admin mode', :enable_admin_mode do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: false)
+      end
+
       it { is_expected.to be_nil }
 
       context 'as admin' do

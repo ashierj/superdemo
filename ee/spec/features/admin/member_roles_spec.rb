@@ -54,7 +54,7 @@ RSpec.describe 'Instance-level Member Roles', :js, feature_category: :permission
 
     context 'when on self-managed' do
       before do
-        stub_saas_features(group_custom_roles: false)
+        stub_saas_features(gitlab_com_subscriptions: false)
 
         visit admin_application_settings_roles_and_permissions_path
       end
@@ -62,8 +62,10 @@ RSpec.describe 'Instance-level Member Roles', :js, feature_category: :permission
       it_behaves_like 'creates a new custom role'
     end
 
-    context 'when on SaaS', :saas do
+    context 'when on SaaS' do
       before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+
         visit admin_application_settings_roles_and_permissions_path
       end
 

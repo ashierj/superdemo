@@ -4,6 +4,8 @@
 
 module MemberRoles
   class RolesFinder
+    include ::GitlabSubscriptions::SubscriptionHelper
+
     attr_reader :current_user, :params
 
     VALID_PARAMS = [:parent, :id, :instance_roles].freeze
@@ -80,7 +82,7 @@ module MemberRoles
     end
 
     def can_read_instance_roles?
-      return false if saas?
+      return false if gitlab_com_subscription?
 
       Ability.allowed?(current_user, :admin_member_role)
     end
@@ -93,10 +95,6 @@ module MemberRoles
       return Ability.allowed?(current_user, :admin_member_role, group) if group
 
       can_read_instance_roles?
-    end
-
-    def saas?
-      Gitlab::Saas.feature_available?(:group_custom_roles)
     end
   end
 end
