@@ -76,6 +76,8 @@ module ProductAnalytics
     end
 
     def self.from_data(data:, project:)
+      return unless data
+
       config =
         if project && !project.empty_repo?
           project.repository.blob_data_at(
@@ -98,7 +100,7 @@ module ProductAnalytics
       @type = 'unknown'
       @data = {}
       @errors = [init_error]
-      @slug = slug.parameterize.underscore
+      @slug = slug&.parameterize&.underscore
     end
 
     def initialize(config:, slug:, init_error: nil)
@@ -115,7 +117,7 @@ module ProductAnalytics
       rescue Psych::Exception => e
         @errors = [e.message]
       end
-      @slug = slug.parameterize.underscore
+      @slug = slug&.parameterize&.underscore
       validate
     end
 
