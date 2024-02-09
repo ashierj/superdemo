@@ -14,6 +14,7 @@ module Features
       stub_feature_flags(merge_when_checks_pass: false)
       stub_licensed_features(security_dashboard: true,
         multiple_approval_rules: true,
+        sast: true, report_approver_rules: true,
         security_orchestration_policies: true)
       policy_management_project.add_developer(user)
 
