@@ -7,7 +7,7 @@ import TrialCreateLeadForm from 'ee/trials/components/trial_create_lead_form.vue
 import CountryOrRegionSelector from 'jh_else_ee/trials/components/country_or_region_selector.vue';
 import { TRIAL_FORM_SUBMIT_TEXT } from 'ee/trials/constants';
 import { trackSaasTrialSubmit } from 'ee/google_tag_manager';
-import { FORM_DATA, SUBMIT_PATH } from './mock_data';
+import { FORM_DATA, SUBMIT_PATH, GTM_SUBMIT_EVENT_LABEL } from './mock_data';
 
 jest.mock('ee/google_tag_manager', () => ({
   trackSaasTrialSubmit: jest.fn(),
@@ -18,12 +18,12 @@ Vue.use(VueApollo);
 describe('TrialCreateLeadForm', () => {
   let wrapper;
 
-  const createComponent = ({ mountFunction = shallowMountExtended, formSubmitText = '' } = {}) => {
-    return mountFunction(TrialCreateLeadForm, {
+  const createComponent = ({ mountFunction = shallowMountExtended } = {}) =>
+    mountFunction(TrialCreateLeadForm, {
       provide: {
-        formSubmitText,
         submitPath: SUBMIT_PATH,
         user: FORM_DATA,
+        gtmSubmitEventLabel: GTM_SUBMIT_EVENT_LABEL,
       },
       stubs: {
         CountryOrRegionSelector: stubComponent(CountryOrRegionSelector, {
@@ -31,7 +31,6 @@ describe('TrialCreateLeadForm', () => {
         }),
       },
     });
-  };
 
   const findForm = () => wrapper.findComponent(GlForm);
   const findButton = () => wrapper.findComponent(GlButton);
@@ -66,21 +65,10 @@ describe('TrialCreateLeadForm', () => {
     });
   });
 
-  describe('submit button text', () => {
-    it('has the "Continue" text on the submit button', () => {
-      wrapper = createComponent();
+  it('has the "Continue" text on the submit button', () => {
+    wrapper = createComponent();
 
-      expect(findButton().text()).toBe(TRIAL_FORM_SUBMIT_TEXT);
-    });
-
-    describe('when submit button text is provided', () => {
-      it('has the provided text on the submit button', () => {
-        const formSubmitText = '_formSubmitText_';
-        wrapper = createComponent({ formSubmitText });
-
-        expect(findButton().text()).toBe(formSubmitText);
-      });
-    });
+    expect(findButton().text()).toBe(TRIAL_FORM_SUBMIT_TEXT);
   });
 
   describe('submitting', () => {
@@ -88,10 +76,10 @@ describe('TrialCreateLeadForm', () => {
       wrapper = createComponent({ mountFunction: mountExtended });
     });
 
-    it('tracks the saas Trial', () => {
+    it('tracks the saas Trial submitting', () => {
       findForm().trigger('submit');
 
-      expect(trackSaasTrialSubmit).toHaveBeenCalled();
+      expect(trackSaasTrialSubmit).toHaveBeenCalledWith(GTM_SUBMIT_EVENT_LABEL);
     });
 
     it.each`

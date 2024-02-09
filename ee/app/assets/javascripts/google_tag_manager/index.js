@@ -43,6 +43,12 @@ const isSupported = () => Boolean(window.dataLayer);
 // window.dataLayer is set by adding partials to the appropriate view found in
 // ee/app/views/layouts/_google_tag_manager_body.html.haml and _google_tag_manager_head.html.haml
 
+const callIfSupported = (callback) => (...args) => {
+  if (isSupported()) {
+    callback(...args);
+  }
+};
+
 const pushEvent = (event, args = {}) => {
   if (!window.dataLayer) {
     return;
@@ -112,19 +118,11 @@ export const trackNewRegistrations = () => {
   trackOmniAuthSubmission('standardSignUp');
 };
 
-export const trackSaasTrialSubmit = () => {
-  if (!isSupported()) {
-    return;
-  }
+export const trackSaasTrialSubmit = callIfSupported((eventLabel) => {
+  pushEvent(eventLabel);
+});
 
-  pushEvent('saasTrialSubmit');
-};
-
-export const trackSaasTrialGroup = () => {
-  if (!isSupported()) {
-    return;
-  }
-
+export const trackSaasTrialGroup = callIfSupported(() => {
   const form = document.querySelector('.js-saas-trial-group');
 
   if (!form) return;
@@ -132,7 +130,17 @@ export const trackSaasTrialGroup = () => {
   form.addEventListener('submit', () => {
     pushEvent('saasTrialGroup');
   });
-};
+});
+
+export const trackSaasDuoProTrialGroup = callIfSupported(() => {
+  const form = document.querySelector('.js-saas-duo-pro-trial-group');
+
+  if (!form) return;
+
+  form.addEventListener('submit', () => {
+    pushEvent('saasDuoProTrialGroup');
+  });
+});
 
 export const trackProjectImport = () => {
   if (!isSupported()) {
