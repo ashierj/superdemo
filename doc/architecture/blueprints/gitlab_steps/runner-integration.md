@@ -125,11 +125,11 @@ made simultaneously. This is also why components are cached by `location`,
 `version` and `hash`. Because we cannot be changing which ref we are on
 while multiple, concurrent executions are using the underlying files.
 
+As steps are executed, step-result traces and sub-process IO are streamed
+back to GitLab Runner. This allows callers to follow execution, at the
+step level for step-result traces (`Follow`), and as written for
+sub-process IO (`FollowIO`).
 
-As steps are executed, traces are streamed back to GitLab Runner.
-So execution can be followed at least at the step level. If a more
-granular follow is required, we can introduce a gRPC step type which
-can stream back logs as they are produced.
 
 Here is how we will connect to Step Runner in each runner executor:
 
