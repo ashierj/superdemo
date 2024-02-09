@@ -323,24 +323,20 @@ export default {
         @input="handleFilterByChanged"
       />
 
-      <gl-button-group v-if="showNewOldBurndownToggle">
-        <gl-button
-          ref="oldBurndown"
-          :category="useLegacyBurndown ? 'primary' : 'secondary'"
-          variant="confirm"
-          size="small"
-          @click="toggleLegacyBurndown(true)"
-        >
-          {{ __('Legacy burndown chart') }}
-        </gl-button>
+      <gl-button-group v-if="showNewOldBurndownToggle" class="gl-pl-2">
         <gl-button
           ref="newBurndown"
-          :category="useLegacyBurndown ? 'secondary' : 'primary'"
-          variant="confirm"
-          size="small"
+          :selected="!useLegacyBurndown"
           @click="toggleLegacyBurndown(false)"
         >
           {{ __('Fixed burndown chart') }}
+        </gl-button>
+        <gl-button
+          ref="oldBurndown"
+          :selected="useLegacyBurndown"
+          @click="toggleLegacyBurndown(true)"
+        >
+          {{ __('Legacy burndown chart') }}
         </gl-button>
       </gl-button-group>
     </div>
