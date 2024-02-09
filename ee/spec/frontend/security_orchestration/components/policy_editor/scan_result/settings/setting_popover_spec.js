@@ -61,7 +61,7 @@ describe('SettingPopover', () => {
     });
 
     it('permanently dismisses the popover when the popover button is clicked', async () => {
-      createComponent({ propsData: { propsData: { showPopover: true } } });
+      createComponent({ propsData: { showPopover: true } });
       await findButton().vm.$emit('click');
       expect(userCalloutDismissSpy).toHaveBeenCalled();
     });
