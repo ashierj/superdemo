@@ -17,7 +17,7 @@ RSpec.describe Gitlab::Graphql::Aggregations::Vulnerabilities::LazyUserNotesCoun
       expect(subject.vulnerability).to match vulnerability
     end
 
-    it 'uses lazy_user_notes_count_aggregate to collect aggregates' do
+    it 'uses lazy_user_notes_count_aggregate to collect aggregates', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/441189' do
       subject = described_class.new({ lazy_user_notes_count_aggregate: { pending_vulnerability_ids: [10, 20, 30].to_set, loaded_objects: {} } }, vulnerability)
 
       expect(subject.lazy_state[:pending_vulnerability_ids]).to match_array [10, 20, 30, vulnerability.id]
