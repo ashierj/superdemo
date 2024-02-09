@@ -138,6 +138,21 @@ subsequent invocations return a success status but otherwise do noting.
 Similarly, multiple calls to `Cancel` should finish and remove the
 relevant job on the first call, and do nothing on subsequent calls.
 
+The `Step Runner` binary will include a command to proxy data from
+(typically text-based) `stdin`/`stdout`/`stderr`-based protocols to the
+gRPC service. This command will run in the same host as the gRPC service,
+and will read input from `stdin`, forward it to the gRPC service over a
+local socket, receive output from the gRPC service over same socket, and
+forward it to the client via `stdout`/`stderr`. This command will enable
+clients (like runner) to transparently tunnel to the gRPC service via
+`stdin`/`stderr`/`stdout`-based protocols like SSH or `docker exec`, which
+will eliminate the need to expose the Step Runner service's gRPC port on
+Docker images, or set up SSH port forwarding on VMs, and allow runner to
+interact with `Step Runner` using established protocols (i.e. SSH and
+`docker exec`). `stdout` should be reserved for writing responses from the
+`Steps Runner` service, and `stderr` should be reserved for errors
+originating in the `proxy` command.
+
 Here is how GitLab Runner will connect to Step Runner in each runner
 executor:
 
