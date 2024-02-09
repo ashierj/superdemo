@@ -70,23 +70,51 @@ RSpec.describe Projects::TransferService do
       allow(Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker).to receive(:perform_async)
     end
 
-    context 'when the project does not have vulnerabilities' do
-      it 'does not schedule the update job' do
-        subject.execute(group)
+    context 'when update_vuln_reads_on_project_transfer_via_event is disabled' do
+      before do
+        stub_feature_flags(update_vuln_reads_traversal_ids_via_event: false)
+      end
 
-        expect(Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker).not_to have_received(:perform_async)
+      context 'when the project does not have vulnerabilities' do
+        it 'does not schedule the update job' do
+          subject.execute(group)
+
+          expect(Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker).not_to have_received(:perform_async)
+        end
+      end
+
+      context 'when the project has vulnerabilities' do
+        before do
+          create(:project_setting, project: project, has_vulnerabilities: true)
+        end
+
+        it 'schedules the update job' do
+          subject.execute(group)
+
+          expect(Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker).to have_received(:perform_async).with(project.id)
+        end
       end
     end
 
-    context 'when the project has vulnerabilities' do
-      before do
-        create(:project_setting, project: project, has_vulnerabilities: true)
+    context 'when update_vuln_reads_on_project_transfer_via_event is enabled' do
+      context 'when the project does not have vulnerabilities' do
+        it 'does not schedule the update job' do
+          subject.execute(group)
+
+          expect(Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker).not_to have_received(:perform_async)
+        end
       end
 
-      it 'schedules the update job' do
-        subject.execute(group)
+      context 'when the project has vulnerabilities' do
+        before do
+          create(:project_setting, project: project, has_vulnerabilities: true)
+        end
 
-        expect(Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker).to have_received(:perform_async).with(project.id)
+        it 'does not schedule the update job' do
+          subject.execute(group)
+
+          expect(Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker).not_to have_received(:perform_async)
+        end
       end
     end
   end

@@ -30,12 +30,14 @@ FactoryBot.modify do
     trait :with_vulnerability do
       after(:create) do |project|
         create(:vulnerability, :detected, project: project)
+        project.project_setting.update!(has_vulnerabilities: true)
       end
     end
 
     trait :with_vulnerabilities do
       after(:create) do |project|
         create_list(:vulnerability, 2, :with_finding, :detected, project: project)
+        project.project_setting.update!(has_vulnerabilities: true)
       end
     end
 

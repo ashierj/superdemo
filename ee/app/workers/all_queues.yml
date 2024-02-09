@@ -2100,6 +2100,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: vulnerabilities_process_transfer_events
+  :worker_name: Vulnerabilities::ProcessTransferEventsWorker
+  :feature_category: :vulnerability_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: vulnerabilities_remove_all_vulnerabilities
   :worker_name: Vulnerabilities::RemoveAllVulnerabilitiesWorker
   :feature_category: :vulnerability_management

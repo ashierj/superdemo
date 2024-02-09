@@ -67,6 +67,7 @@ module EE
       end
 
       def schedule_vulnerability_reads_update
+        return if ::Feature.enabled?(:update_vuln_reads_traversal_ids_via_event, project, type: :gitlab_com_derisk)
         return unless project.project_setting&.has_vulnerabilities?
 
         Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker.perform_async(project.id)
