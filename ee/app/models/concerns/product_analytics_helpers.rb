@@ -60,7 +60,7 @@ module ProductAnalyticsHelpers
   end
 
   def product_analytics_dashboard(slug, user)
-    product_analytics_dashboards(user).find { |dashboard| dashboard.slug == slug }
+    product_analytics_dashboards(user).find { |dashboard| dashboard&.slug == slug }
   end
 
   def default_dashboards_configuration_source

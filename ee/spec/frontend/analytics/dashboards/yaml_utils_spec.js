@@ -2,10 +2,7 @@ import { stringify } from 'yaml';
 import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import {
-  hydrateLegacyYamlConfiguration,
-  fetchYamlConfig,
-} from 'ee/analytics/dashboards/yaml_utils';
+import { fetchYamlConfig } from 'ee/analytics/dashboards/yaml_utils';
 
 let mock;
 
@@ -46,53 +43,5 @@ describe('fetchYamlConfig', () => {
     mock.onGet(API_PATH).reply(HTTP_STATUS_OK, stringify(mockConfig));
     const config = await fetchYamlConfig(YAML_PROJECT_ID);
     expect(config).toEqual(mockConfig);
-  });
-});
-
-describe('hydrateLegacyYamlConfiguration', () => {
-  let res;
-
-  const availableVisualizations = [{ type: 'dora_chart' }];
-
-  const preparedPanels = [
-    { data: { namespace: 'test/one' }, visualization: { type: 'dora_chart' } },
-    { data: { namespace: 'test/two' }, visualization: { type: 'dora_chart' } },
-  ];
-
-  beforeEach(() => {
-    mock = new MockAdapter(axios);
-    mock.onGet(API_PATH).reply(HTTP_STATUS_OK, stringify(mockConfig));
-  });
-
-  describe('with available visualizations', () => {
-    beforeEach(async () => {
-      res = await hydrateLegacyYamlConfiguration(YAML_PROJECT_ID, availableVisualizations);
-    });
-
-    it('will populate the visualization definition', () => {
-      expect(res.panels).toEqual(preparedPanels);
-    });
-  });
-
-  describe('without a valid dashboard', () => {
-    beforeEach(async () => {
-      res = await hydrateLegacyYamlConfiguration(null, []);
-    });
-
-    it('will return null', () => {
-      expect(res).toBe(null);
-    });
-  });
-
-  describe('with no available visualizations', () => {
-    beforeEach(async () => {
-      res = await hydrateLegacyYamlConfiguration(YAML_PROJECT_ID, []);
-    });
-
-    it('will not populate the visualization definition', () => {
-      res.panels.forEach((panel) => {
-        expect(panel.visualization).toBeUndefined();
-      });
-    });
   });
 });
