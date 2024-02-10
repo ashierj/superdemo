@@ -49,10 +49,13 @@ module Gitlab
           add_request_details(start_time: start, path: path, body: payload)
         end
 
-        def index(project, node_id, force: false)
+        def index(project, node_id, force: false, callback_payload: {})
           raise 'Node can not be found' unless node(node_id)
 
-          response = zoekt_indexer_post('/indexer/index', indexing_payload(project, force: force), node_id)
+          callback_payload[:project_id] = project.id
+          payload = indexing_payload(project, force: force, callback_payload: callback_payload)
+
+          response = zoekt_indexer_post('/indexer/index', payload, node_id)
 
           raise "Request failed with: #{response.inspect}" unless response.success?
 
@@ -132,7 +135,7 @@ module Gitlab
           }.compact
         end
 
-        def indexing_payload(project, force:)
+        def indexing_payload(project, force:, callback_payload:)
           repository_storage = project.repository_storage
           connection_info = Gitlab::GitalyClient.connection_data(repository_storage)
           repository_path = "#{project.repository.disk_path}.git"
@@ -151,6 +154,7 @@ module Gitlab
               Storage: repository_storage,
               Path: repository_path
             },
+            Callback: { name: 'index', payload: callback_payload },
             RepoId: project.id,
             FileSizeLimit: Gitlab::CurrentSettings.elasticsearch_indexed_file_size_limit_kb.kilobytes,
             Timeout: "#{INDEXING_TIMEOUT_S}s"
