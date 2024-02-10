@@ -1272,12 +1272,26 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
 
       let(:work_item_fields) { "workItemType { #{work_item_type_fields} }" }
 
-      it 'returns work item type information' do
-        post_graphql(query, current_user: current_user)
+      context 'when work item exists at the project level' do
+        it 'returns work item type information' do
+          post_graphql(query, current_user: current_user)
 
-        expect(work_item_data['workItemType']).to match(
-          expected_work_item_type_response(work_item.work_item_type).first
-        )
+          expect(work_item_data['workItemType']).to match(
+            expected_work_item_type_response(work_item.resource_parent, work_item.work_item_type).first
+          )
+        end
+      end
+
+      context 'when work item exists at the group level' do
+        let(:work_item) { group_work_item }
+
+        it 'returns work item type information' do
+          post_graphql(query, current_user: current_user)
+
+          expect(work_item_data['workItemType']).to match(
+            expected_work_item_type_response(work_item.resource_parent, work_item.work_item_type).first
+          )
+        end
       end
     end
   end

@@ -36,24 +36,9 @@ module EE
       scope :grouped_by_work_item, -> { group(:id) }
     end
 
-    LICENSED_WIDGETS = {
-      iterations: ::WorkItems::Widgets::Iteration,
-      issue_weights: ::WorkItems::Widgets::Weight,
-      requirements: [
-        ::WorkItems::Widgets::Status,
-        ::WorkItems::Widgets::RequirementLegacy,
-        ::WorkItems::Widgets::TestReports
-      ],
-      issuable_health_status: ::WorkItems::Widgets::HealthStatus,
-      okrs: ::WorkItems::Widgets::Progress,
-      epic_colors: ::WorkItems::Widgets::Color
-    }.freeze
-
     def widgets
       strong_memoize(:widgets) do
-        allowed_widgets = work_item_type.widgets - unlicensed_widgets
-
-        allowed_widgets.map do |widget_class|
+        work_item_type.widgets(resource_parent).map do |widget_class|
           widget_class.new(self)
         end
       end
@@ -78,13 +63,6 @@ module EE
     end
 
     private
-
-    def unlicensed_widgets
-      excluded = LICENSED_WIDGETS.map do |licensed_feature, widgets|
-        widgets unless resource_parent.licensed_feature_available?(licensed_feature)
-      end
-      excluded.flatten
-    end
 
     override :linked_work_items_query
     def linked_work_items_query(link_type)

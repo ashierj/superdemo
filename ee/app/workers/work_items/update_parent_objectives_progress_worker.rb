@@ -14,7 +14,7 @@ module WorkItems
     def perform(id)
       work_item = ::WorkItem.id_in(id).first
       parent = work_item&.work_item_parent
-      return unless parent && parent.work_item_type.widgets.include?(WorkItems::Widgets::Progress)
+      return unless parent && parent.has_widget?(:progress)
 
       ApplicationRecord.transaction do
         update_parent_progress(parent)
