@@ -338,6 +338,17 @@ module EE
           method: :downstream_project_subscriptions,
           description: 'Pipeline subscriptions for projects subscribed to the project.'
 
+        field :runner_cloud_provisioning_options,
+          ::Types::Ci::RunnerCloudProvisioningOptionsType,
+          null: true,
+          alpha: { milestone: '16.9' },
+          description: 'Options for runner cloud provisioning by a specified cloud provider. ' \
+                       'Returns `null` if `:gcp_runner` feature flag is disabled, or the GitLab instance ' \
+                       'is not a SaaS instance.' do
+                         argument :provider, ::Types::Ci::RunnerCloudProviderEnum, required: true,
+                           description: 'Identifier of the cloud provider.'
+                       end
+
         field :ai_agents, ::Types::Ai::Agents::AgentType.connection_type,
           null: true,
           alpha: { milestone: '16.9' },
@@ -386,6 +397,16 @@ module EE
             end
           end
         end
+      end
+
+      # TODO To be removed along with :gcp_runner feature flag.
+      # Use `method: :itself` on the related field (see https://graphql-ruby.org/fields/introduction.html#field-resolution).
+      # TODO Before unmarking the field as alpha, figure out solution for polymorphism based on provider argument,
+      #      so that child objects call the correct cloud services
+      def runner_cloud_provisioning_options(provider:) # rubocop:disable Lint/UnusedMethodArgument -- Only one provider type is possible, and is already enforced by GraphQL
+        return if ::Feature.disabled?(:gcp_runner, project, type: :wip)
+
+        project
       end
     end
   end
