@@ -303,6 +303,17 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       client.index(project_1, node_id, force: true)
     end
 
+    it 'sets callback body' do
+      callback_payload = { foo: 'bar', baz: 'bang', project_id: project_1.id }
+
+      expect(::Gitlab::HTTP).to receive(:post) do |_url, options|
+        expect(Gitlab::Json.parse(options[:body],
+          symbolize_keys: true)).to include(Callback: { name: 'index', payload: callback_payload })
+      end.and_return(response)
+
+      client.index(project_1, node_id, force: true, callback_payload: callback_payload)
+    end
+
     it_behaves_like 'an authenticated zoekt request' do
       let(:make_request) { index }
     end
