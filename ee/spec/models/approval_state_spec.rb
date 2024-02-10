@@ -1844,4 +1844,53 @@ RSpec.describe ApprovalState do
       include_examples 'invalid approver rules'
     end
   end
+
+  describe '.filter_committers' do
+    let(:user) { create(:user) }
+    let(:merge_request) { create(:merge_request) }
+    let!(:merge_request_diff) { create(:merge_request_diff, merge_request: merge_request) }
+    let(:mr_diff_commit_user) { create(:merge_request_diff_commit_user, email: user.email) }
+    let!(:mr_diff_commit) { create(:merge_request_diff_commit, merge_request_diff: merge_request_diff, committer: mr_diff_commit_user) }
+    let(:users) { User.where(id: [merge_request.author.id, user.id]) }
+
+    subject(:filtered_committers) { described_class.filter_committers(users, merge_request) }
+
+    it 'does not filter by default' do
+      expect(filtered_committers).to eq(users)
+    end
+
+    context 'when commiters are not allowed to approve' do
+      before do
+        stub_ee_application_setting(prevent_merge_requests_committers_approval: true)
+      end
+
+      shared_examples_for 'filtered committers' do
+        it 'filters out committers' do
+          expect(filtered_committers).not_to include(user)
+        end
+
+        context 'when users are preloaded' do
+          before do
+            users.load
+          end
+
+          it 'filters out committers' do
+            expect(filtered_committers).not_to include(user)
+          end
+        end
+      end
+
+      it_behaves_like 'filtered committers'
+
+      context 'when commit is merge commit' do
+        before do
+          allow_next_instance_of(Commit) do |commit|
+            allow(commit).to receive(:merge_commit?).and_return(true)
+          end
+        end
+
+        it_behaves_like 'filtered committers'
+      end
+    end
+  end
 end
