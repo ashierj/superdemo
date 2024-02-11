@@ -48,6 +48,32 @@ export const mockTaskCompletionResponse = {
     },
   },
 };
+export const markTestCaseTodoDoneResponse = {
+  data: {
+    todoMarkDone: {
+      clientMutationId: '1',
+      errors: [],
+      todo: { id: '2' },
+    },
+  },
+};
+
+export const updateTestCaseResponse = {
+  data: { updateIssue: { errors: [], issue: mockTestCase } },
+};
+
+export const moveTestCaseResponse = {
+  data: {
+    issueMove: {
+      clientMutationId: '1',
+      errors: [],
+      issue: {
+        id: '2',
+        webUrl: mockTestCase.webUrl,
+      },
+    },
+  },
+};
 
 export const mockProvide = {
   projectFullPath: 'gitlab-org/gitlab-test',

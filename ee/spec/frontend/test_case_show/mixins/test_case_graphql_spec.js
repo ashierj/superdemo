@@ -1,115 +1,130 @@
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
-
+import createMockApollo from 'helpers/mock_apollo_helper';
 import TestCaseShowRoot from 'ee/test_case_show/components/test_case_show_root.vue';
 import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_root.vue';
 import markTestCaseTodoDone from 'ee/test_case_show/queries/mark_test_case_todo_done.mutation.graphql';
 import moveTestCase from 'ee/test_case_show/queries/move_test_case.mutation.graphql';
 import updateTestCase from 'ee/test_case_show/queries/update_test_case.mutation.graphql';
+import projectTestCase from 'ee/test_case_show/queries/project_test_case.query.graphql';
+import projectTestCaseTaskList from 'ee/test_case_show/queries/test_case_tasklist.query.graphql';
 import { mockCurrentUserTodo } from 'jest/vue_shared/issuable/list/mock_data';
 import { stubComponent } from 'helpers/stub_component';
+import waitForPromises from 'helpers/wait_for_promises';
 
 import Api from '~/api';
 import { createAlert } from '~/alert';
 import { visitUrl } from '~/lib/utils/url_utility';
 
-import { mockProvide, mockTestCase } from '../mock_data';
+import {
+  markTestCaseTodoDoneResponse,
+  updateTestCaseResponse,
+  moveTestCaseResponse,
+  mockProvide,
+  mockTestCase,
+  mockTestCaseResponse,
+} from '../mock_data';
 
 jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
 
-const createComponent = ({ testCase, testCaseQueryLoading = false } = {}) =>
-  shallowMount(TestCaseShowRoot, {
-    provide: {
-      ...mockProvide,
-    },
-    mocks: {
-      $apollo: {
-        queries: {
-          testCase: {
-            loading: testCaseQueryLoading,
-            refetch: jest.fn(),
-          },
-        },
-        mutate: jest.fn(),
-      },
-    },
-    stubs: {
-      IssuableShow: stubComponent(IssuableShow),
-    },
-    data() {
-      return {
-        testCaseLoading: testCaseQueryLoading,
-        testCase: testCaseQueryLoading
-          ? {}
-          : {
-              ...mockTestCase,
-              ...testCase,
-            },
-      };
-    },
-  });
+Vue.use(VueApollo);
+
+const markTestCaseTodoDoneSpy = jest.fn().mockResolvedValue(markTestCaseTodoDoneResponse);
+const moveTestCaseSpy = jest.fn().mockResolvedValue(moveTestCaseResponse);
+const updateTestCaseSpy = jest.fn().mockResolvedValue(updateTestCaseResponse);
+const projectTestCaseSpy = jest.fn().mockResolvedValue(mockTestCaseResponse());
+const projectTestCaseTaskListSpy = jest.fn().mockResolvedValue({});
+
+const defaultRequestHandlers = {
+  markTestCaseTodoDone: markTestCaseTodoDoneSpy,
+  moveTestCase: moveTestCaseSpy,
+  updateTestCase: updateTestCaseSpy,
+  projectTestCase: projectTestCaseSpy,
+  projectTestCaseTaskList: projectTestCaseTaskListSpy,
+};
 
 describe('TestCaseGraphQL Mixin', () => {
   let wrapper;
+  let requestHandlers;
 
-  beforeEach(() => {
-    wrapper = createComponent();
-  });
+  const createComponent = ({ testCase, testCaseQueryLoading = false, handlers = {} } = {}) => {
+    requestHandlers = {
+      ...defaultRequestHandlers,
+      ...handlers,
+    };
+
+    wrapper = shallowMount(TestCaseShowRoot, {
+      provide: {
+        ...mockProvide,
+      },
+      stubs: {
+        IssuableShow: stubComponent(IssuableShow),
+      },
+      data() {
+        return {
+          testCaseLoading: testCaseQueryLoading,
+          testCase: testCaseQueryLoading
+            ? {}
+            : {
+                ...mockTestCase,
+                ...testCase,
+              },
+        };
+      },
+      apolloProvider: createMockApollo([
+        [projectTestCase, requestHandlers.projectTestCase],
+        [projectTestCaseTaskList, requestHandlers.projectTestCaseTaskList],
+        [markTestCaseTodoDone, requestHandlers.markTestCaseTodoDone],
+        [moveTestCase, requestHandlers.moveTestCase],
+        [updateTestCase, requestHandlers.updateTestCase],
+      ]),
+    });
+  };
 
   describe('updateTestCase', () => {
-    it('calls `$apollo.mutate` with updateTestCase mutation and updateTestCaseInput variables', () => {
-      jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue({
-        data: {
-          updateIssue: {
-            errors: [],
-            issue: mockTestCase,
-          },
-        },
-      });
-
+    it('calls mutation to update the test case correctly', () => {
+      createComponent();
       wrapper.vm.updateTestCase({
-        variables: {
-          title: 'Foo',
-        },
+        variables: { title: 'Foo' },
         errorMessage: 'Something went wrong',
       });
 
-      expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
-        mutation: updateTestCase,
-        variables: {
-          input: {
-            projectPath: mockProvide.projectFullPath,
-            iid: mockProvide.testCaseId,
-            title: 'Foo',
-          },
+      expect(updateTestCaseSpy).toHaveBeenCalledWith({
+        input: {
+          projectPath: mockProvide.projectFullPath,
+          iid: mockProvide.testCaseId,
+          title: 'Foo',
         },
       });
     });
 
-    it('calls `createAlert` with errorMessage on promise reject', () => {
-      jest.spyOn(wrapper.vm.$apollo, 'mutate').mockRejectedValue({});
+    it('creates an alert when updating a test case fails', async () => {
+      const errorUpdateTestCaseSpy = jest
+        .fn()
+        .mockRejectedValue({ data: { updateIssue: { errors: ['Foo'], issue: {} } } });
+      createComponent({ handlers: { updateTestCase: errorUpdateTestCaseSpy } });
+      const errorMessage = 'Something went wrong';
+      wrapper.vm.updateTestCase({ variables: { title: 'Foo' }, errorMessage });
+      await waitForPromises();
 
-      return wrapper.vm
-        .updateTestCase({
-          variables: {
-            title: 'Foo',
-          },
-          errorMessage: 'Something went wrong',
-        })
-        .then(() => {
-          expect(createAlert).toHaveBeenCalledWith({
-            message: 'Something went wrong',
-            captureError: true,
-            error: expect.any(Object),
-          });
-        });
+      expect(createAlert).toHaveBeenCalledWith({
+        message: errorMessage,
+        captureError: true,
+        error: expect.any(Object),
+      });
     });
   });
 
   describe('addTestCaseAsTodo', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
     it('sets `testCaseTodoUpdateInProgress` to true', () => {
       jest.spyOn(Api, 'addProjectIssueAsTodo').mockResolvedValue({});
-
+      expect(wrapper.vm.testCaseTodoUpdateInProgress).toBe(false);
       wrapper.vm.addTestCaseAsTodo();
 
       expect(wrapper.vm.testCaseTodoUpdateInProgress).toBe(true);
@@ -117,7 +132,6 @@ describe('TestCaseGraphQL Mixin', () => {
 
     it('calls `Api.addProjectIssueAsTodo` method with params `projectFullPath` and `testCaseId`', () => {
       jest.spyOn(Api, 'addProjectIssueAsTodo').mockResolvedValue({});
-
       wrapper.vm.addTestCaseAsTodo();
 
       expect(Api.addProjectIssueAsTodo).toHaveBeenCalledWith(
@@ -126,95 +140,78 @@ describe('TestCaseGraphQL Mixin', () => {
       );
     });
 
-    it('calls `$apollo.queries.testCase.refetch` method on request promise resolve', () => {
+    it('refetches project test case data when a new test case is added', async () => {
       jest.spyOn(Api, 'addProjectIssueAsTodo').mockResolvedValue({});
-      jest.spyOn(wrapper.vm.$apollo.queries.testCase, 'refetch');
+      expect(projectTestCaseSpy).toHaveBeenCalledTimes(1);
+      wrapper.vm.addTestCaseAsTodo();
+      await waitForPromises();
 
-      return wrapper.vm.addTestCaseAsTodo().then(() => {
-        expect(wrapper.vm.$apollo.queries.testCase.refetch).toHaveBeenCalled();
+      expect(projectTestCaseSpy).toHaveBeenCalledTimes(2);
+      expect(projectTestCaseSpy).toHaveBeenLastCalledWith({
+        projectPath: mockProvide.projectFullPath,
+        testCaseId: mockProvide.testCaseId,
       });
+      expect(wrapper.vm.testCaseTodoUpdateInProgress).toBe(false);
     });
 
-    it('calls `createAlert` method on request promise reject', () => {
+    it('creates an alert when adding a new test case fails', async () => {
       jest.spyOn(Api, 'addProjectIssueAsTodo').mockRejectedValue({});
+      wrapper.vm.addTestCaseAsTodo();
+      await waitForPromises();
 
-      return wrapper.vm.addTestCaseAsTodo().then(() => {
-        expect(createAlert).toHaveBeenCalledWith({
-          message: 'Something went wrong while adding test case to a to-do item.',
-          captureError: true,
-          error: expect.any(Object),
-        });
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'Something went wrong while adding test case to a to-do item.',
+        captureError: true,
+        error: expect.any(Object),
       });
-    });
-
-    it('sets `testCaseTodoUpdateInProgress` to false on request promise resolve or reject', () => {
-      jest.spyOn(Api, 'addProjectIssueAsTodo').mockRejectedValue({});
-
-      return wrapper.vm.addTestCaseAsTodo().finally(() => {
-        expect(wrapper.vm.testCaseTodoUpdateInProgress).toBe(false);
-      });
+      expect(wrapper.vm.testCaseTodoUpdateInProgress).toBe(false);
     });
   });
 
   describe('markTestCaseTodoDone', () => {
-    const todoResolvedMutation = {
-      data: {
-        todoMarkDone: {
-          errors: [],
-        },
-      },
-    };
-
     it('sets `testCaseTodoUpdateInProgress` to true', () => {
-      jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(todoResolvedMutation);
-
+      createComponent();
+      expect(wrapper.vm.testCaseTodoUpdateInProgress).toBe(false);
       wrapper.vm.markTestCaseTodoDone();
 
       expect(wrapper.vm.testCaseTodoUpdateInProgress).toBe(true);
     });
 
-    it('calls `$apollo.mutate` with markTestCaseTodoDone mutation and todoMarkDoneInput variables', () => {
-      jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(todoResolvedMutation);
-
+    it('calls mutation to mark test case todo as done correctly', () => {
+      createComponent();
       wrapper.vm.markTestCaseTodoDone();
 
-      expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
-        mutation: markTestCaseTodoDone,
-        variables: {
-          todoMarkDoneInput: {
-            id: mockCurrentUserTodo.id,
-          },
-        },
+      expect(markTestCaseTodoDoneSpy).toHaveBeenCalledWith({
+        todoMarkDoneInput: { id: mockCurrentUserTodo.id },
       });
     });
 
-    it('calls `$apollo.queries.testCase.refetch` on mutation promise resolve', () => {
-      jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(todoResolvedMutation);
-      jest.spyOn(wrapper.vm.$apollo.queries.testCase, 'refetch');
+    it('refetches project test cases when a test case is updated', async () => {
+      createComponent();
+      expect(projectTestCaseSpy).toHaveBeenCalledTimes(1);
+      wrapper.vm.markTestCaseTodoDone();
+      await waitForPromises();
 
-      return wrapper.vm.markTestCaseTodoDone().then(() => {
-        expect(wrapper.vm.$apollo.queries.testCase.refetch).toHaveBeenCalled();
+      expect(projectTestCaseSpy).toHaveBeenCalledTimes(2);
+      expect(projectTestCaseSpy).toHaveBeenLastCalledWith({
+        projectPath: mockProvide.projectFullPath,
+        testCaseId: mockProvide.testCaseId,
       });
+      expect(wrapper.vm.testCaseTodoUpdateInProgress).toBe(false);
     });
 
-    it('calls `createAlert` with errorMessage on mutation promise reject', () => {
-      jest.spyOn(wrapper.vm.$apollo, 'mutate').mockRejectedValue({});
+    it('creates an alert when updating a test case fails', async () => {
+      const errorMarkTestCaseTodoDoneSpy = jest.fn().mockRejectedValue({});
+      createComponent({ handlers: { markTestCaseTodoDone: errorMarkTestCaseTodoDoneSpy } });
+      wrapper.vm.markTestCaseTodoDone();
+      await waitForPromises();
 
-      return wrapper.vm.markTestCaseTodoDone().then(() => {
-        expect(createAlert).toHaveBeenCalledWith({
-          message: 'Something went wrong while marking test case to-do item as done.',
-          captureError: true,
-          error: expect.any(Object),
-        });
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'Something went wrong while marking test case to-do item as done.',
+        captureError: true,
+        error: expect.any(Object),
       });
-    });
-
-    it('sets `testCaseTodoUpdateInProgress` to false on mutation promise resolve or reject', () => {
-      jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(todoResolvedMutation);
-
-      return wrapper.vm.markTestCaseTodoDone().finally(() => {
-        expect(wrapper.vm.testCaseTodoUpdateInProgress).toBe(false);
-      });
+      expect(wrapper.vm.testCaseTodoUpdateInProgress).toBe(false);
     });
   });
 
@@ -222,55 +219,44 @@ describe('TestCaseGraphQL Mixin', () => {
     const mockTargetProject = {
       full_path: 'gitlab-org/gitlab-shell',
     };
-    const moveResolvedMutation = {
-      data: {
-        issueMove: {
-          errors: [],
-          issue: {
-            webUrl: mockTestCase.webUrl,
-          },
-        },
-      },
-    };
 
     it('sets `testCaseMoveInProgress` to true', () => {
-      jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(moveResolvedMutation);
-
+      createComponent();
+      expect(wrapper.vm.testCaseMoveInProgress).toBe(false);
       wrapper.vm.moveTestCase(mockTargetProject);
 
       expect(wrapper.vm.testCaseMoveInProgress).toBe(true);
     });
 
-    it('calls `$apollo.mutate` with moveTestCase mutation and moveTestCaseInput variables', () => {
-      jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(moveResolvedMutation);
-
+    it('calls mutation to move test case correctly', async () => {
+      createComponent();
+      expect(moveTestCaseSpy).not.toHaveBeenCalled();
       wrapper.vm.moveTestCase(mockTargetProject);
+      await waitForPromises();
 
-      expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
-        mutation: moveTestCase,
-        variables: {
-          moveTestCaseInput: {
-            projectPath: mockProvide.projectFullPath,
-            iid: mockProvide.testCaseId,
-            targetProjectPath: mockTargetProject.full_path,
-          },
+      expect(moveTestCaseSpy).toHaveBeenCalledWith({
+        moveTestCaseInput: {
+          projectPath: mockProvide.projectFullPath,
+          iid: mockProvide.testCaseId,
+          targetProjectPath: mockTargetProject.full_path,
         },
       });
     });
 
-    it('calls `visitUrl` with updated test case URL on mutation promise resolve', async () => {
-      jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(moveResolvedMutation);
+    it('navigates the user to a new page when a test case is moved successfully', async () => {
+      createComponent();
+      expect(visitUrl).not.toHaveBeenCalled();
+      wrapper.vm.moveTestCase(mockTargetProject);
+      await waitForPromises();
 
-      await wrapper.vm.moveTestCase(mockTargetProject);
-
-      expect(wrapper.vm.testCaseMoveInProgress).toBe(true);
-      expect(visitUrl).toHaveBeenCalledWith(moveResolvedMutation.data.issueMove.issue.webUrl);
+      expect(visitUrl).toHaveBeenCalledWith(moveTestCaseResponse.data.issueMove.issue.webUrl);
     });
 
-    it('calls `createAlert` with errorMessage on mutation promise reject', async () => {
-      jest.spyOn(wrapper.vm.$apollo, 'mutate').mockRejectedValue({});
-
-      await wrapper.vm.moveTestCase(mockTargetProject);
+    it('creates an alert when moving a test case fails', async () => {
+      const errorMoveTestCaseSpy = jest.fn().mockRejectedValue({});
+      createComponent({ handlers: { moveTestCase: errorMoveTestCaseSpy } });
+      wrapper.vm.moveTestCase(mockTargetProject);
+      await waitForPromises();
 
       expect(createAlert).toHaveBeenCalledWith({
         message: 'Something went wrong while moving test case.',
