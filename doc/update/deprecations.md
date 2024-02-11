@@ -1503,6 +1503,18 @@ the GitLab 17.0 release:
 - DAST: version 4
 - DAST API: version 3
 - Fuzz API: version 3
+- Secret Detection: version 5
+- Static Application Security Testing (SAST): version 4 of [all analyzers](https://docs.gitlab.com/ee/user/application_security/sast/analyzers/)
+  - `brakeman`
+  - `flawfinder`
+  - `kubesec`
+  - `mobsf`
+  - `nodejs-scan`
+  - `phpcs-security-audit`
+  - `pmd-apex`
+  - `semgrep`
+  - `sobelow`
+  - `spotbugs`
 
 </div>
 
