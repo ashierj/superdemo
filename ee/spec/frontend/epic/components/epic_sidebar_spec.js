@@ -1,8 +1,7 @@
-import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
-
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import EpicSidebar from 'ee/epic/components/epic_sidebar.vue';
 import { getStoreConfig } from 'ee/epic/store';
 
@@ -32,13 +31,16 @@ describe('EpicSidebarComponent', () => {
       actions: { ...actions, ...actionMocks },
     });
 
-    return shallowMount(EpicSidebar, {
+    return shallowMountExtended(EpicSidebar, {
       store,
       provide: {
         iid: '1',
       },
     });
   };
+
+  const findStartDateEl = () => wrapper.findByTestId('start-date');
+  const findDueDateEl = () => wrapper.findByTestId('due-date');
 
   describe('template', () => {
     beforeEach(() => {
@@ -62,15 +64,12 @@ describe('EpicSidebarComponent', () => {
     });
 
     it('renders Start date & Due date elements when sidebar is expanded', async () => {
-      wrapper.vm.$store.dispatch('toggleSidebarFlag', false);
+      store.dispatch('toggleSidebarFlag', false);
 
       await nextTick();
 
-      const startDateEl = wrapper.find('[data-testid="start-date"]');
-      const dueDateEl = wrapper.find('[data-testid="due-date"]');
-
-      expect(startDateEl.exists()).toBe(true);
-      expect(startDateEl.props()).toMatchObject({
+      expect(findStartDateEl().exists()).toBe(true);
+      expect(findStartDateEl().props()).toMatchObject({
         iid: '1',
         fullPath: 'frontend-fixtures-group',
         issuableType: 'epic',
@@ -78,8 +77,8 @@ describe('EpicSidebarComponent', () => {
         canInherit: true,
       });
 
-      expect(dueDateEl.exists()).toBe(true);
-      expect(dueDateEl.props()).toMatchObject({
+      expect(findDueDateEl().exists()).toBe(true);
+      expect(findDueDateEl().props()).toMatchObject({
         iid: '1',
         fullPath: 'frontend-fixtures-group',
         issuableType: 'epic',
@@ -164,18 +163,16 @@ describe('EpicSidebarComponent', () => {
       wrapper = createComponent();
     });
 
-    it('sets min date when start date is selected', () => {
-      const startDateWidget = wrapper.find('[data-testid="start-date"]');
-      startDateWidget.vm.$emit('startDateUpdated', mockDate);
+    it('sets min date when start date is selected', async () => {
+      await findStartDateEl().vm.$emit('startDateUpdated', mockDate);
 
-      expect(wrapper.vm.minDate).toStrictEqual(parsePikadayDate(mockDate));
+      expect(findDueDateEl().props('minDate')).toStrictEqual(parsePikadayDate(mockDate));
     });
 
-    it('sets max date when due date is selected', () => {
-      const dueDateWidget = wrapper.find('[data-testid="due-date"]');
-      dueDateWidget.vm.$emit('dueDateUpdated', mockDate);
+    it('sets max date when due date is selected', async () => {
+      await findDueDateEl().vm.$emit('dueDateUpdated', mockDate);
 
-      expect(wrapper.vm.maxDate).toStrictEqual(parsePikadayDate(mockDate));
+      expect(findStartDateEl().props('maxDate')).toStrictEqual(parsePikadayDate(mockDate));
     });
   });
 });
