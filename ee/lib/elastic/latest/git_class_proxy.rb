@@ -58,7 +58,7 @@ module Elastic
         target_abilities = Array(abilities)
 
         project_ids.find_all do |project_id|
-          (actual_abilities[project_id] || []).intersect?(target_abilities)
+          (actual_abilities[project_id] || []).intersection(target_abilities).any?
         end
       end
 
