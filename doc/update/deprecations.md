@@ -425,6 +425,23 @@ the aliasing for the `CiRunnerUpgradeStatusType` type will be removed.
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### Compliance framework in general settings
+
+<div class="deprecation-notes">
+- Announced in GitLab <span class="milestone">16.9</span>
+- Removal in GitLab <span class="milestone">17.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/422783).
+</div>
+
+We moved compliance framework management to the framework and projects reports in the
+[Compliance Center](https://docs.gitlab.com/ee/user/compliance/compliance_center/).
+
+Therefore, in GitLab 17.0, we are removing the management of compliance frameworks from the **General** settings page of groups and projects.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### Container registry support for the Swift and OSS storage drivers
 
 <div class="deprecation-notes">
