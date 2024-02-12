@@ -40,7 +40,7 @@ namespace :duo_pro do
   end
 
   def find_add_on_purchase
-    GitlabSubscriptions::AddOnPurchase.for_code_suggestions.active.first
+    GitlabSubscriptions::AddOnPurchase.for_gitlab_duo_pro.active.first
   end
 
   def display_results(result)

@@ -2846,62 +2846,62 @@ RSpec.describe User, feature_category: :system_access do
   end
 
   describe '#duo_pro_add_on_available_namespace_ids' do
-    let_it_be(:code_suggestions_add_on) { create(:gitlab_subscription_add_on) }
+    let_it_be(:gitlab_duo_pro_add_on) { create(:gitlab_subscription_add_on) }
     let_it_be(:user) { create(:user) }
 
-    let_it_be(:expired_code_suggestion_purchase) do
-      create(:gitlab_subscription_add_on_purchase, expires_on: 1.day.ago, add_on: code_suggestions_add_on)
+    let_it_be(:expired_gitlab_duo_pro_purchase) do
+      create(:gitlab_subscription_add_on_purchase, expires_on: 1.day.ago, add_on: gitlab_duo_pro_add_on)
     end
 
-    let_it_be_with_reload(:active_code_suggestion_purchase) do
-      create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
+    let_it_be_with_reload(:active_gitlab_duo_pro_purchase) do
+      create(:gitlab_subscription_add_on_purchase, add_on: gitlab_duo_pro_add_on)
     end
 
-    let(:active_code_suggestion_purchase_namespace_id) { active_code_suggestion_purchase.namespace_id }
+    let(:active_gitlab_duo_pro_purchase_namespace_id) { active_gitlab_duo_pro_purchase.namespace_id }
 
     subject(:duo_pro_add_on_available_namespace_ids) { user.duo_pro_add_on_available_namespace_ids }
 
-    context 'when the user has an active assigned code suggestions seat' do
+    context 'when the user has an active assigned duo pro seat' do
       it 'returns the namespace ID' do
         create(
           :gitlab_subscription_user_add_on_assignment,
           user: user,
-          add_on_purchase: active_code_suggestion_purchase
+          add_on_purchase: active_gitlab_duo_pro_purchase
         )
 
-        expect(duo_pro_add_on_available_namespace_ids).to eq([active_code_suggestion_purchase.namespace_id])
+        expect(duo_pro_add_on_available_namespace_ids).to eq([active_gitlab_duo_pro_purchase.namespace_id])
       end
     end
 
-    context 'when the user belongs to multiple namespaces with an active assigned code suggestions seat' do
-      let!(:active_code_suggestion_purchase_2) do
-        create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
+    context 'when the user belongs to multiple namespaces with an active assigned duo pro seat' do
+      let!(:active_gitlab_duo_pro_purchase_2) do
+        create(:gitlab_subscription_add_on_purchase, add_on: gitlab_duo_pro_add_on)
       end
 
       it 'returns the namespace IDs' do
         create(
           :gitlab_subscription_user_add_on_assignment,
           user: user,
-          add_on_purchase: active_code_suggestion_purchase
+          add_on_purchase: active_gitlab_duo_pro_purchase
         )
 
         create(
           :gitlab_subscription_user_add_on_assignment,
           user: user,
-          add_on_purchase: active_code_suggestion_purchase_2
+          add_on_purchase: active_gitlab_duo_pro_purchase_2
         )
 
         expect(duo_pro_add_on_available_namespace_ids)
-          .to contain_exactly(active_code_suggestion_purchase.namespace_id, active_code_suggestion_purchase_2.namespace_id)
+          .to contain_exactly(active_gitlab_duo_pro_purchase.namespace_id, active_gitlab_duo_pro_purchase_2.namespace_id)
       end
     end
 
-    context 'when the user has an expired assigned code suggestions seat' do
+    context 'when the user has an expired assigned duo pro seat' do
       it 'returns empty' do
         create(
           :gitlab_subscription_user_add_on_assignment,
           user: user,
-          add_on_purchase: expired_code_suggestion_purchase
+          add_on_purchase: expired_gitlab_duo_pro_purchase
         )
 
         expect(duo_pro_add_on_available_namespace_ids).to be_empty
@@ -2921,38 +2921,38 @@ RSpec.describe User, feature_category: :system_access do
         stub_feature_flags(code_suggestions_user_assignments: false)
       end
 
-      context 'with code suggestion purchases' do
+      context 'with duo pro purchases' do
         before do
-          expired_code_suggestion_purchase.namespace.add_owner(user)
+          expired_gitlab_duo_pro_purchase.namespace.add_owner(user)
         end
 
-        context 'with an active purchase for a related group' do
+        context 'with an active duo pro purchase for a related group' do
           where(:group_access_level, :result) do
             :guest      | []
-            :reporter   | [ref(:active_code_suggestion_purchase_namespace_id)]
-            :developer  | [ref(:active_code_suggestion_purchase_namespace_id)]
-            :maintainer | [ref(:active_code_suggestion_purchase_namespace_id)]
-            :owner      | [ref(:active_code_suggestion_purchase_namespace_id)]
+            :reporter   | [ref(:active_gitlab_duo_pro_purchase_namespace_id)]
+            :developer  | [ref(:active_gitlab_duo_pro_purchase_namespace_id)]
+            :maintainer | [ref(:active_gitlab_duo_pro_purchase_namespace_id)]
+            :owner      | [ref(:active_gitlab_duo_pro_purchase_namespace_id)]
           end
 
           with_them do
             before do
-              active_code_suggestion_purchase.namespace.add_member(user, group_access_level)
+              active_gitlab_duo_pro_purchase.namespace.add_member(user, group_access_level)
             end
 
             it { is_expected.to eq(result) }
           end
         end
 
-        context 'with an active purchase for a related project' do
-          let_it_be_with_reload(:project) { create(:project, group: active_code_suggestion_purchase.namespace) }
+        context 'with an active duo pro purchase for a related project' do
+          let_it_be_with_reload(:project) { create(:project, group: active_gitlab_duo_pro_purchase.namespace) }
 
           where(:project_access_level, :result) do
             :guest      | []
-            :reporter   | [ref(:active_code_suggestion_purchase_namespace_id)]
-            :developer  | [ref(:active_code_suggestion_purchase_namespace_id)]
-            :maintainer | [ref(:active_code_suggestion_purchase_namespace_id)]
-            :owner      | [ref(:active_code_suggestion_purchase_namespace_id)]
+            :reporter   | [ref(:active_gitlab_duo_pro_purchase_namespace_id)]
+            :developer  | [ref(:active_gitlab_duo_pro_purchase_namespace_id)]
+            :maintainer | [ref(:active_gitlab_duo_pro_purchase_namespace_id)]
+            :owner      | [ref(:active_gitlab_duo_pro_purchase_namespace_id)]
           end
 
           with_them do
@@ -2964,18 +2964,18 @@ RSpec.describe User, feature_category: :system_access do
           end
         end
 
-        context 'with an active purchase for a shared group' do
+        context 'with an active duo pro purchase for a shared group' do
           let_it_be(:invited_group) { create(:group) }
           let_it_be(:invited_reporter) { invited_group.add_reporter(create(:user)).user }
           let_it_be(:invited_guest) { invited_group.add_guest(create(:user)).user }
 
           context 'with user invited member to project' do
-            let_it_be(:project) { create(:project, namespace: active_code_suggestion_purchase.namespace) }
+            let_it_be(:project) { create(:project, namespace: active_gitlab_duo_pro_purchase.namespace) }
             let_it_be(:project_group_link) { create(:project_group_link, project: project, group: invited_group) }
 
             where(:user, :result) do
               ref(:invited_guest)    | []
-              ref(:invited_reporter) | [ref(:active_code_suggestion_purchase_namespace_id)]
+              ref(:invited_reporter) | [ref(:active_gitlab_duo_pro_purchase_namespace_id)]
             end
 
             with_them do
@@ -2985,12 +2985,12 @@ RSpec.describe User, feature_category: :system_access do
 
           context 'with user invited member to group' do
             let_it_be(:group_group_link) do
-              create(:group_group_link, shared_group: active_code_suggestion_purchase.namespace, shared_with_group: invited_group)
+              create(:group_group_link, shared_group: active_gitlab_duo_pro_purchase.namespace, shared_with_group: invited_group)
             end
 
             where(:user, :result) do
               ref(:invited_guest)    | []
-              ref(:invited_reporter) | [ref(:active_code_suggestion_purchase_namespace_id)]
+              ref(:invited_reporter) | [ref(:active_gitlab_duo_pro_purchase_namespace_id)]
             end
 
             with_them do
@@ -3004,13 +3004,13 @@ RSpec.describe User, feature_category: :system_access do
         end
       end
 
-      context 'without code suggestion purchases for any of the groups or projects' do
+      context 'without duo pro purchases for any of the groups or projects' do
         it { is_expected.to be_empty }
       end
     end
   end
 
-  describe '#eligible_for_self_managed_code_suggestions?' do
+  describe '#eligible_for_self_managed_gitlab_duo_pro?' do
     using RSpec::Parameterized::TableSyntax
 
     let_it_be(:active_user) { create(:user) }
@@ -3028,7 +3028,7 @@ RSpec.describe User, feature_category: :system_access do
       end
 
       it 'returns false by default' do
-        expect(active_user.eligible_for_self_managed_code_suggestions?).to be_falsey
+        expect(active_user.eligible_for_self_managed_gitlab_duo_pro?).to be_falsey
       end
     end
 
@@ -3050,7 +3050,7 @@ RSpec.describe User, feature_category: :system_access do
       end
 
       with_them do
-        subject { user.eligible_for_self_managed_code_suggestions? }
+        subject { user.eligible_for_self_managed_gitlab_duo_pro? }
 
         it { is_expected.to eq(result) }
       end
@@ -3110,7 +3110,7 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
-  describe '#billable_code_suggestions_root_group_ids' do
+  describe '#billable_gitlab_duo_pro_root_group_ids' do
     using RSpec::Parameterized::TableSyntax
 
     let_it_be(:user) { create(:user) }
@@ -3119,7 +3119,7 @@ RSpec.describe User, feature_category: :system_access do
     let_it_be(:group_project) { create(:project, group: root_group) }
     let_it_be(:sub_group_project) { create(:project, group: sub_group) }
 
-    subject { user.billable_code_suggestions_root_group_ids }
+    subject { user.billable_gitlab_duo_pro_root_group_ids }
 
     where(:access_level, :include_group) do
       :guest      | false

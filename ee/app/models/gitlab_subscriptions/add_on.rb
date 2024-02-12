@@ -19,7 +19,7 @@ module GitlabSubscriptions
     # Note: If a new enum is added, make sure to update this method to reflect that as well.
     def self.descriptions
       {
-        code_suggestions: 'Add-on for code suggestions.',
+        code_suggestions: 'Add-on for GitLab Duo Pro.',
         product_analytics: 'Add-on for product analytics. Quantity suggests multiple of available stored event.'
       }
     end

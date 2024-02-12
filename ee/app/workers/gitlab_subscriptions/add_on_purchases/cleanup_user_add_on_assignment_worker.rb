@@ -41,7 +41,7 @@ module GitlabSubscriptions
       end
 
       def add_on_purchase
-        @add_on_purchase ||= root_namespace.subscription_add_on_purchases.for_code_suggestions.first
+        @add_on_purchase ||= root_namespace.subscription_add_on_purchases.for_gitlab_duo_pro.first
       end
 
       def assignment
@@ -49,7 +49,7 @@ module GitlabSubscriptions
       end
 
       def eligible_for_seat?
-        root_namespace.eligible_for_code_suggestions_seat?(user)
+        root_namespace.eligible_for_gitlab_duo_pro_seat?(user)
       end
 
       def log_event

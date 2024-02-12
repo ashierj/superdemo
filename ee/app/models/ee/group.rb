@@ -871,16 +871,15 @@ module EE
       billed_invited_group_to_project_users(exclude_guests: exclude_guests).exists?(id: user.id)
     end
 
-    # Helper method to check if user is eligible for code_suggestions seat
-    def eligible_for_code_suggestions_seat?(user)
+    def eligible_for_gitlab_duo_pro_seat?(user)
       billed_group_user?(user) ||
         billed_project_user?(user) ||
         billed_shared_group_user?(user) ||
         billed_shared_project_user?(user)
     end
 
-    def code_suggestions_eligible_user_ids
-      # all billable users and guests are eligible to be assigned code suggestions, so reuse the billed users lookup
+    def gitlab_duo_pro_eligible_user_ids
+      # all billable users and guests are eligible to be assigned gitlab duo
       billed_user_ids_including_guests[:user_ids]
     end
 

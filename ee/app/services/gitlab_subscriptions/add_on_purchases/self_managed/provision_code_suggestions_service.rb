@@ -9,7 +9,7 @@ module GitlabSubscriptions
         AddOnPurchaseSyncError = Class.new(StandardError)
 
         def execute
-          result = license_has_code_suggestions? ? create_or_update_add_on_purchase : expire_prior_add_on_purchase
+          result = license_has_duo_pro? ? create_or_update_add_on_purchase : expire_prior_add_on_purchase
 
           unless result.success?
             raise AddOnPurchaseSyncError, "Error syncing subscription add-on purchases. Message: #{result[:message]}"
@@ -24,7 +24,7 @@ module GitlabSubscriptions
 
         private
 
-        def license_has_code_suggestions?
+        def license_has_duo_pro?
           current_license&.online_cloud_license? && license_restrictions[:code_suggestions_seat_count].to_i > 0
         end
 
@@ -43,26 +43,26 @@ module GitlabSubscriptions
         end
 
         def create_or_update_add_on_purchase
-          service_class = if code_suggestions_add_on_purchase
+          service_class = if gitlab_duo_pro_add_on_purchase
                             GitlabSubscriptions::AddOnPurchases::UpdateService
                           else
                             GitlabSubscriptions::AddOnPurchases::CreateService
                           end
 
-          service_class.new(namespace, code_suggestions_add_on, add_on_purchase_attributes).execute
+          service_class.new(namespace, gitlab_duo_pro_add_on, add_on_purchase_attributes).execute
         end
 
         # rubocop: disable CodeReuse/ActiveRecord
-        def code_suggestions_add_on_purchase
-          GitlabSubscriptions::AddOnPurchase.find_by(namespace: namespace, add_on: code_suggestions_add_on)
+        def gitlab_duo_pro_add_on_purchase
+          GitlabSubscriptions::AddOnPurchase.find_by(namespace: namespace, add_on: gitlab_duo_pro_add_on)
         end
-        strong_memoize_attr :code_suggestions_add_on_purchase
+        strong_memoize_attr :gitlab_duo_pro_add_on_purchase
         # rubocop: enable CodeReuse/ActiveRecord
 
-        def code_suggestions_add_on
+        def gitlab_duo_pro_add_on
           GitlabSubscriptions::AddOn.find_or_create_by_name(:code_suggestions)
         end
-        strong_memoize_attr :code_suggestions_add_on
+        strong_memoize_attr :gitlab_duo_pro_add_on
 
         def namespace
           nil
@@ -73,13 +73,13 @@ module GitlabSubscriptions
             quantity: license_restrictions[:code_suggestions_seat_count],
             expires_on: current_license.block_changes_at || current_license.expires_at,
             purchase_xid: license_restrictions[:subscription_name]
-          }.merge({ add_on_purchase: code_suggestions_add_on_purchase }.compact)
+          }.merge({ add_on_purchase: gitlab_duo_pro_add_on_purchase }.compact)
         end
 
         def expire_prior_add_on_purchase
-          return empty_success_response unless code_suggestions_add_on_purchase
+          return empty_success_response unless gitlab_duo_pro_add_on_purchase
 
-          GitlabSubscriptions::AddOnPurchases::SelfManaged::ExpireService.new(code_suggestions_add_on_purchase).execute
+          GitlabSubscriptions::AddOnPurchases::SelfManaged::ExpireService.new(gitlab_duo_pro_add_on_purchase).execute
         end
       end
     end

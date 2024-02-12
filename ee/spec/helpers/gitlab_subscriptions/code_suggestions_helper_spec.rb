@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :seat_cost_management do
   include SubscriptionPortalHelper
 
-  describe '#code_suggestions_available?' do
+  describe '#gitlab_duo_available?' do
     context 'when GitLab is SaaS' do
       let_it_be(:namespace) { build_stubbed(:group) }
 
@@ -15,7 +15,7 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
 
       context 'when SaaS feature flag is globally enabled' do
         it 'returns true' do
-          expect(helper.code_suggestions_available?(namespace)).to be_truthy
+          expect(helper.gitlab_duo_available?(namespace)).to be_truthy
         end
       end
 
@@ -25,7 +25,7 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
         end
 
         it 'returns false' do
-          expect(helper.code_suggestions_available?(namespace)).to be_falsy
+          expect(helper.gitlab_duo_available?(namespace)).to be_falsy
         end
 
         context 'when SaaS feature flag is enabled for a specific namespace' do
@@ -34,7 +34,7 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
           end
 
           it 'returns true' do
-            expect(helper.code_suggestions_available?(namespace)).to be_truthy
+            expect(helper.gitlab_duo_available?(namespace)).to be_truthy
           end
         end
       end
@@ -47,7 +47,7 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
 
       context 'when self-managed feature flag is enabled' do
         it 'returns true' do
-          expect(helper.code_suggestions_available?).to be_truthy
+          expect(helper.gitlab_duo_available?).to be_truthy
         end
       end
 
@@ -57,7 +57,7 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
         end
 
         it 'returns false' do
-          expect(helper.code_suggestions_available?).to be_falsy
+          expect(helper.gitlab_duo_available?).to be_falsy
         end
       end
     end
@@ -71,9 +71,9 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
       stub_env('CUSTOMER_PORTAL_URL', env_value)
     end
 
-    context 'when code suggestions are not available' do
+    context 'when duo not available' do
       before do
-        allow(helper).to receive(:code_suggestions_available?).and_return false
+        allow(helper).to receive(:gitlab_duo_available?).and_return false
       end
 
       it 'returns nil' do

@@ -149,7 +149,7 @@ module EE
     end
 
     def show_code_suggestions_tab?(group)
-      gitlab_com_subscription? && code_suggestions_available?(group) && !group.has_free_or_no_subscription?
+      gitlab_com_subscription? && gitlab_duo_available?(group) && !group.has_free_or_no_subscription?
     end
 
     def saml_sso_settings_generate_helper_text(display_none:, text:)

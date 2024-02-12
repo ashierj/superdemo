@@ -138,7 +138,7 @@ module BillingPlansHelper
   def show_code_suggestions_card?(namespace)
     Feature.enabled?(:cs_connect_with_sales, namespace) &&
       !namespace.trial? &&
-      namespace.subscription_add_on_purchases.active.for_code_suggestions.none?
+      namespace.subscription_add_on_purchases.active.for_gitlab_duo_pro.none?
   end
 
   def free_plan_billing_hand_raise_props(namespace, glm_content:)

@@ -6,9 +6,9 @@ RSpec.describe 'Query.namespace.addOnEligibleUsers', feature_category: :seat_cos
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:code_suggestions) { create(:gitlab_subscription_add_on) }
+  let_it_be(:gitlab_duo_pro) { create(:gitlab_subscription_add_on, :gitlab_duo_pro) }
 
-  let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions) }
+  let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, add_on: gitlab_duo_pro) }
   let(:query_add_on_purchase_ids) { [global_id_of(add_on_purchase)] }
 
   let(:query_fields) do
@@ -210,8 +210,8 @@ RSpec.describe 'Query.namespace.addOnEligibleUsers', feature_category: :seat_cos
     end
 
     context 'when the current user is only eligible to view a subset of assignments' do
-      let(:add_on_purchase_1) { create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions) }
-      let(:add_on_purchase_2) { create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions) }
+      let(:add_on_purchase_1) { create(:gitlab_subscription_add_on_purchase, add_on: gitlab_duo_pro) }
+      let(:add_on_purchase_2) { create(:gitlab_subscription_add_on_purchase, add_on: gitlab_duo_pro) }
 
       let(:query_add_on_purchase_ids) do
         [global_id_of(add_on_purchase), global_id_of(add_on_purchase_1), global_id_of(add_on_purchase_1)]
@@ -284,7 +284,7 @@ RSpec.describe 'Query.namespace.addOnEligibleUsers', feature_category: :seat_cos
     end
 
     context 'when selecting for multiple add on purchases' do
-      let(:other_add_on_purchase) { create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions) }
+      let(:other_add_on_purchase) { create(:gitlab_subscription_add_on_purchase, add_on: gitlab_duo_pro) }
 
       let(:query_add_on_purchase_ids) do
         [global_id_of(add_on_purchase), global_id_of(other_add_on_purchase)]

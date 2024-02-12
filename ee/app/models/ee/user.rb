@@ -612,9 +612,9 @@ module EE
 
       Rails.cache.fetch(cache_key, expires_in: 1.hour) do
         if ::Feature.enabled?(:code_suggestions_user_assignments, self)
-          GitlabSubscriptions::UserAddOnAssignment.by_user(self).for_active_code_suggestions_purchase.pluck('subscription_add_on_purchases.namespace_id')
+          GitlabSubscriptions::UserAddOnAssignment.by_user(self).for_active_gitlab_duo_pro_purchase.pluck('subscription_add_on_purchases.namespace_id')
         else
-          GitlabSubscriptions::AddOnPurchase.for_user(self).for_code_suggestions.active.pluck(:namespace_id)
+          GitlabSubscriptions::AddOnPurchase.for_user(self).for_gitlab_duo_pro.active.pluck(:namespace_id)
         end
       end
     end
@@ -622,20 +622,20 @@ module EE
     def duo_pro_add_on_available?
       return duo_pro_add_on_available_namespace_ids.any? if gitlab_com_subscription?
 
-      GitlabSubscriptions::UserAddOnAssignment.by_user(self).for_active_code_suggestions_purchase.any?
+      GitlabSubscriptions::UserAddOnAssignment.by_user(self).for_active_gitlab_duo_pro_purchase.any?
     end
 
     def duo_pro_cache_key_formatted
       format(User::DUO_PRO_ADD_ON_CACHE_KEY, user_id: id)
     end
 
-    def eligible_for_self_managed_code_suggestions?
+    def eligible_for_self_managed_gitlab_duo_pro?
       return false if gitlab_com_subscription?
 
       active? && !bot? && !ghost?
     end
 
-    def billable_code_suggestions_root_group_ids
+    def billable_gitlab_duo_pro_root_group_ids
       group_ids_from_project_authorizaton = ::Project.where(id: project_authorizations.non_guests.select(:project_id)).pluck(:namespace_id)
       group_ids_from_memberships = ::GroupMember.with_user(self).active.non_guests.pluck(:source_id)
       group_ids_from_linked_groups = ::GroupGroupLink.non_guests.where(shared_with_group_id: group_ids_from_memberships).pluck(:shared_group_id)

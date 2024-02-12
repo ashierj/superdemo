@@ -42,7 +42,7 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::BaseCreateService, fea
     context 'when there are available seats' do
       before do
         allow_next_instance_of(described_class) do |instance|
-          allow(instance).to receive(:eligible_for_code_suggestions_seat?).and_return(true)
+          allow(instance).to receive(:eligible_for_gitlab_duo_pro_seat?).and_return(true)
         end
       end
 
@@ -57,7 +57,7 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::BaseCreateService, fea
     context 'when user membership is invalid' do
       it 'logs an error and returns a failure response' do
         allow_next_instance_of(described_class) do |instance|
-          allow(instance).to receive(:eligible_for_code_suggestions_seat?).and_return(false)
+          allow(instance).to receive(:eligible_for_gitlab_duo_pro_seat?).and_return(false)
         end
 
         expect(Gitlab::AppLogger).to receive(:info).with(hash_including(
@@ -71,11 +71,11 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::BaseCreateService, fea
     end
   end
 
-  describe '#eligible_for_code_suggestions_seat?' do
+  describe '#eligible_for_gitlab_duo_pro_seat?' do
     it 'raises NotImplementedError' do
       service = described_class.new(add_on_purchase: add_on_purchase, user: user)
 
-      expect { service.send(:eligible_for_code_suggestions_seat?) }.to raise_error(NotImplementedError)
+      expect { service.send(:eligible_for_gitlab_duo_pro_seat?) }.to raise_error(NotImplementedError)
     end
   end
 end

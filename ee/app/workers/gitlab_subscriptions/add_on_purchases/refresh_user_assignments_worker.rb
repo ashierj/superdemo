@@ -43,7 +43,7 @@ module GitlabSubscriptions
       end
 
       def add_on_purchase
-        @add_on_purchase ||= root_namespace.subscription_add_on_purchases.for_code_suggestions.first
+        @add_on_purchase ||= root_namespace.subscription_add_on_purchases.for_gitlab_duo_pro.first
       end
 
       def lock_key
