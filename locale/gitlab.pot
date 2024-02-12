@@ -48320,9 +48320,6 @@ msgstr ""
 msgid "SubscriptionTable|GitLab allows you to continue using your subscription even if you exceed the number of seats you purchased. You will be required to pay for these seats upon renewal."
 msgstr ""
 
-msgid "SubscriptionTable|Last invoice"
-msgstr ""
-
 msgid "SubscriptionTable|Last updated at %{seatsLastUpdated} UTC"
 msgstr ""
 
@@ -48336,6 +48333,9 @@ msgid "SubscriptionTable|Max seats used"
 msgstr ""
 
 msgid "SubscriptionTable|Next invoice"
+msgstr ""
+
+msgid "SubscriptionTable|Next subscription term start date"
 msgstr ""
 
 msgid "SubscriptionTable|Refresh Seats"
@@ -48363,9 +48363,6 @@ msgid "SubscriptionTable|Subscription end date"
 msgstr ""
 
 msgid "SubscriptionTable|Subscription start date"
-msgstr ""
-
-msgid "SubscriptionTable|This is the last time the GitLab.com team was in contact with you to settle any outstanding balances."
 msgstr ""
 
 msgid "SubscriptionTable|This is the maximum number of users that have existed at the same time since this subscription started."
