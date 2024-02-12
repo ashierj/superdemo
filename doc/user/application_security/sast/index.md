@@ -40,14 +40,10 @@ SAST runs in the `test` stage, which is available by default. If you redefine th
 To run SAST jobs, by default, you need GitLab Runner with the
 [`docker`](https://docs.gitlab.com/runner/executors/docker.html) or
 [`kubernetes`](https://docs.gitlab.com/runner/install/kubernetes.html) executor.
-If you're using the shared runners on GitLab.com, this is enabled by default.
+If you're using SaaS runners on GitLab.com, this is enabled by default.
 
-WARNING:
-GitLab SAST analyzers don't support running on Windows or on any CPU architectures other than amd64.
-
-WARNING:
-If you use your own runners, make sure the Docker version installed
-is **not** `19.03.0`. See [troubleshooting information](troubleshooting.md#error-response-from-daemon-error-processing-tar-file-docker-tar-relocation-error) for details.
+NOTE:
+GitLab SAST analyzers only run in a Docker on Linux amd64 environment, which is **not** `Docker 19.03.0`. See [troubleshooting information](troubleshooting.md#error-response-from-daemon-error-processing-tar-file-docker-tar-relocation-error) for details.
 
 ## Supported languages and frameworks
 
