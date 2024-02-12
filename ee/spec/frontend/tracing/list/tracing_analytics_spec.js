@@ -1,8 +1,7 @@
 import { GlLineChart, GlColumnChart } from '@gitlab/ui/dist/charts';
-import { nextTick } from 'vue';
+import { GlSkeletonLoader } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import TracingAnalytics from 'ee/tracing/list/tracing_analytics.vue';
-import * as commonUtils from '~/lib/utils/common_utils';
 
 describe('TracingAnalytics', () => {
   let wrapper;
@@ -40,10 +39,18 @@ describe('TracingAnalytics', () => {
     },
   ];
 
-  const mountComponent = (analytics = mockAnalytics) => {
+  const TEST_CHART_HEIGHT = 123;
+
+  const mountComponent = ({
+    analytics = mockAnalytics,
+    loading = false,
+    chartHeight = TEST_CHART_HEIGHT,
+  } = {}) => {
     wrapper = shallowMountExtended(TracingAnalytics, {
       propsData: {
         analytics,
+        loading,
+        chartHeight,
       },
     });
   };
@@ -53,6 +60,28 @@ describe('TracingAnalytics', () => {
   });
 
   const findChart = () => wrapper.findComponent(TracingAnalytics);
+  const findSkeleton = () => wrapper.findComponent(GlSkeletonLoader);
+
+  describe('skeleton', () => {
+    it('does not render the skeleton if not loading', () => {
+      mountComponent({ loading: false });
+
+      expect(findSkeleton().exists()).toBe(false);
+    });
+    it('renders the skeleton if loading', () => {
+      mountComponent({ loading: true });
+
+      expect(findSkeleton().exists()).toBe(true);
+    });
+  });
+
+  it('renders nothing if analytics is empty', () => {
+    mountComponent({ analytics: [] });
+
+    expect(findSkeleton().exists()).toBe(false);
+    expect(findChart().findComponent(GlColumnChart).exists()).toBe(false);
+    expect(findChart().findComponent(GlLineChart).exists()).toBe(false);
+  });
 
   describe('volume chart', () => {
     it('renders a column chart with volume data', () => {
@@ -69,9 +98,9 @@ describe('TracingAnalytics', () => {
     it('renders a line chart with error data', () => {
       const chart = findChart().findComponent(GlLineChart);
       expect(chart.props('data')[0].data).toEqual([
-        [new Date('2024-01-28T15:43:00.000Z'), '100.00'],
+        [new Date('2024-01-28T15:43:00.000Z'), '1.20'],
         [new Date('2024-01-28T15:44:00.000Z'), '0.00'],
-        [new Date('2024-01-28T15:45:00.000Z'), '23.42'],
+        [new Date('2024-01-28T15:45:00.000Z'), '0.23'],
       ]);
     });
   });
@@ -89,40 +118,15 @@ describe('TracingAnalytics', () => {
 
   describe('height', () => {
     it('sets the chart height to 20% of the container height', () => {
-      jest.spyOn(commonUtils, 'contentTop').mockReturnValue(200);
-      window.innerHeight = 1000;
-
       mountComponent();
 
-      const chart = findChart().findComponent(GlColumnChart);
-      expect(chart.props('height')).toBe(160);
-    });
-
-    it('sets the min height to 100px', () => {
-      jest.spyOn(commonUtils, 'contentTop').mockReturnValue(20);
-      window.innerHeight = 200;
-
-      mountComponent();
-
-      const chart = findChart().findComponent(GlColumnChart);
-      expect(chart.props('height')).toBe(100);
-    });
-
-    it('resize the chart on window resize', async () => {
-      jest.spyOn(commonUtils, 'contentTop').mockReturnValue(200);
-      window.innerHeight = 1000;
-
-      mountComponent();
-
-      expect(wrapper.findComponent(GlColumnChart).props('height')).toBe(160);
-
-      jest.spyOn(commonUtils, 'contentTop').mockReturnValue(200);
-      window.innerHeight = 800;
-      window.dispatchEvent(new Event('resize'));
-
-      await nextTick();
-
-      expect(wrapper.findComponent(GlColumnChart).props('height')).toBe(120);
+      expect(findChart().findComponent(GlColumnChart).props('height')).toBe(TEST_CHART_HEIGHT);
+      expect(findChart().findAllComponents(GlLineChart).at(0).props('height')).toBe(
+        TEST_CHART_HEIGHT,
+      );
+      expect(findChart().findAllComponents(GlLineChart).at(1).props('height')).toBe(
+        TEST_CHART_HEIGHT,
+      );
     });
   });
 });
