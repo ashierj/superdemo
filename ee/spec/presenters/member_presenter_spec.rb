@@ -118,8 +118,8 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
 
     context 'when user has custom role' do
       let_it_be(:member_role) do
-        build_stubbed(:member_role, namespace: root_group,
-          read_vulnerability: true, admin_merge_request: true, description: 'Role description')
+        build_stubbed(:member_role, namespace: root_group, description: 'Role description',
+          read_vulnerability: true, admin_merge_request: true, read_code: false)
       end
 
       before do

@@ -142,6 +142,22 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
         end
       end
     end
+
+    context 'for ensure_at_least_one_permission_is_enabled' do
+      context 'with at least one permission enabled' do
+        it { is_expected.to be_valid }
+      end
+
+      context 'with no permissions enabled' do
+        it 'is invalid' do
+          member_role = build(:member_role, read_code: false)
+
+          expect(member_role).not_to be_valid
+          expect(member_role.errors[:base].first)
+            .to include(s_('MemberRole|Cannot create a member role with no enabled permissions'))
+        end
+      end
+    end
   end
 
   describe 'callbacks' do

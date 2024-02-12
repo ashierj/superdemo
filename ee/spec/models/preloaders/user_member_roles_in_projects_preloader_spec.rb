@@ -17,7 +17,7 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
   end
 
   def create_member_role(ability, member)
-    create(:member_role, :guest, namespace: project.group).tap do |record|
+    build(:member_role, :guest, namespace: project.group, read_code: false).tap do |record|
       record[ability] = true
       ability_requirements(ability).each do |requirement|
         record[requirement] = true
@@ -110,18 +110,14 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
         end
       end
 
-      context 'when user is a member of the project in multiple ways' do
+      context 'when a user is assigned to custom roles in both group and project' do
         let_it_be(:group_member) { create(:group_member, :guest, user: user, source: project.group) }
 
-        it 'project value array includes the ability' do
+        it 'returns abilities assigned to the custom role inside project' do
           create_member_role(ability, group_member)
-          create(:member_role, :guest, namespace: project.group).tap do |record|
-            record[ability] = false
-            record.save!
-            record.members << project_member
-          end
+          create_member_role(:read_code, project_member)
 
-          expect(result[project.id]).to match_array(expected_abilities)
+          expect(result[project.id]).to match_array([:read_code])
         end
       end
 
@@ -129,26 +125,6 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
         let_it_be(:project) { create(:project, :private, :in_group) }
 
         it 'returns project id with empty value array' do
-          expect(result).to eq(project.id => [])
-        end
-      end
-
-      context 'when project membership has custom role that does not enable custom permission' do
-        let_it_be(:project) { create(:project, :private, :in_group) }
-
-        it 'returns project id with empty value array' do
-          project_without_custom_permission_member = create(
-            :project_member,
-            :guest,
-            user: user,
-            source: project
-          )
-          create(:member_role, :guest, namespace: project.group).tap do |record|
-            record[ability] = false
-            record.save!
-            record.members << project_without_custom_permission_member
-          end
-
           expect(result).to eq(project.id => [])
         end
       end

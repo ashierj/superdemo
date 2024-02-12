@@ -30309,6 +30309,9 @@ msgstr ""
 msgid "MemberRole|Base role to use as template"
 msgstr ""
 
+msgid "MemberRole|Cannot create a member role with no enabled permissions"
+msgstr ""
+
 msgid "MemberRole|Could not fetch available permissions."
 msgstr ""
 

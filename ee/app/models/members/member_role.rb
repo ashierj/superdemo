@@ -29,6 +29,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   validate :validate_namespace_locked, on: :update
   validate :base_access_level_locked, on: :update
   validate :validate_requirements
+  validate :ensure_at_least_one_permission_is_enabled
 
   validates_associated :members
 
@@ -132,6 +133,12 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
         )
       end
     end
+  end
+
+  def ensure_at_least_one_permission_is_enabled
+    return if self.class.all_customizable_permissions.keys.any? { |attr| self[attr] }
+
+    errors.add(:base, s_('MemberRole|Cannot create a member role with no enabled permissions'))
   end
 
   def base_access_level_locked
