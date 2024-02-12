@@ -19,7 +19,6 @@ export default {
 <template>
   <div>
     <gl-empty-state
-      compact
       :svg-path="testRunsEmptyStateImagePath"
       :svg-height="null"
       class="gl-align-items-center"
