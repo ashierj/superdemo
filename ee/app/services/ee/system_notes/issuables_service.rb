@@ -50,13 +50,18 @@ module EE
       #
       # Example Note text:
       #
-      #   "changed color to '#345678'"
+      #   "changed color from `#0052cc` to '#345678'"
       #
       # Returns the created Note object
-      def change_color_note
+      def change_color_note(previous_color)
         color = noteable.color&.color
-
-        body = noteable.color&.destroyed? ? "removed the color `#{color}`" : "changed color to `#{color}`"
+        body = if previous_color
+                 "changed color from `#{previous_color}` to `#{color}`"
+               elsif noteable.color&.destroyed?
+                 "removed color `#{color}`"
+               else
+                 "set color to `#{color}`"
+               end
 
         create_note(NoteSummary.new(noteable, project, author, body, action: 'color'))
       end

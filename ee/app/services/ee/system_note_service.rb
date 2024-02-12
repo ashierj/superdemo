@@ -163,8 +163,8 @@ module EE
       issuables_service(noteable, noteable.project, user).change_progress_note
     end
 
-    def change_color_note(noteable, user)
-      issuables_service(noteable, noteable.project, user).change_color_note
+    def change_color_note(noteable, user, previous_color)
+      issuables_service(noteable, noteable.project, user).change_color_note(previous_color)
     end
 
     def change_checkin_reminder_note(noteable, user)
