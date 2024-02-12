@@ -45,10 +45,23 @@ export default {
       required: false,
       default: '',
     },
+    nextTermStartDate: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   computed: {
     rowClasses() {
       return !this.last ? 'gl-border-b-gray-100 gl-border-b-1 gl-border-b-solid' : null;
+    },
+    formattedNextTermStartDate() {
+      if (!this.nextTermStartDate) return ' - ';
+
+      const [year, month, day] = this.nextTermStartDate.split('-');
+      const formattedDate = dateInWords(new Date(year, month - 1, day));
+
+      return formattedDate;
     },
   },
   methods: {
@@ -75,8 +88,13 @@ export default {
         return ' - ';
       }
 
+      if (col.id === 'nextTermStartDate') {
+        return this.formattedNextTermStartDate;
+      }
+
       return typeof col.value !== 'undefined' && col.value !== null ? col.value : ' - ';
     },
+
     temporaryExtensionDisplayValue() {
       const [year, month, day] = this.temporaryExtensionEndDate.split('-');
 

@@ -140,6 +140,9 @@ export default {
     temporaryExtensionEndDate() {
       return this.temporaryExtension?.endDate;
     },
+    nextTermStartDate() {
+      return this.subscription?.nextTermStartDate;
+    },
     buttons() {
       return [this.addSeatsButton, this.renewButton, this.manageButton].filter(Boolean);
     },
@@ -234,6 +237,7 @@ export default {
         :columns="row.columns"
         :is-free-plan="isFreePlan"
         :temporary-extension-end-date="temporaryExtensionEndDate"
+        :next-term-start-date="nextTermStartDate"
       />
     </gl-card>
 
