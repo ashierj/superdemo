@@ -1,8 +1,7 @@
 <script>
 import { GlLineChart, GlColumnChart } from '@gitlab/ui/dist/charts';
-import { throttle } from 'lodash';
-import { s__ } from '~/locale';
-import { contentTop } from '~/lib/utils/common_utils';
+import { GlSkeletonLoader } from '@gitlab/ui';
+import { s__, sprintf } from '~/locale';
 import { durationNanoToMs } from '../trace_utils';
 
 const intervalToTimestamp = (interval) => new Date(interval * 1000);
@@ -13,7 +12,7 @@ const buildVolumeRateData = ({ interval, trace_rate: traceRate = 0 }, volumeData
 };
 
 const buildErrorRateData = ({ interval, error_rate: errorRate = 0 }, errorData) => {
-  errorData.push([intervalToTimestamp(interval), toFixed(Math.min(errorRate * 100, 100))]);
+  errorData.push([intervalToTimestamp(interval), toFixed(errorRate)]);
 };
 
 const buildDurationData = (
@@ -37,10 +36,11 @@ export default {
   components: {
     GlLineChart,
     GlColumnChart,
+    GlSkeletonLoader,
   },
   i18n: {
     durationLabel: s__('Tracing|Duration (ms)'),
-    errorRateLabel: s__('Tracing|Error rate (%%)'),
+    errorRateLabel: sprintf(s__('Tracing|Error rate (%%)')),
     volumeLabel: s__('Tracing|Request rate (req/s)'),
   },
   props: {
@@ -48,11 +48,14 @@ export default {
       type: Array,
       required: true,
     },
-  },
-  data() {
-    return {
-      chartHeight: 0,
-    };
+    loading: {
+      type: Boolean,
+      required: true,
+    },
+    chartHeight: {
+      type: Number,
+      required: true,
+    },
   },
   computed: {
     seriesData() {
@@ -162,28 +165,18 @@ export default {
       };
     },
   },
-  created() {
-    this.resizeChart();
-
-    this.resizeThrottled = throttle(() => {
-      this.resizeChart();
-    }, 400);
-    window.addEventListener('resize', this.resizeThrottled);
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.resizeThrottled, false);
-  },
-  methods: {
-    resizeChart() {
-      const containerHeight = window.innerHeight - contentTop();
-      this.chartHeight = Math.max(100, (containerHeight * 20) / 100);
-    },
-  },
+  SKELETON_CLASS: 'analytics-chart gl-mx-7 gl-my-4',
+  CONTAINER_CLASS: 'gl-display-flex gl-flex-direction-row gl-mb-6',
 };
 </script>
 
 <template>
-  <div v-if="analytics.length" class="gl-display-flex gl-flex-direction-row gl-mb-8">
+  <div v-if="loading" :class="$options.CONTAINER_CLASS">
+    <div :class="$options.SKELETON_CLASS"><gl-skeleton-loader :lines="5" /></div>
+    <div :class="$options.SKELETON_CLASS"><gl-skeleton-loader :lines="5" /></div>
+    <div :class="$options.SKELETON_CLASS"><gl-skeleton-loader :lines="5" /></div>
+  </div>
+  <div v-else-if="analytics.length" :class="$options.CONTAINER_CLASS">
     <div class="analytics-chart">
       <gl-column-chart
         :bars="volumeRateChartData"

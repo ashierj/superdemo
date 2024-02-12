@@ -12,6 +12,7 @@ import * as urlUtility from '~/lib/utils/url_utility';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { createMockClient } from 'helpers/mock_observability_client';
+import * as commonUtils from '~/lib/utils/common_utils';
 
 jest.mock('~/alert');
 
@@ -69,105 +70,119 @@ describe('TracingList', () => {
     await waitForPromises();
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     observabilityClientMock = createMockClient();
 
     observabilityClientMock.fetchTraces.mockResolvedValue(mockResponse);
     observabilityClientMock.fetchTracesAnalytics.mockResolvedValue(mockAnalytics);
+
+    await mountComponent();
   });
 
-  describe('fetching data', () => {
-    beforeEach(async () => {
-      await mountComponent();
-    });
+  it('fetches traces', () => {
+    expect(observabilityClientMock.fetchTraces).toHaveBeenCalled();
+  });
 
-    it('fetches data and renders the trace list with filtered search', () => {
-      expect(observabilityClientMock.fetchTraces).toHaveBeenCalled();
+  it('renders the loading icon while fetching traces', async () => {
+    observabilityClientMock.fetchTraces.mockReturnValue(new Promise(() => {}));
+    await mountComponent();
+    expect(findLoadingIcon().exists()).toBe(true);
+  });
+
+  it('renders the trace list with filtered search', () => {
+    expect(findLoadingIcon().exists()).toBe(false);
+    expect(findTableList().exists()).toBe(true);
+    expect(findFilteredSearch().exists()).toBe(true);
+    expect(findUrlSync().exists()).toBe(true);
+    expect(findTableList().props('traces')).toEqual(mockResponse.traces);
+  });
+
+  describe('analytics', () => {
+    it('fetches analytics', () => {
       expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenCalled();
-      expect(findLoadingIcon().exists()).toBe(false);
+    });
+
+    it('renders the analytics component', () => {
+      expect(findAnalytics().exists()).toBe(true);
+      expect(findAnalytics().props('analytics')).toEqual(mockAnalytics);
+      expect(findAnalytics().props('loading')).toBe(false);
+    });
+
+    it('does not render the analytics component if there is no traces', async () => {
+      observabilityClientMock.fetchTraces.mockResolvedValue([]);
+      await mountComponent();
+      expect(findAnalytics().exists()).toBe(false);
+    });
+
+    it('sets loading prop while fetching analytics', async () => {
+      observabilityClientMock.fetchTracesAnalytics.mockReturnValue(new Promise(() => {}));
+      await mountComponent();
+      expect(findAnalytics().exists()).toBe(true);
+      expect(findAnalytics().props('loading')).toBe(true);
       expect(findTableList().exists()).toBe(true);
-      expect(findFilteredSearch().exists()).toBe(true);
-      expect(findUrlSync().exists()).toBe(true);
-      expect(findTableList().props('traces')).toEqual(mockResponse.traces);
+      expect(findLoadingIcon().exists()).toBe(false);
     });
 
-    describe('analytics', () => {
-      it('renders the analytics component', () => {
-        expect(findAnalytics().exists()).toBe(true);
-        expect(findAnalytics().props('analytics')).toEqual(mockAnalytics);
+    describe('chart height', () => {
+      it('sets the chart height to 20% of the container height', async () => {
+        jest.spyOn(commonUtils, 'contentTop').mockReturnValue(200);
+        window.innerHeight = 1000;
+
+        await mountComponent();
+
+        expect(findAnalytics().props('chartHeight')).toBe(160);
       });
 
-      it('does not render the analytics component if there is no data', async () => {
-        observabilityClientMock.fetchTracesAnalytics.mockResolvedValue([]);
+      it('sets the min height to 100px', async () => {
+        jest.spyOn(commonUtils, 'contentTop').mockReturnValue(20);
+        window.innerHeight = 200;
+
         await mountComponent();
-        expect(findAnalytics().exists()).toBe(false);
+
+        expect(findAnalytics().props('chartHeight')).toBe(100);
       });
 
-      it('does not render the analytics component if the call fails', async () => {
-        observabilityClientMock.fetchTracesAnalytics.mockRejectedValue('error');
+      it('resize the chart on window resize', async () => {
+        jest.spyOn(commonUtils, 'contentTop').mockReturnValue(200);
+        window.innerHeight = 1000;
+
         await mountComponent();
-        expect(findAnalytics().exists()).toBe(false);
+
+        expect(findAnalytics().props('chartHeight')).toBe(160);
+
+        jest.spyOn(commonUtils, 'contentTop').mockReturnValue(200);
+        window.innerHeight = 800;
+        window.dispatchEvent(new Event('resize'));
+
+        await nextTick();
+
+        expect(findAnalytics().props('chartHeight')).toBe(120);
       });
     });
+  });
 
-    describe('traces and analytics API requests', () => {
-      let resolveFetchTraces;
-      let resolveFetchTracesAnalytics;
-      beforeEach(async () => {
-        const fetchTracesPromise = new Promise((resolve) => {
-          resolveFetchTraces = resolve;
-        });
-        const fetchTracesAnalyticsPromise = new Promise((resolve) => {
-          resolveFetchTracesAnalytics = resolve;
-        });
-        observabilityClientMock.fetchTraces.mockReturnValue(fetchTracesPromise);
-        observabilityClientMock.fetchTracesAnalytics.mockReturnValue(fetchTracesAnalyticsPromise);
-
-        await mountComponent();
-      });
-
-      it('fetches traces and analytics in parallel', () => {
-        expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenCalled();
-        expect(observabilityClientMock.fetchTraces).toHaveBeenCalled();
-      });
-
-      it('waits for both requests to complete', async () => {
-        expect(findLoadingIcon().exists()).toBe(true);
-
-        resolveFetchTraces();
-        await waitForPromises();
-
-        expect(findLoadingIcon().exists()).toBe(true);
-
-        resolveFetchTracesAnalytics();
-        await waitForPromises();
-
-        expect(findLoadingIcon().exists()).toBe(false);
-      });
+  describe('on trace-clicked', () => {
+    let visitUrlMock;
+    beforeEach(() => {
+      setWindowLocation('base_path');
+      visitUrlMock = jest.spyOn(urlUtility, 'visitUrl').mockReturnValue({});
     });
-    describe('on trace-clicked', () => {
-      let visitUrlMock;
-      beforeEach(() => {
-        setWindowLocation('base_path');
-        visitUrlMock = jest.spyOn(urlUtility, 'visitUrl').mockReturnValue({});
+
+    it('redirects to the details url', () => {
+      findTableList().vm.$emit('trace-clicked', { traceId: 'test-trace-id' });
+
+      expect(visitUrlMock).toHaveBeenCalledTimes(1);
+      expect(visitUrlMock).toHaveBeenCalledWith('/base_path/test-trace-id', false);
+    });
+
+    it('opens a new tab if clicked with meta key', () => {
+      findTableList().vm.$emit('trace-clicked', {
+        traceId: 'test-trace-id',
+        clickEvent: { metaKey: true },
       });
 
-      it('redirects to the details url', () => {
-        findTableList().vm.$emit('trace-clicked', { traceId: 'test-trace-id' });
-
-        expect(visitUrlMock).toHaveBeenCalledTimes(1);
-        expect(visitUrlMock).toHaveBeenCalledWith('/base_path/test-trace-id', false);
-      });
-
-      it('opens a new tab if clicked with meta key', () => {
-        findTableList().vm.$emit('trace-clicked', {
-          traceId: 'test-trace-id',
-          clickEvent: { metaKey: true },
-        });
-
-        expect(visitUrlMock).toHaveBeenCalledTimes(1);
-        expect(visitUrlMock).toHaveBeenCalledWith('/base_path/test-trace-id', true);
-      });
+      expect(visitUrlMock).toHaveBeenCalledTimes(1);
+      expect(visitUrlMock).toHaveBeenCalledWith('/base_path/test-trace-id', true);
     });
   });
 
@@ -283,6 +298,7 @@ describe('TracingList', () => {
     describe('on search submit', () => {
       beforeEach(async () => {
         observabilityClientMock.fetchTracesAnalytics.mockReset();
+        observabilityClientMock.fetchTracesAnalytics.mockReturnValue(mockAnalytics);
         await setFilters({
           period: [{ operator: '=', value: '12h' }],
           service: [{ operator: '=', value: 'frontend' }],
@@ -516,6 +532,7 @@ describe('TracingList', () => {
       await bottomReached();
 
       expect(observabilityClientMock.fetchTracesAnalytics).not.toHaveBeenCalled();
+      expect(findAnalytics().exists()).toBe(true);
     });
 
     it('does not update the next_page_token if missing - i.e. it reached the last page', async () => {
@@ -633,16 +650,17 @@ describe('TracingList', () => {
       expect(createAlert).toHaveBeenLastCalledWith({ message: 'Failed to load traces.' });
       expect(findTableList().exists()).toBe(true);
       expect(findTableList().props('traces')).toEqual([]);
+      expect(findAnalytics().exists()).toBe(false);
     });
 
-    it('if fetchTracesAnalytics fails, it renders an alert and empty list', async () => {
+    it('if fetchTracesAnalytics fails, it renders an alert', async () => {
       observabilityClientMock.fetchTracesAnalytics.mockRejectedValue('error');
 
       await mountComponent();
 
-      expect(createAlert).toHaveBeenLastCalledWith({ message: 'Failed to load traces.' });
-      expect(findTableList().exists()).toBe(true);
-      expect(findTableList().props('traces')).toEqual([]);
+      expect(createAlert).toHaveBeenLastCalledWith({
+        message: 'Failed to load tracing analytics.',
+      });
     });
   });
 });
