@@ -259,13 +259,22 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
     end
 
     context 'when on SaaS instance', :saas do
-      before_all { create(:gitlab_subscription_add_on_purchase, namespace: namespace) }
+      let_it_be(:code_suggestion_add_on) { create(:gitlab_subscription_add_on, :code_suggestions) }
 
       let(:gitlab_realm) { "saas" }
       let(:namespace_workhorse_headers) do
         {
           "X-Gitlab-Saas-Namespace-Ids" => [namespace.id.to_s]
         }
+      end
+
+      before_all do
+        create(
+          :gitlab_subscription_add_on_purchase,
+          :active,
+          add_on: code_suggestion_add_on,
+          namespace: namespace
+        )
       end
 
       before do
@@ -307,8 +316,36 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
 
         it_behaves_like 'successful send request via workhorse'
 
+        context 'when add on subscription is expired' do
+          let(:namespace_without_expired_ai_access) { create(:group) }
+          let(:job_without_ai_access) { create(:ci_build, :running, namespace: namespace_without_expired_ai_access) }
+          let(:api_url) { "/internal/jobs/#{job_without_ai_access.id}/x_ray/scan" }
+
+          let(:params) do
+            {
+              token: job_without_ai_access.token,
+              prompt_components: [{ payload: "test" }]
+            }
+          end
+
+          before do
+            create(
+              :gitlab_subscription_add_on_purchase,
+              :expired,
+              add_on: code_suggestion_add_on,
+              namespace: namespace_without_expired_ai_access
+            )
+          end
+
+          it 'returns UNAUTHORIZED status' do
+            post_api
+
+            expect(response).to have_gitlab_http_status(:unauthorized)
+          end
+        end
+
         context 'when job does not have AI access' do
-          let(:namespace_without_ai_access) { create(:namespace_settings, code_suggestions: true).namespace }
+          let(:namespace_without_ai_access) { create(:group) }
           let(:job_without_ai_access) { create(:ci_build, :running, namespace: namespace_without_ai_access) }
           let(:api_url) { "/internal/jobs/#{job_without_ai_access.id}/x_ray/scan" }
 

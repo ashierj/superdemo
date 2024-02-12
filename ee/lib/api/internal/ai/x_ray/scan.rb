@@ -48,6 +48,7 @@ module API
                 ::GitlabSubscriptions::AddOnPurchase
                   .for_code_suggestions
                   .by_namespace_id(current_namespace.id)
+                  .active
                   .any?
               else
                 current_namespace.namespace_settings.code_suggestions?
