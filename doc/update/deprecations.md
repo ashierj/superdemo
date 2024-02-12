@@ -303,6 +303,24 @@ From GitLab 18.0 and later, the methods to register runners introduced by the ne
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### 'repository_download_operation' audit event type for public projects
+
+<div class="deprecation-notes">
+- Announced in GitLab <span class="milestone">16.9</span>
+- Removal in GitLab <span class="milestone">17.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/383218).
+</div>
+
+The audit event type `repository_download_operation` is currently saved to the database for all project downloads, both public projects and private projects. For
+public projects, this audit event is not the most useful for auditing purposes because it can be triggered by non-authenticated users.
+
+From GitLab 17.0, the `repository_download_operation` audit event type will only be triggered for private or internal projects. We will add a new audit event type
+called `public_repository_download_operation` for public project downloads. This new audit even type will be streaming only.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### Agent for Kubernetes option `ca-cert-file` renamed
 
 <div class="deprecation-notes">
