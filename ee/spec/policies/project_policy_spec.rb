@@ -2607,6 +2607,8 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     let(:current_user) { guest }
     let(:licensed_features) { {} }
 
+    subject { described_class.new(current_user, project) }
+
     def create_member_role(member, abilities = member_role_abilities)
       params = abilities.merge(namespace: project.group)
 
@@ -2616,8 +2618,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
 
     shared_examples 'custom roles abilities' do
-      subject { described_class.new(current_user, project) }
-
       context 'without custom_roles license enabled' do
         before do
           create_member_role(group_member_guest)
@@ -2659,16 +2659,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
           context 'when a role does not enable the abilities' do
             it { is_expected.to be_disallowed(*allowed_abilities) }
           end
-        end
-
-        context 'multiple custom roles in hierarchy with different read_code values' do
-          before do
-            create_member_role(group_member_guest)
-            create_member_role(project_member_guest, { read_code: false })
-          end
-
-          # allows the ability if any of the custom roles allow it
-          it { is_expected.to be_allowed(*allowed_abilities) }
         end
       end
     end
@@ -2731,14 +2721,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it_behaves_like 'custom roles abilities'
     end
 
-    context 'for a member role with read_dependency false' do
-      let(:member_role_abilities) { { read_dependency: false } }
-      let(:allowed_abilities) { [] }
-      let(:licensed_features) { { dependency_scanning: true } }
-
-      it_behaves_like 'custom roles abilities'
-    end
-
     context 'for a member role with admin_merge_request true' do
       let(:member_role_abilities) { { admin_merge_request: true } }
       let(:allowed_abilities) { [:admin_merge_request] }
@@ -2781,6 +2763,18 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       let(:allowed_abilities) { [:remove_project, :view_edit_page] }
 
       it_behaves_like 'custom roles abilities'
+    end
+
+    context 'when a user is assigned to custom roles in both group and project' do
+      before do
+        stub_licensed_features(custom_roles: true)
+
+        create_member_role(group_member_guest, { read_dependency: true })
+        create_member_role(project_member_guest, { read_code: true })
+      end
+
+      it { is_expected.to be_disallowed(:read_dependency) }
+      it { is_expected.to be_allowed(:read_code) }
     end
   end
 
