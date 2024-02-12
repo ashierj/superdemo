@@ -39,7 +39,7 @@ class ApprovalState
     if users.is_a?(ActiveRecord::Relation) && !users.loaded?
       users.where.not(id: merge_request.committers(with_merge_commits: true).select(:id))
     else
-      users - merge_request.committers
+      users - merge_request.committers(with_merge_commits: true)
     end
   end
 
