@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
   let_it_be(:developer) { create(:user) }
-  let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, group: group).tap { |proj| proj.add_developer(developer) } }
+  let_it_be(:group) { create(:group).tap { |proj| proj.add_developer(developer) } }
+  let_it_be(:project) { create(:project, group: group) }
   let_it_be(:work_item, refind: true) { create(:work_item, project: project) }
 
   let(:current_user) { developer }
@@ -178,6 +178,101 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
             expect(GraphqlTriggers).not_to receive(:issuable_health_status_updated)
 
             subject
+          end
+        end
+      end
+
+      context 'for color widget' do
+        let_it_be(:work_item, refind: true) { create(:work_item, :epic, namespace: group) }
+        let_it_be(:default_color) { '#1068bf' }
+
+        let(:new_color) { '#c91c00' }
+
+        before do
+          stub_licensed_features(epic_colors: true)
+        end
+
+        context 'when work item has a color' do
+          let_it_be(:existing_color) { create(:color, work_item: work_item, color: '#0052cc') }
+
+          context 'when color changes' do
+            let(:widget_params) { { color_widget: { color: new_color } } }
+
+            it 'updates existing color' do
+              expect { subject }.not_to change { WorkItems::Color.count }
+
+              expect(work_item.color.color.to_s).to eq(new_color)
+              expect(work_item.color.issue_id).to eq(work_item.id)
+            end
+
+            it 'creates system notes' do
+              expect(SystemNoteService).to receive(:change_color_note)
+               .with(work_item, current_user, existing_color.color.to_s)
+               .and_call_original
+
+              expect { subject }.to change { Note.count }.by(1)
+              expect(work_item.notes.last.note).to eq("changed color from `#{existing_color.color}` to `#{new_color}`")
+            end
+          end
+
+          context 'when color remains unchanged' do
+            let(:widget_params) { {} }
+
+            it 'does not update color' do
+              expect { subject }.to not_change { WorkItems::Color.count }.and not_change { Note.count }
+              expect(work_item.color.color.to_s).to eq(existing_color.color.to_s)
+            end
+          end
+
+          context 'when color param is the same as the work item color' do
+            let(:widget_params) { { color_widget: { color: existing_color.color.to_s } } }
+
+            it 'does not update color' do
+              expect { subject }.to not_change { WorkItems::Color.count }.and not_change { Note.count }
+            end
+          end
+
+          context 'when widget is not supported in the new type' do
+            let(:widget_params) { { color_widget: { color: new_color } } }
+
+            before do
+              allow_next_instance_of(WorkItems::Callbacks::Color) do |instance|
+                allow(instance).to receive(:excluded_in_new_type?).and_return(true)
+              end
+            end
+
+            it 'removes color' do
+              expect { subject }.to change { work_item.reload.color }.from(existing_color).to(nil)
+            end
+
+            it 'creates system notes' do
+              expect(SystemNoteService).to receive(:change_color_note)
+                .with(work_item, current_user, nil)
+                .and_call_original
+
+              expect { subject }.to change { Note.count }.by(1)
+              expect(Note.last.note).to eq("removed color `#{existing_color.color}`")
+            end
+          end
+        end
+
+        context 'when work item has no color' do
+          let(:widget_params) { { color_widget: { color: new_color } } }
+
+          it 'creates a new color record' do
+            expect { subject }.to change { WorkItems::Color.count }.by(1)
+
+            expect(work_item.color.color.to_s).to eq(new_color)
+            expect(work_item.color.issue_id).to eq(work_item.id)
+          end
+
+          it 'creates system notes' do
+            expect(SystemNoteService).to receive(:change_color_note)
+              .with(work_item, current_user, nil)
+              .and_call_original
+
+            expect { subject }.to change { Note.count }.by(1)
+            expect(work_item.notes.last.note).to eq("set color to `#{new_color}`")
           end
         end
       end

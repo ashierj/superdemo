@@ -242,4 +242,37 @@ RSpec.describe ::SystemNotes::IssuablesService, feature_category: :team_planning
       end
     end
   end
+
+  describe '#change_color_note' do
+    let_it_be(:noteable) { create(:work_item, :epic, namespace: group) }
+    let_it_be(:new_color) { create(:color, work_item: noteable, color: '#0052cc') }
+
+    subject(:system_note) { service.change_color_note(previous_color) }
+
+    context 'when argument is a color value' do
+      let_it_be(:previous_color) { '#1068bf' }
+
+      it 'creates system note when work item color changes' do
+        expect(system_note.note).to eq "changed color from `#{previous_color}` to `#{new_color.color}`"
+      end
+    end
+
+    context 'when argument is nil and color is present' do
+      let_it_be(:previous_color) { nil }
+
+      it 'creates system note when work item color changes' do
+        expect(system_note.note).to eq "set color to `#{new_color.color}`"
+      end
+    end
+
+    context 'when color was destroyed' do
+      let_it_be(:previous_color) { nil }
+
+      it 'creates system note when work item color changes' do
+        allow(noteable.color).to receive(:destroyed?).and_return(true)
+
+        expect(system_note.note).to eq "removed color `#{new_color.color}`"
+      end
+    end
+  end
 end
