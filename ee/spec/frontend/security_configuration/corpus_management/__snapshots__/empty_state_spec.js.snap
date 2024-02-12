@@ -10,6 +10,7 @@ exports[`EE - CorpusManagement - EmptyState should render correct content 1`] = 
     <img
       alt=""
       class="gl-dark-invert-keep-hue gl-max-w-full"
+      height="144"
       src="/illustrations/no_commits.svg"
     />
   </div>
