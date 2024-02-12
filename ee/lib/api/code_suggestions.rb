@@ -165,7 +165,8 @@ module API
               task.endpoint,
               body: body,
               headers: model_gateway_headers(headers, token),
-              method: "POST"
+              method: "POST",
+              timeouts: { read: 55 }
             )
 
           header(*workhorse_headers)
