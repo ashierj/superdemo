@@ -74,8 +74,6 @@ module EE
       end
 
       def sync_preexiting_states_approval_rules
-        return if ::Feature.disabled?(:security_policies_sync_preexisting_state, project, type: :gitlab_com_derisk)
-
         merge_requests_for_source_branch.each do |merge_request|
           if merge_request.approval_rules.scan_finding.any?
             ::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker.perform_async(merge_request.id)

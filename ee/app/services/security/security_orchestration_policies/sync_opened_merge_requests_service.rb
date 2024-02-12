@@ -36,9 +36,6 @@ module Security
       end
 
       def sync_preexisting_state_approval_rules(merge_request)
-        return if ::Feature.disabled?(:security_policies_sync_preexisting_state, merge_request.project,
-          type: :gitlab_com_derisk)
-
         return unless merge_request.approval_rules.scan_finding.any?
 
         ::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker.perform_async(merge_request.id)

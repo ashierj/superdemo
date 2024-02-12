@@ -15,9 +15,6 @@ module Security
         merge_request = MergeRequest.find_by_id(merge_request_id)
         return unless merge_request
 
-        return if Feature.disabled?(:security_policies_sync_preexisting_state, merge_request.project,
-          type: :gitlab_com_derisk)
-
         Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesService.new(merge_request).execute
       end
     end

@@ -1,9 +1,0 @@
----
-name: security_policies_sync_preexisting_state
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/425482
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/141095
-rollout_issue_url: https://gitlab.com/gitlab-com/gl-infra/production/-/issues/17361
-milestone: '16.9'
-group: group::security policies
-type: gitlab_com_derisk
-default_enabled: false
