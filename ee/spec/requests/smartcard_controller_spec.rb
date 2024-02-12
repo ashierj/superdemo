@@ -289,7 +289,7 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
     end
 
     let(:params) { { client_certificate: encrypted_client_certificate, nonce: nonce } }
-    let(:serial) { '42' }
+    let(:serial) { 42 }
     let(:subject_dn) { '/O=Random Corp Ltd/CN=gitlab-user/emailAddress=gitlab-user@random-corp.org' }
     let(:issuer_dn) { 'CN=Random Corp,O=Random Corp Ltd,C=US' }
 
@@ -365,12 +365,13 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
             "{ serialNumber #{serial}, issuer \"#{issuer_dn}\" }") }
       end
 
-      subject do
+      subject(:verify_smartcard) do
         get(verify_certificate_smartcard_path,
             params: params.merge({ provider: 'ldapmain' }))
       end
 
       before do
+        stub_ldap_config(active_directory: false)
         allow(Net::LDAP).to receive(:new).and_return(ldap_connection)
         allow(ldap_connection).to(
           receive(:search).with(ldap_search_params).and_return([ldap_entry]))
@@ -383,6 +384,31 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
           receive(:search).with(ldap_search_params).and_return([ldap_entry]))
 
         subject
+      end
+
+      context 'when ldap is an active directory server' do
+        let(:ldap_search_params) do
+          { attributes: array_including('dn', 'cn', 'mail', 'uid', 'userid'),
+            base: ldap_user_search_scope,
+            filter: Net::LDAP::Filter.eq(
+              'altSecurityIdentities',
+              "X509:<I>#{issuer_dn}<SR>2a") }
+        end
+
+        before do
+          stub_ldap_config(
+            active_directory: true,
+            smartcard_ad_cert_field: 'altSecurityIdentities',
+            smartcard_ad_cert_format: 'issuer_and_serial_number'
+          )
+        end
+
+        it 'sets correct parameters for LDAP search' do
+          expect(ldap_connection).to(
+            receive(:search).with(ldap_search_params).and_return([ldap_entry]))
+
+          verify_smartcard
+        end
       end
 
       context 'user already exists' do

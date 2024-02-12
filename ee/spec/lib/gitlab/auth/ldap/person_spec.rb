@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Auth::Ldap::Person do
+RSpec.describe Gitlab::Auth::Ldap::Person, feature_category: :system_access do
   include LdapHelpers
 
   let(:entry) { ldap_user_entry('john.doe') }
@@ -54,6 +54,20 @@ RSpec.describe Gitlab::Auth::Ldap::Person do
       expect(adapter).to receive(:user_by_certificate_assertion).with("{ serialNumber #{serial}, issuer \"#{issuer_dn}\" }")
 
       described_class.find_by_certificate_issuer_and_serial(issuer_dn, serial, adapter)
+    end
+  end
+
+  describe '.find_by_ad_certificate_field' do
+    let(:smartcard_ad_cert_field) { 'extensionAttribute1' }
+
+    it 'searches by active directory certificate assertion' do
+      stub_ldap_config(smartcard_ad_cert_field: smartcard_ad_cert_field)
+
+      filter_term = 'X509:<I>issuer_dn<SR>2a'
+      adapter = ldap_adapter
+      expect(adapter).to receive(:user).with(smartcard_ad_cert_field, filter_term)
+
+      described_class.find_by_ad_certificate_field(filter_term, adapter)
     end
   end
 
