@@ -55,10 +55,64 @@ module Gitlab
         end
 
         def ldap_user
-          @ldap_user ||= ::Gitlab::Auth::Ldap::Person.find_by_certificate_issuer_and_serial(
-            @certificate.issuer.to_s(OpenSSL::X509::Name::RFC2253),
-            @certificate.serial.to_s,
-            adapter)
+          if use_ad_certificate_matching?
+            ::Gitlab::Auth::Ldap::Person.find_by_ad_certificate_field(alt_security_id, adapter)
+          else
+            ::Gitlab::Auth::Ldap::Person.find_by_certificate_issuer_and_serial(issuer_dn, serial, adapter)
+          end
+        end
+
+        def issuer_dn
+          @issuer ||= @certificate.issuer.to_s(OpenSSL::X509::Name::RFC2253)
+        end
+
+        def serial
+          @serial ||= @certificate.serial.to_s
+        end
+
+        # in ActiveDirectory, serial numbers are typically stored in
+        # reverse-byte-order hex from the human-readable version
+        # https://learn.microsoft.com/en-us/entra/identity/authentication/how-to-certificate-based-authentication#issuer-and-serial-number-manual-mapping
+        def reverse_serial
+          @reverse_serial ||= @certificate.serial.to_s(16)   #=> "deadbeef"
+                                                 .scan(/../) #=> ["de", "ad", "be", "ef"]
+                                                 .reverse    #=> ["ef", "be", "ad", "de"]
+                                                 .join       #=> "efbeadde"
+                                                 .downcase
+        end
+
+        def subject
+          @subject ||= @certificate.subject.to_s
+        end
+
+        # adapter.config.active_directory defaults to true even for non-AD providers
+        # for legacy reasons. We check for opt-in for AD-specific cert behavior using the
+        # smartcard_ad_cert_format config field
+        def use_ad_certificate_matching?
+          !!adapter.config.active_directory && smartcard_ad_cert_format.present?
+        end
+
+        def smartcard_ad_cert_format
+          adapter.config.smartcard_ad_cert_format
+        end
+
+        # formats gathered from:
+        # https://learn.microsoft.com/en-us/entra/identity/authentication/concept-certificate-based-authentication-certificateuserids#supported-patterns-for-certificate-user-ids
+        def alt_security_id
+          case smartcard_ad_cert_format
+          when 'principal_name'
+            "X509:<PN>#{subject}"
+          when 'rfc822_name'
+            "X509:<RFC822>#{subject}"
+          when 'issuer_and_subject'
+            "X509:<I>#{issuer_dn}<S>#{subject}"
+          when 'subject'
+            "X509:<S>#{subject}"
+          when 'issuer_and_serial_number'
+            "X509:<I>#{issuer_dn}<SR>#{reverse_serial}"
+          else
+            raise _('Missing or invalid configuration field: :smartcard_ad_cert_format')
+          end
         end
 
         def username

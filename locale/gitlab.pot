@@ -31475,6 +31475,9 @@ msgstr ""
 msgid "Missing commit signatures endpoint!"
 msgstr ""
 
+msgid "Missing or invalid configuration field: :smartcard_ad_cert_format"
+msgstr ""
+
 msgid "Missing/invalid scope"
 msgstr ""
 

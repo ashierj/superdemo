@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Auth::Smartcard::LdapCertificate do
+RSpec.describe Gitlab::Auth::Smartcard::LdapCertificate, feature_category: :system_access do
+  include LdapHelpers
+
   let(:certificate_header) { 'certificate' }
   let(:openssl_certificate_store) { instance_double(OpenSSL::X509::Store) }
   let(:user_build_service) { instance_double(Users::BuildService) }
@@ -11,7 +13,8 @@ RSpec.describe Gitlab::Auth::Smartcard::LdapCertificate do
   let(:openssl_certificate) do
     instance_double(OpenSSL::X509::Certificate,
                     { issuer: issuer,
-                      serial: '42' })
+                      serial: 42,
+                      subject: subject_ldap_dn })
   end
 
   let(:ldap_provider) { 'ldapmain' }
@@ -28,6 +31,7 @@ RSpec.describe Gitlab::Auth::Smartcard::LdapCertificate do
   end
 
   before do
+    stub_ldap_config(active_directory: false)
     allow(described_class).to(
       receive(:store).and_return(openssl_certificate_store))
     allow(OpenSSL::X509::Certificate).to(
@@ -39,7 +43,9 @@ RSpec.describe Gitlab::Auth::Smartcard::LdapCertificate do
   end
 
   describe '#find_or_create_user' do
-    subject { described_class.new(ldap_provider, certificate_header).find_or_create_user }
+    subject(:find_or_create_user) do
+      described_class.new(ldap_provider, certificate_header).find_or_create_user
+    end
 
     context 'user and smartcard ldap certificate already exists' do
       let(:user) { create(:user) }
@@ -99,6 +105,93 @@ RSpec.describe Gitlab::Auth::Smartcard::LdapCertificate do
       end
 
       it_behaves_like 'creates user'
+
+      context 'and ldap server is active directory' do
+        let(:smartcard_ad_cert_field) { 'altSecurityIdentities' }
+        let(:smartcard_ad_cert_format) { nil }
+
+        before do
+          stub_ldap_config(
+            active_directory: true,
+            smartcard_ad_cert_field: smartcard_ad_cert_field,
+            smartcard_ad_cert_format: smartcard_ad_cert_format
+          )
+        end
+
+        it 'defaults to non-active-directory LDAP-compatible behavior' do
+          expect { find_or_create_user }.to change { User.count }.from(0).to(1)
+
+          expect(ldap_connection).to have_received(:search).with(
+            a_hash_including(
+              filter: Net::LDAP::Filter.ex('userCertificate:certificateExactMatch',
+                                           "{ serialNumber 42, issuer \"issuer_dn\" }")
+            )
+          ).at_least(:once)
+        end
+
+        context 'when smartcard_ad_cert_format is specified' do
+          using RSpec::Parameterized::TableSyntax
+
+          where(:ad_format, :result) do
+            'issuer_and_serial_number' | 'X509:<I>issuer_dn<SR>2a'
+            'principal_name'           | 'X509:<PN>subject_ldap_dn'
+            'rfc822_name'              | 'X509:<RFC822>subject_ldap_dn'
+            'issuer_and_subject'       | 'X509:<I>issuer_dn<S>subject_ldap_dn'
+            'subject'                  | 'X509:<S>subject_ldap_dn'
+          end
+
+          with_them do
+            it do
+              stub_ldap_config(
+                active_directory: true,
+                smartcard_ad_cert_field: smartcard_ad_cert_field,
+                smartcard_ad_cert_format: ad_format
+              )
+
+              expect { find_or_create_user }.to change { User.count }.from(0).to(1)
+
+              expect(ldap_connection).to have_received(:search).with(
+                a_hash_including(
+                  filter: Net::LDAP::Filter.eq(smartcard_ad_cert_field, result)
+                )
+              ).at_least(:once)
+            end
+          end
+        end
+
+        context 'with unknown cert format' do
+          let(:smartcard_ad_cert_format) { 'not a real format' }
+
+          it 'raises invalid config error' do
+            expect { find_or_create_user }.to raise_error(
+              _('Missing or invalid configuration field: :smartcard_ad_cert_format')
+            )
+          end
+        end
+
+        context 'with different cert field' do
+          let(:smartcard_ad_cert_format) { 'issuer_and_serial_number' }
+          let(:smartcard_ad_cert_field) { 'extensionAttribute1' }
+
+          before do
+            stub_ldap_config(
+              active_directory: true,
+              smartcard_ad_cert_field: smartcard_ad_cert_field,
+              smartcard_ad_cert_format: smartcard_ad_cert_format
+            )
+          end
+
+          it 'searches using the specified field' do
+            expect { find_or_create_user }.to change { User.count }.from(0).to(1)
+
+            expect(ldap_connection).to have_received(:search).with(
+              a_hash_including(
+                filter: Net::LDAP::Filter.eq(smartcard_ad_cert_field, 'X509:<I>issuer_dn<SR>2a')
+              )
+            ).at_least(:once)
+          end
+        end
+      end
 
       context 'when the current minimum password length is different from the default minimum password length' do
         before do
