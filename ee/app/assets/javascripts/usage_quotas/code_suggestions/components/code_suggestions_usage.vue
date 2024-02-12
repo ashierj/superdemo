@@ -120,11 +120,13 @@ export default {
     <template v-else>
       <section v-if="showTitleAndSubtitle">
         <h1 data-testid="code-suggestions-title" class="page-title gl-font-size-h-display">
-          {{ s__('CodeSuggestions|Duo Pro') }}
+          {{ s__('CodeSuggestions|GitLab Duo Pro') }}
         </h1>
 
         <p data-testid="code-suggestions-subtitle">
-          {{ s__('CodeSuggestions|Manage seat assignments for Duo Pro across your instance.') }}
+          {{
+            s__('CodeSuggestions|Manage seat assignments for GitLab Duo Pro across your instance.')
+          }}
         </p>
       </section>
       <section v-if="hasCodeSuggestions">

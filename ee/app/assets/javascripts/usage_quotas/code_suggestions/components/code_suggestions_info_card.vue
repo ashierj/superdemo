@@ -16,7 +16,7 @@ export default {
     description: s__(
       `CodeSuggestions|%{linkStart}Code Suggestions%{linkEnd} uses generative AI to suggest code while you're developing.`,
     ),
-    title: s__('CodeSuggestions|Duo Pro add-on'),
+    title: s__('CodeSuggestions|GitLab Duo Pro add-on'),
     addSeatsText,
   },
   components: {
