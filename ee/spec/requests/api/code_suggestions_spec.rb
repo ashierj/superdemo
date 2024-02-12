@@ -575,13 +575,17 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             end
 
             it 'includes additional headers for SaaS' do
-              add_on_purchase.namespace.namespace_settings.update_attribute(:code_suggestions, true)
+              add_on_purchase.namespace.namespace_settings.update_attribute(:code_suggestions, false)
+              group = create(:group)
+              group.add_developer(authorized_user)
+              group.namespace_settings.update_attribute(:code_suggestions, true)
 
               post_api
 
               _, params = workhorse_send_data
               expect(params['Header']).to include(
-                'X-Gitlab-Saas-Namespace-Ids' => [add_on_purchase.namespace.id.to_s]
+                'X-Gitlab-Saas-Namespace-Ids' => [group.id.to_s],
+                'X-Gitlab-Saas-Duo-Pro-Namespace-Ids' => [add_on_purchase.namespace.id.to_s]
               )
             end
 
