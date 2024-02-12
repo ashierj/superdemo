@@ -97,8 +97,6 @@ module EE
           end
 
           after_transition any => ::Ci::Pipeline.completed_statuses do |pipeline|
-            next if ::Feature.disabled?(:security_policies_unenforceable_rules_notification, pipeline.project)
-
             pipeline.run_after_commit do
               ::Security::UnenforceablePolicyRulesPipelineNotificationWorker.perform_async(pipeline.id)
             end

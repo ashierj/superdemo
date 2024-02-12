@@ -92,18 +92,6 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
           )
         end
       end
-
-      context 'when feature flag "security_policies_unenforceable_rules_notification" is disabled' do
-        before do
-          stub_feature_flags(security_policies_unenforceable_rules_notification: false)
-        end
-
-        it 'does not schedule background job to check for unenforceable policy rules' do
-          execute
-
-          expect(::Security::UnenforceablePolicyRulesNotificationWorker).not_to have_received(:perform_async)
-        end
-      end
     end
 
     context 'when merge request has any_merge_request rules' do

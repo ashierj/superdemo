@@ -280,18 +280,6 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
 
         expect(::Security::UnenforceablePolicyRulesPipelineNotificationWorker).to have_received(:perform_async).with(pipeline.id)
       end
-
-      context 'when feature flag "security_policies_unenforceable_rules_notification" is disabled' do
-        before do
-          stub_feature_flags(security_policies_unenforceable_rules_notification: false)
-        end
-
-        it 'does not schedule notification job for unenforceable policies' do
-          transition_pipeline
-
-          expect(::Security::UnenforceablePolicyRulesPipelineNotificationWorker).not_to have_received(:perform_async)
-        end
-      end
     end
 
     context 'when pipeline is succeeded' do

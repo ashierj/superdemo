@@ -45,8 +45,6 @@ module Security
       end
 
       def notify_for_policy_violations(merge_request)
-        return if ::Feature.disabled?(:security_policies_unenforceable_rules_notification, merge_request.project)
-
         ::Security::UnenforceablePolicyRulesNotificationWorker.perform_async(
           merge_request.id,
           { 'force_without_approval_rules' => true }
