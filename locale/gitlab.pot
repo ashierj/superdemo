@@ -10728,6 +10728,11 @@ msgstr ""
 msgid "CiStatusText|Warning"
 msgstr ""
 
+msgid "CiVariables|%d value found"
+msgid_plural "CiVariables|%d values found"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "CiVariables|%{code_open}Expanded:%{code_close} Variables with %{code_open}$%{code_close} will be treated as the start of a reference to another variable."
 msgstr ""
 
@@ -10800,6 +10805,9 @@ msgstr ""
 msgid "CiVariables|Maximum number of variables reached."
 msgstr ""
 
+msgid "CiVariables|No matching values"
+msgstr ""
+
 msgid "CiVariables|Protect variable"
 msgstr ""
 
@@ -10819,6 +10827,9 @@ msgid "CiVariables|Run job again"
 msgstr ""
 
 msgid "CiVariables|Scope"
+msgstr ""
+
+msgid "CiVariables|Search values"
 msgstr ""
 
 msgid "CiVariables|Specify variable values to be used in this run. The variables specified in the configuration file and %{linkStart}CI/CD settings%{linkEnd} are used by default."
