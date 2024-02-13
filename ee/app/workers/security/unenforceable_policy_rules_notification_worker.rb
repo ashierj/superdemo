@@ -14,7 +14,6 @@ module Security
       return unless merge_request
 
       project = merge_request.project
-      return if Feature.disabled?(:security_policies_unenforceable_rules_notification, project)
       return unless project.licensed_feature_available?(:security_orchestration_policies)
 
       return if merge_request.approval_rules.with_scan_result_policy_read.none? &&

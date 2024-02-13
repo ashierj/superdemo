@@ -15,7 +15,6 @@ module Security
       return if pipeline.has_all_security_policies_reports?
 
       project = pipeline.project
-      return if Feature.disabled?(:security_policies_unenforceable_rules_notification, project)
       return unless project.licensed_feature_available?(:security_orchestration_policies)
       return if project.approval_rules.with_scan_result_policy_read.none?
 
