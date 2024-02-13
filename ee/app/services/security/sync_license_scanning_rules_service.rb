@@ -53,7 +53,7 @@ module Security
       log_violated_rules(merge_request, violated_rules)
       violations.add(violated_rules.pluck(:scan_result_policy_id), unviolated_rules.pluck(:scan_result_policy_id)) # rubocop:disable CodeReuse/ActiveRecord
       violations.execute
-      generate_policy_bot_comment(merge_request, violated_rules, :license_scanning)
+      generate_policy_bot_comment(merge_request, license_approval_rules, :license_scanning)
     end
 
     def update_required_approvals(merge_request, violated_rules, unviolated_rules)

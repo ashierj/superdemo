@@ -70,7 +70,7 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
           end
 
           it_behaves_like 'sets approvals_required to 0'
-          it_behaves_like 'triggers policy bot comment', :any_merge_request, false
+          it_behaves_like 'triggers policy bot comment', :any_merge_request, false, requires_approval: false
           it_behaves_like 'merge request without scan result violations'
 
           it 'does not create a log' do
@@ -87,7 +87,7 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
           end
 
           it_behaves_like 'sets approvals_required to 0'
-          it_behaves_like 'triggers policy bot comment', :any_merge_request, false
+          it_behaves_like 'triggers policy bot comment', :any_merge_request, false, requires_approval: false
           it_behaves_like 'merge request without scan result violations'
         end
       end
@@ -201,7 +201,7 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
               end
             end
 
-            it_behaves_like 'triggers policy bot comment', :any_merge_request, false
+            it_behaves_like 'triggers policy bot comment', :any_merge_request, false, requires_approval: false
             it_behaves_like 'merge request without scan result violations' do
               let(:scan_result_policy_read) { scan_result_policy_read_with_commits }
             end

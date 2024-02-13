@@ -19,11 +19,13 @@ module Security
         return if pipeline.incomplete?
         return unless pipeline.can_store_security_reports?
 
-        approval_rules = merge_request.approval_rules.scan_finding
+        all_scan_finding_rules = merge_request.approval_rules.scan_finding
 
-        if security_policies_sync_preexisting_state_enabled?
-          approval_rules = approval_rules.select { |rule| include_newly_detected?(rule) }
-        end
+        approval_rules = if security_policies_sync_preexisting_state_enabled?
+                           all_scan_finding_rules.select { |rule| include_newly_detected?(rule) }
+                         else
+                           all_scan_finding_rules
+                         end
 
         return if approval_rules.empty?
 
@@ -37,7 +39,7 @@ module Security
         update_required_approvals(violated_rules, unviolated_rules)
         violations.add(violated_rules.pluck(:scan_result_policy_id), unviolated_rules.pluck(:scan_result_policy_id)) # rubocop:disable CodeReuse/ActiveRecord
         violations.execute
-        generate_policy_bot_comment(merge_request, violated_rules, :scan_finding)
+        generate_policy_bot_comment(merge_request, all_scan_finding_rules, :scan_finding)
       end
 
       private
