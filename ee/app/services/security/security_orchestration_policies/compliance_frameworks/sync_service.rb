@@ -9,23 +9,21 @@ module Security
         end
 
         def execute
-          return if configuration.project?
-
-          namespace = configuration.namespace
-
-          return unless Feature.enabled?(:security_policies_policy_scope, namespace)
+          container = configuration.source
+          return if configuration.namespace? && Feature.disabled?(:security_policies_policy_scope,
+            configuration.namespace)
 
           framework_ids_with_policy_index = configuration.compliance_framework_ids_with_policy_index
           framework_ids = framework_ids_with_policy_index.flat_map { |ids_with_idx| ids_with_idx[:framework_ids] }.uniq
 
-          root_namespace = namespace.root_ancestor
+          root_namespace = container.root_ancestor
           frameworks_count = root_namespace.compliance_management_frameworks.id_in(framework_ids).count
 
           if frameworks_count != framework_ids.count
             Gitlab::AppJsonLogger.info(
               message: 'inaccessible compliance_framework_ids found in policy',
               configuration_id: configuration.id,
-              configuration_source_id: namespace.id,
+              configuration_source_id: container.id,
               root_namespace_id: root_namespace.id,
               policy_framework_ids: framework_ids,
               inaccessible_framework_ids_count: (framework_ids.count - frameworks_count)

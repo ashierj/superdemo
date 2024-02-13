@@ -20,7 +20,6 @@ module Security
         return error_with_title(s_('SecurityOrchestration|Branch types don\'t match any existing branches.'), field: :branches) if invalid_branch_types?
         return error_with_title(s_('SecurityOrchestration|Timezone is invalid'), field: :timezone) if invalid_timezone?
         return error_with_title(s_('SecurityOrchestration|Vulnerability age requires previously existing vulnerability states (detected, confirmed, resolved, or dismissed)'), field: :vulnerability_age) if invalid_vulnerability_age?
-        return error_with_title(s_('SecurityOrchestration|Compliance Framework ID(s) can only be set for group policies'), field: :compliance_frameworks) if has_compliance_framework_for_project_policy?
         return error_with_title(s_('SecurityOrchestration|Invalid Compliance Framework ID(s)'), field: :compliance_frameworks) if invalid_compliance_framework_ids?
 
         return error_with_title(s_('SecurityOrchestration|Required approvals exceed eligible approvers.'), title: s_('SecurityOrchestration|Logic error'), field: :approvers_ids) if required_approvals_exceed_eligible_approvers?
@@ -66,10 +65,6 @@ module Security
         return false unless project_container?
 
         missing_branch_names.present?
-      end
-
-      def has_compliance_framework_for_project_policy?
-        project_container? && compliance_framework_ids.present?
       end
 
       def invalid_compliance_framework_ids?
