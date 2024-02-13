@@ -1,7 +1,12 @@
-mutation chat($question: String!, $resourceId: AiModelID!, $clientSubscriptionId: String) {
+mutation chat(
+  $question: String!
+  $resourceId: AiModelID!
+  $clientSubscriptionId: String
+  $currentFileContext: AiCurrentFileInput
+) {
   aiAction(
     input: {
-      chat: { resourceId: $resourceId, content: $question }
+      chat: { resourceId: $resourceId, content: $question, currentFile: $currentFileContext }
       clientSubscriptionId: $clientSubscriptionId
     }
   ) {
