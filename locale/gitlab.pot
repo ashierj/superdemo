@@ -53441,6 +53441,9 @@ msgstr ""
 msgid "UsageQuota|Something went wrong while fetching project storage statistics"
 msgstr ""
 
+msgid "UsageQuota|Something went wrong while loading Usage Quotas Tabs."
+msgstr ""
+
 msgid "UsageQuota|Storage"
 msgstr ""
 
