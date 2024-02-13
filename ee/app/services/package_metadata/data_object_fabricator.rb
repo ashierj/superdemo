@@ -22,6 +22,9 @@ module PackageMetadata
 
     def create_object(data)
       data_object_class.create(data, sync_config.purl_type)
+    rescue ArgumentError => e
+      Gitlab::ErrorTracking.track_exception(e, data: data)
+      nil
     end
 
     def data_object_class
