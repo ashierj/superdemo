@@ -32,7 +32,7 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::SelfManaged::CreateSer
       end
 
       it 'expires the user add-on cache', :use_clean_rails_redis_caching do
-        cache_key = format(User::DUO_PRO_ADD_ON_CACHE_KEY, user_id: user.id)
+        cache_key = user.duo_pro_cache_key_formatted
         Rails.cache.write(cache_key, false, expires_in: 1.hour)
 
         expect { subject }.to change { Rails.cache.read(cache_key) }.from(false).to(nil)

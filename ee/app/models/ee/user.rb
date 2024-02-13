@@ -631,6 +631,10 @@ module EE
       GitlabSubscriptions::UserAddOnAssignment.by_user(self).for_active_code_suggestions_purchase.any?
     end
 
+    def duo_pro_cache_key_formatted
+      format(User::DUO_PRO_ADD_ON_CACHE_KEY, user_id: id)
+    end
+
     def eligible_for_self_managed_code_suggestions?
       return false if gitlab_com_subscription?
 
