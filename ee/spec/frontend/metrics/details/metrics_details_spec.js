@@ -9,9 +9,11 @@ import MetricsChart from 'ee/metrics/details/metrics_chart.vue';
 import FilteredSearch from 'ee/metrics/details/filter_bar/metrics_filtered_search.vue';
 import { ingestedAtTimeAgo } from 'ee/metrics/utils';
 import { prepareTokens } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
+import axios from '~/lib/utils/axios_utils';
 
 jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
+jest.mock('~/lib/utils/axios_utils');
 jest.mock('ee/metrics/utils');
 
 describe('MetricsDetails', () => {
@@ -121,11 +123,10 @@ describe('MetricsDetails', () => {
     });
 
     it('renders the metrics details', () => {
-      expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(
-        METRIC_ID,
-        METRIC_TYPE,
-        expect.any(Object),
-      );
+      expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(METRIC_ID, METRIC_TYPE, {
+        abortController: expect.any(AbortController),
+        filters: expect.any(Object),
+      });
       expect(findLoadingIcon().exists()).toBe(false);
       expect(findMetricDetails().exists()).toBe(true);
     });
@@ -154,6 +155,7 @@ describe('MetricsDetails', () => {
 
       it('fetches metrics with filters', () => {
         expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(METRIC_ID, METRIC_TYPE, {
+          abortController: expect.any(AbortController),
           filters: {
             attributes: [],
             dateRange: {
@@ -197,6 +199,7 @@ describe('MetricsDetails', () => {
             METRIC_ID,
             METRIC_TYPE,
             {
+              abortController: expect.any(AbortController),
               filters: {
                 attributes: {
                   'key.one': [{ operator: '=', value: '12h' }],
@@ -287,10 +290,10 @@ describe('MetricsDetails', () => {
   });
 
   describe('error handling', () => {
-    beforeEach(async () => {
-      observabilityClientMock.isObservabilityEnabled.mockRejectedValueOnce('error');
-
-      await mountComponent();
+    beforeEach(() => {
+      observabilityClientMock.isObservabilityEnabled.mockResolvedValue(true);
+      observabilityClientMock.fetchMetric.mockResolvedValue([]);
+      observabilityClientMock.fetchMetricSearchMetadata.mockResolvedValue([]);
     });
 
     describe.each([
@@ -299,7 +302,7 @@ describe('MetricsDetails', () => {
       ['fetchMetric', () => observabilityClientMock.fetchMetric],
     ])('when %s fails', (_, mockFn) => {
       beforeEach(async () => {
-        mockFn().mockRejectedValueOnce('error');
+        mockFn().mockRejectedValue('error');
         await mountComponent();
       });
       it('renders an alert', () => {
@@ -331,6 +334,15 @@ describe('MetricsDetails', () => {
       expect(createAlert).toHaveBeenCalledWith({
         message: 'Error: Failed to load metrics details. Try reloading the page.',
       });
+    });
+
+    it('does not render an alert if the api call fails because cancelled', async () => {
+      observabilityClientMock.fetchMetric.mockRejectedValueOnce('cancelled');
+      axios.isCancel = jest.fn().mockReturnValue(true);
+
+      await mountComponent();
+
+      expect(createAlert).not.toHaveBeenCalled();
     });
   });
 });
