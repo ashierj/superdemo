@@ -575,25 +575,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         end
       end
 
-      context 'when policy_scope is present' do
-        let_it_be(:container) { create(:project, :repository) }
-        let_it_be(:invaild_framework) { create(:compliance_framework) }
-
-        let(:policy) do
-          {
-            type: policy_type,
-            name: name,
-            policy_scope: policy_scope,
-            enabled: enabled,
-            rules: rules
-          }
-        end
-
-        let(:policy_scope) { { compliance_frameworks: [{ id: invaild_framework.id }] } }
-
-        it_behaves_like 'sets validation errors', field: :compliance_frameworks, message: 'Compliance Framework ID(s) can only be set for group policies'
-      end
-
       context 'when project has a default protected branch' do
         let_it_be(:container) { create(:project, :repository) }
 

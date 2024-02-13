@@ -44553,9 +44553,6 @@ msgstr ""
 msgid "SecurityOrchestration|Clear all"
 msgstr ""
 
-msgid "SecurityOrchestration|Compliance Framework ID(s) can only be set for group policies"
-msgstr ""
-
 msgid "SecurityOrchestration|Compliance framework has no projects"
 msgstr ""
 

@@ -43,7 +43,21 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ComplianceFrameworks::Sy
       create(:security_orchestration_policy_configuration, project: project)
     end
 
-    it_behaves_like 'does not create ComplianceFramework::SecurityPolicy'
+    let(:framework_ids_and_idx) do
+      [
+        { framework_ids: [framework1.id, framework2.id], policy_index: 0 }
+      ]
+    end
+
+    it 'creates ComplianceFramework::SecurityPolicy' do
+      execute
+
+      expect(all_records.count).to eq(2)
+      expect(all_records.map(&:policy_index)).to contain_exactly(0, 0)
+      expect(all_records.map(&:policy_configuration_id)).to contain_exactly(policy_configuration.id,
+        policy_configuration.id)
+      expect(all_records.map(&:framework_id)).to contain_exactly(framework1.id, framework2.id)
+    end
   end
 
   context 'when inaccessible compliance framework is linked to policy' do
