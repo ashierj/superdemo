@@ -30,6 +30,7 @@ module AutoMerge
     def check_availability(merge_request)
       return false if Feature.disabled?(:merge_when_checks_pass, merge_request.project)
       return false unless merge_request.approval_feature_available?
+      return false if merge_request.project.merge_trains_enabled?
 
       super ||
         !merge_request.approved? ||
