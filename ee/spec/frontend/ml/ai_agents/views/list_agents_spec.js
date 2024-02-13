@@ -1,6 +1,7 @@
-import { GlBadge, GlButton } from '@gitlab/ui';
+import { GlBadge } from '@gitlab/ui';
+import { RouterLinkStub as RouterLink } from '@vue/test-utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { ListAgents } from 'ee/ml/ai_agents/apps';
+import ListAgents from 'ee/ml/ai_agents/views/list_agents.vue';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 import AgentList from 'ee/ml/ai_agents/components/agent_list.vue';
 
@@ -8,16 +9,19 @@ let wrapper;
 
 const createWrapper = () => {
   wrapper = shallowMountExtended(ListAgents, {
-    propsData: { projectPath: 'path/to/project', createAgentPath: 'path/to/create' },
+    provide: { projectPath: 'path/to/project' },
+    stubs: {
+      RouterLink,
+    },
   });
 };
 
 const findTitleArea = () => wrapper.findComponent(TitleArea);
-const findCreateButton = () => findTitleArea().findComponent(GlButton);
+const findCreateButton = () => findTitleArea().findComponent(RouterLink);
 const findBadge = () => wrapper.findComponent(GlBadge);
 const findAgentList = () => wrapper.findComponent(AgentList);
 
-describe('ee/ml/ai_agents/apps/list_agents', () => {
+describe('ee/ml/ai_agents/views/list_agents', () => {
   beforeEach(() => createWrapper());
 
   it('shows the title', () => {
@@ -29,7 +33,9 @@ describe('ee/ml/ai_agents/apps/list_agents', () => {
   });
 
   it('shows create agent button', () => {
-    expect(findCreateButton().attributes().href).toBe('path/to/create');
+    expect(findCreateButton().props('to')).toMatchObject({
+      name: 'create',
+    });
   });
 
   it('shows the agent list', () => {

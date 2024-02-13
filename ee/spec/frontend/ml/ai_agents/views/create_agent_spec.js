@@ -8,24 +8,23 @@ import {
 } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { CreateAgent } from 'ee/ml/ai_agents/apps';
+import CreateAgent from 'ee/ml/ai_agents/views/create_agent.vue';
 import createAiAgentMutation from 'ee/ml/ai_agents/graphql/mutations/create_ai_agent.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { visitUrl } from '~/lib/utils/url_utility';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 import { createAiAgentsResponses } from '../graphql/mocks';
 
-jest.mock('~/lib/utils/url_utility', () => ({
-  ...jest.requireActual('~/lib/utils/url_utility'),
-  visitUrl: jest.fn(),
-}));
-
-describe('ee/ml/ai_agents/apps/create_agent', () => {
+describe('ee/ml/ai_agents/views/create_agent', () => {
   let wrapper;
   let apolloProvider;
+
+  const push = jest.fn();
+  const $router = {
+    push,
+  };
 
   Vue.use(VueApollo);
 
@@ -41,7 +40,10 @@ describe('ee/ml/ai_agents/apps/create_agent', () => {
 
     wrapper = shallowMountExtended(CreateAgent, {
       apolloProvider,
-      propsData: { projectPath: 'project/path' },
+      provide: { projectPath: 'project/path' },
+      mocks: {
+        $router,
+      },
     });
   };
 
@@ -99,7 +101,10 @@ describe('ee/ml/ai_agents/apps/create_agent', () => {
 
     await submitForm();
 
-    expect(visitUrl).toHaveBeenCalledWith('/some/project/-/ml/agents/1');
+    expect($router.push).toHaveBeenCalledWith({
+      name: 'show',
+      params: { agentId: 2 },
+    });
   });
 
   it('shows errors when result is a top level error', async () => {
@@ -109,7 +114,7 @@ describe('ee/ml/ai_agents/apps/create_agent', () => {
     await submitForm();
 
     expect(findErrorAlert().text()).toBe('An error has occurred when saving the agent.');
-    expect(visitUrl).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 
   it('shows errors when result is a validation error', async () => {
@@ -118,6 +123,6 @@ describe('ee/ml/ai_agents/apps/create_agent', () => {
     await submitForm();
 
     expect(findErrorAlert().text()).toBe("Name is invalid, Name can't be blank");
-    expect(visitUrl).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 });

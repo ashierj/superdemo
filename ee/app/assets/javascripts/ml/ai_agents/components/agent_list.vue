@@ -1,25 +1,19 @@
 <script>
-import { GlLink, GlLoadingIcon, GlTableLite, GlEmptyState } from '@gitlab/ui';
+import { GlLoadingIcon, GlTableLite, GlEmptyState } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { s__ } from '~/locale';
+import { ROUTE_SHOW_AGENT } from '../constants';
 import getAiAgents from '../graphql/queries/get_ai_agents.query.graphql';
 
 const GRAPHQL_PAGE_SIZE = 30;
 
 export default {
   components: {
-    GlLink,
     GlLoadingIcon,
     GlEmptyState,
     GlTableLite,
   },
   inject: ['projectPath'],
-  props: {
-    createAgentPath: {
-      type: String,
-      required: true,
-    },
-  },
   data() {
     return {
       agents: {},
@@ -30,7 +24,6 @@ export default {
     emptyState: {
       title: s__('AiAgents|Create your own AI Agents'),
       description: s__('AiAgents|Create and manage your AI Agents'),
-      createNew: s__('AiAgents|Get started'),
       svgPath: '/assets/illustrations/tanuki_ai_logo.svg',
     },
   },
@@ -72,6 +65,7 @@ export default {
       return this.agents?.nodes ?? [];
     },
   },
+  ROUTE_SHOW_AGENT,
   methods: {
     fetchPage(pageInfo) {
       const variables = {
@@ -106,17 +100,19 @@ export default {
       data-testId="aiAgentsTable"
     >
       <template #cell(name)="{ item }">
-        <gl-link :href="item._links.showPath" class="gl-text-body gl-line-height-24">
+        <router-link
+          :to="{ name: $options.ROUTE_SHOW_AGENT, params: { agentId: item.routeId } }"
+          data-testid="agent-item"
+          class="gl-text-body gl-line-height-24"
+        >
           {{ item.name }}
-        </gl-link>
+        </router-link>
       </template>
     </gl-table-lite>
 
     <gl-empty-state
       v-else
       :title="$options.i18n.emptyState.title"
-      :primary-button-text="$options.i18n.emptyState.createNew"
-      :primary-button-link="createAgentPath"
       :svg-path="$options.i18n.emptyState.svgPath"
       :svg-height="null"
       :description="$options.i18n.emptyState.description"

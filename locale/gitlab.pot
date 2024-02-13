@@ -1931,9 +1931,6 @@ msgstr ""
 msgid "AIAgents|Create agent"
 msgstr ""
 
-msgid "AIAgents|New AI Agent"
-msgstr ""
-
 msgid "AIAgents|New agent"
 msgstr ""
 
@@ -4427,12 +4424,6 @@ msgstr ""
 msgid "Agent not found for provided id."
 msgstr ""
 
-msgid "AiAgents|AI Agents"
-msgstr ""
-
-msgid "AiAgents|AI agent"
-msgstr ""
-
 msgid "AiAgents|Agent Name"
 msgstr ""
 
@@ -4440,9 +4431,6 @@ msgid "AiAgents|Create and manage your AI Agents"
 msgstr ""
 
 msgid "AiAgents|Create your own AI Agents"
-msgstr ""
-
-msgid "AiAgents|Get started"
 msgstr ""
 
 msgid "Akismet"

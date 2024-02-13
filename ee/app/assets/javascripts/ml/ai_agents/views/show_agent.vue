@@ -14,19 +14,10 @@ export default {
       projectPath: this.projectPath,
     };
   },
-  props: {
-    projectPath: {
-      type: String,
-      required: true,
-    },
-    agentId: {
-      type: String,
-      required: true,
-    },
-  },
+  inject: ['projectPath'],
   computed: {
     title() {
-      return sprintf(s__('AIAgent|AI Agent: %{agentId}'), { agentId: this.agentId });
+      return sprintf(s__('AIAgent|AI Agent: %{agentId}'), { agentId: this.$route.params.agentId });
     },
   },
 };

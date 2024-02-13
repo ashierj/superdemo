@@ -1,8 +1,9 @@
 <script>
-import { GlBadge, GlButton } from '@gitlab/ui';
+import { GlBadge } from '@gitlab/ui';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import AgentList from '../components/agent_list.vue';
+import { ROUTE_NEW_AGENT } from '../constants';
 
 export default {
   name: 'ListAiAgents',
@@ -10,29 +11,20 @@ export default {
     TitleArea,
     AgentList,
     GlBadge,
-    GlButton,
   },
   provide() {
     return {
       projectPath: this.projectPath,
     };
   },
-  props: {
-    projectPath: {
-      type: String,
-      required: true,
-    },
-    createAgentPath: {
-      type: String,
-      required: true,
-    },
-  },
+  inject: ['projectPath'],
   data() {
     return {
       errorMessage: undefined,
     };
   },
   helpPagePath: helpPagePath('policy/experiment-beta-support', { anchor: 'experiment' }),
+  ROUTE_NEW_AGENT,
 };
 </script>
 
@@ -48,10 +40,15 @@ export default {
         </div>
       </template>
       <template #right-actions>
-        <gl-button :href="createAgentPath">{{ s__('AIAgents|Create agent') }}</gl-button>
+        <router-link
+          :to="{ name: $options.ROUTE_NEW_AGENT }"
+          class="btn btn-confirm btn-md gl-button"
+        >
+          {{ s__('AIAgents|Create agent') }}
+        </router-link>
       </template>
     </title-area>
 
-    <agent-list :create-agent-path="createAgentPath" />
+    <agent-list />
   </div>
 </template>
