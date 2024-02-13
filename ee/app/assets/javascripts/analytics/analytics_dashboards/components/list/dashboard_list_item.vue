@@ -1,6 +1,10 @@
 <script>
-import { GlIcon, GlBadge, GlLink } from '@gitlab/ui';
+import { v4 as uuidv4 } from 'uuid';
+
+import { GlIcon, GlBadge, GlLink, GlTruncateText } from '@gitlab/ui';
 import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
+
+const TRUNCATE_BUTTON_ID = `desc-truncate-btn-${uuidv4()}`;
 
 export default {
   name: 'DashboardsListItem',
@@ -8,6 +12,7 @@ export default {
     GlIcon,
     GlBadge,
     GlLink,
+    GlTruncateText,
   },
   props: {
     dashboard: {
@@ -24,7 +29,12 @@ export default {
     },
   },
   methods: {
-    routeToDashboard() {
+    routeToDashboard(e) {
+      const truncateToggleBtn = document.getElementById(TRUNCATE_BUTTON_ID);
+      if (e.target === truncateToggleBtn || truncateToggleBtn?.contains(e.target)) {
+        return;
+      }
+
       if (this.dashboard.redirect) {
         visitUrl(this.redirectHref);
       } else {
@@ -32,6 +42,7 @@ export default {
       }
     },
   },
+  truncateTextToggleButtonProps: { id: TRUNCATE_BUTTON_ID },
 };
 </script>
 
@@ -62,12 +73,12 @@ export default {
           :to="dashboard.slug"
           >{{ dashboard.title }}</router-link
         >
-        <p
-          data-testid="dashboard-description"
-          class="gl-line-height-normal gl-m-0 gl-text-gray-500"
+        <gl-truncate-text
+          class="gl-line-height-normal gl-text-gray-500"
+          :toggle-button-props="$options.truncateTextToggleButtonProps"
         >
           {{ dashboard.description }}
-        </p>
+        </gl-truncate-text>
       </div>
       <div v-if="isBuiltInDashboard" class="gl-float-right" data-testid="dashboard-by-gitlab">
         <gl-badge variant="muted" icon="tanuki-verified">{{
