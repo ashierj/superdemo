@@ -4486,6 +4486,9 @@ msgstr ""
 msgid "After you've reviewed these contribution guidelines, you'll be all set to"
 msgstr ""
 
+msgid "Agent not found for provided id."
+msgstr ""
+
 msgid "AiAgents|AI Agents"
 msgstr ""
 
@@ -53810,6 +53813,9 @@ msgid "User does not have a pending request"
 msgstr ""
 
 msgid "User does not have permission to create a Security Policy project."
+msgstr ""
+
+msgid "User does not have permission to modify agent."
 msgstr ""
 
 msgid "User doesn't exist or you don't have permission to change namespace commit emails."

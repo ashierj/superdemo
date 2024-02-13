@@ -19,7 +19,8 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
       user: build_stubbed(:user),
       chunk_id: 1,
       type: 'tool',
-      context: Gitlab::Llm::AiMessageContext.new(resource: build_stubbed(:user))
+      context: Gitlab::Llm::AiMessageContext.new(resource: build_stubbed(:user)),
+      agent_version_id: 1
     }
   end
 

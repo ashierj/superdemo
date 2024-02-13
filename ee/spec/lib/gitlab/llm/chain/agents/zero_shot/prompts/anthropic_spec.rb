@@ -7,6 +7,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
 
   describe '.prompt' do
     let(:prompt_version) { ::Gitlab::Llm::Chain::Agents::ZeroShot::Executor::PROMPT_TEMPLATE }
+    let(:agent_version_prompt) { nil }
     let(:options) do
       {
         tools_definitions: "tool definitions",
@@ -22,7 +23,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
         prompt_version: prompt_version,
         current_code: "",
         current_resource: "",
-        resources: ""
+        resources: "",
+        agent_version_prompt: agent_version_prompt
       }
     end
 
@@ -54,6 +56,24 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
 
       it 'includes truncated conversation history' do
         expect(subject).to start_with("Assistant: response 2\n\n")
+      end
+    end
+
+    context 'when agent version prompt is provided' do
+      let(:agent_version_prompt) { 'A custom prompt' }
+
+      it 'returns the agent version prompt' do
+        expected_prompt = [
+          "Human: question 1\n\n",
+          "Assistant: response 1\n\n",
+          "Human: question 2\n\n",
+          "Assistant: response 2\n\n",
+          "Human: A custom prompt\n\n",
+          "Question: foo?\n",
+          "Thought: \n"
+        ].join('')
+
+        is_expected.to eq(expected_prompt)
       end
     end
   end

@@ -115,6 +115,7 @@ module Gitlab
                 agent_scratchpad: +"",
                 conversation: conversation,
                 prompt_version: prompt_version,
+                agent_version_prompt: context.agent_version&.prompt,
                 current_resource: current_resource,
                 current_code: current_code,
                 resources: available_resources_names
@@ -156,7 +157,7 @@ module Gitlab
             end
 
             def last_conversation
-              ChatStorage.new(context.current_user).last_conversation
+              ChatStorage.new(context.current_user, context.agent_version&.id).last_conversation
             end
             strong_memoize_attr :last_conversation
 

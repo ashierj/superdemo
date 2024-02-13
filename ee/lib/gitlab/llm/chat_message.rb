@@ -7,7 +7,7 @@ module Gitlab
       CLEAN_HISTORY_MESSAGE = '/clean'
 
       def save!
-        storage = ChatStorage.new(user)
+        storage = ChatStorage.new(user, agent_version_id)
 
         case content
         when CLEAN_HISTORY_MESSAGE

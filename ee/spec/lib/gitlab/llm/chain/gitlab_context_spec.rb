@@ -8,7 +8,8 @@ RSpec.describe Gitlab::Llm::Chain::GitlabContext, :saas, feature_category: :duo_
   let(:ai_request) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
 
   subject(:context) do
-    described_class.new(current_user: user, container: nil, resource: resource, ai_request: ai_request)
+    described_class.new(current_user: user, container: nil, resource: resource, ai_request: ai_request,
+      agent_version: instance_double(Ai::AgentVersion))
   end
 
   describe '#resource_serialized' do

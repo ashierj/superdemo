@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::ChatMessage, feature_category: :duo_chat do
-  subject { build(:ai_chat_message) }
+  subject { build(:ai_chat_message, agent_version_id: 1) }
 
   describe '#conversation_reset?' do
     it 'returns true for reset message' do
@@ -46,7 +46,7 @@ RSpec.describe Gitlab::Llm::ChatMessage, feature_category: :duo_chat do
 
   describe '#save!' do
     it 'saves the message to chat storage' do
-      expect_next_instance_of(Gitlab::Llm::ChatStorage, subject.user) do |instance|
+      expect_next_instance_of(Gitlab::Llm::ChatStorage, subject.user, subject.agent_version_id) do |instance|
         expect(instance).to receive(:add).with(subject)
       end
 
@@ -55,9 +55,9 @@ RSpec.describe Gitlab::Llm::ChatMessage, feature_category: :duo_chat do
 
     context 'for /reset message' do
       it 'saves the message to chat storage' do
-        message = build(:ai_chat_message, content: '/reset')
+        message = build(:ai_chat_message, content: '/reset', agent_version_id: 1)
 
-        expect_next_instance_of(Gitlab::Llm::ChatStorage, message.user) do |instance|
+        expect_next_instance_of(Gitlab::Llm::ChatStorage, message.user, message.agent_version_id) do |instance|
           expect(instance).to receive(:add).with(message)
         end
 
@@ -67,9 +67,9 @@ RSpec.describe Gitlab::Llm::ChatMessage, feature_category: :duo_chat do
 
     context 'for /clean message' do
       it 'removes all messages from chat storage' do
-        message = build(:ai_chat_message, content: '/clean')
+        message = build(:ai_chat_message, content: '/clean', agent_version_id: 1)
 
-        expect_next_instance_of(Gitlab::Llm::ChatStorage, message.user) do |instance|
+        expect_next_instance_of(Gitlab::Llm::ChatStorage, message.user, message.agent_version_id) do |instance|
           expect(instance).to receive(:clean!)
         end
 
