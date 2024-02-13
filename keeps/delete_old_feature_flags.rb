@@ -4,6 +4,7 @@ require 'fileutils'
 require 'cgi'
 require 'httparty'
 require 'json'
+require_relative './helpers/groups'
 
 module Keeps
   # This is an implementation of a ::Gitlab::Housekeeper::Keep. This keep will locate any featrure flag definition file
@@ -58,12 +59,13 @@ module Keeps
         # TODO: Handle the different cases of default_enabled vs enabled/disabled on GitLab.com
 
         # # Finalize the migration
-        title = "Delete the `#{feature_flag.name}` feature flag introduced in #{feature_flag.milestone}"
+        change = ::Gitlab::Housekeeper::Change.new
+        change.title = "Delete the `#{feature_flag.name}` feature flag introduced in #{feature_flag.milestone}"
 
-        identifiers = [self.class.name.demodulize, feature_flag.name]
+        change.identifiers = [self.class.name.demodulize, feature_flag.name]
 
         # rubocop:disable Gitlab/DocUrl -- Not running inside rails application
-        description = <<~MARKDOWN
+        change.description = <<~MARKDOWN
         This feature flag was introduced more than #{CUTOFF_MILESTONE_OLD} milestones ago.
 
         As part of our process we want to ensure [feature flags don't stay too long in the codebase](https://docs.gitlab.com/ee/development/feature_flags/#types-of-feature-flags).
@@ -76,21 +78,31 @@ module Keeps
 
         </details>
 
-        Labels to set (not yet automated): ~"#{feature_flag.group}"
-
         This merge request was created using the
         [gitlab-housekeeper](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/139492)
         gem.
-        #{assign_command(feature_flag.rollout_issue_url)}
         MARKDOWN
         # rubocop:enable Gitlab/DocUrl
 
         FileUtils.rm(feature_flag_yaml_file)
 
-        changed_files = [feature_flag_yaml_file]
+        change.changed_files = [feature_flag_yaml_file]
 
-        to_create = ::Gitlab::Housekeeper::Change.new(identifiers, title, description, changed_files)
-        yield(to_create)
+        change.labels = [
+          'maintenance::refactor',
+          feature_flag.group
+        ]
+
+        change.reviewers = assignees(feature_flag.rollout_issue_url)
+
+        if change.reviewers.empty?
+          group_data = groups_helper.group_for_group_label(feature_flag.group)
+          if group_data
+            change.reviewers = groups_helper.pick_reviewer(group_data, change.identifiers)
+          end
+        end
+
+        yield(change)
       end
     end
 
@@ -135,15 +147,12 @@ module Keeps
       [older_major, older_minor].join(".")
     end
 
-    def assign_command(rollout_issue_url)
+    def assignees(rollout_issue_url)
       rollout_issue = get_rollout_issue(rollout_issue_url)
-      return unless rollout_issue
 
-      "/assign #{assignees(rollout_issue)}"
-    end
+      return unless rollout_issue && rollout_issue[:assignees]
 
-    def assignees(rollout_issue)
-      rollout_issue[:assignees].map { |assignee| "@#{assignee[:username]}" }.join(' ')
+      rollout_issue[:assignees]
     end
 
     def get_rollout_issue(rollout_issue_url)
@@ -170,6 +179,10 @@ module Keeps
 
     def all_feature_flag_files
       Dir.glob("{,ee/}config/feature_flags/{development,gitlab_com_derisk}/*.yml")
+    end
+
+    def groups_helper
+      @groups_helper ||= ::Keeps::Helpers::Groups.new
     end
   end
 end

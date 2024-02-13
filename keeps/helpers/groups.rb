@@ -6,9 +6,14 @@ module Keeps
       Error = Class.new(StandardError)
 
       def group_for_feature_category(category)
-        @groups ||= {}
-        @groups[category] ||= fetch_groups.find do |_, group|
+        groups.find do |_, group|
           group['categories'].present? && group['categories'].include?(category)
+        end&.last
+      end
+
+      def group_for_group_label(group_label)
+        groups.find do |_, group|
+          group['label'] == group_label
         end&.last
       end
 
@@ -19,6 +24,10 @@ module Keeps
       end
 
       private
+
+      def groups
+        @groups ||= fetch_groups
+      end
 
       def fetch_groups
         @groups_json ||= begin
