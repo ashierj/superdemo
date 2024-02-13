@@ -136,7 +136,13 @@ export default {
     <div v-if="!canUpdate" class="gl-ml-4 gl-mt-3 work-item-field-value">
       <sidebar-color-view :color="currentColor" />
     </div>
-    <gl-disclosure-dropdown v-else category="tertiary" :auto-close="false" @hidden="updateColor">
+    <gl-disclosure-dropdown
+      v-else
+      category="tertiary"
+      :auto-close="false"
+      placement="center"
+      @hidden="updateColor"
+    >
       <template #header>
         <div
           class="gl-display-flex gl-align-items-center gl-p-4! gl-min-h-8 gl-border-b-1 gl-border-b-solid gl-border-b-gray-200"
