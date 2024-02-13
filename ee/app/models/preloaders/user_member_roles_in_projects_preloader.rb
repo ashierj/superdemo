@@ -93,11 +93,7 @@ module Preloaders
     strong_memoize_attr :custom_roles_enabled_on
 
     def custom_roles_enabled_on?(project)
-      if Feature.enabled?(:search_filter_by_ability, user)
-        custom_roles_enabled_on[project&.root_ancestor]
-      else
-        project.custom_roles_enabled?
-      end
+      custom_roles_enabled_on[project&.root_ancestor]
     end
 
     def resource_key

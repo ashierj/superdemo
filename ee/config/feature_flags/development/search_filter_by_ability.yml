@@ -1,8 +1,0 @@
----
-name: search_filter_by_ability
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/137192
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/435780
-milestone: '16.8'
-type: development
-group: group::authorization
-default_enabled: true
