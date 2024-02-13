@@ -51,7 +51,7 @@ export default {
   fields: [
     {
       key: 'name',
-      label: s__('Secrets|Secret name'),
+      label: s__('Secrets|Name'),
     },
     {
       key: 'lastAccessed',
@@ -59,7 +59,7 @@ export default {
     },
     {
       key: 'createdAt',
-      label: s__('Secrets|Created at'),
+      label: s__('Secrets|Created'),
     },
     {
       key: 'actions',
@@ -73,7 +73,7 @@ export default {
 </script>
 <template>
   <div>
-    <h1>{{ s__('Secrets|Secrets') }}</h1>
+    <h1 class="page-title gl-font-size-h-display">{{ s__('Secrets|Secrets') }}</h1>
     <p>
       <gl-sprintf
         :message="

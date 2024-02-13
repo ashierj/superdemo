@@ -44257,7 +44257,7 @@ msgstr ""
 msgid "Secrets|Audit log"
 msgstr ""
 
-msgid "Secrets|Created at"
+msgid "Secrets|Created"
 msgstr ""
 
 msgid "Secrets|Delete"
@@ -44272,6 +44272,9 @@ msgstr ""
 msgid "Secrets|Last accessed"
 msgstr ""
 
+msgid "Secrets|Name"
+msgstr ""
+
 msgid "Secrets|New secret"
 msgstr ""
 
@@ -44279,9 +44282,6 @@ msgid "Secrets|Revoke"
 msgstr ""
 
 msgid "Secrets|Secret details"
-msgstr ""
-
-msgid "Secrets|Secret name"
 msgstr ""
 
 msgid "Secrets|Secrets"
