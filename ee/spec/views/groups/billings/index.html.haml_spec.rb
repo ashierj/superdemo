@@ -23,7 +23,7 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
         expect(rendered).not_to have_selector('#js-billing-plans')
         expect(rendered).to have_text('is currently using the')
         expect(rendered).to have_text('Not the group')
-        expect(rendered).to have_link('Check out all groups', href: dashboard_groups_path)
+        expect(rendered).to have_link('Switch to a different group', href: dashboard_groups_path)
 
         page = Capybara.string(rendered)
 
@@ -32,21 +32,21 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
 
         expect(scoped_node).to have_content('Your current plan')
         expect(scoped_node).to have_content('Free')
-        expect(scoped_node).to have_content('Free forever features for individual users')
+        expect(scoped_node).to have_content('Use GitLab for personal projects')
 
         # premium
         scoped_node = page.find("[data-testid='plan-card-premium']")
 
         expect(scoped_node).to have_content('Recommended')
         expect(scoped_node).to have_content('Premium')
-        expect(scoped_node).to have_content('Enhance team productivity and collaboration')
+        expect(scoped_node).to have_content('For scaling organizations and multi-team usage')
         expect(scoped_node).to have_link('Upgrade to Premium')
 
         # ultimate
         scoped_node = page.find("[data-testid='plan-card-ultimate']")
 
         expect(scoped_node).to have_content('Ultimate')
-        expect(scoped_node).to have_content('Organization wide security')
+        expect(scoped_node).to have_content('For enterprises looking to deliver software faster')
         expect(scoped_node).to have_link('Upgrade to Ultimate')
 
         expect(rendered).to have_link('Start a free Ultimate trial', href: new_trial_path(namespace_id: group.id))
@@ -101,6 +101,19 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
 
           expect(rendered).not_to have_link('Start a free Ultimate trial')
         end
+      end
+    end
+
+    context 'with an active trial' do
+      let_it_be(:group) { create(:group_with_plan, plan: :ultimate_trial_plan, trial_ends_on: 10.days.from_now) }
+
+      it 'renders the billing page without the trial CTA' do
+        render
+
+        expect(rendered).to have_selector('#js-billing-plans')
+        expect(rendered).to have_text('Your GitLab.com Ultimate trial will expire after')
+
+        expect(rendered).not_to have_link('Start a free Ultimate trial')
       end
     end
 

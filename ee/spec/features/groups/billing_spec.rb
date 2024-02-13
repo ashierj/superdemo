@@ -56,7 +56,7 @@ RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :purchase do
 
         expect(page).to have_content("#{group.name} is currently using the Free Plan")
         expect(page).to have_text('Not the group')
-        expect(page).to have_link('Check out all groups', href: dashboard_groups_path)
+        expect(page).to have_link('Switch to a different group', href: dashboard_groups_path)
 
         expect(page).not_to have_link("Manage")
         expect(page).not_to have_link("Add seats")
