@@ -7,10 +7,7 @@ module EE
       extend ::Gitlab::Utils::Override
 
       prepended do
-        include ::Geo::HasReplicator
         include UsageStatistics
-
-        with_replicator ::Geo::PipelineReplicator
 
         has_many :vulnerabilities_finding_pipelines, class_name: 'Vulnerabilities::FindingPipeline', inverse_of: :pipeline
         has_many :vulnerability_findings, source: :finding, through: :vulnerabilities_finding_pipelines, class_name: 'Vulnerabilities::Finding'
@@ -227,13 +224,6 @@ module EE
 
       def triggered_for_ondemand_dast_scan?
         ondemand_dast_scan? && parameter_source?
-      end
-
-      override :ensure_persistent_ref
-      def ensure_persistent_ref
-        replicator.log_geo_pipeline_ref_created_event unless persistent_ref.exist?
-
-        super
       end
 
       def has_security_report_ingestion_warnings?

@@ -1,9 +1,0 @@
----
-name: geo_pipeline_replication
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/438632
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/142360
-rollout_issue_url:
-milestone: '16.9'
-group: group::geo
-type: ops
-default_enabled: false
