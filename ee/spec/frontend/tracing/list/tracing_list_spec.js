@@ -284,7 +284,7 @@ describe('TracingList', () => {
         filters: {
           ...expectedFilters,
         },
-        pageSize: 500,
+        pageSize: 50,
         pageToken: null,
         sortBy: 'duration_desc',
       });
@@ -348,7 +348,7 @@ describe('TracingList', () => {
           filters: {
             ...expectedFilters,
           },
-          pageSize: 500,
+          pageSize: 50,
           pageToken: null,
           sortBy: 'duration_desc',
         });
@@ -389,7 +389,7 @@ describe('TracingList', () => {
 
         expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
           filters: { ...expectedFilters },
-          pageSize: 500,
+          pageSize: 50,
           pageToken: null,
           sortBy: 'duration_desc',
         });
@@ -461,7 +461,7 @@ describe('TracingList', () => {
             service: undefined,
             traceId: undefined,
           },
-          pageSize: 500,
+          pageSize: 50,
           pageToken: null,
           sortBy: 'timestamp_asc',
         });
@@ -512,7 +512,7 @@ describe('TracingList', () => {
           service: [{ operator: '=', value: 'loadgenerator' }],
           traceId: undefined,
         },
-        pageSize: 500,
+        pageSize: 50,
         pageToken: 'page-2',
         sortBy: 'duration_desc',
       });
@@ -552,7 +552,7 @@ describe('TracingList', () => {
           service: [{ operator: '=', value: 'loadgenerator' }],
           traceId: undefined,
         },
-        pageSize: 500,
+        pageSize: 50,
         pageToken: 'page-2',
         sortBy: 'duration_desc',
       });
@@ -599,7 +599,7 @@ describe('TracingList', () => {
 
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
         filters: { ...expectedFilters },
-        pageSize: 500,
+        pageSize: 50,
         pageToken: null,
         sortBy: 'duration_desc',
       });
@@ -631,7 +631,7 @@ describe('TracingList', () => {
           service: [{ operator: '=', value: 'loadgenerator' }],
           traceId: undefined,
         },
-        pageSize: 500,
+        pageSize: 50,
         pageToken: null,
         sortBy: 'duration_asc',
       });
