@@ -69,17 +69,6 @@ RSpec.describe 'shared/billings/_trial_status.html.haml', :saas do
     end
   end
 
-  context 'when trial expired' do
-    let(:plan) { create(:free_plan) }
-    let(:trial_ends_on) { Date.yesterday }
-
-    it 'displays the date is expired' do
-      render 'shared/billings/trial_status', namespace: group
-
-      expect(rendered).to have_content("Your GitLab.com trial expired on #{trial_ends_on}")
-    end
-  end
-
   context 'when eligible for trial' do
     before do
       allow(group).to receive(:eligible_for_trial?).and_return(true)

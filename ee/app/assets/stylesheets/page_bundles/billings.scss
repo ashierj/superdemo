@@ -211,11 +211,27 @@ $badge-height: $gl-spacing-scale-7;
 }
 
 .billing-plan-card {
-  width: 230px;
+  width: 308px;
+
+  .gl-card-header {
+    border-top-right-radius: $gl-spacing-scale-3;
+    border-top-left-radius: $gl-spacing-scale-3;
+    height: 28px;
+  }
+
+  .gl-card-body {
+    height: 288px;
+  }
+
+  .billing-plan-card-price {
+    font-size: 4rem;
+    line-height: 4.5rem;
+  }
 }
 
+
 .billing-plan-divider {
-  width: 780px;
+  max-width: 988px;
 }
 
 .flex-grid {

@@ -1,25 +1,39 @@
 = render Pajamas::CardComponent.new(card_options: { class: card_classes, data: { testid: card_testid }},
-                                    header_options: { class: header_classes }) do |c|
+                                    header_options: { class: header_classes },
+                                    body_options: { class: body_classes },
+                                    footer_options: { class: footer_classes }) do |c|
   - c.with_header do
     = header_text
   - c.with_body do
-    = image_tag image_path('logo.svg'), class: 'svg gl-w-8!'
-    .gl-font-size-h1.gl-font-weight-bold.gl-line-height-24.gl-text-purple-800.gl-mb-3
+    .gl-font-size-h1-xl.gl-font-weight-bold.gl-line-height-36.gl-mb-3
       = name
-    .gl-font-sm.gl-mb-4.gl-mx-4.gl-text-gray-700
+    .gl-font-size-h2.gl-font-weight-bold.gl-line-height-24.gl-mb-3
       = elevator_pitch
-    .gl-line-height-52.gl-font-size-h-display-xl.gl-font-weight-bold.gl-text-gray-800.gl-mb-4
-      = price_per_month
-    .gl-min-h-8.gl-mb-4
-      .gl-font-sm.gl-mx-4.gl-text-gray-700
-        = s_("BillingPlans|per user/month")
-      - unless free?
-        .gl-font-sm.gl-mt-0.gl-mx-4.gl-text-gray-700
-          = annual_price_text
+    .gl-display-flex
+      .gl-font-weight-bold.gl-font-size-h1.gl-pt-2.gl-pr-2
+        = "$"
+      .gl-display-flex.gl-align-items-center
+        .gl-font-weight-bold.gl-mb-4.billing-plan-card-price
+          = price_per_month
+        .gl-min-h-8.gl-mb-4
+          .gl-mx-4
+            = s_("BillingPlans|Per user/month")
+          .gl-font-sm.gl-mt-0.gl-mx-4
+            - if free?
+              = s_("BillingPlans|No credit card required")
+            - else
+              = annual_price_text
     - unless free?
       = render Pajamas::ButtonComponent.new(href: cta_url, variant: :confirm, category: cta_category, button_options: { class: 'gl-mb-5', data: cta_data }) do
         = cta_text
-    %ul.gl-pl-6.gl-pr-0
+  - c.with_footer do
+    .gl-font-weight-bold.gl-font-lg.gl-mb-4
+      = features_elevator_pitch
+    %ul.gl-px-0.gl-list-style-none
       - features.each do |feature|
-        %li.gl-text-left.gl-font-sm.gl-text-gray-700.gl-line-height-normal
+        %li.gl-text-gray-700.gl-line-height-20.gl-mb-4
+          = sprite_icon('check', css_class: 'gl-text-purple-500 gl-mr-2')
           = feature.title
+    - unless free?
+      .gl-ml-6
+        = link_to(learn_more_text, learn_more_url, target: '_blank', rel: 'noopener noreferrer')

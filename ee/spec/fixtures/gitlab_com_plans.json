@@ -168,5 +168,14 @@
       "action": "upgrade",
       "href": "http://customers.gitlab.com/subscriptions/new?plan_id=2c92a0ff76f0d5250176f2f8c86f305a"
     }
+  },
+  {
+    "code": "ultimate_trial",
+    "name": "Ultimate Trial Plan",
+    "price_per_year": 0.0,
+    "purchase_link": {
+      "action": "current_plan",
+      "href": null
+    }
   }
 ]

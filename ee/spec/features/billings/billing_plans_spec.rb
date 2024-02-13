@@ -466,7 +466,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
         it 'submits hand raise lead form' do
           visit page_path
 
-          click_button 'Talk to an expert today'
+          click_button 'Talk to an expert'
 
           fill_hand_raise_lead_form_and_submit(form_data)
         end
