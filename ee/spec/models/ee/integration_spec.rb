@@ -7,7 +7,7 @@ RSpec.describe Integration do
     subject { described_class.project_specific_integration_names }
 
     before do
-      stub_saas_features(google_artifact_registry: true)
+      stub_saas_features(google_cloud_support: true)
 
       stub_const("EE::#{described_class.name}::EE_PROJECT_SPECIFIC_INTEGRATION_NAMES", ['ee_project_specific_name'])
     end
@@ -17,7 +17,7 @@ RSpec.describe Integration do
 
     context 'when google artifact registry feature is unavailable' do
       before do
-        stub_saas_features(google_artifact_registry: false)
+        stub_saas_features(google_cloud_support: false)
       end
 
       it { is_expected.not_to include('google_cloud_platform_artifact_registry') }

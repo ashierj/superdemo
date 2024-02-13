@@ -6,7 +6,7 @@ RSpec.shared_examples 'an artifact registry service handling validation errors' 
 
   context 'with saas only feature enabled' do
     before do
-      stub_saas_features(google_artifact_registry: true)
+      stub_saas_features(google_cloud_support: true)
     end
 
     shared_examples 'logging an error' do |message:|

@@ -159,7 +159,7 @@ RSpec.describe Gitlab::Ci::Config::Entry::Job, feature_category: :pipeline_compo
 
     before do
       stub_feature_flags(ci_yaml_support_for_identity_provider: feature_flag_enabled)
-      stub_saas_features(google_artifact_registry: saas_feature_enabled)
+      stub_saas_features(google_cloud_support: saas_feature_enabled)
 
       entry.compose!
     end

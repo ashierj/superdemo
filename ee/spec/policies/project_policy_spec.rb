@@ -3533,7 +3533,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     context 'when SaaS-only feature is available' do
       before do
-        stub_saas_features(google_artifact_registry: true)
+        stub_saas_features(google_cloud_support: true)
       end
 
       context 'the user is a maintainer' do

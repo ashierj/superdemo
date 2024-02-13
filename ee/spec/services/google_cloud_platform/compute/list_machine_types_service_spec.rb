@@ -23,7 +23,7 @@ RSpec.describe GoogleCloudPlatform::Compute::ListMachineTypesService, feature_ca
 
     context 'with saas only feature enabled' do
       before do
-        stub_saas_features(google_artifact_registry: true)
+        stub_saas_features(google_cloud_support: true)
 
         allow(client_double).to receive(:machine_types)
           .with(zone: zone, filter: filter, max_results: max_results, page_token: page_token, order_by: order_by)

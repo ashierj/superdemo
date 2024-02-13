@@ -16,7 +16,7 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::GetDockerImageService, fea
 
     context 'with saas only feature enabled' do
       before do
-        stub_saas_features(google_artifact_registry: true)
+        stub_saas_features(google_cloud_support: true)
 
         allow(client_double).to receive(:docker_image).with(name: name).and_return(dummy_docker_image_response)
       end

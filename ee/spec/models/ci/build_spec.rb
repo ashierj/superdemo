@@ -1238,7 +1238,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
 
     context 'with saas only enabled' do
       before do
-        stub_saas_features(google_artifact_registry: true)
+        stub_saas_features(google_cloud_support: true)
       end
 
       it_behaves_like "does not include environment variables"

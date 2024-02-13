@@ -25,7 +25,7 @@ module GoogleCloudPlatform
       private
 
       def validate_before_execute
-        return ERROR_RESPONSES[:saas_only] unless Gitlab::Saas.feature_available?(:google_artifact_registry)
+        return ERROR_RESPONSES[:saas_only] unless Gitlab::Saas.feature_available?(:google_cloud_support)
         return ERROR_RESPONSES[:feature_flag_disabled] unless Feature.enabled?(:gcp_artifact_registry, project)
         return ERROR_RESPONSES[:no_project_integration] unless project_integration.present?
         return ERROR_RESPONSES[:project_integration_disabled] unless project_integration.active

@@ -13,7 +13,7 @@ RSpec.describe ::GoogleCloudPlatform::ArtifactRegistry::GetRepositoryService, fe
 
     context 'with saas only feature enabled' do
       before do
-        stub_saas_features(google_artifact_registry: true)
+        stub_saas_features(google_cloud_support: true)
 
         allow(client_double).to receive(:repository)
           .and_return(dummy_repository_response)

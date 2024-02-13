@@ -100,7 +100,7 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
 
     context 'with saas only enabled' do
       before do
-        stub_saas_features(google_artifact_registry: true)
+        stub_saas_features(google_cloud_support: true)
       end
 
       context 'when integration is inactive' do
