@@ -8,6 +8,19 @@ RSpec.describe PackageMetadata::DataObjectFabricator, feature_category: :softwar
   describe 'enumerable' do
     subject(:data_objects) { described_class.new(data_file: data_file, sync_config: sync_config).to_a }
 
+    shared_examples_for 'it handles errors' do
+      it 'tracks the error' do
+        expect(Gitlab::ErrorTracking).to receive(:track_exception)
+                                           .with(kind_of(ArgumentError), kind_of(Hash))
+                                           .once
+        subject
+      end
+
+      it 'does not re-raise the error' do
+        expect { subject }.not_to raise_error
+      end
+    end
+
     context 'when licenses' do
       let(:sync_config) do
         build(:pm_sync_config, data_type: 'licenses', purl_type: 'maven', version_format: version_format)
@@ -62,6 +75,8 @@ RSpec.describe PackageMetadata::DataObjectFabricator, feature_category: :softwar
                 "BSD-2-Clause", "CC-PDDC"])
           ])
         }
+
+        it_behaves_like 'it handles errors'
       end
     end
 
@@ -84,6 +99,8 @@ RSpec.describe PackageMetadata::DataObjectFabricator, feature_category: :softwar
           urls: ["https://nvd.nist.gov/vuln/detail/CVE-2019-10445",
             "https://jenkins.io/security/advisory/2019-10-16/#SECURITY-1607"])])
       }
+
+      it_behaves_like 'it handles errors'
     end
   end
 end
