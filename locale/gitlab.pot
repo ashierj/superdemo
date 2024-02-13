@@ -12219,6 +12219,9 @@ msgstr ""
 msgid "CodeownersValidation|Zero owners"
 msgstr ""
 
+msgid "Cohorts|Active users"
+msgstr ""
+
 msgid "Cohorts|Inactive users"
 msgstr ""
 
@@ -12232,9 +12235,6 @@ msgid "Cohorts|Registration month"
 msgstr ""
 
 msgid "Cohorts|Returning users"
-msgstr ""
-
-msgid "Cohorts|User cohorts are shown for the last %{months_included} months. Only users with activity are counted in the 'New users' column; inactive users are counted separately."
 msgstr ""
 
 msgid "Collapse"
