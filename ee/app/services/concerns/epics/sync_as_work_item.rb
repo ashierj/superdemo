@@ -15,7 +15,8 @@ module Epics
       service_response = ::WorkItems::CreateService.new(
         container: epic.group,
         current_user: current_user,
-        params: create_params(epic)
+        params: create_params(epic),
+        widget_params: extract_widget_params(epic)
       ).execute_without_rate_limiting
 
       handle_response!(:create, service_response, epic)
@@ -31,7 +32,8 @@ module Epics
       service_response = ::WorkItems::UpdateService.new(
         container: epic.group,
         current_user: current_user,
-        params: update_params(epic)
+        params: update_params(epic),
+        widget_params: extract_widget_params(epic)
       ).execute(epic.work_item)
 
       handle_response!(:update, service_response, epic)
@@ -86,6 +88,17 @@ module Epics
 
     def work_item_sync_enabled?
       ::Feature.enabled?(:epic_creation_with_synced_work_item, group, type: :wip)
+    end
+
+    def extract_widget_params(epic)
+      work_item_type = WorkItems::Type.default_by_type(:epic)
+
+      work_item_type.widgets(epic.group).each_with_object({}) do |widget, widget_params|
+        attributes = params.slice(*widget.sync_params)
+        next unless attributes.present?
+
+        widget_params[widget.api_symbol] = attributes.merge({ skip_system_notes: true })
+      end
     end
   end
 end

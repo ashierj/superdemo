@@ -46,6 +46,7 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
         .with(
           container: group,
           current_user: user,
+          widget_params: {},
           params: {
             iid: be_a_kind_of(Numeric),
             created_at: be_a_kind_of(Time),
@@ -88,6 +89,7 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
     it 'calls WorkItems::UpdateService with allowed params' do
       expect_next_instance_of(::WorkItems::UpdateService, container: group,
         current_user: user,
+        widget_params: {},
         params: {
           title: 'foo',
           title_html: epic.title_html,

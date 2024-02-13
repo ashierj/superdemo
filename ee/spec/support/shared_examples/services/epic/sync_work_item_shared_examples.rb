@@ -29,6 +29,19 @@ RSpec.shared_examples 'syncs all data from an epic to a work item' do
     expect(work_item.state).to eq(epic.state)
     expect(work_item.external_key).to eq(epic.external_key)
     expect(work_item.lock_version).to eq(epic.lock_version)
+  end
+
+  it 'sets the same epic associations data to the work item', :aggregate_failures do
+    subject
+
+    epic.reload
+    work_item = epic.work_item
+
+    if epic.color == Epic::DEFAULT_COLOR
+      expect(work_item.color).to be_nil
+    else
+      expect(work_item.color.color).to eq(epic.color)
+    end
 
     if epic.parent
       expect(work_item.work_item_parent).to eq(epic.parent.work_item)
