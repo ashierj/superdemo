@@ -271,6 +271,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
         context 'when user has AI features enabled' do
           before do
+            allow(vertex_response).to receive(:success?).and_return(true)
             allow(::Gitlab::Llm::VertexAi::Client).to receive(:new).and_return(vertex_client)
             allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(anthropic_client)
             allow(described_class).to receive(:enabled_for?).and_return(true)
@@ -310,8 +311,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
             embeddings
 
             allow(anthropic_client).to receive(:stream).once
-                                         .and_yield({ "completion" => answer })
-                                         .and_return(completion_response)
+                                          .and_yield({ "completion" => answer })
+                                          .and_return(completion_response)
 
             expect(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
 
@@ -336,6 +337,52 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
             it 'returns an unsupported_response response message' do
               expect(execute.response_body).to eq(unsupported_response_message)
             end
+          end
+
+          context 'when searching for embeddings' do
+            let(:vertex_error_response) { { "error" => { "message" => "some error" } } }
+
+            before do
+              allow(vertex_error_response).to receive(:success?).and_return(true)
+              allow(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_error_response)
+            end
+
+            context 'when the embeddings request is unsuccesful' do
+              before do
+                allow(vertex_error_response).to receive(:success?).and_return(false)
+              end
+
+              it 'logs an error message' do
+                expect(logger).to receive(:info_or_debug).with(user, message: "Could not generate embeddings",
+                  error: "some error")
+                expect(execute.response_body).to eq(empty_response_message)
+                execute
+              end
+            end
+
+            context 'when the embeddings request has no predictions' do
+              let(:empty) { { "predictions" => [] } }
+
+              before do
+                allow(empty).to receive(:success?).and_return(true)
+                allow(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(empty)
+              end
+
+              it 'returns empty response' do
+                expect(execute.response_body).to eq(empty_response_message)
+                execute
+              end
+            end
+          end
+        end
+
+        context 'when ai_global_switch FF is disabled' do
+          before do
+            stub_feature_flags(ai_global_switch: false)
+          end
+
+          it 'returns an empty response message' do
+            expect(execute.response_body).to eq(empty_response_message)
           end
         end
       end
