@@ -99,7 +99,7 @@ to your `.gitlab-ci.yml` file:
 
 ```yaml
 include:
-  - template: Security/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
 ```
 
 The included template:
@@ -121,7 +121,7 @@ registry, and scans the image:
 ```yaml
 include:
   - template: Jobs/Build.gitlab-ci.yml
-  - template: Security/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
 
 container_scanning:
   variables:
@@ -146,7 +146,7 @@ enables verbose output for the analyzer:
 
 ```yaml
 include:
-  - template: Security/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
 
 variables:
     SECURE_LOG_LEVEL: 'debug'
@@ -158,7 +158,7 @@ To scan images located in a registry other than the project's, use the following
 
 ```yaml
 include:
-  - template: Security/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
 
 container_scanning:
   variables:
@@ -182,7 +182,7 @@ container_scanning:
     - export AWS_ECR_PASSWORD=$(aws ecr get-login-password --region region)
 
 include:
-  - template: Security/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
 
 variables:
     CS_IMAGE: <aws_account_id>.dkr.ecr.<region>.amazonaws.com/<image>:<tag>
@@ -206,7 +206,7 @@ For example:
 
 ```yaml
 include:
-  - template: Security/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
 
 container_scanning:
   variables:
@@ -230,7 +230,7 @@ By default, the report only includes packages managed by the Operating System (O
 
 ```yaml
 include:
-  - template: Security/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
 
 container_scanning:
   variables:
@@ -363,7 +363,7 @@ This example sets `GIT_STRATEGY` to `fetch`:
 
 ```yaml
 include:
-  - template: Security/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
 
 container_scanning:
   variables:
@@ -412,7 +412,7 @@ duplicated:
 
 ```yaml
 include:
-  - template: Security/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
 
 container_scanning:
   variables:
@@ -602,7 +602,7 @@ For details on saving and transporting Docker images as a file, see the Docker d
 
    ```yaml
    include:
-     - template: Security/Container-Scanning.gitlab-ci.yml
+     - template: Jobs/Container-Scanning.gitlab-ci.yml
 
    container_scanning:
      image: $CI_REGISTRY/namespace/container-scanning
@@ -653,7 +653,7 @@ This example shows the configuration needed to scan images in a private [Google 
 
 ```yaml
 include:
-  - template: Security/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
 
 container_scanning:
   variables:
@@ -697,7 +697,7 @@ If the above container registry is `gitlab.example.com/trivy-java-db-mirror`, th
 
 ```yaml
 include:
-  - template: Security/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
 
 container_scanning:
   variables:

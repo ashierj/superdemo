@@ -47,7 +47,7 @@ To enable IaC scanning of a project:
 
    ```yaml
    include:
-     - template: Security/SAST-IaC.gitlab-ci.yml
+     - template: Jobs/SAST-IaC.gitlab-ci.yml
    ```
 
 1. Select the **Validate** tab, then select **Validate pipeline**.
@@ -203,7 +203,7 @@ This example uses a specific minor version of the IaC analyzer:
 
 ```yaml
 include:
-  - template: Security/SAST-IaC.gitlab-ci.yml
+  - template: Jobs/SAST-IaC.gitlab-ci.yml
 
 kics-iac-sast:
   variables:
@@ -231,7 +231,7 @@ variables:
   SAST_IMAGE_SUFFIX: '-fips'
 
 include:
-  - template: Security/SAST-IaC.gitlab-ci.yml
+  - template: Jobs/SAST-IaC.gitlab-ci.yml
 ```
 
 ## Automatic vulnerability resolution
