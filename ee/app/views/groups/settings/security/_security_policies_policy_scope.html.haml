@@ -12,8 +12,9 @@
         setting_locked: toggle_security_policies_policy_scope_locked,
         settings_path_helper: ->(locked_ancestor) { edit_group_path(locked_ancestor, anchor: 'js-permissions-settings') },
         help_text: safe_format(s_('Settings|Granularly scope each policy you create to projects containing a compliance framework label, or a list of projects. %{link_start}Learn more%{link_end}.'), tag_pair(link, :link_start, :link_end)) do
-      = s_('Settings|Security policy scope')
-      = render 'shared/experimental_badge_tag'
+      %div
+        = s_('Settings|Security policy scope')
+        = render 'shared/experimental_badge_tag'
     = render 'shared/namespaces/cascading_settings/enforcement_checkbox',
         attribute: :toggle_security_policies_policy_scope,
         group: @group,
