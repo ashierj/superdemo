@@ -92,7 +92,7 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
           stub_licensed_features(code_suggestions: true)
         end
 
-        # TODO: clean up date-related tests after the Code Suggestions service start date (16.9+)
+        # TODO: clean up date-related tests after the Code Suggestions service start date (15.02.2024)
         context 'when before the service start date' do
           around do |example|
             travel_to(CodeSuggestions::SelfManaged::SERVICE_START_DATE - 1.day) do
@@ -118,16 +118,24 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
               namespace.namespace_settings.update!(code_suggestions: true)
             end
 
-            it 'checks ServiceAccessToken', :aggregate_failures do
-              token_double = instance_double(::CloudConnector::ServiceAccessToken)
-              expect(token_double).to receive(:token).and_return(ai_gateway_token)
-              expect(::CloudConnector::ServiceAccessToken).to receive_message_chain(:active, :last)
-                                                                .and_return(token_double)
+            it 'calls ::CloudConnector::AccessService to obtain access token', :aggregate_failures do
+              expect_next_instance_of(::CloudConnector::AccessService) do |instance|
+                expect(instance).to receive(:access_token).with([:code_suggestions], gitlab_realm)
+                                                          .and_return(ai_gateway_token)
+              end
 
               post_api
+
+              expect(response).to have_gitlab_http_status(:ok)
             end
 
-            context 'when ServiceAccessToken is missing' do
+            context 'when cloud connector access token is missing' do
+              before do
+                allow_next_instance_of(::CloudConnector::AccessService) do |instance|
+                  allow(instance).to receive(:access_token).and_return(nil)
+                end
+              end
+
               it 'returns UNAUTHORIZED status' do
                 post_api
 
@@ -135,36 +143,37 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
               end
             end
 
-            context 'when instance has uuid available' do
-              let(:instance_uuid) { 'some uuid' }
-
+            context 'when cloud connector access token is valid' do
               before do
-                allow(Gitlab::CurrentSettings).to receive(:uuid).and_return(instance_uuid)
-                token_double = instance_double(::CloudConnector::ServiceAccessToken, token: ai_gateway_token)
-                allow(::CloudConnector::ServiceAccessToken).to receive_message_chain(:active, :last)
-                                                                 .and_return(token_double)
+                allow_next_instance_of(::CloudConnector::AccessService) do |instance|
+                  allow(instance).to receive(:access_token).and_return(ai_gateway_token)
+                end
               end
 
-              it_behaves_like 'successful send request via workhorse'
-            end
+              context 'when instance has uuid available' do
+                let(:instance_uuid) { 'some uuid' }
 
-            context 'when instance has custom hostname' do
-              let(:hostname) { 'gitlab.local' }
+                before do
+                  allow(Gitlab::CurrentSettings).to receive(:uuid).and_return(instance_uuid)
+                end
 
-              before do
-                stub_config(gitlab: {
-                  protocol: 'http',
-                  host: hostname,
-                  url: "http://#{hostname}",
-                  relative_url_root: "http://#{hostname}"
-                })
-
-                token_double = instance_double(::CloudConnector::ServiceAccessToken, token: ai_gateway_token)
-                allow(::CloudConnector::ServiceAccessToken).to receive_message_chain(:active, :last)
-                                                                 .and_return(token_double)
+                it_behaves_like 'successful send request via workhorse'
               end
 
-              it_behaves_like 'successful send request via workhorse'
+              context 'when instance has custom hostname' do
+                let(:hostname) { 'gitlab.local' }
+
+                before do
+                  stub_config(gitlab: {
+                    protocol: 'http',
+                    host: hostname,
+                    url: "http://#{hostname}",
+                    relative_url_root: "http://#{hostname}"
+                  })
+                end
+
+                it_behaves_like 'successful send request via workhorse'
+              end
             end
           end
         end
@@ -187,16 +196,24 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
           context 'with add on' do
             before_all { create(:gitlab_subscription_add_on_purchase, namespace: namespace) }
 
-            it 'checks ServiceAccessToken', :aggregate_failures do
-              token_double = instance_double(::CloudConnector::ServiceAccessToken)
-              expect(token_double).to receive(:token).and_return(ai_gateway_token)
-              expect(::CloudConnector::ServiceAccessToken).to receive_message_chain(:active, :last)
-                                                                .and_return(token_double)
+            it 'calls ::CloudConnector::AccessService to obtain access token', :aggregate_failures do
+              expect_next_instance_of(::CloudConnector::AccessService) do |instance|
+                expect(instance).to receive(:access_token).with([:code_suggestions], gitlab_realm)
+                                                          .and_return(ai_gateway_token)
+              end
 
               post_api
+
+              expect(response).to have_gitlab_http_status(:ok)
             end
 
-            context 'when ServiceAccessToken is missing' do
+            context 'when cloud connector access token is missing' do
+              before do
+                allow_next_instance_of(::CloudConnector::AccessService) do |instance|
+                  allow(instance).to receive(:access_token).and_return(nil)
+                end
+              end
+
               it 'returns UNAUTHORIZED status' do
                 post_api
 
@@ -204,36 +221,37 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
               end
             end
 
-            context 'when instance has uuid available' do
-              let(:instance_uuid) { 'some uuid' }
-
+            context 'when cloud connector access token is valid' do
               before do
-                allow(Gitlab::CurrentSettings).to receive(:uuid).and_return(instance_uuid)
-                token_double = instance_double(::CloudConnector::ServiceAccessToken, token: ai_gateway_token)
-                allow(::CloudConnector::ServiceAccessToken).to receive_message_chain(:active, :last)
-                                                                 .and_return(token_double)
+                allow_next_instance_of(::CloudConnector::AccessService) do |instance|
+                  allow(instance).to receive(:access_token).and_return(ai_gateway_token)
+                end
               end
 
-              it_behaves_like 'successful send request via workhorse'
-            end
+              context 'when instance has uuid available' do
+                let(:instance_uuid) { 'some uuid' }
 
-            context 'when instance has custom hostname' do
-              let(:hostname) { 'gitlab.local' }
+                before do
+                  allow(Gitlab::CurrentSettings).to receive(:uuid).and_return(instance_uuid)
+                end
 
-              before do
-                stub_config(gitlab: {
-                  protocol: 'http',
-                  host: hostname,
-                  url: "http://#{hostname}",
-                  relative_url_root: "http://#{hostname}"
-                })
-
-                token_double = instance_double(::CloudConnector::ServiceAccessToken, token: ai_gateway_token)
-                allow(::CloudConnector::ServiceAccessToken).to receive_message_chain(:active, :last)
-                                                                 .and_return(token_double)
+                it_behaves_like 'successful send request via workhorse'
               end
 
-              it_behaves_like 'successful send request via workhorse'
+              context 'when instance has custom hostname' do
+                let(:hostname) { 'gitlab.local' }
+
+                before do
+                  stub_config(gitlab: {
+                    protocol: 'http',
+                    host: hostname,
+                    url: "http://#{hostname}",
+                    relative_url_root: "http://#{hostname}"
+                  })
+                end
+
+                it_behaves_like 'successful send request via workhorse'
+              end
             end
           end
         end
@@ -250,18 +268,18 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
         }
       end
 
+      before do
+        allow_next_instance_of(::CloudConnector::AccessService) do |instance|
+          allow(instance).to receive(:access_token).and_return(ai_gateway_token)
+        end
+      end
+
       context 'with purchase_code_suggestions feature disabled' do
         before do
           stub_feature_flags(purchase_code_suggestions: false)
         end
 
         context 'with code suggestions enabled on namespace level' do
-          before do
-            allow_next_instance_of(Gitlab::CloudConnector::SelfIssuedToken) do |instance|
-              allow(instance).to receive(:encoded).and_return(ai_gateway_token)
-            end
-          end
-
           let(:namespace_workhorse_headers) do
             {
               "X-Gitlab-Saas-Namespace-Ids" => [namespace.id.to_s]
@@ -285,9 +303,6 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
       context 'with purchase_code_suggestions feature enabled' do
         before do
           stub_feature_flags(purchase_code_suggestions: true)
-          allow_next_instance_of(Gitlab::CloudConnector::SelfIssuedToken) do |instance|
-            allow(instance).to receive(:encoded).and_return(ai_gateway_token)
-          end
         end
 
         it_behaves_like 'successful send request via workhorse'
