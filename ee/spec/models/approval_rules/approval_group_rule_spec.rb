@@ -23,6 +23,23 @@ RSpec.describe ApprovalRules::ApprovalGroupRule, feature_category: :source_code_
           'Validation failed: Applies to all protected branches must be enabled.')
       end
     end
+
+    context 'for groups' do
+      let_it_be(:parent) { create(:group) }
+      let_it_be(:child) { create(:group, parent: parent) }
+
+      it 'supports top level groups' do
+        group_approval_rule.update!(group: parent)
+        expect(group_approval_rule.group).to eq(parent)
+      end
+
+      it 'child groups are not supported' do
+        expect do
+          group_approval_rule.update!(group: child)
+        end.to raise_error(ActiveRecord::RecordInvalid,
+          'Validation failed: Group must be a top level Group')
+      end
+    end
   end
 
   describe 'associations' do
