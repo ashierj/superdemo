@@ -123,20 +123,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsS
         )
       end
 
-      context 'when security_policies_sync_preexisting_state is disabled' do
-        before do
-          stub_feature_flags(security_policies_sync_preexisting_state: false)
-        end
-
-        it 'does not enqueue SyncPreexistingStatesApprovalRulesWorker' do
-          expect(::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).not_to(
-            receive(:perform_async)
-          )
-
-          subject
-        end
-      end
-
       it "enqueues SyncPreexistingStatesApprovalRulesWorker with opened merge requests" do
         expect(::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).to(
           receive(:perform_async).with(opened_merge_request.id)
