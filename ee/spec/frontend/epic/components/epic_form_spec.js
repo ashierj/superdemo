@@ -1,10 +1,13 @@
 import { GlForm, GlFormCheckbox, GlFormInput } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import EpicForm from 'ee/epic/components/epic_form.vue';
 import createEpic from 'ee/epic/queries/create_epic.mutation.graphql';
 import { TEST_HOST } from 'helpers/test_constants';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import setWindowLocation from 'helpers/set_window_location_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import Autosave from '~/autosave';
 import { visitUrl } from '~/lib/utils/url_utility';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
@@ -20,15 +23,27 @@ jest.mock('~/lib/utils/url_utility', () => ({
 jest.mock('~/autosave');
 
 const TEST_GROUP_PATH = 'gitlab-org';
-const TEST_NEW_EPIC = { data: { createEpic: { epic: { webUrl: TEST_HOST } } } };
-const TEST_FAILED = { data: { createEpic: { errors: ['mutation failed'] } } };
+const TEST_NEW_EPIC = {
+  data: { createEpic: { epic: { id: '1', webUrl: TEST_HOST }, errors: [] } },
+};
 
 describe('ee/epic/components/epic_form.vue', () => {
   let wrapper;
   let trackingSpy;
+  let requestHandler;
 
-  const createWrapper = ({ mutationResult = TEST_NEW_EPIC } = {}) => {
-    wrapper = shallowMount(EpicForm, {
+  const createMutationResponse = (result = TEST_NEW_EPIC) => jest.fn().mockResolvedValue(result);
+
+  const createMockApolloProvider = (handler) => {
+    Vue.use(VueApollo);
+    requestHandler = handler;
+
+    return createMockApollo([[createEpic, handler]]);
+  };
+
+  const createWrapper = ({ handler = createMutationResponse() } = {}) => {
+    wrapper = shallowMountExtended(EpicForm, {
+      apolloProvider: createMockApolloProvider(handler),
       provide: {
         iid: '1',
         groupPath: TEST_GROUP_PATH,
@@ -40,11 +55,6 @@ describe('ee/epic/components/epic_form.vue', () => {
           epicColorHighlight: true,
         },
       },
-      mocks: {
-        $apollo: {
-          mutate: jest.fn().mockResolvedValue(mutationResult),
-        },
-      },
     });
   };
 
@@ -54,12 +64,12 @@ describe('ee/epic/components/epic_form.vue', () => {
   const findTitle = () => wrapper.findComponent(GlFormInput);
   const findDescription = () => wrapper.findComponent(MarkdownEditor);
   const findConfidentialityCheck = () => wrapper.findComponent(GlFormCheckbox);
-  const findStartDate = () => wrapper.find('[data-testid="epic-start-date"]');
-  const findStartDateReset = () => wrapper.find('[data-testid="clear-start-date"]');
-  const findDueDate = () => wrapper.find('[data-testid="epic-due-date"]');
-  const findDueDateReset = () => wrapper.find('[data-testid="clear-due-date"]');
-  const findSaveButton = () => wrapper.find('[data-testid="create-epic-button"]');
-  const findCancelButton = () => wrapper.find('[data-testid="cancel-epic"]');
+  const findStartDate = () => wrapper.findByTestId('epic-start-date');
+  const findStartDateReset = () => wrapper.findByTestId('clear-start-date');
+  const findDueDate = () => wrapper.findByTestId('epic-due-date');
+  const findDueDateReset = () => wrapper.findByTestId('clear-due-date');
+  const findSaveButton = () => wrapper.findByTestId('create-epic-button');
+  const findCancelButton = () => wrapper.findByTestId('cancel-epic');
 
   beforeEach(() => {
     trackingSpy = mockTracking(undefined, null, jest.spyOn);
@@ -87,19 +97,17 @@ describe('ee/epic/components/epic_form.vue', () => {
     });
 
     it.each`
-      field               | findInput        | findResetter
-      ${'startDateFixed'} | ${findStartDate} | ${findStartDateReset}
-      ${'dueDateFixed'}   | ${findDueDate}   | ${findDueDateReset}
-    `('can clear $field with side control', ({ field, findInput, findResetter }) => {
-      findInput().vm.$emit('input', new Date());
+      findInput        | findResetter
+      ${findStartDate} | ${findStartDateReset}
+      ${findDueDate}   | ${findDueDateReset}
+    `('can reset date selectors side control', async ({ findInput, findResetter }) => {
+      await findInput().vm.$emit('input', new Date());
 
-      expect(wrapper.vm[field]).not.toBeNull();
+      expect(findInput().props('value')).not.toBeNull();
 
-      findResetter().vm.$emit('click');
+      await findResetter().vm.$emit('click');
 
-      return nextTick().then(() => {
-        expect(wrapper.vm[field]).toBeNull();
-      });
+      expect(findInput().props('value')).toBeNull();
     });
   });
 
@@ -140,44 +148,43 @@ describe('ee/epic/components/epic_form.vue', () => {
 
         findForm().vm.$emit('submit', { preventDefault: () => {} });
 
-        expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
-          mutation: createEpic,
-          variables: {
-            input: {
-              groupPath: TEST_GROUP_PATH,
-              addLabelIds,
-              title,
-              description,
-              confidential,
-              startDateFixed,
-              startDateIsFixed,
-              dueDateFixed,
-              dueDateIsFixed,
-              color: epicColor.color,
-            },
+        expect(requestHandler).toHaveBeenCalledWith({
+          input: {
+            groupPath: TEST_GROUP_PATH,
+            addLabelIds,
+            title,
+            description,
+            confidential,
+            startDateFixed,
+            startDateIsFixed,
+            dueDateFixed,
+            dueDateIsFixed,
+            color: epicColor.color,
           },
         });
 
-        await nextTick();
+        await waitForPromises();
 
         expect(visitUrl).toHaveBeenCalled();
       },
     );
 
-    it.each`
-      status        | result           | loading
-      ${'succeeds'} | ${TEST_NEW_EPIC} | ${true}
-      ${'fails'}    | ${TEST_FAILED}   | ${false}
-    `('resets loading indicator when $status', ({ result, loading }) => {
-      createWrapper({ mutationResult: result });
+    it('resets loading indicator when request is successful', async () => {
+      createWrapper({ handler: createMutationResponse(TEST_NEW_EPIC) });
 
-      const savePromise = wrapper.vm.save();
+      findForm().vm.$emit('submit', { preventDefault: () => {} });
+      await waitForPromises();
 
-      expect(wrapper.vm.loading).toBe(true);
+      expect(findSaveButton().props('loading')).toBe(true);
+    });
 
-      return savePromise.then(() => {
-        expect(findSaveButton().props('loading')).toBe(loading);
-      });
+    it('resets does not reset loading indicator when request fails', async () => {
+      createWrapper({ handler: jest.fn().mockRejectedValue({}) });
+
+      findForm().vm.$emit('submit', { preventDefault: () => {} });
+      await waitForPromises();
+
+      expect(findSaveButton().props('loading')).toBe(false);
     });
 
     it('tracks event on submit', () => {
@@ -202,7 +209,7 @@ describe('ee/epic/components/epic_form.vue', () => {
 
       findForm().vm.$emit('submit', { preventDefault: () => {} });
 
-      await nextTick();
+      await waitForPromises();
 
       expect(Autosave.prototype.reset).toHaveBeenCalledTimes(1);
       expect(markdownEditorEventHub.$emit).toHaveBeenCalledWith(
