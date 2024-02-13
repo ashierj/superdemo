@@ -108,14 +108,13 @@ module QA
       end
 
       def create_epic
-        EE::Resource::Epic.fabricate_via_api! do |epic|
-          epic.group = group
-          epic.title = 'My New Epic'
-          epic.due_date_fixed = fixed_due_date
-          epic.start_date_fixed = fixed_start_date
-          epic.start_date_is_fixed = true
-          epic.due_date_is_fixed = true
-        end
+        create(:epic,
+          group: group,
+          title: 'My New Epic',
+          due_date_fixed: fixed_due_date,
+          start_date_fixed: fixed_start_date,
+          start_date_is_fixed: true,
+          due_date_is_fixed: true)
       end
 
       def add_issue_to_epic(epic, issue)

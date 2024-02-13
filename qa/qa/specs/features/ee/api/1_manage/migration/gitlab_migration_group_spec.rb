@@ -9,11 +9,10 @@ module QA
     describe "Gitlab migration" do
       context "with EE features" do
         let(:source_iteration) do
-          EE::Resource::GroupIteration.fabricate_via_api! do |iteration|
-            iteration.api_client = source_admin_api_client
-            iteration.group = source_group
-            iteration.description = "Import test iteration for group #{source_group.name}"
-          end
+          create(:group_iteration,
+            api_client: source_admin_api_client,
+            group: source_group,
+            description: "Import test iteration for group #{source_group.name}")
         end
 
         let(:source_epics) { source_group.epics }
@@ -29,25 +28,16 @@ module QA
         end
 
         before do
-          EE::Resource::License.fabricate! do |resource|
-            resource.license = Runtime::Env.ee_license
-            resource.api_client = source_admin_api_client
-          end
+          create(:license, license: Runtime::Env.ee_license, api_client: source_admin_api_client)
 
-          parent_epic = EE::Resource::Epic.fabricate_via_api! do |resource|
-            resource.api_client = source_admin_api_client
-            resource.group = source_group
-            resource.title = 'Parent epic'
-          end
-
-          child_epic = EE::Resource::Epic.fabricate_via_api! do |resource|
-            resource.api_client = source_admin_api_client
-            resource.group = source_group
-            resource.title = 'Child epic'
-            resource.confidential = true
-            resource.labels = 'label1,label2'
-            resource.parent_id = parent_epic.id
-          end
+          parent_epic = create(:epic, api_client: source_admin_api_client, group: source_group, title: 'Parent epic')
+          child_epic = create(:epic,
+            :confidential,
+            api_client: source_admin_api_client,
+            group: source_group,
+            title: 'Child epic',
+            labels: 'label1,label2',
+            parent_id: parent_epic.id)
 
           child_epic.award_emoji('thumbsup')
           child_epic.award_emoji('thumbsdown')

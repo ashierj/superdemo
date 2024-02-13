@@ -21,10 +21,7 @@ module QA
 
           QA::Flow::Login.while_signed_in(address: :geo_primary) do
             # Create a new SSH key for the user
-            key = Resource::SSHKey.fabricate_via_api! do |resource|
-              resource.title = key_title
-              resource.expires_at = Date.today + 2
-            end
+            key = create(:ssh_key, title: key_title, expires_at: Date.today + 2)
 
             # Create a new Project
             project = create(:project, name: 'geo-project', description: 'Geo test project for SSH push to 2nd')
@@ -92,10 +89,7 @@ module QA
 
           QA::Flow::Login.while_signed_in(address: :geo_primary) do
             # Create a new SSH key for the user
-            key = Resource::SSHKey.fabricate_via_api! do |resource|
-              resource.title = key_title
-              resource.expires_at = Date.today + 2
-            end
+            key = create(:ssh_key, title: key_title, expires_at: Date.today + 2)
 
             # Create a new Project
             project = create(:project, name: 'geo-project', description: 'Geo test project for SSH LFS push to 2nd')

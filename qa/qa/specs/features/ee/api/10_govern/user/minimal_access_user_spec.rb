@@ -54,14 +54,13 @@ module QA
       it 'is not allowed to commit via the API', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347652' do
         expect do
-          Resource::Repository::Commit.fabricate_via_api! do |commit|
-            commit.api_client = user_api_client
-            commit.project = project
-            commit.branch = 'new_branch'
-            commit.start_branch = project.default_branch
-            commit.commit_message = 'Add new file'
-            commit.add_files([{ file_path: 'test.txt', content: 'new file' }])
-          end
+          create(:commit,
+            api_client: user_api_client,
+            project: project,
+            branch: 'new_branch',
+            start_branch: project.default_branch,
+            commit_message: 'Add new file',
+            actions: [{ action: 'create', file_path: 'test.txt', content: 'new file' }])
         end.to raise_error(Resource::ApiFabricator::ResourceFabricationFailedError,
           /403 Forbidden - You are not allowed to push into this branch/)
       end

@@ -21,17 +21,10 @@ module QA
 
         let(:agent_project) { create(:project, group: parent_group, name: 'agent-project') }
         let(:kubernetes_agent) do
-          Resource::Clusters::Agent.fabricate_via_api! do |agent|
-            agent.name = "remotedev-#{SecureRandom.hex(4)}"
-            agent.project = agent_project
-          end
+          create(:cluster_agent, name: "removedev-#{SecureRandom.hex(4)}", project: agent_project)
         end
 
-        let!(:agent_token) do
-          Resource::Clusters::AgentToken.fabricate_via_api! do |token|
-            token.agent = kubernetes_agent
-          end
-        end
+        let!(:agent_token) { create(:cluster_agent_token, agent: kubernetes_agent) }
 
         let!(:agent_config_file) do
           agent_config_yaml = ERB.new(read_ee_fixture('remote_development', 'agent-config.yaml.erb')).result(binding)

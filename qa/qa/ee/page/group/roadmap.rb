@@ -17,7 +17,7 @@ module QA
             element 'roadmap-shell'
           end
 
-          def epic_present?(epic)
+          def has_epic?(epic)
             epic_href_selector = "a[href*='#{epic.web_url}']"
 
             wait_for_requests
