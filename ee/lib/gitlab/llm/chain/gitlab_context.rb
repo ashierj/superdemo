@@ -5,11 +5,11 @@ module Gitlab
     module Chain
       class GitlabContext
         attr_accessor :current_user, :container, :resource, :ai_request, :tools_used, :extra_resource, :request_id,
-          :current_file
+          :current_file, :agent_version
 
         def initialize(
           current_user:, container:, resource:, ai_request:, extra_resource: {}, request_id: nil,
-          current_file: {}
+          current_file: {}, agent_version: nil
         )
           @current_user = current_user
           @container = container
@@ -19,6 +19,7 @@ module Gitlab
           @extra_resource = extra_resource
           @request_id = request_id
           @current_file = (current_file || {}).with_indifferent_access
+          @agent_version = agent_version
         end
 
         def resource_serialized(content_limit:)

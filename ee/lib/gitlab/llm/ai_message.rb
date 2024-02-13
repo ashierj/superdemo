@@ -12,7 +12,8 @@ module Gitlab
 
       ATTRIBUTES_LIST = [
         :id, :request_id, :content, :role, :timestamp, :errors, :extras,
-        :user, :ai_action, :client_subscription_id, :type, :chunk_id, :context
+        :user, :ai_action, :client_subscription_id, :type, :chunk_id, :context,
+        :agent_version_id
       ].freeze
 
       attr_accessor(*ATTRIBUTES_LIST)

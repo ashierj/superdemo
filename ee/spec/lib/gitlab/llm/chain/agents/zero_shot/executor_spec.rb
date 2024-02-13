@@ -6,6 +6,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
   include FakeBlobHelpers
 
   let_it_be(:user) { create(:user) }
+  let_it_be(:existing_agent_version) { create(:ai_agent_version) }
 
   let(:input) { 'foo' }
   let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
@@ -18,11 +19,12 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
   let(:response_service_double) { instance_double(::Gitlab::Llm::ResponseService) }
   let(:stream_response_service_double) { nil }
   let(:current_file) { nil }
+  let(:agent_version) { nil }
 
   let(:context) do
     Gitlab::Llm::Chain::GitlabContext.new(
       current_user: user, container: nil, resource: resource, ai_request: ai_request_double,
-      extra_resource: extra_resource, current_file: current_file
+      extra_resource: extra_resource, current_file: current_file, agent_version: agent_version
     )
   end
 
@@ -175,7 +177,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
     let(:prompt_options) do
       {
         prompt_version: described_class::PROMPT_TEMPLATE,
-        resources: 'issues, epics'
+        resources: 'issues, epics',
+        agent_version_prompt: nil
       }
     end
 
@@ -227,6 +230,35 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         .to receive(:prompt).once.with(a_hash_including(prompt_options))
 
       agent.prompt
+    end
+
+    context 'when agent_version is passed' do
+      let(:agent_version) { existing_agent_version }
+
+      before do
+        create(:ai_chat_message, user: user, agent_version_id: agent_version.id, request_id: 'uuid6', role: 'user',
+          content: 'agent version message 1')
+        create(:ai_chat_message, user: user, agent_version_id: agent_version.id, request_id: 'uuid6',
+          role: 'assistant', content: 'agent version message 2')
+      end
+
+      it 'includes agent version prompt in prompt options' do
+        expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
+          .to receive(:prompt).once.with(a_hash_including({ agent_version_prompt: existing_agent_version.prompt }))
+
+        agent.prompt
+      end
+
+      it 'includes only cleaned chat with messages for the user and agent' do
+        expected_chat = [
+          an_object_having_attributes(content: 'agent version message 1'),
+          an_object_having_attributes(content: 'agent version message 2')
+        ]
+        expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
+          .to receive(:prompt).once.with(a_hash_including(conversation: expected_chat))
+
+        agent.prompt
+      end
     end
 
     context 'when duo_chat_current_resource_by_default is enabled' do

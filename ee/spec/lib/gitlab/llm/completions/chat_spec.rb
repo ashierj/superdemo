@@ -9,6 +9,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository,  group: group) }
   let_it_be(:issue) { create(:issue, project: project) }
+  let_it_be(:agent_version) { create(:ai_agent_version) }
 
   let(:resource) { issue }
   let(:expected_container) { group }
@@ -25,7 +26,10 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
     }
   end
 
-  let(:options) { { content: content, extra_resource: extra_resource, current_file: current_file } }
+  let(:options) do
+    { content: content, extra_resource: extra_resource, current_file: current_file, agent_version_id: agent_version.id }
+  end
+
   let(:container) { group }
   let(:context) do
     Gitlab::Llm::Chain::GitlabContext.new(
@@ -34,7 +38,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
       resource: resource,
       request_id: 'uuid',
       ai_request: ai_request,
-      current_file: current_file
+      current_file: current_file,
+      agent_version: agent_version
     )
   end
 
@@ -85,7 +90,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
         .and_return(response_handler)
       expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
         .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request,
-          extra_resource: extra_resource, request_id: 'uuid', current_file: current_file)
+          extra_resource: extra_resource, request_id: 'uuid', current_file: current_file, agent_version: agent_version)
         .and_return(context)
       expect(categorize_service).to receive(:execute)
       expect(::Llm::ExecuteMethodService).to receive(:new)
@@ -337,7 +342,8 @@ client_subscription_id: 'someid' }
           .and_return(response_handler)
         allow(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
           .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request,
-            extra_resource: extra_resource, request_id: 'uuid', current_file: current_file)
+            extra_resource: extra_resource, request_id: 'uuid', current_file: current_file,
+            agent_version: agent_version)
           .and_return(context)
 
         expect(categorize_service).not_to receive(:execute)

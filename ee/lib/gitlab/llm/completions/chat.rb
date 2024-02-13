@@ -33,7 +33,8 @@ module Gitlab
             ai_request: ai_request,
             extra_resource: options.delete(:extra_resource) || {},
             request_id: prompt_message.request_id,
-            current_file: options.delete(:current_file)
+            current_file: options.delete(:current_file),
+            agent_version: options[:agent_version_id] && ::Ai::AgentVersion.find_by_id(options[:agent_version_id])
           )
         end
 

@@ -4,6 +4,8 @@ module Ai
   class AgentVersion < ApplicationRecord
     self.table_name = "ai_agent_versions"
 
+    include GlobalID::Identification
+
     validates :project, :agent, presence: true
 
     validates :prompt,

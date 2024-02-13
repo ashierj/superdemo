@@ -8,12 +8,26 @@ module Gitlab
           module Prompts
             class Base
               def self.base_prompt(options)
+                return agent_version_prompt(options) if options[:agent_version_prompt]
+
                 base_prompt = Utils::Prompt.no_role_text(
                   options.fetch(:prompt_version),
                   options
                 )
 
                 "#{Utils::Prompt.default_system_prompt}\n\n#{base_prompt}"
+              end
+
+              def self.agent_version_prompt(options)
+                base_prompt = Utils::Prompt.no_role_text(
+                  [
+                    Utils::Prompt.as_user("Question: %<user_input>s"),
+                    Utils::Prompt.as_assistant("Thought: ")
+                  ],
+                  options
+                )
+
+                "#{options[:agent_version_prompt]}\n\n#{base_prompt}"
               end
 
               def self.current_blob_prompt(blob)

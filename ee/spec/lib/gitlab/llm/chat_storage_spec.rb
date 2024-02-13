@@ -18,7 +18,9 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
     }
   end
 
-  subject { described_class.new(user) }
+  let(:agent_version_id) { 1 }
+
+  subject { described_class.new(user, agent_version_id) }
 
   before do
     attributes = payload.except(:user).merge(content: 'other user unrelated cache', user: another_user)
@@ -39,6 +41,7 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
       last = subject.messages.last
       expect(last.id).to eq(uuid)
       expect(last.user).to eq(user)
+      expect(last.agent_version_id).to eq(agent_version_id)
       expect(last.request_id).to eq(request_id)
       expect(last.errors).to eq(['some error1', 'another error'])
       expect(last.content).to eq('response')
