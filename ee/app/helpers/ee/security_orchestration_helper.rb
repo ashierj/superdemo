@@ -46,7 +46,7 @@ module EE::SecurityOrchestrationHelper
       timezones: timezone_data(format: :full).to_json,
       max_active_scan_execution_policies_reached: max_active_scan_execution_policies_reached?(container).to_s,
       max_active_scan_result_policies_reached: max_active_scan_result_policies_reached?(container).to_s,
-      max_scan_result_policies_allowed: Security::ScanResultPolicy::LIMIT,
+      max_scan_result_policies_allowed: scan_result_policies_limit,
       max_scan_execution_policies_allowed: Security::ScanExecutionPolicy::POLICY_LIMIT,
       security_policies_policy_scope_toggle_enabled: security_policies_policy_scope_toggle_enabled?(container).to_s,
       custom_ci_toggle_enabled: custom_ci_toggle_enabled?(container).to_s
@@ -97,7 +97,11 @@ module EE::SecurityOrchestrationHelper
   end
 
   def max_active_scan_result_policies_reached?(container)
-    active_scan_result_policy_count(container) >= Security::ScanResultPolicy::LIMIT
+    active_scan_result_policy_count(container) >= scan_result_policies_limit
+  end
+
+  def scan_result_policies_limit
+    Gitlab::CurrentSettings.security_approval_policies_limit
   end
 
   def active_scan_result_policy_count(container)

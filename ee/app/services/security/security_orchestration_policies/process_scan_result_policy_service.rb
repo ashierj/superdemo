@@ -27,7 +27,7 @@ module Security
       def create_new_approval_rules
         action_info = policy[:actions]&.find { |action| action[:type] == Security::ScanResultPolicy::REQUIRE_APPROVAL }
 
-        policy[:rules]&.first(Security::ScanResultPolicy::LIMIT)&.each_with_index do |rule, rule_index|
+        policy[:rules]&.first(Security::ScanResultPolicy::RULES_LIMIT)&.each_with_index do |rule, rule_index|
           next unless rule_type_allowed?(rule[:type])
 
           scan_result_policy_read = create_scan_result_policy(
