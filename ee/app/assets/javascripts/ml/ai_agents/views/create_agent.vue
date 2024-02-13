@@ -11,7 +11,6 @@ import {
 import { s__ } from '~/locale';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { visitUrl } from '~/lib/utils/url_utility';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import createAiAgent from '../graphql/mutations/create_ai_agent.mutation.graphql';
 
@@ -27,12 +26,7 @@ export default {
     GlButton,
     GlAlert,
   },
-  props: {
-    projectPath: {
-      type: String,
-      required: true,
-    },
-  },
+  inject: ['projectPath'],
   data() {
     return {
       errorMessage: undefined,
@@ -60,7 +54,10 @@ export default {
         if (error) {
           this.errorMessage = data.aiAgentCreate.errors.join(', ');
         } else {
-          visitUrl(data?.aiAgentCreate?.agent?._links?.showPath);
+          this.$router.push({
+            name: 'show',
+            params: { agentId: data?.aiAgentCreate?.agent?.routeId },
+          });
         }
       } catch (error) {
         Sentry.captureException(error);
@@ -89,7 +86,7 @@ export default {
 
     <gl-form @submit.prevent="createAgent">
       <gl-form-group :label="s__('AIAgents|Agent name')">
-        <gl-form-input v-model="agentName" />
+        <gl-form-input v-model="agentName" data-testid="agent-name" />
       </gl-form-group>
 
       <gl-form-group :label="__('Prompt')" optional>

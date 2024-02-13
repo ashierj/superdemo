@@ -6,13 +6,11 @@ query getAiAgents($fullPath: ID!, $first: Int, $last: Int, $after: String, $befo
     aiAgents(after: $after, before: $before, first: $first, last: $last) {
       nodes {
         id
+        routeId
         name
         versions {
           id
           model
-        }
-        _links {
-          showPath
         }
       }
       pageInfo {

@@ -1,20 +1,27 @@
 import { GlExperimentBadge } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
-import { ShowAgent } from 'ee/ml/ai_agents/apps';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import ShowAgent from 'ee/ml/ai_agents/views/show_agent.vue';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 
 let wrapper;
 
 const createWrapper = () => {
-  wrapper = shallowMount(ShowAgent, {
-    propsData: { projectPath: 'path/to/project', agentId: '2' },
+  wrapper = shallowMountExtended(ShowAgent, {
+    provide: { projectPath: 'path/to/project' },
+    mocks: {
+      $route: {
+        params: {
+          agentId: 2,
+        },
+      },
+    },
   });
 };
 
 const findTitleArea = () => wrapper.findComponent(TitleArea);
 const findBadge = () => wrapper.findComponent(GlExperimentBadge);
 
-describe('ee/ml/ai_agents/apps/create_agent', () => {
+describe('ee/ml/ai_agents/views/create_agent', () => {
   beforeEach(() => createWrapper());
 
   it('shows the title', () => {
