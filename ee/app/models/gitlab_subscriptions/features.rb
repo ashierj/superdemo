@@ -167,6 +167,7 @@ module GitlabSubscriptions
       oidc_client_groups_claim
       disable_deleting_account_for_users
       disable_private_profiles
+      group_saved_replies
     ].freeze
 
     ULTIMATE_FEATURES = %i[
