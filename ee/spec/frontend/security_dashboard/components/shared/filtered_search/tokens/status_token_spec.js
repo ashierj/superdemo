@@ -1,6 +1,7 @@
 import { GlFilteredSearchToken } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import StatusToken from 'ee/security_dashboard/components/shared/filtered_search/tokens/status_token.vue';
+import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
 import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import { stubComponent } from 'helpers/stub_component';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -31,13 +32,17 @@ describe('Status Token component', () => {
         alignSuggestions: jest.fn(),
         termsAsTokens: () => false,
       },
-
-      stubs,
+      stubs: {
+        QuerystringSync: true,
+        ...stubs,
+      },
     });
   };
 
+  const findQuerystringSync = () => wrapper.findComponent(QuerystringSync);
   const findFilteredSearchToken = () => wrapper.findComponent(GlFilteredSearchToken);
   const findCheckedIcon = (value) => wrapper.findByTestId(`status-icon-${value}`);
+  const isOptionChecked = (v) => !findCheckedIcon(v).classes('gl-visibility-hidden');
 
   const clickDropdownItem = async (...ids) => {
     await Promise.all(
@@ -51,9 +56,11 @@ describe('Status Token component', () => {
   };
 
   const allOptionsExcept = (value) => {
+    const exempt = Array.isArray(value) ? value : [value];
+
     return StatusToken.GROUPS.flatMap((i) => i.options)
       .map((i) => i.value)
-      .filter((i) => i !== value);
+      .filter((i) => !exempt.includes(i));
   };
 
   describe('default view', () => {
@@ -113,8 +120,6 @@ describe('Status Token component', () => {
     });
 
     it('toggles the item selection when clicked on', async () => {
-      const isOptionChecked = (v) => !findCheckedIcon(v).classes('gl-visibility-hidden');
-
       await clickDropdownItem('CONFIRMED', 'RESOLVED');
 
       expect(isOptionChecked('ALL')).toBe(false);
@@ -181,6 +186,54 @@ describe('Status Token component', () => {
     it('shows "Confirmed +1 more" when confirmed and all dismissal reasons are selected', async () => {
       await clickDropdownItem('CONFIRMED', 'DISMISSED');
       expect(findSlotView().text()).toBe('Confirmed +1 more');
+    });
+  });
+
+  describe('QuerystringSync component', () => {
+    beforeEach(() => {
+      createWrapper({});
+    });
+
+    it('has expected props', () => {
+      expect(findQuerystringSync().props()).toMatchObject({
+        querystringKey: 'state',
+        value: StatusToken.DEFAULT_VALUES,
+        validValues: [
+          'ALL',
+          'DETECTED',
+          'CONFIRMED',
+          'RESOLVED',
+          'DISMISSED',
+          'ACCEPTABLE_RISK',
+          'FALSE_POSITIVE',
+          'MITIGATING_CONTROL',
+          'USED_IN_TESTS',
+          'NOT_APPLICABLE',
+        ],
+      });
+    });
+
+    it('receives ALL_STATUS_VALUE when All Statuses option is clicked', async () => {
+      await clickDropdownItem('ALL');
+
+      expect(findQuerystringSync().props('value')).toEqual(['ALL']);
+    });
+
+    it.each`
+      emitted                      | expected
+      ${['CONFIRMED', 'RESOLVED']} | ${['CONFIRMED', 'RESOLVED']}
+      ${['ALL']}                   | ${['ALL']}
+    `('restores selected items - $emitted', async ({ emitted, expected }) => {
+      findQuerystringSync().vm.$emit('input', emitted);
+      await nextTick();
+
+      expected.forEach((item) => {
+        expect(isOptionChecked(item)).toBe(true);
+      });
+
+      allOptionsExcept(expected).forEach((item) => {
+        expect(isOptionChecked(item)).toBe(false);
+      });
     });
   });
 });
