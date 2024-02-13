@@ -23,9 +23,9 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
       it_behaves_like 'returning an error service response', message: 'Access denied'
     end
 
-    context 'with gcp_runner FF disabled' do
+    context 'with google_cloud_runner_provisioning FF disabled' do
       before do
-        stub_feature_flags(gcp_runner: false)
+        stub_feature_flags(google_cloud_runner_provisioning: false)
       end
 
       it_behaves_like 'returning an error service response', message: 'Feature flag not enabled'
