@@ -21,7 +21,7 @@ RSpec.describe Gitlab::Ci::YamlProcessor::Result, feature_category: :pipeline_co
       end
 
       before do
-        stub_saas_features(google_artifact_registry: true)
+        stub_saas_features(google_cloud_support: true)
       end
 
       it 'includes :identity in :options' do

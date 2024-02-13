@@ -171,7 +171,7 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
   context 'when google artifact registry is available' do
     before do
       stub_config(registry: { enabled: true })
-      stub_saas_features(google_artifact_registry: true)
+      stub_saas_features(google_cloud_support: true)
 
       insert_container_nav
       insert_google_artifact_registry_nav
@@ -186,7 +186,7 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
     before do
       stub_config(packages: { enabled: true }, registry: { enabled: true })
       stub_feature_flags(gcp_artifact_registry: false)
-      stub_saas_features(google_artifact_registry: false)
+      stub_saas_features(google_cloud_support: false)
 
       insert_container_nav
 

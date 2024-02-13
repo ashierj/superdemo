@@ -8,7 +8,7 @@ RSpec.describe 'User activates Artifact Registry', feature_category: :package_re
   let(:integration) { build_stubbed(:google_cloud_platform_artifact_registry_integration) }
 
   before do
-    stub_saas_features(google_artifact_registry: true)
+    stub_saas_features(google_cloud_support: true)
   end
 
   it 'activates integration', :js do

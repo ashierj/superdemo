@@ -2043,7 +2043,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
     context 'artifact registry' do
       before do
-        stub_saas_features(google_artifact_registry: true)
+        stub_saas_features(google_cloud_support: true)
       end
 
       it { is_expected.not_to include('google_cloud_platform_artifact_registry') }
@@ -2058,7 +2058,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
       context 'when google artifact registry feature is unavailable' do
         before do
-          stub_saas_features(google_artifact_registry: false)
+          stub_saas_features(google_cloud_support: false)
         end
 
         it { is_expected.to include('google_cloud_platform_artifact_registry') }
@@ -4430,14 +4430,14 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     let_it_be(:project) { build_stubbed(:project) }
 
     before do
-      stub_saas_features(google_artifact_registry: true)
+      stub_saas_features(google_cloud_support: true)
     end
 
     it { is_expected.to eq(true) }
 
     context 'when feature is unavailable' do
       before do
-        stub_saas_features(google_artifact_registry: false)
+        stub_saas_features(google_cloud_support: false)
       end
 
       it { is_expected.to eq(false) }

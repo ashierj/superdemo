@@ -19,7 +19,7 @@ module EE
           subscriptions_trials
           gitlab_com_subscriptions
           duo_chat_categorize_question
-          google_artifact_registry
+          google_cloud_support
           duo_chat_on_saas
           exact_code_search
         ].freeze

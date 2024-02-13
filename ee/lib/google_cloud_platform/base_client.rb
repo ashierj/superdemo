@@ -32,7 +32,7 @@ module GoogleCloudPlatform
         raise ArgumentError, BLANK_PARAMETERS_ERROR_MESSAGE
       end
 
-      raise SAAS_ONLY_ERROR_MESSAGE unless Gitlab::Saas.feature_available?(:google_artifact_registry)
+      raise SAAS_ONLY_ERROR_MESSAGE unless Gitlab::Saas.feature_available?(:google_cloud_support)
 
       @project = project
       @user = user

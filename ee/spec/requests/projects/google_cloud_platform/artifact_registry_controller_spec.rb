@@ -9,7 +9,7 @@ RSpec.describe Projects::GoogleCloudPlatform::ArtifactRegistryController, featur
   before do
     sign_in(user)
     stub_container_registry_config(enabled: true)
-    stub_saas_features(google_artifact_registry: true)
+    stub_saas_features(google_cloud_support: true)
   end
 
   shared_examples 'google artifact registry' do
@@ -30,7 +30,7 @@ RSpec.describe Projects::GoogleCloudPlatform::ArtifactRegistryController, featur
 
       context 'when feature is unavailable' do
         before do
-          stub_saas_features(google_artifact_registry: false)
+          stub_saas_features(google_cloud_support: false)
         end
 
         it_behaves_like 'returning response status', :not_found

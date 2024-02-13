@@ -12,7 +12,7 @@ RSpec.describe Sidebars::Projects::Menus::PackagesRegistriesMenu, feature_catego
 
     describe 'Google Artifact Registry' do
       before do
-        stub_saas_features(google_artifact_registry: true)
+        stub_saas_features(google_cloud_support: true)
       end
 
       let(:item_id) { :google_artifact_registry }
@@ -33,7 +33,7 @@ RSpec.describe Sidebars::Projects::Menus::PackagesRegistriesMenu, feature_catego
 
       context 'when feature is unavailable' do
         before do
-          stub_saas_features(google_artifact_registry: false)
+          stub_saas_features(google_cloud_support: false)
         end
 
         it_behaves_like 'the menu item is not added to list of menu items'

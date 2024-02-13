@@ -26,7 +26,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
     let(:dummy_response) { Object.new }
 
     before do
-      stub_saas_features(google_artifact_registry: true)
+      stub_saas_features(google_cloud_support: true)
       stub_application_setting(ci_jwt_signing_key: rsa_key_data)
       stub_authentication_requests
 
@@ -72,7 +72,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
 
   describe 'validations' do
     before do
-      stub_saas_features(google_artifact_registry: true)
+      stub_saas_features(google_cloud_support: true)
     end
 
     shared_examples 'raising an error with' do |klass, message|
@@ -108,7 +108,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
 
     context 'when not on saas' do
       before do
-        stub_saas_features(google_artifact_registry: false)
+        stub_saas_features(google_cloud_support: false)
       end
 
       it_behaves_like 'raising an error with', RuntimeError, described_class::SAAS_ONLY_ERROR_MESSAGE

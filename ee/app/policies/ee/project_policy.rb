@@ -150,8 +150,7 @@ module EE
       end
 
       condition(:google_cloud_support_available, scope: :global) do
-        # TODO: This will be renamed to google_cloud_platform_support (https://gitlab.com/gitlab-org/gitlab/-/issues/438989)
-        ::Gitlab::Saas.feature_available?(:google_artifact_registry)
+        ::Gitlab::Saas.feature_available?(:google_cloud_support)
       end
 
       condition(:status_page_available) do

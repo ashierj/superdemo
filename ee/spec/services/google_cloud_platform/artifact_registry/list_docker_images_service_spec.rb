@@ -18,7 +18,7 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::ListDockerImagesService, f
 
     context 'with saas only feature enabled' do
       before do
-        stub_saas_features(google_artifact_registry: true)
+        stub_saas_features(google_cloud_support: true)
 
         allow(client_double).to receive(:docker_images)
           .with(page_size: page_size, page_token: page_token, order_by: order_by)

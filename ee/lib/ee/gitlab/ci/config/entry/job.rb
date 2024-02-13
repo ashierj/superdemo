@@ -50,7 +50,7 @@ module EE
 
             def identity_available?
               ::Gitlab::Ci::YamlProcessor::FeatureFlags.enabled?(:ci_yaml_support_for_identity_provider, type: :beta) &&
-                ::Gitlab::Saas.feature_available?(:google_artifact_registry)
+                ::Gitlab::Saas.feature_available?(:google_cloud_support)
             end
           end
         end

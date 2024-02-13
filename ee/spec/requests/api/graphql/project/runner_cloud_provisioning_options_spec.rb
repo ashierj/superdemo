@@ -47,7 +47,7 @@ RSpec.describe 'runnerCloudProvisioningOptions', feature_category: :fleet_visibi
   end
 
   before do
-    stub_saas_features(google_artifact_registry: true)
+    stub_saas_features(google_cloud_support: true)
   end
 
   shared_examples 'a query handling client errors' do
@@ -203,7 +203,7 @@ RSpec.describe 'runnerCloudProvisioningOptions', feature_category: :fleet_visibi
 
   context 'when SaaS feature is not enabled' do
     before do
-      stub_saas_features(google_artifact_registry: false)
+      stub_saas_features(google_cloud_support: false)
     end
 
     it { is_expected.to be nil }

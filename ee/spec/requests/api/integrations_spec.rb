@@ -8,7 +8,7 @@ RSpec.describe API::Integrations, feature_category: :integrations do
   let_it_be_with_reload(:project) { create(:project, namespace: user.namespace) }
 
   before do
-    stub_saas_features(google_artifact_registry: true)
+    stub_saas_features(google_cloud_support: true)
   end
 
   shared_examples 'handling google artifact registry conditions' do |unavailable_status: :not_found|
@@ -20,7 +20,7 @@ RSpec.describe API::Integrations, feature_category: :integrations do
 
     context 'when google artifact registry feature is unavailable' do
       before do
-        stub_saas_features(google_artifact_registry: false)
+        stub_saas_features(google_cloud_support: false)
       end
 
       it_behaves_like 'returning response status', unavailable_status

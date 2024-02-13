@@ -1257,7 +1257,7 @@ module EE
     end
 
     def gcp_artifact_registry_enabled?
-      ::Feature.enabled?(:gcp_artifact_registry, self) && ::Gitlab::Saas.feature_available?(:google_artifact_registry)
+      ::Feature.enabled?(:gcp_artifact_registry, self) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
     end
 
     private

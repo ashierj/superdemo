@@ -21,7 +21,7 @@ RSpec.describe GoogleCloudPlatform::Compute::ListZonesService, feature_category:
 
     context 'with saas only feature enabled' do
       before do
-        stub_saas_features(google_artifact_registry: true)
+        stub_saas_features(google_cloud_support: true)
 
         allow(client_double).to receive(:zones)
           .with(filter: filter, max_results: max_results, page_token: page_token, order_by: order_by)
