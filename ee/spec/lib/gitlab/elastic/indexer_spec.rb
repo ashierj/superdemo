@@ -12,7 +12,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
   let(:project) { create(:project, :repository) }
   let(:user) { project.first_owner }
 
-  let(:expected_from_sha) { Gitlab::Git::EMPTY_TREE_ID }
+  let(:expected_from_sha) { Gitlab::Git::SHA1_EMPTY_TREE_ID }
   let(:to_commit) { project.commit }
   let(:to_sha) { to_commit.try(:sha) }
 
@@ -67,7 +67,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
 
     it 'returns nil for unreachable commits', :aggregate_failures do
       expect(indexer.find_indexable_commit(Gitlab::Git::SHA1_BLANK_SHA)).to be_nil
-      expect(indexer.find_indexable_commit(Gitlab::Git::EMPTY_TREE_ID)).to be_nil
+      expect(indexer.find_indexable_commit(Gitlab::Git::SHA1_EMPTY_TREE_ID)).to be_nil
     end
 
     context 'when repository project is empty' do
