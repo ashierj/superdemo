@@ -23,7 +23,7 @@ module Sbom
           occurrence_maps.uniq! { |occurrence_map| uuid(occurrence_map) }
           occurrence_maps.map do |occurrence_map|
             {
-              project_id: pipeline.project.id,
+              project_id: project.id,
               pipeline_id: pipeline.id,
               component_id: occurrence_map.component_id,
               component_version_id: occurrence_map.component_version_id,
@@ -36,9 +36,11 @@ module Sbom
               licenses: licenses.fetch(occurrence_map.report_component, []),
               component_name: occurrence_map.name,
               highest_severity: occurrence_map.highest_severity,
-              vulnerability_count: occurrence_map.vulnerability_count
+              vulnerability_count: occurrence_map.vulnerability_count,
+              traversal_ids: project.namespace.traversal_ids,
+              archived: project.archived
             }.tap do |attrs|
-              if Feature.disabled?(:sbom_occurrences_vulnerabilities, pipeline.project)
+              if Feature.disabled?(:sbom_occurrences_vulnerabilities, project)
                 attrs.except!(:vulnerability_count, :highest_severity)
               end
             end
@@ -50,13 +52,13 @@ module Sbom
             :component_id,
             :component_version_id,
             :source_id
-          ).merge(project_id: pipeline.project.id)
+          ).merge(project_id: project.id)
 
           ::Sbom::OccurrenceUUID.generate(**uuid_attributes)
         end
 
         def licenses
-          Licenses.new(pipeline.project, occurrence_maps)
+          Licenses.new(project, occurrence_maps)
         end
         strong_memoize_attr :licenses
 
