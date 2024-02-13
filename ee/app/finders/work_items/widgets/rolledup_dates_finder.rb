@@ -40,7 +40,7 @@ module WorkItems
 
       def children_date_source(field)
         WorkItem.joins(:dates_source).select(
-          WorkItems::DatesSource.arel_table["#{field}_fixed"].as(field.to_s),
+          WorkItems::DatesSource.arel_table[field].as(field.to_s),
           "NULL AS #{field}_sourcing_milestone_id",
           WorkItems::DatesSource.arel_table[:issue_id].as("#{field}_sourcing_work_item_id"))
       end
@@ -56,9 +56,9 @@ module WorkItems
 
       def issues_cte
         @issues_cte ||= Gitlab::SQL::CTE.new(:issues, work_item.work_item_children.select(
-          :milestone_id,
-          :start_date,
-          :due_date,
+          WorkItem.arel_table[:milestone_id].as("milestone_id"),
+          WorkItem.arel_table[:start_date].as("start_date"),
+          WorkItem.arel_table[:due_date].as("due_date"),
           WorkItem.arel_table[:id].as("id")))
       end
     end
