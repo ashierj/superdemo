@@ -4,9 +4,6 @@ module Geo
   class JobArtifactState < Ci::ApplicationRecord
     include ::Geo::VerificationStateDefinition
     include ::Ci::Partitionable
-    include SafelyChangeColumnDefault
-
-    columns_changing_default :partition_id
 
     self.primary_key = :job_artifact_id
 
