@@ -5081,9 +5081,6 @@ msgstr ""
 msgid "An error occurred while adding formatted title for epic"
 msgstr ""
 
-msgid "An error occurred while approving, please try again."
-msgstr ""
-
 msgid "An error occurred while checking group path. Please refresh and try again."
 msgstr ""
 
@@ -6399,9 +6396,6 @@ msgid "Approve a pending member"
 msgid_plural "Approve %d pending members"
 msgstr[0] ""
 msgstr[1] ""
-
-msgid "Approve merge request"
-msgstr ""
 
 msgid "Approve the current merge request."
 msgstr ""
@@ -30901,9 +30895,6 @@ msgid "MergeRequests|started a thread on an outdated change in commit %{linkStar
 msgstr ""
 
 msgid "MergeRequests|started a thread on commit %{linkStart}%{commitDisplay}%{linkEnd}"
-msgstr ""
-
-msgid "MergeRequest|Approved by @%{username}"
 msgstr ""
 
 msgid "MergeRequest|Can't fetch the diff needed to update this view. Please reload this page."
