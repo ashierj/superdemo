@@ -60,8 +60,15 @@ module Gitlab
 
       # Note: a Rake task is using this method to extract embeddings for a test fixture.
       def embedding_for_question(question)
-        embeddings_result = vertex_client.text_embeddings(content: question)
-        embeddings_result['predictions'].first['embeddings']['values']
+        result = vertex_client.text_embeddings(content: question)
+
+        if !result.success? || !result.has_key?('predictions')
+          logger.info_or_debug(current_user, message: "Could not generate embeddings",
+            error: result.dig('error', 'message'))
+          nil
+        else
+          result['predictions'].first&.dig('embeddings', 'values')
+        end
       end
 
       # Note: a Rake task is using this method to extract embeddings for a test fixture.
