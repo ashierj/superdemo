@@ -1,15 +1,16 @@
 import { GlButton } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Draggable from 'vuedraggable';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { ESC_KEY_CODE } from '~/lib/utils/keycodes';
 import { DRAG_DELAY } from '~/sortable/constants';
 import TreeRoot from 'ee/related_items_tree/components/tree_root.vue';
 import { treeItemChevronBtnClassName } from 'ee/related_items_tree/constants';
 import createDefaultStore from 'ee/related_items_tree/store';
 import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
+import { gqClient } from 'ee/related_items_tree/utils/epic_utils';
 import {
   mockQueryResponse,
   mockInitialConfig,
@@ -21,51 +22,54 @@ import {
 const { epic } = mockQueryResponse.data.group;
 
 Vue.use(Vuex);
-let store;
-
-const createComponent = ({
-  parentItem = mockParentItem,
-  epicPageInfo = epic.children.pageInfo,
-  issuesPageInfo = epic.issues.pageInfo,
-} = {}) => {
-  store = createDefaultStore();
-  const children = epicUtils.processQueryResponse(mockQueryResponse.data.group);
-
-  store.dispatch('setInitialParentItem', mockParentItem);
-  store.dispatch('setInitialConfig', mockInitialConfig);
-  store.dispatch('setItemChildrenFlags', {
-    isSubItem: false,
-    children,
-  });
-
-  store.dispatch('setEpicPageInfo', {
-    parentItem,
-    pageInfo: epicPageInfo,
-  });
-
-  store.dispatch('setIssuePageInfo', {
-    parentItem,
-    pageInfo: issuesPageInfo,
-  });
-
-  return shallowMount(TreeRoot, {
-    store,
-    stubs: {
-      'tree-item': true,
-    },
-    propsData: {
-      parentItem,
-      children,
-    },
-  });
-};
 
 describe('RelatedItemsTree', () => {
-  describe('TreeRoot', () => {
-    let wrapper;
+  let wrapper;
+  let store;
 
+  const createComponent = ({
+    parentItem = mockParentItem,
+    epicPageInfo = epic.children.pageInfo,
+    issuesPageInfo = epic.issues.pageInfo,
+  } = {}) => {
+    store = createDefaultStore();
+    const children = epicUtils.processQueryResponse(mockQueryResponse.data.group);
+
+    store.dispatch('setInitialParentItem', mockParentItem);
+    store.dispatch('setInitialConfig', mockInitialConfig);
+    store.dispatch('setItemChildrenFlags', {
+      isSubItem: false,
+      children,
+    });
+
+    store.dispatch('setEpicPageInfo', {
+      parentItem,
+      pageInfo: epicPageInfo,
+    });
+
+    store.dispatch('setIssuePageInfo', {
+      parentItem,
+      pageInfo: issuesPageInfo,
+    });
+
+    wrapper = shallowMountExtended(TreeRoot, {
+      store,
+      stubs: {
+        'tree-item': true,
+      },
+      propsData: {
+        parentItem,
+        children,
+      },
+    });
+  };
+
+  const findTreeRoot = () => wrapper.findByTestId('tree-root');
+  const findMoreChildren = () => findTreeRoot().find('li');
+
+  describe('TreeRoot', () => {
     beforeEach(() => {
-      wrapper = createComponent();
+      createComponent();
     });
 
     describe('mixins', () => {
@@ -87,46 +91,48 @@ describe('RelatedItemsTree', () => {
         describe('computed', () => {
           describe('treeRootWrapper', () => {
             it('should return Draggable reference when userSignedIn prop is true', () => {
-              expect(wrapper.vm.treeRootWrapper).toBe(Draggable);
+              expect(findTreeRoot().element.tagName).toBe('DRAGGABLE-STUB');
             });
 
-            it('should return string "ul" when userSignedIn prop is false', () => {
-              store.dispatch('setInitialConfig', {
+            it('should return string "ul" when userSignedIn prop is false', async () => {
+              await store.dispatch('setInitialConfig', {
                 ...mockInitialConfig,
                 userSignedIn: false,
               });
 
-              expect(wrapper.vm.treeRootWrapper).toBe('ul');
+              expect(findTreeRoot().element.tagName).toBe('UL');
             });
           });
 
           describe('treeRootOptions', () => {
             it('should return object containing Vue.Draggable config extended from `defaultSortableOptions` when userSignedIn prop is true', () => {
-              expect(wrapper.vm.treeRootOptions).toEqual(
+              expect(findTreeRoot().attributes()).toEqual(
                 expect.objectContaining({
-                  animation: 200,
-                  forceFallback: true,
-                  fallbackClass: 'is-dragging',
-                  fallbackOnBody: false,
-                  ghostClass: 'is-ghost',
+                  animation: '200',
+                  delay: '100',
+                  forcefallback: 'true',
+                  fallbackclass: 'is-dragging',
+                  ghostclass: 'is-ghost',
                   group: 'gl-new-card-body',
                   tag: 'ul',
-                  'ghost-class': 'tree-item-drag-active',
                   'data-parent-reference': mockParentItem.reference,
                   'data-parent-id': mockParentItem.id,
-                  value: wrapper.vm.children,
                   filter: `.${treeItemChevronBtnClassName}`,
                 }),
               );
             });
 
-            it('should return an empty object when userSignedIn prop is false', () => {
-              store.dispatch('setInitialConfig', {
+            it('should return an empty object when userSignedIn prop is false', async () => {
+              await store.dispatch('setInitialConfig', {
                 ...mockInitialConfig,
                 userSignedIn: false,
               });
 
-              expect(wrapper.vm.treeRootOptions).toEqual(expect.objectContaining({}));
+              expect(Object.keys(findTreeRoot().attributes())).toEqual([
+                'move',
+                'data-testid',
+                'class',
+              ]);
             });
           });
         });
@@ -374,49 +380,7 @@ describe('RelatedItemsTree', () => {
       });
     });
 
-    describe('computed', () => {
-      describe('hasMoreChildren', () => {
-        it('returns `true` when either `hasMoreEpics` or `hasMoreIssues` is true', () => {
-          expect(wrapper.vm.hasMoreChildren).toBe(true);
-        });
-
-        it('returns `false` when both `hasMoreEpics` and `hasMoreIssues` is false', () => {
-          const wrapperNoMoreChild = createComponent({
-            epicPageInfo: {
-              hasNextPage: false,
-              endCursor: 'abc',
-            },
-            issuesPageInfo: {
-              hasNextPage: false,
-              endCursor: 'def',
-            },
-          });
-
-          expect(wrapperNoMoreChild.vm.hasMoreChildren).toBe(false);
-
-          wrapperNoMoreChild.destroy();
-        });
-      });
-    });
-
     describe('methods', () => {
-      describe('handleShowMoreClick', () => {
-        it('sets `fetchInProgress` to true and calls `fetchNextPageItems` action with parentItem as param', () => {
-          jest
-            .spyOn(wrapper.vm, 'fetchNextPageItems')
-            .mockImplementation(() => new Promise(() => {}));
-
-          wrapper.vm.handleShowMoreClick();
-
-          expect(wrapper.vm.fetchInProgress).toBe(true);
-          expect(wrapper.vm.fetchNextPageItems).toHaveBeenCalledWith(
-            expect.objectContaining({
-              parentItem: mockParentItem,
-            }),
-          );
-        });
-      });
-
       describe('onMove', () => {
         let mockEvt;
         let mockOriginalEvt;
@@ -482,6 +446,27 @@ describe('RelatedItemsTree', () => {
     });
 
     describe('template', () => {
+      describe('Children', () => {
+        it('displays children when either when either `hasMoreEpics` or `hasMoreIssues` are true', () => {
+          expect(findMoreChildren().exists()).toBe(true);
+        });
+
+        it('does not display children when both `hasMoreEpics` and `hasMoreIssues` are false', () => {
+          createComponent({
+            epicPageInfo: {
+              hasNextPage: false,
+              endCursor: 'abc',
+            },
+            issuesPageInfo: {
+              hasNextPage: false,
+              endCursor: 'def',
+            },
+          });
+
+          expect(findMoreChildren().exists()).toBe(false);
+        });
+      });
+
       it('renders tree item component', () => {
         expect(wrapper.html()).toContain('tree-item-stub');
       });
@@ -490,12 +475,22 @@ describe('RelatedItemsTree', () => {
         expect(wrapper.findComponent(GlButton).text()).toBe('Show more');
       });
 
-      it('calls `handleShowMoreClick` when `Show more` link is clicked', () => {
-        jest.spyOn(wrapper.vm, 'handleShowMoreClick').mockImplementation(() => {});
-
-        wrapper.findComponent(GlButton).vm.$emit('click');
-
-        expect(wrapper.vm.handleShowMoreClick).toHaveBeenCalled();
+      it('fetches more when `Show more` link is clicked and disables the button', async () => {
+        jest.spyOn(gqClient, 'query').mockResolvedValue({ data: {} });
+        await wrapper.findComponent(GlButton).vm.$emit('click');
+        expect(gqClient.query).toHaveBeenCalled();
+        expect(wrapper.findComponent(GlButton).exists()).toBe(false);
+        const { fullPath, iid } = mockParentItem;
+        expect(gqClient.query).toHaveBeenCalledWith(
+          expect.objectContaining({
+            variables: {
+              epicEndCursor: 'abc',
+              fullPath,
+              iid,
+              issueEndCursor: 'def',
+            },
+          }),
+        );
       });
     });
   });
