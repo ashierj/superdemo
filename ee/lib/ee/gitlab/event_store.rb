@@ -49,6 +49,8 @@ module EE
             to: ::ProjectAuthorizations::AuthorizationsAddedEvent
           store.subscribe ::Security::RefreshComplianceFrameworkSecurityPoliciesWorker,
             to: ::Projects::ComplianceFrameworkChangedEvent
+          store.subscribe ::Sbom::ProcessTransferEventsWorker, to: ::Projects::ProjectTransferedEvent
+          store.subscribe ::Sbom::ProcessTransferEventsWorker, to: ::Groups::GroupTransferedEvent
           store.subscribe ::Vulnerabilities::ProcessTransferEventsWorker,
             to: ::Projects::ProjectTransferedEvent,
             if: ->(event) {
