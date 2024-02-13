@@ -1,4 +1,4 @@
-import { GlBadge, GlIcon } from '@gitlab/ui';
+import { GlBadge, GlIcon, GlTruncateText } from '@gitlab/ui';
 import { visitUrl } from '~/lib/utils/url_utility';
 import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -30,7 +30,7 @@ describe('DashboardsListItem', () => {
   const findListItem = () => wrapper.findByTestId('dashboard-list-item');
   const findRedirectLink = () => wrapper.findByTestId('dashboard-redirect-link');
   const findRouterLink = () => wrapper.findByTestId('dashboard-router-link');
-  const findDescription = () => wrapper.findByTestId('dashboard-description');
+  const findDescriptionTruncate = () => wrapper.findComponent(GlTruncateText);
 
   const $router = {
     push: jest.fn(),
@@ -61,7 +61,7 @@ describe('DashboardsListItem', () => {
     });
 
     it('renders the dashboard description', () => {
-      expect(findDescription().text()).toContain(USER_DEFINED_DASHBOARD.description);
+      expect(findDescriptionTruncate().text()).toContain(USER_DEFINED_DASHBOARD.description);
     });
 
     it('renders the dashboard icon', () => {
