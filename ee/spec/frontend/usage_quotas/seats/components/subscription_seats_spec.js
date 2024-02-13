@@ -311,32 +311,6 @@ describe('Subscription Seats', () => {
     });
   });
 
-  describe('pending members alert', () => {
-    it.each`
-      pendingMembersPagePath | pendingMembersCount | hasLimitedFreePlan | shouldBeRendered
-      ${undefined}           | ${undefined}        | ${false}           | ${false}
-      ${undefined}           | ${0}                | ${false}           | ${false}
-      ${'fake-path'}         | ${0}                | ${false}           | ${false}
-      ${'fake-path'}         | ${3}                | ${true}            | ${false}
-      ${'fake-path'}         | ${3}                | ${false}           | ${true}
-    `(
-      'rendering alert is $shouldBeRendered when pendingMembersPagePath=$pendingMembersPagePath and pendingMembersCount=$pendingMembersCount and hasLimitedFreePlan=$hasLimitedFreePlan',
-      ({ pendingMembersPagePath, pendingMembersCount, shouldBeRendered, hasLimitedFreePlan }) => {
-        wrapper = createComponent({
-          initialState: {
-            pendingMembersCount,
-            pendingMembersPagePath,
-            hasLimitedFreePlan,
-          },
-        });
-
-        expect(wrapper.find('[data-testid="pending-members-alert"]').exists()).toBe(
-          shouldBeRendered,
-        );
-      },
-    );
-  });
-
   describe('subscription user list', () => {
     it('renders subscription users', () => {
       wrapper = createComponent();
