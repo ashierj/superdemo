@@ -1,5 +1,0 @@
-mutation explainCode($resourceId: AiModelID!, $messages: [AiExplainCodeMessageInput!]!) {
-  aiAction(input: { explainCode: { resourceId: $resourceId, messages: $messages } }) {
-    errors
-  }
-}
