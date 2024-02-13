@@ -84,4 +84,34 @@ RSpec.shared_examples 'slash command tool' do
       tool.execute
     end
   end
+
+  context 'when stream_response_service is set' do
+    let(:stream_response_handler) { instance_double(::Gitlab::Llm::ResponseService) }
+
+    before do
+      allow(ai_request_double).to receive(:request).and_yield("Hello").and_yield(" World")
+    end
+
+    it 'streams the final answer' do
+      first_response_double = double
+      second_response_double = double
+
+      allow(Gitlab::Llm::Chain::PlainResponseModifier).to receive(:new).with("Hello")
+        .and_return(first_response_double)
+
+      allow(Gitlab::Llm::Chain::PlainResponseModifier).to receive(:new).with(" World")
+        .and_return(second_response_double)
+
+      expect(stream_response_handler).to receive(:execute).with(
+        response: first_response_double,
+        options: { chunk_id: 1 }
+      )
+      expect(stream_response_handler).to receive(:execute).with(
+        response: second_response_double,
+        options: { chunk_id: 2 }
+      )
+
+      tool.execute
+    end
+  end
 end

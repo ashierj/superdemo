@@ -63,12 +63,6 @@ module Gitlab
               SLASH_COMMANDS
             end
 
-            def perform
-              Answer.new(status: :ok, context: context, content: request, tool: nil)
-            rescue StandardError
-              Answer.error_answer(context: context, content: _("Unexpected error"))
-            end
-
             private
 
             def authorize
