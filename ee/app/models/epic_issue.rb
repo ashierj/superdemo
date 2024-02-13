@@ -57,11 +57,8 @@ class EpicIssue < ApplicationRecord
   def check_existing_parent_link
     return unless epic && issue
 
-    existing_parent_epic = WorkItems::ParentLink.for_children(issue).any? do |parent_link|
-      parent_link.work_item_parent.work_item_type.base_type == 'epic'
-    end
-
-    return unless existing_parent_epic
+    existing_parent_epic = WorkItems::ParentLink.for_children(issue).first
+    return unless existing_parent_epic && existing_parent_epic.work_item_parent_id != epic.issue_id
 
     errors.add(:issue, _('already assigned to an epic'))
   end

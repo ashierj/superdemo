@@ -95,8 +95,6 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
           title_html: epic.title_html,
           updated_by: epic.updated_by,
           updated_at: epic.updated_at,
-          last_edited_at: epic.last_edited_at,
-          last_edited_by: epic.last_edited_by,
           confidential: true,
           extra_params: { synced_work_item: true }
         }
@@ -105,6 +103,35 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
       end
 
       expect(service.execute(epic)).to eq true
+    end
+
+    context 'when epic description has been edited' do
+      let_it_be(:params) { { description: 'new description' } }
+
+      before do
+        epic.assign_attributes(last_edited_by: user, last_edited_at: Time.current)
+        allow(epic).to receive(:edited?).and_return(true)
+      end
+
+      it 'WorkItems::UpdateService includes edited params' do
+        expect_next_instance_of(::WorkItems::UpdateService, container: group,
+          current_user: user,
+          widget_params: {},
+          params: {
+            description: 'new description',
+            description_html: epic.description_html,
+            last_edited_by: epic.last_edited_by,
+            last_edited_at: epic.last_edited_at,
+            updated_by: epic.updated_by,
+            updated_at: epic.updated_at,
+            extra_params: { synced_work_item: true }
+          }
+        ) do |instance|
+          expect(instance).to receive(:execute).with(epic.work_item).and_return({ status: :success })
+        end
+
+        expect(service.execute(epic)).to eq true
+      end
     end
   end
 end

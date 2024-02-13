@@ -22,6 +22,10 @@ module WorkItems
       def dates_source
         work_item&.dates_source
       end
+
+      def self.sync_params
+        [:start_date_fixed, :start_date_is_fixed, :due_date_fixed, :due_date_is_fixed]
+      end
     end
   end
 end
