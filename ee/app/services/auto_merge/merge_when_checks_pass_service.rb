@@ -4,6 +4,17 @@ module AutoMerge
   class MergeWhenChecksPassService < AutoMerge::MergeWhenPipelineSucceedsService
     extend Gitlab::Utils::Override
 
+    override :process
+    def process(merge_request)
+      logger.info("Processing Automerge")
+
+      return unless merge_request.mergeable?
+
+      logger.info("Merge request mergeable")
+
+      merge_request.merge_async(merge_request.merge_user_id, merge_request.merge_params)
+    end
+
     override :overrideable_available_for_checks
     def overrideable_available_for_checks(merge_request)
       if Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project)
@@ -27,6 +38,7 @@ module AutoMerge
       )
     end
 
+    override :check_availability
     def check_availability(merge_request)
       return false if Feature.disabled?(:merge_when_checks_pass, merge_request.project)
       return false unless merge_request.approval_feature_available?

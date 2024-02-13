@@ -133,61 +133,22 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
   end
 
   describe "#process" do
-    it_behaves_like 'auto_merge service #process' do
-      context 'when pipeline has succeeded and approvals are required' do
-        let_it_be(:approver1) { create(:user) }
-        let_it_be(:approver2) { create(:user) }
-        let(:approvals_required) { 2 }
-        let(:triggering_pipeline) do
-          create(:ci_pipeline, :success, project: project, ref: merge_request_ref,
-            sha: merge_request_head,
-            head_pipeline_of: mr_merge_if_green_enabled)
-        end
+    context 'when the merge request is mergable' do
+      it 'calls the merge worker' do
+        expect(mr_merge_if_green_enabled)
+          .to receive(:merge_async)
+          .with(mr_merge_if_green_enabled.merge_user_id, mr_merge_if_green_enabled.merge_params)
 
-        before do
-          allow(mr_merge_if_green_enabled)
-            .to receive_messages(head_pipeline: triggering_pipeline, actual_head_pipeline: triggering_pipeline)
-          approval_rule.users += [approver1, approver2]
-        end
+        service.process(mr_merge_if_green_enabled)
+      end
+    end
 
-        context 'when all required approvals are given' do
-          before do
-            create(:approval, merge_request: mr_merge_if_green_enabled, user: approver1)
-            create(:approval, merge_request: mr_merge_if_green_enabled, user: approver2)
-          end
+    context 'when the merge request is not mergeable' do
+      it 'does not call the merge worker' do
+        expect(mr_merge_if_green_enabled).to receive(:mergeable?).and_return(false)
+        expect(mr_merge_if_green_enabled).not_to receive(:merge_async)
 
-          context 'when mr is not draft' do
-            it 'merges the merge request' do
-              expect(MergeWorker).to receive(:perform_async)
-
-              service.process(mr_merge_if_green_enabled)
-            end
-          end
-
-          context 'when mr is draft' do
-            before do
-              mr_merge_if_green_enabled.update!(title: 'Draft: check')
-            end
-
-            it 'does not merge request' do
-              expect(MergeWorker).not_to receive(:perform_async)
-
-              service.process(mr_merge_if_green_enabled)
-            end
-          end
-        end
-
-        context 'when some approvals are missing' do
-          before do
-            create(:approval, merge_request: mr_merge_if_green_enabled, user: approver1)
-          end
-
-          it 'does not merge request' do
-            expect(MergeWorker).not_to receive(:perform_async)
-
-            service.process(mr_merge_if_green_enabled)
-          end
-        end
+        service.process(mr_merge_if_green_enabled)
       end
     end
   end
