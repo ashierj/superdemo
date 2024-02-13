@@ -17,7 +17,7 @@ import TracingTableList from './tracing_table.vue';
 import FilteredSearch from './filter_bar/tracing_filtered_search.vue';
 import TracingAnalytics from './tracing_analytics.vue';
 
-const PAGE_SIZE = 500;
+const PAGE_SIZE = 50;
 const TRACING_LIST_VERTICAL_PADDING = 140; // Accounts for the search bar height + the legend height + some more v padding
 
 export default {
