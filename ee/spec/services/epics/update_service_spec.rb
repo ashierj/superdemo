@@ -9,7 +9,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
 
   describe '#execute' do
     before do
-      stub_licensed_features(epics: true, subepics: true)
+      stub_licensed_features(epics: true, subepics: true, epic_colors: true)
       group.add_maintainer(user)
     end
 
@@ -809,6 +809,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                 description: 'New description',
                 confidential: true,
                 external_key: 'external_test_key',
+                color: '#CC0000',
                 parent: parent_epic
               }
             end

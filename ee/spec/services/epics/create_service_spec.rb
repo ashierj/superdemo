@@ -31,7 +31,8 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
       last_edited_at: '2024-01-10T01:00:00Z',
       closed_by_id: other_user.id,
       closed_at: '2024-01-11T01:00:00Z',
-      state_id: 2
+      state_id: 2,
+      color: '#c91c00'
     }
   end
 
@@ -39,7 +40,7 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
 
   before do
     group.add_reporter(user)
-    stub_licensed_features(epics: true, subepics: true)
+    stub_licensed_features(epics: true, subepics: true, epic_colors: true)
   end
 
   it_behaves_like 'rate limited service' do
@@ -65,6 +66,7 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
       expect(epic.labels).to contain_exactly(label2)
       expect(epic.relative_position).not_to be_nil
       expect(epic.confidential).to be_truthy
+      expect(epic.color.to_s).to eq('#c91c00')
       expect(NewEpicWorker).to have_received(:perform_async).with(epic.id, user.id)
     end
 
