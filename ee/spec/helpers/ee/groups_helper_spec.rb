@@ -216,6 +216,65 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     end
   end
 
+  describe '#show_user_cap_alert?' do
+    before do
+      allow(group).to receive(:user_cap_available?).and_return(user_cap_applied)
+      allow(helper).to receive(:current_user).and_return(current_user)
+    end
+
+    describe 'when user cap is available' do
+      let(:user_cap_applied) { true }
+
+      describe 'when user cap value is set' do
+        before do
+          group.namespace_settings.update!(new_user_signups_cap: 10)
+        end
+
+        describe 'when user is an owner of the root namespace' do
+          it { expect(helper.show_user_cap_alert?).to be true }
+        end
+
+        describe 'when user is not an owner of the root namespace' do
+          let(:current_user) { create(:user) }
+
+          it { expect(helper.show_user_cap_alert?).to be false }
+        end
+      end
+
+      describe 'when user cap value is not set' do
+        before do
+          group.namespace_settings.update!(new_user_signups_cap: nil)
+        end
+
+        describe 'when user is an owner of the root namespace' do
+          it { expect(helper.show_user_cap_alert?).to be false }
+        end
+      end
+    end
+
+    describe 'when user cap is not available' do
+      let(:user_cap_applied) { false }
+
+      it { expect(helper.show_user_cap_alert?).to be false }
+    end
+  end
+
+  describe '#pending_members_link' do
+    it { expect(helper.pending_members_link).to eq link_to('', pending_members_group_usage_quotas_path(group)) }
+
+    describe 'for a sub-group' do
+      let(:sub_group) { create(:group, :private, parent: group) }
+
+      before do
+        helper.instance_variable_set(:@group, sub_group)
+      end
+
+      it 'returns a link to the root group' do
+        expect(helper.pending_members_link).to eq link_to('', pending_members_group_usage_quotas_path(group))
+      end
+    end
+  end
+
   describe '#show_product_purchase_success_alert?' do
     describe 'when purchased_product is present' do
       before do
@@ -241,7 +300,6 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
   describe '#group_seats_usage_quota_app_data' do
     subject(:group_seats_usage_quota_app_data) { helper.group_seats_usage_quota_app_data(group) }
 
-    let(:user_cap_applied) { true }
     let(:enforcement_free_user_cap) { false }
     let(:data) do
       {
@@ -250,8 +308,6 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
         is_public_namespace: group.public?.to_s,
         full_path: group.full_path,
         seat_usage_export_path: group_seat_usage_path(group, format: :csv),
-        pending_members_page_path: pending_members_group_usage_quotas_path(group),
-        pending_members_count: ::Member.in_hierarchy(group).with_state("awaiting").count,
         add_seats_href: ::Gitlab::Routing.url_helpers.subscription_portal_add_extra_seats_url(group.id),
         has_no_subscription: group.has_free_or_no_subscription?.to_s,
         max_free_namespace_seats: 10,
@@ -262,24 +318,10 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
 
     before do
       stub_ee_application_setting(dashboard_limit: 10)
-      expect(group).to receive(:user_cap_available?).and_return(user_cap_applied)
 
       expect_next_instance_of(::Namespaces::FreeUserCap::Enforcement, group) do |instance|
         expect(instance).to receive(:enforce_cap?).and_return(enforcement_free_user_cap)
       end
-    end
-
-    context 'when user cap is applied' do
-      let(:expected_data) { data.merge({ pending_members_page_path: pending_members_group_usage_quotas_path(group) }) }
-
-      it { is_expected.to eql(expected_data) }
-    end
-
-    context 'when user cap is not applied' do
-      let(:user_cap_applied) { false }
-      let(:expected_data) { data.merge({ pending_members_page_path: nil }) }
-
-      it { is_expected.to eql(expected_data) }
     end
 
     context 'when free user cap is enforced' do
