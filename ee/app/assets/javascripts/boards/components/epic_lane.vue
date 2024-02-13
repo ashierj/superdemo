@@ -226,6 +226,7 @@ export default {
         :can-admin-epic="canAdminEpic"
         :lists="lists"
         :total-issues-count="totalIssuesCountByListId[list.id]"
+        @setFilters="$emit('setFilters', $event)"
       />
     </div>
   </div>
