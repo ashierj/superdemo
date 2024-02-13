@@ -142,7 +142,7 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
     end
 
     it 'expires the cache key for that user', :use_clean_rails_redis_caching do
-      cache_key = format(User::DUO_PRO_ADD_ON_CACHE_KEY, user_id: remove_user.id)
+      cache_key = remove_user.duo_pro_cache_key_formatted
       Rails.cache.write(cache_key, true, expires_in: 1.hour)
 
       expect do
