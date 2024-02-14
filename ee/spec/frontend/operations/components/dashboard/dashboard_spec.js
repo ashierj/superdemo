@@ -59,18 +59,50 @@ describe('dashboard component', () => {
     mockAxios.restore();
   });
 
-  it('renders dashboard title', () => {
-    const dashboardTitle = wrapper.element.querySelector('.js-dashboard-title');
-
-    expect(dashboardTitle.innerText.trim()).toEqual(mockText.DASHBOARD_TITLE);
-  });
-
-  describe('add projects button', () => {
-    it('renders add projects text', () => {
-      expect(findAddProjectButton().text()).toBe(mockText.ADD_PROJECTS);
+  describe('when no projects have been added', () => {
+    beforeEach(() => {
+      store.state.projects = [];
+      store.state.isLoadingProjects = false;
     });
 
-    describe('when a project is added', () => {
+    it('should render the empty state', () => {
+      expect(findEmptyState().exists()).toBe(true);
+    });
+
+    it('should link to the documentation', () => {
+      const link = wrapper.findByTestId('documentation-link');
+
+      expect(link.exists()).toBe(true);
+      expect(link.attributes().href).toEqual(emptyDashboardHelpPath);
+    });
+
+    it('should render the add projects button', () => {
+      const button = findAddProjectButton();
+
+      expect(button.exists()).toBe(true);
+      expect(button.text()).toEqual('Add projects');
+    });
+  });
+
+  describe('wrapped components', () => {
+    const projectCount = 3;
+
+    beforeEach(() => {
+      store.state.projects = mockProjectData(projectCount);
+      wrapper = mountComponent();
+    });
+
+    describe('dashboard layout', () => {
+      it('renders dashboard title', () => {
+        const dashboardTitle = wrapper.findByTestId('dashboard-title');
+
+        expect(dashboardTitle.text()).toEqual(mockText.DASHBOARD_TITLE);
+      });
+
+      it('renders add projects text', () => {
+        expect(findAddProjectButton().text()).toBe(mockText.ADD_PROJECTS);
+      });
+
       it('immediately requests the project list again', async () => {
         mockAxios.reset();
         mockAxios
@@ -89,17 +121,8 @@ describe('dashboard component', () => {
         expect(findAllProjects()).toHaveLength(2);
       });
     });
-  });
 
-  describe('wrapped components', () => {
     describe('dashboard project component', () => {
-      const projectCount = 1;
-
-      beforeEach(() => {
-        store.state.projects = mockProjectData(projectCount);
-        wrapper = mountComponent();
-      });
-
       it('includes a dashboard project component for each project', () => {
         expect(findAllProjects()).toHaveLength(projectCount);
       });
@@ -187,31 +210,6 @@ describe('dashboard component', () => {
 
         expect(store.state.projectSearchResults).toHaveLength(0);
         expect(store.state.selectedProjects).toHaveLength(0);
-      });
-    });
-
-    describe('when no projects have been added', () => {
-      beforeEach(() => {
-        store.state.projects = [];
-        store.state.isLoadingProjects = false;
-      });
-
-      it('should render the empty state', () => {
-        expect(findEmptyState().exists()).toBe(true);
-      });
-
-      it('should link to the documentation', () => {
-        const link = findEmptyState().find('[data-testid="documentation-link"]');
-
-        expect(link.exists()).toBe(true);
-        expect(link.attributes().href).toEqual(emptyDashboardHelpPath);
-      });
-
-      it('should render the add projects button', () => {
-        const button = findAddProjectButton();
-
-        expect(button.exists()).toBe(true);
-        expect(button.text()).toEqual('Add projects');
       });
     });
   });

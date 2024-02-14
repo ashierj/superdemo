@@ -31694,9 +31694,6 @@ msgstr ""
 msgid "Modal updated"
 msgstr ""
 
-msgid "ModalButton|Add projects"
-msgstr ""
-
 msgid "Modal|Close"
 msgstr ""
 
