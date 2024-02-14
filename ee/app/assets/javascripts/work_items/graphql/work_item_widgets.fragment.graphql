@@ -4,8 +4,8 @@
 #import "./work_item_metadata_widgets.fragment.graphql"
 
 fragment WorkItemWidgets on WorkItemWidget {
+  type
   ... on WorkItemWidgetDescription {
-    type
     description
     descriptionHtml
     lastEditedAt
@@ -15,7 +15,6 @@ fragment WorkItemWidgets on WorkItemWidget {
     }
   }
   ... on WorkItemWidgetAssignees {
-    type
     allowsMultipleAssignees
     canInviteMembers
     assignees {
@@ -25,7 +24,6 @@ fragment WorkItemWidgets on WorkItemWidget {
     }
   }
   ... on WorkItemWidgetLabels {
-    type
     allowsScopedLabels
     labels {
       nodes {
@@ -34,7 +32,6 @@ fragment WorkItemWidgets on WorkItemWidget {
     }
   }
   ... on WorkItemWidgetParticipants {
-    type
     participants {
       nodes {
         ...User
@@ -42,21 +39,17 @@ fragment WorkItemWidgets on WorkItemWidget {
     }
   }
   ... on WorkItemWidgetStartAndDueDate {
-    type
     dueDate
     startDate
   }
   ... on WorkItemWidgetWeight {
-    type
     weight
   }
   ... on WorkItemWidgetProgress {
-    type
     progress
     updatedAt
   }
   ... on WorkItemWidgetHierarchy {
-    type
     hasChildren
     parent {
       id
@@ -111,39 +104,29 @@ fragment WorkItemWidgets on WorkItemWidget {
         title
       }
     }
-    type
   }
   ... on WorkItemWidgetMilestone {
-    type
     milestone {
       ...MilestoneFragment
     }
   }
   ... on WorkItemWidgetNotes {
-    type
     discussionLocked
   }
   ... on WorkItemWidgetHealthStatus {
-    type
     healthStatus
   }
   ... on WorkItemWidgetNotifications {
-    type
     subscribed
   }
   ... on WorkItemWidgetCurrentUserTodos {
-    type
     currentUserTodos(state: pending) {
       nodes {
         id
       }
     }
   }
-  ... on WorkItemWidgetAwardEmoji {
-    type
-  }
   ... on WorkItemWidgetLinkedItems {
-    type
     linkedItems {
       nodes {
         linkId
@@ -174,6 +157,5 @@ fragment WorkItemWidgets on WorkItemWidget {
   ... on WorkItemWidgetColor {
     color
     textColor
-    type
   }
 }
