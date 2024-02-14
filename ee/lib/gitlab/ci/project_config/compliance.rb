@@ -9,7 +9,8 @@ module Gitlab
             next unless available?
             next unless pipeline_configuration_full_path.present?
             next if pipeline_source_bridge && pipeline_source == :parent_pipeline
-            next if pipeline_source == :security_orchestration_policy
+
+            next if [:security_orchestration_policy, :ondemand_dast_scan].include?(pipeline_source)
 
             path_file, path_project = pipeline_configuration_full_path.split('@', 2)
             YAML.dump('include' => [{ 'project' => path_project, 'file' => path_file }])
