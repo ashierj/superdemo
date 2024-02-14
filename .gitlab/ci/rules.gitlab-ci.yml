@@ -650,6 +650,10 @@
   - "{,ee/}config/audit_events/types/*.yml"
   - "doc/administration/audit_event_types.md"
   - "tooling/audit_events/docs/templates/audit_event_types.md.erb"
+  - "lib/tasks/gitlab/audit_event_types/audit_event_types.rake"
+  - "lib/tasks/gitlab/audit_event_types/check_docs_task.rb"
+  - "lib/gitlab/audit/type/definition.rb"
+  - "ee/lib/ee/gitlab/audit/type/definition.rb"
 
 ##################
 # Conditions set #
