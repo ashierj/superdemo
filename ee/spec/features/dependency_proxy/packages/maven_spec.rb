@@ -61,7 +61,7 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
 
   shared_examples 'returning the cached file' do
     it 'returns the cached file' do
-      expect_next_instance_of(::DependencyProxy::Packages::Maven::VerifyPackageFileEtagService) do |service|
+      expect_next_instance_of(::DependencyProxy::Packages::VerifyPackageFileEtagService) do |service|
         expect(service).to receive(:execute).and_return(ServiceResponse.success)
       end
       expect(Gitlab::Workhorse).not_to receive(:send_url)
@@ -105,7 +105,7 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
 
   shared_context 'with a wrong etag returned' do
     before do
-      allow_next_instance_of(::DependencyProxy::Packages::Maven::VerifyPackageFileEtagService) do |service|
+      allow_next_instance_of(::DependencyProxy::Packages::VerifyPackageFileEtagService) do |service|
         allow(service).to receive(:execute).and_return(ServiceResponse.error(message: '', reason: :wrong_etag))
       end
     end
@@ -113,7 +113,7 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
 
   shared_context 'with no etag returned' do
     before do
-      allow_next_instance_of(::DependencyProxy::Packages::Maven::VerifyPackageFileEtagService) do |service|
+      allow_next_instance_of(::DependencyProxy::Packages::VerifyPackageFileEtagService) do |service|
         allow(service).to receive(:execute).and_return(ServiceResponse.error(message: '', reason: :no_etag))
       end
     end

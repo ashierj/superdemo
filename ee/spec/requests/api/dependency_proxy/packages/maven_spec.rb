@@ -39,7 +39,7 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
         let(:file_name) { package_file.file_name }
 
         before do
-          allow_next_instance_of(::DependencyProxy::Packages::Maven::VerifyPackageFileEtagService) do |service|
+          allow_next_instance_of(::DependencyProxy::Packages::VerifyPackageFileEtagService) do |service|
             allow(service).to receive(:execute).and_return(ServiceResponse.success)
           end
         end
@@ -131,9 +131,9 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
         shared_examples 'tracking an internal event' do |from_cache: false|
           it 'tracks an internal event' do
             event_name = if from_cache
-                           described_class::TRACKING_EVENT_NAME_FROM_CACHE
+                           'dependency_proxy_packages_maven_file_pulled_from_cache'
                          else
-                           described_class::TRACKING_EVENT_NAME_FROM_EXTERNAL
+                           'dependency_proxy_packages_maven_file_pulled_from_external'
                          end
 
             u = user unless using_a_deploy_token
@@ -216,7 +216,7 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
 
             with_them do
               before do
-                allow_next_instance_of(::DependencyProxy::Packages::Maven::VerifyPackageFileEtagService) do |service|
+                allow_next_instance_of(::DependencyProxy::Packages::VerifyPackageFileEtagService) do |service|
                   allow(service).to receive(:execute).and_return(etag_service_response)
                 end
               end
