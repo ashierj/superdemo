@@ -121,7 +121,7 @@ export default {
 <template>
   <div v-if="flatFindings.length" class="gl-relative">
     <div class="gl-display-inline-flex">
-      <span ref="inlineFindingsIcon" class="gl-z-index-200">
+      <span ref="inlineFindingsIcon">
         <inline-findings-dropdown
           :items="groupedFindings"
           :icon-id="`${filePath}-${firstItem.line}`"
