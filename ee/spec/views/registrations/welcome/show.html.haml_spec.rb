@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'registrations/welcome/show', :saas, feature_category: :onboarding do
+RSpec.describe 'registrations/welcome/show', feature_category: :onboarding do
   let(:invite?) { false }
   let(:trial?) { false }
   let(:onboarding_status) do
