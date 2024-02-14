@@ -83,9 +83,11 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
 
     before do
       stub_licensed_features(repository_mirrors: true)
+      stub_ee_application_setting(elasticsearch_indexing?: true)
     end
 
     it 'sets mirror attributes' do
+      expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(project).once
       result = update_project(project, user, opts)
 
       expect(result).to eq(status: :success)
