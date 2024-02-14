@@ -243,6 +243,15 @@ module EE
         ).has_ability?
       end
 
+      desc 'Custom role on group that enables admin CI/CD variables'
+      condition(:role_enables_admin_cicd_variables) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :admin_cicd_variables
+        ).has_ability?
+      end
+
       rule { owner & unique_project_download_limit_enabled }.policy do
         enable :ban_group_member
       end
@@ -546,6 +555,10 @@ module EE
 
       rule { custom_roles_allowed & owner }.policy do
         enable :admin_member_role
+      end
+
+      rule { custom_roles_allowed & role_enables_admin_cicd_variables }.policy do
+        enable :admin_cicd_variables
       end
 
       rule { can?(:read_group_security_dashboard) }.policy do

@@ -10,6 +10,7 @@ module Auth
 
     def has_ability?
       return false unless user.is_a?(User)
+      return false unless permission_enabled?
 
       roles = if resource.is_a?(::Project)
                 preloaded_member_roles_for_project[resource.id]
@@ -23,6 +24,10 @@ module Auth
     private
 
     attr_reader :user, :resource, :ability
+
+    def permission_enabled?
+      ::MemberRole.permission_enabled?(ability)
+    end
 
     def preloaded_member_roles_for_project
       ::Preloaders::UserMemberRolesInProjectsPreloader.new(

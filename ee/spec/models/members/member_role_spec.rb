@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe ::MemberRole, feature_category: :system_access do
+  using RSpec::Parameterized::TableSyntax
+
   describe 'associations' do
     it { is_expected.to belong_to(:namespace) }
     it { is_expected.to have_many(:members) }
@@ -268,6 +270,29 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
     end
   end
 
+  describe '.permission_enabled?' do
+    let(:ability) { :my_custom_ability }
+
+    subject { described_class.permission_enabled?(ability) }
+
+    where(:flag_exists, :flag_enabled, :expected_result) do
+      true  | false | false
+      true  | true  | true
+      false | true  | true
+    end
+
+    with_them do
+      before do
+        if flag_exists
+          stub_feature_flag_definition("custom_ability_#{ability}")
+          stub_feature_flags("custom_ability_#{ability}" => flag_enabled)
+        end
+      end
+
+      it { is_expected.to eq(expected_result) }
+    end
+  end
+
   describe 'covering all permissions columns' do
     it 'has all attributes listed in the member_roles table' do
       expect(described_class.attribute_names.map(&:to_sym))
@@ -277,10 +302,21 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
   end
 
   describe '#enabled_permissions' do
-    it 'returns the list of enabled abilities' do
-      member_role = build_stubbed(:member_role, read_code: true, read_vulnerability: true, read_dependency: false)
+    let(:member_role) { build_stubbed(:member_role, read_code: true, read_vulnerability: true, read_dependency: false) }
 
+    it 'returns the list of enabled abilities' do
       expect(member_role.enabled_permissions).to match_array([:read_code, :read_vulnerability])
+    end
+
+    context 'when a permission is behind a disabled feature flag' do
+      before do
+        stub_feature_flag_definition(:custom_ability_read_vulnerability)
+        stub_feature_flags(custom_ability_read_vulnerability: false)
+      end
+
+      it 'does not include the ability' do
+        expect(member_role.enabled_permissions).not_to include(:read_vulnerability)
+      end
     end
   end
 
