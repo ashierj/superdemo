@@ -98,7 +98,7 @@ module Security
               .with_merge_request_links
               .by_partition_number(security_findings_partition_number)
               .deduplicated
-              .ordered
+              .ordered(params[:sort])
               .merge(::Security::Scan.latest_successful)
               .page(page)
               .per(per_page)
@@ -143,7 +143,7 @@ module Security
         .where('"security_findings"."severity" = "severities"."severity"') # rubocop:disable CodeReuse/ActiveRecord
         .by_partition_number(security_findings_partition_number)
         .deduplicated
-        .ordered
+        .ordered(params[:sort])
         .then { |relation| by_uuid(relation) }
         .then { |relation| by_confidence_levels(relation) }
         .then { |relation| by_scanner_external_ids(relation) }
@@ -167,7 +167,7 @@ module Security
         .with_merge_request_links
         .merge(::Security::Scan.by_pipeline_ids(pipeline.id))
         .merge(::Security::Scan.latest_successful)
-        .ordered
+        .ordered(params[:sort])
         .then { |relation| by_report_types(relation) }
         .page(page)
         .per(per_page)
