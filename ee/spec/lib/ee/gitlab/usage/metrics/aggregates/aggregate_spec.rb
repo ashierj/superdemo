@@ -40,7 +40,7 @@ RSpec.describe Gitlab::Usage::Metrics::Aggregates::Aggregate, :clean_gitlab_redi
       it 'returns the number of unique events for aggregation', :aggregate_failures do
         expect(namespace::SOURCES[datasource])
           .to receive(:calculate_metrics_intersections)
-                .with(params.merge(metric_names: events))
+                .with(params.merge(metric_names: events, property_name: nil))
                 .and_return(5)
         expect(calculate_count_for_aggregation).to eq(5)
       end
