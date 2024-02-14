@@ -13,7 +13,7 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
   let_it_be_with_refind(:project) { create(:project, :repository, :public, group: group) }
   let_it_be_with_reload(:issue) { create(:issue, project: project) }
 
-  let(:service) { described_class.new(project, current_user) }
+  let(:service) { described_class.new(container: project, current_user: current_user) }
 
   before do
     stub_licensed_features(multiple_issue_assignees: true,
@@ -805,7 +805,7 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       let(:project_label) { create(:label, title: 'project_label') }
       let(:content) { "/label ~#{label.title} ~#{project_label.title}" }
 
-      let(:service) { described_class.new(nil, current_user) }
+      let(:service) { described_class.new(container: group, current_user: current_user) }
 
       context 'when epics are enabled' do
         before do
@@ -1149,7 +1149,13 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       let(:content) { '/merge' }
 
       context 'when "merge_when_checks_pass" is enabled' do
-        let(:service) { described_class.new(project, current_user, { merge_request_diff_head_sha: merge_request.diff_head_sha }) }
+        let(:service) do
+          described_class.new(
+            container: project,
+            current_user: current_user,
+            params: { merge_request_diff_head_sha: merge_request.diff_head_sha }
+          )
+        end
 
         it 'runs merge command and returns merge message' do
           _, updates, message = service.execute(content, merge_request)
@@ -1180,7 +1186,13 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       end
 
       context 'when merge_when_checks_pass and additional_merge_when_checks_ready are enabled' do
-        let(:service) { described_class.new(project, current_user, { merge_request_diff_head_sha: issuable.diff_head_sha }) }
+        let(:service) do
+          described_class.new(
+            container: project,
+            current_user: current_user,
+            params: { merge_request_diff_head_sha: issuable.diff_head_sha }
+          )
+        end
 
         it 'runs merge command and returns merge message' do
           _, updates, message = service.execute(content, issuable)
