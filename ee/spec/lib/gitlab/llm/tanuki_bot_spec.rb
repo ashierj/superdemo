@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
+  # rubocop:disable RSpec/MultipleMemoizedHelpers -- after ai_gateway_docs_search flag removal many let can be removed
   describe '#execute' do
     let_it_be(:user) { create(:user) }
     let_it_be(:embeddings) { create_list(:vertex_gitlab_documentation, 2) }
@@ -21,6 +22,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let(:vertex_model) { ::Embedding::Vertex::GitlabDocumentation }
     let(:vertex_args) { { content: question } }
     let(:vertex_client) { ::Gitlab::Llm::VertexAi::Client.new(user) }
+    let(:ai_gateway_client) { ::Gitlab::Llm::AiGateway::Client.new(user) }
     let(:anthropic_client) { ::Gitlab::Llm::Anthropic::Client.new(user) }
     let(:embedding) { Array.new(1536, 0.5) }
     let(:vertex_embedding) { Array.new(768, 0.5) }
@@ -30,6 +32,22 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let(:vertex_response) { { "predictions" => predictions, "error" => error } }
     let(:attrs) { embeddings.map(&:id).map { |x| "CNT-IDX-#{x}" }.join(", ") }
     let(:completion_response) { "#{answer} ATTRS: #{attrs}" }
+
+    let(:docs_search_client) { ::Gitlab::Llm::AiGateway::DocsClient.new(user) }
+    let(:docs_search_args) { { query: question } }
+    let(:docs_search_response) do
+      {
+        'response' => {
+          'results' => [
+            {
+              'id' => 1,
+              'content' => 'content',
+              'metadata' => 'metadata'
+            }
+          ]
+        }
+      }
+    end
 
     let(:status_code) { 200 }
     let(:success) { true }
@@ -122,6 +140,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
       before do
         allow(License).to receive(:feature_available?).and_return(true)
         allow(logger).to receive(:info_or_debug)
+        stub_feature_flags(ai_gateway_docs_search: false)
       end
 
       context 'when on Gitlab.com' do
@@ -286,5 +305,81 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
         end
       end
     end
+
+    describe 'execute with ai_gateway_docs_search enabled' do
+      before do
+        stub_feature_flags(ai_gateway_docs_search: true)
+        allow(License).to receive(:feature_available?).and_return(true)
+        allow(logger).to receive(:info_or_debug)
+
+        allow(described_class).to receive(:enabled_for?).and_return(true)
+
+        allow(::Gitlab::Llm::AiGateway::Client).to receive(:new).and_return(ai_gateway_client)
+        allow(::Gitlab::Llm::AiGateway::DocsClient).to receive(:new).and_return(docs_search_client)
+
+        allow(ai_gateway_client).to receive(:stream).and_return(completion_response)
+        allow(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
+      end
+
+      it 'executes calls and returns ResponseModifier' do
+        expect(ai_gateway_client).to receive(:stream).once.and_return(completion_response)
+        expect(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
+
+        expect(execute).to be_an_instance_of(::Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot)
+      end
+
+      it 'yields the streamed response to the given block' do
+        expect(ai_gateway_client)
+          .to receive(:stream).once
+          .and_yield(answer)
+          .and_return(completion_response)
+
+        expect(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
+
+        expect { |b| instance.execute(&b) }.to yield_with_args(answer)
+      end
+
+      it 'raises an error when request failed' do
+        expect(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
+        allow(ai_gateway_client).to receive(:stream).once.and_yield({ "error" => { "message" => "some error" } })
+
+        execute
+      end
+
+      context 'when user has AI features disabled' do
+        before do
+          allow(described_class).to receive(:enabled_for?).with(user: user).and_return(false)
+        end
+
+        it 'returns an empty response message' do
+          expect(execute.response_body).to eq(empty_response_message)
+        end
+      end
+
+      context 'when the question is not provided' do
+        let(:question) { nil }
+
+        it 'returns an empty response message' do
+          expect(execute.response_body).to eq(empty_response_message)
+        end
+      end
+
+      context 'when no documents are found' do
+        let(:docs_search_response) { {} }
+
+        it 'returns an empty response message' do
+          expect(execute.response_body).to eq(empty_response_message)
+        end
+      end
+
+      context 'when DocsClient returns nil' do
+        let(:docs_search_response) { nil }
+
+        it 'returns an empty response message' do
+          expect(execute.response_body).to eq(empty_response_message)
+        end
+      end
+    end
   end
+  # rubocop:enable RSpec/MultipleMemoizedHelpers
 end
