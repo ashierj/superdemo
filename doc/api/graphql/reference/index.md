@@ -11297,6 +11297,29 @@ The edge type for [`ForecastDatapoint`](#forecastdatapoint).
 | <a id="forecastdatapointedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="forecastdatapointedgenode"></a>`node` | [`ForecastDatapoint`](#forecastdatapoint) | The item at the end of the edge. |
 
+#### `GoogleCloudArtifactRegistryArtifactConnection`
+
+The connection type for [`GoogleCloudArtifactRegistryArtifact`](#googlecloudartifactregistryartifact).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="googlecloudartifactregistryartifactconnectionedges"></a>`edges` | [`[GoogleCloudArtifactRegistryArtifactEdge]`](#googlecloudartifactregistryartifactedge) | A list of edges. |
+| <a id="googlecloudartifactregistryartifactconnectionnodes"></a>`nodes` | [`[GoogleCloudArtifactRegistryArtifact]`](#googlecloudartifactregistryartifact) | A list of nodes. |
+| <a id="googlecloudartifactregistryartifactconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `GoogleCloudArtifactRegistryArtifactEdge`
+
+The edge type for [`GoogleCloudArtifactRegistryArtifact`](#googlecloudartifactregistryartifact).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="googlecloudartifactregistryartifactedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="googlecloudartifactregistryartifactedgenode"></a>`node` | [`GoogleCloudArtifactRegistryArtifact`](#googlecloudartifactregistryartifact) | The item at the end of the edge. |
+
 #### `GoogleCloudLoggingConfigurationTypeConnection`
 
 The connection type for [`GoogleCloudLoggingConfigurationType`](#googlecloudloggingconfigurationtype).
@@ -19688,6 +19711,59 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="geonodeuploadregistriesreplicationstate"></a>`replicationState` | [`ReplicationStateEnum`](#replicationstateenum) | Filters registries by their replication state. |
 | <a id="geonodeuploadregistriesverificationstate"></a>`verificationState` | [`VerificationStateEnum`](#verificationstateenum) | Filters registries by their verification state. |
 
+### `GoogleCloudArtifactRegistryDockerImage`
+
+Represents a docker artifact of Google Cloud Artifact Registry.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="googlecloudartifactregistrydockerimageartifactregistryimageurl"></a>`artifactRegistryImageUrl` | [`String!`](#string) | Google Cloud URL to access the image. |
+| <a id="googlecloudartifactregistrydockerimagebuildtime"></a>`buildTime` | [`Time`](#time) | Time when the image was built. |
+| <a id="googlecloudartifactregistrydockerimagedigest"></a>`digest` | [`String!`](#string) | Image's digest. |
+| <a id="googlecloudartifactregistrydockerimageimage"></a>`image` | [`String!`](#string) | Image's name. |
+| <a id="googlecloudartifactregistrydockerimageimagesizebytes"></a>`imageSizeBytes` | [`String`](#string) | Calculated size of the image. |
+| <a id="googlecloudartifactregistrydockerimagelocation"></a>`location` | [`String!`](#string) | Location of the Artifact Registry repository. |
+| <a id="googlecloudartifactregistrydockerimagemediatype"></a>`mediaType` | [`String`](#string) | Media type of the image. |
+| <a id="googlecloudartifactregistrydockerimagename"></a>`name` | [`String!`](#string) | Unique image name. |
+| <a id="googlecloudartifactregistrydockerimageprojectid"></a>`projectId` | [`String!`](#string) | ID of the Google Cloud project. |
+| <a id="googlecloudartifactregistrydockerimagerepository"></a>`repository` | [`String!`](#string) | Repository on the Google Cloud Artifact Registry. |
+| <a id="googlecloudartifactregistrydockerimagetags"></a>`tags` | [`[String!]`](#string) | Tags attached to the image. |
+| <a id="googlecloudartifactregistrydockerimageupdatetime"></a>`updateTime` | [`Time`](#time) | Time when the image was last updated. |
+| <a id="googlecloudartifactregistrydockerimageuploadtime"></a>`uploadTime` | [`Time`](#time) | Time when the image was uploaded. |
+| <a id="googlecloudartifactregistrydockerimageuri"></a>`uri` | [`String!`](#string) | Google Cloud URI to access the image. |
+
+### `GoogleCloudArtifactRegistryRepository`
+
+Represents a repository of Google Cloud Artifact Registry.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="googlecloudartifactregistryrepositoryartifactregistryrepositoryurl"></a>`artifactRegistryRepositoryUrl` | [`String!`](#string) | Google Cloud URL to access the repository. |
+| <a id="googlecloudartifactregistryrepositoryprojectid"></a>`projectId` | [`String!`](#string) | ID of the Google Cloud project. |
+| <a id="googlecloudartifactregistryrepositoryrepository"></a>`repository` | [`String!`](#string) | Repository on the Google Cloud Artifact Registry. |
+
+#### Fields with arguments
+
+##### `GoogleCloudArtifactRegistryRepository.artifacts`
+
+Google Cloud Artifact Registry repository artifacts. Returns `null` if `gcp_artifact_registry` feature flag is disabled or GitLab.com feature is unavailable.
+
+Returns [`GoogleCloudArtifactRegistryArtifactConnection`](#googlecloudartifactregistryartifactconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="googlecloudartifactregistryrepositoryartifactssort"></a>`sort` | [`GoogleCloudArtifactRegistryArtifactsSort`](#googlecloudartifactregistryartifactssort) | Criteria to sort artifacts by. |
+
 ### `GoogleCloudLoggingConfigurationType`
 
 Stores Google Cloud Logging configurations associated with IAM service accounts,used for generating access tokens.
@@ -24791,6 +24867,7 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="projectforkingaccesslevel"></a>`forkingAccessLevel` | [`ProjectFeatureAccess`](#projectfeatureaccess) | Access level required for forking access. |
 | <a id="projectforkscount"></a>`forksCount` | [`Int!`](#int) | Number of times the project has been forked. |
 | <a id="projectfullpath"></a>`fullPath` | [`ID!`](#id) | Full path of the project. |
+| <a id="projectgooglecloudartifactregistryrepository"></a>`googleCloudArtifactRegistryRepository` **{warning-solid}** | [`GoogleCloudArtifactRegistryRepository`](#googlecloudartifactregistryrepository) | **Introduced** in 16.10. **Status**: Experiment. Google Cloud Artifact Registry repository. Returns `null` if `gcp_artifact_registry` feature flag is disabled. |
 | <a id="projectgrafanaintegration"></a>`grafanaIntegration` | [`GrafanaIntegration`](#grafanaintegration) | Grafana integration details for the project. |
 | <a id="projectgroup"></a>`group` | [`Group`](#group) | Group of the project. |
 | <a id="projecthasjiravulnerabilityissuecreationenabled"></a>`hasJiraVulnerabilityIssueCreationEnabled` | [`Boolean!`](#boolean) | Indicates whether Jira issue creation from vulnerabilities is enabled. |
@@ -31182,6 +31259,25 @@ Role of User.
 | <a id="gitlabsubscriptionsuserroleowner"></a>`OWNER` | Owner. |
 | <a id="gitlabsubscriptionsuserrolereporter"></a>`REPORTER` | Reporter. |
 
+### `GoogleCloudArtifactRegistryArtifactsSort`
+
+Values for sorting artifacts.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="googlecloudartifactregistryartifactssortbuild_time_asc"></a>`BUILD_TIME_ASC` | Ordered by `build_time` in ascending order. |
+| <a id="googlecloudartifactregistryartifactssortbuild_time_desc"></a>`BUILD_TIME_DESC` | Ordered by `build_time` in descending order. |
+| <a id="googlecloudartifactregistryartifactssortimage_size_bytes_asc"></a>`IMAGE_SIZE_BYTES_ASC` | Ordered by `image_size_bytes` in ascending order. |
+| <a id="googlecloudartifactregistryartifactssortimage_size_bytes_desc"></a>`IMAGE_SIZE_BYTES_DESC` | Ordered by `image_size_bytes` in descending order. |
+| <a id="googlecloudartifactregistryartifactssortmedia_type_asc"></a>`MEDIA_TYPE_ASC` | Ordered by `media_type` in ascending order. |
+| <a id="googlecloudartifactregistryartifactssortmedia_type_desc"></a>`MEDIA_TYPE_DESC` | Ordered by `media_type` in descending order. |
+| <a id="googlecloudartifactregistryartifactssortname_asc"></a>`NAME_ASC` | Ordered by `name` in ascending order. |
+| <a id="googlecloudartifactregistryartifactssortname_desc"></a>`NAME_DESC` | Ordered by `name` in descending order. |
+| <a id="googlecloudartifactregistryartifactssortupdate_time_asc"></a>`UPDATE_TIME_ASC` | Ordered by `update_time` in ascending order. |
+| <a id="googlecloudartifactregistryartifactssortupdate_time_desc"></a>`UPDATE_TIME_DESC` | Ordered by `update_time` in descending order. |
+| <a id="googlecloudartifactregistryartifactssortupload_time_asc"></a>`UPLOAD_TIME_ASC` | Ordered by `upload_time` in ascending order. |
+| <a id="googlecloudartifactregistryartifactssortupload_time_desc"></a>`UPLOAD_TIME_DESC` | Ordered by `upload_time` in descending order. |
+
 ### `GroupMemberRelation`
 
 Group member relation.
@@ -33763,6 +33859,14 @@ Represents metadata associated with a dependency link.
 One of:
 
 - [`NugetDependencyLinkMetadata`](#nugetdependencylinkmetadata)
+
+#### `GoogleCloudArtifactRegistryArtifact`
+
+A base type of Google Cloud Artifact Registry artifacts.
+
+One of:
+
+- [`GoogleCloudArtifactRegistryDockerImage`](#googlecloudartifactregistrydockerimage)
 
 #### `Issuable`
 
