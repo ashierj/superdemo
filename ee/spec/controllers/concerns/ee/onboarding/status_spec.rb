@@ -135,12 +135,14 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
     let(:instance) { described_class.new({}, nil, nil) }
     let(:trial?) { false }
     let(:invite?) { false }
+    let(:subscription?) { false }
 
     subject(:tracking_label) { instance.tracking_label }
 
     before do
       allow(instance).to receive(:trial?).and_return(trial?)
       allow(instance).to receive(:invite?).and_return(invite?)
+      allow(instance).to receive(:subscription?).and_return(subscription?)
     end
 
     it { is_expected.to eq('free_registration') }
@@ -155,6 +157,12 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
       let(:invite?) { true }
 
       it { is_expected.to eq('invite_registration') }
+    end
+
+    context 'when it is a subscription' do
+      let(:subscription?) { true }
+
+      it { is_expected.to eq('subscription_registration') }
     end
   end
 
