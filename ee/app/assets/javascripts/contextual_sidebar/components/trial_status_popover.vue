@@ -17,7 +17,7 @@ const {
   resizeEventDebounceMS,
   disabledBreakpoints,
 } = POPOVER;
-const trackingMixin = Tracking.mixin();
+const trackingMixin = Tracking.mixin({ experiment: 'trial_discover_page' });
 
 export default {
   components: {
@@ -198,6 +198,7 @@ export default {
             block
             data-testid="learn-about-features-btn"
             :title="$options.i18n.learnAboutButtonTitle"
+            @click="trackPageAction('learnAboutFeaturesClick')"
           >
             <span class="gl-font-sm">{{ $options.i18n.learnAboutButtonTitle }}</span>
           </gl-button>

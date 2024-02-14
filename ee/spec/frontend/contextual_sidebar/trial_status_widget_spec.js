@@ -1,13 +1,15 @@
-import { GlLink } from '@gitlab/ui';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { GlLink, GlButton } from '@gitlab/ui';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { WIDGET } from 'ee/contextual_sidebar/components/constants';
 import TrialStatusWidget from 'ee/contextual_sidebar/components/trial_status_widget.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { stubExperiments } from 'helpers/experimentation_helper';
 import { __ } from '~/locale';
+import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 
 describe('TrialStatusWidget component', () => {
   let wrapper;
+  let trackingSpy;
 
   const { trackingEvents } = WIDGET;
   const trialDaysUsed = 10;
@@ -15,10 +17,9 @@ describe('TrialStatusWidget component', () => {
 
   const findGlLink = () => wrapper.findComponent(GlLink);
   const findLearnAboutFeaturesBtn = () => wrapper.findByTestId('learn-about-features-btn');
-  const findLearnAboutFeaturesLink = () => wrapper.findByTestId('learn-about-features-link');
 
   const createComponent = (providers = {}) => {
-    return mountExtended(TrialStatusWidget, {
+    return shallowMountExtended(TrialStatusWidget, {
       provide: {
         trialDaysUsed,
         trialDuration,
@@ -29,9 +30,17 @@ describe('TrialStatusWidget component', () => {
         trialDiscoverPagePath: 'discover-path',
         ...providers,
       },
-      stubs: { GlLink: true },
+      stubs: { GitlabExperiment, GlButton },
     });
   };
+
+  beforeEach(() => {
+    trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
+  });
+
+  afterEach(() => {
+    unmockTracking();
+  });
 
   describe('interpolated strings', () => {
     it('correctly interpolates them all', () => {
@@ -61,16 +70,6 @@ describe('TrialStatusWidget component', () => {
     });
 
     describe('tracks when the widget menu is clicked', () => {
-      let trackingSpy;
-
-      beforeEach(() => {
-        trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
-      });
-
-      afterEach(() => {
-        unmockTracking();
-      });
-
       it('tracks with correct information when namespace is in an active trial', async () => {
         const { category, label } = trackingEvents.activeTrialOptions;
         await wrapper.findByTestId('widget-menu').trigger('click');
@@ -143,7 +142,7 @@ describe('TrialStatusWidget component', () => {
           wrapper = createComponent({ percentageComplete: 110 });
 
           expect(wrapper.text()).not.toContain(__('Learn about features'));
-          expect(findLearnAboutFeaturesLink().exists()).toBe(false);
+          expect(findLearnAboutFeaturesBtn().exists()).toBe(false);
         });
       });
     });
@@ -161,6 +160,18 @@ describe('TrialStatusWidget component', () => {
           expect(findLearnAboutFeaturesBtn().exists()).toBe(true);
           expect(findLearnAboutFeaturesBtn().attributes('href')).toBe('discover-path');
         });
+
+        it('tracks clicking learn about features button', async () => {
+          wrapper = createComponent();
+
+          const { category } = trackingEvents.activeTrialOptions;
+          await findLearnAboutFeaturesBtn().trigger('click');
+
+          expect(trackingSpy).toHaveBeenCalledWith(category, trackingEvents.action, {
+            category,
+            label: 'learn_about_features',
+          });
+        });
       });
 
       describe('when trial is expired', () => {
@@ -168,8 +179,20 @@ describe('TrialStatusWidget component', () => {
           wrapper = createComponent({ percentageComplete: 110 });
 
           expect(wrapper.text()).toContain(__('Learn about features'));
-          expect(findLearnAboutFeaturesLink().exists()).toBe(true);
-          expect(findLearnAboutFeaturesLink().attributes('href')).toBe('discover-path');
+          expect(findLearnAboutFeaturesBtn().exists()).toBe(true);
+          expect(findLearnAboutFeaturesBtn().attributes('href')).toBe('discover-path');
+        });
+
+        it('tracks clicking learn about features link', async () => {
+          wrapper = createComponent({ percentageComplete: 110 });
+
+          const { category } = trackingEvents.trialEndedOptions;
+          await findLearnAboutFeaturesBtn().trigger('click');
+
+          expect(trackingSpy).toHaveBeenCalledWith(category, trackingEvents.action, {
+            category,
+            label: 'learn_about_features',
+          });
         });
       });
     });

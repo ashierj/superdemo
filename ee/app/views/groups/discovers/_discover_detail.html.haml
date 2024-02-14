@@ -1,0 +1,9 @@
+.trial-discover-page-card.gl-flex-grow-1.gl-pr-6.gl-py-3.gl-flex-basis-third
+  = render Pajamas::CardComponent.new(card_options: { class: 'gl-rounded-lg' }) do |c|
+    - c.with_body do
+      .gl-mb-3
+        = sprite_icon(item[:icon], css_class: "gl-text-blue-400")
+      %h5.gl-mt-3
+        = item[:title]
+      .gl-h-13
+        = item[:description]
