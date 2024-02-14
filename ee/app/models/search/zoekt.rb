@@ -23,7 +23,7 @@ module Search
         root_namespace_id = fetch_root_namespace_id(container)
         return false unless root_namespace_id
 
-        ::Search::Zoekt::EnabledNamespace.for_root_namespace_id(root_namespace_id).exists?
+        ::Search::Zoekt::Index.for_root_namespace_id(root_namespace_id).exists?
       end
 
       private
