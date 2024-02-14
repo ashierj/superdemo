@@ -71,6 +71,7 @@ GitLab Dedicated offers the following [compliance certifications](https://about.
 - ISO/IEC 27001:2013
 - ISO/IEC 27017:2015
 - ISO/IEC 27018:2019
+- TISAX Assessment Level 3
 
 #### Isolation
 
