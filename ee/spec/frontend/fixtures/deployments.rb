@@ -55,5 +55,16 @@ RSpec.describe 'Deployments (JavaScript fixtures)' do
       expect_graphql_errors_to_be_empty
       expect(graphql_data_at(:project, :deployment)).to be_present
     end
+
+    deployment_details_query_path = 'deployments/graphql/queries/deployment.query.graphql'
+
+    it "ee/graphql/#{deployment_details_query_path}.json" do
+      query = get_graphql_query_as_string(deployment_details_query_path)
+
+      post_graphql(query, current_user: admin, variables: { fullPath: project.full_path, iid: deployment.iid })
+
+      expect_graphql_errors_to_be_empty
+      expect(graphql_data_at(:project, :deployment)).to be_present
+    end
   end
 end
