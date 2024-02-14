@@ -14396,7 +14396,6 @@ A user with add-on data.
 | <a id="addonusernamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
 | <a id="addonusernamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="addonuserorganization"></a>`organization` | [`String`](#string) | Who the user represents or works for. |
-| <a id="addonuserorganizations"></a>`organizations` **{warning-solid}** | [`OrganizationConnection`](#organizationconnection) | **Introduced** in 16.6. **Status**: Experiment. Organizations where the user has access. |
 | <a id="addonuserpreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="addonuserprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="addonuserprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -14522,6 +14521,26 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="addonusergroupspermissionscope"></a>`permissionScope` | [`GroupPermission`](#grouppermission) | Filter by permissions the user has on groups. |
 | <a id="addonusergroupssearch"></a>`search` | [`String`](#string) | Search by group name or path. |
+
+##### `AddOnUser.organizations`
+
+Organizations where the user has access.
+
+NOTE:
+**Introduced** in 16.6.
+**Status**: Experiment.
+
+Returns [`OrganizationConnection`](#organizationconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="addonuserorganizationssearch"></a>`search` | [`String`](#string) | Search query, which can be for the organization name or a path. |
 
 ##### `AddOnUser.reviewRequestedMergeRequests`
 
@@ -15128,7 +15147,6 @@ Core representation of a GitLab user.
 | <a id="autocompletedusernamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
 | <a id="autocompletedusernamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="autocompleteduserorganization"></a>`organization` | [`String`](#string) | Who the user represents or works for. |
-| <a id="autocompleteduserorganizations"></a>`organizations` **{warning-solid}** | [`OrganizationConnection`](#organizationconnection) | **Introduced** in 16.6. **Status**: Experiment. Organizations where the user has access. |
 | <a id="autocompleteduserpreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="autocompleteduserprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="autocompleteduserprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -15246,6 +15264,26 @@ Returns [`UserMergeRequestInteraction`](#usermergerequestinteraction).
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="autocompletedusermergerequestinteractionid"></a>`id` | [`MergeRequestID!`](#mergerequestid) | Global ID of the merge request. |
+
+##### `AutocompletedUser.organizations`
+
+Organizations where the user has access.
+
+NOTE:
+**Introduced** in 16.6.
+**Status**: Experiment.
+
+Returns [`OrganizationConnection`](#organizationconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="autocompleteduserorganizationssearch"></a>`search` | [`String`](#string) | Search query, which can be for the organization name or a path. |
 
 ##### `AutocompletedUser.reviewRequestedMergeRequests`
 
@@ -17315,7 +17353,6 @@ The currently authenticated GitLab user.
 | <a id="currentusernamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
 | <a id="currentusernamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="currentuserorganization"></a>`organization` | [`String`](#string) | Who the user represents or works for. |
-| <a id="currentuserorganizations"></a>`organizations` **{warning-solid}** | [`OrganizationConnection`](#organizationconnection) | **Introduced** in 16.6. **Status**: Experiment. Organizations where the user has access. |
 | <a id="currentuserpreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="currentuserprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="currentuserprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -17421,6 +17458,26 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="currentusergroupspermissionscope"></a>`permissionScope` | [`GroupPermission`](#grouppermission) | Filter by permissions the user has on groups. |
 | <a id="currentusergroupssearch"></a>`search` | [`String`](#string) | Search by group name or path. |
+
+##### `CurrentUser.organizations`
+
+Organizations where the user has access.
+
+NOTE:
+**Introduced** in 16.6.
+**Status**: Experiment.
+
+Returns [`OrganizationConnection`](#organizationconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="currentuserorganizationssearch"></a>`search` | [`String`](#string) | Search query, which can be for the organization name or a path. |
 
 ##### `CurrentUser.reviewRequestedMergeRequests`
 
@@ -22289,7 +22346,6 @@ A user assigned to a merge request.
 | <a id="mergerequestassigneenamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
 | <a id="mergerequestassigneenamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="mergerequestassigneeorganization"></a>`organization` | [`String`](#string) | Who the user represents or works for. |
-| <a id="mergerequestassigneeorganizations"></a>`organizations` **{warning-solid}** | [`OrganizationConnection`](#organizationconnection) | **Introduced** in 16.6. **Status**: Experiment. Organizations where the user has access. |
 | <a id="mergerequestassigneepreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="mergerequestassigneeprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="mergerequestassigneeprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -22395,6 +22451,26 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestassigneegroupspermissionscope"></a>`permissionScope` | [`GroupPermission`](#grouppermission) | Filter by permissions the user has on groups. |
 | <a id="mergerequestassigneegroupssearch"></a>`search` | [`String`](#string) | Search by group name or path. |
+
+##### `MergeRequestAssignee.organizations`
+
+Organizations where the user has access.
+
+NOTE:
+**Introduced** in 16.6.
+**Status**: Experiment.
+
+Returns [`OrganizationConnection`](#organizationconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestassigneeorganizationssearch"></a>`search` | [`String`](#string) | Search query, which can be for the organization name or a path. |
 
 ##### `MergeRequestAssignee.reviewRequestedMergeRequests`
 
@@ -22573,7 +22649,6 @@ The author of the merge request.
 | <a id="mergerequestauthornamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
 | <a id="mergerequestauthornamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="mergerequestauthororganization"></a>`organization` | [`String`](#string) | Who the user represents or works for. |
-| <a id="mergerequestauthororganizations"></a>`organizations` **{warning-solid}** | [`OrganizationConnection`](#organizationconnection) | **Introduced** in 16.6. **Status**: Experiment. Organizations where the user has access. |
 | <a id="mergerequestauthorpreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="mergerequestauthorprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="mergerequestauthorprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -22679,6 +22754,26 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestauthorgroupspermissionscope"></a>`permissionScope` | [`GroupPermission`](#grouppermission) | Filter by permissions the user has on groups. |
 | <a id="mergerequestauthorgroupssearch"></a>`search` | [`String`](#string) | Search by group name or path. |
+
+##### `MergeRequestAuthor.organizations`
+
+Organizations where the user has access.
+
+NOTE:
+**Introduced** in 16.6.
+**Status**: Experiment.
+
+Returns [`OrganizationConnection`](#organizationconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestauthororganizationssearch"></a>`search` | [`String`](#string) | Search query, which can be for the organization name or a path. |
 
 ##### `MergeRequestAuthor.reviewRequestedMergeRequests`
 
@@ -22920,7 +23015,6 @@ A user participating in a merge request.
 | <a id="mergerequestparticipantnamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
 | <a id="mergerequestparticipantnamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="mergerequestparticipantorganization"></a>`organization` | [`String`](#string) | Who the user represents or works for. |
-| <a id="mergerequestparticipantorganizations"></a>`organizations` **{warning-solid}** | [`OrganizationConnection`](#organizationconnection) | **Introduced** in 16.6. **Status**: Experiment. Organizations where the user has access. |
 | <a id="mergerequestparticipantpreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="mergerequestparticipantprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="mergerequestparticipantprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -23026,6 +23120,26 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestparticipantgroupspermissionscope"></a>`permissionScope` | [`GroupPermission`](#grouppermission) | Filter by permissions the user has on groups. |
 | <a id="mergerequestparticipantgroupssearch"></a>`search` | [`String`](#string) | Search by group name or path. |
+
+##### `MergeRequestParticipant.organizations`
+
+Organizations where the user has access.
+
+NOTE:
+**Introduced** in 16.6.
+**Status**: Experiment.
+
+Returns [`OrganizationConnection`](#organizationconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestparticipantorganizationssearch"></a>`search` | [`String`](#string) | Search query, which can be for the organization name or a path. |
 
 ##### `MergeRequestParticipant.reviewRequestedMergeRequests`
 
@@ -23240,7 +23354,6 @@ A user assigned to a merge request as a reviewer.
 | <a id="mergerequestreviewernamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
 | <a id="mergerequestreviewernamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="mergerequestreviewerorganization"></a>`organization` | [`String`](#string) | Who the user represents or works for. |
-| <a id="mergerequestreviewerorganizations"></a>`organizations` **{warning-solid}** | [`OrganizationConnection`](#organizationconnection) | **Introduced** in 16.6. **Status**: Experiment. Organizations where the user has access. |
 | <a id="mergerequestreviewerpreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="mergerequestreviewerprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="mergerequestreviewerprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -23346,6 +23459,26 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestreviewergroupspermissionscope"></a>`permissionScope` | [`GroupPermission`](#grouppermission) | Filter by permissions the user has on groups. |
 | <a id="mergerequestreviewergroupssearch"></a>`search` | [`String`](#string) | Search by group name or path. |
+
+##### `MergeRequestReviewer.organizations`
+
+Organizations where the user has access.
+
+NOTE:
+**Introduced** in 16.6.
+**Status**: Experiment.
+
+Returns [`OrganizationConnection`](#organizationconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestreviewerorganizationssearch"></a>`search` | [`String`](#string) | Search query, which can be for the organization name or a path. |
 
 ##### `MergeRequestReviewer.reviewRequestedMergeRequests`
 
@@ -28480,7 +28613,6 @@ Core representation of a GitLab user.
 | <a id="usercorenamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
 | <a id="usercorenamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="usercoreorganization"></a>`organization` | [`String`](#string) | Who the user represents or works for. |
-| <a id="usercoreorganizations"></a>`organizations` **{warning-solid}** | [`OrganizationConnection`](#organizationconnection) | **Introduced** in 16.6. **Status**: Experiment. Organizations where the user has access. |
 | <a id="usercorepreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="usercoreprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="usercoreprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -28586,6 +28718,26 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="usercoregroupspermissionscope"></a>`permissionScope` | [`GroupPermission`](#grouppermission) | Filter by permissions the user has on groups. |
 | <a id="usercoregroupssearch"></a>`search` | [`String`](#string) | Search by group name or path. |
+
+##### `UserCore.organizations`
+
+Organizations where the user has access.
+
+NOTE:
+**Introduced** in 16.6.
+**Status**: Experiment.
+
+Returns [`OrganizationConnection`](#organizationconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="usercoreorganizationssearch"></a>`search` | [`String`](#string) | Search query, which can be for the organization name or a path. |
 
 ##### `UserCore.reviewRequestedMergeRequests`
 
@@ -34406,7 +34558,6 @@ Implementations:
 | <a id="usernamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
 | <a id="usernamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="userorganization"></a>`organization` | [`String`](#string) | Who the user represents or works for. |
-| <a id="userorganizations"></a>`organizations` **{warning-solid}** | [`OrganizationConnection`](#organizationconnection) | **Introduced** in 16.6. **Status**: Experiment. Organizations where the user has access. |
 | <a id="userpreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="userprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="userprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -34512,6 +34663,26 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="usergroupspermissionscope"></a>`permissionScope` | [`GroupPermission`](#grouppermission) | Filter by permissions the user has on groups. |
 | <a id="usergroupssearch"></a>`search` | [`String`](#string) | Search by group name or path. |
+
+###### `User.organizations`
+
+Organizations where the user has access.
+
+NOTE:
+**Introduced** in 16.6.
+**Status**: Experiment.
+
+Returns [`OrganizationConnection`](#organizationconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+####### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="userorganizationssearch"></a>`search` | [`String`](#string) | Search query, which can be for the organization name or a path. |
 
 ###### `User.reviewRequestedMergeRequests`
 
