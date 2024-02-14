@@ -79,6 +79,23 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
             it_behaves_like 'does not include compliance pipeline configuration content'
           end
         end
+
+        context 'when the source is on-demand dast scan' do
+          let(:source) { :ondemand_dast_scan }
+          let(:content) { "---\ninclude:\n- template: DAST-On-Demand-Scan.gitlab-ci.yml\n" }
+          let(:content_result) do
+            <<~CICONFIG
+              ---
+              include:
+              - template: DAST-On-Demand-Scan.gitlab-ci.yml
+            CICONFIG
+          end
+
+          it 'does not include compliance pipeline configuration' do
+            expect(config.source).to eq(:parameter_source)
+            expect(config.content).to eq(content_result)
+          end
+        end
       end
 
       context 'when compliance pipeline configuration is not defined' do
