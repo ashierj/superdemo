@@ -41,6 +41,7 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
   end
 
   it_behaves_like 'dashboard SAML reauthentication banner' do
+    let_it_be(:match_filter_params) { false }
     let_it_be(:epic_todo) do
       create(:todo, group: restricted_group, user: user, target: create(:epic, group: restricted_group))
     end
