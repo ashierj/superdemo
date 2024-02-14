@@ -133,7 +133,9 @@ describe('Vulnerabilities Over Time Chart Component', () => {
       createComponent({ requestHandler });
       await waitForPromises();
 
-      expect(createAlert).toHaveBeenCalledTimes(1);
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'Failed to retrieve the vulnerability data. Please refresh the page.',
+      });
     });
   });
 });

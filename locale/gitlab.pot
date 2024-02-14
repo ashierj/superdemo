@@ -45299,9 +45299,6 @@ msgstr ""
 msgid "SecurityReports|Ensure that %{trackingStart}issue tracking%{trackingEnd} is enabled for this project and you have %{permissionsStart}permission to create new issues%{permissionsEnd}."
 msgstr ""
 
-msgid "SecurityReports|Error fetching the vulnerabilities over time. Please check your network connection and try again."
-msgstr ""
-
 msgid "SecurityReports|Error fetching the vulnerability counts. Please check your network connection and try again."
 msgstr ""
 
@@ -45312,6 +45309,9 @@ msgid "SecurityReports|Error parsing security reports"
 msgstr ""
 
 msgid "SecurityReports|Failed to get security report information. Please reload the page or try again later."
+msgstr ""
+
+msgid "SecurityReports|Failed to retrieve the vulnerability data. Please refresh the page."
 msgstr ""
 
 msgid "SecurityReports|Failed updating vulnerabilities with the following IDs: %{ids}"
