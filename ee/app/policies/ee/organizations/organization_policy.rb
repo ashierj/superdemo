@@ -15,8 +15,8 @@ module EE
           License.feature_available?(:license_scanning)
         end
 
-        rule { admin & dependency_scanning_enabled }.enable :read_dependency
-        rule { admin & license_scanning_enabled }.enable :read_licenses
+        rule { (admin | organization_owner) & dependency_scanning_enabled }.enable :read_dependency
+        rule { (admin | organization_owner) & license_scanning_enabled }.enable :read_licenses
       end
     end
   end
