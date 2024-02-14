@@ -35943,9 +35943,6 @@ msgstr ""
 msgid "Pipeline triggers"
 msgstr ""
 
-msgid "Pipeline: %{status}"
-msgstr ""
-
 msgid "PipelineCharts|An error has occurred when retrieving the analytics data"
 msgstr ""
 
