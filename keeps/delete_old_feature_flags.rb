@@ -5,6 +5,7 @@ require 'cgi'
 require 'httparty'
 require 'json'
 require_relative './helpers/groups'
+require_relative './helpers/milestones'
 
 module Keeps
   # This is an implementation of a ::Gitlab::Housekeeper::Keep. This keep will locate any featrure flag definition file
@@ -14,7 +15,6 @@ module Keeps
   #
   # ```
   # bundle exec gitlab-housekeeper -d \
-  #   -r keeps/delete_old_feature_flags.rb \
   #   -k Keeps::DeleteOldFeatureFlags
   # ```
   # rubocop:disable Gitlab/HTTParty -- Don't use GitLab dependencies
@@ -51,7 +51,9 @@ module Keeps
           next
         end
 
-        next unless before_cuttoff?(feature_flag.milestone)
+        next unless milestones_helper.before_cuttoff?(
+          milestone: feature_flag.milestone,
+          milestones_ago: CUTOFF_MILESTONE_OLD)
 
         # feature_flag_default_enabled = feature_flag_definition[:default_enabled]
         # feature_flag_gitlab_com_state = fetch_gitlab_com_state(feature_flag.name)
@@ -60,13 +62,13 @@ module Keeps
 
         # # Finalize the migration
         change = ::Gitlab::Housekeeper::Change.new
-        change.title = "Delete the `#{feature_flag.name}` feature flag introduced in #{feature_flag.milestone}"
-
+        change.changelog_type = 'removed'
+        change.title = "Delete the `#{feature_flag.name}` feature flag"
         change.identifiers = [self.class.name.demodulize, feature_flag.name]
 
         # rubocop:disable Gitlab/DocUrl -- Not running inside rails application
         change.description = <<~MARKDOWN
-        This feature flag was introduced more than #{CUTOFF_MILESTONE_OLD} milestones ago.
+        This feature flag was introduced in #{feature_flag.milestone}, which is more than #{CUTOFF_MILESTONE_OLD} milestones ago.
 
         As part of our process we want to ensure [feature flags don't stay too long in the codebase](https://docs.gitlab.com/ee/development/feature_flags/#types-of-feature-flags).
 
@@ -77,10 +79,6 @@ module Keeps
         ```
 
         </details>
-
-        This merge request was created using the
-        [gitlab-housekeeper](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/139492)
-        gem.
         MARKDOWN
         # rubocop:enable Gitlab/DocUrl
 
@@ -89,7 +87,8 @@ module Keeps
         change.changed_files = [feature_flag_yaml_file]
 
         change.labels = [
-          'maintenance::refactor',
+          'maintenance::removal',
+          'feature flag',
           feature_flag.group
         ]
 
@@ -97,17 +96,12 @@ module Keeps
 
         if change.reviewers.empty?
           group_data = groups_helper.group_for_group_label(feature_flag.group)
-          if group_data
-            change.reviewers = groups_helper.pick_reviewer(group_data, change.identifiers)
-          end
+
+          change.reviewers = groups_helper.pick_reviewer(group_data, change.identifiers) if group_data
         end
 
         yield(change)
       end
-    end
-
-    def before_cuttoff?(milestone)
-      Gem::Version.new(milestone) < Gem::Version.new(milestone_ago(current_milestone, CUTOFF_MILESTONE_OLD))
     end
 
     def fetch_gitlab_com_state(feature_flag_name)
@@ -125,26 +119,6 @@ module Keeps
         '--',
         *(GREP_IGNORE.map { |path| ":^#{path}" })
       )
-    end
-
-    def current_milestone
-      milestone = File.read(File.expand_path('../VERSION', __dir__))
-      milestone.gsub(/^(\d+\.\d+).*$/, '\1').chomp
-    end
-
-    def milestone_ago(milestone, num_milestones)
-      major, minor = milestone.split(".").map(&:to_i)
-
-      older_major =
-        if minor >= num_milestones
-          major
-        else
-          major - (((num_milestones - minor - 1) / 13) + 1)
-        end
-
-      older_minor = (0..12).to_a[(minor - num_milestones) % 13]
-
-      [older_major, older_minor].join(".")
     end
 
     def assignees(rollout_issue_url)
@@ -183,6 +157,10 @@ module Keeps
 
     def groups_helper
       @groups_helper ||= ::Keeps::Helpers::Groups.new
+    end
+
+    def milestones_helper
+      @milestones_helper ||= ::Keeps::Helpers::Milestones.new
     end
   end
 end
