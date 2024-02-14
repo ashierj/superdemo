@@ -12216,9 +12216,6 @@ msgstr ""
 msgid "Collapse AI-generated summary"
 msgstr ""
 
-msgid "Collapse all threads"
-msgstr ""
-
 msgid "Collapse eligible approvers"
 msgstr ""
 
@@ -20314,9 +20311,6 @@ msgstr ""
 msgid "Expand all files"
 msgstr ""
 
-msgid "Expand all threads"
-msgstr ""
-
 msgid "Expand eligible approvers"
 msgstr ""
 
@@ -24605,6 +24599,9 @@ msgid "Hide"
 msgstr ""
 
 msgid "Hide Live Preview"
+msgstr ""
+
+msgid "Hide all comments"
 msgstr ""
 
 msgid "Hide archived projects"
@@ -46559,6 +46556,9 @@ msgid "Show all activity"
 msgstr ""
 
 msgid "Show all breadcrumbs"
+msgstr ""
+
+msgid "Show all comments"
 msgstr ""
 
 msgid "Show all epics"
