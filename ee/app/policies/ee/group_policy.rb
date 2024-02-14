@@ -695,6 +695,9 @@ module EE
 
       rule { supports_saved_replies & developer }.policy do
         enable :read_saved_replies
+        enable :create_saved_replies
+        enable :destroy_saved_replies
+        enable :update_saved_replies
       end
     end
 
