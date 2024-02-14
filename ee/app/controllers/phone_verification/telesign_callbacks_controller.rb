@@ -28,11 +28,15 @@ module PhoneVerification
     end
 
     def exempt_user_from_phone_number_verification
-      return unless ::Feature.enabled?(:auto_request_phone_number_verification_exemption, type: :gitlab_com_derisk)
-
       user = callback.user
 
-      return unless user&.offer_phone_number_exemption?
+      return unless user
+
+      return unless ::Feature.enabled?(
+        :auto_request_phone_number_verification_exemption, user, type: :gitlab_com_derisk
+      )
+
+      return unless user.offer_phone_number_exemption?
 
       user.create_phone_number_exemption!
       Gitlab::EtagCaching::Store.new.touch(verification_state_identity_verification_path)

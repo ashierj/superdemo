@@ -31,7 +31,7 @@ module Users
     layout 'minimal'
 
     def show
-      push_frontend_feature_flag(:auto_request_phone_number_verification_exemption, type: :gitlab_com_derisk)
+      push_frontend_feature_flag(:auto_request_phone_number_verification_exemption, @user, type: :gitlab_com_derisk)
 
       # We to perform cookie migration for tracking from logged out to log in
       # calling this before tracking gives us access to request where the

@@ -81,6 +81,7 @@ RSpec.describe PhoneVerification::TelesignCallbacksController, feature_category:
 
         before do
           allow(user).to receive(:offer_phone_number_exemption?).and_return(true)
+          stub_feature_flags(auto_request_phone_number_verification_exemption: user)
         end
 
         it 'exempts the user' do
@@ -104,9 +105,9 @@ RSpec.describe PhoneVerification::TelesignCallbacksController, feature_category:
           it_behaves_like 'does not invalidate verification_state_identity_verification_path cache'
         end
 
-        context 'when auto_request_phone_number_verification_exemption feature flag is disabled' do
+        context 'when auto_request_phone_number_verification_exemption feature flag is disabled for user' do
           before do
-            stub_feature_flags(auto_request_phone_number_verification_exemption: false)
+            stub_feature_flags(auto_request_phone_number_verification_exemption: create(:user))
           end
 
           it_behaves_like 'does not exempt the user'
