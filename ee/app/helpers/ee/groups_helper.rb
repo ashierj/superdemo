@@ -68,9 +68,10 @@ module EE
 
       return false unless root_namespace.present? &&
         can?(current_user, :admin_group, root_namespace) &&
-        root_namespace.user_cap_available?
+        root_namespace.user_cap_available? &&
+        root_namespace.namespace_settings.present?
 
-      root_namespace.namespace_settings&.new_user_signups_cap.present?
+      root_namespace.user_cap_enabled?
     end
 
     def pending_members_link
