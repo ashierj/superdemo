@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe DependencyProxy::Packages::Maven::VerifyPackageFileEtagService, :aggregate_failures, feature_category: :package_registry do
+RSpec.describe DependencyProxy::Packages::VerifyPackageFileEtagService, :aggregate_failures, feature_category: :package_registry do
   let_it_be(:setting) { create(:dependency_proxy_packages_setting, :maven) }
   let_it_be(:package_file) { create(:package_file, :jar) }
 
-  let(:remote_url) { "http://#{setting.maven_external_registry_username}:#{setting.maven_external_registry_password}@test/package.file" }
+  let(:remote_url) { 'http://test/package.file' }
 
   let(:authorization_header) do
     ActionController::HttpAuthentication::Basic.encode_credentials(
@@ -15,8 +15,10 @@ RSpec.describe DependencyProxy::Packages::Maven::VerifyPackageFileEtagService, :
     )
   end
 
+  let(:request_headers) { { 'Authorization' => authorization_header } }
+
   let(:service) do
-    described_class.new(remote_url: remote_url, package_file: package_file)
+    described_class.new(remote_url: remote_url, package_file: package_file, headers: request_headers)
   end
 
   describe '#execute' do
@@ -41,27 +43,22 @@ RSpec.describe DependencyProxy::Packages::Maven::VerifyPackageFileEtagService, :
 
     context 'with valid arguments' do
       context 'with a successful head request' do
-        it 'returns a successful service response' do
-          stub_external_registry_request(status: 200, etag: "\"#{package_file.file_md5}\"")
+        let(:etag) { package_file.file_md5 }
 
-          expect(result).to be_a(ServiceResponse)
-          expect(result).to be_success
+        before do
+          stub_external_registry_request(status: 200, etag: etag)
         end
 
-        context 'with an etag that contains a digest' do
-          it 'returns a successful service response' do
-            etag = "\"{SHA1{#{package_file.file_sha1}\"}"
-            stub_external_registry_request(status: 200, etag: etag)
+        it_behaves_like 'returning a success service response'
 
-            expect(result).to be_a(ServiceResponse)
-            expect(result).to be_success
-          end
+        context 'with an etag that contains a digest' do
+          let(:etag) { "\"{SHA1{#{package_file.file_sha1}\"}" }
+
+          it_behaves_like 'returning a success service response'
         end
 
         context 'with an unmatched etag' do
-          before do
-            stub_external_registry_request(status: 200, etag: 'wrong_etag')
-          end
+          let(:etag) { 'wrong_etag' }
 
           it_behaves_like 'expecting a service response error with',
             message: "etag from external registry doesn't match any known digests",
@@ -69,9 +66,7 @@ RSpec.describe DependencyProxy::Packages::Maven::VerifyPackageFileEtagService, :
         end
 
         context 'with an absent etag' do
-          before do
-            stub_external_registry_request(status: 200, etag: nil)
-          end
+          let(:etag) { nil }
 
           it_behaves_like 'expecting a service response error with',
             message: 'no etag from external registry',
@@ -89,6 +84,22 @@ RSpec.describe DependencyProxy::Packages::Maven::VerifyPackageFileEtagService, :
             expect(result).to be_a(ServiceResponse)
             expect(result).to be_success
           end
+        end
+
+        context 'with an inline basic auth' do
+          let(:remote_url) { "http://#{setting.maven_external_registry_username}:#{setting.maven_external_registry_password}@test/package.file" }
+
+          let(:service) do
+            described_class.new(remote_url: remote_url, package_file: package_file)
+          end
+
+          it_behaves_like 'returning a success service response'
+        end
+
+        context 'with custom headers' do
+          let(:request_headers) { { 'Authorization' => 'Bearer test' } }
+
+          it_behaves_like 'returning a success service response'
         end
       end
 
@@ -126,11 +137,11 @@ RSpec.describe DependencyProxy::Packages::Maven::VerifyPackageFileEtagService, :
     end
 
     def stub_external_registry_request(status: 200, etag: 'etag', response_headers: {})
-      headers = response_headers
-      headers[:etag] = "\"#{etag}\"" if etag
+      response_headers[:etag] = "\"#{etag}\"" if etag
+
       stub_request(:head, 'http://test/package.file')
-        .with(headers: { 'Authorization' => authorization_header })
-        .to_return(status: status, body: '', headers: headers)
+        .with(headers: request_headers)
+        .to_return(status: status, body: '', headers: response_headers)
     end
   end
 end
