@@ -354,6 +354,13 @@ module EE
           alpha: { milestone: '16.9' },
           description: 'Ai Agents for the project.',
           resolver: ::Resolvers::Ai::Agents::FindAgentResolver
+
+        field :google_cloud_artifact_registry_repository,
+          ::Types::GoogleCloud::ArtifactRegistry::RepositoryType,
+          null: true,
+          alpha: { milestone: '16.10' },
+          description: 'Google Cloud Artifact Registry repository. ' \
+                       'Returns `null` if `gcp_artifact_registry` feature flag is disabled'
       end
 
       def tracking_key
@@ -405,6 +412,15 @@ module EE
       #      so that child objects call the correct cloud services
       def runner_cloud_provisioning_options(provider:) # rubocop:disable Lint/UnusedMethodArgument -- Only one provider type is possible, and is already enforced by GraphQL
         return if ::Feature.disabled?(:google_cloud_runner_provisioning, project)
+
+        project
+      end
+
+      def google_cloud_artifact_registry_repository
+        unless project.gcp_artifact_registry_enabled? &&
+            project.google_cloud_platform_artifact_registry_integration&.active
+          return
+        end
 
         project
       end

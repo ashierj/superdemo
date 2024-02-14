@@ -30,6 +30,7 @@ RSpec.describe GitlabSchema.types['Project'] do
       security_policy_project_linked_projects security_policy_project_linked_namespaces
       dependencies merge_requests_disable_committers_approval has_jira_vulnerability_issue_creation_enabled
       ci_subscriptions_projects ci_subscribed_projects ai_agents duo_features_enabled runner_cloud_provisioning_options
+      google_cloud_artifact_registry_repository
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
