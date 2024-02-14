@@ -1,4 +1,4 @@
-import { GlDropdown, GlFormInput, GlSearchBoxByType } from '@gitlab/ui';
+import { GlDropdown, GlFormInput } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
@@ -19,7 +19,7 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import { TYPE_ISSUE } from '~/issues/constants';
-import { WORK_ITEM_TYPE_VALUE_EPIC } from '~/work_items/constants';
+import { WORK_ITEM_TYPE_VALUE_EPIC, WORK_ITEM_TYPE_ENUM_EPIC } from '~/work_items/constants';
 import { clickEdit, search } from '../helpers';
 
 import {
@@ -51,7 +51,6 @@ describe('SidebarDropdownWidget', () => {
   const findSidebarDropdown = () => wrapper.findComponent(SidebarDropdown);
   const findPopoverCta = () => wrapper.findByTestId('confirm-edit-cta');
   const findPopoverCancel = () => wrapper.findByTestId('confirm-edit-cancel');
-  const findSearchBox = () => wrapper.findComponent(GlSearchBoxByType);
 
   const waitForDropdown = async () => {
     /** This sequence is important to wait for
@@ -108,6 +107,7 @@ describe('SidebarDropdownWidget', () => {
 
   describe('with mock apollo', () => {
     let error;
+    const mockSearchTerm = 'foobar';
 
     beforeEach(() => {
       jest.spyOn(Sentry, 'captureException');
@@ -155,8 +155,6 @@ describe('SidebarDropdownWidget', () => {
           let groupEpicsSpy;
 
           describe('when a user is searching epics', () => {
-            const mockSearchTerm = 'foobar';
-
             beforeEach(async () => {
               groupEpicsSpy = jest.fn().mockResolvedValueOnce(emptyGroupEpicsResponse);
               await createComponentWithApollo({ groupEpicsSpy });
@@ -301,15 +299,6 @@ describe('SidebarDropdownWidget', () => {
             .mockResolvedValue(mockSetWorkItemEpicNullMutationResponse);
           const groupWorkItemEpicsSpy = jest.fn().mockResolvedValue(mockGroupWorkItemEpicsResponse);
 
-          it('search textbox is not displayed', async () => {
-            await createComponentWithApollo({
-              showWorkItemEpics: true,
-            });
-
-            await clickEdit(wrapper);
-            expect(findSearchBox().exists()).toBe(false);
-          });
-
           describe('when hasParent is true', () => {
             beforeEach(async () => {
               await createComponentWithApollo({
@@ -320,6 +309,20 @@ describe('SidebarDropdownWidget', () => {
               });
 
               await clickEdit(wrapper);
+            });
+
+            it('sends a groupEpics query with the entered search term "foo" and in TITLE param', async () => {
+              await search(wrapper, mockSearchTerm);
+
+              expect(groupWorkItemEpicsSpy).toHaveBeenCalledWith({
+                fullPath: mockIssue.groupPath,
+                sort: 'TITLE_ASC',
+                state: 'opened',
+                title: mockSearchTerm,
+                includeWorkItems: true,
+                in: 'TITLE',
+                types: [WORK_ITEM_TYPE_ENUM_EPIC],
+              });
             });
 
             it('calls work item query to fetch current work item epic', () => {
