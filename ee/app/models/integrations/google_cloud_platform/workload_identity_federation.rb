@@ -64,6 +64,42 @@ module Integrations
         []
       end
 
+      def self.wlif_issuer_url(project)
+        "#{::GoogleCloudPlatform.glgo_base_url}/oidc/#{project.root_namespace.path}"
+      end
+
+      # used when setting up WLIF pools
+      # google cloud supports a max of 50 attributes
+      # https://cloud.google.com/iam/docs/workload-identity-federation#mapping
+      #
+      # list of all possible attributes at
+      # https://docs.gitlab.com/ee/ci/secrets/id_token_authentication.html#token-payload
+      def self.jwt_claim_mapping
+        access_attributes = Gitlab::Access.sym_options_with_owner.keys
+        attribute_mapping = access_attributes.to_h do |k, _v|
+          ["attribute.#{k}_access", "assertion.#{k}_access"]
+        end
+
+        additional_attributes = %w[
+          namespace_id
+          namespace_path
+          project_id
+          project_path
+          user_id
+          user_login
+          user_email
+          user_access_level
+        ]
+        additional_attributes.each { |a| attribute_mapping["attribute.#{a}"] = "assertion.#{a}" }
+
+        attribute_mapping['google.subject'] = 'assertion.sub'
+        attribute_mapping
+      end
+
+      def self.jwt_claim_mapping_script_value
+        jwt_claim_mapping.map { |k, v| "#{k}=#{v}" }.join(',')
+      end
+
       # We will make the integration testable in https://gitlab.com/gitlab-org/gitlab/-/issues/439885
       def testable?
         false
