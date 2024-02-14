@@ -282,7 +282,9 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
                 title: "some WI",
                 workItemTypeId: WorkItems::Type.default_by_type(:epic).to_gid.to_s,
                 rolledupDatesWidget: {
+                  startDateIsFixed: true,
                   startDateFixed: start_date.to_s,
+                  dueDateIsFixed: true,
                   dueDateFixed: due_date.to_s
                 }
               }

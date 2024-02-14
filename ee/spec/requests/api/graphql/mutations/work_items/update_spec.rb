@@ -476,7 +476,9 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
           let(:input) do
             {
               "rolledupDatesWidget" => {
+                "startDateIsFixed" => true,
                 "startDateFixed" => start_date,
+                "dueDateIsFixed" => true,
                 "dueDateFixed" => due_date
               }
             }
