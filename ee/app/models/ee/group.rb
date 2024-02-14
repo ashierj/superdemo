@@ -95,6 +95,7 @@ module EE
 
       delegate :experiment_settings_allowed?, to: :namespace_settings
       delegate :product_analytics_settings_allowed?, to: :namespace_settings
+      delegate :user_cap_enabled?, to: :namespace_settings
 
       delegate :wiki_access_level, :wiki_access_level=, to: :group_feature, allow_nil: true
 

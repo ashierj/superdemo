@@ -97,6 +97,10 @@ module EE
           namespace.root?
       end
 
+      def user_cap_enabled?
+        new_user_signups_cap.present? && namespace.root?
+      end
+
       private
 
       def enabling_user_cap?
@@ -117,10 +121,6 @@ module EE
 
       def disable_project_sharing!
         namespace.update_attribute(:share_with_group_lock, true)
-      end
-
-      def user_cap_enabled?
-        new_user_signups_cap.present? && namespace.root?
       end
 
       def active_owner_ids

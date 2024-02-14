@@ -250,6 +250,12 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
           it { expect(helper.show_user_cap_alert?).to be false }
         end
       end
+
+      context 'when namespace settings is nil' do
+        let(:group) { build(:group) }
+
+        it { expect(helper.show_user_cap_alert?).to be false }
+      end
     end
 
     describe 'when user cap is not available' do
