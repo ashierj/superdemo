@@ -9,7 +9,8 @@ module Gitlab
         :changed_files,
         :labels,
         :reviewers,
-        :keep_class
+        :keep_class,
+        :changelog_type
 
       def initialize
         @labels = []
@@ -35,7 +36,7 @@ module Gitlab
 
         #{mr_description}
 
-        Changelog: other
+        Changelog: #{changelog_type || 'other'}
         MARKDOWN
       end
 
