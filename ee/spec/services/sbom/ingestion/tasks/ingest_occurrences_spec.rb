@@ -6,6 +6,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
   describe '#execute' do
     let_it_be(:pipeline) { build(:ci_pipeline) }
 
+    let(:project) { pipeline.project }
     let(:occurrence_maps) { create_list(:sbom_occurrence_map, 4, :for_occurrence_ingestion) }
 
     subject(:ingest_occurrences) { described_class.execute(pipeline, occurrence_maps) }
@@ -41,7 +42,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
       it 'sets the correct attributes for the occurrence' do
         ingest_occurrences
         expect(ingested_occurrence.attributes).to include(
-          'project_id' => pipeline.project.id,
+          'project_id' => project.id,
           'pipeline_id' => pipeline.id,
           'component_id' => occurrence_map.component_id,
           'component_version_id' => occurrence_map.component_version_id,
@@ -64,7 +65,9 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
           ],
           'component_name' => occurrence_map.name,
           'vulnerability_count' => 1,
-          'highest_severity' => 'high'
+          'highest_severity' => 'high',
+          'traversal_ids' => project.namespace.traversal_ids,
+          'archived' => project.archived
         )
       end
 
@@ -109,7 +112,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
           ingest_occurrences
 
           expect(ingested_occurrence.attributes).to include(
-            'project_id' => pipeline.project.id,
+            'project_id' => project.id,
             'pipeline_id' => pipeline.id,
             'component_id' => occurrence_map.component_id,
             'component_version_id' => occurrence_map.component_version_id,
@@ -131,7 +134,9 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
             ],
             'component_name' => occurrence_map.name,
             'vulnerability_count' => 1,
-            'highest_severity' => 'high'
+            'highest_severity' => 'high',
+            'traversal_ids' => project.namespace.traversal_ids,
+            'archived' => project.archived
           )
         end
       end
