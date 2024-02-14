@@ -28,12 +28,12 @@ module Mutations
       def resolve(full_path:, **args)
         raise raise_resource_not_available_error! unless allowed?
 
-        settings = authorized_find!(full_path).project_setting
-        settings.update(args)
+        project = authorized_find!(full_path)
+        ::Projects::UpdateService.new(project, current_user, { project_setting_attributes: args }).execute
 
         {
-          project_settings: settings,
-          errors: errors_on_object(settings)
+          project_settings: project.project_setting,
+          errors: errors_on_object(project.project_setting)
         }
       end
 

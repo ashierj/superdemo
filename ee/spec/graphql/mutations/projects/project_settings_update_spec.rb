@@ -74,6 +74,11 @@ RSpec.describe Mutations::Projects::ProjectSettingsUpdate, feature_category: :co
         end
 
         it 'updates the setting' do
+          expect(::Projects::UpdateService).to receive(:new).with(
+            anything,
+            anything,
+            { project_setting_attributes: { duo_features_enabled: duo_features_enabled } }
+          ).and_call_original
           expect(resolve[:project_settings]).to have_attributes(duo_features_enabled: duo_features_enabled)
         end
       end
