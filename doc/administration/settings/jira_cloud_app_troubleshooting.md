@@ -56,6 +56,15 @@ To resolve this issue, disable the **Jira Connect Proxy URL** setting.
   1. Clear the **Jira Connect Proxy URL** text box.
   1. Select **Save changes**.
 
+If the issue persists, verify that your self-managed GitLab instance can connect to
+`connect-install-keys.atlassian.com` to get the public key from Atlassian.
+To test connectivity, run the following command:
+
+```shell
+# A `404` status code is expected because you're not passing a token
+curl --head "https://connect-install-keys.atlassian.com"
+```
+
 ## Data sync fails with `Invalid JWT`
 
 If the GitLab for Jira Cloud app continuously fails to sync data, it may be due to an outdated secret token. Atlassian can send new secret tokens that must be processed and stored by GitLab.
