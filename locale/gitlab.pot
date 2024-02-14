@@ -3584,6 +3584,9 @@ msgstr ""
 msgid "AdminSettings|Limit the number of namespaces and projects that can be indexed."
 msgstr ""
 
+msgid "AdminSettings|Maximum downstream pipelines triggered in a project per user"
+msgstr ""
+
 msgid "AdminSettings|Maximum duration of a session for Git operations when 2FA is enabled."
 msgstr ""
 
@@ -3741,6 +3744,9 @@ msgid "AdminSettings|The host of your data collector instance."
 msgstr ""
 
 msgid "AdminSettings|The latest artifacts for all jobs in the most recent successful pipelines in each project are stored and do not expire."
+msgstr ""
+
+msgid "AdminSettings|The maximum number of downstream pipelines triggered in a project per user."
 msgstr ""
 
 msgid "AdminSettings|The maximum number of included files per pipeline."
