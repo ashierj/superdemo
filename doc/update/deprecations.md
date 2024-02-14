@@ -1509,6 +1509,24 @@ This change is a breaking change. You should [create a runner in the UI](../ci/r
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### Removal of tags from small SaaS runners on Linux
+
+<div class="deprecation-notes">
+- Announced in GitLab <span class="milestone">16.9</span>
+- Removal in GitLab <span class="milestone">17.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/30829).
+</div>
+
+Due to historical reasons, small Linux SaaS Runners had a lot of tags attached because they were used as labels. We want to streamline the tag to just use `saas-linux-small-amd64` and be consistent across all SaaS runners.
+
+We are deprecating the tags: `docker`, `east-c`, `gce`, `git-annex`, `linux`, `mongo`, `mysql`, `postgres`, `ruby`, `shared`.
+
+For more information, see [Removing tags from our small SaaS runner on Linux](https://about.gitlab.com/blog/2023/08/15/removing-tags-from-small-saas-runner-on-linux/).
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### Rename the 'require_password_to_approve' field
 
 <div class="deprecation-notes">
