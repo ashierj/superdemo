@@ -55,12 +55,11 @@ module Keeps
           milestone: feature_flag.milestone,
           milestones_ago: CUTOFF_MILESTONE_OLD)
 
-        # feature_flag_default_enabled = feature_flag_definition[:default_enabled]
         # feature_flag_gitlab_com_state = fetch_gitlab_com_state(feature_flag.name)
 
         # TODO: Handle the different cases of default_enabled vs enabled/disabled on GitLab.com
 
-        # # Finalize the migration
+        # Finalize the migration
         change = ::Gitlab::Housekeeper::Change.new
         change.changelog_type = 'removed'
         change.title = "Delete the `#{feature_flag.name}` feature flag"
@@ -71,6 +70,10 @@ module Keeps
         This feature flag was introduced in #{feature_flag.milestone}, which is more than #{CUTOFF_MILESTONE_OLD} milestones ago.
 
         As part of our process we want to ensure [feature flags don't stay too long in the codebase](https://docs.gitlab.com/ee/development/feature_flags/#types-of-feature-flags).
+
+        Rollout issue: #{feature_flag.rollout_issue_url}
+
+        #{feature_flag_default_enabled_note(feature_flag_definition[:default_enabled])}
 
         <details><summary>Mentions of the feature flag (click to expand)</summary>
 
@@ -106,6 +109,20 @@ module Keeps
 
     def fetch_gitlab_com_state(feature_flag_name)
       # TBD
+    end
+
+    def feature_flag_default_enabled_note(feature_flag_default_enabled)
+      if feature_flag_default_enabled
+        <<~NOTE
+        The feature flag is enabled by default. Unless it's disabled on GitLab.com, you should keep the feature-flag
+        code branch, otherwise, keep the other branch.
+        NOTE
+      else
+        <<~NOTE
+        The feature flag isn't enabled by default. If it's enabled on GitLab.com, you should keep the feature-flag
+        code branch, otherwise, keep the other branch.
+        NOTE
+      end
     end
 
     def feature_flag_grep(feature_flag_name)
