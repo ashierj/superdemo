@@ -20,6 +20,9 @@ module DuoPro
     include ::GitlabSubscriptions::SubscriptionHelper
     attr_reader :usernames, :add_on_purchase, :successful_assignments, :failed_assignments
 
+    THROTTLE_BATCH_SIZE = 50
+    THROTTLE_SLEEP_DELAY = 0.5.seconds
+
     def initialize(usernames, add_on_purchase)
       @usernames = usernames
       @add_on_purchase = add_on_purchase
@@ -38,7 +41,7 @@ module DuoPro
     private
 
     def process_users(usernames)
-      usernames.each do |username|
+      usernames.each.with_index(1) do |username, index|
         user_to_be_assigned = User.find_by_username(username)
 
         unless user_to_be_assigned
@@ -54,6 +57,8 @@ module DuoPro
         end
 
         log_result(result, username)
+
+        sleep(THROTTLE_SLEEP_DELAY) if index % THROTTLE_BATCH_SIZE == 0
       end
     end
 

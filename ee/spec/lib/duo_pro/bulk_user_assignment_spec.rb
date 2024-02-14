@@ -40,6 +40,15 @@ RSpec.describe DuoPro::BulkUserAssignment, feature_category: :purchase do
           "User is not found: code_suggestions_not_found_username"
         ])
       end
+
+      it 'uses throttling' do
+        stub_const("#{described_class}::THROTTLE_BATCH_SIZE", 5)
+        stub_const("#{described_class}::THROTTLE_SLEEP_DELAY", 0.0001)
+
+        expect(bulk_assignment).to receive(:sleep).with(0.0001).and_call_original
+
+        bulk_assignment.execute
+      end
     end
 
     shared_examples 'bulk user assignment with not enough seats' do
