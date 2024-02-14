@@ -9,6 +9,7 @@ import {
   processFilters as processFilteredSearchFilters,
 } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 import { periodToDate } from '~/observability/utils';
+import axios from '~/lib/utils/axios_utils';
 import { ingestedAtTimeAgo } from '../utils';
 import MetricsChart from './metrics_chart.vue';
 import FilteredSearch from './filter_bar/metrics_filtered_search.vue';
@@ -63,6 +64,7 @@ export default {
           endDate: defaultRange.max,
         },
       },
+      apiAbortController: null,
       loading: false,
     };
   },
@@ -122,16 +124,20 @@ export default {
     async fetchMetricData() {
       this.loading = true;
       try {
+        this.apiAbortController = new AbortController();
         this.metricData = await this.observabilityClient.fetchMetric(
           this.metricId,
           this.metricType,
-          { filters: this.filters },
+          { filters: this.filters, abortController: this.apiAbortController },
         );
       } catch (e) {
-        createAlert({
-          message: this.$options.i18n.error,
-        });
+        if (!axios.isCancel(e)) {
+          createAlert({
+            message: this.$options.i18n.error,
+          });
+        }
       } finally {
+        this.apiAbortController = null;
         this.loading = false;
       }
     },
