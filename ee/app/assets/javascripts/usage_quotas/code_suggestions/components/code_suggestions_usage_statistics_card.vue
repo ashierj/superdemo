@@ -10,9 +10,9 @@ export default {
     codeSuggestionsLearnMoreLink,
   },
   i18n: {
-    codeSuggestionsAssignedInfoText: s__('CodeSuggestions|Duo Pro seats used'),
+    codeSuggestionsAssignedInfoText: s__('CodeSuggestions|GitLab Duo Pro seats used'),
     codeSuggestionsIntroDescriptionText: s__(
-      `CodeSuggestions|A user can be assigned a Duo Pro seat only once each billable month.`,
+      `CodeSuggestions|A user can be assigned a GitLab Duo Pro seat only once each billable month.`,
     ),
   },
   components: {

@@ -21,7 +21,7 @@ Vue.use(VueApollo);
 
 jest.mock('~/sentry/sentry_browser_wrapper');
 
-describe('Duo Pro Usage', () => {
+describe('GitLab Duo Pro Usage', () => {
   let wrapper;
 
   const error = new Error('Something went wrong');
@@ -161,12 +161,12 @@ describe('Duo Pro Usage', () => {
       });
 
       it('renders code suggestions title', () => {
-        expect(findCodeSuggestionsTitle().text()).toBe('Duo Pro');
+        expect(findCodeSuggestionsTitle().text()).toBe('GitLab Duo Pro');
       });
 
       it('renders code suggestions subtitle', () => {
         expect(findCodeSuggestionsSubtitle().text()).toBe(
-          'Manage seat assignments for Duo Pro across your instance.',
+          'Manage seat assignments for GitLab Duo Pro across your instance.',
         );
       });
 
@@ -255,12 +255,12 @@ describe('Duo Pro Usage', () => {
       });
 
       it('renders code suggestions title', () => {
-        expect(findCodeSuggestionsTitle().text()).toBe('Duo Pro');
+        expect(findCodeSuggestionsTitle().text()).toBe('GitLab Duo Pro');
       });
 
       it('renders code suggestions subtitle', () => {
         expect(findCodeSuggestionsSubtitle().text()).toBe(
-          'Manage seat assignments for Duo Pro across your instance.',
+          'Manage seat assignments for GitLab Duo Pro across your instance.',
         );
       });
 

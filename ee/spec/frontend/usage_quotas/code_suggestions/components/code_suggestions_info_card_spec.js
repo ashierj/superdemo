@@ -103,7 +103,7 @@ describe('CodeSuggestionsInfoCard', () => {
     });
 
     it('renders the title text', () => {
-      expect(findCodeSuggestionsInfoTitle().text()).toBe('Duo Pro add-on');
+      expect(findCodeSuggestionsInfoTitle().text()).toBe('GitLab Duo Pro add-on');
     });
   });
 

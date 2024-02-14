@@ -11,7 +11,7 @@ module Sidebars
 
         override :title
         def title
-          s_('Admin|Duo Pro')
+          s_('Admin|GitLab Duo Pro')
         end
 
         override :sprite_icon

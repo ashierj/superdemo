@@ -8,13 +8,13 @@ const supportLink = `${PROMO_URL}/support/`;
 const NO_SEATS_AVAILABLE_ERROR = {
   title: s__('Billing|No seats available'),
   message: s__(
-    'Billing|You have assigned all available Duo Pro add-on seats. Please %{salesLinkStart}contact sales%{salesLinkEnd} if you would like to purchase more seats.',
+    'Billing|You have assigned all available GitLab Duo Pro add-on seats. Please %{salesLinkStart}contact sales%{salesLinkEnd} if you would like to purchase more seats.',
   ),
   links: { salesLink },
 };
 
 const GENERAL_ADD_ON_ASSIGNMENT_ERROR = {
-  title: s__('Billing|Error assigning Duo Pro add-on'),
+  title: s__('Billing|Error assigning GitLab Duo Pro add-on'),
   message: s__(
     'Billing|Something went wrong when assigning the add-on to this member. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
   ),
@@ -22,7 +22,7 @@ const GENERAL_ADD_ON_ASSIGNMENT_ERROR = {
 };
 
 const GENERAL_ADD_ON_UNASSIGNMENT_ERROR = {
-  title: s__('Billing|Error un-assigning Duo Pro add-on'),
+  title: s__('Billing|Error un-assigning GitLab Duo Pro add-on'),
   message: s__(
     'Billing|Something went wrong when un-assigning the add-on to this member. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
   ),
@@ -31,14 +31,14 @@ const GENERAL_ADD_ON_UNASSIGNMENT_ERROR = {
 
 export const ADDON_PURCHASE_FETCH_ERROR = {
   message: s__(
-    'Billing|An error occurred while loading details for the Duo Pro add-on. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
+    'Billing|An error occurred while loading details for the GitLab Duo Pro add-on. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
   ),
   links: { supportLink },
 };
 
 export const ADD_ON_ELIGIBLE_USERS_FETCH_ERROR = {
   message: s__(
-    'Billing|An error occurred while loading users of the Duo Pro add-on. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
+    'Billing|An error occurred while loading users of the GitLab Duo Pro add-on. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
   ),
   links: { supportLink },
 };

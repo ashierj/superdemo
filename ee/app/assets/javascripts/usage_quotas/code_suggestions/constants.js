@@ -9,7 +9,7 @@ export const salesLink = `${PROMO_URL}/solutions/code-suggestions/sales/`;
 export const addOnEligibleUserListTableFields = {
   codeSuggestionsAddon: {
     key: 'codeSuggestionsAddon',
-    label: s__('CodeSuggestions|Duo Pro add-on'),
+    label: s__('CodeSuggestions|GitLab Duo Pro add-on'),
     thClass: thWidthPercent(25),
     tdClass: 'gl-vertical-align-middle!',
   },
