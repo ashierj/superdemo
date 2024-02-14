@@ -33502,6 +33502,12 @@ msgstr ""
 msgid "Notify|Remote mirror"
 msgstr ""
 
+msgid "Notify|Review changes"
+msgstr ""
+
+msgid "Notify|Review requested"
+msgstr ""
+
 msgid "Notify|SMTP host issue:"
 msgstr ""
 
@@ -33593,6 +33599,9 @@ msgid "Notify|You have been mentioned in merge request %{mr_link}"
 msgstr ""
 
 msgid "Notify|You have been unsubscribed from receiving GitLab administrator notifications."
+msgstr ""
+
+msgid "Notify|You were added as a reviewer on %{long_mr} by %{name}."
 msgstr ""
 
 msgid "Notify|Your CSV import for project %{project_link} has been completed."
