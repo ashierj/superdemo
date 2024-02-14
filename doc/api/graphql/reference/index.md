@@ -26062,7 +26062,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 ##### `Project.runnerCloudProvisioningOptions`
 
-Options for runner cloud provisioning by a specified cloud provider. Returns `null` if `:gcp_runner` feature flag is disabled, or the GitLab instance is not a SaaS instance.
+Options for runner cloud provisioning by a specified cloud provider. Returns `null` if `:google_cloud_runner_provisioning` feature flag is disabled, or the GitLab instance is not a SaaS instance.
 
 NOTE:
 **Introduced** in 16.9.

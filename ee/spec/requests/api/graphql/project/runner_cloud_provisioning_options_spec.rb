@@ -209,9 +209,9 @@ RSpec.describe 'runnerCloudProvisioningOptions', feature_category: :fleet_visibi
     it { is_expected.to be nil }
   end
 
-  context 'when gcp_runner FF is disabled' do
+  context 'when google_cloud_runner_provisioning FF is disabled' do
     before do
-      stub_feature_flags(gcp_runner: false)
+      stub_feature_flags(google_cloud_runner_provisioning: false)
     end
 
     it { is_expected.to be nil }
