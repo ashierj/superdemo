@@ -18,7 +18,7 @@ module Security
           pipeline_configuration(action, ci_variables, index)
         when 'custom'
           if action[:ci_configuration]
-            custom_pipeline_configuration(action[:ci_configuration], index)
+            custom_pipeline_configuration(action[:ci_configuration], index, context.user)
           elsif action[:ci_configuration_path]
             Gitlab::Ci::Config::External::Processor.new(
               { include: action[:ci_configuration_path] }, context
@@ -31,8 +31,8 @@ module Security
 
       private
 
-      def custom_pipeline_configuration(ci_configuration, index)
-        Gitlab::Ci::Config.new(ci_configuration, inject_edge_stages: false).to_hash
+      def custom_pipeline_configuration(ci_configuration, index, user)
+        Gitlab::Ci::Config.new(ci_configuration, inject_edge_stages: false, user: user).to_hash
       rescue Gitlab::Ci::Config::ConfigError => e
         {
           generate_job_name_with_index('security_policy_ci', index) => {
