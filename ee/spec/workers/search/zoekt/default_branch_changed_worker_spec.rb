@@ -5,6 +5,9 @@ require 'spec_helper'
 RSpec.describe ::Search::Zoekt::DefaultBranchChangedWorker, feature_category: :global_search do
   let_it_be(:zoekt_enabled_namespace) { create(:zoekt_enabled_namespace) }
   let_it_be(:project) { create(:project, :repository, namespace: zoekt_enabled_namespace.namespace) }
+  let_it_be(:index) do
+    create(:zoekt_index, :ready, zoekt_enabled_namespace: zoekt_enabled_namespace, node: create(:zoekt_node))
+  end
 
   let(:default_branch_changed_event) { Repositories::DefaultBranchChangedEvent.new(data: data) }
   let(:container) { project }
