@@ -89,6 +89,20 @@ RSpec.describe Auth::MemberRoleAbilityLoader, feature_category: :system_access d
           ).has_ability?).to be false
         end
       end
+
+      context 'when the permission is disabled' do
+        before do
+          allow(::MemberRole).to receive(:permission_enabled?).with(:read_vulnerability).and_return(false)
+        end
+
+        it 'returns false' do
+          expect(described_class.new(
+            user: user,
+            resource: group,
+            ability: :read_vulnerability
+          ).has_ability?).to be false
+        end
+      end
     end
 
     context 'when custom role is for a project' do

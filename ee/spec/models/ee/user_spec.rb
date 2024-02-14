@@ -1263,7 +1263,8 @@ RSpec.describe User, feature_category: :system_access do
            WHERE "members"."user_id" = "users"."id"
              AND \(members.access_level > 10
              OR "members"."access_level" = 10
-             AND \(admin_group_member = true
+             AND \(admin_cicd_variables = true
+             OR admin_group_member = true
              OR admin_merge_request = true
              OR admin_terraform_state = true
              OR admin_vulnerability = true

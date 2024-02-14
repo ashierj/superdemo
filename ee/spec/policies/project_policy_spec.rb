@@ -2776,6 +2776,13 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it { is_expected.to be_disallowed(:read_dependency) }
       it { is_expected.to be_allowed(:read_code) }
     end
+
+    context 'for a custom role with the `admin_cicd_variables` ability' do
+      let(:member_role_abilities) { { admin_cicd_variables: true } }
+      let(:allowed_abilities) { [:admin_cicd_variables] }
+
+      it_behaves_like 'custom roles abilities'
+    end
   end
 
   describe 'permissions for suggested reviewers bot', :saas do
