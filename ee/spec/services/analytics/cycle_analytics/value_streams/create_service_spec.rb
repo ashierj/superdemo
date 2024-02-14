@@ -152,6 +152,23 @@ RSpec.describe Analytics::CycleAnalytics::ValueStreams::CreateService, feature_c
           expect(subject).to be_success
           expect(custom_stage).to be_persisted
         end
+
+        context 'when creating a default stage with a custom name' do
+          before do
+            params[:stages] = [{ id: 'plan', name: 'bogus', custom: false }]
+          end
+
+          it 'returns error' do
+            expect(subject).to be_error
+            expect(custom_stage).not_to be_persisted
+
+            names = Gitlab::Analytics::CycleAnalytics::DefaultStages.names.join(', ')
+            message = format(_('Invalid name %{input} was given for this default stage, allowed names: %{names}'),
+              input: 'bogus', names: names)
+            stream = subject.payload[:value_stream]
+            expect(stream.errors.messages).to include({ "stages[0].name": [message] })
+          end
+        end
       end
 
       context 'when no stage params are passed' do

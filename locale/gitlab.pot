@@ -26592,6 +26592,9 @@ msgstr ""
 msgid "Invalid login or password"
 msgstr ""
 
+msgid "Invalid name %{input} was given for this default stage, allowed names: %{names}"
+msgstr ""
+
 msgid "Invalid period"
 msgstr ""
 
