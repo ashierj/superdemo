@@ -58,7 +58,7 @@ module EE
     end
 
     override :keep_around
-    def keep_around(*shas)
+    def keep_around(*shas, source:)
       super
     ensure
       # If there are no SHAs received then there is no write_ref executed.
