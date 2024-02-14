@@ -9,7 +9,7 @@ FactoryBot.define do
     component { component_version&.component || association(:sbom_component) }
     source { association :sbom_source, packager_name: packager_name }
 
-    trait :os_occurence do
+    trait :os_occurrence do
       source do
         association :sbom_source, source_type: :container_scanning, packager_name: packager_name,
           operating_system: { 'name' => 'debian', 'version' => '9' }
