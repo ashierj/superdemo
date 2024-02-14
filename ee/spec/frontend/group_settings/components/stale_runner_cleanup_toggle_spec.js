@@ -7,7 +7,7 @@ import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_m
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
-import { staleTimeoutSecs } from 'jest/ci/runner/mock_data';
+import { STALE_TIMEOUT_SECS } from '~/ci/runner/constants';
 
 import groupStaleRunnerPruningQuery from 'ee/group_settings/graphql/group_stale_runner_pruning.query.graphql';
 import setGroupStaleRunnerPruningMutation from 'ee/group_settings/graphql/set_group_stale_runner_pruning.mutation.graphql';
@@ -74,7 +74,7 @@ describe('StaleRunnerCleanupToggle', () => {
     wrapper = mountFn(StaleRunnerCleanupToggle, {
       propsData: {
         groupFullPath: mockGroupFullPath,
-        staleTimeoutSecs,
+        staleTimeoutSecs: STALE_TIMEOUT_SECS,
       },
       apolloProvider,
     });

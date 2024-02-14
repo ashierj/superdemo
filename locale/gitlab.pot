@@ -42651,6 +42651,9 @@ msgstr ""
 msgid "Runners|Last contact"
 msgstr ""
 
+msgid "Runners|Last contact was %{timeAgo}"
+msgstr ""
+
 msgid "Runners|Last contact: %{timeAgo}"
 msgstr ""
 
@@ -42700,9 +42703,6 @@ msgid "Runners|Name"
 msgstr ""
 
 msgid "Runners|Never contacted"
-msgstr ""
-
-msgid "Runners|Never contacted:"
 msgstr ""
 
 msgid "Runners|Never expires"
@@ -42759,13 +42759,7 @@ msgstr ""
 msgid "Runners|Offline"
 msgstr ""
 
-msgid "Runners|Offline:"
-msgstr ""
-
 msgid "Runners|Online"
-msgstr ""
-
-msgid "Runners|Online:"
 msgstr ""
 
 msgid "Runners|Only administrators can view this."
@@ -42901,16 +42895,10 @@ msgstr ""
 msgid "Runners|Runner description"
 msgstr ""
 
-msgid "Runners|Runner has contacted GitLab within the last %{elapsedTime}"
-msgstr ""
-
-msgid "Runners|Runner has never contacted GitLab (when you register a runner, use %{codeStart}gitlab-runner run%{codeEnd} to bring it online)"
-msgstr ""
-
 msgid "Runners|Runner has never contacted this instance"
 msgstr ""
 
-msgid "Runners|Runner has not contacted GitLab in more than %{elapsedTime}"
+msgid "Runners|Runner hasn't contacted GitLab in more than %{elapsedTime} and last contact was %{timeAgo}"
 msgstr ""
 
 msgid "Runners|Runner is locked and available for currently assigned projects only. Only administrators can change the assigned projects."
@@ -42919,13 +42907,10 @@ msgstr ""
 msgid "Runners|Runner is offline; last contact was %{runner_contact} ago"
 msgstr ""
 
-msgid "Runners|Runner is offline; last contact was %{timeAgo}"
+msgid "Runners|Runner is older than %{elapsedTime} and has never contacted GitLab"
 msgstr ""
 
 msgid "Runners|Runner is online; last contact was %{runner_contact} ago"
-msgstr ""
-
-msgid "Runners|Runner is online; last contact was %{timeAgo}"
 msgstr ""
 
 msgid "Runners|Runner is stale; it has never contacted this instance"
@@ -42934,16 +42919,10 @@ msgstr ""
 msgid "Runners|Runner is stale; last contact was %{runner_contact} ago"
 msgstr ""
 
-msgid "Runners|Runner is stale; last contact was %{timeAgo}"
-msgstr ""
-
 msgid "Runners|Runner performance insights"
 msgstr ""
 
 msgid "Runners|Runner registration"
-msgstr ""
-
-msgid "Runners|Runner statuses"
 msgstr ""
 
 msgid "Runners|Runner unassigned from project."
@@ -43022,9 +43001,6 @@ msgid "Runners|Specific geographical location where you can run your resources."
 msgstr ""
 
 msgid "Runners|Stale"
-msgstr ""
-
-msgid "Runners|Stale:"
 msgstr ""
 
 msgid "Runners|Status"
