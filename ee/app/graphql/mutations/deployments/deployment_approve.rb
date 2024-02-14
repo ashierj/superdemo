@@ -28,7 +28,7 @@ module Mutations
 
       field :deployment_approval,
         Types::Deployments::ApprovalType,
-        null: false,
+        null: true,
         description: 'DeploymentApproval after mutation.'
 
       authorize :read_deployment

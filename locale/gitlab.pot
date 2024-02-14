@@ -17307,6 +17307,12 @@ msgstr ""
 msgid "Deployments|No deployment history"
 msgstr ""
 
+msgid "Deployment|Add approval comment"
+msgstr ""
+
+msgid "Deployment|Approve deployment"
+msgstr ""
+
 msgid "Deployment|Branch"
 msgstr ""
 
@@ -17358,13 +17364,24 @@ msgstr ""
 msgid "Deployment|Open URL"
 msgstr ""
 
+msgid "Deployment|Reject"
+msgstr ""
+
 msgid "Deployment|Related Tags"
 msgstr ""
+
+msgid "Deployment|Requires %d approval"
+msgid_plural "Deployment|Requires %d approvals"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Deployment|Running"
 msgstr ""
 
 msgid "Deployment|Skipped"
+msgstr ""
+
+msgid "Deployment|Something went wrong approving or rejecting the deployment. Please try again later."
 msgstr ""
 
 msgid "Deployment|Started %{timeago} by %{username}"
