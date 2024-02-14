@@ -197,6 +197,7 @@ The following is a list of AWS regions verified for use in GitLab Dedicated. Reg
 
 - Asia Pacific (Singapore)
 - Asia Pacific (Sydney)
+- Asia Pacific (Tokyo)
 - Europe (Frankfurt)
 - Europe (Ireland)
 - Europe (London)
