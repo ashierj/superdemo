@@ -255,6 +255,23 @@ describe('TrialStatusPopover component', () => {
         expect(findLearnAboutFeaturesBtn().exists()).toBe(true);
         expect(findLearnAboutFeaturesBtn().attributes('href')).toBe('discover-path');
       });
+
+      it('tracks click event', () => {
+        wrapper = createComponent({ providers: { daysRemaining: 5 } });
+
+        findLearnAboutFeaturesBtn().vm.$emit('click');
+
+        expectTracking(trackingEvents.activeTrialCategory, {
+          ...trackingEvents.learnAboutFeaturesClick,
+          context: {
+            data: {
+              experiment: 'trial_discover_page',
+              variant: 'candidate',
+            },
+            schema: 'iglu:com.gitlab/gitlab_experiment/jsonschema/1-0-0',
+          },
+        });
+      });
     });
   });
 });

@@ -1,0 +1,9 @@
+.gl-display-flex
+  = render Pajamas::ButtonComponent.new(href: group_billings_path(group), variant: :confirm,
+    button_options: { class: 'gl-mr-3', data: { track_action: "click_compare_plans", track_label: group_trial_status(group) } }) do
+    = s_('TrialDiscoverPage|Compare all plans')
+
+  .js-hand-raise-lead-button{ data: { **hand_raise_props(group, glm_content: 'trial_discover_page'),
+                                      button_attributes: { variant: 'confirm', category: 'secondary' }.to_json,
+                                      track_action: 'click_contact_sales',
+                                      track_label: group_trial_status(group) } }
