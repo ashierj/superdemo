@@ -21,5 +21,13 @@ desired_sharding_key:
       parent:
         foreign_key: policy_configuration_id
         table: security_orchestration_policy_configurations
-        sharding_key: security_policy_management_project_id
+        sharding_key: project_id
+        belongs_to: policy_configuration
+  namespace_id:
+    references: namespaces
+    backfill_via:
+      parent:
+        foreign_key: policy_configuration_id
+        table: security_orchestration_policy_configurations
+        sharding_key: namespace_id
         belongs_to: policy_configuration
