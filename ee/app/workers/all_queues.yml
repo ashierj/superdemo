@@ -426,6 +426,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: cronjob:llm_embedding_gitlab_documentation_create_embeddings_records
+  :worker_name: Llm::Embedding::GitlabDocumentation::CreateEmbeddingsRecordsWorker
+  :feature_category: :duo_chat
+  :has_external_dependencies: false
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:llm_embedding_gitlab_documentation_create_empty_embeddings_records
   :worker_name: Llm::Embedding::GitlabDocumentation::CreateEmptyEmbeddingsRecordsWorker
   :feature_category: :duo_chat
