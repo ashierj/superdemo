@@ -7,3 +7,4 @@ milestone: '14.10'
 feature_category: groups_and_projects
 saved_to_database: true
 streamed: true
+scope: [Project]

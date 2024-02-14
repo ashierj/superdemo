@@ -6,3 +6,4 @@ milestone: '15.2'
 feature_category: project
 saved_to_database: true
 streamed: true
+scope: [Project]

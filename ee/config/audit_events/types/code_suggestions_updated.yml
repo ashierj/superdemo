@@ -7,3 +7,4 @@ feature_category: code_suggestions
 milestone: '15.11'
 saved_to_database: true
 streamed: true
+scope: [Group]

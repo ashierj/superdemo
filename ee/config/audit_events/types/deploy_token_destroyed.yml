@@ -7,3 +7,4 @@ milestone: '15.1'
 feature_category: continuous_delivery
 saved_to_database: true
 streamed: true
+scope: [Project]
