@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlFormGroup, GlFormTextarea, GlIcon } from '@gitlab/ui';
+import { GlButton, GlExperimentBadge, GlFormGroup, GlFormTextarea, GlIcon } from '@gitlab/ui';
 import { v4 as uuidv4 } from 'uuid';
 
 import { fetchPolicies } from '~/lib/graphql';
@@ -13,6 +13,7 @@ export default {
   name: 'AiCubeQueryGenerator',
   components: {
     GlButton,
+    GlExperimentBadge,
     GlFormGroup,
     GlIcon,
     GlFormTextarea,
@@ -30,6 +31,11 @@ export default {
       clientSubscriptionId: uuidv4(),
       skipSubscription: true,
     };
+  },
+  computed: {
+    submitButtonIcon() {
+      return this.submitting ? undefined : 'tanuki-ai';
+    },
   },
   methods: {
     async generateAiQuery() {
@@ -118,22 +124,34 @@ export default {
 <template>
   <gl-form-group>
     <template #label>
-      {{ s__('Analytics|Create with GitLab Duo') }}
-      <gl-icon name="tanuki-ai" class="gl-text-purple-600 gl-ml-1" />
+      <gl-icon name="tanuki-ai" class="gl-mr-1" />
+      {{ s__('Analytics|Create with GitLab Duo (optional)') }}
+      <gl-experiment-badge />
     </template>
+    <p class="gl-mb-3">
+      {{
+        s__(
+          'Analytics|GitLab Duo may be used to help generate your visualization. You can prompt Duo with your desired data, as well as any dimensions or additional groupings of that data. You may also edit the result as needed.',
+        )
+      }}
+    </p>
     <gl-form-textarea
       v-model="prompt"
-      :placeholder="s__('Analytics|Count of page views grouped weekly')"
+      :placeholder="s__('Analytics|Example: Number of users over time, grouped weekly')"
       :submit-on-enter="true"
+      class="gl-w-full gl-md-max-w-70p gl-lg-w-30p gl-min-w-20"
       data-testid="generate-cube-query-prompt-input"
       @submit="generateAiQuery"
     />
     <gl-button
       :loading="submitting"
+      category="secondary"
+      variant="confirm"
+      :icon="submitButtonIcon"
       class="gl-mt-3"
       data-testid="generate-cube-query-submit-button"
       @click="generateAiQuery"
-      >{{ s__('Analytics|Generate visualization') }}</gl-button
+      >{{ s__('Analytics|Generate with Duo') }}</gl-button
     >
   </gl-form-group>
 </template>

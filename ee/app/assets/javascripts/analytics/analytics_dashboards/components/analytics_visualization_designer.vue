@@ -332,7 +332,7 @@ export default {
         <gl-form-group
           :label="s__('Analytics|Visualization title')"
           label-for="title"
-          class="gl-w-full gl-sm-w-30p gl-min-w-20"
+          class="gl-w-full gl-md-max-w-70p gl-lg-w-30p gl-min-w-20"
           data-testid="visualization-title-form-group"
           :invalid-feedback="titleValidationError"
           :state="!titleValidationError"
@@ -354,7 +354,7 @@ export default {
         </gl-form-group>
         <gl-form-group
           :label="s__('Analytics|Visualization type')"
-          class="gl-w-full gl-sm-w-30p gl-min-w-20 gl-m-0"
+          class="gl-w-full gl-md-max-w-70p gl-lg-w-30p gl-min-w-20 gl-m-0"
           data-testid="visualization-type-form-group"
           :invalid-feedback="typeValidationError"
           :state="!typeValidationError"
