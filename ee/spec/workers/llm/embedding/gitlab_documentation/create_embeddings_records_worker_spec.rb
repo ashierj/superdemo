@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::Embedding::GitlabDocumentation::CreateEmptyEmbeddingsRecordsWorker, feature_category: :duo_chat do
+RSpec.describe Llm::Embedding::GitlabDocumentation::CreateEmbeddingsRecordsWorker, feature_category: :duo_chat do
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :always
 
   describe '#perform' do
