@@ -316,7 +316,6 @@ module EE
         enable :maintainer_access
         enable :admin_wiki
         enable :modify_product_analytics_settings
-        enable :update_approval_rule
       end
 
       rule { (admin | maintainer) & group_analytics_dashboards_available & ~has_parent }.policy do
@@ -579,6 +578,7 @@ module EE
 
       rule { (admin | owner) & group_merge_request_approval_settings_enabled }.policy do
         enable :admin_merge_request_approval_settings
+        enable :update_approval_rule
       end
 
       rule { needs_new_sso_session }.policy do

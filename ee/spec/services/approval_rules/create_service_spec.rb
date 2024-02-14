@@ -243,10 +243,6 @@ RSpec.describe ApprovalRules::CreateService, feature_category: :source_code_mana
       }
     end
 
-    before do
-      target.add_owner(user)
-    end
-
     subject do
       described_class.new(
         target,
@@ -255,55 +251,71 @@ RSpec.describe ApprovalRules::CreateService, feature_category: :source_code_mana
       ).execute
     end
 
-    it_behaves_like "creatable"
-
-    context 'when approval_group_rules is disabled for group' do
+    context 'when user is a maintainer' do
       before do
-        stub_feature_flags(approval_group_rules: false)
+        target.add_maintainer(user)
       end
 
-      it 'returns an error' do
-        expect(subject[:status]).to eq(:error)
-        expect(subject[:message]).to eq('The feature approval_group_rules is not enabled.')
+      it 'returns a forbidden status' do
+        expect(subject[:http_status]).to eq 403
       end
     end
 
-    context 'and multiple approval rules are enabled' do
+    context 'when user is an owner' do
       before do
-        stub_licensed_features(multiple_approval_rules: true)
+        target.add_owner(user)
       end
 
-      context 'when protected_branch_ids param is present' do
-        let(:protected_branch) { create(:protected_branch, project: nil, group: group) }
-        let(:protected_branch_ids) { [protected_branch.id] }
-        let(:params) do
-          {
-            name: name,
-            approvals_required: 1,
-            skip_authorization: true
-          }
+      it_behaves_like "creatable"
+
+      context 'when approval_group_rules is disabled for group' do
+        before do
+          stub_feature_flags(approval_group_rules: false)
         end
 
-        it 'does not associate the group approval rule to the protected branches' do
-          expect(subject[:status]).to eq(:success)
-          expect(subject[:rule].protected_branches).to eq([])
-        end
-      end
-
-      context 'when applies_to_all_protected_branches is set to false' do
-        let(:protected_branch) { create(:protected_branch, project: nil, group: group) }
-        let(:skip_authorization) { true }
-        let(:params) do
-          {
-            name: name,
-            approvals_required: 1,
-            skip_authorization: true,
-            applies_to_all_protected_branches: false
-          }
-        end
-
-        it 'throws a validation error' do
+        it 'returns an error' do
           expect(subject[:status]).to eq(:error)
+          expect(subject[:message]).to eq('The feature approval_group_rules is not enabled.')
+        end
+      end
+
+      context 'and multiple approval rules are enabled' do
+        before do
+          stub_licensed_features(multiple_approval_rules: true)
+        end
+
+        context 'when protected_branch_ids param is present' do
+          let(:protected_branch) { create(:protected_branch, project: nil, group: group) }
+          let(:protected_branch_ids) { [protected_branch.id] }
+          let(:params) do
+            {
+              name: name,
+              approvals_required: 1,
+              skip_authorization: true
+            }
+          end
+
+          it 'does not associate the group approval rule to the protected branches' do
+            expect(subject[:status]).to eq(:success)
+            expect(subject[:rule].protected_branches).to eq([])
+          end
+        end
+
+        context 'when applies_to_all_protected_branches is set to false' do
+          let(:protected_branch) { create(:protected_branch, project: nil, group: group) }
+          let(:skip_authorization) { true }
+          let(:params) do
+            {
+              name: name,
+              approvals_required: 1,
+              skip_authorization: true,
+              applies_to_all_protected_branches: false
+            }
+          end
+
+          it 'throws a validation error' do
+            expect(subject[:status]).to eq(:error)
+          end
         end
       end
     end
