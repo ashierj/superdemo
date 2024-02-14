@@ -42,11 +42,3 @@ export const EMPTY_LIST_DESCRIPTION = s__(
 export const EMPTY_POLICY_PROJECT_DESCRIPTION = s__(
   'SecurityOrchestration|This %{namespaceType} is not linked to a security policy project',
 );
-
-export const POLICY_PROJECT_LINK_SUCCESS_MESSAGE = s__(
-  'SecurityOrchestration|Security policy project was linked successfully',
-);
-
-export const POLICY_PROJECT_LINK_ERROR_MESSAGE = s__(
-  'SecurityOrchestration|An error occurred assigning your security policy project',
-);
