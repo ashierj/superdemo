@@ -76,16 +76,6 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
                   described_class.new(projects: projects, user: user).execute
                 end.to issue_same_number_of_queries_as(control).or_fewer
               end
-
-              context 'with the `search_filter_by_ability` feature flag disabled' do
-                before do
-                  stub_feature_flags(search_filter_by_ability: false)
-                end
-
-                it 'returns the expect results' do
-                  expect(result[project.id]).to match_array(expected_abilities)
-                end
-              end
             end
           end
 

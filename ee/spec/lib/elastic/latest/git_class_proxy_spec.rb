@@ -164,16 +164,6 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
                 end.to issue_same_number_of_queries_as(control).or_fewer
               end
             end
-
-            context 'when the `search_filter_by_ability` feature flag is disabled' do
-              before do
-                stub_feature_flags(search_filter_by_ability: false)
-              end
-
-              it 'returns no search results' do
-                expect(search_results[:blobs][:results]).to be_empty
-              end
-            end
           end
         end
       end

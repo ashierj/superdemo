@@ -52,7 +52,6 @@ module Elastic
 
       def filter_ids_by_ability(project_ids, user, abilities)
         return [] if user.blank? || abilities.blank?
-        return [] unless Feature.enabled?(:search_filter_by_ability, user)
 
         actual_abilities = abilities_for(project_ids, user)
         target_abilities = Array(abilities)
