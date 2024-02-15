@@ -6,6 +6,8 @@ module Gitlab
       module Utils
         # Run tar command to create or extract content from an archive
         class Tar
+          DEFAULT_EXCLUDES = ['lost+found'].freeze
+
           # Returns the version of tar command available
           #
           # @return [String] the first line of `--version` output
@@ -23,7 +25,43 @@ module Gitlab
                      end
           end
 
+          # Tar's Shell::Command that can be used directly or combined with a Shell::Pipeline
+          #
+          # @param [String|Pathname] archive_file the archive file with full path (used by tar's --file option)
+          # @param [String|Pathname] target_directory the path to evaluate targets (used by tar's --directory option)
+          # @param [String|Pathname|Array] target what will be packed into the archive
+          # @param [Array<String>] excludes targets that will be excluded from the backup
+          # @return [Gitlab::Backup::Cli::Shell::Command]
+          def pack_cmd(archive_file:, target_directory:, target:, excludes: [])
+            tar_args = []
+            tar_args += build_exclude_patterns(*DEFAULT_EXCLUDES)
+            tar_args += build_exclude_targets(*excludes)
+            tar_args += %W[
+              --directory=#{target_directory}
+              --create
+              --file=#{archive_file}
+            ]
+
+            # Ensure single target or multiple targets are converted to string before adding to args,
+            # to avoid type conversion errors with Pathname
+            if target.respond_to?(:map)
+              tar_args += target.map(&:to_s)
+            else
+              tar_args << target.to_s
+            end
+
+            Shell::Command.new(cmd, *tar_args)
+          end
+
           private
+
+          def build_exclude_patterns(*patterns)
+            patterns.map { |pattern| %(--exclude=#{pattern}) }
+          end
+
+          def build_exclude_targets(*targets)
+            targets.map { |target| %(--exclude=./#{target}) }
+          end
 
           def gtar_available?
             Dependencies.executable_exist?('gtar')
