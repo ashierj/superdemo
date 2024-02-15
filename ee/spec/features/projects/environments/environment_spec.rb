@@ -49,6 +49,7 @@ RSpec.describe 'Environment detail page', :js, feature_category: :environment_ma
     before do
       sign_in(operator_user)
       visit project_environment_path(project, environment)
+      click_link s_('Environments|Deployment history')
     end
 
     it 'shows re-deploy button' do
