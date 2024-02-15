@@ -132,5 +132,26 @@ RSpec.describe Elastic::Latest::ProjectInstanceProxy, :elastic_helpers, feature_
         expect(result).to match_array(expected_keys)
       end
     end
+
+    describe '#es_parent' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:target) { create(:project, group: group) }
+
+      subject { described_class.new(target).es_parent }
+
+      it 'is the root namespace id' do
+        expect(subject).to eq("n_#{group.id}")
+      end
+
+      context 'if migration is not finished' do
+        before do
+          set_elasticsearch_migration_to :migrate_projects_to_separate_index, including: false
+        end
+
+        it 'is nil' do
+          expect(subject).to be_nil
+        end
+      end
+    end
   end
 end

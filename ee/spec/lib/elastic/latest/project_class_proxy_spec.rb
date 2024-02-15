@@ -98,4 +98,48 @@ RSpec.describe Elastic::Latest::ProjectClassProxy, feature_category: :global_sea
       end
     end
   end
+
+  describe '#routing_options' do
+    subject(:routing_options) { described_class.new(Project).routing_options(options) }
+
+    context 'when the migration has finished' do
+      before do
+        allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
+          .with(:reindex_projects_to_apply_routing).and_return(true)
+      end
+
+      it 'is empty' do
+        expect(routing_options).to eq({})
+      end
+
+      context 'for group level' do
+        let_it_be(:parent) { create(:group) }
+        let_it_be(:group) { create(:group, parent: parent) }
+        let(:options) { { group_id: group.id } }
+
+        it 'routes to the group ancestor id' do
+          expect(routing_options).to eq({ routing: "n_#{parent.id}" })
+        end
+
+        context 'when the group is not found' do
+          let(:options) { { group_id: non_existing_record_id } }
+
+          it 'is empty' do
+            expect(routing_options).to eq({})
+          end
+        end
+      end
+    end
+
+    context 'when the migration is not finished' do
+      before do
+        allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
+          .with(:reindex_projects_to_apply_routing).and_return(false)
+      end
+
+      it 'is empty' do
+        expect(routing_options).to eq({})
+      end
+    end
+  end
 end
