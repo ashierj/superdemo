@@ -15,6 +15,26 @@ RSpec.describe Security::ScanResultPolicyViolation, feature_category: :security_
     subject { violation }
 
     it { is_expected.to(validate_uniqueness_of(:scan_result_policy_id).scoped_to(%i[merge_request_id])) }
+
+    describe 'violation_data' do
+      it { is_expected.not_to allow_value('string').for(:violation_data) }
+      it { is_expected.to allow_value({}).for(:violation_data) }
+
+      it do
+        is_expected.to allow_value(
+          { violations: { uuids: { newly_detected: ['123'], previously_existing: ['456'] }, licenses: ['MIT'] },
+            context: { pipeline_ids: [123], target_pipeline_ids: [456] } }
+        ).for(:violation_data)
+      end
+
+      it do
+        is_expected.to allow_value(
+          { errors: [{ error: 'SCAN_REMOVED', missing_scans: ['sast'] }] }
+        ).for(:violation_data)
+      end
+
+      it { is_expected.not_to allow_value({ errors: [{}] }).for(:violation_data) }
+    end
   end
 
   describe '.for_approval_rules' do
