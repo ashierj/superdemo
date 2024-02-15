@@ -22,6 +22,7 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
     subject(:setting) { described_class.new }
 
     it { expect(setting.security_approval_policies_limit).to eq(5) }
+    it { expect(setting.use_clickhouse_for_analytics).to eq(false) }
   end
 
   describe 'validations' do

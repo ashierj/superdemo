@@ -74,7 +74,8 @@ module EE
         :openai_api_key,
         :security_policy_global_group_approvers_enabled,
         :security_approval_policies_limit,
-        :anthropic_api_key
+        :anthropic_api_key,
+        :use_clickhouse_for_analytics
       ]
     end
 

@@ -16,6 +16,11 @@ module EE
 
       belongs_to :file_template_project, class_name: "Project"
 
+      jsonb_accessor :clickhouse,
+        use_clickhouse_for_analytics: [:boolean, { default: false }]
+
+      validates :clickhouse, json_schema: { filename: "application_setting_clickhouse" }
+
       validates :shared_runners_minutes,
         numericality: { greater_than_or_equal_to: 0 }
 
