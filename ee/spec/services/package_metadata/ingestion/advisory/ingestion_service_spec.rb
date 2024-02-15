@@ -12,11 +12,11 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::IngestionService, feature_c
     let(:old_advisories) { build_list(:pm_advisory_data_object, 5, published_date: Time.zone.now - 14.days - 1.second) }
     let(:import_data) { recent_advisories + old_advisories }
 
-    where(:ds_ff_enabled, :cs_ff_enabled) do
-      true  | true
-      true  | false
-      false | true
-      false | false
+    where(:cs_ff_enabled) do
+      [
+        true,
+        false
+      ]
     end
 
     with_them do
@@ -31,7 +31,6 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::IngestionService, feature_c
       end
 
       before do
-        stub_feature_flags(dependency_scanning_on_advisory_ingestion: ds_ff_enabled)
         value = cs_ff_enabled ? 100 : 0
         Feature.enable_percentage_of_actors(:container_scanning_continuous_vulnerability_scans, value)
         allow(Gitlab::AppJsonLogger).to receive(:warn).and_call_original
@@ -51,20 +50,20 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::IngestionService, feature_c
                                                        .pluck(:source_xid, :advisory_xid)
 
         expected = recent_advisories.filter_map do |obj|
-          if (obj.source_xid == 'glad' && ds_ff_enabled) || (obj.source_xid == 'trivy-db' && cs_ff_enabled)
+          if (obj.source_xid == 'glad') || (obj.source_xid == 'trivy-db' && cs_ff_enabled)
             [obj.source_xid, obj.advisory_xid]
           end
         end
 
         expect(received_advisories).to match_array(expected)
 
-        if ds_ff_enabled || cs_ff_enabled
+        if cs_ff_enabled
           expect(Gitlab::AppJsonLogger).to have_received(:info)
             .with(message: 'Queued scan for advisory', source_xid: anything, advisory_xid: anything)
             .at_least(:once)
         end
 
-        if !ds_ff_enabled || !cs_ff_enabled
+        unless cs_ff_enabled
           expect(Gitlab::AppJsonLogger).to have_received(:warn)
             .with(message: 'Skipped scan for advisory', source_xid: anything, advisory_xid: anything)
             .at_least(:once)
