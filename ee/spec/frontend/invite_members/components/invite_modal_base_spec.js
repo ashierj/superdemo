@@ -39,7 +39,7 @@ describe('EEInviteModalBase', () => {
   let listenerSpy;
   let mockApollo;
 
-  const defaultResolverMock = generateReconciliationResponse(true);
+  const defaultReconciliationMock = generateReconciliationResponse(true);
   const defaultBillableMock = jest.fn().mockResolvedValue({
     data: {
       group: {
@@ -60,7 +60,8 @@ describe('EEInviteModalBase', () => {
   const createComponent = ({
     props = {},
     glFeatures = {},
-    queryHandler = defaultResolverMock,
+    overageMembersModalAvailable = true,
+    queryHandler = defaultReconciliationMock,
     showModal = true,
   } = {}) => {
     const mockCustomersDotClient = createMockClient([[getReconciliationStatus, queryHandler]]);
@@ -85,6 +86,7 @@ describe('EEInviteModalBase', () => {
       apolloProvider: mockApollo,
       provide: {
         glFeatures,
+        overageMembersModalAvailable,
       },
       stubs: {
         GlSprintf,
@@ -242,7 +244,7 @@ describe('EEInviteModalBase', () => {
     });
 
     it("doesn't call api on initial render", () => {
-      expect(defaultResolverMock).toHaveBeenCalledTimes(0);
+      expect(defaultReconciliationMock).not.toHaveBeenCalled();
     });
 
     describe('(integration) when invite is clicked', () => {
@@ -269,61 +271,107 @@ describe('EEInviteModalBase', () => {
   });
 
   describe('when a custom role is selected', () => {
-    beforeEach(async () => {
-      createComponent({
-        props: { defaultAccessLevel: 10, defaultMemberRoleId: 100, newUsersToInvite: [123] },
-        glFeatures: { overageMembersModal: true },
+    describe('when overageMembersModalAvailable is true', () => {
+      beforeEach(async () => {
+        createComponent({
+          props: { defaultAccessLevel: 10, defaultMemberRoleId: 100, newUsersToInvite: [123] },
+          glFeatures: { overageMembersModal: true },
+          overageMembersModalAvailable: true,
+        });
+        await waitForPromises();
       });
-      await waitForPromises();
+
+      it('submits the `memberRoleId`', async () => {
+        clickInviteButton();
+        await waitForPromises();
+
+        expect(defaultBillableMock).toHaveBeenCalledWith(
+          expect.objectContaining({ memberRoleId: 100 }),
+        );
+
+        clickInviteButton();
+        await waitForPromises();
+
+        expect(wrapper.emitted('submit')).toEqual([
+          [{ accessLevel: 10, expiresAt: undefined, memberRoleId: 100 }],
+        ]);
+      });
     });
 
-    it('submits the `memberRoleId`', async () => {
-      clickInviteButton();
-      await waitForPromises();
+    describe('when overageMembersModalAvailable is false', () => {
+      beforeEach(async () => {
+        createComponent({
+          props: { defaultAccessLevel: 10, defaultMemberRoleId: 100, newUsersToInvite: [123] },
+          glFeatures: { overageMembersModal: true },
+          overageMembersModalAvailable: false,
+        });
+        await waitForPromises();
+      });
 
-      expect(defaultBillableMock).toHaveBeenCalledWith(
-        expect.objectContaining({ memberRoleId: 100 }),
-      );
+      it('submits the `memberRoleId` without calling getBillableUserCountChanges', async () => {
+        clickInviteButton();
+        await waitForPromises();
 
-      clickInviteButton();
-      await waitForPromises();
-
-      expect(wrapper.emitted('submit')).toEqual([
-        [{ accessLevel: 10, expiresAt: undefined, memberRoleId: 100 }],
-      ]);
+        expect(defaultBillableMock).not.toHaveBeenCalled();
+        expect(wrapper.emitted('submit')).toEqual([
+          [{ accessLevel: 10, expiresAt: undefined, memberRoleId: 100 }],
+        ]);
+      });
     });
   });
 
   describe('with overageMembersModal feature flag and a group to invite, and invite is clicked', () => {
-    beforeEach(async () => {
-      createComponent({
-        props: { newGroupToInvite: 123, rootGroupId: '54321' },
-        glFeatures: { overageMembersModal: true },
+    describe('when overageMembersModalAvailable is true', () => {
+      beforeEach(async () => {
+        createComponent({
+          props: { newGroupToInvite: 123, rootGroupId: '54321' },
+          glFeatures: { overageMembersModal: true },
+          overageMembersModalAvailable: true,
+        });
+        clickInviteButton();
+        await nextTick();
+        await waitForPromises();
       });
-      clickInviteButton();
-      await nextTick();
-      await waitForPromises();
+
+      it('calls graphql API and passes correct parameters', () => {
+        expect(defaultBillableMock).toHaveBeenCalledWith({
+          fullPath: 'mygroup',
+          addGroupId: 123,
+          addUserEmails: [],
+          addUserIds: [],
+          role: 'REPORTER',
+          memberRoleId: null,
+        });
+        expect(defaultReconciliationMock).toHaveBeenCalledTimes(1);
+        expect(defaultReconciliationMock).toHaveBeenCalledWith({ namespaceId: 54321 });
+      });
     });
 
-    it('calls graphql API and passes correct parameters', () => {
-      expect(defaultBillableMock).toHaveBeenCalledWith({
-        fullPath: 'mygroup',
-        addGroupId: 123,
-        addUserEmails: [],
-        addUserIds: [],
-        role: 'REPORTER',
-        memberRoleId: null,
+    describe('when overageMembersModalAvailable is false', () => {
+      beforeEach(async () => {
+        createComponent({
+          props: { newGroupToInvite: 123, rootGroupId: '54321' },
+          glFeatures: { overageMembersModal: true },
+          overageMembersModalAvailable: false,
+        });
+        clickInviteButton();
+        await nextTick();
+        await waitForPromises();
       });
-      expect(defaultResolverMock).toHaveBeenCalledTimes(1);
-      expect(defaultResolverMock).toHaveBeenCalledWith({ namespaceId: 54321 });
+
+      it('calls does not call graphql API', () => {
+        expect(defaultBillableMock).not.toHaveBeenCalled();
+        expect(defaultReconciliationMock).not.toHaveBeenCalled();
+      });
     });
   });
 
-  describe('with overageMembersModal feature flag, and invite is clicked', () => {
+  describe('with overageMembersModal feature flag, overageMembersModalAvailable is true, and invite is clicked', () => {
     beforeEach(async () => {
       createComponent({
         props: { newUsersToInvite: [123] },
         glFeatures: { overageMembersModal: true },
+        overageMembersModalAvailable: true,
       });
       clickInviteButton();
       await waitForPromises();
@@ -377,26 +425,30 @@ describe('EEInviteModalBase', () => {
     });
   });
 
-  describe('when the group is not eligible to show overage', () => {
-    beforeEach(async () => {
-      createComponent({
-        glFeatures: { overageMembersModal: true },
-        queryHandler: generateReconciliationResponse(false),
+  describe.each([true, false])(
+    'when the group is not eligible to show overage and overageMembersModalAvailable is %s',
+    (overageMembersModalAvailable) => {
+      beforeEach(async () => {
+        createComponent({
+          glFeatures: { overageMembersModal: true },
+          overageMembersModalAvailable,
+          queryHandler: generateReconciliationResponse(false),
+        });
+
+        clickInviteButton();
+        await nextTick();
       });
 
-      clickInviteButton();
-      await nextTick();
-    });
+      it('shows the initial modal', () => {
+        expect(findModal().props('title')).toBe(propsDataCE.modalTitle);
+        expect(findInitialModalContent().isVisible()).toBe(true);
+      });
 
-    it('shows the initial modal', () => {
-      expect(findModal().props('title')).toBe(propsDataCE.modalTitle);
-      expect(findInitialModalContent().isVisible()).toBe(true);
-    });
-
-    it("doesn't show the overage content", () => {
-      expect(findOverageModalContent().isVisible()).toBe(false);
-    });
-  });
+      it("doesn't show the overage content", () => {
+        expect(findOverageModalContent().isVisible()).toBe(false);
+      });
+    },
+  );
 
   describe('when group eligibility API request fails', () => {
     beforeEach(async () => {
@@ -427,27 +479,38 @@ describe('EEInviteModalBase', () => {
     });
   });
 
-  describe('integration', () => {
-    it('sets overage and actual feedback message if invalidFeedbackMessage prop is passed', async () => {
+  describe('invalid feedback message', () => {
+    it('does not show in initial modal', () => {
+      createComponent({
+        props: { newUsersToInvite: [123] },
+        glFeatures: { overageMembersModal: true, overageMembersModalAvailable: true },
+      });
+
+      expect(findModal().props('title')).toBe(propsDataCE.modalTitle);
+      expect(findCEBase().props('invalidFeedbackMessage')).toBe('');
+    });
+
+    it('does not show after invite if invalidFeedbackMessage prop is not passed', async () => {
       createComponent({
         props: { newUsersToInvite: [123] },
         glFeatures: { overageMembersModal: true },
+        overageMembersModalAvailable: true,
       });
-
-      // shows initial modal
-      expect(findModal().props('title')).toBe(propsDataCE.modalTitle);
-      expect(findCEBase().props('invalidFeedbackMessage')).toBe('');
 
       clickInviteButton();
       await waitForPromises();
 
-      // shows overage modal
       expect(findModal().props('title')).toBe(OVERAGE_MODAL_TITLE);
+      expect(findCEBase().props('invalidFeedbackMessage')).toBe('');
+    });
 
-      wrapper.setProps({ invalidFeedbackMessage: 'invalid message' });
-      await nextTick();
+    it('shows if invalidFeedbackMessage prop is passed', () => {
+      createComponent({
+        props: { newUsersToInvite: [123], invalidFeedbackMessage: 'invalid message' },
+        glFeatures: { overageMembersModal: true },
+        overageMembersModalAvailable: true,
+      });
 
-      // shows initial modal again
       expect(findModal().props('title')).toBe(propsDataCE.modalTitle);
       expect(findCEBase().props('invalidFeedbackMessage')).toBe('invalid message');
     });

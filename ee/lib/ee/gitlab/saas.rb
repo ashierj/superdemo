@@ -22,6 +22,7 @@ module EE
           google_cloud_support
           duo_chat_on_saas
           exact_code_search
+          overage_members_modal
         ].freeze
 
       CONFIG_FILE_ROOT = 'ee/config/saas_features'

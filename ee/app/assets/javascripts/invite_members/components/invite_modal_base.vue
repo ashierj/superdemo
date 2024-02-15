@@ -40,6 +40,7 @@ export default {
   },
   apolloProvider,
   mixins: [glFeatureFlagsMixin()],
+  inject: ['overageMembersModalAvailable'],
   inheritAttrs: false,
   props: {
     accessLevels: {
@@ -179,7 +180,7 @@ export default {
       return undefined;
     },
     showOverageModal() {
-      return this.willIncreaseOverage && this.enabledOverageCheck && !this.actualFeedbackMessage;
+      return this.willIncreaseOverage && this.enabledOverageModal && !this.actualFeedbackMessage;
     },
     submitDisabledEE() {
       if (this.showOverageModal) {
@@ -189,8 +190,8 @@ export default {
       // Use CE default
       return this.submitDisabled;
     },
-    enabledOverageCheck() {
-      return this.glFeatures.overageMembersModal;
+    enabledOverageModal() {
+      return this.glFeatures.overageMembersModal && this.overageMembersModalAvailable;
     },
     modalInfo() {
       if (this.totalUserCount) {
@@ -250,7 +251,7 @@ export default {
     onSubmit(args) {
       if (this.reachedLimit) return;
 
-      if (this.enabledOverageCheck && !this.willIncreaseOverage && this.hasInput) {
+      if (this.enabledOverageModal && !this.willIncreaseOverage && this.hasInput) {
         this.actualFeedbackMessage = '';
         this.checkEligibility(args);
       } else {

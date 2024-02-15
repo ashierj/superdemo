@@ -185,4 +185,26 @@ RSpec.describe EE::InviteMembersHelper, feature_category: :onboarding do
       end
     end
   end
+
+  describe '#overage_members_modal_available' do
+    context 'when SaaS' do
+      before do
+        stub_saas_features({ overage_members_modal: true })
+      end
+
+      it 'returns true' do
+        expect(helper.overage_members_modal_available).to be(true)
+      end
+    end
+
+    context 'when SM' do
+      before do
+        stub_saas_features({ overage_members_modal: false })
+      end
+
+      it 'returns false' do
+        expect(helper.overage_members_modal_available).to be(false)
+      end
+    end
+  end
 end

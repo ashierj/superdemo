@@ -8,7 +8,8 @@ module EE
     def common_invite_group_modal_data(source, _member_class, _is_project)
       super.merge(
         free_user_cap_enabled: ::Namespaces::FreeUserCap::Enforcement.new(source.root_ancestor).enforce_cap?.to_s,
-        free_users_limit: ::Namespaces::FreeUserCap.dashboard_limit
+        free_users_limit: ::Namespaces::FreeUserCap.dashboard_limit,
+        overage_members_modal_available: overage_members_modal_available.to_s
       )
     end
 
@@ -29,6 +30,7 @@ module EE
       end
 
       dataset[:manage_member_roles_path] = manage_member_roles_path(source)
+      dataset[:overage_members_modal_available] = overage_members_modal_available.to_s
 
       dataset
     end
@@ -67,6 +69,10 @@ module EE
       return {} unless root_group&.enforced_sso? && root_group.saml_provider&.id
 
       { users_filter: 'saml_provider_id', filter_id: root_group.saml_provider.id }
+    end
+
+    def overage_members_modal_available
+      ::Gitlab::Saas.feature_available?(:overage_members_modal)
     end
   end
 end
