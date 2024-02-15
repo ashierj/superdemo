@@ -7,3 +7,4 @@ milestone: '14.10'
 feature_category: code_review_workflow
 saved_to_database: true
 streamed: true
+scope: [Project]

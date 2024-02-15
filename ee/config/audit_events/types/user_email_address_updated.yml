@@ -7,3 +7,4 @@ milestone: '10.1'
 feature_category: user_profile
 saved_to_database: true
 streamed: true
+scope: [User]

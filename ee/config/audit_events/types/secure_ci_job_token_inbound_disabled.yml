@@ -6,3 +6,4 @@ feature_category: "verify_security"
 milestone: "16.0"
 saved_to_database: true
 streamed: true
+scope: [Project]

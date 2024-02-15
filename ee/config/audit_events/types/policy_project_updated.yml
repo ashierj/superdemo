@@ -6,3 +6,4 @@ milestone: "15.6"
 feature_category: "security_policy_management"
 saved_to_database: true
 streamed: true
+scope: ["Group", "Project"]
