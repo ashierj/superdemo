@@ -160,7 +160,8 @@ module EE
     override :nav_options
     def nav_options
       super.merge(show_epics: search_service.show_epics?,
-        show_elasticsearch_tabs: search_service.show_elasticsearch_tabs?
+        show_elasticsearch_tabs: search_service.show_elasticsearch_tabs?,
+        zoekt_enabled: ::Search::Zoekt.enabled_for_user?(current_user)
       )
     end
   end

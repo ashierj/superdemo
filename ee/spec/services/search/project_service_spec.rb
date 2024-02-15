@@ -83,6 +83,18 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
       expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
     end
 
+    context 'when advanced search is disabled' do
+      before do
+        stub_ee_application_setting(elasticsearch_search: false, elasticsearch_indexing: false)
+      end
+
+      it 'returns a Gitlab::Zoekt::SearchResults' do
+        expect(service.use_zoekt?).to eq(true)
+        expect(service.zoekt_searchable_scope).to eq(project)
+        expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
     context 'when project does not have Zoekt enabled' do
       let(:search_code_with_zoekt) { false }
 

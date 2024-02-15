@@ -122,8 +122,7 @@ RSpec.describe 'User with read_code custom role', feature_category: :system_acce
         end
 
         context 'when searching a group' do
-          # To be completed with: https://gitlab.com/gitlab-org/gitlab/-/issues/389750
-          pending 'allows access via a custom role' do
+          it 'allows access via a custom role' do
             get search_path, params: {
               group_id: project.group.id,
               scope: 'blobs',

@@ -50,11 +50,17 @@ module EE
 
       override :allowed_scopes
       def allowed_scopes
-        return super + %w[epics] unless use_elasticsearch? # In basic search we have epics enabled for groups
-        return super - %w[epics] unless group.licensed_feature_available?(:epics)
-
         strong_memoize(:ee_group_allowed_scopes) do
-          super
+          scopes = super
+
+          if use_elasticsearch?
+            scopes -= %w[epics] unless group.licensed_feature_available?(:epics)
+          else
+            scopes += %w[epics] # In basic search we have epics enabled for groups
+            scopes += %w[blobs] if ::Search::Zoekt.search?(group) && ::Search::Zoekt.enabled_for_user?(current_user)
+          end
+
+          scopes
         end
       end
     end
