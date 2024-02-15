@@ -48,6 +48,12 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
       it_behaves_like 'does not update approvals'
     end
 
+    context 'when pipeline source is not one of ci_and_security_orchestration_sources' do
+      let_it_be(:pipeline) { create(:ee_ci_pipeline, :success, project: project, source: :parent_pipeline) }
+
+      it_behaves_like 'does not update approvals'
+    end
+
     context 'when pipeline_findings is not empty' do
       let_it_be(:pipeline_scan) { create(:security_scan, pipeline: pipeline) }
       let_it_be(:pipeline_findings) do
