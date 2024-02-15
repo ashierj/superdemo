@@ -32263,8 +32263,8 @@ Pipeline security report finding sort values.
 
 | Value | Description |
 | ----- | ----------- |
-| <a id="pipelinesecurityreportfindingsortseverity_asc"></a>`SEVERITY_ASC` | Severity in ascending order. |
-| <a id="pipelinesecurityreportfindingsortseverity_desc"></a>`SEVERITY_DESC` | Severity in descending order. |
+| <a id="pipelinesecurityreportfindingsortseverity_asc"></a>`severity_asc` | Severity in ascending order. |
+| <a id="pipelinesecurityreportfindingsortseverity_desc"></a>`severity_desc` | Severity in descending order. |
 
 ### `PipelineStatusEnum`
 
