@@ -4,6 +4,8 @@ require 'fileutils'
 require 'cgi'
 require 'httparty'
 require 'json'
+
+require_relative '../config/environment'
 require_relative './helpers/groups'
 require_relative './helpers/milestones'
 
@@ -27,24 +29,11 @@ module Keeps
     ].freeze
     API_BASE_URI = 'https://gitlab.com/api/v4'
     ROLLOUT_ISSUE_URL_REGEX = %r{\Ahttps://gitlab\.com/(?<project_path>.*)/-/issues/(?<issue_iid>\d+)\z}
-
-    FeatureFlag = Struct.new(
-      :name,
-      :feature_issue_url,
-      :introduced_by_url,
-      :rollout_issue_url,
-      :milestone,
-      :group,
-      :type,
-      :default_enabled,
-      keyword_init: true
-    )
-
-    def initialize; end
+    FEATURE_FLAG_LOG_ISSUES_URL = "https://gitlab.com/gitlab-com/gl-infra/feature-flag-log/-/issues/?search=%<feature_flag_name>s&sort=created_date&state=all&label_name%%5B%%5D=host%%3A%%3Agitlab.com"
 
     def each_change
       each_feature_flag do |feature_flag_yaml_file, feature_flag_definition|
-        feature_flag = FeatureFlag.new(feature_flag_definition)
+        feature_flag = Feature::Definition.new(feature_flag_yaml_file, feature_flag_definition)
 
         if feature_flag.milestone.nil?
           puts "#{feature_flag.name} has no milestone set!"
@@ -55,11 +44,6 @@ module Keeps
           milestone: feature_flag.milestone,
           milestones_ago: CUTOFF_MILESTONE_OLD)
 
-        # feature_flag_gitlab_com_state = fetch_gitlab_com_state(feature_flag.name)
-
-        # TODO: Handle the different cases of default_enabled vs enabled/disabled on GitLab.com
-
-        # Finalize the migration
         change = ::Gitlab::Housekeeper::Change.new
         change.changelog_type = 'removed'
         change.title = "Delete the `#{feature_flag.name}` feature flag"
@@ -71,7 +55,7 @@ module Keeps
 
         As part of our process we want to ensure [feature flags don't stay too long in the codebase](https://docs.gitlab.com/ee/development/feature_flags/#types-of-feature-flags).
 
-        Rollout issue: #{feature_flag.rollout_issue_url}
+        Rollout issue: #{feature_flag_rollout_issue_url(feature_flag)}
 
         #{feature_flag_default_enabled_note(feature_flag_definition[:default_enabled])}
 
@@ -82,6 +66,13 @@ module Keeps
         ```
 
         </details>
+
+        It is likely that this MR will still need some changes to remove references to the feature flag in the code.
+        At the moment the `gitlab-housekeeper` is not capable of removing references but we'll be adding that functionality next.
+        It is the responsibility of ~"#{feature_flag.group}" to push those changes to this branch.
+        If they are already removing this feature flag in another merge request then they can just close this merge request.
+
+        You can also see the status of the rollout by checking #{feature_flag_rollout_issue_url(feature_flag)} and #{format(FEATURE_FLAG_LOG_ISSUES_URL, feature_flag_name: feature_flag.name)}.
         MARKDOWN
         # rubocop:enable Gitlab/DocUrl
 
@@ -105,10 +96,6 @@ module Keeps
 
         yield(change)
       end
-    end
-
-    def fetch_gitlab_com_state(feature_flag_name)
-      # TBD
     end
 
     def feature_flag_default_enabled_note(feature_flag_default_enabled)
@@ -136,6 +123,10 @@ module Keeps
         '--',
         *(GREP_IGNORE.map { |path| ":^#{path}" })
       )
+    end
+
+    def feature_flag_rollout_issue_url(feature_flag)
+      feature_flag.rollout_issue_url || '(missing URL)'
     end
 
     def assignees(rollout_issue_url)
