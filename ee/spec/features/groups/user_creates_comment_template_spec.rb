@@ -2,19 +2,26 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Profile > Comment templates > User creates comment template', :js,
-  feature_category: :user_profile do
+RSpec.describe 'Groups > Comment templates > User creates comment template', :js,
+  feature_category: :code_review_workflow do
   let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
+
+  before_all do
+    group.add_owner(user)
+  end
 
   before do
+    stub_licensed_features(group_saved_replies: true)
+
     sign_in(user)
 
-    visit profile_comment_templates_path
+    visit group_comment_templates_path(group)
 
     wait_for_requests
   end
 
-  it 'shows the user a list of their saved replies' do
+  it 'creates a new comment template' do
     click_button 'Add new'
     find_by_testid('comment-template-name-input').set('test')
     find_by_testid('comment-template-content-input').set('Test content')
