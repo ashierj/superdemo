@@ -10,10 +10,6 @@ import linkSecurityPolicyProject from 'ee/security_orchestration/graphql/mutatio
 import unlinkSecurityPolicyProject from 'ee/security_orchestration/graphql/mutations/unlink_security_policy_project.mutation.graphql';
 import InstanceProjectSelector from 'ee/security_orchestration/components/policies/instance_project_selector.vue';
 import {
-  POLICY_PROJECT_LINK_ERROR_MESSAGE,
-  POLICY_PROJECT_LINK_SUCCESS_MESSAGE,
-} from 'ee/security_orchestration/components/policies/constants';
-import {
   mockLinkSecurityPolicyProjectResponses,
   mockUnlinkSecurityPolicyProjectResponses,
 } from '../../mocks/mock_apollo';
@@ -122,9 +118,9 @@ describe('ProjectModal Component', () => {
       'Unlinking a security project removes all policies stored in the linked security project. Save to confirm this action.';
 
     it.each`
-      mutationResult | expectedVariant | expectedText                                                    | expectedHasPolicyProject
-      ${'success'}   | ${'success'}    | ${'Security policy project was unlinked successfully'}          | ${false}
-      ${'failure'}   | ${'danger'}     | ${'An error occurred unassigning your security policy project'} | ${true}
+      mutationResult | expectedVariant | expectedText                                           | expectedHasPolicyProject
+      ${'success'}   | ${'success'}    | ${'Security policy project was unlinked successfully'} | ${false}
+      ${'failure'}   | ${'danger'}     | ${'unlink failed'}                                     | ${true}
     `(
       'unlinks a project and handles $mutationResult case',
       async ({ mutationResult, expectedVariant, expectedText, expectedHasPolicyProject }) => {
@@ -182,9 +178,9 @@ describe('ProjectModal Component', () => {
     });
 
     it.each`
-      messageType  | factoryFn                                                                                                  | text                                   | variant      | hasPolicyProject | selectedProject
-      ${'success'} | ${createWrapperAndSelectProject}                                                                           | ${POLICY_PROJECT_LINK_SUCCESS_MESSAGE} | ${'success'} | ${true}          | ${sampleProject}
-      ${'failure'} | ${() => createWrapperAndSelectProject({ mutationResult: mockLinkSecurityPolicyProjectResponses.failure })} | ${POLICY_PROJECT_LINK_ERROR_MESSAGE}   | ${'danger'}  | ${false}         | ${undefined}
+      messageType  | factoryFn                                                                                                  | text                                                 | variant      | hasPolicyProject | selectedProject
+      ${'success'} | ${createWrapperAndSelectProject}                                                                           | ${'Security policy project was linked successfully'} | ${'success'} | ${true}          | ${sampleProject}
+      ${'failure'} | ${() => createWrapperAndSelectProject({ mutationResult: mockLinkSecurityPolicyProjectResponses.failure })} | ${'link failed'}                                     | ${'danger'}  | ${false}         | ${undefined}
     `(
       'emits an event with $messageType message',
       async ({ factoryFn, text, variant, hasPolicyProject, selectedProject }) => {

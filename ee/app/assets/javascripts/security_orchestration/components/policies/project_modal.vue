@@ -4,10 +4,6 @@ import { s__, __ } from '~/locale';
 import linkSecurityPolicyProject from '../../graphql/mutations/link_security_policy_project.mutation.graphql';
 import unlinkSecurityPolicyProject from '../../graphql/mutations/unlink_security_policy_project.mutation.graphql';
 import InstanceProjectSelector from './instance_project_selector.vue';
-import {
-  POLICY_PROJECT_LINK_ERROR_MESSAGE,
-  POLICY_PROJECT_LINK_SUCCESS_MESSAGE,
-} from './constants';
 
 export default {
   i18n: {
@@ -16,9 +12,11 @@ export default {
       header: s__('SecurityOrchestration|Select security project'),
     },
     save: {
-      okLink: POLICY_PROJECT_LINK_SUCCESS_MESSAGE,
+      okLink: s__('SecurityOrchestration|Security policy project was linked successfully'),
       okUnlink: s__('SecurityOrchestration|Security policy project was unlinked successfully'),
-      errorLink: POLICY_PROJECT_LINK_ERROR_MESSAGE,
+      errorLink: s__(
+        'SecurityOrchestration|An error occurred assigning your security policy project',
+      ),
       errorUnlink: s__(
         'SecurityOrchestration|An error occurred unassigning your security policy project',
       ),
@@ -98,9 +96,11 @@ export default {
           variant: 'success',
           hasPolicyProject: true,
         });
-      } catch {
+      } catch (e) {
+        const text = e?.message || this.$options.i18n.save.errorLink;
+
         this.$emit('project-updated', {
-          text: this.$options.i18n.save.errorLink,
+          text,
           variant: 'danger',
           hasPolicyProject: false,
         });
@@ -129,9 +129,11 @@ export default {
           variant: 'success',
           hasPolicyProject: false,
         });
-      } catch {
+      } catch (e) {
+        const text = e?.message || this.$options.i18n.save.errorUnlink;
+
         this.$emit('project-updated', {
-          text: this.$options.i18n.save.errorUnlink,
+          text,
           variant: 'danger',
           hasPolicyProject: true,
         });
