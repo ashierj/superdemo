@@ -27,6 +27,7 @@ describe('EEInviteMembersModal', () => {
       provide: {
         newProjectPath,
         name: propsData.name,
+        overageMembersModalAvailable: true,
       },
       propsData: {
         usersLimitDataset: {},
