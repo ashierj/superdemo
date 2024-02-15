@@ -7,7 +7,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
   let_it_be(:rsa_key) { OpenSSL::PKey::RSA.generate(3072) }
   let_it_be(:rsa_key_data) { rsa_key.to_s }
 
-  let(:gcp_project_id) { 'gcp_project_id' }
+  let(:gcp_project_id) { 'cloud_project_id' }
   let(:gcp_wlif) { '//wlif.test' }
 
   let(:user) { project.owner }

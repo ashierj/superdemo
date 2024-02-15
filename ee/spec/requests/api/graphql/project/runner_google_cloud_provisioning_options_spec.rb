@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'runnerCloudProvisioningOptions', feature_category: :fleet_visibility do
+RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :fleet_visibility do
   include GraphqlHelpers
 
   let_it_be_with_refind(:project) { create(:project) }
@@ -11,11 +11,12 @@ RSpec.describe 'runnerCloudProvisioningOptions', feature_category: :fleet_visibi
 
   let(:client_klass) { GoogleCloudPlatform::Compute::Client }
   let(:current_user) { maintainer }
+  let(:google_cloud_project_id) { 'project_id_override' }
   let(:expected_compute_client_args) do
     {
       project: project,
       user: current_user,
-      gcp_project_id: integration.artifact_registry_project_id,
+      gcp_project_id: google_cloud_project_id,
       gcp_wlif: integration.wlif
     }
   end
@@ -30,9 +31,14 @@ RSpec.describe 'runnerCloudProvisioningOptions', feature_category: :fleet_visibi
     graphql_query_for(
       :project, { fullPath: project.full_path },
       query_graphql_field(
-        :runner_cloud_provisioning_options, { provider: :GOOGLE_CLOUD },
-        query_nodes(node_name, args: base_item_query_args.merge(item_query_args), of: item_type,
-          include_pagination_info: true)
+        :runner_cloud_provisioning_options, { provider: :GOOGLE_CLOUD, cloud_project_id: google_cloud_project_id },
+        "... on CiRunnerGoogleCloudProvisioningOptions {
+          #{query_nodes(
+            node_name,
+            args: base_item_query_args.merge(item_query_args),
+            of: item_type,
+            include_pagination_info: true)}
+        }"
       )
     )
   end

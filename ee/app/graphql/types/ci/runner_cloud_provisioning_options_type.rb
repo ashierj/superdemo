@@ -2,29 +2,22 @@
 
 module Types
   module Ci
-    class RunnerCloudProvisioningOptionsType < BaseObject
+    class RunnerCloudProvisioningOptionsType < BaseUnion
       graphql_name 'CiRunnerCloudProvisioningOptions'
       description 'Options for runner cloud provisioning.'
 
-      include Gitlab::Graphql::Authorize::AuthorizeResource
+      UnexpectedProviderType = Class.new(StandardError)
 
-      authorize :read_runner_cloud_provisioning_options
+      possible_types ::Types::Ci::RunnerGoogleCloudProvisioningOptionsType
 
-      field :regions, Types::Ci::RunnerCloudProvisioningRegionType.connection_type,
-        null: true,
-        resolver: ::Resolvers::Ci::RunnerCloudProvisioningRegionsResolver,
-        connection_extension: Gitlab::Graphql::Extensions::ForwardOnlyExternallyPaginatedArrayExtension
-
-      field :zones, Types::Ci::RunnerCloudProvisioningZoneType.connection_type,
-        null: true,
-        resolver: ::Resolvers::Ci::RunnerCloudProvisioningZonesResolver,
-        connection_extension: Gitlab::Graphql::Extensions::ForwardOnlyExternallyPaginatedArrayExtension
-
-      field :machine_types,
-        Types::Ci::RunnerCloudProvisioningMachineTypeType.connection_type,
-        null: true,
-        resolver: ::Resolvers::Ci::RunnerCloudProvisioningMachineTypesResolver,
-        connection_extension: Gitlab::Graphql::Extensions::ForwardOnlyExternallyPaginatedArrayExtension
+      def self.resolve_type(object, _context)
+        case object[:provider]
+        when :google_cloud
+          ::Types::Ci::RunnerGoogleCloudProvisioningOptionsType
+        else
+          raise UnexpectedProviderType, 'Unsupported CI runner cloud provider'
+        end
+      end
     end
   end
 end

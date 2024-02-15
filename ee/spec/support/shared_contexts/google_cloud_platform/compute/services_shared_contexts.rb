@@ -6,7 +6,7 @@ RSpec.shared_context 'for a compute service' do
     create(
       :google_cloud_platform_artifact_registry_integration,
       project: project,
-      artifact_registry_project_id: 'gcp_project_id',
+      artifact_registry_project_id: 'cloud_project_id',
       workload_identity_pool_project_number: '555',
       workload_identity_pool_id: 'my_pool',
       workload_identity_pool_provider_id: 'my_provider'
@@ -16,13 +16,14 @@ RSpec.shared_context 'for a compute service' do
   let(:user) { project.owner }
   let(:service) { described_class.new(project: project, current_user: user, params: params) }
   let(:client_double) { instance_double('::GoogleCloudPlatform::Compute::Client') }
+  let(:google_cloud_project_id) { nil }
 
   before do
     allow(::GoogleCloudPlatform::Compute::Client).to receive(:new)
       .with(
         project: project,
         user: user,
-        gcp_project_id: project_integration.artifact_registry_project_id,
+        gcp_project_id: google_cloud_project_id || project_integration.artifact_registry_project_id,
         gcp_wlif: project_integration.wlif
       ).and_return(client_double)
   end

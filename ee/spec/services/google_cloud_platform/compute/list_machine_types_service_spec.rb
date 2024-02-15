@@ -14,7 +14,10 @@ RSpec.describe GoogleCloudPlatform::Compute::ListMachineTypesService, feature_ca
     let(:order_by) { 'name asc' }
     let(:service) { described_class.new(project: project, current_user: user, zone: zone, params: params) }
     let(:params) do
-      { filter: filter, max_results: max_results, page_token: page_token, order_by: order_by }
+      {
+        google_cloud_project_id: google_cloud_project_id, filter: filter,
+        max_results: max_results, page_token: page_token, order_by: order_by
+      }.compact
     end
 
     subject(:response) { service.execute }
@@ -29,6 +32,8 @@ RSpec.describe GoogleCloudPlatform::Compute::ListMachineTypesService, feature_ca
           .with(zone: zone, filter: filter, max_results: max_results, page_token: page_token, order_by: order_by)
           .and_return(dummy_list_response)
       end
+
+      it_behaves_like 'overriding the google cloud project id'
 
       it 'returns the machine_types' do
         expect(response).to be_success

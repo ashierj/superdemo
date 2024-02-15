@@ -67,3 +67,23 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
     end
   end
 end
+
+RSpec.shared_examples 'overriding the google cloud project id' do
+  let(:google_cloud_project_id) { 'project_id_override' }
+  let(:extra_params) { { google_cloud_project_id: google_cloud_project_id } }
+
+  it 'returns results by calling the specified project id' do
+    expect(::GoogleCloudPlatform::Compute::Client).to receive(:new)
+      .with(
+        project: project,
+        user: user,
+        gcp_project_id: google_cloud_project_id,
+        gcp_wlif: project_integration.wlif
+      ).and_return(client_double)
+
+    expect(response).to be_success
+    expect(response.payload[:items]).to be_a Enumerable
+    expect(response.payload[:items].count).to be 1
+    expect(response.payload[:next_page_token]).to eq('next_page_token')
+  end
+end
