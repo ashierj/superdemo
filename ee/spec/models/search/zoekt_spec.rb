@@ -143,4 +143,31 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
       it { expect { index }.to raise_error(ArgumentError) }
     end
   end
+
+  describe '#enabled_for_user?' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:a_user) { create(:user) }
+
+    subject(:enabled_for_user) { described_class.enabled_for_user?(user) }
+
+    before do
+      stub_feature_flags(search_code_with_zoekt: feature_flag)
+      stub_licensed_features(zoekt_code_search: license_setting)
+
+      allow(a_user).to receive(:enabled_zoekt?).and_return(user_setting)
+    end
+
+    where(:user, :feature_flag, :license_setting, :user_setting, :expected_result) do
+      ref(:a_user) | true   | true  | true  | true
+      ref(:a_user) | true   | true  | false | false
+      ref(:a_user) | true   | false | true  | false
+      ref(:a_user) | false  | true  | true  | false
+      nil          | true   | true  | true  | true
+    end
+
+    with_them do
+      it { is_expected.to eq(expected_result) }
+    end
+  end
 end

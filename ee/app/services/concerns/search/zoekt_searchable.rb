@@ -6,9 +6,7 @@ module Search
       # TODO: rename to search_code_with_zoekt?
       # https://gitlab.com/gitlab-org/gitlab/-/issues/421619
       return false if params[:basic_search]
-      return false unless ::Feature.enabled?(:search_code_with_zoekt, current_user)
-      return false unless ::License.feature_available?(:zoekt_code_search)
-      return false if current_user && !current_user.enabled_zoekt?
+      return false unless ::Search::Zoekt.enabled_for_user?(current_user)
       return false unless zoekt_searchable_scope?
       return false if skip_api?
 

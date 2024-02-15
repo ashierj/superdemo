@@ -26,6 +26,14 @@ module Search
         ::Search::Zoekt::EnabledNamespace.for_root_namespace_id(root_namespace_id).exists?
       end
 
+      def enabled_for_user?(user)
+        return false unless ::Feature.enabled?(:search_code_with_zoekt, user)
+        return false unless ::License.feature_available?(:zoekt_code_search)
+        return true unless user # anonymous users have access, the final check is the user's preference setting
+
+        user.enabled_zoekt?
+      end
+
       private
 
       def fetch_root_namespace_id(container)

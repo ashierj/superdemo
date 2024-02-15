@@ -14,7 +14,8 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
 
-  it_behaves_like 'EE search service shared examples', ::Gitlab::GroupSearchResults, ::Gitlab::Elastic::GroupSearchResults do
+  it_behaves_like 'EE search service shared examples', ::Gitlab::GroupSearchResults,
+    ::Gitlab::Elastic::GroupSearchResults do
     let(:scope) { group }
     let(:service) { described_class.new(user, scope, params) }
   end
@@ -25,7 +26,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
     # These projects shouldn't be found
     let(:outside_project) { create(:project, :public, name: "Outside #{term}") }
-    let(:private_project) { create(:project, :private, namespace: nested_group, name: "Private #{term}" ) }
+    let(:private_project) { create(:project, :private, namespace: nested_group, name: "Private #{term}") }
     let(:other_project)   { create(:project, :public, namespace: nested_group, name: 'OtherProject') }
 
     # These projects should be found
@@ -80,7 +81,11 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
   end
 
   context 'when searching with Zoekt' do
-    let(:service) { described_class.new(user, group, search: 'foobar', scope: scope, basic_search: basic_search, page: page, source: source) }
+    let(:service) do
+      described_class.new(user, group, search: 'foobar', scope: scope,
+        basic_search: basic_search, page: page, source: source)
+    end
+
     let(:source) { nil }
     let(:use_zoekt) { true }
     let(:scope) { 'blobs' }
@@ -104,6 +109,18 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
       expect(service.use_zoekt?).to eq(true)
       expect(service.zoekt_searchable_scope).to eq(group)
       expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+    end
+
+    context 'when advanced search is disabled' do
+      before do
+        stub_ee_application_setting(elasticsearch_search: false, elasticsearch_indexing: false)
+      end
+
+      it 'returns a Gitlab::Zoekt::SearchResults' do
+        expect(service.use_zoekt?).to eq(true)
+        expect(service.zoekt_searchable_scope).to eq(group)
+        expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
     end
 
     context 'when group does not have Zoekt enabled' do
@@ -215,7 +232,10 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
     context 'merge request' do
       let!(:merge_request) { create :merge_request, target_project: project, source_project: project }
-      let!(:merge_request2) { create :merge_request, target_project: project2, source_project: project2, title: merge_request.title }
+      let!(:merge_request2) do
+        create :merge_request, target_project: project2, source_project: project2, title: merge_request.title
+      end
+
       let(:scope) { 'merge_requests' }
       let(:search) { merge_request.title }
 
@@ -238,7 +258,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
         let!(:confidential_note) do
           note_author_and_assignee = user || project.creator
           issue = create(:issue, project: project, assignees: [note_author_and_assignee])
-          create(:note, confidential: true, project: project, noteable: issue, author: note_author_and_assignee )
+          create(:note, confidential: true, project: project, noteable: issue, author: note_author_and_assignee)
         end
 
         where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
@@ -264,7 +284,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
       end
 
       context 'on commits' do
-        let_it_be_with_reload(:project) { create(:project, :repository, namespace: group ) }
+        let_it_be_with_reload(:project) { create(:project, :repository, namespace: group) }
         let_it_be_with_reload(:project2) { create(:project, :repository) }
 
         let!(:note) { create :note_on_commit, project: project }
@@ -380,7 +400,8 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
     context 'milestone' do
       let!(:milestone) { create :milestone, project: project }
 
-      where(:project_level, :issues_access_level, :merge_requests_access_level, :membership, :admin_mode, :expected_count) do
+      where(:project_level, :issues_access_level, :merge_requests_access_level, :membership, :admin_mode,
+        :expected_count) do
         permission_table_for_milestone_access
       end
 
@@ -457,13 +478,35 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
       let(:scope) { 'merge_requests' }
       let!(:project) { create(:project, :public, group: group) }
 
-      let!(:new_result) { create(:merge_request, :opened, source_project: project, source_branch: 'new-1', title: 'sorted recent', created_at: 1.day.ago) }
-      let!(:old_result) { create(:merge_request, :opened, source_project: project, source_branch: 'old-1', title: 'sorted old', created_at: 1.month.ago) }
-      let!(:very_old_result) { create(:merge_request, :opened, source_project: project, source_branch: 'very-old-1', title: 'sorted very old', created_at: 1.year.ago) }
+      let!(:new_result) do
+        create(:merge_request, :opened, source_project: project, source_branch: 'new-1', title: 'sorted recent',
+          created_at: 1.day.ago)
+      end
 
-      let!(:new_updated) { create(:merge_request, :opened, source_project: project, source_branch: 'updated-new-1', title: 'updated recent', updated_at: 1.day.ago) }
-      let!(:old_updated) { create(:merge_request, :opened, source_project: project, source_branch: 'updated-old-1', title: 'updated old', updated_at: 1.month.ago) }
-      let!(:very_old_updated) { create(:merge_request, :opened, source_project: project, source_branch: 'updated-very-old-1', title: 'updated very old', updated_at: 1.year.ago) }
+      let!(:old_result) do
+        create(:merge_request, :opened, source_project: project, source_branch: 'old-1', title: 'sorted old',
+          created_at: 1.month.ago)
+      end
+
+      let!(:very_old_result) do
+        create(:merge_request, :opened, source_project: project, source_branch: 'very-old-1', title: 'sorted very old',
+          created_at: 1.year.ago)
+      end
+
+      let!(:new_updated) do
+        create(:merge_request, :opened, source_project: project, source_branch: 'updated-new-1', title: 'updated recent',
+          updated_at: 1.day.ago)
+      end
+
+      let!(:old_updated) do
+        create(:merge_request, :opened, source_project: project, source_branch: 'updated-old-1', title: 'updated old',
+          updated_at: 1.month.ago)
+      end
+
+      let!(:very_old_updated) do
+        create(:merge_request, :opened, source_project: project, source_branch: 'updated-very-old-1',
+          title: 'updated very old', updated_at: 1.year.ago)
+      end
 
       before do
         ensure_elasticsearch_index!
@@ -500,11 +543,49 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
   end
 
   describe '#allowed_scopes' do
-    let(:group) { create(:group) }
+    let_it_be(:group) { create(:group) }
 
-    context 'epics scope' do
-      let(:allowed_scopes) { described_class.new(user, group, {}).allowed_scopes }
+    subject(:allowed_scopes) { described_class.new(user, group, {}).allowed_scopes }
 
+    context 'for blobs scope' do
+      context 'when elasticearch_search is disabled and zoekt is disabled' do
+        before do
+          stub_ee_application_setting(elasticsearch_search: false)
+          allow(::Search::Zoekt).to receive(:enabled_for_user?).and_return(false)
+        end
+
+        it { is_expected.not_to include('blobs') }
+      end
+
+      context 'when elasticsearch_search is enabled and zoekt is disabled' do
+        before do
+          stub_ee_application_setting(elasticsearch_search: true)
+          allow(::Search::Zoekt).to receive(:enabled_for_user?).and_return(false)
+        end
+
+        it { is_expected.to include('blobs') }
+      end
+
+      context 'when elasticsearch_search is disabled and zoekt is enabled' do
+        before do
+          stub_ee_application_setting(elasticsearch_search: false)
+          allow(::Search::Zoekt).to receive(:enabled_for_user?).and_return(true)
+          allow(::Search::Zoekt).to receive(:search?).with(group).and_return(true)
+        end
+
+        it { is_expected.to include('blobs') }
+
+        context 'but the group does is not enabled for zoekt' do
+          before do
+            allow(::Search::Zoekt).to receive(:search?).with(group).and_return(false)
+          end
+
+          it { is_expected.not_to include('blobs') }
+        end
+      end
+    end
+
+    context 'for epics scope' do
       before do
         stub_licensed_features(epics: epics_available)
       end
