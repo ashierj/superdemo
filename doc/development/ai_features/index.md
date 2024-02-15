@@ -112,9 +112,14 @@ Gitlab::CurrentSettings.update!(anthropic_api_key: <insert API key>)
 
 ### Embeddings database
 
-Embeddings are generated through the [VertexAI text embeddings API](https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings). The sections
-below explain how to populate embeddings in the DB or extract embeddings to be
-used in specs.
+Embeddings are generated through the [VertexAI text embeddings API](https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings).
+
+Embeddings for GitLab documentation are updated based on the latest changes
+Monday through Friday at 05:00 UTC when the
+[embeddings cron job](https://gitlab.com/gitlab-org/gitlab/-/blob/6742f6bd3970c56a9d5bcd31e3d3dff180c97088/config/initializers/1_settings.rb#L817) runs.
+
+The sections below explain how to populate embeddings in the DB or extract
+embeddings to be used in specs.
 
 #### Set up
 
