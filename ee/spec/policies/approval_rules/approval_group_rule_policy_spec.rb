@@ -12,7 +12,7 @@ RSpec.describe ApprovalRules::ApprovalGroupRulePolicy, feature_category: :source
   end
 
   before_all do
-    group.add_maintainer(user)
+    group.add_owner(user)
   end
 
   context 'when user can update group' do

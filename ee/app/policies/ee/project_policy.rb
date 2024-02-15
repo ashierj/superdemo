@@ -149,6 +149,10 @@ module EE
         @subject.feature_available?(:combined_project_analytics_dashboards, @user)
       end
 
+      condition(:google_cloud_support_available, scope: :global) do
+        ::Gitlab::Saas.feature_available?(:google_cloud_support)
+      end
+
       condition(:status_page_available) do
         @subject.feature_available?(:status_page, @user)
       end
@@ -294,8 +298,17 @@ module EE
         ).has_ability?
       end
 
+      desc 'Custom role on project that enables admin CI/CD variables'
+      condition(:role_enables_admin_cicd_variables) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :admin_cicd_variables
+        ).has_ability?
+      end
+
       condition(:developer_access_to_admin_vulnerability) do
-        ::Feature.disabled?(:disable_developer_access_to_admin_vulnerability, subject&.group) &&
+        ::Feature.disabled?(:disable_developer_access_to_admin_vulnerability, subject&.root_namespace) &&
           can?(:developer_access)
       end
 
@@ -348,11 +361,20 @@ module EE
           @subject.licensed_feature_available?(:metrics_observability)
       end
 
+      condition(:observability_logs_enabled) do
+        ::Feature.enabled?(:observability_logs, @subject.root_namespace, type: :wip) &&
+          @subject.licensed_feature_available?(:logs_observability)
+      end
+
       # We are overriding the already defined condition in CE version
       # to allow Guest users with member roles to access the merge requests.
       condition(:merge_requests_disabled) do
         !(access_allowed_to?(:merge_requests) ||
           (custom_roles_allowed? && merge_requests_is_a_private_feature? && role_enables_admin_merge_request?))
+      end
+
+      rule { custom_roles_allowed & role_enables_admin_cicd_variables }.policy do
+        enable :admin_cicd_variables
       end
 
       condition(:ci_cancellation_maintainers_only, scope: :subject) do
@@ -425,6 +447,7 @@ module EE
         enable :read_project_audit_events
         enable :read_product_analytics
         enable :create_workspace
+        enable :enable_continuous_vulnerability_scans
       end
 
       rule { can?(:reporter_access) & iterations_available }.policy do
@@ -672,10 +695,6 @@ module EE
           .default_project_deletion_protection
       end
 
-      condition(:continuous_vulnerability_scanning_available) do
-        ::Feature.enabled?(:dependency_scanning_on_advisory_ingestion)
-      end
-
       desc "Custom role on project that enables manage project access tokens"
       condition(:role_enables_manage_project_access_tokens) do
         ::Auth::MemberRoleAbilityLoader.new(
@@ -766,6 +785,8 @@ module EE
 
       rule { status_page_available & can?(:owner_access) }.enable :mark_issue_for_publication
       rule { status_page_available & can?(:developer_access) }.enable :publish_status_page
+
+      rule { google_cloud_support_available & can?(:maintainer_access) }.enable :read_runner_cloud_provisioning_options
 
       rule { hidden }.policy do
         prevent :download_code
@@ -859,16 +880,16 @@ module EE
         (maintainer | owner | admin) & pages_multiple_versions_available
       end.enable :pages_multiple_versions
 
-      rule { continuous_vulnerability_scanning_available & can?(:developer_access) }.policy do
-        enable :enable_continuous_vulnerability_scans
-      end
-
       rule { can?(:reporter_access) & tracing_enabled }.policy do
         enable :read_tracing
       end
 
       rule { can?(:reporter_access) & observability_metrics_enabled }.policy do
         enable :read_observability_metrics
+      end
+
+      rule { can?(:reporter_access) & observability_logs_enabled }.policy do
+        enable :read_observability_logs
       end
 
       rule { ci_cancellation_maintainers_only & ~can?(:maintainer_access) }.policy do
@@ -885,11 +906,11 @@ module EE
 
       rule { ai_available & generate_cube_query_enabled }.enable :generate_cube_query
 
-      rule { agent_registry_enabled }.policy do
+      rule { guest & agent_registry_enabled }.policy do
         enable :read_ai_agents
       end
 
-      rule { can?(:reporter_access) & agent_registry_enabled }.policy do
+      rule { reporter & agent_registry_enabled }.policy do
         enable :write_ai_agents
       end
 

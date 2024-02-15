@@ -221,12 +221,14 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulner
       let(:other_identifier) { build(:ci_reports_security_identifier, external_id: identifier_external_id) }
       let(:other_location) { build(:ci_reports_security_locations_sast, start_line: location_start_line) }
       let(:other_finding) do
-        build(:ci_reports_security_finding,
-              severity: 'low',
-              report_type: report_type,
-              identifiers: [other_identifier],
-              location: other_location,
-              vulnerability_finding_signatures_enabled: vulnerability_finding_signatures_enabled)
+        build(
+          :ci_reports_security_finding,
+          severity: 'low',
+          report_type: report_type,
+          identifiers: [other_identifier],
+          location: other_location,
+          vulnerability_finding_signatures_enabled: vulnerability_finding_signatures_enabled
+        )
       end
 
       let(:signature) { ::Gitlab::Ci::Reports::Security::FindingSignature.new(algorithm_type: 'location', signature_value: 'value1') }
@@ -313,11 +315,13 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulner
     let(:uuid) { SecureRandom.uuid }
 
     let(:finding) do
-      build(:ci_reports_security_finding,
-            scanner: scanner,
-            identifiers: identifiers,
-            location: location,
-            uuid: uuid)
+      build(
+        :ci_reports_security_finding,
+        scanner: scanner,
+        identifiers: identifiers,
+        location: location,
+        uuid: uuid
+      )
     end
 
     subject { finding.valid? }
@@ -380,12 +384,14 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulner
 
     context 'with vulnerability_finding_signatures enabled' do
       let(:finding) do
-        build(:ci_reports_security_finding,
-              scanner: scanner,
-              identifiers: identifiers,
-              location: location,
-              uuid: uuid,
-              vulnerability_finding_signatures_enabled: true)
+        build(
+          :ci_reports_security_finding,
+          scanner: scanner,
+          identifiers: identifiers,
+          location: location,
+          uuid: uuid,
+          vulnerability_finding_signatures_enabled: true
+        )
       end
 
       let(:low_priority_signature) { ::Gitlab::Ci::Reports::Security::FindingSignature.new(algorithm_type: 'location', signature_value: 'value1') }
@@ -407,12 +413,14 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulner
 
     context 'without vulnerability_finding_signatures enabled' do
       let(:finding) do
-        build(:ci_reports_security_finding,
-              scanner: scanner,
-              identifiers: identifiers,
-              location: location,
-              uuid: uuid,
-              vulnerability_finding_signatures_enabled: false)
+        build(
+          :ci_reports_security_finding,
+          scanner: scanner,
+          identifiers: identifiers,
+          location: location,
+          uuid: uuid,
+          vulnerability_finding_signatures_enabled: false
+        )
       end
 
       it 'returns the expected hash' do

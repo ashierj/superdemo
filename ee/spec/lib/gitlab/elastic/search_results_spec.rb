@@ -776,6 +776,30 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
       expect(results.merge_requests_count).to eq 2
     end
 
+    it_behaves_like 'can search by title for miscellaneous cases', 'merge_requests'
+
+    context 'when description has code snippets' do
+      include_context 'with code examples' do
+        before do
+          code_examples.values.uniq.each.with_index do |code, idx|
+            sha = Digest::SHA256.hexdigest(code)
+            create :merge_request, target_branch: "feature#{idx}", source_project: project_1, target_project: project_1,
+              title: sha, description: code
+          end
+
+          ensure_elasticsearch_index!
+        end
+
+        it 'finds all examples' do
+          code_examples.each do |query, description|
+            sha = Digest::SHA256.hexdigest(description)
+            merge_requests = described_class.new(user, query, limit_project_ids).objects('merge_requests')
+            expect(merge_requests.map(&:title)).to include(sha)
+          end
+        end
+      end
+    end
+
     it 'returns empty list when merge requests are not found' do
       results = described_class.new(user, 'security', limit_project_ids)
 

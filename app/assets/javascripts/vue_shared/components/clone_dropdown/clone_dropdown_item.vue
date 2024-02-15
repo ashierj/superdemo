@@ -32,7 +32,7 @@ export default {
       type: String,
       required: true,
     },
-    inputTestId: {
+    inputId: {
       type: String,
       required: false,
       default: '',
@@ -55,14 +55,14 @@ export default {
     <gl-form-group
       :label="label"
       :label-class="labelClass"
-      :label-for="inputTestId"
+      :label-for="inputId"
       class="gl-px-3 gl-mb-3 gl-text-left"
     >
       <gl-form-input-group
-        :id="inputTestId"
+        :id="inputId"
         :value="link"
         :name="name"
-        :data-testid="inputTestId"
+        :data-testid="inputId"
         readonly
         select-on-click
       >

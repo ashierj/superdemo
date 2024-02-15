@@ -97,7 +97,7 @@ include:
           --token "${TEST_FAILURES_PROJECT_TOKEN}" \
           --project "gitlab-org/gitlab" \
           --input-files "rspec/rspec-*.json" \
-          --exclude-labels-for-search "QA,rspec:slow test" \
+          --exclude-labels-for-search "QA,rspec:slow test,knapsack_report" \
           --system-log-files "log" \
           --related-issues-file "rspec/${CI_JOB_ID}-failed-test-issues.json";
       fi
@@ -120,7 +120,7 @@ include:
           --token "${KNAPSACK_REPORT_ISSUES_PROJECT_TOKEN}" \
           --project "gitlab-org/gitlab" \
           --input-file knapsack/rspec_*_report.json \
-          --expected-report node_specs_expected_duration.json;
+          --expected-report knapsack/node_specs_expected_duration.json;
       fi
     - echo -e "\e[0Ksection_end:`date +%s`:report_results_section\r\e[0K"
     - tooling/bin/push_job_metrics || true

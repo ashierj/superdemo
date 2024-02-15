@@ -11,6 +11,7 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     it { is_expected.to belong_to(:project).required }
     it { is_expected.to belong_to(:pipeline) }
     it { is_expected.to belong_to(:source) }
+    it { is_expected.to belong_to(:source_package) }
     it { is_expected.to have_many(:occurrences_vulnerabilities) }
     it { is_expected.to have_many(:vulnerabilities) }
   end
@@ -30,7 +31,7 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     it { is_expected.to validate_uniqueness_of(:uuid).case_insensitive }
     it { is_expected.to validate_length_of(:package_manager).is_at_most(255) }
     it { is_expected.to validate_length_of(:component_name).is_at_most(255) }
-    it { is_expected.to validate_length_of(:input_file_path).is_at_most(255) }
+    it { is_expected.to validate_length_of(:input_file_path).is_at_most(1024) }
 
     describe '#licenses' do
       subject { build(:sbom_occurrence, licenses: licenses) }
@@ -502,6 +503,24 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
             ancestors: nil
           }
         )
+      end
+
+      context 'when occurrence was found by trivy' do
+        before do
+          occurrence.input_file_path = 'container-image:photon:5.1-12345678'
+        end
+
+        it 'returns expected location data' do
+          expect(location).to eq(
+            {
+              blob_path: "/#{occurrence.project.full_path}/-/blob/#{occurrence.commit_sha}/" \
+                         "#{occurrence.input_file_path}",
+              path: occurrence.input_file_path,
+              top_level: false,
+              ancestors: nil
+            }
+          )
+        end
       end
 
       context 'when source is nil' do

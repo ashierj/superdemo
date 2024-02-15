@@ -31,7 +31,7 @@ RSpec.shared_examples 'scan passed' do
     it 'filters existing blobs out' do
       expect_next_instance_of(::Gitlab::Checks::ChangedBlobs) do |instance|
         # old blob is expected to be filtered out
-        expect(instance).to receive(:filter_existing)
+        expect(instance).to receive(:filter_existing!)
           .with(
             array_including(old_blob, new_blob)
           )
@@ -54,6 +54,7 @@ RSpec.shared_examples 'scan passed' do
         .with(
           ['--not', '--all', '--not'] + changes.pluck(:newrev),
           bytes_limit: Gitlab::Checks::SecretsCheck::BLOB_BYTES_LIMIT + 1,
+          with_paths: false,
           dynamic_timeout: kind_of(Float)
         )
         .once
@@ -147,7 +148,7 @@ RSpec.shared_examples 'scan detected secrets' do
     it 'filters existing blobs out' do
       expect_next_instance_of(::Gitlab::Checks::ChangedBlobs) do |instance|
         # old blob is expected to be filtered out
-        expect(instance).to receive(:filter_existing)
+        expect(instance).to receive(:filter_existing!)
           .with(
             array_including(old_blob, new_blob)
           )
@@ -170,6 +171,7 @@ RSpec.shared_examples 'scan detected secrets' do
         .with(
           ['--not', '--all', '--not'] + changes.pluck(:newrev),
           bytes_limit: Gitlab::Checks::SecretsCheck::BLOB_BYTES_LIMIT + 1,
+          with_paths: false,
           dynamic_timeout: kind_of(Float)
         )
         .once
@@ -655,7 +657,7 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
     it 'filters existing blobs out' do
       expect_next_instance_of(::Gitlab::Checks::ChangedBlobs) do |instance|
         # old blob is expected to be filtered out
-        expect(instance).to receive(:filter_existing)
+        expect(instance).to receive(:filter_existing!)
           .with(
             array_including(old_blob, new_blob, timed_out_blob, failed_to_scan_blob)
           )
@@ -689,6 +691,7 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
         .with(
           ['--not', '--all', '--not'] + changes.pluck(:newrev),
           bytes_limit: Gitlab::Checks::SecretsCheck::BLOB_BYTES_LIMIT + 1,
+          with_paths: false,
           dynamic_timeout: kind_of(Float)
         )
         .once

@@ -1,5 +1,5 @@
 ---
-description: Ci Build created
+description: Tracks the number of Ci Builds created
 category: InternalEventTracking
 action: create_ci_build
 identifiers:

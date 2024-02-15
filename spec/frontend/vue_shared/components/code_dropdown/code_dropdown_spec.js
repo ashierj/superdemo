@@ -11,10 +11,10 @@ describe('Clone Dropdown Button', () => {
   const xcodeUrl = 'xcode://foo.bar';
   const currentPath = null;
   const directoryDownloadLinks = [
-    { text: 'zip', path: httpUrl },
-    { text: 'tar.gz', path: httpUrl },
-    { text: 'tar.bz2', path: httpUrl },
-    { text: 'tar', path: httpUrl },
+    { text: 'zip', path: `${httpUrl}/archive.zip` },
+    { text: 'tar.gz', path: `${httpUrl}/archive.tar.gz` },
+    { text: 'tar.bz2', path: `${httpUrl}/archive.tar.bz2` },
+    { text: 'tar', path: `${httpUrl}/archive.tar` },
   ];
   const defaultPropsData = {
     sshUrl,
@@ -102,18 +102,14 @@ describe('Clone Dropdown Button', () => {
   });
 
   describe('sourceCodeGroup', () => {
-    it.each`
-      name         | index | href
-      ${'zip'}     | ${5}  | ${httpUrl}
-      ${'tar.gz'}  | ${6}  | ${httpUrl}
-      ${'tar.bz2'} | ${7}  | ${httpUrl}
-      ${'tar'}     | ${8}  | ${httpUrl}
-    `('renders correct values for $name', ({ name, index, href }) => {
+    it.each(
+      directoryDownloadLinks.map((directoryDownloadLink, i) => [i + 5, directoryDownloadLink]),
+    )('renders correct values for $name', (index, directoryDownloadLink) => {
       createComponent();
 
       const item = findDropdownItemAtIndex(index);
-      expect(item.props('item').text).toBe(name);
-      expect(item.props('item').href).toBe(href);
+      expect(item.props('item').text).toBe(directoryDownloadLink.text);
+      expect(item.props('item').href).toBe(directoryDownloadLink.path);
     });
   });
 
@@ -124,20 +120,16 @@ describe('Clone Dropdown Button', () => {
       expect(findDropdownItems().length).toEqual(13);
     });
 
-    it.each`
-      name         | index | href
-      ${'zip'}     | ${9}  | ${httpUrl}
-      ${'tar.gz'}  | ${10} | ${httpUrl}
-      ${'tar.bz2'} | ${11} | ${httpUrl}
-      ${'tar'}     | ${12} | ${httpUrl}
-    `('renders correct values for $name directory link', ({ name, index, href }) => {
+    it.each(
+      directoryDownloadLinks.map((directoryDownloadLink, i) => [i + 9, directoryDownloadLink]),
+    )('renders correct values for $name directory link', (index, directoryDownloadLink) => {
       const subPath = '/subdir';
 
       createComponent({ ...defaultPropsData, currentPath: subPath });
 
       const item = findDropdownItemAtIndex(index);
-      expect(item.props('item').text).toBe(name);
-      expect(item.props('item').href).toBe(`${href}?path=${subPath}`);
+      expect(item.props('item').text).toBe(directoryDownloadLink.text);
+      expect(item.props('item').href).toBe(`${directoryDownloadLink.path}?path=${subPath}`);
     });
   });
 });

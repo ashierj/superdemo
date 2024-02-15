@@ -15,9 +15,8 @@ import { visitUrl, mergeUrlParams, joinPaths } from '~/lib/utils/url_utility';
 import {
   CHART_TYPES,
   INSIGHTS_NO_DATA_TOOLTIP,
-  INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES,
+  INSIGHTS_CHART_ITEM_SETTINGS,
   INSIGHTS_CHARTS_SUPPORT_DRILLDOWN,
-  ISSUABLE_TYPES,
 } from '../constants';
 import InsightsChartError from './insights_chart_error.vue';
 
@@ -107,6 +106,21 @@ export default {
       required: false,
       default: '',
     },
+    filterLabels: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    collectionLabels: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    groupBy: {
+      type: String,
+      required: false,
+      default: '',
+    },
     error: {
       type: String,
       required: false,
@@ -178,17 +192,13 @@ export default {
       return this.type === this.$options.chartTypes.LINE;
     },
     supportsDrillDown() {
-      return (
-        INSIGHTS_CHARTS_SUPPORT_DRILLDOWN.includes(this.title) &&
-        this.type === this.$options.chartTypes.STACKED_BAR &&
-        this.dataSourceType === ISSUABLE_TYPES.ISSUE
-      );
+      return INSIGHTS_CHARTS_SUPPORT_DRILLDOWN.includes(this.dataSourceType);
     },
     namespacePath() {
       return this.isProject ? this.fullPath : joinPaths('groups', this.fullPath);
     },
     drillThroughPathSuffix() {
-      const { groupPathSuffix, projectPathSuffix } = INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES[
+      const { groupPathSuffix, projectPathSuffix } = INSIGHTS_CHART_ITEM_SETTINGS[
         this.dataSourceType
       ];
 
@@ -201,6 +211,12 @@ export default {
         this.namespacePath,
         this.drillThroughPathSuffix,
       );
+    },
+    hasFilterLabels() {
+      return Boolean(this.filterLabels.length);
+    },
+    hasCollectionLabels() {
+      return Boolean(this.collectionLabels.length);
     },
   },
   beforeDestroy() {
@@ -232,16 +248,27 @@ export default {
       }
     },
     onChartItemClicked({ params }) {
-      const { seriesName } = params;
-      const canDrillDown = seriesName !== 'undefined' && this.supportsDrillDown;
+      const { seriesName, name } = params;
+      // handles edge case where, when groupBy is undefined and collectionLabels have been added, the latter define the x-axis rather than dates, so we use chart item's `name` instead
+      const collectionLabel = this.groupBy ? seriesName : name;
+      const canDrillDown = collectionLabel !== 'undefined' && this.supportsDrillDown;
 
       if (!canDrillDown) return;
 
-      const chartItemUrlWithParams = mergeUrlParams({ label_name: seriesName }, this.chartItemUrl);
-
       this.$emit('chart-item-clicked');
 
-      visitUrl(chartItemUrlWithParams);
+      const drillDownLabels = [
+        ...(this.hasFilterLabels ? this.filterLabels : []),
+        ...(this.hasCollectionLabels ? [collectionLabel] : []),
+      ];
+
+      const chartItemUrlWithParams = mergeUrlParams(
+        { label_name: drillDownLabels },
+        this.chartItemUrl,
+        { spreadArrays: true },
+      );
+
+      visitUrl(drillDownLabels.length ? chartItemUrlWithParams : this.chartItemUrl);
     },
     formatTooltipText(params) {
       const { seriesData } = params;
@@ -308,6 +335,7 @@ export default {
       :y-axis-title="data.yAxisTitle"
       :option="chartOptions"
       @created="onChartCreated"
+      @chartItemClicked="onChartItemClicked"
     />
     <gl-stacked-column-chart
       v-else-if="loaded && isStackedColumnChart"
@@ -347,6 +375,7 @@ export default {
         :format-tooltip-text="formatTooltipText"
         show-legend
         @created="onChartCreated"
+        @chartItemClicked="onChartItemClicked"
       >
         <template #tooltip-title> {{ tooltipTitle }} </template>
         <template #tooltip-content>

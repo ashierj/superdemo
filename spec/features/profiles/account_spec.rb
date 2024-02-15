@@ -51,14 +51,14 @@ RSpec.describe 'Profile > Account', :js, feature_category: :user_profile do
       update_username(new_username)
       visit new_user_path
       expect(page).to have_current_path(new_user_path, ignore_query: true)
-      expect(find('.user-info')).to have_content(new_username)
+      expect(find('.user-profile-header')).to have_content(new_username)
     end
 
     it 'the old user path redirects to the new path' do
       update_username(new_username)
       visit old_user_path
       expect(page).to have_current_path(new_user_path, ignore_query: true)
-      expect(find('.user-info')).to have_content(new_username)
+      expect(find('.user-profile-header')).to have_content(new_username)
     end
 
     context 'with a project' do
@@ -128,7 +128,7 @@ def update_username(new_username)
 
   fill_in 'username-change-input', with: new_username
 
-  page.find('[data-testid="username-change-confirmation-modal"]').click
+  find_by_testid('username-change-confirmation-modal').click
 
   page.within('.modal') do
     find('.js-modal-action-primary').click

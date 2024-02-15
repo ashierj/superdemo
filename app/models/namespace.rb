@@ -53,6 +53,8 @@ class Namespace < ApplicationRecord
   has_one :namespace_details, inverse_of: :namespace, class_name: 'Namespace::Detail', autosave: true
   has_one :namespace_statistics
   has_one :namespace_route, foreign_key: :namespace_id, autosave: false, inverse_of: :namespace, class_name: 'Route'
+  has_one :catalog_verified_namespace, class_name: 'Ci::Catalog::VerifiedNamespace', inverse_of: :namespace
+
   has_many :namespace_members, foreign_key: :member_namespace_id, inverse_of: :member_namespace, class_name: 'Member'
 
   has_one :namespace_ldap_settings, inverse_of: :namespace, class_name: 'Namespaces::LdapSetting', autosave: true
@@ -155,6 +157,12 @@ class Namespace < ApplicationRecord
     :npm_package_requests_forwarding,
     to: :package_settings
   delegate :default_branch_protection_defaults, to: :namespace_settings, allow_nil: true
+  delegate :math_rendering_limits_enabled,
+    :lock_math_rendering_limits_enabled,
+    to: :namespace_settings, allow_nil: true
+  delegate :math_rendering_limits_enabled?,
+    :lock_math_rendering_limits_enabled?,
+    to: :namespace_settings
 
   before_save :update_new_emails_created_column, if: -> { emails_disabled_changed? }
   before_create :sync_share_with_group_lock_with_parent

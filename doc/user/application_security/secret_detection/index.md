@@ -119,8 +119,8 @@ Secret Detection can detect if a secret was added in one commit and removed in a
 Prerequisites:
 
 - Linux-based GitLab Runner with the [`docker`](https://docs.gitlab.com/runner/executors/docker.html) or
-  [`kubernetes`](https://docs.gitlab.com/runner/install/kubernetes.html) executor. If you're using the
-  shared runners on GitLab.com, this is enabled by default.
+  [`kubernetes`](https://docs.gitlab.com/runner/install/kubernetes.html) executor.
+- If you're using SaaS runners on GitLab.com, this is enabled by default.
   - Windows Runners are not supported.
   - CPU architectures other than amd64 are not supported.
 - If you use your own runners, make sure the Docker version installed is **not** `19.03.0`. See
@@ -144,7 +144,8 @@ your GitLab CI/CD configuration file is complex.
 
 1. On the left sidebar, select **Search or go to** and find your project.
 1. Select **Build > Pipeline editor**.
-1. Copy and paste the following to the bottom of the `.gitlab-ci.yml` file:
+1. Copy and paste the following to the bottom of the `.gitlab-ci.yml` file. If an `include` line
+   already exists, add only the `template` line below it.
 
    ```yaml
    include:
@@ -520,7 +521,7 @@ variables:
   SECRET_DETECTION_RULESET_GIT_REFERENCE: "gitlab.com/example-group/example-ruleset-project"
 ```
 
-For more information on the syntax of remote configurations, see the
+For more information on the syntax of remote configurations and how to troubleshoot, see the
 [specify a private remote configuration example](../sast/customize_rulesets.md#specify-a-private-remote-configuration)
 on the SAST customize rulesets page.
 
@@ -633,7 +634,7 @@ This feature is separate from Secret Detection scanning, which checks your Git r
 ### Debug-level logging
 
 Debug-level logging can help when troubleshooting. For details, see
-[debug-level logging](../index.md#debug-level-logging).
+[debug-level logging](../../application_security/troubleshooting_application_security.md#debug-level-logging).
 
 ### Warning: `gl-secret-detection-report.json: no matching files`
 
@@ -651,7 +652,7 @@ For example, you could have a pipeline triggered from a merge request containing
 clone is not deep enough to contain all of the relevant commits. To verify the current value, see
 [pipeline configuration](../../../ci/pipelines/settings.md#limit-the-number-of-changes-fetched-during-clone).
 
-To confirm this as the cause of the error, enable [debug-level logging](../index.md#debug-level-logging),
+To confirm this as the cause of the error, enable [debug-level logging](../../application_security/troubleshooting_application_security.md#debug-level-logging),
 then rerun the pipeline. The logs should look similar to the following example. The text
 "object not found" is a symptom of this error.
 

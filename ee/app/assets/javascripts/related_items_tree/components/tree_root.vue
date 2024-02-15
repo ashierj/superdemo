@@ -91,6 +91,7 @@ export default {
     v-bind="treeRootOptions"
     class="list-unstyled related-items-list tree-root gl-pb-0 gl-pt-0"
     :move="onMove"
+    data-testid="tree-root"
     @start="handleDragOnStart"
     @end="handleDragOnEnd"
   >

@@ -19,6 +19,21 @@ module Gitlab
             ai_request.request(prompt_str, &block)
           end
 
+          def streamed_request_handler(streamed_answer)
+            proc do |content|
+              next unless stream_response_handler
+
+              chunk = streamed_answer.next_chunk(content)
+
+              if chunk
+                stream_response_handler.execute(
+                  response: Gitlab::Llm::Chain::PlainResponseModifier.new(content),
+                  options: { chunk_id: chunk[:id] }
+                )
+              end
+            end
+          end
+
           private
 
           def ai_request

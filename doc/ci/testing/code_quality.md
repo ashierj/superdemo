@@ -105,7 +105,7 @@ The project quality view displays an overview of the code quality findings. The 
 Prerequisites:
 
 - GitLab CI/CD configuration (`.gitlab-ci.yml`) must include the `test` stage.
-- If you're using shared runners, the Code Quality job must be configured for the
+- If you're using instance runners, the Code Quality job must be configured for the
   [Docker-in-Docker workflow](../docker/using_docker_build.md#use-docker-in-docker).
 - If you're using private runners, you should use an
   [alternative configuration](#improve-code-quality-performance-with-private-runners)
@@ -116,7 +116,7 @@ Prerequisites:
 To enable Code Quality, either:
 
 - Enable [Auto DevOps](../../topics/autodevops/index.md), which includes
-  [Auto Code Quality](../../topics/autodevops/stages.md#auto-secret-detection).
+  [Auto Code Quality](../../topics/autodevops/stages.md#auto-code-quality).
 
 - Include the Code Quality template in your
   `.gitlab-ci.yml` file.

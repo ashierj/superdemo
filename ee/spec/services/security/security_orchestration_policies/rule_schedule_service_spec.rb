@@ -169,9 +169,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
 
     context 'with mismatching `branches`' do
       let(:policy) do
-        build(:scan_execution_policy,
-                           enabled: true,
-                           rules: [{ type: 'schedule', branches: %w[invalid_branch], cadence: '*/20 * * * *' }])
+        build(
+          :scan_execution_policy,
+          enabled: true,
+          rules: [{ type: 'schedule', branches: %w[invalid_branch], cadence: '*/20 * * * *' }]
+        )
       end
 
       it_behaves_like 'does not execute scan'
@@ -179,9 +181,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
 
     context 'with mismatching `branch_type`' do
       let(:policy) do
-        build(:scan_execution_policy,
-                           enabled: true,
-                           rules: [{ type: 'schedule', branch_type: "protected", cadence: '*/20 * * * *' }])
+        build(
+          :scan_execution_policy,
+          enabled: true,
+          rules: [{ type: 'schedule', branch_type: "protected", cadence: '*/20 * * * *' }]
+        )
       end
 
       it_behaves_like 'does not execute scan'
@@ -254,9 +258,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
 
     describe "branch lookup" do
       let(:policy) do
-        build(:scan_execution_policy,
-              enabled: true,
-              rules: [{ type: 'schedule', branch_type: "protected", cadence: '*/20 * * * *' }])
+        build(
+          :scan_execution_policy,
+          enabled: true,
+          rules: [{ type: 'schedule', branch_type: "protected", cadence: '*/20 * * * *' }]
+        )
       end
 
       before do

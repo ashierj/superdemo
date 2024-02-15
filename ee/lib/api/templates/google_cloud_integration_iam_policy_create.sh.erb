@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+gcloud config set project '<%= google_cloud_project_id %>'
+
+GOOGLE_CLOUD_PROJECT_NUMBER=$(gcloud projects describe '<%= google_cloud_project_id %>' --format='value(projectNumber)')
+
+PRINCIPAL="principalSet://iam.googleapis.com/projects/$GOOGLE_CLOUD_PROJECT_NUMBER/\
+locations/global/workloadIdentityPools/<%= google_cloud_workload_identity_pool_id %>/\
+attribute.<%= oidc_claim_name %>/<%= oidc_claim_value %>"
+
+gcloud projects add-iam-policy-binding '<%= google_cloud_project_id %>' \
+  --member=$PRINCIPAL --role='<%= google_cloud_iam_role %>'

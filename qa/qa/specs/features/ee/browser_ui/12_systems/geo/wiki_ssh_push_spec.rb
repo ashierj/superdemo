@@ -18,10 +18,7 @@ module QA
 
           QA::Flow::Login.while_signed_in(address: :geo_primary) do
             # Create a new SSH key
-            key = Resource::SSHKey.fabricate_via_api! do |resource|
-              resource.title = "Geo wiki SSH #{Time.now.to_f}"
-              resource.expires_at = Date.today + 2
-            end
+            key = create(:ssh_key, title: "Geo wiki SSH #{Time.now.to_f}", expires_at: Date.today + 2)
 
             # Create a new project and wiki
             project = create(:project, name: 'geo-wiki-ssh-project', description: 'Geo project for wiki SSH spec')

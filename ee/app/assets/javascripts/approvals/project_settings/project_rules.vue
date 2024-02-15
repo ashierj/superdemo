@@ -35,6 +35,12 @@ export default {
     hasNamedRule() {
       return this.rules.some((rule) => rule.ruleType === RULE_TYPE_REGULAR);
     },
+    firstColumnSpan() {
+      return this.hasNamedRule ? '1' : '2';
+    },
+    firstColumnWidth() {
+      return this.hasNamedRule ? 'gl-w-half' : 'gl-w-full';
+    },
     hasAnyRule() {
       return (
         this.settings.allowMultiRule &&
@@ -105,9 +111,11 @@ export default {
     <rules :rules="rules">
       <template #thead="{ name, members, approvalsRequired, branches, actions }">
         <tr class="d-none d-sm-table-row">
-          <th class="w-50">{{ hasNamedRule ? name : members }}</th>
-          <th :class="settings.allowMultiRule ? 'w-50 d-none d-sm-table-cell' : 'w-75'">
-            <span v-if="hasNamedRule">{{ members }}</span>
+          <th :colspan="firstColumnSpan" :class="firstColumnWidth">
+            {{ hasNamedRule ? name : members }}
+          </th>
+          <th v-if="hasNamedRule" class="gl-w-half d-none d-sm-table-cell">
+            <span>{{ members }}</span>
           </th>
           <th v-if="settings.allowMultiRule" class="gl-text-center">{{ branches }}</th>
           <th class="gl-text-center">{{ approvalsRequired }}</th>
@@ -126,26 +134,28 @@ export default {
             :can-edit="canEdit(rule)"
           />
           <tr v-else :key="index">
-            <td class="js-name gl-vertical-align-middle!" :data-label="__('Name')">
+            <td class="js-name" :data-label="__('Rule')">
               <rule-name :name="rule.name" />
             </td>
-            <td class="js-members" :data-label="__('Approvers')">
-              <user-avatar-list :items="rule.eligibleApprovers" :img-size="24" empty-text="" />
+            <td class="gl-py-5! js-members" :data-label="__('Approvers')">
+              <user-avatar-list
+                :items="rule.eligibleApprovers"
+                :img-size="24"
+                empty-text=""
+                class="gl-my-n2!"
+              />
             </td>
             <td
               v-if="settings.allowMultiRule"
-              class="js-branches gl-vertical-align-middle! gl-text-center"
+              class="js-branches gl-text-center"
               :data-label="__('Target branch')"
             >
               <rule-branches :rule="rule" />
             </td>
-            <td class="js-approvals-required" :data-label="__('Approvals required')">
+            <td class="gl-py-5! js-approvals-required" :data-label="__('Approvals required')">
               <rule-input :rule="rule" />
             </td>
-            <td
-              class="text-nowrap js-controls gl-md-pt-0! gl-md-pb-0! gl-md-pl-0! gl-md-pr-0!"
-              :data-label="__('Actions')"
-            >
+            <td class="text-nowrap js-controls gl-md-pl-0! gl-md-pr-0!" :data-label="__('Actions')">
               <rule-controls v-if="canEdit(rule)" :rule="rule" />
             </td>
           </tr>

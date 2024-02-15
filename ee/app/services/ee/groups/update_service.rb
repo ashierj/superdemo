@@ -35,6 +35,8 @@ module EE
         if group.saved_change_to_max_personal_access_token_lifetime?
           group.update_personal_access_tokens_lifetime
         end
+
+        activate_pending_members
       end
 
       override :before_assignment_hook
@@ -140,6 +142,15 @@ module EE
         @ip_restriction_update_service&.log_audit_event # rubocop:disable Gitlab/ModuleWithInstanceVariables
 
         Audit::GroupChangesAuditor.new(current_user, group).execute
+      end
+
+      def activate_pending_members
+        settings = group.namespace_settings
+        return unless settings.new_user_signups_cap.nil?
+
+        if settings.previous_changes.include?(:new_user_signups_cap)
+          ::Members::ActivateService.for_group(group).execute(current_user: current_user)
+        end
       end
     end
   end

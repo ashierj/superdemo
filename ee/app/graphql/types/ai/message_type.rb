@@ -53,6 +53,11 @@ module Types
         null: true,
         description: 'Extra message metadata.'
 
+      field :agent_version_id,
+        ::Types::GlobalIDType[::Ai::AgentVersion],
+        null: true,
+        description: 'Global ID of the agent version to answer the message.'
+
       def id
         object[:id]
       end

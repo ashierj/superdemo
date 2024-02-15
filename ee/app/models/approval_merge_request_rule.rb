@@ -5,7 +5,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
   include ApprovalRuleLike
   include UsageStatistics
 
-  scope :not_matching_pattern, -> (pattern) { code_owner.where.not(name: pattern) }
+  scope :not_matching_id, -> (ids) { code_owner.where.not(id: ids) }
   scope :matching_pattern, -> (pattern) { code_owner.where(name: pattern) }
 
   scope :from_project_rule, -> (project_rule) do
@@ -27,6 +27,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
   scope :code_owner_approval_optional, -> { code_owner.where(approvals_required: 0) }
   scope :code_owner_approval_required, -> { code_owner.where('approvals_required > 0') }
   scope :with_added_approval_rules, -> { left_outer_joins(:approval_merge_request_rule_source).where(approval_merge_request_rule_sources: { approval_merge_request_rule_id: nil }) }
+  scope :applicable_post_merge, -> { where(applicable_post_merge: [true, nil]) }
 
   validates :name, uniqueness: { scope: [:merge_request_id, :rule_type, :section, :applicable_post_merge] }, unless: :scan_finding?
   validates :name, uniqueness: { scope: [:merge_request_id, :rule_type, :section, :security_orchestration_policy_configuration_id, :orchestration_policy_idx] }, if: :scan_finding?
@@ -145,7 +146,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
   end
 
   def vulnerability_states_for_branch
-    states = self.vulnerability_states
+    states = self.vulnerability_states.presence || DEFAULT_VULNERABILITY_STATUSES
     return states if merge_request.target_default_branch?
 
     states & NEWLY_DETECTED_STATUSES

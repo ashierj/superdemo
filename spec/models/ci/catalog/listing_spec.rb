@@ -74,23 +74,9 @@ RSpec.describe Ci::Catalog::Listing, feature_category: :pipeline_composition do
 
       let(:params) { { scope: :namespaces } }
 
-      context 'when the `ci_guard_query_for_catalog_resource_scope` ff is enabled' do
-        it "returns the catalog resources belonging to the user's authorized namespaces" do
-          is_expected.to contain_exactly(public_resource_a, public_resource_b, internal_resource,
-            private_namespace_resource)
-        end
-      end
-
-      context 'when the `ci_guard_query_for_catalog_resource_scope` ff is disabled' do
-        before do
-          stub_feature_flags(ci_guard_for_catalog_resource_scope: false)
-        end
-
-        it 'returns all resources visible to the current user' do
-          is_expected.to contain_exactly(
-            public_resource_a, public_resource_b, private_namespace_resource,
-            internal_resource)
-        end
+      it "returns the catalog resources belonging to the user's authorized namespaces" do
+        is_expected.to contain_exactly(public_resource_a, public_resource_b, internal_resource,
+          private_namespace_resource)
       end
     end
 
@@ -156,38 +142,14 @@ RSpec.describe Ci::Catalog::Listing, feature_category: :pipeline_composition do
         end
       end
     end
-
-    context 'when namespace is provided' do
-      let(:params) { { namespace: namespace } }
-
-      context 'when it is a root namespace' do
-        context 'when it has catalog resources' do
-          it 'returns resources in the namespace visible to the user' do
-            is_expected.to contain_exactly(public_resource_a, private_namespace_resource)
-          end
-        end
-
-        context 'when the namespace has no catalog resources' do
-          let(:namespace) { build(:namespace) }
-
-          it { is_expected.to be_empty }
-        end
-      end
-
-      context 'when namespace is not a root namespace' do
-        let_it_be(:namespace) { create(:group, :nested) }
-
-        it 'raises an exception' do
-          expect { resources }.to raise_error(ArgumentError, 'Namespace is not a root namespace')
-        end
-      end
-    end
   end
 
   describe '#find_resource' do
     let_it_be(:accessible_resource) { create(:ci_catalog_resource, :published, project: public_project) }
     let_it_be(:inaccessible_resource) { create(:ci_catalog_resource, :published, project: project_noaccess) }
-    let_it_be(:draft_resource) { create(:ci_catalog_resource, project: public_namespace_project, state: :draft) }
+    let_it_be(:unpublished_resource) do
+      create(:ci_catalog_resource, project: public_namespace_project, state: :unpublished)
+    end
 
     context 'when using the ID argument' do
       subject { list.find_resource(id: id) }
@@ -209,7 +171,7 @@ RSpec.describe Ci::Catalog::Listing, feature_category: :pipeline_composition do
       end
 
       context 'when the resource is not published' do
-        let(:id) { draft_resource.id }
+        let(:id) { unpublished_resource.id }
 
         it 'returns nil' do
           is_expected.to be_nil
@@ -245,7 +207,7 @@ RSpec.describe Ci::Catalog::Listing, feature_category: :pipeline_composition do
       end
 
       context 'when the resource is not published' do
-        let(:full_path) { draft_resource.project.full_path }
+        let(:full_path) { unpublished_resource.project.full_path }
 
         it 'returns nil' do
           is_expected.to be_nil

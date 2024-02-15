@@ -24,6 +24,7 @@ describe('ComplianceFrameworkDropdown', () => {
 
   const showMock = jest.fn();
   const hideMock = jest.fn();
+  const openMock = jest.fn();
 
   const defaultNodes = [
     {
@@ -118,6 +119,12 @@ describe('ComplianceFrameworkDropdown', () => {
         ...propsData,
       },
       stubs: {
+        GlCollapsibleListbox: stubComponent(GlCollapsibleListbox, {
+          template: `<div><slot name="footer"></slot></div>`,
+          methods: {
+            open: openMock,
+          },
+        }),
         ComplianceFrameworkFormModal,
         GlModal: stubComponent(GlModal, {
           methods: {
@@ -192,6 +199,7 @@ describe('ComplianceFrameworkDropdown', () => {
       findComplianceFrameworkFormModal().vm.$emit('change');
 
       expect(hideMock).toHaveBeenCalled();
+      expect(openMock).toHaveBeenCalled();
     });
   });
 
@@ -226,6 +234,7 @@ describe('ComplianceFrameworkDropdown', () => {
         },
       });
       expect(requestHandlers.complianceFrameworks).toHaveBeenCalledTimes(1);
+
       findCreateFrameworkButton().vm.$emit('click');
       findSharedForm().vm.$emit('submit');
 
@@ -265,7 +274,7 @@ describe('ComplianceFrameworkDropdown', () => {
 
     it('renders all frameworks selected text', async () => {
       await waitForPromises();
-      expect(findDropdown().props('toggleText')).toBe('All compliance frameworks');
+      expect(findDropdown().props('toggleText')).toBe('A1 +2 more');
     });
 
     it('should reset all frameworks', async () => {

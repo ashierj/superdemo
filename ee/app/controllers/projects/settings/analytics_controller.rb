@@ -48,7 +48,7 @@ module Projects
       end
 
       def authorize_analytics_settings!
-        access_denied! unless Feature.enabled?(:combined_analytics_dashboards, project)
+        access_denied! unless Feature.enabled?(:combined_analytics_dashboards, project) && !project.personal?
       end
     end
   end

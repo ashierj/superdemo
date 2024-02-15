@@ -16,8 +16,6 @@ import runnerJobCountQuery from '~/ci/runner/graphql/list/runner_job_count.query
 import {
   runnerJobCountData,
   runnersCountData,
-  onlineContactTimeoutSecs,
-  staleTimeoutSecs,
   mockRegistrationToken,
   newRunnerPath,
 } from 'jest/ci/runner/mock_data';
@@ -54,8 +52,6 @@ describe('AdminRunnersApp', () => {
       },
       provide: {
         localMutations,
-        onlineContactTimeoutSecs,
-        staleTimeoutSecs,
         ...provide,
       },
       ...options,

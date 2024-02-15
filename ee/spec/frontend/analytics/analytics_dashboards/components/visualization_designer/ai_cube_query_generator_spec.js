@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { v4 as uuidv4 } from 'uuid';
+import { GlExperimentBadge, GlFormGroup } from '@gitlab/ui';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -25,6 +26,7 @@ describe('AiCubeQueryGenerator', () => {
     wrapper.findByTestId('generate-cube-query-prompt-input');
   const findGenerateCubeQuerySubmitButton = () =>
     wrapper.findByTestId('generate-cube-query-submit-button');
+  const findExperimentBadge = () => wrapper.findComponent(GlExperimentBadge);
 
   const createWrapper = () => {
     wrapper = shallowMountExtended(AiCubeQueryGenerator, {
@@ -35,6 +37,9 @@ describe('AiCubeQueryGenerator', () => {
         [generateCubeQueryMutation, generateCubeQueryMutationHandlerMock],
         [aiResponseSubscription, aiResponseSubscriptionHandlerMock],
       ]),
+      stubs: {
+        GlFormGroup,
+      },
     });
   };
 
@@ -47,6 +52,10 @@ describe('AiCubeQueryGenerator', () => {
   afterEach(() => {
     generateCubeQueryMutationHandlerMock.mockReset();
     aiResponseSubscriptionHandlerMock.mockReset();
+  });
+
+  it('renders an experiment badge', () => {
+    expect(findExperimentBadge().exists()).toBe(true);
   });
 
   it('does not send a request when no prompt has been entered', async () => {
@@ -97,6 +106,7 @@ describe('AiCubeQueryGenerator', () => {
 
     it('shows a loading indicator', () => {
       expect(findGenerateCubeQuerySubmitButton().props('loading')).toBe(true);
+      expect(findGenerateCubeQuerySubmitButton().props('icon')).toBe('');
     });
 
     describe('when aiCompletionResponse subscription returns a value', () => {
@@ -104,6 +114,7 @@ describe('AiCubeQueryGenerator', () => {
 
       it('stops loading', () => {
         expect(findGenerateCubeQuerySubmitButton().props('loading')).toBe(false);
+        expect(findGenerateCubeQuerySubmitButton().props('icon')).toBe('tanuki-ai');
       });
 
       it('emits generated query', () => {

@@ -153,7 +153,11 @@ RSpec.describe MemberRoles::RolesFinder, feature_category: :system_access do
             end
           end
 
-          context 'when on SaaS', :saas do
+          context 'when on SaaS' do
+            before do
+              stub_saas_features(gitlab_com_subscriptions: true)
+            end
+
             it 'returns an error' do
               expect { find_member_roles }.to raise_error(ArgumentError)
             end
@@ -174,14 +178,40 @@ RSpec.describe MemberRoles::RolesFinder, feature_category: :system_access do
           let(:current_user) { admin }
 
           context 'when on self-managed' do
-            it 'returns instance member roles for instance admin' do
+            before do
+              stub_saas_features(gitlab_com_subscriptions: false)
+            end
+
+            it 'returns instance member roles' do
               expect(find_member_roles).to eq([member_role_instance])
             end
           end
 
-          context 'when on SaaS', :saas do
+          context 'when on SaaS' do
+            before do
+              stub_saas_features(gitlab_com_subscriptions: true)
+            end
+
             it 'returns an empty array' do
               expect(find_member_roles).to be_empty
+            end
+          end
+        end
+      end
+
+      context 'when requesting roles for the whole instance and group' do
+        let(:params) { { instance_roles: true, parent: group } }
+
+        context 'when a user is an instance admin', :enable_admin_mode do
+          let(:current_user) { admin }
+
+          context 'when on self-managed' do
+            before do
+              stub_saas_features(gitlab_com_subscriptions: false)
+            end
+
+            it 'returns both instance member roles and group member roles' do
+              expect(find_member_roles).to eq([member_role_instance, member_role_2, member_role_1])
             end
           end
         end

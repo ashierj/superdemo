@@ -87,7 +87,7 @@ RAILS_ENV=development bundle exec rake gitlab:duo:setup['<test-group-name>']
 
 In order to obtain a GCP service key for local development, follow the steps below:
 
-- Create a sandbox GCP project by visiting [this page](https://about.gitlab.com/handbook/infrastructure-standards/#individual-environment) and following the instructions, or by requesting access to our existing group GCP project by using [this template](https://gitlab.com/gitlab-com/it/infra/issue-tracker/-/issues/new?issuable_template=gcp_group_account_iam_update_request).
+- Create a sandbox GCP project by visiting [this page](https://handbook.gitlab.com/handbook/infrastructure-standards/#individual-environment) and following the instructions, or by requesting access to our existing group GCP project by using [this template](https://gitlab.com/gitlab-com/it/infra/issue-tracker/-/issues/new?issuable_template=gcp_group_account_iam_update_request).
 - If you are using an individual GCP project, you may also need to enable the Vertex AI API:
   1. Visit [welcome page](https://console.cloud.google.com/welcome), choose your project (e.g. jdoe-5d23dpe).
   1. Go to **APIs & Services > Enabled APIs & services**.
@@ -126,7 +126,7 @@ used in specs.
    ```
 
 1. Run `gdk reconfigure`
-1. Run database migrations to create the embedding database
+1. Run database migrations to create the embedding database in the `gitlab` folder of the GDK
 
    ```shell
      RAILS_ENV=development bin/rails db:migrate
@@ -216,10 +216,11 @@ Therefore, a different setup is required from the [SaaS-only AI features](#test-
        - To test Self Managed instances, follow [Cloud Activation steps](../../administration/license.md#activate-gitlab-ee) using the cloud activation code you received earlier.
        - To test SaaS, follow [Activate GitLab Enterprise license](https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/doc/index.md#use-gitlab-enterprise-features) with your license file.
    1. Export these environment variables in the same terminal session with `gdk start`:
+      - Note that you can also configure your terminal always export the environment variables (e.g. adding the exports to `~/.bash_profile` or `~/.zshrc`). 
 
       ```shell
-      export CODE_SUGGESTIONS_BASE_URL=http://0.0.0.0:5052 # URL to the local AI Gateway instance
-      export LLM_DEBUG=1                                   # Enable debug logging
+      export AI_GATEWAY_URL=http://0.0.0.0:5052 # URL to the local AI Gateway instance
+      export LLM_DEBUG=1                        # Enable debug logging
       ```
 
       Alternatively, you can create an `env.runit` file in the root of your GDK with the above snippet.

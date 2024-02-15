@@ -120,7 +120,7 @@ In GitLab 15.11 and later with the `always_perform_delayed_deletion` feature fla
 
 Alternatively, projects that are marked for removal can be deleted immediately. To do so:
 
-1. [Restore the project](../../user/project/settings/migrate_projects.md#restore-a-project).
+1. [Restore the project](../../user/project/working_with_projects.md#restore-a-project).
 1. Delete the project as described in the
    [Administering Projects page](../admin_area.md#administering-projects).
 
@@ -237,9 +237,8 @@ If only one protocol is enabled:
 GitLab only allows Git actions for the protocols you select.
 
 WARNING:
-GitLab versions [10.7 and later](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/18021),
-allow the HTTP(S) protocol for Git clone or fetch requests done by GitLab Runner
-from CI/CD jobs, even if you select **Only SSH**.
+GitLab [10.7 and later](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/18021)
+allows the HTTP(S) protocol for Git clone or fetch requests performed [with GitLab CI/CD job tokens](../../ci/jobs/ci_job_token.md), even if you select **Only SSH**. This is required for GitLab Runner and CI/CD jobs.
 
 ## Customize Git clone URL for HTTP(S)
 

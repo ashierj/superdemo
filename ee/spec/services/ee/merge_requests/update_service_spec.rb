@@ -477,18 +477,6 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
           execute
         end
       end
-
-      context 'when feature flag "security_policies_unenforceable_rules_notification" is disabled' do
-        before do
-          stub_feature_flags(security_policies_unenforceable_rules_notification: false)
-        end
-
-        it 'does not enqueue Security::UnenforceablePolicyRulesNotificationWorker' do
-          expect(Security::UnenforceablePolicyRulesNotificationWorker).not_to receive(:perform_async)
-
-          execute
-        end
-      end
     end
   end
 end

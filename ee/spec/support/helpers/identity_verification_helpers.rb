@@ -1,20 +1,21 @@
 # frozen_string_literal: true
 
 module IdentityVerificationHelpers
-  def solve_arkose_verify_challenge(saml: false, risk: :low)
-    stub_request(:post, 'https://verify-api.arkoselabs.com/api/v4/verify/').to_return(
+  def stub_arkose_token_verification(risk: :low, response: {})
+    stub_request(:post, 'https://verify-api.arkoselabs.com/api/v4/verify/')
+    .to_return(
       status: 200,
-      body: { session_risk: { risk_band: risk.capitalize } }.to_json,
+      body: response.present? ? response.to_json : { session_risk: { risk_band: risk.capitalize } }.to_json,
       headers: { content_type: 'application/json' }
     )
+  end
+
+  def solve_arkose_verify_challenge(risk: :low, response: {})
+    stub_arkose_token_verification(risk: risk, response: response)
 
     selector = '[data-testid="arkose-labs-token-input"]'
     page.execute_script("document.querySelector('#{selector}').value='mock_arkose_labs_session_token'")
-    if saml
-      page.execute_script("document.querySelector('[data-testid=\"arkose-labs-token-form\"]').submit()")
-    else
-      page.execute_script("document.querySelector('#{selector}').dispatchEvent(new Event('input'))")
-    end
+    page.execute_script("document.querySelector('#{selector}').dispatchEvent(new Event('input'))")
   end
 
   def stub_telesign_verification

@@ -3,57 +3,33 @@
 module Geo
   class EventLog < ApplicationRecord
     include IgnorableColumns
+
     ignore_column :geo_event_id_convert_to_bigint, remove_with: '16.11', remove_after: '2024-03-21'
+
+    ignore_columns %i[
+      hashed_storage_migrated_event_id
+      hashed_storage_attachments_event_id
+      repository_created_event_id
+      repository_updated_event_id
+      repository_deleted_event_id
+      repository_renamed_event_id
+      reset_checksum_event_id
+    ], remove_with: '17.0', remove_after: '2024-05-16'
 
     include Geo::Model
     include ::EachBatch
 
     EVENT_CLASSES = %w[Geo::CacheInvalidationEvent
-                       Geo::RepositoryCreatedEvent
-                       Geo::RepositoryUpdatedEvent
-                       Geo::RepositoryDeletedEvent
-                       Geo::RepositoryRenamedEvent
                        Geo::RepositoriesChangedEvent
-                       Geo::ResetChecksumEvent
-                       Geo::HashedStorageMigratedEvent
-                       Geo::HashedStorageAttachmentsEvent
                        Geo::Event].freeze
 
     belongs_to :cache_invalidation_event,
       class_name: 'Geo::CacheInvalidationEvent',
       foreign_key: :cache_invalidation_event_id
 
-    belongs_to :repository_created_event,
-      class_name: 'Geo::RepositoryCreatedEvent',
-      foreign_key: :repository_created_event_id
-
-    belongs_to :repository_updated_event,
-      class_name: 'Geo::RepositoryUpdatedEvent',
-      foreign_key: :repository_updated_event_id
-
-    belongs_to :repository_deleted_event,
-      class_name: 'Geo::RepositoryDeletedEvent',
-      foreign_key: :repository_deleted_event_id
-
-    belongs_to :repository_renamed_event,
-      class_name: 'Geo::RepositoryRenamedEvent',
-      foreign_key: :repository_renamed_event_id
-
     belongs_to :repositories_changed_event,
       class_name: 'Geo::RepositoriesChangedEvent',
       foreign_key: :repositories_changed_event_id
-
-    belongs_to :hashed_storage_migrated_event,
-      class_name: 'Geo::HashedStorageMigratedEvent',
-      foreign_key: :hashed_storage_migrated_event_id
-
-    belongs_to :hashed_storage_attachments_event,
-      class_name: 'Geo::HashedStorageAttachmentsEvent',
-      foreign_key: :hashed_storage_attachments_event_id
-
-    belongs_to :reset_checksum_event,
-      class_name: 'Geo::ResetChecksumEvent',
-      foreign_key: :reset_checksum_event_id
 
     belongs_to :geo_event,
       class_name: 'Geo::Event',
@@ -81,14 +57,7 @@ module Geo
 
     # rubocop:disable Metrics/CyclomaticComplexity
     def event
-      repository_created_event ||
-        repository_updated_event ||
-        repository_deleted_event ||
-        repository_renamed_event ||
-        repositories_changed_event ||
-        hashed_storage_migrated_event ||
-        hashed_storage_attachments_event ||
-        reset_checksum_event ||
+      repositories_changed_event ||
         cache_invalidation_event ||
         geo_event
     end

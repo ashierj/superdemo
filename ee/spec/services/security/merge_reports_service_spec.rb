@@ -9,12 +9,13 @@ RSpec.describe Security::MergeReportsService, '#execute', feature_category: :vul
   let(:identifier_2_cve) { build(:ci_reports_security_identifier, external_id: 'CVE-2019-456', external_type: 'cve') }
 
   let(:finding_id_2_loc_1) do
-    build(:ci_reports_security_finding,
-          identifiers: [identifier_2_primary, identifier_2_cve],
-          location: build(:ci_reports_security_locations_sast, start_line: 32, end_line: 34),
-          scanner: scanner_2,
-          severity: :medium
-         )
+    build(
+      :ci_reports_security_finding,
+      identifiers: [identifier_2_primary, identifier_2_cve],
+      location: build(:ci_reports_security_locations_sast, start_line: 32, end_line: 34),
+      scanner: scanner_2,
+      severity: :medium
+    )
   end
 
   context 'ordering reports for dependency scanning analyzers' do

@@ -66,27 +66,25 @@ initForksButton();
 InitMoreActionsDropdown();
 leaveByUrl('project');
 
-if (document.getElementById('empty-page')) {
-  const initCodeDropdown = () => {
-    const codeDropdownEl = document.getElementById('js-code-dropdown');
+const initCodeDropdown = () => {
+  const codeDropdownEl = document.querySelector('#js-project-show-empty-page #js-code-dropdown');
 
-    if (!codeDropdownEl) return false;
+  if (!codeDropdownEl) return false;
 
-    const { sshUrl, httpUrl, kerberosUrl } = codeDropdownEl.dataset;
+  const { sshUrl, httpUrl, kerberosUrl } = codeDropdownEl.dataset;
 
-    return new Vue({
-      el: codeDropdownEl,
-      render(createElement) {
-        return createElement(CodeDropdown, {
-          props: {
-            sshUrl,
-            httpUrl,
-            kerberosUrl,
-          },
-        });
-      },
-    });
-  };
+  return new Vue({
+    el: codeDropdownEl,
+    render(createElement) {
+      return createElement(CodeDropdown, {
+        props: {
+          sshUrl,
+          httpUrl,
+          kerberosUrl,
+        },
+      });
+    },
+  });
+};
 
-  initCodeDropdown();
-}
+initCodeDropdown();

@@ -464,7 +464,7 @@ deploy_staging:
 #### Runners
 
 Runners are the services that execute jobs. If you are using GitLab.com, you can use the
-[shared runner fleet](../runners/index.md) to run jobs without provisioning your own self-managed runners.
+[instance runner fleet](../runners/index.md) to run jobs without provisioning your own self-managed runners.
 
 Some key details about runners:
 
@@ -626,7 +626,7 @@ for example to add SAST scanning to your pipeline, add the following to your `.g
 
 ```yaml
 include:
-  - template: Security/SAST.gitlab-ci.yml
+  - template: Jobs/SAST.gitlab-ci.yml
 ```
 
 You can customize the behavior of security scanners by using CI/CD variables, for example

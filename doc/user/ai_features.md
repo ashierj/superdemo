@@ -14,12 +14,12 @@ GitLab is creating AI-assisted features across our DevSecOps platform. These fea
 
 Some features are still in development. View details about [support for each status](../policy/experiment-beta-support.md#experiment) (Experiment, Beta, Generally Available).
 
- As features become Generally Available, GitLab is [transparent](https://about.gitlab.com/handbook/content/handbook/values/index.md/#transparency) and updates the documentation to clearly state how and where you can access these capabilities.
+ As features become Generally Available, GitLab is [transparent](https://handbook.gitlab.com/handbook/values/#transparency) and updates the documentation to clearly state how and where you can access these capabilities.
 
 | Goal | Feature | Tier/Offering/Status |
 |---|---|---|
-| Helps you write code more efficiently by showing code suggestions as you type. <br><br><i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=hCAyCTacdAQ) | [Code Suggestions](project/repository/code_suggestions/index.md) | **Free Open Access** subject to the [Testing Agreement](https://handbook.gitlab.com/handbook/legal/testing-agreement/) available through February 14, 2024:<br>- SaaS, All subscription tiers <br>- Self-managed, Premium and Ultimate tiers<br><br> **Generally Available** starting Feburary 15, 2024: <br> - SaaS, self-managed <br>- Premium and Ultimate tiers as part of [GitLab Duo Pro](https://about.gitlab.com/press/releases/2024-01-17-gitlab-announces-pricing-of-gitLab-duo-pro.html/) |
-| Processes and generates text and code in a conversational manner. Helps you quickly identify useful information in large volumes of text in issues, epics, code, and GitLab documentation. | [Chat](gitlab_duo_chat.md) | **Beta Access** subject to the [Testing Agreement](https://handbook.gitlab.com/handbook/legal/testing-agreement/):<br>- SaaS, self-managed <br>- Ultimate tier<br><br>**Status:** Beta |
+| Helps you write code more efficiently by showing code suggestions as you type. <br><br><i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=hCAyCTacdAQ) | [Code Suggestions](project/repository/code_suggestions/index.md) | **Tier:** Premium or Ultimate with [GitLab Duo Pro](../subscriptions/subscription-add-ons.md) <br>**Offering:** SaaS, self-managed |
+| Processes and generates text and code in a conversational manner. Helps you quickly identify useful information in large volumes of text in issues, epics, code, and GitLab documentation. | [Chat](gitlab_duo_chat.md) | **Beta Access** subject to the [Testing Agreement](https://handbook.gitlab.com/handbook/legal/testing-agreement/):<br>- SaaS, self-managed <br>- Premium and Ultimate tiers<br><br>**Status:** Beta |
 | Helps you discover or recall Git commands when and where you need them. | [Git suggestions](../editor_extensions/gitlab_cli/index.md#gitlab-duo-commands) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
 | Assists with quickly getting everyone up to speed on lengthy conversations to help ensure you are all on the same page. | [Discussion summary](#summarize-issue-discussions-with-discussion-summary) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
 | Generates issue descriptions. | [Issue description generation](#summarize-an-issue-with-issue-description-generation) | **Tier:** Ultimate<br>**Offering:** SaaS <br>**Status:** Experiment |
@@ -29,7 +29,7 @@ Some features are still in development. View details about [support for each sta
 | Efficiently communicates the impact of your merge request changes. | [Merge request summary](project/merge_requests/ai_in_merge_requests.md#summarize-merge-request-changes) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
 | Helps ease merge request handoff between authors and reviewers and help reviewers efficiently understand suggestions. | [Code review summary](project/merge_requests/ai_in_merge_requests.md#summarize-my-merge-request-review) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
 | Helps you remediate vulnerabilities more efficiently, boost your skills, and write more secure code. <br><br><i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=6sDf73QOav8) | [Vulnerability summary](application_security/vulnerabilities/index.md#explaining-a-vulnerability) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Beta |
-| Generates a merge request containing the changes required to mitigate a vulnerability. | [Vulnerability resolution](application_security/vulnerabilities/index.md#explaining-a-vulnerability) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
+| Generates a merge request containing the changes required to mitigate a vulnerability. | [Vulnerability resolution](application_security/vulnerabilities/index.md#vulnerability-resolution) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
 | Helps you understand code by explaining it in English language. <br><br><i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=1izKaLmmaCA) | [Code explanation](#explain-code-in-the-web-ui-with-code-explanation) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
 | Assists you in determining the root cause for a pipeline failure and failed CI/CD build. | [Root cause analysis](#root-cause-analysis) | **Tier:** Ultimate <br>**Offering:** SaaS <br>**Status:** Experiment |
 | Assists you with predicting productivity metrics and identifying anomalies across your software development lifecycle. | [Value stream forecasting](#forecast-deployment-frequency-with-value-stream-forecasting) | **Tier:** Ultimate <br>**Offering:** SaaS, self-managed <br>**Status:** Experiment |
@@ -41,17 +41,15 @@ Some features are still in development. View details about [support for each sta
   - All features categorized as
     [Experiment features](../policy/experiment-beta-support.md#experiment) or
     [Beta features](../policy/experiment-beta-support.md#beta)
-    (besides Code Suggestions) require that this setting is enabled at the group
-    level.
+    require that this setting is enabled at the group level.
   - Their usage is subject to the
     [Testing Terms of Use](https://handbook.gitlab.com/handbook/legal/testing-agreement/).
   - Experiment and Beta features are disabled by default.
   - This setting is available to Ultimate groups on SaaS and can be set by a user
     who has the Owner role in the group.
   - View [how to enable this setting](group/manage.md#enable-experiment-and-beta-features).
-- Code Suggestions
-  - View [how to enable for self-managed](project/repository/code_suggestions/self_managed.md#enable-code-suggestions-on-self-managed-gitlab).
-  - View [how to enable for SaaS](project/repository/code_suggestions/saas.md#enable-code-suggestions).
+- [Code Suggestions](project/repository/code_suggestions/index.md) is enabled when you purchase the
+  GitLab Duo Pro add-on and assign seats to users.
 
 ## Experimental AI features and how to use them
 
@@ -212,15 +210,6 @@ Provide feedback on this experimental feature in [issue 409844](https://gitlab.c
 **Data usage**: When you use this feature, the text you enter is sent to the large
 language model referenced above.
 
-### GitLab Duo Chat
-
-DETAILS:
-**Tier:** Ultimate
-**Offering:** SaaS
-**Status:** Beta
-
-For details about this Beta feature, see [GitLab Duo Chat](gitlab_duo_chat.md).
-
 ## Language models
 
 | Feature | Large Language Model |
@@ -268,7 +257,7 @@ All of these AI providers are under data protection agreements with GitLab that 
 
 ### Telemetry
 
-GitLab Duo collects aggregated or de-identified first-party usage data through our [Snowplow collector](https://about.gitlab.com/handbook/business-technology/data-team/platform/snowplow/). This usage data includes the following metrics:
+GitLab Duo collects aggregated or de-identified first-party usage data through our [Snowplow collector](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/snowplow/). This usage data includes the following metrics:
 
 - Number of unique users
 - Number of unique instances

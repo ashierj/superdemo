@@ -9,9 +9,11 @@ import MetricsChart from 'ee/metrics/details/metrics_chart.vue';
 import FilteredSearch from 'ee/metrics/details/filter_bar/metrics_filtered_search.vue';
 import { ingestedAtTimeAgo } from 'ee/metrics/utils';
 import { prepareTokens } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
+import axios from '~/lib/utils/axios_utils';
 
 jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
+jest.mock('~/lib/utils/axios_utils');
 jest.mock('ee/metrics/utils');
 
 describe('MetricsDetails', () => {
@@ -121,11 +123,10 @@ describe('MetricsDetails', () => {
     });
 
     it('renders the metrics details', () => {
-      expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(
-        METRIC_ID,
-        METRIC_TYPE,
-        expect.any(Object),
-      );
+      expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(METRIC_ID, METRIC_TYPE, {
+        abortController: expect.any(AbortController),
+        filters: expect.any(Object),
+      });
       expect(findLoadingIcon().exists()).toBe(false);
       expect(findMetricDetails().exists()).toBe(true);
     });
@@ -133,16 +134,15 @@ describe('MetricsDetails', () => {
     describe('filtered search', () => {
       const findFilteredSearch = () => findMetricDetails().findComponent(FilteredSearch);
       it('renders the FilteredSearch component', () => {
-        expect(findFilteredSearch().exists()).toBe(true);
-        // TODO get searchConfig from API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2488
-        expect(Object.keys(findFilteredSearch().props('searchConfig'))).toEqual(
-          expect.arrayContaining([
-            'dimensions',
-            'groupByFunctions',
-            'defaultGroupByFunction',
-            'defaultGroupByDimensions',
-          ]),
-        );
+        const filteredSearch = findFilteredSearch();
+        expect(filteredSearch.exists()).toBe(true);
+        expect(filteredSearch.props('searchMetadata')).toBe(mockSearchMetadata);
+      });
+
+      it('does not render the filtered search component if fetching metadata fails', async () => {
+        observabilityClientMock.fetchMetricSearchMetadata.mockRejectedValueOnce('error');
+        await mountComponent();
+        expect(findFilteredSearch().exists()).toBe(false);
       });
 
       it('sets the default date range', () => {
@@ -155,8 +155,9 @@ describe('MetricsDetails', () => {
 
       it('fetches metrics with filters', () => {
         expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(METRIC_ID, METRIC_TYPE, {
+          abortController: expect.any(AbortController),
           filters: {
-            dimensions: [],
+            attributes: [],
             dateRange: {
               endDate: new Date('2020-07-06T00:00:00.000Z'),
               startDarte: new Date('2020-07-05T23:00:00.000Z'),
@@ -167,9 +168,9 @@ describe('MetricsDetails', () => {
       });
 
       describe('on search submit', () => {
-        const setFilters = async (dimensions, dateRange, groupBy) => {
+        const setFilters = async (attributes, dateRange, groupBy) => {
           findFilteredSearch().vm.$emit('filter', {
-            dimensions: prepareTokens(dimensions),
+            attributes: prepareTokens(attributes),
             dateRange,
             groupBy,
           });
@@ -188,7 +189,7 @@ describe('MetricsDetails', () => {
             },
             {
               func: 'avg',
-              dimensions: ['attr_1', 'attr_2'],
+              attributes: ['attr_1', 'attr_2'],
             },
           );
         });
@@ -198,8 +199,9 @@ describe('MetricsDetails', () => {
             METRIC_ID,
             METRIC_TYPE,
             {
+              abortController: expect.any(AbortController),
               filters: {
-                dimensions: {
+                attributes: {
                   'key.one': [{ operator: '=', value: '12h' }],
                 },
                 dateRange: {
@@ -209,7 +211,7 @@ describe('MetricsDetails', () => {
                 },
                 groupBy: {
                   func: 'avg',
-                  dimensions: ['attr_1', 'attr_2'],
+                  attributes: ['attr_1', 'attr_2'],
                 },
               },
             },
@@ -222,14 +224,14 @@ describe('MetricsDetails', () => {
             startDarte: new Date('2020-07-05T23:00:00.000Z'),
             value: '30d',
           });
-          expect(findFilteredSearch().props('dimensionFilters')).toEqual(
+          expect(findFilteredSearch().props('attributeFilters')).toEqual(
             prepareTokens({
               'key.one': [{ operator: '=', value: '12h' }],
             }),
           );
           expect(findFilteredSearch().props('groupByFilter')).toEqual({
             func: 'avg',
-            dimensions: ['attr_1', 'attr_2'],
+            attributes: ['attr_1', 'attr_2'],
           });
         });
       });
@@ -288,10 +290,10 @@ describe('MetricsDetails', () => {
   });
 
   describe('error handling', () => {
-    beforeEach(async () => {
-      observabilityClientMock.isObservabilityEnabled.mockRejectedValueOnce('error');
-
-      await mountComponent();
+    beforeEach(() => {
+      observabilityClientMock.isObservabilityEnabled.mockResolvedValue(true);
+      observabilityClientMock.fetchMetric.mockResolvedValue([]);
+      observabilityClientMock.fetchMetricSearchMetadata.mockResolvedValue([]);
     });
 
     describe.each([
@@ -300,7 +302,7 @@ describe('MetricsDetails', () => {
       ['fetchMetric', () => observabilityClientMock.fetchMetric],
     ])('when %s fails', (_, mockFn) => {
       beforeEach(async () => {
-        mockFn().mockRejectedValueOnce('error');
+        mockFn().mockRejectedValue('error');
         await mountComponent();
       });
       it('renders an alert', () => {
@@ -318,12 +320,6 @@ describe('MetricsDetails', () => {
       });
     });
 
-    it('does not fetch metric data if fetching search metadata fails', async () => {
-      observabilityClientMock.fetchMetricSearchMetadata.mockRejectedValueOnce('error');
-      await mountComponent();
-      expect(observabilityClientMock.fetchMetric).not.toHaveBeenCalled();
-    });
-
     it('renders an alert if metricId is missing', async () => {
       await mountComponent({ metricId: undefined });
 
@@ -338,6 +334,15 @@ describe('MetricsDetails', () => {
       expect(createAlert).toHaveBeenCalledWith({
         message: 'Error: Failed to load metrics details. Try reloading the page.',
       });
+    });
+
+    it('does not render an alert if the api call fails because cancelled', async () => {
+      observabilityClientMock.fetchMetric.mockRejectedValueOnce('cancelled');
+      axios.isCancel = jest.fn().mockReturnValue(true);
+
+      await mountComponent();
+
+      expect(createAlert).not.toHaveBeenCalled();
     });
   });
 });

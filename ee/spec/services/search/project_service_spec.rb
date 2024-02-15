@@ -51,7 +51,8 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
         search: 'foobar',
         scope: scope,
         basic_search: basic_search,
-        advanced_search: advanced_search
+        advanced_search: advanced_search,
+        source: source
       )
     end
 
@@ -64,6 +65,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
     let(:circuit_breaker) { instance_double(::Search::Zoekt::CircuitBreaker) }
     let(:circuit_breaker_operational) { true }
     let(:anonymous_user) { false }
+    let(:source) { nil }
 
     before do
       allow(project).to receive(:search_code_with_zoekt?).and_return(search_code_with_zoekt)
@@ -133,6 +135,26 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
         expect(service.use_zoekt?).to eq(true)
         expect(service.zoekt_searchable_scope).to eq(project)
         expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when search comes from API' do
+      let(:source) { 'api' }
+
+      it 'searches with Zoekt' do
+        expect(service.use_zoekt?).to eq(true)
+        expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+
+      context 'when zoekt_search_api is disabled' do
+        before do
+          stub_feature_flags(zoekt_search_api: false)
+        end
+
+        it 'does not search with Zoekt' do
+          expect(service.use_zoekt?).to eq(false)
+          expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        end
       end
     end
   end

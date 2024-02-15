@@ -253,6 +253,7 @@ merge_requests:
 - predictions
 - user_agent_detail
 - scan_result_policy_violations
+- applicable_post_merge_approval_rules
 external_pull_requests:
 - project
 merge_request_diff:
@@ -724,7 +725,6 @@ project:
 - audit_events
 - path_locks
 - approver_groups
-- repository_state
 - wiki_repository
 - wiki_repository_state
 - source_pipelines
@@ -845,6 +845,9 @@ project:
 - xray_reports
 - member_approvals
 - zoekt_repository
+- security_policy_management_project_linked_configurations
+- security_policy_project_linked_projects
+- security_policy_project_linked_namespaces
 award_emoji:
 - awardable
 - user
@@ -1028,6 +1031,7 @@ issuable_sla:
   - issue
 push_rule:
   - group
+  - organization
 bulk_import_export:
   - group
 service_desk_setting:

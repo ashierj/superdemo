@@ -12,6 +12,11 @@ FactoryBot.define do
       maven_external_registry_password { 'password' }
     end
 
+    trait :npm do
+      maven_external_registry_url { nil }
+      npm_external_registry_url { 'http://local.test/npm' }
+    end
+
     trait :disabled do
       enabled { false }
     end

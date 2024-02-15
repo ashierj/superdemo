@@ -5,6 +5,8 @@ export default {
   components: {
     MrBrowserPerformanceWidget: () =>
       import('ee/vue_merge_request_widget/extensions/browser_performance/index.vue'),
+    MrLoadPerformanceWidget: () =>
+      import('ee/vue_merge_request_widget/extensions/load_performance/index.vue'),
     MrMetricsWidget: () => import('ee/vue_merge_request_widget/extensions/metrics/index.vue'),
     MrSecurityWidgetEE: () =>
       import(
@@ -31,6 +33,10 @@ export default {
       return this.mr.browserPerformance ? 'MrBrowserPerformanceWidget' : undefined;
     },
 
+    loadPerformanceWidget() {
+      return this.mr.loadPerformance ? 'MrLoadPerformanceWidget' : undefined;
+    },
+
     metricsWidget() {
       return this.mr.metricsReportsPath ? 'MrMetricsWidget' : undefined;
     },
@@ -50,6 +56,7 @@ export default {
         this.licenseComplianceWidget,
         this.codeQualityWidget,
         this.browserPerformanceWidget,
+        this.loadPerformanceWidget,
         this.testReportWidget,
         this.metricsWidget,
         this.statusChecksWidget,

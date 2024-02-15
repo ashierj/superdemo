@@ -22,16 +22,14 @@ module WorkItems
         attr_reader :work_item, :params
 
         def start_date_attributes
-          if params[:start_date_fixed].present?
+          if params.key?(:start_date_fixed)
             {
               start_date_is_fixed: true,
               start_date: params[:start_date_fixed],
               start_date_fixed: params[:start_date_fixed]
             }
-          elsif params[:start_date_is_fixed] == true
-            {
-              start_date_is_fixed: true
-            }
+          elsif params[:start_date_is_fixed]
+            { start_date_is_fixed: true }
           else
             finder.minimum_start_date.first.then do |result|
               {
@@ -45,16 +43,14 @@ module WorkItems
         end
 
         def due_date_attributes
-          if params[:due_date_fixed].present?
+          if params.key?(:due_date_fixed)
             {
               due_date: params[:due_date_fixed],
               due_date_fixed: params[:due_date_fixed],
               due_date_is_fixed: true
             }
-          elsif params[:due_date_is_fixed] == true
-            {
-              due_date_is_fixed: true
-            }
+          elsif params[:due_date_is_fixed]
+            { due_date_is_fixed: true }
           else
             finder.maximum_due_date.first.then do |result|
               {

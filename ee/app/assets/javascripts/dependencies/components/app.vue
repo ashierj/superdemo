@@ -12,12 +12,8 @@ import {
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { __, s__ } from '~/locale';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
-import { NAMESPACE_PROJECT } from '../constants';
-import {
-  REPORT_STATUS,
-  SORT_FIELD_SEVERITY,
-  SORT_FIELD_PACKAGER,
-} from '../store/modules/list/constants';
+import { NAMESPACE_ORGANIZATION, NAMESPACE_PROJECT } from '../constants';
+import { REPORT_STATUS, SORT_FIELD_SEVERITY } from '../store/modules/list/constants';
 import DependenciesActions from './dependencies_actions.vue';
 import DependencyListIncompleteAlert from './dependency_list_incomplete_alert.vue';
 import DependencyListJobFailedAlert from './dependency_list_job_failed_alert.vue';
@@ -111,6 +107,9 @@ export default {
     isProjectNamespace() {
       return this.namespaceType === NAMESPACE_PROJECT;
     },
+    isOrganizationNamespace() {
+      return this.namespaceType === NAMESPACE_ORGANIZATION;
+    },
     message() {
       return this.isProjectNamespace
         ? s__(
@@ -124,7 +123,7 @@ export default {
   created() {
     this.setDependenciesEndpoint(this.endpoint);
     this.setExportDependenciesEndpoint(this.exportEndpoint);
-    this.setSortField(this.isProjectNamespace ? SORT_FIELD_SEVERITY : SORT_FIELD_PACKAGER);
+    this.setSortField(SORT_FIELD_SEVERITY);
   },
   methods: {
     ...mapActions([
@@ -207,6 +206,7 @@ export default {
         </p>
       </div>
       <gl-button
+        v-if="exportEndpoint"
         v-gl-tooltip.hover
         :title="s__('Dependencies|Export as JSON')"
         class="gl-float-right gl-md-float-none gl-mt-3 gl-md-mt-0"
@@ -219,7 +219,11 @@ export default {
       </gl-button>
     </header>
 
-    <dependencies-actions class="gl-mt-3" :namespace="currentList" />
+    <dependencies-actions
+      v-if="!isOrganizationNamespace"
+      class="gl-mt-3"
+      :namespace="currentList"
+    />
 
     <article>
       <paginated-dependencies-table :namespace="currentList" />

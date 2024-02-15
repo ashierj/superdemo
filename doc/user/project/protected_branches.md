@@ -2,6 +2,7 @@
 stage: Create
 group: Source Code
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
+description: "Protected branches in GitLab restrict who can push to, merge, or modify a Git branch."
 ---
 
 # Protected branches
@@ -47,7 +48,7 @@ When a branch is protected, the default behavior enforces these restrictions on 
    for that branch at the project level are ignored. All other protections continue
    to use project level settings.
 
-You can implement a [scan result policy](../application_security/policies/scan-result-policies.md#approval_settings)
+You can implement a [merge request approval policy](../application_security/policies/scan-result-policies.md#approval_settings)
 to prevent protected branches being unprotected or deleted.
 
 ### When a branch matches multiple rules
@@ -287,8 +288,6 @@ To protect a new branch and enable force push:
 1. From the **Branch** dropdown list, select the branch you want to protect.
 1. From the **Allowed to push and merge** and **Allowed to merge** lists, select the settings you want.
 1. To allow all users with push access to force push, turn on the **Allowed to force push** toggle.
-1. To reject code pushes that change files listed in the `CODEOWNERS` file, turn on the
-   **Require approval from code owners** toggle.
 1. Select **Protect**.
 
 To enable force pushes on branches that are already protected:

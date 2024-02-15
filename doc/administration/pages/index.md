@@ -60,7 +60,7 @@ Before proceeding with the Pages configuration, you must:
 1. Configure a **wildcard DNS record**.
 1. Optional. Have a **wildcard certificate** for that domain if you decide to
    serve Pages under HTTPS.
-1. Optional but recommended. Enable [Shared runners](../../ci/runners/index.md)
+1. Optional but recommended. Enable [instance runners](../../ci/runners/index.md)
    so that your users don't have to bring their own.
 1. For custom domains, have a **secondary IP**.
 
@@ -422,7 +422,7 @@ control over how the Pages daemon runs and serves content in your environment.
 | `namespace_in_path`                     | (Experimental) Enable or disable namespace in the URL path. This requires `pages_nginx[enable] = true`. Sets `rewrite` configuration in NGINX to support [without wildcard DNS setup](#for-namespace-in-url-path-without-wildcard-dns). Default: `false`                    |
 | `propagate_correlation_id`              | Set to true (false by default) to re-use existing Correlation ID from the incoming request header `X-Request-ID` if present. If a reverse proxy sets this header, the value is propagated in the request chain.                                                                                            |
 | `max_connections`                       | Limit on the number of concurrent connections to the HTTP, HTTPS or proxy listeners.                                                                                                                                                                                                                       |
-| `max_uri_length`                        | The maximum length of URIs accepted by GitLab Pages. Set to 0 for unlimited length. [Introduced](https://gitlab.com/gitlab-org/omnibus-gitlab/-/merge_requests/5729) in GitLab 14.5.
+| `max_uri_length`                        | The maximum length of URIs accepted by GitLab Pages. Set to 0 for unlimited length. [Introduced](https://gitlab.com/gitlab-org/omnibus-gitlab/-/merge_requests/5729) in GitLab 14.5. |
 | `metrics_address`                       | The address to listen on for metrics requests.                                                                                                                                                                                                                                                             |
 | `redirect_http`                         | Redirect pages from HTTP to HTTPS, true/false.                                                                                                                                                                                                                                                             |
 | `redirects_max_config_size`             | The maximum size of the `_redirects` file, in bytes (default: 65536).                                                                                                                                                                                                                                      |

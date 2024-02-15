@@ -95,7 +95,7 @@ RSpec.describe Telesign::TransactionCallback, feature_category: :instance_resili
       end
     end
 
-    it 'logs with the correct payload' do
+    it 'logs with the correct payload and tracks the event', :aggregate_failures do
       expect_next_instance_of(Telesign::TransactionCallbackPayload, request_params) do |response|
         expect(response).to receive(:reference_id).and_return(reference_id, reference_id)
         expect(response).to receive(:status).and_return(status, status)
@@ -107,6 +107,7 @@ RSpec.describe Telesign::TransactionCallback, feature_category: :instance_resili
       expect(Gitlab::AppJsonLogger).to receive(:info).with(
         hash_including(
           class: 'Telesign::TransactionCallback',
+          username: phone_number_validation.user.username,
           message: 'IdentityVerification::Phone',
           event: 'Telesign transaction status update',
           telesign_reference_id: reference_id,
@@ -152,7 +153,7 @@ RSpec.describe Telesign::TransactionCallback, feature_category: :instance_resili
     context 'when there is no matching record for the received reference_id' do
       let(:reference_id) { 'non-existing-ref-id' }
 
-      it 'does not log' do
+      it 'does not track any event' do
         expect_next_instance_of(Telesign::TransactionCallbackPayload, request_params) do |response|
           expect(response).to receive(:reference_id).and_return(reference_id, reference_id)
           expect(response).to receive(:status).and_return(status)
@@ -176,6 +177,45 @@ RSpec.describe Telesign::TransactionCallback, feature_category: :instance_resili
 
         expect_no_snowplow_event
       end
+    end
+  end
+
+  describe '#user' do
+    let(:callback_valid) { true }
+
+    subject(:user) { described_class.new(instance_double(ActionDispatch::Request), {}).user }
+
+    before do
+      allow_next_instance_of(described_class) do |callback|
+        allow(callback).to receive(:valid?).and_return(callback_valid)
+      end
+    end
+
+    context 'when callback is not valid' do
+      let(:callback_valid) { false }
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when no matching phone number validation record is found' do
+      it 'returns nil' do
+        expect_next_instance_of(Telesign::TransactionCallbackPayload, {}) do |response|
+          expect(response).to receive(:reference_id).and_return('fake-ref-id')
+        end
+
+        expect(user).to be_nil
+      end
+    end
+
+    it 'returns user associated with the matching phone number validation record' do
+      ref_id = 'abc123'
+      record = create(:phone_number_validation, telesign_reference_xid: ref_id)
+
+      expect_next_instance_of(Telesign::TransactionCallbackPayload, {}) do |response|
+        expect(response).to receive(:reference_id).and_return(ref_id)
+      end
+
+      expect(user).to eq record.user
     end
   end
 end

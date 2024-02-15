@@ -13,7 +13,6 @@ import BoardCardMoveToPosition from '~/boards/components/board_card_move_to_posi
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   DEFAULT_BOARD_LIST_ITEMS_SIZE,
-  toggleFormEventPrefix,
   DraggableItemTypes,
   listIssuablesQueries,
   ListType,
@@ -26,9 +25,9 @@ import {
   setError,
 } from '../graphql/cache_updates';
 import { shouldCloneCard, moveItemVariables } from '../boards_util';
-import eventHub from '../eventhub';
 import BoardCard from './board_card.vue';
 import BoardNewIssue from './board_new_issue.vue';
+import BoardCutLine from './board_cut_line.vue';
 
 export default {
   draggableItemTypes: DraggableItemTypes,
@@ -42,6 +41,7 @@ export default {
   components: {
     BoardCard,
     BoardNewIssue,
+    BoardCutLine,
     BoardNewEpic: () => import('ee_component/boards/components/board_new_epic.vue'),
     GlLoadingIcon,
     GlIntersectionObserver,
@@ -70,13 +70,15 @@ export default {
       type: Object,
       required: true,
     },
+    showNewForm: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
-      scrollOffset: 250,
       showCount: false,
-      showIssueForm: false,
-      showEpicForm: false,
       currentList: null,
       isLoadingMore: false,
       toListId: null,
@@ -155,6 +157,16 @@ export default {
     boardListItems() {
       return this.currentList?.[`${this.issuableType}s`].nodes || [];
     },
+    beforeCutLine() {
+      return this.boardItemsSizeExceedsMax
+        ? this.boardListItems.slice(0, this.list.maxIssueCount)
+        : this.boardListItems;
+    },
+    afterCutLine() {
+      return this.boardItemsSizeExceedsMax
+        ? this.boardListItems.slice(this.list.maxIssueCount)
+        : [];
+    },
     listQueryVariables() {
       return {
         fullPath: this.fullPath,
@@ -175,8 +187,10 @@ export default {
         issuableType: this.isEpicBoard ? 'epics' : 'issues',
       });
     },
-    toggleFormEventPrefix() {
-      return this.isEpicBoard ? toggleFormEventPrefix.epic : toggleFormEventPrefix.issue;
+    wipLimitText() {
+      return sprintf(__('Work in progress limit: %{wipLimit}'), {
+        wipLimit: this.list.maxIssueCount,
+      });
     },
     boardItemsSizeExceedsMax() {
       return this.list.maxIssueCount > 0 && this.listItemsCount > this.list.maxIssueCount;
@@ -188,10 +202,10 @@ export default {
       return this.$apollo.queries.currentList.loading && !this.isLoadingMore;
     },
     epicCreateFormVisible() {
-      return this.isEpicBoard && this.list.listType !== STATUS_CLOSED && this.showEpicForm;
+      return this.isEpicBoard && this.list.listType !== STATUS_CLOSED && this.showNewForm;
     },
     issueCreateFormVisible() {
-      return !this.isEpicBoard && this.list.listType !== STATUS_CLOSED && this.showIssueForm;
+      return !this.isEpicBoard && this.list.listType !== STATUS_CLOSED && this.showNewForm;
     },
     listRef() {
       // When list is draggable, the reference to the list needs to be accessed differently
@@ -242,22 +256,6 @@ export default {
         this.showCount = this.scrollHeight() > Math.ceil(this.listHeight());
       });
     },
-    'list.id': {
-      handler(id, oldVal) {
-        if (id) {
-          eventHub.$on(`${this.toggleFormEventPrefix}${this.list.id}`, this.toggleForm);
-          eventHub.$on(`scroll-board-list-${this.list.id}`, this.scrollToTop);
-
-          eventHub.$off(`${this.toggleFormEventPrefix}${oldVal}`, this.toggleForm);
-          eventHub.$off(`scroll-board-list-${oldVal}`, this.scrollToTop);
-        }
-      },
-      immediate: true,
-    },
-  },
-  beforeDestroy() {
-    eventHub.$off(`${this.toggleFormEventPrefix}${this.list.id}`, this.toggleForm);
-    eventHub.$off(`scroll-board-list-${this.list.id}`, this.scrollToTop);
   },
   methods: {
     listHeight() {
@@ -265,12 +263,6 @@ export default {
     },
     scrollHeight() {
       return this.listRef?.scrollHeight || 0;
-    },
-    scrollTop() {
-      return this.listRef.scrollTop + this.listHeight();
-    },
-    scrollToTop() {
-      this.listRef.scrollTop = 0;
     },
     async loadNextPage() {
       this.isLoadingMore = true;
@@ -282,13 +274,6 @@ export default {
         },
       });
       this.isLoadingMore = false;
-    },
-    toggleForm() {
-      if (this.isEpicBoard) {
-        this.showEpicForm = !this.showEpicForm;
-      } else {
-        this.showIssueForm = !this.showIssueForm;
-      }
     },
     isObservableItem(index) {
       // observe every 6 item of 10 to achieve smooth loading state
@@ -565,7 +550,7 @@ export default {
       }
     },
     async addListItem(input) {
-      this.toggleForm();
+      this.$emit('toggleNewForm');
       this.addItemToListInProgress = true;
       let issuable;
       try {
@@ -620,6 +605,7 @@ export default {
           mutation: setActiveBoardItemMutation,
           variables: {
             boardItem: issuable,
+            listId: this.list.id,
             isIssue: this.isIssueBoard,
           },
         });
@@ -647,12 +633,14 @@ export default {
       v-if="issueCreateFormVisible"
       :list="list"
       :board-id="boardId"
+      @toggleNewForm="$emit('toggleNewForm')"
       @addNewIssue="addListItem"
     />
     <board-new-epic
       v-if="epicCreateFormVisible"
       :list="list"
       :board-id="boardId"
+      @toggleNewForm="$emit('toggleNewForm')"
       @addNewEpic="addListItem"
     />
     <component
@@ -663,7 +651,7 @@ export default {
       :data-board="list.id"
       :data-board-type="list.listType"
       :class="{
-        'gl-bg-red-100 gl-rounded-bottom-left-base gl-rounded-bottom-right-base': boardItemsSizeExceedsMax,
+        'gl-bg-red-50 gl-rounded-bottom-left-base gl-rounded-bottom-right-base': boardItemsSizeExceedsMax,
         'gl-overflow-hidden': disableScrollingWhenMutationInProgress,
         'gl-overflow-y-auto': !disableScrollingWhenMutationInProgress,
       }"
@@ -674,7 +662,7 @@ export default {
       @end="handleDragOnEnd"
     >
       <board-card
-        v-for="(item, index) in boardListItems"
+        v-for="(item, index) in beforeCutLine"
         ref="issue"
         :key="item.id"
         :index="index"
@@ -682,6 +670,33 @@ export default {
         :item="item"
         :data-draggable-item-type="$options.draggableItemTypes.card"
         :show-work-item-type-icon="!isEpicBoard"
+        @setFilters="$emit('setFilters', $event)"
+      >
+        <board-card-move-to-position
+          v-if="showMoveToPosition"
+          :item="item"
+          :index="index"
+          :list="list"
+          :list-items-length="boardListItems.length"
+          @moveToPosition="moveToPosition($event, index, item)"
+        />
+        <gl-intersection-observer
+          v-if="isObservableItem(index)"
+          data-testid="board-card-gl-io"
+          @appear="onReachingListBottom"
+        />
+      </board-card>
+      <board-cut-line v-if="boardItemsSizeExceedsMax" :cut-line-text="wipLimitText" />
+      <board-card
+        v-for="(item, index) in afterCutLine"
+        ref="issue"
+        :key="item.id"
+        :index="index"
+        :list="list"
+        :item="item"
+        :data-draggable-item-type="$options.draggableItemTypes.card"
+        :show-work-item-type-icon="!isEpicBoard"
+        @setFilters="$emit('setFilters', $event)"
       >
         <board-card-move-to-position
           v-if="showMoveToPosition"

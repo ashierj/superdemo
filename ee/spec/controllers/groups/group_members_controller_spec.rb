@@ -73,6 +73,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
         create_list(:group_member, 5, group: group, created_by: user)
         create_list(:group_member, 5, :invited, group: group, created_by: user)
         create_list(:group_member, 5, :access_request, group: group)
+
         # locally 39 vs 43 GDK vs 48 CI
         unresolved_n_plus_ones = 4 # still have a few queries created by can_update/can_remove that could be reduced
         multiple_members_threshold = 5 # GDK vs CI difference

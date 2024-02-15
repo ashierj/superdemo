@@ -303,7 +303,7 @@ export default {
     },
   },
   filterByOptions: [
-    { value: FILTER_BY_ISSUES, text: __('Issues'), props: { 'data-testid': 'issue-button' } },
+    { value: FILTER_BY_ISSUES, text: __('Issue count'), props: { 'data-testid': 'issue-button' } },
     {
       value: FILTER_BY_ISSUE_WEIGHT,
       text: __('Issue weight'),
@@ -315,32 +315,28 @@ export default {
 
 <template>
   <div>
-    <div class="burndown-header gl-display-flex gl-align-items-center gl-flex-wrap">
-      <strong ref="filterLabel">{{ __('Filter by') }}</strong>
+    <div class="burndown-header gl-display-flex gl-align-items-center gl-flex-wrap gl-gap-2">
+      <strong ref="filterLabel">{{ __('Display by') }}</strong>
       <segmented-control-button-group
         :value="filterBySelectedValue"
         :options="$options.filterByOptions"
         @input="handleFilterByChanged"
       />
 
-      <gl-button-group v-if="showNewOldBurndownToggle">
-        <gl-button
-          ref="oldBurndown"
-          :category="useLegacyBurndown ? 'primary' : 'secondary'"
-          variant="confirm"
-          size="small"
-          @click="toggleLegacyBurndown(true)"
-        >
-          {{ __('Legacy burndown chart') }}
-        </gl-button>
+      <gl-button-group v-if="showNewOldBurndownToggle" class="gl-pl-2">
         <gl-button
           ref="newBurndown"
-          :category="useLegacyBurndown ? 'secondary' : 'primary'"
-          variant="confirm"
-          size="small"
+          :selected="!useLegacyBurndown"
           @click="toggleLegacyBurndown(false)"
         >
           {{ __('Fixed burndown chart') }}
+        </gl-button>
+        <gl-button
+          ref="oldBurndown"
+          :selected="useLegacyBurndown"
+          @click="toggleLegacyBurndown(true)"
+        >
+          {{ __('Legacy burndown chart') }}
         </gl-button>
       </gl-button-group>
     </div>

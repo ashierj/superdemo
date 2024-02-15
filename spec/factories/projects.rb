@@ -113,7 +113,7 @@ FactoryBot.define do
       # user have access to the project. Our specs don't use said service class,
       # thus we must manually refresh things here.
       unless project.group || project.pending_delete
-        project.add_owner(project.first_owner)
+        Gitlab::ExclusiveLease.skipping_transaction_check { project.add_owner(project.first_owner) }
       end
 
       if project.group
@@ -609,15 +609,15 @@ FactoryBot.define do
     files { { 'README.md' => 'Hello World' } }
   end
 
-  trait :with_code_suggestions_enabled do
+  trait :with_duo_features_enabled do
     after(:create) do |project|
-      project.project_setting.update!(code_suggestions: true)
+      project.project_setting.update!(duo_features_enabled: true)
     end
   end
 
-  trait :with_code_suggestions_disabled do
+  trait :with_duo_features_disabled do
     after(:create) do |project|
-      project.project_setting.update!(code_suggestions: false)
+      project.project_setting.update!(duo_features_enabled: false)
     end
   end
 end

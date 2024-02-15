@@ -324,9 +324,7 @@ class IssuableBaseService < ::BaseContainerService
     if issuable.changed? || params.present? || widget_params.present? || @callbacks.present?
       issuable.assign_attributes(allowed_update_params(params))
 
-      if issuable.description_changed?
-        issuable.assign_attributes(last_edited_at: Time.current, last_edited_by: current_user)
-      end
+      assign_last_edited(issuable)
 
       before_update(issuable)
 
@@ -343,7 +341,12 @@ class IssuableBaseService < ::BaseContainerService
 
         issuable.updated_by = current_user if should_touch
 
-        transaction_update(issuable, { save_with_touch: should_touch })
+        # `issuable` could create a ghost user when updating `last_edited_by`.
+        # Users::Internal.ghost will obtain an ExclusiveLease within this transaction.
+        # See issue: https://gitlab.com/gitlab-org/gitlab/-/issues/441526
+        Gitlab::ExclusiveLease.skipping_transaction_check do
+          transaction_update(issuable, { save_with_touch: should_touch })
+        end
       end
 
       if issuable_saved
@@ -511,6 +514,12 @@ class IssuableBaseService < ::BaseContainerService
       params[:assignee_ids] = assignee_ids
       issuable.touch
     end
+  end
+
+  def assign_last_edited(issuable)
+    return unless issuable.description_changed?
+
+    issuable.assign_attributes(last_edited_at: Time.current, last_edited_by: current_user)
   end
 
   # Arrays of ids are used, but we should really use sets of ids, so

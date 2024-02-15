@@ -52,6 +52,9 @@
     "ExternalAuditEventDestination",
     "InstanceExternalAuditEventDestination"
   ],
+  "GoogleCloudArtifactRegistryArtifact": [
+    "GoogleCloudArtifactRegistryDockerImage"
+  ],
   "GoogleCloudLoggingConfigurationInterface": [
     "GoogleCloudLoggingConfigurationType",
     "InstanceGoogleCloudLoggingConfigurationType"
@@ -89,6 +92,7 @@
     "MergeRequest"
   ],
   "OrchestrationPolicy": [
+    "ApprovalPolicy",
     "ScanExecutionPolicy",
     "ScanResultPolicy"
   ],
@@ -190,6 +194,7 @@
     "WorkItemWidgetColor",
     "WorkItemWidgetCurrentUserTodos",
     "WorkItemWidgetDescription",
+    "WorkItemWidgetDesigns",
     "WorkItemWidgetHealthStatus",
     "WorkItemWidgetHierarchy",
     "WorkItemWidgetIteration",
@@ -205,6 +210,7 @@
     "WorkItemWidgetStartAndDueDate",
     "WorkItemWidgetStatus",
     "WorkItemWidgetTestReports",
+    "WorkItemWidgetTimeTracking",
     "WorkItemWidgetWeight"
   ],
   "WorkItemWidgetDefinition": [

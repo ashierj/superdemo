@@ -31,6 +31,7 @@ RSpec.describe GoogleCloudPlatform::Jwt, feature_category: :shared do
         'project_path' => project.full_path,
         'user_id' => user.id.to_s,
         'user_email' => user.email,
+        'user_access_level' => nil,
         'sub' => "project_#{project.id}_user_#{user.id}",
         'iss' => Gitlab.config.gitlab.url
       )
@@ -38,6 +39,18 @@ RSpec.describe GoogleCloudPlatform::Jwt, feature_category: :shared do
       expect(headers).to include(
         'kid' => rsa_key.public_key.to_jwk[:kid]
       )
+    end
+
+    it_behaves_like 'setting the user_access_level claim' do
+      let(:payload) do
+        JWT.decode(
+          encoded,
+          rsa_key.public_key,
+          true,
+          { algorithm: 'RS256' }
+        ).first
+        .symbolize_keys!
+      end
     end
 
     context 'with missing jwt audience' do
@@ -63,23 +76,6 @@ RSpec.describe GoogleCloudPlatform::Jwt, feature_category: :shared do
 
       it 'raises a NoSigningKeyError' do
         expect { encoded }.to raise_error(described_class::NoSigningKeyError)
-      end
-    end
-
-    context 'with oidc_issuer_url feature flag disabled' do
-      before do
-        stub_feature_flags(oidc_issuer_url: false)
-        # Settings.gitlab.base_url and Gitlab.config.gitlab.url are the
-        # same for test. Changing that to assert the proper behavior here.
-        allow(Settings.gitlab).to receive(:base_url).and_return('test.dev')
-      end
-
-      it 'uses a different issuer' do
-        payload, _ = JWT.decode(encoded, rsa_key.public_key, true, { algorithm: 'RS256' })
-
-        expect(payload).to include(
-          'iss' => Settings.gitlab.base_url
-        )
       end
     end
   end

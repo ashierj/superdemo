@@ -19,18 +19,6 @@ RSpec.describe Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesW
       run_worker
     end
 
-    context 'when security_policies_sync_preexisting_state is disabled' do
-      before do
-        stub_feature_flags(security_policies_sync_preexisting_state: false)
-      end
-
-      it 'does not call SyncPreexistingStatesApprovalRulesService' do
-        expect(Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesService).not_to receive(:new)
-
-        run_worker
-      end
-    end
-
     context 'when merge_request does not exist' do
       let(:merge_request_id) { non_existing_record_id }
 

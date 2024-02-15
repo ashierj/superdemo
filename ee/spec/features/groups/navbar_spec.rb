@@ -10,7 +10,7 @@ RSpec.describe 'Group navbar', :js, feature_category: :groups_and_projects do
   include_context 'group navbar structure'
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, :crm_disabled) }
 
   context 'for maintainers' do
     before do
@@ -121,8 +121,8 @@ RSpec.describe 'Group navbar', :js, feature_category: :groups_and_projects do
         it_behaves_like 'verified navigation bar'
       end
 
-      context 'when customer relations feature is enabled' do
-        let(:group) { create(:group, :crm_enabled) }
+      context 'when crm feature is enabled' do
+        let(:group) { create(:group) }
 
         before do
           insert_customer_relations_nav(_('Iterations'))
@@ -133,8 +133,8 @@ RSpec.describe 'Group navbar', :js, feature_category: :groups_and_projects do
         it_behaves_like 'verified navigation bar'
       end
 
-      context 'when customer relations feature enabled but subgroup' do
-        let(:group) { create(:group, :crm_enabled, parent: create(:group)) }
+      context 'when crm feature is enabled on both group and parent group' do
+        let(:group) { create(:group, parent: create(:group)) }
 
         before do
           visit group_path(group)

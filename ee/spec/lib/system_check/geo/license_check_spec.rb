@@ -29,5 +29,18 @@ RSpec.describe SystemCheck::Geo::LicenseCheck, feature_category: :geo_replicatio
         expect(described_class.check_pass).to eq(pass_message) if check_result
       end
     end
+
+    describe '#show_error' do
+      before do
+        allow(Gitlab::Geo).to receive(:license_allows?).and_return(false)
+      end
+
+      it 'returns the geo setup/database page' do
+        expect(subject).to receive(:try_fixing_it).with('Add a new license that includes the GitLab Geo feature')
+        expect(subject).to receive(:for_more_information).with('https://about.gitlab.com/solutions/geo/')
+
+        subject.show_error
+      end
+    end
   end
 end

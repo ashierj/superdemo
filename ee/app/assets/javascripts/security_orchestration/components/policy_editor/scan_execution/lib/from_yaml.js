@@ -74,7 +74,6 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
       const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables', 'tags', 'id'];
 
       if (gon?.features?.compliancePipelineInPolicies) {
-        actionsKeys.push('ci_configuration_path');
         actionsKeys.push('ci_configuration');
       }
 

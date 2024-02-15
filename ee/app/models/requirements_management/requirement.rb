@@ -11,24 +11,7 @@ module RequirementsManagement
     include AtomicInternalId
     include Sortable
     include Gitlab::SQL::Pattern
-    include IgnorableColumns
     include FilterableByTestReports
-
-    ignore_columns(
-      %i[
-        created_at
-        updated_at
-        author_id
-        cached_markdown_version
-        state
-        title
-        title_html
-        description
-        description_html
-      ],
-      remove_with: '16.9',
-      remove_after: '2024-01-22'
-    )
 
     # the expected name for this table is `requirements_management_requirements`,
     # but to avoid downtime and deployment issues `requirements` is still used

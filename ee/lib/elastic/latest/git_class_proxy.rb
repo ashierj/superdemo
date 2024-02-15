@@ -52,13 +52,12 @@ module Elastic
 
       def filter_ids_by_ability(project_ids, user, abilities)
         return [] if user.blank? || abilities.blank?
-        return [] unless Feature.enabled?(:search_filter_by_ability, user)
 
         actual_abilities = abilities_for(project_ids, user)
         target_abilities = Array(abilities)
 
         project_ids.find_all do |project_id|
-          (actual_abilities[project_id] || []).intersect?(target_abilities)
+          (actual_abilities[project_id] || []).intersection(target_abilities).any?
         end
       end
 

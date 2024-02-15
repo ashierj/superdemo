@@ -152,7 +152,7 @@ module QA
         end
 
         context 'when a user is added to a group', :reliable do
-          let(:user) { Resource::User.fabricate_via_api! }
+          let(:user) { create(:user) }
           let(:target_details) { user.name }
           let(:entity_path) { root_group.full_path }
 

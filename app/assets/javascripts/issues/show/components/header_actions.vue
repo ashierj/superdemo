@@ -14,7 +14,9 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert, VARIANT_SUCCESS } from '~/alert';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
-import { ISSUABLE_EDIT_DESCRIPTION } from '~/behaviors/shortcuts/keybindings';
+import { keysFor, ISSUABLE_EDIT_DESCRIPTION } from '~/behaviors/shortcuts/keybindings';
+import { shouldDisableShortcuts } from '~/behaviors/shortcuts/shortcuts_toggle';
+import { sanitize } from '~/lib/dompurify';
 import { STATUS_CLOSED, TYPE_ISSUE, issuableTypeText } from '~/issues/constants';
 import { ISSUE_STATE_EVENT_CLOSE, ISSUE_STATE_EVENT_REOPEN } from '~/issues/show/constants';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
@@ -192,10 +194,14 @@ export default {
       };
     },
     editShortcutKey() {
-      return ISSUABLE_EDIT_DESCRIPTION.defaultKeys[0];
+      return shouldDisableShortcuts() ? null : keysFor(ISSUABLE_EDIT_DESCRIPTION)[0];
     },
     editTooltip() {
-      return `${this.$options.i18n.editTitleAndDescription} <kbd class="glat gl-ml-1" aria-hidden=true>${this.editShortcutKey}</kbd>`;
+      const description = this.$options.i18n.editTitleAndDescription;
+      const key = this.editShortcutKey;
+      return shouldDisableShortcuts()
+        ? description
+        : sanitize(`${description} <kbd class="flat gl-ml-1" aria-hidden=true>${key}</kbd>`);
     },
   },
   created() {
@@ -319,7 +325,7 @@ export default {
         :auto-close="false"
         data-testid="mobile-dropdown"
         :loading="isToggleStateButtonLoading"
-        placement="right"
+        placement="left"
       >
         <template v-if="showMovedSidebarOptions && !glFeatures.notificationsTodosButtons">
           <sidebar-subscriptions-widget
@@ -330,10 +336,6 @@ export default {
           />
 
           <gl-dropdown-divider />
-        </template>
-
-        <template v-if="showLockIssueOption">
-          <issuable-lock-form :is-editable="false" data-testid="lock-issue-toggle" />
         </template>
 
         <gl-disclosure-dropdown-item v-if="canUpdateIssue" @action="edit">
@@ -350,6 +352,9 @@ export default {
         <gl-disclosure-dropdown-item v-if="canPromoteToEpic" @action="promoteToEpic">
           <template #list-item>{{ __('Promote to epic') }}</template>
         </gl-disclosure-dropdown-item>
+        <template v-if="showLockIssueOption">
+          <issuable-lock-form :is-editable="false" data-testid="lock-issue-toggle" />
+        </template>
         <gl-disclosure-dropdown-item
           :data-clipboard-text="issuableReference"
           class="js-copy-reference"
@@ -364,7 +369,7 @@ export default {
           :data-clipboard-text="issuableEmailAddress"
           data-testid="copy-email"
           @action="copyEmailAddress"
-          >{{ copyMailAddressText }}</gl-disclosure-dropdown-item
+          ><template #list-item>{{ copyMailAddressText }}</template></gl-disclosure-dropdown-item
         >
         <gl-disclosure-dropdown-item
           v-if="canReportSpam"

@@ -13,7 +13,7 @@ module EE
       #
       # Example Note text:
       #
-      # "revoked approvals from @user3, @user4, and @user5 by pushing to the branch"
+      # "reset approvals from @user3, @user4, and @user5 by pushing to the branch"
       #
       # Returns the created Note object
       def approvals_reset(cause, approvers)
@@ -21,7 +21,7 @@ module EE
         return unless cause == :new_push
         return if approvers.empty?
 
-        body = "revoked approvals from #{approvers.map(&:to_reference).to_sentence} by pushing to the branch"
+        body = "reset approvals from #{approvers.map(&:to_reference).to_sentence} by pushing to the branch"
 
         create_note(NoteSummary.new(noteable, project, author, body, action: 'approvals_reset'))
       end

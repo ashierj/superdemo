@@ -14,21 +14,25 @@ RSpec.describe Security::OverrideUuidsService, feature_category: :vulnerability_
     let(:vulnerability_identifier) { create(:vulnerabilities_identifier, fingerprint: 'e2bd6788a715674769f48fadffd0bd3ea16656f5') }
 
     let(:vulnerability_finding_1) do
-      create(:vulnerabilities_finding,
-             project: pipeline.project,
-             uuid: vulnerability_finding_uuid_1,
-             location_fingerprint: location_1.fingerprint,
-             primary_identifier: vulnerability_identifier,
-             scanner: vulnerability_scanner)
+      create(
+        :vulnerabilities_finding,
+        project: pipeline.project,
+        uuid: vulnerability_finding_uuid_1,
+        location_fingerprint: location_1.fingerprint,
+        primary_identifier: vulnerability_identifier,
+        scanner: vulnerability_scanner
+      )
     end
 
     let(:vulnerability_finding_2) do
-      create(:vulnerabilities_finding,
-             project: pipeline.project,
-             uuid: vulnerability_finding_uuid_2,
-             location_fingerprint: location_2.fingerprint,
-             primary_identifier: vulnerability_identifier,
-             scanner: vulnerability_scanner)
+      create(
+        :vulnerabilities_finding,
+        project: pipeline.project,
+        uuid: vulnerability_finding_uuid_2,
+        location_fingerprint: location_2.fingerprint,
+        primary_identifier: vulnerability_identifier,
+        scanner: vulnerability_scanner
+      )
     end
 
     let(:report_scanner) { create(:ci_reports_security_scanner, external_id: 'gitlab-sast') }
@@ -46,9 +50,16 @@ RSpec.describe Security::OverrideUuidsService, feature_category: :vulnerability_
     let(:unmatching_report_finding) { create(:ci_reports_security_finding, vulnerability_finding_signatures_enabled: true, signatures: [signature_1], scanner: report_scanner) }
 
     let(:report) do
-      create(:ci_reports_security_report,
-             findings: [unmatching_report_finding, matching_report_finding_by_signature, matching_report_finding_by_location, matching_report_finding_by_location_conflict],
-             pipeline: pipeline)
+      create(
+        :ci_reports_security_report,
+        findings: [
+          unmatching_report_finding,
+          matching_report_finding_by_signature,
+          matching_report_finding_by_location,
+          matching_report_finding_by_location_conflict
+        ],
+        pipeline: pipeline
+      )
     end
 
     let(:service_object) { described_class.new(report) }
@@ -61,13 +72,14 @@ RSpec.describe Security::OverrideUuidsService, feature_category: :vulnerability_
     subject(:override_uuids) { service_object.execute }
 
     it 'overrides finding uuids and prioritizes the existing findings' do
-      expect { override_uuids }.to change { report.findings.map(&:overridden_uuid) }.from(Array.new(4) { nil }).to([an_instance_of(String), an_instance_of(String), nil, nil])
-                               .and change { matching_report_finding_by_signature.uuid }.from(matching_report_finding_uuid_1).to(vulnerability_finding_uuid_1)
-                               .and change { matching_report_finding_by_signature.overridden_uuid }.from(nil).to(matching_report_finding_uuid_1)
-                               .and change { matching_report_finding_by_location.uuid }.from(matching_report_finding_uuid_2).to(vulnerability_finding_uuid_2)
-                               .and change { matching_report_finding_by_location.overridden_uuid }.from(nil).to(matching_report_finding_uuid_2)
-                               .and not_change { matching_report_finding_by_location_conflict.uuid }
-                               .and not_change { unmatching_report_finding.uuid }
+      expect { override_uuids }
+        .to change { report.findings.map(&:overridden_uuid) }.from(Array.new(4) { nil }).to([an_instance_of(String), an_instance_of(String), nil, nil])
+        .and change { matching_report_finding_by_signature.uuid }.from(matching_report_finding_uuid_1).to(vulnerability_finding_uuid_1)
+        .and change { matching_report_finding_by_signature.overridden_uuid }.from(nil).to(matching_report_finding_uuid_1)
+        .and change { matching_report_finding_by_location.uuid }.from(matching_report_finding_uuid_2).to(vulnerability_finding_uuid_2)
+        .and change { matching_report_finding_by_location.overridden_uuid }.from(nil).to(matching_report_finding_uuid_2)
+        .and not_change { matching_report_finding_by_location_conflict.uuid }
+        .and not_change { unmatching_report_finding.uuid }
     end
   end
 end

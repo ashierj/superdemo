@@ -9,6 +9,7 @@ module EE
   module Gitlab
     module Access
       extend ActiveSupport::Concern
+      extend ::Gitlab::Utils::Override
 
       MINIMAL_ACCESS_HASH = { "Minimal Access" => ::Gitlab::Access::MINIMAL_ACCESS }.freeze
 
@@ -31,6 +32,13 @@ module EE
         def human_access(access)
           options_with_minimal_access.key(access)
         end
+      end
+
+      override :human_access_labeled
+      def human_access_labeled
+        return super unless member_role
+
+        "#{s_('Custom role')}: #{member_role.name}"
       end
     end
   end

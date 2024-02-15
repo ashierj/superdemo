@@ -97,7 +97,7 @@ export default {
             :per-page="perPage"
             :total-items="totalItems"
             align="center"
-            class="w-100"
+            class="gl-w-full"
           />
         </template>
       </template>

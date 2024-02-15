@@ -51,6 +51,14 @@ module SaasRegistrationHelpers
     expect_verification_completed
   end
 
+  def accept_privacy_and_terms
+    checkbox = find('[data-testid="privacy-and-terms-confirm"] > input')
+
+    expect(checkbox).not_to be_checked
+
+    checkbox.set(true)
+  end
+
   def regular_sign_up(params = {}, password: User.random_password)
     perform_enqueued_jobs do
       user_signs_up(params, password: password)
@@ -97,6 +105,8 @@ module SaasRegistrationHelpers
   end
 
   def user_signs_up_with_sso(params = {}, provider: 'google_oauth2', name: 'Registering User')
+    stub_arkose_token_verification
+
     mock_auth_hash(provider, 'external_uid', user_email, name: name)
     stub_omniauth_setting(block_auto_created_users: false)
     allow(::Arkose::Settings).to receive(:enabled?).and_return(true)
@@ -110,7 +120,6 @@ module SaasRegistrationHelpers
     wait_for_all_requests
 
     click_link_or_button Gitlab::Auth::OAuth::Provider.label_for(provider)
-    solve_arkose_verify_challenge(saml: true)
   end
 
   def user_signs_up_through_subscription_with_sso(provider: 'google_oauth2')
@@ -244,8 +253,8 @@ module SaasRegistrationHelpers
 
   def expect_to_be_in_import_process
     expect(page).to have_content <<~MESSAGE.tr("\n", ' ')
-      To connect GitHub repositories, you first need to authorize
-      GitLab to access the list of your GitHub repositories.
+      To import GitHub repositories, you must first authorize
+      GitLab to access your GitHub repositories.
     MESSAGE
   end
 
@@ -552,6 +561,8 @@ module SaasRegistrationHelpers
     page.execute_script <<~JS
       document.querySelector('[data-testid="subscription_app"]').__vue__.$store.dispatch('fetchPaymentMethodDetailsSuccess')
     JS
+
+    accept_privacy_and_terms
 
     click_button 'Confirm purchase'
   end

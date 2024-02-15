@@ -880,10 +880,10 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
 
     let(:params) do
       {
-        variables: { licenseKey: license_key },
+        variables: { licenseKey: license_key, gitlabVersion: Gitlab::VERSION },
         query: <<~GQL
-            query cloudConnectorAccess($licenseKey: String!) {
-              cloudConnectorAccess(licenseKey: $licenseKey) {
+            query cloudConnectorAccess($licenseKey: String!, $gitlabVersion: String!) {
+              cloudConnectorAccess(licenseKey: $licenseKey, gitlabVersion: $gitlabVersion) {
                 serviceToken {
                   token
                   expiresAt

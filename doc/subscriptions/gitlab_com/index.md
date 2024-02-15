@@ -1,6 +1,6 @@
 ---
 stage: Fulfillment
-group: Purchase
+group: Subscription Management
 description: Seat usage, compute minutes, storage limits, renewal info.
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
@@ -119,8 +119,10 @@ To view your subscription information and a summary of seat counts:
 1. On the left sidebar, select **Search or go to** and find your group.
 1. Select **Settings > Billing**.
 
-The usage statistics are updated once per day, which may cause
-a difference between the information in the **Usage Quotas** page and the **Billing page**.
+- The usage statistics are updated once per day, which may cause a difference between the information 
+  in the **Usage Quotas** page and the **Billing page**.
+- The **Last login** field is updated when a user signs in after they have signed out. If there is an active session 
+  when a user re-authenticates (for example, after a 24 hour SAML session timeout), this field is not updated.
 
 ### Search seat usage
 
@@ -387,10 +389,32 @@ To add a secondary contact for your subscription:
    [Customers Portal](https://customers.gitlab.com/customers/sign_in) for the user you want to add.
 1. [Create a ticket with the Support team](https://support.gitlab.com/hc/en-us/requests/new?ticket_form_id=360000071293). Include any relevant material in your request.
 
+## GitLab Duo Pro
+
+Increase developer productivity across the software development lifecycle. Refer to [GitLab Duo](../../user/ai_features.md) for more information.
+
+### Purchase additional GitLab Duo Pro seats
+
+If you're using GitLab SaaS, you can purchase additional seats for the GitLab Duo Pro product.
+
+<!-- vale gitlab.Substitutions = NO -->
+1. On the left sidebar, select **Search or go to** and find your group.
+1. Select **Settings > Usage Quotas**.
+1. Select **Duo Pro**.
+1. Select **Add seats**. GitLab redirects you to the Customers Portal.
+1. Enter the desired quantity of GitLab Duo Pro seats. Mind that it should not be higher than the amount of seats in your group namespace main subscription.
+1. In the **Billing information** section select the payment method from the dropdown list.
+1. Select the **Privacy Policy** and **Terms of Service** checkbox.
+1. Select **Purchase seats**.
+1. Switch back to the GitLab SaaS tab and refresh the page.
+<!-- vale gitlab.Substitutions = YES -->
+
+After your payment is processed, the additional seats are available for your group namespace.
+
 ## Compute
 
 Compute is the resource consumed when running [pipelines](../../ci/pipelines/index.md)
-on GitLab shared runners.
+on GitLab instance runners.
 
 Refer to [Compute usage](../../ci/pipelines/cicd_minutes.md)
 for more information.

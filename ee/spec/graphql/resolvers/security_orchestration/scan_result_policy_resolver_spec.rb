@@ -15,7 +15,7 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver, featu
         name: 'Require security approvals',
         description: 'This policy considers only container scanning and critical severities',
         edit_path: Gitlab::Routing.url_helpers.edit_project_security_policy_url(
-          project, id: CGI.escape(policy[:name]), type: 'scan_result_policy'
+          project, id: CGI.escape(policy[:name]), type: 'approval_policy'
         ),
         enabled: true,
         yaml: YAML.dump(policy.deep_stringify_keys),

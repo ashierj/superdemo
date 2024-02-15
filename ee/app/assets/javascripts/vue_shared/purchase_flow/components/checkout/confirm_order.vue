@@ -9,14 +9,17 @@ import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_
 import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { s__ } from '~/locale';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
+import PrivacyAndTermsConfirm from 'ee/subscriptions/shared/components/privacy_and_terms_confirm.vue';
 
 export default {
   components: {
     GlButton,
     GlLoadingIcon,
+    PrivacyAndTermsConfirm,
   },
   data() {
     return {
+      didAcceptTerms: false,
       idempotencyKeys: {},
       isActive: false,
       isLoading: false,
@@ -38,6 +41,9 @@ export default {
     },
     quantity() {
       return this.orderParams?.subscription?.quantity;
+    },
+    shouldDisableConfirmOrder() {
+      return !this.didAcceptTerms || this.isLoading;
     },
     selectedGroup() {
       return this.orderParams?.selected_group;
@@ -150,7 +156,17 @@ export default {
 </script>
 <template>
   <div v-if="isActive" class="full-width gl-mb-7" data-testid="confirm-order-root">
-    <gl-button :disabled="isLoading" variant="confirm" category="primary" @click="confirmOrder">
+    <privacy-and-terms-confirm
+      v-model="didAcceptTerms"
+      class="mb-2"
+      data-testid="privacy-and-terms-confirm"
+    />
+    <gl-button
+      :disabled="shouldDisableConfirmOrder"
+      variant="confirm"
+      category="primary"
+      @click="confirmOrder"
+    >
       <gl-loading-icon v-if="isLoading" inline size="sm" />
       {{ isLoading ? $options.i18n.confirming : $options.i18n.confirm }}
     </gl-button>

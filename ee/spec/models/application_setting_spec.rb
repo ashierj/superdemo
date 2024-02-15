@@ -18,6 +18,12 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
     end
   end
 
+  describe 'default values' do
+    subject(:setting) { described_class.new }
+
+    it { expect(setting.security_approval_policies_limit).to eq(5) }
+  end
+
   describe 'validations' do
     describe 'mirror', feature_category: :source_code_management do
       it { is_expected.to validate_numericality_of(:mirror_max_delay).only_integer }
@@ -74,8 +80,17 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
       it { is_expected.to allow_value('').for(:elasticsearch_username) }
       it { is_expected.to allow_value('a' * 255).for(:elasticsearch_username) }
       it { is_expected.not_to allow_value('a' * 256).for(:elasticsearch_username) }
+    end
 
+    describe 'security policy settings' do
       it { is_expected.to validate_inclusion_of(:security_policy_global_group_approvers_enabled).in_array([true, false]) }
+
+      it do
+        is_expected.to validate_numericality_of(:security_approval_policies_limit)
+                         .only_integer
+                         .is_greater_than_or_equal_to(5)
+                         .is_less_than_or_equal_to(::Security::ScanResultPolicy::POLICIES_LIMIT)
+      end
     end
 
     describe 'future_subscriptions', feature_category: :subscription_management do
@@ -1139,33 +1154,6 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
       it 'is nil' do
         expect(subject).to be_nil
       end
-    end
-  end
-
-  describe 'delayed deletion', feature_category: :groups_and_projects do
-    context 'when delayed_group_deletion is set to false' do
-      before do
-        setting.update!(delayed_group_deletion: false)
-      end
-
-      it 'unlocks the delayed_project_removal setting' do
-        expect(setting.lock_delayed_project_removal).to be true
-      end
-
-      it { is_expected.not_to allow_value(true).for(:delayed_project_removal) }
-      it { is_expected.to allow_value(false).for(:delayed_project_removal) }
-    end
-
-    context 'when delayed_group_deletion is set to true' do
-      before do
-        setting.update!(delayed_group_deletion: true)
-      end
-
-      it 'locks the delayed_project_removal setting' do
-        expect(setting.lock_delayed_project_removal).to be false
-      end
-
-      it { is_expected.to validate_inclusion_of(:delayed_project_removal).in_array([true, false]) }
     end
   end
 

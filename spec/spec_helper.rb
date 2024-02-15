@@ -225,7 +225,12 @@ RSpec.configure do |config|
 
     # Gradually stop using rspec-retry
     # See https://gitlab.com/gitlab-org/gitlab/-/issues/438388
-    %i[lib migrations models requests services].each do |type|
+    %i[
+      lib mailers metrics_server
+      migrations models policies presenters rack_servers requests
+      routing rubocop scripts serializers services sidekiq sidekiq_cluster
+      spam support_specs tasks tooling uploaders validators views workers
+    ].each do |type|
       config.prepend_before(:each, type: type) do |example|
         example.metadata[:retry] = 1
       end
@@ -333,6 +338,11 @@ RSpec.configure do |config|
 
       # This is going to be removed with https://gitlab.com/gitlab-org/gitlab/-/issues/432866
       stub_feature_flags(redis_hll_property_name_tracking: false)
+
+      # The code under this flag will be removed soon
+      # We are temporarily keeping it in place while we confirm some assumptions
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/440667
+      stub_feature_flags(ci_text_interpolation: false)
     else
       unstub_all_feature_flags
     end
@@ -546,3 +556,23 @@ module RedisCommands
 end
 
 Redis::Client.prepend(RedisCommands::Instrumentation)
+
+module UsersInternalAllowExclusiveLease
+  extend ActiveSupport::Concern
+
+  class_methods do
+    def unique_internal(scope, username, email_pattern, &block)
+      # this lets skip transaction checks when Users::Internal bots are created in
+      # let_it_be blocks during test set-up.
+      #
+      # Users::Internal bot creation within examples are still checked since the RSPec.current_scope is :example
+      if ::RSpec.respond_to?(:current_scope) && ::RSpec.current_scope == :before_all
+        Gitlab::ExclusiveLease.skipping_transaction_check { super }
+      else
+        super
+      end
+    end
+  end
+end
+
+Users::Internal.prepend(UsersInternalAllowExclusiveLease)

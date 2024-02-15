@@ -250,16 +250,20 @@ describe('slugifyToArray', () => {
 
 describe('renderMultiSelectText', () => {
   it.each`
-    selected                    | items                                                                      | expectedText
-    ${[]}                       | ${{}}                                                                      | ${'Select projects'}
-    ${['project1']}             | ${{ project1: 'project 1', project2: 'project 2' }}                        | ${'project 1'}
-    ${['project1', 'project2']} | ${{ project1: 'project 1', project2: 'project 2' }}                        | ${'All projects'}
-    ${['project1', 'project2']} | ${{ project1: 'project 1', project2: 'project 2', project3: 'project 3' }} | ${'project 1 +1 more'}
-    ${[]}                       | ${{ project1: 'project 1', project2: 'project 2', project3: 'project 3' }} | ${'Select projects'}
-    ${['project4', 'project5']} | ${{ project1: 'project 1', project2: 'project 2', project3: 'project 3' }} | ${'Select projects'}
-    ${['project4', 'project5']} | ${{ project2: 'project 2', project3: 'project 3' }}                        | ${'Select projects'}
-  `('should render correct selection text', ({ selected, items, expectedText }) => {
-    expect(renderMultiSelectText(selected, items, 'projects')).toBe(expectedText);
+    selected                    | useAllSelected | items                                                                      | expectedText
+    ${[]}                       | ${true}        | ${{}}                                                                      | ${'Select projects'}
+    ${['project1']}             | ${true}        | ${{ project1: 'project 1', project2: 'project 2' }}                        | ${'project 1'}
+    ${['project1', 'project2']} | ${true}        | ${{ project1: 'project 1', project2: 'project 2' }}                        | ${'All projects'}
+    ${['project1', 'project2']} | ${false}       | ${{ project1: 'project 1', project2: 'project 2' }}                        | ${'project 1 +1 more'}
+    ${['project1']}             | ${false}       | ${{ project1: 'project 1' }}                                               | ${'project 1'}
+    ${['project1', 'project2']} | ${true}        | ${{ project1: 'project 1', project2: 'project 2', project3: 'project 3' }} | ${'project 1 +1 more'}
+    ${[]}                       | ${true}        | ${{ project1: 'project 1', project2: 'project 2', project3: 'project 3' }} | ${'Select projects'}
+    ${['project4', 'project5']} | ${true}        | ${{ project1: 'project 1', project2: 'project 2', project3: 'project 3' }} | ${'Select projects'}
+    ${['project4', 'project5']} | ${true}        | ${{ project2: 'project 2', project3: 'project 3' }}                        | ${'Select projects'}
+  `('should render correct selection text', ({ selected, useAllSelected, items, expectedText }) => {
+    expect(
+      renderMultiSelectText({ selected, items, itemTypeName: 'projects', useAllSelected }),
+    ).toBe(expectedText);
   });
 
   describe('parseCustomFileConfiguration', () => {

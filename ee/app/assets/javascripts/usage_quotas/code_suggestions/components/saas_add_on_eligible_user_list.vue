@@ -1,5 +1,6 @@
 <script>
-import { __ } from '~/locale';
+import { GlAvatarLabeled, GlAvatarLink, GlBadge } from '@gitlab/ui';
+import { s__, __ } from '~/locale';
 import { DEFAULT_PER_PAGE } from '~/api';
 import { fetchPolicies } from '~/lib/graphql';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
@@ -10,25 +11,32 @@ import {
   ADD_ON_ERROR_DICTIONARY,
 } from 'ee/usage_quotas/error_constants';
 import {
-  TOKEN_TITLE_PROJECT,
-  TOKEN_TYPE_PROJECT,
   OPERATORS_IS,
+  TOKEN_TITLE_GROUP,
   TOKEN_TITLE_GROUP_INVITE,
+  TOKEN_TITLE_PROJECT,
+  TOKEN_TYPE_GROUP,
   TOKEN_TYPE_GROUP_INVITE,
+  TOKEN_TYPE_PROJECT,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
 import { ADD_ON_CODE_SUGGESTIONS, SORT_OPTIONS } from 'ee/usage_quotas/code_suggestions/constants';
 import SearchAndSortBar from 'ee/usage_quotas/code_suggestions/components/search_and_sort_bar.vue';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
+import GroupToken from 'ee/usage_quotas/code_suggestions/tokens/group_token.vue';
 import ProjectToken from 'ee/usage_quotas/code_suggestions/tokens/project_token.vue';
 
 export default {
   name: 'SaasAddOnEligibleUserList',
+  avatarSize: 32,
   components: {
-    SearchAndSortBar,
-    ErrorAlert,
+    GlAvatarLabeled,
+    GlAvatarLink,
+    GlBadge,
     AddOnEligibleUserList,
+    ErrorAlert,
+    SearchAndSortBar,
   },
   mixins: [glFeatureFlagMixin()],
   inject: ['fullPath'],
@@ -83,6 +91,15 @@ export default {
           title: TOKEN_TITLE_PROJECT,
           token: ProjectToken,
           type: TOKEN_TYPE_PROJECT,
+          unique: true,
+        },
+        {
+          fullPath: this.fullPath,
+          icon: 'group',
+          operators: OPERATORS_IS,
+          title: TOKEN_TITLE_GROUP,
+          token: GroupToken,
+          type: TOKEN_TYPE_GROUP,
           unique: true,
         },
         {
@@ -153,6 +170,18 @@ export default {
     handleSort(sort) {
       this.sort = sort;
     },
+    isGroupInvite(user) {
+      return user.membershipType === 'group_invite';
+    },
+    isProjectInvite(user) {
+      return user.membershipType === 'project_invite';
+    },
+    userMembershipType(user) {
+      if (this.isProjectInvite(user)) {
+        return s__('Billing|Project invite');
+      }
+      return this.isGroupInvite(user) ? s__('Billing|Group invite') : null;
+    },
   },
 };
 </script>
@@ -184,6 +213,24 @@ export default {
         :dismissible="true"
         @dismiss="clearAddOnEligibleUsersFetchError"
       />
+    </template>
+    <template #user-cell="{ item }">
+      <div class="gl-display-flex">
+        <gl-avatar-link target="_blank" :href="item.webUrl" :alt="item.name">
+          <gl-avatar-labeled
+            :src="item.avatarUrl"
+            :size="$options.avatarSize"
+            :label="item.name"
+            :sub-label="item.username"
+          >
+            <template #meta>
+              <gl-badge v-if="userMembershipType(item)" size="sm" variant="muted">
+                {{ userMembershipType(item) }}
+              </gl-badge>
+            </template>
+          </gl-avatar-labeled>
+        </gl-avatar-link>
+      </div>
     </template>
   </add-on-eligible-user-list>
 </template>

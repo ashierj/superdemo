@@ -9,6 +9,9 @@ module Users
     include IdentityVerificationHelper
     include ::Gitlab::RackLoadBalancingHelpers
     include Recaptcha::Adapters::ControllerMethods
+    include ::Gitlab::Utils::StrongMemoize
+
+    helper_method :onboarding_status
 
     EVENT_CATEGORIES = %i[email phone credit_card error toggle_phone_exemption].freeze
     PHONE_VERIFICATION_ACTIONS = %i[send_phone_verification_code verify_phone_verification_code].freeze
@@ -28,6 +31,8 @@ module Users
     layout 'minimal'
 
     def show
+      push_frontend_feature_flag(:auto_request_phone_number_verification_exemption, @user, type: :gitlab_com_derisk)
+
       # We to perform cookie migration for tracking from logged out to log in
       # calling this before tracking gives us access to request where the
       # signed cookie exist with the info we need for migration.
@@ -36,8 +41,10 @@ module Users
     end
 
     def verification_state
+      Gitlab::PollingInterval.set_header(response, interval: 10_000)
+
       # if the back button is pressed, don't cache the user's identity verification state
-      no_cache_headers
+      no_cache_headers if params['no_cache']
 
       render json: {
         verification_methods: @user.required_identity_verification_methods,
@@ -79,7 +86,7 @@ module Users
       result = ::PhoneVerification::Users::SendVerificationCodeService.new(@user, phone_verification_params).execute
 
       unless result.success?
-        log_event(:phone, :failed_attempt, result.reason)
+        log_event(:phone, :failed_attempt, result.reason) unless result.reason == :related_to_high_risk_user
 
         # Do not pass the `related_to_banned_user` reason to the frontend if the `identity_verification_auto_ban`
         # feature flag is disabled, to allow re-submitting the form.
@@ -139,7 +146,7 @@ module Users
       set_redirect_url
       experiment(:phone_verification_for_low_risk_users, user: @user).track(:registration_completed)
 
-      render 'devise/sessions/successful_verification'
+      render 'devise/sessions/successful_verification', locals: { tracking_label: onboarding_status.tracking_label }
     end
 
     def verify_credit_card
@@ -195,8 +202,12 @@ module Users
 
     private
 
+    def onboarding_status
+      Onboarding::Status.new(params.to_unsafe_h.deep_symbolize_keys, session, @user)
+    end
+    strong_memoize_attr :onboarding_status
+
     def set_redirect_url
-      onboarding_status = ::Onboarding::Status.new(params.to_unsafe_h.deep_symbolize_keys, session, @user)
       @redirect_url = if onboarding_status.subscription?
                         # Since we need this value to stay in the stored_location_for(user) in order for
                         # us to be properly redirected for subscription signups.

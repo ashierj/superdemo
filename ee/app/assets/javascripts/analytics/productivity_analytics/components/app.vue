@@ -196,7 +196,7 @@ export default {
         <gl-button
           v-if="isFilteringByDaysToMerge"
           ref="clearChartFiltersBtn"
-          class="btn-link float-right"
+          class="btn-link gl-float-right"
           type="button"
           variant="default"
           @click="resetMainChartSelection()"

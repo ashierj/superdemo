@@ -62,6 +62,9 @@ RSpec.describe SystemCheck::Geo::ClocksSynchronizationCheck, :silence_stdout, fe
       end
 
       it 'passes with a success message' do
+        ntp_response = instance_double(Net::NTP::Response, offset: 0.1234)
+        expect(Net::NTP).to receive(:get).with(ntp_host_env, ntp_port_env, ntp_timeout_env.to_i)
+          .and_return(ntp_response)
         expect_pass
 
         expect(subject.multi_check).to be_truthy
@@ -70,6 +73,9 @@ RSpec.describe SystemCheck::Geo::ClocksSynchronizationCheck, :silence_stdout, fe
 
     context 'with default NTP connection params' do
       it 'passes with a success message' do
+        ntp_response = instance_double(Net::NTP::Response, offset: 0.1234)
+        expect(Net::NTP).to receive(:get).with('pool.ntp.org', 'ntp', Net::NTP::TIMEOUT.to_i)
+          .and_return(ntp_response)
         expect_pass
 
         expect(subject.multi_check).to be_truthy
@@ -91,6 +97,8 @@ RSpec.describe SystemCheck::Geo::ClocksSynchronizationCheck, :silence_stdout, fe
         allow(subject).to receive(:ntp_request).and_raise(Errno::ECONNREFUSED)
 
         expect_warning('NTP Server pool.ntp.org cannot be reached')
+        expect(subject).to receive(:for_more_information).with(subject.help_replication_check)
+
         subject.multi_check
       end
     end

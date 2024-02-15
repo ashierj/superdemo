@@ -129,6 +129,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: cronjob:cloud_connector_sync_service_token
+  :worker_name: CloudConnector::SyncServiceTokenWorker
+  :feature_category: :cloud_connector
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:compliance_management_merge_requests_compliance_violations_consistency
   :worker_name: ComplianceManagement::MergeRequests::ComplianceViolationsConsistencyWorker
   :feature_category: :compliance_management
@@ -410,6 +419,15 @@
   :tags: []
 - :name: cronjob:llm_embedding_gitlab_documentation_cleanup_previous_versions_records
   :worker_name: Llm::Embedding::GitlabDocumentation::CleanupPreviousVersionsRecordsWorker
+  :feature_category: :duo_chat
+  :has_external_dependencies: false
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: cronjob:llm_embedding_gitlab_documentation_create_embeddings_records
+  :worker_name: Llm::Embedding::GitlabDocumentation::CreateEmbeddingsRecordsWorker
   :feature_category: :duo_chat
   :has_external_dependencies: false
   :urgency: :throttled
@@ -1794,6 +1812,24 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: sbom_process_transfer_events
+  :worker_name: Sbom::ProcessTransferEventsWorker
+  :feature_category: :dependency_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: sbom_sync_project_traversal_ids
+  :worker_name: Sbom::SyncProjectTraversalIdsWorker
+  :feature_category: :dependency_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: search_elastic_default_branch_changed
   :worker_name: Search::ElasticDefaultBranchChangedWorker
   :feature_category: :global_search
@@ -2085,6 +2121,15 @@
 - :name: vulnerabilities_mark_dropped_as_resolved
   :worker_name: Vulnerabilities::MarkDroppedAsResolvedWorker
   :feature_category: :static_application_security_testing
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: vulnerabilities_process_transfer_events
+  :worker_name: Vulnerabilities::ProcessTransferEventsWorker
+  :feature_category: :vulnerability_management
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown

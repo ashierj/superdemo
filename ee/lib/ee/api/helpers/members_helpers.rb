@@ -43,11 +43,7 @@ module EE
         override :retrieve_members
         def retrieve_members(source, params:, deep: false)
           members = super
-          members = if ::Feature.enabled?(:members_api_expose_enterprise_users_emails_only, type: :gitlab_com_derisk)
-                      members.includes(user: [:user_highest_role, :user_detail])
-                    else
-                      members.includes(user: [:user_highest_role, { user_detail: :provisioned_by_group }])
-                    end
+          members = members.includes(user: [:user_highest_role, :user_detail])
 
           if can_view_group_identity?(source)
             members = members.includes(user: :group_saml_identities)

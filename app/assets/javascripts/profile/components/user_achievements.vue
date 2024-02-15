@@ -7,6 +7,8 @@ import { TYPENAME_USER } from '~/graphql_shared/constants';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
 import getUserAchievements from './graphql/get_user_achievements.query.graphql';
 
+export const MAX_VISIBLE_ACHIEVEMENTS = 7;
+
 export default {
   name: 'UserAchievements',
   components: { GlAvatar, GlBadge, GlPopover, GlSprintf },
@@ -28,10 +30,15 @@ export default {
       },
     },
   },
+  computed: {
+    hasUserAchievements() {
+      return Boolean(this.userAchievements?.length);
+    },
+  },
   methods: {
     processNodes(nodes) {
       return Object.entries(groupBy(nodes, 'achievement.id'))
-        .slice(0, 3)
+        .slice(0, MAX_VISIBLE_ACHIEVEMENTS)
         .map(([id, values]) => {
           const {
             achievement: { name, avatarUrl, description, namespace },
@@ -67,12 +74,16 @@ export default {
   i18n: {
     awardedBy: s__('Achievements|Awarded %{timeAgo} by %{namespace}'),
     awardedByUnknownNamespace: s__('Achievements|Awarded %{timeAgo} by a private namespace'),
+    achievementsLabel: s__('Achievements|Achievements'),
   },
 };
 </script>
 
 <template>
-  <div class="gl-mb-3">
+  <div v-if="hasUserAchievements">
+    <h2 class="gl-font-base gl-mb-2 gl-mt-4">
+      {{ $options.i18n.achievementsLabel }}
+    </h2>
     <div
       v-for="userAchievement in userAchievements"
       :key="userAchievement.id"
@@ -85,7 +96,7 @@ export default {
         :size="32"
         tabindex="0"
         shape="rect"
-        class="gl-mx-2 gl-p-1 gl-border-none"
+        class="gl-mr-2 gl-p-1 gl-border-none"
       />
       <br />
       <gl-badge v-if="showCountBadge(userAchievement.count)" variant="info" size="sm">{{

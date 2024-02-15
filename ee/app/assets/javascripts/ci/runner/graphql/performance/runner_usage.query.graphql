@@ -1,0 +1,11 @@
+query getRunnerUsage {
+  runnerUsage(runnerType: INSTANCE_TYPE, runnersLimit: 5) {
+    runner {
+      id
+      shortSha
+      description
+      adminUrl
+    }
+    ciMinutesUsed
+  }
+}

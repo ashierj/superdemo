@@ -1,16 +1,13 @@
 import { provide } from 'ee/ci/runner/admin_runners/provide';
 
-import {
-  onlineContactTimeoutSecs,
-  staleTimeoutSecs,
-  runnerInstallHelpPage,
-} from 'jest/ci/runner/mock_data';
+import { runnerInstallHelpPage } from 'jest/ci/runner/mock_data';
 import { runnerDashboardPath } from 'ee_jest/ci/runner/mock_data';
+import { ONLINE_CONTACT_TIMEOUT_SECS, STALE_TIMEOUT_SECS } from '~/ci/runner/constants';
 
 const mockDataset = {
   runnerInstallHelpPage,
-  onlineContactTimeoutSecs,
-  staleTimeoutSecs,
+  onlineContactTimeoutSecs: ONLINE_CONTACT_TIMEOUT_SECS,
+  staleTimeoutSecs: STALE_TIMEOUT_SECS,
   runnerDashboardPath,
 };
 

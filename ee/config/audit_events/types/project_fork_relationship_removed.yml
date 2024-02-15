@@ -6,3 +6,4 @@ feature_category: "source_code_management"
 milestone: "15.6"
 saved_to_database: true
 streamed: true
+scope: [Project]

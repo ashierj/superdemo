@@ -55,6 +55,7 @@ module GoogleCloudPlatform
         user_id: @user&.id.to_s,
         user_login: @user&.username,
         user_email: @user&.email,
+        user_access_level: user_access_level,
         wlif: @claims[:wlif]
       }
     end
@@ -67,9 +68,15 @@ module GoogleCloudPlatform
       @project.root_namespace
     end
 
+    def user_access_level
+      return unless @user
+
+      @project.team.human_max_access(@user.id)&.downcase
+    end
+
     override :issuer
     def issuer
-      Feature.enabled?(:oidc_issuer_url) ? Gitlab.config.gitlab.url : Settings.gitlab.base_url
+      Gitlab.config.gitlab.url
     end
 
     override :audience

@@ -84,7 +84,7 @@ RSpec.describe Resolvers::PipelineSecurityReportFindingsResolver, feature_catego
     end
 
     context 'when given states' do
-      let(:params) { { state: %w[detected confirmed] } }
+      let(:params) { { sort: 'severity_desc', state: %w[detected confirmed] } }
 
       before do
         allow(Security::PipelineVulnerabilitiesFinder).to receive(:new).and_call_original
@@ -94,6 +94,26 @@ RSpec.describe Resolvers::PipelineSecurityReportFindingsResolver, feature_catego
         resolve_query
 
         expect(Security::PipelineVulnerabilitiesFinder).to have_received(:new).with(pipeline: pipeline, params: params)
+      end
+    end
+
+    context 'when given sorting order' do
+      context 'when direction is descending' do
+        let(:params) { { sort: 'severity_desc' } }
+        let(:returned_findings) { [critical_vulnerability_finding, high_vulnerability_finding, low_vulnerability_finding] }
+
+        it 'returns findings with descending severity' do
+          is_expected.to eq(returned_findings)
+        end
+      end
+
+      context 'when direction is ascending' do
+        let(:params) { { sort: 'severity_asc' } }
+        let(:returned_findings) { [low_vulnerability_finding, high_vulnerability_finding, critical_vulnerability_finding] }
+
+        it 'returns findings with descending severity' do
+          is_expected.to eq(returned_findings)
+        end
       end
     end
 

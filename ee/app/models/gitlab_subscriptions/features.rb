@@ -73,6 +73,7 @@ module GitlabSubscriptions
     ].freeze
 
     PREMIUM_FEATURES = %i[
+      ai_chat
       adjourned_deletion_for_projects_and_groups
       admin_audit_log
       auditor_user
@@ -128,6 +129,7 @@ module GitlabSubscriptions
       merge_trains
       metrics_reports
       metrics_observability
+      logs_observability
       multiple_alert_http_integrations
       multiple_approval_rules
       multiple_group_issue_boards
@@ -165,14 +167,13 @@ module GitlabSubscriptions
       oidc_client_groups_claim
       disable_deleting_account_for_users
       disable_private_profiles
+      group_saved_replies
     ].freeze
 
     ULTIMATE_FEATURES = %i[
-      ai_chat
       ai_config_chat
       ai_features
       ai_git_command
-      ai_tanuki_bot
       ai_analyze_ci_job_failure
       ai_agents
       api_discovery

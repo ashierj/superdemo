@@ -29,6 +29,9 @@ export default {
     ),
     formGroupLabel: s__('ScanExecutionPolicy|file path group'),
   },
+  refSelectorTranslations: {
+    noRefSelected: __('default branch'),
+  },
   name: 'CodeBlockFilePath',
   components: {
     CodeBlockSourceSelector,
@@ -157,6 +160,7 @@ export default {
             :disabled="!selectedProjectId"
             :project-id="selectedProjectIdShortFormat"
             :state="projectAndRefState"
+            :translations="$options.refSelectorTranslations"
             :value="selectedRef"
             @input="setSelectedRef"
           />

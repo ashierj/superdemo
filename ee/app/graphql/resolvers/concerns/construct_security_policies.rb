@@ -29,7 +29,7 @@ module ConstructSecurityPolicies
       {
         name: policy[:name],
         description: policy[:description],
-        edit_path: edit_path(policy, :scan_result_policy),
+        edit_path: edit_path(policy, :approval_policy),
         enabled: policy[:enabled],
         yaml: YAML.dump(policy.slice(*POLICY_YAML_ATTRIBUTES).deep_stringify_keys),
         updated_at: policy[:config].policy_last_updated_at,

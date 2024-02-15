@@ -33,14 +33,13 @@ module QA
           branch.branch_name = project.default_branch
         end
 
-        Resource::ProtectedBranch.fabricate_via_api! do |branch|
-          branch.project = project
-          branch.new_branch = false
-          branch.branch_name = project.default_branch
-          branch.allowed_to_push = { roles: Resource::ProtectedBranch::Roles::NO_ONE }
-          branch.allowed_to_merge = { roles: Resource::ProtectedBranch::Roles::MAINTAINERS }
-          branch.require_code_owner_approval = true
-        end
+        create(:protected_branch,
+          project: project,
+          new_branch: false,
+          branch_name: project.default_branch,
+          allowed_to_push: { roles: Resource::ProtectedBranch::Roles::NO_ONE },
+          allowed_to_merge: { roles: Resource::ProtectedBranch::Roles::MAINTAINERS },
+          require_code_owner_approval: true)
 
         create(:merge_request,
           :no_preparation,

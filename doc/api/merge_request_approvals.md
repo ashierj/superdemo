@@ -33,7 +33,7 @@ Group approval rules apply to all protected branches of projects belonging to th
 
 ### Create group-level approval rules
 
-Users with at least the Maintainer role can create group level approval rules using the following endpoint:
+Group admins can create group level approval rules using the following endpoint:
 
 ```plaintext
 POST /groups/:id/approval_rules
@@ -940,7 +940,7 @@ Supported attributes:
 | `name`                     | string            | Yes | The name of the approval rule.                                               |
 | `approval_project_rule_id` | integer           | No | The ID of a project-level approval rule.                                     |
 | `group_ids`                | Array             | No | The IDs of groups as approvers.                                              |
-| `user_ids`                 | Array             | No | The IDs of users as approvers. If you provide both `user_ids` and `usernames`, both lists of users are added.
+| `user_ids`                 | Array             | No | The IDs of users as approvers. If you provide both `user_ids` and `usernames`, both lists of users are added. |
 | `usernames`                | string array      | No | The usernames of approvers for this rule (same as `user_ids` but requires a list of usernames). If you provide both `user_ids` and `usernames`, both lists of users are added. |
 
 **Important:** When `approval_project_rule_id` is set, the `name`, `users` and

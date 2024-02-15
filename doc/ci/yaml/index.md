@@ -1,7 +1,10 @@
 ---
 stage: Verify
 group: Pipeline Authoring
-info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
+info: >-
+  To determine the technical writer assigned to the Stage/Group associated with
+  this page, see
+  https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
 # CI/CD YAML syntax reference
@@ -59,6 +62,7 @@ A GitLab CI/CD pipeline configuration includes:
   | [`dependencies`](#dependencies)             | Restrict which artifacts are passed to a specific job by providing a list of jobs to fetch artifacts from. |
   | [`environment`](#environment)               | Name of an environment to which the job deploys. |
   | [`extends`](#extends)                       | Configuration entries that this job inherits from. |
+  | [`identity`](#identity)                     | Authenticate with third party services using identity federation. |
   | [`image`](#image)                           | Use Docker images. |
   | [`inherit`](#inherit)                       | Select which global defaults all jobs inherit. |
   | [`interruptible`](#interruptible)           | Defines if a job can be canceled when made redundant by a newer run. |
@@ -107,7 +111,8 @@ is not used.
 - [`retry`](#retry)
 - [`services`](#services)
 - [`tags`](#tags)
-- [`timeout`](#timeout)
+- [`timeout`](#timeout), though due to [issue 213634](https://gitlab.com/gitlab-org/gitlab/-/issues/213634)
+  this keyword has no effect.
 
 **Example of `default`**:
 
@@ -418,6 +423,8 @@ In this example:
 
 ### `stages`
 
+> - Support for nested array of strings [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/439451) in GitLab 16.9.
+
 Use `stages` to define stages that contain groups of jobs. Use [`stage`](#stage)
 in a job to configure the job to run in a specific stage.
 
@@ -464,7 +471,7 @@ start. Jobs in the current stage are not stopped and continue to run.
 
 - If a job does not specify a [`stage`](#stage), the job is assigned the `test` stage.
 - If a stage is defined but no jobs use it, the stage is not visible in the pipeline,
-  which can help [compliance pipeline configurations](../../user/group/compliance_frameworks.md#compliance-pipelines):
+  which can help [compliance pipeline configurations](../../user/group/compliance_pipelines.md):
   - Stages can be defined in the compliance configuration but remain hidden if not used.
   - The defined stages become visible when developers use them in job definitions.
 
@@ -489,12 +496,12 @@ You can use some [predefined CI/CD variables](../variables/predefined_variables.
 #### `workflow:auto_cancel:on_new_commit`
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/412473) in GitLab 16.8 [with a flag](../../administration/feature_flags.md) named `ci_workflow_auto_cancel_on_new_commit`. Disabled by default.
+> - [Enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/434676) in GitLab 16.9.
 
 FLAG:
-On self-managed GitLab, by default this feature is not available. To make it available per project or
-for your entire instance, an administrator can [enable the feature flag](../../administration/feature_flags.md) named `ci_workflow_auto_cancel_on_new_commit`.
-On GitLab.com, this feature is not available.
-The feature is not ready for production use.
+On self-managed GitLab, by default this feature is available.
+To hide the feature, an administrator can [disable the feature flag](../../administration/feature_flags.md) named `ci_workflow_auto_cancel_on_new_commit`.
+On GitLab.com, this feature is available.
 
 Use `workflow:auto_cancel:on_new_commit` to configure the behavior of
 the [auto-cancel redundant pipelines](../pipelines/settings.md#auto-cancel-redundant-pipelines) feature.
@@ -706,12 +713,12 @@ When the branch is something else:
 #### `workflow:rules:auto_cancel`
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/436467) in GitLab 16.8 [with a flag](../../administration/feature_flags.md) named `ci_workflow_auto_cancel_on_new_commit`. Disabled by default.
+> - [Enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/434676) in GitLab 16.9.
 
 FLAG:
-On self-managed GitLab, by default this feature is not available. To make it available per project or
-for your entire instance, an administrator can [enable the feature flag](../../administration/feature_flags.md) named `ci_workflow_auto_cancel_on_new_commit`.
-On GitLab.com, this feature is not available.
-The feature is not ready for production use.
+On self-managed GitLab, by default this feature is available.
+To hide the feature, an administrator can [disable the feature flag](../../administration/feature_flags.md) named `ci_workflow_auto_cancel_on_new_commit`.
+On GitLab.com, this feature is available.
 
 Use `workflow:rules:auto_cancel` to configure the behavior of
 the [`workflow:auto_cancel:on_new_commit`](#workflowauto_cancelon_new_commit) feature.
@@ -1315,7 +1322,11 @@ test:
 
 **Additional details**:
 
-- If `artifacts:paths` uses [CI/CD variables](../variables/index.md), the artifacts do not display in the UI.
+- Artifacts are saved, but do not display in the UI if the `artifacts:paths` values:
+  - Use [CI/CD variables](../variables/index.md).
+  - Define a directory, but do not end with `/`. For example, `directory/` works with `artifacts:expose_as`,
+    but `directory` does not.
+  - Start with `./`. For example, `file` works with `artifacts:expose_as`, but `./file` does not.
 - A maximum of 10 job artifacts per merge request can be exposed.
 - Glob patterns are unsupported.
 - If a directory is specified and there is more than one file in the directory,
@@ -1373,10 +1384,10 @@ Use `artifacts:public` to determine whether the job artifacts should be
 publicly available.
 
 When `artifacts:public` is `true` (default), the artifacts in
-public pipelines are available for download by anonymous and guest users.
+public pipelines are available for download by anonymous, guest, and reporter users.
 
-To deny read access for anonymous and guest users to artifacts in public
-pipelines, set `artifacts:public` to `false`:
+To deny read access to artifacts in public
+pipelines for anonymous, guest, and reporter users, set `artifacts:public` to `false`:
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
 [`default` section](#default).
@@ -2437,6 +2448,36 @@ job1:
 
 - [GitLab Runner configuration](https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-runners-section)
 
+### `identity`
+
+DETAILS:
+**Status:** Experiment
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/142054) in GitLab 16.9. This feature is an [Experiment](../../policy/experiment-beta-support.md).
+
+FLAG:
+On GitLab.com, this feature is not available.
+The feature is not ready for production use.
+
+Use `identity` to authenticate with third party services using identity federation.
+
+**Keyword type**: Job keyword. You can use it only as part of a job or in the [`default:` section](#default).
+
+**Possible inputs**: An identifier. Supported providers: `google_cloud` (Google Cloud).
+
+**Example of `identity`**:
+
+```yaml
+job_with_workload_identity:
+  identity: google_cloud
+  script:
+    - gcloud compute instances list
+```
+
+**Related topics**:
+
+- [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation).
+
 ### `id_tokens`
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/356986) in GitLab 15.7.
@@ -2457,7 +2498,7 @@ JWTs created this way support OIDC authentication. The required `aud` sub-keywor
 job_with_id_tokens:
   id_tokens:
     ID_TOKEN_1:
-      aud: https://gitlab.com
+      aud: https://vault.example.com
     ID_TOKEN_2:
       aud:
         - https://gcp.com
@@ -2465,8 +2506,9 @@ job_with_id_tokens:
     SIGSTORE_ID_TOKEN:
       aud: sigstore
   script:
-    - command_to_authenticate_with_gitlab $ID_TOKEN_1
+    - command_to_authenticate_with_vault $ID_TOKEN_1
     - command_to_authenticate_with_aws $ID_TOKEN_2
+    - command_to_authenticate_with_gcp $ID_TOKEN_2
 ```
 
 **Related topics**:
@@ -2526,8 +2568,10 @@ The name of the Docker image that the job runs in. Similar to [`image`](#image) 
 **Example of `image:name`**:
 
 ```yaml
-image:
-  name: "registry.example.com/my/image:latest"
+test-job:
+  image:
+    name: "registry.example.com/my/image:latest"
+  script: echo "Hello world"
 ```
 
 **Related topics**:
@@ -2552,9 +2596,11 @@ where each shell token is a separate string in the array.
 **Example of `image:entrypoint`**:
 
 ```yaml
-image:
-  name: super/sql:experimental
-  entrypoint: [""]
+test-job:
+  image:
+    name: super/sql:experimental
+    entrypoint: [""]
+  script: echo "Hello world"
 ```
 
 **Related topics**:
@@ -2720,7 +2766,7 @@ job2:
 ### `interruptible`
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/32022) in GitLab 12.3.
-> - Support for `trigger` jobs [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/412473) in GitLab 16.8 [with a flag](../../administration/feature_flags.md) named `ci_workflow_auto_cancel_on_new_commit`. Disabled by default.
+> - Support for `trigger` jobs [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/138508) in GitLab 16.8.
 
 Use `interruptible` to configure the [auto-cancel redundant pipelines](../pipelines/settings.md#auto-cancel-redundant-pipelines)
 feature to cancel a job before it completes if a new pipeline on the same ref starts for a newer commit. If the feature
@@ -3068,7 +3114,7 @@ can use that variable in `needs:pipeline` to download artifacts from the parent 
 **Additional details**:
 
 - The `pipeline` attribute does not accept the current pipeline ID (`$CI_PIPELINE_ID`).
-  To download artifacts from a job in the current pipeline, use [`needs`](#needsartifacts).
+  To download artifacts from a job in the current pipeline, use [`needs:artifacts`](#needsartifacts).
 
 #### `needs:optional`
 
@@ -3991,7 +4037,7 @@ docker build:
 
 **Related topics**:
 
-- [Jobs or pipelines can run unexpectedly when using `rules: changes`](../jobs/job_control.md#jobs-or-pipelines-run-unexpectedly-when-using-changes).
+- [Jobs or pipelines can run unexpectedly when using `rules: changes`](../jobs/job_troubleshooting.md#jobs-or-pipelines-run-unexpectedly-when-using-changes).
 
 ##### `rules:changes:paths`
 
@@ -5488,7 +5534,7 @@ docker build:
 - [`only: changes` and `except: changes` examples](../jobs/job_control.md#onlychanges--exceptchanges-examples).
 - If you use `changes` with [only allow merge requests to be merged if the pipeline succeeds](../../user/project/merge_requests/merge_when_pipeline_succeeds.md#require-a-successful-pipeline-for-merge),
   you should [also use `only:merge_requests`](../jobs/job_control.md#use-onlychanges-with-merge-request-pipelines).
-- [Jobs or pipelines can run unexpectedly when using `only: changes`](../jobs/job_control.md#jobs-or-pipelines-run-unexpectedly-when-using-changes).
+- [Jobs or pipelines can run unexpectedly when using `only: changes`](../jobs/job_troubleshooting.md#jobs-or-pipelines-run-unexpectedly-when-using-changes).
 
 #### `only:kubernetes` / `except:kubernetes`
 

@@ -87,7 +87,7 @@ module Analytics
           current_select_columns = event_model.select_columns # default SELECT columns
           # Add the stage timestamp columns to the SELECT
           event_slice.each do |event|
-            scope = event.include_in(scope)
+            scope = event.include_in(scope, include_all_timestamps_as_array: attempt_cumulative_duration_calculation?)
             current_select_columns << event.timestamp_projection.as(event_column_name(event))
           end
 
@@ -108,14 +108,12 @@ module Analytics
 
         records.each_value do |record|
           stages.each do |stage|
-            start_event = record[event_column_name(stage.start_event)]
-            end_event = record[event_column_name(stage.end_event)]
+            start_event_timestamp, end_event_timestamp, duration_in_milliseconds = calculate_duration(
+              record[event_column_name(stage.start_event)],
+              record[event_column_name(stage.end_event)]
+            )
 
-            next if start_event.nil?
-            # Avoid negative duration values
-            next if end_event && start_event > end_event
-
-            duration_in_milliseconds = end_event && (end_event - start_event).in_milliseconds
+            next if start_event_timestamp.nil?
 
             data << {
               stage_event_hash_id: stage.stage_event_hash_id,
@@ -125,8 +123,8 @@ module Analytics
               author_id: record['author_id'],
               milestone_id: record['milestone_id'],
               state_id: record['state_id'],
-              start_event_timestamp: start_event,
-              end_event_timestamp: end_event,
+              start_event_timestamp: start_event_timestamp,
+              end_event_timestamp: end_event_timestamp,
               duration_in_milliseconds: duration_in_milliseconds,
               weight: record['weight'],
               sprint_id: record['sprint_id']
@@ -169,6 +167,58 @@ module Analytics
         @events ||= stages
           .flat_map { |stage| [stage.start_event, stage.end_event] }
           .uniq { |event| event.hash_code }
+      end
+
+      def calculate_duration(start_event_timestamp, end_event_timestamp)
+        if attempt_cumulative_duration_calculation?
+          return calculate_cumulative_duration(start_event_timestamp, end_event_timestamp)
+        end
+
+        # Avoid negative duration values
+        return if start_event_timestamp.nil?
+        return if end_event_timestamp && start_event_timestamp > end_event_timestamp
+
+        [
+          start_event_timestamp,
+          end_event_timestamp,
+          end_event_timestamp && (end_event_timestamp - start_event_timestamp).in_milliseconds
+        ]
+      end
+
+      def calculate_cumulative_duration(start_event_timestamp, end_event_timestamp)
+        return if start_event_timestamp.nil?
+
+        start_event_timestamps = Array.wrap(start_event_timestamp)
+        # reverse is needed because the DB returns these in DESC order
+        end_event_timestamps = Array.wrap(end_event_timestamp).reverse
+        duration = 0
+
+        return [start_event_timestamps.first, nil, nil] if end_event_timestamp.nil?
+
+        # Handle the case when the timestamp arrays are uneven. Measure the duration
+        # between the first start event timestamp and the last end event timestamp.
+        if start_event_timestamps.size != end_event_timestamps.size
+          start_event_timestamps = start_event_timestamps.first(1)
+          end_event_timestamps = end_event_timestamps.last(1)
+        end
+
+        start_event_timestamps.zip(end_event_timestamps).each do |t1, t2|
+          duration += (t2 - t1).in_milliseconds if t2 && t2 > t1
+        end
+
+        # Under normal circumstances 0ms duration is unlikely to happen. For example
+        # adding and removing the label will never happen at the same time.
+        return if duration == 0
+
+        [
+          start_event_timestamps.first,
+          end_event_timestamps.last,
+          duration
+        ]
+      end
+
+      def attempt_cumulative_duration_calculation?
+        Feature.enabled?(:enable_vsa_cumulative_label_duration_calculation, group, type: :beta)
       end
     end
   end

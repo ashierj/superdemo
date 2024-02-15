@@ -215,14 +215,28 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
 
     let(:expected_findings) { [finding_3, finding_4, finding_1, finding_2] }
 
-    subject { described_class.ordered }
-
     before do
       finding_1.update!(severity: :high)
       finding_2.update!(severity: :low)
     end
 
-    it { is_expected.to eq(expected_findings) }
+    context "when order is not given" do
+      subject { described_class.ordered }
+
+      it "ordered with descending severity" do
+        is_expected.to eq(expected_findings)
+      end
+    end
+
+    context "when order is given" do
+      let(:expected_findings) { [finding_2, finding_1, finding_3, finding_4] }
+
+      subject { described_class.ordered('severity_asc') }
+
+      it "ordered with descending severity" do
+        is_expected.to eq(expected_findings)
+      end
+    end
   end
 
   describe '.deduplicated' do

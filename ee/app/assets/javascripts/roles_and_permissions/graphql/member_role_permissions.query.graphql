@@ -4,6 +4,7 @@ query memberRolePermissions {
       description
       name
       value
+      requirements
     }
   }
 }

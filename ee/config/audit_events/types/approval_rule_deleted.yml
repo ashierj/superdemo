@@ -7,3 +7,4 @@ milestone: '14.9'
 feature_category: source_code_management
 saved_to_database: true
 streamed: true
+scope: [Project]

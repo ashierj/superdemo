@@ -43,4 +43,40 @@ RSpec.describe EE::PackagesHelper, feature_category: :package_registry do
       end
     end
   end
+
+  describe '#google_artifact_registry_data' do
+    subject(:data) { helper.google_artifact_registry_data(project) }
+
+    it { is_expected.to include(full_path: project.full_path) }
+
+    it { is_expected.to include(endpoint: project_google_cloud_platform_artifact_registry_index_path(project)) }
+
+    describe 'settings_path' do
+      before do
+        allow(project).to receive(:gcp_artifact_registry_enabled?).and_return(true)
+        allow(helper).to receive(:show_container_registry_settings).with(project).and_return(true)
+      end
+
+      it do
+        is_expected.to include(settings_path: edit_project_settings_integration_path(project,
+          ::Integrations::GoogleCloudPlatform::ArtifactRegistry))
+      end
+
+      context 'when gcp_artifact_registry_enabled? is false' do
+        before do
+          allow(project).to receive(:gcp_artifact_registry_enabled?).and_return(false)
+        end
+
+        it { is_expected.to include(settings_path: '') }
+      end
+
+      context 'when show_container_registry_settings is false' do
+        before do
+          allow(helper).to receive(:show_container_registry_settings).with(project).and_return(false)
+        end
+
+        it { is_expected.to include(settings_path: '') }
+      end
+    end
+  end
 end

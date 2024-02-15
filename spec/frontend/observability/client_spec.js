@@ -21,6 +21,7 @@ describe('buildClient', () => {
   const metricsUrl = 'https://example.com/metrics';
   const metricsSearchUrl = 'https://example.com/metrics/search';
   const metricsSearchMetadataUrl = 'https://example.com/metrics/searchmetadata';
+  const logsSearchUrl = 'https://example.com/metrics/logs/search';
   const FETCHING_TRACES_ERROR = 'traces are missing/invalid in the response';
 
   const apiConfig = {
@@ -32,6 +33,7 @@ describe('buildClient', () => {
     metricsUrl,
     metricsSearchUrl,
     metricsSearchMetadataUrl,
+    logsSearchUrl,
   };
 
   const getQueryParam = () => decodeURIComponent(axios.get.mock.calls[0][1].params.toString());
@@ -780,16 +782,29 @@ describe('buildClient', () => {
       expect(result).toEqual(data.results);
     });
 
+    it('passes the abort controller to axios', async () => {
+      axiosMock.onGet(metricsSearchUrl).reply(200, { results: [] });
+
+      const abortController = new AbortController();
+      await client.fetchMetric('name', 'type', { abortController });
+
+      expect(axios.get).toHaveBeenCalledWith(metricsSearchUrl, {
+        withCredentials: true,
+        params: new URLSearchParams({ mname: 'name', mtype: 'type' }),
+        signal: abortController.signal,
+      });
+    });
+
     describe('query filter params', () => {
       beforeEach(() => {
         axiosMock.onGet(metricsSearchUrl).reply(200, { results: [] });
       });
 
-      describe('dimension filter', () => {
+      describe('attribute filter', () => {
         it('converts filter to proper query params', async () => {
           await client.fetchMetric('name', 'type', {
             filters: {
-              dimensions: {
+              attributes: {
                 attr_1: [
                   { operator: '=', value: 'foo' },
                   { operator: '!=', value: 'bar' },
@@ -811,7 +826,7 @@ describe('buildClient', () => {
         it('handles repeated params', async () => {
           await client.fetchMetric('name', 'type', {
             filters: {
-              dimensions: {
+              attributes: {
                 attr_1: [
                   { operator: '=', value: 'v1' },
                   { operator: '=', value: 'v2' },
@@ -824,7 +839,7 @@ describe('buildClient', () => {
 
         it('ignores empty filters', async () => {
           await client.fetchMetric('name', 'type', {
-            filters: { dimensions: [] },
+            filters: { attributes: [] },
           });
 
           expect(getQueryParam()).toBe('mname=name&mtype=type');
@@ -832,7 +847,7 @@ describe('buildClient', () => {
 
         it('ignores undefined dimension filters', async () => {
           await client.fetchMetric('name', 'type', {
-            filters: { dimensions: undefined },
+            filters: { attributes: undefined },
           });
 
           expect(getQueryParam()).toBe('mname=name&mtype=type');
@@ -841,7 +856,7 @@ describe('buildClient', () => {
         it('ignores non-array filters', async () => {
           await client.fetchMetric('name', 'type', {
             filters: {
-              dimensions: {
+              attributes: {
                 attr_1: { operator: '=', value: 'foo' },
               },
             },
@@ -853,7 +868,7 @@ describe('buildClient', () => {
         it('ignores unsupported operators', async () => {
           await client.fetchMetric('name', 'type', {
             filters: {
-              dimensions: {
+              attributes: {
                 attr_1: [
                   { operator: '*', value: 'foo' },
                   { operator: '>', value: 'foo' },
@@ -929,16 +944,16 @@ describe('buildClient', () => {
           expect(getQueryParam()).toContain(`groupby_fn=sum`);
         });
 
-        it('handle group by dimension', async () => {
+        it('handle group by attribute', async () => {
           await client.fetchMetric('name', 'type', {
-            filters: { groupBy: { dimensions: ['attr_1'] } },
+            filters: { groupBy: { attributes: ['attr_1'] } },
           });
           expect(getQueryParam()).toContain(`groupby_attrs=attr_1`);
         });
 
-        it('handle group by multiple dimensions', async () => {
+        it('handle group by multiple attributes', async () => {
           await client.fetchMetric('name', 'type', {
-            filters: { groupBy: { dimensions: ['attr_1', 'attr_2'] } },
+            filters: { groupBy: { attributes: ['attr_1', 'attr_2'] } },
           });
           expect(getQueryParam()).toContain(`groupby_attrs=attr_1,attr_2`);
         });
@@ -951,7 +966,7 @@ describe('buildClient', () => {
 
         it('ignores empty list', async () => {
           await client.fetchMetric('name', 'type', {
-            filters: { groupBy: { dimensions: [] } },
+            filters: { groupBy: { attributes: [] } },
           });
           expect(getQueryParam()).toBe('mname=name&mtype=type');
         });
@@ -983,6 +998,85 @@ describe('buildClient', () => {
       const e = 'fetchMetric() - metric type is required.';
       await expect(client.fetchMetric('name')).rejects.toThrow(e);
       expectErrorToBeReported(new Error(e));
+    });
+  });
+
+  describe('fetchMetricSearchMetadata', () => {
+    it('fetches the metric metadata from the API', async () => {
+      const data = {
+        name: 'system.network.packets',
+        type: 'sum',
+        description: 'System network packets',
+        attribute_keys: ['device', 'direction'],
+        last_ingested_at: 1706338215873651200,
+        supported_aggregations: ['1m', '1h', '1d'],
+        supported_functions: ['avg', 'sum', 'min', 'max', 'count'],
+        default_group_by_attributes: ['*'],
+        default_group_by_function: 'sum',
+      };
+
+      axiosMock.onGet(metricsSearchMetadataUrl).reply(200, data);
+
+      const result = await client.fetchMetricSearchMetadata('name', 'type');
+
+      expect(axios.get).toHaveBeenCalledTimes(1);
+      expect(axios.get).toHaveBeenCalledWith(metricsSearchMetadataUrl, {
+        withCredentials: true,
+        params: new URLSearchParams({ mname: 'name', mtype: 'type' }),
+      });
+      expect(result).toEqual(data);
+    });
+  });
+
+  describe('fetchLogs', () => {
+    const FETCHING_LOGS_ERROR = 'logs are missing/invalid in the response';
+    it('fetches logs from the tracing URL', async () => {
+      const mockResponse = {
+        results: [
+          {
+            timestamp: '2024-01-28T10:36:08.2960655Z',
+            trace_id: 'trace-id',
+            span_id: 'span-id',
+            trace_flags: 1,
+            severity_text: 'Information',
+            severity_number: 1,
+            service_name: 'a/service/name',
+            body: 'GetCartAsync called with userId={userId} ',
+            resource_attributes: {
+              'container.id': '8aae63236c224245383acd38611a4e32d09b7630573421fcc801918eda378bf5',
+              'k8s.deployment.name': 'otel-demo-cartservice',
+              'k8s.namespace.name': 'otel-demo-app',
+            },
+            log_attributes: {
+              userId: '',
+            },
+          },
+        ],
+      };
+
+      axiosMock.onGet(logsSearchUrl).reply(200, mockResponse);
+
+      const result = await client.fetchLogs();
+
+      expect(axios.get).toHaveBeenCalledTimes(1);
+      expect(axios.get).toHaveBeenCalledWith(logsSearchUrl, {
+        withCredentials: true,
+      });
+      expect(result).toEqual(mockResponse.results);
+    });
+
+    it('rejects if logs are missing', async () => {
+      axiosMock.onGet(logsSearchUrl).reply(200, {});
+
+      await expect(client.fetchLogs()).rejects.toThrow(FETCHING_LOGS_ERROR);
+      expectErrorToBeReported(new Error(FETCHING_LOGS_ERROR));
+    });
+
+    it('rejects if logs are invalid', async () => {
+      axiosMock.onGet(logsSearchUrl).reply(200, { logs: 'invalid' });
+
+      await expect(client.fetchLogs()).rejects.toThrow(FETCHING_LOGS_ERROR);
+      expectErrorToBeReported(new Error(FETCHING_LOGS_ERROR));
     });
   });
 });

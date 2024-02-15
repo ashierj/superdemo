@@ -11,33 +11,29 @@ DETAILS:
 **Tier:** Ultimate
 **Offering:** SaaS, self-managed
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/323423) in GitLab 13.12 as a Beta feature.
 > - [Generally available](https://gitlab.com/groups/gitlab-org/-/epics/9023) in GitLab 15.7 (GitLab DAST v3.0.50).
 
-If you deploy your web application into a new environment, your application may
-become exposed to new types of attacks. For example, misconfigurations of your
-application server or incorrect assumptions about security controls may not be
-visible from the source code.
+Browser-based DAST helps you identify security weaknesses (CWEs) in your web applications. After you
+deploy your web application, it becomes exposed to new types of attacks, many of which cannot be
+detected prior to deployment. For example, misconfigurations of your application server or incorrect
+assumptions about security controls may not be visible from the source code, but they can be
+detected with browser-based DAST.
 
-Dynamic Application Security Testing (DAST) examines applications for
-vulnerabilities like these in deployed environments.
+Dynamic Application Security Testing (DAST) examines applications for vulnerabilities like these in
+deployed environments.
 
 <i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
 For an overview, see [Dynamic Application Security Testing (DAST)](https://www.youtube.com/watch?v=nbeDUoLZJTo).
 
-NOTE:
-To learn how four of the top six attacks were application-based and how
-to protect your organization, download our
-["A Seismic Shift in Application Security"](https://about.gitlab.com/resources/whitepaper-seismic-shift-application-security/)
-whitepaper.
-
 WARNING:
-Do not run DAST scans against a production server. Not only can it perform *any* function that
-a user can, such as clicking buttons or submitting forms, but it may also trigger bugs, leading to modification or loss of production data. Only run DAST scans against a test server.
+Do not run DAST scans against a production server. Not only can it perform *any* function that a
+user can, such as clicking buttons or submitting forms, but it may also trigger bugs, leading to
+modification or loss of production data. Only run DAST scans against a test server.
 
-The DAST browser-based analyzer was built by GitLab to scan modern-day web applications for vulnerabilities.
-Scans run in a browser to optimize testing applications heavily dependent on JavaScript, such as single-page applications.
-See [how DAST scans an application](#how-dast-scans-an-application) for more information.
+The DAST browser-based analyzer was built by GitLab to scan modern-day web applications for
+vulnerabilities. Scans run in a browser to optimize testing applications heavily dependent on
+JavaScript, such as single-page applications. See
+[how DAST scans an application](#how-dast-scans-an-application) for more information.
 
 To add the analyzer to your CI/CD pipeline, see [enabling the analyzer](configuration/enabling_the_analyzer.md).
 

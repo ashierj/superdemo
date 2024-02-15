@@ -33,10 +33,10 @@ For example:
 
 | Type | Name | Scope  | Comment    |
 |------|------|--------|------------|
-| Approval rule            | UX                   | All files     | A user experience (UX) team member reviews the user experience of all changes made in your project.
-| Approval rule            | Security             | All files     | A security team member reviews all changes for vulnerabilities.
-| Code Owner approval rule | Frontend: Code Style | `*.css` files | A frontend engineer reviews CSS file changes for adherence to project style standards.
-| Code Owner approval rule | Backend: Code Review | `*.rb` files  | A backend engineer reviews the logic and code style of Ruby files.
+| Approval rule            | UX                   | All files     | A user experience (UX) team member reviews the user experience of all changes made in your project. |
+| Approval rule            | Security             | All files     | A security team member reviews all changes for vulnerabilities. |
+| Code Owner approval rule | Frontend: Code Style | `*.css` files | A frontend engineer reviews CSS file changes for adherence to project style standards. |
+| Code Owner approval rule | Backend: Code Review | `*.rb` files  | A backend engineer reviews the logic and code style of Ruby files. |
 
 <div class="video-fallback">
   Video introduction: <a href="https://www.youtube.com/watch?v=RoyBySTUSB0">Code Owners</a>.
@@ -455,3 +455,27 @@ GitLab has approved this rule automatically to unblock the merge request.
 This issue occurs when an approval rule uses a Code Owner that is not a direct member of the project.
 
 The workaround is to check that the group or user has been invited to the project.
+
+### User or group not shown when viewing Code Owners for a directory
+
+Code Owners might not show the intended user or group based on your configured rules when viewing a directory,
+but correctly show the Code Owners for files beneath the directory.
+
+For example:
+
+```plaintext
+* @dev-team
+docs/ @tech-writer-team
+```
+
+All files beneath the `docs/` directory show `@tech-writer-team` as Code Owners, but the directory itself will show `@dev-team`.
+
+This behavior occurs when viewing a directory because the [syntax rule](../../project/codeowners/reference.md#directory-paths)
+applies to all files beneath the directory, which does not include the directory itself. To resolve this, update the `CODEOWNERS` file to include the
+directory specifically along with all files beneath the directory. For example:
+
+```plaintext
+* @dev-team
+docs @tech-writer-team
+docs/ @tech-writer-team
+```

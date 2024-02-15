@@ -1,11 +1,9 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import CodeSuggestionsUsage from 'ee/usage_quotas/code_suggestions/components/code_suggestions_usage.vue';
-import createDefaultClient from '~/lib/graphql';
+import apolloProvider from 'ee/usage_quotas/shared/provider';
 
-const apolloProvider = new VueApollo({
-  defaultClient: createDefaultClient(),
-});
+Vue.use(VueApollo);
 
 export default (containerId = 'js-code-suggestions-usage-app') => {
   const el = document.getElementById(containerId);

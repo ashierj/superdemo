@@ -7,6 +7,7 @@ import {
   trackNewRegistrations,
   trackSaasTrialSubmit,
   trackSaasTrialGroup,
+  trackSaasDuoProTrialGroup,
   trackTrialAcceptTerms,
   trackCheckout,
   trackTransaction,
@@ -141,6 +142,11 @@ describe('ee/google_tag_manager/index', () => {
     createTestCase(trackSaasTrialGroup, {
       forms: [{ cls: 'js-saas-trial-group', expectation: { event: 'saasTrialGroup' } }],
     }),
+    createTestCase(trackSaasDuoProTrialGroup, {
+      forms: [
+        { cls: 'js-saas-duo-pro-trial-group', expectation: { event: 'saasDuoProTrialGroup' } },
+      ],
+    }),
     createTestCase(trackProjectImport, {
       links: [
         {
@@ -230,10 +236,10 @@ describe('ee/google_tag_manager/index', () => {
     it('when trackSaasTrialSubmit is invoked', () => {
       expect(spy).not.toHaveBeenCalled();
 
-      trackSaasTrialSubmit();
+      trackSaasTrialSubmit('_eventLabel_');
 
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith({ event: 'saasTrialSubmit' });
+      expect(spy).toHaveBeenCalledWith({ event: '_eventLabel_' });
       expect(logError).not.toHaveBeenCalled();
     });
 
@@ -456,17 +462,23 @@ describe('ee/google_tag_manager/index', () => {
       merge(window, { dataLayer: null });
     });
 
-    it('no ops', () => {
-      setHTMLFixture(createHTML({ forms: [{ cls: 'js-saas-trial-group' }] }));
+    describe.each`
+      fn                           | cls
+      ${trackSaasTrialGroup}       | ${'js-saas-trial-group'}
+      ${trackSaasDuoProTrialGroup} | ${'js-saas-duo-pro-trial-group'}
+    `('$fn', ({ fn, cls }) => {
+      it('no ops', () => {
+        setHTMLFixture(createHTML({ forms: [{ cls }] }));
 
-      trackSaasTrialGroup();
+        fn();
 
-      triggerEvent('.js-saas-trial-group', 'submit');
+        triggerEvent(`.${cls}`, 'submit');
 
-      expect(spy).not.toHaveBeenCalled();
-      expect(logError).not.toHaveBeenCalled();
+        expect(spy).not.toHaveBeenCalled();
+        expect(logError).not.toHaveBeenCalled();
 
-      resetHTMLFixture();
+        resetHTMLFixture();
+      });
     });
   });
 
@@ -481,19 +493,25 @@ describe('ee/google_tag_manager/index', () => {
       };
     });
 
-    it('logs error', () => {
-      setHTMLFixture(createHTML({ forms: [{ cls: 'js-saas-trial-group' }] }));
+    describe.each`
+      fn                           | cls
+      ${trackSaasTrialGroup}       | ${'js-saas-trial-group'}
+      ${trackSaasDuoProTrialGroup} | ${'js-saas-duo-pro-trial-group'}
+    `('$fn', ({ fn, cls }) => {
+      it('logs error', () => {
+        setHTMLFixture(createHTML({ forms: [{ cls }] }));
 
-      trackSaasTrialGroup();
+        fn();
 
-      triggerEvent('.js-saas-trial-group', 'submit');
+        triggerEvent(`.${cls}`, 'submit');
 
-      expect(logError).toHaveBeenCalledWith(
-        'Unexpected error while pushing to dataLayer',
-        pushError,
-      );
+        expect(logError).toHaveBeenCalledWith(
+          'Unexpected error while pushing to dataLayer',
+          pushError,
+        );
 
-      resetHTMLFixture();
+        resetHTMLFixture();
+      });
     });
   });
 

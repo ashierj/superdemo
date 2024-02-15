@@ -63,18 +63,28 @@ module EE
       !params[:purchased_product].blank?
     end
 
-    def group_seats_usage_quota_app_data(group)
-      pending_members_page_path = group.user_cap_available? ? pending_members_group_usage_quotas_path(group) : nil
-      pending_members_count = ::Member.in_hierarchy(group).with_state("awaiting").count
+    def show_user_cap_alert?
+      root_namespace = @group.root_ancestor
 
+      return false unless root_namespace.present? &&
+        can?(current_user, :admin_group, root_namespace) &&
+        root_namespace.user_cap_available? &&
+        root_namespace.namespace_settings.present?
+
+      root_namespace.user_cap_enabled?
+    end
+
+    def pending_members_link
+      link_to('', pending_members_group_usage_quotas_path(@group.root_ancestor))
+    end
+
+    def group_seats_usage_quota_app_data(group)
       {
         namespace_id: group.id,
         namespace_name: group.name,
         is_public_namespace: group.public?.to_s,
         full_path: group.full_path,
         seat_usage_export_path: group_seat_usage_path(group, format: :csv),
-        pending_members_page_path: pending_members_page_path,
-        pending_members_count: pending_members_count,
         add_seats_href: add_seats_url(group),
         has_no_subscription: group.has_free_or_no_subscription?.to_s,
         max_free_namespace_seats: ::Namespaces::FreeUserCap.dashboard_limit,

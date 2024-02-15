@@ -199,7 +199,7 @@ Take for example the following scenarios:
   [
   the lowest number from
     - number of cores: 2
-    - memory limit: (8 - 1.5) = 6
+    - memory limit: (8 - 1.5) = 6.5
   ]
   ```
 
@@ -262,9 +262,11 @@ Redis stores all user sessions and the background task queue.
 
 The requirements for Redis are as follows:
 
-- Redis 6.x or 7.x is required in GitLab 16.0 and later. In GitLab 16.8 and later, Redis 6.2 or later is required.
-- Redis Cluster mode is not supported. Redis Standalone must be used.
+- Redis 6.x or 7.x is required in GitLab 16.0 and later. However, you should upgrade to
+Redis 6.2 or later as [Redis 6.0 is no longer supported](https://endoflife.date/redis).
+- Redis Cluster mode is not supported. Redis Standalone must be used, with or without HA.
 - Storage requirements for Redis are minimal, about 25 kB per user on average.
+- [Redis eviction mode](../administration/redis/replication_and_failover_external.md#setting-the-eviction-policy) set appropriately.
 
 ## Sidekiq
 

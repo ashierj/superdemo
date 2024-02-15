@@ -67,6 +67,7 @@ module Elastic
       end
 
       def namespace_for_traversal_ids_filter(options)
+        return unless options[:group_id]
         return unless traversal_ids_flag_enabled?(options)
         return if should_use_project_ids_filter?(options)
 
@@ -84,8 +85,17 @@ module Elastic
       end
 
       def rejected_project_filter(namespace, options)
-        project_ids_public_or_visibile_to_user = Project.public_or_visible_to_user(options[:current_user]).pluck_primary_key
-        rejected_ids = namespace.all_project_ids_except(project_ids_public_or_visibile_to_user).pluck_primary_key
+        current_user = options[:current_user]
+        scoped_project_ids = scoped_project_ids(current_user, options[:project_ids])
+
+        return if scoped_project_ids == :any
+
+        project_ids = Project
+                        .id_in(scoped_project_ids)
+                        .public_or_visible_to_user(current_user)
+                        .pluck_primary_key
+
+        rejected_ids = namespace.all_project_ids_except(project_ids).pluck_primary_key
 
         return unless rejected_ids.any?
 
@@ -98,7 +108,7 @@ module Elastic
 
       # rubocop: disable CodeReuse/ActiveRecord
       def preload_indexing_data(relation)
-        relation.includes(:project_feature, :route, :namespace, :catalog_resource)
+        relation.includes(:project_feature, :route, :catalog_resource, :fork_network, :mirror_user, :repository_languages, :group, namespace: :owner)
       end
       # rubocop: enable CodeReuse/ActiveRecord
     end

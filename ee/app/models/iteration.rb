@@ -339,3 +339,6 @@ class Iteration < ApplicationRecord
     errors.add(:title, _('already being used for another iteration within this cadence.')) if title_exists
   end
 end
+
+# JH required
+::Iteration.prepend_mod

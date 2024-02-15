@@ -136,6 +136,7 @@ export default {
     tracking() {
       return {
         label: 'hand_raise_lead_form',
+        experiment: this.ctaTracking.experiment,
       };
     },
     companySizeOptionsWithDefault() {
@@ -208,6 +209,12 @@ export default {
       this.state = state;
       this.stateRequired = stateRequired;
     },
+    trackBtnClick() {
+      const { action, ...options } = this.ctaTracking;
+      if (action) {
+        this.track(action, options);
+      }
+    },
   },
   i18n: {
     firstNameLabel: LEADS_FIRST_NAME_LABEL,
@@ -239,11 +246,7 @@ export default {
       v-gl-modal.hand-raise-lead
       v-bind="buttonAttributes"
       :loading="isLoading"
-      :data-track-action="ctaTracking.action"
-      :data-track-label="ctaTracking.label"
-      :data-track-property="ctaTracking.property"
-      :data-track-value="ctaTracking.value"
-      :data-track-experiment="ctaTracking.experiment"
+      @click="trackBtnClick"
     >
       {{ buttonText }}
     </gl-button>

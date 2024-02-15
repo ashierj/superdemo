@@ -9,6 +9,7 @@ import {
   processFilters as processFilteredSearchFilters,
 } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 import { periodToDate } from '~/observability/utils';
+import axios from '~/lib/utils/axios_utils';
 import { ingestedAtTimeAgo } from '../utils';
 import MetricsChart from './metrics_chart.vue';
 import FilteredSearch from './filter_bar/metrics_filtered_search.vue';
@@ -53,18 +54,18 @@ export default {
     const defaultRange = periodToDate(DEFAULT_TIME_RANGE);
     return {
       metricData: [],
-      searchConfig: null,
+      searchMetadata: null,
       // TODO get filters from query params https://gitlab.com/gitlab-org/opstrace/opstrace/-/work_items/2605
       filters: {
-        dimensions: [],
+        attributes: [],
         dateRange: {
           value: DEFAULT_TIME_RANGE,
           startDarte: defaultRange.min,
           endDate: defaultRange.max,
         },
       },
+      apiAbortController: null,
       loading: false,
-      searchMetadata: null,
     };
   },
   computed: {
@@ -76,9 +77,9 @@ export default {
         description: this.searchMetadata?.description,
       };
     },
-    dimensionFiltersValue() {
-      // only dimensions are used by the filtered_search component, so only those needs processing
-      return prepareTokens(this.filters.dimensions);
+    attributeFiltersValue() {
+      // only attributes are used by the filtered_search component, so only those needs processing
+      return prepareTokens(this.filters.attributes);
     },
   },
   created() {
@@ -96,10 +97,7 @@ export default {
       try {
         const enabled = await this.observabilityClient.isObservabilityEnabled();
         if (enabled) {
-          await this.fetchMetricSearchMetadata();
-          if (this.searchMetadata) {
-            await this.fetchMetricData();
-          }
+          await Promise.all([this.fetchMetricSearchMetadata(), await this.fetchMetricData()]);
         } else {
           this.goToMetricsIndex();
         }
@@ -126,33 +124,30 @@ export default {
     async fetchMetricData() {
       this.loading = true;
       try {
+        this.apiAbortController = new AbortController();
         this.metricData = await this.observabilityClient.fetchMetric(
           this.metricId,
           this.metricType,
-          { filters: this.filters },
+          { filters: this.filters, abortController: this.apiAbortController },
         );
-        // TODO fetch config from API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2488
-        this.searchConfig = {
-          dimensions: ['dimension_one', 'dimension_two'],
-          groupByFunctions: ['avg', 'sum', 'p50'],
-          defaultGroupByFunction: 'avg',
-          defaultGroupByDimensions: ['dimension_one', 'dimension_two'],
-        };
       } catch (e) {
-        createAlert({
-          message: this.$options.i18n.error,
-        });
+        if (!axios.isCancel(e)) {
+          createAlert({
+            message: this.$options.i18n.error,
+          });
+        }
       } finally {
+        this.apiAbortController = null;
         this.loading = false;
       }
     },
     goToMetricsIndex() {
       visitUrl(this.metricsIndexUrl);
     },
-    onFilter({ dimensions, dateRange, groupBy }) {
+    onFilter({ attributes, dateRange, groupBy }) {
       this.filters = {
-        // only dimensions are used by the filtered_search component, so only those needs processing
-        dimensions: processFilteredSearchFilters(dimensions),
+        // only attributes are used by the filtered_search component, so only those needs processing
+        attributes: processFilteredSearchFilters(attributes),
         dateRange,
         groupBy,
       };
@@ -182,9 +177,9 @@ export default {
 
     <div class="gl-my-6">
       <filtered-search
-        v-if="searchConfig"
-        :search-config="searchConfig"
-        :dimension-filters="dimensionFiltersValue"
+        v-if="searchMetadata"
+        :search-metadata="searchMetadata"
+        :attribute-filters="attributeFiltersValue"
         :date-range-filter="filters.dateRange"
         :group-by-filter="filters.groupBy"
         @filter="onFilter"

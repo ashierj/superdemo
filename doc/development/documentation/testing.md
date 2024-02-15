@@ -27,9 +27,15 @@ in the relevant projects:
 
 We also run some documentation tests in the:
 
+- GitLab CLI project: <https://gitlab.com/gitlab-org/cli/-/blob/main/.gitlab-ci.yml>
 - GitLab Development Kit project:
   <https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/.gitlab/ci/test.gitlab-ci.yml>.
 - Gitaly project: <https://gitlab.com/gitlab-org/gitaly/-/blob/master/.gitlab-ci.yml>.
+- GitLab Duo Plugin for JetBrains: <https://gitlab.com/gitlab-org/editor-extensions/gitlab-jetbrains-plugin/-/blob/main/.gitlab-ci.yml>
+- GitLab VS Code Extension project: <https://gitlab.com/gitlab-org/gitlab-vscode-extension/-/blob/main/.gitlab-ci.yml>.
+- GitLab Plugin for Neovim project: <https://gitlab.com/gitlab-org/editor-extensions/gitlab.vim/-/blob/main/.gitlab-ci.yml>.
+- GitLab Language Server project: <https://gitlab.com/gitlab-org/editor-extensions/gitlab-lsp/-/blob/main/.gitlab-ci.yml>.
+- GitLab Extension for Visual Studio project: <https://gitlab.com/gitlab-org/editor-extensions/gitlab-visual-studio-extension/-/blob/main/.gitlab-ci.yml>.
 
 ## Run tests locally
 
@@ -251,7 +257,7 @@ At GitLab, we mostly use:
 used by the `docs-lint` test.
 
 Our [Documentation Style Guide](styleguide/index.md#markdown) and
-[Markdown Guide](https://about.gitlab.com/handbook/markdown-guide/) elaborate on which choices must
+[Markdown Guide](https://handbook.gitlab.com/handbook/markdown-guide/) elaborate on which choices must
 be made when selecting Markdown syntax for GitLab documentation. This tool helps catch deviations
 from those guidelines.
 

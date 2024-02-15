@@ -315,8 +315,8 @@ module Gitlab
 
           def get_cloud_connector_access_data(license_key)
             query = <<~GQL
-            query cloudConnectorAccess($licenseKey: String!) {
-              cloudConnectorAccess(licenseKey: $licenseKey) {
+            query cloudConnectorAccess($licenseKey: String!, $gitlabVersion: String!) {
+              cloudConnectorAccess(licenseKey: $licenseKey, gitlabVersion: $gitlabVersion) {
                 serviceToken {
                   token
                   expiresAt
@@ -334,7 +334,8 @@ module Gitlab
               {
                 query: query,
                 variables: {
-                  licenseKey: license_key
+                  licenseKey: license_key,
+                  gitlabVersion: Gitlab::VERSION
                 }
               }
             )[:data]

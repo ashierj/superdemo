@@ -15,11 +15,13 @@ module Security
       framework = ComplianceManagement::Framework.find_by_id(event.data[:compliance_framework_id])
       return unless project && framework
 
-      framework.security_orchestration_policy_configurations.find_each do |policy_configuration|
-        next unless policy_configuration.namespace? &&
-          Feature.enabled?(:security_policies_policy_scope, policy_configuration.namespace)
+      policy_configuration_ids = project.all_security_orchestration_policy_configuration_ids
+      return unless policy_configuration_ids.any?
 
-        Security::ProcessScanResultPolicyWorker.perform_async(project.id, policy_configuration.id)
+      framework.security_orchestration_policy_configurations.id_in(policy_configuration_ids).find_each do |config|
+        next if config.namespace? && Feature.disabled?(:security_policies_policy_scope, config.namespace)
+
+        Security::ProcessScanResultPolicyWorker.perform_async(project.id, config.id)
       end
     end
   end

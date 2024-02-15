@@ -511,17 +511,22 @@ describe('Dependencies actions', () => {
       const filters = [
         {
           type: 'packager',
-          value: { data: 'bundler' },
+          value: { data: ['bundler'] },
         },
         {
           type: 'project',
           value: { data: ['GitLab', 'Gnome'] },
         },
+        // filters that contain strings (this happens when a user types in a value) should be ignored
+        {
+          type: 'ignored',
+          value: { data: 'string_value' },
+        },
       ];
 
       const expected = {
         project: ['GitLab', 'Gnome'],
-        packager: 'bundler',
+        packager: ['bundler'],
       };
 
       return testAction(
@@ -594,7 +599,7 @@ describe('Dependencies actions', () => {
     });
 
     describe('on success', () => {
-      it('correctly sets the loading state and the fetched licenses transformed to camelCased', () => {
+      it('correctly sets the loading state and the fetched licenses transformed to camelCased and an added id property', () => {
         const licenses = [
           {
             name: 'BSD Zero Clause License',
@@ -602,8 +607,9 @@ describe('Dependencies actions', () => {
             web_url: 'https://spdx.org/licenses/0BSD.html',
           },
         ];
-        const camelCasedLicenses = [
+        const camelCasedLicensesWithId = [
           {
+            id: 0,
             name: 'BSD Zero Clause License',
             spdxIdentifier: '0BSD',
             webUrl: 'https://spdx.org/licenses/0BSD.html',
@@ -623,7 +629,7 @@ describe('Dependencies actions', () => {
             },
             {
               type: types.SET_LICENSES,
-              payload: camelCasedLicenses,
+              payload: camelCasedLicensesWithId,
             },
             {
               type: types.SET_FETCHING_LICENSES_IN_PROGRESS,

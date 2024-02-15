@@ -24,6 +24,10 @@ export default {
       required: false,
       default: () => {},
     },
+    filters: {
+      type: Object,
+      required: true,
+    },
   },
   computed: {
     tokens() {
@@ -80,6 +84,7 @@ export default {
     data-testid="epic-filtered-search"
     :tokens="tokens"
     :board="board"
+    :filters="filters"
     @setFilters="$emit('setFilters', $event)"
   />
 </template>

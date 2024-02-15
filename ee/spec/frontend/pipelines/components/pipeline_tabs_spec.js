@@ -21,7 +21,8 @@ describe('The Pipeline Tabs', () => {
   const findPipelineTab = () => wrapper.findByTestId('pipeline-tab');
   const findSecurityTab = () => wrapper.findByTestId('security-tab');
   const findTestsTab = () => wrapper.findByTestId('tests-tab');
-  const getLicenseCount = () => wrapper.findByTestId('license-counter').text();
+  const findLicenseCounter = () => wrapper.findByTestId('license-counter');
+  const getLicenseCount = () => findLicenseCounter().text();
   const getCodequalityCount = () => wrapper.findByTestId('codequality-counter');
   const findCodeQualityRouterView = () => wrapper.findComponent({ ref: 'router-view-codequality' });
   const findLicensesRouterView = () => wrapper.findComponent({ ref: 'router-view-licenses' });
@@ -227,6 +228,31 @@ describe('The Pipeline Tabs', () => {
       await nextTick();
 
       expect(getLicenseCount()).toBe(`${newLicenseCount}`);
+    });
+
+    describe('when the count is initially undefined', () => {
+      beforeEach(() => {
+        createComponent({
+          provide: { exposeLicenseScanningData: true, licenseScanCount: undefined },
+          stubs: { GlTab },
+        });
+      });
+
+      it('does not show the count on initial page load', () => {
+        expect(findLicenseCounter().exists()).toBe(false);
+      });
+
+      it('shows count after tab content loads', async () => {
+        const newLicenseCount = 100;
+
+        expect(findLicenseCounter().exists()).toBe(false);
+
+        findLicensesRouterView().vm.$emit('updateBadgeCount', newLicenseCount);
+        await nextTick();
+
+        expect(findLicenseCounter().exists()).toBe(true);
+        expect(getLicenseCount()).toBe(`${newLicenseCount}`);
+      });
     });
   });
 });

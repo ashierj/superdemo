@@ -38,4 +38,186 @@ RSpec.describe GitlabSchema.types['MergeRequest'], feature_category: :code_revie
       end
     end
   end
+
+  shared_examples_for 'avoids N+1 queries' do
+    specify do
+      GitlabSchema.execute(query, context: { current_user: user })
+
+      control = ActiveRecord::QueryRecorder.new { GitlabSchema.execute(query, context: { current_user: user }) }
+
+      create_additional_resources
+
+      expect { GitlabSchema.execute(query, context: { current_user: user }) }.not_to exceed_query_limit(control)
+    end
+  end
+
+  shared_examples_for 'field with approval rules related check' do
+    let_it_be(:user) { project.owner }
+    let_it_be(:users) { create_list(:user, 2) }
+    let_it_be(:groups) { create_list(:group, 2) }
+
+    let_it_be(:merge_request) do
+      create(
+        :merge_request,
+        source_project: project,
+        source_branch: 'source-branch-1'
+      )
+    end
+
+    let_it_be(:protected_branches) { create_list(:protected_branch, 2, project: project) }
+
+    let_it_be(:approval_project_rule_1) do
+      create(
+        :approval_project_rule,
+        project: project,
+        users: users,
+        groups: groups
+      )
+    end
+
+    let_it_be(:approval_project_rule_2) do
+      create(
+        :approval_project_rule,
+        project: project,
+        users: users,
+        groups: groups
+      )
+    end
+
+    let_it_be(:approval_project_rule_3) do
+      create(
+        :approval_project_rule,
+        project: project,
+        users: users,
+        groups: groups,
+        protected_branches: protected_branches
+      )
+    end
+
+    let_it_be(:approval_project_rule_4) do
+      create(
+        :approval_project_rule,
+        project: project,
+        users: users,
+        groups: groups,
+        protected_branches: protected_branches
+      )
+    end
+
+    before_all do
+      users.each do |user|
+        project.add_maintainer(user)
+      end
+
+      groups.each do |group|
+        users = create_list(:user, 2)
+
+        group.add_members(users, GroupMember::MAINTAINER)
+      end
+
+      setup_approval_rules(merge_request)
+    end
+
+    before do
+      stub_licensed_features(merge_request_approvers: true, multiple_approval_rules: true)
+    end
+
+    shared_examples_for 'avoids N+1 queries related to approval rules' do
+      it_behaves_like 'avoids N+1 queries' do
+        let(:create_additional_resources) do
+          mr_1 = create(
+            :merge_request,
+            source_project: project,
+            source_branch: 'source-branch-2'
+          )
+
+          create(
+            :merge_request,
+            source_project: project,
+            source_branch: 'source-branch-3'
+          )
+
+          mr_3 = create(
+            :merge_request,
+            source_project: project
+          )
+
+          setup_approval_rules(mr_1)
+          setup_approval_rules(mr_3)
+
+          # Simulate a merged MR
+          mr_3.mark_as_merged!
+        end
+      end
+    end
+
+    context 'when overriding approvers is disabled' do
+      before do
+        project.update!(disable_overriding_approvers_per_merge_request: true)
+      end
+
+      it_behaves_like 'avoids N+1 queries related to approval rules'
+    end
+
+    context 'when overriding approvers is enabled' do
+      before do
+        project.update!(disable_overriding_approvers_per_merge_request: false)
+      end
+
+      it_behaves_like 'avoids N+1 queries related to approval rules'
+    end
+
+    def setup_approval_rules(merge_request)
+      create(:approval_merge_request_rule, merge_request: merge_request, approval_project_rule: approval_project_rule_1, users: users, groups: groups)
+      create(:approval_merge_request_rule, merge_request: merge_request, approval_project_rule: approval_project_rule_2, users: users, groups: groups)
+      create(:approval_merge_request_rule, merge_request: merge_request, approval_project_rule: approval_project_rule_3, users: users, groups: groups)
+      create(:approval_merge_request_rule, merge_request: merge_request, approval_project_rule: approval_project_rule_4, users: users, groups: groups)
+      create(:any_approver_rule, merge_request: merge_request)
+      create(:code_owner_rule, merge_request: merge_request, users: users, groups: groups)
+      create(:report_approver_rule, merge_request: merge_request, users: users, groups: groups)
+
+      create(:approval, merge_request: merge_request, user: users.last)
+      create(:approval, merge_request: merge_request, user: groups.last.members.last.user)
+    end
+  end
+
+  describe '#mergeable' do
+    let_it_be_with_reload(:project) { create(:project, :public) }
+
+    let(:query) do
+      %(
+        query {
+          project(fullPath: "#{project.full_path}") {
+            mergeRequests {
+              nodes {
+                mergeable
+              }
+            }
+          }
+        }
+      )
+    end
+
+    it_behaves_like 'field with approval rules related check'
+  end
+
+  describe '#detailed_merge_status' do
+    let_it_be_with_reload(:project) { create(:project, :public) }
+
+    let(:query) do
+      %(
+        query {
+          project(fullPath: "#{project.full_path}") {
+            mergeRequests {
+              nodes {
+                detailedMergeStatus
+              }
+            }
+          }
+        }
+      )
+    end
+
+    it_behaves_like 'field with approval rules related check'
+  end
 end

@@ -1,6 +1,8 @@
-ARG GDK_SHA=5b2320dca617c32a02418bd3d2ea5b44eb780131
+ARG GDK_SHA=dda0a9732d049f4b93c8440555722c6e6fe0398f
+# Use tag prefix when running on 'stable' branch to make sure 'protected' image is used which is not deleted by registry cleanup
+ARG GDK_BASE_TAG_PREFIX
 
-FROM registry.gitlab.com/gitlab-org/gitlab-development-kit/asdf-bootstrapped-verify/main:${GDK_SHA} as base
+FROM registry.gitlab.com/gitlab-org/gitlab-development-kit/asdf-bootstrapped-verify/main:${GDK_BASE_TAG_PREFIX}${GDK_SHA} as base
 
 ENV GITLAB_LICENSE_MODE=test \
     GDK_KILL_CONFIRM=true
@@ -55,7 +57,7 @@ RUN set -eux; \
 #
 FROM base as gitlab-gems
 
-COPY --chown=gdk:gdk Gemfile Gemfile.lock ./gitlab/
+COPY --chown=gdk:gdk Gemfile Gemfile.lock .tool-versions ./gitlab/
 COPY --chown=gdk:gdk vendor/gems/ ./gitlab/vendor/gems/
 COPY --chown=gdk:gdk gems/ ./gitlab/gems/
 RUN make .gitlab-bundle \

@@ -50,7 +50,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
       class="col-lg-3 col-mb-6 col-sm-12 gl-mt-5"
     >
       <div
-        class="gl-card gl-pt-0 h-100"
+        class="gl-card gl-h-full gl-pt-0"
       >
         <div
           class="gl-bg-white gl-border-0 gl-card-header gl-pb-0"
@@ -61,12 +61,12 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
           <h2
             class="gl-font-lg gl-mb-3"
           >
-            Start with the WebIDE
+            Add code
           </h2>
           <p
             class="gl-mb-6 gl-text-gray-700"
           >
-            Use the built-in editor to create or upload files.
+            Use the built-in editor, WebIDE, or upload code using your preferred method.
           </p>
         </div>
         <div
@@ -76,7 +76,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="align-items-center flex"
+              class="flex gl-align-items-center"
             >
               <span
                 class="gl-text-green-500"
@@ -115,7 +115,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
       class="col-lg-4 col-mb-6 col-sm-12 gl-mt-5"
     >
       <div
-        class="gl-card gl-pt-0 h-100"
+        class="gl-card gl-h-full gl-pt-0"
       >
         <div
           class="gl-bg-white gl-border-0 gl-card-header gl-pb-0"
@@ -141,7 +141,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="align-items-center flex"
+              class="flex gl-align-items-center"
             >
               <span
                 class="gl-text-green-500"
@@ -164,7 +164,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="align-items-center flex"
+              class="flex gl-align-items-center"
             >
               <span
                 class="gl-text-green-500"
@@ -187,7 +187,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="align-items-center flex"
+              class="flex gl-align-items-center"
             >
               <div>
                 <a
@@ -207,7 +207,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="align-items-center flex"
+              class="flex gl-align-items-center"
             >
               <div>
                 <a
@@ -228,7 +228,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="align-items-center flex"
+              class="flex gl-align-items-center"
             >
               <div>
                 <a
@@ -256,7 +256,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="align-items-center flex"
+              class="flex gl-align-items-center"
             >
               <div>
                 <a
@@ -287,7 +287,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
       class="col-lg-4 col-mb-6 col-sm-12 gl-mt-5"
     >
       <div
-        class="gl-card gl-pt-0 h-100"
+        class="gl-card gl-h-full gl-pt-0"
       >
         <div
           class="gl-bg-white gl-border-0 gl-card-header gl-pb-0"
@@ -313,7 +313,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="align-items-center flex"
+              class="flex gl-align-items-center"
             >
               <div>
                 <a
@@ -341,7 +341,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="align-items-center flex"
+              class="flex gl-align-items-center"
             >
               <div>
                 <a
@@ -369,7 +369,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="align-items-center flex"
+              class="flex gl-align-items-center"
             >
               <div>
                 <a
@@ -400,7 +400,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
       class="col-lg-4 col-mb-6 col-sm-12 gl-mt-5"
     >
       <div
-        class="gl-card gl-pt-0 h-100"
+        class="gl-card gl-h-full gl-pt-0"
       >
         <div
           class="gl-bg-white gl-border-0 gl-card-header gl-pb-0"
@@ -426,7 +426,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="align-items-center flex"
+              class="flex gl-align-items-center"
             >
               <div>
                 <a
@@ -446,7 +446,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="align-items-center flex"
+              class="flex gl-align-items-center"
             >
               <div>
                 <a

@@ -67,5 +67,47 @@ RSpec.describe Gitlab::Llm::StageCheck, :saas, feature_category: :ai_abstraction
         end
       end
     end
+
+    context 'with premium plan' do
+      let_it_be(:root_group) { create(:group_with_plan, :private, plan: :premium_plan) }
+
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: true)
+        stub_licensed_features(ai_chat: true)
+        root_group.namespace_settings.update!(experiment_features_enabled: true)
+        stub_const("#{described_class}::BETA_FEATURES", [feature_name])
+      end
+
+      it 'returns false' do
+        expect(described_class.available?(project, feature_name)).to eq(false)
+      end
+    end
+  end
+
+  context 'with chat feature' do
+    let(:feature_name) { :chat }
+    let_it_be(:root_group) { create(:group_with_plan, :private, plan: :premium_plan) }
+    let_it_be(:group) { create(:group, :private, parent: root_group) }
+    let_it_be_with_reload(:project) { create(:project, group: group) }
+
+    subject { described_class.available?(container, feature_name) }
+
+    before do
+      stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_licensed_features(ai_chat: true)
+      root_group.namespace_settings.update!(experiment_features_enabled: true)
+    end
+
+    context 'with project' do
+      let(:container) { project }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'with group' do
+      let(:container) { group }
+
+      it { is_expected.to eq(true) }
+    end
   end
 end

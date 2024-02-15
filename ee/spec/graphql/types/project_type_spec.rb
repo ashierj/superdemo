@@ -6,9 +6,12 @@ RSpec.describe GitlabSchema.types['Project'] do
   using RSpec::Parameterized::TableSyntax
   include GraphqlHelpers
 
+  let_it_be(:namespace) { create(:group) }
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
   let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project, severity: :high) }
+
+  let_it_be(:security_policy_management_project) { create(:project) }
 
   before do
     stub_licensed_features(security_dashboard: true)
@@ -22,10 +25,12 @@ RSpec.describe GitlabSchema.types['Project'] do
       vulnerability_severities_count packages compliance_frameworks vulnerabilities_count_by_day
       security_dashboard_path iterations iteration_cadences repository_size_excess actual_repository_size_limit
       code_coverage_summary api_fuzzing_ci_configuration corpuses path_locks incident_management_escalation_policies
-      incident_management_escalation_policy scan_execution_policies security_policy_project
-      network_policies security_training_urls vulnerability_images only_allow_merge_if_all_status_checks_passed
+      incident_management_escalation_policy scan_execution_policies approval_policies network_policies
+      security_policy_project security_training_urls vulnerability_images only_allow_merge_if_all_status_checks_passed
+      security_policy_project_linked_projects security_policy_project_linked_namespaces
       dependencies merge_requests_disable_committers_approval has_jira_vulnerability_issue_creation_enabled
-      ci_subscriptions_projects ci_subscribed_projects ai_agents
+      ci_subscriptions_projects ci_subscribed_projects ai_agents duo_features_enabled runner_cloud_provisioning_options
+      google_cloud_artifact_registry_repository
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
@@ -188,7 +193,6 @@ RSpec.describe GitlabSchema.types['Project'] do
   end
 
   shared_context 'is an orchestration policy' do
-    let(:security_policy_management_project) { create(:project) }
     let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: security_policy_management_project) }
     let(:policy_yaml) { Gitlab::Config::Loader::Yaml.new(fixture_file('security_orchestration.yml', dir: 'ee')).load! }
 
@@ -206,7 +210,7 @@ RSpec.describe GitlabSchema.types['Project'] do
     end
   end
 
-  describe 'scan_execution_policies' do
+  describe 'scan_execution_policies', feature_category: :security_policy_management do
     let(:query) do
       %(
         query {
@@ -234,7 +238,7 @@ RSpec.describe GitlabSchema.types['Project'] do
     end
   end
 
-  describe 'scan_result_policies' do
+  describe 'scan_result_policies', feature_category: :security_policy_management do
     let(:query) do
       %(
         query {
@@ -262,6 +266,34 @@ RSpec.describe GitlabSchema.types['Project'] do
     end
   end
 
+  describe 'approval_policies', feature_category: :security_policy_management do
+    let(:query) do
+      %(
+        query {
+          project(fullPath: "#{project.full_path}") {
+            approvalPolicies {
+              nodes {
+                name
+                description
+                enabled
+                yaml
+                updatedAt
+              }
+            }
+          }
+        }
+      )
+    end
+
+    include_context 'is an orchestration policy'
+
+    it 'returns associated approval policies' do
+      policies = subject.dig('data', 'project', 'approvalPolicies', 'nodes')
+
+      expect(policies.count).to be(8)
+    end
+  end
+
   describe 'security_policy_project', feature_category: :security_policy_management do
     let(:query) do
       %(
@@ -284,6 +316,77 @@ RSpec.describe GitlabSchema.types['Project'] do
       expect(result).to eq(
         'name' => security_policy_management_project.name,
         'fullPath' => security_policy_management_project.full_path
+      )
+    end
+  end
+
+  describe 'security_policy_project_linked_projects', feature_category: :security_policy_management do
+    let(:query) do
+      %(
+        query {
+          project(fullPath: "#{security_policy_management_project.full_path}") {
+            securityPolicyProjectLinkedProjects {
+              nodes {
+                name
+                fullPath
+              }
+            }
+          }
+        }
+      )
+    end
+
+    include_context 'is an orchestration policy'
+
+    it 'returns the associated security policy project' do
+      result = subject.dig('data', 'project', 'securityPolicyProjectLinkedProjects', 'nodes', 0)
+
+      expect(result).to eq(
+        'name' => project.name,
+        'fullPath' => project.full_path
+      )
+    end
+  end
+
+  describe 'security_policy_project_linked_namespaces', feature_category: :security_policy_management do
+    let(:policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: namespace, security_policy_management_project: security_policy_management_project) }
+    let(:query) do
+      %(
+        query {
+          project(fullPath: "#{security_policy_management_project.full_path}") {
+            securityPolicyProjectLinkedNamespaces {
+              nodes {
+                name
+                fullPath
+              }
+            }
+          }
+        }
+      )
+    end
+
+    let(:policy_yaml) { Gitlab::Config::Loader::Yaml.new(fixture_file('security_orchestration.yml', dir: 'ee')).load! }
+
+    subject { GitlabSchema.execute(query, context: { current_user: user }).as_json }
+
+    before do
+      allow_next_found_instance_of(Security::OrchestrationPolicyConfiguration) do |policy|
+        allow(policy).to receive(:policy_configuration_valid?).and_return(true)
+        allow(policy).to receive(:policy_hash).and_return(policy_yaml)
+        allow(policy).to receive(:policy_last_updated_at).and_return(Time.now)
+      end
+
+      stub_licensed_features(security_orchestration_policies: true)
+      policy_configuration.security_policy_management_project.add_maintainer(user)
+      namespace.add_developer(user)
+    end
+
+    it 'returns the associated security policy project' do
+      result = subject.dig('data', 'project', 'securityPolicyProjectLinkedNamespaces', 'nodes', 0)
+
+      expect(result).to eq(
+        'name' => namespace.name,
+        'fullPath' => namespace.full_path
       )
     end
   end
@@ -387,6 +490,12 @@ RSpec.describe GitlabSchema.types['Project'] do
 
     it { is_expected.to have_graphql_type(Types::Ai::Agents::AgentType.connection_type) }
     it { is_expected.to have_graphql_resolver(Resolvers::Ai::Agents::FindAgentResolver) }
+  end
+
+  describe 'runnerCloudProvisioningOptions', feature_category: :fleet_visibility do
+    subject { described_class.fields['runnerCloudProvisioningOptions'] }
+
+    it { is_expected.to have_graphql_type(::Types::Ci::RunnerCloudProvisioningOptionsType) }
   end
 
   private

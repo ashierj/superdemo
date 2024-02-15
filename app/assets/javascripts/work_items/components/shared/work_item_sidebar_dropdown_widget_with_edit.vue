@@ -155,7 +155,7 @@ export default {
   <div>
     <div class="gl-display-flex gl-align-items-center gl-gap-3">
       <!-- hide header when editing, since we then have a form label. Keep it reachable for screenreader nav  -->
-      <h3 :class="{ 'gl-sr-only': isEditing }" class="gl-mb-0! gl-heading-scale-5">
+      <h3 :class="{ 'gl-sr-only': isEditing }" class="gl-mb-0! gl-heading-5">
         {{ dropdownLabel }}
       </h3>
       <gl-loading-icon v-if="updateInProgress" />
@@ -164,7 +164,7 @@ export default {
         data-testid="edit-button"
         category="tertiary"
         size="small"
-        class="gl-ml-auto gl-mr-2"
+        class="gl-ml-auto"
         :disabled="updateInProgress"
         @click="isEditing = true"
         >{{ $options.i18n.editButtonLabel }}</gl-button
@@ -177,7 +177,6 @@ export default {
           data-testid="apply-button"
           category="tertiary"
           size="small"
-          class="gl-mr-2"
           :disabled="updateInProgress"
           @click="isEditing = false"
           >{{ $options.i18n.applyButtonLabel }}</gl-button
@@ -219,8 +218,8 @@ export default {
       {{ hasValue }}
     </gl-form>
     <slot v-else-if="hasValue" name="readonly"></slot>
-    <slot v-else class="gl-text-secondary" name="none">
-      {{ $options.i18n.none }}
+    <slot v-else name="none">
+      <span class="gl-text-secondary">{{ $options.i18n.none }}</span>
     </slot>
   </div>
 </template>

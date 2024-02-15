@@ -33,6 +33,10 @@ RSpec.describe 'EE > Projects > Settings > Merge requests > User manages approva
     it 'shows approval settings' do
       expect(page).to have_selector('#js-merge-request-approval-settings')
     end
+
+    it 'passes axe automated accessibility testing', :js do
+      expect(page).to be_axe_clean.within('#js-merge-request-approval-settings').skipping :'link-in-text-block'
+    end
   end
 
   context 'when `code_owner_approval_required` is not available' do

@@ -43,49 +43,6 @@ module EE
       options.to_json
     end
 
-    def geo_registry_status(registry)
-      status_type = case registry.synchronization_state
-                    when :synced then 'gl-text-green-500'
-                    when :pending then 'gl-text-orange-500'
-                    when :failed then 'gl-text-red-500'
-                    else 'gl-text-gray-500'
-                    end
-
-      content_tag(:div, class: status_type, data: { testid: 'project-status-icon' }) do
-        icon = geo_registry_status_icon(registry)
-        text = geo_registry_status_text(registry)
-
-        [icon, text].join(' ').html_safe
-      end
-    end
-
-    def geo_registry_status_icon(registry)
-      sprite_icon(STATUS_ICON_NAMES_BY_STATE.fetch(registry.synchronization_state, 'status_notfound'))
-    end
-
-    def geo_registry_status_text(registry)
-      case registry.synchronization_state
-      when :never
-        _('Never')
-      when :failed
-        _('Failed')
-      when :pending
-        if registry.pending_synchronization?
-          s_('Geo|Pending synchronization')
-        elsif registry.pending_verification?
-          s_('Geo|Pending verification')
-        else
-          # should never reach this state, unless we introduce new behavior
-          _('Unknown')
-        end
-      when :synced
-        _('Synced')
-      else
-        # should never reach this state, unless we introduce new behavior
-        _('Unknown')
-      end
-    end
-
     def replicable_types
       enabled_replicator_classes.map do |replicator_class|
         {

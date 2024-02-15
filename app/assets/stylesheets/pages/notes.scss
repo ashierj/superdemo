@@ -34,6 +34,10 @@ $system-note-icon-m-left: $avatar-m-left + $icon-size-diff / $avatar-m-ratio;
 
   .main-notes-list::before {
     background: var(--gray-50, $gray-50);
+
+    .gl-dark .modal-body & {
+      background: var(--gray-100, $gray-100);
+    }
   }
 
   .timeline-entry:not(.draft-note):last-child::before {
@@ -43,8 +47,8 @@ $system-note-icon-m-left: $avatar-m-left + $icon-size-diff / $avatar-m-ratio;
       background: var(--gray-10);
     }
 
-    &.note-comment {
-      top: 30px;
+    .gl-dark .modal-body & {
+      background: var(--gray-50, $gray-50);
     }
   }
 }
@@ -491,10 +495,6 @@ $system-note-icon-m-left: $avatar-m-left + $icon-size-diff / $avatar-m-ratio;
 
     &:hover {
       background-color: $gray-light;
-    }
-
-    .btn-clipboard {
-      top: 10px;
     }
   }
 

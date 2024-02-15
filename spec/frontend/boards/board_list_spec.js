@@ -7,11 +7,11 @@ import waitForPromises from 'helpers/wait_for_promises';
 import createComponent from 'jest/boards/board_list_helper';
 import { ESC_KEY_CODE } from '~/lib/utils/keycodes';
 import BoardCard from '~/boards/components/board_card.vue';
-import eventHub from '~/boards/eventhub';
+import BoardCutLine from '~/boards/components/board_cut_line.vue';
 import BoardCardMoveToPosition from '~/boards/components/board_card_move_to_position.vue';
 import listIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 
-import { mockIssues, mockList, mockIssuesMore, mockGroupIssuesResponse } from './mock_data';
+import { mockIssues, mockIssuesMore, mockGroupIssuesResponse } from './mock_data';
 
 describe('Board list component', () => {
   let wrapper;
@@ -21,6 +21,8 @@ describe('Board list component', () => {
   const findMoveToPositionComponent = () => wrapper.findComponent(BoardCardMoveToPosition);
   const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
   const findBoardListCount = () => wrapper.find('.board-list-count');
+
+  const maxIssueCountWarningClass = '.gl-bg-red-50';
 
   const triggerInfiniteScroll = () => findIntersectionObserver().vm.$emit('appear');
 
@@ -72,8 +74,10 @@ describe('Board list component', () => {
       expect(wrapper.find('.board-card').attributes('data-item-id')).toBe('gid://gitlab/Issue/436');
     });
 
-    it('shows new issue form after eventhub event', async () => {
-      eventHub.$emit(`toggle-issue-form-${mockList.id}`);
+    it('shows new issue form when showNewForm prop is true', async () => {
+      wrapper = createComponent({
+        componentProps: { showNewForm: true },
+      });
 
       await nextTick();
       expect(wrapper.find('.board-new-issue-form').exists()).toBe(true);
@@ -84,12 +88,10 @@ describe('Board list component', () => {
         listProps: {
           listType: ListType.closed,
         },
+        componentProps: { showNewForm: true },
       });
       await waitForPromises();
 
-      eventHub.$emit(`toggle-issue-form-${mockList.id}`);
-
-      await nextTick();
       expect(wrapper.find('.board-new-issue-form').exists()).toBe(false);
     });
 
@@ -143,34 +145,48 @@ describe('Board list component', () => {
 
   describe('max issue count warning', () => {
     describe('when issue count exceeds max issue count', () => {
-      it('sets background to gl-bg-red-100', async () => {
-        wrapper = createComponent({ listProps: { issuesCount: 4, maxIssueCount: 3 } });
-
+      beforeEach(async () => {
+        wrapper = createComponent({ listProps: { issuesCount: 4, maxIssueCount: 2 } });
         await waitForPromises();
-        const block = wrapper.find('.gl-bg-red-100');
+      });
+      it('sets background to warning color', () => {
+        const block = wrapper.find(maxIssueCountWarningClass);
 
         expect(block.exists()).toBe(true);
         expect(block.attributes('class')).toContain(
           'gl-rounded-bottom-left-base gl-rounded-bottom-right-base',
         );
       });
+      it('shows cut line', () => {
+        const cutline = wrapper.findComponent(BoardCutLine);
+        expect(cutline.exists()).toBe(true);
+        expect(cutline.props('cutLineText')).toEqual('Work in progress limit: 2');
+      });
     });
 
     describe('when list issue count does NOT exceed list max issue count', () => {
-      it('does not sets background to gl-bg-red-100', async () => {
+      beforeEach(async () => {
         wrapper = createComponent({ list: { issuesCount: 2, maxIssueCount: 3 } });
         await waitForPromises();
-
-        expect(wrapper.find('.gl-bg-red-100').exists()).toBe(false);
+      });
+      it('does not sets background to warning color', () => {
+        expect(wrapper.find(maxIssueCountWarningClass).exists()).toBe(false);
+      });
+      it('does not show cut line', () => {
+        expect(wrapper.findComponent(BoardCutLine).exists()).toBe(false);
       });
     });
 
     describe('when list max issue count is 0', () => {
-      it('does not sets background to gl-bg-red-100', async () => {
+      beforeEach(async () => {
         wrapper = createComponent({ list: { maxIssueCount: 0 } });
         await waitForPromises();
-
-        expect(wrapper.find('.gl-bg-red-100').exists()).toBe(false);
+      });
+      it('does not sets background to warning color', () => {
+        expect(wrapper.find(maxIssueCountWarningClass).exists()).toBe(false);
+      });
+      it('does not show cut line', () => {
+        expect(wrapper.findComponent(BoardCutLine).exists()).toBe(false);
       });
     });
   });

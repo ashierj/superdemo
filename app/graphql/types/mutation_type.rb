@@ -44,8 +44,8 @@ module Types
     mount_mutation Mutations::Clusters::AgentTokens::Create
     mount_mutation Mutations::Clusters::AgentTokens::Revoke
     mount_mutation Mutations::Commits::Create, calls_gitaly: true
-    mount_mutation Mutations::CustomEmoji::Create, alpha: { milestone: '13.6' }
-    mount_mutation Mutations::CustomEmoji::Destroy, alpha: { milestone: '13.6' }
+    mount_mutation Mutations::CustomEmoji::Create
+    mount_mutation Mutations::CustomEmoji::Destroy
     mount_mutation Mutations::CustomerRelations::Contacts::Create
     mount_mutation Mutations::CustomerRelations::Contacts::Update
     mount_mutation Mutations::CustomerRelations::Organizations::Create
@@ -152,9 +152,11 @@ module Types
     mount_mutation Mutations::Ci::Job::Retry
     mount_mutation Mutations::Ci::Job::ArtifactsDestroy
     mount_mutation Mutations::Ci::Job::Unschedule
+    mount_mutation Mutations::Ci::JobTokenScope::AddGroupOrProject
     mount_mutation Mutations::Ci::JobTokenScope::AddProject
     mount_mutation Mutations::Ci::JobArtifact::BulkDestroy, alpha: { milestone: '15.10' }
     mount_mutation Mutations::Ci::JobArtifact::Destroy
+    mount_mutation Mutations::Ci::JobTokenScope::RemoveGroup
     mount_mutation Mutations::Ci::JobTokenScope::RemoveProject
     mount_mutation Mutations::Ci::Pipeline::Cancel
     mount_mutation Mutations::Ci::Pipeline::Destroy
@@ -204,6 +206,7 @@ module Types
     mount_mutation Mutations::WorkItems::Subscribe, alpha: { milestone: '16.3' }
     mount_mutation Mutations::Admin::AbuseReportLabels::Create, alpha: { milestone: '16.4' }
     mount_mutation Mutations::Ml::Models::Create, alpha: { milestone: '16.8' }
+    mount_mutation Mutations::BranchRules::Delete, alpha: { milestone: '16.9' }
   end
 end
 

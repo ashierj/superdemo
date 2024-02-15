@@ -2,6 +2,8 @@
 import { GlLineChart } from '@gitlab/ui/dist/charts';
 import merge from 'lodash/merge';
 
+import { formatVisualizationValue } from './utils';
+
 export default {
   name: 'LineChart',
   components: {
@@ -24,6 +26,9 @@ export default {
       return merge({ yAxis: { min: 0 } }, this.options);
     },
   },
+  methods: {
+    formatVisualizationValue,
+  },
 };
 </script>
 
@@ -34,5 +39,7 @@ export default {
     height="auto"
     responsive
     class="gl-overflow-hidden"
-  />
+  >
+    <template #tooltip-value="{ value }">{{ formatVisualizationValue(value) }}</template>
+  </gl-line-chart>
 </template>

@@ -80,11 +80,11 @@ export default {
       return this.selected;
     },
     dropdownPlaceholder() {
-      return renderMultiSelectText(
-        this.formattedSelectedProjectsIds,
-        this.projectItems,
-        __('projects'),
-      );
+      return renderMultiSelectText({
+        selected: this.formattedSelectedProjectsIds,
+        items: this.projectItems,
+        itemTypeName: __('projects'),
+      });
     },
     loading() {
       return this.$apollo.queries.projects.loading;

@@ -184,7 +184,6 @@ vulnerability's action log.
 ## Create a GitLab issue for a vulnerability
 
 You can create a GitLab issue to track any action taken to resolve or mitigate a vulnerability.
-
 To create a GitLab issue for a vulnerability:
 
 1. On the left sidebar, select **Search or go to** and find your project.
@@ -192,7 +191,7 @@ To create a GitLab issue for a vulnerability:
 1. Select the vulnerability's description.
 1. Select **Create issue**.
 
-A GitLab issue is created in the project with information from the vulnerability report.
+The issue is created in the GitLab project with information from the vulnerability report.
 
 To create a Jira issue, see [Create a Jira issue for a vulnerability](../../../integration/jira/configure.md#create-a-jira-issue-for-a-vulnerability).
 
@@ -235,7 +234,8 @@ Be aware of the following conditions between a vulnerability and a linked GitLab
 
 Prerequisites:
 
-- [Jira issue integration](../../../integration/jira/configure.md) must be enabled, with option **Enable Jira issue creation from vulnerabilities** also enabled.
+- Ensure the Jira issue integration is [configured](../../../integration/jira/configure.md#configure-the-integration) and the
+  **Enable Jira issues** and **Enable Jira issue creation from vulnerabilities** checkboxes are selected.
 
 To link a vulnerability to existing Jira issues, add the following line to the Jira issue's description:
 

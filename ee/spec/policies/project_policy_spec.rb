@@ -2607,6 +2607,8 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     let(:current_user) { guest }
     let(:licensed_features) { {} }
 
+    subject { described_class.new(current_user, project) }
+
     def create_member_role(member, abilities = member_role_abilities)
       params = abilities.merge(namespace: project.group)
 
@@ -2616,8 +2618,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
 
     shared_examples 'custom roles abilities' do
-      subject { described_class.new(current_user, project) }
-
       context 'without custom_roles license enabled' do
         before do
           create_member_role(group_member_guest)
@@ -2659,16 +2659,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
           context 'when a role does not enable the abilities' do
             it { is_expected.to be_disallowed(*allowed_abilities) }
           end
-        end
-
-        context 'multiple custom roles in hierarchy with different read_code values' do
-          before do
-            create_member_role(group_member_guest)
-            create_member_role(project_member_guest, { read_code: false })
-          end
-
-          # allows the ability if any of the custom roles allow it
-          it { is_expected.to be_allowed(*allowed_abilities) }
         end
       end
     end
@@ -2731,14 +2721,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it_behaves_like 'custom roles abilities'
     end
 
-    context 'for a member role with read_dependency false' do
-      let(:member_role_abilities) { { read_dependency: false } }
-      let(:allowed_abilities) { [] }
-      let(:licensed_features) { { dependency_scanning: true } }
-
-      it_behaves_like 'custom roles abilities'
-    end
-
     context 'for a member role with admin_merge_request true' do
       let(:member_role_abilities) { { admin_merge_request: true } }
       let(:allowed_abilities) { [:admin_merge_request] }
@@ -2779,6 +2761,25 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     context 'for a member role with `remove_project` true' do
       let(:member_role_abilities) { { remove_project: true } }
       let(:allowed_abilities) { [:remove_project, :view_edit_page] }
+
+      it_behaves_like 'custom roles abilities'
+    end
+
+    context 'when a user is assigned to custom roles in both group and project' do
+      before do
+        stub_licensed_features(custom_roles: true)
+
+        create_member_role(group_member_guest, { read_dependency: true })
+        create_member_role(project_member_guest, { read_code: true })
+      end
+
+      it { is_expected.to be_disallowed(:read_dependency) }
+      it { is_expected.to be_allowed(:read_code) }
+    end
+
+    context 'for a custom role with the `admin_cicd_variables` ability' do
+      let(:member_role_abilities) { { admin_cicd_variables: true } }
+      let(:allowed_abilities) { [:admin_cicd_variables] }
 
       it_behaves_like 'custom roles abilities'
     end
@@ -3242,6 +3243,49 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
+  describe 'read_observability_logs policy' do
+    let(:current_user) { reporter }
+
+    before do
+      stub_licensed_features(logs_observability: true)
+    end
+
+    describe 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(observability_logs: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_observability_logs) }
+    end
+
+    describe 'when feature flag is enabled for root namespace' do
+      before do
+        stub_feature_flags(observability_logs: false)
+        stub_feature_flags(observability_logs: project.root_namespace)
+      end
+
+      it { is_expected.to be_allowed(:read_observability_logs) }
+    end
+
+    describe 'when the project does not have the correct license' do
+      before do
+        stub_licensed_features(logs_observability: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_observability_logs) }
+    end
+
+    describe 'when the user does not have permission' do
+      let(:current_user) { guest }
+
+      it { is_expected.to be_disallowed(:read_observability_logs) }
+    end
+
+    describe 'when the user has permission' do
+      it { is_expected.to be_allowed(:read_observability_logs) }
+    end
+  end
+
   describe 'generate_cube_query policy' do
     using RSpec::Parameterized::TableSyntax
 
@@ -3282,7 +3326,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       true  | true  | ref(:owner)      | true
       true  | true  | ref(:reporter)   | true
       true  | true  | ref(:guest)      | true
-      true  | true  | ref(:non_member) | true
+      true  | true  | ref(:non_member) | false
       true  | false | ref(:owner)      | false
       true  | false | ref(:reporter)   | false
       true  | false | ref(:guest)      | false
@@ -3352,10 +3396,10 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     subject { described_class.new(current_user, project) }
 
     context 'when on SaaS instance', :saas do
-      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :premium_plan) }
 
       context 'when container is a group with AI enabled' do
-        include_context 'with ai features enabled for group'
+        include_context 'with ai chat enabled for group on SaaS'
 
         context 'when user is a member of the group' do
           before do
@@ -3364,7 +3408,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
           it { is_expected.to be_allowed(:access_duo_chat) }
 
-          context 'when the group does not have an Ultimate SaaS license' do
+          context 'when the group does not have an Premium SaaS license' do
             let_it_be(:group) { create(:group) }
 
             it { is_expected.to be_disallowed(:access_duo_chat) }
@@ -3374,7 +3418,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         context 'when user is not a member of the parent group' do
           context 'when the user has AI enabled via another group' do
             it 'is disallowed' do
-              allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
+              allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(true)
 
               is_expected.to be_disallowed(:access_duo_chat)
             end
@@ -3388,7 +3432,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
           context 'when the user has AI enabled through parent group' do
             it 'is allowed' do
-              allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
+              allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(true)
 
               is_expected.to be_allowed(:access_duo_chat)
             end
@@ -3399,14 +3443,14 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       context 'when group has not AI enabled' do
         context 'when user has AI enabled' do
           before do
-            allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
+            allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(true)
           end
 
           context 'when container is a group' do
             include_context 'with experiment features disabled for group'
 
             it 'returns false' do
-              allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
+              allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(true)
 
               is_expected.to be_disallowed(:access_duo_chat)
             end
@@ -3485,6 +3529,30 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
             end
           end
         end
+      end
+    end
+  end
+
+  describe 'read_runner_cloud_provisioning_options policy' do
+    let(:current_user) { maintainer }
+
+    it { is_expected.to be_disallowed(:read_runner_cloud_provisioning_options) }
+
+    context 'when SaaS-only feature is available' do
+      before do
+        stub_saas_features(google_cloud_support: true)
+      end
+
+      context 'the user is a maintainer' do
+        let(:current_user) { maintainer }
+
+        it { is_expected.to be_allowed(:read_runner_cloud_provisioning_options) }
+      end
+
+      context 'the user is a guest' do
+        let(:current_user) { guest }
+
+        it { is_expected.to be_disallowed(:read_runner_cloud_provisioning_options) }
       end
     end
   end

@@ -91,6 +91,13 @@ module EE
         ::Gitlab::Auth::GroupSaml::SessionEnforcer.new(@user, @subject).access_restricted?
       end
 
+      condition(:sso_enforced, scope: :subject) do
+        saml_provider = @subject.root_ancestor.saml_provider
+        next false unless saml_provider
+
+        saml_provider.enabled? && saml_provider.enforced_sso?
+      end
+
       condition(:ip_enforcement_prevents_access, scope: :subject) do
         !::Gitlab::IpRestriction::Enforcer.new(subject).allows_current_ip?
       end
@@ -236,6 +243,15 @@ module EE
         ).has_ability?
       end
 
+      desc 'Custom role on group that enables admin CI/CD variables'
+      condition(:role_enables_admin_cicd_variables) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :admin_cicd_variables
+        ).has_ability?
+      end
+
       rule { owner & unique_project_download_limit_enabled }.policy do
         enable :ban_group_member
       end
@@ -253,7 +269,7 @@ module EE
       end
 
       condition(:developer_access_to_admin_vulnerability) do
-        ::Feature.disabled?(:disable_developer_access_to_admin_vulnerability, subject) &&
+        ::Feature.disabled?(:disable_developer_access_to_admin_vulnerability, subject&.root_ancestor) &&
           can?(:developer_access)
       end
 
@@ -300,7 +316,6 @@ module EE
         enable :maintainer_access
         enable :admin_wiki
         enable :modify_product_analytics_settings
-        enable :update_approval_rule
       end
 
       rule { (admin | maintainer) & group_analytics_dashboards_available & ~has_parent }.policy do
@@ -541,6 +556,10 @@ module EE
         enable :admin_member_role
       end
 
+      rule { custom_roles_allowed & role_enables_admin_cicd_variables }.policy do
+        enable :admin_cicd_variables
+      end
+
       rule { can?(:read_group_security_dashboard) }.policy do
         enable :create_vulnerability_export
         enable :read_security_resource
@@ -559,6 +578,7 @@ module EE
 
       rule { (admin | owner) & group_merge_request_approval_settings_enabled }.policy do
         enable :admin_merge_request_approval_settings
+        enable :update_approval_rule
       end
 
       rule { needs_new_sso_session }.policy do
@@ -662,6 +682,10 @@ module EE
       rule { guest }.enable :read_limit_alert
 
       rule { membership_for_chat & chat_allowed_for_group & chat_available_for_user }.enable :access_duo_chat
+
+      rule { can?(:admin_group_member) & sso_enforced }.policy do
+        enable :read_saml_user
+      end
     end
 
     override :lookup_access_level!

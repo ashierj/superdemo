@@ -15,7 +15,8 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
     {
       request_id: 'uuid',
       client_subscription_id: client_subscription_id,
-      ai_action: ai_action
+      ai_action: ai_action,
+      agent_version_id: 1
     }
   end
 
@@ -67,7 +68,8 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
         chunk_id: nil,
         extras: extras,
         user: user,
-        resource: resource
+        resource: resource,
+        agent_version_id: 1
       ).compact)
     end
   end

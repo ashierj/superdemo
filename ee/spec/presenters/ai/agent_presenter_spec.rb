@@ -6,9 +6,9 @@ RSpec.describe Ai::AgentPresenter, feature_category: :mlops do
   let(:project) { build_stubbed(:project) }
   let(:agent) { build_stubbed(:ai_agent, project: project) }
 
-  describe '#path' do
-    subject { agent.present.path }
+  describe '#route_id' do
+    subject { agent.present.route_id }
 
-    it { is_expected.to eq("/#{project.full_path}/-/ml/agents/#{agent.id}") }
+    it { is_expected.to eq(agent.id) }
   end
 end

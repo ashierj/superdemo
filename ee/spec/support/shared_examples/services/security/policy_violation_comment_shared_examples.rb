@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples_for 'triggers policy bot comment' do |report_type, expected_violation,
-  requires_approval: expected_violation|
+  requires_approval: true|
   it 'enqueues Security::GeneratePolicyViolationCommentWorker' do
     expect(Security::GeneratePolicyViolationCommentWorker).to receive(:perform_async).with(
       merge_request.id,

@@ -39,7 +39,7 @@ module EE
       def test(_)
         super.then do |result|
           next result unless result[:success]
-          next result unless project.jira_vulnerabilities_integration_enabled?
+          next result unless jira_vulnerabilities_integration_enabled?
 
           result.merge(data: { issuetypes: issue_types })
         end
@@ -103,12 +103,9 @@ module EE
       #
       # @return [Array] the array of objects with JIRA Issuetype ID, Name and Description
       def issue_types
-        return [] if jira_project.blank?
+        issuetypes = jira_project.blank? ? client.Issuetype.all : jira_project.issuetypes
 
-        jira_project
-          .issuetypes
-          .reject(&:subtask)
-          .map do |issue_type|
+        issuetypes.reject(&:subtask).map do |issue_type|
           {
             id: issue_type.id,
             name: issue_type.name,

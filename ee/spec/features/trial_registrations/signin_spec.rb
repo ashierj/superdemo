@@ -16,7 +16,7 @@ RSpec.describe 'Trial Sign In', feature_category: :purchase do
 
       click_on 'Sign in'
 
-      within('div#login-pane') do
+      within_testid('sign-in-form') do
         fill_in 'user_login', with: user.email
         fill_in 'user_password', with: user.password
 

@@ -2,11 +2,17 @@
 import { debounce } from 'lodash';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
+import { n__ } from '~/locale';
 import { RULE_TYPE_ANY_APPROVER } from '../../constants';
 
 const ANY_RULE_NAME = 'All Members';
 
 export default {
+  i18n: {
+    inputLabel(approvalsCount) {
+      return n__('Approval required', 'Approvals required', approvalsCount);
+    },
+  },
   props: {
     rule: {
       type: Object,
@@ -20,6 +26,12 @@ export default {
   },
   computed: {
     ...mapState(['settings']),
+    uniqueInputId() {
+      return `approvals-number-field-${this.rule.id}`;
+    },
+    minInputValue() {
+      return this.rule.minApprovalsRequired || 0;
+    },
   },
   created() {
     this.onInputChangeDebounced = debounce((event) => {
@@ -47,13 +59,20 @@ export default {
 </script>
 
 <template>
-  <input
-    :value="rule.approvalsRequired"
-    :disabled="!settings.canEdit"
-    class="form-control gl-ml-auto gl-sm-mr-auto gl-w-10 gl-mt-n2 gl-mb-n2 gl-text-center"
-    type="number"
-    :min="rule.minApprovalsRequired || 0"
-    data-testid="approvals-number-field"
-    @input="onInputChangeDebounced"
-  />
+  <div>
+    <label :for="uniqueInputId" class="gl-sr-only">
+      {{ $options.i18n.inputLabel(rule.approvalsRequired) }}
+    </label>
+    <input
+      :id="uniqueInputId"
+      :value="rule.approvalsRequired"
+      :disabled="!settings.canEdit"
+      class="form-control gl-ml-auto gl-sm-mr-auto gl-w-10 gl-my-n3 gl-text-center"
+      type="number"
+      name="approvals-number-field"
+      :min="minInputValue"
+      data-testid="approvals-number-field"
+      @input="onInputChangeDebounced"
+    />
+  </div>
 </template>

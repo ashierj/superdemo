@@ -268,11 +268,6 @@ export default {
         )
       );
     },
-    autoMergeStateVisible() {
-      if (!window.gon?.features?.mergeBlockedComponent) return false;
-
-      return this.mr.state === 'autoMergeEnabled' || this.mr.machineValue === 'AUTO_MERGE';
-    },
   },
   watch: {
     'mr.machineValue': {
@@ -301,7 +296,7 @@ export default {
       );
   },
   beforeDestroy() {
-    eventHub.$off('mr.discussion.updated', this.checkStatus);
+    this.unbindEventListeners();
 
     if (this.deploymentsInterval) {
       this.deploymentsInterval.destroy();
@@ -474,48 +469,47 @@ export default {
     stopPolling() {
       this.$apollo.queries.state.stopPolling();
     },
+    checkRebasedStatus(cb) {
+      this.checkStatus(cb, true);
+    },
+    setIsRemovingSourceBranch([value]) {
+      this.mr.isRemovingSourceBranch = value;
+    },
+    setMergeError(mergeError) {
+      this.mr.state = 'failedToMerge';
+      this.mr.mergeError = mergeError;
+    },
+    setMrData(data) {
+      this.mr.setData(data);
+    },
+    onFetchDeployments() {
+      this.fetchPreMergeDeployments();
+      if (this.shouldRenderMergedPipeline) {
+        this.fetchPostMergeDeployments();
+      }
+    },
     bindEventHubListeners() {
-      eventHub.$on('MRWidgetUpdateRequested', (cb) => {
-        this.checkStatus(cb);
-      });
-
-      eventHub.$on('MRWidgetRebaseSuccess', (cb) => {
-        this.checkStatus(cb, true);
-      });
-
-      // `params` should be an Array contains a Boolean, like `[true]`
-      // Passing parameter as Boolean didn't work.
-      eventHub.$on('SetBranchRemoveFlag', (params) => {
-        [this.mr.isRemovingSourceBranch] = params;
-      });
-
-      eventHub.$on('FailedToMerge', (mergeError) => {
-        this.mr.state = 'failedToMerge';
-        this.mr.mergeError = mergeError;
-      });
-
-      eventHub.$on('UpdateWidgetData', (data) => {
-        this.mr.setData(data);
-      });
-
-      eventHub.$on('FetchActionsContent', () => {
-        this.fetchActionsContent();
-      });
-
-      eventHub.$on('EnablePolling', () => {
-        this.resumePolling();
-      });
-
-      eventHub.$on('DisablePolling', () => {
-        this.stopPolling();
-      });
-
-      eventHub.$on('FetchDeployments', () => {
-        this.fetchPreMergeDeployments();
-        if (this.shouldRenderMergedPipeline) {
-          this.fetchPostMergeDeployments();
-        }
-      });
+      eventHub.$on('MRWidgetUpdateRequested', this.checkStatus);
+      eventHub.$on('MRWidgetRebaseSuccess', this.checkRebasedStatus);
+      eventHub.$on('SetBranchRemoveFlag', this.setIsRemovingSourceBranch);
+      eventHub.$on('FailedToMerge', this.setMergeError);
+      eventHub.$on('UpdateWidgetData', this.setMrData);
+      eventHub.$on('FetchActionsContent', this.fetchActionsContent);
+      eventHub.$on('EnablePolling', this.resumePolling);
+      eventHub.$on('DisablePolling', this.stopPolling);
+      eventHub.$on('FetchDeployments', this.onFetchDeployments);
+    },
+    unbindEventListeners() {
+      eventHub.$off('MRWidgetUpdateRequested', this.checkStatus);
+      eventHub.$off('MRWidgetRebaseSuccess', this.checkRebasedStatus);
+      eventHub.$off('SetBranchRemoveFlag', this.setIsRemovingSourceBranch);
+      eventHub.$off('FailedToMerge', this.setMergeError);
+      eventHub.$off('UpdateWidgetData', this.setMrData);
+      eventHub.$off('FetchActionsContent', this.fetchActionsContent);
+      eventHub.$off('EnablePolling', this.resumePolling);
+      eventHub.$off('DisablePolling', this.stopPolling);
+      eventHub.$off('FetchDeployments', this.onFetchDeployments);
+      eventHub.$off('mr.discussion.updated', this.checkStatus);
     },
     dismissSuggestPipelines() {
       this.mr.isDismissedSuggestPipeline = true;
@@ -581,13 +575,15 @@ export default {
       </div>
 
       <div class="mr-widget-section" data-testid="mr-widget-content">
-        <mr-widget-auto-merge-enabled
-          v-if="autoMergeStateVisible"
-          :mr="mr"
-          :service="service"
-          class="gl-border-b-1 gl-border-b-solid gl-border-gray-100"
-        />
-        <merge-checks v-if="mergeBlockedComponentEnabled" :mr="mr" :service="service" />
+        <template v-if="mergeBlockedComponentEnabled">
+          <mr-widget-auto-merge-enabled
+            v-if="mr.autoMergeEnabled"
+            :mr="mr"
+            :service="service"
+            class="gl-border-b-1 gl-border-b-solid gl-border-gray-100"
+          />
+          <merge-checks :mr="mr" :service="service" />
+        </template>
         <component :is="componentName" v-else :mr="mr" :service="service" />
         <ready-to-merge
           v-if="mr.commitsCount"

@@ -1,3 +1,5 @@
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { s__ } from '~/locale';
@@ -6,18 +8,34 @@ import InternationalPhoneInput from 'ee/users/identity_verification/components/i
 import VerifyPhoneVerificationCode from 'ee/users/identity_verification/components/verify_phone_verification_code.vue';
 import Captcha from 'ee/users/identity_verification/components/identity_verification_captcha.vue';
 import { calculateRemainingMilliseconds } from '~/lib/utils/datetime_utility';
+import { HTTP_STATUS_OK, HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import Poll from '~/lib/utils/poll';
+import { createAlert, VARIANT_INFO } from '~/alert';
 
 jest.mock('~/lib/utils/datetime_utility', () => ({
   calculateRemainingMilliseconds: jest.fn(),
 }));
+jest.mock('~/alert');
 
 describe('Phone Verification component', () => {
   let wrapper;
+  let axiosMock;
 
   const PHONE_NUMBER = {
     country: 'US',
     internationalDialCode: '1',
     number: '555',
+  };
+
+  const DEFAULT_PROVIDE = {
+    verificationStatePath: '/users/identity_verification/verification_state',
+    offerPhoneNumberExemption: true,
+    phoneNumber: {
+      enableArkoseChallenge: true,
+      showArkoseChallenge: true,
+      showRecaptchaChallenge: true,
+    },
+    glFeatures: { autoRequestPhoneNumberVerificationExemption: true },
   };
 
   const findInternationalPhoneInput = () => wrapper.findComponent(InternationalPhoneInput);
@@ -30,12 +48,7 @@ describe('Phone Verification component', () => {
   const createComponent = (provide = {}, props = {}) => {
     wrapper = shallowMountExtended(PhoneVerification, {
       provide: {
-        offerPhoneNumberExemption: true,
-        phoneNumber: {
-          enableArkoseChallenge: true,
-          showArkoseChallenge: true,
-          showRecaptchaChallenge: true,
-        },
+        ...DEFAULT_PROVIDE,
         ...provide,
       },
       propsData: props,
@@ -43,6 +56,7 @@ describe('Phone Verification component', () => {
   };
 
   beforeEach(() => {
+    axiosMock = new MockAdapter(axios);
     calculateRemainingMilliseconds.mockReturnValue(1000);
 
     createComponent();
@@ -284,6 +298,110 @@ describe('Phone Verification component', () => {
           disableSubmitButton: true,
           additionalRequestParams: {},
         });
+      });
+    });
+  });
+
+  describe('Verification state polling', () => {
+    const pollInterval = 10;
+
+    let pollRequest;
+    let pollStop;
+
+    const mockVerificationState = (mockState) => {
+      const data = {
+        verification_methods: Object.keys(mockState),
+        verification_state: mockState,
+      };
+      axiosMock
+        .onGet(DEFAULT_PROVIDE.verificationStatePath)
+        .reply(HTTP_STATUS_OK, data, { 'poll-interval': pollInterval });
+
+      return data;
+    };
+
+    const setupComponent = async (provide = {}) => {
+      createComponent(provide);
+
+      await findInternationalPhoneInput().vm.$emit('next', {
+        ...PHONE_NUMBER,
+        sendAllowedAfter: '2000-01-01T01:02:03Z',
+      });
+    };
+
+    beforeEach(() => {
+      pollRequest = jest.spyOn(Poll.prototype, 'makeRequest');
+      pollStop = jest.spyOn(Poll.prototype, 'stop');
+    });
+
+    afterEach(() => {
+      pollRequest.mockRestore();
+      pollStop.mockRestore();
+      axiosMock.restore();
+      createAlert.mockClear();
+    });
+
+    describe('when request succeeds', () => {
+      it('emits set-verification-state with response data then stops', async () => {
+        mockVerificationState({ phone: false });
+
+        setupComponent();
+
+        jest.advanceTimersByTime(5000);
+        await axios.waitForAll();
+
+        expect(pollRequest).toHaveBeenCalledTimes(1);
+        expect(pollStop).not.toHaveBeenCalled();
+        expect(wrapper.emitted('set-verification-state')).toBeUndefined();
+
+        const responseData = mockVerificationState({});
+        mockVerificationState({});
+
+        jest.advanceTimersByTime(pollInterval);
+        await axios.waitForAll();
+
+        expect(pollRequest).toHaveBeenCalledTimes(2);
+        expect(pollStop).toHaveBeenCalledTimes(1);
+        expect(wrapper.emitted('set-verification-state')).toStrictEqual([[responseData]]);
+        expect(createAlert).toHaveBeenCalledWith({
+          message:
+            'Phone number verification is unavailable at this time. Please verify with a credit card instead.',
+          variant: VARIANT_INFO,
+        });
+
+        jest.advanceTimersByTime(pollInterval);
+        await axios.waitForAll();
+
+        expect(pollRequest).toHaveBeenCalledTimes(2);
+        expect(pollStop).toHaveBeenCalledTimes(1);
+        expect(wrapper.emitted('set-verification-state')).toStrictEqual([[responseData]]);
+      });
+    });
+
+    describe('when request fails', () => {
+      it('stops', async () => {
+        axiosMock
+          .onGet(DEFAULT_PROVIDE.verificationStatePath)
+          .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+
+        setupComponent();
+
+        jest.advanceTimersByTime(5000);
+        await axios.waitForAll();
+
+        expect(pollRequest).toHaveBeenCalledTimes(1);
+        expect(pollStop).toHaveBeenCalledTimes(1);
+        expect(wrapper.emitted('set-verification-state')).toBeUndefined();
+      });
+    });
+
+    describe('when autoRequestPhoneNumberVerificationExemption feature flag is disabled', () => {
+      it('does not start', () => {
+        setupComponent({ glFeatures: { autoRequestPhoneNumberVerificationExemption: false } });
+
+        jest.advanceTimersByTime(5000);
+
+        expect(pollRequest).not.toHaveBeenCalled();
       });
     });
   });

@@ -18,11 +18,24 @@ module EE
 
     module FilterByBranch
       def applicable_to_branch(branch)
-        includes(:protected_branches).select { |rule| rule.applies_to_branch?(branch) }
+        preload_protected_branches
+
+        select { |rule| rule.applies_to_branch?(branch) }
       end
 
       def inapplicable_to_branch(branch)
-        includes(:protected_branches).reject { |rule| rule.applies_to_branch?(branch) }
+        preload_protected_branches
+
+        reject { |rule| rule.applies_to_branch?(branch) }
+      end
+
+      private
+
+      def preload_protected_branches
+        ActiveRecord::Associations::Preloader.new(
+          records: self,
+          associations: [:protected_branches]
+        ).call
       end
     end
 
@@ -50,7 +63,6 @@ module EE
       belongs_to :mirror_user, class_name: 'User'
       belongs_to :deleting_user, foreign_key: 'marked_for_deletion_by_user_id', class_name: 'User'
 
-      has_one :repository_state, class_name: 'ProjectRepositoryState', inverse_of: :project
       has_one :wiki_repository, class_name: 'Projects::WikiRepository', inverse_of: :project
       has_one :push_rule, ->(project) { project&.feature_available?(:push_rules) ? all : none }, inverse_of: :project
       has_one :index_status
@@ -135,7 +147,13 @@ module EE
       has_many :incident_management_oncall_rotations, class_name: 'IncidentManagement::OncallRotation', through: :incident_management_oncall_schedules, source: :rotations
       has_many :incident_management_escalation_policies, class_name: 'IncidentManagement::EscalationPolicy', inverse_of: :project
 
+      # one project can be linked to single Securty Policy Project, this relation describes that
       has_one :security_orchestration_policy_configuration, class_name: 'Security::OrchestrationPolicyConfiguration', foreign_key: :project_id, inverse_of: :project
+
+      # one project can be used multiple times as Security Policy Project, this relation describes all such usages
+      has_many :security_policy_management_project_linked_configurations, class_name: 'Security::OrchestrationPolicyConfiguration', foreign_key: :security_policy_management_project_id, inverse_of: :security_policy_management_project
+      has_many :security_policy_project_linked_projects, through: :security_policy_management_project_linked_configurations, source: :project
+      has_many :security_policy_project_linked_namespaces, through: :security_policy_management_project_linked_configurations, source: :namespace
 
       has_many :security_scans, class_name: 'Security::Scan', inverse_of: :project
       has_many :security_trainings, class_name: 'Security::Training', inverse_of: :project
@@ -285,16 +303,6 @@ module EE
         order.apply_cursor_conditions(joins(:statistics)).order(order)
       end
 
-      scope :order_by_storage_size, -> (direction) do
-        build_keyset_order_on_joined_column(
-          scope: joins(:statistics),
-          attribute_name: 'project_statistics_storage_size',
-          column: ::ProjectStatistics.arel_table[:storage_size],
-          direction: direction,
-          nullable: :nulls_first
-        )
-      end
-
       scope :with_project_setting, -> { includes(:project_setting) }
 
       scope :compliance_framework_id_in, -> (ids) do
@@ -325,8 +333,8 @@ module EE
           .where(project_states: { verification_state: verification_state_value(state) })
       }
 
-      scope :with_sbom_component, -> (id) do
-        where(id: Sbom::Occurrence.select(:project_id).where(component_id: id))
+      scope :with_sbom_component_version, -> (id) do
+        where(id: Sbom::Occurrence.select(:project_id).where(component_version_id: id))
       end
 
       scope :not_indexed_in_elasticsearch, -> {
@@ -1145,6 +1153,10 @@ module EE
       security_orchestration_policies_for_scope(security_policies)
     end
 
+    def all_security_orchestration_policy_configuration_ids
+      all_security_orchestration_policy_configurations.pluck(:id)
+    end
+
     def all_inherited_security_orchestration_policy_configurations
       all_parent_groups = group&.self_and_ancestor_ids
       return [] if all_parent_groups.blank?
@@ -1233,7 +1245,30 @@ module EE
       ::Gitlab::FIPS.enabled? ? ::Feature.enabled?(:dast_ods_browser_based_scanner, self) : true
     end
 
+    override :code_suggestions_enabled?
+    def code_suggestions_enabled?
+      return super unless ::Gitlab.org_or_com? || ::License.feature_available?(:code_suggestions)
+
+      if gitlab_com_and_feature_enabled? || self_managed_and_past_service_start_date?
+        duo_features_enabled
+      else
+        root_ancestor.code_suggestions
+      end
+    end
+
+    def gcp_artifact_registry_enabled?
+      ::Feature.enabled?(:gcp_artifact_registry, self) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
+    end
+
     private
+
+    def gitlab_com_and_feature_enabled?
+      ::Gitlab.org_or_com? && ::Feature.enabled?(:purchase_code_suggestions)
+    end
+
+    def self_managed_and_past_service_start_date?
+      ::License.feature_available?(:code_suggestions) && ::CodeSuggestions::SelfManaged::SERVICE_START_DATE.past?
+    end
 
     def latest_ingested_sbom_pipeline_id_redis_key
       "latest_ingested_sbom_pipeline_id/#{id}"
@@ -1276,10 +1311,6 @@ module EE
 
     def github_integration_enabled?
       feature_available?(:github_integration)
-    end
-
-    def gcp_artifact_registry_enabled?
-      ::Feature.enabled?(:gcp_artifact_registry, self) && ::Gitlab::Saas.feature_available?(:google_artifact_registry)
     end
 
     def group_hooks

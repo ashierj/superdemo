@@ -24,6 +24,15 @@ export const projectsUsageDataValidator = (items) => {
   return Array.isArray(items) && items.every(isValidProject);
 };
 
+export const monthlyTotalsValidator = (items) => {
+  return (
+    Array.isArray(items) &&
+    items.every(
+      ([monthLabel, count]) => typeof monthLabel === 'string' && typeof count === 'number',
+    )
+  );
+};
+
 export const getCurrentMonth = () => {
   return dateAtFirstDayOfMonth(new Date());
 };
@@ -44,6 +53,10 @@ export const findPreviousMonthUsage = (project) => {
   return findMonthsUsage(project, 1);
 };
 
+const formatMonthLabel = (date) => {
+  return formatDate(date, 'mmm yyyy');
+};
+
 /**
  * Maps projects into an array of monthLabel, numEvents pairs.
  */
@@ -60,5 +73,11 @@ export const mapMonthlyTotals = (projects) => {
   return Array.from(Object.entries(monthlyTotals))
     .map(([timestampString, count]) => [Number(timestampString), count])
     .sort(([timestampA], [timestampB]) => timestampA - timestampB)
-    .map(([timestamp, count]) => [formatDate(new Date(timestamp), 'mmm yyyy'), count]);
+    .map(([timestamp, count]) => [formatMonthLabel(new Date(timestamp)), count]);
+};
+
+export const findCurrentMonthEventsUsed = (monthlyTotals) => {
+  const currentMonthLabel = formatMonthLabel(getCurrentMonth());
+
+  return monthlyTotals?.find(([dateLabel]) => dateLabel === currentMonthLabel)?.at(1);
 };

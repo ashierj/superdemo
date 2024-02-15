@@ -15,6 +15,11 @@ module Types
         required: false,
         description: "Global ID of the namespace the user is acting on."
 
+      argument :agent_version_id,
+        ::Types::GlobalIDType[::Ai::AgentVersion],
+        required: false,
+        description: "Global ID of the agent version to answer the chat."
+
       argument :content, GraphQL::Types::String,
         required: true,
         validates: { allow_blank: false },

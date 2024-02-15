@@ -1,12 +1,16 @@
 import Vue, { nextTick } from 'vue';
+import { GlBadge } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
 import SaasAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/saas_add_on_eligible_user_list.vue';
 import waitForPromises from 'helpers/wait_for_promises';
-import { mockPaginatedAddOnEligibleUsers } from 'ee_jest/usage_quotas/code_suggestions/mock_data';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import {
+  mockPaginatedAddOnEligibleUsers,
+  mockPaginatedAddOnEligibleUsersWithMembershipType,
+} from 'ee_jest/usage_quotas/code_suggestions/mock_data';
+import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/saas_add_on_eligible_users.query.graphql';
 import {
   ADD_ON_ELIGIBLE_USERS_FETCH_ERROR_CODE,
@@ -15,13 +19,16 @@ import {
 import SearchAndSortBar from 'ee/usage_quotas/code_suggestions/components/search_and_sort_bar.vue';
 import { SORT_OPTIONS } from 'ee/usage_quotas/code_suggestions/constants';
 import {
-  TOKEN_TITLE_PROJECT,
-  TOKEN_TYPE_PROJECT,
   OPERATORS_IS,
+  TOKEN_TITLE_GROUP,
   TOKEN_TITLE_GROUP_INVITE,
+  TOKEN_TITLE_PROJECT,
+  TOKEN_TYPE_GROUP,
   TOKEN_TYPE_GROUP_INVITE,
+  TOKEN_TYPE_PROJECT,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
+import GroupToken from 'ee/usage_quotas/code_suggestions/tokens/group_token.vue';
 import ProjectToken from 'ee/usage_quotas/code_suggestions/tokens/project_token.vue';
 
 Vue.use(VueApollo);
@@ -49,13 +56,19 @@ describe('Add On Eligible User List', () => {
   const addOnEligibleUsersDataHandler = jest
     .fn()
     .mockResolvedValue(mockPaginatedAddOnEligibleUsers);
+  const addOnEligibleUsersWithMembershipTypeDataHandler = jest
+    .fn()
+    .mockResolvedValue(mockPaginatedAddOnEligibleUsersWithMembershipType);
   const addOnEligibleUsersErrorHandler = jest.fn().mockRejectedValue(error);
 
   const createMockApolloProvider = (handler) =>
     createMockApollo([[getAddOnEligibleUsers, handler]]);
 
-  const createComponent = (handler = addOnEligibleUsersDataHandler) => {
-    wrapper = shallowMountExtended(SaasAddOnEligibleUserList, {
+  const createComponent = (
+    handler = addOnEligibleUsersDataHandler,
+    mountFn = shallowMountExtended,
+  ) => {
+    wrapper = mountFn(SaasAddOnEligibleUserList, {
       apolloProvider: createMockApolloProvider(handler),
       propsData: {
         addOnPurchaseId,
@@ -73,6 +86,7 @@ describe('Add On Eligible User List', () => {
   const findAddOnEligibleUserList = () => wrapper.findComponent(AddOnEligibleUserList);
   const findAddOnEligibleUsersFetchError = () =>
     wrapper.findByTestId('add-on-eligible-users-fetch-error');
+  const findMembershipTypeBadge = () => wrapper.findComponent(GlBadge);
   const findSearchAndSortBar = () => wrapper.findComponent(SearchAndSortBar);
 
   describe('add-on eligible user list', () => {
@@ -93,7 +107,7 @@ describe('Add On Eligible User List', () => {
         search: '',
       };
 
-      expect(findAddOnEligibleUserList().props()).toEqual(expectedProps);
+      expect(findAddOnEligibleUserList().props()).toMatchObject(expectedProps);
     });
 
     it('calls addOnEligibleUsers query with appropriate params', () => {
@@ -102,6 +116,18 @@ describe('Add On Eligible User List', () => {
 
     it('passes the correct sort options to <search-and-sort-bar>', () => {
       expect(findSearchAndSortBar().props('sortOptions')).toStrictEqual([]);
+    });
+
+    it('does not the membership type badge', () => {
+      expect(findMembershipTypeBadge().exists()).toBe(false);
+    });
+
+    describe('with group invited users', () => {
+      it('shows the membership type badge', async () => {
+        await createComponent(addOnEligibleUsersWithMembershipTypeDataHandler, mountExtended);
+
+        expect(findMembershipTypeBadge().text()).toBe('Group invite');
+      });
     });
 
     describe('when enableAddOnUsersFiltering is enabled', () => {
@@ -123,6 +149,15 @@ describe('Add On Eligible User List', () => {
             title: TOKEN_TITLE_PROJECT,
             token: ProjectToken,
             type: TOKEN_TYPE_PROJECT,
+            unique: true,
+          },
+          {
+            fullPath,
+            icon: 'group',
+            operators: OPERATORS_IS,
+            title: TOKEN_TITLE_GROUP,
+            token: GroupToken,
+            type: TOKEN_TYPE_GROUP,
             unique: true,
           },
           {

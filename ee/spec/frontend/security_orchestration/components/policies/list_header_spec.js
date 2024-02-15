@@ -1,5 +1,7 @@
-import { GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
+import { GlButton, GlSprintf } from '@gitlab/ui';
 import { nextTick } from 'vue';
+import ExperimentFeaturesBanner from 'ee/security_orchestration/components/policies/experiment_features_banner.vue';
+import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import ListHeader from 'ee/security_orchestration/components/policies/list_header.vue';
 import ProjectModal from 'ee/security_orchestration/components/policies/project_modal.vue';
 import { NEW_POLICY_BUTTON_TEXT } from 'ee/security_orchestration/components/constants';
@@ -12,7 +14,8 @@ describe('List Header Component', () => {
   const newPolicyPath = '/path/to/new/policy/page';
   const projectLinkSuccessText = 'Project was linked successfully.';
 
-  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findErrorAlert = () => wrapper.findByTestId('error-alert');
+  const findMigrationAlert = () => wrapper.findByTestId('migration-alert');
   const findScanNewPolicyModal = () => wrapper.findComponent(ProjectModal);
   const findHeader = () => wrapper.findByRole('heading');
   const findMoreInformationLink = () => wrapper.findComponent(GlButton);
@@ -20,6 +23,8 @@ describe('List Header Component', () => {
   const findViewPolicyProjectButton = () => wrapper.findByTestId('view-project-policy-button');
   const findNewPolicyButton = () => wrapper.findByTestId('new-policy-button');
   const findSubheader = () => wrapper.findByTestId('policies-subheader');
+  const findExperimentFeaturesBanner = () => wrapper.findComponent(ExperimentFeaturesBanner);
+  const findLocalStorageSync = () => wrapper.findComponent(LocalStorageSync);
 
   const linkSecurityPoliciesProject = async () => {
     findScanNewPolicyModal().vm.$emit('project-updated', {
@@ -40,8 +45,8 @@ describe('List Header Component', () => {
         ...provide,
       },
       stubs: {
-        GlSprintf,
         GlButton,
+        GlSprintf,
       },
     });
   };
@@ -55,13 +60,14 @@ describe('List Header Component', () => {
       expect(findNewPolicyButton().exists()).toBe(true);
       expect(findNewPolicyButton().text()).toBe(NEW_POLICY_BUTTON_TEXT);
       expect(findNewPolicyButton().attributes('href')).toBe(newPolicyPath);
+      expect(findExperimentFeaturesBanner().exists()).toBe(false);
     });
 
     it.each`
       status        | component                       | findFn                         | exists
       ${'does'}     | ${'edit policy project button'} | ${findEditPolicyProjectButton} | ${true}
       ${'does not'} | ${'view policy project button'} | ${findViewPolicyProjectButton} | ${false}
-      ${'does not'} | ${'alert component'}            | ${findAlert}                   | ${false}
+      ${'does not'} | ${'alert component'}            | ${findErrorAlert}              | ${false}
       ${'does'}     | ${'header'}                     | ${findHeader}                  | ${true}
     `('$status display the $component', ({ findFn, exists }) => {
       expect(findFn().exists()).toBe(exists);
@@ -90,7 +96,7 @@ describe('List Header Component', () => {
       });
 
       it('displays the alert component when scan new modal policy emits event', () => {
-        expect(findAlert().text()).toBe(projectLinkSuccessText);
+        expect(findErrorAlert().text()).toBe(projectLinkSuccessText);
         expect(wrapper.emitted('update-policy-list')).toStrictEqual([
           [
             {
@@ -104,7 +110,20 @@ describe('List Header Component', () => {
       it('hides the previous alert when scan new modal policy is processing a new link', async () => {
         findScanNewPolicyModal().vm.$emit('updating-project');
         await nextTick();
-        expect(findAlert().exists()).toBe(false);
+        expect(findErrorAlert().exists()).toBe(false);
+      });
+    });
+
+    describe('migration alert', () => {
+      it('displays the migration alert', () => {
+        expect(findLocalStorageSync().exists()).toBe(true);
+        expect(findMigrationAlert().exists()).toBe(true);
+      });
+
+      it('dismisses the alert when the dismiss button is clicked', async () => {
+        await findMigrationAlert().vm.$emit('dismiss');
+        expect(findMigrationAlert().exists()).toBe(false);
+        expect(findLocalStorageSync().props().value).toBe(true);
       });
     });
   });
@@ -153,5 +172,29 @@ describe('List Header Component', () => {
         expect(findFn().exists()).toBe(false);
       });
     });
+  });
+
+  describe('experiments promotion banner', () => {
+    it.each`
+      securityPoliciesPolicyScope | compliancePipelineInPolicies | expectedResult
+      ${true}                     | ${true}                      | ${true}
+      ${true}                     | ${false}                     | ${true}
+      ${false}                    | ${true}                      | ${true}
+      ${false}                    | ${false}                     | ${false}
+    `(
+      'renders experiments promotion banner',
+      ({ securityPoliciesPolicyScope, compliancePipelineInPolicies, expectedResult }) => {
+        createWrapper({
+          provide: {
+            glFeatures: {
+              securityPoliciesPolicyScope,
+              compliancePipelineInPolicies,
+            },
+          },
+        });
+
+        expect(findExperimentFeaturesBanner().exists()).toBe(expectedResult);
+      },
+    );
   });
 });

@@ -12,7 +12,6 @@ import { redirectTo, getLocationHash } from '~/lib/utils/url_utility'; // eslint
 import CodeIntelligence from '~/code_navigation/components/app.vue';
 import LineHighlighter from '~/blob/line_highlighter';
 import blobInfoQuery from 'shared_queries/repository/blob_info.query.graphql';
-import { addBlameLink } from '~/blob/blob_blame_link';
 import highlightMixin from '~/repository/mixins/highlight_mixin';
 import projectInfoQuery from '../queries/project_info.query.graphql';
 import getRefMixin from '../mixins/get_ref';
@@ -195,10 +194,6 @@ export default {
     isUsingLfs() {
       return this.blobInfo.storedExternally && this.blobInfo.externalStorage === LFS_STORAGE;
     },
-    isBlameEnabled() {
-      // Blame information within the blob viewer is not yet supported in our fallback (HAML) viewers
-      return !this.useFallback;
-    },
   },
   watch: {
     // Watch the URL 'plain' query value to know if the viewer needs changing.
@@ -246,7 +241,6 @@ export default {
 
             if (type === SIMPLE_BLOB_VIEWER) {
               new LineHighlighter(); // eslint-disable-line no-new
-              addBlameLink('.file-holder', 'js-line-links');
             }
           });
 
@@ -318,7 +312,7 @@ export default {
         :show-path="false"
         :override-copy="true"
         :show-fork-suggestion="showForkSuggestion"
-        :show-blame-toggle="isBlameEnabled"
+        :show-blame-toggle="true"
         :project-path="projectPath"
         :project-id="projectId"
         @viewer-changed="handleViewerChanged"
@@ -359,8 +353,10 @@ export default {
         :content="legacySimpleViewer"
         :is-raw-content="true"
         :active-viewer="viewer"
-        :hide-line-numbers="true"
+        :show-blame="showBlame"
+        :current-ref="currentRef"
         :loading="isLoadingLegacyViewer"
+        :project-path="projectPath"
         :data-loading="isRenderingLegacyTextViewer"
       />
       <component

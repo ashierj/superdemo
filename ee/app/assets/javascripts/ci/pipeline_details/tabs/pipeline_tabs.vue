@@ -63,6 +63,9 @@ export default {
     showSecurityTab() {
       return Boolean(this.exposeSecurityDashboard);
     },
+    showLicenseCount() {
+      return Boolean(this.licenseCount !== undefined);
+    },
   },
   watch: {
     $route(to) {
@@ -115,7 +118,9 @@ export default {
     >
       <template #title>
         <span class="gl-mr-2">{{ $options.i18n.tabs.licensesTitle }}</span>
-        <gl-badge size="sm" data-testid="license-counter">{{ licenseCount }}</gl-badge>
+        <gl-badge v-if="showLicenseCount" size="sm" data-testid="license-counter">{{
+          licenseCount
+        }}</gl-badge>
       </template>
 
       <router-view

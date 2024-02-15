@@ -1,4 +1,5 @@
 <script>
+import Participants from '~/sidebar/components/participants/participants.vue';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   WIDGET_TYPE_ASSIGNEES,
@@ -7,9 +8,11 @@ import {
   WIDGET_TYPE_ITERATION,
   WIDGET_TYPE_LABELS,
   WIDGET_TYPE_MILESTONE,
+  WIDGET_TYPE_PARTICIPANTS,
   WIDGET_TYPE_PROGRESS,
   WIDGET_TYPE_START_AND_DUE_DATE,
   WIDGET_TYPE_WEIGHT,
+  WIDGET_TYPE_COLOR,
   WORK_ITEM_TYPE_VALUE_KEY_RESULT,
   WORK_ITEM_TYPE_VALUE_OBJECTIVE,
   WORK_ITEM_TYPE_VALUE_TASK,
@@ -26,6 +29,7 @@ import WorkItemParent from './work_item_parent_with_edit.vue';
 
 export default {
   components: {
+    Participants,
     WorkItemLabels,
     WorkItemMilestoneInline,
     WorkItemMilestoneWithEdit,
@@ -48,6 +52,8 @@ export default {
       import('ee_component/work_items/components/work_item_health_status_with_edit.vue'),
     WorkItemHealthStatusInline: () =>
       import('ee_component/work_items/components/work_item_health_status_inline.vue'),
+    WorkItemColorInline: () =>
+      import('ee_component/work_items/components/work_item_color_inline.vue'),
   },
   mixins: [glFeatureFlagMixin()],
   props: {
@@ -82,6 +88,9 @@ export default {
     workItemWeight() {
       return this.isWidgetPresent(WIDGET_TYPE_WEIGHT);
     },
+    workItemParticipants() {
+      return this.isWidgetPresent(WIDGET_TYPE_PARTICIPANTS);
+    },
     workItemProgress() {
       return this.isWidgetPresent(WIDGET_TYPE_PROGRESS);
     },
@@ -106,6 +115,9 @@ export default {
     },
     workItemParent() {
       return this.isWidgetPresent(WIDGET_TYPE_HIERARCHY)?.parent;
+    },
+    workItemColor() {
+      return this.isWidgetPresent(WIDGET_TYPE_COLOR);
     },
   },
   methods: {
@@ -151,22 +163,24 @@ export default {
       :work-item-iid="workItem.iid"
       @error="$emit('error', $event)"
     />
-    <template v-if="workItemDueDate">
-      <work-item-due-date-with-edit
+    <template v-if="workItemWeight">
+      <work-item-weight
         v-if="glFeatures.workItemsMvc2"
+        class="gl-mb-5"
         :can-update="canUpdate"
-        :due-date="workItemDueDate.dueDate"
-        :start-date="workItemDueDate.startDate"
+        :weight="workItemWeight.weight"
+        :work-item-id="workItem.id"
+        :work-item-iid="workItem.iid"
         :work-item-type="workItemType"
-        :work-item="workItem"
         @error="$emit('error', $event)"
       />
-      <work-item-due-date-inline
+      <work-item-weight-inline
         v-else
+        class="gl-mb-5"
         :can-update="canUpdate"
-        :due-date="workItemDueDate.dueDate"
-        :start-date="workItemDueDate.startDate"
+        :weight="workItemWeight.weight"
         :work-item-id="workItem.id"
+        :work-item-iid="workItem.iid"
         :work-item-type="workItemType"
         @error="$emit('error', $event)"
       />
@@ -193,37 +207,6 @@ export default {
         @error="$emit('error', $event)"
       />
     </template>
-    <template v-if="workItemWeight">
-      <work-item-weight
-        v-if="glFeatures.workItemsMvc2"
-        class="gl-mb-5"
-        :can-update="canUpdate"
-        :weight="workItemWeight.weight"
-        :work-item-id="workItem.id"
-        :work-item-iid="workItem.iid"
-        :work-item-type="workItemType"
-        @error="$emit('error', $event)"
-      />
-      <work-item-weight-inline
-        v-else
-        class="gl-mb-5"
-        :can-update="canUpdate"
-        :weight="workItemWeight.weight"
-        :work-item-id="workItem.id"
-        :work-item-iid="workItem.iid"
-        :work-item-type="workItemType"
-        @error="$emit('error', $event)"
-      />
-    </template>
-    <work-item-progress
-      v-if="workItemProgress"
-      class="gl-mb-5"
-      :can-update="canUpdate"
-      :progress="workItemProgress.progress"
-      :work-item-id="workItem.id"
-      :work-item-type="workItemType"
-      @error="$emit('error', $event)"
-    />
     <template v-if="workItemIteration">
       <work-item-iteration
         v-if="glFeatures.workItemsMvc2"
@@ -248,6 +231,35 @@ export default {
         @error="$emit('error', $event)"
       />
     </template>
+    <template v-if="workItemDueDate">
+      <work-item-due-date-with-edit
+        v-if="glFeatures.workItemsMvc2"
+        :can-update="canUpdate"
+        :due-date="workItemDueDate.dueDate"
+        :start-date="workItemDueDate.startDate"
+        :work-item-type="workItemType"
+        :work-item="workItem"
+        @error="$emit('error', $event)"
+      />
+      <work-item-due-date-inline
+        v-else
+        :can-update="canUpdate"
+        :due-date="workItemDueDate.dueDate"
+        :start-date="workItemDueDate.startDate"
+        :work-item-id="workItem.id"
+        :work-item-type="workItemType"
+        @error="$emit('error', $event)"
+      />
+    </template>
+    <work-item-progress
+      v-if="workItemProgress"
+      class="gl-mb-5"
+      :can-update="canUpdate"
+      :progress="workItemProgress.progress"
+      :work-item-id="workItem.id"
+      :work-item-type="workItemType"
+      @error="$emit('error', $event)"
+    />
     <template v-if="workItemHealthStatus">
       <work-item-health-status
         v-if="glFeatures.workItemsMvc2"
@@ -273,7 +285,7 @@ export default {
     <template v-if="showWorkItemParent">
       <work-item-parent
         v-if="glFeatures.workItemsMvc2"
-        class="gl-mb-5"
+        class="gl-mb-5 gl-pt-5 gl-border-t gl-border-gray-50"
         :can-update="canUpdate"
         :work-item-id="workItem.id"
         :work-item-type="workItemType"
@@ -290,5 +302,18 @@ export default {
         @error="$emit('error', $event)"
       />
     </template>
+    <work-item-color-inline
+      v-if="workItemColor"
+      class="gl-mb-5"
+      :work-item="workItem"
+      :can-update="canUpdate"
+      @error="$emit('error', $event)"
+    />
+    <participants
+      v-if="workItemParticipants && glFeatures.workItemsMvc"
+      class="gl-mb-5 gl-pt-5 gl-border-t gl-border-gray-50"
+      :number-of-less-participants="10"
+      :participants="workItemParticipants.participants.nodes"
+    />
   </div>
 </template>

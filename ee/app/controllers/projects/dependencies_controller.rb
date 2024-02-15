@@ -39,7 +39,7 @@ module Projects
     def collect_dependencies
       return [] if not_able_to_collect_dependencies?
 
-      if Feature.enabled?(:project_level_sbom_occurrences, project)
+      if project_level_sbom_occurrences_enabled?
         dependencies_finder.execute.with_component.with_version.with_source
       else
         ::Security::DependencyListService.new(pipeline: pipeline, params: dependency_list_params).execute
@@ -63,7 +63,6 @@ module Projects
     end
 
     def report_service
-      job_artifacts = ::Ci::JobArtifact.of_report_type(:dependency_list)
       @report_service ||= ::Security::ReportFetchService.new(project, job_artifacts)
     end
 
@@ -84,6 +83,15 @@ module Projects
           render_403
         end
       end
+    end
+
+    def project_level_sbom_occurrences_enabled?
+      Feature.enabled?(:project_level_sbom_occurrences, project)
+    end
+
+    def job_artifacts
+      report_type = project_level_sbom_occurrences_enabled? ? :sbom : :dependency_list
+      ::Ci::JobArtifact.of_report_type(report_type)
     end
   end
 end

@@ -21,8 +21,9 @@ module Gitlab
       # sufficient.
       MAX_TEXT_LIMIT = 20_000
 
-      def initialize(user)
+      def initialize(user, agent_version_id = nil)
         @user = user
+        @agent_version_id = agent_version_id
       end
 
       def add(message)
@@ -72,7 +73,7 @@ module Gitlab
 
       private
 
-      attr_reader :user
+      attr_reader :user, :agent_version_id
 
       def cache_data(data)
         with_redis do |redis|
@@ -82,6 +83,8 @@ module Gitlab
       end
 
       def key
+        return "ai_chat:#{user.id}:#{agent_version_id}" if agent_version_id
+
         "ai_chat:#{user.id}"
       end
 
@@ -114,6 +117,7 @@ module Gitlab
         data['timestamp'] = Time.zone.parse(data['timestamp']) if data['timestamp']
         data['ai_action'] = 'chat'
         data['user'] = user
+        data['agent_version_id'] = agent_version_id
 
         ChatMessage.new(data)
       end

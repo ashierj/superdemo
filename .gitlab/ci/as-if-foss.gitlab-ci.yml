@@ -1,7 +1,7 @@
 .as-if-foss-variables:
   variables:
     AS_IF_FOSS_BRANCH: "as-if-foss/${CI_COMMIT_REF_NAME}"
-    FOSS_REPOSITORY: "https://dummy:${AS_IF_FOSS_TOKEN}@gitlab.com/gitlab-org/gitlab-foss.git"
+    FOSS_REPOSITORY: "https://dummy:${AS_IF_FOSS_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/gitlab-foss.git"
 
 prepare-as-if-foss-branch:
   extends:
@@ -15,6 +15,7 @@ prepare-as-if-foss-branch:
   before_script:
     - git clone --single-branch --branch master "${FOSS_REPOSITORY}" gitlab-foss
     - git -C gitlab-foss checkout -b "${AS_IF_FOSS_BRANCH}" master
+    - git -C gitlab-foss rev-parse HEAD
     - rm -r .git/
     - mv gitlab-foss/.git .
     - rm -r gitlab-foss
@@ -29,7 +30,9 @@ prepare-as-if-foss-branch:
     - rm -f CHANGELOG-EE.md
     - rm -f changelogs/*-ee.md
     - git add -A
-    - git commit -m 'Update from merge request'  # TODO: Mark which SHA we add
+    # --allow-empty accounts for the edge case where FOSS matchess EE repository
+    # and a merge request only contains EE related changes.
+    - git commit -m 'Update from merge request' --allow-empty # TODO: Mark which SHA we add
     - git push -f "${FOSS_REPOSITORY}" "${AS_IF_FOSS_BRANCH}"
 
 prepare-as-if-foss-env:
@@ -66,6 +69,10 @@ start-as-if-foss:
     RUBY_VERSION: $RUBY_VERSION
     ENABLE_RSPEC: $ENABLE_RSPEC
     ENABLE_RSPEC_FAST_SPEC_HELPER: $ENABLE_RSPEC_FAST_SPEC_HELPER
+    ENABLE_RSPEC_PRAEFECT: $ENABLE_RSPEC_PRAEFECT
+    ENABLE_RSPEC_SINGLE_DB: $ENABLE_RSPEC_SINGLE_DB
+    ENABLE_RSPEC_SINGLE_DB_CI_CONNECTION: $ENABLE_RSPEC_SINGLE_DB_CI_CONNECTION
+    ENABLE_RSPEC_SINGLE_REDIS: $ENABLE_RSPEC_SINGLE_REDIS
     ENABLE_RSPEC_UNIT: $ENABLE_RSPEC_UNIT
     ENABLE_RSPEC_INTEGRATION: $ENABLE_RSPEC_INTEGRATION
     ENABLE_RSPEC_SYSTEM: $ENABLE_RSPEC_SYSTEM
@@ -86,7 +93,7 @@ start-as-if-foss:
     ENABLE_QA_SELECTORS: $ENABLE_QA_SELECTORS
     ENABLE_STATIC_ANALYSIS: $ENABLE_STATIC_ANALYSIS
   trigger:
-    project: gitlab-org/gitlab-foss
+    project: ${CI_PROJECT_NAMESPACE}/gitlab-foss
     branch: as-if-foss/${CI_COMMIT_REF_NAME}
     strategy: depend
 

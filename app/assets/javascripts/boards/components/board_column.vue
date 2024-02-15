@@ -28,6 +28,11 @@ export default {
       default: () => [],
     },
   },
+  data() {
+    return {
+      showNewForm: false,
+    };
+  },
   computed: {
     highlighted() {
       return this.highlightedLists.includes(this.list.id);
@@ -48,6 +53,11 @@ export default {
       immediate: true,
     },
   },
+  methods: {
+    toggleNewForm() {
+      this.showNewForm = !this.showNewForm;
+    },
+  },
 };
 </script>
 
@@ -63,16 +73,25 @@ export default {
     data-testid="board-list"
   >
     <div
-      class="board-inner gl-display-flex gl-flex-direction-column gl-relative gl-h-full gl-rounded-base gl-bg-gray-50"
+      class="gl-display-flex gl-flex-direction-column gl-relative gl-h-full gl-rounded-base gl-bg-gray-50"
       :class="{ 'board-column-highlighted': highlighted }"
     >
       <board-list-header
         :list="list"
         :filter-params="filters"
         :board-id="boardId"
+        @toggleNewForm="toggleNewForm"
         @setActiveList="$emit('setActiveList', $event)"
       />
-      <board-list ref="board-list" :board-id="boardId" :list="list" :filter-params="filters" />
+      <board-list
+        ref="board-list"
+        :board-id="boardId"
+        :list="list"
+        :filter-params="filters"
+        :show-new-form="showNewForm"
+        @toggleNewForm="toggleNewForm"
+        @setFilters="$emit('setFilters', $event)"
+      />
     </div>
   </div>
 </template>

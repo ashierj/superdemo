@@ -91,43 +91,16 @@ RSpec.describe Ci::Build, feature_category: :continuous_integration, factory_def
     end
 
     context 'when running after_commit callbacks' do
-      context 'without user present' do
-        it 'tracks creation event' do
-          build = FactoryBot.build(:ci_build)
+      it 'tracks creation event' do
+        build = FactoryBot.build(:ci_build, user: create(:user))
 
-          expect(Gitlab::InternalEvents).to receive(:track_event).with(
-            'create_ci_build',
-            project: build.project
-          )
+        expect(Gitlab::InternalEvents).to receive(:track_event).with(
+          'create_ci_build',
+          project: build.project,
+          user: build.user
+        )
 
-          build.save!
-        end
-      end
-
-      context 'with user present' do
-        it 'tracks creation event' do
-          build = FactoryBot.build(:ci_build, user: create(:user))
-
-          expect(Gitlab::InternalEvents).to receive(:track_event).with(
-            'create_ci_build',
-            project: build.project,
-            user: build.user
-          )
-
-          build.save!
-        end
-      end
-
-      context 'with FF track_ci_build_created_internal_event disabled' do
-        before do
-          stub_feature_flags(track_ci_build_created_internal_event: false)
-        end
-
-        it 'does not track creation event' do
-          expect(Gitlab::InternalEvents).not_to receive(:track_event)
-
-          create(:ci_build)
-        end
+        build.save!
       end
     end
   end
@@ -136,7 +109,7 @@ RSpec.describe Ci::Build, feature_category: :continuous_integration, factory_def
     context 'when transitioning to any state from running' do
       it 'removes runner_session' do
         %w[success drop cancel].each do |event|
-          build = FactoryBot.create(:ci_build, :running, :with_runner_session, pipeline: pipeline)
+          build = create(:ci_build, :running, :with_runner_session, pipeline: pipeline)
 
           build.fire_events!(event)
 
@@ -5079,6 +5052,14 @@ RSpec.describe Ci::Build, feature_category: :continuous_integration, factory_def
 
       it { is_expected.to eq false }
     end
+
+    context 'when metadata does not exist' do
+      before do
+        build.metadata.destroy!
+      end
+
+      it { is_expected.to eq false }
+    end
   end
 
   describe '#drop_with_exit_code!' do
@@ -5608,14 +5589,14 @@ RSpec.describe Ci::Build, feature_category: :continuous_integration, factory_def
     let(:ci_build) { create(:ci_build, pipeline: new_pipeline) }
 
     before do
-      stub_current_partition_id
+      stub_current_partition_id(ci_testing_partition_id_for_check_constraints)
     end
 
     it 'includes partition_id in the token prefix' do
       prefix = ci_build.token.match(/^glcbt-([\h]+)_/)
       partition_prefix = prefix[1].to_i(16)
 
-      expect(partition_prefix).to eq(ci_testing_partition_id)
+      expect(partition_prefix).to eq(ci_testing_partition_id_for_check_constraints)
     end
   end
 

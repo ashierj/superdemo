@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
   let(:allowed_sharding_key_referenced_tables) { %w[projects namespaces organizations] }
-  let(:connection) { ApplicationRecord.connection }
 
   it 'must reference an allowed referenced table' do
     desired_sharding_key_entries.each do |entry|
@@ -20,6 +19,7 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
     desired_sharding_key_entries.each do |entry|
       entry.desired_sharding_key.each do |desired_column, details|
         table = entry.table_name
+        connection = Gitlab::Database.schemas_to_base_models[entry.gitlab_schema].first.connection
         sharding_key = desired_column
         parent = details['backfill_via']['parent']
         foreign_key = parent['foreign_key']
@@ -49,7 +49,7 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
         parent_association = model.reflect_on_association(belongs_to)
         expect(parent_association).not_to be_nil,
           "Invalid backfil_via.parent.belongs_to: #{belongs_to} in db/docs for #{entry.table_name}"
-        parent_columns = parent_association.class_name.constantize.columns.map(&:name)
+        parent_columns = parent_association.klass.columns.map(&:name)
 
         expect(parent_columns).to include(parent_sharding_key)
       end
@@ -71,19 +71,5 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
     ::Gitlab::Database::Dictionary.entries.select do |entry|
       entry.desired_sharding_key.present?
     end
-  end
-
-  def valid_backfill_via?
-    sql = <<~SQL
-    SELECT 1
-    FROM information_schema.columns
-    WHERE table_schema = 'public' AND
-    table_name = '#{table_name}' AND
-    column_name = '#{column_name}';
-    SQL
-
-    result = ApplicationRecord.connection.execute(sql)
-
-    result.count > 0
   end
 end

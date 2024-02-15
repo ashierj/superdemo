@@ -12,7 +12,8 @@ module Projects
           Gitlab::HTTP_V2::UrlBlocker.blocked_url?(
             normalized_url(project.import_url),
             schemes: Project::VALID_MIRROR_PROTOCOLS,
-            deny_all_requests_except_allowed: Gitlab::CurrentSettings.deny_all_requests_except_allowed?)
+            deny_all_requests_except_allowed: Gitlab::CurrentSettings.deny_all_requests_except_allowed?,
+            outbound_local_requests_allowlist: Gitlab::CurrentSettings.outbound_local_requests_whitelist) # rubocop:disable Naming/InclusiveLanguage -- existing setting
         return error("The import URL is invalid.")
       end
 

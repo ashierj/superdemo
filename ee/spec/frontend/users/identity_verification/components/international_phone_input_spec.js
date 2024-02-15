@@ -8,6 +8,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
 import countriesResolver from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
@@ -26,6 +27,8 @@ import { COUNTRIES, mockCountry1, mockCountry2 } from '../mock_data';
 Vue.use(VueApollo);
 
 jest.mock('~/alert');
+
+useMockLocationHelper();
 
 describe('International Phone input component', () => {
   let wrapper;
@@ -373,6 +376,24 @@ describe('International Phone input component', () => {
           captureError: true,
           error: expect.any(Error),
         });
+      });
+    });
+
+    describe('when user is high risk', () => {
+      const errorMessage = 'Telesign high-risk user';
+      const reason = 'related_to_high_risk_user';
+
+      beforeEach(() => {
+        axiosMock
+          .onPost(SEND_CODE_PATH)
+          .reply(HTTP_STATUS_BAD_REQUEST, { message: errorMessage, reason });
+
+        submitForm();
+        return waitForPromises();
+      });
+
+      it('reloads the window', () => {
+        expect(window.location.reload).toHaveBeenCalled();
       });
     });
 

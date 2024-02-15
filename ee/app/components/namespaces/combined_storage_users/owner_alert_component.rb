@@ -3,6 +3,8 @@
 module Namespaces
   module CombinedStorageUsers
     class OwnerAlertComponent < BaseAlertComponent
+      include ButtonHelper
+
       private
 
       def render?
@@ -28,17 +30,19 @@ module Namespaces
       end
 
       def namespace_primary_cta
-        link_to _('Explore paid plans'),
+        link_button_to _('Explore paid plans'),
           group_billings_path(root_namespace, source: 'users-storage-limit-alert-enforcement'),
-          class: 'btn gl-alert-action btn-info btn-md gl-button',
+          variant: :confirm,
+          class: 'gl-alert-action',
           data: { track_action: 'click_button',
                   track_label: 'explore_paid_plans' }
       end
 
       def namespace_secondary_cta
-        link_to _('Manage usage'),
+        link_button_to _('Manage usage'),
           group_usage_quotas_path(root_namespace, source: 'users-storage-limit-alert-enforcement'),
-          class: 'btn gl-alert-action btn-default btn-md gl-button',
+          variant: :default,
+          class: 'gl-alert-action',
           data: {
             track_action: 'click_button',
             track_label: 'manage_users_storage_limits'

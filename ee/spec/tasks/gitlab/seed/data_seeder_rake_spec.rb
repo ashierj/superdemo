@@ -38,7 +38,7 @@ module Gitlab
       end
 
       it 'prints a seeding statement' do
-        expect { run_rake }.to output(/Seeding demo data/).to_stdout
+        expect { run_rake }.to output(/Seeding data/).to_stdout
       end
 
       it 'prints a done statement' do

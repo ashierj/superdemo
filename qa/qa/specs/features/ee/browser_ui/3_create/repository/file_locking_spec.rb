@@ -123,11 +123,7 @@ module QA
       end
 
       def add_to_project(user:)
-        Resource::ProjectMember.fabricate_via_api! do |member|
-          member.user = user
-          member.project = project
-          member.access_level = member.level[:developer]
-        end
+        create(:project_member, :developer, user: user, project: project)
       end
 
       def push(as_user:, branch: project.default_branch, file: 'file')

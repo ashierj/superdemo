@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature_category: :code_review_workflow do
   let_it_be(:project) { create(:project, :public, :repository) }
   let_it_be(:merge_request) { create(:merge_request, :merged, source_project: project) }
+  let(:approval_rules_selector) { '[data-testid="mr-approval-rules"]' }
 
   before do
     project.update!(disable_overriding_approvers_per_merge_request: false)
@@ -23,5 +24,13 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
       expect(page).not_to have_button('Add approval rule')
       expect(page).to have_selector('input[disabled]')
     end
+  end
+
+  it 'passes axe automated accessibility testing', :js do
+    click_button 'Approval rules'
+
+    wait_for_requests
+
+    expect(page).to be_axe_clean.within(approval_rules_selector).skipping :'heading-order'
   end
 end

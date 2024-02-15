@@ -4,5 +4,5 @@ import 'ee/trials/track_trial_user_errors';
 import { initNamespaceSelector } from 'ee/trials/init_namespace_selector';
 
 trackSaasTrialGroup();
-initTrialCreateLeadForm();
+initTrialCreateLeadForm('saasTrialSubmit');
 initNamespaceSelector();

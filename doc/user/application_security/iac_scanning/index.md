@@ -34,19 +34,19 @@ Prerequisites:
 - The `test` stage is required in the `.gitlab-ci.yml` file.
 - On GitLab self-managed you need GitLab Runner with the
   [`docker`](https://docs.gitlab.com/runner/executors/docker.html) or
-  [`kubernetes`](https://docs.gitlab.com/runner/install/kubernetes.html) executor. On GitLab.com this
-  is enabled by default on the shared runners. The analyzer images provided are for the Linux/amd64
-  architecture.
+  [`kubernetes`](https://docs.gitlab.com/runner/install/kubernetes.html) executor.
+- If you're using SaaS runners on GitLab.com, this is enabled by default.
 
 To enable IaC scanning of a project:
 
 1. On the left sidebar, select **Search or go to** and find your project.
 1. Select **Build > Pipeline editor**.
-1. Copy and paste the following to the bottom of the `.gitlab-ci.yml` file.
+1. Copy and paste the following to the bottom of the `.gitlab-ci.yml` file. If an `include` line
+   already exists, add only the `template` line below it.
 
    ```yaml
    include:
-     - template: Security/SAST-IaC.gitlab-ci.yml
+     - template: Jobs/SAST-IaC.gitlab-ci.yml
    ```
 
 1. Select the **Validate** tab, then select **Validate pipeline**.
@@ -202,7 +202,7 @@ This example uses a specific minor version of the IaC analyzer:
 
 ```yaml
 include:
-  - template: Security/SAST-IaC.gitlab-ci.yml
+  - template: Jobs/SAST-IaC.gitlab-ci.yml
 
 kics-iac-sast:
   variables:
@@ -230,7 +230,7 @@ variables:
   SAST_IMAGE_SUFFIX: '-fips'
 
 include:
-  - template: Security/SAST-IaC.gitlab-ci.yml
+  - template: Jobs/SAST-IaC.gitlab-ci.yml
 ```
 
 ## Automatic vulnerability resolution

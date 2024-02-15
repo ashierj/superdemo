@@ -93,7 +93,8 @@ module QA
           end
         end
 
-        it_behaves_like 'audit event', ['Added user access as Guest', 'Changed access level', 'Removed user access']
+        it_behaves_like 'audit event',
+          ['Added user access as Default role: Guest', 'Changed access level', 'Removed user access']
       end
 
       context 'for add and remove project access', :reliable,

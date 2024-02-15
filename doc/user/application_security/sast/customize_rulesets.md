@@ -115,6 +115,16 @@ variables:
 
 See [specify a private remote configuration example](#specify-a-private-remote-configuration) for advanced usage.
 
+### Troubleshooting remote configuration files
+
+If remote configuration file doesn't seem to be applying customizations correctly, the causes can be:
+
+1. Your repository has a local `.gitlab/sast-ruleset.toml` file.
+    - A local file is used if it's present, even if a remote configuration is set as a variable.
+    - A change to this logic is considered in [issue 414732](https://gitlab.com/gitlab-org/gitlab/-/issues/414732).
+1. There is a problem with authentication.
+    - To check whether this is the cause of the problem, try referencing a configuration file from a repository location that doesn't require authentication.
+
 ## Schema
 
 ### The top-level section
@@ -608,7 +618,7 @@ See [group access tokens](../../group/settings/group_access_tokens.md#bot-users-
 
 ```yaml
 include:
-  - template: Security/SAST.gitlab-ci.yml
+  - template: Jobs/SAST.gitlab-ci.yml
 
 variables:
   SAST_RULESET_GIT_REFERENCE: "group_2504721_bot_7c9311ffb83f2850e794d478ccee36f5:$PERSONAL_ACCESS_TOKEN@gitlab.com/example-group/example-ruleset-project@c8ea7e3ff126987fb4819cc35f2310755511c2ab"

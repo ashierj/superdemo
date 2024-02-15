@@ -318,8 +318,8 @@ RSpec.describe Groups::EpicsController, feature_category: :portfolio_management 
             expect { subject }.to change { Epic.count }.from(0).to(1).and change { WorkItem.count }.by(1)
           end
 
-          it 'assigns labels to the new epic and the synced work item' do
-            expect { subject }.to change { LabelLink.count }.by(2)
+          it 'assigns labels to the new epic' do
+            expect { subject }.to change { LabelLink.count }.by(1)
           end
 
           it 'returns the correct json' do

@@ -27,28 +27,56 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillEpicCacheCounts, :migration 
   end
 
   let!(:project_root) do
-    projects.create!(namespace_id: root_group.id, project_namespace_id: root_group.id,
-                     name: 'root group project', path: 'root-group-project')
+    projects.create!(
+      namespace_id: root_group.id,
+      project_namespace_id: root_group.id,
+      name: 'root group project',
+      path: 'root-group-project'
+    )
   end
 
   let!(:project) do
-    projects.create!(namespace_id: group.id, project_namespace_id: group.id,
-                     name: 'group project', path: 'group-project')
+    projects.create!(
+      namespace_id: group.id,
+      project_namespace_id: group.id,
+      name: 'group project',
+      path: 'group-project'
+    )
   end
 
   let!(:epic_root) do
-    epics.create!(iid: 2, title: 'root-group-epic', title_html: 'root-group-epic',
-                  group_id: root_group.id, author_id: user.id, updated_at: updated_at)
+    epics.create!(
+      iid: 2,
+      title: 'root-group-epic',
+      title_html: 'root-group-epic',
+      group_id: root_group.id,
+      author_id: user.id,
+      updated_at: updated_at
+    )
   end
 
   let!(:epic1) do
-    epics.create!(iid: 1, title: 'group-epic1', title_html: 'group-epic1',
-                  group_id: group.id, author_id: user.id, parent_id: epic_root.id, updated_at: updated_at)
+    epics.create!(
+      iid: 1,
+      title: 'group-epic1',
+      title_html: 'group-epic1',
+      group_id: group.id,
+      author_id: user.id,
+      parent_id: epic_root.id,
+      updated_at: updated_at
+    )
   end
 
   let!(:epic2) do
-    epics.create!(iid: 2, title: 'group-epic2', title_html: 'group-epic2',
-                  group_id: group.id, author_id: user.id, parent_id: epic_root.id, updated_at: updated_at)
+    epics.create!(
+      iid: 2,
+      title: 'group-epic2',
+      title_html: 'group-epic2',
+      group_id: group.id,
+      author_id: user.id,
+      parent_id: epic_root.id,
+      updated_at: updated_at
+    )
   end
 
   let!(:user) { users.create!(name: 'test', email: 'test@example.com', projects_limit: 5) }

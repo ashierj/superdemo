@@ -1,8 +1,8 @@
 import { GlIcon } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SubscriptionTableRow from 'ee/billings/subscriptions/components/subscription_table_row.vue';
 import initialStore from 'ee/billings/subscriptions/store';
 import { TABLE_TYPE_DEFAULT } from 'ee/billings/constants';
@@ -46,7 +46,7 @@ describe('subscription table row', () => {
     billableSeatsHref = BILLABLE_SEATS_URL,
     seatsLastUpdated = '12:13:14',
   } = {}) => {
-    wrapper = shallowMount(SubscriptionTableRow, {
+    wrapper = shallowMountExtended(SubscriptionTableRow, {
       propsData: {
         ...defaultProps,
         ...props,
@@ -64,8 +64,8 @@ describe('subscription table row', () => {
     jest.spyOn(store, 'dispatch').mockImplementation();
   });
 
-  const findHeaderCell = () => wrapper.find('[data-testid="header-cell"]');
-  const findContentCells = () => wrapper.findAll('[data-testid="content-cell"]');
+  const findHeaderCell = () => wrapper.findByTestId('header-cell');
+  const findContentCells = () => wrapper.findAllByTestId('content-cell');
   const findHeaderIcon = () => findHeaderCell().findComponent(GlIcon);
 
   const findColumnLabelAndTitle = (columnWrapper) => {
@@ -156,7 +156,7 @@ describe('subscription table row', () => {
     ])('renders seats last updated time when $description', ({ columns, expected }) => {
       createComponent({ props: { columns } });
 
-      expect(wrapper.find('[data-testid="seats-last-updated"]').text()).toBe(expected);
+      expect(wrapper.findByTestId('seats-last-updated').text()).toBe(expected);
     });
 
     it('does not render seats last updated block when table type is not default', () => {
@@ -175,7 +175,7 @@ describe('subscription table row', () => {
         },
       });
 
-      expect(wrapper.find('[data-testid="seats-last-updated"]').exists()).toBe(false);
+      expect(wrapper.findByTestId('seats-last-updated').exists()).toBe(false);
     });
 
     it('does not render seats last updated block when seatsLastUpdated is not available', () => {
@@ -192,7 +192,7 @@ describe('subscription table row', () => {
         },
       });
 
-      expect(wrapper.find('[data-testid="seats-last-updated"]').exists()).toBe(false);
+      expect(wrapper.findByTestId('seats-last-updated').exists()).toBe(false);
     });
   });
 
@@ -267,7 +267,39 @@ describe('subscription table row', () => {
         props: { temporaryExtensionEndDate: '2023-12-28', columns: [dateColumn] },
       });
 
-      expect(wrapper.find('[data-testid="temporary-extension-label"]').exists()).toBe(true);
+      expect(wrapper.findByTestId('temporary-extension-label').exists()).toBe(true);
+    });
+  });
+
+  describe('next term start date', () => {
+    const testId = 'next-subscription-term-start-date';
+    const dateColumn = {
+      id: 'nextTermStartDate',
+      label: 'Next subscription term start date',
+      value: null,
+      isDate: true,
+    };
+
+    describe('when next term start date is present', () => {
+      it('renders next term start date', () => {
+        createComponent({
+          props: { nextTermStartDate: '2023-12-28', columns: [dateColumn] },
+        });
+
+        expect(wrapper.findByTestId(testId).exists()).toBe(true);
+        expect(wrapper.findByTestId(testId).text()).toBe('December 28, 2023');
+      });
+    });
+
+    describe('when next term start date is null', () => {
+      it('renders dash', () => {
+        createComponent({
+          props: { nextTermStartDate: null, columns: [dateColumn] },
+        });
+
+        expect(wrapper.findByTestId(testId).exists()).toBe(true);
+        expect(wrapper.findByTestId(testId).text()).toBe('-');
+      });
     });
   });
 });

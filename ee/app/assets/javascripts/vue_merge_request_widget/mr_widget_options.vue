@@ -2,14 +2,11 @@
 import { GlSprintf, GlLink } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
-import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
-import { s__, sprintf } from '~/locale';
 import CEWidgetOptions from '~/vue_merge_request_widget/mr_widget_options.vue';
 import MrWidgetJiraAssociationMissing from './components/states/mr_widget_jira_association_missing.vue';
 import MrWidgetPolicyViolation from './components/states/mr_widget_policy_violation.vue';
 import MrWidgetGeoSecondaryNode from './components/states/mr_widget_secondary_geo_node.vue';
 import WidgetContainer from './components/widget/app.vue';
-import loadPerformanceExtension from './extensions/load_performance';
 
 export default {
   components: {
@@ -27,105 +24,13 @@ export default {
   },
   extends: CEWidgetOptions,
   mixins: [reportsMixin],
-  data() {
-    return {
-      isLoadingLoadPerformance: false,
-      loadingLoadPerformanceFailed: false,
-      loadingLicenseReportFailed: false,
-    };
-  },
-  computed: {
-    hasLoadPerformanceMetrics() {
-      return (
-        this.mr.loadPerformanceMetrics?.degraded?.length > 0 ||
-        this.mr.loadPerformanceMetrics?.improved?.length > 0 ||
-        this.mr.loadPerformanceMetrics?.same?.length > 0
-      );
-    },
-    hasLoadPerformancePaths() {
-      const loadPerformance = this.mr?.loadPerformance || {};
-
-      return Boolean(loadPerformance.head_path && loadPerformance.base_path);
-    },
-
-    loadPerformanceText() {
-      const { improved, degraded, same } = this.mr.loadPerformanceMetrics;
-      const text = [];
-      const reportNumbers = [];
-
-      if (improved.length || degraded.length || same.length) {
-        text.push(s__('ciReport|Load performance test metrics: '));
-
-        if (degraded.length > 0)
-          reportNumbers.push(
-            sprintf(s__('ciReport|%{degradedNum} degraded'), { degradedNum: degraded.length }),
-          );
-        if (same.length > 0)
-          reportNumbers.push(sprintf(s__('ciReport|%{sameNum} same'), { sameNum: same.length }));
-        if (improved.length > 0)
-          reportNumbers.push(
-            sprintf(s__('ciReport|%{improvedNum} improved'), { improvedNum: improved.length }),
-          );
-      } else {
-        text.push(s__('ciReport|Load performance test metrics: No changes'));
-      }
-
-      return [...text, ...reportNumbers.join(', ')].join('');
-    },
-
-    loadPerformanceStatus() {
-      return this.checkReportStatus(
-        this.isLoadingLoadPerformance,
-        this.loadingLoadPerformanceFailed,
-      );
-    },
-  },
-  watch: {
-    hasLoadPerformancePaths(newVal) {
-      if (newVal) {
-        this.registerLoadPerformance();
-        this.fetchLoadPerformance();
-      }
-    },
-  },
   methods: {
-    registerLoadPerformance() {
-      registerExtension(loadPerformanceExtension);
-    },
     getServiceEndpoints(store) {
       const base = CEWidgetOptions.methods.getServiceEndpoints(store);
 
       return {
         ...base,
         apiApprovalSettingsPath: store.apiApprovalSettingsPath,
-      };
-    },
-
-    fetchLoadPerformance() {
-      const { head_path, base_path } = this.mr.loadPerformance;
-
-      this.isLoadingLoadPerformance = true;
-
-      Promise.all([this.service.fetchReport(head_path), this.service.fetchReport(base_path)])
-        .then((values) => {
-          this.mr.compareLoadPerformanceMetrics(values[0], values[1]);
-        })
-        .catch(() => {
-          this.loadingLoadPerformanceFailed = true;
-        })
-        .finally(() => {
-          this.isLoadingLoadPerformance = false;
-        });
-    },
-
-    translateText(type) {
-      return {
-        error: sprintf(s__('ciReport|Failed to load %{reportName} report'), {
-          reportName: type,
-        }),
-        loading: sprintf(s__('ciReport|Loading %{reportName} report'), {
-          reportName: type,
-        }),
       };
     },
   },
@@ -189,13 +94,15 @@ export default {
       <blocking-merge-requests-report :mr="mr" />
 
       <div class="mr-widget-section">
-        <mr-widget-auto-merge-enabled
-          v-if="autoMergeStateVisible"
-          :mr="mr"
-          :service="service"
-          class="gl-border-b-1 gl-border-b-solid gl-border-gray-100"
-        />
-        <merge-checks v-if="mergeBlockedComponentEnabled" :mr="mr" :service="service" />
+        <template v-if="mergeBlockedComponentEnabled">
+          <mr-widget-auto-merge-enabled
+            v-if="mr.autoMergeEnabled"
+            :mr="mr"
+            :service="service"
+            class="gl-border-b-1 gl-border-b-solid gl-border-gray-100"
+          />
+          <merge-checks :mr="mr" :service="service" />
+        </template>
         <component :is="componentName" v-else :mr="mr" :service="service" />
         <ready-to-merge
           v-if="mr.commitsCount"

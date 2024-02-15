@@ -6,6 +6,10 @@ import { mapActions, mapState } from 'vuex';
 
 import { __ } from '~/locale';
 import { InternalEvents } from '~/tracking';
+import {
+  INSIGHTS_CHART_ITEM_SETTINGS,
+  INSIGHTS_CHART_ITEM_TRACKING_CLICK_ACTION,
+} from 'ee/insights/constants';
 import InsightsChart from './insights_chart.vue';
 
 export default {
@@ -63,9 +67,13 @@ export default {
         );
       }
     },
-    onChartItemClicked() {
-      this.trackEvent('insights_chart_item_clicked');
-      this.trackEvent(`insights_issue_chart_item_clicked`); // hardcode data source type `issue` until more chart types support drilling down
+    onChartItemClicked(dataSourceType) {
+      const { trackingClickAction } = INSIGHTS_CHART_ITEM_SETTINGS[dataSourceType] || {};
+
+      if (trackingClickAction) {
+        this.trackEvent(INSIGHTS_CHART_ITEM_TRACKING_CLICK_ACTION);
+        this.trackEvent(trackingClickAction);
+      }
     },
   },
 };
@@ -77,7 +85,19 @@ export default {
       <div class="insights-charts" data-testid="insights-charts">
         <insights-chart
           v-for="(
-            { loaded, type, description, data, dataSourceType, error }, key, index
+            {
+              loaded,
+              type,
+              description,
+              data,
+              dataSourceType,
+              error,
+              filterLabels,
+              collectionLabels,
+              groupBy,
+            },
+            key,
+            index
           ) in chartData"
           :key="index"
           :loaded="loaded"
@@ -87,7 +107,10 @@ export default {
           :data="data"
           :data-source-type="dataSourceType"
           :error="error"
-          @chart-item-clicked="onChartItemClicked"
+          :filter-labels="filterLabels"
+          :collection-labels="collectionLabels"
+          :group-by="groupBy"
+          @chart-item-clicked="onChartItemClicked(dataSourceType)"
         />
       </div>
     </div>

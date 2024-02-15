@@ -17,8 +17,6 @@ module Security
         pipeline = Ci::Pipeline.find_by_id(pipeline_id)
         return unless pipeline
 
-        return unless Feature.enabled?(:scan_result_policy_merge_base_pipeline, pipeline.project)
-
         merge_request = MergeRequest.find_by_id(merge_request_id)
         return unless merge_request
 

@@ -78,9 +78,16 @@ module EE
       def variables
         strong_memoize(:variables) do
           super.tap do |collection|
-            collection.concat(dast_configuration_variables)
+            collection
+              .concat(dast_configuration_variables)
+              .concat(google_artifact_registry_variables)
           end
         end
+      end
+
+      override :job_jwt_variables
+      def job_jwt_variables
+        super.concat(identity_variables)
       end
 
       def cost_factor_enabled?
@@ -276,26 +283,26 @@ module EE
       end
 
       def track_ci_secrets_management_usage
-        return unless ::Feature.enabled?(:usage_data_i_ci_secrets_management_vault_build_created)
-
         return unless ci_secrets_management_available? && secrets?
 
-        ::Gitlab::UsageDataCounters::HLLRedisCounter.track_event('i_ci_secrets_management_vault_build_created', values: user_id)
+        providers = secrets.flat_map { |_secret, config| config.keys.map(&:to_sym) & ::Gitlab::Ci::Config::Entry::Secret::SUPPORTED_PROVIDERS }
 
-        return unless ::Feature.enabled?(:usage_data_i_ci_secrets_management_vault_build_created)
+        providers.uniq.each do |provider|
+          ::Gitlab::UsageDataCounters::HLLRedisCounter.track_event("i_ci_secrets_management_#{provider}_build_created", values: user_id)
 
-        ::Gitlab::Tracking.event(
-          self.class.to_s,
-          'create_secrets_vault',
-          namespace: namespace,
-          user: user,
-          label: 'redis_hll_counters.ci_secrets_management.i_ci_secrets_management_vault_build_created_monthly',
-          ultimate_namespace_id: namespace.root_ancestor.id,
-          context: [::Gitlab::Tracking::ServicePingContext.new(
-            data_source: :redis_hll,
-            event: 'i_ci_secrets_management_vault_build_created'
-          ).to_context]
-        )
+          ::Gitlab::Tracking.event(
+            self.class.to_s,
+            "create_secrets_#{provider}",
+            namespace: namespace,
+            user: user,
+            label: "redis_hll_counters.ci_secrets_management.i_ci_secrets_management_#{provider}_build_created_monthly",
+            ultimate_namespace_id: namespace.root_ancestor.id,
+            context: [::Gitlab::Tracking::ServicePingContext.new(
+              data_source: :redis_hll,
+              event: "i_ci_secrets_management_#{provider}_build_created"
+            ).to_context]
+          )
+        end
       end
 
       def gcp_secret_manager_provider?
@@ -312,6 +319,23 @@ module EE
 
       def hashicorp_vault_provider?
         variable_value('VAULT_SERVER_URL').present?
+      end
+
+      def identity_variables
+        return [] if options[:identity].blank?
+
+        case options[:identity]
+        when 'google_cloud'
+          ::Gitlab::Ci::GoogleCloud::GenerateBuildEnvironmentVariablesService.new(self).execute
+        else
+          raise ArgumentError, "Unknown identity value: #{options[:identity]}"
+        end
+      end
+
+      def google_artifact_registry_variables
+        ::Gitlab::Ci::Variables::Collection.new(
+          project.google_cloud_platform_artifact_registry_integration&.ci_variables || []
+        )
       end
     end
   end

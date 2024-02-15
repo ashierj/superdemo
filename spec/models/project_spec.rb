@@ -612,6 +612,53 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
         end
       end
     end
+
+    context 'when last_activity_at is being set' do
+      let(:last_activity_at) { 1.day.ago }
+      let(:project) { build(:project, last_activity_at: last_activity_at) }
+
+      it 'will use supplied timestamp' do
+        expect { project.valid? }.not_to change(project, :last_activity_at)
+      end
+    end
+
+    context 'when last_activity_at is not being set' do
+      context 'and one of PROJECT_ACTIVITY_ATTRIBUTES is updated' do
+        let(:project) { build(:project) }
+
+        before do
+          project.name = "Name Changed"
+        end
+
+        it 'sets last_activity_at to the current time' do
+          freeze_time do
+            expect { project.valid? }.to change(project, :last_activity_at).to(Time.current)
+          end
+        end
+      end
+
+      context 'and the record is new' do
+        let(:project) { build(:project) }
+
+        it 'sets last_activity_at to the current time' do
+          freeze_time do
+            expect { project.valid? }.to change(project, :last_activity_at).from(nil).to(Time.current)
+          end
+        end
+      end
+
+      context 'and the last_activity_at is nil' do
+        let_it_be(:project) { create(:project) }
+
+        before do
+          project.update_column(:last_activity_at, nil)
+        end
+
+        it 'sets last_activity_at to created_at' do
+          expect { project.valid? }.to change(project, :last_activity_at).from(nil).to(project.created_at)
+        end
+      end
+    end
   end
 
   describe 'validation' do
@@ -1603,12 +1650,6 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
         expect(project.last_activity).to eq(last_event)
       end
     end
-
-    describe 'last_activity_date' do
-      it 'returns the project\'s last update date' do
-        expect(project.last_activity_date).to be_like_time(project.updated_at)
-      end
-    end
   end
 
   describe '#get_issue' do
@@ -2091,9 +2132,9 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
   end
 
   describe '.sort_by_attribute' do
-    let_it_be(:project1) { create(:project, star_count: 2, updated_at: 1.minute.ago) }
+    let_it_be(:project1) { create(:project, star_count: 2, last_activity_at: 1.minute.ago) }
     let_it_be(:project2) { create(:project, star_count: 1) }
-    let_it_be(:project3) { create(:project, updated_at: 2.minutes.ago) }
+    let_it_be(:project3) { create(:project, last_activity_at: 2.minutes.ago) }
 
     it 'reorders the input relation by start count desc' do
       projects = described_class.sort_by_attribute(:stars_desc)
@@ -2123,6 +2164,20 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
       projects = described_class.sort_by_attribute(:path_desc)
 
       expect(projects).to eq([project1, project2, project3].sort_by(&:path).reverse)
+    end
+  end
+
+  describe '.order_by_storage_size' do
+    let_it_be(:project_1) { create(:project_statistics, repository_size: 1).project }
+    let_it_be(:project_2) { create(:project_statistics, repository_size: 3).project }
+    let_it_be(:project_3) { create(:project_statistics, repository_size: 2).project }
+
+    context 'ascending' do
+      it { expect(described_class.order_by_storage_size(:asc)).to eq([project_1, project_3, project_2]) }
+    end
+
+    context 'descending' do
+      it { expect(described_class.order_by_storage_size(:desc)).to eq([project_2, project_3, project_1]) }
     end
   end
 
@@ -3074,22 +3129,6 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
               shard_name: project.repository_storage,
               object_format: 'sha256'
             )
-          end
-
-          context 'when feature flag "store_object_format" is disabled' do
-            before do
-              stub_feature_flags(store_object_format: false)
-            end
-
-            it 'tracks a SHA1 object format' do
-              project.track_project_repository
-
-              expect(project.project_repository).to have_attributes(
-                disk_path: project.disk_path,
-                shard_name: project.repository_storage,
-                object_format: 'sha1'
-              )
-            end
           end
         end
       end
@@ -5347,57 +5386,32 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
   describe '#has_ci_config_file?' do
     subject(:has_ci_config_file) { project.has_ci_config_file? }
 
-    # Extract these from `shared_examples` when the FF ci_refactor_has_ci_config_file is removed.
-    shared_examples '#has_ci_config_file?' do
-      context 'when the repository does not exist' do
-        let_it_be(:project) { create(:project) }
+    context 'when the repository does not exist' do
+      let_it_be(:project) { create(:project) }
 
-        it { is_expected.to be_falsey }
-      end
-
-      context 'when the repository has a .gitlab-ci.yml file' do
-        let_it_be(:project) { create(:project, :small_repo, files: { '.gitlab-ci.yml' => 'test' }) }
-
-        it { is_expected.to be_truthy }
-      end
-
-      context 'when the repository does not have a .gitlab-ci.yml file' do
-        let_it_be(:project) { create(:project, :small_repo, files: { 'README.md' => 'hello' }) }
-
-        it { is_expected.to be_falsey }
-      end
+      it { is_expected.to be_falsey }
     end
 
-    context 'when the FF ci_refactor_has_ci_config_file is enabled' do
-      it_behaves_like '#has_ci_config_file?'
+    context 'when the repository has a .gitlab-ci.yml file' do
+      let_it_be(:project) { create(:project, :small_repo, files: { '.gitlab-ci.yml' => 'test' }) }
 
-      context 'when the repository has a custom CI config file' do
-        let_it_be(:project) { create(:project, :small_repo, files: { 'my_ci_file.yml' => 'test' }) }
-
-        before do
-          project.ci_config_path = 'my_ci_file.yml'
-        end
-
-        it { is_expected.to be_truthy }
-      end
+      it { is_expected.to be_truthy }
     end
 
-    context 'when the FF ci_refactor_has_ci_config_file is disabled' do
+    context 'when the repository does not have a .gitlab-ci.yml file' do
+      let_it_be(:project) { create(:project, :small_repo, files: { 'README.md' => 'hello' }) }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when the repository has a custom CI config file' do
+      let_it_be(:project) { create(:project, :small_repo, files: { 'my_ci_file.yml' => 'test' }) }
+
       before do
-        stub_feature_flags(ci_refactor_has_ci_config_file: false)
+        project.ci_config_path = 'my_ci_file.yml'
       end
 
-      it_behaves_like '#has_ci_config_file?'
-
-      context 'when the repository has a custom CI config file' do
-        let_it_be(:project) { create(:project, :small_repo, files: { 'my_ci_file.yml' => 'test' }) }
-
-        before do
-          project.ci_config_path = 'my_ci_file.yml'
-        end
-
-        it { is_expected.to be_falsey }
-      end
+      it { is_expected.to be_truthy }
     end
   end
 
@@ -9029,6 +9043,28 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
     end
   end
 
+  describe '#repository_object_format' do
+    subject { project.repository_object_format }
+
+    let_it_be(:project) { create(:project) }
+
+    context 'when project without a repository' do
+      it { is_expected.to be_nil }
+    end
+
+    context 'when project with sha1 repository' do
+      let_it_be(:project_repository) { create(:project_repository, project: project, object_format: 'sha1') }
+
+      it { is_expected.to eq 'sha1' }
+    end
+
+    context 'when project with sha256 repository' do
+      let_it_be(:project_repository) { create(:project_repository, project: project, object_format: 'sha256') }
+
+      it { is_expected.to eq 'sha256' }
+    end
+  end
+
   describe '#supports_lock_on_merge?' do
     it_behaves_like 'checks self (project) and root ancestor feature flag' do
       let(:feature_flag) { :enforce_locked_labels_on_merge }
@@ -9118,6 +9154,14 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
     it { is_expected.to be_falsy }
   end
 
+  describe '#code_suggestions_enabled?' do
+    let(:project) { build_stubbed(:project) }
+
+    subject(:code_suggestions_enabled?) { project.code_suggestions_enabled? }
+
+    it { is_expected.to be_falsy }
+  end
+
   private
 
   def finish_job(export_job)
@@ -9150,6 +9194,28 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
     it_behaves_like 'cleanup by a loose foreign key' do
       let_it_be(:parent) { create(:user) }
       let_it_be(:model) { create(:project, creator: parent) }
+    end
+  end
+
+  describe '#parent_groups' do
+    context 'when project has parent groups' do
+      let_it_be(:nested_group) { create(:group, parent: group) }
+      let_it_be_with_reload(:group) { create(:group, name: 'foo', parent: nested_group) }
+      let_it_be(:project) { create(:project, group: group) }
+
+      it 'builds an groups path' do
+        groups_path = project.parent_groups
+        expect(groups_path).to match_array([group, nested_group])
+      end
+    end
+
+    context 'when project does not have a parent group' do
+      let_it_be(:project) { create(:project) }
+
+      it 'builds an empty path' do
+        groups_path = project.parent_groups
+        expect(groups_path).to eq([])
+      end
     end
   end
 end

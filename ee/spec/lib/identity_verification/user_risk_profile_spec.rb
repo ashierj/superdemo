@@ -8,6 +8,18 @@ RSpec.describe IdentityVerification::UserRiskProfile, feature_category: :instanc
   let_it_be(:user) { create(:user) }
   let_it_be(:risk_profile) { described_class.new(user) }
 
+  describe '#assume_low_risk!' do
+    subject(:call_method) { risk_profile.assume_low_risk!(reason: 'Because') }
+
+    it 'creates a custom attribute with correct attribute values for the user', :aggregate_failures do
+      expect { call_method }.to change { user.custom_attributes.count }.by(1)
+
+      record = user.custom_attributes.last
+      expect(record.key).to eq described_class::ASSUMED_LOW_RISK_ATTR_KEY
+      expect(record.value).to eq 'Because'
+    end
+  end
+
   describe '#assume_high_risk!' do
     subject(:call_method) { risk_profile.assume_high_risk!(reason: 'Because') }
 
@@ -98,16 +110,18 @@ RSpec.describe IdentityVerification::UserRiskProfile, feature_category: :instanc
   describe('#arkose_verified?') do
     subject { risk_profile.arkose_verified? }
 
-    where(:arkose_risk_band, :result) do
-      nil      | false
-      'High'   | true
-      'Medium' | true
-      'Low'    | true
+    where(:arkose_risk_band, :assumed_low_risk, :result) do
+      nil      | false | false
+      nil      | true  | true
+      'High'   | false | true
+      'Medium' | false | true
+      'Low'    | false | true
     end
 
     with_them do
       before do
         add_user_risk_band(arkose_risk_band) if arkose_risk_band.present?
+        user.assume_low_risk!(reason: 'Because') if assumed_low_risk
       end
 
       it { is_expected.to eq result }

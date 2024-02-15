@@ -18,8 +18,8 @@ import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashb
 import {
   BUILT_IN_PRODUCT_ANALYTICS_DASHBOARDS,
   BUILT_IN_VALUE_STREAM_DASHBOARD,
+  CUSTOM_VALUE_STREAM_DASHBOARD,
 } from 'ee/analytics/dashboards/constants';
-import { hydrateLegacyYamlConfiguration } from 'ee/analytics/dashboards/yaml_utils';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   FILE_ALREADY_EXISTS_SERVER_RESPONSE,
@@ -31,7 +31,7 @@ import {
 import getCustomizableDashboardQuery from '../graphql/queries/get_customizable_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_customizable_visualizations.query.graphql';
 
-const HIDE_DASHBOARD_FILTERS = [BUILT_IN_VALUE_STREAM_DASHBOARD];
+const HIDE_DASHBOARD_FILTERS = [BUILT_IN_VALUE_STREAM_DASHBOARD, CUSTOM_VALUE_STREAM_DASHBOARD];
 
 export default {
   name: 'AnalyticsDashboard',
@@ -66,10 +66,6 @@ export default {
     breadcrumbState: {
       type: Object,
     },
-    vsdAvailableVisualizations: {
-      type: Array,
-      default: [],
-    },
   },
   async beforeRouteLeave(to, from, next) {
     const confirmed = await this.$refs.dashboard.confirmDiscardIfChanged();
@@ -101,15 +97,16 @@ export default {
       changesSaved: false,
       alert: null,
       hasDashboardError: false,
-      vsdYamlDashboard: null,
     };
   },
   computed: {
     currentDashboard() {
-      return this.vsdYamlDashboard || this.initialDashboard;
+      return this.initialDashboard;
     },
     showValueStreamFeedbackBanner() {
-      return this.currentDashboard?.slug === BUILT_IN_VALUE_STREAM_DASHBOARD;
+      return [BUILT_IN_VALUE_STREAM_DASHBOARD, CUSTOM_VALUE_STREAM_DASHBOARD].includes(
+        this.currentDashboard?.slug,
+      );
     },
     showProductAnalyticsFeedbackBanner() {
       return (
@@ -120,14 +117,6 @@ export default {
     showDashboardFilters() {
       return !HIDE_DASHBOARD_FILTERS.includes(this.currentDashboard?.slug);
     },
-    shouldFetchLegacyYamlConfiguration() {
-      // NOTE: If there is no pointer project configured, we won't have a YAML file to fetch.
-      // We only need to perform this check when viewing the VSD (Value streams dashboard)
-      return (
-        this.$route?.params.slug === BUILT_IN_VALUE_STREAM_DASHBOARD &&
-        this.customDashboardsProject?.id
-      );
-    },
   },
   watch: {
     initialDashboard(initialDashboard) {
@@ -137,14 +126,6 @@ export default {
     },
   },
   async created() {
-    if (this.shouldFetchLegacyYamlConfiguration) {
-      this.vsdYamlDashboard = await hydrateLegacyYamlConfiguration(
-        this.customDashboardsProject.id,
-        this.vsdAvailableVisualizations,
-      );
-      return;
-    }
-
     if (this.isNewDashboard) {
       this.initialDashboard = this.createNewDashboard();
     }

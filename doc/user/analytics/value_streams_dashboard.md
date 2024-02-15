@@ -33,6 +33,10 @@ With the Value Streams Dashboard, you can:
 - Understand security exposure.
 - Drill down into individual projects or metrics to take actions for improvement.
 
+NOTE:
+Data displayed on the Value Streams Dashboard is continuously collected in the backend.
+If you upgrade to the Ultimate tier, you get access to historical data, and can view metrics about past GitLab usage and performance.
+
 ## Value Streams Dashboard panels
 
 The Value Streams Dashboard panels has a default configuration, but you can also [customize the dashboard panels](#customize-the-dashboard-panels).
@@ -54,15 +58,22 @@ that are the largest value contributors, overperforming, or underperforming.
 You can also drill down the metrics for further analysis.
 When you hover over a metric, a tooltip displays an explanation of the metric and a link to the related documentation page.
 
+The monthly values also indicate a percentage increase or decrease compared to the previous month.
+
+The sparkline for the past six months represents value trends over this time period, not the percentage change rate.
+The sparkline color ranges from blue to green, where green indicates a positive trend, and blue indicates a negative trend.
+Sparklines help you identify patterns in metric trends (such as seasonal changes) over time.
+
 NOTE:
 The contributor count metric is available only on GitLab.com at the group-level. To view this metric in the comparison panel, you must [set up ClickHouse](../../integration/clickhouse.md), and enable the [feature flags](../../administration/feature_flags.md) `clickhouse_data_collection` and `event_sync_worker_for_click_house`.
 
 ### DORA Performers score panel
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/386843) in GitLab 16.2 [with a flag](../../administration/feature_flags.md) named `dora_performers_score_panel`. Disabled by default.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/386843) in GitLab 16.3 [with a flag](../../administration/feature_flags.md) named `dora_performers_score_panel`. Disabled by default.
+> - [Enabled on GitLab.com](https://gitlab.com/gitlab-org/gitlab/-/issues/439737) in GitLab 16.9.
 
 FLAG:
-By default this feature is not available. To make it available, an administrator can [enable the feature flag](../../administration/feature_flags.md) named `dora_performers_score_panel`.
+On self-managed GitLab, by default this feature is available. To hide the feature, an administrator can [disable the feature flag](../../administration/feature_flags.md) named `dora_performers_score_panel`.
 
 The [DORA metrics](dora_metrics.md) Performers score panel is a bar chart that visualizes the status of the organization's DevOps performance levels across different projects.
 
@@ -251,8 +262,8 @@ If the comparison panel from the configuration file is enabled with `filter_labe
 | Change failure rate | Percentage of deployments that cause an incident in production. | [Change failure rate tab](https://gitlab.com/groups/gitlab-org/-/analytics/ci_cd?tab=change-failure-rate) | [Change failure rate](dora_metrics.md#change-failure-rate) | `change_failure_rate` |
 | Lead time | Median time from issue created to issue closed. | [Value Stream Analytics](https://gitlab.com/groups/gitlab-org/-/analytics/value_stream_analytics) | [View the lead time and cycle time for issues](../group/value_stream_analytics/index.md#lifecycle-metrics) | `lead_time` |
 | Cycle time | Median time from the earliest commit of a linked issue's merge request to when that issue is closed. | [VSA overview](https://gitlab.com/groups/gitlab-org/-/analytics/value_stream_analytics) | [View the lead time and cycle time for issues](../group/value_stream_analytics/index.md#lifecycle-metrics) | `cycle_time` |
-| Issues created | Number of new issues created. | [Issue Analytics](https://gitlab.com/groups/gitlab-org/-/issues_analytics) | Issue analytics [for projects](issue_analytics.md) and [for groups](../../user/group/issues_analytics/index.md) | `issues` |
-| Issues closed | Number of issues closed by month. | [Value Stream Analytics](https://gitlab.com/groups/gitlab-org/-/analytics/value_stream_analytics) | [Value Stream Analytics](../group/value_stream_analytics/index.md)  | `issues_completed` |
+| Issues created | Number of new issues created. | [Issue Analytics](https://gitlab.com/groups/gitlab-org/-/issues_analytics) | [Issue Analytics](../../user/group/issues_analytics/index.md) | `issues` |
+| Issues closed | Number of issues closed by month. | [Issue Analytics](https://gitlab.com/groups/gitlab-org/-/issues_analytics) | [Issue Analytics](../../user/group/issues_analytics/index.md) | `issues_completed` |
 | Number of deploys | Total number of deploys to production. | [Merge Request Analytics](https://gitlab.com/gitlab-org/gitlab/-/analytics/merge_request_analytics) | [Merge request analytics](merge_request_analytics.md) | `deploys` |
 | Merge request throughput | The number of merge requests merged by month. | [Groups Productivity analytics](productivity_analytics.md), [Projects Merge Request Analytics](https://gitlab.com/gitlab-org/gitlab/-/analytics/merge_request_analytics)  | [Groups Productivity analytics](productivity_analytics.md) [Projects Merge request analytics](merge_request_analytics.md) | `merge_request_throughput` |
 | Contributor count | Number of monthly unique users with contributions in the group.| [Contribution Analytics](https://gitlab.com/groups/gitlab-org/-/contribution_analytics) | [User contribution events](../profile/contributions_calendar.md#user-contribution-events) | `contributor_count` |

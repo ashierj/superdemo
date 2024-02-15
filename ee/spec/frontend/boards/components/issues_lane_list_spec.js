@@ -7,7 +7,6 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { DraggableItemTypes } from 'ee_else_ce/boards/constants';
 import listQuery from 'ee_else_ce/boards/graphql/board_lists_deferred.query.graphql';
 import IssuesLaneList from 'ee/boards/components/issues_lane_list.vue';
-import eventHub from '~/boards/eventhub';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardNewIssue from '~/boards/components/board_new_issue.vue';
 import { ListType } from '~/boards/constants';
@@ -30,6 +29,8 @@ describe('IssuesLaneList', () => {
   let wrapper;
   let mockApollo;
 
+  const maxIssueCountWarningClass = '.gl-bg-red-50';
+
   const findNewIssueForm = () => wrapper.findComponent(BoardNewIssue);
 
   const listIssuesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupIssuesResponse());
@@ -47,6 +48,7 @@ describe('IssuesLaneList', () => {
     canAdminEpic = false,
     highlightedLists = [],
     totalIssuesCount = 2,
+    showNewForm = false,
     listsIssuesQueryHandler = listIssuesQueryHandlerSuccess,
     moveIssueMutationHandler = moveIssueMutationHandlerSuccess,
     createIssueMutationHandler = createIssueMutationHandlerSuccess,
@@ -116,6 +118,7 @@ describe('IssuesLaneList', () => {
         lists: mockLists,
         highlightedLists,
         totalIssuesCount,
+        showNewForm,
       },
       provide: {
         fullPath: 'gitlab-org',
@@ -231,19 +234,19 @@ describe('IssuesLaneList', () => {
 
   describe('max issue count warning', () => {
     describe('when issue count exceeds max issue count', () => {
-      it('sets background to red-100', () => {
+      it('sets background to warning color', () => {
         createComponent({ listProps: { maxIssueCount: 3 }, totalIssuesCount: 4 });
-        const block = wrapper.find('.gl-bg-red-100');
+        const block = wrapper.find(maxIssueCountWarningClass);
         expect(block.exists()).toBe(true);
         expect(block.attributes('class')).toContain('gl-rounded-base');
       });
     });
 
     describe('when list issue count does NOT exceed list max issue count', () => {
-      it('does not set background to red-100', () => {
+      it('does not set background to warning color', () => {
         createComponent({ listProps: { maxIssueCount: 3 }, totalIssuesCount: 2 });
 
-        expect(wrapper.find('.gl-bg-red-100').exists()).toBe(false);
+        expect(wrapper.find(maxIssueCountWarningClass).exists()).toBe(false);
       });
     });
   });
@@ -327,12 +330,11 @@ describe('IssuesLaneList', () => {
         },
         isUnassignedIssuesLane: true,
         canAdminEpic: true,
+        showNewForm: true,
       });
 
       await waitForPromises();
 
-      eventHub.$emit(`toggle-issue-form-${mockList.id}`);
-      await nextTick();
       expect(findNewIssueForm().exists()).toBe(true);
       findNewIssueForm().vm.$emit('addNewIssue', { title: 'Foo' });
 
@@ -348,13 +350,12 @@ describe('IssuesLaneList', () => {
         },
         isUnassignedIssuesLane: true,
         canAdminEpic: true,
+        showNewForm: true,
         createIssueMutationHandler: queryHandlerFailure,
       });
 
       await waitForPromises();
 
-      eventHub.$emit(`toggle-issue-form-${mockList.id}`);
-      await nextTick();
       expect(findNewIssueForm().exists()).toBe(true);
       findNewIssueForm().vm.$emit('addNewIssue', { title: 'Foo' });
 

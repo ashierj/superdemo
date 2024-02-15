@@ -142,80 +142,6 @@ RSpec.describe Gitlab::Geo::LogCursor::Daemon, :clean_gitlab_redis_shared_state,
         daemon.find_and_handle_events!
       end
     end
-
-    context 'when node has namespace restrictions' do
-      let(:group_1) { create(:group) }
-      let(:group_2) { create(:group) }
-      let(:project) { create(:project, group: group_1) }
-      let(:hashed_storage_attachments_event) { create(:geo_hashed_storage_attachments_event, project: project) }
-      let(:event_log) { create(:geo_event_log, hashed_storage_attachments_event: hashed_storage_attachments_event) }
-      let!(:event_log_state) { create(:geo_event_log_state, event_id: event_log.id - 1) }
-      let!(:registry) { create(:geo_project_repository_registry, :synced, project: project) }
-
-      before do
-        allow(Gitlab::ShardHealthCache).to receive(:healthy_shard?).with('default').and_return(true)
-        allow(Gitlab::Geo::Logger).to receive(:info).and_call_original
-      end
-
-      it 'detects when an event was skipped' do
-        updated_event = create(:geo_hashed_storage_attachments_event, project: project)
-        new_event = create(:geo_event_log, id: event_log.id + 2, hashed_storage_attachments_event: updated_event)
-
-        daemon.find_and_handle_events!
-
-        create(:geo_event_log, id: event_log.id + 1)
-
-        expect(read_gaps).to eq([event_log.id + 1])
-
-        expect(::Geo::EventLogState.last_processed.id).to eq(new_event.id)
-      end
-
-      it 'detects when an event was skipped between batches' do
-        updated_event = create(:geo_hashed_storage_attachments_event, project: project)
-        new_event = create(:geo_event_log, hashed_storage_attachments_event: updated_event)
-
-        daemon.find_and_handle_events!
-
-        create(:geo_event_log, id: new_event.id + 3, hashed_storage_attachments_event: updated_event)
-
-        daemon.find_and_handle_events!
-
-        create(:geo_event_log, id: new_event.id + 1, hashed_storage_attachments_event: updated_event)
-        create(:geo_event_log, id: new_event.id + 2, hashed_storage_attachments_event: updated_event)
-
-        expect(read_gaps).to eq([new_event.id + 1, new_event.id + 2])
-      end
-
-      it "logs a message if an associated event can't be found" do
-        new_event = create(:geo_event_log)
-
-        expect(Gitlab::Geo::Logger).to receive(:warn)
-                                        .with(hash_including(
-                                                class: 'Gitlab::Geo::LogCursor::Daemon',
-                                                message: '#handle_single_event: unknown event',
-                                                event_log_id: new_event.id))
-
-        daemon.find_and_handle_events!
-
-        expect(::Geo::EventLogState.last_processed.id).to eq(new_event.id)
-      end
-
-      it 'logs a message for skipped events' do
-        secondary.update!(selective_sync_type: 'namespaces', namespaces: [group_2])
-
-        expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
-                                                             :pid,
-                                                             :cursor_delay_s,
-                                                             message: 'Skipped event',
-                                                             class: 'Gitlab::Geo::LogCursor::Daemon',
-                                                             event_log_id: event_log.id,
-                                                             event_id: hashed_storage_attachments_event.id,
-                                                             event_type: 'Geo::HashedStorageAttachmentsEvent',
-                                                             project_id: project.id))
-
-        daemon.find_and_handle_events!
-      end
-    end
   end
 
   describe '#handle_events' do
@@ -248,7 +174,7 @@ RSpec.describe Gitlab::Geo::LogCursor::Daemon, :clean_gitlab_redis_shared_state,
   end
 
   describe '#handle_single_event' do
-    let_it_be(:event_log) { create(:geo_event_log, :updated_event) }
+    let_it_be(:event_log) { create(:geo_event_log, :geo_event) }
 
     it 'skips execution when no event data is found' do
       event_log = build(:geo_event_log)

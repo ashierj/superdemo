@@ -4,7 +4,6 @@ import Draggable from 'vuedraggable';
 import { __, s__ } from '~/locale';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardNewIssue from '~/boards/components/board_new_issue.vue';
-import eventHub from '~/boards/eventhub';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { STATUS_CLOSED } from '~/issues/constants';
 import {
@@ -82,10 +81,14 @@ export default {
       required: false,
       default: 0,
     },
+    showNewForm: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
-      showIssueForm: false,
       toListId: null,
     };
   },
@@ -183,7 +186,7 @@ export default {
       return this.list.maxIssueCount > 0 && this.totalIssuesCount > this.list.maxIssueCount;
     },
     showNewIssue() {
-      return this.list.type !== STATUS_CLOSED && this.showIssueForm && this.isUnassignedIssuesLane;
+      return this.list.type !== STATUS_CLOSED && this.showNewForm && this.isUnassignedIssuesLane;
     },
   },
   watch: {
@@ -203,19 +206,7 @@ export default {
       }
     },
   },
-  created() {
-    eventHub.$on(`toggle-issue-form-${this.list.id}`, this.toggleForm);
-  },
-  beforeDestroy() {
-    eventHub.$off(`toggle-issue-form-${this.list.id}`, this.toggleForm);
-  },
   methods: {
-    toggleForm() {
-      this.showIssueForm = !this.showIssueForm;
-      if (this.showIssueForm && this.isUnassignedIssuesLane) {
-        this.$el.scrollIntoView(false);
-      }
-    },
     handleDragOnStart() {
       document.body.classList.add('is-dragging');
     },
@@ -391,7 +382,7 @@ export default {
       });
     },
     async addListItem(input) {
-      this.toggleForm();
+      this.$emit('toggleNewForm');
       try {
         await this.$apollo.mutate({
           mutation: listIssuablesQueries.issue.createMutation,
@@ -443,11 +434,12 @@ export default {
     class="board gl-px-3 gl-vertical-align-top gl-white-space-normal gl-display-flex gl-flex-shrink-0"
     :class="{ 'is-collapsed gl-w-10': list.collapsed }"
   >
-    <div class="board-inner gl-rounded-base gl-relative gl-w-full gl-bg-gray-50">
+    <div class="gl-rounded-base gl-relative gl-w-full gl-bg-gray-50">
       <board-new-issue
         v-if="showNewIssue"
         :list="list"
         :board-id="boardId"
+        @toggleNewForm="$emit('toggleNewForm')"
         @addNewIssue="addListItem"
       />
       <component
@@ -457,7 +449,7 @@ export default {
         class="board-cell gl-p-2 gl-m-0 gl-h-full gl-list-style-none"
         :class="{
           'board-column-highlighted': highlighted,
-          'gl-bg-red-100 gl-rounded-base': boardItemsSizeExceedsMax,
+          'gl-bg-red-50 gl-rounded-base': boardItemsSizeExceedsMax,
         }"
         data-testid="tree-root-wrapper"
         @start="handleDragOnStart"
@@ -472,6 +464,7 @@ export default {
             :list="list"
             :item="issue"
             :can-admin="canAdminEpic"
+            @setFilters="$emit('setFilters', $event)"
           />
         </template>
         <gl-loading-icon

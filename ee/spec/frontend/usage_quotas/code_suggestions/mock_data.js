@@ -24,13 +24,13 @@ export const purchasedAddonFuzzyData = {
       id: 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/3',
       name: ADD_ON_CODE_SUGGESTIONS,
       assignedQuantity: 0,
-      purchasedQuantity: undefined,
+      purchasedQuantity: null,
       __typename: 'AddOnPurchase',
     },
   },
 };
 
-export const mockUserWithAddOnAssignment = {
+export const mockSMUserWithAddOnAssignment = {
   id: 'gid://gitlab/User/1',
   username: 'userone',
   name: 'User One',
@@ -46,7 +46,7 @@ export const mockUserWithAddOnAssignment = {
   __typename: 'AddOnUser',
 };
 
-export const mockUserWithNoAddOnAssignment = {
+export const mockSMUserWithNoAddOnAssignment = {
   id: 'gid://gitlab/User/2',
   username: 'usertwo',
   name: 'User Two',
@@ -59,7 +59,18 @@ export const mockUserWithNoAddOnAssignment = {
   __typename: 'AddOnUser',
 };
 
+export const mockUserWithAddOnAssignment = {
+  ...mockSMUserWithAddOnAssignment,
+  membershipType: null,
+};
+
+export const mockUserWithNoAddOnAssignment = {
+  ...mockSMUserWithNoAddOnAssignment,
+  membershipType: null,
+};
+
 export const eligibleUsers = [mockUserWithAddOnAssignment, mockUserWithNoAddOnAssignment];
+export const eligibleSMUsers = [mockSMUserWithAddOnAssignment, mockSMUserWithNoAddOnAssignment];
 export const eligibleUsersWithMaxRole = eligibleUsers.map((user) => ({
   ...user,
   maxRole: 'developer',
@@ -104,6 +115,66 @@ export const mockPaginatedAddOnEligibleUsers = {
       addOnEligibleUsers: {
         nodes: eligibleUsers,
         pageInfo: pageInfoWithMorePages,
+      },
+    },
+  },
+};
+
+export const mockPaginatedAddOnEligibleUsersWithMembershipType = {
+  data: {
+    namespace: {
+      id: 'gid://gitlab/Group/1',
+      addOnEligibleUsers: {
+        nodes: eligibleUsers.map((user) => ({ ...user, membershipType: 'group_invite' })),
+        pageInfo: pageInfoWithMorePages,
+      },
+    },
+  },
+};
+
+export const mockNoGroups = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/95',
+      name: 'Code Suggestions Group',
+      fullName: 'Code Suggestions Group',
+      fullPath: 'code-suggestions-group',
+      __typename: 'Group',
+      descendantGroups: {
+        nodes: [],
+        pageInfo: {},
+        __typename: 'GroupConnection',
+      },
+    },
+  },
+};
+
+export const mockGroups = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/95',
+      name: 'Code Suggestions Group',
+      fullName: 'Code Suggestions Group',
+      fullPath: 'code-suggestions-group',
+      __typename: 'Group',
+      descendantGroups: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Group/99',
+            name: 'Code Suggestions Subgroup',
+            fullName: 'Code Suggestions Group / Code Suggestions Subgroup',
+            fullPath: 'code-suggestions-group/code-suggestions-subgroup',
+            __typename: 'Group',
+          },
+        ],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: null,
+          endCursor: null,
+          __typename: 'PageInfo',
+        },
+        __typename: 'GroupConnection',
       },
     },
   },

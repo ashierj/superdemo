@@ -32,13 +32,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     it { is_expected.to have_many(:compliance_violations).class_name('MergeRequests::ComplianceViolation') }
 
     describe 'approval_rules association' do
-      describe '#applicable_post_merge' do
+      describe 'applicable_post_merge_approval_rules' do
         it 'returns only the rules applicable_post_merge true or nil' do
           create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: false)
           rule_2 = create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: true)
           rule_3 = create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: true)
 
-          expect(merge_request.approval_rules.applicable_post_merge).to contain_exactly(rule_2, rule_3)
+          expect(merge_request.applicable_post_merge_approval_rules).to contain_exactly(rule_2, rule_3)
         end
       end
 
@@ -319,6 +319,14 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
             end
 
             it { is_expected.to eq(overrides) }
+
+            context 'when scan_result_policy_violations is already loaded' do
+              before do
+                merge_request.scan_result_policy_violations.load
+              end
+
+              it { is_expected.to eq(overrides) }
+            end
           end
 
           context 'when unviolated' do
@@ -1727,36 +1735,6 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       merge_request = create(:merge_request, title: 'I am a title')
 
       expect(merge_request.audit_details).to eq(merge_request.title)
-    end
-  end
-
-  describe '#latest_finished_target_branch_pipeline_for_scan_result_policy' do
-    context 'without pipeline' do
-      it 'return nil' do
-        expect(merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy).to be_nil
-      end
-    end
-
-    context 'with existing pipeline' do
-      let!(:target_branch_pipeline) do
-        create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch)
-      end
-
-      let!(:target_branch_tag_pipeline) do
-        create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch, tag: true)
-      end
-
-      let!(:target_branch_running_pipeline) do
-        create(:ee_ci_pipeline, :running, project: project, ref: merge_request.target_branch)
-      end
-
-      let!(:target_branch_skipped_pipeline) do
-        create(:ee_ci_pipeline, :skipped, project: project, ref: merge_request.target_branch)
-      end
-
-      it 'returns the pipeline related to the target branch' do
-        expect(merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy).to eq(target_branch_pipeline)
-      end
     end
   end
 

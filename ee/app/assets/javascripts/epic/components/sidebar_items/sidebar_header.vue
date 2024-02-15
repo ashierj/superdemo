@@ -24,7 +24,7 @@ export default {
   <div class="issuable-sidebar-header">
     <toggle-sidebar
       :collapsed="sidebarCollapsed"
-      css-classes="float-right"
+      css-classes="gl-float-right"
       @toggle="toggleSidebar({ sidebarCollapsed })"
     />
     <slot></slot>

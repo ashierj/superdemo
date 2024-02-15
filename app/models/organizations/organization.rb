@@ -2,6 +2,8 @@
 
 module Organizations
   class Organization < MainClusterwide::ApplicationRecord
+    include Gitlab::SQL::Pattern
+
     DEFAULT_ORGANIZATION_ID = 1
 
     scope :without_default, -> { where.not(id: DEFAULT_ORGANIZATION_ID) }
@@ -35,8 +37,16 @@ module Organizations
     accepts_nested_attributes_for :organization_detail
     accepts_nested_attributes_for :organization_users
 
+    def self.search(query, use_minimum_char_limit: true)
+      fuzzy_search(query, [:name, :path], use_minimum_char_limit: use_minimum_char_limit)
+    end
+
     def self.default_organization
       find_by(id: DEFAULT_ORGANIZATION_ID)
+    end
+
+    def self.default?(id)
+      id == DEFAULT_ORGANIZATION_ID
     end
 
     def organization_detail
@@ -44,7 +54,7 @@ module Organizations
     end
 
     def default?
-      id == DEFAULT_ORGANIZATION_ID
+      self.class.default?(id)
     end
 
     def to_param
@@ -72,3 +82,5 @@ module Organizations
     end
   end
 end
+
+::Organizations::Organization.prepend_mod_with('Organizations::Organization')

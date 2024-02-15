@@ -121,6 +121,12 @@ module EE
           alpha: { milestone: '16.9' },
           description: 'Runner usage by project.',
           resolver: ::Resolvers::Ci::RunnerUsageByProjectResolver
+        field :runner_usage,
+          [::Types::Ci::RunnerUsageType],
+          null: true,
+          alpha: { milestone: '16.9' },
+          description: 'Runner usage by runner.',
+          resolver: ::Resolvers::Ci::RunnerUsageResolver
 
         field :instance_google_cloud_logging_configurations,
           ::Types::AuditEvents::Instance::GoogleCloudLoggingConfigurationType.connection_type,
@@ -185,7 +191,7 @@ module EE
       end
 
       def member_role_permissions
-        MemberRole.all_customizable_permissions.keys
+        MemberRole.all_customizable_permissions.keys.filter { |perm| ::MemberRole.permission_enabled?(perm) }
       end
 
       private

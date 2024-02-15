@@ -21,16 +21,7 @@ module Epics
       super.tap do |save_result|
         break save_result unless save_result && work_item_sync_enabled?
 
-        service_response = create_work_item_for(epic)
-
-        if service_response.success?
-          epic.issue_id = service_response.payload[:work_item].id
-          epic.save
-        else
-          error_message = service_response.payload[:errors]&.full_messages&.join(', ')
-          log_error("Unable create synced work item: #{error_message}. Group ID: #{group.id}")
-          raise StandardError, error_message
-        end
+        create_work_item_for!(epic)
       end
     end
 
@@ -57,10 +48,6 @@ module Epics
       if params[:due_date_fixed] && params[:due_date_is_fixed]
         params[:end_date] = params[:due_date_fixed]
       end
-    end
-
-    def work_item_sync_enabled?
-      ::Feature.enabled?(:epic_creation_with_synced_work_item, group, type: :wip)
     end
   end
 end

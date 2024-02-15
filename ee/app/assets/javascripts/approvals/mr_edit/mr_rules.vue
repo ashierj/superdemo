@@ -39,6 +39,12 @@ export default {
         ? rule.ruleType === RULE_TYPE_REGULAR
         : rule.name !== RULE_NAME_ANY_APPROVER;
     },
+    firstColumnSpan() {
+      return this.hasNamedRule ? '1' : '2';
+    },
+    firstColumnWidth() {
+      return this.hasNamedRule ? 'gl-w-30p' : 'w-75';
+    },
     canEdit() {
       return this.settings.canEdit;
     },
@@ -113,12 +119,14 @@ export default {
   <rules :rules="rules">
     <template #thead="{ name, members, approvalsRequired, actions }">
       <tr>
-        <th :class="hasNamedRule ? 'w-25' : 'w-75'">{{ hasNamedRule ? name : members }}</th>
-        <th :class="hasNamedRule ? 'w-50' : null">
-          <span v-if="hasNamedRule">{{ members }}</span>
+        <th :colspan="firstColumnSpan" :class="firstColumnWidth">
+          {{ hasNamedRule ? name : members }}
+        </th>
+        <th v-if="hasNamedRule" class="gl-w-40p">
+          <span>{{ members }}</span>
         </th>
         <th class="gl-text-center">{{ approvalsRequired }}</th>
-        <th>{{ actions }}</th>
+        <th class="gl-text-right">{{ actions }}</th>
       </tr>
     </template>
     <template #tbody="{ rules }">
@@ -132,19 +140,20 @@ export default {
           :can-edit="canEdit"
         />
         <tr v-else :key="index">
-          <td :data-label="__('Name')">
+          <td :data-label="__('Rule')">
             <div>
-              <div class="js-name" :data-label="__('Name')">{{ rule.name }}</div>
+              <div class="js-name">{{ rule.name }}</div>
               <div ref="indicator" class="text-muted">
                 {{ indicatorText(rule) }}
               </div>
             </div>
           </td>
-          <td class="js-members" :data-label="__('Approvers')">
+          <td class="gl-py-5! js-members" :data-label="__('Approvers')">
             <user-avatar-list
               :items="rule.approvers"
               :img-size="24"
               :empty-text="__('Approvers from private group(s) not shown')"
+              class="gl-my-n2!"
             />
           </td>
           <td class="js-approvals-required gl-text-right" :data-label="__('Approvals required')">

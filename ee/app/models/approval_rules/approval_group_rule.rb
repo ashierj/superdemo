@@ -21,6 +21,7 @@ module ApprovalRules
       scope: :group_id,
       message: proc { _('any-approver for the group already exists') }
     }, if: :any_approver?
+    validates :group, presence: true, top_level_group: true
 
     def audit_add(_model)
       # currently no audit on group add, only on project.

@@ -22,6 +22,7 @@ function mountCodeSuggestionsUsageApp() {
     apolloProvider,
     provide: {
       isSaaS: false,
+      addDuoProHref: el.dataset.addDuoProSeatsUrl,
     },
     render: (h) => h(CodeSuggestionsUsage),
   });

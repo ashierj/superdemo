@@ -22,8 +22,7 @@ module Audit
 
     def execute
       EVENT_NAME_PER_COLUMN.each do |column, event_name|
-        audit_changes(column, as: column_human_name(column), model: model,
-                              event_type: event_name)
+        audit_changes(column, as: column_human_name(column), model: model, event_type: event_name)
       end
 
       audit_namespace_setting_changes

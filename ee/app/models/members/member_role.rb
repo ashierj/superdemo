@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
+  include GitlabSubscriptions::SubscriptionHelper
+
   MAX_COUNT_PER_GROUP_HIERARCHY = 10
 
   NON_PERMISSION_COLUMNS = [
@@ -19,7 +21,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   has_many :saml_group_links
   belongs_to :namespace
 
-  validates :namespace, presence: true, if: :group_role_required?
+  validates :namespace, presence: true, if: :gitlab_com_subscription?
   validates :name, presence: true
   validates :base_access_level, presence: true, inclusion: { in: LEVELS }
   validate :belongs_to_top_level_namespace
@@ -27,6 +29,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   validate :validate_namespace_locked, on: :update
   validate :base_access_level_locked, on: :update
   validate :validate_requirements
+  validate :ensure_at_least_one_permission_is_enabled
 
   validates_associated :members
 
@@ -39,6 +42,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   end
 
   scope :by_namespace, ->(group_ids) { where(namespace_id: group_ids) }
+  scope :for_instance, -> { where(namespace_id: nil) }
 
   scope :with_members_count, -> do
     left_outer_joins(:members)
@@ -80,10 +84,18 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     def customizable_permissions_exempt_from_consuming_seat
       MemberRole.all_customizable_permissions.select { |_k, v| v[:skip_seat_consumption] }.keys
     end
+
+    def permission_enabled?(permission)
+      return true unless ::Feature::Definition.get("custom_ability_#{permission}")
+
+      ::Feature.enabled?("custom_ability_#{permission}")
+    end
   end
 
   def enabled_permissions
-    MemberRole.all_customizable_permissions.keys.filter { |perm| attributes[perm.to_s] }
+    MemberRole.all_customizable_permissions.keys.filter do |permission|
+      attributes[permission.to_s] && self.class.permission_enabled?(permission)
+    end
   end
 
   private
@@ -131,6 +143,12 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     end
   end
 
+  def ensure_at_least_one_permission_is_enabled
+    return if self.class.all_customizable_permissions.keys.any? { |attr| self[attr] }
+
+    errors.add(:base, s_('MemberRole|Cannot create a member role with no enabled permissions'))
+  end
+
   def base_access_level_locked
     return unless changed_attributes.include?('base_access_level')
 
@@ -152,9 +170,5 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     )
 
     throw :abort # rubocop:disable Cop/BanCatchThrow
-  end
-
-  def group_role_required?
-    Gitlab::Saas.feature_available?(:group_custom_roles)
   end
 end

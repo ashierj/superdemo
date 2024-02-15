@@ -11,10 +11,6 @@ RSpec.describe 'Instance-level Member Roles', :js, feature_category: :permission
   let(:permission_name) { permission.to_s.humanize }
   let(:access_level) { 'Developer' }
 
-  before_all do
-    sign_in(admin)
-  end
-
   before do
     stub_licensed_features(custom_roles: true)
   end
@@ -37,21 +33,47 @@ RSpec.describe 'Instance-level Member Roles', :js, feature_category: :permission
     before do
       allow(Gitlab::CustomRoles::Definition).to receive(:all).and_return(permissions)
 
-      visit admin_application_settings_roles_and_permissions_path
+      gitlab_sign_in(admin)
     end
 
-    it 'creates a new custom role' do
-      create_role(access_level, name, [permission_name])
+    shared_examples 'creates a new custom role' do
+      it 'and displays it' do
+        create_role(access_level, name, [permission_name])
 
-      created_member_role = MemberRole.find_by(
-        name: name,
-        base_access_level: Gitlab::Access.options[access_level],
-        permission => true)
+        created_member_role = MemberRole.find_by(
+          name: name,
+          base_access_level: Gitlab::Access.options[access_level],
+          permission => true)
 
-      expect(created_member_role).not_to be_nil
+        expect(created_member_role).not_to be_nil
 
-      role = created_role(name, created_member_role.id, access_level, [permission_name])
-      expect(page).to have_content(role)
+        role = created_role(name, created_member_role.id, access_level, [permission_name])
+        expect(page).to have_content(role)
+      end
+    end
+
+    context 'when on self-managed' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: false)
+
+        visit admin_application_settings_roles_and_permissions_path
+      end
+
+      it_behaves_like 'creates a new custom role'
+    end
+
+    context 'when on SaaS' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+
+        visit admin_application_settings_roles_and_permissions_path
+      end
+
+      it 'shows an error message' do
+        create_role(access_level, name, [permission_name])
+
+        expect(page).to have_content('Failed to create role')
+      end
     end
   end
 end

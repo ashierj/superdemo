@@ -19,7 +19,8 @@ RSpec.describe Projects::ObservabilityHelper, type: :helper, feature_category: :
       operationsUrl: Gitlab::Observability.operations_url(project),
       metricsUrl: Gitlab::Observability.metrics_url(project),
       metricsSearchUrl: Gitlab::Observability.metrics_search_url(project),
-      metricsSearchMetadataUrl: Gitlab::Observability.metrics_search_metadata_url(project)
+      metricsSearchMetadataUrl: Gitlab::Observability.metrics_search_metadata_url(project),
+      logsSearchUrl: Gitlab::Observability.logs_search_url(project)
     }
   end
 
@@ -66,6 +67,16 @@ RSpec.describe Projects::ObservabilityHelper, type: :helper, feature_category: :
 
       expect(helper.observability_metrics_details_view_model(project, "test.metric", "metric_type"))
         .to eq(expected_json)
+    end
+  end
+
+  describe '#observability_logs_view_model' do
+    it 'generates the correct JSON' do
+      expected_json = {
+        apiConfig: expected_api_config
+      }.to_json
+
+      expect(helper.observability_logs_view_model(project)).to eq(expected_json)
     end
   end
 end

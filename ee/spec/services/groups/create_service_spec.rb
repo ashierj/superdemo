@@ -98,7 +98,7 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
 
   context 'when updating protected params' do
     let(:extra_params) do
-      { shared_runners_minutes_limit: 1000, extra_shared_runners_minutes_limit: 100, delayed_project_removal: true }
+      { shared_runners_minutes_limit: 1000, extra_shared_runners_minutes_limit: 100 }
     end
 
     context 'as an admin' do
@@ -107,7 +107,6 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
       it 'updates the attributes' do
         expect(created_group.shared_runners_minutes_limit).to eq(1000)
         expect(created_group.extra_shared_runners_minutes_limit).to eq(100)
-        expect(created_group.namespace_settings.delayed_project_removal).to be true
       end
     end
 
@@ -115,7 +114,6 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
       it 'ignores the attributes' do
         expect(created_group.shared_runners_minutes_limit).to be_nil
         expect(created_group.extra_shared_runners_minutes_limit).to be_nil
-        expect(created_group.namespace_settings.delayed_project_removal).to be false
       end
     end
   end

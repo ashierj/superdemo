@@ -53,6 +53,15 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
           template: `<div><slot name="view"></slot><slot name="suggestions"></slot></div>`,
         }),
         GlIntersperse,
+        DynamicScroller: stubComponent(
+          {
+            props: ['items'],
+          },
+          {
+            template: `<div><slot :item="license" :active="false"></slot></div>`,
+            data: () => ({ license: TEST_LICENSES[0] }),
+          },
+        ),
       },
     });
   };
@@ -71,6 +80,7 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
     findFilteredSearchToken().vm.$emit('input', { data: searchTerm });
     return waitForPromises();
   };
+  const findDynamicScroller = () => wrapper.findByTestId('dynamic-scroller');
 
   describe('when the component is initially rendered', () => {
     it('shows a loading indicator while fetching the list of licenses', () => {
@@ -89,13 +99,21 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
       );
     });
 
-    it('shows the full list of licenses once the fetch is completed', () => {
-      store.state.allDependencies.licenses = TEST_LICENSES;
-      createComponent();
+    it.each([
+      { licenses: TEST_LICENSES, expectDynamicScroller: true },
+      {
+        licenses: [],
+        expectDynamicScroller: false,
+      },
+    ])(
+      'with $licenses.length licenses it contains a dynamic-scroller is "$expectDynamicScroller"',
+      ({ licenses, expectDynamicScroller }) => {
+        store.state.allDependencies.licenses = licenses;
+        createComponent();
 
-      expect(wrapper.text()).toContain(TEST_LICENSES[0].name);
-      expect(wrapper.text()).toContain(TEST_LICENSES[1].name);
-    });
+        expect(findDynamicScroller().exists()).toBe(expectDynamicScroller);
+      },
+    );
 
     it.each([
       { active: true, expectedValue: null },
@@ -123,12 +141,23 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
       createComponent();
     });
 
+    it('correctly sets up a dynamic-scroller to enhance the render-performance of the licenses list', () => {
+      expect(findDynamicScroller().attributes()).toMatchObject({
+        'key-field': 'id',
+        'min-item-size': '32',
+        style: 'max-height: 170px;',
+      });
+    });
+
+    it('shows the full list of licenses once the fetch is completed', () => {
+      expect(findDynamicScroller().props('items')).toEqual(TEST_LICENSES);
+    });
+
     describe('when a user enters a search term', () => {
       it('shows the filtered list of suggestions', async () => {
         await searchForLicense(TEST_LICENSES[0].name);
 
-        expect(wrapper.text()).toContain(TEST_LICENSES[0].name);
-        expect(wrapper.text()).not.toContain(TEST_LICENSES[1].name);
+        expect(findDynamicScroller().props('items')).toEqual([TEST_LICENSES[0]]);
       });
     });
 

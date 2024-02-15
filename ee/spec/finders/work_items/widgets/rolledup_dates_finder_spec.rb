@@ -49,21 +49,22 @@ RSpec.describe WorkItems::Widgets::RolledupDatesFinder, :aggregate_failures, fea
     let_it_be(:dates_source) do
       create(
         :work_items_dates_source,
+        :fixed,
         work_item: child_work_item,
-        start_date_fixed: 3.days.ago,
-        due_date_fixed: 3.days.from_now)
+        start_date: 3.days.ago,
+        due_date: 3.days.from_now)
     end
 
     it 'returns the right attributes' do
       expect(finder.minimum_start_date.first.attributes).to eq(
         'issue_id' => nil,
-        'start_date' => child_work_item.dates_source.start_date_fixed,
+        'start_date' => child_work_item.dates_source.start_date,
         'start_date_sourcing_work_item_id' => child_work_item.id,
         'start_date_sourcing_milestone_id' => nil)
 
       expect(finder.maximum_due_date.first.attributes).to eq(
         'issue_id' => nil,
-        'due_date' => child_work_item.dates_source.due_date_fixed,
+        'due_date' => child_work_item.dates_source.due_date,
         'due_date_sourcing_work_item_id' => child_work_item.id,
         'due_date_sourcing_milestone_id' => nil)
     end
@@ -81,9 +82,10 @@ RSpec.describe WorkItems::Widgets::RolledupDatesFinder, :aggregate_failures, fea
     let_it_be(:dates_source) do
       create(
         :work_items_dates_source,
+        :fixed,
         work_item: child_work_item,
-        start_date_fixed: 2.days.ago,
-        due_date_fixed: 2.days.from_now)
+        start_date: 2.days.ago,
+        due_date: 2.days.from_now)
     end
 
     before do

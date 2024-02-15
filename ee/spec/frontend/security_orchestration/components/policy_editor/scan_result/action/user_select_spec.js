@@ -13,31 +13,39 @@ import { NAMESPACE_TYPES, USER_TYPE } from 'ee/security_orchestration/constants'
 Vue.use(VueApollo);
 
 const user = {
-  id: 'gid://gitlab/User/2',
+  id: 'gid://gitlab/User/1',
   name: 'Name 1',
   username: 'name.1',
   avatarUrl: 'https://www.gravatar.com/avatar/1234',
   __typename: 'UserCore',
 };
 
-const PROJECT_MEMBER_RESPONSE = {
+const user2 = {
+  id: 'gid://gitlab/User/2',
+  name: 'Name 2',
+  username: 'name.2',
+  avatarUrl: 'https://www.gravatar.com/avatar/1235',
+  __typename: 'UserCore',
+};
+
+const createProjectMemberResponse = (nodes) => ({
   data: {
     project: {
       id: 'gid://gitlab/Project/6',
       projectMembers: {
-        nodes: [
-          {
-            id: 'gid://gitlab/ProjectMember/1',
-            user,
-            __typename: 'ProjectMember',
-          },
-        ],
+        nodes,
         __typename: 'MemberInterfaceConnection',
       },
       __typename: 'Project',
     },
   },
-};
+});
+
+const DUPLICATE_PROJECT_MEMBER_RESPONSE = createProjectMemberResponse([
+  { id: 'gid://gitlab/ProjectMember/1', user, __typename: 'ProjectMember' },
+  { id: 'gid://gitlab/ProjectMember/2', user, __typename: 'ProjectMember' },
+  { id: 'gid://gitlab/ProjectMember/3', user: user2, __typename: 'ProjectMember' },
+]);
 
 const GROUP_MEMBER_RESPONSE = {
   data: {
@@ -68,7 +76,9 @@ describe('UserSelect component', () => {
   let wrapper;
   const namespacePath = 'path/to/namespace';
   const namespaceType = NAMESPACE_TYPES.PROJECT;
-  const projectSearchQueryHandlerSuccess = jest.fn().mockResolvedValue(PROJECT_MEMBER_RESPONSE);
+  const projectSearchQueryHandlerSuccess = jest
+    .fn()
+    .mockResolvedValue(DUPLICATE_PROJECT_MEMBER_RESPONSE);
   const groupSearchQueryHandlerSuccess = jest.fn().mockResolvedValue(GROUP_MEMBER_RESPONSE);
 
   const createComponent = ({ propsData = {}, provide = {} } = {}) => {
@@ -109,6 +119,19 @@ describe('UserSelect component', () => {
       expect(findListbox().props('toggleClass')).toEqual([
         'gl-max-w-15',
         { 'gl-inset-border-1-red-500!': false },
+      ]);
+    });
+
+    it('removes duplicates from user request', () => {
+      expect(findListbox().props('items')).toEqual([
+        { ...user, id: user.id, text: user.name, username: `@${user.username}`, value: user.id },
+        {
+          ...user2,
+          id: user2.id,
+          text: user2.name,
+          username: `@${user2.username}`,
+          value: user2.id,
+        },
       ]);
     });
 
@@ -172,7 +195,6 @@ describe('UserSelect component', () => {
   it('requests project members at the project-level', async () => {
     createComponent();
     await waitForApolloAndVue();
-
     expect(projectSearchQueryHandlerSuccess).toHaveBeenCalledWith({
       fullPath: namespacePath,
       search: '',

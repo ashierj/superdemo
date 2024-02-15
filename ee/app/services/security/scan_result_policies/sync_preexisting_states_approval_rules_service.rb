@@ -24,13 +24,15 @@ module Security
       delegate :project, to: :merge_request, private: true
 
       def sync_required_approvals
-        rules_with_preexisting_states = merge_request.approval_rules.scan_finding.reject do |rule|
+        all_scan_finding_rules = merge_request.approval_rules.scan_finding
+        rules_with_preexisting_states = all_scan_finding_rules.reject do |rule|
           include_newly_detected?(rule)
         end
 
         return unless rules_with_preexisting_states.any?
 
         update_scan_finding_rules_with_preexisting_states(rules_with_preexisting_states)
+        generate_policy_bot_comment(merge_request, all_scan_finding_rules, :scan_finding)
       end
 
       def update_scan_finding_rules_with_preexisting_states(approval_rules)
@@ -47,8 +49,6 @@ module Security
         log_violated_rules(violated_rules)
         violations.add(violated_rules.map(&:scan_result_policy_id), unviolated_rules.map(&:scan_result_policy_id))
         violations.execute
-
-        generate_policy_bot_comment(merge_request, violated_rules, :scan_finding)
       end
 
       def preexisting_findings_count_violated?(approval_rule)

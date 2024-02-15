@@ -700,6 +700,58 @@ Get the external wiki settings for a project.
 GET /projects/:id/integrations/external-wiki
 ```
 
+## GitGuardian
+
+DETAILS:
+**Tier:** Premium, Ultimate
+**Offering:** Self-managed
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/435706) in GitLab 16.9 [with a flag](../administration/feature_flags.md) named `git_guardian_integration`. Enabled by default. Disabled on GitLab.com.
+
+FLAG:
+On self-managed GitLab, by default this feature is available. To hide the feature, ask an administrator to [disable the feature flag](../administration/feature_flags.md) named `git_guardian_integration`.
+On GitLab.com, this feature is not available.
+
+WARNING:
+Pushes can be delayed or can time out. With the GitGuardian integration, pushes are sent to a third-party, and GitLab has no control over the connection with GitGuardian or the GitGuardian process.
+
+[GitGuardian](https://www.gitguardian.com/) is a cybersecurity service that detects sensitive data such as API keys
+and passwords in source code repositories.
+It scans Git repositories, alerts on policy violations, and helps organizations
+fix security issues before hackers can exploit them.
+
+You can configure GitLab to reject commits based on GitGuardian policies.
+
+### Set up GitGuardian
+
+Set up the GitGuardian integration for a project.
+
+```plaintext
+PUT /projects/:id/integrations/git-guardian
+```
+
+Parameters:
+
+| Parameter | Type | Required | Description                                   |
+| --------- | ---- | -------- |-----------------------------------------------|
+| `token` | string | true | GitGuardian API token with `scan` scope. |
+
+### Disable GitGuardian
+
+Disable the GitGuardian integration for a project. Integration settings are reset.
+
+```plaintext
+DELETE /projects/:id/integrations/git-guardian
+```
+
+### Get GitGuardian settings
+
+Get the GitGuardian integration settings for a project.
+
+```plaintext
+GET /projects/:id/integrations/git-guardian
+```
+
 ## GitHub
 
 DETAILS:
@@ -1258,7 +1310,7 @@ Parameters:
 
 | Parameter | Type | Required | Description |
 | --------- | ---- | -------- | ----------- |
-| `mock_service_url` | string | true | `http://localhost:4004`. |
+| `mock_service_url` | string | true | URL of the Mock CI integration. |
 | `enable_ssl_verification` | boolean | false | Enable SSL verification. Defaults to `true` (enabled). |
 
 ### Disable Mock CI

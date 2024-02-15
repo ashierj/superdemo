@@ -33,7 +33,7 @@ class GitlabSubscription < ApplicationRecord
   end
 
   scope :with_hosted_plan, -> (plan_name) do
-    joins(:hosted_plan).where(trial: false, 'plans.name' => plan_name)
+    joins(:hosted_plan).where(trial: [false, nil], 'plans.name' => plan_name)
     .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422013')
   end
 
@@ -55,6 +55,8 @@ class GitlabSubscription < ApplicationRecord
       .where("last_seat_refresh_at < ? OR last_seat_refresh_at IS NULL", 18.hours.ago)
       .limit(limit)
   end
+
+  scope :not_expired, -> (before_date: Date.today) { where('end_date IS NULL OR end_date >= ?', before_date) }
 
   DAYS_AFTER_EXPIRATION_BEFORE_REMOVING_FROM_INDEX = 30
 

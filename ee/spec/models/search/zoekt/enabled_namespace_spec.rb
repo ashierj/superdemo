@@ -78,5 +78,35 @@ RSpec.describe ::Search::Zoekt::EnabledNamespace, feature_category: :global_sear
         expect(described_class.with_missing_indices).to contain_exactly(zoekt_enabled_namespace)
       end
     end
+
+    describe '.destroy_namespaces_with_expired_subscriptions!', :saas do
+      subject(:destroy_namespaces) { described_class.destroy_namespaces_with_expired_subscriptions! }
+
+      let_it_be(:expired_date) { Date.today - Search::Zoekt::EXPIRED_SUBSCRIPTION_GRACE_PERIOD }
+      let_it_be(:expired_subscription) { create(:gitlab_subscription, :ultimate, end_date: expired_date - 1.day) }
+      let_it_be(:grace_period_subscription) { create(:gitlab_subscription, :ultimate, end_date: expired_date + 1.day) }
+      let_it_be(:ultimate_subscription) { create(:gitlab_subscription, :ultimate) }
+
+      let_it_be(:zoekt_enabled_namespace_ultimate_expired) do
+        create(:zoekt_enabled_namespace, namespace: expired_subscription.namespace)
+      end
+
+      let_it_be(:zoekt_enabled_namespace_ultimate_grace_period) do
+        create(:zoekt_enabled_namespace, namespace: grace_period_subscription.namespace)
+      end
+
+      let_it_be(:zoekt_enabled_namespace_ultimate) do
+        create(:zoekt_enabled_namespace, namespace: ultimate_subscription.namespace)
+      end
+
+      it 'destroys expired subscriptions' do
+        expect { destroy_namespaces }.to change { ::Search::Zoekt::EnabledNamespace.count }.by(-2)
+
+        expect(described_class.all).to contain_exactly(
+          zoekt_enabled_namespace_ultimate_grace_period,
+          zoekt_enabled_namespace_ultimate
+        )
+      end
+    end
   end
 end

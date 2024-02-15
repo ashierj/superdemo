@@ -6,7 +6,7 @@ RSpec.describe Geo::PruneEventLogService, feature_category: :geo_replication do
   include ExclusiveLeaseHelpers
 
   let(:min_id) { :all }
-  let!(:events) { create_list(:geo_event_log, 5, :updated_event) }
+  let!(:events) { create_list(:geo_event_log, 5, :geo_event) }
   let(:lease_key) { 'geo/prune_event_log_service' }
   let(:lease_timeout) { described_class::LEASE_TIMEOUT }
 
@@ -39,9 +39,7 @@ RSpec.describe Geo::PruneEventLogService, feature_category: :geo_replication do
   end
 
   it 'prunes max 50k records' do
-    expect(service).to receive(:prune!).and_return(20_000).ordered
-    expect(service).to receive(:prune!).with(anything, 30_000).and_return(20_000).ordered
-    expect(service).to receive(:prune!).with(anything, 10_000).and_return(9_000).ordered
+    expect(service).to receive(:prune!).and_return(49_000).ordered
     expect(service).to receive(:prune!).with(anything, 1_000).and_return(1_000).ordered
     expect(service).not_to receive(:prune!).ordered
 
@@ -54,7 +52,7 @@ RSpec.describe Geo::PruneEventLogService, feature_category: :geo_replication do
     end
 
     it 'prunes all associated events' do
-      expect { service.execute }.to change { Geo::RepositoryUpdatedEvent.count }.by(-5)
+      expect { service.execute }.to change { Geo::Event.count }.by(-5)
     end
   end
 
@@ -66,13 +64,13 @@ RSpec.describe Geo::PruneEventLogService, feature_category: :geo_replication do
     end
 
     it 'prunes all associated events' do
-      expect { service.execute }.to change { Geo::RepositoryUpdatedEvent.count }.by(-1)
+      expect { service.execute }.to change { Geo::Event.count }.by(-1)
     end
   end
 
   describe '#prune!' do
     it 'returns the number of rows pruned' do
-      expect(service.send(:prune!, Geo::RepositoryUpdatedEvent, 50_000)).to eq(5)
+      expect(service.send(:prune!, Geo::Event, 50_000)).to eq(5)
     end
   end
 end

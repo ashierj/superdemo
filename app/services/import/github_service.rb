@@ -92,7 +92,8 @@ module Import
         allow_localhost: allow_local_requests?,
         allow_local_network: allow_local_requests?,
         schemes: %w[http https],
-        deny_all_requests_except_allowed: Gitlab::CurrentSettings.deny_all_requests_except_allowed?
+        deny_all_requests_except_allowed: Gitlab::CurrentSettings.deny_all_requests_except_allowed?,
+        outbound_local_requests_allowlist: Gitlab::CurrentSettings.outbound_local_requests_whitelist # rubocop:disable Naming/InclusiveLanguage -- existing setting
       )
     end
 
@@ -141,7 +142,8 @@ module Import
         .write(
           timeout_strategy: params[:timeout_strategy] || ProjectImportData::PESSIMISTIC_TIMEOUT,
           optional_stages: params[:optional_stages],
-          extended_events: Feature.enabled?(:github_import_extended_events, current_user)
+          extended_events: Feature.enabled?(:github_import_extended_events, current_user),
+          prioritize_collaborators: Feature.enabled?(:github_import_prioritize_collaborators, current_user)
         )
     end
   end

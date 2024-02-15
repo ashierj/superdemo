@@ -8,3 +8,5 @@ export const FORM_DATA = {
   country: 'US',
   state: 'CA',
 };
+
+export const GTM_SUBMIT_EVENT_LABEL = '_eventLabel_';

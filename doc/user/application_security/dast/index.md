@@ -10,22 +10,30 @@ DETAILS:
 **Tier:** Ultimate
 **Offering:** SaaS, Self-managed
 
-If you deploy your web application into a new environment, your application may
-become exposed to new types of attacks. For example, misconfigurations of your
-application server or incorrect assumptions about security controls may not be
-visible from the source code.
+WARNING:
+Proxy-based DAST was [deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/430966) in GitLab
+16.9 and is planned for removal in 17.0. Use [browser-based DAST](browser_based.md) instead. This
+change is a breaking change.
 
-Dynamic Application Security Testing (DAST) examines applications for
-vulnerabilities like these in deployed environments.
+Dynamic Application Security Testing (DAST) runs automated penetration tests to find vulnerabilities
+in your web applications and APIs as they are running. DAST automates a hacker’s approach and
+simulates real-world attacks for critical threats such as cross-site scripting (XSS), SQL injection
+(SQLi), and cross-site request forgery (CSRF) to uncover vulnerabilities and misconfigurations that
+other security tools cannot detect.
+
+DAST is completely language agnostic and examines your application from the outside in. With a
+running application in a test environment, DAST scans can be automated in a CI/CD pipeline,
+automated on a schedule, or run independently by using on-demand scans. Using DAST during the
+software development life cycle enables teams to uncover vulnerabilities before their applications
+are in production. DAST is a foundational component of software security and should be used in
+tandem with SAST, dependency and license scanning, and secret detection, to provide a comprehensive
+security assessment of your applications.
+
+GitLab’s Browser-based DAST and DAST API are proprietary runtime tools, which provide broad security
+coverage for modern-day web applications and APIs.
 
 <i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
 For an overview, see [Dynamic Application Security Testing (DAST)](https://www.youtube.com/watch?v=nbeDUoLZJTo).
-
-NOTE:
-To learn how four of the top six attacks were application-based and how
-to protect your organization, download our
-["A Seismic Shift in Application Security"](https://about.gitlab.com/resources/whitepaper-seismic-shift-application-security/)
-whitepaper.
 
 ## GitLab DAST
 

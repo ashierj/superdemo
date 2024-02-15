@@ -145,16 +145,10 @@ export default () => ({
               isDate: true,
             },
             {
-              id: 'lastInvoice',
-              label: s__('SubscriptionTable|Last invoice'),
+              id: 'nextTermStartDate',
+              label: s__('SubscriptionTable|Next subscription term start date'),
               value: null,
               isDate: true,
-              popover: {
-                content: s__(
-                  'SubscriptionTable|This is the last time the GitLab.com team was in contact with you to settle any outstanding balances.',
-                ),
-              },
-              hideContent: true, // temporarily display a blank cell (as we don't have content yet)
             },
             {
               id: 'nextInvoice',

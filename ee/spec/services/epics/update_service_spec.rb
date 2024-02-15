@@ -9,7 +9,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
 
   describe '#execute' do
     before do
-      stub_licensed_features(epics: true, subepics: true)
+      stub_licensed_features(epics: true, subepics: true, epic_colors: true)
       group.add_maintainer(user)
     end
 
@@ -697,6 +697,20 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
           end
         end
 
+        shared_examples 'calls correct EpicLinks service' do |service_type|
+          it 'calls correct service' do
+            service_class = "Epics::EpicLinks::#{service_type.capitalize}Service".constantize
+            params = service_type == 'create' ? [new_parent, user, { target_issuable: epic }] : [epic, user]
+
+            allow_next_instance_of(service_class) do |service|
+              allow(service).to receive(:execute).and_return({ status: :success })
+            end
+
+            expect(service_class).to receive(:new).with(*params)
+            subject
+          end
+        end
+
         it 'creates system notes' do
           expect { subject }.to change { epic.parent }.from(nil).to(new_parent)
                                                       .and change { Note.count }.by(2)
@@ -709,6 +723,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
           expect(new_parent.notes.first.note).to eq("added epic #{child_ref} as child epic")
         end
 
+        it_behaves_like 'calls correct EpicLinks service', 'create'
         it_behaves_like 'records parent changed after saving'
 
         context 'when parent is already present' do
@@ -731,12 +746,13 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
             expect(existing_parent.notes.first.note).to eq("moved child epic #{child_ref} to epic #{new_ref}")
           end
 
+          it_behaves_like 'calls correct EpicLinks service', 'create'
           it_behaves_like 'records parent changed after saving'
 
           context 'when removing parent' do
             subject { update_epic(parent: nil) }
 
-            it 'removed parent and creates system notes' do
+            it 'removes parent and creates system notes' do
               expect { subject }.to change { epic.parent }.from(existing_parent).to(nil)
                                                           .and change { Note.count }.by(2)
 
@@ -748,8 +764,118 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
               expect(existing_parent.notes.first.note).to eq("removed child epic #{child_ref}")
             end
 
+            it_behaves_like 'calls correct EpicLinks service', 'destroy'
             it_behaves_like 'records parent changed after saving'
+
+            context 'when user cannot access parent' do
+              before do
+                allow(Ability).to receive(:allowed?).and_call_original
+                allow(Ability).to receive(:allowed?)
+                                    .with(user, :read_epic_relation, existing_parent).and_return(false)
+              end
+
+              it 'does not change parent' do
+                expect { subject }.not_to change { epic.parent }
+              end
+
+              it 'does not create notes or track change' do
+                expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
+                  .not_to receive(:track_epic_parent_updated_action)
+
+                expect { subject }.not_to change { Note.count }
+              end
+            end
           end
+        end
+      end
+    end
+
+    context 'work item sync' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:labels) { create_pair(:group_label, group: group) }
+
+      context 'when epic has a synced work item' do
+        let_it_be_with_reload(:epic) { create(:epic, :with_synced_work_item, group: group) }
+        let(:work_item) { epic.work_item }
+
+        context 'multiple values update' do
+          let_it_be(:synced_parent_work_item) { create(:work_item, :epic, namespace: group) }
+          let_it_be(:parent_epic) { create(:epic, group: group, issue_id: synced_parent_work_item.id) }
+
+          context 'when changes are valid' do
+            let(:opts) do
+              {
+                title: 'New title',
+                description: 'New description',
+                confidential: true,
+                external_key: 'external_test_key',
+                color: '#CC0000',
+                parent: parent_epic
+              }
+            end
+
+            subject { update_epic(opts) }
+
+            it_behaves_like 'syncs all data from an epic to a work item'
+
+            context 'when feature flag is disabled' do
+              before do
+                stub_feature_flags(epic_creation_with_synced_work_item: false)
+              end
+
+              it 'does not propagate changes' do
+                expect { subject }.to change { epic.reload.title }.and not_change { work_item.reload.title }
+              end
+            end
+          end
+
+          context 'when changes are invalid', :aggregate_failures do
+            it 'does not propagate the title change to the work item' do
+              expect { update_epic({ title: '' }) }.to not_change { work_item.reload }
+
+              expect(work_item.reload).to be_valid
+            end
+          end
+        end
+
+        context 'when work item update errors' do
+          let(:error_message) { ["error 1", "error 2"] }
+
+          before do
+            allow_next_instance_of(WorkItems::UpdateService) do |instance|
+              allow(instance).to receive(:execute).and_return(
+                {
+                  status: :error,
+                  message: error_message
+                }
+              )
+            end
+          end
+
+          it 'does not propagate the update to the work item and resets the epic udpates' do
+            expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
+              .with({
+                message: "Not able to update epic work item",
+                error_message: error_message,
+                group_id: group.id,
+                epic_id: epic.id
+              })
+
+            expect { update_epic({ title: 'New title' }) }
+              .to raise_error(Epics::SyncAsWorkItem::SyncAsWorkItemError)
+              .and not_change { work_item.reload }
+              .and not_change { epic.reload }
+          end
+        end
+      end
+
+      context 'when epic has no synced work item' do
+        let_it_be_with_reload(:epic) { create(:epic, group: group) }
+
+        it 'does not call WorkItems::UpdateService' do
+          expect(WorkItems::UpdateService).not_to receive(:new)
+
+          update_epic({ title: 'New title' })
         end
       end
     end

@@ -181,6 +181,24 @@ which is part of [GitLab CI/CD](#gitlab-cicd).
 
 [Rate limits](#gitlabcom-specific-rate-limits) also exist for GitLab Pages.
 
+## GitLab container registry
+
+| Setting          | GitLab.com                        |
+|:-----------------|:----------------------------------|
+| Domain name      | `registry.gitlab.com`             |
+| IP address       | `35.227.35.254`                   |
+| CDN domain name  | `cdn.registry.gitlab-static.net`  |
+| CDN IP address   | `34.149.22.116`                   |
+
+To use the GitLab container registry, Docker clients must have access to:
+
+- The registry endpoint and GitLab.com for authorization.
+- Google Cloud Storage or Google Cloud Content Delivery Network to download images.
+
+GitLab.com is fronted by Cloudflare.
+For incoming connections to GitLab.com, you must allow CIDR blocks of Cloudflare
+([IPv4](https://www.cloudflare.com/ips-v4/) and [IPv6](https://www.cloudflare.com/ips-v6/)).
+
 ## GitLab CI/CD
 
 Below are the current settings regarding [GitLab CI/CD](../../ci/index.md).
@@ -264,7 +282,7 @@ from those IPs and allow them.
 GitLab.com is fronted by Cloudflare. For incoming connections to GitLab.com, you might need to allow CIDR blocks of Cloudflare ([IPv4](https://www.cloudflare.com/ips-v4/) and [IPv6](https://www.cloudflare.com/ips-v6/)).
 
 For outgoing connections from CI/CD runners, we are not providing static IP addresses.
-All GitLab.com shared runners are deployed into Google Cloud Platform (GCP) in `us-east1`.
+All GitLab.com instance runners are deployed into Google Cloud Platform (GCP) in `us-east1`.
 Any IP-based firewall can be configured by looking up
 [IP address ranges or CIDR blocks for GCP](https://cloud.google.com/compute/docs/faq#find_ip_range).
 
@@ -343,27 +361,27 @@ code. The client should wait before attempting the request again. There
 are also informational headers with this response detailed in
 [rate limiting responses](#rate-limiting-responses).
 
-The following table describes the rate limits for GitLab.com, both before and
-after the limits change in January, 2021:
+The following table describes the rate limits for GitLab.com:
 
-| Rate limit                                                                 | From 2021-02-12               | From 2022-02-03                      |
-|:---------------------------------------------------------------------------|:------------------------------|:-------------------------------------|
-| **Protected paths** (for a given **IP address**)                           | **10** requests per minute    | **10** requests per minute           |
-| **Raw endpoint** traffic (for a given **project, commit, and file path**)  | **300** requests per minute   | **300** requests per minute          |
-| **Unauthenticated** traffic (from a given **IP address**)                  | **500** requests per minute   | **500** requests per minute          |
-| **Authenticated** API traffic (for a given **user**)                       | **2,000** requests per minute | **2,000** requests per minute        |
-| **Authenticated** non-API HTTP traffic (for a given **user**)              | **1,000** requests per minute | **1,000** requests per minute        |
-| **All** traffic (from a given **IP address**)                              | **2,000** requests per minute | **2,000** requests per minute        |
-| **Issue creation**                                                         | **300** requests per minute   | **200** requests per minute          |
-| **Note creation** (on issues and merge requests)                           | **60** requests per minute    | **60** requests per minute           |
-| **Advanced, project, and group search** API (for a given **IP address**)   | **10** requests per minute    | **10** requests per minute           |
-| **GitLab Pages** requests (for a given **IP address**)                     |                               | **1000** requests per **50 seconds** |
-| **GitLab Pages** requests (for a given **GitLab Pages domain**)            |                               | **5000** requests per **10 seconds** |
-| **GitLab Pages** TLS connections (for a given **IP address**)              |                               | **1000** requests per **50 seconds** |
-| **GitLab Pages** TLS connections (for a given **GitLab Pages domain**)     |                               | **400** requests per **10 seconds**  |
-| **Pipeline creation** requests (for a given **project, user, and commit**) |                               | **25** requests per minute           |
-| **Alert integration endpoint** requests (for a given **project**)          |                               | **3600** requests per hour           |
-| **[Pull mirroring](../project/repository/mirror/pull.md)** intervals       | **5** minutes                 | **5** minutes |
+| Rate limit                                                                 | Setting                              |
+|:---------------------------------------------------------------------------|:-------------------------------------|
+| **Protected paths** (for a given **IP address**)                           | **10** requests per minute           |
+| **Raw endpoint** traffic (for a given **project, commit, and file path**)  | **300** requests per minute          |
+| **Unauthenticated** traffic (from a given **IP address**)                  | **500** requests per minute          |
+| **Authenticated** API traffic (for a given **user**)                       | **2,000** requests per minute        |
+| **Authenticated** non-API HTTP traffic (for a given **user**)              | **1,000** requests per minute        |
+| **All** traffic (from a given **IP address**)                              | **2,000** requests per minute        |
+| **Issue creation**                                                         | **200** requests per minute          |
+| **Note creation** (on issues and merge requests)                           | **60** requests per minute           |
+| **Advanced, project, and group search** API (for a given **IP address**)   | **10** requests per minute           |
+| **GitLab Pages** requests (for a given **IP address**)                     | **1000** requests per **50 seconds** |
+| **GitLab Pages** requests (for a given **GitLab Pages domain**)            | **5000** requests per **10 seconds** |
+| **GitLab Pages** TLS connections (for a given **IP address**)              | **1000** requests per **50 seconds** |
+| **GitLab Pages** TLS connections (for a given **GitLab Pages domain**)     | **400** requests per **10 seconds**  |
+| **Pipeline creation** requests (for a given **project, user, and commit**) | **25** requests per minute           |
+| **Alert integration endpoint** requests (for a given **project**)          | **3600** requests per hour           |
+| **[Pull mirroring](../project/repository/mirror/pull.md)** intervals       | **5** minutes                        |
+| **API Requests** (from a given **user**) to `/api/v4/users/:id`            | **300** requests per **10 minutes**  |
 
 More details are available on the rate limits for
 [protected paths](#protected-paths-throttle) and

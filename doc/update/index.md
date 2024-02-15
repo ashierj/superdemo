@@ -43,12 +43,20 @@ There are also instructions when you want to
 
 :::TabTitle Helm chart (Kubernetes)
 
-GitLab can be deployed into a Kubernetes cluster using Helm.
-Instructions on how to upgrade a cloud-native deployment are in
-[a separate document](https://docs.gitlab.com/charts/installation/upgrade.html).
+GitLab can be deployed into a Kubernetes cluster using Helm. For production deployments,
+the setup follows the [Cloud Native Hybrid](../administration/reference_architectures/index.md#cloud-native-hybrid)
+guidance where stateless components of cloud-native GitLab run in Kubernetes with
+the GitLab Helm chart, and stateful components are deployed in compute VMs with the
+Linux package.
 
 Use the [version mapping](https://docs.gitlab.com/charts/installation/version_mappings.html)
 from the chart version to GitLab version to determine the [upgrade path](#upgrade-paths).
+
+Follow [Multi-node upgrades with downtime](with_downtime.md) to perform the upgrade in a Cloud Native Hybrid setup.
+
+A full cloud-native deployment is [not supported](../administration/reference_architectures/index.md#stateful-components-in-kubernetes)
+for production. However, instructions on how to upgrade such an environment are in
+[a separate document](https://docs.gitlab.com/charts/installation/upgrade.html).
 
 :::TabTitle Docker
 
@@ -188,7 +196,7 @@ Upgrading across multiple GitLab versions in one go is *only possible by accepti
 If you don't want any downtime, read how to [upgrade with zero downtime](zero_downtime.md).
 
 For a dynamic view of examples of supported upgrade paths, try the [Upgrade Path tool](https://gitlab-com.gitlab.io/support/toolbox/upgrade-path/)
-maintained by the [GitLab Support team](https://about.gitlab.com/handbook/support/#about-the-support-team). To share
+maintained by the [GitLab Support team](https://handbook.gitlab.com/handbook/support/#about-the-support-team). To share
 feedback and help improve the tool, create an issue or MR in the [upgrade-path project](https://gitlab.com/gitlab-com/support/toolbox/upgrade-path).
 
 When upgrading:

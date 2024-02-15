@@ -295,6 +295,14 @@ The following languages and dependency managers are supported:
       </ul>
     </p>
   </li>
+  <li>
+    <a id="notes-regarding-supported-languages-and-package-managers-9"></a>
+    <p>
+      <ul>
+        <li>Support for Python 3.9 was deprecated in GitLab 16.9 and will be removed in GitLab 17.0</li>
+      </ul>
+    </p>
+  </li>
 </ol>
 <!-- markdownlint-enable MD044 -->
 
@@ -702,9 +710,8 @@ Prerequisites:
 - The `test` stage is required in the `.gitlab-ci.yml` file.
 - On GitLab self-managed you need GitLab Runner with the
   [`docker`](https://docs.gitlab.com/runner/executors/docker.html) or
-  [`kubernetes`](https://docs.gitlab.com/runner/install/kubernetes.html) executor. On GitLab.com this
-  is enabled by default on the shared runners. The analyzer images provided are for the Linux/amd64
-  architecture.
+  [`kubernetes`](https://docs.gitlab.com/runner/install/kubernetes.html) executor.
+- If you're using SaaS runners on GitLab.com, this is enabled by default.
 
 To enable the analyzer, either:
 
@@ -730,7 +737,7 @@ To enable dependency scanning:
 
    ```yaml
    include:
-     - template: Security/Dependency-Scanning.gitlab-ci.yml
+     - template: Jobs/Dependency-Scanning.gitlab-ci.yml
    ```
 
 1. Select the **Validate** tab, then select **Validate pipeline**.
@@ -791,7 +798,7 @@ the `gemnasium` analyzer:
 
 ```yaml
 include:
-  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
 
 gemnasium-dependency_scanning:
   variables:
@@ -802,7 +809,7 @@ To override the `dependencies: []` attribute, add an override job as above, targ
 
 ```yaml
 include:
-  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
 
 gemnasium-dependency_scanning:
   dependencies: ["build"]
@@ -1015,7 +1022,7 @@ stages:
   - merge-cyclonedx-sboms
 
 include:
-  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
 
 merge cyclonedx sboms:
   stage: merge-cyclonedx-sboms
@@ -1109,7 +1116,7 @@ value of `GEMNASIUM_DB_REMOTE_URL` to the location of your offline Git copy of t
 
 ```yaml
 include:
-  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
 
 variables:
   SECURE_ANALYZERS_PREFIX: "docker-registry.example.com/analyzers"

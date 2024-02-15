@@ -34,7 +34,7 @@ export default {
   name: 'WidgetSecurityReports',
   components: {
     FindingModal,
-    StandaloneFindingModal: () =>
+    VulnerabilityFindingModal: () =>
       import('ee/security_dashboard/components/pipeline/vulnerability_finding_modal.vue'),
     MrWidget,
     MrWidgetRow,
@@ -655,12 +655,11 @@ export default {
       />
     </template>
     <template #content>
-      <standalone-finding-modal
+      <vulnerability-finding-modal
         v-if="showStandaloneFindingModal"
         :finding-uuid="modalData.vulnerability.uuid"
         :pipeline-iid="pipelineIid"
         :project-full-path="mr.targetProjectFullPath"
-        :has-create-issue-path="hasCreateIssuePath"
         @hidden="clearModalData"
         @dismissed="updateFindingState('dismissed')"
         @detected="updateFindingState('detected')"

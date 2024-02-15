@@ -19,13 +19,14 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
     shared_examples 'creates scan jobs' do |on_demand_jobs: [], pipeline_scan_job_templates: [], variables: {}|
       it 'returns created jobs' do
         expect(::Security::SecurityOrchestrationPolicies::CiConfigurationService).to receive(:new)
-                                                                                       .exactly(pipeline_scan_job_templates.size)
-                                                                                       .times
-                                                                                       .and_call_original
+          .exactly(pipeline_scan_job_templates.size)
+          .times
+          .and_call_original
         expect(::Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConfigurationService).to receive(:new)
-                                                                                                         .exactly(on_demand_jobs.count)
-                                                                                                         .times
-                                                                                                         .and_call_original
+          .exactly(on_demand_jobs.count)
+          .times
+          .and_call_original
+
         pipeline_scan_jobs = []
 
         pipeline_scan_job_templates.each_with_index do |job_template, index|
@@ -69,7 +70,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
       it 'does not pass variables from the action into configuration service' do
         expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
           expect(ci_configuration_service).to receive(:execute).once
-                                                               .with(actions.first, {}, context, 0).and_call_original
+            .with(actions.first, {}, context, 0).and_call_original
         end
 
         subject
@@ -85,7 +86,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
         it 'ignores action variables and sets base_variables' do
           expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
             expect(ci_configuration_service).to receive(:execute).once
-                                                                 .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }, context, 0).and_call_original
+              .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }, context, 0).and_call_original
           end
 
           subject
@@ -101,7 +102,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
         it 'sets the value provided when initializing the service' do
           expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
             expect(ci_configuration_service).to receive(:execute).once
-                                                                 .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' }, context, 0).and_call_original
+              .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' }, context, 0).and_call_original
           end
 
           subject
@@ -121,9 +122,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
       end
 
       it_behaves_like 'creates scan jobs',
-                      on_demand_jobs: %i[dast-on-demand-0],
-                      pipeline_scan_job_templates: %w[Jobs/Secret-Detection Jobs/Container-Scanning Jobs/SAST],
-                      variables: { 'container-scanning-1': {}, 'dast-on-demand-0': {}, 'sast-2': {}, 'secret-detection-0': {} }
+        on_demand_jobs: %i[dast-on-demand-0],
+        pipeline_scan_job_templates: %w[Jobs/Secret-Detection Jobs/Container-Scanning Jobs/SAST],
+        variables: { 'container-scanning-1': {}, 'dast-on-demand-0': {}, 'sast-2': {}, 'secret-detection-0': {} }
     end
 
     context 'when there are valid and invalid actions' do

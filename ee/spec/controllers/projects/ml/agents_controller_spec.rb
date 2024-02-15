@@ -7,16 +7,12 @@ RSpec.describe Projects::Ml::AgentsController, feature_category: :mlops do
   let_it_be(:user) { project.first_owner }
 
   let(:read_ai_agents) { true }
-  let(:write_ai_agents) { true }
 
   before do
     allow(Ability).to receive(:allowed?).and_call_original
     allow(Ability).to receive(:allowed?)
                         .with(user, :read_ai_agents, project)
                         .and_return(read_ai_agents)
-    allow(Ability).to receive(:allowed?)
-                        .with(user, :write_ai_agents, project)
-                        .and_return(write_ai_agents)
 
     sign_in(user)
   end
@@ -36,50 +32,6 @@ RSpec.describe Projects::Ml::AgentsController, feature_category: :mlops do
 
       it 'renders 404' do
         expect(index_request).to have_gitlab_http_status(:not_found)
-      end
-    end
-  end
-
-  describe 'GET new' do
-    subject(:new_request) do
-      get :new, params: { namespace_id: project.namespace, project_id: project }
-      response
-    end
-
-    it 'renders the template' do
-      expect(new_request).to render_template(:new)
-    end
-
-    context 'when user does not have access' do
-      let(:write_ai_agents) { false }
-
-      it 'renders 404' do
-        expect(new_request).to have_gitlab_http_status(:not_found)
-      end
-    end
-  end
-
-  describe 'GET show' do
-    subject(:show_request) do
-      get :show, params: { namespace_id: project.namespace, project_id: project, agent_id: 1 }
-      response
-    end
-
-    it 'renders the template' do
-      expect(show_request).to render_template(:show)
-    end
-
-    it 'assigns the correct param' do
-      show_request
-
-      expect(assigns[:agent_id]).to eq('1')
-    end
-
-    context 'when user does not have access' do
-      let(:read_ai_agents) { false }
-
-      it 'renders 404' do
-        expect(show_request).to have_gitlab_http_status(:not_found)
       end
     end
   end

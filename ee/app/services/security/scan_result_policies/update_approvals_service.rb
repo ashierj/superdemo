@@ -19,25 +19,25 @@ module Security
         return if pipeline.incomplete?
         return unless pipeline.can_store_security_reports?
 
-        approval_rules = merge_request.approval_rules.scan_finding
+        all_scan_finding_rules = merge_request.approval_rules.scan_finding
 
-        if security_policies_sync_preexisting_state_enabled?
-          approval_rules = approval_rules.select { |rule| include_newly_detected?(rule) }
+        approval_rules_with_newly_detected_states = all_scan_finding_rules.select do |rule|
+          include_newly_detected?(rule)
         end
 
-        return if approval_rules.empty?
+        return if approval_rules_with_newly_detected_states.empty?
 
         log_update_approval_rule('Evaluating MR approval rules from scan result policies',
           pipeline_ids: related_pipeline_ids,
           target_pipeline_ids: related_target_pipeline_ids
         )
 
-        violated_rules, unviolated_rules = partition_rules(approval_rules)
+        violated_rules, unviolated_rules = partition_rules(approval_rules_with_newly_detected_states)
 
         update_required_approvals(violated_rules, unviolated_rules)
         violations.add(violated_rules.pluck(:scan_result_policy_id), unviolated_rules.pluck(:scan_result_policy_id)) # rubocop:disable CodeReuse/ActiveRecord
         violations.execute
-        generate_policy_bot_comment(merge_request, violated_rules, :scan_finding)
+        generate_policy_bot_comment(merge_request, all_scan_finding_rules, :scan_finding)
       end
 
       private
@@ -94,11 +94,7 @@ module Security
 
       def violates_approval_rule?(approval_rule)
         target_pipeline_uuids = target_pipeline_findings_uuids(approval_rule)
-
-        return true if findings_count_violated?(approval_rule, target_pipeline_uuids)
-        return true if preexisting_findings_count_violated?(approval_rule, target_pipeline_uuids)
-
-        false
+        findings_count_violated?(approval_rule, target_pipeline_uuids)
       end
 
       def missing_scans(approval_rule)
@@ -125,11 +121,7 @@ module Security
       strong_memoize_attr :target_pipeline_security_scan_types
 
       def target_pipeline
-        if Feature.enabled?(:scan_result_policy_merge_base_pipeline, project)
-          merge_request.latest_scan_finding_comparison_pipeline
-        else
-          merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy
-        end
+        merge_request.latest_scan_finding_comparison_pipeline
       end
       strong_memoize_attr :target_pipeline
 
@@ -153,15 +145,6 @@ module Security
             total_count > vulnerabilities_allowed
           end
         end
-      end
-
-      def preexisting_findings_count_violated?(approval_rule, target_pipeline_uuids)
-        return false if security_policies_sync_preexisting_state_enabled?
-        return false if target_pipeline_uuids.empty? || include_newly_detected?(approval_rule)
-
-        vulnerabilities_count = vulnerabilities_count_for_uuids(target_pipeline_uuids, approval_rule)
-
-        vulnerabilities_count[:exceeded_allowed_count]
       end
 
       def related_pipeline_sources
@@ -221,10 +204,6 @@ module Security
           allowed_count: approval_rule.vulnerabilities_allowed,
           vulnerability_age: approval_rule.scan_result_policy_read&.vulnerability_age
         ).execute
-      end
-
-      def security_policies_sync_preexisting_state_enabled?
-        Feature.enabled?(:security_policies_sync_preexisting_state, merge_request.project, type: :gitlab_com_derisk)
       end
     end
   end

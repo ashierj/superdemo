@@ -26,7 +26,9 @@ module EE
 
         return unless params[:member_role_id]
 
-        member_role = top_level_group.member_roles.find_by_id(params[:member_role_id])
+        # TODO: scope to group/instance based on saas? mode when
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/429281 is merged
+        member_role = MemberRole.find_by_id(params[:member_role_id])
 
         unless member_role
           member.errors.add(:member_role, "not found")
@@ -51,10 +53,10 @@ module EE
           additional_details: {
             change: 'access_level',
             from: old_access_level,
-            to: member.human_access,
+            to: member.human_access_labeled,
             expiry_from: old_expiry,
             expiry_to: member.expires_at,
-            as: ::Gitlab::Access.options_with_owner.key(member.access_level.to_i),
+            as: member.human_access_labeled,
             member_id: member.id
           }
         }

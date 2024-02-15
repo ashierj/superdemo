@@ -36,24 +36,9 @@ module EE
       scope :grouped_by_work_item, -> { group(:id) }
     end
 
-    LICENSED_WIDGETS = {
-      iterations: ::WorkItems::Widgets::Iteration,
-      issue_weights: ::WorkItems::Widgets::Weight,
-      requirements: [
-        ::WorkItems::Widgets::Status,
-        ::WorkItems::Widgets::RequirementLegacy,
-        ::WorkItems::Widgets::TestReports
-      ],
-      issuable_health_status: ::WorkItems::Widgets::HealthStatus,
-      okrs: ::WorkItems::Widgets::Progress,
-      epic_colors: ::WorkItems::Widgets::Color
-    }.freeze
-
     def widgets
       strong_memoize(:widgets) do
-        allowed_widgets = work_item_type.widgets - unlicensed_widgets
-
-        allowed_widgets.map do |widget_class|
+        work_item_type.widgets(resource_parent).map do |widget_class|
           widget_class.new(self)
         end
       end
@@ -67,14 +52,17 @@ module EE
       (::WorkItems::Progress.where(work_item: children).sum(:progress).to_i / child_count).to_i
     end
 
-    private
-
-    def unlicensed_widgets
-      excluded = LICENSED_WIDGETS.map do |licensed_feature, widgets|
-        widgets unless resource_parent.licensed_feature_available?(licensed_feature)
-      end
-      excluded.flatten
+    override :skip_description_version?
+    def skip_description_version?
+      super || epic_work_item?
     end
+
+    override :skip_metrics?
+    def skip_metrics?
+      super || epic_work_item?
+    end
+
+    private
 
     override :linked_work_items_query
     def linked_work_items_query(link_type)
@@ -96,6 +84,10 @@ module EE
       linked_issues_select
         .joins("INNER JOIN issue_links ON issue_links.#{columns[0]} = issues.id")
         .where(issue_links: { columns[1] => id, link_type: link_class.link_types[link_class::TYPE_BLOCKS] })
+    end
+
+    def epic_work_item?
+      work_item_type.base_type == ::WorkItems::Type.default_by_type(:epic)&.base_type
     end
   end
 end

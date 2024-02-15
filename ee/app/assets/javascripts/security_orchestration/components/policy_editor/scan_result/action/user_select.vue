@@ -1,4 +1,5 @@
 <script>
+import { uniqBy } from 'lodash';
 import { GlAvatarLabeled, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import searchProjectMembers from '~/graphql_shared/queries/project_user_members_search.query.graphql';
@@ -51,7 +52,8 @@ export default {
             ? data?.project?.projectMembers?.nodes
             : data?.workspace?.users?.nodes;
 
-        return (nodes || []).map(({ user }) => createUserObject(user));
+        const users = (nodes || []).map(({ user }) => createUserObject(user));
+        return uniqBy(users, 'id');
       },
       debounce: DEFAULT_DEBOUNCE_AND_THROTTLE_MS,
     },

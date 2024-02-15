@@ -4,10 +4,11 @@ import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { sprintf } from '~/locale';
 import Tracking from '~/tracking';
 import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
+import { isExperimentVariant } from '~/experimentation/utils';
 import { WIDGET } from './constants';
 
 const { i18n, trackingEvents } = WIDGET;
-const trackingMixin = Tracking.mixin();
+const trackingMixin = Tracking.mixin({ experiment: 'trial_discover_page' });
 
 export default {
   components: {
@@ -30,6 +31,11 @@ export default {
   },
   i18n,
   computed: {
+    widgetLink() {
+      return isExperimentVariant('trial_discover_page', 'candidate')
+        ? this.trialDiscoverPagePath
+        : this.plansHref;
+    },
     isTrialActive() {
       return this.percentageComplete <= 100;
     },
@@ -45,21 +51,25 @@ export default {
         duration: this.trialDuration,
       });
     },
-  },
-  methods: {
-    onWidgetClick() {
-      const options = this.isTrialActive
+    trackingOptions() {
+      return this.isTrialActive
         ? trackingEvents.activeTrialOptions
         : trackingEvents.trialEndedOptions;
-
-      this.track(trackingEvents.action, { ...options });
+    },
+  },
+  methods: {
+    onLearnAboutFeaturesClick() {
+      this.track(trackingEvents.action, { ...this.trackingOptions, label: 'learn_about_features' });
+    },
+    onWidgetClick() {
+      this.track(trackingEvents.action, { ...this.trackingOptions });
     },
   },
 };
 </script>
 
 <template>
-  <gl-link :id="containerId" :title="widgetTitle" :href="plansHref">
+  <gl-link :id="containerId" :title="widgetTitle" :href="widgetLink">
     <div
       data-testid="widget-menu"
       class="gl-display-flex gl-flex-direction-column gl-align-items-stretch gl-w-full"
@@ -91,6 +101,7 @@ export default {
               class="gl-mt-3"
               data-testid="learn-about-features-btn"
               :title="$options.i18n.learnAboutButtonTitle"
+              @click.stop="onLearnAboutFeaturesClick()"
             >
               {{ $options.i18n.learnAboutButtonTitle }}
             </gl-button>
@@ -107,9 +118,16 @@ export default {
             {{ $options.i18n.widgetBodyExpiredTrial }}
             <gitlab-experiment name="trial_discover_page">
               <template #candidate>
-                <a data-testid="learn-about-features-link" :href="trialDiscoverPagePath">
+                <gl-button
+                  :href="trialDiscoverPagePath"
+                  variant="link"
+                  size="small"
+                  data-testid="learn-about-features-btn"
+                  :title="$options.i18n.learnAboutButtonTitle"
+                  @click.stop="onLearnAboutFeaturesClick()"
+                >
                   {{ $options.i18n.learnAboutButtonTitle }}
-                </a>
+                </gl-button>
               </template>
             </gitlab-experiment>
           </div>

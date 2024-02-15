@@ -1,0 +1,11 @@
+query getRunnerUsageByProject {
+  runnerUsageByProject(runnerType: INSTANCE_TYPE, projectsLimit: 5) {
+    project {
+      id
+      name
+      avatarUrl
+      webUrl
+    }
+    ciMinutesUsed
+  }
+}

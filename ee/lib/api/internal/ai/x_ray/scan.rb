@@ -23,29 +23,35 @@ module API
 
             def x_ray_enabled_on_instance?
               return true if ::Gitlab.org_or_com?
+              return false unless ::License.feature_available?(:code_suggestions)
 
-              ::License.feature_available?(:code_suggestions) &&
+              if ::CodeSuggestions::SelfManaged::SERVICE_START_DATE.past?
+                ::GitlabSubscriptions::AddOnPurchase
+                  .for_code_suggestions
+                  .any?
+              else # Before service start date
+                # TODO: Remove this else branch after the service start date
                 ::Gitlab::CurrentSettings.instance_level_code_suggestions_enabled
+              end
             end
 
             def x_ray_available?
-              group = current_job.namespace
-              return false unless group.namespace_settings.code_suggestions?
-
               if Gitlab.org_or_com?
-                code_suggestions_add_on?(group)
+                code_suggestions_add_on?
               else
                 ai_gateway_token.present?
               end
             end
 
-            def code_suggestions_add_on?(namespace)
-              return true unless ::Feature.enabled?(:purchase_code_suggestions)
-
-              ::GitlabSubscriptions::AddOnPurchase
-                .for_code_suggestions
-                .by_namespace_id(namespace.id)
-                .any?
+            def code_suggestions_add_on?
+              if ::Feature.enabled?(:purchase_code_suggestions)
+                ::GitlabSubscriptions::AddOnPurchase
+                  .for_code_suggestions
+                  .by_namespace_id(current_namespace.id)
+                  .any?
+              else
+                current_namespace.namespace_settings.code_suggestions?
+              end
             end
 
             def model_gateway_headers(headers, gateway_token)
@@ -64,9 +70,14 @@ module API
               return {} unless Gitlab.com?
 
               {
-                'X-Gitlab-Saas-Namespace-Ids' => [current_job.namespace.id.to_s]
+                'X-Gitlab-Saas-Namespace-Ids' => [current_namespace.id.to_s]
               }
             end
+
+            def current_namespace
+              current_job.namespace
+            end
+            strong_memoize_attr :current_namespace
 
             def ai_gateway_token
               ::CloudConnector::AccessService.new.access_token([:code_suggestions], gitlab_realm)

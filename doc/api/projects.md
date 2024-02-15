@@ -1567,6 +1567,7 @@ curl --request POST --header "PRIVATE-TOKEN: <your-token>" \
 | `public_builds`                                                   | boolean | No                             | _(Deprecated)_ If `true`, jobs can be viewed by non-project members. Use `public_jobs` instead. |
 | `public_jobs`                                                     | boolean | No                             | If `true`, jobs can be viewed by non-project members. |
 | `releases_access_level`                                           | string  | No                             | One of `disabled`, `private`, or `enabled`. |
+| `repository_object_format`                                        | string  | No                             | Repository object format. Defaults to `sha1`. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/419887) in GitLab 16.9. |
 | `remove_source_branch_after_merge`                                | boolean | No                             | Enable `Delete source branch` option by default for all new merge requests. |
 | `repository_access_level`                                         | string  | No                             | One of `disabled`, `private`, or `enabled`. |
 | `repository_storage`                                              | string  | No                             | Which storage shard the repository is on. _(administrator only)_ |
@@ -1661,6 +1662,7 @@ POST /projects/user/:user_id
 | `public_builds`                                                   | boolean | No       | _(Deprecated)_ If `true`, jobs can be viewed by non-project members. Use `public_jobs` instead. |
 | `public_jobs`                                                     | boolean | No       | If `true`, jobs can be viewed by non-project members. |
 | `releases_access_level`                                           | string  | No       | One of `disabled`, `private`, or `enabled`. |
+| `repository_object_format`                                        | string  | No       | Repository object format. Defaults to `sha1`. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/419887) in GitLab 16.9. |
 | `remove_source_branch_after_merge`                                | boolean | No       | Enable `Delete source branch` option by default for all new merge requests. |
 | `repository_access_level`                                         | string  | No       | One of `disabled`, `private`, or `enabled`. |
 | `repository_storage`                                              | string  | No       | Which storage shard the repository is on. _(administrators only)_ |
@@ -1891,6 +1893,7 @@ Example responses:
     "name_with_namespace": "Diaspora / Diaspora Project Site",
     "path": "diaspora-project-site",
     "path_with_namespace": "diaspora/diaspora-project-site",
+    "repository_object_format": "sha1",
     "issues_enabled": true,
     "open_issues_count": 1,
     "merge_requests_enabled": true,
@@ -1993,6 +1996,7 @@ Example response:
   "name_with_namespace": "Diaspora / Diaspora Project Site",
   "path": "diaspora-project-site",
   "path_with_namespace": "diaspora/diaspora-project-site",
+  "repository_object_format": "sha1",
   "issues_enabled": true,
   "open_issues_count": 1,
   "merge_requests_enabled": true,
@@ -2101,6 +2105,7 @@ Example response:
   "name_with_namespace": "Diaspora / Diaspora Project Site",
   "path": "diaspora-project-site",
   "path_with_namespace": "diaspora/diaspora-project-site",
+  "repository_object_format": "sha1",
   "issues_enabled": true,
   "open_issues_count": 1,
   "merge_requests_enabled": true,
@@ -2289,6 +2294,7 @@ Example response:
   "name_with_namespace": "Diaspora / Diaspora Project Site",
   "path": "diaspora-project-site",
   "path_with_namespace": "diaspora/diaspora-project-site",
+  "repository_object_format": "sha1",
   "issues_enabled": true,
   "open_issues_count": 1,
   "merge_requests_enabled": true,
@@ -2422,6 +2428,7 @@ Example response:
   "name_with_namespace": "Diaspora / Diaspora Project Site",
   "path": "diaspora-project-site",
   "path_with_namespace": "diaspora/diaspora-project-site",
+  "repository_object_format": "sha1",
   "issues_enabled": true,
   "open_issues_count": 1,
   "merge_requests_enabled": true,
@@ -2630,6 +2637,27 @@ Returned object:
 {
   "avatar_url": "https://gitlab.example.com/uploads/-/system/project/avatar/2/dk.png"
 }
+```
+
+## Download a project avatar
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/144039) in GitLab 16.9.
+
+Get a project avatar.
+You can access this endpoint without authentication if the project is publicly accessible.
+
+```plaintext
+GET /projects/:id/avatar
+```
+
+| Attribute | Type              | Required | Description           |
+| --------- | ----------------- | -------- | --------------------- |
+| `id`      | integer or string | yes      | ID or [URL-encoded path](rest/index.md#namespaced-path-encoding) of the project. |
+
+Example:
+
+```shell
+curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/projects/4/avatar"
 ```
 
 ## Remove a project avatar
@@ -2968,6 +2996,8 @@ Adds a push rule to a specified project.
 POST /projects/:id/push_rule
 ```
 
+<!-- markdownlint-disable MD056 -->
+
 | Attribute                       | Type              | Required | Description |
 |---------------------------------|-------------------|----------|-------------|
 | `id`                            | integer or string | Yes      | The ID or [URL-encoded path of the project](rest/index.md#namespaced-path-encoding). |
@@ -2984,6 +3014,8 @@ POST /projects/:id/push_rule
 | `prevent_secrets`               | boolean           | No       | GitLab rejects any files that are likely to contain secrets. |
 | `reject_unsigned_commits`       | boolean           | No       | Reject commit when it's not signed through GPG. |
 
+<!-- markdownlint-enable MD056 -->
+
 ### Edit project push rule
 
 Edits a push rule for a specified project.
@@ -2991,6 +3023,8 @@ Edits a push rule for a specified project.
 ```plaintext
 PUT /projects/:id/push_rule
 ```
+
+<!-- markdownlint-disable MD056 -->
 
 | Attribute                       | Type              | Required | Description |
 |---------------------------------|-------------------|----------|-------------|
@@ -3007,6 +3041,8 @@ PUT /projects/:id/push_rule
 | `member_check`                  | boolean           | No       | Restrict commits by author (email) to existing GitLab users. |
 | `prevent_secrets`               | boolean           | No       | GitLab rejects any files that are likely to contain secrets. |
 | `reject_unsigned_commits`       | boolean           | No       | Reject commits when they are not GPG signed. |
+
+<!-- markdownlint-enable MD056 -->
 
 ### Delete project push rule
 

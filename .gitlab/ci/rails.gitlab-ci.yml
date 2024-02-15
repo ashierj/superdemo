@@ -1,5 +1,11 @@
 include:
   - local: .gitlab/ci/rails/shared.gitlab-ci.yml
+  - local: .gitlab/ci/artifact-collector/as-if-foss.gitlab-ci.yml
+    rules:
+      - if: '$GITLAB_FEATURES =~ /\bcross_project_pipelines\b/'
+  - local: .gitlab/ci/artifact-collector/as-if-foss-dummy.gitlab-ci.yml
+    rules:
+      - if: '$GITLAB_FEATURES !~ /\bcross_project_pipelines\b/'
 
 ###############################################################
 # EE/FOSS: default refs (MRs, default branch, schedules) jobs #
@@ -40,6 +46,14 @@ setup-test-env:
       - ${TMP_TEST_GITLAB_WORKHORSE_PATH}/
     when: always
 
+setup-test-env-fips:
+  extends:
+    - setup-test-env
+  image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/gitlab-build-images/${BUILD_OS}-${OS_VERSION}-ruby-${RUBY_VERSION}-golang-${GO_VERSION}-rust-${RUST_VERSION}:rubygems-${RUBYGEMS_VERSION}-git-2.36-exiftool-12.60
+  variables:
+    BUILD_OS: "ubi"
+    OS_VERSION: ${UBI_VERSION}
+
 update-setup-test-env-cache:
   extends:
     - setup-test-env
@@ -48,6 +62,12 @@ update-setup-test-env-cache:
   artifacts:
     paths: []  # This job's purpose is only to update the cache.
 
+update-setup-test-env-cache-fips:
+  extends:
+    - setup-test-env-fips
+    - .setup-test-env-cache-push
+    - .shared:rules:update-cache
+
 update-gitaly-binaries-cache:
   extends:
     - setup-test-env
@@ -55,6 +75,12 @@ update-gitaly-binaries-cache:
     - .shared:rules:update-gitaly-binaries-cache
   artifacts:
     paths: []  # This job's purpose is only to update the cache.
+
+update-gitaly-binaries-cache-fips:
+  extends:
+    - setup-test-env-fips
+    - .gitaly-binaries-cache-push
+    - .shared:rules:update-gitaly-binaries-cache
 
 update-ruby-gems-coverage-cache-push:
   extends:
@@ -352,22 +378,25 @@ gitlab:setup:
 rspec:artifact-collector unit:
   extends:
     - .artifact-collector
-    - .rails:rules:ee-and-foss-unit
+    - .rails:rules:artifact-collector-unit
   needs:
-    - rspec unit pg14  # 32 jobs
+    - job: rspec unit pg14  # 32 jobs
+      optional: true
     - job: rspec unit clickhouse  # 1 job
       optional: true
 
 rspec:artifact-collector system:
   extends:
     - .artifact-collector
-    - .rails:rules:ee-and-foss-system
+    - .rails:rules:artifact-collector-system
   needs:
-    - rspec system pg14  # 32 jobs
+    - job: rspec system pg14  # 32 jobs
+      optional: true
 
 rspec:artifact-collector remainder:
   extends:
     - .artifact-collector
+    - .rails:rules:artifact-collector-remainder
   needs:
     - job: rspec integration pg14  # 16 jobs
       optional: true
@@ -375,60 +404,30 @@ rspec:artifact-collector remainder:
       optional: true
     - job: rspec background_migration pg14  # 5 jobs
       optional: true
-  rules:
-    - !reference ['.rails:rules:ee-and-foss-integration', rules]
-    - !reference ['.rails:rules:ee-and-foss-migration', rules]
-    - !reference ['.rails:rules:ee-and-foss-background-migration', rules]
-
-rspec:artifact-collector as-if-foss unit:
-  extends:
-    - .artifact-collector
-    - .rails:rules:as-if-foss-unit
-  needs:
-    - rspec unit pg14-as-if-foss  # 32 jobs
-
-rspec:artifact-collector as-if-foss system:
-  extends:
-    - .artifact-collector
-    - .rails:rules:as-if-foss-system
-  needs:
-    - rspec system pg14-as-if-foss  # 32 jobs
-
-rspec:artifact-collector as-if-foss remainder:
-  extends:
-    - .artifact-collector
-  needs:
-    - job: rspec integration pg14-as-if-foss  # 16 jobs
-      optional: true
-    - job: rspec migration pg14-as-if-foss  # 15 jobs
-      optional: true
-    - job: rspec background_migration pg14-as-if-foss  # 5 jobs
-      optional: true
-  rules:
-    - !reference ['.rails:rules:as-if-foss-integration', rules]
-    - !reference ['.rails:rules:as-if-foss-migration', rules]
-    - !reference ['.rails:rules:as-if-foss-background-migration', rules]
 
 rspec:artifact-collector unit single-redis:
   extends:
     - .artifact-collector
     - .rails:rules:single-redis
   needs:
-    - rspec unit pg14 single-redis  # 32 jobs
+    - job: rspec unit pg14 single-redis  # 32 jobs
+      optional: true
 
 rspec:artifact-collector system single-redis:
   extends:
     - .artifact-collector
     - .rails:rules:single-redis
   needs:
-    - rspec system pg14 single-redis  # 32 jobs
+    - job: rspec system pg14 single-redis  # 32 jobs
+      optional: true
 
 rspec:artifact-collector remainder single-redis:
   extends:
     - .artifact-collector
     - .rails:rules:single-redis
   needs:
-    - rspec integration pg14 single-redis  # 16 jobs
+    - job: rspec integration pg14 single-redis  # 16 jobs
+      optional: true
 
 rspec:artifact-collector ee single-redis:
   extends:
@@ -472,7 +471,7 @@ rspec:artifact-collector ee remainder:
     - !reference ['.rails:rules:ee-only-system', rules]
 
 rspec:coverage:
-  image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/gitlab-build-images/debian-bullseye-slim-ruby-${RUBY_VERSION}
+  image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/gitlab-build-images/${BUILD_OS}-${OS_VERSION}-slim-ruby-${RUBY_VERSION}
   extends:
     - .coverage-base
     - .rails:rules:rspec-coverage
@@ -494,11 +493,7 @@ rspec:coverage:
     - job: rspec:artifact-collector remainder single-redis
       optional: true
     # as-if-foss jobs
-    - job: rspec:artifact-collector as-if-foss unit
-      optional: true
-    - job: rspec:artifact-collector as-if-foss system
-      optional: true
-    - job: rspec:artifact-collector as-if-foss remainder
+    - job: rspec:artifact-collector as-if-foss
       optional: true
     # EE jobs
     - job: rspec:artifact-collector ee single-redis
@@ -527,7 +522,7 @@ rspec:coverage:
         path: coverage/coverage.xml
 
 rspec:undercoverage:
-  image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/gitlab-build-images/debian-bullseye-slim-ruby-${RUBY_VERSION}
+  image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/gitlab-build-images/${BUILD_OS}-${OS_VERSION}-slim-ruby-${RUBY_VERSION}
   extends:
     - .coverage-base
     - .rails:rules:rspec-undercoverage
@@ -655,131 +650,6 @@ rspec-ee:predictive:trigger:
     include:
       - artifact: "${RSPEC_PREDICTIVE_PIPELINE_TEMPLATE_YML}-ee.yml"
         job: rspec-predictive:pipeline-generate
-
-rspec migration pg14-as-if-foss:
-  extends:
-    - .rspec-base-pg14-as-if-foss
-    - .rspec-base-migration
-    - .rspec-migration-parallel
-    - .rails:rules:as-if-foss-migration
-
-rspec background_migration pg14-as-if-foss:
-  extends:
-    - .rspec-base-pg14-as-if-foss
-    - .rspec-base-migration
-    - .rspec-background-migration-parallel
-    - .rails:rules:as-if-foss-background-migration
-
-rspec migration pg14-as-if-foss single-db:
-  extends:
-    - rspec migration pg14-as-if-foss
-    - .single-db-rspec
-    - .rspec-migration-parallel
-    - .rails:rules:single-db-as-if-foss
-
-rspec background_migration pg14-as-if-foss single-db:
-  extends:
-    - rspec background_migration pg14-as-if-foss
-    - .single-db-rspec
-    - .rails:rules:single-db-as-if-foss
-
-rspec migration pg14-as-if-foss single-db-ci-connection:
-  extends:
-    - rspec migration pg14-as-if-foss
-    - .single-db-ci-connection-rspec
-    - .rspec-migration-parallel
-    - .rails:rules:single-db-ci-connection-as-if-foss
-
-rspec background_migration pg14-as-if-foss single-db-ci-connection:
-  extends:
-    - rspec background_migration pg14-as-if-foss
-    - .single-db-ci-connection-rspec
-    - .rails:rules:single-db-ci-connection-as-if-foss
-
-rspec migration pg14-as-if-foss clusterwide-db:
-  extends:
-    - rspec migration pg14-as-if-foss
-    - .clusterwide-db
-    - .rspec-migration-parallel
-    - .rails:rules:clusterwide-db
-
-rspec background_migration pg14-as-if-foss clusterwide-db:
-  extends:
-    - rspec background_migration pg14-as-if-foss
-    - .clusterwide-db
-    - .rails:rules:clusterwide-db
-
-rspec unit pg14-as-if-foss:
-  extends:
-    - .rspec-base-pg14-as-if-foss
-    - .rails:rules:as-if-foss-unit
-    - .rspec-unit-parallel
-
-rspec unit pg14-as-if-foss single-db:
-  extends:
-    - rspec unit pg14-as-if-foss
-    - .single-db-rspec
-    - .rails:rules:single-db-as-if-foss
-
-rspec unit pg14-as-if-foss single-db-ci-connection:
-  extends:
-    - rspec unit pg14-as-if-foss
-    - .single-db-ci-connection-rspec
-    - .rails:rules:single-db-ci-connection-as-if-foss
-
-rspec unit pg14-as-if-foss clusterwide-db:
-  extends:
-    - rspec unit pg14-as-if-foss
-    - .clusterwide-db
-    - .rails:rules:clusterwide-db
-
-rspec integration pg14-as-if-foss:
-  extends:
-    - .rspec-base-pg14-as-if-foss
-    - .rails:rules:as-if-foss-integration
-    - .rspec-integration-parallel
-
-rspec integration pg14-as-if-foss single-db:
-  extends:
-    - rspec integration pg14-as-if-foss
-    - .single-db-rspec
-    - .rails:rules:single-db-as-if-foss
-
-rspec integration pg14-as-if-foss single-db-ci-connection:
-  extends:
-    - rspec integration pg14-as-if-foss
-    - .single-db-ci-connection-rspec
-    - .rails:rules:single-db-ci-connection-as-if-foss
-
-rspec integration pg14-as-if-foss clusterwide-db:
-  extends:
-    - rspec integration pg14-as-if-foss
-    - .clusterwide-db
-    - .rails:rules:clusterwide-db
-
-rspec system pg14-as-if-foss:
-  extends:
-    - .rspec-base-pg14-as-if-foss
-    - .rails:rules:as-if-foss-system
-    - .rspec-system-parallel
-
-rspec system pg14-as-if-foss single-db:
-  extends:
-    - rspec system pg14-as-if-foss
-    - .single-db-rspec
-    - .rails:rules:single-db-as-if-foss
-
-rspec system pg14-as-if-foss single-db-ci-connection:
-  extends:
-    - rspec system pg14-as-if-foss
-    - .single-db-ci-connection-rspec
-    - .rails:rules:single-db-ci-connection-as-if-foss
-
-rspec system pg14-as-if-foss clusterwide-db:
-  extends:
-    - rspec system pg14-as-if-foss
-    - .clusterwide-db
-    - .rails:rules:clusterwide-db
 
 .rspec-ee-base-gitlab-duo:
   extends:

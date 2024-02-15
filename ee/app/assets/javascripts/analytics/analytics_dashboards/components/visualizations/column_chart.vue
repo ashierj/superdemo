@@ -2,6 +2,8 @@
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import merge from 'lodash/merge';
 
+import { formatVisualizationValue } from './utils';
+
 export default {
   name: 'ColumnChart',
   components: {
@@ -23,6 +25,9 @@ export default {
       return merge({ yAxis: { min: 0 } }, this.options);
     },
   },
+  methods: {
+    formatVisualizationValue,
+  },
 };
 </script>
 
@@ -37,5 +42,7 @@ export default {
     responsive
     data-testid="dashboard-visualization-column-chart"
     class="gl-overflow-hidden"
-  />
+  >
+    <template #tooltip-value="{ value }">{{ formatVisualizationValue(value) }}</template>
+  </gl-column-chart>
 </template>

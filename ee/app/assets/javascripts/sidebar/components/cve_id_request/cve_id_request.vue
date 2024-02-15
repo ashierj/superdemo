@@ -90,7 +90,7 @@ export default {
       {{ $options.i18n.action }}
       <div
         v-if="!showHelpState"
-        class="help-button float-right"
+        class="help-button gl-float-right"
         data-testid="help-button"
         @click="toggleHelpState(true)"
       >
@@ -98,7 +98,7 @@ export default {
       </div>
       <div
         v-else
-        class="close-help-button float-right"
+        class="close-help-button gl-float-right"
         data-testid="close-help-button"
         @click="toggleHelpState(false)"
       >

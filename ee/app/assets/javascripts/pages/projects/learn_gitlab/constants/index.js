@@ -113,8 +113,10 @@ export const ACTION_LABELS = {
 
 export const ACTION_SECTIONS = {
   code: {
-    title: s__('LearnGitLab|Start with the WebIDE'),
-    description: s__('LearnGitLab|Use the built-in editor to create or upload files.'),
+    title: s__('LearnGitLab|Add code'),
+    description: s__(
+      'LearnGitLab|Use the built-in editor, WebIDE, or upload code using your preferred method.',
+    ),
   },
   workspace: {
     title: s__('LearnGitLab|Set up your workspace'),

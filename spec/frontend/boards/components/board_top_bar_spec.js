@@ -45,6 +45,7 @@ describe('BoardTopBar', () => {
         boardId: 'gid://gitlab/Board/1',
         isSwimlanesOn: false,
         addColumnFormVisible: false,
+        filters: {},
       },
       provide: {
         swimlanesFeatureAvailable: false,
@@ -102,6 +103,11 @@ describe('BoardTopBar', () => {
     it('emits setFilters when setFilters is emitted by filtered search', () => {
       wrapper.findComponent(IssueBoardFilteredSearch).vm.$emit('setFilters');
       expect(wrapper.emitted('setFilters')).toHaveLength(1);
+    });
+
+    it('emits updateBoard when updateBoard is emitted by boards selector', () => {
+      wrapper.findComponent(BoardsSelector).vm.$emit('updateBoard');
+      expect(wrapper.emitted('updateBoard')).toHaveLength(1);
     });
   });
 

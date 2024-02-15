@@ -16,9 +16,8 @@ module Telesign
     end
 
     def status
-      code = payload.dig('status', 'code')
       description = payload.dig('status', 'description')
-      [code, description].compact.join(' - ')
+      [status_code, description].compact.join(' - ')
     end
 
     def status_updated_on
@@ -34,8 +33,19 @@ module Telesign
     end
 
     def failed_delivery?
-      status_code = payload.dig('status', 'code')
       status_code != 200
+    end
+
+    def country_blocked?
+      # https://developer.telesign.com/enterprise/docs/all-status-and-error-codes#status-codes
+      # 237	- Message blocked in requested country
+      status_code == 237
+    end
+
+    private
+
+    def status_code
+      @status_code ||= payload.dig('status', 'code')
     end
   end
 end

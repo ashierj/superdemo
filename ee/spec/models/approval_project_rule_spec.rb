@@ -381,6 +381,15 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
         it 'returns false when the branch name does not exist' do
           expect(rule.applies_to_branch?('this-is-not-a-real-branch')).to be false
         end
+
+        context 'when protected branches are already loaded' do
+          it 'still returns true when the branch name is a protected branch' do
+            rule.reload
+            rule.protected_branches.load
+
+            expect(rule.applies_to_branch?(protected_branch.name)).to be true
+          end
+        end
       end
 
       context 'and project has no protected branches' do
@@ -698,13 +707,22 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
     describe '#vulnerability_states_for_branch' do
       let(:project) { create(:project, :repository) }
       let(:branch_name) { project.default_branch }
-      let!(:rule) { build(:approval_project_rule, project: project, protected_branches: protected_branches, vulnerability_states: %w[new_needs_triage resolved]) }
+      let(:vulnerability_states) { %w[new_needs_triage resolved] }
+      let!(:rule) { build(:approval_project_rule, project: project, protected_branches: protected_branches, vulnerability_states: vulnerability_states) }
 
       context 'with protected branch set to any' do
         let(:protected_branches) { [] }
 
         it 'returns all content of vulnerability states' do
           expect(rule.vulnerability_states_for_branch).to contain_exactly('new_needs_triage', 'resolved')
+        end
+
+        context 'when vulnerabilty_states is empty' do
+          let(:vulnerability_states) { [] }
+
+          it 'returns only default states' do
+            expect(rule.vulnerability_states_for_branch).to contain_exactly('new_needs_triage', 'new_dismissed')
+          end
         end
       end
 
@@ -713,6 +731,14 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
 
         it 'returns only the content of vulnerability states' do
           expect(rule.vulnerability_states_for_branch).to contain_exactly('new_needs_triage')
+        end
+
+        context 'when vulnerabilty_states is empty' do
+          let(:vulnerability_states) { [] }
+
+          it 'returns only default states' do
+            expect(rule.vulnerability_states_for_branch).to contain_exactly('new_needs_triage', 'new_dismissed')
+          end
         end
       end
     end

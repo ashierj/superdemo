@@ -170,6 +170,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     wiki_page_meta
     workspace
     workspace_variable
+    member_approval
   ].to_set.freeze
 
   # Some factories and their corresponding models are based on

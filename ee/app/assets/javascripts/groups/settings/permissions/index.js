@@ -49,8 +49,12 @@ const shouldShowConfirmModal = (
     return false;
   }
 
+  if (hasUserCapChangedFromLimitedToUnlimited) {
+    return true;
+  }
+
   return (
-    hasUserCapChangedFromLimitedToUnlimited ||
+    gon.features.saasUserCapsAutoApprovePendingUsersOnCapIncrease &&
     parseInt(newUserSignupsCapNewValue, 10) > parseInt(newUserSignupsCapOriginalValue, 10)
   );
 };

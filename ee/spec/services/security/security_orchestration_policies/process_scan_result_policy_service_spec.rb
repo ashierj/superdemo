@@ -310,9 +310,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
 
       where(:rules_count, :expected_rules_count) do
         [
-          [Security::ScanResultPolicy::LIMIT - 1, Security::ScanResultPolicy::LIMIT - 1],
-          [Security::ScanResultPolicy::LIMIT, Security::ScanResultPolicy::LIMIT],
-          [Security::ScanResultPolicy::LIMIT + 1, Security::ScanResultPolicy::LIMIT]
+          [Gitlab::CurrentSettings.security_approval_policies_limit - 1, Gitlab::CurrentSettings.security_approval_policies_limit - 1],
+          [Gitlab::CurrentSettings.security_approval_policies_limit, Gitlab::CurrentSettings.security_approval_policies_limit],
+          [Gitlab::CurrentSettings.security_approval_policies_limit + 1, Gitlab::CurrentSettings.security_approval_policies_limit]
         ]
       end
 

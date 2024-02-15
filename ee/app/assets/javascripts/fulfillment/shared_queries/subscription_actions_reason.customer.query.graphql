@@ -1,6 +1,7 @@
 query getSubscriptionPermissionsData($namespaceId: ID!) {
   subscription(namespaceId: $namespaceId) {
     canAddSeats
+    canAddDuoProSeats
     canRenew
     communityPlan
   }

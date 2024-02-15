@@ -14,7 +14,7 @@ module Epics
       { group: value }
     end
 
-    attr_reader :parent_epic, :child_epic
+    attr_reader :parent_epic, :child_epic, :remove_parent
 
     # TODO: The first argument of the initializer is named group because it has no `project` associated,
     # even though it is only a `group` in this sub-hierarchy of `IssuableBaseClass`,
@@ -55,11 +55,6 @@ module Epics
       [].freeze
     end
 
-    override :handle_changes
-    def handle_changes(epic, options)
-      handle_parent_epic_change(epic, options)
-    end
-
     override :handle_quick_actions
     def handle_quick_actions(epic)
       super
@@ -69,7 +64,7 @@ module Epics
 
     override :filter_params
     def filter_params(epic)
-      filter_parent_epic(epic)
+      filter_parent_epic
 
       super
     end
@@ -103,6 +98,15 @@ module Epics
       result
     end
 
+    def remove_parent_epic_for(epic)
+      return unless remove_parent && epic.parent
+
+      result = Epics::EpicLinks::DestroyService.new(epic, current_user).execute
+      return if result[:status] == :error
+
+      track_epic_parent_updated
+    end
+
     def available_labels
       @available_labels ||= LabelsFinder.new(
         current_user,
@@ -131,57 +135,17 @@ module Epics
       )
     end
 
-    def filter_parent_epic(epic)
-      return unless parent_param_present?
+    def filter_parent_epic
+      return unless params.key?(:parent) || params.key?(:parent_id)
 
-      new_parent = params[:parent] || Epic.find_by_id(params[:parent_id])
-      return unless new_parent
-
-      if can_link_epics?(epic, new_parent)
-        params[:parent] = new_parent
-      else
-        params.delete(:parent)
-      end
+      @parent_epic = if params.key?(:parent)
+                       @remove_parent = true if params[:parent].nil?
+                       params.delete(:parent)
+                     elsif params.key?(:parent_id)
+                       Epic.find_by_id(params[:parent_id])
+                     end
 
       params.delete(:parent_id)
-    end
-
-    def can_link_epics?(epic, parent)
-      can?(current_user, :admin_epic_tree_relation, epic) &&
-        can?(current_user, :create_epic_tree_relation, parent)
-    end
-
-    def handle_parent_epic_change(epic, options)
-      return unless parent_param_present?
-
-      old_parent = options.dig(:old_associations, :parent)
-      new_parent = epic.parent
-
-      return if old_parent == new_parent
-
-      create_parent_notes(epic, new_parent, old_parent)
-      track_epic_parent_updated
-    end
-
-    def create_parent_notes(epic, new_parent, old_parent)
-      if new_parent
-        SystemNoteService.change_epics_relation(new_parent, epic, current_user, 'relate_epic')
-
-        return unless old_parent
-
-        SystemNoteService.move_child_epic_to_new_parent(
-          previous_parent_epic: old_parent,
-          child_epic: epic,
-          new_parent_epic: new_parent,
-          user: current_user
-        )
-      elsif old_parent
-        SystemNoteService.change_epics_relation(old_parent, epic, current_user, 'unrelate_epic')
-      end
-    end
-
-    def parent_param_present?
-      params.key?(:parent) || params.key?(:parent_id)
     end
 
     def log_audit_event(epic, event_type, message)
@@ -195,6 +159,10 @@ module Epics
       }
 
       ::Gitlab::Audit::Auditor.audit(audit_context)
+    end
+
+    def sync_as_work_item?(group)
+      ::Feature.enabled?(:epic_creation_with_synced_work_item, group, type: :wip)
     end
   end
 end

@@ -5,7 +5,6 @@ import { s__ } from '~/locale';
 import BoardContent from '~/boards/components/board_content.vue';
 import BoardSettingsSidebar from '~/boards/components/board_settings_sidebar.vue';
 import BoardTopBar from '~/boards/components/board_top_bar.vue';
-import eventHub from '~/boards/eventhub';
 import { listsQuery, FilterFields } from 'ee_else_ce/boards/constants';
 import { formatBoardLists, filterVariables, FiltersInfo } from 'ee_else_ce/boards/boards_util';
 import activeBoardItemQuery from 'ee_else_ce/boards/graphql/client/active_board_item.query.graphql';
@@ -52,7 +51,7 @@ export default {
         };
       },
       result({ data: { activeBoardItem } }) {
-        if (activeBoardItem) {
+        if (activeBoardItem && activeBoardItem.listId !== null) {
           this.setActiveId('');
         }
       },
@@ -113,11 +112,9 @@ export default {
   },
   created() {
     window.addEventListener('popstate', refreshCurrentPage);
-    eventHub.$on('updateBoard', this.refetchLists);
   },
   destroyed() {
     window.removeEventListener('popstate', refreshCurrentPage);
-    eventHub.$off('updateBoard', this.refetchLists);
   },
   methods: {
     refetchLists() {
@@ -144,10 +141,12 @@ export default {
       :board-id="boardId"
       :add-column-form-visible="addColumnFormVisible"
       :is-swimlanes-on="isSwimlanesOn"
+      :filters="filterParams"
       @switchBoard="switchBoard"
       @setFilters="setFilters"
       @setAddColumnFormVisibility="addColumnFormVisible = $event"
       @toggleSwimlanes="isShowingEpicsSwimlanes = $event"
+      @updateBoard="refetchLists"
     />
     <board-content
       :board-id="boardId"
@@ -159,6 +158,7 @@ export default {
       :list-query-variables="listQueryVariables"
       @setActiveList="setActiveId"
       @setAddColumnFormVisibility="addColumnFormVisible = $event"
+      @setFilters="setFilters"
     />
     <board-settings-sidebar
       v-if="activeList"

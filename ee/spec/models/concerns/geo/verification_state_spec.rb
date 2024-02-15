@@ -509,12 +509,16 @@ RSpec.describe Geo::VerificationState, feature_category: :geo_replication do
     end
 
     describe '.fail_verification_timeouts' do
-      it 'sets verification state to failed' do
+      it 'sets sync state to failed' do
         registry = create(:geo_package_file_registry, :synced, verification_started_at: (described_class::VERIFICATION_TIMEOUT + 1.minute).ago, verification_state: 1)
 
         registry.class.fail_verification_timeouts
 
-        expect(registry.reload.verification_failed?).to be_truthy
+        expect(registry.reload.failed?).to be_truthy
+        expect(registry.last_sync_failure).to match(/Verification timed out/)
+        expect(registry.retry_count).to eq(1)
+        expect(registry.verification_failed?).to be_truthy
+        expect(registry.verification_failure).to match(/Verification timed out/)
       end
     end
 

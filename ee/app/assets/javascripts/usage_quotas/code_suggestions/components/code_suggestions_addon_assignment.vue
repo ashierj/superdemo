@@ -14,7 +14,7 @@ import userAddOnAssignmentRemoveMutation from 'ee/usage_quotas/add_on/graphql/us
 export default {
   name: 'CodeSuggestionsAddonAssignment',
   i18n: {
-    toggleLabel: s__('CodeSuggestions|Duo Pro add-on status'),
+    toggleLabel: s__('CodeSuggestions|GitLab Duo Pro add-on status'),
   },
   components: {
     GlToggle,

@@ -7,3 +7,4 @@ feature_category: incident_management
 milestone: '16.1'
 saved_to_database: true
 streamed: true
+scope: [Project]

@@ -12,6 +12,7 @@ import MrCodeQualityWidget from '~/vue_merge_request_widget/extensions/code_qual
 import MrTerraformWidget from '~/vue_merge_request_widget/extensions/terraform/index.vue';
 import MrStatusChecksWidget from 'ee/vue_merge_request_widget/extensions/status_checks/index.vue';
 import MrBrowserPerformanceWidget from 'ee/vue_merge_request_widget/extensions/browser_performance/index.vue';
+import MrLoadPerformanceWidget from 'ee/vue_merge_request_widget/extensions/load_performance/index.vue';
 
 describe('MR Widget App', () => {
   let wrapper;
@@ -70,6 +71,7 @@ describe('MR Widget App', () => {
     ${'terraformPlansWidget'}     | ${MrTerraformWidget}          | ${'terraformReportsPath'}
     ${'statusChecksWidget'}       | ${MrStatusChecksWidget}       | ${'apiStatusChecksPath'}
     ${'browserPerformanceWidget'} | ${MrBrowserPerformanceWidget} | ${'browserPerformance'}
+    ${'loadPerformanceWidget'}    | ${MrLoadPerformanceWidget}    | ${'loadPerformance'}
   `('$widgetName', ({ widget, endpoint }) => {
     beforeEach(() => {
       mock.onGet(endpoint).reply(HTTP_STATUS_OK);

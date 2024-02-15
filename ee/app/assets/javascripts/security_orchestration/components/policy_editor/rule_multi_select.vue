@@ -47,7 +47,11 @@ export default {
       return this.includeSelectAll ? this.$options.i18n.selectAllLabel : '';
     },
     text() {
-      return renderMultiSelectText(this.selected, this.items, this.itemTypeName);
+      return renderMultiSelectText({
+        selected: this.selected,
+        items: this.items,
+        itemTypeName: this.itemTypeName,
+      });
     },
     itemsKeys() {
       return Object.keys(this.items);

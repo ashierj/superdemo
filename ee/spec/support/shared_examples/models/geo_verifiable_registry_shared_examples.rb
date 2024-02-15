@@ -43,6 +43,28 @@ RSpec.shared_examples 'a Geo verifiable registry' do
         end
       end
     end
+
+    context 'when transitioning to pending' do
+      context 'when synced' do
+        let(:registry) { create(registry_class_factory, :synced) }
+
+        it 'marks verification as disabled' do
+          registry.pending!
+
+          expect(registry.reload).to be_verification_disabled
+        end
+      end
+
+      context 'when failed' do
+        let(:registry) { create(registry_class_factory, :failed) }
+
+        it 'marks verification as disabled' do
+          registry.pending!
+
+          expect(registry.reload).to be_verification_disabled
+        end
+      end
+    end
   end
 
   context 'verification_state machine' do

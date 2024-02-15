@@ -41,7 +41,7 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanResultPoli
             name: policy[:name],
             description: policy[:description],
             edit_path: Gitlab::Routing.url_helpers.edit_project_security_policy_url(
-              project, id: CGI.escape(policy[:name]), type: 'scan_result_policy'
+              project, id: CGI.escape(policy[:name]), type: 'approval_policy'
             ),
             enabled: policy[:enabled],
             yaml: YAML.dump(policy.deep_stringify_keys),

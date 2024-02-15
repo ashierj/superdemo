@@ -5,12 +5,14 @@ module Mutations
     class Create < Base
       graphql_name 'MemberRoleCreate'
 
+      include ::GitlabSubscriptions::SubscriptionHelper
       include Mutations::ResolvesNamespace
 
       argument :base_access_level,
         ::Types::MemberAccessLevelEnum,
         required: true,
         description: 'Base access level for the custom role.'
+
       argument :group_path, GraphQL::Types::ID,
         required: false,
         description: 'Group the member role to mutate is in. Required for SaaS.'
@@ -48,22 +50,18 @@ module Mutations
       end
 
       def authorize_group_member_roles!(group)
-        raise_resource_not_available_error! unless saas?
+        raise_resource_not_available_error! if restrict_member_roles? && !gitlab_com_subscription?
         raise_resource_not_available_error! unless Ability.allowed?(current_user, :admin_member_role, group)
         raise_resource_not_available_error! unless group.custom_roles_enabled?
       end
 
       def authorize_instance_member_roles!
         raise_resource_not_available_error! unless Ability.allowed?(current_user, :admin_member_role)
-        raise_resource_not_available_error! if saas?
-      end
-
-      def saas?
-        Gitlab::Saas.feature_available?(:group_custom_roles)
+        raise_resource_not_available_error! if gitlab_com_subscription?
       end
 
       def missing_group_path?(args)
-        return false unless saas?
+        return false unless gitlab_com_subscription?
 
         args[:group_path].blank?
       end
@@ -73,6 +71,10 @@ module Mutations
         permissions.each_with_object(args) do |permission, new_args|
           new_args[permission.downcase] = true
         end
+      end
+
+      def restrict_member_roles?
+        Feature.enabled?(:restrict_member_roles, type: :beta)
       end
     end
   end

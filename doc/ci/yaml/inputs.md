@@ -109,6 +109,23 @@ In this example:
 - `version` is a mandatory string input that must match the specified regular expression.
 - `export_results` is an optional boolean input. When not specified, it defaults to `true`.
 
+### Multi-line input string values
+
+[Inputs](../yaml/inputs.md) support different value types. You can pass multi-string values using the following format:
+
+```yaml
+spec:
+  inputs:
+    closed_message:
+      description: Message to announce when an issue is closed.
+      default: 'Hi {{author}} :wave:,
+
+        Based on the policy for inactive issues, this is now being closed.
+
+        If this issue requires further attention, please reopen this issue.'
+---
+```
+
 ## Set input values when using `include`
 
 > - `include:with` [renamed to `include:inputs`](https://gitlab.com/gitlab-org/gitlab/-/issues/406780) in GitLab 16.0.
@@ -277,7 +294,7 @@ Assuming the value of `inputs.test` is `0123456789`, then the output would be `3
 
 [CI/CD variable expressions](../jobs/job_control.md#cicd-variable-expressions)
 in `rules:if` expect a comparison of a CI/CD variable with a string, otherwise
-[a variety of syntax errors could be returned](../jobs/job_control.md#this-gitlab-ci-configuration-is-invalid-for-variable-expressions).
+[a variety of syntax errors could be returned](../jobs/job_troubleshooting.md#this-gitlab-ci-configuration-is-invalid-for-variable-expressions).
 
 You must ensure that expressions remain properly formatted after input values are
 inserted into the configuration, which might require the use of additional quote characters.

@@ -62,6 +62,7 @@ module Gitlab
             # Attaching foreign keys handles cases where one or more foreign keys already exists, so it doesn't
             # need a check similar to the rest of this method
             attach_foreign_keys_to_parent
+            analyze_parent_table
           end
 
           def revert_partitioning
@@ -199,7 +200,7 @@ module Gitlab
           end
 
           def attach_foreign_keys_to_parent
-            migration_context.foreign_keys(table_name).each do |fk|
+            Gitlab::Database::PostgresForeignKey.by_constrained_table_name(table_name).not_inherited.each do |fk|
               # At this point no other connection knows about the parent table.
               # Thus the only contended lock in the following transaction is on fk.to_table.
               # So a deadlock is impossible.
@@ -208,14 +209,30 @@ module Gitlab
 
               # If we're rerunning this migration after a failure to acquire a lock, the foreign key might already exist
               # Don't try to recreate it in that case
-              if migration_context.foreign_keys(parent_table_name)
-                                  .any? { |p_fk| p_fk.options[:name] == fk.options[:name] }
-                next
-              end
+              next if Gitlab::Database::PostgresForeignKey
+                  .by_constrained_table_name(parent_table_name)
+                  .not_inherited
+                  .any? { |p_fk| p_fk.name == fk.name }
 
-              migration_context.with_lock_retries(raise_on_exhaustion: true) do
-                migration_context.add_foreign_key(parent_table_name, fk.to_table, **fk.options)
-              end
+              migration_context.add_concurrent_foreign_key(
+                parent_table_name,
+                fk.referenced_table_name,
+                name: fk.name,
+                column: fk.constrained_columns,
+                target_column: fk.referenced_columns,
+                on_delete: fk.on_delete_action == "no_action" ? nil : fk.on_delete_action.to_sym,
+                on_update: fk.on_update_action == "no_action" ? nil : fk.on_update_action.to_sym,
+                validate: true,
+                allow_partitioned: true
+              )
+            end
+          end
+
+          def analyze_parent_table
+            migration_context.disable_statement_timeout do
+              migration_context.execute(<<~SQL)
+                ANALYZE VERBOSE #{quote_table_name(parent_table_name)}
+              SQL
             end
           end
 

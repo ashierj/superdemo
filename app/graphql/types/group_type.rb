@@ -22,8 +22,7 @@ module Types
           type: Types::CustomEmojiType.connection_type,
           null: true,
           resolver: Resolvers::CustomEmojiResolver,
-          description: 'Custom emoji in this namespace.',
-          alpha: { milestone: '13.6' }
+          description: 'Custom emoji in this namespace.'
 
     field :share_with_group_lock,
           type: GraphQL::Types::Boolean,
@@ -61,6 +60,11 @@ module Types
           type: GraphQL::Types::Boolean,
           null: true,
           description: 'Indicates if a group has email notifications disabled.'
+
+    field :emails_enabled,
+          type: GraphQL::Types::Boolean,
+          null: true,
+          description: 'Indicates if a group has email notifications enabled.'
 
     field :max_access_level, Types::AccessLevelType,
           null: false,
@@ -307,6 +311,18 @@ module Types
           resolver: Resolvers::AutocompleteUsersResolver,
           description: 'Search users for autocompletion'
 
+    field :lock_math_rendering_limits_enabled,
+          GraphQL::Types::Boolean,
+          null: true,
+          method: :lock_math_rendering_limits_enabled?,
+          description: 'Indicates if math rendering limits are locked for all descendant groups.'
+
+    field :math_rendering_limits_enabled,
+          GraphQL::Types::Boolean,
+          null: true,
+          method: :math_rendering_limits_enabled?,
+          description: 'Indicates if math rendering limits are used for this group.'
+
     def label(title:)
       BatchLoader::GraphQL.for(title).batch(key: group) do |titles, loader, args|
         LabelsFinder
@@ -363,6 +379,10 @@ module Types
         descendants_counts = Group.id_in(group_ids).descendant_groups_counts
         descendants_counts.each { |group_id, count| loader.call(group_id, count) }
       end
+    end
+
+    def emails_disabled
+      !group.emails_enabled?
     end
 
     def projects_count

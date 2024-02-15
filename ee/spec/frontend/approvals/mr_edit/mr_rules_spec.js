@@ -176,12 +176,7 @@ describe('EE Approvals MRRules', () => {
       store.modules.approvals.state.rules = [createEmptyRule()];
       factory();
 
-      expect(findHeaders()).toEqual([
-        HEADERS.members,
-        '',
-        HEADERS.approvalsRequired,
-        HEADERS.actions,
-      ]);
+      expect(findHeaders()).toEqual([HEADERS.members, HEADERS.approvalsRequired, HEADERS.actions]);
     });
 
     it('shows message if no approvers are visible', () => {

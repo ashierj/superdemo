@@ -91,10 +91,10 @@ module EE
       truthy_values.include? server['smartcard_auth']
     end
 
-    def smartcard_login_button_classes(provider_name)
-      css_classes = %w[btn btn-success]
-      css_classes << 'btn-inverted' unless smartcard_enabled_for_ldap?(provider_name, required: true)
-      css_classes.join(' ')
+    def smartcard_login_button_category(provider_name)
+      return :secondary unless smartcard_enabled_for_ldap?(provider_name, required: true)
+
+      :primary
     end
 
     def group_saml_enabled?

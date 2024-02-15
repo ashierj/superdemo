@@ -232,7 +232,7 @@ export default {
       >
         <div
           v-safe-html="$options.chartEmptyStateIllustration"
-          class="gl-my-5 svg-w-100 d-flex align-items-center"
+          class="gl-my-5 svg-w-100 d-flex gl-align-items-center"
         ></div>
         <h5 class="text-center">{{ $options.i18n.emptyChart }}</h5>
       </div>

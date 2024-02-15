@@ -113,8 +113,8 @@ module QA
 
           def has_vulnerability_info_content?(name)
             retry_until(reload: true, sleep_interval: 2, max_attempts: 2, message: 'Finding "Security Finding" text') do
-              click_link('Security') unless has_element?('security-report-content')
-              has_element?('vulnerability-info-content', text: name, wait: 1)
+              has_element?('vulnerability-info-content', text: name,
+                wait: 1) || has_element?('vulnerability', text: name, wait: 1)
             end
           end
 

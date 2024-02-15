@@ -312,6 +312,10 @@ RSpec.describe AddressableUrlValidator do
     let(:options) { { attributes: [:link_url] } }
     let(:validator) { described_class.new(**options) }
 
+    before do
+      allow(ApplicationSetting).to receive(:current).and_return(ApplicationSetting.new)
+    end
+
     context 'true' do
       let(:options) { super().merge(deny_all_requests_except_allowed: true) }
 
@@ -321,6 +325,20 @@ RSpec.describe AddressableUrlValidator do
         subject
 
         expect(badge.errors).to be_present
+      end
+
+      context 'when allowlisted in application setting' do
+        before do
+          stub_application_setting(outbound_local_requests_whitelist: ['example.com'])
+        end
+
+        it 'allows the url' do
+          badge.link_url = url
+
+          subject
+
+          expect(badge.errors).to be_empty
+        end
       end
     end
 
@@ -338,7 +356,6 @@ RSpec.describe AddressableUrlValidator do
 
     context 'not given' do
       before do
-        allow(ApplicationSetting).to receive(:current).and_return(ApplicationSetting.new)
         stub_application_setting(deny_all_requests_except_allowed: app_setting)
       end
 
@@ -352,10 +369,52 @@ RSpec.describe AddressableUrlValidator do
 
           expect(badge.errors).to be_present
         end
+
+        context 'when allowlisted in application setting' do
+          before do
+            stub_application_setting(outbound_local_requests_whitelist: ['example.com'])
+          end
+
+          it 'allows the url' do
+            badge.link_url = url
+
+            subject
+
+            expect(badge.errors).to be_empty
+          end
+        end
       end
 
       context 'when app setting is false' do
         let(:app_setting) { false }
+
+        it 'allows the url' do
+          badge.link_url = url
+
+          subject
+
+          expect(badge.errors).to be_empty
+        end
+      end
+    end
+
+    context 'a proc' do
+      let(:options) { super().merge(deny_all_requests_except_allowed: deny_all_requests_except_allowed_proc) }
+
+      context 'that is evaluating true' do
+        let(:deny_all_requests_except_allowed_proc) { ->(_) { true } }
+
+        it 'prevents the url' do
+          badge.link_url = url
+
+          subject
+
+          expect(badge.errors).to be_present
+        end
+      end
+
+      context 'that is evaluating false' do
+        let(:deny_all_requests_except_allowed_proc) { ->(_) { false } }
 
         it 'allows the url' do
           badge.link_url = url

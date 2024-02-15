@@ -45,6 +45,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    filters: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
@@ -97,17 +101,20 @@ export default {
           :board="board"
           :is-current-board-loading="isLoading"
           @switchBoard="$emit('switchBoard', $event)"
+          @updateBoard="$emit('updateBoard', $event)"
         />
         <new-board-button />
         <issue-board-filtered-search
           v-if="isIssueBoard"
           :board="board"
           :is-swimlanes-on="isSwimlanesOn"
+          :filters="filters"
           @setFilters="$emit('setFilters', $event)"
         />
         <epic-board-filtered-search
           v-else
           :board="board"
+          :filters="filters"
           @setFilters="$emit('setFilters', $event)"
         />
       </div>

@@ -838,9 +838,9 @@ project, you can [disable it from your project's settings](../../user/project/se
 ## Use an external container registry with GitLab as an auth endpoint
 
 WARNING:
-Using external container registries in GitLab is [deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/376217)
-in GitLab 15.8 and the end of support is scheduled for GitLab 16.0.
-If you need to use external container registries instead of the GitLab container registry,
+Using third-party container registries in GitLab was [deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/376217)
+in GitLab 15.8 and support ended in GitLab 16.0.
+If you need to use third-party container registries instead of the GitLab container registry,
 tell us about your use cases in [feedback issue 958](https://gitlab.com/gitlab-org/container-registry/-/issues/958).
 
 If you use an external container registry, some features associated with the
@@ -1278,10 +1278,10 @@ DETAILS:
 **Status:** Beta
 
 You can run garbage collection in the background without the need to schedule it or require read-only mode,
-if you migrate to the [metadata database (beta)](container_registry_metadata_database.md).
+if you migrate to the [metadata database](container_registry_metadata_database.md).
 
 NOTE:
-If you would like to try this [beta feature](../../policy/experiment-beta-support.md#beta),
+If you would like to try this [Beta feature](../../policy/experiment-beta-support.md#beta),
 you should review the [known limitations](container_registry_metadata_database.md#known-limitations). If you have any feedback,
 you can let us know in the [feedback issue](https://gitlab.com/gitlab-org/gitlab/-/issues/423459).
 

@@ -2,6 +2,8 @@
 
 module MemberRoles
   class CreateService < BaseService
+    include ::GitlabSubscriptions::SubscriptionHelper
+
     def execute
       return authorized_error unless allowed?
       return root_group_error if subgroup?
@@ -22,7 +24,7 @@ module MemberRoles
     end
 
     def allowed_for_instance?
-      return false if saas?
+      return false if gitlab_com_subscription?
 
       can?(current_user, :admin_member_role)
     end
@@ -33,13 +35,9 @@ module MemberRoles
     end
 
     def subgroup?
-      return false unless saas?
+      return false unless gitlab_com_subscription?
 
       !group.root?
-    end
-
-    def saas?
-      Gitlab::Saas.feature_available?(:group_custom_roles)
     end
 
     def create_member_role

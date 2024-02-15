@@ -14,6 +14,7 @@ class ApplicationSetting < MainClusterwide::ApplicationRecord
   ignore_columns %i[instance_administration_project_id instance_administrators_group_id], remove_with: '16.2', remove_after: '2023-06-22'
   ignore_columns %i[encrypted_ai_access_token encrypted_ai_access_token_iv], remove_with: '16.10', remove_after: '2024-03-22'
   ignore_columns %i[repository_storages], remove_with: '16.8', remove_after: '2023-12-21'
+  ignore_columns %i[delayed_project_removal lock_delayed_project_removal delayed_group_deletion], remove_with: '16.10', remove_after: '2024-03-22'
 
   INSTANCE_REVIEW_MIN_USERS = 50
   GRAFANA_URL_ERROR_MESSAGE = 'Please check your Grafana URL setting in ' \
@@ -596,11 +597,13 @@ class ApplicationSetting < MainClusterwide::ApplicationRecord
       :sidekiq_job_limiter_compression_threshold_bytes,
       :sidekiq_job_limiter_limit_bytes,
       :terminal_max_session_time,
-      :users_get_by_id_limit
+      :users_get_by_id_limit,
+      :downstream_pipeline_trigger_limit_per_project_user_sha
   end
 
   jsonb_accessor :rate_limits,
-    members_delete_limit: [:integer, { default: 60 }]
+    members_delete_limit: [:integer, { default: 60 }],
+    downstream_pipeline_trigger_limit_per_project_user_sha: [:integer, { default: 0 }]
 
   validates :rate_limits, json_schema: { filename: "application_setting_rate_limits" }
 
@@ -910,7 +913,8 @@ class ApplicationSetting < MainClusterwide::ApplicationRecord
     @parsed_kroki_url ||= Gitlab::HTTP_V2::UrlBlocker.validate!(
       kroki_url, schemes: %w[http https],
       enforce_sanitization: true,
-      deny_all_requests_except_allowed: Gitlab::CurrentSettings.deny_all_requests_except_allowed?)[0]
+      deny_all_requests_except_allowed: Gitlab::CurrentSettings.deny_all_requests_except_allowed?,
+      outbound_local_requests_allowlist: Gitlab::CurrentSettings.outbound_local_requests_whitelist)[0] # rubocop:disable Naming/InclusiveLanguage -- existing setting
   rescue Gitlab::HTTP_V2::UrlBlocker::BlockedUrlError => e
     self.errors.add(
       :kroki_url,

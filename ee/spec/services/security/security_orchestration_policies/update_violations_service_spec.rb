@@ -11,8 +11,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::UpdateViolationsService,
 
   let_it_be(:policy_a) { create(:scan_result_policy_read, project: project) }
   let_it_be(:policy_b) { create(:scan_result_policy_read, project: project) }
+  let(:violated_policies) { violations.map(&:scan_result_policy_read) }
 
-  subject(:violated_policies) { merge_request.scan_result_policy_violations.map(&:scan_result_policy_read) }
+  subject(:violations) { merge_request.scan_result_policy_violations }
 
   describe 'attributes' do
     subject(:attrs) { project.scan_result_policy_violations.last.attributes }
@@ -31,17 +32,28 @@ RSpec.describe Security::SecurityOrchestrationPolicies::UpdateViolationsService,
   end
 
   context 'without pre-existing violations' do
-    it 'creates violations' do
+    before do
       service.add([policy_b.id], [])
+    end
+
+    it 'creates violations' do
       service.execute
 
       expect(violated_policies).to contain_exactly(policy_b)
+    end
+
+    it 'can persist violation data' do
+      service.set_violation_data(policy_b.id, { violations: { uuid: { newly_detected: [123] } } })
+      service.execute
+
+      expect(violations.last.violation_data).to eq({ "violations" => { "uuid" => { "newly_detected" => [123] } } })
     end
   end
 
   context 'with pre-existing violations' do
     before do
       service.add([policy_a.id], [])
+      service.set_violation_data(policy_a.id, { violations: { uuid: { newly_detected: [123] } } })
       service.execute
     end
 
@@ -52,11 +64,21 @@ RSpec.describe Security::SecurityOrchestrationPolicies::UpdateViolationsService,
       expect(violated_policies).to contain_exactly(policy_b)
     end
 
+    it 'updates existing violation data' do
+      service.add([policy_a.id], [])
+      service.set_violation_data(policy_a.id, { errors: [{ error: 'SCAN_REMOVED', missing_scans: ['sast'] }] })
+
+      expect { service.execute }
+        .to change { violations.last.violation_data }.to(
+          { "errors" => [{ "error" => "SCAN_REMOVED", "missing_scans" => ["sast"] }] }
+        )
+    end
+
     context 'with identical state' do
       it 'does not clear violations' do
         service.add([policy_a.id], [])
-        service.execute
 
+        expect { service.execute }.not_to change { violations.last.violation_data }
         expect(violated_policies).to contain_exactly(policy_a)
       end
     end
@@ -74,7 +96,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::UpdateViolationsService,
     it 'removes only violations provided in unviolated ids' do
       service.execute
 
-      expect(merge_request.scan_result_policy_violations).to contain_exactly(unrelated_violation)
+      expect(violations).to contain_exactly(unrelated_violation)
     end
   end
 
@@ -82,7 +104,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::UpdateViolationsService,
     it 'clears all violations' do
       service.execute
 
-      expect(violated_policies).to be_empty
+      expect(violations).to be_empty
     end
   end
 end

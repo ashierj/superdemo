@@ -1,7 +1,11 @@
 export const mockDefaultPermissions = [
-  { name: 'Permission A', description: 'Description A', value: 'READ_CODE' },
-  { name: 'Permission B', description: 'Description B', value: 'READ_VULNERABILITY' },
-  { name: 'Permission C', description: 'Description C', value: 'ADMIN_VULNERABILITY' },
+  { value: 'A', name: 'A', description: 'A', requirements: null },
+  { value: 'B', name: 'B', description: 'B', requirements: ['A'] },
+  { value: 'C', name: 'C', description: 'C', requirements: ['B'] }, // Nested dependency: C -> B -> A
+  { value: 'D', name: 'D', description: 'D', requirements: ['C'] }, // Nested dependency: D -> C -> B -> A
+  { value: 'E', name: 'E', description: 'E', requirements: ['F'] }, // Circular dependency
+  { value: 'F', name: 'F', description: 'F', requirements: ['E'] }, // Circular dependency
+  { value: 'G', name: 'G', description: 'G', requirements: ['A', 'B', 'C'] }, // Multiple dependencies
 ];
 
 export const mockPermissions = {
@@ -26,6 +30,7 @@ export const mockMemberRoles = {
             },
             id: 'gid://gitlab/MemberRole/1',
             name: 'Test',
+            description: 'Test description',
             enabledPermissions: {
               nodes: [
                 {
@@ -60,6 +65,7 @@ export const mockInstanceMemberRoles = {
           },
           id: 'gid://gitlab/MemberRole/2',
           name: 'Instance Test',
+          description: 'Instance Test description',
           enabledPermissions: {
             nodes: [
               {

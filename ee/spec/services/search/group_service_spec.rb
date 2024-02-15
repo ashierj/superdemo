@@ -80,7 +80,8 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
   end
 
   context 'when searching with Zoekt' do
-    let(:service) { described_class.new(user, group, search: 'foobar', scope: scope, basic_search: basic_search, page: page) }
+    let(:service) { described_class.new(user, group, search: 'foobar', scope: scope, basic_search: basic_search, page: page, source: source) }
+    let(:source) { nil }
     let(:use_zoekt) { true }
     let(:scope) { 'blobs' }
     let(:basic_search) { nil }
@@ -178,6 +179,26 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
       it 'does not search with Zoekt' do
         expect(service).not_to be_use_zoekt
         expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when search comes from API' do
+      let(:source) { 'api' }
+
+      it 'searches with Zoekt' do
+        expect(service.use_zoekt?).to eq(true)
+        expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+
+      context 'when zoekt_search_api is disabled' do
+        before do
+          stub_feature_flags(zoekt_search_api: false)
+        end
+
+        it 'does not search with Zoekt' do
+          expect(service.use_zoekt?).to eq(false)
+          expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        end
       end
     end
   end

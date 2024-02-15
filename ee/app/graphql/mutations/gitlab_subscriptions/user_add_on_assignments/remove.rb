@@ -29,7 +29,7 @@ module Mutations
 
           assignment.destroy!
 
-          Rails.cache.delete(format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: user_to_be_removed.id))
+          Rails.cache.delete(user_to_be_removed.duo_pro_cache_key_formatted)
 
           log_event
 

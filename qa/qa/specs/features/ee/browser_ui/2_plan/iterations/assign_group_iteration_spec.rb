@@ -20,10 +20,7 @@ module QA
       before do
         Flow::Login.sign_in
 
-        EE::Resource::GroupCadence.fabricate_via_api! do |cadence|
-          cadence.group = iteration_group
-          cadence.start_date = start_date
-        end
+        create(:group_cadence, group: iteration_group, start_date: start_date)
       end
 
       it(

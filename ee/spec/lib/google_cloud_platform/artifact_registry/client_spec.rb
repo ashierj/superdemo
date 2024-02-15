@@ -33,7 +33,7 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
     let(:dummy_response) { Object.new }
 
     before do
-      stub_saas_features(google_artifact_registry: true)
+      stub_saas_features(google_cloud_support: true)
       stub_application_setting(ci_jwt_signing_key: rsa_key_data)
       stub_authentication_requests
 
@@ -58,12 +58,12 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
     it_behaves_like 'transforming the error',
       message: "test #{described_class::GCP_SUBJECT_TOKEN_ERROR_MESSAGE} test",
       from_klass: RuntimeError,
-      to_klass: described_class::AuthenticationError
+      to_klass: ::GoogleCloudPlatform::AuthenticationError
 
     it_behaves_like 'transforming the error',
       message: "test #{described_class::GCP_TOKEN_EXCHANGE_ERROR_MESSAGE} test",
       from_klass: RuntimeError,
-      to_klass: described_class::AuthenticationError
+      to_klass: ::GoogleCloudPlatform::AuthenticationError
 
     it_behaves_like 'transforming the error',
       message: "test",
@@ -73,12 +73,12 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
     it_behaves_like 'transforming the error',
       message: "test",
       from_klass: ::Google::Cloud::Error,
-      to_klass: described_class::ApiError
+      to_klass: ::GoogleCloudPlatform::ApiError
   end
 
   describe 'validations' do
     before do
-      stub_saas_features(google_artifact_registry: true)
+      stub_saas_features(google_cloud_support: true)
     end
 
     shared_examples 'raising an error with' do |klass, message|
@@ -114,7 +114,7 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
 
     context 'when not on saas' do
       before do
-        stub_saas_features(google_artifact_registry: false)
+        stub_saas_features(google_cloud_support: false)
       end
 
       it_behaves_like 'raising an error with', RuntimeError, described_class::SAAS_ONLY_ERROR_MESSAGE
@@ -212,9 +212,9 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
   end
 
   def stub_authentication_requests
-    stub_request(:get, ::GoogleCloudPlatform::BaseClient::GLGO_TOKEN_ENDPOINT_URL)
+    stub_request(:get, ::GoogleCloudPlatform::GLGO_TOKEN_ENDPOINT_URL)
       .to_return(status: 200, body: ::Gitlab::Json.dump(token: 'token'))
-    stub_request(:post, ::GoogleCloudPlatform::BaseClient::STS_URL)
+    stub_request(:post, ::GoogleCloudPlatform::STS_URL)
       .to_return(status: 200, body: ::Gitlab::Json.dump(token: 'token'))
   end
 end

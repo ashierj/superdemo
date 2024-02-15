@@ -34,7 +34,7 @@ use the default approval rules from the target (upstream) project, not the sourc
 
 ## Add an approval rule
 
-> Approval rules for all protected branches introduced in GitLab 15.3.
+> - Approval rules for all protected branches introduced in GitLab 15.3.
 
 Prerequisites:
 
@@ -285,7 +285,7 @@ DETAILS:
 > - Bot comment for approvals [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/411656) in GitLab 16.2 [with a flag](../../../../administration/feature_flags.md) named `security_policy_approval_notification`. Enabled by default.
 > - Bot comment for approvals [generally available](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/130827) in GitLab 16.3. Feature flag `security_policy_approval_notification` removed.
 
-You can use [scan result policies](../../../application_security/policies/scan-result-policies.md#scan-result-policy-editor) to define security approvals based on the status of vulnerabilities in the merge request and the default branch.
+You can use [merge request approval policies](../../../application_security/policies/scan-result-policies.md#merge-request-approval-policy-editor) to define security approvals based on the status of vulnerabilities in the merge request and the default branch.
 Details for each security policy is shown in the Security Approvals section of your Merge Request configuration.
 
 The security approval rules are applied to all merge requests until the pipeline is complete. The application of the

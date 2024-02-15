@@ -37,12 +37,12 @@ describe('CodeSuggestionsUsageStatisticsCard', () => {
 
     it('renders the description text', () => {
       expect(findCodeSuggestionsDescription().text()).toBe(
-        `A user can be assigned a Duo Pro seat only once each billable month.`,
+        `A user can be assigned a GitLab Duo Pro seat only once each billable month.`,
       );
     });
 
     it('renders the info text', () => {
-      expect(findCodeSuggestionsInfo().text()).toBe('Duo Pro seats used');
+      expect(findCodeSuggestionsInfo().text()).toBe('GitLab Duo Pro seats used');
     });
 
     it('passes the correct props to <usage-statistics>', () => {

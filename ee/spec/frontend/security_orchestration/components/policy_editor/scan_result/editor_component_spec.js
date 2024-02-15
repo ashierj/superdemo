@@ -275,7 +275,7 @@ describe('EditorComponent', () => {
         expect(findAddRuleButton().exists()).toBe(false);
       });
 
-      it('updates an existing rule', () => {
+      it('updates an existing rule', async () => {
         const newValue = {
           type: 'scan_finding',
           branches: [],
@@ -286,9 +286,8 @@ describe('EditorComponent', () => {
         };
         factory();
 
-        findAllRuleSections().at(0).vm.$emit('changed', newValue);
-
-        expect(wrapper.vm.policy.rules[0]).toEqual(newValue);
+        await findAllRuleSections().at(0).vm.$emit('changed', newValue);
+        expect(findAllRuleSections().at(0).props('initRule')).toEqual(newValue);
         expect(findPolicyEditorLayout().props('policy').rules[0].vulnerabilities_allowed).toBe(1);
       });
 

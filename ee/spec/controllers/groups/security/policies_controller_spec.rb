@@ -70,9 +70,9 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
           expect(app['data-scan-result-approvers']).to be_nil
         end
 
-        context 'with scan result policy type' do
+        shared_examples 'scan result policy like type' do |type|
           let(:policy) { build(:scan_result_policy) }
-          let(:policy_type) { 'scan_result_policy' }
+          let(:policy_type) { type }
           let_it_be(:service_result) { { users: [user], groups: [group], roles: ['OWNER'], status: :success } }
 
           let(:service) do
@@ -100,6 +100,9 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
               user.id.to_s, group.full_path, group.id.to_s)
           end
         end
+
+        it_behaves_like 'scan result policy like type', 'scan_result_policy'
+        it_behaves_like 'scan result policy like type', 'approval_policy'
 
         context 'when type is missing' do
           let(:policy_type) { nil }

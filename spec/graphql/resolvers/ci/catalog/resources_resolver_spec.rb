@@ -43,15 +43,6 @@ RSpec.describe Resolvers::Ci::Catalog::ResourcesResolver, feature_category: :pip
         internal_project.add_reporter(user)
       end
 
-      context 'when the project path argument is provided' do
-        let(:project_path) { private_namespace_project.full_path }
-
-        it 'returns all catalog resources visible to the current user in the namespace' do
-          expect(result.items.count).to be(2)
-          expect(result.items.pluck(:name)).to contain_exactly('z private test', 'public')
-        end
-      end
-
       context 'when sort argument is not provided' do
         it 'returns all catalog resources sorted by descending created date' do
           expect(result.items.pluck(:name)).to eq(['internal', 'public', 'z private test'])
@@ -91,17 +82,6 @@ RSpec.describe Resolvers::Ci::Catalog::ResourcesResolver, feature_category: :pip
             expect(result.items.count).to be(4)
             expect(result.items.pluck(:name)).to contain_exactly('public', 'internal public', 'internal',
               'z private test')
-          end
-        end
-
-        context 'and the ci_guard_for_catalog_resource_scope FF is disabled' do
-          before do
-            stub_feature_flags(ci_guard_for_catalog_resource_scope: false)
-          end
-
-          it 'returns all the catalog resources' do
-            expect(result.items.count).to be(3)
-            expect(result.items.pluck(:name)).to contain_exactly('public', 'internal', 'z private test')
           end
         end
 

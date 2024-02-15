@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe ::MemberRole, feature_category: :system_access do
+  using RSpec::Parameterized::TableSyntax
+
   describe 'associations' do
     it { is_expected.to belong_to(:namespace) }
     it { is_expected.to have_many(:members) }
@@ -17,11 +19,19 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
     it { is_expected.to validate_presence_of(:base_access_level) }
     it { is_expected.to validate_inclusion_of(:base_access_level).in_array(described_class::LEVELS) }
 
-    context 'when running on Gitlab.com', :saas do
+    context 'when running on Gitlab.com' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+      end
+
       it { is_expected.to validate_presence_of(:namespace) }
     end
 
     context 'when running on self-managed' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: false)
+      end
+
       it { is_expected.not_to validate_presence_of(:namespace) }
     end
 
@@ -134,6 +144,22 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
         end
       end
     end
+
+    context 'for ensure_at_least_one_permission_is_enabled' do
+      context 'with at least one permission enabled' do
+        it { is_expected.to be_valid }
+      end
+
+      context 'with no permissions enabled' do
+        it 'is invalid' do
+          member_role = build(:member_role, read_code: false)
+
+          expect(member_role).not_to be_valid
+          expect(member_role.errors[:base].first)
+            .to include(s_('MemberRole|Cannot create a member role with no enabled permissions'))
+        end
+      end
+    end
   end
 
   describe 'callbacks' do
@@ -203,6 +229,14 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
       end
     end
 
+    describe 'for_instance' do
+      let_it_be(:instance_member_role) { create(:member_role, :instance, name: 'Manager') }
+
+      it 'returns member roles created on the instance' do
+        expect(described_class.for_instance).to match_array([instance_member_role])
+      end
+    end
+
     describe '.with_members_count' do
       let_it_be(:member_role_1_members) do
         create_list(:group_member, 3, :developer, {
@@ -236,6 +270,29 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
     end
   end
 
+  describe '.permission_enabled?' do
+    let(:ability) { :my_custom_ability }
+
+    subject { described_class.permission_enabled?(ability) }
+
+    where(:flag_exists, :flag_enabled, :expected_result) do
+      true  | false | false
+      true  | true  | true
+      false | true  | true
+    end
+
+    with_them do
+      before do
+        if flag_exists
+          stub_feature_flag_definition("custom_ability_#{ability}")
+          stub_feature_flags("custom_ability_#{ability}" => flag_enabled)
+        end
+      end
+
+      it { is_expected.to eq(expected_result) }
+    end
+  end
+
   describe 'covering all permissions columns' do
     it 'has all attributes listed in the member_roles table' do
       expect(described_class.attribute_names.map(&:to_sym))
@@ -245,10 +302,21 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
   end
 
   describe '#enabled_permissions' do
-    it 'returns the list of enabled abilities' do
-      member_role = build_stubbed(:member_role, read_code: true, read_vulnerability: true, read_dependency: false)
+    let(:member_role) { build_stubbed(:member_role, read_code: true, read_vulnerability: true, read_dependency: false) }
 
+    it 'returns the list of enabled abilities' do
       expect(member_role.enabled_permissions).to match_array([:read_code, :read_vulnerability])
+    end
+
+    context 'when a permission is behind a disabled feature flag' do
+      before do
+        stub_feature_flag_definition(:custom_ability_read_vulnerability)
+        stub_feature_flags(custom_ability_read_vulnerability: false)
+      end
+
+      it 'does not include the ability' do
+        expect(member_role.enabled_permissions).not_to include(:read_vulnerability)
+      end
     end
   end
 

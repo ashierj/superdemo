@@ -184,14 +184,32 @@ module EE
               ::Types::SecurityOrchestration::ScanResultPolicyType.connection_type,
               calls_gitaly: true,
               null: true,
+              deprecated: { reason: 'Use `approvalPolicies`', milestone: '16.9' },
               description: 'Scan Result Policies of the project',
               resolver: ::Resolvers::SecurityOrchestration::ScanResultPolicyResolver
+
+        field :approval_policies,
+              ::Types::SecurityOrchestration::ApprovalPolicyType.connection_type,
+              calls_gitaly: true,
+              null: true,
+              description: 'Approval Policies of the project',
+              resolver: ::Resolvers::SecurityOrchestration::ApprovalPolicyResolver
 
         field :security_policy_project,
               ::Types::ProjectType,
               null: true,
               method: :security_policy_management_project,
               description: 'Security policy project assigned to the project, absent if assigned to a parent group.'
+
+        field :security_policy_project_linked_projects,
+              ::Types::ProjectType.connection_type,
+              null: true,
+              description: 'Projects linked to the project, when used as Security Policy Project.'
+
+        field :security_policy_project_linked_namespaces,
+              ::Types::NamespaceType.connection_type,
+              null: true,
+              description: 'Namespaces linked to the project, when used as Security Policy Project.'
 
         field :network_policies,
               ::Types::NetworkPolicyType.connection_type,
@@ -226,6 +244,11 @@ module EE
               null: true,
               description: 'Indicates that merges of merge requests should be blocked ' \
                            'unless all status checks have passed.'
+
+        field :duo_features_enabled, GraphQL::Types::Boolean,
+              null: true,
+              alpha: { milestone: '16.9' },
+              description: 'Indicates whether GitLab Duo features are enabled for the project.'
 
         field :gitlab_subscriptions_preview_billable_user_change,
               ::Types::GitlabSubscriptions::PreviewBillableUserChangeType,
@@ -315,11 +338,29 @@ module EE
           method: :downstream_project_subscriptions,
           description: 'Pipeline subscriptions for projects subscribed to the project.'
 
+        field :runner_cloud_provisioning_options,
+          ::Types::Ci::RunnerCloudProvisioningOptionsType,
+          null: true,
+          alpha: { milestone: '16.9' },
+          description: 'Options for runner cloud provisioning by a specified cloud provider. ' \
+                       'Returns `null` if `:google_cloud_runner_provisioning` feature flag is disabled, ' \
+                       'or the GitLab instance is not a SaaS instance.' do
+                         argument :provider, ::Types::Ci::RunnerCloudProviderEnum, required: true,
+                           description: 'Identifier of the cloud provider.'
+                       end
+
         field :ai_agents, ::Types::Ai::Agents::AgentType.connection_type,
           null: true,
           alpha: { milestone: '16.9' },
           description: 'Ai Agents for the project.',
           resolver: ::Resolvers::Ai::Agents::FindAgentResolver
+
+        field :google_cloud_artifact_registry_repository,
+          ::Types::GoogleCloud::ArtifactRegistry::RepositoryType,
+          null: true,
+          alpha: { milestone: '16.10' },
+          description: 'Google Cloud Artifact Registry repository. ' \
+                       'Returns `null` if `gcp_artifact_registry` feature flag is disabled'
       end
 
       def tracking_key
@@ -363,6 +404,25 @@ module EE
             end
           end
         end
+      end
+
+      # TODO To be removed along with :google_cloud_runner_provisioning feature flag.
+      # Use `method: :itself` on the related field (see https://graphql-ruby.org/fields/introduction.html#field-resolution).
+      # TODO Before unmarking the field as alpha, figure out solution for polymorphism based on provider argument,
+      #      so that child objects call the correct cloud services
+      def runner_cloud_provisioning_options(provider:) # rubocop:disable Lint/UnusedMethodArgument -- Only one provider type is possible, and is already enforced by GraphQL
+        return if ::Feature.disabled?(:google_cloud_runner_provisioning, project)
+
+        project
+      end
+
+      def google_cloud_artifact_registry_repository
+        unless project.gcp_artifact_registry_enabled? &&
+            project.google_cloud_platform_artifact_registry_integration&.active
+          return
+        end
+
+        project
       end
     end
   end

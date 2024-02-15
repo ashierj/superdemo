@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Member Roles', :saas, :js, feature_category: :permissions do
+RSpec.describe 'Member Roles', :js, feature_category: :permissions do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
@@ -39,61 +39,60 @@ RSpec.describe 'Member Roles', :saas, :js, feature_category: :permissions do
       allow(Gitlab::CustomRoles::Definition).to receive(:all).and_return(permissions)
 
       sign_in(user)
-      visit group_settings_roles_and_permissions_path(group)
     end
 
-    it 'creates a new custom role' do
-      create_role(access_level, name, [permission_name])
+    shared_examples 'creates a new custom role' do
+      it 'and displays it' do
+        create_role(access_level, name, [permission_name])
 
-      created_member_role = MemberRole.find_by(
-        name: name,
-        base_access_level: Gitlab::Access.options[access_level],
-        permission => true)
+        created_member_role = MemberRole.find_by(
+          name: name,
+          base_access_level: Gitlab::Access.options[access_level],
+          permission => true)
 
-      expect(created_member_role).not_to be_nil
+        expect(created_member_role).not_to be_nil
 
-      role = created_role(name, created_member_role.id, access_level, [permission_name])
-      expect(page).to have_content(role)
+        role = created_role(name, created_member_role.id, access_level, [permission_name])
+        expect(page).to have_content(role)
+      end
     end
 
-    context 'when the permission has a requirement' do
-      let(:permissions) do
-        { admin_vulnerability: { name: 'admin_vulnerability', requirements: ['read_vulnerability'] },
-          read_vulnerability: { name: 'read_vulnerability' } }
+    context 'when on SaaS' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+
+        visit group_settings_roles_and_permissions_path(group)
       end
 
-      let(:permission) { :admin_vulnerability }
-      let(:requirement) { permissions[permission][:requirements].first }
-      let(:requirement_name) { requirement.to_s.humanize }
+      it_behaves_like 'creates a new custom role'
+    end
 
-      context 'when the requirement has not been met' do
-        it 'show an error message' do
+    context 'when on self-managed' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: false)
+      end
+
+      context 'when restrict_member_roles feature-flag is disabled' do
+        before do
+          stub_feature_flags(restrict_member_roles: false)
+
+          visit group_settings_roles_and_permissions_path(group)
+        end
+
+        it_behaves_like 'creates a new custom role'
+      end
+
+      context 'when restrict_member_roles feature-flag is enabled' do
+        before do
+          stub_feature_flags(restrict_member_roles: true)
+
+          visit group_settings_roles_and_permissions_path(group)
+        end
+
+        it 'shows an error message' do
           create_role(access_level, name, [permission_name])
 
-          created_member_role = MemberRole.find_by(
-            name: name,
-            base_access_level: Gitlab::Access.options[access_level],
-            permission => true)
-
-          expect(created_member_role).to be_nil
-          expect(page).to have_content("#{requirement_name} has to be enabled in order to enable #{permission_name}")
-        end
-      end
-
-      context 'when the requirement has been met' do
-        it 'creates the custom role' do
-          create_role(access_level, name, [permission_name, requirement_name])
-
-          created_member_role = MemberRole.find_by(
-            name: name,
-            base_access_level: Gitlab::Access.options[access_level],
-            permission => true,
-            requirement => true)
-
-          expect(created_member_role).not_to be_nil
-
-          role = created_role(name, created_member_role.id, access_level, [permission_name, requirement_name])
-          expect(page).to have_content(role)
+          expect(page).to have_content('Failed to create role')
         end
       end
     end

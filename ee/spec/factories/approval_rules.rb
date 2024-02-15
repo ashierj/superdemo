@@ -58,6 +58,10 @@ FactoryBot.define do
     sequence(:name) { |n| "#{ApprovalRuleLike::DEFAULT_NAME}-#{n}" }
     rule_type { :regular }
 
+    trait :for_all_protected_branches do
+      applies_to_all_protected_branches { true }
+    end
+
     trait :any_approver_rule do
       rule_type { :any_approver }
       name { "All Members" }

@@ -9,15 +9,7 @@ module API
     integration_classes = Helpers::IntegrationsHelpers.integration_classes
 
     if Gitlab.dev_or_test_env?
-      integrations['mock-ci'] = [
-        {
-          required: true,
-          name: :mock_service_url,
-          type: String,
-          desc: 'URL to the mock integration'
-        }
-      ]
-      integrations['mock-deployment'] = []
+      integrations['mock-ci'] = ::Integrations::MockCi.api_fields
       integrations['mock-monitoring'] = []
 
       integration_classes += Helpers::IntegrationsHelpers.development_integration_classes
@@ -38,20 +30,8 @@ module API
     end
 
     SLASH_COMMAND_INTEGRATIONS = {
-      'mattermost-slash-commands' => [
-        {
-          name: :token,
-          type: String,
-          desc: 'The Mattermost token'
-        }
-      ],
-      'slack-slash-commands' => [
-        {
-          name: :token,
-          type: String,
-          desc: 'The Slack token'
-        }
-      ]
+      'mattermost-slash-commands' => ::Integrations::MattermostSlashCommands.api_fields,
+      'slack-slash-commands' => ::Integrations::SlackSlashCommands.api_fields
     }.freeze
 
     helpers do
@@ -110,7 +90,7 @@ module API
             end
           end
           put "#{path}/#{slug}" do
-            if slug == "git-guardian" && Feature.disabled?(:git_guardian_integration, type: :wip)
+            if slug == "git-guardian" && Feature.disabled?(:git_guardian_integration)
               render_api_error!('GitGuardian feature is disabled', 400)
             end
 
@@ -148,7 +128,7 @@ module API
           requires :slug, type: String, values: INTEGRATIONS.keys, desc: 'The name of the integration'
         end
         delete "#{path}/:slug" do
-          if params[:slug] == "git-guardian" && Feature.disabled?(:git_guardian_integration, type: :wip)
+          if params[:slug] == "git-guardian" && Feature.disabled?(:git_guardian_integration)
             render_api_error!('GitGuardian feature is disabled', 400)
           end
 

@@ -4,8 +4,9 @@ module Sbom
   class DependenciesFinder
     include Gitlab::Utils::StrongMemoize
 
-    def initialize(project_or_group, params: {})
-      @project_or_group = project_or_group
+    # @param dependable [Organization, Group, Project] the container for detected SBoM occurrences
+    def initialize(dependable, params: {})
+      @dependable = dependable
       @params = params
     end
 
@@ -20,7 +21,7 @@ module Sbom
 
     private
 
-    attr_reader :project_or_group, :params
+    attr_reader :dependable, :params
 
     def filter_by_package_managers
       return if params[:package_managers].blank?
@@ -60,7 +61,7 @@ module Sbom
     end
 
     def occurrences
-      return project_or_group.sbom_occurrences if params[:project_ids].blank? || project?
+      return dependable.sbom_occurrences if params[:project_ids].blank? || project?
 
       Sbom::Occurrence.by_project_ids(project_ids_in_group_hierarchy)
     end
@@ -68,12 +69,12 @@ module Sbom
     def project_ids_in_group_hierarchy
       Project
         .id_in(params[:project_ids])
-        .for_group_and_its_subgroups(project_or_group)
+        .for_group_and_its_subgroups(dependable)
         .select(:id)
     end
 
     def project?
-      project_or_group.is_a?(::Project)
+      dependable.is_a?(::Project)
     end
   end
 end

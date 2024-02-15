@@ -82,4 +82,28 @@ RSpec.describe Admin::AbuseReportDetailsEntity, feature_category: :insider_threa
       expect(entity_hash[:user][:plan]).to eq('Bronze')
     end
   end
+
+  describe 'phone verification state' do
+    subject { entity_hash[:user][:verification_state][:phone] }
+
+    context 'when the user has no phone number validation attempts' do
+      it { is_expected.to eq false }
+    end
+
+    context 'when the user has a validated phone number' do
+      before do
+        build_stubbed(:phone_number_validation, :validated, user: user)
+      end
+
+      it { is_expected.to eq true }
+    end
+
+    context 'when the user has an unvalidated phone number' do
+      before do
+        build_stubbed(:phone_number_validation, user: user)
+      end
+
+      it { is_expected.to eq false }
+    end
+  end
 end

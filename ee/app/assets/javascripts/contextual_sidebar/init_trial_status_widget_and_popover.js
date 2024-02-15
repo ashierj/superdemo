@@ -53,8 +53,6 @@ export const initTrialStatusPopover = () => {
     companyName,
     glmContent,
     createHandRaiseLeadPath,
-    trackAction,
-    trackLabel,
     trialDiscoverPagePath,
   } = el.dataset;
 
@@ -68,8 +66,6 @@ export const initTrialStatusPopover = () => {
       targetId,
       createHandRaiseLeadPath,
       trialEndDate: new Date(trialEndDate),
-      trackAction,
-      trackLabel,
       trialDiscoverPagePath,
       user: {
         namespaceId,

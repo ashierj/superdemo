@@ -15,14 +15,17 @@ import { addExperimentContext } from '~/tracking/utils';
 import { ActiveModelError } from '~/lib/utils/error_utils';
 import { isInvalidPromoCodeError } from 'ee/subscriptions/new/utils';
 import { visitUrl } from '~/lib/utils/url_utility';
+import PrivacyAndTermsConfirm from 'ee/subscriptions/shared/components/privacy_and_terms_confirm.vue';
 
 export default {
   components: {
     GlButton,
     GlLoadingIcon,
+    PrivacyAndTermsConfirm,
   },
   data() {
     return {
+      didAcceptTerms: false,
       idempotencyKeys: {},
       isActive: {},
       isConfirmingOrder: false,
@@ -44,6 +47,9 @@ export default {
       'selectedPlanDetails',
     ]),
     shouldDisableConfirmOrder() {
+      if (!this.didAcceptTerms) {
+        return true;
+      }
       return this.isConfirmingOrder || !this.hasValidPriceDetails;
     },
     idempotencyKeyParams() {
@@ -178,6 +184,11 @@ export default {
 </script>
 <template>
   <div v-if="isActive" class="full-width gl-mt-5 gl-mb-7">
+    <privacy-and-terms-confirm
+      v-model="didAcceptTerms"
+      class="mb-2"
+      data-testid="privacy-and-terms-confirm"
+    />
     <gl-button
       :disabled="shouldDisableConfirmOrder"
       variant="confirm"

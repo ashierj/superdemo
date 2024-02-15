@@ -6,6 +6,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
   describe '#execute' do
     let_it_be(:pipeline) { build(:ci_pipeline) }
 
+    let(:project) { pipeline.project }
     let(:occurrence_maps) { create_list(:sbom_occurrence_map, 4, :for_occurrence_ingestion) }
 
     subject(:ingest_occurrences) { described_class.execute(pipeline, occurrence_maps) }
@@ -41,7 +42,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
       it 'sets the correct attributes for the occurrence' do
         ingest_occurrences
         expect(ingested_occurrence.attributes).to include(
-          'project_id' => pipeline.project.id,
+          'project_id' => project.id,
           'pipeline_id' => pipeline.id,
           'component_id' => occurrence_map.component_id,
           'component_version_id' => occurrence_map.component_version_id,
@@ -49,6 +50,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
           'commit_sha' => pipeline.sha,
           'package_manager' => occurrence_map.packager,
           'input_file_path' => occurrence_map.input_file_path,
+          'source_package_id' => occurrence_map.source_package_id,
           'licenses' => [
             {
               'spdx_identifier' => 'Apache-2.0',
@@ -63,7 +65,9 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
           ],
           'component_name' => occurrence_map.name,
           'vulnerability_count' => 1,
-          'highest_severity' => 'high'
+          'highest_severity' => 'high',
+          'traversal_ids' => project.namespace.traversal_ids,
+          'archived' => project.archived
         )
       end
 
@@ -77,6 +81,63 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
 
           expect(ingested_occurrence.vulnerability_count).to be 0
           expect(ingested_occurrence.highest_severity).to be_nil
+        end
+      end
+
+      context 'when sbom occurrence was found by trivy' do
+        let(:report_source) do
+          build_stubbed(:ci_reports_sbom_source, data: {
+            'category' => 'development',
+            'image' => {
+              'name' => 'docker.io/library/alpine',
+              'tag' => '3.12'
+            },
+            'operating_system' => {
+              'name' => 'Alpine',
+              'version' => '3.12'
+            }
+          })
+        end
+
+        let(:report_component) { build_stubbed(:ci_reports_sbom_component, :with_trivy_properties) }
+
+        let(:occurrence_map) do
+          create(:sbom_occurrence_map, :for_occurrence_ingestion, report_source: report_source,
+            report_component: report_component, vulnerabilities: vulnerability_info)
+        end
+
+        let(:occurrence_maps) { [occurrence_map] }
+
+        it 'sets the correct attributes for the occurrence' do
+          ingest_occurrences
+
+          expect(ingested_occurrence.attributes).to include(
+            'project_id' => project.id,
+            'pipeline_id' => pipeline.id,
+            'component_id' => occurrence_map.component_id,
+            'component_version_id' => occurrence_map.component_version_id,
+            'source_id' => occurrence_map.source_id,
+            'commit_sha' => pipeline.sha,
+            'package_manager' => report_component.properties.packager,
+            'input_file_path' => 'container-image:docker.io/library/alpine:3.12',
+            'licenses' => [
+              {
+                'spdx_identifier' => 'Apache-2.0',
+                'name' => 'Apache 2.0 License',
+                'url' => 'https://spdx.org/licenses/Apache-2.0.html'
+              },
+              {
+                'spdx_identifier' => 'MIT',
+                'name' => 'MIT',
+                'url' => 'https://spdx.org/licenses/MIT.html'
+              }
+            ],
+            'component_name' => occurrence_map.name,
+            'vulnerability_count' => 1,
+            'highest_severity' => 'high',
+            'traversal_ids' => project.namespace.traversal_ids,
+            'archived' => project.archived
+          )
         end
       end
     end
@@ -110,6 +171,15 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
         ingest_occurrences
 
         expect(Sbom::Occurrence.pluck(:licenses)).to all(be_empty)
+      end
+    end
+
+    context 'when there is no source package' do
+      let(:occurrence_maps) { create_list(:sbom_occurrence_map, 4, :for_occurrence_ingestion, source_package: nil) }
+
+      it 'inserts records without the source package' do
+        expect { ingest_occurrences }.to change(Sbom::Occurrence, :count).by(4)
+        expect(occurrence_maps).to all(have_attributes(occurrence_id: Integer))
       end
     end
 

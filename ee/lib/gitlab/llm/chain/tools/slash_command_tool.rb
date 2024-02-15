@@ -7,6 +7,14 @@ module Gitlab
         class SlashCommandTool < Tool
           extend ::Gitlab::Utils::Override
 
+          def perform
+            content = request(&streamed_request_handler(StreamedAnswer.new))
+
+            Answer.new(status: :ok, context: context, content: content, tool: nil)
+          rescue StandardError
+            Answer.error_answer(context: context, content: _("Unexpected error"))
+          end
+
           private
 
           attr_reader :command

@@ -1,8 +1,6 @@
 <script>
 import { s__ } from '~/locale';
 import BoardNewItem from '~/boards/components/board_new_item.vue';
-import { toggleFormEventPrefix } from '~/boards/constants';
-import eventHub from '~/boards/eventhub';
 import { setError } from '~/boards/graphql/cache_updates';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import epicBoardQuery from '../graphql/epic_board.query.graphql';
@@ -58,12 +56,6 @@ export default {
     },
   },
   computed: {
-    formEventPrefix() {
-      return toggleFormEventPrefix.epic;
-    },
-    formEvent() {
-      return `${this.formEventPrefix}${this.list.id}`;
-    },
     groupPath() {
       return this.selectedGroup?.fullPath ?? this.fullPath;
     },
@@ -91,7 +83,7 @@ export default {
       });
     },
     cancel() {
-      eventHub.$emit(this.formEvent);
+      this.$emit('toggleNewForm');
     },
   },
 };
@@ -100,7 +92,6 @@ export default {
 <template>
   <board-new-item
     :list="list"
-    :form-event-prefix="formEventPrefix"
     :submit-button-title="__('Create epic')"
     @form-submit="submit"
     @form-cancel="cancel"

@@ -21,6 +21,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/api"
+	"gitlab.com/gitlab-org/gitlab/workhorse/internal/config"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/helper"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/proxy"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/testhelper"
@@ -73,7 +74,7 @@ func TestUploadHandlerForwardingRawData(t *testing.T) {
 	fa := &eagerAuthorizer{&api.Response{TempPath: tempPath}}
 	preparer := &DefaultPreparer{}
 
-	interceptMultipartFiles(response, httpRequest, handler, nil, fa, preparer)
+	interceptMultipartFiles(response, httpRequest, handler, nil, fa, preparer, config.NewDefaultConfig())
 
 	require.Equal(t, 202, response.Code)
 	require.Equal(t, "RESPONSE", response.Body.String(), "response body")
@@ -141,7 +142,7 @@ func TestUploadHandlerRewritingMultiPartData(t *testing.T) {
 	fa := &eagerAuthorizer{&api.Response{TempPath: tempPath}}
 	preparer := &DefaultPreparer{}
 
-	interceptMultipartFiles(response, httpRequest, handler, &testFormProcessor{}, fa, preparer)
+	interceptMultipartFiles(response, httpRequest, handler, &testFormProcessor{}, fa, preparer, config.NewDefaultConfig())
 	require.Equal(t, 202, response.Code)
 
 	cancel() // this will trigger an async cleanup
@@ -290,7 +291,7 @@ func TestUploadProcessingFile(t *testing.T) {
 			fa := &eagerAuthorizer{test.preauth}
 			preparer := &DefaultPreparer{}
 
-			interceptMultipartFiles(response, httpRequest, nilHandler, &testFormProcessor{}, fa, preparer)
+			interceptMultipartFiles(response, httpRequest, nilHandler, &testFormProcessor{}, fa, preparer, config.NewDefaultConfig())
 
 			require.Equal(t, 200, response.Code)
 			require.Equal(t, "test", string(test.content(t)))
@@ -332,6 +333,30 @@ func TestInvalidFileNames(t *testing.T) {
 	}
 }
 
+func TestIncompleteMultipartData(t *testing.T) {
+	testhelper.ConfigureSecret()
+
+	buffer := &bytes.Buffer{}
+
+	writer := multipart.NewWriter(buffer)
+	file, err := writer.CreateFormFile("file", "somefile.txt")
+	require.NoError(t, err)
+	fmt.Fprint(file, "test")
+	writer.Close()
+
+	// Truncate the buffer to simulate an incomplete multipart request
+	truncatedBuffer := buffer.Bytes()[:buffer.Len()-1]
+	customReader := bytes.NewReader(truncatedBuffer)
+
+	httpRequest, err := http.NewRequest("POST", "/example", customReader)
+	require.NoError(t, err)
+	httpRequest.Header.Set("Content-Type", writer.FormDataContentType())
+
+	response := httptest.NewRecorder()
+	testInterceptMultipartFiles(t, response, httpRequest, nilHandler, &SavedFileTracker{Request: httpRequest})
+	require.Equal(t, 400, response.Code)
+}
+
 func TestBadMultipartHeader(t *testing.T) {
 	httpRequest, err := http.NewRequest("POST", "/example", bytes.NewReader(nil))
 	require.NoError(t, err)
@@ -355,7 +380,7 @@ func TestUnauthorizedMultipartHeader(t *testing.T) {
 	defer ts.Close()
 
 	api := api.NewAPI(helper.URLMustParse(ts.URL), "123", http.DefaultTransport)
-	interceptMultipartFiles(response, httpRequest, nilHandler, &testFormProcessor{}, &apiAuthorizer{api}, &DefaultPreparer{})
+	interceptMultipartFiles(response, httpRequest, nilHandler, &testFormProcessor{}, &apiAuthorizer{api}, &DefaultPreparer{}, config.NewDefaultConfig())
 
 	require.Equal(t, 401, response.Code)
 	require.Equal(t, "401 Unauthorized\n", response.Body.String())
@@ -573,7 +598,7 @@ func testInterceptMultipartFiles(t *testing.T, w http.ResponseWriter, r *http.Re
 	fa := &eagerAuthorizer{&api.Response{TempPath: t.TempDir()}}
 	preparer := &DefaultPreparer{}
 
-	interceptMultipartFiles(w, r, h, filter, fa, preparer)
+	interceptMultipartFiles(w, r, h, filter, fa, preparer, config.NewDefaultConfig())
 }
 
 func setupMultipleFiles(t *testing.T) (*http.Request, *httptest.ResponseRecorder) {

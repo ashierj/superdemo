@@ -303,6 +303,7 @@ module Gitlab
     config.assets.precompile << "page_bundles/ci_cd_settings.css"
     config.assets.precompile << "page_bundles/cluster_agents.css"
     config.assets.precompile << "page_bundles/clusters.css"
+    config.assets.precompile << "page_bundles/commits.css"
     config.assets.precompile << "page_bundles/cycle_analytics.css"
     config.assets.precompile << "page_bundles/dashboard.css"
     config.assets.precompile << "page_bundles/dashboard_projects.css"
@@ -317,7 +318,7 @@ module Gitlab
     config.assets.precompile << "page_bundles/group.css"
     config.assets.precompile << "page_bundles/ide.css"
     config.assets.precompile << "page_bundles/import.css"
-    config.assets.precompile << "page_bundles/incident_management_list.css"
+    config.assets.precompile << "page_bundles/paginated_table.css"
     config.assets.precompile << "page_bundles/incidents.css"
     config.assets.precompile << "page_bundles/issues_analytics.css"
     config.assets.precompile << "page_bundles/issuable.css"
@@ -655,7 +656,8 @@ module Gitlab
         ActiveSupport::TimeWithZone,
         ActiveSupport::TimeZone,
         Gitlab::Color, # https://gitlab.com/gitlab-org/gitlab/-/issues/368844,
-        Hashie::Array # https://gitlab.com/gitlab-org/gitlab/-/issues/378089
+        Hashie::Array, # https://gitlab.com/gitlab-org/gitlab/-/issues/378089
+        Hashie::Mash # https://gitlab.com/gitlab-org/gitlab/-/issues/440316
       ]
       #
       # Restore setting the YAML permitted classes for ActiveRecord

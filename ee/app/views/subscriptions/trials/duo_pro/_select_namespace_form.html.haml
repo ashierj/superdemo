@@ -1,5 +1,9 @@
 - @body_class = 'duo-pro-trials'
 - page_title s_('DuoProTrial|Start your free Duo Pro trial')
+- content_for :page_specific_javascripts do
+  = render 'layouts/google_tag_manager_head'
+  = render 'layouts/one_trust'
+= render 'layouts/google_tag_manager_body'
 
 .gl-display-flex.gl-flex-direction-column.gl-md-flex-direction-row.gl-align-items-center.gl-justify-content-center.gl-py-6.bg-decorations
   .m-sm-6.gl-max-w-62
@@ -14,7 +18,7 @@
 
       = yield :before_form
 
-      = gitlab_ui_form_for '', url: trials_duo_pro_path do |f|
+      = gitlab_ui_form_for '', url: trials_duo_pro_path, class: 'js-saas-duo-pro-trial-group' do |f|
         .js-namespace-selector{ data: namespace_selector_data({}) }
         - if should_ask_company_question?
           .form-group

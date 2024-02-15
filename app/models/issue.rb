@@ -232,7 +232,7 @@ class Issue < ApplicationRecord
 
   before_validation :ensure_namespace_id, :ensure_work_item_type
 
-  after_save :ensure_metrics!, unless: :importing?
+  after_save :ensure_metrics!, unless: :skip_metrics?
   after_commit :expire_etag_cache, unless: :importing?
   after_create_commit :record_create_action, unless: :importing?
 
@@ -639,7 +639,7 @@ class Issue < ApplicationRecord
   end
 
   def supports_assignee?
-    work_item_type_with_default.supports_assignee?
+    work_item_type_with_default.supports_assignee?(resource_parent)
   end
 
   def supports_time_tracking?
@@ -739,6 +739,16 @@ class Issue < ApplicationRecord
   override :gfm_reference
   def gfm_reference(from = nil)
     "#{work_item_type_with_default.name.underscore} #{to_reference(from)}"
+  end
+
+  def skip_metrics?
+    importing?
+  end
+
+  def has_widget?(widget)
+    widget_class = WorkItems::Widgets.const_get(widget.to_s.camelize, false)
+
+    work_item_type.widgets(resource_parent).include?(widget_class)
   end
 
   private

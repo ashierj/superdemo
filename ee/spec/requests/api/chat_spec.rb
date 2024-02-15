@@ -29,7 +29,7 @@ RSpec.describe API::Chat, :saas, feature_category: :duo_chat do
     allow(SecureRandom).to receive(:uuid).and_return('uuid')
 
     # Bypass actual requests of AI Gateway client
-    allow_next_instance_of(Gitlab::Ai::AccessToken) do |access_token|
+    allow_next_instance_of(Gitlab::CloudConnector::SelfIssuedToken) do |access_token|
       allow(access_token).to receive(:encoded).and_return(nil)
     end
   end
@@ -152,6 +152,14 @@ RSpec.describe API::Chat, :saas, feature_category: :duo_chat do
           }
         end
 
+        it 'saves question in the chat storage' do
+          post_api
+
+          expect(Gitlab::Llm::ChatStorage.new(authorized_user)
+                                         .last_conversation
+                                         .reverse.find { |message| message.role == 'user' }.content).to eq(content)
+        end
+
         context 'with a referer URL' do
           let(:content) { 'Explain this code' }
           let(:options) { { referer_url: referer_url } }
@@ -159,6 +167,7 @@ RSpec.describe API::Chat, :saas, feature_category: :duo_chat do
           let(:resource) { current_user }
 
           it 'sends the referer URL to the chat' do
+            expect(chat_message).to receive(:save!)
             expect(Gitlab::Llm::ChatMessage).to receive(:new).with(chat_message_params).and_return(chat_message)
             expect(Llm::Internal::CompletionService).to receive(:new).with(chat_message, options).and_return(chat)
             expect(chat).to receive(:execute)
@@ -169,6 +178,7 @@ RSpec.describe API::Chat, :saas, feature_category: :duo_chat do
 
         context 'with an issue' do
           it 'sends resource to the chat' do
+            expect(chat_message).to receive(:save!)
             expect(Gitlab::Llm::ChatMessage).to receive(:new).with(chat_message_params).and_return(chat_message)
             expect(Llm::Internal::CompletionService).to receive(:new).with(chat_message, options).and_return(chat)
             expect(chat).to receive(:execute)
@@ -186,6 +196,7 @@ RSpec.describe API::Chat, :saas, feature_category: :duo_chat do
           end
 
           it 'sends resource to the chat' do
+            expect(chat_message).to receive(:save!)
             expect(Gitlab::Llm::ChatMessage).to receive(:new).with(chat_message_params).and_return(chat_message)
             expect(Llm::Internal::CompletionService).to receive(:new).with(chat_message, options).and_return(chat)
             expect(chat).to receive(:execute)
@@ -198,6 +209,7 @@ RSpec.describe API::Chat, :saas, feature_category: :duo_chat do
           let(:resource) { project }
 
           it 'sends resource to the chat' do
+            expect(chat_message).to receive(:save!)
             expect(Gitlab::Llm::ChatMessage).to receive(:new).with(chat_message_params).and_return(chat_message)
             expect(Llm::Internal::CompletionService).to receive(:new).with(chat_message, options).and_return(chat)
             expect(chat).to receive(:execute)
@@ -210,6 +222,7 @@ RSpec.describe API::Chat, :saas, feature_category: :duo_chat do
           let(:resource) { group }
 
           it 'sends resource to the chat' do
+            expect(chat_message).to receive(:save!)
             expect(Gitlab::Llm::ChatMessage).to receive(:new).with(chat_message_params).and_return(chat_message)
             expect(Llm::Internal::CompletionService).to receive(:new).with(chat_message, options).and_return(chat)
             expect(chat).to receive(:execute)
@@ -223,6 +236,7 @@ RSpec.describe API::Chat, :saas, feature_category: :duo_chat do
           let(:resource) { current_user }
 
           it 'sends resource to the chat' do
+            expect(chat_message).to receive(:save!)
             expect(Gitlab::Llm::ChatMessage).to receive(:new).with(chat_message_params).and_return(chat_message)
             expect(Llm::Internal::CompletionService).to receive(:new).with(chat_message, options).and_return(chat)
             expect(chat).to receive(:execute)
@@ -241,6 +255,7 @@ RSpec.describe API::Chat, :saas, feature_category: :duo_chat do
             reset_params[:content] = '/reset'
 
             expect(Gitlab::Llm::ChatMessage).to receive(:new).with(reset_params).twice.and_return(reset_message)
+            expect(chat_message).to receive(:save!)
             expect(reset_message).to receive(:save!).twice
             expect(Gitlab::Llm::ChatMessage).to receive(:new).with(chat_message_params).and_return(chat_message)
             expect(Llm::Internal::CompletionService).to receive(:new).with(chat_message, options).and_return(chat)

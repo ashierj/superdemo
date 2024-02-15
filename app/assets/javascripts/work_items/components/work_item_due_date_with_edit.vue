@@ -211,7 +211,7 @@ export default {
 <template>
   <section class="gl-pb-4">
     <div class="gl-display-flex gl-align-items-center gl-gap-3">
-      <h3 :class="{ 'gl-sr-only': isEditing }" class="gl-mb-0! gl-heading-scale-5">
+      <h3 :class="{ 'gl-sr-only': isEditing }" class="gl-mb-0! gl-heading-5">
         {{ $options.i18n.dates }}
       </h3>
       <gl-button
@@ -219,7 +219,7 @@ export default {
         data-testid="edit-button"
         category="tertiary"
         size="small"
-        class="gl-ml-auto gl-mr-2"
+        class="gl-ml-auto"
         :disabled="isUpdating"
         @click="expandWidget"
         >{{ __('Edit') }}</gl-button
@@ -234,7 +234,6 @@ export default {
           data-testid="apply-button"
           category="tertiary"
           size="small"
-          class="gl-mr-2"
           :disabled="isUpdating"
           @click="collapseWidget"
           >{{ __('Apply') }}</gl-button

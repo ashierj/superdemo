@@ -52,14 +52,14 @@ RSpec.describe Geo::PruneEventLogWorker, :geo, feature_category: :geo_replicatio
       end
 
       it 'deletes also associated event table rows' do
-        create_list(:geo_event_log, 2, :updated_event)
+        create_list(:geo_event_log, 2, :geo_event)
         create(:geo_node_status, :healthy, cursor_last_event_id: Geo::EventLog.last.id, geo_node_id: secondary.id)
 
-        expect { worker.perform }.to change { Geo::RepositoryUpdatedEvent.count }.by(-1)
+        expect { worker.perform }.to change { Geo::Event.count }.by(-1)
       end
 
       it 'delegates pruning to Geo::PruneEventLogService' do
-        create(:geo_event_log, :updated_event)
+        create(:geo_event_log, :geo_event)
         create(:geo_node_status, :healthy, cursor_last_event_id: Geo::EventLog.last.id, geo_node_id: secondary.id)
 
         prune_service = spy(:prune_service)

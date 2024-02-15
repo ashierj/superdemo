@@ -74,6 +74,14 @@ class ApprovalProjectRule < ApplicationRecord
   def applies_to_branch?(branch)
     return !applies_to_all_protected_branches? if protected_branches.empty?
 
+    # Call `ProtectedBranch.matching` with `protected_branches` passed as `protected_refs`
+    # when `protected_branches` are already loaded to prevent executing SQL query per rule
+    # which can lead to N+1 issues.
+    #
+    # Without this, a SQL query per rule will be executed as `ProtectedRef.matching`
+    # will call `#all` on the relation even if it's already loaded.
+    return ProtectedBranch.matching(branch, protected_refs: protected_branches).any? if protected_branches.loaded?
+
     protected_branches.matching(branch).any?
   end
 
@@ -121,10 +129,12 @@ class ApprovalProjectRule < ApplicationRecord
   end
 
   def vulnerability_states_for_branch(branch = project.default_branch)
+    states = self.vulnerability_states.presence || DEFAULT_VULNERABILITY_STATUSES
+
     if applies_to_branch?(branch)
-      self.vulnerability_states
+      states
     else
-      self.vulnerability_states & NEWLY_DETECTED_STATUSES
+      states & NEWLY_DETECTED_STATUSES
     end
   end
 

@@ -76,13 +76,16 @@ GitLab uses these IDs to look up users.
 If the identity provider does not know the current values for these fields,
 that provider may create duplicate users, or fail to complete expected actions.
 
-To change the identifier values to match:
+To change the identifier values to match, you can do one of the following:
 
-1. Have users unlink and relink themselves, based on the
+- Have users unlink and relink themselves, based on the
   [SAML authentication failed: User has already been taken](troubleshooting.md#message-saml-authentication-failed-user-has-already-been-taken)
   section.
-1. Unlink all users simultaneously by removing all users from the SCIM app while provisioning is turned on.
-1. Use the [SAML API](../../../api/saml.md) or [SCIM API](../../../api/scim.md) to manually correct the `extern_uid` stored for users to match the SAML
+- Unlink all users simultaneously by removing all users from the SCIM app while provisioning is turned on.
+
+  WARNING:
+  This resets all users' roles in the top level group and subgroups to the [configured default membership role](index.md#configure-gitlab).
+- Use the [SAML API](../../../api/saml.md) or [SCIM API](../../../api/scim.md) to manually correct the `extern_uid` stored for users to match the SAML
   `NameId` or SCIM `externalId`.
 
 You must not:
@@ -146,7 +149,7 @@ DETAILS:
 **Offering:** SaaS
 
 GitLab.com administrators can search for SCIM requests in the `api_json.log` using the `pubsub-rails-inf-gprd-*` index in
-[Kibana](https://about.gitlab.com/handbook/support/workflows/kibana.html#using-kibana). Use the following filters based
+[Kibana](https://handbook.gitlab.com/handbook/support/workflows/kibana/#using-kibana). Use the following filters based
 on the internal [group SCIM API](../../../development/internal_api/index.md#group-scim-api):
 
 - `json.path`: `/scim/v2/groups/<group-path>`
@@ -250,7 +253,7 @@ error. The error response can include a HTML result of the GitLab URL `https://g
 
 This error is harmless and occurs because group provisioning was turned on but GitLab SCIM integration does not support
 it nor require it. To remove the error, follow the instructions in the Azure configuration guide to disable the option
-to [synchronize Azure Active Directory groups to AppName](scim_setup.md#configure-azure-active-directory).
+to [synchronize Azure Active Directory groups to AppName](scim_setup.md#configure-microsoft-entra-id-formerly-azure-active-directory).
 
 ## Okta
 

@@ -55,6 +55,10 @@ export const POPOVER = {
       action: CLICK_BUTTON_ACTION,
       label: 'compare_all_plans',
     },
+    learnAboutFeaturesClick: {
+      action: CLICK_BUTTON_ACTION,
+      label: 'learn_about_features',
+    },
   },
   resizeEventDebounceMS: RESIZE_EVENT_DEBOUNCE_MS,
   disabledBreakpoints: ['xs', 'sm'],

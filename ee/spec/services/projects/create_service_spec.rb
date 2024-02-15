@@ -162,9 +162,12 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
     context 'when licensed' do
       before do
         stub_licensed_features(repository_mirrors: true)
+        stub_ee_application_setting(elasticsearch_indexing?: true)
       end
 
       it 'sets the correct attributes' do
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(an_instance_of(User))
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(an_instance_of(Project))
         expect(created_project).to be_persisted
         expect(created_project.mirror).to be true
         expect(created_project.mirror_user_id).to eq(user.id)

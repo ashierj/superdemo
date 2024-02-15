@@ -7,6 +7,7 @@ module Sbom
         ::Sbom::Ingestion::Tasks::IngestComponents,
         ::Sbom::Ingestion::Tasks::IngestComponentVersions,
         ::Sbom::Ingestion::Tasks::IngestSources,
+        ::Sbom::Ingestion::Tasks::IngestSourcePackages,
         ::Sbom::Ingestion::Tasks::IngestOccurrences
       ].freeze
 

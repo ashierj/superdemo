@@ -72,17 +72,5 @@ RSpec.describe Security::UnenforceablePolicyRulesPipelineNotificationWorker, fea
         run_worker
       end
     end
-
-    context 'when feature flag "security_policies_unenforceable_rules_notification" is disabled' do
-      before do
-        stub_feature_flags(security_policies_unenforceable_rules_notification: false)
-      end
-
-      it 'does not call UnenforceablePolicyRulesNotificationService' do
-        expect(Security::UnenforceablePolicyRulesNotificationService).not_to receive(:new)
-
-        run_worker
-      end
-    end
   end
 end

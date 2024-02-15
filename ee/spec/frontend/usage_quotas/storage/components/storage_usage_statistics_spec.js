@@ -24,6 +24,7 @@ const defaultApolloData = {
     canAddSeats: false,
     canRenew: false,
     communityPlan: false,
+    canAddDuoProSeats: true,
   },
   userActionAccess: { limitedAccessReason: 'RAMP_SUBSCRIPTION' },
 };

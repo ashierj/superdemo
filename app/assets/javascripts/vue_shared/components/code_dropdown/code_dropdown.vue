@@ -56,53 +56,29 @@ export default {
     httpUrlEncoded() {
       return encodeURIComponent(this.httpUrl);
     },
-    unfilteredDropdownItems() {
-      return [
-        {
-          item: {
-            text: __('Visual Studio Code (SSH)'),
-            href: `${this.vsCodeBaseUrl}${this.sshUrlEncoded}`,
-          },
-          isIncluded: Boolean(this.sshUrl),
-        },
-        {
-          item: {
-            text: __('Visual Studio Code (HTTPS)'),
-            href: `${this.vsCodeBaseUrl}${this.httpUrlEncoded}`,
-          },
-          isIncluded: Boolean(this.httpUrl),
-        },
-        {
-          item: {
-            text: __('IntelliJ IDEA (SSH)'),
-            href: `${this.jetBrainsBaseUrl}${this.sshUrlEncoded}`,
-          },
-          isIncluded: Boolean(this.sshUrl),
-        },
-        {
-          item: {
-            text: __('IntelliJ IDEA (HTTPS)'),
-            href: `${this.jetBrainsBaseUrl}${this.httpUrlEncoded}`,
-          },
-          isIncluded: Boolean(this.httpUrl),
-        },
-        {
-          item: {
-            text: __('Xcode'),
-            href: this.xcodeUrl,
-          },
-          isIncluded: Boolean(this.xcodeUrl),
-        },
-      ];
-    },
     ideGroup() {
-      const items = [];
-
-      this.unfilteredDropdownItems.forEach(({ item, isIncluded }) => {
-        if (isIncluded) {
-          items.push(item);
-        }
-      });
+      const items = [
+        Boolean(this.sshUrl) && {
+          text: __('Visual Studio Code (SSH)'),
+          href: `${this.$options.vsCodeBaseUrl}${this.sshUrlEncoded}`,
+        },
+        Boolean(this.httpUrl) && {
+          text: __('Visual Studio Code (HTTPS)'),
+          href: `${this.$options.vsCodeBaseUrl}${this.httpUrlEncoded}`,
+        },
+        Boolean(this.sshUrl) && {
+          text: __('IntelliJ IDEA (SSH)'),
+          href: `${this.$options.jetBrainsBaseUrl}${this.sshUrlEncoded}`,
+        },
+        Boolean(this.httpUrl) && {
+          text: __('IntelliJ IDEA (HTTPS)'),
+          href: `${this.$options.jetBrainsBaseUrl}${this.httpUrlEncoded}`,
+        },
+        Boolean(this.xcodeUrl) && {
+          text: __('Xcode'),
+          href: this.xcodeUrl,
+        },
+      ].filter(Boolean);
 
       return {
         name: this.$options.i18n.openInIDE,
@@ -148,7 +124,7 @@ export default {
     cloneWithSsh: __('Clone with SSH'),
     cloneWithKerberos: __('Clone with KRB5'),
     openInIDE: __('Open in your IDE'),
-    downloadSourceCode: __('Download Source Code'),
+    downloadSourceCode: __('Download source code'),
     downloadDirectory: __('Download this directory'),
   },
 };
@@ -169,7 +145,7 @@ export default {
         label-class="gl-font-sm! gl-pt-2!"
         :link="sshUrl"
         name="ssh_project_clone"
-        input-test-id="copy-ssh-url-input"
+        input-id="copy-ssh-url-input"
         test-id="copy-ssh-url-button"
       />
     </gl-disclosure-dropdown-group>
@@ -179,7 +155,7 @@ export default {
         label-class="gl-font-sm! gl-pt-2!"
         :link="httpUrl"
         name="http_project_clone"
-        input-test-id="copy-http-url-input"
+        input-id="copy-http-url-input"
         test-id="copy-http-url-button"
       />
     </gl-disclosure-dropdown-group>
@@ -189,7 +165,7 @@ export default {
         label-class="gl-font-sm! gl-pt-2!"
         :link="kerberosUrl"
         name="kerberos_project_clone"
-        input-test-id="copy-http-url-input"
+        input-id="copy-http-url-input"
         test-id="copy-http-url-button"
       />
     </gl-disclosure-dropdown-group>
@@ -205,6 +181,7 @@ export default {
 <style>
 /* Temporary override until we have
    * widths available in GlDisclosureDropdown
+   * https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2501
    */
 .code-dropdown .gl-new-dropdown-panel {
   width: 100%;

@@ -17,8 +17,6 @@ module ComplianceManagement
       @user = User.find user_id
       @group = Namespace.find group_id
 
-      return unless feature_enabled?
-
       raise ExportFailedError, 'An error occurred generating the standards adherence export' unless csv_export&.success?
 
       Notify.compliance_standards_adherence_csv_email(
@@ -32,10 +30,6 @@ module ComplianceManagement
     end
 
     private
-
-    def feature_enabled?
-      Feature.enabled?(:compliance_standards_adherence_csv_export, @group)
-    end
 
     def csv_export
       @csv_export ||= ComplianceManagement::Standards::ExportService.new(

@@ -112,7 +112,7 @@ RSpec.describe 'Login', feature_category: :system_access do
               # Loging using smartcard
               visit verify_certificate_smartcard_path(client_certificate: encrypted_openssl_certificate)
 
-              visit profile_path
+              visit user_settings_profile_path
 
               expect(page).not_to have_content(_('Enter verification code'))
             end
@@ -122,7 +122,7 @@ RSpec.describe 'Login', feature_category: :system_access do
             it 'asks for Two-Factor Authentication' do
               sign_in(user)
 
-              visit profile_path
+              visit user_settings_profile_path
 
               expect(page).to have_content(_('Enter verification code'))
             end
@@ -175,7 +175,7 @@ RSpec.describe 'Login', feature_category: :system_access do
       it 'shows LDAP smartcard login form' do
         subject
 
-        expect(page).to have_selector('#ldapmain_smartcard input[value="Sign in with smart card"]')
+        expect(page).to have_button(_('Sign in with smart card'))
       end
     end
 
@@ -198,7 +198,7 @@ RSpec.describe 'Login', feature_category: :system_access do
       it 'shows LDAP smartcard login form' do
         subject
 
-        expect(page).to have_selector('#ldapmain_smartcard input[value="Sign in with smart card"]')
+        expect(page).to have_button(_('Sign in with smart card'))
       end
     end
   end

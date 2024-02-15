@@ -16,6 +16,13 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
     subject { service.available_for?(mr_merge_if_green_enabled) }
 
     let_it_be(:approver) { create(:user) }
+    let(:feature_flag) { true }
+    let(:draft_status) { true }
+    let(:blocked_status) { true }
+    let(:discussions_status) { true }
+    let(:additional_feature_flag) { true }
+    let(:pipeline_status) { :running }
+    let(:approvals_required) { 1 }
 
     before do
       create(:ci_pipeline, pipeline_status,
@@ -25,41 +32,33 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
       mr_merge_if_green_enabled.update_head_pipeline
 
       approval_rule.users << approver
+      stub_feature_flags(merge_when_checks_pass: feature_flag,
+        additional_merge_when_checks_ready: additional_feature_flag)
+      mr_merge_if_green_enabled.update!(title: 'Draft: check') if draft_status
+      allow(mr_merge_if_green_enabled).to receive(:merge_blocked_by_other_mrs?).and_return(blocked_status)
+      allow(mr_merge_if_green_enabled).to receive(:mergeable_discussions_state?).and_return(discussions_status)
     end
 
-    context 'when feature flag "merge_when_checks_pass" is enabled' do
-      before do
-        stub_feature_flags(merge_when_checks_pass: project, additional_merge_when_checks_ready: additional_feature_flag)
-        mr_merge_if_green_enabled.update!(title: 'Draft: check') if draft_status
-        allow(mr_merge_if_green_enabled).to receive(:merge_blocked_by_other_mrs?).and_return(blocked_status)
-        allow(mr_merge_if_green_enabled).to receive(:mergeable_discussions_state?).and_return(discussions_status)
-      end
+    where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :discussions_status,
+      :additional_feature_flag, :result) do
+      :running | 0 | true | true | false | true | true
+      :running | 0 | false | false | true | true | true
+      :success | 0 | false | false | true | true | false
+      :success | 0 | true | true | false | true | true
+      :success | 0 | true | true | true | false | false
+      :running | 1 | true | true | false | true | true
+      :success | 1 | true | true | false | true | true
+      :success | 1 | false | false | true | true | true
+      :running | 1 | false | false | true | true | true
+    end
 
-      where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :discussions_status,
-        :additional_feature_flag, :result) do
-        :running | 0 | true | true | false | true | true
-        :running | 0 | false | false | true | true | true
-        :success | 0 | false | false | true | true | false
-        :success | 0 | true | true | false | true | true
-        :success | 0 | true | true | true | false | false
-        :running | 1 | true | true | false | true | true
-        :success | 1 | true | true | false | true | true
-        :success | 1 | false | false | true | true | true
-        :running | 1 | false | false | true | true | true
-      end
-
-      with_them do
-        it { is_expected.to eq result }
-      end
+    with_them do
+      it { is_expected.to eq result }
     end
 
     context 'when feature flags merge_when_checks_pass and additional_merge_when_checks_ready are disabled"' do
-      before do
-        stub_feature_flags(merge_when_checks_pass: false, additional_merge_when_checks_ready: false)
-        mr_merge_if_green_enabled.update!(title: 'Draft: check') if draft_status
-        allow(mr_merge_if_green_enabled).to receive(:merge_blocked_by_other_mrs?).and_return(blocked_status)
-        allow(mr_merge_if_green_enabled).to receive(:mergeable_discussions_state?).and_return(discussions_status)
-      end
+      let(:additional_feature_flag) { false }
+      let(:feature_flag) { false }
 
       where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :discussions_status, :result) do
         :running | 0 | true  | true | false | false
@@ -92,6 +91,14 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
         stub_feature_flags(additional_merge_when_checks_ready: false)
         stub_licensed_features(blocking_merge_requests: true)
         create(:merge_request_block, blocked_merge_request: mr_merge_if_green_enabled)
+      end
+
+      it { is_expected.to eq false }
+    end
+
+    context 'when merge trains are enabled' do
+      before do
+        allow(mr_merge_if_green_enabled.project).to receive(:merge_trains_enabled?).and_return(true)
       end
 
       it { is_expected.to eq false }

@@ -43,7 +43,7 @@ Consider the following workflow:
 
 ## How it works
 
-First, GitLab Runner uploads all [JUnit report format XML files](https://www.ibm.com/docs/en/adfz/developer-for-zos/14.1.0?topic=formats-junit-xml-format)
+First, GitLab Runner uploads all [JUnit report format XML files](https://www.ibm.com/docs/en/developer-for-zos/16.0?topic=formats-junit-xml-format)
 as [artifacts](../yaml/artifacts_reports.md#artifactsreportsjunit) to GitLab. Then, when you visit a merge request, GitLab starts
 comparing the head and base branch's JUnit report format XML files, where:
 
@@ -136,7 +136,7 @@ use the [`artifacts:when:always`](../yaml/index.md#artifactswhen) keyword.
 
 You cannot have multiple tests with the same name and class in your JUnit report format XML file.
 
-In GitLab 15.0 and earlier, test reports from [parallel:matrix](../yaml/index.md#parallel:matrix)
+In GitLab 15.0 and earlier, test reports from [parallel:matrix](../yaml/index.md#parallelmatrix)
 jobs are aggregated together, which can cause some report information to not be displayed.
 In GitLab 15.1 and later, [this bug is fixed](https://gitlab.com/gitlab-org/gitlab/-/issues/296814),
 and all report information is displayed.

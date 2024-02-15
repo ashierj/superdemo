@@ -12,7 +12,7 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
 
   before do
     stub_container_registry_config(enabled: true)
-    stub_saas_features(google_artifact_registry: true)
+    stub_saas_features(google_cloud_support: true)
     sign_in(user)
   end
 
@@ -36,6 +36,43 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
     visit_page
 
     expect(page).to have_link _('Open in Google Cloud')
+  end
+
+  describe 'link to settings' do
+    context 'when user is not a group owner' do
+      it 'does not show group settings link' do
+        visit_page
+
+        expect(page).not_to have_link('Configure in settings',
+          href: edit_project_settings_integration_path(project, ::Integrations::GoogleCloudPlatform::ArtifactRegistry))
+      end
+    end
+
+    context 'when user is a group maintainer' do
+      before_all do
+        project.add_maintainer(user)
+      end
+
+      it 'shows group settings link' do
+        visit_page
+
+        expect(page).to have_link('Configure in settings',
+          href: edit_project_settings_integration_path(project, ::Integrations::GoogleCloudPlatform::ArtifactRegistry))
+      end
+    end
+  end
+
+  describe 'details page' do
+    it 'has a page title set' do
+      visit project_google_cloud_platform_artifact_registry_image_path(project, {
+        image: 'alpine@sha256:6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
+        project: 'dev-package-container-96a3ff34',
+        repository: 'myrepo',
+        location: 'us-east1'
+      })
+
+      expect(page).to have_text _('alpine@6a0657acfef7')
+    end
   end
 
   private

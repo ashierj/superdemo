@@ -11,7 +11,7 @@ RSpec.describe 'Deployments (JavaScript fixtures)' do
   let_it_be(:project) { create(:project, :repository, group: group, path: 'releases-project') }
 
   let_it_be(:environment) do
-    create(:environment, project: project)
+    create(:environment, project: project, external_url: 'http://example.com')
   end
 
   let_it_be(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
@@ -49,6 +49,17 @@ RSpec.describe 'Deployments (JavaScript fixtures)' do
 
     it "graphql/#{one_deployment_query_path}.json" do
       query = get_graphql_query_as_string(one_deployment_query_path, ee: true)
+
+      post_graphql(query, current_user: admin, variables: { fullPath: project.full_path, iid: deployment.iid })
+
+      expect_graphql_errors_to_be_empty
+      expect(graphql_data_at(:project, :deployment)).to be_present
+    end
+
+    deployment_details_query_path = 'deployments/graphql/queries/deployment.query.graphql'
+
+    it "ee/graphql/#{deployment_details_query_path}.json" do
+      query = get_graphql_query_as_string(deployment_details_query_path)
 
       post_graphql(query, current_user: admin, variables: { fullPath: project.full_path, iid: deployment.iid })
 

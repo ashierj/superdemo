@@ -25,7 +25,11 @@ module QA
       end
 
       context 'when developers and maintainers are not allowed to push to a protected branch' do
-        it 'user without push rights fails to push', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347757' do
+        it 'user without push rights fails to push', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347757',
+          quarantine: {
+            issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/426739',
+            type: :flaky
+          } do
           create_protected_branch(allowed_to_push: {
             roles: Resource::ProtectedBranch::Roles::NO_ONE
           })
@@ -35,11 +39,7 @@ module QA
       end
 
       def create_protected_branch(allowed_to_push:)
-        Resource::ProtectedBranch.fabricate_via_api! do |resource|
-          resource.branch_name = branch_name
-          resource.project = project
-          resource.allowed_to_push = allowed_to_push
-        end
+        create(:protected_branch, branch_name: branch_name, project: project, allowed_to_push: allowed_to_push)
       end
 
       def push_new_file(branch)

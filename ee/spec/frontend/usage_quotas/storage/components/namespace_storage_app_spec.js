@@ -135,13 +135,13 @@ describe('NamespaceStorageApp', () => {
         provide: {
           isUsingNamespaceEnforcement: false,
           isUsingProjectEnforcementWithLimits: true,
-          customSortKey: 'STORAGE',
+          customSortKey: 'EXCESS_REPO_STORAGE_SIZE_DESC',
         },
       });
 
       expect(getProjectListStorageHandler).toHaveBeenCalledWith(
         expect.objectContaining({
-          sortKey: 'STORAGE',
+          sortKey: 'EXCESS_REPO_STORAGE_SIZE_DESC',
         }),
       );
 

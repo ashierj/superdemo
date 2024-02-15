@@ -18,8 +18,8 @@ Array [
     "seatsOwed": 4,
   },
   Object {
-    "lastInvoice": "2018-09-01",
     "nextInvoice": "2018-10-01",
+    "nextTermStartDate": null,
     "subscriptionEndDate": "2019-07-11",
     "subscriptionStartDate": "2018-07-11",
   },

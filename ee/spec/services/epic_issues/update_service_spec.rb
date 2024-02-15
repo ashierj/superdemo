@@ -4,9 +4,9 @@ require 'spec_helper'
 
 RSpec.describe EpicIssues::UpdateService, feature_category: :portfolio_management do
   describe '#execute' do
-    let_it_be(:user) { create(:user) }
+    let_it_be(:current_user) { create(:user) }
     let_it_be(:group) { create(:group) }
-    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:project) { create(:project, group: create(:group)) }
     let_it_be(:epic) { create(:epic, group: group) }
     let_it_be(:issues) { create_list(:issue, 4, project: project) }
     let_it_be(:epic_issue1, reload: true) { create(:epic_issue, epic: epic, issue: issues[0], relative_position: 3) }
@@ -16,11 +16,13 @@ RSpec.describe EpicIssues::UpdateService, feature_category: :portfolio_managemen
     let_it_be(:default_position_value) { Gitlab::Database::MAX_INT_VALUE / 2 }
 
     before do
-      group.add_developer(user)
+      stub_licensed_features(epics: true)
+      group.add_guest(current_user)
+      project.add_guest(current_user)
     end
 
-    def order_issue(issue, params)
-      described_class.new(issue, user, params ).execute
+    def order_issue(issue, params, user = current_user)
+      described_class.new(issue, user, params).execute
     end
 
     def ordered_epics
@@ -128,6 +130,26 @@ RSpec.describe EpicIssues::UpdateService, feature_category: :portfolio_managemen
         it 'orders issues correctly' do
           expect(ordered_epics).to eq([epic_issue2, epic_issue3, epic_issue4, epic_issue1])
         end
+      end
+    end
+
+    context 'when user has insufficient permissions to update epic issue' do
+      let_it_be(:non_member) { create(:user) }
+
+      let(:error_msg) { 'Insufficient permissions to update relation' }
+
+      subject { order_issue(epic_issue1, { move_after_id: epic_issue1.id }, non_member) }
+
+      it 'returns an error if user does not have admin_issue_relation access' do
+        group.add_guest(non_member)
+
+        is_expected.to eq(message: error_msg, status: :error, http_status: 403)
+      end
+
+      it 'returns an error if user does not have admin_epic_relation access' do
+        project.add_guest(non_member)
+
+        is_expected.to eq(message: error_msg, status: :error, http_status: 403)
       end
     end
   end

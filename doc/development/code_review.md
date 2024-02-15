@@ -103,10 +103,15 @@ To find a domain expert:
 NOTE:
 Reviewer roulette is an internal tool for use on GitLab.com, and not available for use on customer installations.
 
+NOTE:
+Until %16.11, GitLab is running [an experiment](https://gitlab.com/gitlab-org/quality/engineering-productivity/team/-/issues/377) to remove hungriness and busy indicators.
+
 The [Danger bot](dangerbot.md) randomly picks a reviewer and a maintainer for
 each area of the codebase that your merge request seems to touch. It makes
 **recommendations** for developer reviewers and you should override it if you think someone else is a better
 fit.
+
+[Approval Guidelines](#approval-guidelines) can help to pick [domain experts](#domain-experts).
 
 We only do UX reviews for MRs from teams that include a Product Designer. User-facing changes from these teams are required to have a UX review, even if it's behind a feature flag. Default to the recommended UX reviewer suggested.
 
@@ -138,7 +143,7 @@ page, with these behaviors:
   not counted. These MRs are usually backports, and maintainers or reviewers usually
   do not need much time reviewing them.
 
-- Team members whose Slack or [GitLab status](../user/profile/index.md#set-your-current-status) emoji
+- 'Hungriness' for reviews: Team members whose Slack or [GitLab status](../user/profile/index.md#set-your-current-status) emoji
   is 🔵 `:large_blue_circle:` are more likely to be picked. This applies to both reviewers and trainee maintainers.
   - Reviewers with 🔵 `:large_blue_circle:` are two times as likely to be picked as other reviewers.
   - [Trainee maintainers](https://handbook.gitlab.com/handbook/engineering/workflow/code-review/#trainee-maintainer) with 🔵 `:large_blue_circle:` are three times as likely to be picked as other reviewers.
@@ -280,8 +285,8 @@ See the [test engineering process](https://handbook.gitlab.com/handbook/engineer
 
 1. You have confirmed that if this MR contains changes to processing or storing of credentials or tokens, authorization, and authentication methods, or other items described in [the security review guidelines](https://handbook.gitlab.com/handbook/security/product-security/application-security/appsec-reviews/#what-should-be-reviewed), you have added the `~security` label and you have `@`-mentioned `@gitlab-com/gl-security/appsec`.
 1. You have reviewed the documentation regarding [internal application security reviews](https://handbook.gitlab.com/handbook/security/product-security/application-security/appsec-reviews/#internal-application-security-reviews) for **when** and **how** to request a security review and requested a security review if this is warranted for this change.
-1. If there are security scan results that are blocking the MR (due to the [scan result policies](https://gitlab.com/gitlab-com/gl-security/security-policies)):
-    - For true positive findings, they should be corrected before the merge request is merged. This will remove the AppSec approval required by the scan result policy.
+1. If there are security scan results that are blocking the MR (due to the [merge request approval policies](https://gitlab.com/gitlab-com/gl-security/security-policies)):
+    - For true positive findings, they should be corrected before the merge request is merged. This will remove the AppSec approval required by the merge request approval policy.
     - For false positive findings, something that should be discussed for risk acceptance, or anything questionable, ping `@gitlab-com/gl-security/appsec`.
 
 ##### Deployment
@@ -298,7 +303,7 @@ See the [test engineering process](https://handbook.gitlab.com/handbook/engineer
 ### The responsibility of the merge request author
 
 The responsibility to find the best solution and implement it lies with the
-merge request author. The author or [directly responsible individual](https://about.gitlab.com/handbook/people-group/directly-responsible-individuals/)
+merge request author. The author or [directly responsible individual](https://handbook.gitlab.com/handbook/people-group/directly-responsible-individuals/)
 (DRI) stays assigned to the merge request as the assignee throughout
 the code review lifecycle. If you are unable to set yourself as an assignee, ask a [reviewer](https://handbook.gitlab.com/handbook/engineering/workflow/code-review/#reviewer) to do this for you.
 

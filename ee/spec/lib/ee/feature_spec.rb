@@ -19,7 +19,6 @@ RSpec.describe Feature, stub_feature_flags: false, query_analyzers: false do
   describe '.enabled?' do
     before do
       described_class.reset
-      skip_feature_flags_yaml_validation
       allow(described_class).to receive(:log_feature_flag_states?).and_return(false)
 
       stub_feature_flag_definition(:disabled_feature_flag)

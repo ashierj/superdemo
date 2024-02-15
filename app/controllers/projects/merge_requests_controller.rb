@@ -12,6 +12,7 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
   include DiffHelper
   include Gitlab::Cache::Helpers
   include MergeRequestsHelper
+  include ParseCommitDate
 
   prepend_before_action(only: [:index]) { authenticate_sessionless_user!(:rss) }
   skip_before_action :merge_request, only: [:index, :bulk_update, :export_csv]
@@ -48,7 +49,6 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     push_frontend_feature_flag(:mention_autocomplete_backend_filtering, project)
     push_frontend_feature_flag(:pinned_file, project)
     push_frontend_feature_flag(:merge_request_diff_generated_subscription, project)
-    push_frontend_feature_flag(:preload_autocomplete_members_issues_mrs, current_user)
   end
 
   around_action :allow_gitaly_ref_name_caching, only: [:index, :show, :diffs, :discussions]
@@ -149,16 +149,27 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
 
     Gitlab::PollingInterval.set_header(response, interval: 10_000)
 
+    serializer_options = {
+      disable_coverage: true,
+      disable_failed_builds: true,
+      preload: true
+    }
+
+    if Feature.enabled?(:skip_status_preload_in_pipeline_lists, @project, type: :gitlab_com_derisk)
+      serializer_options.merge!(
+        disable_manual_and_scheduled_actions: true,
+        preload_statuses: false,
+        preload_downstream_statuses: false
+      )
+    end
+
     render json: {
       pipelines: PipelineSerializer
         .new(project: @project, current_user: @current_user)
         .with_pagination(request, response)
         .represent(
           @pipelines,
-          preload: true,
-          disable_failed_builds: true,
-          disable_coverage: Feature.enabled?(:merge_request_pipelines_list_disable_coverage, @project,
-            type: :gitlab_com_derisk)
+          **serializer_options
         ),
       count: {
         all: @pipelines.count
@@ -451,14 +462,9 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     @update_current_user_path = expose_path(api_v4_user_preferences_path)
     @endpoint_metadata_url = endpoint_metadata_url(@project, @merge_request)
     @endpoint_diff_batch_url = endpoint_diff_batch_url(@project, @merge_request)
+
     if params[:pin] && Feature.enabled?(:pinned_file, @project)
-      @pinned_file_url = diff_by_file_hash_namespace_project_merge_request_path(
-        format: 'json',
-        id: merge_request.iid,
-        namespace_id: project&.namespace.to_param,
-        project_id: project&.path,
-        file_hash: params[:pin]
-      )
+      @pinned_file_url = pinned_file_url(@project, @merge_request)
     end
 
     if merge_request.diffs_batch_cache_with_max_age?
@@ -636,9 +642,15 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     diffs_batch_project_json_merge_request_path(project, merge_request, 'json', params)
   end
 
-  def convert_date_to_epoch(date)
-    Date.strptime(date, "%Y-%m-%d")&.to_time&.to_i if date
-  rescue Date::Error, TypeError
+  def pinned_file_url(project, merge_request)
+    diff_by_file_hash_namespace_project_merge_request_path(
+      format: 'json',
+      id: merge_request.iid,
+      namespace_id: project&.namespace.to_param,
+      project_id: project&.path,
+      file_hash: params[:pin],
+      diff_head: true
+    )
   end
 end
 

@@ -108,6 +108,7 @@ export default {
         mutation: setActiveBoardItemMutation,
         variables: {
           boardItem: this.isActive ? null : this.item,
+          listId: this.list.id,
           isIssue: this.isActive ? undefined : this.isIssueBoard,
         },
       });
@@ -122,7 +123,7 @@ export default {
         });
         await this.$apollo.mutate({
           mutation: setActiveBoardItemMutation,
-          variables: { boardItem: null },
+          variables: { boardItem: null, listId: null },
         });
       }
       this.$apollo.mutate({
@@ -163,6 +164,7 @@ export default {
       :update-filters="true"
       :index="index"
       :show-work-item-type-icon="showWorkItemTypeIcon"
+      @setFilters="$emit('setFilters', $event)"
     >
       <slot></slot>
     </board-card-inner>

@@ -111,47 +111,63 @@ RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu, feature_category: :navi
         stub_licensed_features(combined_project_analytics_dashboards: true)
       end
 
-      specify { is_expected.not_to be_nil }
+      describe 'for personal namespace projects' do
+        it 'is nil for personal namespace projects' do
+          is_expected.to be_nil
+        end
+      end
 
-      context 'with different user access levels' do
-        where(:access_level, :has_menu_item) do
-          nil         | false
-          :reporter   | false
-          :developer  | true
-          :maintainer | true
+      describe 'for group namespace projects' do
+        let_it_be(:user) { create(:user) }
+        let_it_be(:group) { create(:group) }
+        let_it_be_with_reload(:project) { create(:project, group: group) }
+
+        before_all do
+          project.add_maintainer(user)
         end
 
-        with_them do
-          let(:user) { create(:user) }
+        specify { is_expected.not_to be_nil }
 
+        context 'with different user access levels' do
+          where(:access_level, :has_menu_item) do
+            nil         | false
+            :reporter   | false
+            :developer  | true
+            :maintainer | true
+          end
+
+          with_them do
+            let(:user) { create(:user) }
+
+            before do
+              project.add_member(user, access_level)
+            end
+
+            context "when the user is not allowed to view the menu item", if: !params[:has_menu_item] do
+              specify { is_expected.to be_nil }
+            end
+
+            context "when the user is allowed to view the menu item", if: params[:has_menu_item] do
+              specify { is_expected.not_to be_nil }
+            end
+          end
+        end
+
+        describe 'when the license does not support the feature' do
           before do
-            project.add_member(user, access_level)
+            stub_licensed_features(combined_project_analytics_dashboards: false)
           end
 
-          describe "when the user is not allowed to view the menu item", if: !params[:has_menu_item] do
-            specify { is_expected.to be_nil }
+          specify { is_expected.to be_nil }
+        end
+
+        describe 'when the dashboards analytics feature is disabled' do
+          before do
+            stub_feature_flags(combined_analytics_dashboards: false)
           end
 
-          describe "when the user is allowed to view the menu item", if: params[:has_menu_item] do
-            specify { is_expected.not_to be_nil }
-          end
+          specify { is_expected.to be_nil }
         end
-      end
-
-      describe 'when the license does not support the feature' do
-        before do
-          stub_licensed_features(combined_project_analytics_dashboards: false)
-        end
-
-        specify { is_expected.to be_nil }
-      end
-
-      describe 'when the dashboards analytics feature is disabled' do
-        before do
-          stub_feature_flags(combined_analytics_dashboards: false)
-        end
-
-        specify { is_expected.to be_nil }
       end
     end
   end

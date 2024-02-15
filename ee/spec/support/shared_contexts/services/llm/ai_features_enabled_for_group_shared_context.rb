@@ -43,3 +43,23 @@ RSpec.shared_context 'with experiment features disabled for self-managed' do
     stub_licensed_features(ai_chat: true)
   end
 end
+
+RSpec.shared_context 'with ai chat enabled for group on SaaS' do
+  before do
+    allow(Gitlab).to receive(:org_or_com?).and_return(true)
+    stub_ee_application_setting(should_check_namespace_plan: true)
+    stub_licensed_features(ai_chat: true)
+    allow(group.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+    group.namespace_settings.reload.update!(experiment_features_enabled: true)
+  end
+end
+
+RSpec.shared_context 'with ai features disabled and licensed chat for group on SaaS' do
+  before do
+    allow(Gitlab).to receive(:org_or_com?).and_return(true)
+    stub_ee_application_setting(should_check_namespace_plan: true)
+    stub_licensed_features(ai_chat: true)
+    allow(group.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+    group.namespace_settings.reload.update!(experiment_features_enabled: false)
+  end
+end

@@ -136,13 +136,14 @@ describe('EpicsSwimlanes', () => {
       expect(virtualList.props()).toMatchObject({
         remain: bufferSize,
         bench: bufferSize,
-        item: EpicLane,
         size: EPIC_LANE_BASE_HEIGHT,
-        itemcount: mockEpics.length,
-        itemprops: expect.any(Function),
       });
 
       expect(virtualList.props().scrollelement).toBe(scrollableContainer);
+    });
+
+    it('renders epic lanes', () => {
+      expect(wrapper.findAllComponents(EpicLane)).toHaveLength(mockEpics.length);
     });
 
     it('does not display load more epics button if there are no more epics', () => {

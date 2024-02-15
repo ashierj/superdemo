@@ -12,7 +12,7 @@ import {
 import { cloneDeep } from 'lodash';
 import { DOCS_URL_IN_EE_DIR } from 'jh_else_ce/lib/utils/url_utility';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { NAMESPACE_PROJECT, DEPENDENCIES_TABLE_I18N } from '../constants';
+import { NAMESPACE_ORGANIZATION, NAMESPACE_PROJECT, DEPENDENCIES_TABLE_I18N } from '../constants';
 import DependencyLicenseLinks from './dependency_license_links.vue';
 import DependencyLocation from './dependency_location.vue';
 import DependencyLocationCount from './dependency_location_count.vue';
@@ -85,10 +85,17 @@ export default {
       return this.localDependencies.some((dependency) => this.vulnerabilitiesCount(dependency));
     },
     fields() {
+      if (this.isOrganizationNamespace) {
+        return this.$options.organizationFields;
+      }
+
       return this.isProjectNamespace ? this.$options.projectFields : this.$options.groupFields;
     },
     isProjectNamespace() {
       return this.namespaceType === NAMESPACE_PROJECT;
+    },
+    isOrganizationNamespace() {
+      return this.namespaceType === NAMESPACE_ORGANIZATION;
     },
     localDependencies() {
       return this.transformDependenciesForUI(this.dependencies);
@@ -111,7 +118,7 @@ export default {
       }));
     },
     displayLocation(item) {
-      return this.isProjectNamespace || item.occurrenceCount < 2;
+      return !item.occurrenceCount || item.occurrenceCount < 2;
     },
     packager(dependency) {
       return dependency.packager || this.$options.i18n.unknown;
@@ -135,6 +142,7 @@ export default {
       }
     },
   },
+  organizationFields: [...sharedFields],
   groupFields: [
     ...sharedFields,
     { key: 'projects', label: DEPENDENCIES_TABLE_I18N.projects, tdClass: tdClass() },

@@ -11,6 +11,20 @@ module EE
       )
     end
 
+    def google_artifact_registry_data(project)
+      {
+        endpoint: project_google_cloud_platform_artifact_registry_index_path(project),
+        full_path: project.full_path,
+
+        settings_path: if show_google_cloud_artifact_registry_settings?(project)
+                         edit_project_settings_integration_path(project,
+                           ::Integrations::GoogleCloudPlatform::ArtifactRegistry)
+                       else
+                         ''
+                       end
+      }
+    end
+
     private
 
     def show_dependency_proxy_settings?(project)
@@ -19,6 +33,10 @@ module EE
         :admin_dependency_proxy_packages_settings,
         project.dependency_proxy_packages_setting
       )
+    end
+
+    def show_google_cloud_artifact_registry_settings?(project)
+      project.gcp_artifact_registry_enabled? && show_container_registry_settings(project)
     end
   end
 end

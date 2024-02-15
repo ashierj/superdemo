@@ -565,17 +565,21 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     let_it_be_with_reload(:second_group) { create(:group) }
 
     context 'when on .org or .com' do
-      where(:licensed, :group_1_cs_setting, :group_2_cs_setting, :cs_matcher) do
-        true  | false | false | be_disallowed(:access_code_suggestions)
-        true  | false | true  | be_allowed(:access_code_suggestions)
-        true  | true  | true  | be_allowed(:access_code_suggestions)
-        false | false | false | be_disallowed(:access_code_suggestions)
-        false | false | true  | be_allowed(:access_code_suggestions)
-        false | true  | true  | be_allowed(:access_code_suggestions)
+      where(:add_on_enabled, :licensed, :group_1_cs_setting, :group_2_cs_setting, :cs_matcher) do
+        # without addon group settings are respected
+        false | true  | false | false | be_disallowed(:access_code_suggestions)
+        # with addon group settings are ignored
+        true  | false | false | false | be_allowed(:access_code_suggestions)
+        false | true  | false | true  | be_allowed(:access_code_suggestions)
+        false | true  | true  | true  | be_allowed(:access_code_suggestions)
+        false | false | false | false | be_disallowed(:access_code_suggestions)
+        false | false | false | true  | be_allowed(:access_code_suggestions)
+        false | false | true  | true  | be_allowed(:access_code_suggestions)
       end
 
       with_them do
         before do
+          stub_feature_flags(purchase_code_suggestions: add_on_enabled)
           allow(::Gitlab).to receive(:org_or_com?).and_return(true)
 
           first_group.update_attribute(:code_suggestions, group_1_cs_setting)
@@ -648,7 +652,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
           before do
             allow(::Gitlab).to receive(:org_or_com?).and_return(false)
             stub_licensed_features(code_suggestions: licensed)
-            allow(current_user).to receive(:code_suggestions_add_on_available?).and_return(cs_seat_assigned)
+            allow(current_user).to receive(:duo_pro_add_on_available?).and_return(cs_seat_assigned)
           end
 
           it { is_expected.to cs_matcher }
@@ -663,37 +667,50 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     let_it_be_with_reload(:current_user) { create(:user) }
 
     context 'when on .org or .com', :saas do
-      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be(:tomorrow) { Time.current + 1.day }
+      let_it_be(:yesterday) { Time.current - 1.day }
 
-      context 'when user is member of a group' do
-        before do
-          group.add_developer(current_user)
-        end
-
-        context 'when group has AI licensing and settings' do
-          include_context 'with ai features enabled for group'
-
-          it { is_expected.to be_allowed(:access_duo_chat) }
-        end
-
-        context 'when group has not AI licensing and settings' do
-          include_context 'with experiment features disabled for group'
-
-          it { is_expected.to be_disallowed(:access_duo_chat) }
-        end
+      where(:group_with_ai_membership, :duo_pro_seat_assigned,
+        :start_date, :purchase_code_suggestions_ff, :cs_matcher) do
+        true  | false | ref(:tomorrow)  | false | be_allowed(policy)
+        true  | true  | ref(:tomorrow)  | false | be_allowed(policy)
+        false | false | ref(:tomorrow)  | false | be_disallowed(policy)
+        false | true  | ref(:tomorrow)  | false | be_disallowed(policy)
+        false | true  | ref(:tomorrow)  | true  | be_disallowed(policy)
+        false | true  | ref(:yesterday) | false | be_disallowed(policy)
+        false | true  | ref(:yesterday) | true  | be_allowed(policy)
+        false | false | ref(:yesterday) | true  | be_disallowed(policy)
+        true  | false | ref(:yesterday) | true  | be_disallowed(policy)
+        true  | true  | ref(:yesterday) | false | be_allowed(policy)
       end
 
-      context 'when user is not a member of a group' do
-        it { is_expected.to be_disallowed(:access_duo_chat) }
+      with_them do
+        before do
+          allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(group_with_ai_membership)
+          allow(current_user).to receive(:duo_pro_add_on_available?).and_return(duo_pro_seat_assigned)
+          stub_feature_flags(purchase_code_suggestions: purchase_code_suggestions_ff)
+          allow(CloudConnector::Access).to receive(:service_start_date_for).and_return(start_date)
+        end
+
+        it { is_expected.to cs_matcher }
       end
     end
 
     context 'when not on .org or .com' do
-      where(:licensed, :instance_level_ai_beta_features_enabled, :cs_matcher) do
-        true  | false | be_disallowed(policy)
-        true  | true  | be_allowed(policy)
-        false | false | be_disallowed(policy)
-        false | true  | be_disallowed(policy)
+      let_it_be(:tomorrow) { Time.current + 1.day }
+      let_it_be(:yesterday) { Time.current - 1.day }
+
+      where(:licensed, :instance_level_ai_beta_features_enabled, :start_date, :duo_pro_seat_assigned, :cs_matcher) do
+        true  | false | ref(:tomorrow)  | false | be_disallowed(policy)
+        true  | true  | ref(:tomorrow)  | false | be_allowed(policy)
+        false | false | ref(:tomorrow)  | false | be_disallowed(policy)
+        false | true  | ref(:tomorrow)  | false | be_disallowed(policy)
+        false | true  | ref(:tomorrow)  | true  | be_disallowed(policy)
+        false | true  | ref(:yesterday) | false | be_disallowed(policy)
+        false | true  | ref(:yesterday) | true  | be_disallowed(policy)
+        false | false | ref(:yesterday) | true  | be_disallowed(policy)
+        true  | false | ref(:yesterday) | true  | be_allowed(policy)
+        true  | true  | ref(:yesterday) | false | be_disallowed(policy)
       end
 
       with_them do
@@ -701,6 +718,8 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
           allow(::Gitlab).to receive(:org_or_com?).and_return(false)
           stub_ee_application_setting(instance_level_ai_beta_features_enabled: instance_level_ai_beta_features_enabled)
           stub_licensed_features(ai_chat: licensed)
+          allow(current_user).to receive(:duo_pro_add_on_available?).and_return(duo_pro_seat_assigned)
+          allow(CloudConnector::Access).to receive(:service_start_date_for).and_return(start_date)
         end
 
         it { is_expected.to cs_matcher }

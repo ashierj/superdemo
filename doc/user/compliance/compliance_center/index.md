@@ -21,6 +21,7 @@ The compliance center is the central location for compliance teams to manage the
 > - [Enabled](https://gitlab.com/gitlab-org/gitlab/-/issues/414495) in GitLab 16.5.
 > - [Feature flag `compliance_adherence_report` and `adherence_report_ui`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/137398) removed in GitLab 16.7.
 > - Standards adherence filtering [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/413734) in GitLab 16.7.
+> - Standards adherence grouping [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/413735) in GitLab 16.9.
 
 The compliance standards adherence dashboard lists the adherence status of projects complying to the _GitLab standard_.
 
@@ -43,6 +44,10 @@ You can filter the compliance standards adherence dashboard on:
 - The project that the check was performed on.
 - The type of check that was performed on a project.
 - The standard that the check belongs to.
+
+You can group the compliance standards adherence dashboard on:
+
+- The type of check that was performed on a project.
 
 ### GitLab standard
 
@@ -78,10 +83,7 @@ information, see [Merge request approval rules](../../project/merge_requests/app
 ### Export compliance standards adherence report for projects in a group
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/413736) in GitLab 16.8 [with a flag](../../../administration/feature_flags.md) named `compliance_standards_adherence_csv_export`. Disabled by default.
-
-FLAG:
-On self-managed GitLab, by default this feature is not available. To make it available, an administrator can [enable the feature flag](../../../administration/feature_flags.md)
-named `compliance_standards_adherence_csv_export`. On GitLab.com, this feature is not available. The feature is not ready for production use.
+> - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/142568) in GitLab 16.9. Feature flag `compliance_standards_adherence_csv_export` removed.
 
 Exports the contents of a standards adherence report for projects in a group. Reports are truncated at 15 MB to avoid a large email attachment.
 
@@ -379,7 +381,7 @@ To export a report of compliance frameworks on projects in a group:
 
 A report is compiled and delivered to your email inbox as an attachment.
 
-#### Filter the compliance projects report
+### Filter the compliance projects report
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/387911) in GitLab 15.11.
 
@@ -395,6 +397,49 @@ To filter the list of compliance frameworks:
 1. Select **Search**.
 
 Repeat this process to filter by multiple attributes.
+
+### Create a new compliance framework
+
+Prerequisites:
+
+- You must be an administrator or have the Owner role for the group.
+
+To create a new compliance framework from the compliance projects report:
+
+1. On the left sidebar, select **Search or go to** and find your group.
+1. Select **Secure > Compliance center**.
+1. On the page, select the **Projects** tab.
+1. Select the **+ Add framework**.
+1. Select the **Create a new framework**.
+1. Select the **Add framework** to create compliance framework.
+
+### Edit a compliance framework
+
+Prerequisites:
+
+- You must be an administrator or have the Owner role for the group.
+
+To edit a compliance framework from the compliance projects report:
+
+1. On the left sidebar, select **Search or go to** and find your group.
+1. Select **Secure > Compliance center**.
+1. On the page, select the **Projects** tab.
+1. Hover over framework and select **Edit the framework**.
+1. Select the **Save changes** to edit compliance framework.
+
+### Delete a compliance framework
+
+Prerequisites:
+
+- You must be an administrator or have the Owner role for the group.
+
+To delete a compliance framework from the compliance projects report:
+
+1. On the left sidebar, select **Search or go to** and find your group.
+1. Select **Secure > Compliance center**.
+1. On the page, select the **Projects** tab.
+1. Hover over framework and select **Edit the framework**.
+1. Select the **Delete framework** to delete compliance framework.
 
 ## Compliance frameworks report
 
@@ -419,8 +464,50 @@ Prerequisites:
 
 - You must be an administrator or have the Owner role for the group.
 
-To view the compliance projects report:
+To view the compliance frameworks report:
 
 1. On the left sidebar, select **Search or go to** and find your group.
 1. Select **Secure > Compliance center**.
 1. On the page, select the **Frameworks** tab.
+
+### Create a new compliance framework
+
+Prerequisites:
+
+- You must be an administrator or have the Owner role for the group.
+
+To create a new compliance framework from the compliance frameworks report:
+
+1. On the left sidebar, select **Search or go to** and find your group.
+1. Select **Secure > Compliance center**.
+1. On the page, select the **Frameworks** tab.
+1. Select the **New framework**.
+1. Select the **Add framework** to create compliance framework.
+
+### Edit a compliance framework
+
+Prerequisites:
+
+- You must be an administrator or have the Owner role for the group.
+
+To edit a compliance framework from the compliance frameworks report:
+
+1. On the left sidebar, select **Search or go to** and find your group.
+1. Select **Secure > Compliance center**.
+1. On the page, select the **Frameworks** tab.
+1. Hover over framework and select **Edit the framework**.
+1. Select the **Save changes** to edit compliance framework.
+
+### Delete a compliance framework
+
+Prerequisites:
+
+- You must be an administrator or have the Owner role for the group.
+
+To delete a compliance framework from the compliance frameworks report:
+
+1. On the left sidebar, select **Search or go to** and find your group.
+1. Select **Secure > Compliance center**.
+1. On the page, select the **Frameworks** tab.
+1. Hover over framework and select **Edit the framework**.
+1. Select the **Delete framework** to delete compliance framework.

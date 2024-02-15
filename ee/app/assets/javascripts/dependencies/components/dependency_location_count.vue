@@ -119,15 +119,20 @@ export default {
             :href="item.location.blob_path"
             class="gl-hover-text-decoration-none"
           >
-            <gl-icon name="doc-text" />
-            <gl-truncate position="start" :text="item.location.path" with-tooltip />
+            <gl-icon name="doc-text" class="gl-absolute" />
+            <gl-truncate position="start" :text="item.location.path" with-tooltip class="gl-pl-6" />
           </gl-link>
           <div v-else class="gl-text-gray-500" data-testid="unknown-path">
-            <gl-icon name="error" />
-            <gl-truncate position="start" :text="$options.i18n.unknownPath" with-tooltip />
+            <gl-icon name="error" class="gl-absolute" />
+            <gl-truncate
+              position="start"
+              :text="$options.i18n.unknownPath"
+              with-tooltip
+              class="gl-pl-6"
+            />
           </div>
         </div>
-        <gl-truncate :text="item.project.name" class="gl-mt-2 gl-ml-6 gl-text-gray-500" />
+        <gl-truncate :text="item.project.name" class="gl-mt-2 gl-pl-6 gl-text-gray-500" />
       </div>
     </template>
   </gl-collapsible-listbox>

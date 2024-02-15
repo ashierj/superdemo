@@ -98,6 +98,19 @@ between the two.
 The [common `if` clauses for `rules`](jobs/job_control.md#common-if-clauses-for-rules)
 can be very helpful for examples of how to write rules that behave the way you expect.
 
+### Unexpected behavior when `.gitlab-ci.yml` file contains a byte order mark (BOM)
+
+A [UTF-8 Byte-Order Mark (BOM)](https://en.wikipedia.org/wiki/Byte_order_mark) in
+the `.gitlab-ci.yml` file or other included configuration files can lead to incorrect
+pipeline behavior. The byte order mark affects parsing of the file, causing some configuration
+to be ignored - jobs might be missing, and variables could have the wrong values.
+Some text editors could insert a BOM character if configured to do so.
+
+If your pipeline has confusing behavior, you can check for the presence of BOM characters
+with a tool capable of displaying them. The pipeline editor cannot display the characters,
+so you must use an external tool. See [issue 35402](https://gitlab.com/gitlab-org/gitlab/-/issues/354026)
+for more details.
+
 ### A job with the `changes` keyword runs unexpectedly
 
 A common reason a job is added to a pipeline unexpectedly is because the `changes`
@@ -175,7 +188,7 @@ For help with a specific area, see:
 - [Jobs](jobs/index.md#troubleshooting).
 - [Job control](jobs/job_control.md).
 - [Job artifacts](jobs/job_artifacts_troubleshooting.md).
-- [Merge request pipelines](pipelines/merge_request_pipelines.md#troubleshooting),
+- [Merge request pipelines](pipelines/mr_pipeline_troubleshooting.md),
   [merged results pipelines](pipelines/merged_results_pipelines.md#troubleshooting),
   and [Merge trains](pipelines/merge_trains.md#troubleshooting).
 - [Pipeline editor](pipeline_editor/index.md#troubleshooting).
@@ -295,7 +308,7 @@ These errors can happen if the following are both true:
   the private project's allowlist.
 
 To resolve this issue, add any projects with CI/CD jobs that fetch images from the container
-registry to the target project's [job token allowlist](jobs/ci_job_token.md#allow-access-to-your-project-with-a-job-token).
+registry to the target project's [job token allowlist](jobs/ci_job_token.md#add-a-project-to-the-job-token-allowlist).
 
 These errors might also happen when trying to use a [project access token](../user/project/settings/project_access_tokens.md)
 to access images in another project. Project access tokens are scoped to one project,

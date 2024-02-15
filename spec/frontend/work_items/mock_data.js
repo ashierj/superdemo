@@ -628,6 +628,7 @@ export const workItemResponseFactory = ({
   assigneesWidgetPresent = true,
   datesWidgetPresent = true,
   weightWidgetPresent = true,
+  participantsWidgetPresent = true,
   progressWidgetPresent = true,
   milestoneWidgetPresent = true,
   iterationWidgetPresent = true,
@@ -638,6 +639,7 @@ export const workItemResponseFactory = ({
   canInviteMembers = false,
   labelsWidgetPresent = true,
   linkedItemsWidgetPresent = true,
+  colorWidgetPresent = true,
   labels = mockLabels,
   allowsScopedLabels = false,
   lastEditedAt = null,
@@ -651,6 +653,7 @@ export const workItemResponseFactory = ({
   awardEmoji = mockAwardsWidget,
   state = 'OPEN',
   linkedItems = mockEmptyLinkedItems,
+  color = '#1068bf',
 } = {}) => ({
   data: {
     workItem: {
@@ -751,6 +754,24 @@ export const workItemResponseFactory = ({
                   title: 'A dolores assumenda harum non facilis similique delectus quod.',
                   __typename: 'IterationCadence',
                 },
+              },
+            }
+          : { type: 'MOCK TYPE' },
+        participantsWidgetPresent
+          ? {
+              __typename: 'WorkItemWidgetParticipants',
+              type: 'PARTICIPANTS',
+              participants: {
+                nodes: [
+                  {
+                    __typename: 'UserCore',
+                    id: 'gid://gitlab/User/5',
+                    avatarUrl: '/avatar2',
+                    name: 'rookie',
+                    username: 'rookie',
+                    webUrl: 'rookie',
+                  },
+                ],
               },
             }
           : { type: 'MOCK TYPE' },
@@ -863,6 +884,14 @@ export const workItemResponseFactory = ({
             }
           : { type: 'MOCK TYPE' },
         linkedItemsWidgetPresent ? linkedItems : { type: 'MOCK TYPE' },
+        colorWidgetPresent
+          ? {
+              color,
+              textColor: '#FFFFFF',
+              type: 'COLOR',
+              __typename: 'WorkItemWidgetColor',
+            }
+          : { type: 'MOCK TYPE' },
       ],
     },
   },

@@ -60,46 +60,66 @@ RSpec.describe WorkItems::UpdateParentObjectivesProgressWorker, feature_category
       end
     end
 
-    include_examples 'an idempotent worker' do
+    context 'when okrs feature is not available' do
       let(:job_args) { work_item_id }
 
-      it_behaves_like 'parent progress is updated', 10
-    end
+      before do
+        stub_licensed_features(okrs: false)
+      end
 
-    context 'when work_item id not found' do
-      let(:work_item_id) { non_existing_record_id }
-
-      it 'does nothing' do
+      it "does not update the parent's progress" do
         expect(worker).not_to receive(:update_parent_progress)
 
         perform
       end
     end
 
-    context 'when parent progress is not created' do
-      let(:job_args) { work_item_id }
-
-      it_behaves_like 'parent progress is updated', 10
-    end
-
-    context 'when parent progress is average of its children' do
+    context 'when okrs feature is available' do
       before do
-        create(:progress, work_item: parent_work_item, progress: 10)
+        stub_licensed_features(okrs: true)
       end
 
-      let(:job_args) { work_item_id }
+      include_examples 'an idempotent worker' do
+        let(:job_args) { work_item_id }
 
-      it_behaves_like 'parent progress is not changed'
-    end
-
-    context 'when parent progress is not average of its children' do
-      before do
-        create(:progress, work_item: parent_work_item, progress: 20)
+        it_behaves_like 'parent progress is updated', 10
       end
 
-      let(:job_args) { work_item_id }
+      context 'when work_item id not found' do
+        let(:work_item_id) { non_existing_record_id }
 
-      it_behaves_like 'parent progress is updated', 10
+        it 'does nothing' do
+          expect(worker).not_to receive(:update_parent_progress)
+
+          perform
+        end
+      end
+
+      context 'when parent progress is not created' do
+        let(:job_args) { work_item_id }
+
+        it_behaves_like 'parent progress is updated', 10
+      end
+
+      context 'when parent progress is average of its children' do
+        before do
+          create(:progress, work_item: parent_work_item, progress: 10)
+        end
+
+        let(:job_args) { work_item_id }
+
+        it_behaves_like 'parent progress is not changed'
+      end
+
+      context 'when parent progress is not average of its children' do
+        before do
+          create(:progress, work_item: parent_work_item, progress: 20)
+        end
+
+        let(:job_args) { work_item_id }
+
+        it_behaves_like 'parent progress is updated', 10
+      end
     end
   end
 end

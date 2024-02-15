@@ -7,3 +7,4 @@ milestone: '15.8'
 feature_category: user_management
 saved_to_database: true
 streamed: true
+scope: [User]

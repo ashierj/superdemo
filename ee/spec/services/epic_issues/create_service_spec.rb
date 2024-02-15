@@ -4,9 +4,11 @@ require 'spec_helper'
 
 RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_management do
   describe '#execute' do
-    let_it_be(:group) { create(:group) }
-    let_it_be(:project) { create(:project, group: group) }
-    let_it_be(:user) { create(:user) }
+    let_it_be(:non_member) { create(:user) }
+    let_it_be(:guest) { create(:user) }
+    let_it_be(:group) { create(:group, :public) }
+    let_it_be(:other_group) { create(:group, :public).tap { |p| p.add_guest(guest) } }
+    let_it_be(:project) { create(:project, :public, group: other_group) }
     let_it_be(:issue) { create(:issue, project: project) }
     let_it_be(:issue2) { create(:issue, project: project) }
     let_it_be(:issue3) { create(:issue, project: project) }
@@ -102,12 +104,9 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
     end
 
     context 'when epics feature is disabled' do
-      subject { assign_issue([valid_reference]) }
+      let(:user) { guest }
 
-      before do
-        group.add_guest(user)
-        project.add_guest(user)
-      end
+      subject { assign_issue([valid_reference]) }
 
       include_examples 'returns an error'
     end
@@ -118,10 +117,7 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
       end
 
       context 'when user has permissions to link the issue' do
-        before do
-          group.add_guest(user)
-          project.add_guest(user)
-        end
+        let(:user) { guest }
 
         context 'when the reference list is empty' do
           subject { assign_issue([]) }
@@ -145,19 +141,9 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
 
             include_examples 'returns success'
 
-            it 'does not perform N + 1 queries', :request_store do
+            it 'does not perform N + 1 queries', :use_clean_rails_memory_store_caching, :request_store do
               allow(SystemNoteService).to receive(:epic_issue)
               allow(SystemNoteService).to receive(:issue_on_epic)
-
-              # Extractor makes a permission check for each issue which messes up the query count check
-              extractor = double
-              allow(Gitlab::ReferenceExtractor).to receive(:new).and_return(extractor)
-              allow(extractor).to receive(:reset_memoized_values)
-              allow(extractor).to receive(:mentioned_user_ids)
-              allow(extractor).to receive(:mentioned_group_ids)
-              allow(extractor).to receive(:mentioned_project_ids)
-              allow(extractor).to receive(:analyze)
-              allow(extractor).to receive(:issues).and_return([issue])
 
               params = { issuable_references: [valid_reference] }
               control_count = ActiveRecord::QueryRecorder.new { described_class.new(epic, user, params).execute }.count
@@ -169,7 +155,6 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
               epic = create(:epic, group: group)
               group.add_guest(user)
 
-              allow(extractor).to receive(:issues).and_return(issues)
               params = { issuable_references: issues.map { |i| i.to_reference(full: true) } }
 
               # threshold 24 because 6 queries are generated for each insert
@@ -177,7 +162,7 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
               # and we insert 5 issues instead of 1 which we do for control count
               expect { described_class.new(epic, user, params).execute }
                 .not_to exceed_query_limit(control_count)
-                .with_threshold(25)
+                .with_threshold(24)
             end
           end
 
@@ -241,6 +226,19 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
               expect { subject }.to change { Note.count }.from(0).to(4)
             end
           end
+
+          context 'when epic_relations_for_non_members feature flag is disabled' do
+            let(:user) { non_member }
+
+            subject { assign_issue([issue.to_reference(full: true)]) }
+
+            before do
+              stub_feature_flags(epic_relations_for_non_members: false)
+              group.add_guest(non_member)
+            end
+
+            include_examples 'returns success'
+          end
         end
 
         context 'when there are invalid references' do
@@ -257,6 +255,7 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
 
           before do
             project.add_reporter(user)
+            group.add_reporter(user)
           end
 
           it 'creates links only for valid references' do
@@ -283,15 +282,17 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
       end
 
       context 'when user does not have permissions to link the issue' do
+        let(:user) { non_member }
+
         subject { assign_issue([valid_reference]) }
 
         include_examples 'returns an error'
       end
 
       context 'when assigning issue(s) to the same epic' do
+        let(:user) { guest }
+
         before do
-          group.add_guest(user)
-          project.add_guest(user)
           assign_issue([valid_reference])
           epic.reload
         end
@@ -320,9 +321,9 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
       end
 
       context 'when an issue is already assigned to another epic', :sidekiq_inline do
+        let(:user) { guest }
+
         before do
-          group.add_guest(user)
-          project.add_guest(user)
           create(:epic_issue, epic: epic, issue: issue)
           issue.reload
         end
@@ -392,12 +393,13 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
       end
 
       context 'when issue from non group project is given' do
+        let(:user) { guest }
+
         subject { assign_issue([another_issue.to_reference(full: true)]) }
 
         let_it_be(:another_issue) { create :issue }
 
         before do
-          group.add_guest(user)
           another_issue.project.add_guest(user)
         end
 

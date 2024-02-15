@@ -127,13 +127,41 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
               )
             end
 
-            context 'when the `search_filter_by_ability` feature flag is disabled' do
-              before do
-                stub_feature_flags(search_filter_by_ability: false)
+            context 'with saas', :saas do
+              let_it_be(:subscription) do
+                create(:gitlab_subscription, namespace: project.group, hosted_plan: create(:ultimate_plan))
               end
 
-              it 'returns no search results' do
-                expect(search_results[:blobs][:results]).to be_empty
+              before do
+                stub_ee_application_setting(should_check_namespace_plan: true)
+              end
+
+              it 'returns matching search results' do
+                expect(search_results[:blobs][:results].count).to eq(1)
+                expect(search_results[:blobs][:results][0][:_source][:blob][:path]).to eq(
+                  'files/markdown/ruby-style-guide.md'
+                )
+              end
+
+              it 'avoids N+1 queries' do
+                control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+                  included_class
+                    .new(project.repository.class)
+                    .elastic_search('Mailer.deliver', type: 'blob', options: search_options)
+                end
+
+                projects = [
+                  project,
+                  create(:project, :private, :repository, group: create(:group, parent: project.group))
+                ]
+
+                expect do
+                  included_class
+                    .new(project.repository.class)
+                    .elastic_search('Mailer.deliver', type: 'blob', options: search_options.merge(
+                      project_ids: projects.map(&:id)
+                    ))
+                end.to issue_same_number_of_queries_as(control).or_fewer
               end
             end
           end

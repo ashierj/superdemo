@@ -30,14 +30,14 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
 
     shared_examples 'user authorization' do
       context 'when user has groups with ai available' do
-        include_context 'with ai features enabled for group'
+        include_context 'with ai chat enabled for group on SaaS'
         it 'returns true' do
           expect(authorizer.user(user: user).allowed?).to be(true)
         end
       end
 
       context 'when user has no groups with ai available' do
-        include_context 'with experiment features disabled for group'
+        include_context 'with ai features disabled and licensed chat for group on SaaS'
 
         it 'returns true when user has no groups with ai available' do
           expect(authorizer.user(user: user).allowed?).to be(false)
@@ -49,7 +49,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
     describe '.context.allowed?' do
       context 'when both resource and container are present' do
         context 'when container is authorized' do
-          include_context 'with ai features enabled for group'
+          include_context 'with ai chat enabled for group on SaaS'
 
           it 'returns true if both resource and container are authorized' do
             expect(authorizer.context(context: context).allowed?).to be(true)
@@ -65,7 +65,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
         end
 
         context 'when container is not authorized' do
-          include_context 'with experiment features disabled for group'
+          include_context 'with ai features disabled and licensed chat for group on SaaS'
 
           it 'returns false if container is not authorized' do
             expect(authorizer.context(context: context).allowed?).to be(false)
@@ -86,7 +86,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
         end
 
         context 'when resource container is authorized' do
-          include_context 'with ai features enabled for group'
+          include_context 'with ai chat enabled for group on SaaS'
 
           it 'returns true' do
             expect(authorizer.context(context: context).allowed?).to be(true)
@@ -94,7 +94,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
         end
 
         context 'when container is not authorized' do
-          include_context 'with experiment features disabled for group'
+          include_context 'with ai features disabled and licensed chat for group on SaaS'
 
           it 'returns false' do
             expect(authorizer.context(context: context).allowed?).to be(false)
@@ -113,7 +113,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
         end
 
         context 'when container is authorized' do
-          include_context 'with ai features enabled for group'
+          include_context 'with ai chat enabled for group on SaaS'
 
           it 'returns true' do
             expect(authorizer.context(context: context).allowed?).to be(false)
@@ -121,7 +121,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
         end
 
         context 'when container is not authorized' do
-          include_context 'with experiment features disabled for group'
+          include_context 'with ai features disabled and licensed chat for group on SaaS'
 
           it 'returns false' do
             expect(authorizer.context(context: context).allowed?).to be(false)
@@ -140,7 +140,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
         end
 
         context 'when user is authorized' do
-          include_context 'with ai features enabled for group'
+          include_context 'with ai chat enabled for group on SaaS'
 
           it 'returns true' do
             expect(authorizer.context(context: context).allowed?).to be(true)
@@ -148,7 +148,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
         end
 
         context 'when user is not authorized' do
-          include_context 'with experiment features disabled for group'
+          include_context 'with ai features disabled and licensed chat for group on SaaS'
 
           it 'returns false' do
             expect(authorizer.context(context: context).allowed?).to be(false)
@@ -185,7 +185,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
       end
 
       context 'when resource parent is not authorized' do
-        include_context 'with experiment features disabled for group'
+        include_context 'with ai features disabled and licensed chat for group on SaaS'
 
         it 'returns false' do
           expect(authorizer.resource(resource: context.resource, user: context.current_user).allowed?)
@@ -194,7 +194,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
       end
 
       context 'when resource container is authorized' do
-        include_context 'with ai features enabled for group'
+        include_context 'with ai chat enabled for group on SaaS'
 
         it 'calls user.can? with the appropriate arguments' do
           expect(user).to receive(:can?).with('read_issue', resource)
@@ -214,7 +214,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
 
       context 'when resource is current user' do
         context 'when user is not in any group with ai' do
-          include_context 'with experiment features disabled for group'
+          include_context 'with ai features disabled and licensed chat for group on SaaS'
 
           it 'returns false' do
             expect(authorizer.resource(resource: context.current_user, user: context.current_user).allowed?)
@@ -223,7 +223,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
         end
 
         context 'when user is in any group with ai' do
-          include_context 'with ai features enabled for group'
+          include_context 'with ai chat enabled for group on SaaS'
 
           it 'returns true' do
             expect(authorizer.resource(resource: context.current_user, user: context.current_user).allowed?)

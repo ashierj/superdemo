@@ -48,23 +48,25 @@ class Gitlab::Seeder::ProductivityAnalytics
 
     Sidekiq::Worker.skipping_transaction_check do
       Sidekiq::Testing.inline! do
-        create_maintainers!
-        print '.'
+        Gitlab::ExclusiveLease.skipping_transaction_check do
+          create_maintainers!
+          print '.'
 
-        issues = create_issues
-        print '.'
+          issues = create_issues
+          print '.'
 
-        add_milestones_and_list_labels(issues)
-        print '.'
+          add_milestones_and_list_labels(issues)
+          print '.'
 
-        branches = mention_in_commits(issues)
-        print '.'
+          branches = mention_in_commits(issues)
+          print '.'
 
-        merge_requests = create_merge_requests_closing_issues(issues, branches)
-        print '.'
+          merge_requests = create_merge_requests_closing_issues(issues, branches)
+          print '.'
 
-        create_notes(merge_requests)
-        print '.'
+          create_notes(merge_requests)
+          print '.'
+        end
       end
     end
 
@@ -219,19 +221,21 @@ class Gitlab::Seeder::ProductivityAnalytics
   end
 
   def merge_merge_requests
-    Sidekiq::Worker.skipping_transaction_check do
-      project.merge_requests.take(7).each do |merge_request| # leaves some MRs opened for code review analytics chart
-        date = get_date_after(merge_request.created_at)
-        user = maintainers.sample
-        travel_to(date) do
-          MergeRequests::MergeService.new(
-            project: merge_request.project,
-            current_user: user,
-            params: { sha: merge_request.diff_head_sha }
-          ).execute(merge_request.reset)
+    Gitlab::ExclusiveLease.skipping_transaction_check do
+      Sidekiq::Worker.skipping_transaction_check do
+        project.merge_requests.take(7).each do |merge_request| # leaves some MRs opened for code review analytics chart
+          date = get_date_after(merge_request.created_at)
+          user = maintainers.sample
+          travel_to(date) do
+            MergeRequests::MergeService.new(
+              project: merge_request.project,
+              current_user: user,
+              params: { sha: merge_request.diff_head_sha }
+            ).execute(merge_request.reset)
 
-          issue = merge_request.visible_closing_issues_for(user).first
-          MergeRequests::CloseIssueWorker.new.perform(project.id, user.id, issue.id, merge_request.id) if issue
+            issue = merge_request.visible_closing_issues_for(user).first
+            MergeRequests::CloseIssueWorker.new.perform(project.id, user.id, issue.id, merge_request.id) if issue
+          end
         end
       end
     end

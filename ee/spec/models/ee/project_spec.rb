@@ -26,7 +26,6 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     it { is_expected.to belong_to(:deleting_user) }
 
     it { is_expected.to have_one(:import_state).class_name('ProjectImportState') }
-    it { is_expected.to have_one(:repository_state).class_name('ProjectRepositoryState').inverse_of(:project) }
     it { is_expected.to have_one(:wiki_repository).class_name('Projects::WikiRepository').inverse_of(:project) }
     it { is_expected.to have_one(:push_rule).inverse_of(:project) }
     it { is_expected.to have_one(:status_page_setting).class_name('StatusPage::ProjectSetting') }
@@ -58,6 +57,9 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     it { is_expected.to have_many(:vulnerability_reads).class_name('Vulnerabilities::Read') }
     it { is_expected.to have_many(:merge_train_cars).class_name('MergeTrains::Car') }
     it { is_expected.to have_many(:xray_reports).class_name('Projects::XrayReport') }
+    it { is_expected.to have_many(:security_policy_management_project_linked_configurations).class_name('Security::OrchestrationPolicyConfiguration') }
+    it { is_expected.to have_many(:security_policy_project_linked_projects).through(:security_policy_management_project_linked_configurations) }
+    it { is_expected.to have_many(:security_policy_project_linked_namespaces).through(:security_policy_management_project_linked_configurations) }
 
     it { is_expected.to have_one(:github_integration) }
     it { is_expected.to have_one(:zoekt_repository) }
@@ -266,6 +268,18 @@ RSpec.describe Project, feature_category: :groups_and_projects do
             let(:protected_branches) { [create(:protected_branch, name: branch)] }
 
             it { is_expected.to eq([rule]) }
+
+            context 'and multiple rules' do
+              it 'avoids N+1 queries' do
+                project.reload.approval_rules.applicable_to_branch(branch)
+
+                control = ActiveRecord::QueryRecorder.new { project.reload.approval_rules.applicable_to_branch(branch) }
+
+                create(:approval_project_rule, project: project, protected_branches: protected_branches)
+
+                expect { project.reload.approval_rules.applicable_to_branch(branch) }.not_to exceed_query_limit(control)
+              end
+            end
           end
 
           context 'but branch does not match anything' do
@@ -292,6 +306,18 @@ RSpec.describe Project, feature_category: :groups_and_projects do
             let(:protected_branches) { [create(:protected_branch, name: branch.reverse)] }
 
             it { is_expected.to eq([rule]) }
+
+            context 'and multiple rules' do
+              it 'avoids N+1 queries' do
+                project.reload.approval_rules.inapplicable_to_branch(branch)
+
+                control = ActiveRecord::QueryRecorder.new { project.reload.approval_rules.inapplicable_to_branch(branch) }
+
+                create(:approval_project_rule, project: project, protected_branches: protected_branches)
+
+                expect { project.reload.approval_rules.inapplicable_to_branch(branch) }.not_to exceed_query_limit(control)
+              end
+            end
           end
 
           context 'but branch matches' do
@@ -453,20 +479,6 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       it { is_expected.to eq([project_2, project_3, project_1]) }
     end
 
-    describe '.order_by_storage_size' do
-      let_it_be(:project_1) { create(:project_statistics, repository_size: 1).project }
-      let_it_be(:project_2) { create(:project_statistics, repository_size: 3).project }
-      let_it_be(:project_3) { create(:project_statistics, repository_size: 2).project }
-
-      context 'ascending' do
-        it { expect(described_class.order_by_storage_size(:asc)).to eq([project_1, project_3, project_2]) }
-      end
-
-      context 'descending' do
-        it { expect(described_class.order_by_storage_size(:desc)).to eq([project_2, project_3, project_1]) }
-      end
-    end
-
     describe '.with_coverage_feature_usage' do
       let_it_be(:project_1) { create(:project) }
       let_it_be(:project_2) { create(:project) }
@@ -606,11 +618,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       end
     end
 
-    describe '.with_sbom_component' do
+    describe '.with_sbom_component_version' do
       let_it_be(:project_with_occurrence) { create(:project) }
       let(:occurrence) { create(:sbom_occurrence, project: project_with_occurrence) }
 
-      subject { described_class.with_sbom_component(occurrence.component_id) }
+      subject { described_class.with_sbom_component_version(occurrence.component_version_id) }
 
       it { is_expected.to match_array([project_with_occurrence]) }
     end
@@ -2031,7 +2043,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
     context 'artifact registry' do
       before do
-        stub_saas_features(google_artifact_registry: true)
+        stub_saas_features(google_cloud_support: true)
       end
 
       it { is_expected.not_to include('google_cloud_platform_artifact_registry') }
@@ -2046,7 +2058,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
       context 'when google artifact registry feature is unavailable' do
         before do
-          stub_saas_features(google_artifact_registry: false)
+          stub_saas_features(google_cloud_support: false)
         end
 
         it { is_expected.to include('google_cloud_platform_artifact_registry') }
@@ -3270,15 +3282,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
   describe '#adjourned_deletion?' do
     subject { project.adjourned_deletion? }
 
-    where(:licensed?, :feature_enabled_on_group?, :adjourned_period, :result) do
-      true    | true  | 0 | false
-      true    | true  | 1 | true
-      true    | false | 0 | false
-      true    | false | 1 | true
-      false   | true  | 0 | false
-      false   | true  | 1 | false
-      false   | false | 0 | false
-      false   | false | 1 | false
+    where(:licensed?, :adjourned_period, :result) do
+      true    | 0 | false
+      true    | 1 | true
+      false   | 0 | false
+      false   | 1 | false
     end
 
     with_them do
@@ -3288,7 +3296,6 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       before do
         stub_licensed_features(adjourned_deletion_for_projects_and_groups: licensed?)
         stub_application_setting(deletion_adjourned_period: adjourned_period)
-        allow(group.namespace_settings).to receive(:delayed_project_removal?).and_return(feature_enabled_on_group?)
       end
 
       it { is_expected.to be result }
@@ -4412,6 +4419,113 @@ RSpec.describe Project, feature_category: :groups_and_projects do
           stub_feature_flags(dast_ods_browser_based_scanner: browser_based_ff)
 
           is_expected.to eq(on_demand_available)
+        end
+      end
+    end
+  end
+
+  describe '#gcp_artifact_registry_enabled?' do
+    subject { project.gcp_artifact_registry_enabled? }
+
+    let_it_be(:project) { build_stubbed(:project) }
+
+    before do
+      stub_saas_features(google_cloud_support: true)
+    end
+
+    it { is_expected.to eq(true) }
+
+    context 'when feature is unavailable' do
+      before do
+        stub_saas_features(google_cloud_support: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when gcp_artifact_registry feature is disabled' do
+      before do
+        stub_feature_flags(gcp_artifact_registry: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    describe '#code_suggestions_enabled?' do
+      let_it_be_with_reload(:project) { create(:project, :in_group) }
+
+      context 'gitlab.com' do
+        where(:duo_features_enabled, :code_suggestions_enabled) do
+          true  | true
+          false | false
+        end
+
+        with_them do
+          context 'purchase_code_suggestions FF is enabled' do
+            before do
+              allow(::Gitlab).to receive(:org_or_com?).and_return(true)
+              project.project_setting.update!(duo_features_enabled: duo_features_enabled)
+            end
+
+            it 'uses the duo_features_enabled project setting value' do
+              expect(project.code_suggestions_enabled?).to eq code_suggestions_enabled
+            end
+          end
+        end
+
+        with_them do
+          context 'purchase_code_suggestions FF is not enabled' do
+            before do
+              allow(::Gitlab).to receive(:org_or_com?).and_return(true)
+              stub_feature_flags(purchase_code_suggestions: false)
+              project.root_ancestor.update!(code_suggestions: duo_features_enabled)
+            end
+
+            it 'uses the legacy code_suggestions setting on the root group' do
+              expect(project.code_suggestions_enabled?).to eq code_suggestions_enabled
+            end
+          end
+        end
+      end
+
+      context 'self-managed' do
+        where(:code_suggestions_license, :duo_features_enabled, :code_suggestions_enabled) do
+          true  | true  |  true
+          true  | false |  false
+          false | true  |  false
+          false | false |  false
+        end
+
+        with_them do
+          context 'after service start date' do
+            before do
+              project.project_setting.update!(duo_features_enabled: duo_features_enabled)
+              allow(::Gitlab).to receive(:org_or_com?).and_return(false)
+              stub_licensed_features(code_suggestions: code_suggestions_license)
+            end
+
+            it 'uses the duo_features_enabled project setting value' do
+              travel_to(::CodeSuggestions::SelfManaged::SERVICE_START_DATE + 1.day) do
+                expect(project.code_suggestions_enabled?).to eq code_suggestions_enabled
+              end
+            end
+          end
+        end
+
+        with_them do
+          context 'before service start date' do
+            before do
+              project.root_ancestor.update!(code_suggestions: duo_features_enabled)
+              allow(::Gitlab).to receive(:org_or_com?).and_return(false)
+              stub_licensed_features(code_suggestions: code_suggestions_license)
+            end
+
+            it 'uses the legacy code_suggestions setting on the root group' do
+              travel_to(::CodeSuggestions::SelfManaged::SERVICE_START_DATE - 1.day) do
+                expect(project.code_suggestions_enabled?).to eq code_suggestions_enabled
+              end
+            end
+          end
         end
       end
     end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe NamespaceSetting do
+RSpec.describe NamespaceSetting, feature_category: :groups_and_projects, type: :model do
   let(:group) { create(:group) }
   let(:setting) { group.namespace_settings }
 
@@ -265,6 +265,30 @@ RSpec.describe NamespaceSetting do
     end
   end
 
+  describe '#user_cap_enabled?', feature_category: :consumables_cost_management do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:new_user_signups_cap, :root_namespace, :expectation) do
+      nil | true  | false
+      nil | false | false
+      10  | true  | true
+      10  | false | false
+    end
+
+    with_them do
+      let(:setting) { build(:namespace_settings, new_user_signups_cap: new_user_signups_cap) }
+      let(:group) { build(:group, namespace_settings: setting) }
+
+      before do
+        allow(group).to receive(:root?).and_return(root_namespace)
+      end
+
+      it 'returns the expected response' do
+        expect(setting.user_cap_enabled?).to be expectation
+      end
+    end
+  end
+
   context 'validating new_user_signup_cap' do
     using RSpec::Parameterized::TableSyntax
 
@@ -458,11 +482,12 @@ RSpec.describe NamespaceSetting do
   describe '.experiment_settings_allowed?' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:check_namespace_plan, :licensed_feature, :is_root, :result) do
-      true  | true  | true  | true
-      false | true  | true  | false
-      true  | false | true  | false
-      true  | true  | false | false
+    where(:check_namespace_plan, :licensed_feature, :is_root, :ai_chat, :result) do
+      true  | true  | true  | true  | true
+      false | true  | true  | true  | false
+      true  | false | true  | false | false
+      true  | true  | false | true  | false
+      true  | false | true  | true  | true
     end
 
     with_them do
@@ -472,6 +497,7 @@ RSpec.describe NamespaceSetting do
       before do
         allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_namespace_plan)
         allow(group).to receive(:licensed_feature_available?).with(:experimental_features).and_return(licensed_feature)
+        allow(group).to receive(:licensed_feature_available?).with(:ai_chat).and_return(ai_chat)
         allow(group).to receive(:root?).and_return(is_root)
       end
 

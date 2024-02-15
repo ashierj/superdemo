@@ -9,7 +9,6 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import { formatDate, nSecondsBefore } from '~/lib/utils/datetime_utility';
 import { captureException } from '~/ci/runner/sentry_utils';
 import { createAlert } from '~/alert';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import runnerWaitTimes from 'ee/ci/runner/graphql/performance/runner_wait_times.query.graphql';
 import runnerWaitTimeHistoryQuery from 'ee/ci/runner/graphql/performance/runner_wait_time_history.query.graphql';
@@ -31,7 +30,6 @@ export default {
     GlSingleStat,
     GlLineChart,
   },
-  mixins: [glFeatureFlagMixin()],
   apollo: {
     waitTimes: {
       query: runnerWaitTimes,
@@ -61,10 +59,9 @@ export default {
       },
     },
   },
-  props: {
+  inject: {
     clickhouseCiAnalyticsAvailable: {
-      type: Boolean,
-      required: true,
+      default: false,
     },
   },
   computed: {

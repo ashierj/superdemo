@@ -7,24 +7,23 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 # Troubleshooting Code Suggestions
 
 DETAILS:
-**Tier:** Free, Premium, Ultimate
-**Offering:** SaaS, self-managed
+**Tier:** Premium, Ultimate
+**Offering:** GitLab.com, self-managed, GitLab Dedicated. GitLab Duo Pro required.
 
 When working with GitLab Duo Code Suggestions, you might encounter the following issues.
 
 ## Code Suggestions are not displayed
 
-If Code Suggestions are not displayed, and you have [installed a supported IDE extension](index.md#supported-editor-extensions), try the following troubleshooting steps.
+If Code Suggestions are not displayed:
 
-In GitLab, ensure Code Suggestions is enabled for **at least one**
-[top-level group your account belongs to](../../../group/manage.md#enable-code-suggestions-for-a-group).
-If you don't have a role that lets you view the top-level group's settings, contact a group owner.
+- Ensure you have [installed a supported IDE extension](supported_extensions.md#supported-editor-extensions)
+- Ensure your administrator has [assigned you a seat](../../../../subscriptions/subscription-add-ons.md#assign-gitlab-duo-pro-seats).
 
-### Code Suggestions not displayed in VS Code or GitLab WebIDE
+If Code Suggestions are still not displayed, try the following troubleshooting steps.
 
-Check all the steps in [Code Suggestions are not displayed](#code-suggestions-are-not-displayed) first.
+### Code Suggestions not displayed in VS Code or GitLab Web IDE
 
-If you are a self-managed user, ensure that Code Suggestions for the [GitLab WebIDE](../../../project/web_ide/index.md) are enabled. The same settings apply to VS Code as local IDE.
+If you are a self-managed user, ensure that Code Suggestions for the [GitLab Web IDE](../../../project/web_ide/index.md) are enabled. The same settings apply to VS Code as local IDE.
 
 1. On the left sidebar, select **Extensions > GitLab Workflow**.
 1. Select **Settings** (**{settings}**), and then select **Extension Settings**.
@@ -41,12 +40,10 @@ If the settings are enabled, but Code Suggestions are still not displayed, try t
 ```shell
 2023-07-14T17:29:00:763 [debug]: Disabling code completion
 2023-07-14T17:29:01:802 [debug]: Enabling code completion
-2023-07-14T17:29:01:802 [debug]: AI Assist: Using server: https://codesuggestions.gitlab.com/v2/completions
+2023-07-14T17:29:01:802 [debug]: AI Assist: Using server: https://cloud.gitlab.com/ai/v2/code/completions
 ```
 
 ### Code Suggestions not displayed in Microsoft Visual Studio
-
-Check all the steps in [Code Suggestions are not displayed](#code-suggestions-are-not-displayed) first.
 
 1. Ensure you have properly [set up the extension](https://gitlab.com/gitlab-org/editor-extensions/gitlab-visual-studio-extension#setup).
 1. From the **Tools > Options** menu, find the **GitLab** option. Ensure **Log Level** is set to **Debug**.

@@ -2,7 +2,11 @@
 import { GlDaterangePicker } from '@gitlab/ui';
 import { periodToDate } from '~/observability/utils';
 import DateRangesDropdown from '~/analytics/shared/components/date_ranges_dropdown.vue';
-import { TIME_RANGE_OPTIONS } from '~/observability/constants';
+import {
+  TIME_RANGE_OPTIONS,
+  TIME_RANGE_OPTIONS_VALUES,
+  CUSTOM_DATE_RANGE_OPTION,
+} from '~/observability/constants';
 
 export default {
   components: {
@@ -18,11 +22,10 @@ export default {
   },
   data() {
     return {
-      shouldShowDateRangePicker: false,
       dateRange: this.selected ?? {
         value: '',
-        min: null,
-        max: null,
+        startDate: null,
+        endDate: null,
       },
     };
   },
@@ -38,10 +41,12 @@ export default {
         };
       });
     },
+    shouldShowDateRangePicker() {
+      return this.dateRange.value === CUSTOM_DATE_RANGE_OPTION;
+    },
   },
   methods: {
     onSelectPredefinedDateRange({ value, startDate, endDate }) {
-      this.shouldShowDateRangePicker = false;
       this.dateRange = {
         value,
         startDate: new Date(startDate),
@@ -50,11 +55,17 @@ export default {
       this.$emit('onDateRangeSelected', this.dateRange);
     },
     onSelectCustomDateRange() {
-      this.shouldShowDateRangePicker = true;
+      const defaultDateRange = periodToDate(TIME_RANGE_OPTIONS_VALUES.ONE_MONTH);
+      this.dateRange = {
+        value: CUSTOM_DATE_RANGE_OPTION,
+        startDate: defaultDateRange.min,
+        endDate: defaultDateRange.max,
+      };
+      this.$emit('onDateRangeSelected', this.dateRange);
     },
     onCustomRangeSelected({ startDate, endDate }) {
       this.dateRange = {
-        value: 'custom',
+        value: CUSTOM_DATE_RANGE_OPTION,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
       };
@@ -77,7 +88,8 @@ export default {
     />
     <gl-daterange-picker
       v-if="shouldShowDateRangePicker"
-      start-opened
+      :default-start-date="dateRange.startDate"
+      :default-end-date="dateRange.endDate"
       @input="onCustomRangeSelected"
     />
   </div>

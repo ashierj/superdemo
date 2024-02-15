@@ -9,15 +9,15 @@
           provider: provider,
           tracking_label: registration_tracking_label(trial: true)
 
-  .omniauth-divider.gl-display-flex.gl-align-items-center.gl-mb-5.gl-mt-5.gl-font-weight-bold.gl-max-w-75
-    = _('Or create your own GitLab account:')
+  .gl-my-5.gl-font-weight-bold.gl-max-w-75
+    = _('Or create your own GitLab account')
 
-.row
+.row.marketing-styling
   .col-md-8.gl-display-flex.gl-flex-direction-column.gl-pl-120
     %h1.gl-mt-0
       - upper_tag = tag.span(class: 'gl-font-size-h2-xl')
       - lower_tag = tag.span(class: 'gl-display-block')
-      = safe_format(s_('InProductMarketing|%{upper_start}Start your 30-day free trial of%{upper_end} %{lower_start}GitLab Ultimate%{lower_end}'),
+      = safe_format(s_('InProductMarketing|%{upper_start}Free 30-day trial%{upper_end} %{lower_start}GitLab Ultimate%{lower_end}'),
         tag_pair(upper_tag, :upper_start, :upper_end),
         tag_pair(lower_tag, :lower_start, :lower_end))
 
@@ -35,16 +35,24 @@
 
   .col-md-4.gl-lg-display-flex.gl-flex-direction-column.gl-mb-6.gl-align-items-center.gl-pr-8
     %div
-      - ultimate_trial_value_props = [s_('InProductMarketing|Accelerate your digital transform'),
+      - ultimate_trial_value_props = [s_('InProductMarketing|Accelerate your digital transformation'),
       s_('InProductMarketing|Deliver software faster'),
       s_('InProductMarketing|Ensure compliance'),
-      s_('InProductMarketing|Built-in security'),
+      s_('InProductMarketing|Build in security'),
       s_('InProductMarketing|Improve collaboration and visibility')]
 
-      %h2.gl-font-size-h2-xl= s_('InProductMarketing|No credit card required.')
+      %h2.gl-font-size-h2-xl.gl-font-weight-normal.gl-mb-6= s_('InProductMarketing|No credit card required.')
 
-      %ul.gl-pl-0.gl-mb-6.gl-pl-0.gl-mb-6x.gl-text-gray-800.check-mark-text
+      %ul.gl-pl-0.gl-mb-7.gl-pl-0.gl-text-gray-800.check-mark-text
         - ultimate_trial_value_props.each do |value_prop|
-          %li.gl-display-flex.gl-mb-5
-            %span.gl-mr-3.gl-text-green-400= sprite_icon 'check', css_class: 'gl-icon check-marks'
+          %li.gl-display-flex.gl-mb-3
+            %span.gl-mr-3.text-brand-purple-02= sprite_icon 'check', css_class: 'gl-icon check-marks'
             = value_prop
+
+      .gl-text-gray-800.gl-font-sm
+        = s_('InProductMarketing|Trusted by')
+
+      .gl-mt-5.gl-display-flex.gl-gap-6.gl-flex-wrap
+        - TrialRegistrationsHelper::TRUSTED_BY_LOGOS.each do |logo|
+          .gl-display-flex.gl-align-items-center
+            = image_tag(logo[:path], alt: logo[:alt], title: logo[:title], width: 100)

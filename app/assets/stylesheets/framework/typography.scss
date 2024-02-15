@@ -81,7 +81,6 @@
     word-wrap: break-word;
     overflow-wrap: break-word;
     word-break: keep-all;
-    font-size: $gl-font-size;
   }
 
   h1 {
@@ -146,7 +145,7 @@
 
     p {
       line-height: 1.5;
-      @include gl-reset-color;
+     color: inherit;
 
       &:last-child {
         margin: 0;

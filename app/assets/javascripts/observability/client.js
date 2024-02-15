@@ -2,7 +2,7 @@ import { isValidDate } from '~/lib/utils/datetime_utility';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import axios from '~/lib/utils/axios_utils';
 import { logError } from '~/lib/logger';
-import { DEFAULT_SORTING_OPTION, SORTING_OPTIONS } from './constants';
+import { DEFAULT_SORTING_OPTION, SORTING_OPTIONS, CUSTOM_DATE_RANGE_OPTION } from './constants';
 
 function reportErrorAndThrow(e) {
   logError(e);
@@ -337,7 +337,7 @@ async function fetchMetrics(metricsUrl, { filters = {}, limit } = {}) {
 
 const SUPPORTED_METRICS_DIMENSION_FILTER_OPERATORS = ['=', '!=', '=~', '!~'];
 
-function addMetricsDimensionFilterToQueryParams(dimensionFilter, params) {
+function addMetricsAttributeFilterToQueryParams(dimensionFilter, params) {
   if (!dimensionFilter || !params) return;
 
   Object.entries(dimensionFilter).forEach(([filterName, values]) => {
@@ -358,7 +358,7 @@ function addMetricsDateRangeFilterToQueryParams(dateRangeFilter, params) {
   if (!dateRangeFilter || !params) return;
 
   const { value, endDate, startDate } = dateRangeFilter;
-  if (value === 'custom') {
+  if (value === CUSTOM_DATE_RANGE_OPTION) {
     if (isValidDate(startDate) && isValidDate(endDate)) {
       params.append('start_time', startDate.toISOString());
       params.append('end_time', endDate.toISOString());
@@ -371,12 +371,12 @@ function addMetricsDateRangeFilterToQueryParams(dateRangeFilter, params) {
 function addGroupByFilterToQueryParams(groupByFilter, params) {
   if (!groupByFilter || !params) return;
 
-  const { func, dimensions } = groupByFilter;
+  const { func, attributes } = groupByFilter;
   if (func) {
     params.append('groupby_fn', func);
   }
-  if (Array.isArray(dimensions) && dimensions.length > 0) {
-    params.append('groupby_attrs', dimensions.join(','));
+  if (Array.isArray(attributes) && attributes.length > 0) {
+    params.append('groupby_attrs', attributes.join(','));
   }
 }
 
@@ -394,10 +394,10 @@ async function fetchMetric(searchUrl, name, type, options = {}) {
       mtype: type,
     });
 
-    const { dimensions, dateRange, groupBy } = options.filters ?? {};
+    const { attributes, dateRange, groupBy } = options.filters ?? {};
 
-    if (dimensions) {
-      addMetricsDimensionFilterToQueryParams(dimensions, params);
+    if (attributes) {
+      addMetricsAttributeFilterToQueryParams(attributes, params);
     }
 
     if (dateRange) {
@@ -410,6 +410,7 @@ async function fetchMetric(searchUrl, name, type, options = {}) {
 
     const { data } = await axios.get(searchUrl, {
       params,
+      signal: options.abortController?.signal,
       withCredentials: true,
     });
 
@@ -431,28 +432,29 @@ async function fetchMetricSearchMetadata(searchMetadataUrl, name, type) {
       throw new Error('fetchMetric() - metric type is required.');
     }
 
-    // TODO remove mocks once API has been implemented https://gitlab.com/gitlab-org/opstrace/opstrace/-/work_items/2624
-    // const params = new URLSearchParams({
-    //   mname: name,
-    //   mtype: type,
-    // });
-    // const { data } = await axios.get(searchMetadataUrl, {
-    //   params,
-    //   withCredentials: true,
-    // });
-    // return data;
+    const params = new URLSearchParams({
+      mname: name,
+      mtype: type,
+    });
+    const { data } = await axios.get(searchMetadataUrl, {
+      params,
+      withCredentials: true,
+    });
+    return data;
+  } catch (e) {
+    return reportErrorAndThrow(e);
+  }
+}
 
-    return {
-      name: 'cpu_seconds_total',
-      type: 'sum',
-      description: 'some_description',
-      last_ingested_at: 1705374438711900000,
-      attribute_keys: ['host.name', 'host.dc', 'host.type'],
-      supported_aggregations: ['1m', '1h'],
-      supported_functions: ['min', 'max', 'avg', 'sum', 'count'],
-      default_group_by_attributes: ['host.name'],
-      default_group_by_function: ['avg'],
-    };
+export async function fetchLogs(logsSearchUrl) {
+  try {
+    const { data } = await axios.get(logsSearchUrl, {
+      withCredentials: true,
+    });
+    if (!Array.isArray(data.results)) {
+      throw new Error('logs are missing/invalid in the response'); // eslint-disable-line @gitlab/require-i18n-strings
+    }
+    return data.results;
   } catch (e) {
     return reportErrorAndThrow(e);
   }
@@ -472,6 +474,7 @@ export function buildClient(config) {
     metricsUrl,
     metricsSearchUrl,
     metricsSearchMetadataUrl,
+    logsSearchUrl,
   } = config;
 
   if (typeof provisioningUrl !== 'string') {
@@ -506,6 +509,10 @@ export function buildClient(config) {
     throw new Error('metricsSearchMetadataUrl param must be a string');
   }
 
+  if (typeof logsSearchUrl !== 'string') {
+    throw new Error('logsSearchUrl param must be a string');
+  }
+
   return {
     enableObservability: () => enableObservability(provisioningUrl),
     isObservabilityEnabled: () => isObservabilityEnabled(provisioningUrl),
@@ -519,5 +526,6 @@ export function buildClient(config) {
       fetchMetric(metricsSearchUrl, metricName, metricType, options),
     fetchMetricSearchMetadata: (metricName, metricType) =>
       fetchMetricSearchMetadata(metricsSearchMetadataUrl, metricName, metricType),
+    fetchLogs: () => fetchLogs(logsSearchUrl),
   };
 }

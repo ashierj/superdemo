@@ -231,18 +231,6 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
         subject
       end
 
-      context 'when security_policies_sync_preexisting_state is disabled' do
-        before do
-          stub_feature_flags(security_policies_sync_preexisting_state: false)
-        end
-
-        it 'does not enqueue SyncPreexistingStatesApprovalRulesWorker' do
-          expect(Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).not_to receive(:perform_async)
-
-          subject
-        end
-      end
-
       context 'without scan_finding rule' do
         let!(:scan_finding_rule) { nil }
 

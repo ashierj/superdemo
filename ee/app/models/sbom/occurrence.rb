@@ -12,6 +12,7 @@ module Sbom
     belongs_to :project, optional: false
     belongs_to :pipeline, class_name: 'Ci::Pipeline'
     belongs_to :source
+    belongs_to :source_package, optional: true
 
     has_many :occurrences_vulnerabilities,
       class_name: 'Sbom::OccurrencesVulnerability',
@@ -22,13 +23,11 @@ module Sbom
 
     enum highest_severity: ::Enums::Vulnerability.severity_levels
 
-    ignore_column :vulnerabilities, remove_with: '16.6', remove_after: '2023-12-16'
-
     validates :commit_sha, presence: true
     validates :uuid, presence: true, uniqueness: { case_sensitive: false }
     validates :package_manager, length: { maximum: 255 }
     validates :component_name, length: { maximum: 255 }
-    validates :input_file_path, length: { maximum: 255 }
+    validates :input_file_path, length: { maximum: 1024 }
     validates :licenses, json_schema: { filename: 'sbom_occurrences-licenses' }
 
     delegate :name, to: :component
@@ -36,7 +35,8 @@ module Sbom
     delegate :component_type, to: :component
     delegate :version, to: :component_version, allow_nil: true
     delegate :source_package_name, to: :component_version, allow_nil: true
-    delegate :packager, to: :source, allow_nil: true
+
+    alias_attribute :packager, :package_manager
 
     scope :order_by_id, -> { order(id: :asc) }
 
@@ -116,6 +116,7 @@ module Sbom
         .where.not(sbom_licenses: { spdx_identifier: nil })
     end
     scope :with_project_route, -> { includes(project: :route).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/420046") }
+    scope :with_project_namespace, -> { includes(project: [namespace: :route]) }
     scope :with_source, -> { includes(:source) }
     scope :with_version, -> { includes(:component_version) }
     scope :with_component_source_version_project_and_pipeline, -> do

@@ -83,7 +83,7 @@ export default {
       :target="popoverTarget"
       placement="right"
       triggers="hover focus"
-      :css-classes="['w-100']"
+      :css-classes="['gl-w-full']"
       :title="title"
     >
       <section>

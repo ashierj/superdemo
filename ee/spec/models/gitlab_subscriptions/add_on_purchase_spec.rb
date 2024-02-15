@@ -409,8 +409,8 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
       end
 
       it 'expires the cache keys for the ineligible users', :use_clean_rails_redis_caching do
-        eligible_user_cache_key = format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: eligible_user.id)
-        ineligible_user_cache_key = format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: ineligible_user.id)
+        eligible_user_cache_key = eligible_user.duo_pro_cache_key_formatted
+        ineligible_user_cache_key = ineligible_user.duo_pro_cache_key_formatted
         Rails.cache.write(eligible_user_cache_key, true, expires_in: 1.hour)
         Rails.cache.write(ineligible_user_cache_key, true, expires_in: 1.hour)
 

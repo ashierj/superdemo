@@ -84,6 +84,8 @@ module EE
       belongs_to :push_rule, inverse_of: :group
       has_many :approval_rules, class_name: 'ApprovalRules::ApprovalGroupRule', inverse_of: :group
 
+      has_many :saved_replies, class_name: 'Groups::SavedReply'
+
       delegate :deleting_user, :marked_for_deletion_on, to: :deletion_schedule, allow_nil: true
 
       delegate :repository_read_only,
@@ -93,6 +95,7 @@ module EE
 
       delegate :experiment_settings_allowed?, to: :namespace_settings
       delegate :product_analytics_settings_allowed?, to: :namespace_settings
+      delegate :user_cap_enabled?, to: :namespace_settings
 
       delegate :wiki_access_level, :wiki_access_level=, to: :group_feature, allow_nil: true
 
@@ -243,6 +246,10 @@ module EE
       def service_accounts
         provisioned_users.service_account
       end
+
+      def epic_synced_with_work_item_enabled?
+        ::Feature.enabled?(:epic_creation_with_synced_work_item, self, type: :wip)
+      end
     end
 
     override :usage_quotas_enabled?
@@ -251,6 +258,11 @@ module EE
 
       # Details on this feature https://gitlab.com/gitlab-org/gitlab/-/issues/384893
       ::License.feature_available?(:usage_quotas) || ::Feature.enabled?(:usage_quotas_for_all_editions, self)
+    end
+
+    override :supports_saved_replies?
+    def supports_saved_replies?
+      ::Feature.enabled?(:group_saved_replies_flag, self, type: :wip) && licensed_feature_available?(:group_saved_replies)
     end
 
     class_methods do

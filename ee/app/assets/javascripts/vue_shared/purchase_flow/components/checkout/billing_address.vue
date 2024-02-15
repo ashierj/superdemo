@@ -1,5 +1,5 @@
 <script>
-import { GlFormGroup, GlFormInput, GlFormSelect } from '@gitlab/ui';
+import { GlAlert, GlButton, GlFormGroup, GlFormInput, GlFormSelect } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import {
   COUNTRIES_WITH_STATES_REQUIRED,
@@ -15,16 +15,21 @@ import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import SprintfWithLinks from 'ee/vue_shared/purchase_flow/components/checkout/sprintf_with_links.vue';
 import { s__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
 import getBillingAccountQuery from 'ee/vue_shared/purchase_flow/graphql/queries/get_billing_account.customer.query.graphql';
 import { logError } from '~/lib/logger';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import BillingAccountDetails from 'ee/vue_shared/purchase_flow/components/checkout/billing_account_details.vue';
 
 export default {
   components: {
+    BillingAccountDetails,
     Step,
+    GlAlert,
+    GlButton,
     GlFormGroup,
     GlFormInput,
     GlFormSelect,
@@ -33,6 +38,7 @@ export default {
   directives: {
     autofocusonshow,
   },
+  mixins: [glFeatureFlagsMixin()],
   data() {
     return {
       countries: [],
@@ -117,6 +123,9 @@ export default {
     shouldShowManageContacts() {
       return Boolean(this.billingAccount?.zuoraAccountName);
     },
+    shouldShowBillingAccountDetails() {
+      return this.glFeatures?.keyContactsManagementV2 && this.shouldShowManageContacts;
+    },
     stepTitle() {
       return this.shouldShowManageContacts
         ? this.$options.i18n.contactInformationStepTitle
@@ -199,12 +208,16 @@ export default {
     manageContacts: s__(
       'Checkout|Manage the subscription and billing contacts for your billing account in the %{customersPortalLinkStart}Customers Portal%{customersPortalLinkEnd}. Learn more about %{manageContactsLinkStart}how to manage your contacts%{manageContactsLinkEnd}.',
     ),
+    editCustomersPortalText: s__('Checkout|Edit in Customers Portal'),
   },
   manageContactsLinkObject: {
     customersPortalLink: gon.subscriptions_url,
-    manageContactsLink: helpPagePath('subscriptions/customers_portal'),
+    manageContactsLink: helpPagePath(
+      'subscriptions/customers_portal#subscription-and-billing-contacts',
+    ),
   },
   stepId: STEPS[1].id,
+  billingAccountsUrl: gon.billing_accounts_url,
 };
 </script>
 <template>
@@ -217,11 +230,19 @@ export default {
   >
     <template #body>
       <div v-if="shouldShowManageContacts" class="gl-mb-3">
-        <sprintf-with-links
-          :message="$options.i18n.manageContacts"
-          :link-object="$options.manageContactsLinkObject"
+        <gl-alert :dismissible="false" class="gl-my-5" variant="tip">
+          <sprintf-with-links
+            :message="$options.i18n.manageContacts"
+            :link-object="$options.manageContactsLinkObject"
+          />
+        </gl-alert>
+
+        <billing-account-details
+          v-if="shouldShowBillingAccountDetails"
+          :billing-account="billingAccount"
         />
       </div>
+
       <div v-else data-testid="checkout-billing-address-form">
         <gl-form-group
           v-if="!$apollo.loading.countries"
@@ -276,14 +297,31 @@ export default {
         </div>
       </div>
     </template>
-    <template v-if="!shouldShowManageContacts" #summary>
-      <div data-testid="checkout-billing-address-summary">
+    <template #summary>
+      <billing-account-details
+        v-if="shouldShowBillingAccountDetails"
+        :billing-account="billingAccount"
+      />
+
+      <div v-else-if="!shouldShowManageContacts" data-testid="checkout-billing-address-summary">
         <div class="js-summary-line-1">{{ customer.address1 }}</div>
         <div class="js-summary-line-2">{{ customer.address2 }}</div>
         <div class="js-summary-line-3">
           {{ customer.city }}, {{ customer.country }} {{ selectedStateName }} {{ customer.zipCode }}
         </div>
       </div>
+    </template>
+
+    <template v-if="shouldShowBillingAccountDetails" #footer>
+      <gl-button
+        variant="default"
+        category="primary"
+        data-testid="billing-address-cdot-edit"
+        :href="$options.billingAccountsUrl"
+        target="_blank"
+      >
+        {{ $options.i18n.editCustomersPortalText }}
+      </gl-button>
     </template>
   </step>
 </template>

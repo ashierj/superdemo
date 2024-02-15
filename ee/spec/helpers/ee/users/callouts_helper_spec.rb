@@ -290,49 +290,6 @@ RSpec.describe EE::Users::CalloutsHelper do
     end
   end
 
-  describe '.show_code_suggestions_ga_non_owner_alert?', :saas, feature_category: :code_suggestions do
-    using RSpec::Parameterized::TableSyntax
-
-    let_it_be(:user) { create(:user) }
-    let_it_be(:group) { create(:group) }
-
-    where(
-      feature_flag_enabled?: [true, false],
-      non_owner_of_group?: [true, false],
-      group_paid?: [true, false],
-      group_trial?: [true, false],
-      group_ai_assist_ui_enabled?: [true, false],
-      group_code_suggestions_enabled?: [true, false],
-      user_dismissed_callout?: [true, false]
-    )
-
-    with_them do
-      before do
-        stub_feature_flags(code_suggestions_ga_non_owner_alert: feature_flag_enabled?)
-        allow(Namespaces::FreeUserCap).to receive(:non_owner_access?).and_return(non_owner_of_group?)
-        allow(group).to receive(:paid?).and_return(group_paid?)
-        allow(group).to receive(:trial?).and_return(group_trial?)
-        allow(group).to receive(:ai_assist_ui_enabled?).and_return(group_ai_assist_ui_enabled?)
-        allow(group).to receive(:code_suggestions_enabled?).and_return(group_code_suggestions_enabled?)
-        allow(helper).to receive(:user_dismissed?).and_return(user_dismissed_callout?)
-      end
-
-      let(:expected_result) do
-        feature_flag_enabled? &&
-          non_owner_of_group? &&
-          group_paid? &&
-          !group_trial? &&
-          group_ai_assist_ui_enabled? &&
-          !user_dismissed_callout? &&
-          group_code_suggestions_enabled?
-      end
-
-      subject { helper.show_code_suggestions_ga_non_owner_alert?(group) }
-
-      it { is_expected.to eq(expected_result) }
-    end
-  end
-
   describe '.show_code_suggestions_ga_owner_alert?', :saas, feature_category: :code_suggestions do
     using RSpec::Parameterized::TableSyntax
 
@@ -394,6 +351,42 @@ RSpec.describe EE::Users::CalloutsHelper do
       subject { helper.show_joining_a_project_alert? }
 
       it { is_expected.to eq(expected_result) }
+    end
+  end
+
+  describe '.show_transition_to_jihu_callout?', :do_not_mock_admin_mode_setting do
+    let_it_be(:admin) { create(:user, :admin) }
+    let_it_be(:user) { create(:user) }
+
+    subject { helper.show_transition_to_jihu_callout? }
+
+    using RSpec::Parameterized::TableSyntax
+
+    where(:gitlab_com_subscriptions_enabled, :gitlab_jh, :has_active_license, :current_user, :timezone, :user_dismissed, :expected_result) do
+      false | false | false | ref(:admin) | 'Asia/Hong_Kong'      | false | true
+      false | false | false | ref(:admin) | 'Asia/Shanghai'       | false | true
+      false | false | false | ref(:admin) | 'Asia/Macau'          | false | true
+      false | false | false | ref(:admin) | 'Asia/Chongqing'      | false | true
+
+      true  | false | false | ref(:admin) | 'Asia/Shanghai'       | false | false
+      false | true  | false | ref(:admin) | 'Asia/Shanghai'       | false | false
+      false | false | true  | ref(:admin) | 'Asia/Shanghai'       | false | false
+      false | false | false | ref(:user)  | 'Asia/Shanghai'       | false | false
+      false | false | false | ref(:admin) | 'America/Los_Angeles' | false | false
+      false | false | false | ref(:admin) | 'Asia/Shanghai'       | true  | false
+    end
+
+    with_them do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: gitlab_com_subscriptions_enabled)
+        allow(::Gitlab).to receive(:jh?).and_return(gitlab_jh)
+        allow(helper).to receive(:has_active_license?).and_return(has_active_license)
+        allow(helper).to receive(:current_user).and_return(current_user)
+        allow(helper).to receive(:user_dismissed?).with(::Users::CalloutsHelper::TRANSITION_TO_JIHU_CALLOUT) { user_dismissed }
+        allow(current_user).to receive(:timezone).and_return(timezone)
+      end
+
+      it { is_expected.to be expected_result }
     end
   end
 end

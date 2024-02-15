@@ -31,7 +31,8 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
       last_edited_at: '2024-01-10T01:00:00Z',
       closed_by_id: other_user.id,
       closed_at: '2024-01-11T01:00:00Z',
-      state_id: 2
+      state_id: 2,
+      color: '#c91c00'
     }
   end
 
@@ -39,7 +40,7 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
 
   before do
     group.add_reporter(user)
-    stub_licensed_features(epics: true, subepics: true)
+    stub_licensed_features(epics: true, subepics: true, epic_colors: true)
   end
 
   it_behaves_like 'rate limited service' do
@@ -65,48 +66,70 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
       expect(epic.labels).to contain_exactly(label2)
       expect(epic.relative_position).not_to be_nil
       expect(epic.confidential).to be_truthy
+      expect(epic.color.to_s).to eq('#c91c00')
       expect(NewEpicWorker).to have_received(:perform_async).with(epic.id, user.id)
     end
 
     context 'when syncing work item' do
+      subject do
+        described_class.new(group: group, current_user: user, params: params.merge(external_key: "test-external-key"))
+          .execute
+      end
+
       it 'creates an epic work item' do
         expect { subject }.to change { Epic.count }.by(1).and(change { WorkItem.count }.by(1))
       end
 
-      it 'creates epic work item with same attributes' do
+      it_behaves_like 'syncs all data from an epic to a work item' do
+        let(:epic) { Epic.last }
+      end
+
+      it 'does not create work item metrics' do
+        expect { subject }.to change { Epic.count }.by(1)
+          .and(change { WorkItem.count }.by(1))
+          .and(not_change { Issue::Metrics.count })
+      end
+
+      it 'does not duplicate system notes' do
+        expect { subject }.to change { Epic.count }.by(1).and(change { WorkItem.count }.by(1))
+
+        expect(Epic.last.notes.size).to eq(1)
+        expect(WorkItem.last.notes.size).to eq(0)
+      end
+
+      it 'does not call run_after_commit for the work item' do
+        expect_next_instance_of(WorkItem) do |instance|
+          expect(instance).not_to receive(:run_after_commit)
+        end
+
         subject
+      end
 
-        epic = Epic.last
-        work_item = WorkItem.last
+      it 'does not call after commit workers for the work item' do
+        expect(NewIssueWorker).not_to receive(:perform_async)
+        expect(Issues::PlacementWorker).not_to receive(:perform_async)
+        expect(Onboarding::IssueCreatedWorker).not_to receive(:perform_async)
 
-        expect(work_item.work_item_type.name).to eq('Epic')
-        expect(epic.attributes.with_indifferent_access.slice(*base_attrs))
-          .to eq(work_item.attributes.with_indifferent_access.slice(*base_attrs))
-
-        expect(epic.issue_id).to eq(work_item.id)
-        expect(epic.iid).to eq(work_item.iid)
-        expect(epic.created_at).to eq(work_item.created_at)
-        expect(epic.author).to eq(work_item.author)
-        expect(epic.parent.work_item).to eq(work_item.work_item_parent)
-        expect(epic.labels).to eq(work_item.labels)
-        expect(epic.state).to eq(work_item.state)
+        subject
       end
 
       context 'when work item creation fails' do
         it 'does not create epic' do
-          error_msg = 'error 1, error 2'
-          allow_next_instance_of(Epics::CreateService) do |instance|
-            allow(instance).to receive(:create_work_item_for).and_return(
-              instance_double(
-                ServiceResponse,
-                success?: false,
-                payload: { errors: instance_double(ActiveModel::Errors, full_messages: error_msg.split(", ")) })
-            )
+          error_message = ['error 1', 'error 2']
+          allow_next_instance_of(WorkItems::CreateService) do |instance|
+            allow(instance).to receive(:execute).and_return(ServiceResponse.error(message: error_message))
           end
 
-          expect(Gitlab::AppLogger).to receive(:error)
-                                   .with("Unable create synced work item: #{error_msg}. Group ID: #{group.id}")
-          expect { subject }.to raise_error(StandardError, error_msg).and not_change { Epic.count }
+          expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
+            .with({
+              message: "Not able to create epic work item",
+              error_message: error_message,
+              group_id: group.id,
+              epic_id: an_instance_of(Integer)
+            })
+
+          expect { subject }.to raise_error(Epics::SyncAsWorkItem::SyncAsWorkItemError)
+            .and not_change { Epic.count }
         end
       end
 

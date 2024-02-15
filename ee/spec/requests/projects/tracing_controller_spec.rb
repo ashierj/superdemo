@@ -18,7 +18,8 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
       operationsUrl: Gitlab::Observability.operations_url(project),
       metricsUrl: Gitlab::Observability.metrics_url(project),
       metricsSearchUrl: Gitlab::Observability.metrics_search_url(project),
-      metricsSearchMetadataUrl: Gitlab::Observability.metrics_search_metadata_url(project)
+      metricsSearchMetadataUrl: Gitlab::Observability.metrics_search_metadata_url(project),
+      logsSearchUrl: Gitlab::Observability.logs_search_url(project)
     }
   end
 

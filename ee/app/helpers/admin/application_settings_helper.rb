@@ -14,6 +14,16 @@ module Admin
         tag_pair_for_link(ai_powered_docs_url))
     end
 
+    def admin_display_code_suggestions_toggle?
+      start_date = CodeSuggestions::SelfManaged::SERVICE_START_DATE
+      License.feature_available?(:code_suggestions) && start_date.future?
+    end
+
+    def admin_display_ai_powered_toggle?
+      start_date = CloudConnector::Access.service_start_date_for('duo_chat')
+      License.feature_available?(:ai_chat) && (start_date.nil? || start_date&.future?)
+    end
+
     private
 
     # rubocop:disable Gitlab/DocUrl

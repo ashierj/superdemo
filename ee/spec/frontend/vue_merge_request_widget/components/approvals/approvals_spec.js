@@ -122,6 +122,75 @@ describe('MRWidget approvals', () => {
         canApproveResponse = createCanApproveResponse();
       });
 
+      describe('with approvers, with SAML auth requried for approval', () => {
+        beforeEach(async () => {
+          canApproveResponse.data.project.mergeRequest.approvedBy.nodes =
+            approvedByCurrentUser.data.project.mergeRequest.approvedBy.nodes;
+          canApproveResponse.data.project.mergeRequest.approvedBy.nodes[0].id = 69;
+
+          mr.requireSamlAuthToApprove = true;
+
+          createComponent({}, canApproveResponse);
+          await waitForPromises();
+        });
+
+        it('approve additionally action is rendered with correct text', () => {
+          expect(findActionData()).toEqual({
+            variant: 'confirm',
+            text: 'Approve additionally with SAML',
+            category: 'secondary',
+          });
+        });
+      });
+
+      describe('with approvers', () => {
+        beforeEach(async () => {
+          canApproveResponse.data.project.mergeRequest.approvedBy.nodes =
+            approvedByCurrentUser.data.project.mergeRequest.approvedBy.nodes;
+
+          canApproveResponse.data.project.mergeRequest.approvedBy.nodes[0].id = 2;
+
+          createComponent({}, canApproveResponse);
+          await waitForPromises();
+        });
+
+        it('approve additionally action is rendered', () => {
+          expect(findActionData()).toEqual({
+            variant: 'confirm',
+            text: 'Approve additionally',
+            category: 'secondary',
+          });
+        });
+      });
+
+      describe('has approvals left', () => {
+        it('shows approve text', async () => {
+          const response = JSON.parse(JSON.stringify(approvedByCurrentUser));
+          response.data.project.mergeRequest.approvalsLeft = 1;
+          response.data.project.mergeRequest.userPermissions.canApprove = true;
+          gon.current_user_id = 10000000;
+
+          createComponent({}, response);
+          await waitForPromises();
+
+          expect(findAction().text()).toBe('Approve');
+        });
+      });
+
+      describe('no approvals left', () => {
+        it('shows approve additionally text', async () => {
+          const response = JSON.parse(JSON.stringify(approvedByCurrentUser));
+          response.data.project.mergeRequest.approvalsLeft = 0;
+          response.data.project.mergeRequest.userPermissions.canApprove = true;
+          gon.current_user_id = 10000000;
+
+          createComponent({}, response);
+          await waitForPromises();
+
+          expect(findAction().text()).toBe('Approve additionally');
+        });
+      });
+
       describe('and MR is approved', () => {
         beforeEach(() => {
           canApproveResponse.data.project.mergeRequest.approved = true;

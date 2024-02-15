@@ -31,7 +31,7 @@ module Types
 
       field :enabled_permissions,
         ::Types::MemberRoles::CustomizablePermissionType.connection_type,
-        null: true,
+        null: false,
         alpha: { milestone: '16.5' },
         description: 'Array of all permissions enabled for the custom role.'
 

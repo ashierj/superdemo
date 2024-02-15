@@ -114,46 +114,35 @@ for the group's projects to meet your group's needs.
 > - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/352526) in GitLab 14.9. [Feature flag `invite_members_group_modal`](https://gitlab.com/gitlab-org/gitlab/-/issues/352526) removed.
 
 Similar to how you [share a project with a group](../project/members/share_project_with_groups.md),
-you can share a group with another group. To invite a group, you must be a member of it.
-To share a given group, for example, `Frontend` with another group, for example,
-`Engineering`:
+you can share a group with another group by invitation.
+For more information about sharing conditions and behavior, see [Sharing projects and groups](../project/members/sharing_projects_groups.md).
 
-1. Go to the `Frontend` group.
+Prerequisites:
+
+- You must be a member of the inviting group.
+
+To invite a group to your group:
+
+1. On the left sidebar, select **Search or go to** and find your group.
 1. Select **Manage > Members**.
 1. Select **Invite a group**.
-1. In the **Select a group to invite** list, select `Engineering`.
+1. In the **Select a group to invite** list, select the group you want to invite.
 1. Select a [role](../permissions.md) as maximum access level.
 1. Select **Invite**.
 
-After sharing the `Frontend` group with the `Engineering` group:
+## Remove an invited group
 
-- The **Groups** tab lists the `Engineering` group.
-- The **Groups** tab lists a group regardless of whether it is a public or private group.
-- From [GitLab 16.6](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/134623),
-  the invited group's name and membership source will be masked unless:
-  - the invited group is public, or
-  - the current user is a member of the invited group, or
-  - the current user is a member of the current group.
-- All direct members of the `Engineering` group have access to the `Frontend` group. The least access is granted between the access in the `Engineering` group and the access in the `Frontend` group.
-  - If `Member1` has the Maintainer role in `Engineering` and `Engineering` is added to `Frontend` with the Developer role, `Member1` has the Developer role in `Frontend`.
-  - If `Member2` has the Guest role in `Engineering` and `Engineering` is added to `Frontend` with the Developer role, `Member2` has the Guest role in `Frontend`.
-- Inherited members of the `Engineering` group do not gain access to the `Frontend` group.
-- Direct members of the `Engineering` group who have the **Group Invite** badge next to their profile on the group's usage quota page count towards the billable members of the `Frontend` group.
-
-## Remove a shared group
-
-To unshare a group:
+To remove an invited group:
 
 1. On the left sidebar, select **Search or go to** and find your group.
 1. Select **Manage > Members**.
 1. Select the **Groups** tab.
 1. To the right of the account you want to remove, select **Remove group** (**{remove}**).
 
-For example, if the `Engineering` group is shared with the `Frontend` group, when
-you unshare the `Engineering` group:
+When you remove the invited group from your group:
 
-- All direct members of the `Engineering` group no longer have access to the `Frontend` group.
-- Members of the `Engineering` group no longer count towards the billable members of the `Frontend` group.
+- All direct members of the invited group no longer have access to the inviting group.
+- Members of the invited group no longer count towards the billable members of the inviting group.
 
 ## Transfer a group
 
@@ -458,37 +447,10 @@ Approval settings should not be confused with [approval rules](../project/merge_
 for the ability to set merge request approval rules for groups is tracked in
 [epic 4367](https://gitlab.com/groups/gitlab-org/-/epics/4367).
 
-## Enable Code Suggestions for a group
-
-DETAILS:
-**Tier:** Free, Premium, Ultimate
-**Offering:** SaaS
-
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/405126) in GitLab 15.11.
-> - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/408158) from GitLab Ultimate to GitLab Premium in 16.0.
-> - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/410801) from GitLab Premium to GitLab Free in 16.0.
-
-You can give all users in a group and its subgroups access to
-[Code Suggestions](../project/repository/code_suggestions/index.md). This setting
-[cascades to all projects](../project/merge_requests/approvals/settings.md#settings-cascading) in the group.
-
-Code Suggestions are enabled by default at the group level.
-
-To update this setting:
-
-1. On the left sidebar, select **Search or go to** and find your group.
-1. Select **Settings > General**.
-1. Expand **Permissions and group features**.
-1. Under **Code Suggestions**, select the **Projects in this group can use Code Suggestions** checkbox.
-1. Select **Save changes**.
-
-Individual users can disable Code Suggestions by disabling the feature in their
-[installed IDE editor extension](../project/repository/code_suggestions/index.md#supported-editor-extensions).
-
 ## Enable Experiment and Beta features
 
 DETAILS:
-**Tier:** Ultimate
+**Tier:** Premium, Ultimate
 **Offering:** SaaS
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118222) in GitLab 16.0.
@@ -497,6 +459,9 @@ WARNING:
 [Experiment and Beta features](../../policy/experiment-beta-support.md) may produce unexpected results
 (for example, the results might be low-quality, incomplete, incoherent, offensive, or insensitive,
 and might include insecure code or failed pipelines).
+
+NOTE:
+[GitLab Duo Chat](../../user/gitlab_duo_chat.md) is an only feature available in Premium tier.
 
 You can give all users in a top-level group access to Experiment and Beta features.
 This setting [cascades to all projects](../project/merge_requests/approvals/settings.md#settings-cascading)

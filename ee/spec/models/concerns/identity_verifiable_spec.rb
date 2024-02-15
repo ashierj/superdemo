@@ -470,10 +470,39 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
     let(:user) { create(:user) }
 
-    it 'creates an exemption' do
+    it 'creates an exemption', :aggregate_failures do
+      expect(user).to receive(:clear_memoization).with(:phone_number_exemption_attribute).and_call_original
+      expect(user).to receive(:clear_memoization).with(:identity_verification_state).and_call_original
+
       expect { subject }.to change {
         user.custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_PHONE_EXEMPT).count
       }.from(0).to(1)
+    end
+
+    shared_examples 'it does not create an exemption' do
+      it 'does not create an exemption', :aggregate_failures do
+        expect(user).not_to receive(:clear_memoization)
+
+        expect { subject }.not_to change {
+          user.custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_PHONE_EXEMPT).count
+        }
+      end
+    end
+
+    context 'when user has already verified a phone number' do
+      before do
+        create(:phone_number_validation, :validated, user: user)
+      end
+
+      it_behaves_like 'it does not create an exemption'
+    end
+
+    context 'when user is already exempt' do
+      before do
+        add_phone_exemption
+      end
+
+      it_behaves_like 'it does not create an exemption'
     end
   end
 
@@ -483,11 +512,12 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     let(:user) { create(:user) }
 
     context 'when a user has a phone number exemption' do
-      before do
+      it 'destroys the exemption', :aggregate_failures do
         add_phone_exemption
-      end
 
-      it 'destroys the exemption' do
+        expect(user).to receive(:clear_memoization).with(:phone_number_exemption_attribute).and_call_original
+        expect(user).to receive(:clear_memoization).with(:identity_verification_state).and_call_original
+
         subject
 
         expect(user.custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_PHONE_EXEMPT)).to be_empty
@@ -495,7 +525,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     end
 
     context 'when a user does not have a phone number exemption' do
-      it { is_expected.to be false }
+      it { is_expected.to be_nil }
     end
   end
 
@@ -636,6 +666,11 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
   end
 
   describe '#toggle_phone_number_verification' do
+    before do
+      allow(user).to receive(:clear_memoization).with(:phone_number_exemption_attribute).and_call_original
+      allow(user).to receive(:clear_memoization).with(:identity_verification_state).and_call_original
+    end
+
     subject(:toggle_phone_number_verification) { user.toggle_phone_number_verification }
 
     context 'when not exempt from phone number verification' do
@@ -647,59 +682,42 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     end
 
     context 'when exempt from phone number verification' do
-      before do
-        user.create_phone_number_exemption!
-      end
-
       it 'destroys the exemption' do
+        user.create_phone_number_exemption!
+
         expect(user).to receive(:destroy_phone_number_exemption)
 
         toggle_phone_number_verification
       end
     end
 
-    it 'clears memoization of phone_number_exemption_attribute and identity_verification_state', :aggregate_failures do
-      expect(user).to receive(:clear_memoization).with(:phone_number_exemption_attribute).and_call_original
-      expect(user).to receive(:clear_memoization).with(:identity_verification_state).and_call_original
+    it 'clears memoization of identity_verification_state' do
+      expect(user).to receive(:clear_memoization).with(:identity_verification_state)
 
       toggle_phone_number_verification
     end
   end
 
   describe '#offer_phone_number_exemption?' do
-    subject(:offer_phone_number_exemption?) { !!user.offer_phone_number_exemption? }
+    subject(:offer_phone_number_exemption?) { user.offer_phone_number_exemption? }
 
-    where(:credit_card, :risk_band, :phone_number, :experiment_group, :result) do
-      true  | 'Low'         | true  | :candidate | true
-      true  | 'Low'         | true  | :control   | false
-      true  | 'Low'         | false | :candidate | false
-      true  | 'Low'         | false | :control   | false
-      true  | 'Medium'      | true  | :candidate | true
-      true  | 'Medium'      | true  | :control   | true
-      true  | 'Medium'      | false | :candidate | true
-      true  | 'Medium'      | false | :control   | true
-      true  | 'High'        | true  | :control   | false
-      true  | 'Unavailable' | true  | :control   | false
-      true  | nil           | true  | :control   | false
-      false | 'Low'         | true  | :candidate | false
-      false | 'Low'         | true  | :control   | false
-      false | 'Low'         | false | :candidate | false
-      false | 'Low'         | false | :control   | false
-      false | 'Medium'      | true  | :candidate | false
-      false | 'Medium'      | true  | :control   | false
-      false | 'Medium'      | false | :candidate | false
-      false | 'Medium'      | false | :control   | false
-      false | 'High'        | true  | :control   | false
-      false | 'Unavailable' | true  | :control   | false
-      false | nil           | true  | :control   | false
+    where(:credit_card, :phone_number, :phone_exempt, :required_verification_methods, :result) do
+      true   | true  | false | %w[email]                   | false
+      false  | true  | false | %w[email phone]             | false
+      true   | true  | false | %w[email phone]             | true
+      true   | false | false | %w[email credit_card]       | false
+      true   | true  | false | %w[email credit_card]       | false
+      true   | true  | true  | %w[email credit_card]       | true
+      true   | true  | false | %w[email phone credit_card] | false
     end
 
     with_them do
       before do
-        add_user_risk_band(risk_band) if risk_band
         stub_feature_flags(identity_verification_credit_card: credit_card)
         stub_feature_flags(identity_verification_phone_number: phone_number)
-        stub_experiments(phone_verification_for_low_risk_users: experiment_group)
+
+        allow(user).to receive(:required_identity_verification_methods).and_return(required_verification_methods)
+        allow(user).to receive(:exempt_from_phone_number_verification?).and_return(phone_exempt)
       end
 
       it { is_expected.to eq(result) }
@@ -759,12 +777,14 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
   it 'delegates risk profile methods', :aggregate_failures do
     expect_next_instance_of(IdentityVerification::UserRiskProfile, user) do |instance|
       expect(instance).to receive(:arkose_verified?).ordered
+      expect(instance).to receive(:assume_low_risk!).with(reason: 'Low reason').ordered
+      expect(instance).to receive(:assume_high_risk!).with(reason: 'High reason').ordered
       expect(instance).to receive(:assumed_high_risk?).ordered
-      expect(instance).to receive(:assume_high_risk!).with(reason: 'Because').ordered
     end
 
     user.arkose_verified?
+    user.assume_low_risk!(reason: 'Low reason')
+    user.assume_high_risk!(reason: 'High reason')
     user.assumed_high_risk?
-    user.assume_high_risk!(reason: 'Because')
   end
 end

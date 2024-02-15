@@ -2541,7 +2541,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
 
     context 'with a public group' do
-      let_it_be(:public_group) { create(:group, :public, :crm_enabled) }
+      let_it_be(:public_group) { create(:group, :public) }
 
       subject { described_class.new(user, public_group) }
 
@@ -2957,10 +2957,10 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     subject { described_class.new(current_user, group) }
 
     context 'when on SaaS instance', :saas do
-      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :premium_plan) }
 
       context 'when container is a group with AI enabled' do
-        include_context 'with ai features enabled for group'
+        include_context 'with ai chat enabled for group on SaaS'
 
         context 'when user is a member of the group' do
           before do
@@ -2969,7 +2969,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
           it { is_expected.to be_allowed(:access_duo_chat) }
 
-          context 'when the group does not have an Ultimate SaaS license' do
+          context 'when the group does not have an Premium SaaS license' do
             let_it_be(:group) { create(:group) }
 
             it { is_expected.to be_disallowed(:access_duo_chat) }
@@ -2992,7 +2992,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
           end
 
           context 'when container is a group' do
-            include_context 'with experiment features disabled for group'
+            include_context 'with ai features disabled and licensed chat for group on SaaS'
 
             it 'returns false' do
               allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
@@ -3027,6 +3027,69 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
           it { is_expected.to cs_matcher }
         end
+      end
+    end
+  end
+
+  describe ':read_saml_user' do
+    let_it_be(:user) { non_group_member }
+    let_it_be(:subgroup) { create(:group, :private, parent: group) }
+
+    subject(:policy) { described_class.new(user, the_group) }
+
+    context 'when a SAML provider does not exist' do
+      let_it_be(:the_group) { subgroup }
+
+      before do
+        stub_licensed_features(group_saml: true)
+        the_group.add_member(user, Gitlab::Access::OWNER)
+      end
+
+      it { is_expected.to be_disallowed(:read_saml_user) }
+    end
+
+    context 'when a SAML provider exists' do
+      before_all do
+        create(:saml_provider, group: group)
+      end
+
+      using RSpec::Parameterized::TableSyntax
+
+      where(:the_group, :licensed, :saml_enabled, :sso_enforced, :role, :allowed) do
+        ref(:group)     | false | false | false | Gitlab::Access::OWNER      | false
+        ref(:group)     | false | false | false | Gitlab::Access::MAINTAINER | false
+
+        ref(:group)     | true  | false | false | Gitlab::Access::OWNER      | false
+        ref(:group)     | true  | false | false | Gitlab::Access::MAINTAINER | false
+
+        ref(:group)     | true  | true  | false | Gitlab::Access::OWNER      | false
+        ref(:group)     | true  | true  | false | Gitlab::Access::MAINTAINER | false
+
+        ref(:group)     | true  | true  | true  | Gitlab::Access::OWNER      | true
+        ref(:group)     | true  | true  | true  | Gitlab::Access::MAINTAINER | false
+
+        ref(:subgroup)  | false | false | false | Gitlab::Access::OWNER      | false
+        ref(:subgroup)  | false | false | false | Gitlab::Access::MAINTAINER | false
+
+        ref(:subgroup)  | true  | false | false | Gitlab::Access::OWNER      | false
+        ref(:subgroup)  | true  | false | false | Gitlab::Access::MAINTAINER | false
+
+        ref(:subgroup)  | true  | true  | false | Gitlab::Access::OWNER      | false
+        ref(:subgroup)  | true  | true  | false | Gitlab::Access::MAINTAINER | false
+
+        ref(:subgroup)  | true  | true  | true  | Gitlab::Access::OWNER      | true
+        ref(:subgroup)  | true  | true  | true  | Gitlab::Access::MAINTAINER | false
+      end
+
+      with_them do
+        before do
+          stub_licensed_features(group_saml: licensed)
+          the_group.add_member(user, role)
+          the_group.root_ancestor.saml_provider.update!(enabled: saml_enabled)
+          the_group.root_ancestor.saml_provider.update!(enforced_sso: sso_enforced)
+        end
+
+        it { expect(policy.allowed?(:read_saml_user)).to eq(allowed) }
       end
     end
   end
@@ -3213,6 +3276,13 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
         it { is_expected.to be_disallowed(*allowed_abilities) }
       end
+    end
+
+    context 'for a custom role with the `admin_cicd_variables` ability' do
+      let(:member_role_abilities) { { admin_cicd_variables: true } }
+      let(:allowed_abilities) { [:admin_cicd_variables] }
+
+      it_behaves_like 'custom roles abilities'
     end
   end
 

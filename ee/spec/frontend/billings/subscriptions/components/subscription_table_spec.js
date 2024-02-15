@@ -47,7 +47,7 @@ describe('SubscriptionTable component', () => {
     props = {},
     provide = {},
     state = {},
-    apolloMock = { subscription: { canAddSeats: true, canRenew: true } },
+    apolloMock = { subscription: { canAddSeats: true, canRenew: true, nextTermStartDate: null } },
     temporaryExtensionMock = { temporaryExtension: { endDate: '2023-12-28' } },
   } = {}) => {
     store = new Vuex.Store(initialStore());
@@ -246,7 +246,7 @@ describe('SubscriptionTable component', () => {
                 code: planCode,
               },
             },
-            apolloMock: { subscription: { canAddSeats: true, canRenew } },
+            apolloMock: { subscription: { canAddSeats: true, canRenew, nextTermStartDate: null } },
           });
         });
 
@@ -276,7 +276,7 @@ describe('SubscriptionTable component', () => {
                 upgradable: true,
               },
             },
-            apolloMock: { subscription: { canAddSeats, canRenew: true } },
+            apolloMock: { subscription: { canAddSeats, canRenew: true, nextTermStartDate: null } },
           });
 
           await waitForPromises();
@@ -298,7 +298,9 @@ describe('SubscriptionTable component', () => {
             upgradable: true,
           },
         },
-        apolloMock: { subscription: { canAddSeats: true, canRenew: true } },
+        apolloMock: {
+          subscription: { canAddSeats: true, canRenew: true, nextTermStartDate: null },
+        },
       });
       await waitForPromises();
 

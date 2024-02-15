@@ -11,7 +11,7 @@ import {
   ADD_ON_ERROR_DICTIONARY,
 } from 'ee/usage_quotas/error_constants';
 import {
-  eligibleUsers,
+  eligibleSMUsers,
   pageInfoWithMorePages,
 } from 'ee_jest/usage_quotas/code_suggestions/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -30,7 +30,7 @@ describe('Add On Eligible User List', () => {
   const addOnEligibleUsersResponse = {
     data: {
       selfManagedAddOnEligibleUsers: {
-        nodes: eligibleUsers,
+        nodes: eligibleSMUsers,
         pageInfo: pageInfoWithMorePages,
         __typename: 'AddOnUserConnection',
       },
@@ -80,7 +80,7 @@ describe('Add On Eligible User List', () => {
         isLoading: false,
         pageInfo: pageInfoWithMorePages,
         search: '',
-        users: eligibleUsers,
+        users: eligibleSMUsers,
       };
 
       expect(findAddOnEligibleUserList().props()).toEqual(expectedProps);

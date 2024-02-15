@@ -790,53 +790,6 @@ RSpec.describe GroupsController, feature_category: :groups_and_projects do
       end
     end
 
-    context 'when `delayed_project_removal` and `lock_delayed_project_removal` params are specified' do
-      let_it_be(:params) { { delayed_project_removal: true, lock_delayed_project_removal: true } }
-      let_it_be(:user) { create(:user) }
-
-      subject do
-        put :update, params: { id: group.to_param, group: params }
-      end
-
-      before do
-        group.add_owner(user)
-        sign_in(user)
-        stub_licensed_features(adjourned_deletion_for_projects_and_groups: available)
-      end
-
-      shared_examples_for 'allows storing of settings' do
-        it 'allows storing of settings' do
-          subject
-
-          expect(response).to have_gitlab_http_status(:found)
-          expect(group.reload.namespace_settings.delayed_project_removal).to eq(params[:delayed_project_removal])
-          expect(group.reload.namespace_settings.lock_delayed_project_removal).to eq(params[:lock_delayed_project_removal])
-        end
-      end
-
-      shared_examples_for 'does not allow storing of settings' do
-        it 'does not allow storing of settings' do
-          subject
-
-          expect(response).to have_gitlab_http_status(:found)
-          expect(group.reload.namespace_settings.delayed_project_removal).not_to eq(params[:delayed_project_removal])
-          expect(group.reload.namespace_settings.lock_delayed_project_removal).not_to eq(params[:lock_delayed_project_removal])
-        end
-      end
-
-      context 'when feature is available' do
-        let(:available) { true }
-
-        it_behaves_like 'does not allow storing of settings'
-      end
-
-      context 'when feature is not available' do
-        let(:available) { false }
-
-        it_behaves_like 'does not allow storing of settings'
-      end
-    end
-
     context 'when service_access_tokens_expiration_enforced is specified' do
       subject(:update_group_request) { put :update, params: params }
 

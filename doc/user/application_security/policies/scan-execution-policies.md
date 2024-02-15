@@ -32,7 +32,7 @@ increments the number until the name no longer conflicts with existing job names
 policy at the group level, it applies to every child project or subgroup. You cannot edit a
 group-level policy from a child project or subgroup.
 
-This feature has some overlap with [compliance framework pipelines](../../group/compliance_frameworks.md#compliance-pipelines),
+This feature has some overlap with [compliance framework pipelines](../../group/compliance_pipelines.md),
 as we have not [unified the user experience for these two features](https://gitlab.com/groups/gitlab-org/-/epics/7312).
 For details on the similarities and differences between these features, see
 [Enforce scan execution](../index.md#enforce-scan-execution).
@@ -175,8 +175,8 @@ When using the `schedule` rule type in conjunction with the `branches` field, no
 
 Use this schema to define `agents` objects in the [`schedule` rule type](#schedule-rule-type).
 
-| Field        | Type                | Required | Possible values          | Description |
-|--------------|---------------------|----------|--------------------------|-------------|
+| Field        | Type                | Required | Description |
+|--------------|---------------------|----------|-------------|
 | `namespaces` | `array` of `string` | true | The namespace that is scanned. If empty, all namespaces are scanned. |
 
 #### Policy example
@@ -343,11 +343,13 @@ Prerequisites:
 - To enable the pipeline execution policy action feature, a Group owner or administrator must enable
   the experimental feature:
 
-  1. On the left sidebar, select **Search or go to** and find your project or group.
+  1. On the left sidebar, select **Search or go to** and find your group.
   1. Select **Settings > General**.
   1. Expand **Permissions and group features**.
   1. Select the **Run customized CI YAML as security policy actions** checkbox.
   1. Optional. Select **Enforce for all subgroups**.
+
+     If the setting is not enforced for all subgroups, subgroup owners can manage the setting per subgroup.
 
 The pipeline execution policy action introduces a new scan action type into
 scan execution policies for creating and enforcing custom CI in your target
@@ -381,7 +383,8 @@ Note the following:
 
 - For `custom` scans, you must specify one of `ci_configuration` or `ci_configuration_path`.
 - `custom` scans are being executed for triggered rules only.
-- Jobs variables and stages definitions from `custom` scans take precedence over the project's CI/CD configuration.
+- Jobs variables from `custom` scans take precedence over the project's CI/CD configuration.
+- Users triggering a pipeline must have at least read access to CI files specified in the `ci_configuration_path` or included in the CI/CD configuration.
 
 #### Example security policies project
 
@@ -421,6 +424,8 @@ Prerequisites:
   1. Expand **Permissions and group features**.
   1. Select the **Security Policy Scopes** checkbox.
   1. Optional. Select **Enforce for all subgroups**.
+
+     If the setting is not enforced for all subgroups, subgroup owners can manage the setting per subgroup.
 
 Security policy enforcement depends first on establishing a link between the group, subgroup, or
 project on which you want to enforce policies, and the security policy project that contains the

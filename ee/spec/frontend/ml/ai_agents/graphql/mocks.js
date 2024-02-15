@@ -4,9 +4,7 @@ export const createAiAgentsResponses = {
       aiAgentCreate: {
         agent: {
           id: 'gid://gitlab/Ai::Agent/1',
-          _links: {
-            showPath: '/some/project/-/ml/agents/1',
-          },
+          routeId: 2,
         },
         errors: [],
       },
@@ -30,6 +28,7 @@ export const listAiAgentsResponses = {
         nodes: [
           {
             id: 'gid://gitlab/Ai::Agent/1',
+            routeId: 2,
             name: 'agent-1',
             versions: [
               {
@@ -38,9 +37,6 @@ export const listAiAgentsResponses = {
                 model: 'default',
               },
             ],
-            _links: {
-              showPath: '/namespace/projects/-/ml/agents/1',
-            },
           },
         ],
         pageInfo: {

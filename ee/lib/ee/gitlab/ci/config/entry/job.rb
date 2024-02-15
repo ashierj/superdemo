@@ -9,13 +9,17 @@ module EE
             extend ActiveSupport::Concern
             extend ::Gitlab::Utils::Override
 
-            EE_ALLOWED_KEYS = %i[dast_configuration secrets].freeze
+            EE_ALLOWED_KEYS = %i[dast_configuration identity secrets].freeze
 
             prepended do
               attributes :dast_configuration, :secrets
 
               entry :dast_configuration, ::Gitlab::Ci::Config::Entry::DastConfiguration,
                 description: 'DAST configuration for this job',
+                inherit: false
+
+              entry :identity, ::Gitlab::Ci::Config::Entry::Identity,
+                description: 'Configured workload identity for this job.',
                 inherit: false
 
               entry :secrets, ::Gitlab::Config::Entry::ComposableHash,
@@ -37,8 +41,16 @@ module EE
             def value
               super.merge({
                 dast_configuration: dast_configuration_value,
+                identity: identity_available? ? identity_value : nil,
                 secrets: secrets_value
               }.compact)
+            end
+
+            private
+
+            def identity_available?
+              ::Gitlab::Ci::YamlProcessor::FeatureFlags.enabled?(:ci_yaml_support_for_identity_provider, type: :beta) &&
+                ::Gitlab::Saas.feature_available?(:google_cloud_support)
             end
           end
         end

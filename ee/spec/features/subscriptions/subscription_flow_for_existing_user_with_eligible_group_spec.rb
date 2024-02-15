@@ -76,6 +76,8 @@ RSpec.describe 'Subscription flow for existing user with eligible group', :js, f
       document.querySelector('[data-testid="subscription_app"]').__vue__.$store.dispatch('fetchPaymentMethodDetailsSuccess')
     JS
 
+    accept_privacy_and_terms
+
     click_button 'Confirm purchase'
   end
 

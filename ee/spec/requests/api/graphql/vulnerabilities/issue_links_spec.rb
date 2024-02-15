@@ -103,7 +103,8 @@ RSpec.describe 'Query.vulnerabilities.issueLinks', feature_category: :vulnerabil
       # 26) Loading the project authorizations
       # 27) Loading the namespace
       # 28) Loading the user
-      expect { query_issue_links }.not_to exceed_query_limit(28)
+      # 29) Loading the organization
+      expect { query_issue_links }.not_to exceed_query_limit(29)
     end
   end
 

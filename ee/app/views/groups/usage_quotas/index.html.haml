@@ -8,6 +8,9 @@
 
 - if Feature.enabled?(:usage_quotas_for_all_editions, @group)
   #js-usage-quotas-view{ data: { namespace_name: @group.name } }
+    #js-namespace-storage-app{ data: storage_usage_app_data(@group) }
+    - if can? current_user, :admin_ci_minutes, @group
+      #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
 - else
   - if show_product_purchase_success_alert?
     = render 'product_purchase_success_alert', product_name: params[:purchased_product]
@@ -24,7 +27,7 @@
       = s_('UsageQuota|Seats')
     - if show_code_suggestions_tab?(@group)
       = gl_tab_link_to '#code-suggestions-usage-tab', data: { testid: 'code-suggestions-tab' } do
-        = s_('UsageQuota|Duo Pro')
+        = s_('UsageQuota|GitLab Duo Pro')
     - if can? current_user, :admin_ci_minutes, @group
       = gl_tab_link_to '#pipelines-quota-tab', data: { testid: 'pipelines-tab' } do
         =  s_('UsageQuota|Pipelines')
@@ -53,7 +56,7 @@
     .tab-pane#pipelines-quota-tab
       #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
     .tab-pane#storage-quota-tab
-      #js-storage-counter-app{ data: storage_usage_app_data(@group) }
+      #js-namespace-storage-app{ data: storage_usage_app_data(@group) }
     - if Feature.enabled?(:data_transfer_monitoring, @group)
       .tab-pane#transfer-quota-tab
         #js-group-transfer-app{ data: group_transfer_app_data(@group) }

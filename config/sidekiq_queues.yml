@@ -179,6 +179,8 @@
   - 1
 - - ci_upstream_projects_subscriptions_cleanup
   - 1
+- - ci_user_cancel_pipeline
+  - 1
 - - click_house_audit_event_partition_sync
   - 1
 - - click_house_ci_finished_builds_sync
@@ -373,6 +375,8 @@
   - 1
 - - import_issues_csv
   - 2
+- - import_refresh_import_jid
+  - 1
 - - incident_management
   - 2
 - - incident_management_apply_incident_sla_exceeded_label
@@ -651,7 +655,11 @@
   - 1
 - - requirements_management_process_requirements_reports
   - 1
+- - sbom_process_transfer_events
+  - 1
 - - sbom_reports
+  - 1
+- - sbom_sync_project_traversal_ids
   - 1
 - - search_elastic_default_branch_changed
   - 1
@@ -750,6 +758,8 @@
 - - users_track_namespace_visits
   - 1
 - - vulnerabilities_mark_dropped_as_resolved
+  - 1
+- - vulnerabilities_process_transfer_events
   - 1
 - - vulnerabilities_remove_all_vulnerabilities
   - 1

@@ -13,6 +13,7 @@ RSpec.describe MemberRoles::UpdateService, feature_category: :system_access do
         name: 'new name',
         description: 'new description',
         read_vulnerability: false,
+        read_code: true,
         base_access_level: Gitlab::Access::DEVELOPER
       }
     end
@@ -71,7 +72,7 @@ RSpec.describe MemberRoles::UpdateService, feature_category: :system_access do
                 target_details: {
                   name: 'new name',
                   description: 'new description',
-                  abilities: ''
+                  abilities: 'read_code'
                 }.to_s,
                 custom_message: 'Member role was updated',
                 author_class: user.class.name

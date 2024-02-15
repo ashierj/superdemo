@@ -71,15 +71,24 @@ module IdentityVerifiable
   end
 
   def create_phone_number_exemption!
+    return if phone_verified?
+    return if exempt_from_phone_number_verification?
+
     custom_attributes.create!(
       key: UserCustomAttribute::IDENTITY_VERIFICATION_PHONE_EXEMPT,
       value: true.to_s,
       user_id: id
     )
+    clear_memoization(:phone_number_exemption_attribute)
+    clear_memoization(:identity_verification_state)
   end
 
   def destroy_phone_number_exemption
-    !!phone_number_exemption_attribute && phone_number_exemption_attribute.destroy
+    return unless phone_number_exemption_attribute
+
+    phone_number_exemption_attribute.destroy
+    clear_memoization(:phone_number_exemption_attribute)
+    clear_memoization(:identity_verification_state)
   end
 
   def exempt_from_phone_number_verification?
@@ -89,8 +98,6 @@ module IdentityVerifiable
 
   def toggle_phone_number_verification
     exempt_from_phone_number_verification? ? destroy_phone_number_exemption : create_phone_number_exemption!
-    clear_memoization(:phone_number_exemption_attribute)
-    clear_memoization(:identity_verification_state)
   end
 
   def create_identity_verification_exemption
@@ -112,15 +119,17 @@ module IdentityVerifiable
 
   def offer_phone_number_exemption?
     return false unless credit_card_verification_enabled?
-    return true if medium_risk?
+    return false unless phone_number_verification_enabled?
 
-    if low_risk? && phone_number_verification_enabled?
-      return experiment(:phone_verification_for_low_risk_users, user: self) do |e|
-        e.candidate { true }
-      end.run
-    end
+    phone_required = verification_method_required?(method: VERIFICATION_METHODS[:PHONE_NUMBER])
+    cc_required = verification_method_required?(method: VERIFICATION_METHODS[:CREDIT_CARD])
 
-    false
+    return false if phone_required && cc_required
+
+    # If phone verification is not required but a phone exemption exists it means the user toggled from
+    # verifying with a phone to verifying with a credit card. Returning true if a phone exemption exists
+    # will allow the user to toggle back to using phone verification from the credit card form.
+    phone_required || exempt_from_phone_number_verification?
   end
 
   def verification_method_allowed?(method:)
@@ -140,7 +149,7 @@ module IdentityVerifiable
     prerequisite_methods_state.values.all?
   end
 
-  delegate :arkose_verified?, :assume_high_risk!, :assumed_high_risk?, to: :risk_profile
+  delegate :arkose_verified?, :assume_low_risk!, :assume_high_risk!, :assumed_high_risk?, to: :risk_profile
   delegate :high_risk?, :medium_risk?, :low_risk?, to: :risk_profile, private: true
 
   private

@@ -64,11 +64,13 @@ RSpec.describe Gitlab::BackgroundMigration::FixSecurityScanStatuses, feature_cat
   end
 
   def create_build(status: 'success', **extra_args)
-    builds.create!(commit_id: pipeline.id,
-                   retried: false,
-                   status: status,
-                   type: 'Ci::Build',
-                   partition_id: 100,
-                   **extra_args)
+    builds.create!(
+      commit_id: pipeline.id,
+      retried: false,
+      status: status,
+      type: 'Ci::Build',
+      partition_id: 100,
+      **extra_args
+    )
   end
 end

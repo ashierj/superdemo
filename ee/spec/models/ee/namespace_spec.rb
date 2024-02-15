@@ -457,6 +457,12 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
       let_it_be(:opensource_namespace) { create(:namespace_with_plan, plan: :opensource_plan) }
 
       it { is_expected.to contain_exactly(ultimate_namespace, ultimate_trial_namespace, opensource_namespace) }
+
+      context 'with ai_chat feature' do
+        subject { described_class.with_ai_supported_plan(:ai_chat) }
+
+        it { is_expected.to contain_exactly(ultimate_namespace, ultimate_trial_namespace, premium_namespace, opensource_namespace) }
+      end
     end
 
     describe '.with_code_suggestions_enabled' do

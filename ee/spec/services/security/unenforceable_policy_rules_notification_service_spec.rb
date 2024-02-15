@@ -66,7 +66,7 @@ RSpec.describe Security::UnenforceablePolicyRulesNotificationService, '#execute'
   end
 
   shared_examples_for 'unenforceable report' do |report_type|
-    it_behaves_like 'triggers policy bot comment', report_type, false
+    it_behaves_like 'triggers policy bot comment', report_type, false, requires_approval: false
 
     context 'with violated approval rules' do
       let(:approvals_required) { 1 }
@@ -112,7 +112,7 @@ RSpec.describe Security::UnenforceablePolicyRulesNotificationService, '#execute'
           end
         end
 
-        it_behaves_like 'triggers policy bot comment', report_type, false
+        it_behaves_like 'triggers policy bot comment', report_type, false, requires_approval: false
       end
     end
   end

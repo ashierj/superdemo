@@ -31,11 +31,11 @@
     .well-segment.borderless.gl-mb-3.col-12.col-lg-9.gl-p-0
       = f.label :default_membership_role, class: 'label-bold' do
         = s_('GroupSAML|Default membership role')
-      .js-saml-membership-role-selector{ data: { saml_membership_role_selector_data: saml_membership_role_selector_data(group).to_json } }
+      .js-saml-membership-role-selector{ data: { saml_membership_role_selector_data: saml_membership_role_selector_data(group, current_user).to_json } }
       .form-text.text-muted
         = s_('GroupSAML|This will be set as the access level of users added to the group.')
 
     .mt-3
       = f.submit _("Save changes"), data: { testid: 'save-changes-button' }, pajamas_button: true
-      #js-saml-test-button.has-tooltip.float-right
+      #js-saml-test-button.has-tooltip.gl-float-right
         = render 'test_button', saml_provider: @saml_provider

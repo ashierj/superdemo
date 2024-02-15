@@ -3,16 +3,12 @@
 #import "~/work_items/graphql/milestone.fragment.graphql"
 
 fragment WorkItemMetadataWidgets on WorkItemWidget {
-  ... on WorkItemWidgetDescription {
-    type
-  }
+  type
   ... on WorkItemWidgetStartAndDueDate {
-    type
     dueDate
     startDate
   }
   ... on WorkItemWidgetWeight {
-    type
     weight
   }
   ... on WorkItemWidgetIteration {
@@ -28,28 +24,20 @@ fragment WorkItemMetadataWidgets on WorkItemWidget {
         title
       }
     }
-    type
-  }
-  ... on WorkItemWidgetNotes {
-    type
   }
   ... on WorkItemWidgetProgress {
-    type
     progress
     updatedAt
   }
   ... on WorkItemWidgetHealthStatus {
-    type
     healthStatus
   }
   ... on WorkItemWidgetMilestone {
-    type
     milestone {
       ...MilestoneFragment
     }
   }
   ... on WorkItemWidgetAssignees {
-    type
     allowsMultipleAssignees
     canInviteMembers
     assignees {
@@ -59,7 +47,6 @@ fragment WorkItemMetadataWidgets on WorkItemWidget {
     }
   }
   ... on WorkItemWidgetLabels {
-    type
     allowsScopedLabels
     labels {
       nodes {
@@ -68,27 +55,14 @@ fragment WorkItemMetadataWidgets on WorkItemWidget {
     }
   }
   ... on WorkItemWidgetNotifications {
-    type
     subscribed
   }
 
   ... on WorkItemWidgetCurrentUserTodos {
-    type
     currentUserTodos(state: pending) {
       nodes {
         id
       }
     }
-  }
-  ... on WorkItemWidgetAwardEmoji {
-    type
-  }
-
-  ... on WorkItemWidgetLinkedItems {
-    type
-  }
-
-  ... on WorkItemWidgetHierarchy {
-    type
   }
 }

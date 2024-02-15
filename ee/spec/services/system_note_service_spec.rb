@@ -278,4 +278,14 @@ RSpec.describe SystemNoteService, feature_category: :team_planning do
       described_class.approvals_reset(noteable, author, cause, approvers)
     end
   end
+
+  describe '.change_color_note' do
+    it 'calls IssuableResourceLinksService' do
+      expect_next_instance_of(::SystemNotes::IssuablesService) do |service|
+        expect(service).to receive(:change_color_note).with('#0052cc')
+      end
+
+      described_class.change_color_note(noteable, author, '#0052cc')
+    end
+  end
 end

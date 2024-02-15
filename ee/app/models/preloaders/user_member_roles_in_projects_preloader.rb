@@ -2,6 +2,8 @@
 
 module Preloaders
   class UserMemberRolesInProjectsPreloader
+    include Gitlab::Utils::StrongMemoize
+
     def initialize(projects:, user:)
       @projects = if projects.is_a?(Array)
                     Project.select(:id, :namespace_id).where(id: projects)
@@ -15,11 +17,6 @@ module Preloaders
     end
 
     def execute
-      ActiveRecord::Associations::Preloader.new(
-        records: projects,
-        associations: [:group]
-      ).call
-
       ::Preloaders::ProjectRootAncestorPreloader.new(projects, :namespace).execute
 
       ::Gitlab::SafeRequestLoader.execute(
@@ -34,7 +31,7 @@ module Preloaders
 
     def abilities_for_user_grouped_by_project
       sql_values_array = projects.filter_map do |project|
-        next unless project.custom_roles_enabled?
+        next unless custom_roles_enabled_on?(project)
 
         [project.id, Arel.sql("ARRAY[#{project.namespace.traversal_ids.join(',')}]::integer[]")]
       end
@@ -86,6 +83,17 @@ module Preloaders
           permission if value.find { |custom_role| custom_role[permission.to_s] == true }
         end
       end
+    end
+
+    def custom_roles_enabled_on
+      Hash.new do |hash, namespace|
+        hash[namespace] = namespace&.custom_roles_enabled?
+      end
+    end
+    strong_memoize_attr :custom_roles_enabled_on
+
+    def custom_roles_enabled_on?(project)
+      custom_roles_enabled_on[project&.root_ancestor]
     end
 
     def resource_key

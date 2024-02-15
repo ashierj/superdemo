@@ -6,6 +6,7 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import CeInviteModalBase from '~/invite_members/components/invite_modal_base.vue';
+import getInstanceMemberRoles from 'ee/roles_and_permissions/graphql/instance_member_roles.query.graphql';
 import apolloProvider from '../provider';
 import {
   OVERAGE_MODAL_LINK,
@@ -99,6 +100,28 @@ export default {
     },
   },
   apollo: {
+    instanceMemberRoles: {
+      client: 'gitlabClient',
+      query() {
+        return getInstanceMemberRoles;
+      },
+      update(data) {
+        const memberRoles = data?.memberRoles?.nodes || [];
+
+        return memberRoles.map(({ id, name, description, baseAccessLevel }) => ({
+          baseAccessLevel: baseAccessLevel.integerValue,
+          name,
+          description,
+          memberRoleId: getIdFromGraphQLId(id),
+        }));
+      },
+      error(error) {
+        Sentry.captureException(error);
+      },
+      skip() {
+        return this.isGroupInvite || !this.isVisible;
+      },
+    },
     memberRoles: {
       client: 'gitlabClient',
       query() {
@@ -111,9 +134,10 @@ export default {
       },
       update(data) {
         const memberRoles = data?.namespace?.memberRoles?.nodes || [];
-        return memberRoles.map(({ id, name, baseAccessLevel }) => ({
+        return memberRoles.map(({ id, name, description, baseAccessLevel }) => ({
           baseAccessLevel: baseAccessLevel.integerValue,
           name,
+          description,
           memberRoleId: getIdFromGraphQLId(id),
         }));
       },
@@ -136,9 +160,16 @@ export default {
       isVisible: false,
       actualFeedbackMessage: this.invalidFeedbackMessage,
       billableUsersDetails: null,
+      memberRoles: [],
+      instanceMemberRoles: [],
     };
   },
   computed: {
+    isLoadingRoles() {
+      return (
+        this.$apollo.queries.instanceMemberRoles.loading || this.$apollo.queries.memberRoles.loading
+      );
+    },
     currentSlot() {
       if (this.showOverageModal) {
         return OVERAGE_CONTENT_SLOT;
@@ -188,7 +219,10 @@ export default {
       return Boolean(this.newGroupToInvite || this.newUsersToInvite.length !== 0);
     },
     upgradedRoles() {
-      return { ...this.accessLevels, customRoles: this.memberRoles };
+      return {
+        ...this.accessLevels,
+        customRoles: [...this.memberRoles, ...this.instanceMemberRoles],
+      };
     },
   },
   watch: {
@@ -342,7 +376,7 @@ export default {
     :prevent-cancel-default="showOverageModal"
     :reached-limit="reachedLimit"
     :is-loading="isLoading"
-    :is-loading-roles="$apollo.queries.memberRoles.loading"
+    :is-loading-roles="isLoadingRoles"
     :invalid-feedback-message="actualFeedbackMessage"
     @reset="onReset"
     @submit="onSubmit"

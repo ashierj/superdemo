@@ -6,5 +6,5 @@
 #js-admin-runners-dashboard{ data: {
   admin_runners_path: admin_runners_path,
   new_runner_path: new_admin_runner_path,
-  clickhouse_ci_analytics_available: ::Gitlab::ClickHouse.configured?
+  clickhouse_ci_analytics_available: ::Gitlab::ClickHouse.configured?.to_s
 } }

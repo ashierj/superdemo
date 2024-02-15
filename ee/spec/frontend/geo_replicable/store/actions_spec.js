@@ -85,10 +85,9 @@ describe('GeoReplicable Store Actions', () => {
         state,
         [{ type: types.RECEIVE_REPLICABLE_ITEMS_ERROR }],
         [],
-        () => {
-          expect(createAlert).toHaveBeenCalledTimes(1);
-        },
       );
+
+      expect(createAlert).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -117,8 +116,8 @@ describe('GeoReplicable Store Actions', () => {
         const direction = null;
         const data = [];
 
-        it('should not error and pass empty values to the mutations', () => {
-          return testAction(
+        it('should not error and pass empty values to the mutations', async () => {
+          await testAction(
             actions.fetchReplicableItems,
             direction,
             state,
@@ -130,13 +129,18 @@ describe('GeoReplicable Store Actions', () => {
                 payload: { data, pagination: null },
               },
             ],
-            () => {
-              expect(mockGeoGqClient.query).toHaveBeenCalledWith({
-                query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
-                variables: { before: '', after: '', first: DEFAULT_PAGE_SIZE, last: null },
-              });
-            },
           );
+
+          expect(mockGeoGqClient.query).toHaveBeenCalledWith({
+            query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
+            variables: {
+              before: '',
+              after: '',
+              first: DEFAULT_PAGE_SIZE,
+              last: null,
+              replicationState: null,
+            },
+          });
         });
       });
 
@@ -155,8 +159,8 @@ describe('GeoReplicable Store Actions', () => {
           const registries = MOCK_BASIC_GRAPHQL_QUERY_RESPONSE.geoNode[MOCK_GRAPHQL_REGISTRY];
           const data = registries.nodes;
 
-          it('should call mockGeoGqClient with no before/after variables as well as a first variable but no last variable', () => {
-            return testAction(
+          it('should call mockGeoGqClient with no before/after variables as well as a first variable but no last variable', async () => {
+            await testAction(
               actions.fetchReplicableItems,
               direction,
               state,
@@ -168,13 +172,18 @@ describe('GeoReplicable Store Actions', () => {
                   payload: { data, pagination: registries.pageInfo },
                 },
               ],
-              () => {
-                expect(mockGeoGqClient.query).toHaveBeenCalledWith({
-                  query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
-                  variables: { before: '', after: '', first: DEFAULT_PAGE_SIZE, last: null },
-                });
-              },
             );
+
+            expect(mockGeoGqClient.query).toHaveBeenCalledWith({
+              query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
+              variables: {
+                before: '',
+                after: '',
+                first: DEFAULT_PAGE_SIZE,
+                last: null,
+                replicationState: null,
+              },
+            });
           });
         });
 
@@ -184,8 +193,8 @@ describe('GeoReplicable Store Actions', () => {
           const registries = MOCK_BASIC_GRAPHQL_QUERY_RESPONSE.geoNode[MOCK_GRAPHQL_REGISTRY];
           const data = registries.nodes;
 
-          it('should call mockGeoGqClient with after variable but no before variable as well as a first variable but no last variable', () => {
-            return testAction(
+          it('should call mockGeoGqClient with after variable but no before variable as well as a first variable but no last variable', async () => {
+            await testAction(
               actions.fetchReplicableItems,
               direction,
               state,
@@ -197,18 +206,18 @@ describe('GeoReplicable Store Actions', () => {
                   payload: { data, pagination: registries.pageInfo },
                 },
               ],
-              () => {
-                expect(mockGeoGqClient.query).toHaveBeenCalledWith({
-                  query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
-                  variables: {
-                    before: '',
-                    after: MOCK_GRAPHQL_PAGINATION_DATA.endCursor,
-                    first: DEFAULT_PAGE_SIZE,
-                    last: null,
-                  },
-                });
-              },
             );
+
+            expect(mockGeoGqClient.query).toHaveBeenCalledWith({
+              query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
+              variables: {
+                before: '',
+                after: MOCK_GRAPHQL_PAGINATION_DATA.endCursor,
+                first: DEFAULT_PAGE_SIZE,
+                last: null,
+                replicationState: null,
+              },
+            });
           });
         });
 
@@ -218,8 +227,8 @@ describe('GeoReplicable Store Actions', () => {
           const registries = MOCK_BASIC_GRAPHQL_QUERY_RESPONSE.geoNode[MOCK_GRAPHQL_REGISTRY];
           const data = registries.nodes;
 
-          it('should call mockGeoGqClient with before variable but no after variable as well as a last variable but no first variable', () => {
-            return testAction(
+          it('should call mockGeoGqClient with before variable but no after variable as well as a last variable but no first variable', async () => {
+            await testAction(
               actions.fetchReplicableItems,
               direction,
               state,
@@ -231,18 +240,18 @@ describe('GeoReplicable Store Actions', () => {
                   payload: { data, pagination: registries.pageInfo },
                 },
               ],
-              () => {
-                expect(mockGeoGqClient.query).toHaveBeenCalledWith({
-                  query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
-                  variables: {
-                    before: MOCK_GRAPHQL_PAGINATION_DATA.startCursor,
-                    after: '',
-                    first: null,
-                    last: DEFAULT_PAGE_SIZE,
-                  },
-                });
-              },
             );
+
+            expect(mockGeoGqClient.query).toHaveBeenCalledWith({
+              query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
+              variables: {
+                before: MOCK_GRAPHQL_PAGINATION_DATA.startCursor,
+                after: '',
+                first: null,
+                last: DEFAULT_PAGE_SIZE,
+                replicationState: null,
+              },
+            });
           });
         });
 
@@ -252,10 +261,10 @@ describe('GeoReplicable Store Actions', () => {
           const registries = MOCK_BASIC_GRAPHQL_QUERY_RESPONSE.geoNode[MOCK_GRAPHQL_REGISTRY];
           const data = registries.nodes;
 
-          it('should call mockGeoGqClient with all uppercase replicationState', () => {
+          it('should call mockGeoGqClient with all uppercase replicationState', async () => {
             state.statusFilter = FILTER_OPTIONS[1].value;
 
-            return testAction(
+            await testAction(
               actions.fetchReplicableItems,
               direction,
               state,
@@ -267,19 +276,18 @@ describe('GeoReplicable Store Actions', () => {
                   payload: { data, pagination: registries.pageInfo },
                 },
               ],
-              () => {
-                expect(mockGeoGqClient.query).toHaveBeenCalledWith({
-                  query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
-                  variables: {
-                    before: '',
-                    after: '',
-                    first: DEFAULT_PAGE_SIZE,
-                    last: null,
-                    replicationState: FILTER_OPTIONS[1].value.toUpperCase(),
-                  },
-                });
-              },
             );
+
+            expect(mockGeoGqClient.query).toHaveBeenCalledWith({
+              query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
+              variables: {
+                before: '',
+                after: '',
+                first: DEFAULT_PAGE_SIZE,
+                last: null,
+                replicationState: FILTER_OPTIONS[1].value.toUpperCase(),
+              },
+            });
           });
         });
       });
@@ -324,26 +332,24 @@ describe('GeoReplicable Store Actions', () => {
         state,
         [{ type: types.RECEIVE_INITIATE_ALL_REPLICABLE_ACTION_SUCCESS }],
         [{ type: 'fetchReplicableItems' }],
-        () => {
-          expect(toast).toHaveBeenCalledTimes(1);
-          toast.mockClear();
-        },
       );
+
+      expect(toast).toHaveBeenCalledTimes(1);
+      toast.mockClear();
     });
   });
 
   describe('receiveInitiateAllReplicableActionError', () => {
-    it('should commit mutation RECEIVE_INITIATE_ALL_REPLICABLE_ACTION_ERROR', () => {
-      return testAction(
+    it('should commit mutation RECEIVE_INITIATE_ALL_REPLICABLE_ACTION_ERROR', async () => {
+      await testAction(
         actions.receiveInitiateAllReplicableActionError,
         { action: ACTION_TYPES.RESYNC_ALL },
         state,
         [{ type: types.RECEIVE_INITIATE_ALL_REPLICABLE_ACTION_ERROR }],
         [],
-        () => {
-          expect(createAlert).toHaveBeenCalledTimes(1);
-        },
       );
+
+      expect(createAlert).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -356,8 +362,8 @@ describe('GeoReplicable Store Actions', () => {
           jest.spyOn(mockGeoGqClient, 'mutate').mockResolvedValue({});
         });
 
-        it('should call mockGeoClient with correct parameters and success actions', () => {
-          return testAction(
+        it('should call mockGeoClient with correct parameters and success actions', async () => {
+          await testAction(
             actions.initiateAllReplicableAction,
             { action },
             state,
@@ -369,14 +375,6 @@ describe('GeoReplicable Store Actions', () => {
                 payload: { action },
               },
             ],
-            () => {
-              expect(mockGeoGqClient.query).toHaveBeenCalledWith({
-                mutate: replicableTypeBulkUpdateMutation,
-                variables: {
-                  action: action.toUpperCase(),
-                },
-              });
-            },
           );
         });
       });
@@ -386,8 +384,8 @@ describe('GeoReplicable Store Actions', () => {
           jest.spyOn(mockGeoGqClient, 'mutate').mockRejectedValue({});
         });
 
-        it('should call mockGeoClient with correct parameters and error actions', () => {
-          return testAction(
+        it('should call mockGeoClient with correct parameters and error actions', async () => {
+          await testAction(
             actions.initiateAllReplicableAction,
             { action },
             state,
@@ -399,15 +397,15 @@ describe('GeoReplicable Store Actions', () => {
                 payload: { action },
               },
             ],
-            () => {
-              expect(mockGeoGqClient.query).toHaveBeenCalledWith({
-                mutate: replicableTypeBulkUpdateMutation,
-                variables: {
-                  action: action.toUpperCase(),
-                },
-              });
-            },
           );
+
+          expect(mockGeoGqClient.mutate).toHaveBeenCalledWith({
+            mutation: replicableTypeBulkUpdateMutation,
+            variables: {
+              action: action.toUpperCase(),
+              registryClass: MOCK_GRAPHQL_REGISTRY_CLASS,
+            },
+          });
         });
       });
     });
@@ -465,8 +463,8 @@ describe('GeoReplicable Store Actions', () => {
           jest.spyOn(mockGeoGqClient, 'mutate').mockResolvedValue({});
         });
 
-        it('should call mockGeoClient with correct parameters and success actions', () => {
-          return testAction(
+        it('should call mockGeoClient with correct parameters and success actions', async () => {
+          await testAction(
             actions.initiateReplicableAction,
             { registryId, name, action },
             state,
@@ -478,17 +476,16 @@ describe('GeoReplicable Store Actions', () => {
                 payload: { name, action },
               },
             ],
-            () => {
-              expect(mockGeoGqClient.query).toHaveBeenCalledWith({
-                mutate: replicableTypeUpdateMutation,
-                variables: {
-                  action: action.toUpperCase(),
-                  registryId,
-                  registryClass: MOCK_GRAPHQL_REGISTRY_CLASS,
-                },
-              });
-            },
           );
+
+          expect(mockGeoGqClient.mutate).toHaveBeenCalledWith({
+            mutation: replicableTypeUpdateMutation,
+            variables: {
+              action: action.toUpperCase(),
+              registryId,
+              registryClass: MOCK_GRAPHQL_REGISTRY_CLASS,
+            },
+          });
         });
       });
 
@@ -497,8 +494,8 @@ describe('GeoReplicable Store Actions', () => {
           jest.spyOn(mockGeoGqClient, 'mutate').mockRejectedValue({});
         });
 
-        it('should call mockGeoClient with correct parameters and error actions', () => {
-          return testAction(
+        it('should call mockGeoClient with correct parameters and error actions', async () => {
+          await testAction(
             actions.initiateReplicableAction,
             { registryId, name, action },
             state,
@@ -510,17 +507,16 @@ describe('GeoReplicable Store Actions', () => {
                 payload: { name },
               },
             ],
-            () => {
-              expect(mockGeoGqClient.query).toHaveBeenCalledWith({
-                mutate: replicableTypeUpdateMutation,
-                variables: {
-                  action: action.toUpperCase(),
-                  registryId,
-                  registryClass: MOCK_GRAPHQL_REGISTRY_CLASS,
-                },
-              });
-            },
           );
+
+          expect(mockGeoGqClient.mutate).toHaveBeenCalledWith({
+            mutation: replicableTypeUpdateMutation,
+            variables: {
+              action: action.toUpperCase(),
+              registryId,
+              registryClass: MOCK_GRAPHQL_REGISTRY_CLASS,
+            },
+          });
         });
       });
     });

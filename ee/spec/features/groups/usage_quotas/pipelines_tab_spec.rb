@@ -54,7 +54,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
       end
 
       within_testid('pipelines-quota-tab-project-table') do
-        expect(page).to have_content('Shared runners are disabled, so there are no limits set on pipeline usage')
+        expect(page).to have_content('Instance runners are disabled, so there are no limits set on pipeline usage')
       end
     end
   end
@@ -209,7 +209,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
       quarantine: "https://gitlab.com/gitlab-org/gitlab/-/issues/437680" do
       within_testid('pipelines-quota-tab-project-table') do
         expect(page).to have_content("Project")
-        expect(page).to have_content("Shared runner duration")
+        expect(page).to have_content("Instance runner duration")
         expect(page).to have_content("Compute usage")
 
         shared_runner_durations = all('[data-testid="project_shared_runner_duration"]').map(&:text)

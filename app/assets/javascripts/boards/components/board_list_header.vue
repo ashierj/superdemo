@@ -21,12 +21,10 @@ import setActiveBoardItemMutation from 'ee_else_ce/boards/graphql/client/set_act
 import AccessorUtilities from '~/lib/utils/accessor';
 import {
   ListType,
-  toggleFormEventPrefix,
   updateListQueries,
   toggleCollapsedMutations,
   listsDeferredQuery,
 } from 'ee_else_ce/boards/constants';
-import eventHub from '../eventhub';
 import { setError } from '../graphql/cache_updates';
 import ItemCount from './item_count.vue';
 
@@ -109,6 +107,9 @@ export default {
     },
     itemsCount() {
       return this.isEpicBoard ? this.list.metadata.epicsCount : this.boardList?.issuesCount;
+    },
+    boardItemsSizeExceedsMax() {
+      return this.list.maxIssueCount > 0 && this.itemsCount > this.list.maxIssueCount;
     },
     listAssignee() {
       return this.list?.assignee?.username || '';
@@ -232,7 +233,7 @@ export default {
     openSidebarSettings() {
       this.$apollo.mutate({
         mutation: setActiveBoardItemMutation,
-        variables: { boardItem: null },
+        variables: { boardItem: null, listId: null },
       });
       this.$emit('setActiveList', this.list.id);
 
@@ -241,18 +242,15 @@ export default {
     showScopedLabels(label) {
       return this.scopedLabelsAvailable && isScopedLabel(label);
     },
-    showNewIssueForm() {
+    showNewForm() {
       if (this.isSwimlanesHeader) {
-        eventHub.$emit('open-unassigned-lane');
+        this.$emit('openUnassignedLane');
         this.$nextTick(() => {
-          eventHub.$emit(`${toggleFormEventPrefix.issue}${this.list.id}`);
+          this.$emit('toggleNewForm');
         });
       } else {
-        eventHub.$emit(`${toggleFormEventPrefix.issue}${this.list.id}`);
+        this.$emit('toggleNewForm');
       }
-    },
-    showNewEpicForm() {
-      eventHub.$emit(`${toggleFormEventPrefix.epic}${this.list.id}`);
     },
     toggleExpanded() {
       const collapsed = !this.list.collapsed;
@@ -331,8 +329,9 @@ export default {
   <header
     :class="{
       'gl-h-full': list.collapsed,
-      'board-inner gl-bg-gray-50': isSwimlanesHeader,
+      'gl-bg-gray-50': isSwimlanesHeader,
       'gl-border-t-solid gl-border-4 gl-rounded-top-left-base gl-rounded-top-right-base': isLabelList,
+      'gl-bg-red-50 gl-rounded-top-left-base gl-rounded-top-right-base': boardItemsSizeExceedsMax,
     }"
     :style="headerStyle"
     class="board-header gl-relative"
@@ -493,7 +492,7 @@ export default {
           size="small"
           icon="plus"
           data-testid="new-issue-btn"
-          @click="showNewIssueForm"
+          @click="showNewForm"
         />
 
         <gl-button
@@ -504,7 +503,7 @@ export default {
           size="small"
           icon="plus"
           data-testid="new-epic-btn"
-          @click="showNewEpicForm"
+          @click="showNewForm"
         />
 
         <gl-button

@@ -155,8 +155,8 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
 
         context 'with found cyclonedx report' do
           let(:user) { developer }
-          let(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report, project: project) }
-
+          let(:pipeline) { create(:ee_ci_pipeline, report_type, project: project) }
+          let(:report_type) { :with_dependency_list_report }
           let(:build) { create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline) }
 
           before do
@@ -193,6 +193,22 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
 
               expect { get project_dependencies_path(project, **params, format: :json) }
                 .not_to exceed_query_limit(control_count)
+            end
+
+            context 'without cyclonedx artifacts' do
+              let(:build) { create(:ee_ci_build, :success, :dependency_scanning, pipeline: pipeline) }
+
+              it 'does not returns any data due to job not being present' do
+                expect(json_response).to eq({ "report" => { "status" => "job_not_set_up" }, "dependencies" => [] })
+              end
+            end
+
+            context 'with only cyclonedx artifacts' do
+              let(:report_type) { :with_cyclonedx_report }
+
+              it 'returns data based on sbom occurrences' do
+                expect(json_response['dependencies']).to match_array(hash_including('occurrence_id' => occurrence.id))
+              end
             end
           end
         end

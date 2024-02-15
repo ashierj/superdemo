@@ -1,6 +1,5 @@
-import { groupBy, uniqueId } from 'lodash';
-import { ACCESS_LEVEL_LABELS } from '~/access_level/constants';
-import { __, s__, sprintf } from '~/locale';
+import { uniqueId } from 'lodash';
+import { __, s__ } from '~/locale';
 import {
   generateBadges as CEGenerateBadges,
   roleDropdownItems as CERoleDropdownItems,
@@ -60,21 +59,15 @@ export const roleDropdownItems = ({ validRoles, customRoles }) => {
 
   const { flatten: staticRoleDropdownItems } = CERoleDropdownItems({ validRoles });
 
-  const customRoleDropdownItems = customRoles.map(({ baseAccessLevel, name, memberRoleId }) => ({
-    accessLevel: baseAccessLevel,
-    memberRoleId,
-    text: name,
-    value: uniqueId('role-custom-'),
-  }));
-
-  const customRoleDropdownGroups = Object.entries(
-    groupBy(customRoleDropdownItems, 'accessLevel'),
-  ).map(([accessLevel, options]) => ({
-    text: sprintf(s__('MemberRole|Custom roles based on %{accessLevel}'), {
-      accessLevel: ACCESS_LEVEL_LABELS[accessLevel],
+  const customRoleDropdownItems = customRoles.map(
+    ({ baseAccessLevel, name, memberRoleId, description }) => ({
+      accessLevel: baseAccessLevel,
+      memberRoleId,
+      text: name,
+      value: uniqueId('role-custom-'),
+      description,
     }),
-    options,
-  }));
+  );
 
   return {
     flatten: [...staticRoleDropdownItems, ...customRoleDropdownItems],
@@ -83,7 +76,10 @@ export const roleDropdownItems = ({ validRoles, customRoles }) => {
         text: s__('MemberRole|Standard roles'),
         options: staticRoleDropdownItems,
       },
-      ...customRoleDropdownGroups,
+      {
+        text: s__('MemberRole|Custom roles'),
+        options: customRoleDropdownItems,
+      },
     ],
   };
 };

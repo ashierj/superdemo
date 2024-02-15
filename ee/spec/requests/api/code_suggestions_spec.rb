@@ -6,12 +6,13 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   include WorkhorseHelpers
 
   let_it_be(:authorized_user) { create(:user) }
+  let_it_be(:unauthorized_user) { build(:user) }
   let_it_be(:tokens) do
     {
       api: create(:personal_access_token, scopes: %w[api], user: authorized_user),
       read_api: create(:personal_access_token, scopes: %w[read_api], user: authorized_user),
       ai_features: create(:personal_access_token, scopes: %w[ai_features], user: authorized_user),
-      unauthorized_user: create(:personal_access_token, scopes: %w[api], user: build(:user))
+      unauthorized_user: create(:personal_access_token, scopes: %w[api], user: unauthorized_user)
     }
   end
 
@@ -25,6 +26,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     allow(Ability).to receive(:allowed?).and_call_original
     allow(Ability).to receive(:allowed?).with(authorized_user, :access_code_suggestions, :global)
                                         .and_return(access_code_suggestions)
+    allow(Ability).to receive(:allowed?).with(unauthorized_user, :access_code_suggestions, :global)
+                                        .and_return(false)
 
     allow(Gitlab::InternalEvents).to receive(:track_event)
   end
@@ -60,7 +63,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       let(:response_body) do
         {
           'access_token' => kind_of(String),
-          'expires_in' => Gitlab::Ai::AccessToken::EXPIRES_IN,
+          'expires_in' => Gitlab::CloudConnector::SelfIssuedToken::EXPIRES_IN,
           'created_at' => Time.now.to_i
         }
       end
@@ -124,7 +127,9 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     context 'when using token with :read_api scope but for an unauthorized user' do
       let(:access_token) { tokens[:unauthorized_user] }
 
-      it { expect(response).to have_gitlab_http_status(:unauthorized) }
+      it 'checks access_code_suggestions ability for user and return 401 unauthorized' do
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
     end
   end
 
@@ -164,10 +169,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           it_behaves_like 'an endpoint authenticated with token'
 
           it 'sets the access token realm to SaaS' do
-            expect(Gitlab::Ai::AccessToken).to receive(:new).with(
+            expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(
               current_user,
               scopes: [:code_suggestions],
-              gitlab_realm: Gitlab::Ai::AccessToken::GITLAB_REALM_SAAS
+              gitlab_realm: Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SAAS
             )
 
             post_api
@@ -187,10 +192,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             end
 
             it 'sets the access token realm to self-managed' do
-              expect(Gitlab::Ai::AccessToken).to receive(:new).with(
+              expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(
                 current_user,
                 scopes: [:code_suggestions],
-                gitlab_realm: Gitlab::Ai::AccessToken::GITLAB_REALM_SELF_MANAGED
+                gitlab_realm: Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SELF_MANAGED
               )
 
               post_api
@@ -307,7 +312,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             'URL' => 'https://cloud.gitlab.com/ai/v2/code/completions',
             'AllowRedirects' => false,
             'Body' => body.merge(prompt_version: 1).to_json,
-            'Method' => 'POST'
+            'Method' => 'POST',
+            'ResponseHeaderTimeout' => '55s'
           )
           expect(params['Header']).to include(
             'X-Gitlab-Authentication-Type' => ['oidc'],
@@ -319,42 +325,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             'Content-Type' => ['application/json'],
             'User-Agent' => ['Super Awesome Browser 43.144.12']
           )
-        end
-
-        context 'when use_cloud_connector_lb ff is disabled' do
-          before do
-            stub_feature_flags(use_cloud_connector_lb: false)
-          end
-
-          context 'when service base URL is not set' do
-            before do
-              stub_env('CODE_SUGGESTIONS_BASE_URL', nil)
-            end
-
-            it 'sends requests to this URL instead' do
-              post_api
-
-              _, params = workhorse_send_data
-              expect(params).to include({
-                'URL' => 'https://codesuggestions.gitlab.com/v2/code/completions'
-              })
-            end
-          end
-
-          context 'when overriding service base URL' do
-            before do
-              stub_env('CODE_SUGGESTIONS_BASE_URL', 'http://test.com')
-            end
-
-            it 'sends requests to this URL instead' do
-              post_api
-
-              _, params = workhorse_send_data
-              expect(params).to include({
-                'URL' => 'http://test.com/v2/code/completions'
-              })
-            end
-          end
         end
 
         context 'with telemetry headers' do
@@ -472,7 +442,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       end
 
       before do
-        allow_next_instance_of(Gitlab::Ai::AccessToken) do |instance|
+        allow_next_instance_of(Gitlab::CloudConnector::SelfIssuedToken) do |instance|
           allow(instance).to receive(:encoded).and_return(token)
         end
       end
@@ -604,42 +574,18 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               post_api
             end
 
-            context  'when use_cloud_connector_lb is disabled' do
-              before do
-                stub_feature_flags(use_cloud_connector_lb: false)
-              end
-
-              it 'sends requests to the code generation endpoint' do
-                expected_body = body.merge(
-                  model_provider: 'anthropic',
-                  prompt_version: 2,
-                  prompt: prompt,
-                  current_file: {
-                    file_name: file_name,
-                    content_above_cursor: prefix,
-                    content_below_cursor: ''
-                  },
-                  model_name: 'claude-2.1'
-                )
-                expect(Gitlab::Workhorse)
-                  .to receive(:send_url)
-                    .with(
-                      'https://codesuggestions.gitlab.com/v2/code/generations',
-                      hash_including(body: expected_body.to_json)
-                    )
-
-                post_api
-              end
-            end
-
             it 'includes additional headers for SaaS' do
-              add_on_purchase.namespace.namespace_settings.update_attribute(:code_suggestions, true)
+              add_on_purchase.namespace.namespace_settings.update_attribute(:code_suggestions, false)
+              group = create(:group)
+              group.add_developer(authorized_user)
+              group.namespace_settings.update_attribute(:code_suggestions, true)
 
               post_api
 
               _, params = workhorse_send_data
               expect(params['Header']).to include(
-                'X-Gitlab-Saas-Namespace-Ids' => [add_on_purchase.namespace.id.to_s]
+                'X-Gitlab-Saas-Namespace-Ids' => [group.id.to_s],
+                'X-Gitlab-Saas-Duo-Pro-Namespace-Ids' => [add_on_purchase.namespace.id.to_s]
               )
             end
 
@@ -791,35 +737,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               post_api
             end
 
-            context  'when use_cloud_connector_lb is disabled' do
-              before do
-                stub_feature_flags(use_cloud_connector_lb: false)
-              end
-
-              it 'sends requests to the code generation endpoint' do
-                expected_body = body.merge(
-                  model_provider: 'anthropic',
-                  prompt_version: 2,
-                  prompt: prompt,
-                  current_file: {
-                    file_name: file_name,
-                    content_above_cursor: prefix,
-                    content_below_cursor: ''
-                  },
-                  model_name: 'claude-2.1'
-                )
-
-                expect(Gitlab::Workhorse)
-                  .to receive(:send_url)
-                        .with(
-                          'https://codesuggestions.gitlab.com/v2/code/generations',
-                          hash_including(body: expected_body.to_json)
-                        )
-
-                post_api
-              end
-            end
-
             context 'when body is too big' do
               before do
                 stub_const("#{described_class}::MAX_BODY_SIZE", 10)
@@ -906,27 +823,20 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
   end
 
-  context 'when checking in project has code suggestions enabled' do
-    let_it_be(:enabled_project) { create(:project, :with_code_suggestions_enabled) }
-    let(:current_user) { authorized_user }
-    let_it_be(:disabled_project) { create(:project, :with_code_suggestions_disabled) }
-    let_it_be(:secret_project) { create(:project, :with_code_suggestions_enabled) }
+  context 'when checking if project has duo features enabled' do
+    let_it_be(:enabled_project) { create(:project, :in_group, :private, :with_duo_features_enabled) }
+    let_it_be(:disabled_project) { create(:project, :in_group, :with_duo_features_disabled) }
 
-    before_all do
-      enabled_project.add_maintainer(authorized_user)
-      disabled_project.add_maintainer(authorized_user)
-    end
+    let(:current_user) { authorized_user }
 
     subject { post api("/code_suggestions/enabled", current_user), params: { project_path: project_path } }
 
-    context 'when not logged in' do
-      let(:current_user) { nil }
-      let(:project_path) { enabled_project.full_path }
+    context 'when authorized to view project' do
+      before_all do
+        enabled_project.add_maintainer(authorized_user)
+        disabled_project.add_maintainer(authorized_user)
+      end
 
-      it { is_expected.to eq(401) }
-    end
-
-    context 'when authorized' do
       context 'when enabled' do
         let(:project_path) { enabled_project.full_path }
 
@@ -938,18 +848,25 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
         it { is_expected.to eq(403) }
       end
+    end
 
-      context 'when user cannot access project' do
-        let(:project_path) { secret_project.full_path }
+    context 'when not logged in' do
+      let(:current_user) { nil }
+      let(:project_path) { enabled_project.full_path }
 
-        it { is_expected.to eq(404) }
-      end
+      it { is_expected.to eq(401) }
+    end
 
-      context 'when does not exist' do
-        let(:project_path) { 'not_a_real_project' }
+    context 'when logged in but not authorized to view project' do
+      let(:project_path) { enabled_project.full_path }
 
-        it { is_expected.to eq(404) }
-      end
+      it { is_expected.to eq(404) }
+    end
+
+    context 'when project for project path does not exist' do
+      let(:project_path) { 'not_a_real_project' }
+
+      it { is_expected.to eq(404) }
     end
   end
 end

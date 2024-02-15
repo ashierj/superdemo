@@ -128,7 +128,6 @@ export default {
   <section>
     <slot name="search-and-sort-bar"> </slot>
     <slot name="error-alert"></slot>
-
     <error-alert
       v-if="addOnAssignmentError"
       data-testid="add-on-assignment-error"
@@ -137,7 +136,6 @@ export default {
       :dismissible="true"
       @dismiss="clearAddOnAssignmentError"
     />
-
     <gl-table
       :items="tableItems"
       :fields="tableFields"
@@ -158,18 +156,19 @@ export default {
         </div>
       </template>
       <template #cell(user)="{ item }">
-        <div class="gl-display-flex">
-          <gl-avatar-link target="blank" :href="item.webUrl" :alt="item.name">
-            <gl-avatar-labeled
-              :src="item.avatarUrl"
-              :size="$options.avatarSize"
-              :label="item.name"
-              :sub-label="item.username"
-            />
-          </gl-avatar-link>
-        </div>
+        <slot name="user-cell" :item="item">
+          <div class="gl-display-flex">
+            <gl-avatar-link target="_blank" :href="item.webUrl" :alt="item.name">
+              <gl-avatar-labeled
+                :src="item.avatarUrl"
+                :size="$options.avatarSize"
+                :label="item.name"
+                :sub-label="item.username"
+              />
+            </gl-avatar-link>
+          </div>
+        </slot>
       </template>
-
       <template #cell(email)="{ item }">
         <div data-testid="email">
           <span v-if="item.publicEmail" class="gl-text-gray-900">{{ item.publicEmail }}</span>
@@ -183,7 +182,6 @@ export default {
           </span>
         </div>
       </template>
-
       <template #cell(codeSuggestionsAddon)="{ item }">
         <code-suggestions-addon-assignment
           :user-id="item.id"
@@ -193,11 +191,9 @@ export default {
           @clearAddOnAssignmentError="clearAddOnAssignmentError"
         />
       </template>
-
       <template #cell(maxRole)="{ item }">
         <gl-badge v-if="item.maxRole" data-testid="max-role">{{ item.maxRole }}</gl-badge>
       </template>
-
       <template #cell(lastActivityTime)="data">
         <span data-testid="last-activity-on">
           {{ data.item.lastActivityOn ? data.item.lastActivityOn : __('Never') }}

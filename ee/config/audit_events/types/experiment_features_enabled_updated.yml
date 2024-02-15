@@ -7,3 +7,4 @@ feature_category: not_owned
 milestone: '16.0'
 saved_to_database: true
 streamed: true
+scope: [Group]

@@ -1,5 +1,5 @@
 %li
-  .float-right
+  .gl-float-right
     = link_button_to group_saml_group_link_path(group, saml_group_link), method: :delete, 'aria-label': _('Remove link'),
       data: { confirm: s_('GroupSAML|Are you sure you want to remove the SAML group link?'), 'confirm-btn-variant': 'danger' }, variant: :danger, icon: 'unlink' do
       = _('Remove')

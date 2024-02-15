@@ -1,5 +1,0 @@
----
-name: google_artifact_registry
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/140086
-milestone: '16.8'
-group: group::container registry

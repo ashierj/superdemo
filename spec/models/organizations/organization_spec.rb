@@ -88,6 +88,20 @@ RSpec.describe Organizations::Organization, type: :model, feature_category: :cel
     end
   end
 
+  describe '.default?' do
+    context 'when organization is default' do
+      it 'returns true' do
+        expect(described_class.default?(default_organization.id)).to eq(true)
+      end
+    end
+
+    context 'when organization is not default' do
+      it 'returns false' do
+        expect(described_class.default?(organization.id)).to eq(false)
+      end
+    end
+  end
+
   describe '#id' do
     context 'when organization is default' do
       it 'has id 1' do
@@ -237,6 +251,34 @@ RSpec.describe Organizations::Organization, type: :model, feature_category: :cel
 
       expect(Gitlab::UrlBuilder).to receive(:build).with(organization, only_path: nil).and_return(web_url)
       expect(organization.web_url).to eq(web_url)
+    end
+  end
+
+  describe '.search' do
+    using RSpec::Parameterized::TableSyntax
+
+    subject { described_class.search(query) }
+
+    context 'when searching by name' do
+      where(:query, :expected_organizations) do
+        'Organization' | [ref(:organization)]
+        'default'      | [ref(:default_organization)]
+      end
+
+      with_them do
+        it { is_expected.to contain_exactly(*expected_organizations) }
+      end
+    end
+
+    context 'when searching by path' do
+      where(:query, :expected_organizations) do
+        'organization' | [ref(:organization)]
+        'default'      | [ref(:default_organization)]
+      end
+
+      with_them do
+        it { is_expected.to contain_exactly(*expected_organizations) }
+      end
     end
   end
 end

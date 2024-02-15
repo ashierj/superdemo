@@ -38,6 +38,28 @@ RSpec.describe 'creating member role', feature_category: :system_access do
 
   subject(:create_member_role) { graphql_mutation_response(:member_role_create) }
 
+  shared_examples 'a mutation that creates a member role' do
+    it 'returns success', :aggregate_failures do
+      post_graphql_mutation(mutation, current_user: current_user)
+
+      expect(graphql_errors).to be_nil
+
+      expect(create_member_role['memberRole']['enabledPermissions']['nodes'].flat_map(&:values))
+        .to match_array(permissions)
+    end
+
+    it 'creates the member role', :aggregate_failures do
+      expect { post_graphql_mutation(mutation, current_user: current_user) }
+        .to change { MemberRole.count }.by(1)
+
+      member_role = MemberRole.last
+
+      expect(member_role.read_vulnerability).to eq(true)
+
+      expect(member_role.namespace).to eq(group)
+    end
+  end
+
   context 'without the custom roles feature' do
     before do
       stub_licensed_features(custom_roles: false)
@@ -74,49 +96,36 @@ RSpec.describe 'creating member role', feature_category: :system_access do
         end
 
         context 'when on self-managed' do
-          it_behaves_like 'a mutation that returns a top-level access error'
+          context 'when restrict_member_roles feature-flag is disabled' do
+            before do
+              stub_feature_flags(restrict_member_roles: false)
+            end
+
+            it_behaves_like 'a mutation that creates a member role'
+          end
+
+          context 'when restrict_member_roles feature-flag is enabled' do
+            before do
+              stub_feature_flags(restrict_member_roles: true)
+            end
+
+            it_behaves_like 'a mutation that returns a top-level access error'
+          end
         end
 
-        context 'when on Saas', :saas do
+        context 'when on SaaS' do
+          before do
+            stub_saas_features(gitlab_com_subscriptions: true)
+          end
+
           context 'with valid arguments' do
-            it 'returns success' do
-              post_graphql_mutation(mutation, current_user: current_user)
-
-              expect(graphql_errors).to be_nil
-              expect(create_member_role['memberRole']['enabledPermissions']['nodes'].flat_map(&:values))
-                .to match_array(MemberRole.all_customizable_permissions.keys.map(&:to_s).map(&:upcase))
-            end
-
-            it 'creates the member role' do
-              expect { post_graphql_mutation(mutation, current_user: current_user) }
-                .to change { MemberRole.count }.by(1)
-
-              member_role = MemberRole.last
-
-              expect(member_role.read_vulnerability).to eq(true)
-              expect(member_role.namespace).to eq(group)
-            end
+            it_behaves_like 'a mutation that creates a member role'
           end
 
           context 'with an array of permissions' do
             let(:permissions) { ['READ_VULNERABILITY'] }
 
-            it 'returns success' do
-              post_graphql_mutation(mutation, current_user: current_user)
-
-              expect(graphql_errors).to be_nil
-              mutation_response = create_member_role['memberRole']
-              expect(mutation_response['enabledPermissions']['nodes'].flat_map(&:values)).to eq(['READ_VULNERABILITY'])
-            end
-
-            it 'creates a member role with the specified permissions' do
-              expect do
-                post_graphql_mutation(mutation, current_user: current_user)
-              end.to change { MemberRole.count }.by(1)
-
-              member_role = MemberRole.last
-              expect(member_role.read_vulnerability).to eq(true)
-            end
+            it_behaves_like 'a mutation that creates a member role'
           end
 
           context 'with an unknown permission' do
@@ -140,7 +149,14 @@ RSpec.describe 'creating member role', feature_category: :system_access do
 
     context 'when creating an instance level member role' do
       before do
-        input.delete(:group_path)
+        stub_saas_features(gitlab_com_subscriptions: false)
+      end
+
+      let(:input) do
+        {
+          base_access_level: 'GUEST',
+          permissions: permissions
+        }
       end
 
       context 'with unauthorized user' do
@@ -152,29 +168,35 @@ RSpec.describe 'creating member role', feature_category: :system_access do
           current_user.update!(admin: true)
         end
 
-        context 'when on SaaS', :saas do
-          it_behaves_like 'a mutation that returns top-level errors', errors: ['group_path argument is required.']
-        end
-
-        context 'when running on self-managed' do
-          it 'returns success' do
+        context 'when on self-managed' do
+          it 'returns success', :aggregate_failures do
             post_graphql_mutation(mutation, current_user: current_user)
 
             expect(graphql_errors).to be_nil
+
             expect(create_member_role['memberRole']['enabledPermissions']['nodes'].flat_map(&:values))
-              .to include('READ_VULNERABILITY')
-            expect(create_member_role['memberRole']['namespace']).to be_nil
+              .to match_array(permissions)
           end
 
-          it 'creates the member role' do
+          it 'creates the member role', :aggregate_failures do
             expect { post_graphql_mutation(mutation, current_user: current_user) }
               .to change { MemberRole.count }.by(1)
 
             member_role = MemberRole.last
 
             expect(member_role.read_vulnerability).to eq(true)
+
             expect(member_role.namespace).to be_nil
           end
+        end
+
+        context 'when on SaaS' do
+          before do
+            stub_saas_features(gitlab_com_subscriptions: true)
+            stub_feature_flags(restrict_member_roles: false)
+          end
+
+          it_behaves_like 'a mutation that returns top-level errors', errors: ['group_path argument is required.']
         end
       end
     end

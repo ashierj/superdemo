@@ -33,30 +33,6 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
         expect(subject.map { |u| u['id'] }).not_to include(minimal_access_member.user_id)
       end
-
-      context 'when members_api_expose_enterprise_users_emails_only FF is disabled' do
-        before do
-          stub_feature_flags(members_api_expose_enterprise_users_emails_only: false)
-        end
-
-        context 'when the current_user is a group owner' do
-          let_it_be(:member) { create(:group_member, :owner, group: group) }
-
-          it_behaves_like 'members response with hidden email' do
-            let(:email) { member.user.email }
-          end
-
-          context 'when member user is provisioned by the group' do
-            before do
-              member.user.update!(provisioned_by_group: group)
-            end
-
-            it_behaves_like 'members response with exposed email' do
-              let(:email) { member.user.email }
-            end
-          end
-        end
-      end
     end
 
     describe 'POST /groups/:id/members' do
@@ -261,7 +237,8 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
               put_member
 
               expect(response).to have_gitlab_http_status(:bad_request)
-              expect(json_response['message']['member_role']).to contain_exactly('not found')
+              expect(json_response['message']['member_namespace'])
+                .to contain_exactly("must be in same hierarchy as custom role's namespace")
             end
           end
 

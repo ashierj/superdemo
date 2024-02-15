@@ -11,7 +11,7 @@ To help ensure consistency in the documentation, the Technical Writing team
 recommends these word choices. In addition:
 
 - The GitLab handbook contains a list of
-  [top misused terms](https://about.gitlab.com/handbook/communication/top-misused-terms/).
+  [top misused terms](https://handbook.gitlab.com/handbook/communication/top-misused-terms/).
 - The documentation [style guide](../styleguide#language) includes details
   about language and capitalization.
 - The GitLab handbook provides guidance on the [use of third-party trademarks](https://handbook.gitlab.com/handbook/legal/policies/product-third-party-trademarks-guidelines/#process-for-adding-third-party-trademarks-to-gitlab).
@@ -782,7 +782,7 @@ Thereafter, use **Git suggestions** by itself.
 
 ## GitLab
 
-Do not make **GitLab** possessive (GitLab's). This guidance follows [GitLab Trademark Guidelines](https://about.gitlab.com/handbook/marketing/brand-and-product-marketing/brand/brand-activation/trademark-guidelines/).
+Do not make **GitLab** possessive (GitLab's). This guidance follows [GitLab Trademark Guidelines](https://handbook.gitlab.com/handbook/marketing/brand-and-product-marketing/brand/brand-activation/trademark-guidelines/).
 
 ## GitLab Dedicated
 
@@ -1581,6 +1581,12 @@ Use lowercase for **runners**. These are the agents that run CI/CD jobs. See als
 
 When referring to runners, if you have to specify that the runners are installed on a customer's GitLab instance,
 use **self-managed** rather than **self-hosted**.
+
+When referring to the scope of runners, use:
+
+- **project runner**: Associated with specific projects.
+- **group runner**: Available to all projects and subgroups in a group.
+- **instance runner**: Available to all groups and projects in a GitLab instance.
 
 ## runner manager, runner managers
 

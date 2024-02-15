@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/api"
+	"gitlab.com/gitlab-org/gitlab/workhorse/internal/config"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/upload/destination"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/upload/exif"
 )
@@ -24,8 +25,9 @@ const maxFilesAllowed = 10
 
 // ErrInjectedClientParam means that the client sent a parameter that overrides one of our own fields
 var (
-	ErrInjectedClientParam  = errors.New("injected client parameter")
-	ErrTooManyFilesUploaded = fmt.Errorf("upload request contains more than %v files", maxFilesAllowed)
+	ErrInjectedClientParam    = errors.New("injected client parameter")
+	ErrTooManyFilesUploaded   = fmt.Errorf("upload request contains more than %v files", maxFilesAllowed)
+	ErrUnexpectedMultipartEOF = fmt.Errorf("unexpected EOF when reading multipart data")
 )
 
 var (
@@ -62,7 +64,7 @@ type rewriter struct {
 	finalizedFields map[string]bool
 }
 
-func rewriteFormFilesFromMultipart(r *http.Request, writer *multipart.Writer, filter MultipartFormProcessor, fa fileAuthorizer, preparer Preparer) error {
+func rewriteFormFilesFromMultipart(r *http.Request, writer *multipart.Writer, filter MultipartFormProcessor, fa fileAuthorizer, preparer Preparer, cfg *config.Config) error {
 	// Create multipart reader
 	reader, err := r.MultipartReader()
 	if err != nil {
@@ -86,6 +88,14 @@ func rewriteFormFilesFromMultipart(r *http.Request, writer *multipart.Writer, fi
 			if err == io.EOF {
 				break
 			}
+			// Unfortunately as described in https://github.com/golang/go/issues/54133,
+			// we don't have a good way to determine the actual error cause of NextPart()
+			// without an ugly string comparison.
+			// Note that io.EOF is treated differently from an unexpected EOF:
+			// https://github.com/golang/go/blob/69d6c7b8ee62b4db5a8f6399e15f27d47b209a29/src/mime/multipart/multipart.go#L395-L405
+			if err.Error() == "multipart: NextPart: EOF" {
+				return ErrUnexpectedMultipartEOF
+			}
 			return err
 		}
 
@@ -100,7 +110,7 @@ func rewriteFormFilesFromMultipart(r *http.Request, writer *multipart.Writer, fi
 		}
 
 		if filename != "" {
-			err = rew.handleFilePart(r, name, p)
+			err = rew.handleFilePart(r, name, p, cfg)
 		} else {
 			err = rew.copyPart(r.Context(), name, p)
 		}
@@ -120,7 +130,7 @@ func parseAndNormalizeContentDisposition(header textproto.MIMEHeader) (string, s
 	return params["name"], params["filename"]
 }
 
-func (rew *rewriter) handleFilePart(r *http.Request, name string, p *multipart.Part) error {
+func (rew *rewriter) handleFilePart(r *http.Request, name string, p *multipart.Part, cfg *config.Config) error {
 	if rew.filter.Count() >= maxFilesAllowed {
 		return ErrTooManyFilesUploaded
 	}
@@ -171,7 +181,7 @@ func (rew *rewriter) handleFilePart(r *http.Request, name string, p *multipart.P
 
 	multipartFileUploadBytes.WithLabelValues(rew.filter.Name()).Add(float64(fh.Size))
 
-	return rew.filter.ProcessFile(ctx, name, fh, rew.writer)
+	return rew.filter.ProcessFile(ctx, name, fh, rew.writer, cfg)
 }
 
 func (rew *rewriter) copyPart(ctx context.Context, name string, p *multipart.Part) error {

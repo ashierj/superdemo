@@ -97,7 +97,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
       context 'when user has permission to read resource' do
         before do
           stub_application_setting(check_namespace_plan: true)
-          stub_licensed_features(summarize_notes: true, ai_features: true)
+          stub_licensed_features(ai_chat: true)
 
           project.add_guest(user)
           allow(project.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)

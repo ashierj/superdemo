@@ -62,23 +62,6 @@ describe('ProjectList', () => {
       createComponent();
     });
 
-    describe('Initial sorting', () => {
-      // https://docs.gitlab.com/ee/user/usage_quotas#project-storage-limit
-      describe('Namespace under Project type storage enforcement', () => {
-        it('will disable sorting by storage field', () => {
-          createComponent({
-            provide: {
-              isUsingNamespaceEnforcement: false,
-              isUsingProjectEnforcementWithLimits: true,
-            },
-          });
-          expect(findTable().props('fields')).toEqual(
-            expect.arrayContaining([expect.objectContaining({ key: 'storage', sortable: false })]),
-          );
-        });
-      });
-    });
-
     describe('rendering a fork', () => {
       it('renders a fork when the storage size and cost factored storage size match', () => {
         const project = createProject({

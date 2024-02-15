@@ -186,7 +186,7 @@ describe('EE approvals license-compliance actions', () => {
   });
 
   describe('putFallbackRule', () => {
-    it('puts correct fallback-data and dispatches "fetchRules" when request is successful', () => {
+    it('puts correct fallback-data and dispatches "fetchRules" when request is successful', async () => {
       const payload = {
         name: 'Foo',
         approvalsRequired: 1,
@@ -195,7 +195,7 @@ describe('EE approvals license-compliance actions', () => {
       };
       axiosMock.onPut(mocks.state.projectPath).replyOnce(HTTP_STATUS_OK);
 
-      return testAction(
+      await testAction(
         actions.putFallbackRule,
         payload,
         state,
@@ -205,10 +205,8 @@ describe('EE approvals license-compliance actions', () => {
             type: 'fetchRules',
           },
         ],
-        () => {
-          expect(axiosMock.history.put[0].data).toBe('{"fallback_approvals_required":1}');
-        },
       );
+      expect(axiosMock.history.put[0].data).toBe('{"fallback_approvals_required":1}');
     });
 
     it('creates an alert error if the request is not successful', async () => {

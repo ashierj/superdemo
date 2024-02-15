@@ -27,6 +27,10 @@ module EE
               adapter.user_by_certificate_assertion(certificate_assertion)
             end
 
+            def find_by_ad_certificate_field(filter_term, adapter)
+              adapter.user(adapter.config.smartcard_ad_cert_field, filter_term)
+            end
+
             def find_by_kerberos_principal(principal, adapter)
               uid, domain = principal.split('@', 2)
               return unless uid && domain

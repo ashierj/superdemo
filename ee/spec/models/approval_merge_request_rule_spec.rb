@@ -168,9 +168,9 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep, feature_categor
     let!(:coverage_rule) { create(:report_approver_rule, :code_coverage) }
     let!(:license_rule) { create(:report_approver_rule, :license_scanning) }
 
-    describe '.not_matching_pattern' do
+    describe '.not_matching_id' do
       it 'returns the correct rules' do
-        expect(described_class.not_matching_pattern(['*.rb', '*.js']))
+        expect(described_class.not_matching_id([rb_rule.id, js_rule.id]))
           .to contain_exactly(css_rule)
       end
     end
@@ -201,6 +201,16 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep, feature_categor
         expect(described_class.coverage)
           .to contain_exactly(coverage_rule)
       end
+    end
+  end
+
+  describe '.applicable_post_merge' do
+    it 'returns only the rules applicable_post_merge true or nil' do
+      create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: false)
+      rule_2 = create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: true)
+      rule_3 = create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: nil)
+
+      expect(described_class.applicable_post_merge).to contain_exactly(rule_2, rule_3)
     end
   end
 
@@ -477,6 +487,14 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep, feature_categor
     context 'with target branch different from project default branch' do
       it 'returns only newly detected' do
         expect(subject).to contain_exactly('new_needs_triage')
+      end
+
+      context 'when vulnerabilty_states is empty' do
+        let(:vulnerability_states) { [] }
+
+        it 'returns only default states' do
+          expect(subject).to contain_exactly('new_needs_triage', 'new_dismissed')
+        end
       end
 
       context 'without newly_detected' do

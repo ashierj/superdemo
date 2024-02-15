@@ -39,7 +39,7 @@ class ApprovalState
     if users.is_a?(ActiveRecord::Relation) && !users.loaded?
       users.where.not(id: merge_request.committers(with_merge_commits: true).select(:id))
     else
-      users - merge_request.committers
+      users - merge_request.committers(with_merge_commits: true)
     end
   end
 
@@ -47,7 +47,7 @@ class ApprovalState
     strong_memoize(:wrapped_approval_rules) do
       next [] unless approval_feature_available?
 
-      if Feature.enabled?(:use_new_rule_finalize_approach, merge_request.project) && merge_request.merged?
+      if merge_request.merged?
         # After merging, we have historical data that we contain invalid approval rules associated with
         # the merge request. We should remove any of these invalid approver rules.
         # We also removed any that are not approved, as they would have not been
@@ -208,7 +208,7 @@ class ApprovalState
 
   def user_defined_rules
     strong_memoize(:user_defined_rules) do
-      if approval_rules_overwritten? || (Feature.enabled?(:use_new_rule_finalize_approach, merge_request.project) && merge_request.merged? && user_defined_merge_request_rules.any?)
+      if approval_rules_overwritten? || (merge_request.merged? && user_defined_merge_request_rules.any?)
         user_defined_merge_request_rules
       else
         project.visible_user_defined_rules(branch: target_branch).map do |rule|
@@ -293,8 +293,8 @@ class ApprovalState
 
   def wrapped_rules
     strong_memoize(:wrapped_rules) do
-      rules = if Feature.enabled?(:use_new_rule_finalize_approach, merge_request.project) && merge_request.merged?
-                merge_request.approval_rules.applicable_post_merge
+      rules = if merge_request.merged?
+                merge_request.applicable_post_merge_approval_rules
               else
                 merge_request.approval_rules.applicable_to_branch(target_branch)
               end

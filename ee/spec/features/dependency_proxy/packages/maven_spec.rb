@@ -42,7 +42,8 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
     stub_licensed_features(dependency_proxy_for_packages: true)
     stub_config(dependency_proxy: { enabled: true })
 
-    dependency_proxy_setting.update!(maven_external_registry_url: remote_server.base_url)
+    # avoid restriction on localhost url
+    dependency_proxy_setting.update_column(:maven_external_registry_url, remote_server.base_url)
   end
 
   shared_examples 'pulling and caching the remote file' do
@@ -60,7 +61,7 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
 
   shared_examples 'returning the cached file' do
     it 'returns the cached file' do
-      expect_next_instance_of(::DependencyProxy::Packages::Maven::VerifyPackageFileEtagService) do |service|
+      expect_next_instance_of(::DependencyProxy::Packages::VerifyPackageFileEtagService) do |service|
         expect(service).to receive(:execute).and_return(ServiceResponse.success)
       end
       expect(Gitlab::Workhorse).not_to receive(:send_url)
@@ -104,7 +105,7 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
 
   shared_context 'with a wrong etag returned' do
     before do
-      allow_next_instance_of(::DependencyProxy::Packages::Maven::VerifyPackageFileEtagService) do |service|
+      allow_next_instance_of(::DependencyProxy::Packages::VerifyPackageFileEtagService) do |service|
         allow(service).to receive(:execute).and_return(ServiceResponse.error(message: '', reason: :wrong_etag))
       end
     end
@@ -112,7 +113,7 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
 
   shared_context 'with no etag returned' do
     before do
-      allow_next_instance_of(::DependencyProxy::Packages::Maven::VerifyPackageFileEtagService) do |service|
+      allow_next_instance_of(::DependencyProxy::Packages::VerifyPackageFileEtagService) do |service|
         allow(service).to receive(:execute).and_return(ServiceResponse.error(message: '', reason: :no_etag))
       end
     end

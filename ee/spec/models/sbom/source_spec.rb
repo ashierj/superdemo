@@ -15,9 +15,11 @@ RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_managem
   end
 
   describe 'source validation' do
-    subject { build(:sbom_source, source: source_attributes) }
+    subject { build(:sbom_source, source_type: source_type, source: source_attributes) }
 
     context 'with dependency scanning source' do
+      let(:source_type) { :dependency_scanning }
+
       context 'when source is valid' do
         let(:source_attributes) do
           {
@@ -69,6 +71,8 @@ RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_managem
     end
 
     context 'with container scanning source' do
+      let(:source_type) { :container_scanning }
+
       context 'when source is valid' do
         let(:source_attributes) do
           {
@@ -119,9 +123,10 @@ RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_managem
   end
 
   describe 'readers' do
-    let(:source) { build(:sbom_source, source: source_attributes) }
+    let(:source) { build(:sbom_source, source_type: source_type, source: source_attributes) }
 
     context 'for dependency scanning' do
+      let(:source_type) { :dependency_scanning }
       let(:source_attributes) do
         {
           'category' => 'development',
@@ -152,6 +157,7 @@ RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_managem
     end
 
     context "for container scanning" do
+      let(:source_type) { :container_scanning }
       let(:source_attributes) do
         {
           "image" => { "name" => "rhel", "tag" => "7.1" },

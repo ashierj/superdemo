@@ -12,7 +12,6 @@ import {
   mockLabelList,
 } from 'jest/boards/mock_data';
 import { ListType } from '~/boards/constants';
-import boardsEventHub from '~/boards/eventhub';
 import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import listQuery from 'ee/boards/graphql/board_lists_deferred.query.graphql';
 import epicListQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.graphql';
@@ -129,7 +128,6 @@ describe('Board List Header Component', () => {
 
   describe('New epic button', () => {
     beforeEach(() => {
-      jest.spyOn(boardsEventHub, '$emit');
       createComponent({ isEpicBoard: true, issuableType: 'epic' });
     });
 
@@ -155,13 +153,12 @@ describe('Board List Header Component', () => {
       expect(findButtonGroup().exists()).toBe(false);
     });
 
-    it('emits `toggle-epic-form` event on Sidebar eventHub when clicked', () => {
-      expect(boardsEventHub.$emit).not.toHaveBeenCalled();
+    it('emits `toggleNewForm` event when clicked', () => {
+      expect(wrapper.emitted('toggleNewForm')).toBeUndefined();
 
       findNewEpicButton().trigger('click');
 
-      expect(boardsEventHub.$emit).toHaveBeenCalledWith(`toggle-epic-form-${mockList.id}`);
-      expect(boardsEventHub.$emit).toHaveBeenCalledTimes(1);
+      expect(wrapper.emitted('toggleNewForm')).toHaveLength(1);
     });
   });
 

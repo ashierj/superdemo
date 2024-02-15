@@ -24,7 +24,8 @@ module EE
     delegator_override :valid_member_roles
     def valid_member_roles
       root_group = member.source&.root_ancestor
-      member_roles = root_group.member_roles
+      member_roles = ::MemberRoles::RolesFinder.new(current_user,
+        { parent: root_group, instance_roles: true }).execute
 
       if member.highest_group_member
         member_roles = member_roles.select do |role|
@@ -36,7 +37,8 @@ module EE
         {
           base_access_level: member_role.base_access_level,
           member_role_id: member_role.id,
-          name: member_role.name
+          name: member_role.name,
+          description: member_role.description
         }
       end
     end
@@ -47,6 +49,11 @@ module EE
       member_role.enabled_permissions.each.map do |permission|
         { key: permission, name: permission.to_s.humanize }
       end
+    end
+
+    delegator_override :member_role_description
+    def member_role_description
+      member_role&.description
     end
 
     private

@@ -90,7 +90,6 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
     end
 
     before do
-      skip_feature_flags_yaml_validation
       skip_default_enabled_yaml_check
       allow(described_class).to receive(:known_events).and_return(known_events)
     end
@@ -157,7 +156,7 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
 
       context 'for weekly events' do
         it 'sets the keys in Redis to expire' do
-          described_class.track_event("g_compliance_dashboard", values: entity1)
+          described_class.track_event("g_compliance_dashboard", values: entity1, property_name: :user)
 
           Gitlab::Redis::SharedState.with do |redis|
             keys = redis.scan_each(match: "{#{described_class::REDIS_SLOT}}_g_compliance_dashboard-*").to_a
@@ -212,7 +211,7 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
               expected_key = "{hll_counters}_#{not_overridden_name}-2020-23"
               expect(Gitlab::Redis::HLL).to receive(:add).with(hash_including(key: expected_key))
 
-              described_class.track_event(not_overridden_name, values: entity1)
+              described_class.track_event(not_overridden_name, values: entity1, property_name: :user)
             end
           end
         end
@@ -264,21 +263,27 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
             end
           end
 
-          context "with no property_name for an overridden event" do
-            it "tracks the events using a Redis key with no property_name" do
-              expected_key = "{hll_counters}_#{event_overridden_for_user}-2020-23"
-              expect(Gitlab::Redis::HLL).to receive(:add).with(hash_including(key: expected_key))
+          context "with a property_name for a legacy event" do
+            it "raises an error with an instructive message" do
+              expect do
+                described_class.track_event('g_analytics_productivity', values: entity1, property_name: 'project')
+              end.to raise_error(described_class::UnfinishedEventMigrationError, /migration\.html/)
+            end
+          end
 
-              described_class.track_event(event_overridden_for_user, values: entity1)
+          context "with no property_name for an overridden event" do
+            it "raises an error with an instructive message" do
+              expect do
+                described_class.track_event(event_overridden_for_user, values: entity1)
+              end.to raise_error(described_class::UnknownLegacyEventError, /hll_redis_legacy_events.yml/)
             end
           end
 
           context "with no property_name for a new event" do
-            it "tracks the events using a Redis key with no property_name" do
-              expected_key = "{hll_counters}_#{no_slot}-2020-23"
-              expect(Gitlab::Redis::HLL).to receive(:add).with(hash_including(key: expected_key))
-
-              described_class.track_event(no_slot, values: entity1)
+            it "raises an error with an instructive message" do
+              expect do
+                described_class.track_event(no_slot, values: entity1)
+              end.to raise_error(described_class::UnknownLegacyEventError, /hll_redis_legacy_events.yml/)
             end
           end
         end
@@ -300,11 +305,10 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
             described_class.track_event(no_slot, values: entity1, property_name: 'project')
           end
 
-          it "uses old Redis key for new events when no property name sent" do
-            expected_key = "{hll_counters}_#{no_slot}-2020-23"
-            expect(Gitlab::Redis::HLL).to receive(:add).with(hash_including(key: expected_key))
-
-            described_class.track_event(no_slot, values: entity1)
+          it "raises an error for new events when no property_name sent" do
+            expect do
+              described_class.track_event(no_slot, values: entity1)
+            end.to raise_error(described_class::UnknownLegacyEventError, /hll_redis_legacy_events.yml/)
           end
         end
       end
@@ -422,21 +426,27 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
             end
           end
 
-          context "with no property_name for a overridden event" do
-            it "tracks the events using a Redis key with no property_name" do
-              expected_key = "{hll_counters}_#{event_overridden_for_user}-2020-22"
-              expect(Gitlab::Redis::HLL).to receive(:count).with(keys: [expected_key])
+          context "with a property_name for a legacy event" do
+            it "raises an error with an instructive message" do
+              expect do
+                described_class.unique_events(event_names: 'g_analytics_productivity', property_name: 'project', start_date: 7.days.ago, end_date: Date.current)
+              end.to raise_error(described_class::UnfinishedEventMigrationError, /migration\.html/)
+            end
+          end
 
-              described_class.unique_events(event_names: [event_overridden_for_user], start_date: 7.days.ago, end_date: Date.current)
+          context "with no property_name for a overridden event" do
+            it "raises an error with an instructive message" do
+              expect do
+                described_class.unique_events(event_names: [event_overridden_for_user], start_date: 7.days.ago, end_date: Date.current)
+              end.to raise_error(described_class::UnknownLegacyEventError, /hll_redis_legacy_events.yml/)
             end
           end
 
           context "with no property_name for a new event" do
-            it "tracks the events using a Redis key with no property_name" do
-              expected_key = "{hll_counters}_#{no_slot}-2020-22"
-              expect(Gitlab::Redis::HLL).to receive(:count).with(keys: [expected_key])
-
-              described_class.unique_events(event_names: [no_slot], start_date: 7.days.ago, end_date: Date.current)
+            it "raises an error with an instructive message" do
+              expect do
+                described_class.unique_events(event_names: [no_slot], start_date: 7.days.ago, end_date: Date.current)
+              end.to raise_error(described_class::UnknownLegacyEventError, /hll_redis_legacy_events.yml/)
             end
           end
         end
@@ -458,11 +468,10 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
             described_class.unique_events(event_names: [no_slot], property_name: 'project', start_date: 7.days.ago, end_date: Date.current)
           end
 
-          it "uses old Redis key for new events when no property name sent" do
-            expected_key = "{hll_counters}_#{no_slot}-2020-22"
-            expect(Gitlab::Redis::HLL).to receive(:count).with(keys: [expected_key])
-
-            described_class.unique_events(event_names: [no_slot], start_date: 7.days.ago, end_date: Date.current)
+          it "raises an error with an instructive message" do
+            expect do
+              described_class.unique_events(event_names: [no_slot], start_date: 7.days.ago, end_date: Date.current)
+            end.to raise_error(described_class::UnknownLegacyEventError, /hll_redis_legacy_events.yml/)
           end
         end
       end
@@ -528,39 +537,58 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
         { name: 'g_project_management_epic_created' },
         { name: 'g_project_management_epic_closed' },
         { name: 'g_project_management_epic_reopened' },
-        { name: 'g_project_management_epic_issue_added' }
+        { name: 'g_project_management_epic_issue_added' },
+        { name: 'g_analytics_insights' }
       ].map(&:with_indifferent_access)
     end
 
     before do
       allow(described_class).to receive(:known_events).and_return(known_events)
 
-      described_class.track_event('g_compliance_dashboard', values: entity1, time: 2.days.ago)
-      described_class.track_event('g_compliance_dashboard', values: entity2, time: 2.days.ago)
-      described_class.track_event('g_compliance_dashboard', values: entity3, time: 2.days.ago)
-      described_class.track_event('g_project_management_epic_created', values: entity1, time: 2.days.ago)
-      described_class.track_event('g_project_management_epic_created', values: entity2, time: 3.days.ago)
-      described_class.track_event('g_project_management_epic_created', values: entity3, time: 3.days.ago)
-      described_class.track_event('g_project_management_epic_closed', values: entity1, time: 3.days.ago)
-      described_class.track_event('g_project_management_epic_closed', values: entity2, time: 3.days.ago)
-      described_class.track_event('g_project_management_epic_reopened', values: entity2, time: 3.days.ago)
+      described_class.track_event('g_compliance_dashboard', values: entity1, time: 2.days.ago, property_name: :user)
+      described_class.track_event('g_compliance_dashboard', values: entity2, time: 2.days.ago, property_name: :user)
+      described_class.track_event('g_compliance_dashboard', values: entity3, time: 2.days.ago, property_name: :user)
+      described_class.track_event('g_project_management_epic_created', values: entity1, time: 2.days.ago, property_name: :user)
+      described_class.track_event('g_project_management_epic_created', values: entity2, time: 3.days.ago, property_name: :user)
+      described_class.track_event('g_project_management_epic_created', values: entity3, time: 3.days.ago, property_name: :user)
+      described_class.track_event('g_project_management_epic_closed', values: entity1, time: 3.days.ago, property_name: :user)
+      described_class.track_event('g_project_management_epic_closed', values: entity2, time: 3.days.ago, property_name: :user)
+      described_class.track_event('g_project_management_epic_reopened', values: entity2, time: 3.days.ago, property_name: :user)
+
+      # legacy event
+      described_class.track_event('g_analytics_insights', values: entity1, time: 3.days.ago)
+      described_class.track_event('g_analytics_insights', values: entity2, time: 3.days.ago)
 
       # events out of time scope
-      described_class.track_event('g_project_management_epic_created', values: entity4, time: 8.days.ago)
+      described_class.track_event('g_project_management_epic_created', values: entity4, time: 8.days.ago, property_name: :user)
 
       # events in different slots
-      described_class.track_event('g_project_management_epic_issue_added', values: entity1, time: 2.days.ago)
-      described_class.track_event('g_project_management_epic_issue_added', values: entity2, time: 2.days.ago)
+      described_class.track_event('g_project_management_epic_issue_added', values: entity1, time: 2.days.ago, property_name: :user)
+      described_class.track_event('g_project_management_epic_issue_added', values: entity2, time: 2.days.ago, property_name: :user)
     end
 
     it 'calculates union of given events', :aggregate_failures do
-      expect(described_class.calculate_events_union(**time_range.merge(event_names: %w[g_project_management_epic_issue_added]))).to eq 2
-      expect(described_class.calculate_events_union(**time_range.merge(event_names: %w[g_compliance_dashboard g_project_management_epic_created g_project_management_epic_closed]))).to eq 3
+      expect(described_class.calculate_events_union(**time_range.merge(event_names: %w[g_project_management_epic_issue_added], property_name: nil))).to eq 2
+      expect(described_class.calculate_events_union(**time_range.merge(event_names: %w[g_compliance_dashboard g_project_management_epic_created g_project_management_epic_closed], property_name: nil))).to eq 3
     end
 
-    it 'returns 0 if there are no keys for given events' do
+    context "with property_name" do
+      it 'calculates union of given events', :aggregate_failures do
+        expect(described_class.calculate_events_union(**time_range.merge(event_names: %w[g_project_management_epic_issue_added], property_name: 'user.id'))).to eq 2
+        expect(described_class.calculate_events_union(**time_range.merge(event_names: %w[g_compliance_dashboard g_project_management_epic_created g_project_management_epic_closed], property_name: 'user.id'))).to eq 3
+      end
+
+      context "with a legacy event" do
+        it 'ignores the property_name and uses original redis key for the event', :aggregate_failures do
+          expect(described_class.calculate_events_union(**time_range.merge(event_names: %w[g_analytics_insights], property_name: 'user.id'))).to eq 2
+          expect(described_class.calculate_events_union(**time_range.merge(event_names: %w[g_analytics_insights], property_name: 'project.id'))).to eq 2
+        end
+      end
+    end
+
+    it 'returns fallback value if there are no keys for given events' do
       expect(Gitlab::Redis::HLL).not_to receive(:count)
-      expect(described_class.calculate_events_union(event_names: %w[g_compliance_dashboard g_project_management_epic_created g_project_management_epic_closed], start_date: Date.current, end_date: 4.weeks.ago)).to eq(-1)
+      expect(described_class.calculate_events_union(event_names: %w[g_compliance_dashboard g_project_management_epic_created g_project_management_epic_closed], start_date: Date.current, end_date: 4.weeks.ago, property_name: nil)).to eq(-1)
     end
   end
 

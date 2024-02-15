@@ -90,7 +90,14 @@ describe('CodeBlockFilePath', () => {
       expect(findTruncate().props('text')).toBe('fullPath');
       expect(findRefSelector().exists()).toBe(true);
       expect(findFormInput().exists()).toBe(false);
-      expect(findRefSelector().props('value')).toBe('ref');
+      expect(findRefSelector().props()).toEqual(
+        expect.objectContaining({
+          translations: {
+            noRefSelected: 'default branch',
+          },
+          value: 'ref',
+        }),
+      );
       expect(findGroupProjectsDropdown().props('selected')).toBe(PROJECT_ID);
     });
 

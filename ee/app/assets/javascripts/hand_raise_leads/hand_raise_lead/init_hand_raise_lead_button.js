@@ -12,6 +12,7 @@ export const initHandRaiseLeadButton = (el) => {
     companyName,
     glmContent,
     productInteraction,
+    trackCategory,
     trackAction,
     trackLabel,
     trackProperty,
@@ -41,6 +42,7 @@ export const initHandRaiseLeadButton = (el) => {
         productInteraction,
       },
       ctaTracking: {
+        category: trackCategory,
         action: trackAction,
         label: trackLabel,
         property: trackProperty,

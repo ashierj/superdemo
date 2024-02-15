@@ -35,6 +35,7 @@ RSpec.describe Members::ActivateService, feature_category: :groups_and_projects 
         members: match_array(members.map(&:id))
       }
 
+      allow(Gitlab::AppLogger).to receive(:info)
       expect(Gitlab::AppLogger).to receive(:info).with(expected_params)
 
       execute

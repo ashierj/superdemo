@@ -68,10 +68,11 @@ Details of each dependency are listed, sorted by decreasing severity of vulnerab
 ## Filter dependency list
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/422356) in GitLab 16.7  [with a flag](../../../administration/feature_flags.md) named `group_level_dependencies_filtering`. Disabled by default.
+> - [Enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/424727) in GitLab 16.10.
 
 FLAG:
-On self-managed GitLab, by default this feature is not available. To make it available, an administrator can [enable the feature flag](../../../administration/feature_flags.md) named `group_level_dependencies_filtering`.
-On GitLab.com, this feature is available but can be configured by GitLab.com administrators only.
+On self-managed GitLab, by default this feature is available. To hide the feature, an administrator can [disable the feature flag](../../../administration/feature_flags.md) named `group_level_dependencies_filtering`.
+On GitLab.com, this feature is available.
 
 In the group-level dependency list you can filter by:
 
@@ -104,6 +105,12 @@ dependencies, but the user interface shows only one of the shortest paths.
 
 NOTE:
 The dependency path is only displayed for dependencies that have vulnerabilities.
+
+WARNING:
+The dependency path based on the `dependency_files` property from the Dependency Scanning report was
+[deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/396376) in GitLab
+16.9 and is planned for removal in 17.0.
+This will be replaced with data from the [CycloneDX report](https://gitlab.com/gitlab-org/gitlab/-/issues/441118).
 
 ![Dependency path](img/yarn_dependency_path_v13_6.png)
 

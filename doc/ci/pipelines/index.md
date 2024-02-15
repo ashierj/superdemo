@@ -192,9 +192,9 @@ In this example:
   and the message explains the other options.
 
 NOTE:
-Because of a [known issue](https://gitlab.com/gitlab-org/gitlab/-/issues/382857), projects that use [compliance pipelines](../../user/group/compliance_frameworks.md#compliance-pipelines) can have prefilled variables not appear
+Because of a [known issue](https://gitlab.com/gitlab-org/gitlab/-/issues/382857), projects that use [compliance pipelines](../../user/group/compliance_pipelines.md) can have prefilled variables not appear
 when running a pipeline manually. To workaround this issue,
-[change the compliance pipeline configuration](../../user/group/compliance_frameworks.md#prefilled-variables-are-not-shown).
+[change the compliance pipeline configuration](../../user/group/compliance_pipelines.md#prefilled-variables-are-not-shown).
 
 #### Configure a list of selectable prefilled variable values
 
@@ -363,8 +363,12 @@ downstream projects. On self-managed instances, an administrator can change this
 
 ### How pipeline duration is calculated
 
-Total running time for a given pipeline excludes retries and pending
-(queued) time.
+The total running time for a given pipeline excludes:
+
+- The duration of the initial run for any job that is retried or manually re-run.
+- Any pending (queue) time.
+
+That means that if a job is retried or manually re-run, only the duration of the latest run is included in the total running time.
 
 Each job is represented as a `Period`, which consists of:
 
@@ -373,26 +377,32 @@ Each job is represented as a `Period`, which consists of:
 
 A simple example is:
 
-- A (1, 3)
-- B (2, 4)
+- A (0, 2)
+- A' (2, 4)
+  - This is retrying A
+- B (1, 3)
 - C (6, 7)
 
 In the example:
 
-- A begins at 1 and ends at 3.
-- B begins at 2 and ends at 4.
+- A begins at 0 and ends at 2.
+- A' begins at 2 and ends at 4.
+- B begins at 1 and ends at 3.
 - C begins at 6 and ends at 7.
 
 Visually, it can be viewed as:
 
 ```plaintext
 0  1  2  3  4  5  6  7
-   AAAAAAA
-      BBBBBBB
+AAAAAAA
+   BBBBBBB
+      A'A'A'A
                   CCCC
 ```
 
-The union of A, B, and C is (1, 4) and (6, 7). Therefore, the total running time is:
+Because A is retried, we ignore it and count only job A'.
+The union of B, A', and C is (1, 4) and (6, 7). Therefore, the total
+running time is:
 
 ```plaintext
 (4 - 1) + (7 - 6) => 4

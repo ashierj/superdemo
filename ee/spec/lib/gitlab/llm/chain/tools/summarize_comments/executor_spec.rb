@@ -29,7 +29,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
 
     before do
       stub_application_setting(check_namespace_plan: true)
-      stub_licensed_features(summarize_notes: true, ai_features: true, experimental_features: true)
+      stub_licensed_features(summarize_notes: true, ai_features: true, experimental_features: true, ai_chat: true)
 
       group.add_developer(user)
       group.update!(experiment_features_enabled: true)

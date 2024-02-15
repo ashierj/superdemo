@@ -87,6 +87,28 @@ describe('Getters Notes Store', () => {
 
     const getDiscussions = () => getters.discussions(state, {}, { batchComments });
 
+    describe('merge request filters', () => {
+      it('returns only bot comments', () => {
+        const normalDiscussion = JSON.parse(JSON.stringify(discussionMock));
+        const discussion = JSON.parse(JSON.stringify(discussionMock));
+        discussion.notes[0].author.bot = true;
+
+        const individualBotNote = JSON.parse(JSON.stringify(discussionMock));
+        individualBotNote.notes[0].author.bot = true;
+        individualBotNote.individual_note = true;
+
+        state.noteableData = { targetType: 'merge_request' };
+        state.discussions = [discussion, normalDiscussion, individualBotNote];
+        state.mergeRequestFilters = ['bot_comments'];
+
+        const discussions = getDiscussions();
+
+        expect(discussions).toContain(discussion);
+        expect(discussions).not.toContain(normalDiscussion);
+        expect(discussions).toContain(individualBotNote);
+      });
+    });
+
     describe('without batchComments module', () => {
       it('should return all discussions in the store', () => {
         expect(getDiscussions()).toEqual([individualNote]);
@@ -555,5 +577,21 @@ describe('Getters Notes Store', () => {
         expect(getters.canUserAddIncidentTimelineEvents(state)).toBe(expected);
       },
     );
+  });
+
+  describe('allDiscussionsExpanded', () => {
+    it('returns true when every discussion is expanded', () => {
+      state = {
+        discussions: [{ expanded: true }, { expanded: true }],
+      };
+      expect(getters.allDiscussionsExpanded(state)).toBe(true);
+    });
+
+    it('returns false when at least one discussion is collapsed', () => {
+      state = {
+        discussions: [{ expanded: true }, { expanded: false }],
+      };
+      expect(getters.allDiscussionsExpanded(state)).toBe(false);
+    });
   });
 });

@@ -9,8 +9,7 @@ class ApprovalWrappedCodeOwnerRule < ApprovalWrappedRule
   end
 
   def approvals_required
-    return approval_rule.approvals_required if Feature.enabled?(:use_new_rule_finalize_approach,
-      merge_request.project) && merge_request.merged?
+    return approval_rule.approvals_required if merge_request.merged?
 
     approvals_required_pre_merge
   end

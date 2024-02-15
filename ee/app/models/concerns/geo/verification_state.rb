@@ -182,7 +182,13 @@ module Geo
 
       # Fail verification for records which started verification a long time ago
       def fail_verification_timeouts
-        attrs = {
+        verification_timed_out_batch_query.each_batch do |relation|
+          relation.update_all(fail_verification_timeouts_attrs)
+        end
+      end
+
+      def fail_verification_timeouts_attrs
+        {
           verification_state: verification_state_value(:verification_failed),
           verification_failure: "Verification timed out after #{VERIFICATION_TIMEOUT}",
           verification_checksum: nil,
@@ -190,10 +196,6 @@ module Geo
           verification_retry_at: next_retry_time(1),
           verified_at: Time.current
         }
-
-        verification_timed_out_batch_query.each_batch do |relation|
-          relation.update_all(attrs)
-        end
       end
 
       # Reverifies batch and returns the number of records.

@@ -10,6 +10,7 @@ import DependencyListJobFailedAlert from 'ee/dependencies/components/dependency_
 import PaginatedDependenciesTable from 'ee/dependencies/components/paginated_dependencies_table.vue';
 import createStore from 'ee/dependencies/store';
 import { DEPENDENCY_LIST_TYPES } from 'ee/dependencies/store/constants';
+import { NAMESPACE_ORGANIZATION } from 'ee/dependencies/constants';
 import { REPORT_STATUS } from 'ee/dependencies/store/modules/list/constants';
 import { TEST_HOST } from 'helpers/test_constants';
 import { getDateInPast } from '~/lib/utils/datetime_utility';
@@ -169,14 +170,41 @@ describe('DependenciesApp component', () => {
       ]);
     });
 
+    describe('without export endpoint', () => {
+      beforeEach(async () => {
+        factory({ provide: { exportEndpoint: null } });
+        setStateLoaded();
+
+        await nextTick();
+      });
+
+      it('removes the export button', () => {
+        expect(findExportButton().exists()).toBe(false);
+      });
+    });
+
+    describe('with namespaceType set to organization', () => {
+      beforeEach(async () => {
+        factory({
+          provide: { namespaceType: NAMESPACE_ORGANIZATION },
+        });
+        setStateLoaded();
+        await nextTick();
+      });
+
+      it('removes the actions bar', () => {
+        expect(wrapper.findComponent(DependenciesActions).exists()).toBe(false);
+      });
+    });
+
     describe('with namespaceType set to group', () => {
       beforeEach(() => {
         factory({ provide: { namespaceType: 'group' } });
       });
 
-      it('dispatches setSortField with packager', () => {
+      it('dispatches setSortField with severity', () => {
         expect(store.dispatch.mock.calls).toEqual(
-          expect.arrayContaining([['setSortField', 'packager']]),
+          expect.arrayContaining([['setSortField', 'severity']]),
         );
       });
     });

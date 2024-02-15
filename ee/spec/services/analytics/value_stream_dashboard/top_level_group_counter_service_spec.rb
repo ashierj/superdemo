@@ -13,15 +13,6 @@ RSpec.describe Analytics::ValueStreamDashboard::TopLevelGroupCounterService, fea
   let_it_be(:project_in_subsubgroup) { create(:project, group: subsubgroup) }
 
   let_it_be(:issue_in_group) { create(:issue, project: project_in_group) }
-  let_it_be(:another_issue_in_group) { create(:issue, project: project_in_group) }
-  let_it_be(:issue_in_subsubgroup) { create(:issue, project: project_in_subsubgroup) }
-
-  let_it_be(:mr_in_subsubgroup1) { create(:merge_request, :unique_branches, source_project: project_in_subsubgroup) }
-  let_it_be(:mr_in_subsubgroup2) { create(:merge_request, :unique_branches, source_project: project_in_subsubgroup) }
-
-  let_it_be(:ci_pipeline1) { create(:ci_pipeline, project: project_in_group) }
-  let_it_be(:ci_pipeline2) { create(:ci_pipeline, project: project_in_group) }
-  let_it_be(:ci_pipeline3) { create(:ci_pipeline, project: project_in_group) }
 
   let_it_be(:aggregation) { create(:value_stream_dashboard_aggregation, namespace: group, last_run_at: nil) }
 
@@ -56,7 +47,10 @@ RSpec.describe Analytics::ValueStreamDashboard::TopLevelGroupCounterService, fea
       { metric: 'pipelines', namespace_id: project_in_group.project_namespace.id, count: 3 },
       { metric: 'pipelines', namespace_id: project_in_subgroup.project_namespace.id, count: 0 },
       { metric: 'pipelines', namespace_id: another_project_in_subgroup.project_namespace.id, count: 0 },
-      { metric: 'pipelines', namespace_id: project_in_subsubgroup.project_namespace.id, count: 0 }
+      { metric: 'pipelines', namespace_id: project_in_subsubgroup.project_namespace.id, count: 0 },
+      { metric: 'direct_members', namespace_id: group.id, count: 1 },
+      { metric: 'direct_members', namespace_id: subgroup.id, count: 2 },
+      { metric: 'direct_members', namespace_id: subsubgroup.id, count: 0 }
     ]
   end
 
@@ -64,6 +58,25 @@ RSpec.describe Analytics::ValueStreamDashboard::TopLevelGroupCounterService, fea
     Analytics::ValueStreamDashboard::Count
       .where(namespace_id: group_namespace_ids + project_namespace_ids)
       .order(:namespace_id)
+  end
+
+  before_all do
+    # Issues
+    create(:issue, project: project_in_group)
+    create(:issue, project: project_in_subsubgroup)
+    # Group members
+    create(:group_member, group: group)
+    create(:group_member, :access_request, group: group) # Not included
+    create(:group_member, :invited, :developer, group: group) # Not included
+    create(:group_member, group: subgroup)
+    create(:group_member, group: subgroup)
+    # Merge Requests
+    create(:merge_request, :unique_branches, source_project: project_in_subsubgroup)
+    create(:merge_request, :unique_branches, source_project: project_in_subsubgroup)
+    # Pipelines
+    create(:ci_pipeline, project: project_in_group)
+    create(:ci_pipeline, project: project_in_group)
+    create(:ci_pipeline, project: project_in_group)
   end
 
   it 'returns successful response' do

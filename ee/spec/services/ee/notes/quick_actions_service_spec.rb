@@ -642,7 +642,7 @@ RSpec.describe Notes::QuickActionsService, feature_category: :team_planning do
 
       context 'for requirement' do
         it_behaves_like 'note on issue type that does not support time tracking' do
-          let(:noteable) { create(:requirement_issue, project: project) }
+          let(:noteable) { create(:requirement, project: project) }
         end
       end
 

@@ -536,7 +536,7 @@ class Group < Namespace
     owners = []
 
     members_from_hiearchy.all_owners.non_invite.each_batch do |relation|
-      owners += relation.preload(:user).load.reject do |member|
+      owners += relation.preload(:user, :source).load.reject do |member|
         member.user.nil? || member.user.project_bot?
       end
     end
@@ -854,7 +854,7 @@ class Group < Namespace
   end
 
   def crm_enabled?
-    crm_settings&.enabled?
+    crm_settings.nil? || crm_settings.enabled?
   end
 
   def shared_with_group_links_visible_to_user(user)
@@ -894,6 +894,10 @@ class Group < Namespace
 
   def usage_quotas_enabled?
     ::Feature.enabled?(:usage_quotas_for_all_editions, self) && root?
+  end
+
+  def supports_saved_replies?
+    false
   end
 
   # Check for enabled features, similar to `Project#feature_available?`

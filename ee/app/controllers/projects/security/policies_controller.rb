@@ -12,6 +12,7 @@ module Projects
 
       before_action do
         push_frontend_feature_flag(:scan_result_policies_block_unprotecting_branches, project)
+        push_frontend_feature_flag(:security_policies_policy_scope_project, project)
         push_frontend_feature_flag(:compliance_pipeline_in_policies, project)
       end
 
@@ -77,7 +78,7 @@ module Projects
       end
 
       def approvers
-        return unless @policy_type == :scan_result_policy
+        return unless ::Security::ScanResultPolicy::SCAN_RESULT_POLICY_TYPES.include?(@policy_type)
 
         result = ::Security::SecurityOrchestrationPolicies::FetchPolicyApproversService.new(
           policy: @policy,

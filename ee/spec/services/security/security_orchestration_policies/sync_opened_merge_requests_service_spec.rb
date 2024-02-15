@@ -93,18 +93,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsS
 
         subject
       end
-
-      context 'when feature flag "security_policies_unenforceable_rules_notification" is disabled' do
-        before do
-          stub_feature_flags(security_policies_unenforceable_rules_notification: false)
-        end
-
-        it 'does not enqueue UnenforceablePolicyRulesNotificationWorker' do
-          expect(::Security::UnenforceablePolicyRulesNotificationWorker).not_to receive(:perform_async)
-
-          subject
-        end
-      end
     end
 
     context "when merge request has `any_merge_request` rules" do
@@ -133,20 +121,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsS
           project: project,
           security_orchestration_policy_configuration: policy_configuration
         )
-      end
-
-      context 'when security_policies_sync_preexisting_state is disabled' do
-        before do
-          stub_feature_flags(security_policies_sync_preexisting_state: false)
-        end
-
-        it 'does not enqueue SyncPreexistingStatesApprovalRulesWorker' do
-          expect(::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).not_to(
-            receive(:perform_async)
-          )
-
-          subject
-        end
       end
 
       it "enqueues SyncPreexistingStatesApprovalRulesWorker with opened merge requests" do

@@ -15,9 +15,14 @@ import EmailVerification from 'ee/users/identity_verification/components/email_v
 import { I18N_GENERIC_ERROR } from 'ee/users/identity_verification/constants';
 
 jest.mock('~/alert');
-jest.mock('~/lib/utils/url_utility', () => ({
-  visitUrl: jest.fn().mockName('visitUrlMock'),
-}));
+jest.mock('~/lib/utils/url_utility', () => {
+  const originalModule = jest.requireActual('~/lib/utils/url_utility');
+
+  return {
+    ...originalModule,
+    visitUrl: jest.fn().mockName('visitUrlMock'),
+  };
+});
 
 describe('IdentityVerificationWizard', () => {
   let wrapper;
@@ -40,11 +45,15 @@ describe('IdentityVerificationWizard', () => {
   const findDescription = () => wrapper.find('p');
   const findNextButton = () => wrapper.findComponent(GlButton);
 
+  const buildVerificationStateResponse = (mockState) => ({
+    verification_methods: Object.keys(mockState),
+    verification_state: mockState,
+  });
+
   const mockVerificationState = (mockState) => {
-    axiosMock.onGet(DEFAULT_PROVIDE.verificationStatePath).replyOnce(HTTP_STATUS_OK, {
-      verification_methods: Object.keys(mockState),
-      verification_state: mockState,
-    });
+    const url = `${DEFAULT_PROVIDE.verificationStatePath}?no_cache=1`;
+
+    axiosMock.onGet(url).replyOnce(HTTP_STATUS_OK, buildVerificationStateResponse(mockState));
   };
 
   beforeEach(() => {
@@ -215,6 +224,27 @@ describe('IdentityVerificationWizard', () => {
           error: expect.any(Error),
         });
       });
+    });
+  });
+
+  describe('A verification component emits set-verification-state', () => {
+    beforeEach(async () => {
+      mockVerificationState({ email: false });
+      createComponent();
+      await waitForPromises();
+    });
+
+    it('executes setVerificationState', async () => {
+      expect(findSteps().at(0).props('completed')).toBe(false);
+
+      findSteps()
+        .at(0)
+        .findComponent(EmailVerification)
+        .vm.$emit('set-verification-state', buildVerificationStateResponse({ email: true }));
+
+      await nextTick();
+
+      expect(findSteps().at(0).props('completed')).toBe(true);
     });
   });
 });

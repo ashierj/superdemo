@@ -43,7 +43,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-py-4 gl-px-5">
+  <div class="gl-my-n3! gl-pr-5 gl-text-right">
     <gl-button
       v-gl-tooltip
       category="tertiary"

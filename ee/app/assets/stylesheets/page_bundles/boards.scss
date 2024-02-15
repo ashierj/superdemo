@@ -1,10 +1,6 @@
 @import '../../../../../app/assets/stylesheets/page_bundles/boards';
 
 .board-add-new-list {
-  .board-inner {
-    background: var(--gray-50, $gray-10);
-  }
-
   .gl-dropdown-inner {
     max-height: 12rem !important;
 

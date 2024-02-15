@@ -1,4 +1,5 @@
 import { GlTableLite, GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
+import { RouterLinkStub as RouterLink } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
@@ -18,6 +19,9 @@ describe('AI Agents List View', () => {
       apolloProvider,
       provide: { projectPath: 'path/to/project' },
       propsData: { createAgentPath: 'path/to/create' },
+      stubs: {
+        RouterLink,
+      },
     });
   };
 

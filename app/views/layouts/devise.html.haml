@@ -1,5 +1,6 @@
 - add_page_specific_style 'page_bundles/login'
 - custom_text = custom_sign_in_description
+
 !!! 5
 %html.html-devise-layout{ class: user_application_theme, lang: I18n.locale }
   = render "layouts/head"
@@ -7,7 +8,7 @@
     = header_message
     = render "layouts/init_client_detection_flags"
     = yield :sessions_broadcast
-    .gl-h-full.borderless.gl-display-flex.gl-flex-wrap
+    .gl-h-full.gl-display-flex.gl-flex-wrap
       .container.gl-align-self-center
         .content
           = render "layouts/flash"

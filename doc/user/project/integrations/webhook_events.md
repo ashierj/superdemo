@@ -40,7 +40,7 @@ Event type                                   | Trigger
 
 NOTE:
 If an author has no public email listed in their
-[GitLab profile](https://gitlab.com/-/profile), the `email` attribute in the
+[GitLab profile](https://gitlab.com/-/user_settings/profile), the `email` attribute in the
 webhook payload displays a value of `[REDACTED]`.
 
 ## Push events
@@ -916,6 +916,7 @@ Payload example:
     "merge_status": "unchecked",
     "target_project_id": 14,
     "description": "",
+    "prepared_at": "2013-12-03T19:23:34Z",
     "total_time_spent": 1800,
     "time_change": 30,
     "human_total_time_spent": "30m",

@@ -808,23 +808,108 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
   end
 
   describe 'secrets management usage data' do
+    before do
+      allow(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event).and_call_original
+    end
+
     let_it_be(:user) { create(:user) }
+
+    let_it_be(:valid_secret_configs) do
+      {
+        vault: {
+          PASSWORD_1: {
+            vault: {
+              engine: { name: 'kv-v2', path: 'kv-v2' },
+              path: 'production/db',
+              field: 'password'
+            }
+          }
+        },
+        gcp_secret_manager: {
+          PASSWORD_2: {
+            gcp_secret_manager: {
+              name: 'my-secret'
+            },
+            token: '$ID_TOKEN'
+          }
+        },
+        azure_key_vault: {
+          PASSWORD_3: {
+            azure_key_vault: {
+              name: 'my-secret'
+            }
+          }
+        }
+      }
+    end
+
+    shared_examples 'not tracking usage for provider' do |provider:|
+      it 'does not track RedisHLL event' do
+        expect(::Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event).with("i_ci_secrets_management_#{provider}_build_created")
+
+        ci_build.save!
+      end
+
+      it 'does not track Snowplow event' do
+        ci_build.save!
+
+        expect_no_snowplow_event(category: described_class.to_s, action: "create_secrets_#{provider}")
+      end
+    end
+
+    shared_examples 'tracking usage for provider' do |provider:|
+      it 'tracks RedisHLL event with user_id' do
+        expect(::Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
+          .with("i_ci_secrets_management_#{provider}_build_created", values: user.id)
+
+        ci_build.save!
+      end
+
+      it 'tracks Snowplow event with RedisHLL context' do
+        params = {
+          category: described_class.to_s,
+          action: "create_secrets_#{provider}",
+          namespace: ci_build.namespace,
+          user: user,
+          label: "redis_hll_counters.ci_secrets_management.i_ci_secrets_management_#{provider}_build_created_monthly",
+          ultimate_namespace_id: ci_build.namespace.root_ancestor.id,
+          context: [::Gitlab::Tracking::ServicePingContext.new(
+            data_source: :redis_hll,
+            event: "i_ci_secrets_management_#{provider}_build_created"
+          ).to_context.to_json]
+        }
+
+        ci_build.save!
+
+        expect_snowplow_event(**params)
+      end
+
+      it 'does not track unused providers' do
+        unused_providers = Gitlab::Ci::Config::Entry::Secret::SUPPORTED_PROVIDERS - [provider]
+        unused_providers.each do |unused_provider|
+          expect(::Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event).with("i_ci_secrets_management_#{unused_provider}_build_created")
+        end
+
+        ci_build.save!
+
+        unused_providers.each do |unused_provider|
+          expect_no_snowplow_event(category: described_class.to_s, action: "create_secrets_#{unused_provider}")
+        end
+      end
+    end
 
     context 'when secrets management feature is not available' do
       before do
         stub_licensed_features(ci_secrets_management: false)
       end
 
-      it 'does not track RedisHLL event' do
-        expect(::Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
+      Gitlab::Ci::Config::Entry::Secret::SUPPORTED_PROVIDERS.each do |provider|
+        context "when using #{provider}" do
+          let(:valid_secret) { valid_secret_configs.fetch(provider) }
+          let(:ci_build) { build(:ci_build, secrets: valid_secret) }
 
-        create(:ci_build, secrets: valid_secrets)
-      end
-
-      it 'does not track Snowplow event' do
-        create(:ci_build, secrets: valid_secrets)
-
-        expect_no_snowplow_event
+          it_behaves_like 'not tracking usage for provider', provider: provider
+        end
       end
     end
 
@@ -834,72 +919,108 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
       end
 
       context 'when there are secrets defined' do
-        context 'on create' do
-          let(:ci_build) { build(:ci_build, secrets: valid_secrets, user: user) }
+        Gitlab::Ci::Config::Entry::Secret::SUPPORTED_PROVIDERS.each do |provider|
+          context "when using #{provider}" do
+            let(:valid_secret) { valid_secret_configs.fetch(provider) }
 
-          before do
-            allow(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event).and_call_original
-          end
+            context 'on create' do
+              let(:ci_build) { build(:ci_build, secrets: valid_secret, user: user) }
 
-          it 'tracks RedisHLL event with user_id' do
-            expect(::Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
-              .with('i_ci_secrets_management_vault_build_created', values: user.id)
-
-            ci_build.save!
-          end
-
-          it 'tracks Snowplow event with RedisHLL context' do
-            params = {
-              category: described_class.to_s,
-              action: 'create_secrets_vault',
-              namespace: ci_build.namespace,
-              user: user,
-              label: 'redis_hll_counters.ci_secrets_management.i_ci_secrets_management_vault_build_created_monthly',
-              ultimate_namespace_id: ci_build.namespace.root_ancestor.id,
-              context: [::Gitlab::Tracking::ServicePingContext.new(
-                data_source: :redis_hll,
-                event: 'i_ci_secrets_management_vault_build_created'
-              ).to_context.to_json]
-            }
-
-            ci_build.save!
-
-            expect_snowplow_event(**params)
-          end
-
-          context 'with usage_data_i_ci_secrets_management_vault_build_created FF disabled' do
-            before do
-              stub_feature_flags(usage_data_i_ci_secrets_management_vault_build_created: false)
+              it_behaves_like 'tracking usage for provider', provider: provider
             end
 
-            it 'does not track RedisHLL secrets management event' do
-              expect(::Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
-                .with('i_ci_secrets_management_id_tokens_build_created', values: user.id)
+            context 'on update' do
+              let(:ci_build) { create(:ci_build, secrets: valid_secret, user: user) }
 
-              ci_build.save!
-            end
+              before do
+                ci_build.success
+              end
 
-            it 'does not track Snowplow event' do
-              ci_build.save!
-
-              expect_no_snowplow_event
+              it_behaves_like 'not tracking usage for provider', provider: provider
             end
           end
         end
 
-        context 'on update' do
-          let_it_be(:ci_build) { create(:ci_build, secrets: valid_secrets, user: user) }
+        context 'when using multiple providers' do
+          let(:valid_secret) { valid_secret_configs.values.inject(:merge) }
 
-          it 'does not track RedisHLL event' do
-            expect(::Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
+          let(:ci_build) { build(:ci_build, secrets: valid_secret, user: user) }
 
-            ci_build.success
+          it 'tracks RedisHLL event with user_id on all providers' do
+            Gitlab::Ci::Config::Entry::Secret::SUPPORTED_PROVIDERS.each do |provider|
+              expect(::Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
+                .with("i_ci_secrets_management_#{provider}_build_created", values: user.id)
+            end
+
+            ci_build.save!
           end
 
-          it 'does not track Snowplow event' do
-            ci_build.success
+          it 'tracks Snowplow event with RedisHLL context on all providers' do
+            ci_build.save!
 
-            expect_no_snowplow_event
+            Gitlab::Ci::Config::Entry::Secret::SUPPORTED_PROVIDERS.each do |provider|
+              params = {
+                category: described_class.to_s,
+                action: "create_secrets_#{provider}",
+                namespace: ci_build.namespace,
+                user: user,
+                label: "redis_hll_counters.ci_secrets_management.i_ci_secrets_management_#{provider}_build_created_monthly",
+                ultimate_namespace_id: ci_build.namespace.root_ancestor.id,
+                context: [::Gitlab::Tracking::ServicePingContext.new(
+                  data_source: :redis_hll,
+                  event: "i_ci_secrets_management_#{provider}_build_created"
+                ).to_context.to_json]
+              }
+
+              expect_snowplow_event(**params)
+            end
+          end
+        end
+
+        context 'when using repeated providers' do
+          let(:valid_secret) do
+            {
+              PASSWORD_1: {
+                gcp_secret_manager: {
+                  name: 'my-secret-1'
+                },
+                token: '$ID_TOKEN'
+              },
+              PASSWORD_2: {
+                gcp_secret_manager: {
+                  name: 'my-secret-2'
+                },
+                token: '$ID_TOKEN'
+              }
+            }
+          end
+
+          let(:ci_build) { build(:ci_build, secrets: valid_secret, user: user) }
+
+          it 'tracks a single RedisHLL event with user_id on the provider' do
+            expect(::Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
+              .with('i_ci_secrets_management_gcp_secret_manager_build_created', values: user.id).once
+
+            ci_build.save!
+          end
+
+          it 'tracks a single Snowplow event with RedisHLL context on all providers' do
+            ci_build.save!
+
+            params = {
+              category: described_class.to_s,
+              action: 'create_secrets_gcp_secret_manager',
+              namespace: ci_build.namespace,
+              user: user,
+              label: 'redis_hll_counters.ci_secrets_management.i_ci_secrets_management_gcp_secret_manager_build_created_monthly',
+              ultimate_namespace_id: ci_build.namespace.root_ancestor.id,
+              context: [::Gitlab::Tracking::ServicePingContext.new(
+                data_source: :redis_hll,
+                event: 'i_ci_secrets_management_gcp_secret_manager_build_created'
+              ).to_context.to_json]
+            }
+
+            expect_snowplow_event(**params)
           end
         end
       end
@@ -909,17 +1030,8 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
       let(:ci_build) { build(:ci_build, user: user) }
 
       context 'on create' do
-        it 'does not track RedisHLL event' do
-          expect(::Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
-            .with('i_ci_secrets_management_id_tokens_build_created', values: user.id)
-
-          ci_build.save!
-        end
-
-        it 'does not track Snowplow event' do
-          ci_build.save!
-
-          expect_no_snowplow_event
+        Gitlab::Ci::Config::Entry::Secret::SUPPORTED_PROVIDERS.each do |provider|
+          it_behaves_like 'not tracking usage for provider', provider: provider
         end
       end
     end
@@ -1005,6 +1117,67 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     end
   end
 
+  describe 'build identity' do
+    let_it_be(:user) { create(:user) }
+
+    let(:identity) { 'google_cloud' }
+    let(:build) do
+      create(:ci_build, pipeline: pipeline, user: user, options: { identity: identity })
+    end
+
+    subject(:variables) { build.variables }
+
+    before do
+      rsa_key = OpenSSL::PKey::RSA.generate(3072)
+      stub_application_setting(ci_jwt_signing_key: rsa_key.to_s)
+    end
+
+    it 'does not include the gcloud file variables' do
+      runner_vars = variables.to_runner_variables.index_by { |v| v[:key] }
+      runner_var_names = runner_vars.keys
+
+      expect(runner_var_names).not_to include('CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE')
+      expect(runner_var_names).not_to include('GOOGLE_APPLICATION_CREDENTIALS')
+    end
+
+    context 'with integration active' do
+      let!(:project) { create(:project) }
+      let!(:integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
+      let!(:pipeline) { create(:ci_pipeline, project: project, status: 'success') }
+
+      it 'includes the gcloud file variables' do
+        runner_vars = variables.to_runner_variables.index_by { |v| v[:key] }
+        runner_var_names = runner_vars.keys
+
+        expect(runner_var_names).to include('CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE')
+        expect(runner_var_names).to include('GOOGLE_APPLICATION_CREDENTIALS')
+        expect(runner_vars['GOOGLE_APPLICATION_CREDENTIALS']).to include(file: true)
+        expect(runner_vars['GOOGLE_APPLICATION_CREDENTIALS'].except(:key)).to eq(
+          runner_vars['CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE'].except(:key))
+
+        json = Gitlab::Json.parse(runner_vars['CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE'][:value])
+        expect(json).to match(
+          'type' => 'external_account',
+          'audience' => an_instance_of(String),
+          'subject_token_type' => 'urn:ietf:params:oauth:token-type:jwt',
+          'token_url' => 'https://sts.googleapis.com/v1/token',
+          'credential_source' => {
+            'url' => 'https://auth.gcp.gitlab.com/token',
+            'headers' => { 'Authorization' => an_instance_of(String) },
+            'format' => { 'type' => 'json', 'subject_token_field_name' => 'token' }
+          })
+      end
+
+      context 'when identity is unknown' do
+        let(:identity) { 'unknown' }
+
+        it 'raises an error' do
+          expect { subject }.to raise_error ArgumentError, "Unknown identity value: #{identity}"
+        end
+      end
+    end
+  end
+
   context 'with loose foreign keys for partitioned tables' do
     before do
       create(:security_scan, build: job)
@@ -1041,6 +1214,54 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
       subject(:pages_options) { job.pages }
 
       it { is_expected.to eq(result) }
+    end
+  end
+
+  describe 'google artifact registry integration' do
+    subject(:variables) { job.variables.to_runner_variables }
+
+    shared_examples 'does not include environment variables' do
+      it 'does not include environment variables', :aggregate_failures do
+        var_names = subject.pluck(:key)
+
+        %w[
+          GOOGLE_ARTIFACT_REGISTRY_PROJECT_ID
+          GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_NAME
+          GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_LOCATION
+        ].each do |var_name|
+          expect(var_names).not_to include(var_name)
+        end
+      end
+    end
+
+    it_behaves_like "does not include environment variables"
+
+    context 'with saas only enabled' do
+      before do
+        stub_saas_features(google_cloud_support: true)
+      end
+
+      it_behaves_like "does not include environment variables"
+
+      context 'with integration active' do
+        let_it_be(:integration) { create(:google_cloud_platform_artifact_registry_integration) }
+        let_it_be(:pipeline) { create(:ci_pipeline, project: integration.project, status: 'success') }
+
+        it 'includes the environment variables', :aggregate_failures do
+          {
+            'GOOGLE_ARTIFACT_REGISTRY_PROJECT_ID' => integration.artifact_registry_project_id,
+            'GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_NAME' => integration.artifact_registry_repository,
+            'GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_LOCATION' => integration.artifact_registry_location
+          }.each do |var_name, var_value|
+            expect(subject).to include({
+              key: var_name,
+              value: var_value,
+              public: true,
+              masked: false
+            })
+          end
+        end
+      end
     end
   end
 end

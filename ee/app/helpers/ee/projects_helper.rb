@@ -176,7 +176,7 @@ module EE
 
     def group_project_templates_count(group_id)
       if ::Feature.enabled?(:project_templates_without_min_access, current_user)
-        projects_not_aimed_for_deletions_for(group_id).count do |project|
+        preloaded_projects(group_id).count do |project|
           can?(current_user, :download_code, project)
         end
       else
@@ -186,7 +186,7 @@ module EE
 
     def group_project_templates(group)
       if ::Feature.enabled?(:project_templates_without_min_access, current_user)
-        projects_not_aimed_for_deletions_for(group.id).select do |project|
+        preloaded_projects(group.id).select do |project|
           can?(current_user, :download_code, project)
         end
       else
@@ -376,6 +376,15 @@ module EE
         .in_namespace(allowed_subgroups(group_id))
         .not_aimed_for_deletion
         .non_archived
+    end
+
+    def preloaded_projects(group_id)
+      projects = projects_not_aimed_for_deletions_for(group_id)
+
+      ::Preloaders::ProjectPolicyPreloader.new(projects, current_user).execute
+      ::Preloaders::ProjectRootAncestorPreloader.new(projects).execute
+
+      projects
     end
   end
 end

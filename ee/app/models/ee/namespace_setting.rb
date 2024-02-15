@@ -76,10 +76,12 @@ module EE
         self[:unique_project_download_limit_alertlist].presence || active_owner_ids
       end
 
+      # TODO: remove :ai_chat condition after Chat goes GA
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/441099
       def experiment_settings_allowed?
         namespace.root? &&
           ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-          namespace.feature_available?(:experimental_features)
+          (namespace.feature_available?(:experimental_features) || namespace.feature_available?(:ai_chat))
       end
 
       def product_analytics_settings_allowed?
@@ -93,6 +95,10 @@ module EE
           ::Feature.enabled?(:ai_assist_ui) &&
           ::Feature.enabled?(:ai_assist_flag, namespace) &&
           namespace.root?
+      end
+
+      def user_cap_enabled?
+        new_user_signups_cap.present? && namespace.root?
       end
 
       private
@@ -115,10 +121,6 @@ module EE
 
       def disable_project_sharing!
         namespace.update_attribute(:share_with_group_lock, true)
-      end
-
-      def user_cap_enabled?
-        new_user_signups_cap.present? && namespace.root?
       end
 
       def active_owner_ids

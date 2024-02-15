@@ -48,7 +48,12 @@ to a dedicated component project.
 
 To create a component project, you must:
 
-1. [Create a new project](../../user/project/index.md#create-a-blank-project) with a `README.md` file.
+1. [Create a new project](../../user/project/index.md#create-a-blank-project) with a `README.md` file:
+   - Ensure the description gives a clear introduction to the component.
+   - Optional. After the project is created, you can [add a project avatar](../../user/project/working_with_projects.md#edit-project-name-and-description).
+
+   Components published to the [CI/CD catalog](#cicd-catalog) use both the description and avatar when displaying the component project's summary.
+
 1. Add a YAML configuration file for each component, following the [required directory structure](#directory-structure).
    For example:
 
@@ -76,6 +81,9 @@ The repository must contain:
   - In single files ending in `.yml` for each component, like `templates/secret-detection.yml`.
   - In sub-directories containing `template.yml` files as entry points, for components
     that bundle together multiple related files. For example, `templates/secret-detection/template.yml`.
+
+NOTE:
+Optionally, each component can also have its own `README.md` file that provides more detailed information, and can be linked from the top-level `README.md` file. This helps to provide a better overview of your component project and how to use it.
 
 You should also:
 
@@ -358,7 +366,9 @@ that builds Go source code likely needs some samples of Go to test against. Alte
 a component that builds Docker images likely needs some sample Dockerfiles to test against.
 
 You can include sample files like these directly in the component project, to be used
-during component testing. For example, you can see the [code-quality CI/CD component's testing samples](https://gitlab.com/components/code-quality/-/tree/main/src).
+during component testing.
+
+You can learn more in [examples for testing a component](examples.md#test-a-component).
 
 ### Avoid using global keywords
 
@@ -533,6 +543,8 @@ can be converted to a CI/CD component:
      or making it [more efficient](../pipelines/pipeline_efficiency.md).
 1. Leverage the `.gitlab-ci.yml` in the components repository to [test changes to the component](index.md#test-the-component).
 1. Tag and [release the component](#publish-a-new-release).
+
+You can learn more by following a practical example for [migrating the Go CI/CD template to CI/CD component](examples.md#cicd-component-migration-example-go).
 
 ## Troubleshooting
 

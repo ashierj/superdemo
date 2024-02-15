@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_management do
-  let_it_be(:report_component) { build_stubbed(:ci_reports_sbom_component) }
+  let_it_be(:report_component) { build_stubbed(:ci_reports_sbom_component, source_package_name: 'source-package-name') }
   let_it_be(:report_source) { build_stubbed(:ci_reports_sbom_source) }
 
   let(:vulnerability_info) { create(:sbom_vulnerabilities) }
@@ -17,6 +17,8 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
       source: report_source.data,
       source_id: nil,
       source_type: report_source.source_type,
+      source_package_id: nil,
+      source_package_name: report_component.source_package_name,
       version: report_component.version
     }
   end
@@ -33,7 +35,8 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
         {
           component_id: 1,
           component_version_id: 2,
-          source_id: 3
+          source_id: 3,
+          source_package_id: 4
         }
       end
 
@@ -41,6 +44,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
         occurrence_map.component_id = ids[:component_id]
         occurrence_map.component_version_id = ids[:component_version_id]
         occurrence_map.source_id = ids[:source_id]
+        occurrence_map.source_package_id = ids[:source_package_id]
       end
 
       it 'returns a hash with ids and base data' do
@@ -62,6 +66,8 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
             source: nil,
             source_id: nil,
             source_type: nil,
+            source_package_id: nil,
+            source_package_name: report_component.source_package_name,
             version: report_component.version
           }
         )
@@ -82,6 +88,8 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
             source: report_source.data,
             source_id: nil,
             source_type: report_source.source_type,
+            source_package_id: nil,
+            source_package_name: report_component.source_package_name,
             version: report_component.version
           }
         )
@@ -105,6 +113,8 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
             source: report_source.data,
             source_id: nil,
             source_type: report_source.source_type,
+            source_package_id: nil,
+            source_package_name: report_component.source_package_name,
             version: report_component.version
           }
         )
@@ -130,11 +140,119 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
     end
   end
 
+  describe '#input_file_path' do
+    context 'when component was found by trivy' do
+      let_it_be(:report_source) { build_stubbed(:ci_reports_sbom_source, :container_scanning) }
+
+      subject(:input_file_path) { occurrence_map.input_file_path }
+
+      context 'with os package type' do
+        let_it_be(:report_component_properties) do
+          build_stubbed(:ci_reports_sbom_source, type: :trivy, data: { 'PkgType' => 'alpine' })
+        end
+
+        let_it_be(:report_component) do
+          build_stubbed(:ci_reports_sbom_component, purl_type: 'apk', properties: report_component_properties)
+        end
+
+        it 'returns a container-image path' do
+          expect(input_file_path).to eq(
+            'container-image:photon:5.1-12345678')
+        end
+      end
+
+      context 'with programming language package type' do
+        let_it_be(:report_component_properties) do
+          build_stubbed(:ci_reports_sbom_source, type: :trivy, data: {
+            'PkgType' => 'node-pkg',
+            'FilePath' => 'usr/local/lib/node_modules/retire/node_modules/escodegen/package.json'
+          })
+        end
+
+        let_it_be(:report_component) do
+          build_stubbed(:ci_reports_sbom_component, purl_type: 'npm', properties: report_component_properties)
+        end
+
+        it 'returns a container-image path' do
+          expect(input_file_path).to eq('container-image:photon:5.1-12345678')
+        end
+      end
+
+      context 'when component was found by gemnasium' do
+        context 'when gemnasium sbom was merged with trivy sbom' do
+          let_it_be(:report_source) do
+            build_stubbed(:ci_reports_sbom_source, data: {
+              'category' => 'development',
+              'source_file' => { 'path' => 'package.json' },
+              'input_file' => { 'path' => 'package-lock.json' },
+              'package_manager' => { 'name' => 'npm' },
+              'language' => { 'name' => 'JavaScript' },
+              'image' => {
+                'name' => 'docker.io/library/alpine',
+                'tag' => '3.12'
+              },
+              'operating_system' => {
+                'name' => 'Alpine',
+                'version' => '3.12'
+              }
+            })
+          end
+
+          let_it_be(:report_component) { build_stubbed(:ci_reports_sbom_component) }
+
+          it 'returns a repository path' do
+            expect(input_file_path).to eq('package-lock.json')
+          end
+        end
+      end
+    end
+  end
+
+  describe '#packager' do
+    subject { occurrence_map.packager }
+
+    context 'when component was found by gemnasium' do
+      let_it_be(:report_component) { build_stubbed(:ci_reports_sbom_component, purl_type: 'npm') }
+
+      it { is_expected.to eq('npm') }
+    end
+
+    context 'when component was found by trivy' do
+      context 'when component is an os package' do
+        let_it_be(:report_component_properties) do
+          build_stubbed(:ci_reports_sbom_source, type: :trivy, data: { 'PkgType' => 'alpine' })
+        end
+
+        let_it_be(:report_component) do
+          build_stubbed(:ci_reports_sbom_component, purl_type: 'apk', properties: report_component_properties)
+        end
+
+        it do
+          is_expected.to eq('apk')
+        end
+      end
+
+      context 'when component is a language pack' do
+        let_it_be(:report_component_properties) do
+          build_stubbed(:ci_reports_sbom_source, type: :trivy, data: {
+            'PkgType' => 'node-pkg',
+            'FilePath' => 'usr/local/lib/node_modules/retire/node_modules/escodegen/package.json'
+          })
+        end
+
+        let_it_be(:report_component) do
+          build_stubbed(:ci_reports_sbom_component, purl_type: 'npm', properties: report_component_properties)
+        end
+
+        it { is_expected.to eq('npm') }
+      end
+    end
+  end
+
   describe 'delegations' do
-    it { is_expected.to delegate_method(:packager).to(:report_source).allow_nil }
-    it { is_expected.to delegate_method(:input_file_path).to(:report_source).allow_nil }
     it { is_expected.to delegate_method(:name).to(:report_component) }
     it { is_expected.to delegate_method(:version).to(:report_component) }
+    it { is_expected.to delegate_method(:source_package_name).to(:report_component) }
   end
 
   context 'without vulnerability data' do
@@ -164,5 +282,32 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
     it { expect(occurrence_map.vulnerability_ids).to eq([finding.vulnerability_id]) }
     it { expect(occurrence_map.vulnerability_count).to be 1 }
     it { expect(occurrence_map.highest_severity).to eq 'high' }
+
+    context 'when component was found by trivy' do
+      let_it_be(:report_component_properties) do
+        build_stubbed(:ci_reports_sbom_source, type: :trivy, data: { 'PkgType' => 'alpine' })
+      end
+
+      let_it_be(:report_component) do
+        build_stubbed(:ci_reports_sbom_component, properties: report_component_properties,
+          purl_type: 'apk', namespace: 'alpine', name: 'alpine-baselayout')
+      end
+
+      let(:finding) do
+        create(
+          :vulnerabilities_finding,
+          :detected,
+          :with_dependency_scanning_metadata,
+          project: pipeline.project,
+          file: occurrence_map.input_file_path,
+          package: report_component.name_without_namespace,
+          version: occurrence_map.version
+        )
+      end
+
+      it { expect(occurrence_map.vulnerability_ids).to eq([finding.vulnerability_id]) }
+      it { expect(occurrence_map.vulnerability_count).to be 1 }
+      it { expect(occurrence_map.highest_severity).to eq 'high' }
+    end
   end
 end

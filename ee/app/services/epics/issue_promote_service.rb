@@ -51,6 +51,15 @@ module Epics
       mark_as_promoted
     end
 
+    def update_new_entity_description
+      super
+
+      return unless ::Feature.enabled?(:epic_creation_with_synced_work_item, parent_group, type: :wip)
+      return unless new_entity.work_item
+
+      new_entity.work_item.update!(description: new_entity.description, description_html: new_entity.description_html)
+    end
+
     def mark_as_promoted
       original_entity.update(promoted_to_epic: new_entity)
     end

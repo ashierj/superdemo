@@ -8,8 +8,17 @@ import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import InsightsChart from 'ee/insights/components/insights_chart.vue';
 import InsightsPage from 'ee/insights/components/insights_page.vue';
 import { createStore } from 'ee/insights/stores';
-import { chartInfo, pageInfo, pageInfoNoCharts, barChartData } from 'ee_jest/insights/mock_data';
+import {
+  chartInfo,
+  pageInfo,
+  pageInfoNoCharts,
+  barChartData,
+  mockFilterLabels,
+  mockCollectionLabels,
+  mockGroupBy,
+} from 'ee_jest/insights/mock_data';
 import { TEST_HOST } from 'helpers/test_constants';
+import { CHART_TYPES, INSIGHTS_CHARTS_SUPPORT_DRILLDOWN } from 'ee/insights/constants';
 
 Vue.use(Vuex);
 
@@ -35,7 +44,7 @@ describe('Insights page component', () => {
     }, {});
   };
 
-  const createLoadedChartData = () => {
+  const createLoadedChartData = ({ dataSourceType = 'issue' } = {}) => {
     return pageInfo.charts.reduce((memo, chart) => {
       return {
         ...memo,
@@ -44,7 +53,10 @@ describe('Insights page component', () => {
           type: chart.type,
           description: '',
           data: barChartData,
-          dataSourceType: 'issue',
+          dataSourceType,
+          filterLabels: mockFilterLabels,
+          collectionLabels: mockCollectionLabels,
+          groupBy: mockGroupBy,
           error: null,
         },
       };
@@ -78,11 +90,6 @@ describe('Insights page component', () => {
   describe('charts configured', () => {
     beforeEach(() => {
       createComponent({ pageConfig: pageInfo });
-      trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-    });
-
-    afterEach(() => {
-      unmockTracking();
     });
 
     it('fetches chart data when mounted', () => {
@@ -127,30 +134,66 @@ describe('Insights page component', () => {
         store.state.insights.chartData = createLoadedChartData();
       });
 
-      it('does not render loading state', () => {
+      it('passes correct props to chart component', () => {
         expect(findInsightsChartData().props()).toMatchObject({
           loaded: true,
+          type: CHART_TYPES.BAR,
+          description: '',
+          data: barChartData,
+          dataSourceType: 'issue',
+          filterLabels: mockFilterLabels,
+          collectionLabels: mockCollectionLabels,
+          groupBy: mockGroupBy,
+          error: null,
         });
       });
+    });
 
-      describe('chart item clicked', () => {
-        const trackingChartItemClickedAction = 'insights_chart_item_clicked';
-        const trackingChartTypeItemClickedAction = 'insights_issue_chart_item_clicked';
+    describe('chart item clicked', () => {
+      beforeEach(() => {
+        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+      });
 
-        beforeEach(() => {
-          findInsightsChartData().vm.$emit('chart-item-clicked');
+      afterEach(() => {
+        unmockTracking();
+      });
+
+      it('should not send tracking event if chart does not support drilling down', () => {
+        store.state.insights.chartData = createLoadedChartData({
+          dataSourceType: 'deployment_frequency',
         });
 
-        it('should send two tracking events', () => {
-          expect(trackingSpy).toHaveBeenCalledTimes(2);
-        });
+        createComponent({ pageConfig: pageInfo });
 
-        it(`should track the '${trackingChartItemClickedAction}' event`, () => {
-          expectTrackingAction(trackingChartItemClickedAction);
-        });
+        findInsightsChartData().vm.$emit('chart-item-clicked');
 
-        it(`should track the '${trackingChartTypeItemClickedAction}' event`, () => {
-          expectTrackingAction(trackingChartTypeItemClickedAction);
+        expect(trackingSpy).toHaveBeenCalledTimes(0);
+      });
+
+      describe('chart supports drilling down', () => {
+        describe.each(INSIGHTS_CHARTS_SUPPORT_DRILLDOWN)('dataSourceType=%s', (dataSourceType) => {
+          const trackingChartItemClickedAction = 'insights_chart_item_clicked';
+          const trackingChartTypeItemClickedAction = `insights_${dataSourceType}_chart_item_clicked`;
+
+          beforeEach(() => {
+            store.state.insights.chartData = createLoadedChartData({ dataSourceType });
+
+            createComponent({ pageConfig: pageInfo });
+
+            findInsightsChartData().vm.$emit('chart-item-clicked');
+          });
+
+          it('should send two tracking events', () => {
+            expect(trackingSpy).toHaveBeenCalledTimes(2);
+          });
+
+          it(`should track the '${trackingChartItemClickedAction}' event`, () => {
+            expectTrackingAction(trackingChartItemClickedAction);
+          });
+
+          it(`should track the '${trackingChartTypeItemClickedAction}' event`, () => {
+            expectTrackingAction(trackingChartTypeItemClickedAction);
+          });
         });
       });
     });

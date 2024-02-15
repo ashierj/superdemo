@@ -13,19 +13,20 @@ import {
   FILTERED_SEARCH_TERM,
   TOKEN_EMPTY_SEARCH_TERM,
 } from '~/vue_shared/components/filtered_search_bar/constants';
-import { RESOURCE_TYPE_GROUPS, RESOURCE_TYPE_PROJECTS } from '../../constants';
-import GroupsView from '../../shared/components/groups_view.vue';
-import ProjectsView from '../../shared/components/projects_view.vue';
-import { onPageChange } from '../../shared/utils';
-import { QUERY_PARAM_END_CURSOR, QUERY_PARAM_START_CURSOR } from '../../shared/constants';
+import { RESOURCE_TYPE_GROUPS, RESOURCE_TYPE_PROJECTS } from '~/organizations/constants';
+import GroupsView from '~/organizations/shared/components/groups_view.vue';
+import ProjectsView from '~/organizations/shared/components/projects_view.vue';
+import NewGroupButton from '~/organizations/shared/components/new_group_button.vue';
+import NewProjectButton from '~/organizations/shared/components/new_project_button.vue';
+import { onPageChange } from '~/organizations/shared/utils';
 import {
-  DISPLAY_LISTBOX_ITEMS,
+  QUERY_PARAM_END_CURSOR,
+  QUERY_PARAM_START_CURSOR,
   SORT_DIRECTION_ASC,
   SORT_DIRECTION_DESC,
-  SORT_ITEMS,
-  SORT_ITEM_CREATED,
-  FILTERED_SEARCH_TERM_KEY,
-} from '../constants';
+  SORT_ITEM_NAME,
+} from '~/organizations/shared/constants';
+import { DISPLAY_LISTBOX_ITEMS, SORT_ITEMS, FILTERED_SEARCH_TERM_KEY } from '../constants';
 
 export default {
   i18n: {
@@ -33,7 +34,13 @@ export default {
     searchInputPlaceholder: s__('Organization|Search or filter list'),
     displayListboxHeaderText: __('Display'),
   },
-  components: { FilteredSearchBar, GlCollapsibleListbox, GlSorting },
+  components: {
+    FilteredSearchBar,
+    GlCollapsibleListbox,
+    GlSorting,
+    NewGroupButton,
+    NewProjectButton,
+  },
   filteredSearch: {
     tokens: [],
     namespace: 'organization_groups_and_projects',
@@ -60,10 +67,13 @@ export default {
       return this.$options.sortItems.find((sortItem) => sortItem.value === this.sortName);
     },
     sortName() {
-      return this.$route.query.sort_name || SORT_ITEM_CREATED.value;
+      return this.$route.query.sort_name || SORT_ITEM_NAME.value;
+    },
+    sortDirection() {
+      return this.$route.query.sort_direction || SORT_DIRECTION_ASC;
     },
     isAscending() {
-      return this.$route.query.sort_direction !== SORT_DIRECTION_DESC;
+      return this.sortDirection !== SORT_DIRECTION_DESC;
     },
     sortText() {
       return this.activeSortItem.text;
@@ -91,6 +101,21 @@ export default {
         ? display
         : RESOURCE_TYPE_GROUPS;
     },
+    search() {
+      return (
+        this.filteredSearchValue.find((token) => token.type === FILTERED_SEARCH_TERM)?.value
+          ?.data || ''
+      );
+    },
+    routeQueryWithoutPagination() {
+      const {
+        [QUERY_PARAM_START_CURSOR]: startCursor,
+        [QUERY_PARAM_END_CURSOR]: endCursor,
+        ...routeQuery
+      } = this.$route.query;
+
+      return routeQuery;
+    },
   },
   methods: {
     pushQuery(query) {
@@ -110,11 +135,11 @@ export default {
         return;
       }
 
-      this.pushQuery({ ...this.$route.query, sort_name: sortValue });
+      this.pushQuery({ ...this.routeQueryWithoutPagination, sort_name: sortValue });
     },
     onSortDirectionChange(isAscending) {
       this.pushQuery({
-        ...this.$route.query,
+        ...this.routeQueryWithoutPagination,
         sort_direction: isAscending ? SORT_DIRECTION_ASC : SORT_DIRECTION_DESC,
       });
     },
@@ -139,7 +164,15 @@ export default {
 
 <template>
   <div>
-    <h1 class="gl-font-size-h-display">{{ $options.i18n.pageTitle }}</h1>
+    <div
+      class="page-title-holder gl-display-flex gl-sm-flex-direction-row gl-flex-direction-column gl-sm-align-items-center"
+    >
+      <h1 class="page-title gl-font-size-h-display">{{ $options.i18n.pageTitle }}</h1>
+      <div class="gl-display-flex gl-column-gap-3 gl-sm-ml-auto gl-mb-4 gl-sm-mb-0">
+        <new-group-button category="secondary" />
+        <new-project-button />
+      </div>
+    </div>
     <div class="gl-p-5 gl-bg-gray-10 gl-border-t gl-border-b">
       <div class="gl-mx-n2 gl-my-n2 gl-md-display-flex">
         <div class="gl-p-2 gl-flex-grow-1">
@@ -167,6 +200,7 @@ export default {
           <gl-sorting
             class="gl-display-flex"
             dropdown-class="gl-w-full"
+            block
             :text="sortText"
             :is-ascending="isAscending"
             :sort-options="$options.sortItems"
@@ -182,6 +216,9 @@ export default {
       list-item-class="gl-px-5"
       :start-cursor="startCursor"
       :end-cursor="endCursor"
+      :search="search"
+      :sort-name="sortName"
+      :sort-direction="sortDirection"
       @page-change="onPageChange"
     />
   </div>

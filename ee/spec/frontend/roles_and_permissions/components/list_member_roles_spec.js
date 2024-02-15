@@ -5,18 +5,12 @@ import { createAlert } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import groupMemberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
 import instanceMemberRolesQuery from 'ee/roles_and_permissions/graphql/instance_member_roles.query.graphql';
-import memberRolePermissionsQuery from 'ee/roles_and_permissions/graphql/member_role_permissions.query.graphql';
 import deleteMemberRoleMutation from 'ee/roles_and_permissions/graphql/delete_member_role.mutation.graphql';
 import CreateMemberRole from 'ee/roles_and_permissions/components/create_member_role.vue';
 import ListMemberRoles from 'ee/roles_and_permissions/components/list_member_roles.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import {
-  mockDefaultPermissions,
-  mockPermissions,
-  mockMemberRoles,
-  mockInstanceMemberRoles,
-} from '../mock_data';
+import { mockMemberRoles, mockInstanceMemberRoles } from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -34,7 +28,6 @@ describe('ListMemberRoles', () => {
   const mockToastShow = jest.fn();
   const groupRolesSuccessQueryHandler = jest.fn().mockResolvedValue(mockMemberRoles);
   const instanceRolesSuccessQueryHandler = jest.fn().mockResolvedValue(mockInstanceMemberRoles);
-  const permissionsSuccessQueryHandler = jest.fn().mockResolvedValue(mockPermissions);
   const deleteMutationSuccessHandler = jest
     .fn()
     .mockResolvedValue({ data: { memberRoleDelete: { errors: null, memberRole: { id: '1' } } } });
@@ -45,21 +38,16 @@ describe('ListMemberRoles', () => {
     mountFn = shallowMountExtended,
     groupRolesQueryHandler = groupRolesSuccessQueryHandler,
     instanceRolesQueryHandler = instanceRolesSuccessQueryHandler,
-    permissionsQueryHandler = permissionsSuccessQueryHandler,
     deleteMutationHandler = deleteMutationSuccessHandler,
-    props = {},
+    groupFullPath = 'test-group',
   } = {}) => {
     wrapper = mountFn(ListMemberRoles, {
       apolloProvider: createMockApollo([
         [groupMemberRolesQuery, groupRolesQueryHandler],
         [instanceMemberRolesQuery, instanceRolesQueryHandler],
-        [memberRolePermissionsQuery, permissionsQueryHandler],
         [deleteMemberRoleMutation, deleteMutationHandler],
       ]),
-      propsData: {
-        groupFullPath: 'test-group',
-        ...props,
-      },
+      propsData: { groupFullPath },
       stubs: { GlCard, GlTable },
       mocks: {
         $toast: {
@@ -128,16 +116,14 @@ describe('ListMemberRoles', () => {
       it('shows alert when there is an error', async () => {
         await waitForPromises();
 
-        expect(createAlert).toHaveBeenCalledWith({
-          message: 'Failed to fetch roles: GraphQL error',
-        });
+        expect(createAlert).toHaveBeenCalledWith({ message: 'Failed to fetch roles.' });
       });
     });
   });
 
   describe('instance-level member roles', () => {
     beforeEach(() => {
-      createComponent({ props: { groupFullPath: null } });
+      createComponent({ groupFullPath: null });
     });
 
     it('fetches member roles', async () => {
@@ -146,10 +132,21 @@ describe('ListMemberRoles', () => {
       expect(instanceRolesSuccessQueryHandler).toHaveBeenCalled();
     });
 
+    it('refetches roles when a member role is created', async () => {
+      findAddRoleButton().vm.$emit('click');
+      await waitForPromises();
+
+      expect(instanceRolesSuccessQueryHandler).toHaveBeenCalledTimes(1);
+
+      findCreateMemberRole().vm.$emit('success');
+
+      expect(instanceRolesSuccessQueryHandler).toHaveBeenCalledTimes(2);
+    });
+
     describe('when there is an error fetching roles', () => {
       beforeEach(() => {
         createComponent({
-          props: { groupFullPath: null },
+          groupFullPath: null,
           instanceRolesQueryHandler: failedQueryHandler,
         });
       });
@@ -157,9 +154,7 @@ describe('ListMemberRoles', () => {
       it('shows alert when there is an error', async () => {
         await waitForPromises();
 
-        expect(createAlert).toHaveBeenCalledWith({
-          message: 'Failed to fetch roles: GraphQL error',
-        });
+        expect(createAlert).toHaveBeenCalledWith({ message: 'Failed to fetch roles.' });
       });
     });
   });
@@ -173,7 +168,6 @@ describe('ListMemberRoles', () => {
 
     it('renders CreateMemberRole component', () => {
       expect(findCreateMemberRole().exists()).toBe(true);
-      expect(findCreateMemberRole().props('availablePermissions')).toEqual(mockDefaultPermissions);
     });
 
     it('toggles display', async () => {
@@ -188,6 +182,21 @@ describe('ListMemberRoles', () => {
         findCreateMemberRole().vm.$emit('success');
 
         expect(mockToastShow).toHaveBeenCalledWith('Role successfully created.');
+      });
+
+      it('hides form', async () => {
+        findCreateMemberRole().vm.$emit('success');
+        await nextTick();
+
+        expect(findCreateMemberRole().exists()).toBe(false);
+      });
+
+      it('refetches roles', () => {
+        expect(groupRolesSuccessQueryHandler).toHaveBeenCalledTimes(1);
+
+        findCreateMemberRole().vm.$emit('success');
+
+        expect(groupRolesSuccessQueryHandler).toHaveBeenCalledTimes(2);
       });
     });
   });
@@ -266,7 +275,7 @@ describe('ListMemberRoles', () => {
 
     describe('deleting instance-level member role', () => {
       beforeEach(() => {
-        createComponent({ mountFn: mountExtended, props: { groupFullPath: null } });
+        createComponent({ mountFn: mountExtended, groupFullPath: null });
         return waitForPromises();
       });
 

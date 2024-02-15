@@ -98,11 +98,11 @@ export default {
           :disabled="isDisabled"
           :aria-expanded="isExpanded"
           :aria-controls="contentContainerId"
-          class="gl-bg-transparent border-0 rounded-0 w-100 p-0 text-left"
+          class="gl-bg-transparent border-0 rounded-0 gl-w-full p-0 text-left"
           :class="{ 'cursor-default': isDisabled, 'list-group-item-action': !isDisabled }"
           @click="handleClick"
         >
-          <div class="d-flex align-items-center p-2">
+          <div class="d-flex gl-align-items-center p-2">
             <gl-icon
               :size="16"
               class="gl-mr-3 gl-text-gray-900"

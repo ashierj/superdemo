@@ -74,30 +74,32 @@ module SubscriptionPortalHelpers
     }.to_json, headers: { 'Content-Type' => 'application/json' })
   end
 
-  def stub_subscription_management_data(namespace_id, can_add_seats: true, can_renew: true)
+  def stub_subscription_management_data(namespace_id, can_add_seats: true, can_renew: true, next_term_start_date: nil)
     stub_full_request(graphql_url, method: :post)
       .with(
-        body: "{\"operationName\":\"getSubscriptionData\",\"variables\":{\"namespaceId\":#{namespace_id}},\"query\":\"query getSubscriptionData($namespaceId: ID!) {\\n  subscription(namespaceId: $namespaceId) {\\n    canAddSeats\\n    canRenew\\n    __typename\\n  }\\n}\\n\"}"
+        body: "{\"operationName\":\"getSubscriptionData\",\"variables\":{\"namespaceId\":#{namespace_id}},\"query\":\"query getSubscriptionData($namespaceId: ID!) {\\n  subscription(namespaceId: $namespaceId) {\\n    canAddSeats\\n    canRenew\\n    nextTermStartDate\\n    __typename\\n  }\\n}\\n\"}"
       )
       .to_return(status: 200, body: {
         "data": {
           "subscription": {
             "canAddSeats": can_add_seats,
-            "canRenew": can_renew
+            "canRenew": can_renew,
+            "nextTermStartDate": next_term_start_date
           }
         }
       }.to_json)
   end
 
-  def stub_subscription_permissions_data(namespace_id, can_add_seats: true, can_renew: true, community_plan: false, reason: 'MANAGED_BY_RESELLER')
+  def stub_subscription_permissions_data(namespace_id, can_add_seats: true, can_add_duo_pro_seats: true, can_renew: true, community_plan: false, reason: 'MANAGED_BY_RESELLER')
     stub_full_request(graphql_url, method: :post)
       .with(
-        body: "{\"operationName\":\"getSubscriptionPermissionsData\",\"variables\":{\"namespaceId\":#{namespace_id}},\"query\":\"query getSubscriptionPermissionsData($namespaceId: ID!) {\\n  subscription(namespaceId: $namespaceId) {\\n    canAddSeats\\n    canRenew\\n    communityPlan\\n    __typename\\n  }\\n  userActionAccess(namespaceId: $namespaceId) {\\n    limitedAccessReason\\n    __typename\\n  }\\n}\\n\"}"
+        body: "{\"operationName\":\"getSubscriptionPermissionsData\",\"variables\":{\"namespaceId\":#{namespace_id}},\"query\":\"query getSubscriptionPermissionsData($namespaceId: ID!) {\\n  subscription(namespaceId: $namespaceId) {\\n    canAddSeats\\n    canAddDuoProSeats\\n    canRenew\\n    communityPlan\\n    __typename\\n  }\\n  userActionAccess(namespaceId: $namespaceId) {\\n    limitedAccessReason\\n    __typename\\n  }\\n}\\n\"}"
       )
       .to_return(status: 200, body: {
         "data": {
           "subscription": {
             "canAddSeats": can_add_seats,
+            "canAddDuoProSeats": can_add_duo_pro_seats,
             "canRenew": can_renew,
             "communityPlan": community_plan
           },

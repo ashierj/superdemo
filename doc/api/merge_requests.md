@@ -2,6 +2,7 @@
 stage: Create
 group: Code Review
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
+description: "Documentation for the REST API for merge requests in GitLab."
 ---
 
 # Merge requests API
@@ -847,7 +848,6 @@ The `prepared_at` field is populated one time, only after all of the preparation
 are completed. It is not updated if more changes are added to the merge request:
 
 - The diff is created.
-- Web hooks are executed.
 - Pipelines are created.
 - Mergeability is checked.
 - Git LFS objects are linked.

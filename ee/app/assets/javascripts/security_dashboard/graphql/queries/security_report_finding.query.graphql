@@ -155,9 +155,6 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
         stateComment
         vulnerability {
           id
-          userPermissions {
-            createVulnerabilityFeedback
-          }
           externalIssueLinks {
             nodes {
               id

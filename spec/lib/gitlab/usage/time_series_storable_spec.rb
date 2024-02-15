@@ -7,9 +7,9 @@ RSpec.describe Gitlab::Usage::TimeSeriesStorable, feature_category: :service_pin
     Class.new do
       include Gitlab::Usage::TimeSeriesStorable
 
-      def redis_key(event, date)
+      def redis_key(event, date, used_in_aggregate_metric)
         key = apply_time_aggregation(event, date)
-        "#{key}:"
+        "#{key}:#{used_in_aggregate_metric}"
       end
     end
   end
@@ -27,14 +27,15 @@ RSpec.describe Gitlab::Usage::TimeSeriesStorable, feature_category: :service_pin
 
   describe '#keys_for_aggregation' do
     let(:result) { counter_instance.keys_for_aggregation(**params) }
-    let(:params) { base_params }
-    let(:base_params) { { events: events, start_date: start_date, end_date: end_date } }
+    let(:params) { { events: events, start_date: start_date, end_date: end_date, used_in_aggregate_metric: true } }
     let(:events) { %w[event1 event2] }
     let(:start_date) { Date.new(2023, 4, 1) }
     let(:end_date) { Date.new(2023, 4, 15) }
 
     it 'returns proper keys' do
-      expect(result).to match_array(["event1-2023-13:", "event1-2023-14:", "event2-2023-13:", "event2-2023-14:"])
+      expect(result).to match_array(
+        ["event1-2023-13:true", "event1-2023-14:true", "event2-2023-13:true", "event2-2023-14:true"]
+      )
     end
   end
 end

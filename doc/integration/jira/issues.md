@@ -146,56 +146,6 @@ Consider this example:
    - GitLab adds a formatted comment to Jira, linking back to the commit that
      resolved the issue. You can [disable comments](#disable-comments-on-jira-issues).
 
-## View Jira issues
-
-DETAILS:
-**Tier:** Premium, Ultimate
-**Offering:** SaaS, self-managed
-
-You can view and search issues from a selected Jira project directly in GitLab,
-provided your GitLab administrator [has configured the integration](configure.md#configure-the-integration).
-
-To view Jira issues:
-
-1. On the left sidebar, select **Search or go to** and find your project.
-1. Select **Plan > Jira issues**.
-
-The issues are sorted by **Created date** by default, with the most recently created issues listed at the top.
-
-- To display the most recently updated issues first, select **Updated date**.
-- You can [search and filter the issue list](#search-and-filter-the-issue-list).
-- You can [select an issue from the list to view the issue in GitLab](https://gitlab.com/gitlab-org/gitlab/-/issues/299832).
-
-Issues are grouped into tabs based on their
-[Jira status](https://confluence.atlassian.com/adminjiraserver070/defining-status-field-values-749382903.html):
-
-- **Open** tab: All issues with a Jira status in any category other than Done.
-- **Closed** tab: All issues with a Jira status categorized as Done.
-- **All** tab: All issues of any status.
-
-### Search and filter the issue list
-
-DETAILS:
-**Tier:** Premium, Ultimate
-**Offering:** SaaS, self-managed
-
-To refine the list of issues, use the search bar to search for any text
-contained in an issue summary (title) or description. Use any combination
-of these filters:
-
-- To filter issues by `labels`, specify one or more labels as part of the `labels[]`
-  parameter in the URL. When using multiple labels, only issues that contain all specified
-  labels are listed: `/-/integrations/jira/issues?labels[]=backend&labels[]=feature&labels[]=QA`
-- To filter issues by `status`, specify the `status` parameter in the URL:
-  `/-/integrations/jira/issues?status=In Progress`
-- To filter issues by `reporter`, specify a reporter's Jira display name for the
-  `author_username` parameter in the URL: `/-/integrations/jira/issues?author_username=John Smith`
-- To filter issues by `assignee`, specify their Jira display name for the
-  `assignee_username` parameter in the URL: `/-/integrations/jira/issues?assignee_username=John Smith`
-
-Enhancements to use these filters through the user interface
-[are planned](https://gitlab.com/groups/gitlab-org/-/epics/3622).
-
 ## Automatic issue transitions
 
 When you configure automatic issue transitions, you can transition a referenced

@@ -40,16 +40,14 @@ $badge-height: $gl-spacing-scale-7;
     .card {
       border-width: $gl-border-size-1;
       border-style: solid;
-      @include gl-rounded-top-left-none;
-      @include gl-rounded-top-right-none;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
 
       border-color: $highlight-color;
     }
   }
 
   .card-badge {
-    @include gl-rounded-top-left-base;
-    @include gl-rounded-top-right-base;
     font-weight: $gl-font-weight-bold;
     padding-left: $gl-spacing-scale-5;
     padding-right: $gl-spacing-scale-5;
@@ -117,7 +115,7 @@ $badge-height: $gl-spacing-scale-7;
 @media (min-width: $breakpoint-md) {
   .billing-plans {
     display: flex;
-    @include gl-flex-wrap;
+    flex-wrap: wrap;
     justify-content: space-between;
 
     > * + * {
@@ -154,7 +152,7 @@ $badge-height: $gl-spacing-scale-7;
     .card-wrapper {
       flex-grow: 1;
       margin-bottom: 0;
-      @include gl-overflow-hidden;
+      overflow: hidden;
     }
   }
 }
@@ -213,11 +211,27 @@ $badge-height: $gl-spacing-scale-7;
 }
 
 .billing-plan-card {
-  width: 230px;
+  width: 308px;
+
+  .gl-card-header {
+    border-top-right-radius: $gl-spacing-scale-3;
+    border-top-left-radius: $gl-spacing-scale-3;
+    height: 28px;
+  }
+
+  .gl-card-body {
+    height: 288px;
+  }
+
+  .billing-plan-card-price {
+    font-size: 4rem;
+    line-height: 4.5rem;
+  }
 }
 
+
 .billing-plan-divider {
-  width: 780px;
+  max-width: 988px;
 }
 
 .flex-grid {

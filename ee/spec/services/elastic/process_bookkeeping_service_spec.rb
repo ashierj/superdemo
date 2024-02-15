@@ -6,6 +6,7 @@ RSpec.describe Elastic::ProcessBookkeepingService,
   :clean_gitlab_redis_shared_state,
   :elastic,
   feature_category: :global_search do
+  include ProjectForksHelper
   let(:ref_class) { ::Gitlab::Elastic::DocumentReference }
 
   let(:fake_refs) { Array.new(10) { |i| ref_class.new(Issue, i, "issue_#{i}", 'project_1') } }
@@ -403,13 +404,18 @@ RSpec.describe Elastic::ProcessBookkeepingService,
 
     context 'N+1 queries' do
       it 'does not have N+1 queries for projects' do
-        projects = create_list(:project, 2)
+        project = create(:project)
+        projects = [create(:project, group: create(:group))]
+        projects << fork_project(project)
+        projects << create(:project, :mirror)
 
         described_class.track!(*projects)
 
         control = ActiveRecord::QueryRecorder.new(skip_cached: false) { described_class.new.execute }
 
-        projects += create_list(:project, 3)
+        projects << create(:project, group: create(:group))
+        projects << fork_project(project)
+        projects << create(:project, :mirror)
 
         described_class.track!(*projects)
 

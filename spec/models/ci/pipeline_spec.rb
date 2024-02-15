@@ -171,6 +171,28 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep, feature_category: 
     end
   end
 
+  describe 'callbacks' do
+    describe '.track_ci_pipeline_created_event' do
+      let(:pipeline) { build(:ci_pipeline, user: user) }
+
+      it 'tracks the creation event with user information' do
+        expect(Gitlab::InternalEvents).to receive(:track_event).with('create_ci_internal_pipeline', project: project, user: user)
+
+        pipeline.save!
+      end
+
+      context 'when pipeline is external' do
+        let(:pipeline) { build(:ci_pipeline, source: :external) }
+
+        it 'does not track creation event' do
+          expect(Gitlab::InternalEvents).not_to receive(:track_event)
+
+          pipeline.save!
+        end
+      end
+    end
+  end
+
   describe 'unlocking pipelines based on state transition' do
     let(:ci_ref) { create(:ci_ref) }
     let(:unlock_previous_pipelines_worker_spy) { class_spy(::Ci::Refs::UnlockPreviousPipelinesWorker) }
@@ -5769,6 +5791,38 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep, feature_category: 
         end
 
         it { is_expected.to eq('interruptible') }
+      end
+    end
+  end
+
+  describe '#auto_cancel_on_job_failure' do
+    let_it_be_with_reload(:pipeline) { create(:ci_pipeline, project: project) }
+
+    subject(:auto_cancel_on_job_failure) { pipeline.auto_cancel_on_job_failure }
+
+    context 'when pipeline_metadata is not present' do
+      it { is_expected.to eq('none') }
+    end
+
+    context 'when pipeline_metadata is present' do
+      before_all do
+        create(:ci_pipeline_metadata, project: pipeline.project, pipeline: pipeline)
+      end
+
+      context 'when auto_cancel_on_job_failure is nil' do
+        before do
+          pipeline.pipeline_metadata.auto_cancel_on_job_failure = nil
+        end
+
+        it { is_expected.to eq('none') }
+      end
+
+      context 'when auto_cancel_on_job_failure is a valid value' do
+        before do
+          pipeline.pipeline_metadata.auto_cancel_on_job_failure = 'all'
+        end
+
+        it { is_expected.to eq('all') }
       end
     end
   end

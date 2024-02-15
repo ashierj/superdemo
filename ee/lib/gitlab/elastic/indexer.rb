@@ -13,7 +13,7 @@ module Gitlab
       Error = Class.new(StandardError)
       BLOB_SCHEMA_VERSION = 23_08
       COMMIT_SCHEMA_VERSION = 23_06
-      WIKI_SCHEMA_VERSION = 23_10
+      WIKI_SCHEMA_VERSION = 24_02
 
       class << self
         def indexer_version
@@ -68,7 +68,7 @@ module Gitlab
           base_sha = if purge_unreachable_commits_from_index?(commit_sha)
                        purge_unreachable_commits_from_index!(target)
 
-                       Gitlab::Git::EMPTY_TREE_ID
+                       Gitlab::Git::SHA1_EMPTY_TREE_ID
                      else
                        from_sha
                      end
@@ -227,7 +227,7 @@ module Gitlab
 
       def from_sha
         strong_memoize(:from_sha) do
-          repository_contains_last_indexed_commit? ? last_commit : Gitlab::Git::EMPTY_TREE_ID
+          repository_contains_last_indexed_commit? ? last_commit : Gitlab::Git::SHA1_EMPTY_TREE_ID
         end
       end
 
@@ -241,9 +241,9 @@ module Gitlab
         return true if Gitlab::Git.blank_ref?(from_sha)
         return false unless repository_contains_last_indexed_commit?
 
-        # we always treat the `EMPTY_TREE_ID` as an ancestor to make sure
+        # we always treat the `SHA1_EMPTY_TREE_ID` as an ancestor to make sure
         # we don't try to purge an empty index
-        from_sha == Gitlab::Git::EMPTY_TREE_ID || repository.ancestor?(from_sha, to_sha)
+        from_sha == Gitlab::Git::SHA1_EMPTY_TREE_ID || repository.ancestor?(from_sha, to_sha)
       end
 
       def repository_path

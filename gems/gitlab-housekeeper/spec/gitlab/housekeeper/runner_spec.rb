@@ -98,7 +98,7 @@ RSpec.describe ::Gitlab::Housekeeper::Runner do
           update_description: true,
           update_labels: true,
           update_reviewers: true
-        )
+        ).and_return({ 'web_url' => 'https://example.com' })
       expect(gitlab_client).to receive(:create_or_update_merge_request)
         .with(
           change: change2,
@@ -110,9 +110,46 @@ RSpec.describe ::Gitlab::Housekeeper::Runner do
           update_description: true,
           update_labels: true,
           update_reviewers: true
-        )
+        ).and_return({ 'web_url' => 'https://example.com' })
 
       described_class.new(max_mrs: 2, keeps: [fake_keep]).run
+
+      # It sets the keep_class for the change
+      expect(change1.keep_class).to eq(fake_keep)
+      expect(change2.keep_class).to eq(fake_keep)
+    end
+
+    context 'when given filter_identifiers' do
+      it 'skips a change that does not match the filter_identifiers' do
+        # Branches get created. We allow branches to be created for filtered changes but we don't want to push them.
+        allow(git).to receive(:commit_in_branch).and_return("the-branch-should-not-be-pushed")
+        expect(git).to receive(:commit_in_branch).with(change2)
+          .and_return('the-identifier-for-the-second-change')
+
+        # Branches get shown and pushed
+        expect(::Gitlab::Housekeeper::Shell).to receive(:execute)
+          .with('git', '--no-pager', 'diff', '--color=always', 'master',
+            'the-identifier-for-the-second-change', '--', 'change1.txt', 'change2.txt')
+        expect(::Gitlab::Housekeeper::Shell).to receive(:execute)
+          .with('git', 'push', '-f', 'housekeeper',
+            'the-identifier-for-the-second-change:the-identifier-for-the-second-change')
+
+        # Merge requests get created
+        expect(gitlab_client).to receive(:create_or_update_merge_request)
+          .with(
+            change: change2,
+            source_project_id: '123',
+            source_branch: 'the-identifier-for-the-second-change',
+            target_branch: 'master',
+            target_project_id: '456',
+            update_title: true,
+            update_description: true,
+            update_labels: true,
+            update_reviewers: true
+          ).and_return({ 'web_url' => 'https://example.com' })
+
+        described_class.new(max_mrs: 2, keeps: [fake_keep], filter_identifiers: [/second/]).run
+      end
     end
 
     context 'when title, description, code has changed already' do
@@ -153,7 +190,7 @@ RSpec.describe ::Gitlab::Housekeeper::Runner do
             update_description: false,
             update_labels: true,
             update_reviewers: false
-          )
+          ).and_return({ 'web_url' => 'https://example.com' })
         expect(gitlab_client).to receive(:create_or_update_merge_request)
           .with(
             change: change2,
@@ -165,7 +202,7 @@ RSpec.describe ::Gitlab::Housekeeper::Runner do
             update_description: false,
             update_labels: true,
             update_reviewers: true
-          )
+          ).and_return({ 'web_url' => 'https://example.com' })
 
         described_class.new(max_mrs: 2, keeps: [fake_keep]).run
       end

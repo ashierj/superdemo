@@ -96,6 +96,9 @@ export default {
         this.paginateDashboard(newPage);
       },
     },
+    showDashboard() {
+      return this.projects.length || this.isLoadingProjects;
+    },
     projectsPerPage() {
       return this.projectsPage.pageInfo.perPage;
     },
@@ -160,7 +163,7 @@ export default {
 </script>
 
 <template>
-  <div class="environments-dashboard">
+  <div v-if="showDashboard" class="environments-dashboard">
     <gl-modal
       :modal-id="$options.modalId"
       :title="$options.addProjectsModalHeader"
@@ -192,15 +195,18 @@ export default {
         @bottomReached="fetchNextPage"
       />
     </gl-modal>
-    <div class="page-title-holder flex-fill d-flex align-items-center">
-      <h1 class="js-dashboard-title page-title gl-font-size-h-display text-nowrap flex-fill">
+    <div class="page-title-holder flex-fill d-flex gl-align-items-center">
+      <h1
+        class="page-title gl-font-size-h-display text-nowrap flex-fill"
+        data-testid="dashboard-title"
+      >
         {{ $options.dashboardHeader }}
       </h1>
-      <gl-button v-gl-modal="$options.modalId" class="js-add-projects-button" variant="confirm">
+      <gl-button v-gl-modal="$options.modalId" data-testid="add-projects-button" variant="confirm">
         {{ $options.addProjectsButton }}
       </gl-button>
     </div>
-    <p class="mt-2 mb-4 js-page-limits-message">
+    <p class="gl-mt-3 gl-mb-6" data-testid="page-limits-message">
       <gl-sprintf :message="$options.informationText">
         <template #link="{ content }">
           <gl-link :href="environmentsDashboardHelpPath" target="_blank">
@@ -234,26 +240,30 @@ export default {
       </div>
 
       <gl-dashboard-skeleton v-else-if="isLoadingProjects" />
-
-      <gl-empty-state
-        v-else
-        :title="$options.emptyDashboardHeader"
-        :svg-path="emptyDashboardSvgPath"
-        :svg-height="150"
-      >
-        <template #description>
-          {{ $options.emptyDashboardDocs }}
-          <gl-link :href="emptyDashboardHelpPath" class="js-documentation-link">{{
-            $options.viewDocumentationButton
-          }}</gl-link
-          >.
-        </template>
-        <template #actions>
-          <gl-button v-gl-modal="$options.modalId" variant="confirm" class="js-add-projects-button">
-            {{ s__('ModalButton|Add projects') }}
-          </gl-button>
-        </template>
-      </gl-empty-state>
     </div>
   </div>
+  <gl-empty-state
+    v-else
+    :title="$options.emptyDashboardHeader"
+    :description="$options.emptyDashboardDocs"
+    :svg-path="emptyDashboardSvgPath"
+  >
+    <template #actions>
+      <gl-button
+        v-gl-modal="$options.modalId"
+        variant="confirm"
+        class="gl-mb-3 gl-mx-2"
+        data-testid="add-projects-button"
+      >
+        {{ $options.addProjectsButton }}
+      </gl-button>
+      <gl-button
+        :href="emptyDashboardHelpPath"
+        class="gl-mb-3 gl-mx-2"
+        data-testid="documentation-link"
+      >
+        {{ $options.viewDocumentationButton }}
+      </gl-button>
+    </template>
+  </gl-empty-state>
 </template>

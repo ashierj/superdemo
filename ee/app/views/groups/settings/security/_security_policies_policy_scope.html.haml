@@ -1,0 +1,22 @@
+- return if Feature.disabled?(:security_policies_policy_scope, @group)
+
+- link = link_to('', help_page_path('user/application_security/policies/scan-execution-policies', anchor: 'security-policy-scopes'), target: '_blank', rel: 'noopener noreferrer')
+- toggle_security_policies_policy_scope_locked = cascading_namespace_setting_locked?(:toggle_security_policies_policy_scope, @group)
+
+.form-group.gl-mb-3
+  .gl-form-checkbox.custom-control.custom-checkbox
+    = f.check_box :toggle_security_policies_policy_scope, checked: @group.namespace_settings.toggle_security_policies_policy_scope?, disabled: toggle_security_policies_policy_scope_locked, class: 'custom-control-input'
+    = render 'shared/namespaces/cascading_settings/setting_label_checkbox', attribute: :toggle_security_policies_policy_scope,
+        group: @group,
+        form: f,
+        setting_locked: toggle_security_policies_policy_scope_locked,
+        settings_path_helper: ->(locked_ancestor) { edit_group_path(locked_ancestor, anchor: 'js-permissions-settings') },
+        help_text: safe_format(s_('Settings|Granularly scope each policy you create to projects containing a compliance framework label, or a list of projects. %{link_start}Learn more%{link_end}.'), tag_pair(link, :link_start, :link_end)) do
+      %div
+        = s_('Settings|Security policy scope')
+        = render 'shared/experimental_badge_tag'
+    = render 'shared/namespaces/cascading_settings/enforcement_checkbox',
+        attribute: :toggle_security_policies_policy_scope,
+        group: @group,
+        form: f,
+        setting_locked: toggle_security_policies_policy_scope_locked

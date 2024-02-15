@@ -42,8 +42,8 @@
 
   pre code {
     font-size: $gl-font-size-sm;
-    @include gl-line-height-1;
-    @include gl-bg-transparent;
+    line-height: 1;
+    background-color: transparent;
     white-space: inherit;
   }
 
@@ -132,8 +132,8 @@
 
   &::after {
     content: attr(data-value) ' ';
-    @include gl-visibility-hidden;
-    @include gl-white-space-pre-wrap;
+    visibility: hidden;
+    white-space: pre-wrap;
     padding-top: $gl-spacing-scale-4;
     padding-bottom: $gl-spacing-scale-4;
   }
