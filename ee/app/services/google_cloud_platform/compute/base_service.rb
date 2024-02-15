@@ -78,7 +78,7 @@ module GoogleCloudPlatform
       end
 
       def gcp_project_id
-        project_integration.artifact_registry_project_id
+        params[:google_cloud_project_id] || project_integration.artifact_registry_project_id
       end
 
       def gcp_wlif

@@ -12,7 +12,10 @@ RSpec.describe GoogleCloudPlatform::Compute::ListZonesService, feature_category:
     let(:page_token) { 'token' }
     let(:order_by) { 'name asc' }
     let(:params) do
-      { filter: filter, max_results: max_results, page_token: page_token, order_by: order_by }
+      {
+        google_cloud_project_id: google_cloud_project_id, filter: filter,
+        max_results: max_results, page_token: page_token, order_by: order_by
+      }.compact
     end
 
     subject(:response) { service.execute }
@@ -34,6 +37,8 @@ RSpec.describe GoogleCloudPlatform::Compute::ListZonesService, feature_category:
         expect(response.payload[:items]).to contain_exactly({ name: 'test', description: 'us-central1-a' })
         expect(response.payload[:next_page_token]).to eq('next_page_token')
       end
+
+      it_behaves_like 'overriding the google cloud project id'
 
       context 'with an invalid order_by' do
         where(:field, :direction) do
