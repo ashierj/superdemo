@@ -5,17 +5,8 @@ describe('GroupByFilter', () => {
   let wrapper;
 
   const props = {
-    searchMetadata: {
-      name: 'cpu_seconds_total',
-      type: 'sum',
-      description: 'some_description',
-      last_ingested_at: 1705374438711900000,
-      attribute_keys: ['attribute_one', 'attributes_two'],
-      supported_aggregations: ['1m', '1h'],
-      supported_functions: ['sum', 'avg'],
-      default_group_by_attributes: ['attribute_one', 'attributes_two'],
-      default_group_by_function: 'avg',
-    },
+    supportedAttributes: ['attribute_one', 'attributes_two', 'attributes_three'],
+    supportedFunctions: ['sum', 'avg'],
     selectedAttributes: ['attribute_one'],
     selectedFunction: 'sum',
   };
@@ -32,28 +23,29 @@ describe('GroupByFilter', () => {
     mount();
   });
 
+  const findGroupByFunctionDropdown = () => wrapper.findByTestId('group-by-function-dropdown');
+  const findGroupByAttributesDropdown = () => wrapper.findByTestId('group-by-attributes-dropdown');
+  const findGroupByLabel = () => wrapper.findByTestId('group-by-label');
+
   it('renders the group by function dropdown', () => {
-    expect(wrapper.findByTestId('group-by-function-dropdown').props('items')).toEqual([
+    expect(findGroupByFunctionDropdown().props('items')).toEqual([
       { value: 'sum', text: 'sum' },
       { value: 'avg', text: 'avg' },
     ]);
-    expect(wrapper.findByTestId('group-by-function-dropdown').props('selected')).toEqual(
-      props.selectedFunction,
-    );
+    expect(findGroupByFunctionDropdown().props('selected')).toEqual(props.selectedFunction);
   });
 
   it('renders the group by attributes dropdown', () => {
-    expect(wrapper.findByTestId('group-by-attributes-dropdown').props('items')).toEqual([
+    expect(findGroupByAttributesDropdown().props('items')).toEqual([
       { value: 'attribute_one', text: 'attribute_one' },
       { value: 'attributes_two', text: 'attributes_two' },
+      { value: 'attributes_three', text: 'attributes_three' },
     ]);
-    expect(wrapper.findByTestId('group-by-attributes-dropdown').props('selected')).toEqual(
-      props.selectedAttributes,
-    );
+    expect(findGroupByAttributesDropdown().props('selected')).toEqual(props.selectedAttributes);
   });
 
   it('emits groupBy on function change', async () => {
-    await wrapper.findByTestId('group-by-function-dropdown').vm.$emit('select', 'avg');
+    await findGroupByFunctionDropdown().vm.$emit('select', 'avg');
 
     expect(wrapper.emitted('groupBy')).toEqual([
       [
@@ -66,9 +58,7 @@ describe('GroupByFilter', () => {
   });
 
   it('emits groupBy on attribute change', async () => {
-    await wrapper
-      .findByTestId('group-by-attributes-dropdown')
-      .vm.$emit('select', ['attribute_two']);
+    await findGroupByAttributesDropdown().vm.$emit('select', ['attribute_two']);
 
     expect(wrapper.emitted('groupBy')).toEqual([
       [
@@ -81,40 +71,38 @@ describe('GroupByFilter', () => {
   });
 
   it('updates the group-by toggle text depending on value', async () => {
-    expect(wrapper.findByTestId('group-by-attributes-dropdown').props('toggleText')).toBe(
-      'attribute_one',
-    );
+    expect(findGroupByAttributesDropdown().props('toggleText')).toBe('attribute_one');
 
-    await wrapper
-      .findByTestId('group-by-attributes-dropdown')
-      .vm.$emit('select', ['attribute_two']);
+    await findGroupByAttributesDropdown().vm.$emit('select', ['attribute_two']);
 
-    expect(wrapper.findByTestId('group-by-attributes-dropdown').props('toggleText')).toBe(
+    expect(findGroupByAttributesDropdown().props('toggleText')).toBe('attribute_two');
+
+    await findGroupByAttributesDropdown().vm.$emit('select', ['attribute_two', 'attributes_one']);
+
+    expect(findGroupByAttributesDropdown().props('toggleText')).toBe('multiple');
+
+    await findGroupByAttributesDropdown().vm.$emit('select', [
       'attribute_two',
-    );
+      'attributes_one',
+      'attributes_threww',
+    ]);
 
-    await wrapper
-      .findByTestId('group-by-attributes-dropdown')
-      .vm.$emit('select', ['attribute_two', 'attributes_one']);
+    expect(findGroupByAttributesDropdown().props('toggleText')).toBe('all');
 
-    expect(wrapper.findByTestId('group-by-attributes-dropdown').props('toggleText')).toBe(
-      'multiple',
-    );
+    await findGroupByAttributesDropdown().vm.$emit('select', []);
+
+    expect(findGroupByAttributesDropdown().props('toggleText')).toBe('Select attributes');
   });
 
   it('updates the group-by label depending on value', async () => {
-    expect(wrapper.findByTestId('group-by-label').text()).toBe('');
+    expect(findGroupByLabel().text()).toBe('');
 
-    await wrapper
-      .findByTestId('group-by-attributes-dropdown')
-      .vm.$emit('select', ['attribute_two']);
+    await findGroupByAttributesDropdown().vm.$emit('select', ['attribute_two']);
 
-    expect(wrapper.findByTestId('group-by-label').text()).toBe('');
+    expect(findGroupByLabel().text()).toBe('');
 
-    await wrapper
-      .findByTestId('group-by-attributes-dropdown')
-      .vm.$emit('select', ['attribute_two', 'attributes_one']);
+    await findGroupByAttributesDropdown().vm.$emit('select', ['attribute_two', 'attributes_one']);
 
-    expect(wrapper.findByTestId('group-by-label').text()).toBe('attribute_two, attributes_one');
+    expect(findGroupByLabel().text()).toBe('attribute_two, attributes_one');
   });
 });

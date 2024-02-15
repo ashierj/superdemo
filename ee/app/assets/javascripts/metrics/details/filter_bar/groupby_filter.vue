@@ -8,10 +8,16 @@ export default {
   },
   i18n: {
     groupByPlaceholderMultipleSelect: s__('ObservabilityMetrics|multiple'),
+    groupByPlaceholderAllSelect: s__('ObservabilityMetrics|all'),
+    groupByPlaceholder: s__('ObservabilityMetrics|Select attributes'),
   },
   props: {
-    searchMetadata: {
-      type: Object,
+    supportedFunctions: {
+      type: Array,
+      required: true,
+    },
+    supportedAttributes: {
+      type: Array,
       required: true,
     },
     selectedAttributes: {
@@ -31,10 +37,10 @@ export default {
   },
   computed: {
     availableGroupByFunctions() {
-      return this.searchMetadata.supported_functions.map((func) => ({ value: func, text: func }));
+      return this.supportedFunctions.map((func) => ({ value: func, text: func }));
     },
     availableGroupByAttributes() {
-      return this.searchMetadata.attribute_keys.map((d) => ({ value: d, text: d }));
+      return this.supportedAttributes.map((d) => ({ value: d, text: d }));
     },
     groupByLabel() {
       return this.groupByAttributes.length > 1 ? this.groupByAttributes.join(', ') : '';
@@ -44,9 +50,12 @@ export default {
         if (this.groupByAttributes.length === 1) {
           return this.groupByAttributes[0];
         }
+        if (this.groupByAttributes.length === this.supportedAttributes.length) {
+          return this.$options.i18n.groupByPlaceholderAllSelect;
+        }
         return this.$options.i18n.groupByPlaceholderMultipleSelect;
       }
-      return '';
+      return this.$options.i18n.groupByPlaceholder;
     },
   },
   methods: {

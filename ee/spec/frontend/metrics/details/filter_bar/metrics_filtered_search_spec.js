@@ -54,6 +54,7 @@ describe('MetricsFilteredSearch', () => {
 
   it('renders the filtered search component with with initial tokens', () => {
     const filters = [{ type: 'key.name', value: 'foo' }];
+
     mount({ attributeFilters: filters });
 
     expect(findFilteredSearch().props('initialFilterValue')).toEqual(filters);
@@ -65,7 +66,9 @@ describe('MetricsFilteredSearch', () => {
       startDarte: new Date('2020-07-05T23:00:00.000Z'),
       value: '1h',
     };
+
     mount({ dateRangeFilter: date });
+
     const dateRangesDropdown = findDateRangeFilter();
     expect(dateRangesDropdown.exists()).toBe(true);
     expect(dateRangesDropdown.props('selected')).toEqual(date);
@@ -75,7 +78,10 @@ describe('MetricsFilteredSearch', () => {
     it('renders the group-by filter with search metadata', () => {
       const groupBy = findGroupByFilter();
       expect(groupBy.exists()).toBe(true);
-      expect(groupBy.props('searchMetadata')).toEqual(defaultSearchMetadata);
+      expect(groupBy.props('supportedAttributes')).toEqual(defaultSearchMetadata.attribute_keys);
+      expect(groupBy.props('supportedFunctions')).toEqual(
+        defaultSearchMetadata.supported_functions,
+      );
       expect(groupBy.props('selectedFunction')).toBe(
         defaultSearchMetadata.default_group_by_function,
       );
@@ -84,48 +90,36 @@ describe('MetricsFilteredSearch', () => {
       );
     });
 
-    it('renders the group-by filter with defaults', () => {
-      mount(
-        {},
-        {
-          default_group_by_function: 'avg',
-          default_group_by_attributes: ['attribute_one', 'attribute_two'],
+    it('renders the group-by filter with selected values', () => {
+      mount({
+        groupByFilter: {
+          func: 'sum',
+          attributes: ['attribute_one'],
         },
-      );
-      const groupBy = findGroupByFilter();
-
-      expect(groupBy.props('searchMetadata')).toEqual({
-        ...defaultSearchMetadata,
-        default_group_by_function: 'avg',
-        default_group_by_attributes: ['attribute_one', 'attribute_two'],
       });
 
-      expect(groupBy.props('selectedFunction')).toBe('avg');
-      expect(groupBy.props('selectedAttributes')).toEqual(['attribute_one', 'attribute_two']);
+      const groupBy = findGroupByFilter();
+      expect(groupBy.props('selectedFunction')).toBe('sum');
+      expect(groupBy.props('selectedAttributes')).toEqual(['attribute_one']);
     });
 
-    it('renders the group-by filter with specified prop', () => {
-      mount(
-        {
-          groupByFilter: {
-            func: 'sum',
-            attributes: ['attr_1'],
-          },
+    it(`handles default_group_by_attributes=['*']`, () => {
+      mount({
+        searchMetadata: {
+          ...defaultSearchMetadata,
+          default_group_by_attributes: ['*'],
         },
-        {
-          default_group_by_function: 'avg',
-          default_group_by_attributes: ['attribute_one', 'attribute_two'],
-        },
-      );
-      const groupBy = findGroupByFilter();
+      });
 
-      expect(groupBy.props('selectedFunction')).toBe('sum');
-      expect(groupBy.props('selectedAttributes')).toEqual(['attr_1']);
+      expect(findGroupByFilter().props('selectedAttributes')).toEqual([
+        ...defaultSearchMetadata.attribute_keys,
+      ]);
     });
   });
 
   it('emits the filter event when the attributes filter is changed', async () => {
     const filters = [{ attribute: 'namespace', operator: 'is not', value: 'test' }];
+
     await findFilteredSearch().vm.$emit('onFilter', filters);
 
     expect(wrapper.emitted('filter')).toEqual([
@@ -149,6 +143,7 @@ describe('MetricsFilteredSearch', () => {
     };
 
     await findDateRangeFilter().vm.$emit('onDateRangeSelected', dateRange);
+
     expect(wrapper.emitted('filter')).toBeUndefined();
 
     await findFilteredSearch().vm.$emit('onFilter', []);
@@ -176,7 +171,6 @@ describe('MetricsFilteredSearch', () => {
         default_group_by_attributes: ['attribute_one', 'attribute_two'],
       },
     );
-
     await findFilteredSearch().vm.$emit('onFilter', []);
 
     expect(wrapper.emitted('filter')).toEqual([
@@ -199,6 +193,7 @@ describe('MetricsFilteredSearch', () => {
     };
 
     await findGroupByFilter().vm.$emit('groupBy', groupBy);
+
     expect(wrapper.emitted('filter')).toBeUndefined();
 
     await findFilteredSearch().vm.$emit('onFilter', []);
