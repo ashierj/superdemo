@@ -62,6 +62,7 @@ export default {
       required: true,
     },
   },
+  emits: ['updated'],
   data() {
     return {
       selectedRows: [],
