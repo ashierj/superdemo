@@ -83,7 +83,7 @@ module Gitlab
           _id: ref.es_id
         }
 
-        op[:routing] = ref.es_parent if ref.es_parent # blank for projects
+        op[:routing] = ref.es_parent if ref.es_parent
 
         op
       end

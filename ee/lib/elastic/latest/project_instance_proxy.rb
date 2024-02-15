@@ -3,6 +3,8 @@
 module Elastic
   module Latest
     class ProjectInstanceProxy < ApplicationInstanceProxy
+      SCHEMA_VERSION = 24_02
+
       TRACKED_FEATURE_SETTINGS = %w[
         issues_access_level
         merge_requests_access_level
@@ -38,7 +40,7 @@ module Elastic
 
         # Schema version. The format is Date.today.strftime('%y_%m')
         # Please update if you're changing the schema of the document
-        data['schema_version'] = 24_02
+        data['schema_version'] = SCHEMA_VERSION
 
         data['traversal_ids'] = target.elastic_namespace_ancestry
 
@@ -67,6 +69,12 @@ module Elastic
         end
 
         data
+      end
+
+      def es_parent
+        return unless ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
+
+        "n_#{target.root_ancestor.id}"
       end
     end
   end

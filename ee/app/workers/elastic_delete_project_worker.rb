@@ -14,7 +14,7 @@ class ElasticDeleteProjectWorker
 
   def perform(project_id, es_id, options = {})
     options = options.with_indifferent_access
-    remove_project_document(es_id) if options.fetch(:delete_project, true)
+    remove_project_document(project_id, es_id, options) if options.fetch(:delete_project, true)
     remove_children_documents(project_id, es_id)
     helper.remove_wikis_from_the_standalone_index(project_id, 'Project', options[:namespace_routing_id]) # Wikis have different routing that's why one more query is needed.
     IndexStatus.for_project(project_id).delete_all
@@ -37,10 +37,44 @@ class ElasticDeleteProjectWorker
     [helper.target_name] + standalone_indices.map(&:index_name)
   end
 
-  def remove_project_document(es_id)
-    helper.client.delete(index: Project.index_name, id: es_id)
+  def remove_project_document(project_id, es_id, options)
+    routing_id = find_root_ancestor_id(project_id, options[:namespace_routing_id])
+
+    if routing_id
+      helper.client.delete(index: Project.index_name, id: es_id, routing: "n_#{routing_id}")
+    else
+      helper.client.delete_by_query(
+        index: Project.index_name,
+        body: {
+          query: {
+            bool: {
+              filter: [
+                {
+                  exists: {
+                    field: '_routing'
+                  }
+                },
+                {
+                  term: {
+                    _id: es_id
+                  }
+                }
+              ]
+            }
+          }
+        }
+      )
+    end
   rescue Elasticsearch::Transport::Transport::Errors::NotFound
     # no-op
+  end
+
+  def find_root_ancestor_id(project_id, namespace_id)
+    if namespace_id
+      Namespace.find_by_id(namespace_id)&.root_ancestor&.id
+    else
+      Project.find_by_id(project_id)&.root_ancestor&.id
+    end
   end
 
   def remove_children_documents(project_id, es_id)

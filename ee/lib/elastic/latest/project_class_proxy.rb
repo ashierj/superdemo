@@ -3,6 +3,8 @@
 module Elastic
   module Latest
     class ProjectClassProxy < ApplicationClassProxy
+      extend ::Gitlab::Utils::Override
+
       def elastic_search(query, options: {})
         if ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
           options[:project_id_field] = :id
@@ -104,6 +106,19 @@ module Elastic
             id: rejected_ids
           }
         }
+      end
+
+      override :routing_options
+      def routing_options(options)
+        return super unless ::Elastic::DataMigrationService.migration_has_finished?(:reindex_projects_to_apply_routing)
+
+        group = Group.find_by_id(options[:group_id])
+
+        return {} unless group
+
+        root_namespace_id = group.root_ancestor.id
+
+        { routing: "n_#{root_namespace_id}" }
       end
 
       # rubocop: disable CodeReuse/ActiveRecord

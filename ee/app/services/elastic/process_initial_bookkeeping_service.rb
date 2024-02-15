@@ -19,8 +19,8 @@ module Elastic
         "elastic:bulk:initial:#{shard_number}:score"
       end
 
-      def backfill_projects!(*projects)
-        track!(*projects)
+      def backfill_projects!(*projects, skip_projects: false)
+        track!(*projects) unless skip_projects
 
         projects.each do |project|
           raise ArgumentError, 'This method only accepts Projects' unless project.is_a?(Project)

@@ -67,6 +67,7 @@ RSpec.describe ElasticDeleteProjectWorker, :elastic, feature_category: :global_s
     allow(::Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
     allow(helper).to receive(:index_exists?).and_return(false)
 
+    expect(helper.client).to receive(:delete_by_query).with(a_hash_including(index: Project.index_name))
     expect(helper.client).to receive(:delete_by_query).with(a_hash_including(index: [helper.target_name]))
 
     worker.perform(1, 2)
@@ -74,6 +75,31 @@ RSpec.describe ElasticDeleteProjectWorker, :elastic, feature_category: :global_s
 
   it 'does not raise exception when project document not found' do
     expect { worker.perform(non_existing_record_id, "project_#{non_existing_record_id}") }.not_to raise_error
+  end
+
+  context 'when namespace_routing_id is passed in options' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+
+    it 'deletes the project' do
+      ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project)
+
+      ensure_elasticsearch_index!
+
+      expect(Project.elastic_search('*', **search_options).records).to include(project)
+
+      worker.perform(project.id, project.es_id, namespace_routing_id: group.id)
+
+      ensure_elasticsearch_index!
+
+      expect(Project.elastic_search('*', **search_options).records).not_to include(project)
+    end
+
+    it 'does not raise exception when namespace document not found' do
+      expect do
+        worker.perform(project.id, project.es_id, namespace_routing_id: non_existing_record_id)
+      end.not_to raise_error
+    end
   end
 
   context 'when passed delete_project option of false', :sidekiq_inline do
