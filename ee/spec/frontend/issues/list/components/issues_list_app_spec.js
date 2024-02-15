@@ -55,6 +55,7 @@ describe('EE IssuesListApp component', () => {
     autocompleteAwardEmojisPath: 'autocomplete/award/emojis/path',
     calendarPath: 'calendar/path',
     canBulkUpdate: false,
+    canCreateIssue: false,
     canCreateProjects: false,
     canReadCrmContact: false,
     canReadCrmOrganization: false,
