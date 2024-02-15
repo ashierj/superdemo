@@ -49513,6 +49513,9 @@ msgstr[1] ""
 msgid "The API key used by GitLab for accessing the Spam Check service endpoint."
 msgstr ""
 
+msgid "The Bugzilla logo is a trademark of the Mozilla Foundation in the U.S. and other countries."
+msgstr ""
+
 msgid "The CSV export will be created in the background. Once finished, it will be sent to %{email} in an attachment."
 msgstr ""
 
