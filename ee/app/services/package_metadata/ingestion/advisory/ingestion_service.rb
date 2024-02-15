@@ -38,11 +38,6 @@ module PackageMetadata
             source_xid = data_object.source_xid
             advisory_xid = data_object.advisory_xid
 
-            if source_xid == 'glad' && Feature.disabled?(:dependency_scanning_on_advisory_ingestion)
-              log_skipped_advisory(source_xid, advisory_xid)
-              next
-            end
-
             if source_xid == 'trivy-db' && Feature.disabled?(:container_scanning_continuous_vulnerability_scans,
               Feature.current_request, type: :beta)
               log_skipped_advisory(source_xid, advisory_xid)

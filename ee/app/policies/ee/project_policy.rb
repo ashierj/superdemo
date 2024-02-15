@@ -447,6 +447,7 @@ module EE
         enable :read_project_audit_events
         enable :read_product_analytics
         enable :create_workspace
+        enable :enable_continuous_vulnerability_scans
       end
 
       rule { can?(:reporter_access) & iterations_available }.policy do
@@ -694,10 +695,6 @@ module EE
           .default_project_deletion_protection
       end
 
-      condition(:continuous_vulnerability_scanning_available) do
-        ::Feature.enabled?(:dependency_scanning_on_advisory_ingestion)
-      end
-
       desc "Custom role on project that enables manage project access tokens"
       condition(:role_enables_manage_project_access_tokens) do
         ::Auth::MemberRoleAbilityLoader.new(
@@ -882,10 +879,6 @@ module EE
       rule do
         (maintainer | owner | admin) & pages_multiple_versions_available
       end.enable :pages_multiple_versions
-
-      rule { continuous_vulnerability_scanning_available & can?(:developer_access) }.policy do
-        enable :enable_continuous_vulnerability_scans
-      end
 
       rule { can?(:reporter_access) & tracing_enabled }.policy do
         enable :read_tracing
