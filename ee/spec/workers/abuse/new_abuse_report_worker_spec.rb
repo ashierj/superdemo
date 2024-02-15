@@ -19,6 +19,13 @@ RSpec.describe Abuse::NewAbuseReportWorker, :saas, feature_category: :instance_r
     it 'bans the user' do
       expect(user).to receive(:ban!).and_call_original
       expect(UserCustomAttribute).to receive(:upsert_custom_attributes).with([user_custom_attributes]).and_call_original
+      expect(Gitlab::AppLogger).to receive(:info).with(
+        message: "User ban",
+        user_id: user.id,
+        username: user.username,
+        abuse_report_id: abuse_report.id,
+        reason: "Automatic ban triggered by abuse report for #{abuse_report.category}."
+      )
       worker.perform(*job_args)
 
       expect(user).to be_banned
