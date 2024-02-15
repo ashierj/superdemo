@@ -9,7 +9,7 @@ module Geo
     MODEL_CLASS = ::Project
     MODEL_FOREIGN_KEY = :project_id
 
-    ignore_column :force_to_redownload, remove_with: '16.4', remove_after: '2023-08-22'
+    ignore_column :force_to_redownload, remove_with: '16.11', remove_after: '2024-03-21'
 
     belongs_to :project, class_name: 'Project'
 
