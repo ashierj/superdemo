@@ -28557,6 +28557,9 @@ msgstr ""
 msgid "KubernetesDashboard|Services"
 msgstr ""
 
+msgid "KubernetesDashboard|Spec"
+msgstr ""
+
 msgid "KubernetesDashboard|StatefulSet"
 msgstr ""
 
