@@ -154,7 +154,7 @@ module QA
           Page::Project::New.perform(&:go_to_create_from_template_group_tab)
         end
 
-        it 'successfully imports the project using template',
+        it 'successfully imports the project using template', :blocking,
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347933', quarantine: {
             type: :bug,
             issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/436948",
