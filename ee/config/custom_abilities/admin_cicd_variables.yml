@@ -4,7 +4,7 @@ description: Allows to admin CI/CD variables.
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/437947
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/143369
 feature_category: secrets_management
-milestone: '16.9'
+milestone: '16.10'
 group_ability: true
 project_ability: true
 requirements: []
