@@ -10,7 +10,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
     create(:merge_request, :with_merge_request_pipeline, source_project: project)
   end
 
-  let_it_be(:pipeline) do
+  let_it_be_with_reload(:pipeline) do
     create(
       :ee_ci_pipeline,
       :success,
@@ -64,14 +64,24 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
       let(:license_states) { ['newly_detected'] }
       let(:match_on_inclusion_license) { true }
       let(:approvals_required) { 1 }
+      let_it_be(:protected_branch) do
+        create(:protected_branch, name: merge_request.target_branch, project: project)
+      end
 
       let(:scan_result_policy_read) do
         create(:scan_result_policy_read, license_states: license_states,
           match_on_inclusion_license: match_on_inclusion_license)
       end
 
+      let!(:license_finding_project_rule) do
+        create(:approval_project_rule, :license_scanning, project: project,
+          approvals_required: approvals_required, scan_result_policy_read: scan_result_policy_read,
+          protected_branches: [protected_branch])
+      end
+
       let!(:license_finding_rule) do
         create(:report_approver_rule, :license_scanning, merge_request: merge_request,
+          approval_project_rule: license_finding_project_rule,
           approvals_required: approvals_required, scan_result_policy_read: scan_result_policy_read)
       end
 
@@ -116,6 +126,15 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           let(:approvals_required) { 0 }
 
           it_behaves_like 'triggers policy bot comment', :license_scanning, true, requires_approval: false
+        end
+
+        context 'when targeting an unprotected branch' do
+          before do
+            merge_request.update!(target_branch: 'non-protected')
+            pipeline.update!(ref: 'non-protected')
+          end
+
+          it_behaves_like 'triggers policy bot comment', :license_scanning, false, requires_approval: false
         end
 
         context 'when most recent base pipeline lacks SBOM report' do

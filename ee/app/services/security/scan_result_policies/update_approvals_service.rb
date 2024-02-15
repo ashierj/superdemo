@@ -37,7 +37,11 @@ module Security
         update_required_approvals(violated_rules, unviolated_rules)
         violations.add(violated_rules.pluck(:scan_result_policy_id), unviolated_rules.pluck(:scan_result_policy_id)) # rubocop:disable CodeReuse/ActiveRecord
         violations.execute
-        generate_policy_bot_comment(merge_request, all_scan_finding_rules, :scan_finding)
+        generate_policy_bot_comment(
+          merge_request,
+          all_scan_finding_rules.applicable_to_branch(merge_request.target_branch),
+          :scan_finding
+        )
       end
 
       private

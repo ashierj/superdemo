@@ -58,7 +58,7 @@ module EE
       end
 
       def notify_for_policy_violations(merge_request)
-        ::Security::UnenforceablePolicyRulesNotificationWorker.perform_async(merge_request.id)
+        ::Security::SyncPolicyViolationCommentWorker.perform_async(merge_request.id)
       end
     end
   end
