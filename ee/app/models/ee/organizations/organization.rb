@@ -6,7 +6,11 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        has_many :sbom_occurrences, through: :projects, class_name: 'Sbom::Occurrence'
+        has_many :active_projects,
+          -> { non_archived },
+          class_name: 'Project',
+          inverse_of: :organization
+        has_many :sbom_occurrences, through: :active_projects, class_name: 'Sbom::Occurrence'
       end
     end
   end
