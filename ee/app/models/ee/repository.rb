@@ -83,9 +83,12 @@ module EE
       log_geo_updated_event
     end
 
+    # TODO: Refactor to avoid this case statement https://gitlab.com/gitlab-org/gitlab/-/issues/437929
     def log_geo_updated_event
+      return unless ::Gitlab::Geo.primary?
+
       case container
-      when Project, ProjectSnippet
+      when Project
         project.geo_handle_after_update
       when ProjectWiki
         project.wiki_repository&.geo_handle_after_update
@@ -93,6 +96,8 @@ module EE
         group.group_wiki_repository&.geo_handle_after_update
       when DesignManagement::Repository
         container.geo_handle_after_update
+      when Snippet # personal and project
+        container.snippet_repository&.geo_handle_after_update
       else
         raise "Cannot log a Geo updated event for #{container.class}"
       end
