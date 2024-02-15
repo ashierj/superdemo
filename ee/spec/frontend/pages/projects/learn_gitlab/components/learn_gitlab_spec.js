@@ -9,7 +9,7 @@ import eventHub from '~/invite_members/event_hub';
 import { INVITE_MODAL_OPEN_COOKIE } from 'ee/pages/projects/learn_gitlab/constants';
 import { ON_CELEBRATION_TRACK_LABEL } from '~/invite_members/constants';
 import eventHubNav from '~/super_sidebar/event_hub';
-import { testProviders, testActions, testSections, testProject } from './mock_data';
+import { testActions, testSections, testProject } from './mock_data';
 
 describe('Learn GitLab', () => {
   let wrapper;
@@ -20,7 +20,6 @@ describe('Learn GitLab', () => {
   const createWrapper = () => {
     wrapper = extendedWrapper(
       mount(LearnGitlab, {
-        provide: testProviders,
         propsData: {
           actions: testActions,
           sections: testSections,
