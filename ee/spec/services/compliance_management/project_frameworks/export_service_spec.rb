@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ComplianceManagement::Frameworks::ExportService, feature_category: :compliance_management do
+RSpec.describe ComplianceManagement::ProjectFrameworks::ExportService, feature_category: :compliance_management do
   subject(:service) { described_class.new user: user, namespace: group }
 
   let_it_be(:csv_header) { "Project,Project Path,Framework,isDefaultFramework" }
@@ -34,7 +34,7 @@ RSpec.describe ComplianceManagement::Frameworks::ExportService, feature_category
     end
 
     context 'with a authorized user' do
-      before do
+      before_all do
         group.add_owner user
       end
 
@@ -88,7 +88,7 @@ RSpec.describe ComplianceManagement::Frameworks::ExportService, feature_category
   describe '#email_export' do
     subject(:service) { described_class.new user: user, namespace: group }
 
-    let(:worker) { ComplianceManagement::FrameworkExportMailerWorker }
+    let(:worker) { ComplianceManagement::ProjectFrameworkExportMailerWorker }
 
     it 'enqueues a worker' do
       expect(worker).to receive(:perform_async).with(user.id, group.id)

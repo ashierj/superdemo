@@ -5,7 +5,10 @@ require 'spec_helper'
 RSpec.describe "groups/security/compliance_dashboards/show", type: :view, feature_category: :compliance_management do
   let_it_be(:user) { build_stubbed(:user) }
   let_it_be(:group) { build_stubbed(:group) }
-  let(:framework_csv_export_path) { group_security_compliance_framework_reports_path(group, format: :csv) }
+  let(:project_framework_csv_export_path) do
+    group_security_compliance_project_framework_reports_path(group, format: :csv)
+  end
+
   let(:violations_csv_export_path) { group_security_compliance_violation_reports_path(group, format: :csv) }
   let(:adherences_csv_export_path) { group_security_compliance_standards_adherence_reports_path(group, format: :csv) }
   let(:merge_commits_csv_export_path) { group_security_merge_commit_reports_path(group) }
@@ -20,7 +23,8 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
 
     expect(rendered).to have_selector('#js-compliance-report')
     expect(rendered).to have_selector("[data-can-add-edit='true']")
-    expect(rendered).to have_selector("[data-frameworks-csv-export-path='#{framework_csv_export_path}']")
+    expect(rendered)
+      .to have_selector("[data-project-frameworks-csv-export-path='#{project_framework_csv_export_path}']")
     expect(rendered).to have_selector("[data-violations-csv-export-path='#{violations_csv_export_path}']")
     expect(rendered).to have_selector("[data-merge-commits-csv-export-path='#{merge_commits_csv_export_path}']")
     expect(rendered).to have_selector("[data-group-path='#{group.full_path}']")

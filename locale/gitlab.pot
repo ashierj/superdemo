@@ -12686,7 +12686,7 @@ msgstr ""
 msgid "ComplianceFrameworksReport|Edit framework"
 msgstr ""
 
-msgid "ComplianceFrameworks| Frameworks export"
+msgid "ComplianceFrameworks| Project frameworks export"
 msgstr ""
 
 msgid "ComplianceFrameworks|Active compliance frameworks"
@@ -12815,10 +12815,10 @@ msgstr ""
 msgid "ComplianceFrameworks|You are about to permanently delete the compliance framework %{framework} from all projects which currently have it applied, which may remove other functionality. This cannot be undone."
 msgstr ""
 
-msgid "ComplianceFrameworks|Your Compliance Frameworks CSV export for the group \"%{group_name}\" has been attached to this email."
+msgid "ComplianceFrameworks|Your Compliance Project Frameworks CSV export for the group \"%{group_name}\" has been attached to this email."
 msgstr ""
 
-msgid "ComplianceFrameworks|Your Compliance Frameworks CSV export for the group %{group_link} has been attached to this email."
+msgid "ComplianceFrameworks|Your Compliance Project Frameworks CSV export for the group %{group_link} has been attached to this email."
 msgstr ""
 
 msgid "ComplianceFrameworks|default"

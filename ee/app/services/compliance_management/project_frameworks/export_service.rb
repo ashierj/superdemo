@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ComplianceManagement
-  module Frameworks
+  module ProjectFrameworks
     class ExportService
       TARGET_FILESIZE = 15.megabytes
 
@@ -17,7 +17,7 @@ module ComplianceManagement
       end
 
       def email_export
-        FrameworkExportMailerWorker.perform_async user.id, namespace.id
+        ProjectFrameworkExportMailerWorker.perform_async user.id, namespace.id
 
         ServiceResponse.success
       end

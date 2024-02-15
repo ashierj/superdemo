@@ -191,7 +191,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       end
 
       resources :merge_commit_reports, only: [:index], constraints: { format: :csv }
-      resources :compliance_framework_reports, only: [:index], constraints: { format: :csv }
+      resources :compliance_project_framework_reports, only: [:index], constraints: { format: :csv }
       resources :compliance_violation_reports, only: [:index], constraints: { format: :csv }
       resources :compliance_standards_adherence_reports, only: [:index], constraints: { format: :csv }
     end

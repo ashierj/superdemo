@@ -2,13 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe ComplianceManagement::FrameworkExportMailerWorker, :saas, feature_category: :compliance_management,
-  type: :worker do
+RSpec.describe ComplianceManagement::ProjectFrameworkExportMailerWorker,
+  :saas, feature_category: :compliance_management, type: :worker do
   describe '#perform', travel_to: '2023-09-22' do
     let_it_be(:user) { create :user }
     let_it_be(:namespace) { create :group_with_plan, :private, plan: :ultimate_plan }
 
-    before do
+    before_all do
       namespace.add_owner user
     end
 
@@ -22,7 +22,7 @@ RSpec.describe ComplianceManagement::FrameworkExportMailerWorker, :saas, feature
       let(:error_response) { ServiceResponse.error message: "what the dog doing?" }
 
       before do
-        allow_next_instance_of(ComplianceManagement::Frameworks::ExportService) do |export_service|
+        allow_next_instance_of(ComplianceManagement::ProjectFrameworks::ExportService) do |export_service|
           allow(export_service).to receive(:execute).and_return(error_response)
         end
       end
