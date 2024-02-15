@@ -10,8 +10,8 @@ module IdentityVerificationHelpers
     )
   end
 
-  def solve_arkose_verify_challenge(risk: :low)
-    stub_arkose_token_verification(risk: risk)
+  def solve_arkose_verify_challenge(risk: :low, response: {})
+    stub_arkose_token_verification(risk: risk, response: response)
 
     selector = '[data-testid="arkose-labs-token-input"]'
     page.execute_script("document.querySelector('#{selector}').value='mock_arkose_labs_session_token'")

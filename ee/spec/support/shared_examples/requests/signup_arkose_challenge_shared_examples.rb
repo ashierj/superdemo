@@ -148,7 +148,7 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
     context 'when arkose is operational' do
       it_behaves_like 'renders new action with an alert flash'
 
-      it 'skips verification and data recording' do
+      it 'skips data recording' do
         expect(Arkose::RecordUserDataService).not_to receive(:new)
 
         create_user
