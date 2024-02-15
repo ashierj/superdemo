@@ -45,14 +45,6 @@ RSpec.describe SoftwareLicensePolicy, feature_category: :software_composition_an
     it { expect(described_class.by_spdx(SecureRandom.uuid)).to be_empty }
   end
 
-  describe '.count_for_software_license' do
-    let!(:mit) { create(:software_license, :mit) }
-    let!(:mit_policy1) { create(:software_license_policy, software_license: mit) }
-    let!(:mit_policy2) { create(:software_license_policy, software_license: mit) }
-
-    it { expect(described_class.count_for_software_license(mit.id)).to eq(2) }
-  end
-
   describe '.exclusion_allowed' do
     let_it_be(:mit) { create(:software_license, :mit) }
     let_it_be(:scan_result_policy_read_with_inclusion) { create(:scan_result_policy_read, match_on_inclusion_license: true) }
