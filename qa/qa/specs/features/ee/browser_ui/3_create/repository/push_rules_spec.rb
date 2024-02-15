@@ -57,7 +57,7 @@ module QA
             error: Regexp.escape(%(File name #{@file_name_limitation} was prohibited by the pattern "#{@file_name_limitation}")))
         end
 
-        it 'restricts users by email format', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347783' do
+        it 'restricts users by email format', :blocking, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347783' do
           gitlab_user = Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_2, Runtime::Env.gitlab_qa_password_2)
           @project.add_member(gitlab_user, Resource::Members::AccessLevel::MAINTAINER)
 
@@ -165,7 +165,7 @@ module QA
           @gpg = Resource::UserGPG.fabricate_via_api!
         end
 
-        it 'restricts to signed commits', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347785' do
+        it 'restricts to signed commits', :blocking, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347785' do
           expect_no_error_on_push(file: standard_file, gpg: @gpg)
           expect_error_on_push(file: standard_file, error: 'Commit must be signed with a GPG key')
         end
