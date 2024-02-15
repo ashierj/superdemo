@@ -8,7 +8,10 @@ module Backup
       extend ::Gitlab::Utils::Override
       include Backup::Helper
 
-      DEFAULT_EXCLUDE = 'lost+found'
+      DEFAULT_EXCLUDE = ['lost+found'].freeze
+
+      # Use the content from a PIPE instead of an actual filepath (used by tar as input or output)
+      USE_PIPE_INSTEAD_OF_FILE = '-'
 
       attr_reader :excludes
 
@@ -16,7 +19,7 @@ module Backup
         super(progress, options: options)
 
         @storage_path = storage_path
-        @excludes = [DEFAULT_EXCLUDE].concat(excludes)
+        @excludes = excludes
       end
 
       # Copy files from public/files to backup/files
@@ -26,8 +29,12 @@ module Backup
         FileUtils.mkdir_p(backup_basepath)
         FileUtils.rm_f(backup_tarball)
 
+        tar_utils = ::Gitlab::Backup::Cli::Utils::Tar.new
+        shell_pipeline = ::Gitlab::Backup::Cli::Shell::Pipeline
+        compress_command = ::Gitlab::Backup::Cli::Shell::Command.new(compress_cmd)
+
         if options.strategy == ::Backup::Options::Strategy::COPY
-          cmd = [%w[rsync -a --delete], exclude_dirs(:rsync), %W[#{storage_realpath} #{backup_basepath}]].flatten
+          cmd = [%w[rsync -a --delete], exclude_dirs_rsync, %W[#{storage_realpath} #{backup_basepath}]].flatten
           output, status = Gitlab::Popen.popen(cmd)
 
           # Retry if rsync source files vanish
@@ -41,15 +48,30 @@ module Backup
             raise_custom_error(backup_tarball)
           end
 
-          tar_cmd = [tar, exclude_dirs(:tar), %W[-C #{backup_files_realpath} -cf - .]].flatten
-          status_list, output = run_pipeline!([tar_cmd, compress_cmd], out: [backup_tarball, 'w', 0o600])
+          archive_file = [backup_tarball, 'w', 0o600]
+          tar_command = tar_utils.pack_cmd(
+            archive_file: USE_PIPE_INSTEAD_OF_FILE,
+            target_directory: backup_files_realpath,
+            target: '.',
+            excludes: excludes)
+          result = shell_pipeline.new(tar_command, compress_command).run_pipeline!(output: archive_file)
+
           FileUtils.rm_rf(backup_files_realpath)
         else
-          tar_cmd = [tar, exclude_dirs(:tar), %W[-C #{storage_realpath} -cf - .]].flatten
-          status_list, output = run_pipeline!([tar_cmd, compress_cmd], out: [backup_tarball, 'w', 0o600])
+          archive_file = [backup_tarball, 'w', 0o600]
+          tar_command = tar_utils.pack_cmd(
+            archive_file: USE_PIPE_INSTEAD_OF_FILE,
+            target_directory: storage_realpath,
+            target: '.',
+            excludes: excludes)
+
+          result = shell_pipeline.new(tar_command, compress_command).run_pipeline!(output: archive_file)
         end
 
-        success = pipeline_succeeded?(tar_status: status_list[0], compress_status: status_list[1], output: output)
+        success = pipeline_succeeded?(
+          tar_status: result.status_list[0],
+          compress_status: result.status_list[1],
+          output: result.stderr)
 
         raise_custom_error(backup_tarball) unless success
       end
@@ -140,16 +162,12 @@ module Backup
         false
       end
 
-      def exclude_dirs(fmt)
-        excludes.map do |s|
-          if s == DEFAULT_EXCLUDE
-            "--exclude=#{s}"
-          elsif fmt == :rsync
-            "--exclude=/#{File.join(File.basename(storage_realpath), s)}"
-          elsif fmt == :tar
-            "--exclude=./#{s}"
-          end
-        end
+      def exclude_dirs_rsync
+        default = DEFAULT_EXCLUDE.map { |entry| "--exclude=#{entry}" }
+
+        basepath = Pathname(File.basename(storage_realpath))
+
+        default.concat(excludes.map { |entry| "--exclude=/#{basepath.join(entry)}" })
       end
 
       def raise_custom_error(backup_tarball)
