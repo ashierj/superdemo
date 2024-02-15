@@ -17,6 +17,7 @@ module EE
 
       def validate_legacy_hierarchy
         return unless work_item_parent&.work_item_type&.base_type == 'epic' && work_item&.has_epic?
+        return if work_item.epic.issue_id == work_item_parent.id
 
         errors.add :work_item, _('already assigned to an epic')
       end

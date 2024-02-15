@@ -31,7 +31,7 @@ RSpec.shared_examples 'syncs all data from an epic to a work item' do
     expect(work_item.lock_version).to eq(epic.lock_version)
   end
 
-  it 'sets the same epic associations data to the work item', :aggregate_failures do
+  it 'sets the same epic data to the work item association', :aggregate_failures do
     subject
 
     epic.reload
@@ -48,6 +48,16 @@ RSpec.shared_examples 'syncs all data from an epic to a work item' do
       expect(work_item.parent_link.relative_position).to eq(epic.relative_position)
     else
       expect(work_item.work_item_parent).to be_nil
+    end
+
+    if epic.start_date_is_fixed
+      expect(work_item.dates_source.start_date_is_fixed).to eq(epic.start_date_is_fixed)
+      expect(work_item.dates_source.start_date_fixed).to eq(epic.start_date_fixed)
+    end
+
+    if epic.due_date_is_fixed
+      expect(work_item.dates_source.due_date_is_fixed).to eq(epic.due_date_is_fixed)
+      expect(work_item.dates_source.due_date_fixed).to eq(epic.due_date_fixed)
     end
 
     # Data we do not want to sync yet

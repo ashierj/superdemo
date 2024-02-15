@@ -19,6 +19,14 @@ RSpec.describe ::WorkItems::ParentLink, feature_category: :portfolio_management 
           expect(subject).to be_valid
         end
 
+        it 'is valid for child with legacy epic synced to work item parent' do
+          legacy_epic = create(:epic, :with_synced_work_item, group: group)
+          work_item_epic = legacy_epic.work_item
+          create(:epic_issue, epic: legacy_epic, issue: issue)
+
+          expect(described_class.new(work_item: issue, work_item_parent: work_item_epic)).to be_valid
+        end
+
         it 'is invalid for child with existing legacy epic', :aggregate_failures do
           create(:epic_issue, epic: legacy_epic, issue: issue)
 

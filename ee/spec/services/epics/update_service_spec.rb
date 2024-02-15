@@ -801,6 +801,8 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
         context 'multiple values update' do
           let_it_be(:synced_parent_work_item) { create(:work_item, :epic, namespace: group) }
           let_it_be(:parent_epic) { create(:epic, group: group, issue_id: synced_parent_work_item.id) }
+          let_it_be(:start_date) { Date.new(2024, 1, 1) }
+          let_it_be(:due_date) { Date.new(2024, 1, 31) }
 
           context 'when changes are valid' do
             let(:opts) do
@@ -810,13 +812,94 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                 confidential: true,
                 external_key: 'external_test_key',
                 color: '#CC0000',
-                parent: parent_epic
+                parent: parent_epic,
+                start_date_is_fixed: true,
+                start_date_fixed: start_date,
+                due_date_is_fixed: true,
+                due_date_fixed: due_date
               }
             end
 
             subject { update_epic(opts) }
 
             it_behaves_like 'syncs all data from an epic to a work item'
+
+            context 'when updating rolledup dates' do
+              let(:opts) { { start_date_is_fixed: false, due_date_is_fixed: false } }
+
+              context 'with issue milestone date roll up' do
+                let_it_be(:milestone) do
+                  create(:milestone, group: group, start_date: Date.new(2024, 2, 1), due_date: Date.new(2024, 2, 29))
+                end
+
+                before do
+                  child_issue = create(:issue, milestone: milestone, project: create(:project, group: group))
+                  create(:epic_issue, epic: epic, issue: child_issue)
+                  create(:parent_link, work_item_parent: epic.work_item, work_item: WorkItem.find(child_issue.id))
+                end
+
+                it 'sets rolledup dated for the work item', :aggregate_failures do
+                  subject
+
+                  epic.reload
+                  work_item = epic.work_item
+
+                  expect(epic.start_date_sourcing_milestone_id).to eq(milestone.id)
+                  expect(epic.due_date_sourcing_milestone_id).to eq(milestone.id)
+                  expect(epic.start_date).to eq(milestone.start_date)
+                  expect(epic.start_date_is_fixed).to eq(false)
+                  expect(epic.due_date).to eq(milestone.due_date)
+                  expect(epic.due_date_is_fixed).to eq(false)
+
+                  expect(work_item.dates_source.start_date_is_fixed).to eq(epic.start_date_is_fixed)
+                  expect(work_item.dates_source.start_date_fixed).to eq(epic.start_date_fixed)
+                  expect(work_item.dates_source.start_date).to eq(epic.start_date)
+                  expect(work_item.dates_source.due_date).to eq(epic.due_date)
+                  expect(work_item.dates_source.start_date_sourcing_milestone_id)
+                    .to eq(epic.start_date_sourcing_milestone_id)
+                  expect(work_item.dates_source.due_date_sourcing_milestone_id)
+                    .to eq(epic.due_date_sourcing_milestone_id)
+                end
+              end
+
+              context 'with child epic date roll up' do
+                let_it_be(:child_epic) do
+                  create(
+                    :epic, :with_synced_work_item,
+                    group: group,
+                    parent: epic,
+                    start_date: Date.new(2024, 3, 1),
+                    end_date: Date.new(2024, 3, 31)
+                  )
+                end
+
+                before do
+                  child_epic.work_item.update!(start_date: child_epic.start_date, due_date: child_epic.end_date)
+                  create(:parent_link, work_item_parent: epic.work_item, work_item: child_epic.work_item)
+                end
+
+                it 'sets rolledup dated for the work item', :aggregate_failures do
+                  subject
+
+                  epic.reload
+                  work_item = epic.work_item
+
+                  expect(epic.start_date_sourcing_epic_id).to eq(child_epic.id)
+                  expect(epic.due_date_sourcing_epic_id).to eq(child_epic.id)
+                  expect(epic.start_date).to eq(child_epic.start_date)
+                  expect(epic.start_date_is_fixed).to eq(false)
+                  expect(epic.due_date).to eq(child_epic.end_date)
+                  expect(epic.due_date_is_fixed).to eq(false)
+
+                  expect(work_item.dates_source.start_date_is_fixed).to eq(epic.start_date_is_fixed)
+                  expect(work_item.dates_source.start_date_fixed).to eq(epic.start_date_fixed)
+                  expect(work_item.dates_source.start_date).to eq(epic.start_date)
+                  expect(work_item.dates_source.due_date).to eq(epic.due_date)
+                  expect(work_item.dates_source.start_date_sourcing_work_item_id).to eq(child_epic.issue_id)
+                  expect(work_item.dates_source.due_date_sourcing_work_item_id).to eq(child_epic.issue_id)
+                end
+              end
+            end
 
             context 'when feature flag is disabled' do
               before do

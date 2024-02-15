@@ -63,10 +63,13 @@ module Epics
       update_params = filtered_params.merge({
         updated_by: epic.updated_by,
         updated_at: epic.updated_at,
-        last_edited_at: epic.last_edited_at,
-        last_edited_by: epic.last_edited_by,
         extra_params: { synced_work_item: true }
       })
+
+      if epic.edited?
+        update_params[:last_edited_at] = epic.last_edited_at
+        update_params[:last_edited_by] = epic.last_edited_by
+      end
 
       update_params[:title_html] = epic.title_html if params[:title].present?
       update_params[:description_html] = epic.description_html if params[:description].present?
@@ -97,7 +100,7 @@ module Epics
         attributes = params.slice(*widget.sync_params)
         next unless attributes.present?
 
-        widget_params[widget.api_symbol] = attributes.merge({ skip_system_notes: true })
+        widget_params[widget.api_symbol] = attributes.merge({ synced_work_item: true })
       end
     end
   end

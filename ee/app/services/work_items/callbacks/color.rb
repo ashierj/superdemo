@@ -8,7 +8,7 @@ module WorkItems
       def after_initialize
         return work_item.color.destroy! if work_item.color.present? && excluded_in_new_type?
 
-        handle_color_change if params.key?(:color) && has_permission?(:admin_work_item)
+        handle_color_change if params.key?(:color) && can_set_color?
       end
 
       def after_save_commit
@@ -27,9 +27,13 @@ module WorkItems
       end
 
       def create_system_notes?
-        return false if params.fetch(:skip_system_notes, false) || work_item.color.nil?
+        return false if params.fetch(:synced_work_item, false) || work_item.color.nil?
 
         work_item.color.destroyed? || work_item.color.previous_changes.include?('color')
+      end
+
+      def can_set_color?
+        params.fetch(:synced_work_item, false) || has_permission?(:admin_work_item)
       end
     end
   end

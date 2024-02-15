@@ -13,7 +13,10 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
   let_it_be(:synced_parent_work_item) { create(:work_item, :epic, namespace: group) }
   let_it_be(:parent_epic) { create(:epic, group: group, issue_id: synced_parent_work_item.id) }
   let(:base_attrs) do
-    %i[title description confidential updated_by_id last_edited_by_id last_edited_at closed_by_id closed_at]
+    %i[
+      title description confidential updated_by_id last_edited_by_id last_edited_at closed_by_id closed_at
+      start_date_is_fixed due_date_is_fixed start_date_fixed due_date_fixed
+    ]
   end
 
   let(:params) do
@@ -32,7 +35,11 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
       closed_by_id: other_user.id,
       closed_at: '2024-01-11T01:00:00Z',
       state_id: 2,
-      color: '#c91c00'
+      color: '#c91c00',
+      start_date_is_fixed: true,
+      start_date_fixed: Date.new(2024, 1, 1),
+      due_date_is_fixed: true,
+      due_date_fixed: Date.new(2024, 1, 31)
     }
   end
 
@@ -207,21 +214,6 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
 
           it_behaves_like 'creates epic without parent'
         end
-      end
-    end
-
-    context 'handling fixed dates' do
-      it 'sets the fixed date correctly' do
-        date = Date.new(2019, 10, 10)
-        params[:start_date_fixed] = date
-        params[:start_date_is_fixed] = true
-
-        subject
-
-        epic = Epic.last
-        expect(epic.start_date).to eq(date)
-        expect(epic.start_date_fixed).to eq(date)
-        expect(epic.start_date_is_fixed).to be_truthy
       end
     end
 

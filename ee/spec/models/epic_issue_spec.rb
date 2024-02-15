@@ -70,6 +70,14 @@ RSpec.describe EpicIssue, feature_category: :portfolio_management do
         expect(subject).to be_valid
       end
 
+      it 'is valid for issue with work item parent synced to the epic' do
+        legacy_epic = create(:epic, :with_synced_work_item, group: group)
+        work_item_epic = legacy_epic.work_item
+        create(:parent_link, work_item_parent: work_item_epic, work_item: WorkItem.find(issue.id))
+
+        expect(described_class.new(epic: legacy_epic, issue: issue)).to be_valid
+      end
+
       it 'is not valid for an issue with a parent link epic', :aggregate_failures do
         work_item_epic = create(:work_item, :epic, project: project)
         create(:parent_link, work_item_parent: work_item_epic, work_item: WorkItem.find(issue.id))
