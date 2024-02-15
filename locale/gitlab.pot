@@ -33798,10 +33798,16 @@ msgstr ""
 msgid "ObservabilityMetrics|Search metrics starting with..."
 msgstr ""
 
+msgid "ObservabilityMetrics|Select attributes"
+msgstr ""
+
 msgid "ObservabilityMetrics|Type"
 msgstr ""
 
 msgid "ObservabilityMetrics|Value"
+msgstr ""
+
+msgid "ObservabilityMetrics|all"
 msgstr ""
 
 msgid "ObservabilityMetrics|is like"

@@ -38,11 +38,15 @@ export default {
     },
   },
   data() {
+    let defaultGroupByAttributes = this.searchMetadata.default_group_by_attributes ?? [];
+    if (defaultGroupByAttributes.length === 1 && defaultGroupByAttributes[0] === '*') {
+      defaultGroupByAttributes = [...(this.searchMetadata.attribute_keys ?? [])];
+    }
     return {
       shouldShowDateRangePicker: false,
       dateRange: this.dateRangeFilter,
       groupBy: this.groupByFilter ?? {
-        attributes: this.searchMetadata.default_group_by_attributes ?? [],
+        attributes: defaultGroupByAttributes,
         func: this.searchMetadata.default_group_by_function ?? '',
       },
     };
@@ -97,7 +101,8 @@ export default {
     <hr class="gl-my-3" />
 
     <group-by-filter
-      :search-metadata="searchMetadata"
+      :supported-functions="searchMetadata.supported_functions"
+      :supported-attributes="searchMetadata.attribute_keys"
       :selected-attributes="groupBy.attributes"
       :selected-function="groupBy.func"
       @groupBy="onGroupBy"
