@@ -44,28 +44,12 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::DataForDurationCha
       )
     end
 
-    context 'when feature flag vsa_duration_from_db is enabled' do
-      it 'calculates duration from database column duration_in_milliseconds' do
-        average_two_days_ago = result[0]
-        average_today = result[1]
+    it 'calculates duration from database column duration_in_milliseconds' do
+      average_two_days_ago = result[0]
+      average_today = result[1]
 
-        expect(average_two_days_ago).to have_attributes(date: end_timestamp_1.to_date, average_duration_in_seconds: 100000)
-        expect(average_today).to have_attributes(date: end_timestamp_2.to_date, average_duration_in_seconds: 25005)
-      end
-    end
-
-    context 'when feature flag vsa_duration_from_db is disabled' do
-      before do
-        stub_feature_flags(vsa_duration_from_db: false)
-      end
-
-      it 'calculates duration from start and end events' do
-        average_two_days_ago = result[0]
-        average_today = result[1]
-
-        expect(average_two_days_ago).to have_attributes(date: end_timestamp_1.to_date, average_duration_in_seconds: 3.days)
-        expect(average_today).to have_attributes(date: end_timestamp_2.to_date, average_duration_in_seconds: 2.days)
-      end
+      expect(average_two_days_ago).to have_attributes(date: end_timestamp_1.to_date, average_duration_in_seconds: 100000)
+      expect(average_today).to have_attributes(date: end_timestamp_2.to_date, average_duration_in_seconds: 25005)
     end
   end
 end
