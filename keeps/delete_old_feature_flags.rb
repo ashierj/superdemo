@@ -2,8 +2,6 @@
 
 require 'fileutils'
 require 'cgi'
-require 'httparty'
-require 'json'
 
 require_relative '../config/environment'
 require_relative './helpers/groups'
@@ -19,16 +17,14 @@ module Keeps
   # bundle exec gitlab-housekeeper -d \
   #   -k Keeps::DeleteOldFeatureFlags
   # ```
-  # rubocop:disable Gitlab/HTTParty -- Don't use GitLab dependencies
-  # rubocop:disable Gitlab/Json -- Don't use GitLab dependencies
   class DeleteOldFeatureFlags < ::Gitlab::Housekeeper::Keep
     CUTOFF_MILESTONE_OLD = 12
     GREP_IGNORE = [
       'locale/',
       'db/structure.sql'
     ].freeze
-    API_BASE_URI = 'https://gitlab.com/api/v4'
     ROLLOUT_ISSUE_URL_REGEX = %r{\Ahttps://gitlab\.com/(?<project_path>.*)/-/issues/(?<issue_iid>\d+)\z}
+    API_ISSUE_URL = "https://gitlab.com/api/v4/projects/%<project_path>s/issues/%<issue_iid>s"
     FEATURE_FLAG_LOG_ISSUES_URL = "https://gitlab.com/gitlab-com/gl-infra/feature-flag-log/-/issues/?search=%<feature_flag_name>s&sort=created_date&state=all&label_name%%5B%%5D=host%%3A%%3Agitlab.com"
 
     def each_change
@@ -141,8 +137,8 @@ module Keeps
       matches = ROLLOUT_ISSUE_URL_REGEX.match(rollout_issue_url)
       return unless matches
 
-      response = HTTParty.get(
-        "#{API_BASE_URI}/projects/#{CGI.escape(matches[:project_path])}/issues/#{matches[:issue_iid]}"
+      response = Gitlab::HTTP_V2.try_get(
+        format(API_ISSUE_URL, project_path: CGI.escape(matches[:project_path]), issue_iid: matches[:issue_iid])
       )
 
       unless (200..299).cover?(response.code)
@@ -150,7 +146,7 @@ module Keeps
           "Failed with response code: #{response.code} and body:\n#{response.body}"
       end
 
-      JSON.parse(response.body, symbolize_names: true)
+      Gitlab::Json.parse(response.body, symbolize_names: true)
     end
 
     def each_feature_flag
@@ -172,5 +168,3 @@ module Keeps
     end
   end
 end
-# rubocop:enable Gitlab/Json
-# rubocop:enable Gitlab/HTTParty

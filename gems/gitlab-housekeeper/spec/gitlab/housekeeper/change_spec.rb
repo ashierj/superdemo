@@ -20,6 +20,15 @@ RSpec.describe ::Gitlab::Housekeeper::Change do
     end
   end
 
+  describe '#reviewers=' do
+    it 'always sets an array' do
+      change = described_class.new
+      change.reviewers = 'foo'
+
+      expect(change.reviewers).to eq(['foo'])
+    end
+  end
+
   describe '#mr_description' do
     it 'includes standard content' do
       expect(change.mr_description).to eq(
