@@ -1,11 +1,11 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { v4 as uuidv4 } from 'uuid';
-import { GlExperimentBadge } from '@gitlab/ui';
+import { GlExperimentBadge, GlFormGroup } from '@gitlab/ui';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import generateCubeQueryMutation from 'ee/analytics/analytics_dashboards/graphql/mutations/generate_cube_query.mutation.graphql';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
@@ -28,8 +28,8 @@ describe('AiCubeQueryGenerator', () => {
     wrapper.findByTestId('generate-cube-query-submit-button');
   const findExperimentBadge = () => wrapper.findComponent(GlExperimentBadge);
 
-  const createWrapper = (mountFn = shallowMountExtended) => {
-    wrapper = mountFn(AiCubeQueryGenerator, {
+  const createWrapper = () => {
+    wrapper = shallowMountExtended(AiCubeQueryGenerator, {
       provide: {
         namespaceId: 'gid://gitlab/Namespace/1',
       },
@@ -37,12 +37,16 @@ describe('AiCubeQueryGenerator', () => {
         [generateCubeQueryMutation, generateCubeQueryMutationHandlerMock],
         [aiResponseSubscription, aiResponseSubscriptionHandlerMock],
       ]),
+      stubs: {
+        GlFormGroup,
+      },
     });
   };
 
   beforeEach(() => {
     window.gon = { current_user_id: 1 };
     uuidv4.mockImplementation(() => 'mock-uuid');
+    createWrapper();
   });
 
   afterEach(() => {
@@ -51,13 +55,10 @@ describe('AiCubeQueryGenerator', () => {
   });
 
   it('renders an experiment badge', () => {
-    createWrapper(mountExtended);
-
     expect(findExperimentBadge().exists()).toBe(true);
   });
 
   it('does not send a request when no prompt has been entered', async () => {
-    createWrapper();
     findGenerateCubeQuerySubmitButton().vm.$emit('click');
 
     await waitForPromises();
@@ -69,8 +70,6 @@ describe('AiCubeQueryGenerator', () => {
     const generatedQuery = TEST_VISUALIZATION().data.query;
 
     beforeEach(() => {
-      createWrapper();
-
       generateCubeQueryMutationHandlerMock.mockResolvedValue({
         data: { aiAction: { errors: [], __typename: 'AiActionPayload' } },
       });
