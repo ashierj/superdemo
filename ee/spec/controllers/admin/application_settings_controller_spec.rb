@@ -400,34 +400,18 @@ RSpec.describe Admin::ApplicationSettingsController do
     end
 
     context 'when instance_level_code_suggestions_enabled is enabled' do
-      it 'triggers SyncServiceTokenWorker worker' do
-        expect(::Ai::SyncServiceTokenWorker).to receive(:perform_async)
+      it 'triggers Cloud Connector access data sync' do
+        expect(::CloudConnector::SyncServiceTokenWorker).to receive(:perform_async)
 
         settings = { instance_level_code_suggestions_enabled: '1' }
 
         patch :general, params: { application_setting: settings }
       end
-
-      context 'when :use_sync_service_token_worker feature flag is disabled' do
-        before do
-          stub_feature_flags(use_sync_service_token_worker: false)
-        end
-
-        it 'triggers SeatLinkData sync' do
-          expect_next_instance_of(::Gitlab::SeatLinkData) do |sync_link_data|
-            expect(sync_link_data).to receive(:sync)
-          end
-
-          settings = { instance_level_code_suggestions_enabled: '1' }
-
-          patch :general, params: { application_setting: settings }
-        end
-      end
     end
 
     context 'when instance_level_code_suggestions_enabled is disabled' do
-      it 'does not trigger SyncServiceTokenWorker worker' do
-        expect(::Ai::SyncServiceTokenWorker).not_to receive(:perform_async)
+      it 'does not trigger Cloud Connector access data sync' do
+        expect(::CloudConnector::SyncServiceTokenWorker).not_to receive(:perform_async)
 
         settings = { instance_level_code_suggestions_enabled: '0' }
 

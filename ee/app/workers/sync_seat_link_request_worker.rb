@@ -34,18 +34,13 @@ class SyncSeatLinkRequestWorker
       save_future_subscriptions(response)
       update_code_suggestions_add_on_purchase
       update_reconciliation!(response)
-      update_code_suggestions_tokens(response) unless use_sync_service_token_worker?
-      ::Ai::SyncServiceTokenWorker.perform_async if refresh_token
+      ::CloudConnector::SyncServiceTokenWorker.perform_async if refresh_token
     else
       raise RequestError, request_error_message(response)
     end
   end
 
   private
-
-  def use_sync_service_token_worker?
-    ::Feature.enabled?(:use_sync_service_token_worker)
-  end
 
   def reset_license!(license_key)
     if License.current_cloud_license?(license_key)
