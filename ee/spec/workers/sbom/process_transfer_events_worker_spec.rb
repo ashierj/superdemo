@@ -39,6 +39,8 @@ RSpec.describe Sbom::ProcessTransferEventsWorker, feature_category: :dependency_
   context 'when a project sync event is published', :sidekiq_inline do
     let(:event) { project_event }
 
+    it_behaves_like 'subscribes to event'
+
     it 'enqueues a sync job for the project id' do
       expect(::Sbom::SyncProjectTraversalIdsWorker).to receive(:perform_bulk).with([[project.id]])
 
@@ -48,6 +50,8 @@ RSpec.describe Sbom::ProcessTransferEventsWorker, feature_category: :dependency_
 
   context 'when a namespace sync event is published', :sidekiq_inline do
     let(:event) { namespace_event }
+
+    it_behaves_like 'subscribes to event'
 
     it 'enqueues a sync job for each project id belonging to the namespace id' do
       expect(::Sbom::SyncProjectTraversalIdsWorker).to receive(:perform_bulk).with(
