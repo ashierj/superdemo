@@ -26,7 +26,7 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
         parent_table = parent['table']
         parent_sharding_key = parent['sharding_key']
 
-        connection.execute("ALTER TABLE #{table} ADD COLUMN #{sharding_key} bigint")
+        connection.execute("ALTER TABLE #{table} ADD COLUMN IF NOT EXISTS #{sharding_key} bigint")
 
         # Confirming it at least produces a valid query
         connection.execute <<~SQL
