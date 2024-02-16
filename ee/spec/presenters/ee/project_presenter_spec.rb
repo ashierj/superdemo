@@ -10,7 +10,7 @@ RSpec.describe ProjectPresenter, feature_category: :consumables_cost_management 
     let(:presenter) { described_class.new(project, current_user: user) }
 
     before do
-      stub_application_setting(check_namespace_plan: true)
+      stub_saas_features(gitlab_com_subscriptions: true)
       stub_application_setting(namespace_storage_forks_cost_factor: 0.1)
       allow(presenter).to receive(:can?).with(user, :admin_project, project).and_return(true)
       allow(project).to receive(:empty_repo?).and_return(false)
