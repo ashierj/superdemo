@@ -1,13 +1,52 @@
 <script>
-import TitleArea from '~/vue_shared/components/registry/title_area.vue';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import DetailsHeader from 'ee_component/packages_and_registries/google_artifact_registry/components/details/header.vue';
+import ImageDetails from 'ee_component/packages_and_registries/google_artifact_registry/components/details/image.vue';
+import getArtifactDetailsQuery from 'ee_component/packages_and_registries/google_artifact_registry/graphql/queries/get_artifact_details.query.graphql';
 
 export default {
   name: 'ArtifactRegistryDetailsPage',
   components: {
-    TitleArea,
+    DetailsHeader,
+    ImageDetails,
   },
   inject: ['breadCrumbState'],
+  apollo: {
+    artifact: {
+      query: getArtifactDetailsQuery,
+      variables() {
+        return this.queryVariables;
+      },
+      update(data) {
+        return data.googleCloudRegistryArtifactDetails ?? {};
+      },
+      result() {
+        this.updateBreadcrumb();
+      },
+      error(error) {
+        this.failedToLoad = true;
+        Sentry.captureException(error);
+      },
+    },
+  },
+  data() {
+    return {
+      artifact: {},
+      failedToLoad: false,
+    };
+  },
   computed: {
+    headerData() {
+      const { uri, artifactRegistryImageUrl } = this.artifact;
+      if (uri) {
+        return {
+          title: this.imageNameAndShortDigest,
+          uri,
+          artifactRegistryImageUrl,
+        };
+      }
+      return {};
+    },
     imageParams() {
       return this.$route.params.image;
     },
@@ -19,13 +58,29 @@ export default {
       const [name] = this.imageParams.split('@');
       return `${name}@${this.shortDigest}`;
     },
+    isLoading() {
+      return this.$apollo.queries.artifact.loading;
+    },
+    queryVariables() {
+      return {
+        project: this.$route.params.project,
+        location: this.$route.params.location,
+        repository: this.$route.params.repository,
+        image: this.imageParams,
+      };
+    },
   },
-  mounted() {
-    this.breadCrumbState.updateName(this.imageNameAndShortDigest);
+  methods: {
+    updateBreadcrumb() {
+      this.breadCrumbState.updateName(this.imageNameAndShortDigest);
+    },
   },
 };
 </script>
 
 <template>
-  <title-area :title="imageNameAndShortDigest" />
+  <div>
+    <details-header :data="headerData" :is-loading="isLoading" :show-error="failedToLoad" />
+    <image-details v-if="!failedToLoad" :data="artifact" :is-loading="isLoading" />
+  </div>
 </template>

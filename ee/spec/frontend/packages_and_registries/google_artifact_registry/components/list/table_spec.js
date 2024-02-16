@@ -1,9 +1,14 @@
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import { RouterLinkStub } from '@vue/test-utils';
 import { GlBadge, GlTable, GlTruncate } from '@gitlab/ui';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { useFakeDate } from 'helpers/fake_date';
 import ListTable from 'ee_component/packages_and_registries/google_artifact_registry/components/list/table.vue';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import { imageData } from '../../mock_data';
+
+Vue.use(VueRouter);
 
 describe('ListTable', () => {
   let wrapper;
@@ -22,6 +27,7 @@ describe('ListTable', () => {
 
   const findTable = () => wrapper.findComponent(GlTable);
   const findClipboardButton = () => wrapper.findComponent(ClipboardButton);
+  const findImageLink = () => wrapper.findComponent(RouterLinkStub);
   const findCells = () => wrapper.findAllByRole('cell');
   const findImageName = () => wrapper.findComponent(GlTruncate);
   const findBadges = () => wrapper.findAllComponents(GlBadge);
@@ -36,6 +42,7 @@ describe('ListTable', () => {
       stubs: {
         GlTruncate: true,
         ClipboardButton: true,
+        RouterLink: RouterLinkStub,
       },
     });
   };
@@ -108,6 +115,10 @@ describe('ListTable', () => {
         text: 'alpine@sha256:1234567890abcdef1234567890abcdef12345678',
         title: 'Copy image name',
       });
+    });
+
+    it('has a link to navigate to the details page', () => {
+      expect(findImageLink().props('to')).toBe(imageData.name);
     });
 
     describe('tags', () => {
