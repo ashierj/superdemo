@@ -16,6 +16,7 @@ module Security
       attr_reader :pipeline
 
       def sync_scan_finding
+        return unless Enums::Ci::Pipeline.ci_and_security_orchestration_sources.key?(pipeline.source.to_sym)
         return if pipeline.security_findings.empty? && !pipeline.complete?
 
         update_required_approvals_for_scan_finding
