@@ -50,6 +50,7 @@ module Vulnerabilities
 
     def save_vulnerability(vulnerability, finding)
       from_state = finding.state
+
       vulnerability.assign_attributes(
         author: @author,
         project: @project,

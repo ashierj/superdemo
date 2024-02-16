@@ -64,8 +64,8 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities, feature_catego
 
     it 'backfills the finding_id column' do
       expect { ingest_vulnerabilities }.to change { existing_vulnerability.reload.finding_id }
-        .from(nil).to(existing_vulnerability.finding.id).and change { resolved_vulnerability.reload.finding_id }
-        .from(nil).to(resolved_vulnerability.finding.id)
+        .to(existing_vulnerability.finding.id).and change { resolved_vulnerability.reload.finding_id }
+        .to(resolved_vulnerability.finding.id)
     end
 
     it 'creates new vulnerabilities with present_on_default_branch set to true' do

@@ -247,8 +247,10 @@ RSpec.describe(
 
     context "when a Vulnerability is dismissed" do
       before do
-        vulnerability = create_vulnerability(project, user)
-        finding = create_finding(project, scanner, vulnerability_id: vulnerability.id)
+        finding = create_finding(project, scanner)
+        vulnerability = create_vulnerability(project, user, finding_id: finding.id)
+        finding.update!(vulnerability_id: vulnerability.id)
+
         create_feedback(
           project,
           user,
@@ -309,8 +311,8 @@ RSpec.describe(
     # rubocop:disable RSpec/MultipleMemoizedHelpers
     context "when a Vulnerability is dismissed with a comment" do
       let(:comment) { "This is a test comment" }
-      let(:vulnerability) { create_vulnerability(project, user) }
-      let(:finding) { create_finding(project, scanner, vulnerability_id: vulnerability.id) }
+      let!(:finding) { create_finding(project, scanner) }
+      let(:vulnerability) { create_vulnerability(project, user, finding_id: finding.id) }
       let(:feedback) do
         create_feedback(
           project,
@@ -325,6 +327,7 @@ RSpec.describe(
       end
 
       before do
+        finding.update!(vulnerability_id: vulnerability.id)
         create_feedback(
           project,
           user,
@@ -375,8 +378,9 @@ RSpec.describe(
       dismissal_reason = 3 # used_in_test
 
       before do
-        vulnerability = create_vulnerability(project, user)
-        finding = create_finding(project, scanner, vulnerability_id: vulnerability.id)
+        finding = create_finding(project, scanner)
+        vulnerability = create_vulnerability(project, user, finding_id: finding.id)
+        finding.update!(vulnerability_id: vulnerability.id)
         create_feedback(
           project,
           user,
@@ -498,7 +502,8 @@ RSpec.describe(
       report_type: 0, # sast
       description: "test",
       project_id: project.id,
-      author_id: overrides.fetch(:author_id) { user.id }
+      author_id: overrides.fetch(:author_id) { user.id },
+      finding_id: overrides.fetch(:finding_id)
     }
 
     vulnerabilities.create!(attrs)
