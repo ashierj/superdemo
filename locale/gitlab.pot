@@ -8491,6 +8491,9 @@ msgstr ""
 msgid "Boards|New board"
 msgstr ""
 
+msgid "Boards|No cadence matches current iteration filter"
+msgstr ""
+
 msgid "Boards|Retrieving blocking %{issuableType}s"
 msgstr ""
 
