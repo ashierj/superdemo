@@ -26101,8 +26101,6 @@ CREATE INDEX index_personal_access_tokens_on_user_id ON personal_access_tokens U
 
 CREATE INDEX index_pipeline_metadata_on_name_text_pattern_pipeline_id ON ci_pipeline_metadata USING btree (name text_pattern_ops, pipeline_id);
 
-CREATE INDEX index_pipeline_metadata_on_pipeline_id_name_text_pattern ON ci_pipeline_metadata USING btree (pipeline_id, name text_pattern_ops);
-
 CREATE UNIQUE INDEX p_ci_pipeline_variables_pipeline_id_key_partition_id_idx ON ONLY p_ci_pipeline_variables USING btree (pipeline_id, key, partition_id);
 
 CREATE UNIQUE INDEX index_pipeline_variables_on_pipeline_id_key_partition_id_unique ON ci_pipeline_variables USING btree (pipeline_id, key, partition_id);
