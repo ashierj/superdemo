@@ -584,7 +584,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
               _, params = workhorse_send_data
               expect(params['Header']).to include(
-                'X-Gitlab-Saas-Namespace-Ids' => [group.id.to_s],
+                'X-Gitlab-Saas-Namespace-Ids' => [''],
                 'X-Gitlab-Saas-Duo-Pro-Namespace-Ids' => [add_on_purchase.namespace.id.to_s]
               )
             end

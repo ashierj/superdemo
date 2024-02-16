@@ -12,7 +12,6 @@ RSpec.describe 'groups/edit.html.haml', feature_category: :groups_and_projects d
 
     assign(:group, group)
     allow(view).to receive(:current_user) { user }
-    allow(view).to receive(:ai_assist_ui_enabled?)
   end
 
   context 'ip_restriction' do

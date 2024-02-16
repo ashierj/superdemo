@@ -123,10 +123,7 @@ module EE
       end
 
       def show_code_suggestions_ga_alert?(group)
-        group.paid? &&
-          !group.trial? &&
-          group.ai_assist_ui_enabled? &&
-          group.code_suggestions_enabled?
+        group.paid? && !group.trial?
       end
     end
   end

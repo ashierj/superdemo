@@ -464,20 +464,6 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
         it { is_expected.to contain_exactly(ultimate_namespace, ultimate_trial_namespace, premium_namespace, opensource_namespace) }
       end
     end
-
-    describe '.with_code_suggestions_enabled' do
-      subject { described_class.with_code_suggestions_enabled }
-
-      let_it_be(:namespace_with_code_suggestions) { create(:group) }
-      let_it_be(:namespace_without_code_suggestions) { create(:group) }
-
-      before do
-        namespace_with_code_suggestions.namespace_settings.update_attribute(:code_suggestions, true)
-        namespace_without_code_suggestions.namespace_settings.update_attribute(:code_suggestions, false)
-      end
-
-      it { is_expected.to contain_exactly(namespace_with_code_suggestions) }
-    end
   end
 
   context 'validation' do
@@ -2104,31 +2090,6 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
           expect(namespace.ci_cd_settings.allow_stale_runner_pruning?).to eq true
         end
       end
-    end
-  end
-
-  describe '#code_suggestions_enabled?' do
-    where(:feature_ai_assist_flag, :code_suggestions, :result) do
-      true  | true  | true
-      true  | false | false
-      false | true  | false
-      false | false | false
-    end
-
-    subject { namespace.code_suggestions_enabled? }
-
-    with_them do
-      let(:namespace) do
-        build_stubbed(
-          :namespace, namespace_settings: build_stubbed(:namespace_settings, code_suggestions: code_suggestions)
-        )
-      end
-
-      before do
-        stub_feature_flags(ai_assist_flag: feature_ai_assist_flag)
-      end
-
-      it { is_expected.to eq(result) }
     end
   end
 

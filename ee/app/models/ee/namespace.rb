@@ -114,11 +114,6 @@ module EE
           ).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
       end
 
-      scope :with_code_suggestions_enabled, -> do
-        joins(:namespace_settings)
-          .where(namespace_settings: { code_suggestions: true })
-      end
-
       delegate :eligible_additional_purchased_storage_size, :additional_purchased_storage_size=,
         :additional_purchased_storage_ends_on, :additional_purchased_storage_ends_on=,
         :temporary_storage_increase_ends_on, :temporary_storage_increase_ends_on=,
@@ -170,10 +165,6 @@ module EE
 
       def temporary_storage_increase_enabled?
         !!namespace_limit&.temporary_storage_increase_enabled?
-      end
-
-      def ai_assist_ui_enabled?
-        !!namespace_settings&.ai_assist_ui_enabled?
       end
 
       def eligible_for_temporary_storage_increase?
@@ -570,10 +561,6 @@ module EE
 
     def okrs_mvc_feature_flag_enabled?
       ::Feature.enabled?(:okrs_mvc, self)
-    end
-
-    def code_suggestions_enabled?
-      ::Feature.enabled?(:ai_assist_flag, self) && code_suggestions
     end
 
     def reached_project_access_token_limit?

@@ -502,78 +502,6 @@ RSpec.describe GroupsController, feature_category: :groups_and_projects do
       end
     end
 
-    context 'when `code_suggestions` is specified' do
-      let(:params) { { code_suggestions: false } }
-      let(:submitted_group) { group }
-
-      subject(:put_update) do
-        put :update, params: { id: submitted_group.to_param, group: params }
-      end
-
-      before_all do
-        group.add_owner(user)
-      end
-
-      before do
-        sign_in(user)
-      end
-
-      context 'with `ai_assist_ui_enabled` enabled' do
-        before do
-          stub_feature_flags(ai_assist_ui: true)
-          stub_feature_flags(ai_assist_flag: true)
-          stub_ee_application_setting(check_namespace_plan: true)
-        end
-
-        context 'when enabling' do
-          let(:params) { { code_suggestions: true } }
-
-          it 'allows the parameter' do
-            expect(group.code_suggestions).to eq(true)
-
-            put_update
-
-            expect(group.reload.code_suggestions).to eq(true)
-          end
-        end
-
-        context 'when disabling' do
-          it 'allows the parameter' do
-            expect(group.code_suggestions).to eq(true)
-
-            put_update
-
-            expect(group.reload.code_suggestions).to eq(false)
-          end
-        end
-
-        context 'when group is a subgroup' do
-          let_it_be(:subgroup) { create(:group, parent: group) }
-          let(:submitted_group) { subgroup }
-
-          it 'does not allow changes to a subgroup' do
-            expect(subgroup.code_suggestions).to eq(true)
-
-            put_update
-
-            expect(subgroup.reload.code_suggestions).to eq(true)
-          end
-        end
-      end
-
-      context 'with `ai_assist_ui_enabled` disabled' do
-        before do
-          stub_ee_application_setting(check_namespace_plan: false)
-        end
-
-        it 'does not allow the parameter' do
-          put_update
-
-          expect(group.reload.code_suggestions).to eq(true)
-        end
-      end
-    end
-
     context 'when `toggle_security_policy_custom_ci` is specified' do
       let(:params) { { toggle_security_policy_custom_ci: true } }
       let(:submitted_group) { group }
@@ -999,50 +927,6 @@ RSpec.describe GroupsController, feature_category: :groups_and_projects do
           put :update, params: { id: group.to_param, group: { experiment_features_enabled: true } }
         end.to not_change { group.reload.experiment_features_enabled }
       end
-    end
-  end
-
-  describe '#ai_assist_ui_enabled?' do
-    let_it_be(:subgroup) { create(:group, parent: group) }
-
-    where(:feature_ai_assist_ui, :ai_assist_flag, :current_group, :check_namespace_plan, :result) do
-      false | true  | ref(:group)    | false | false
-      false | true  | nil            | false | false
-      false | true  | ref(:subgroup) | false | false
-      false | true  | ref(:group)    | true  | false
-      false | true  | nil            | true  | false
-      false | true  | ref(:subgroup) | true  | false
-      true  | false | ref(:group)    | false | false
-      true  | false | nil            | false | false
-      true  | false | ref(:subgroup) | false | false
-      true  | false | ref(:group)    | true  | false
-      true  | false | nil            | true  | false
-      true  | false | ref(:subgroup) | true  | false
-      true  | true  | ref(:group)    | false | false
-      true  | true  | nil            | false | false
-      true  | true  | ref(:subgroup) | false | false
-      true  | true  | ref(:group)    | true  | true
-      true  | true  | nil            | true  | false
-      true  | true  | ref(:subgroup) | true  | false
-      false | false | ref(:group)    | false | false
-      false | false | nil            | false | false
-      false | false | ref(:subgroup) | false | false
-      false | false | ref(:group)    | true  | false
-      false | false | nil            | true  | false
-      false | false | ref(:subgroup) | true  | false
-    end
-
-    with_them do
-      before do
-        stub_feature_flags(ai_assist_ui: feature_ai_assist_ui)
-        stub_feature_flags(ai_assist_flag: ai_assist_flag)
-        allow(controller).to receive(:current_group).and_return(current_group)
-        stub_ee_application_setting(check_namespace_plan: check_namespace_plan)
-      end
-
-      subject { controller.helpers.ai_assist_ui_enabled? }
-
-      it { is_expected.to eq(result) }
     end
   end
 end
