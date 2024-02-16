@@ -16,5 +16,13 @@ namespace :gitlab do
       Tasks::Gitlab::CustomRoles::CompileDocsTask
         .new(custom_roles_dir, custom_roles_doc_file, template_erb_file_path).run
     end
+
+    desc 'GitLab | Custom Roles | Check if custom abilities documentation is up to date'
+    task check_docs: :environment do
+      require_relative './check_docs_task'
+
+      Tasks::Gitlab::CustomRoles::CheckDocsTask
+        .new(custom_roles_dir, custom_roles_doc_file, template_erb_file_path).run
+    end
   end
 end

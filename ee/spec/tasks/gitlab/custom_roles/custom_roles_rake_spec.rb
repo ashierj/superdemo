@@ -23,4 +23,19 @@ RSpec.describe 'gitlab:custom_roles rake tasks', :silence_stdout, feature_catego
       run_rake_task('gitlab:custom_roles:compile_docs')
     end
   end
+
+  describe 'check_docs' do
+    it 'invokes Gitlab::CustomRoles::CheckDocsTask with correct arguments' do
+      check_docs_task = instance_double(Tasks::Gitlab::CustomRoles::CheckDocsTask)
+
+      expect(Tasks::Gitlab::CustomRoles::CheckDocsTask).to receive(:new).with(
+        Rails.root.join("doc/user/custom_roles"),
+        Rails.root.join("doc/user/custom_roles/abilities.md"),
+        Rails.root.join("tooling/custom_roles/docs/templates/custom_abilities.md.erb")).and_return(check_docs_task)
+
+      expect(check_docs_task).to receive(:run)
+
+      run_rake_task('gitlab:custom_roles:check_docs')
+    end
+  end
 end
