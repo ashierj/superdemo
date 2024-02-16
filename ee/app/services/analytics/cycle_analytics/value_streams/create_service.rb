@@ -69,8 +69,8 @@ module Analytics
         end
 
         def use_default_stage_params(stage_attributes)
-          default_stage_attributes = Gitlab::Analytics::CycleAnalytics::DefaultStages.find_by_name!(stage_attributes[:name].to_s.downcase)
-          stage_attributes.merge(default_stage_attributes)
+          default_stage_attributes = Gitlab::Analytics::CycleAnalytics::DefaultStages.find_by_name(stage_attributes[:name].to_s.downcase) || {}
+          stage_attributes.merge(default_stage_attributes.except(:name))
         end
 
         def success_http_status
