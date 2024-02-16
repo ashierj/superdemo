@@ -16,9 +16,6 @@ function initLearnGitlab() {
 
   return new Vue({
     el,
-    provide: {
-      promoteUltimateFeatures: project.promoteUltimateFeatures,
-    },
     render(createElement) {
       return createElement(LearnGitlab, {
         props: { actions, sections, project },

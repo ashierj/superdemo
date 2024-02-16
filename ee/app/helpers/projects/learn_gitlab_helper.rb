@@ -73,8 +73,7 @@ module Projects
 
     def onboarding_project_data(project)
       {
-        name: project.name,
-        promote_ultimate_features: promote_ultimate_features?(project.root_ancestor)
+        name: project.name
       }
     end
 
@@ -120,14 +119,6 @@ module Projects
         secure_dependency_scanning_run: project_security_configuration_path(project, anchor: 'dependency-scanning'),
         secure_dast_run: project_security_configuration_path(project, anchor: 'dast')
       }
-    end
-
-    def promote_ultimate_features?(group)
-      return unless group.trial_active?
-
-      experiment(:promote_ultimate_features, group: group) do |e|
-        e.candidate { group.onboarding_progress&.promote_ultimate_features_at.present? }
-      end.run
     end
   end
 end
