@@ -1,0 +1,24 @@
+query getArtifactDetails($image: String, $location: String, $repository: String, $project: String) {
+  googleCloudRegistryArtifactDetails(
+    image: $image
+    location: $location
+    repository: $repository
+    project: $project
+  ) {
+    name
+    image
+    digest
+    tags
+    buildTime
+    updateTime
+
+    uri
+    imageSizeBytes
+    uploadTime
+    mediaType
+    project
+    location
+    repository
+    artifactRegistryImageUrl
+  }
+}

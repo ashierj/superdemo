@@ -114,12 +114,14 @@ export default {
       <div
         class="gl-display-flex gl-align-items-center gl-justify-content-end gl-md-justify-content-start"
       >
-        <gl-truncate
-          class="gl-font-weight-bold"
-          position="middle"
-          :text="getImageNameAndShortDigest(item)"
-          :with-tooltip="true"
-        />
+        <router-link class="gl-text-body gl-min-w-0" :to="item.name">
+          <gl-truncate
+            class="gl-font-weight-bold"
+            position="middle"
+            :text="getImageNameAndShortDigest(item)"
+            :with-tooltip="true"
+          />
+        </router-link>
         <clipboard-button
           :title="s__('GoogleArtifactRegistry|Copy image name')"
           :text="getImageNameAndDigest(item)"
