@@ -3897,6 +3897,44 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
+  describe 'starred_projects' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:user) { create(:user) }
+
+    context 'when project is not maintaining elasticsearch' do
+      before do
+        stub_ee_application_setting(elasticsearch_indexing: false)
+      end
+
+      it 'doest not call Elastic::ProcessBookkeepingService' do
+        expect(::Elastic::ProcessBookkeepingService).not_to receive(:track!)
+        user.toggle_star(project)
+      end
+    end
+
+    context 'when project is maintaining elasticsearch' do
+      before do
+        stub_ee_application_setting(elasticsearch_indexing: true)
+      end
+
+      it 'calls Elastic::ProcessBookkeepingService' do
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(project).once
+        user.toggle_star(project)
+      end
+    end
+
+    context 'when user is inactive' do
+      before do
+        user.block
+      end
+
+      it 'doest not call Elastic::ProcessBookkeepingService' do
+        expect(::Elastic::ProcessBookkeepingService).not_to receive(:track!)
+        user.toggle_star(project)
+      end
+    end
+  end
+
   describe '#external?' do
     subject { user.external? }
 

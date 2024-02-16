@@ -257,6 +257,12 @@ module EE
       end
     end
 
+    override :toggle_star
+    def toggle_star(project)
+      super
+      project.maintain_elasticsearch_update if self.active? && project.maintaining_elasticsearch?
+    end
+
     def pending_billable_invitations
       if ::License.current.exclude_guests_from_active_count?
         pending_invitations.where('access_level > ?', ::Gitlab::Access::GUEST)
