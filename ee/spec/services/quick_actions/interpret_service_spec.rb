@@ -922,6 +922,14 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
 
         expect(updates).to eq(weight: nil)
       end
+
+      it 'unsets weight if weight is 0' do
+        issuable.update!(weight: 0)
+
+        _, updates = service.execute(content, issuable)
+
+        expect(updates).to eq(weight: nil)
+      end
     end
 
     context 'issuable weights licensed' do
