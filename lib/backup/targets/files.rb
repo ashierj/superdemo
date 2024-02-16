@@ -15,6 +15,10 @@ module Backup
 
       attr_reader :excludes
 
+      # @param [IO] progress
+      # @param [String] storage_path
+      # @param [::Backup::Options] options
+      # @param [Array] excludes
       def initialize(progress, storage_path, options:, excludes: [])
         super(progress, options: options)
 
@@ -81,20 +85,23 @@ module Backup
       def restore(backup_tarball, _)
         backup_existing_files_dir(backup_tarball)
 
-        cmd_list = [decompress_cmd, %W[#{tar} --unlink-first --recursive-unlink -C #{storage_realpath} -xf -]]
-        status_list, output = run_pipeline!(cmd_list, in: backup_tarball.to_s)
-        success = pipeline_succeeded?(compress_status: status_list[0], tar_status: status_list[1], output: output)
+        tar_utils = ::Gitlab::Backup::Cli::Utils::Tar.new
+        shell_pipeline = ::Gitlab::Backup::Cli::Shell::Pipeline
+        decompress_command = ::Gitlab::Backup::Cli::Shell::Command.new(decompress_cmd)
 
-        raise Backup::Error, "Restore operation failed: #{output}" unless success
-      end
+        archive_file = backup_tarball.to_s
+        tar_command = tar_utils.extract_cmd(
+          archive_file: USE_PIPE_INSTEAD_OF_FILE,
+          target_directory: storage_realpath)
 
-      def tar
-        if system(*%w[gtar --version], out: '/dev/null')
-          # It looks like we can get GNU tar by running 'gtar'
-          'gtar'
-        else
-          'tar'
-        end
+        result = shell_pipeline.new(decompress_command, tar_command).run_pipeline!(input: archive_file)
+
+        success = pipeline_succeeded?(
+          compress_status: result.status_list[0],
+          tar_status: result.status_list[1],
+          output: result.stderr)
+
+        raise Backup::Error, "Restore operation failed: #{result.stderr}" unless success
       end
 
       def backup_existing_files_dir(backup_tarball)
@@ -116,15 +123,6 @@ module Backup
         access_denied_error(storage_realpath)
       rescue Errno::EBUSY
         resource_busy_error(storage_realpath)
-      end
-
-      def run_pipeline!(cmd_list, options = {})
-        err_r, err_w = IO.pipe
-        options[:err] = err_w
-        status_list = Open3.pipeline(*cmd_list, options)
-        err_w.close
-
-        [status_list, err_r.read]
       end
 
       def noncritical_warning?(warning)

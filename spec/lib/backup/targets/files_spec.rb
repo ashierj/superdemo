@@ -10,7 +10,8 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
 
   let(:status_0) { instance_double(Process::Status, success?: true, exitstatus: 0) }
   let(:status_1) { instance_double(Process::Status, success?: false, exitstatus: 1) }
-  let(:status_2) { instance_double(Process::Status, success?: false, exitstatus: 2) }
+  let(:pipeline_status_success) { Gitlab::Backup::Cli::Shell::Pipeline::Result.new(status_list: [status_0, status_0]) }
+  let(:pipeline_status_failed) { Gitlab::Backup::Cli::Shell::Pipeline::Result.new(status_list: [status_1, status_1]) }
   let(:restore_target) { File.realpath(Dir.mktmpdir('files-target-restore')) }
   let(:backup_target) do
     tmpdir = Dir.mktmpdir('files-target-backup')
@@ -39,20 +40,6 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
     FileUtils.rm_rf(backup_target)
   end
 
-  RSpec::Matchers.define :eq_statuslist do |expected|
-    match do |actual|
-      actual.map(&:exitstatus) == expected.map(&:exitstatus)
-    end
-
-    description do
-      'be an Array of Process::Status with equal exitstatus against expected'
-    end
-
-    failure_message do |actual|
-      "expected #{actual} exitstatuses list to be equal #{expected} exitstatuses list"
-    end
-  end
-
   describe '#restore' do
     subject(:files) { described_class.new(progress, restore_target, options: backup_options) }
 
@@ -66,35 +53,45 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
       let(:existing_content) { File.join(restore_target, 'sample1') }
 
       before do
-        allow(files).to receive(:run_pipeline!).and_return([[true, true], ''])
-        allow(files).to receive(:pipeline_succeeded?).and_return(true)
-
         FileUtils.touch(existing_content)
       end
 
       it 'moves all necessary files' do
-        tmp_dir = backup_basepath.join('tmp', "registry.#{Time.now.to_i}")
+        expect_next_instance_of(Gitlab::Backup::Cli::Shell::Pipeline) do |pipeline|
+          expect(pipeline).to receive(:run_pipeline!).and_return(pipeline_status_success)
+        end
 
+        tmp_dir = backup_basepath.join('tmp', "registry.#{Time.now.to_i}")
         expect(FileUtils).to receive(:mv).with([existing_content], tmp_dir)
 
         files.restore('registry.tar.gz', 'backup_id')
       end
 
       it 'raises no errors' do
+        expect_next_instance_of(Gitlab::Backup::Cli::Shell::Pipeline) do |pipeline|
+          expect(pipeline).to receive(:run_pipeline!).and_return(pipeline_status_success)
+        end
+
         expect { files.restore('registry.tar.gz', 'backup_id') }.not_to raise_error
       end
 
       it 'calls tar command with unlink' do
-        expect(files).to receive(:run_pipeline!).with(
-          ['gzip -cd', %W[#{files.tar} --unlink-first --recursive-unlink -C #{restore_target} -xf -]],
-          any_args)
-        expect(files).to receive(:pipeline_succeeded?).and_return(true)
+        expect_next_instance_of(Gitlab::Backup::Cli::Shell::Pipeline) do |pipeline|
+          tar_cmd = pipeline.shell_commands[1]
+
+          expect(tar_cmd.cmd_args).to include('--unlink-first')
+          expect(tar_cmd.cmd_args).to include('--recursive-unlink')
+
+          expect(pipeline).to receive(:run_pipeline!).and_return(pipeline_status_success)
+        end
 
         files.restore('registry.tar.gz', 'backup_id')
       end
 
       it 'raises an error on failure' do
-        expect(files).to receive(:pipeline_succeeded?).and_return(false)
+        expect_next_instance_of(Gitlab::Backup::Cli::Shell::Pipeline) do |pipeline|
+          expect(pipeline).to receive(:run_pipeline!).and_return(pipeline_status_failed)
+        end
 
         expect { files.restore('registry.tar.gz', 'backup_id') }.to raise_error(/Restore operation failed:/)
       end
@@ -136,7 +133,12 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
       end
 
       it 'passes through tee instead of gzip' do
-        expect(files).to receive(:run_pipeline!).with(['tee', anything], any_args).and_return([[true, true], ''])
+        expect_next_instance_of(Gitlab::Backup::Cli::Shell::Pipeline) do |pipeline|
+          decompress_cmd = pipeline.shell_commands[0]
+
+          expect(decompress_cmd.cmd_args).to include('tee')
+          expect(pipeline).to receive(:run_pipeline!).and_return(pipeline_status_success)
+        end
 
         expect do
           files.restore('registry.tar.gz', 'backup_id')
@@ -271,42 +273,6 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
       basefolder = File.basename(backup_target)
 
       expect(files.exclude_dirs_rsync).to eq(%W[--exclude=lost+found --exclude=/#{basefolder}/@pages.tmp])
-    end
-  end
-
-  describe '#run_pipeline!' do
-    subject(:files) do
-      described_class.new(progress, '/var/gitlab-registry', options: backup_options)
-    end
-
-    it 'executes an Open3.pipeline for cmd_list' do
-      expect(Open3).to receive(:pipeline).with(%w[whew command], %w[another cmd], any_args)
-
-      files.run_pipeline!([%w[whew command], %w[another cmd]])
-    end
-
-    it 'returns an empty output on success pipeline' do
-      expect(files.run_pipeline!(%w[true true])[1]).to eq('')
-    end
-
-    it 'returns the stderr for failed pipeline' do
-      expect(
-        files.run_pipeline!(['echo OMG: failed command present 1>&2; false', 'true'])[1]
-      ).to match(/OMG: failed/)
-    end
-
-    it 'returns the success status list on success pipeline' do
-      expect(
-        files.run_pipeline!(%w[true true])[0]
-      ).to eq_statuslist([status_0, status_0])
-    end
-
-    it 'returns the failed status in status list for failed commands in pipeline' do
-      expect(files.run_pipeline!(%w[false true true])[0]).to eq_statuslist([status_1, status_0, status_0])
-      expect(files.run_pipeline!(%w[true false true])[0]).to eq_statuslist([status_0, status_1, status_0])
-      expect(files.run_pipeline!(%w[false false true])[0]).to eq_statuslist([status_1, status_1, status_0])
-      expect(files.run_pipeline!(%w[false true false])[0]).to eq_statuslist([status_1, status_0, status_1])
-      expect(files.run_pipeline!(%w[false false false])[0]).to eq_statuslist([status_1, status_1, status_1])
     end
   end
 
