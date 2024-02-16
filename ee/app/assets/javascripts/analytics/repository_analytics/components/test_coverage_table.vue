@@ -1,4 +1,5 @@
 <script>
+import emptyStateIllustrationUrl from '@gitlab/svgs/dist/illustrations/empty-state/empty-search-md.svg?url';
 import {
   GlCard,
   GlEmptyState,
@@ -180,6 +181,7 @@ export default {
     },
   ],
   i18n,
+  emptyStateIllustrationUrl,
   LOADING_STATE: {
     rows: 4,
     height: 10,
@@ -290,6 +292,7 @@ export default {
       class="gl-mt-3"
       :title="$options.i18n.emptyStateTitle"
       :description="$options.i18n.emptyStateDescription"
+      :svg-path="$options.emptyStateIllustrationUrl"
       data-testid="test-coverage-table-empty-state"
     />
   </gl-card>

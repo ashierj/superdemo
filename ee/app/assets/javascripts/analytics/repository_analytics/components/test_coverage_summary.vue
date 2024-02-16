@@ -1,6 +1,6 @@
 <script>
-import chartEmptyStateIllustration from '@gitlab/svgs/dist/illustrations/chart-empty-state.svg?raw';
-import { GlCard, GlSprintf, GlSkeletonLoader, GlPopover } from '@gitlab/ui';
+import emptyStateIllustrationUrl from '@gitlab/svgs/dist/illustrations/empty-state/empty-radar-md.svg?url';
+import { GlCard, GlSprintf, GlSkeletonLoader, GlPopover, GlEmptyState } from '@gitlab/ui';
 import { GlSingleStat, GlAreaChart } from '@gitlab/ui/dist/charts';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import {
@@ -28,6 +28,7 @@ export default {
     GlSkeletonLoader,
     GlSingleStat,
     GlPopover,
+    GlEmptyState,
   },
   directives: {
     SafeHtml,
@@ -175,7 +176,7 @@ export default {
     },
   },
   i18n,
-  chartEmptyStateIllustration,
+  emptyStateIllustrationUrl,
 };
 </script>
 <template>
@@ -225,17 +226,12 @@ export default {
 
       <chart-skeleton-loader v-if="isLoading" data-testid="group-coverage-chart-loading" />
 
-      <div
+      <gl-empty-state
         v-else-if="isChartEmpty"
-        class="d-flex flex-column justify-content-center gl-my-7"
+        :svg-path="$options.emptyStateIllustrationUrl"
+        :title="$options.i18n.emptyChart"
         data-testid="group-coverage-chart-empty"
-      >
-        <div
-          v-safe-html="$options.chartEmptyStateIllustration"
-          class="gl-my-5 svg-w-100 d-flex gl-align-items-center"
-        ></div>
-        <h5 class="text-center">{{ $options.i18n.emptyChart }}</h5>
-      </div>
+      />
 
       <gl-area-chart
         v-else
