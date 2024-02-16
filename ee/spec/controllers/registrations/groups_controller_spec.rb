@@ -19,7 +19,7 @@ RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
 
     let_it_be(:user) do
       create(:user, onboarding_in_progress: onboarding_in_progress) do |record|
-        create(:user_detail, user: record, onboarding_step_url: url, onboarding_status_step_url: url)
+        create(:user_detail, user: record, onboarding_status_step_url: url)
       end
     end
 
@@ -30,7 +30,6 @@ RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
         subject
         user.reload
 
-        expect(user.user_detail.onboarding_step_url).to eq url
         expect(user.onboarding_in_progress).to be(true)
       end
     end
@@ -40,7 +39,6 @@ RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
         subject
         user.reload
 
-        expect(user.user_detail.onboarding_step_url).to be_nil
         expect(user.onboarding_in_progress).to be(false)
       end
     end

@@ -47,7 +47,7 @@ module EE
         return unless ::Onboarding.user_onboarding_in_progress?(member.user)
         return unless finished_welcome_step?
 
-        member.user.update(onboarding_step_url: nil, onboarding_in_progress: false)
+        member.user.update(onboarding_in_progress: false)
       end
 
       def finished_welcome_step?

@@ -275,8 +275,8 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
 
         context 'when onboarding is enabled' do
           let_it_be(:user) do
-            create(:user, onboarding_in_progress: true).tap do |record|
-              create(:user_detail, user: record, onboarding_step_url: '_url_', onboarding_status_step_url: '_url_')
+            create(:user, onboarding_in_progress: true) do |record|
+              create(:user_detail, user: record, onboarding_status_step_url: '_url_')
             end
           end
 
@@ -299,7 +299,6 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
               patch_update
               user.reload
 
-              expect(user.user_detail.onboarding_step_url).to be_nil
               expect(user.onboarding_in_progress).to be(false)
               expect(response).to redirect_to dashboard_projects_path
             end
@@ -312,7 +311,6 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
                 user.reload
                 path = new_users_sign_up_group_path
 
-                expect(user.user_detail.onboarding_step_url).to eq(path)
                 expect(user.onboarding_in_progress).to be(true)
                 expect(response).to redirect_to path
               end
@@ -427,7 +425,6 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
             it 'redirects to the company path and stores the url' do
               user.reload
 
-              expect(user.user_detail.onboarding_step_url).to eq(redirect_path)
               expect(user.onboarding_in_progress).to be(true)
               expect(user.onboarding_status_step_url).to eq(redirect_path)
               expect(user.onboarding_status_email_opt_in).to eq(true)
@@ -463,7 +460,6 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
               user.reload
               path = new_users_sign_up_group_path
 
-              expect(user.user_detail.onboarding_step_url).to eq(path)
               expect(user.onboarding_in_progress).to be(true)
               expect(user.onboarding_status_step_url).to eq(path)
               expect(response).to redirect_to path
@@ -499,7 +495,6 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
                   user.reload
                   path = new_users_sign_up_company_path(expected_params)
 
-                  expect(user.user_detail.onboarding_step_url).to eq(path)
                   expect(user.onboarding_in_progress).to be(true)
                   expect(user.onboarding_status_step_url).to eq(path)
                   expect(user.onboarding_status_email_opt_in).to eq(opt_in)
@@ -526,7 +521,6 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
                 user.reload
                 path = new_users_sign_up_group_path
 
-                expect(user.user_detail.onboarding_step_url).to eq(path)
                 expect(user.onboarding_in_progress).to be(true)
                 expect(user.onboarding_status_step_url).to eq(path)
                 expect(response).to redirect_to path
@@ -596,7 +590,6 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
                   }.merge(extra_params)
                 )
 
-                expect(user.user_detail.onboarding_step_url).to eq(path)
                 expect(user.onboarding_in_progress).to be(true)
                 expect(user.onboarding_status_step_url).to eq(path)
                 expect(response).to redirect_to path

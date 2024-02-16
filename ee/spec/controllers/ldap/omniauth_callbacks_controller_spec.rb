@@ -33,7 +33,6 @@ RSpec.describe Ldap::OmniauthCallbacksController, feature_category: :system_acce
       expect(response).to redirect_to(dashboard_projects_path)
       created_user = User.find_by_email(user.email)
       expect(created_user).not_to be_onboarding_in_progress
-      expect(created_user.user_detail.onboarding_step_url).to be_nil
       expect(created_user.onboarding_status_step_url).to be_nil
     end
   end

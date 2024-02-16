@@ -429,7 +429,6 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
           expect(response).to redirect_to(group_path(group))
           created_user = User.find_by_email(user.email)
           expect(created_user).not_to be_onboarding_in_progress
-          expect(created_user.user_detail.onboarding_step_url).to be_nil
           expect(created_user.onboarding_status_step_url).to be_nil
         end
       end
