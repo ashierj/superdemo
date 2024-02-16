@@ -55769,6 +55769,9 @@ msgstr ""
 msgid "Webhooks|Confidential issues events"
 msgstr ""
 
+msgid "Webhooks|Custom webhook template (optional)"
+msgstr ""
+
 msgid "Webhooks|Delete webhook"
 msgstr ""
 
@@ -55797,6 +55800,9 @@ msgid "Webhooks|Go to webhooks"
 msgstr ""
 
 msgid "Webhooks|How it looks in the UI"
+msgstr ""
+
+msgid "Webhooks|How to create a custom webhook template?"
 msgstr ""
 
 msgid "Webhooks|Issues events"

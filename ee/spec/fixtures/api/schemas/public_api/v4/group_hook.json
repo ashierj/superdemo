@@ -24,7 +24,8 @@
     "emoji_events",
     "alert_status",
     "disabled_until",
-    "url_variables"
+    "url_variables",
+    "custom_webhook_template"
   ],
   "properties": {
     "id": {
@@ -128,6 +129,12 @@
           }
         }
       }
+    },
+    "custom_webhook_template": {
+      "type": [
+        "string",
+        "null"
+      ]
     }
   },
   "additionalProperties": false
