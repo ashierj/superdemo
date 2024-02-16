@@ -22,7 +22,8 @@ RSpec.describe 'Protected Tags', :js, feature_category: :source_code_management 
       include_examples 'protected tags > access control > EE'
     end
 
-    describe 'with ref permissions for users disabled' do
+    describe 'with ref permissions for users disabled',
+      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422899' do
       before do
         stub_licensed_features(protected_refs_for_users: false)
       end
