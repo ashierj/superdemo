@@ -63,6 +63,11 @@ module EE
                   ::Feature.enabled?(:update_vuln_reads_traversal_ids_via_event,
                     ::Group.find_by_id(event.data['group_id']), type: :gitlab_com_derisk)
                 }
+          store.subscribe ::Sbom::SyncArchivedStatusWorker, to: ::Projects::ProjectArchivedEvent,
+            if: ->(event) do
+              project = ::Project.find_by_id(event.data['project_id'])
+              ::Feature.enabled?(:sync_project_archival_status_to_sbom_occurrences, project)
+            end
         end
       end
     end
