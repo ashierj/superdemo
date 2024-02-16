@@ -684,6 +684,14 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       let(:merge_request) { create(:ee_merge_request, :with_dast_reports, source_project: project) }
 
       it { is_expected.to be_truthy }
+
+      context 'when head pipeline is blocked by manual jobs' do
+        before do
+          merge_request.actual_head_pipeline.block!
+        end
+
+        it { is_expected.to be_truthy }
+      end
     end
 
     context 'when head pipeline does not have security reports' do
@@ -704,6 +712,14 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       let(:merge_request) { create(:ee_merge_request, :with_dependency_scanning_reports, source_project: project) }
 
       it { is_expected.to be_truthy }
+
+      context 'when head pipeline is blocked by manual jobs' do
+        before do
+          merge_request.actual_head_pipeline.block!
+        end
+
+        it { is_expected.to be_truthy }
+      end
     end
 
     context 'when head pipeline does not have dependency scanning reports' do
@@ -724,6 +740,14 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       let(:merge_request) { create(:ee_merge_request, :with_container_scanning_reports, source_project: project) }
 
       it { is_expected.to be_truthy }
+
+      context 'when head pipeline is blocked by manual jobs' do
+        before do
+          merge_request.actual_head_pipeline.block!
+        end
+
+        it { is_expected.to be_truthy }
+      end
     end
 
     context 'when head pipeline does not have container scanning reports' do
@@ -744,6 +768,14 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       let(:merge_request) { create(:ee_merge_request, :with_dast_reports, source_project: project) }
 
       it { is_expected.to be_truthy }
+
+      context 'when head pipeline is blocked by manual jobs' do
+        before do
+          merge_request.actual_head_pipeline.block!
+        end
+
+        it { is_expected.to be_truthy }
+      end
     end
 
     context 'when pipeline ran for an older commit than the branch head' do
@@ -791,6 +823,14 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       let(:merge_request) { create(:ee_merge_request, :with_coverage_fuzzing_reports, source_project: project) }
 
       it { is_expected.to be_truthy }
+
+      context 'when head pipeline is blocked by manual jobs' do
+        before do
+          merge_request.actual_head_pipeline.block!
+        end
+
+        it { is_expected.to be_truthy }
+      end
     end
 
     context 'when head pipeline does not have coverage fuzzing reports' do
@@ -811,6 +851,14 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       let(:merge_request) { create(:ee_merge_request, :with_api_fuzzing_reports, source_project: project) }
 
       it { is_expected.to be_truthy }
+
+      context 'when head pipeline is blocked by manual jobs' do
+        before do
+          merge_request.actual_head_pipeline.block!
+        end
+
+        it { is_expected.to be_truthy }
+      end
     end
 
     context 'when head pipeline does not have coverage fuzzing reports' do
@@ -2468,9 +2516,9 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
         context 'when no base pipeline has completed' do
           before do
-            base_pipeline.update!(status: :manual)
-            old_base_pipeline.update!(status: :manual)
-            most_recent_base_pipeline.update!(status: :manual)
+            base_pipeline.update!(status: :waiting_for_resource)
+            old_base_pipeline.update!(status: :waiting_for_resource)
+            most_recent_base_pipeline.update!(status: :waiting_for_resource)
           end
 
           context 'when comparison prior to pipeline completion is disabled' do

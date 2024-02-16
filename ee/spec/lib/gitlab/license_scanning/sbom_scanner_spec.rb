@@ -170,6 +170,14 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
             it { is_expected.to be_truthy }
           end
         end
+
+        context "and the pipeline is blocked by manual jobs" do
+          before do
+            pipeline.block!
+          end
+
+          it { is_expected.to be_truthy }
+        end
       end
 
       context "when the pipeline does not have an sbom report" do

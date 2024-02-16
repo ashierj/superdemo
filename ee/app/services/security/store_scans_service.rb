@@ -13,6 +13,20 @@ module Security
     def execute
       return if already_purged?
 
+      return old_execute unless pipeline.include_manual_to_pipeline_completion_enabled?
+
+      # StoreGroupedScansService returns true only when it creates a `security_scans` record.
+      # To avoid resource wastage we are skipping the reports ingestion and rules sync when there are no new scans.
+      results = grouped_report_artifacts.map { |artifacts| StoreGroupedScansService.execute(artifacts) }
+
+      return unless results.any?(true)
+
+      schedule_store_reports_worker
+      schedule_scan_security_report_secrets_worker
+      sync_findings_to_approval_rules unless pipeline.default_branch?
+    end
+
+    def old_execute
       grouped_report_artifacts.each { |artifacts| StoreGroupedScansService.execute(artifacts) }
 
       schedule_store_reports_worker
