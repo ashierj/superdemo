@@ -55,6 +55,14 @@ RSpec.describe PhoneVerification::TelesignCallbacksController, feature_category:
         end
       end
 
+      shared_examples 'does not log the event' do
+        it 'does not log the event' do
+          expect(Gitlab::AppLogger).not_to receive(:info)
+
+          do_request
+        end
+      end
+
       before do
         allow_next_instance_of(
           Telesign::TransactionCallback,
@@ -74,6 +82,7 @@ RSpec.describe PhoneVerification::TelesignCallbacksController, feature_category:
         let(:user) { nil }
 
         it_behaves_like 'does not invalidate verification_state_identity_verification_path cache'
+        it_behaves_like 'does not log the event'
       end
 
       context 'when a user is associated with the callback' do
@@ -96,6 +105,16 @@ RSpec.describe PhoneVerification::TelesignCallbacksController, feature_category:
           do_request
         end
 
+        it 'logs the event' do
+          expect(Gitlab::AppLogger).to receive(:info).with({
+            message: 'Phone number verification exemption created',
+            reason: 'Phone number country is blocked in Telesign',
+            username: user.username
+          })
+
+          do_request
+        end
+
         context 'when user is not qualified for phone number exemption offer' do
           before do
             allow(user).to receive(:offer_phone_number_exemption?).and_return(false)
@@ -103,6 +122,7 @@ RSpec.describe PhoneVerification::TelesignCallbacksController, feature_category:
 
           it_behaves_like 'does not exempt the user'
           it_behaves_like 'does not invalidate verification_state_identity_verification_path cache'
+          it_behaves_like 'does not log the event'
         end
 
         context 'when auto_request_phone_number_verification_exemption feature flag is disabled for user' do
@@ -112,6 +132,7 @@ RSpec.describe PhoneVerification::TelesignCallbacksController, feature_category:
 
           it_behaves_like 'does not exempt the user'
           it_behaves_like 'does not invalidate verification_state_identity_verification_path cache'
+          it_behaves_like 'does not log the event'
         end
       end
     end
