@@ -53,7 +53,7 @@ module EE
           condition do
             quick_action_target.persisted? &&
               quick_action_target.weight_available? &&
-              quick_action_target.weight? &&
+              quick_action_target.weight.present? &&
               current_user.can?(:"admin_#{quick_action_target.to_ability_name}", quick_action_target)
           end
           command :clear_weight do
