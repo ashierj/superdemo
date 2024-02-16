@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlCollapse, GlBadge, GlPopover, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlCollapse, GlBadge, GlPopover, GlLink, GlIcon, GlSprintf } from '@gitlab/ui';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import CodeOwners, {
@@ -40,6 +40,7 @@ const createComponent = async ({ props = {}, codeOwnersDataMock = codeOwnersMock
       },
       stubs: {
         GlSprintf,
+        GlIcon,
       },
     }),
   );
@@ -88,7 +89,7 @@ describe('Code owners component', () => {
     });
 
     it('renders a popover trigger with question icon', () => {
-      expect(findHelpPopoverTrigger().props('icon')).toBe('question-o');
+      expect(findHelpPopoverTrigger().findComponent(GlIcon).props('name')).toBe('question-o');
       expect(findHelpPopoverTrigger().attributes('aria-label')).toBe(i18n.helpText);
     });
 
