@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { fetchPolicies } from '~/lib/graphql';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT, TYPENAME_USER } from '~/graphql_shared/constants';
+import { s__ } from '~/locale';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 
 import generateCubeQuery from '../../graphql/mutations/generate_cube_query.mutation.graphql';
@@ -26,13 +28,16 @@ export default {
   data() {
     return {
       prompt: null,
-      errors: null,
+      error: null,
       submitting: false,
       clientSubscriptionId: uuidv4(),
       skipSubscription: true,
     };
   },
   computed: {
+    isValid() {
+      return !this.error;
+    },
     submitButtonIcon() {
       return this.submitting ? undefined : 'tanuki-ai';
     },
@@ -40,11 +45,14 @@ export default {
   methods: {
     async generateAiQuery() {
       if (this.submitting) return;
-      if (!this.prompt) return;
+      if (!this.prompt) {
+        this.error = s__('Analytics|Enter a prompt to continue.');
+        return;
+      }
 
       this.skipSubscription = false;
       this.submitting = true;
-      this.errors = null;
+      this.error = null;
 
       try {
         await this.$apollo.mutate({
@@ -57,12 +65,14 @@ export default {
           },
         });
       } catch (error) {
-        // TODO add proper error handling: https://gitlab.com/gitlab-org/gitlab/-/issues/435785
-        // eslint-disable-next-line no-console
-        console.error('generateCubeQueryMutation: ', error);
-        this.errors = [error];
+        this.handleErrors([error]);
         this.submitting = false;
       }
+    },
+    handleErrors(errors) {
+      errors.forEach((error) => Sentry.captureException(error));
+
+      this.error = s__('Analytics|There was a problem generating your query. Please try again.');
     },
   },
   apollo: {
@@ -83,19 +93,13 @@ export default {
           };
         },
         error(error) {
-          // TODO add proper error handling: https://gitlab.com/gitlab-org/gitlab/-/issues/435785
-          // eslint-disable-next-line no-console
-          console.error('aiResponseSubscription: ', error);
-          this.errors = [error];
+          this.handleErrors([error]);
         },
         result({ data }) {
           const { errors = [], content } = data.aiCompletionResponse || {};
 
           if (errors.length) {
-            // TODO add proper error handling: https://gitlab.com/gitlab-org/gitlab/-/issues/435785
-            // eslint-disable-next-line no-console
-            console.error('aiResponseSubscription: ', { errors, content });
-            this.errors = errors;
+            this.handleErrors(errors);
             this.submitting = false;
             return;
           }
@@ -110,9 +114,7 @@ export default {
             const query = JSON.parse(content);
             this.$emit('query-generated', query);
           } catch (error) {
-            // TODO add proper error handling: https://gitlab.com/gitlab-org/gitlab/-/issues/435785
-            // eslint-disable-next-line no-console
-            console.error('parseGeneratedResponse: ', { error, content });
+            this.handleErrors([error]);
           }
         },
       },
@@ -122,27 +124,30 @@ export default {
 </script>
 
 <template>
-  <gl-form-group>
-    <template #label>
-      <gl-icon name="tanuki-ai" class="gl-mr-1" />
-      {{ s__('Analytics|Create with GitLab Duo (optional)') }}
-      <gl-experiment-badge />
-    </template>
-    <p class="gl-mb-3">
-      {{
-        s__(
-          'Analytics|GitLab Duo may be used to help generate your visualization. You can prompt Duo with your desired data, as well as any dimensions or additional groupings of that data. You may also edit the result as needed.',
-        )
-      }}
-    </p>
-    <gl-form-textarea
-      v-model="prompt"
-      :placeholder="s__('Analytics|Example: Number of users over time, grouped weekly')"
-      :submit-on-enter="true"
-      class="gl-w-full gl-md-max-w-70p gl-lg-w-30p gl-min-w-20"
-      data-testid="generate-cube-query-prompt-input"
-      @submit="generateAiQuery"
-    />
+  <section>
+    <gl-form-group :optional="true" :state="isValid" :invalid-feedback="error" class="gl-mb-0">
+      <template #label>
+        <gl-icon name="tanuki-ai" class="gl-mr-1" />
+        {{ s__('Analytics|Create with GitLab Duo (optional)') }}
+        <gl-experiment-badge />
+      </template>
+      <p class="gl-mb-3">
+        {{
+          s__(
+            'Analytics|GitLab Duo may be used to help generate your visualization. You can prompt Duo with your desired data, as well as any dimensions or additional groupings of that data. You may also edit the result as needed.',
+          )
+        }}
+      </p>
+      <gl-form-textarea
+        v-model="prompt"
+        :placeholder="s__('Analytics|Example: Number of users over time, grouped weekly')"
+        :submit-on-enter="true"
+        :state="isValid"
+        class="gl-w-full gl-md-max-w-70p gl-lg-w-30p gl-min-w-20"
+        data-testid="generate-cube-query-prompt-input"
+        @submit="generateAiQuery"
+      />
+    </gl-form-group>
     <gl-button
       :loading="submitting"
       category="secondary"
@@ -153,5 +158,5 @@ export default {
       @click="generateAiQuery"
       >{{ s__('Analytics|Generate with Duo') }}</gl-button
     >
-  </gl-form-group>
+  </section>
 </template>

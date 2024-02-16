@@ -5608,6 +5608,9 @@ msgstr ""
 msgid "Analytics|Enter a dashboard title"
 msgstr ""
 
+msgid "Analytics|Enter a prompt to continue."
+msgstr ""
+
 msgid "Analytics|Enter a visualization title"
 msgstr ""
 
@@ -5735,6 +5738,9 @@ msgid "Analytics|Tables"
 msgstr ""
 
 msgid "Analytics|Target URL"
+msgstr ""
+
+msgid "Analytics|There was a problem generating your query. Please try again."
 msgstr ""
 
 msgid "Analytics|To create your own dashboards, first configure a project to store your dashboards."
