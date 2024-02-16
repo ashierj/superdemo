@@ -12716,9 +12716,7 @@ CREATE TABLE packages_protection_rules (
     push_protected_up_to_access_level smallint NOT NULL,
     package_type smallint NOT NULL,
     package_name_pattern text NOT NULL,
-    package_name_pattern_ilike_query text,
-    CONSTRAINT check_d2d75d206d CHECK ((char_length(package_name_pattern) <= 255)),
-    CONSTRAINT check_ff47b09794 CHECK ((char_length(package_name_pattern_ilike_query) <= 255))
+    CONSTRAINT check_d2d75d206d CHECK ((char_length(package_name_pattern) <= 255))
 );
 
 CREATE SEQUENCE packages_protection_rules_id_seq
