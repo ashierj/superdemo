@@ -115,11 +115,16 @@ RSpec.describe GitlabSchema.types['MergeRequest'], feature_category: :code_revie
         group.add_members(users, GroupMember::MAINTAINER)
       end
 
+      setup_blocking_mrs(merge_request)
       setup_approval_rules(merge_request)
     end
 
     before do
-      stub_licensed_features(merge_request_approvers: true, multiple_approval_rules: true)
+      stub_licensed_features(
+        merge_request_approvers: true,
+        multiple_approval_rules: true,
+        blocking_merge_requests: true
+      )
     end
 
     shared_examples_for 'avoids N+1 queries related to approval rules' do
@@ -131,7 +136,7 @@ RSpec.describe GitlabSchema.types['MergeRequest'], feature_category: :code_revie
             source_branch: 'source-branch-2'
           )
 
-          create(
+          mr_2 = create(
             :merge_request,
             source_project: project,
             source_branch: 'source-branch-3'
@@ -142,6 +147,9 @@ RSpec.describe GitlabSchema.types['MergeRequest'], feature_category: :code_revie
             source_project: project
           )
 
+          setup_blocking_mrs(mr_1)
+          setup_blocking_mrs(mr_2)
+          setup_blocking_mrs(mr_3)
           setup_approval_rules(mr_1)
           setup_approval_rules(mr_3)
 
@@ -165,6 +173,10 @@ RSpec.describe GitlabSchema.types['MergeRequest'], feature_category: :code_revie
       end
 
       it_behaves_like 'avoids N+1 queries related to approval rules'
+    end
+
+    def setup_blocking_mrs(merge_request)
+      create(:merge_request_block, blocked_merge_request: merge_request)
     end
 
     def setup_approval_rules(merge_request)
