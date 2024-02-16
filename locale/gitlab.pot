@@ -35275,6 +35275,9 @@ msgstr ""
 msgid "PackageRegistry|Published to the %{project} Package Registry %{datetime}"
 msgstr ""
 
+msgid "PackageRegistry|Published to the %{project} Terraform Module Registry %{datetime}"
+msgstr ""
+
 msgid "PackageRegistry|Push protected up to access level"
 msgstr ""
 
