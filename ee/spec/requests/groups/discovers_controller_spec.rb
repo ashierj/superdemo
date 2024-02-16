@@ -119,16 +119,19 @@ RSpec.describe Groups::DiscoversController, :saas, feature_category: :activation
     end
 
     context 'when group is not on trial' do
-      let_it_be(:group) { create(:group, :private) }
+      let_it_be(:group) { create(:group) }
+      let_it_be(:expired_subscription) do
+        create(:gitlab_subscription, :expired_trial, :free, namespace: group, trial_ends_on: 1.day.ago)
+      end
 
-      it 'renders 404 when group does not have active_trial' do
+      it 'renders page when group has an expired trial' do
         stub_experiments(trial_discover_page: :candidate)
         group.add_owner(owner)
         sign_in(owner)
 
         get group_discover_path(group)
 
-        is_expected.to have_gitlab_http_status(:not_found)
+        is_expected.to have_gitlab_http_status(:ok)
       end
     end
   end

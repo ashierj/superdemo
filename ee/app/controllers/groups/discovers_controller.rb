@@ -16,9 +16,7 @@ module Groups
     private
 
     def authorize_discover_page
-      return render_404 if experiment(:trial_discover_page, actor: current_user).assigned[:name] == :control
-
-      render_404 unless group.trial_active?
+      render_404 if experiment(:trial_discover_page, actor: current_user).assigned[:name] == :control
     end
   end
 end
