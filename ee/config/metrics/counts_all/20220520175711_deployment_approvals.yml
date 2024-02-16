@@ -3,7 +3,7 @@ key_path: usage_activity_by_stage.release.deployment_approvals
 description: Count of deployment approvals
 product_section: ops
 product_stage: release
-product_group: release
+product_group: delivery
 value_type: number
 status: active
 milestone: "15.1"
