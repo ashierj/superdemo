@@ -53,6 +53,21 @@ module Gitlab
             Shell::Command.new(cmd, *tar_args)
           end
 
+          # @param [Object] archive_file
+          # @param [Object] target_directory
+          # @return [Gitlab::Backup::Cli::Shell::Command]
+          def extract_cmd(archive_file:, target_directory:)
+            tar_args = %W[
+              --unlink-first
+              --recursive-unlink
+              --directory=#{target_directory}
+              --extract
+              --file=#{archive_file}
+            ]
+
+            Shell::Command.new(cmd, *tar_args)
+          end
+
           private
 
           def build_exclude_patterns(*patterns)
