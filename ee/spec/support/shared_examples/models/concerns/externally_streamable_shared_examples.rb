@@ -4,25 +4,25 @@ RSpec.shared_examples 'includes ExternallyStreamable concern' do
   describe 'validations' do
     it { is_expected.to validate_presence_of(:config) }
     it { is_expected.to validate_presence_of(:secret_token) }
-    it { is_expected.to validate_presence_of(:type) }
+    it { is_expected.to validate_presence_of(:category) }
     it { is_expected.to be_a(AuditEvents::ExternallyStreamable) }
     it { is_expected.to validate_length_of(:name).is_at_most(72) }
 
-    context 'when type' do
+    context 'when category' do
       it 'is valid' do
         expect(destination).to be_valid
       end
 
       it 'is nil' do
-        destination.type = nil
+        destination.category = nil
 
         expect(destination).not_to be_valid
         expect(destination.errors.full_messages)
-          .to match_array(["Type can't be blank"])
+          .to match_array(["Category can't be blank"])
       end
 
       it 'is invalid' do
-        expect { destination.type = 'invalid' }.to raise_error(ArgumentError)
+        expect { destination.category = 'invalid' }.to raise_error(ArgumentError)
       end
     end
 
