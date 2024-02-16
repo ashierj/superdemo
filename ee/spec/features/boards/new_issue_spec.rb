@@ -58,7 +58,8 @@ RSpec.describe 'Issue Boards new issue', :js, feature_category: :team_planning d
 
     describe 'board scoped to current iteration' do
       let!(:iteration) do
-        create(:current_iteration, iterations_cadence: create(:iterations_cadence, group: group),
+        create(:current_iteration, title: 'Iteration 1',
+          iterations_cadence: create(:iterations_cadence, group: group),
           start_date: 3.days.ago, due_date: 3.days.from_now)
       end
 
@@ -102,7 +103,7 @@ RSpec.describe 'Issue Boards new issue', :js, feature_category: :team_planning d
       click_button 'Edit'
 
       page.within(".dropdown-menu") do
-        click_button "Current"
+        click_button "Current iteration"
       end
     end
 

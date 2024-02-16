@@ -935,3 +935,49 @@ export const createEpicMutationResponse = {
     },
   },
 };
+
+export const mockGroupBoardCurrentIterationResponse = {
+  data: {
+    workspace: {
+      id: 'gid://gitlab/Group/1',
+      board: {
+        id: 'gid://gitlab/Board/1',
+        name: 'Current iteration board',
+        hideBacklogList: false,
+        hideClosedList: false,
+        labels: [],
+        milestone: null,
+        assignee: null,
+        weight: null,
+        iterationCadence: null,
+        iteration: {
+          id: 'gid://gitlab/Iteration/-4',
+          title: 'Current',
+          __typename: 'Iteration',
+        },
+        __typename: 'Board',
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const currentIterationQueryResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/1',
+      iterations: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Iteration/1',
+            iterationCadence: {
+              id: 'gid://gitlab/Iterations::Cadence/1',
+            },
+            __typename: 'Iteration',
+          },
+        ],
+      },
+      __typename: 'Group',
+    },
+  },
+};
