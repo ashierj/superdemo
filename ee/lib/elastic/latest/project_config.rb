@@ -42,6 +42,9 @@ module Elastic
         indexes :forked, type: :boolean
         indexes :owner_id, type: :integer
         indexes :repository_languages, type: :keyword
+
+        indexes :star_count, type: :integer
+        indexes :last_repository_updated_date, type: :date
       end
     end
   end

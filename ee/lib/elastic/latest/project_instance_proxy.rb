@@ -55,6 +55,8 @@ module Elastic
           data['repository_languages'] = target.repository_languages.map(&:name)
         end
 
+        data.merge!(add_count_fields(target))
+
         unless ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
           # Set it as a parent in our `project => child` JOIN field
           data['join_field'] = es_type
@@ -75,6 +77,18 @@ module Elastic
         return unless ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
 
         "n_#{target.root_ancestor.id}"
+      end
+
+      private
+
+      def add_count_fields(target)
+        data = {}
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_count_fields_to_projects)
+          data['star_count'] = target.star_count
+          data['last_repository_updated_date'] = target.last_repository_updated_at
+        end
+
+        data
       end
     end
   end

@@ -122,6 +122,45 @@ RSpec.describe Elastic::Latest::ProjectInstanceProxy, :elastic_helpers, feature_
           repository_languages: project.repository_languages.map(&:name)
         )
       end
+    end
+  end
+
+  describe 'when add_count_fields_to_projects migration is completed' do
+    before do
+      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+      set_elasticsearch_migration_to(:add_count_fields_to_projects, including: true)
+      ensure_elasticsearch_index! # ensure objects are indexed
+    end
+
+    describe '#as_indexed_json' do
+      it 'serializes project as hash' do
+        result = proxy.as_indexed_json.with_indifferent_access
+
+        expect(result).to include(
+          id: project.id,
+          name: project.name,
+          path: project.path,
+          description: project.description,
+          namespace_id: project.namespace_id,
+          created_at: project.created_at,
+          updated_at: project.updated_at,
+          archived: project.archived,
+          last_activity_at: project.last_activity_at,
+          name_with_namespace: project.name_with_namespace,
+          path_with_namespace: project.path_with_namespace,
+          traversal_ids: project.elastic_namespace_ancestry,
+          type: 'project',
+          visibility_level: project.visibility_level,
+          schema_version: schema_version,
+          ci_catalog: project.catalog_resource.present?,
+          mirror: project.mirror?,
+          forked: project.forked? || false,
+          owner_id: project.owner.id,
+          repository_languages: project.repository_languages.map(&:name),
+          star_count: project.star_count,
+          last_repository_updated_date: project.last_repository_updated_at
+        )
+      end
 
       it 'contains the expected mappings' do
         result = proxy.as_indexed_json.with_indifferent_access.keys
