@@ -34,9 +34,10 @@ module Vulnerabilities
       )
 
       Vulnerability.transaction do
-        vulnerability.save!
         finding.save!
-        vulnerability.update!(finding_id: finding.id)
+        vulnerability.vulnerability_finding = finding
+        vulnerability.save!
+        finding.update!(vulnerability_id: vulnerability.id)
         Statistics::UpdateService.update_for(vulnerability)
 
         ServiceResponse.success(payload: { vulnerability: vulnerability })
