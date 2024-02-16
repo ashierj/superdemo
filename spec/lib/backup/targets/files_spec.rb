@@ -11,21 +11,32 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
   let(:status_0) { instance_double(Process::Status, success?: true, exitstatus: 0) }
   let(:status_1) { instance_double(Process::Status, success?: false, exitstatus: 1) }
   let(:status_2) { instance_double(Process::Status, success?: false, exitstatus: 2) }
+  let(:restore_target) { File.realpath(Dir.mktmpdir('files-target-restore')) }
+  let(:backup_target) do
+    tmpdir = Dir.mktmpdir('files-target-backup')
+
+    %w[@pages.tmp lost+found @hashed].each do |folder|
+      path = Pathname(tmpdir).join(folder, 'something', 'else')
+
+      FileUtils.mkdir_p(path)
+      FileUtils.touch(path.join('artifacts.zip'))
+    end
+
+    File.realpath(tmpdir)
+  end
 
   before do
-    allow(progress).to receive(:puts)
-    allow(progress).to receive(:print)
-    allow(FileUtils).to receive(:mkdir_p).and_return(true)
     allow(FileUtils).to receive(:mv).and_return(true)
     allow(File).to receive(:exist?).and_return(true)
-    allow(File).to receive(:realpath).with("/var/gitlab-registry").and_return("/var/gitlab-registry")
-    allow(File).to receive(:realpath).with("/var/gitlab-registry/..").and_return("/var")
-    allow(File).to receive(:realpath).with("/var/gitlab-pages").and_return("/var/gitlab-pages")
-    allow(File).to receive(:realpath).with("/var/gitlab-pages/..").and_return("/var")
 
     allow_next_instance_of(described_class) do |instance|
       allow(instance).to receive(:progress).and_return(progress)
     end
+  end
+
+  after do
+    FileUtils.rm_rf(restore_target)
+    FileUtils.rm_rf(backup_target)
   end
 
   RSpec::Matchers.define :eq_statuslist do |expected|
@@ -43,7 +54,7 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
   end
 
   describe '#restore' do
-    subject(:files) { described_class.new(progress, '/var/gitlab-registry', options: backup_options) }
+    subject(:files) { described_class.new(progress, restore_target, options: backup_options) }
 
     let(:timestamp) { Time.utc(2017, 3, 22) }
 
@@ -52,19 +63,19 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
     end
 
     describe 'folders with permission' do
+      let(:existing_content) { File.join(restore_target, 'sample1') }
+
       before do
         allow(files).to receive(:run_pipeline!).and_return([[true, true], ''])
-        allow(files).to receive(:backup_existing_files).and_return(true)
         allow(files).to receive(:pipeline_succeeded?).and_return(true)
-        found_files = %w[/var/gitlab-registry/. /var/gitlab-registry/.. /var/gitlab-registry/sample1]
-        allow(Dir).to receive(:glob).with("/var/gitlab-registry/*", File::FNM_DOTMATCH).and_return(found_files)
+
+        FileUtils.touch(existing_content)
       end
 
       it 'moves all necessary files' do
-        allow(files).to receive(:backup_existing_files).and_call_original
-
         tmp_dir = backup_basepath.join('tmp', "registry.#{Time.now.to_i}")
-        expect(FileUtils).to receive(:mv).with(['/var/gitlab-registry/sample1'], tmp_dir)
+
+        expect(FileUtils).to receive(:mv).with([existing_content], tmp_dir)
 
         files.restore('registry.tar.gz', 'backup_id')
       end
@@ -74,10 +85,8 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
       end
 
       it 'calls tar command with unlink' do
-        expect(files).to receive(:tar).and_return('blabla-tar')
-
         expect(files).to receive(:run_pipeline!).with(
-          ['gzip -cd', %w[blabla-tar --unlink-first --recursive-unlink -C /var/gitlab-registry -xf -]],
+          ['gzip -cd', %W[#{files.tar} --unlink-first --recursive-unlink -C #{restore_target} -xf -]],
           any_args)
         expect(files).to receive(:pipeline_succeeded?).and_return(true)
 
@@ -99,7 +108,7 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
       end
 
       it 'shows error message' do
-        expect(files).to receive(:access_denied_error).with("/var/gitlab-registry")
+        expect(files).to receive(:access_denied_error).with(restore_target)
 
         files.restore('registry.tar.gz', 'backup_id')
       end
@@ -113,8 +122,8 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
       end
 
       it 'shows error message' do
-        expect(files).to receive(:resource_busy_error).with("/var/gitlab-registry")
-                             .and_call_original
+        expect(files).to receive(:resource_busy_error).with(restore_target)
+                                                      .and_call_original
 
         expect { files.restore('registry.tar.gz', 'backup_id') }.to raise_error(/is a mountpoint/)
       end
@@ -138,12 +147,7 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
 
   describe '#dump' do
     subject(:files) do
-      described_class.new(progress, '/var/gitlab-pages', excludes: ['@pages.tmp'], options: backup_options)
-    end
-
-    before do
-      allow(files).to receive(:run_pipeline!).and_return([[true, true], ''])
-      allow(files).to receive(:pipeline_succeeded?).and_return(true)
+      described_class.new(progress, backup_target, excludes: ['@pages.tmp'], options: backup_options)
     end
 
     it 'raises no errors' do
@@ -151,16 +155,19 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
     end
 
     it 'excludes tmp dirs from archive' do
-      expect(files).to receive(:tar).and_return('blabla-tar')
+      expect_next_instance_of(Gitlab::Backup::Cli::Shell::Pipeline) do |pipeline|
+        tar_cmd = pipeline.shell_commands[0]
 
-      expect(files).to receive(:run_pipeline!).with(
-        [%w[blabla-tar --exclude=lost+found --exclude=./@pages.tmp -C /var/gitlab-pages -cf - .], 'gzip -c -1'],
-        any_args)
+        expect(tar_cmd.cmd_args).to include('--exclude=lost+found')
+        expect(tar_cmd.cmd_args).to include('--exclude=./@pages.tmp')
+
+        allow(pipeline).to receive(:run_pipeline!).and_call_original
+      end
+
       files.dump('registry.tar.gz', 'backup_id')
     end
 
     it 'raises an error on failure' do
-      allow(files).to receive(:run_pipeline!).and_return([[true, true], ''])
       expect(files).to receive(:pipeline_succeeded?).and_return(false)
 
       expect do
@@ -170,23 +177,25 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
 
     describe 'with Backup::Options.strategy = copy' do
       let(:backup_options) { create(:backup_options, :strategy_copy) }
+      let(:backup_basename) { File.basename(backup_target) }
+      let(:backup_basepath) { files.send(:backup_basepath) }
 
       before do
-        allow(files).to receive(:backup_basepath).and_return(Pathname('/var/gitlab-backup'))
-        allow(File).to receive(:realpath).with('/var/gitlab-backup').and_return('/var/gitlab-backup')
+        allow(files).to receive(:pipeline_succeeded?).and_return(true)
       end
 
       it 'excludes tmp dirs from rsync' do
-        cmd_args = %w[rsync -a --delete --exclude=lost+found --exclude=/gitlab-pages/@pages.tmp
-          /var/gitlab-pages /var/gitlab-backup]
+        cmd_args = %W[rsync -a --delete --exclude=lost+found --exclude=/#{backup_basename}/@pages.tmp
+          #{backup_target} #{backup_basepath}]
+
         expect(Gitlab::Popen).to receive(:popen).with(cmd_args).and_return(['', 0])
 
         files.dump('registry.tar.gz', 'backup_id')
       end
 
       it 'retries if rsync fails due to vanishing files' do
-        cmd_args = %w[rsync -a --delete --exclude=lost+found --exclude=/gitlab-pages/@pages.tmp
-          /var/gitlab-pages /var/gitlab-backup]
+        cmd_args = %W[rsync -a --delete --exclude=lost+found --exclude=/#{backup_basename}/@pages.tmp
+          #{backup_target} #{backup_basepath}]
         expect(Gitlab::Popen).to receive(:popen).with(cmd_args).and_return(['rsync failed', 24], ['', 0])
 
         expect do
@@ -195,14 +204,14 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
       end
 
       it 'raises an error and outputs an error message if rsync failed' do
-        cmd_args = %w[rsync -a --delete --exclude=lost+found --exclude=/gitlab-pages/@pages.tmp
-          /var/gitlab-pages /var/gitlab-backup]
+        cmd_args = %W[rsync -a --delete --exclude=lost+found --exclude=/#{backup_basename}/@pages.tmp
+          #{backup_target} #{backup_basepath}]
         allow(Gitlab::Popen).to receive(:popen).with(cmd_args).and_return(['rsync failed', 1])
 
         expect do
           files.dump('registry.tar.gz', 'backup_id')
         end.to output(/rsync failed/).to_stdout
-           .and raise_error(/Failed to create compressed file/)
+                                     .and raise_error(/Failed to create compressed file/)
       end
     end
 
@@ -212,7 +221,12 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
       end
 
       it 'passes through tee instead of gzip' do
-        expect(files).to receive(:run_pipeline!).with([anything, 'tee'], any_args)
+        expect_next_instance_of(Gitlab::Backup::Cli::Shell::Pipeline) do |pipeline|
+          compress_cmd = pipeline.shell_commands[1]
+
+          expect(compress_cmd.cmd_args).to include('tee')
+        end
+
         expect do
           files.dump('registry.tar.gz', 'backup_id')
         end.to output(/Using custom COMPRESS_CMD 'tee'/).to_stdout
@@ -225,30 +239,38 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
       end
 
       it 'gzips the files with rsyncable option' do
-        expect(files).to receive(:run_pipeline!).with([anything, 'gzip --rsyncable -c -1'], any_args)
+        expect_next_instance_of(Gitlab::Backup::Cli::Shell::Pipeline) do |pipeline|
+          compress_cmd = pipeline.shell_commands[1]
+
+          expect(compress_cmd.cmd_args).to include('gzip --rsyncable -c -1')
+        end
+
         files.dump('registry.tar.gz', 'backup_id')
       end
     end
 
     context 'when GZIP_RSYNCABLE is not set' do
       it 'gzips the files without the rsyncable option' do
-        expect(files).to receive(:run_pipeline!).with([anything, 'gzip -c -1'], any_args)
+        expect_next_instance_of(Gitlab::Backup::Cli::Shell::Pipeline) do |pipeline|
+          compress_cmd = pipeline.shell_commands[1]
+
+          expect(compress_cmd.cmd_args).to include('gzip -c -1')
+        end
+
         files.dump('registry.tar.gz', 'backup_id')
       end
     end
   end
 
-  describe '#exclude_dirs' do
+  describe '#exclude_dirs_rsync' do
     subject(:files) do
-      described_class.new(progress, '/var/gitlab-pages', excludes: ['@pages.tmp'], options: backup_options)
-    end
-
-    it 'prepends a leading dot slash to tar excludes' do
-      expect(files.exclude_dirs(:tar)).to eq(%w[--exclude=lost+found --exclude=./@pages.tmp])
+      described_class.new(progress, backup_target, excludes: ['@pages.tmp'], options: backup_options)
     end
 
     it 'prepends a leading slash and app_files_dir basename to rsync excludes' do
-      expect(files.exclude_dirs(:rsync)).to eq(%w[--exclude=lost+found --exclude=/gitlab-pages/@pages.tmp])
+      basefolder = File.basename(backup_target)
+
+      expect(files.exclude_dirs_rsync).to eq(%W[--exclude=lost+found --exclude=/#{basefolder}/@pages.tmp])
     end
   end
 
