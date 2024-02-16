@@ -15,7 +15,9 @@ module SoftwareLicensePolicies
         [license.name, license.id]
       end
 
-      result = software_license_policies(licenses).each_slice(BATCH_SIZE) do |batch|
+      result = software_license_policies(licenses)
+
+      result.each_slice(BATCH_SIZE) do |batch|
         SoftwareLicensePolicy.insert_all(batch)
       end
 
