@@ -10,7 +10,7 @@ RSpec.shared_examples 'dashboard ultimate trial callout' do
 
     visit page_path
 
-    expect(page).not_to have_selector '.promotion-callout'
+    expect(page).not_to have_selector '[data-testid="start-trial-banner"]'
   end
 
   describe '.com' do
@@ -26,11 +26,11 @@ RSpec.shared_examples 'dashboard ultimate trial callout' do
 
       visit page_path
 
-      expect(page).to have_selector '.promotion-callout'
+      expect(page).to have_selector '[data-testid="start-trial-banner"]'
       expect(page).to have_selector('[data-track-action=render]')
       expect(page).to have_selector('[data-track-label=ultimate_banner]')
 
-      page.within('.promotion-callout') do
+      page.within('[data-testid="start-trial-banner"]') do
         expect(page).to have_selector('[data-track-action=click_button]')
         expect(page).to have_selector('[data-track-label=start_your_trial]')
 
@@ -39,7 +39,7 @@ RSpec.shared_examples 'dashboard ultimate trial callout' do
         find('.js-close').click
       end
 
-      expect(page).not_to have_selector '.promotion-callout'
+      expect(page).not_to have_selector '[data-testid="start-trial-banner"]'
     end
 
     it 'hides dismissable promotion callout if default dashboard for a non group owner' do
@@ -47,7 +47,7 @@ RSpec.shared_examples 'dashboard ultimate trial callout' do
 
       visit page_path
 
-      expect(page).not_to have_selector '.promotion-callout'
+      expect(page).not_to have_selector '[data-testid="start-trial-banner"]'
     end
 
     it 'hides dismissable promotion callout if not default dashboard', :js do
@@ -55,7 +55,7 @@ RSpec.shared_examples 'dashboard ultimate trial callout' do
 
       visit page_path
 
-      expect(page).not_to have_selector '.promotion-callout'
+      expect(page).not_to have_selector '[data-testid="start-trial-banner"]'
     end
 
     it 'hides promotion callout if a trial is active' do
@@ -66,7 +66,7 @@ RSpec.shared_examples 'dashboard ultimate trial callout' do
 
       visit page_path
 
-      expect(page).not_to have_selector '.promotion-callout'
+      expect(page).not_to have_selector '[data-testid="start-trial-banner"]'
     end
 
     it 'hides promotion callout if user owns a paid namespace', :js do
@@ -77,7 +77,7 @@ RSpec.shared_examples 'dashboard ultimate trial callout' do
 
       visit page_path
 
-      expect(page).not_to have_selector '.promotion-callout'
+      expect(page).not_to have_selector '[data-testid="start-trial-banner"]'
     end
   end
 end
@@ -95,8 +95,8 @@ RSpec.shared_examples 'billings ultimate trial callout' do
     end
 
     it 'renders an undismissable ultimate trial callout' do
-      expect(page).to have_selector '.promotion-callout'
-      expect(page).not_to have_selector '.promotion-callout .js-close'
+      expect(page).to have_selector '[data-testid="start-trial-banner"]'
+      expect(page).not_to have_selector '[data-testid="start-trial-banner"] .js-close'
     end
   end
 
@@ -117,11 +117,11 @@ RSpec.shared_examples 'billings ultimate trial callout' do
       end
 
       it 'renders a dismissable ultimate trial callout' do
-        expect(page).to have_selector '.promotion-callout'
+        expect(page).to have_selector '[data-testid="start-trial-banner"]'
 
-        find('.promotion-callout .js-close').click
+        find('[data-testid="start-trial-banner"] .js-close').click
 
-        expect(page).not_to have_selector '.promotion-callout'
+        expect(page).not_to have_selector '[data-testid="start-trial-banner"]'
       end
     end
   end
@@ -138,7 +138,7 @@ RSpec.shared_examples 'billings ultimate trial callout' do
     end
 
     it "doesn't render a ultimate trial callout" do
-      expect(page).not_to have_selector '.promotion-callout'
+      expect(page).not_to have_selector '[data-testid="start-trial-banner"]'
     end
   end
 end
