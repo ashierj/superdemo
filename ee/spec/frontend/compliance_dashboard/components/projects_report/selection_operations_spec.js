@@ -147,6 +147,13 @@ describe('SelectionOperations component', () => {
               })),
             ]);
           });
+
+          it('apply button resets to disabled state', async () => {
+            await nextTick();
+
+            expect(findApplyButton().exists()).toBe(true);
+            expect(findApplyButton().props('disabled')).toBe(true);
+          });
         });
       });
     });

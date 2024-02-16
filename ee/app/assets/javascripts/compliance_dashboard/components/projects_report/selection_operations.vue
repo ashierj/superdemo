@@ -32,6 +32,7 @@ export default {
       default: () => null,
     },
   },
+  emits: ['change', 'create'],
   data() {
     return {
       selectedOperation: null,
@@ -107,6 +108,7 @@ export default {
       }));
 
       this.$emit('change', operations);
+      this.reset();
     },
   },
 
@@ -169,7 +171,7 @@ export default {
       class="gl-ml-3"
       data-testid="apply-bulk-operation-button"
       :variant="actionButtonVariant"
-      :disabled="!isSelectionValid || isApplyInProgress"
+      :disabled="!isSelectionValid || isApplyInProgress || !hasSelection"
       :loading="isApplyInProgress"
       @click="apply"
     >
