@@ -186,13 +186,12 @@ export default {
       </template>
     </div>
 
-    <gl-button
+    <gl-icon
       v-if="hasCodeOwners"
       :id="$options.helpPopoverId"
       :aria-label="$options.i18n.helpText"
-      class="gl-ml-auto"
-      category="tertiary"
-      icon="question-o"
+      name="question-o"
+      class="gl-ml-auto gl-my-3 gl-mr-3 gl-text-blue-500 gl-cursor-pointer"
       data-testid="help-popover-trigger"
     />
     <gl-popover
