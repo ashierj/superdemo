@@ -240,24 +240,10 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, 
       expect(issue_ids).to eq([stage_event_2.issue_id, stage_event_1.issue_id])
     end
 
-    context 'when feature flag vsa_duration_from_db is disabled' do
-      before do
-        stub_feature_flags(vsa_duration_from_db: false)
-      end
+    it 'returns the items in order (by db duration value)' do
+      params[:sort] = :duration
 
-      it 'returns the items in order (by duration calculated by end event time - start event time)' do
-        params[:sort] = :duration
-
-        expect(issue_ids).to eq([stage_event_1.issue_id, stage_event_2.issue_id])
-      end
-    end
-
-    context 'when feature flag vsa_duration_from_db is enabled' do
-      it 'returns the items in order (by db duration value)' do
-        params[:sort] = :duration
-
-        expect(issue_ids).to eq([stage_event_2.issue_id, stage_event_1.issue_id])
-      end
+      expect(issue_ids).to eq([stage_event_2.issue_id, stage_event_1.issue_id])
     end
 
     it 'handles the project_ids filter' do
