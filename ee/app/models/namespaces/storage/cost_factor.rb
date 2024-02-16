@@ -22,7 +22,7 @@ module Namespaces
       private
 
       def forks_cost_factor
-        if ::Gitlab::CurrentSettings.should_check_namespace_plan?
+        if ::Gitlab::Saas.feature_available?(:gitlab_com_subscriptions)
           ::Gitlab::CurrentSettings.namespace_storage_forks_cost_factor
         else
           FULL_COST

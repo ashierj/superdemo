@@ -10,7 +10,7 @@ RSpec.describe Namespaces::Storage::CostFactor, feature_category: :consumables_c
 
   before do
     stub_ee_application_setting(namespace_storage_forks_cost_factor: forks_cost_factor)
-    stub_ee_application_setting(check_namespace_plan: true)
+    stub_saas_features(gitlab_com_subscriptions: true)
   end
 
   describe '.cost_factor_for' do
@@ -32,8 +32,8 @@ RSpec.describe Namespaces::Storage::CostFactor, feature_category: :consumables_c
       expect(described_class.cost_factor_for(project)).to eq(full_cost)
     end
 
-    it 'returns full cost when namespace plans are not checked' do
-      stub_ee_application_setting(check_namespace_plan: false)
+    it 'returns full cost when gitlab_com_subscriptions feature is not available' do
+      stub_saas_features(gitlab_com_subscriptions: false)
       project = build_fork(group: paid_group)
 
       expect(described_class.cost_factor_for(project)).to eq(full_cost)
@@ -45,8 +45,8 @@ RSpec.describe Namespaces::Storage::CostFactor, feature_category: :consumables_c
       expect(described_class.inverted_cost_factor_for_forks).to eq(0.8)
     end
 
-    it 'returns the inverse of full cost when namespace plans are not checked' do
-      stub_ee_application_setting(check_namespace_plan: false)
+    it 'returns the inverse of full cost when gitlab_com_subscriptions feature is not available' do
+      stub_saas_features(gitlab_com_subscriptions: false)
 
       expect(described_class.inverted_cost_factor_for_forks).to eq(0)
     end
