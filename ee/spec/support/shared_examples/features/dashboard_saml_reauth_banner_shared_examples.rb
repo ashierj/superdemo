@@ -12,6 +12,7 @@ RSpec.shared_examples_for 'dashboard SAML reauthentication banner' do
 
   before_all do
     create(:group_saml_identity, user: user, saml_provider: saml_provider)
+    user.reload
 
     restricted_group.add_developer(user)
 
@@ -29,6 +30,11 @@ RSpec.shared_examples_for 'dashboard SAML reauthentication banner' do
       link = page.find_link(restricted_group.path)
       expect(link[:href]).to start_with(sso_group_saml_providers_path(restricted_group))
       expect(link[:href]).to include("redirect=#{ERB::Util.url_encode(page_path)}")
+
+      if match_filter_params
+        # "assignee_username[]=username": Brackets need to be double-encoded to match
+        expect(link[:href]).to include(ERB::Util.url_encode("assignee_username%5B%5D=#{user.username}"))
+      end
     end
   end
 
