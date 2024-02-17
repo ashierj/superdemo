@@ -885,7 +885,8 @@ CREATE TABLE p_ci_builds_metadata (
     runtime_runner_features jsonb DEFAULT '{}'::jsonb NOT NULL,
     id_tokens jsonb DEFAULT '{}'::jsonb NOT NULL,
     partition_id bigint NOT NULL,
-    debug_trace_enabled boolean DEFAULT false NOT NULL
+    debug_trace_enabled boolean DEFAULT false NOT NULL,
+    exit_code smallint
 )
 PARTITION BY LIST (partition_id);
 
@@ -5780,7 +5781,8 @@ CREATE TABLE ci_builds_metadata (
     runtime_runner_features jsonb DEFAULT '{}'::jsonb NOT NULL,
     id_tokens jsonb DEFAULT '{}'::jsonb NOT NULL,
     partition_id bigint NOT NULL,
-    debug_trace_enabled boolean DEFAULT false NOT NULL
+    debug_trace_enabled boolean DEFAULT false NOT NULL,
+    exit_code smallint
 );
 
 CREATE TABLE ci_builds_runner_session (
