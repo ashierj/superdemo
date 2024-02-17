@@ -19508,9 +19508,6 @@ msgstr ""
 msgid "Environment|Healthy"
 msgstr ""
 
-msgid "Environment|Kubernetes overview"
-msgstr ""
-
 msgid "Environment|No Kubernetes clusters configured"
 msgstr ""
 
