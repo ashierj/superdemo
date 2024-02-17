@@ -69,6 +69,7 @@ module EE
 
       has_one :github_integration, class_name: 'Integrations::Github'
       has_one :google_cloud_platform_artifact_registry_integration, class_name: 'Integrations::GoogleCloudPlatform::ArtifactRegistry'
+      has_one :google_cloud_platform_workload_identity_federation_integration, class_name: 'Integrations::GoogleCloudPlatform::WorkloadIdentityFederation'
       has_one :git_guardian_integration, class_name: 'Integrations::GitGuardian'
 
       has_one :status_page_setting, inverse_of: :project, class_name: 'StatusPage::ProjectSetting'
@@ -923,6 +924,7 @@ module EE
 
       names << 'github' unless github_integration_enabled?
       names << 'google_cloud_platform_artifact_registry' unless gcp_artifact_registry_enabled?
+      names << 'google_cloud_platform_workload_identity_federation' unless google_cloud_workload_identity_federation_enabled?
 
       super + names
     end
@@ -1258,6 +1260,10 @@ module EE
 
     def gcp_artifact_registry_enabled?
       ::Feature.enabled?(:gcp_artifact_registry, self) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
+    end
+
+    def google_cloud_workload_identity_federation_enabled?
+      ::Feature.enabled?(:google_cloud_workload_identity_federation, self) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
     end
 
     private

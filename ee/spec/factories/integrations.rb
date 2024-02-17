@@ -22,6 +22,17 @@ FactoryBot.define do
     artifact_registry_repositories { 'demo, my-repo' }
   end
 
+  factory(:google_cloud_platform_workload_identity_federation_integration,
+    class: 'Integrations::GoogleCloudPlatform::WorkloadIdentityFederation') do
+    project
+    type { 'Integrations::GoogleCloudPlatform::WorkloadIdentityFederation' }
+    active { true }
+    workload_identity_federation_project_id { 'google-wlif-project-id' }
+    workload_identity_federation_project_number { '123456789' }
+    workload_identity_pool_id { 'wlif-pool-id' }
+    workload_identity_pool_provider_id { 'wlif-pool-provider-id' }
+  end
+
   factory :git_guardian_integration, class: 'Integrations::GitGuardian' do
     project
     type { 'Integrations::GitGuardian' }

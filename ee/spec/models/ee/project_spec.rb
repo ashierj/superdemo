@@ -64,6 +64,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     it { is_expected.to have_one(:github_integration) }
     it { is_expected.to have_one(:zoekt_repository) }
     it { is_expected.to have_one(:google_cloud_platform_artifact_registry_integration) }
+    it { is_expected.to have_one(:google_cloud_platform_workload_identity_federation_integration) }
     it { is_expected.to have_one(:git_guardian_integration) }
     it { is_expected.to have_many(:project_aliases) }
     it { is_expected.to have_many(:approval_rules) }
@@ -2062,6 +2063,26 @@ RSpec.describe Project, feature_category: :groups_and_projects do
         end
 
         it { is_expected.to include('google_cloud_platform_artifact_registry') }
+      end
+    end
+
+    context 'workload identity federation' do
+      it { is_expected.to include('google_cloud_platform_workload_identity_federation') }
+
+      context 'when google_cloud_workload_identity_federation FF is disabled' do
+        before do
+          stub_feature_flags(google_cloud_workload_identity_federation: false)
+        end
+
+        it { is_expected.to include('google_cloud_platform_workload_identity_federation') }
+      end
+
+      context 'when google artifact registry feature is available' do
+        before do
+          stub_saas_features(google_cloud_support: true)
+        end
+
+        it { is_expected.not_to include('google_cloud_platform_workload_identity_federation') }
       end
     end
   end
@@ -4450,84 +4471,108 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
       it { is_expected.to eq(false) }
     end
+  end
 
-    describe '#code_suggestions_enabled?' do
-      let_it_be_with_reload(:project) { create(:project, :in_group) }
+  describe '#code_suggestions_enabled?' do
+    let_it_be_with_reload(:project) { create(:project, :in_group) }
 
-      context 'gitlab.com' do
-        where(:duo_features_enabled, :code_suggestions_enabled) do
-          true  | true
-          false | false
-        end
+    context 'gitlab.com' do
+      where(:duo_features_enabled, :code_suggestions_enabled) do
+        true  | true
+        false | false
+      end
 
-        with_them do
-          context 'purchase_code_suggestions FF is enabled' do
-            before do
-              allow(::Gitlab).to receive(:org_or_com?).and_return(true)
-              project.project_setting.update!(duo_features_enabled: duo_features_enabled)
-            end
+      with_them do
+        context 'purchase_code_suggestions FF is enabled' do
+          before do
+            allow(::Gitlab).to receive(:org_or_com?).and_return(true)
+            project.project_setting.update!(duo_features_enabled: duo_features_enabled)
+          end
 
-            it 'uses the duo_features_enabled project setting value' do
-              expect(project.code_suggestions_enabled?).to eq code_suggestions_enabled
-            end
+          it 'uses the duo_features_enabled project setting value' do
+            expect(project.code_suggestions_enabled?).to eq code_suggestions_enabled
           end
         end
+      end
 
-        with_them do
-          context 'purchase_code_suggestions FF is not enabled' do
-            before do
-              allow(::Gitlab).to receive(:org_or_com?).and_return(true)
-              stub_feature_flags(purchase_code_suggestions: false)
-              project.root_ancestor.update!(code_suggestions: duo_features_enabled)
-            end
+      with_them do
+        context 'purchase_code_suggestions FF is not enabled' do
+          before do
+            allow(::Gitlab).to receive(:org_or_com?).and_return(true)
+            stub_feature_flags(purchase_code_suggestions: false)
+            project.root_ancestor.update!(code_suggestions: duo_features_enabled)
+          end
 
-            it 'uses the legacy code_suggestions setting on the root group' do
+          it 'uses the legacy code_suggestions setting on the root group' do
+            expect(project.code_suggestions_enabled?).to eq code_suggestions_enabled
+          end
+        end
+      end
+    end
+
+    context 'self-managed' do
+      where(:code_suggestions_license, :duo_features_enabled, :code_suggestions_enabled) do
+        true  | true  |  true
+        true  | false |  false
+        false | true  |  false
+        false | false |  false
+      end
+
+      with_them do
+        context 'after service start date' do
+          before do
+            project.project_setting.update!(duo_features_enabled: duo_features_enabled)
+            allow(::Gitlab).to receive(:org_or_com?).and_return(false)
+            stub_licensed_features(code_suggestions: code_suggestions_license)
+          end
+
+          it 'uses the duo_features_enabled project setting value' do
+            travel_to(::CodeSuggestions::SelfManaged::SERVICE_START_DATE + 1.day) do
               expect(project.code_suggestions_enabled?).to eq code_suggestions_enabled
             end
           end
         end
       end
 
-      context 'self-managed' do
-        where(:code_suggestions_license, :duo_features_enabled, :code_suggestions_enabled) do
-          true  | true  |  true
-          true  | false |  false
-          false | true  |  false
-          false | false |  false
-        end
-
-        with_them do
-          context 'after service start date' do
-            before do
-              project.project_setting.update!(duo_features_enabled: duo_features_enabled)
-              allow(::Gitlab).to receive(:org_or_com?).and_return(false)
-              stub_licensed_features(code_suggestions: code_suggestions_license)
-            end
-
-            it 'uses the duo_features_enabled project setting value' do
-              travel_to(::CodeSuggestions::SelfManaged::SERVICE_START_DATE + 1.day) do
-                expect(project.code_suggestions_enabled?).to eq code_suggestions_enabled
-              end
-            end
+      with_them do
+        context 'before service start date' do
+          before do
+            project.root_ancestor.update!(code_suggestions: duo_features_enabled)
+            allow(::Gitlab).to receive(:org_or_com?).and_return(false)
+            stub_licensed_features(code_suggestions: code_suggestions_license)
           end
-        end
 
-        with_them do
-          context 'before service start date' do
-            before do
-              project.root_ancestor.update!(code_suggestions: duo_features_enabled)
-              allow(::Gitlab).to receive(:org_or_com?).and_return(false)
-              stub_licensed_features(code_suggestions: code_suggestions_license)
-            end
-
-            it 'uses the legacy code_suggestions setting on the root group' do
-              travel_to(::CodeSuggestions::SelfManaged::SERVICE_START_DATE - 1.day) do
-                expect(project.code_suggestions_enabled?).to eq code_suggestions_enabled
-              end
+          it 'uses the legacy code_suggestions setting on the root group' do
+            travel_to(::CodeSuggestions::SelfManaged::SERVICE_START_DATE - 1.day) do
+              expect(project.code_suggestions_enabled?).to eq code_suggestions_enabled
             end
           end
         end
       end
+    end
+  end
+
+  describe '#google_cloud_workload_identity_federation_enabled?' do
+    subject { project.google_cloud_workload_identity_federation_enabled? }
+
+    let(:project) { build_stubbed(:project) }
+
+    it { is_expected.to eq(false) }
+
+    context 'when feature is available' do
+      before do
+        stub_saas_features(google_cloud_support: true)
+      end
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when google_cloud_workload_identity_federation FF is disabled' do
+      before do
+        stub_feature_flags(google_cloud_workload_identity_federation: false)
+      end
+
+      it { is_expected.to eq(false) }
     end
   end
 end

@@ -39,8 +39,7 @@ RSpec.describe API::Integrations, feature_category: :integrations do
 
   %w[integrations services].each do |endpoint|
     where(:integration) do
-      Integration::EE_PROJECT_SPECIFIC_INTEGRATION_NAMES +
-        Integration::GOOGLE_CLOUD_PLATFORM_INTEGRATION_NAMES
+      Integration::EE_PROJECT_SPECIFIC_INTEGRATION_NAMES.union(Integration::GOOGLE_CLOUD_PLATFORM_INTEGRATION_NAMES)
     end
 
     with_them do
@@ -83,6 +82,32 @@ RSpec.describe API::Integrations, feature_category: :integrations do
   end
 
   describe 'Google Cloud Artifact Registry' do
+    shared_examples 'handling google artifact registry conditions' do |unavailable_status: :not_found|
+      shared_examples 'does not change integrations count' do
+        it do
+          expect { subject }.not_to change { project.integrations.count }
+        end
+      end
+
+      context 'when google artifact registry feature is unavailable' do
+        before do
+          stub_saas_features(google_cloud_support: false)
+        end
+
+        it_behaves_like 'returning response status', unavailable_status
+        it_behaves_like 'does not change integrations count'
+      end
+
+      context 'when gcp_artifact_registry FF is disabled' do
+        before do
+          stub_feature_flags(gcp_artifact_registry: false)
+        end
+
+        it_behaves_like 'returning response status', unavailable_status
+        it_behaves_like 'does not change integrations count'
+      end
+    end
+
     describe 'PUT /projects/:id/integrations/google-cloud-platform-artifact-registry' do
       let(:params) do
         {
@@ -123,6 +148,45 @@ RSpec.describe API::Integrations, feature_category: :integrations do
 
       it_behaves_like 'handling google artifact registry conditions' do
         subject { get url }
+      end
+    end
+  end
+
+  context 'when Google Cloud Workload Identity Federation integration feature is unavailable' do
+    let_it_be(:project_integration) do
+      create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+    end
+
+    let(:url) { api("/projects/#{project.id}/integrations/google-cloud-platform-workload-identity-federation", user) }
+
+    before do
+      stub_saas_features(google_cloud_support: false)
+    end
+
+    describe 'GET /projects/:id/integrations/google-cloud-workload-identity-federation' do
+      it_behaves_like 'returning response status', :not_found do
+        subject { get url }
+      end
+    end
+
+    describe 'PUT /projects/:id/integrations/google-cloud-workload-identity-federation' do
+      let(:params) do
+        {
+          workload_identity_federation_project_id: 'google-wlif-project-id',
+          workload_identity_federation_project_number: '123456789',
+          workload_identity_pool_id: 'wlif-pool-id',
+          workload_identity_pool_provider_id: 'wlif-pool-provider-id'
+        }
+      end
+
+      it_behaves_like 'returning response status', :bad_request do
+        subject { put url, params: params }
+      end
+    end
+
+    describe 'DELETE /projects/:id/integrations/google-cloud-workload-identity-federation' do
+      it_behaves_like 'returning response status', :not_found do
+        subject { delete url }
       end
     end
   end

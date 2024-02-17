@@ -6,9 +6,6 @@ module EE
       extend ::Gitlab::Utils::Override
 
       ALLOWED_PARAMS_EE = [
-        :workload_identity_pool_project_number,
-        :workload_identity_pool_id,
-        :workload_identity_pool_provider_id,
         :artifact_registry_project_id,
         :artifact_registry_location,
         :artifact_registry_repositories,
@@ -18,7 +15,12 @@ module EE
         :repository_url,
         :static_context,
         :vulnerabilities_enabled,
-        :vulnerabilities_issuetype
+        :vulnerabilities_issuetype,
+        :workload_identity_federation_project_id,
+        :workload_identity_federation_project_number,
+        :workload_identity_pool_id,
+        :workload_identity_pool_project_number,
+        :workload_identity_pool_provider_id
       ].freeze
 
       override :allowed_integration_params
