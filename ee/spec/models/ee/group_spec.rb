@@ -21,6 +21,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     it { is_expected.to have_many(:allowed_email_domains) }
     it { is_expected.to have_many(:compliance_management_frameworks) }
     it { is_expected.to have_one(:deletion_schedule) }
+    it { is_expected.to have_one(:google_cloud_platform_workload_identity_federation_integration) }
     it { is_expected.to have_one(:group_wiki_repository) }
     it { is_expected.to belong_to(:push_rule).inverse_of(:group) }
     it { is_expected.to have_many(:saml_group_links) }
@@ -3523,6 +3524,28 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       end
 
       it { is_expected.to be false }
+    end
+  end
+
+  describe '#google_cloud_workload_identity_federation_enabled?' do
+    subject { group.google_cloud_workload_identity_federation_enabled? }
+
+    it { is_expected.to eq(false) }
+
+    context 'when feature is available' do
+      before do
+        stub_saas_features(google_cloud_support: true)
+      end
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when google_cloud_workload_identity_federation FF is disabled' do
+      before do
+        stub_feature_flags(google_cloud_workload_identity_federation: false)
+      end
+
+      it { is_expected.to eq(false) }
     end
   end
 end

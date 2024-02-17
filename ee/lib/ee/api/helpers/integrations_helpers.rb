@@ -15,7 +15,9 @@ module EE
               'github' => ::Integrations::Github.api_fields,
               'git-guardian' => ::Integrations::GitGuardian.api_fields,
               'google-cloud-platform-artifact-registry' =>
-                ::Integrations::GoogleCloudPlatform::ArtifactRegistry.api_fields
+                ::Integrations::GoogleCloudPlatform::ArtifactRegistry.api_fields,
+              'google-cloud-platform-workload-identity-federation' =>
+                ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.api_fields
             )
           end
 
@@ -25,6 +27,7 @@ module EE
               ::Integrations::Github,
               ::Integrations::GitGuardian,
               ::Integrations::GoogleCloudPlatform::ArtifactRegistry,
+              ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation,
               *super
             ]
           end

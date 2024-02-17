@@ -46,6 +46,7 @@ module EE
       has_one :analytics_dashboards_configuration_project, through: :analytics_dashboards_pointer, source: :target_project
       has_one :scim_oauth_access_token
       has_one :index_status, class_name: 'Elastic::GroupIndexStatus', foreign_key: :namespace_id, dependent: :destroy
+      has_one :google_cloud_platform_workload_identity_federation_integration, class_name: 'Integrations::GoogleCloudPlatform::WorkloadIdentityFederation'
       has_many :external_audit_event_destinations, class_name: "AuditEvents::ExternalAuditEventDestination", foreign_key: 'namespace_id'
       has_many :google_cloud_logging_configurations, class_name: "AuditEvents::GoogleCloudLoggingConfiguration",
         foreign_key: 'namespace_id',
@@ -939,6 +940,10 @@ module EE
     # filter the users from members outside this class as well.
     def billed_users_from_members(members, merge_condition: ::User.all)
       users_without_bots(members, merge_condition: merge_condition)
+    end
+
+    def google_cloud_workload_identity_federation_enabled?
+      ::Feature.enabled?(:google_cloud_workload_identity_federation, self) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
     end
 
     private

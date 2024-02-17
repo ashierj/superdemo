@@ -1,0 +1,9 @@
+---
+name: google_cloud_workload_identity_federation
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/439200
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/143729
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/441401
+milestone: '16.10'
+group: group::authentication
+type: beta
+default_enabled: false

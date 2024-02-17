@@ -2,25 +2,32 @@
 
 require 'spec_helper'
 
-RSpec.describe Integration do
+RSpec.describe Integration, feature_category: :integrations do
+  describe '.integration_names' do
+    subject { described_class.integration_names }
+
+    it { is_expected.not_to include('google_cloud_platform_workload_identity_federation') }
+
+    context 'when google workload identity federation integration feature is available' do
+      before do
+        stub_saas_features(google_cloud_support: true)
+      end
+
+      it { is_expected.to include('google_cloud_platform_workload_identity_federation') }
+    end
+  end
+
   describe '.project_specific_integration_names' do
     subject { described_class.project_specific_integration_names }
 
-    before do
-      stub_saas_features(google_cloud_support: true)
+    it { is_expected.not_to include('google_cloud_platform_artifact_registry') }
 
-      stub_const("EE::#{described_class.name}::EE_PROJECT_SPECIFIC_INTEGRATION_NAMES", ['ee_project_specific_name'])
-    end
-
-    it { is_expected.to include('ee_project_specific_name') }
-    it { is_expected.to include(*described_class::GOOGLE_CLOUD_PLATFORM_INTEGRATION_NAMES) }
-
-    context 'when google artifact registry feature is unavailable' do
+    context 'when google artifact registry feature is available' do
       before do
-        stub_saas_features(google_cloud_support: false)
+        stub_saas_features(google_cloud_support: true)
       end
 
-      it { is_expected.not_to include('google_cloud_platform_artifact_registry') }
+      it { is_expected.to include(*described_class::EE_PROJECT_SPECIFIC_INTEGRATION_NAMES) }
     end
   end
 

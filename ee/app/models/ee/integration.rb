@@ -8,20 +8,37 @@ module EE
       scope :vulnerability_hooks, -> { where(vulnerability_events: true, active: true) }
     end
 
+    EE_INTEGRATION_NAMES = %w[
+      google_cloud_platform_workload_identity_federation
+    ].freeze
+
     EE_PROJECT_SPECIFIC_INTEGRATION_NAMES = %w[
       github
+      google_cloud_platform_artifact_registry
     ].freeze
 
     GOOGLE_CLOUD_PLATFORM_INTEGRATION_NAMES = %w[
       google_cloud_platform_artifact_registry
+      google_cloud_platform_workload_identity_federation
     ].freeze
 
     class_methods do
       extend ::Gitlab::Utils::Override
 
+      override :integration_names
+      def integration_names
+        names = super + EE_INTEGRATION_NAMES
+
+        unless ::Gitlab::Saas.feature_available?(:google_cloud_support)
+          names.delete('google_cloud_platform_workload_identity_federation')
+        end
+
+        names
+      end
+
       override :project_specific_integration_names
       def project_specific_integration_names
-        names = super + EE_PROJECT_SPECIFIC_INTEGRATION_NAMES + GOOGLE_CLOUD_PLATFORM_INTEGRATION_NAMES
+        names = super + EE_PROJECT_SPECIFIC_INTEGRATION_NAMES
         names.append('git_guardian') if ::Feature.enabled?(:git_guardian_integration)
 
         unless ::Gitlab::Saas.feature_available?(:google_cloud_support)
