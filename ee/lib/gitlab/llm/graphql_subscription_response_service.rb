@@ -3,11 +3,12 @@
 module Gitlab
   module Llm
     class GraphqlSubscriptionResponseService < BaseService
-      def initialize(user, resource, response_modifier, options:)
+      def initialize(user, resource, response_modifier, options:, save_message: true)
         @user = user
         @resource = resource
         @response_modifier = response_modifier
         @options = options
+        @save_message = save_message
         @logger = Gitlab::Llm::Logger.build
       end
 
@@ -39,10 +40,11 @@ module Gitlab
 
       private
 
-      attr_reader :user, :resource, :response_modifier, :options, :logger
+      attr_reader :user, :resource, :response_modifier, :options, :save_message, :logger
 
       def save_message?
-        response_message.is_a?(ChatMessage) &&
+        save_message &&
+          response_message.is_a?(ChatMessage) &&
           !response_message.type &&
           !response_message.chunk_id
       end

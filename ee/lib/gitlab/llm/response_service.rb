@@ -9,10 +9,11 @@ module Gitlab
         @basic_options = basic_options
       end
 
-      def execute(response:, options: {})
+      def execute(response:, options: {}, save_message: true)
         ::Gitlab::Llm::GraphqlSubscriptionResponseService
           .new(user, resource, response,
-            options: basic_options.merge(options))
+            options: basic_options.merge(options),
+            save_message: save_message)
           .execute
       end
 
