@@ -77,13 +77,14 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         actionsKeys.push('ci_configuration');
       }
 
+      const hasPolicyScope =
+        gon?.features?.securityPoliciesPolicyScope ||
+        gon?.features?.securityPoliciesPolicyScopeProject;
+
       /**
        * Can be removed after ff is enabled
        */
-      const primaryKeys = PRIMARY_POLICY_KEYS;
-      if (gon?.features?.securityPoliciesPolicyScope) {
-        primaryKeys.push('policy_scope');
-      }
+      const primaryKeys = [...PRIMARY_POLICY_KEYS, ...(hasPolicyScope ? ['policy_scope'] : [])];
 
       return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
         !hasInvalidCron(policy) &&
