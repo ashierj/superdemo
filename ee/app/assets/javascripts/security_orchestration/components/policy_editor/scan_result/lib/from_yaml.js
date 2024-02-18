@@ -24,10 +24,11 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
        * the UI for new attributes may not be available.
        */
 
-      const primaryKeys = [
-        ...PRIMARY_POLICY_KEYS,
-        ...(gon?.features?.securityPoliciesPolicyScope ? ['policy_scope'] : []),
-      ];
+      const hasPolicyScope =
+        gon?.features?.securityPoliciesPolicyScope ||
+        gon?.features?.securityPoliciesPolicyScopeProject;
+
+      const primaryKeys = [...PRIMARY_POLICY_KEYS, ...(hasPolicyScope ? ['policy_scope'] : [])];
       const rulesKeys = [
         'type',
         'branches',
