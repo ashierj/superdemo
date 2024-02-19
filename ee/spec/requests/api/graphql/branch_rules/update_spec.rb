@@ -7,14 +7,14 @@ RSpec.describe 'BranchRuleUpdate', feature_category: :source_code_management do
 
   let_it_be(:project) { create(:project, :public) }
   let_it_be(:user) { create(:user) }
-  let!(:branch_rule) { create(:protected_branch, project: project) }
+  let!(:protected_branch) { create(:protected_branch, project: project) }
+  let(:branch_rule) { Projects::BranchRule.new(project, protected_branch) }
   let(:current_user) { user }
   let(:mutation) { graphql_mutation(:branch_rule_update, params) }
 
   let(:params) do
     {
       id: branch_rule.to_global_id,
-      project_path: project.full_path,
       name: branch_rule.name.reverse
     }
   end
