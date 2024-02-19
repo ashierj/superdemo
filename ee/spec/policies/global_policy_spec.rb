@@ -667,21 +667,15 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     let_it_be_with_reload(:current_user) { create(:user) }
 
     context 'when on .org or .com', :saas do
-      let_it_be(:tomorrow) { Time.current + 1.day }
-      let_it_be(:yesterday) { Time.current - 1.day }
-
-      where(:group_with_ai_membership, :duo_pro_seat_assigned,
-        :start_date, :purchase_code_suggestions_ff, :cs_matcher) do
-        true  | false | ref(:tomorrow)  | false | be_allowed(policy)
-        true  | true  | ref(:tomorrow)  | false | be_allowed(policy)
-        false | false | ref(:tomorrow)  | false | be_disallowed(policy)
-        false | true  | ref(:tomorrow)  | false | be_disallowed(policy)
-        false | true  | ref(:tomorrow)  | true  | be_disallowed(policy)
-        false | true  | ref(:yesterday) | false | be_disallowed(policy)
-        false | true  | ref(:yesterday) | true  | be_allowed(policy)
-        false | false | ref(:yesterday) | true  | be_disallowed(policy)
-        true  | false | ref(:yesterday) | true  | be_disallowed(policy)
-        true  | true  | ref(:yesterday) | false | be_allowed(policy)
+      where(:group_with_ai_membership, :duo_pro_seat_assigned, :purchase_code_suggestions_ff, :cs_matcher) do
+        false | false  | false | be_disallowed(policy)
+        false | false  | true  | be_disallowed(policy)
+        false | true   | false | be_disallowed(policy)
+        false | true   | true  | be_disallowed(policy)
+        true  | false  | false | be_allowed(policy)
+        true  | false  | true  | be_allowed(policy)
+        true  | true   | false | be_allowed(policy)
+        true  | true   | true  | be_allowed(policy)
       end
 
       with_them do
@@ -689,7 +683,6 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
           allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(group_with_ai_membership)
           allow(current_user).to receive(:duo_pro_add_on_available?).and_return(duo_pro_seat_assigned)
           stub_feature_flags(purchase_code_suggestions: purchase_code_suggestions_ff)
-          allow(CloudConnector::Access).to receive(:service_start_date_for).and_return(start_date)
         end
 
         it { is_expected.to cs_matcher }
@@ -700,7 +693,8 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
       let_it_be(:tomorrow) { Time.current + 1.day }
       let_it_be(:yesterday) { Time.current - 1.day }
 
-      where(:licensed, :instance_level_ai_beta_features_enabled, :start_date, :duo_pro_seat_assigned, :cs_matcher) do
+      where(:licensed, :instance_level_ai_beta_features_enabled, :duo_chat_cut_off_date, :duo_pro_seat_assigned,
+        :cs_matcher) do
         true  | false | ref(:tomorrow)  | false | be_disallowed(policy)
         true  | true  | ref(:tomorrow)  | false | be_allowed(policy)
         false | false | ref(:tomorrow)  | false | be_disallowed(policy)
@@ -719,7 +713,11 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
           stub_ee_application_setting(instance_level_ai_beta_features_enabled: instance_level_ai_beta_features_enabled)
           stub_licensed_features(ai_chat: licensed)
           allow(current_user).to receive(:duo_pro_add_on_available?).and_return(duo_pro_seat_assigned)
-          allow(CloudConnector::Access).to receive(:service_start_date_for).and_return(start_date)
+
+          duo_chat = CloudConnector::ConnectedService.new(name: :duo_chat, cut_off_date: duo_chat_cut_off_date)
+          allow_next_instance_of(::CloudConnector::AccessService) do |instance|
+            allow(instance).to receive(:available_services).and_return({ duo_chat: duo_chat })
+          end
         end
 
         it { is_expected.to cs_matcher }

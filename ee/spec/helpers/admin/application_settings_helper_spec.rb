@@ -48,20 +48,23 @@ RSpec.describe Admin::ApplicationSettingsHelper, feature_category: :code_suggest
 
   describe '#admin_display_ai_powered_toggle?', :freeze_time, feature_category: :duo_chat do
     let(:feature_enabled) { true }
-
-    let(:today) { Date.current }
-    let(:tomorrow) { today + 1.day }
+    let(:past) { Time.current - 1.second }
+    let(:future) { Time.current + 1.second }
+    let(:duo_chat) { CloudConnector::ConnectedService.new(name: :duo_chat, cut_off_date: duo_chat_cut_off_date) }
 
     before do
       stub_licensed_features(ai_chat: feature_enabled)
-      allow(CloudConnector::Access).to receive(:service_start_date_for).with('duo_chat').and_return(service_start_date)
+
+      allow_next_instance_of(::CloudConnector::AccessService) do |instance|
+        allow(instance).to receive(:available_services).and_return({ duo_chat: duo_chat })
+      end
     end
 
-    where(:service_start_date, :feature_available, :expectation) do
-      ref(:today) | true | false
-      ref(:today) | false | false
-      ref(:tomorrow) | true | true
-      ref(:tomorrow) | false | false
+    where(:duo_chat_cut_off_date, :feature_available, :expectation) do
+      ref(:past) | true | false
+      ref(:past) | false | false
+      ref(:future) | true | true
+      ref(:future) | false | false
       nil | true | true
       nil | false | false
     end

@@ -82,7 +82,7 @@ module EE
         next true if ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
         next false unless ::License.feature_available?(:ai_chat)
 
-        if duo_chat_start_date_in_past?
+        if duo_chat_free_access_was_cut_off?
           @user.duo_pro_add_on_available?
         else # Before service start date
           ::Gitlab::CurrentSettings.instance_level_ai_beta_features_enabled?
@@ -93,7 +93,7 @@ module EE
         next false unless @user
         next true unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
 
-        if ::Feature.enabled?(:purchase_code_suggestions) && duo_chat_start_date_in_past?
+        if ::Feature.enabled?(:purchase_code_suggestions) && duo_chat_free_access_was_cut_off?
           @user.duo_pro_add_on_available?
         else
           @user.any_group_with_ai_chat_available?
@@ -185,10 +185,20 @@ module EE
       end
     end
 
-    def duo_chat_start_date_in_past?
-      start_date = CloudConnector::Access.service_start_date_for('duo_chat')
+    def duo_chat_free_access_was_cut_off?
+      if ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
+        duo_chat_free_access_was_cut_off_for_gitlab_com?
+      else
+        duo_chat_free_access_was_cut_off_for_sm?
+      end
+    end
 
-      start_date && start_date.past?
+    def duo_chat_free_access_was_cut_off_for_gitlab_com?
+      false # TODO: update with the hardcoded cut-off date check, https://gitlab.com/gitlab-org/gitlab/-/issues/440386
+    end
+
+    def duo_chat_free_access_was_cut_off_for_sm?
+      !CloudConnector::AccessService.new.free_access_for?(:duo_chat)
     end
   end
 end
