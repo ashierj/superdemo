@@ -280,6 +280,35 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
 
             it { is_expected.to eq(expected_ci_config) }
           end
+
+          context 'when including a file from a private project' do
+            let(:project) do
+              create(
+                :project,
+                :custom_repo,
+                files: {
+                  'ci-file.yaml' => 'image: "busybox:latest"'
+                }
+              )
+            end
+
+            let(:ci_configuration) do
+              <<~CI_CONFIG
+              include:
+                - project: #{project.full_path}
+                  file: ci-file.yaml
+                  ref: master
+              CI_CONFIG
+            end
+
+            let(:action) { { scan: 'custom', ci_configuration: ci_configuration } }
+
+            before do
+              project.add_owner(user)
+            end
+
+            it { is_expected.to eq(image: 'busybox:latest') }
+          end
         end
 
         context 'with ci_configuration_path' do
