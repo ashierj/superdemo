@@ -7678,7 +7678,7 @@ msgstr ""
 msgid "Because you enabled auto-banning, we have also automatically banned this user from %{scope}. If this is a mistake, you can unban them: %{url}."
 msgstr ""
 
-msgid "Before enabling this integration, create a webhook for the room in Google Chat where you want to receive notifications from this project. %{docs_link}"
+msgid "Before enabling this integration, create a webhook for the space in Google Chat where you want to receive notifications from this project. %{docs_link}"
 msgstr ""
 
 msgid "Before inserting code, be sure to read the comment that separated each code group."
