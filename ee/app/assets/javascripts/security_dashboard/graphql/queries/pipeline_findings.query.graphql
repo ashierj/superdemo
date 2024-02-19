@@ -12,6 +12,7 @@ query pipelineFindings(
   $reportType: [String!]
   $scanner: [String!]
   $state: [VulnerabilityState!]
+  $sort: PipelineSecurityReportFindingSort
   $vetEnabled: Boolean = false
 ) {
   project(fullPath: $fullPath) {
@@ -27,6 +28,7 @@ query pipelineFindings(
         reportType: $reportType
         scanner: $scanner
         state: $state
+        sort: $sort
       ) {
         nodes {
           # This query is used by vulnerability_list_graphql.vue, which expects an id property for
