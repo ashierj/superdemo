@@ -221,4 +221,131 @@ RSpec.describe Members::UpdateService, feature_category: :groups_and_projects do
       end
     end
   end
+
+  context 'when current user has admin_group_member custom permission' do
+    let_it_be(:current_user) { create(:user) }
+    let_it_be(:root_ancestor, reload: true) { create(:group) }
+    let_it_be(:subgroup) { create(:group, parent: root_ancestor) }
+    let_it_be(:current_member, reload: true) { create(:group_member, group: root_ancestor, user: current_user) }
+    let_it_be(:member_role, reload: true) do
+      create(:member_role, namespace: root_ancestor, admin_group_member: true)
+    end
+
+    let(:params) { { access_level: role } }
+
+    subject(:update_member) do
+      described_class.new(current_user, params).execute(member)
+    end
+
+    shared_examples 'updating members using custom permission' do
+      let_it_be(:member, reload: true) do
+        create(:group_member, :minimal_access, group: group)
+      end
+
+      before do
+        # it is more efficient to change the base_access_level than to create a new member_role
+        member_role.base_access_level = current_role
+        member_role.save!(validate: false)
+
+        current_member.update!(access_level: current_role, member_role: member_role)
+      end
+
+      context 'when custom_roles feature is enabled' do
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        context 'when updating member to the same access role as current user' do
+          let(:role) { current_role }
+
+          it 'updates the member' do
+            expect { update_member }.to change { member.access_level }.to(role)
+          end
+        end
+
+        context 'when updating member to higher role than current user' do
+          let(:role) { higher_role }
+
+          it 'raises an error' do
+            expect { update_member }.to raise_error { Gitlab::Access::AccessDeniedError }
+          end
+        end
+      end
+
+      context 'when custom_roles feature is disabled' do
+        before do
+          stub_licensed_features(custom_roles: false)
+        end
+
+        context 'when updating member to the same access role as current user' do
+          let(:role) { current_role }
+
+          it 'fails to update the member' do
+            expect { update_member }.to raise_error { Gitlab::Access::AccessDeniedError }
+          end
+        end
+      end
+    end
+
+    shared_examples 'updating members using custom permission in a group' do
+      context 'for guest member role' do
+        let(:current_role) { Gitlab::Access::GUEST }
+        let(:higher_role) { Gitlab::Access::REPORTER }
+
+        it_behaves_like 'updating members using custom permission'
+
+        context 'when downgrading member role' do
+          let(:member) { create(:group_member, :maintainer, group: group) }
+          let(:role) { Gitlab::Access::REPORTER }
+
+          before do
+            stub_licensed_features(custom_roles: true)
+
+            # it is more efficient to change the base_access_level than to create a new member_role
+            member_role.base_access_level = current_role
+            member_role.save!(validate: false)
+
+            current_member.update!(access_level: current_role, member_role: member_role)
+          end
+
+          it 'updates the member' do
+            expect { update_member }.to change { member.access_level }.to(role)
+          end
+        end
+      end
+
+      context 'for reporter member role' do
+        let(:current_role) { Gitlab::Access::REPORTER }
+        let(:higher_role) { Gitlab::Access::DEVELOPER }
+
+        it_behaves_like 'updating members using custom permission'
+      end
+
+      context 'for developer member role' do
+        let(:current_role) { Gitlab::Access::DEVELOPER }
+        let(:higher_role) { Gitlab::Access::MAINTAINER }
+
+        it_behaves_like 'updating members using custom permission'
+      end
+
+      context 'for maintainer member role' do
+        let(:current_role) { Gitlab::Access::MAINTAINER }
+        let(:higher_role) { Gitlab::Access::OWNER }
+
+        it_behaves_like 'updating members using custom permission'
+      end
+    end
+
+    context 'when updating a member of the root group' do
+      let_it_be(:group) { root_ancestor }
+
+      it_behaves_like 'updating members using custom permission in a group'
+    end
+
+    context 'when updating a member of the subgroup' do
+      let_it_be(:group) { subgroup }
+
+      it_behaves_like 'updating members using custom permission in a group'
+    end
+  end
 end

@@ -946,6 +946,15 @@ module EE
       ::Feature.enabled?(:google_cloud_workload_identity_federation, self) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
     end
 
+    def assigning_role_too_high?(current_user, access_level)
+      return false if current_user.can_admin_all_resources?
+      return false unless access_level
+
+      current_user_role = max_member_access(current_user)
+
+      access_level > current_user_role
+    end
+
     private
 
     def active_project_tokens_of_root_ancestor

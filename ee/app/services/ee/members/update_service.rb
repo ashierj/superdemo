@@ -4,6 +4,7 @@ module EE
   module Members
     module UpdateService
       extend ActiveSupport::Concern
+      extend ::Gitlab::Utils::Override
 
       def after_execute(action:, old_access_level:, old_expiry:, member:)
         super
@@ -12,6 +13,17 @@ module EE
       end
 
       private
+
+      override :has_update_permissions?
+      def has_update_permissions?(member, permission)
+        super && !member_role_too_high?(member)
+      end
+
+      def member_role_too_high?(member)
+        return false unless params[:access_level] # we don't update access_level
+
+        member.prevent_role_assignement?(current_user, params.merge(current_access_level: member.access_level))
+      end
 
       def update_member(member, permission)
         handle_member_role_assignement(member) if params.key?(:member_role_id)
