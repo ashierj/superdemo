@@ -56475,9 +56475,6 @@ msgstr ""
 msgid "WikiEdit|There is already a page with the same title in that path."
 msgstr ""
 
-msgid "WikiEmptyIssueMessage|Suggest wiki improvement"
-msgstr ""
-
 msgid "WikiEmptyIssueMessage|You must be a group member in order to add wiki pages. If you have suggestions for how to improve the wiki for this group, consider opening an issue in the %{issues_link}."
 msgstr ""
 
