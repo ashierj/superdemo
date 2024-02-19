@@ -4,8 +4,8 @@ require 'fileutils'
 require 'cgi'
 
 require_relative '../config/environment'
-require_relative './helpers/groups'
-require_relative './helpers/milestones'
+require_relative 'helpers/groups'
+require_relative 'helpers/milestones'
 
 module Keeps
   # This is an implementation of a ::Gitlab::Housekeeper::Keep. This keep will locate any featrure flag definition file
@@ -28,70 +28,76 @@ module Keeps
     FEATURE_FLAG_LOG_ISSUES_URL = "https://gitlab.com/gitlab-com/gl-infra/feature-flag-log/-/issues/?search=%<feature_flag_name>s&sort=created_date&state=all&label_name%%5B%%5D=host%%3A%%3Agitlab.com"
 
     def each_change
-      each_feature_flag do |feature_flag_yaml_file, feature_flag_definition|
-        feature_flag = Feature::Definition.new(feature_flag_yaml_file, feature_flag_definition)
+      each_feature_flag do |feature_flag|
+        change = prepare_change(feature_flag)
 
-        if feature_flag.milestone.nil?
-          puts "#{feature_flag.name} has no milestone set!"
-          next
-        end
-
-        next unless milestones_helper.before_cuttoff?(
-          milestone: feature_flag.milestone,
-          milestones_ago: CUTOFF_MILESTONE_OLD)
-
-        change = ::Gitlab::Housekeeper::Change.new
-        change.changelog_type = 'removed'
-        change.title = "Delete the `#{feature_flag.name}` feature flag"
-        change.identifiers = [self.class.name.demodulize, feature_flag.name]
-
-        # rubocop:disable Gitlab/DocUrl -- Not running inside rails application
-        change.description = <<~MARKDOWN
-        This feature flag was introduced in #{feature_flag.milestone}, which is more than #{CUTOFF_MILESTONE_OLD} milestones ago.
-
-        As part of our process we want to ensure [feature flags don't stay too long in the codebase](https://docs.gitlab.com/ee/development/feature_flags/#types-of-feature-flags).
-
-        Rollout issue: #{feature_flag_rollout_issue_url(feature_flag)}
-
-        #{feature_flag_default_enabled_note(feature_flag_definition[:default_enabled])}
-
-        <details><summary>Mentions of the feature flag (click to expand)</summary>
-
-        ```
-        #{feature_flag_grep(feature_flag.name)}
-        ```
-
-        </details>
-
-        It is likely that this MR will still need some changes to remove references to the feature flag in the code.
-        At the moment the `gitlab-housekeeper` is not capable of removing references but we'll be adding that functionality next.
-        It is the responsibility of ~"#{feature_flag.group}" to push those changes to this branch.
-        If they are already removing this feature flag in another merge request then they can just close this merge request.
-
-        You can also see the status of the rollout by checking #{feature_flag_rollout_issue_url(feature_flag)} and #{format(FEATURE_FLAG_LOG_ISSUES_URL, feature_flag_name: feature_flag.name)}.
-        MARKDOWN
-        # rubocop:enable Gitlab/DocUrl
-
-        FileUtils.rm(feature_flag_yaml_file)
-
-        change.changed_files = [feature_flag_yaml_file]
-
-        change.labels = [
-          'maintenance::removal',
-          'feature flag',
-          feature_flag.group
-        ]
-
-        change.reviewers = assignees(feature_flag.rollout_issue_url)
-
-        if change.reviewers.empty?
-          group_data = groups_helper.group_for_group_label(feature_flag.group)
-
-          change.reviewers = groups_helper.pick_reviewer(group_data, change.identifiers) if group_data
-        end
-
-        yield(change)
+        yield(change) if change
       end
+    end
+
+    private
+
+    def prepare_change(feature_flag)
+      if feature_flag.milestone.nil?
+        puts "#{feature_flag.name} has no milestone set!"
+        return
+      end
+
+      return unless milestones_helper.before_cuttoff?(
+        milestone: feature_flag.milestone,
+        milestones_ago: CUTOFF_MILESTONE_OLD)
+
+      change = ::Gitlab::Housekeeper::Change.new
+      change.changelog_type = 'removed'
+      change.title = "Delete the `#{feature_flag.name}` feature flag"
+      change.identifiers = [self.class.name.demodulize, feature_flag.name]
+
+      # rubocop:disable Gitlab/DocUrl -- Not running inside rails application
+      change.description = <<~MARKDOWN
+      This feature flag was introduced in #{feature_flag.milestone}, which is more than #{CUTOFF_MILESTONE_OLD} milestones ago.
+
+      As part of our process we want to ensure [feature flags don't stay too long in the codebase](https://docs.gitlab.com/ee/development/feature_flags/#types-of-feature-flags).
+
+      Rollout issue: #{feature_flag_rollout_issue_url(feature_flag)}
+
+      #{feature_flag_default_enabled_note(feature_flag.default_enabled)}
+
+      <details><summary>Mentions of the feature flag (click to expand)</summary>
+
+      ```
+      #{feature_flag_grep(feature_flag.name)}
+      ```
+
+      </details>
+
+      It is likely that this MR will still need some changes to remove references to the feature flag in the code.
+      At the moment the `gitlab-housekeeper` is not capable of removing references but we'll be adding that functionality next.
+      It is the responsibility of ~"#{feature_flag.group}" to push those changes to this branch.
+      If they are already removing this feature flag in another merge request then they can just close this merge request.
+
+      You can also see the status of the rollout by checking #{feature_flag_rollout_issue_url(feature_flag)} and #{format(FEATURE_FLAG_LOG_ISSUES_URL, feature_flag_name: feature_flag.name)}.
+      MARKDOWN
+      # rubocop:enable Gitlab/DocUrl
+
+      FileUtils.rm(feature_flag.path)
+
+      change.changed_files = [feature_flag.path]
+
+      change.labels = [
+        'maintenance::removal',
+        'feature flag',
+        feature_flag.group
+      ]
+
+      change.reviewers = assignees(feature_flag.rollout_issue_url)
+
+      if change.reviewers.empty?
+        group_data = groups_helper.group_for_group_label(feature_flag.group)
+
+        change.reviewers = groups_helper.pick_reviewer(group_data, change.identifiers) if group_data
+      end
+
+      change
     end
 
     def feature_flag_default_enabled_note(feature_flag_default_enabled)
@@ -151,7 +157,9 @@ module Keeps
 
     def each_feature_flag
       all_feature_flag_files.map do |f|
-        yield(f, YAML.load_file(f, permitted_classes: [Symbol], symbolize_names: true))
+        yield(
+          Feature::Definition.new(f, YAML.load_file(f, permitted_classes: [Symbol], symbolize_names: true))
+        )
       end
     end
 

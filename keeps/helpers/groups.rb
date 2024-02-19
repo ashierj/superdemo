@@ -3,6 +3,7 @@
 module Keeps
   module Helpers
     class Groups
+      GROUPS_JSON_URL = "https://about.gitlab.com/groups.json"
       Error = Class.new(StandardError)
 
       def group_for_feature_category(category)
@@ -31,7 +32,7 @@ module Keeps
 
       def fetch_groups
         @groups_json ||= begin
-          response = Gitlab::HTTP.get('https://about.gitlab.com/groups.json')
+          response = Gitlab::HTTP.get(GROUPS_JSON_URL)
 
           unless (200..299).cover?(response.code)
             raise Error,
