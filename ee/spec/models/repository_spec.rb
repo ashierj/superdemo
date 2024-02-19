@@ -125,11 +125,11 @@ RSpec.describe Repository, feature_category: :source_code_management do
 
           expect(Gitlab::EventStore).to receive(:publish).with(event).once
 
-          repository.keep_around(sha)
+          repository.keep_around(sha, source: 'repository_spec')
         end
 
         it 'creates a Geo::Event', :sidekiq_inline do
-          expect { repository.keep_around(sha) }
+          expect { repository.keep_around(sha, source: 'repository_spec') }
             .to change { ::Geo::Event.where(event_name: :updated).count }.by(1)
         end
       end
@@ -143,11 +143,11 @@ RSpec.describe Repository, feature_category: :source_code_management do
 
           expect(Gitlab::EventStore).to receive(:publish).with(event).once
 
-          repository.keep_around(sha, sample_big_commit.id)
+          repository.keep_around(sha, sample_big_commit.id, source: 'repository_spec')
         end
 
         it 'creates exactly one Geo::Event', :sidekiq_inline do
-          expect { repository.keep_around(sha, sample_big_commit.id) }
+          expect { repository.keep_around(sha, sample_big_commit.id, source: 'repository_spec') }
             .to change { ::Geo::Event.where(event_name: :updated).count }.by(1)
         end
       end
@@ -167,11 +167,11 @@ RSpec.describe Repository, feature_category: :source_code_management do
 
           expect(Gitlab::EventStore).to receive(:publish).with(event)
 
-          repository.keep_around(sha, sample_big_commit.id)
+          repository.keep_around(sha, sample_big_commit.id, source: 'repository_spec')
         end
 
         it 'does not create a Geo::Event', :sidekiq_inline do
-          expect { repository.keep_around(sha) }
+          expect { repository.keep_around(sha, source: 'repository_spec') }
             .not_to change { ::Geo::Event.count }
         end
       end
@@ -182,11 +182,11 @@ RSpec.describe Repository, feature_category: :source_code_management do
 
           expect(Gitlab::EventStore).not_to have_received(:publish).with(instance_of(Repositories::KeepAroundRefsCreatedEvent))
 
-          repository.keep_around(nil)
+          repository.keep_around(nil, source: 'repository_spec')
         end
 
         it 'does not create a Geo::Event', :sidekiq_inline do
-          expect { repository.keep_around(nil) }
+          expect { repository.keep_around(nil, source: 'repository_spec') }
           .not_to change { ::Geo::Event.count }
         end
       end
