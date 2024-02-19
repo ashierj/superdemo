@@ -75,12 +75,26 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
   end
 
   describe '#execute' do
-    let(:service) { described_class.new(user, resource, response_modifier, options: options) }
+    let(:save_message) { true }
+    let(:service) do
+      described_class.new(user, resource, response_modifier, options: options, save_message: save_message)
+    end
+
     let_it_be(:resource) { project }
 
     subject { service.execute }
 
     context 'when message is chat' do
+      shared_examples 'not saving the message' do
+        it 'does not save the message' do
+          expect_next_instance_of(::Gitlab::Llm::AiMessage) do |instance|
+            expect(instance).not_to receive(:save!)
+          end
+
+          subject
+        end
+      end
+
       let(:ai_action) { 'chat' }
 
       it 'saves the message' do
@@ -89,28 +103,22 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
         subject
       end
 
+      context 'when save_message is false' do
+        let(:save_message) { false }
+
+        it_behaves_like 'not saving the message'
+      end
+
       context 'when message is stream chunk' do
         let(:options) { super().merge(chunk_id: 1) }
 
-        it 'does not save the message' do
-          expect_next_instance_of(::Gitlab::Llm::AiMessage) do |instance|
-            expect(instance).not_to receive(:save!)
-          end
-
-          subject
-        end
+        it_behaves_like 'not saving the message'
       end
 
       context 'when message has special type' do
         let(:options) { super().merge(type: 'tool') }
 
-        it 'does not save the message' do
-          expect_next_instance_of(::Gitlab::Llm::AiMessage) do |instance|
-            expect(instance).not_to receive(:save!)
-          end
-
-          subject
-        end
+        it_behaves_like 'not saving the message'
       end
     end
 
