@@ -8,7 +8,11 @@ module QA
       name: 'saas_user_caps',
       scope: :group
     },
-    only: { pipeline: %i[staging staging-canary] } do
+    only: { pipeline: %i[staging staging-canary] },
+    quarantine: {
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/438744',
+      type: :investigating
+    } do
     describe 'Utilization' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:hash) { SecureRandom.hex(8) }
