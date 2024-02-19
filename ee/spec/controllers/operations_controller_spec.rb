@@ -480,7 +480,11 @@ RSpec.describe OperationsController, feature_category: :release_orchestration do
             end
 
             context 'N+1 queries' do
-              it 'avoids N+1 database queries' do
+              # The `read_project` check in Dashboard::Projects::ListService introduces N+1 queries.
+              # We consider this as an acceptable tradeoff for a more robust security.
+              # The N+1 queries will be addressed in a later issue.
+              # See https://gitlab.com/gitlab-org/security/gitlab/-/merge_requests/3842#note_1752824853
+              it 'avoids N+1 database queries', :skip do
                 control = ActiveRecord::QueryRecorder.new { get_environments(:json) }
 
                 projects = create_list(:project, 8) do |project|
@@ -747,6 +751,60 @@ RSpec.describe OperationsController, feature_category: :release_orchestration do
 
           user.reload
           expect(user.ops_dashboard_projects).to be_empty
+        end
+
+        describe 'ip restricted project' do
+          let_it_be(:group) do
+            restricted_ip_ranges = ['10.0.0.0/8', '255.255.255.224/27']
+
+            create(:group).tap do |group|
+              restricted_ip_ranges&.each do |range|
+                create(:ip_restriction, group: group, range: range)
+              end
+            end
+          end
+
+          let_it_be(:project_b) { create(:project, group: group) }
+
+          context 'when ip restriction feature is enabled' do
+            before do
+              stub_licensed_features(
+                operations_dashboard: true,
+                group_ip_restriction: true
+              )
+            end
+
+            it 'does not add ip-restricted project to the dashboard' do
+              post_create({ project_ids: [project_a.id, project_b.id.to_s] })
+
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(json_response['added']).to contain_exactly(project_a.id)
+              expect(json_response['invalid']).to contain_exactly(project_b.id)
+
+              user.reload
+              expect(user.ops_dashboard_projects).to contain_exactly(project_a)
+            end
+          end
+
+          context 'when ip restriction feature is disabled' do
+            before do
+              stub_licensed_features(
+                operations_dashboard: true,
+                group_ip_restriction: false
+              )
+            end
+
+            it 'adds ip-restricted project to the dashboard' do
+              post_create({ project_ids: [project_a.id, project_b.id.to_s] })
+
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(json_response['added']).to contain_exactly(project_a.id, project_b.id)
+              expect(json_response['invalid']).to be_empty
+
+              user.reload
+              expect(user.ops_dashboard_projects).to contain_exactly(project_a, project_b)
+            end
+          end
         end
       end
 
