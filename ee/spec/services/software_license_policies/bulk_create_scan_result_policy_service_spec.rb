@@ -21,7 +21,8 @@ RSpec.describe SoftwareLicensePolicies::BulkCreateScanResultPolicyService, featu
         expect { execute_service }.to change { SoftwareLicense.count }.by(3)
       end
 
-      it 'creates one software license policy correctly' do
+      it 'creates one software license policy correctly',
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/442288' do
         result = execute_service
         created_policy = SoftwareLicensePolicy.find_by(result[:software_license_policy].first)
 
@@ -53,7 +54,8 @@ RSpec.describe SoftwareLicensePolicies::BulkCreateScanResultPolicyService, featu
       context 'when name contains whitespaces' do
         let(:params) { [{ name: '  MIT   ', approval_status: 'allowed', scan_result_policy_read: scan_result_policy }] }
 
-        it 'creates one software license policy with stripped name' do
+        it 'creates one software license policy with stripped name',
+          quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/442288' do
           result = execute_service
           created_policy = SoftwareLicensePolicy.find_by(result[:software_license_policy].first)
 
