@@ -19,6 +19,36 @@ RSpec.describe Gitlab::CodeOwners::ReferenceExtractor, feature_category: :source
     it 'includes all mentioned email addresses' do
       expect(extractor.emails).to contain_exactly('user@gitlab.org', 'other-user@gitlab.org')
     end
+
+    describe "ReDOS vulnerability" do
+      subject(:extractor) do
+        described_class.new(text + email)
+      end
+
+      context "when valid email length" do
+        let(:email) { generate_email(100, 255) }
+
+        it "includes the email" do
+          expect(extractor.emails).to include(email)
+        end
+      end
+
+      context "when invalid email first part length" do
+        let(:email) { generate_email(101, 255) }
+
+        it "doesn't include the email" do
+          expect(extractor.emails).not_to include(email)
+        end
+      end
+
+      context "when invalid email second part length" do
+        let(:email) { generate_email(100, 256) }
+
+        it "doesn't include the email" do
+          expect(extractor.emails).not_to include(email)
+        end
+      end
+    end
   end
 
   describe '#names' do
@@ -36,5 +66,9 @@ RSpec.describe Gitlab::CodeOwners::ReferenceExtractor, feature_category: :source
         'other-user@gitlab.org', 'group', 'group/nested-on/other-group'
       )
     end
+  end
+
+  def generate_email(left_length, right_length)
+    "#{SecureRandom.alphanumeric(left_length)}@#{SecureRandom.alphanumeric(right_length)}"
   end
 end
