@@ -8,14 +8,16 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
   include GoogleApi::CloudPlatformHelpers
 
   let_it_be(:project) { create(:project) }
-  let_it_be(:project_integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
-  let_it_be(:user) { project.first_owner }
+  let_it_be_with_refind(:project_integration) do
+    create(:google_cloud_platform_artifact_registry_integration, project: project)
+  end
 
   let_it_be(:artifact_registry_repository_url) do
     "https://console.cloud.google.com/artifacts/docker/#{project_integration.artifact_registry_project_id}/" \
       "#{project_integration.artifact_registry_location}/#{project_integration.artifact_registry_repository}"
   end
 
+  let(:user) { project.first_owner }
   let(:image) { 'ruby' }
   let(:digest) { 'sha256:4ca5c21b' }
   let(:client_double) { instance_double('::GoogleCloudPlatform::ArtifactRegistry::Client') }
@@ -86,12 +88,10 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
 
     allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
       .with(
-        project: project,
+        project_integration: project_integration,
         user: user,
-        gcp_project_id: project_integration.artifact_registry_project_id,
-        gcp_location: project_integration.artifact_registry_location,
-        gcp_repository: project_integration.artifact_registry_repository,
-        gcp_wlif: project_integration.wlif
+        artifact_registry_location: project_integration.artifact_registry_location,
+        artifact_registry_repository: project_integration.artifact_registry_repository
       ).and_return(client_double)
 
     allow(client_double).to receive(:docker_images)

@@ -74,12 +74,11 @@ RSpec.shared_examples 'overriding the google cloud project id' do
 
   it 'returns results by calling the specified project id' do
     expect(::GoogleCloudPlatform::Compute::Client).to receive(:new)
-      .with(
-        project: project,
-        user: user,
-        gcp_project_id: google_cloud_project_id,
-        gcp_wlif: project_integration.wlif
-      ).and_return(client_double)
+      .with(project_integration: project_integration, user: user, params: extra_params) do |**args|
+        expect(args.dig(:params, :google_cloud_project_id)).to eq(google_cloud_project_id)
+
+        client_double
+      end
 
     expect(response).to be_success
     expect(response.payload[:items]).to be_a Enumerable

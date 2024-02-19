@@ -4,14 +4,14 @@ module GoogleCloudPlatform
   class Jwt < ::JSONWebToken::RSAToken
     extend ::Gitlab::Utils::Override
 
-    JWT_OPTIONS_ERROR = 'This jwt needs jwt claims audience and wlif to be set.'
+    JWT_OPTIONS_ERROR = 'This jwt needs jwt claims audience and target_audience to be set.'
 
     NoSigningKeyError = Class.new(StandardError)
 
     def initialize(project:, user:, claims:)
       super
 
-      raise ArgumentError, JWT_OPTIONS_ERROR if claims[:audience].blank? || claims[:wlif].blank?
+      raise ArgumentError, JWT_OPTIONS_ERROR if claims[:audience].blank? || claims[:target_audience].blank?
 
       @claims = claims
       @project = project
@@ -34,8 +34,6 @@ module GoogleCloudPlatform
     override :key_data
     def key_data
       @key_data ||= begin
-        # TODO Feels strange to use the CI signing key but do
-        # we have a different signing key?
         key_data = Gitlab::CurrentSettings.ci_jwt_signing_key
 
         raise NoSigningKeyError unless key_data
@@ -56,7 +54,7 @@ module GoogleCloudPlatform
         user_login: @user&.username,
         user_email: @user&.email,
         user_access_level: user_access_level,
-        wlif: @claims[:wlif]
+        target_audience: @claims[:target_audience]
       }
     end
 

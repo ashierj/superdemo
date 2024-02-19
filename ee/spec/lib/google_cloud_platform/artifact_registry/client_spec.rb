@@ -6,26 +6,22 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
   let_it_be(:project) { create(:project) }
   let_it_be(:rsa_key) { OpenSSL::PKey::RSA.generate(3072) }
   let_it_be(:rsa_key_data) { rsa_key.to_s }
-
-  let(:gcp_project_id) { 'gcp_project_id' }
-  let(:gcp_location) { 'gcp_location' }
-  let(:gcp_repository) { 'gcp_repository' }
-  let(:gcp_wlif) { '//wlif.test' }
+  let_it_be(:project_integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
 
   let(:user) { project.owner }
+  let(:artifact_registry_location) { project_integration&.artifact_registry_location }
+  let(:artifact_registry_repository) { project_integration&.artifact_registry_repository }
   let(:client) do
     described_class.new(
-      project: project,
+      project_integration: project_integration,
       user: user,
-      gcp_project_id: gcp_project_id,
-      gcp_location: gcp_location,
-      gcp_repository: gcp_repository,
-      gcp_wlif: gcp_wlif
+      artifact_registry_location: artifact_registry_location,
+      artifact_registry_repository: artifact_registry_repository
     )
   end
 
-  shared_context 'with a gcp client double' do
-    let(:gcp_client_double) { instance_double('::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Client') }
+  shared_context 'with a client double' do
+    let(:client_double) { instance_double('::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Client') }
     let(:config_double) do
       instance_double('Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Client::Configuration')
     end
@@ -41,15 +37,19 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
         .with(instance_of(::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Credentials))
       allow(::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Client).to receive(:new) do |_, &block|
         block.call(config_double)
-        gcp_client_double
+        client_double
       end
+
+      # required so that google auth gem will not trigger any API request
+      allow(project_integration).to receive(:identity_provider_resource_name)
+          .and_return('//identity.provider.resource.name.test')
     end
   end
 
-  shared_examples 'handling errors' do |gcp_client_method:|
+  shared_examples 'handling errors' do |client_method:|
     shared_examples 'transforming the error' do |message:, from_klass:, to_klass:|
       it "translates the error from #{from_klass} to #{to_klass}" do
-        expect(gcp_client_double).to receive(gcp_client_method).and_raise(from_klass, message)
+        expect(client_double).to receive(client_method).and_raise(from_klass, message)
 
         expect { subject }.to raise_error(to_klass, message)
       end
@@ -87,8 +87,8 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
       end
     end
 
-    context 'with a nil project' do
-      let(:project) { nil }
+    context 'with a nil project integration' do
+      let(:project_integration) { nil }
       let(:user) { build(:user) }
 
       it_behaves_like 'raising an error with',
@@ -104,7 +104,10 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
         ::GoogleCloudPlatform::BaseClient::BLANK_PARAMETERS_ERROR_MESSAGE
     end
 
-    %i[gcp_project_id gcp_location gcp_repository gcp_wlif].each do |field|
+    %i[
+      artifact_registry_location
+      artifact_registry_repository
+    ].each do |field|
       context "with a nil #{field}" do
         let(field) { nil }
 
@@ -122,23 +125,23 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
   end
 
   describe '#repository' do
-    include_context 'with a gcp client double'
+    include_context 'with a client double'
 
     subject(:repository) { client.repository }
 
     it 'returns the expected response' do
-      expect(gcp_client_double).to receive(:get_repository)
+      expect(client_double).to receive(:get_repository)
         .with(instance_of(::Google::Cloud::ArtifactRegistry::V1::GetRepositoryRequest))
         .and_return(dummy_response)
 
       expect(repository).to eq(dummy_response)
     end
 
-    it_behaves_like 'handling errors', gcp_client_method: :get_repository
+    it_behaves_like 'handling errors', client_method: :get_repository
   end
 
   describe '#docker_images' do
-    include_context 'with a gcp client double'
+    include_context 'with a client double'
 
     let(:page_size) { nil }
     let(:page_token) { nil }
@@ -154,7 +157,7 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
 
     shared_examples 'returning the expected response' do |expected_page_size: described_class::DEFAULT_PAGE_SIZE|
       it 'returns the expected response' do
-        expect(gcp_client_double).to receive(:list_docker_images) do |request|
+        expect(client_double).to receive(:list_docker_images) do |request|
           expect(request).to be_a ::Google::Cloud::ArtifactRegistry::V1::ListDockerImagesRequest
           expect(request.page_size).to eq(expected_page_size)
           expect(request.page_token).to eq(page_token.to_s)
@@ -187,18 +190,18 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
       it_behaves_like 'returning the expected response'
     end
 
-    it_behaves_like 'handling errors', gcp_client_method: :list_docker_images
+    it_behaves_like 'handling errors', client_method: :list_docker_images
   end
 
   describe '#docker_image' do
-    include_context 'with a gcp client double'
+    include_context 'with a client double'
 
     let(:name) { 'test' }
 
     subject(:docker_image) { client.docker_image(name: name) }
 
     it 'returns the expected response' do
-      expect(gcp_client_double).to receive(:get_docker_image) do |request|
+      expect(client_double).to receive(:get_docker_image) do |request|
         expect(request).to be_a ::Google::Cloud::ArtifactRegistry::V1::GetDockerImageRequest
         expect(request.name).to eq(name)
 
@@ -208,7 +211,7 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
       expect(docker_image).to eq(dummy_response)
     end
 
-    it_behaves_like 'handling errors', gcp_client_method: :get_docker_image
+    it_behaves_like 'handling errors', client_method: :get_docker_image
   end
 
   def stub_authentication_requests

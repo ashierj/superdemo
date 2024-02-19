@@ -24,6 +24,8 @@ module GoogleCloudPlatform
 
       private
 
+      delegate :artifact_registry_location, :artifact_registry_repository, to: :project_integration, private: true
+
       def validate_before_execute
         return ERROR_RESPONSES[:saas_only] unless Gitlab::Saas.feature_available?(:google_cloud_support)
         return ERROR_RESPONSES[:feature_flag_disabled] unless Feature.enabled?(:gcp_artifact_registry, project)
@@ -39,29 +41,11 @@ module GoogleCloudPlatform
 
       def client
         ::GoogleCloudPlatform::ArtifactRegistry::Client.new(
-          project: project,
+          project_integration: project_integration,
           user: current_user,
-          gcp_project_id: gcp_project_id,
-          gcp_location: gcp_location,
-          gcp_repository: gcp_repository,
-          gcp_wlif: gcp_wlif
+          artifact_registry_location: artifact_registry_location,
+          artifact_registry_repository: artifact_registry_repository
         )
-      end
-
-      def gcp_project_id
-        project_integration.artifact_registry_project_id
-      end
-
-      def gcp_location
-        project_integration.artifact_registry_location
-      end
-
-      def gcp_repository
-        project_integration.artifact_registry_repository
-      end
-
-      def gcp_wlif
-        project_integration.wlif
       end
 
       def project_integration

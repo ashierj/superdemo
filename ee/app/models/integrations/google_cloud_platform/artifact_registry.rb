@@ -91,7 +91,7 @@ module Integrations
         []
       end
 
-      def wlif
+      def identity_provider_resource_name
         "//iam.googleapis.com/projects/#{workload_identity_pool_project_number}/" \
           "locations/global/workloadIdentityPools/#{workload_identity_pool_id}/" \
           "providers/#{workload_identity_pool_provider_id}"

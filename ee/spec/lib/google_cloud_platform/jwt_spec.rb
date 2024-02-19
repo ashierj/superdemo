@@ -6,7 +6,7 @@ RSpec.describe GoogleCloudPlatform::Jwt, feature_category: :shared do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
 
-  let(:claims) { { audience: 'http://sandbox.test', wlif: 'http://wlif.test' } }
+  let(:claims) { { audience: 'http://sandbox.test', target_audience: 'audience' } }
   let(:jwt) { described_class.new(project: project, user: user, claims: claims) }
 
   describe '#encoded' do
@@ -25,7 +25,7 @@ RSpec.describe GoogleCloudPlatform::Jwt, feature_category: :shared do
       expect(payload).to include(
         'root_namespace_path' => project.root_namespace.full_path,
         'root_namespace_id' => project.root_namespace.id.to_s,
-        'wlif' => claims[:wlif],
+        'target_audience' => claims[:target_audience],
         'aud' => claims[:audience],
         'project_id' => project.id.to_s,
         'project_path' => project.full_path,
@@ -54,15 +54,15 @@ RSpec.describe GoogleCloudPlatform::Jwt, feature_category: :shared do
     end
 
     context 'with missing jwt audience' do
-      let(:claims) { { wlif: 'http://wlif.test' } }
+      let(:claims) { super().merge(audience: nil) }
 
       it 'raises an ArgumentError' do
         expect { encoded }.to raise_error(ArgumentError, described_class::JWT_OPTIONS_ERROR)
       end
     end
 
-    context 'with missing jwt wlif' do
-      let(:claims) { { audience: 'http://sandbox.test' } }
+    context 'with missing jwt target_audience' do
+      let(:claims) { super().merge(target_audience: nil) }
 
       it 'raises an ArgumentError' do
         expect { encoded }.to raise_error(ArgumentError, described_class::JWT_OPTIONS_ERROR)
