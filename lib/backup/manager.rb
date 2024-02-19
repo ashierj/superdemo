@@ -112,7 +112,7 @@ module Backup
       @backup_tasks ||= {
         Backup::Tasks::Database.id => Backup::Tasks::Database.new(progress: progress, options: options),
         Backup::Tasks::Repositories.id => Backup::Tasks::Repositories.new(progress: progress, options: options,
-          server_side: backup_information[:repositories_server_side]),
+          server_side_callable: -> { backup_information[:repositories_server_side] }),
         Backup::Tasks::Uploads.id => Backup::Tasks::Uploads.new(progress: progress, options: options),
         Backup::Tasks::Builds.id => Backup::Tasks::Builds.new(progress: progress, options: options),
         Backup::Tasks::Artifacts.id => Backup::Tasks::Artifacts.new(progress: progress, options: options),
