@@ -13,9 +13,6 @@ import {
   WIDGET_TYPE_START_AND_DUE_DATE,
   WIDGET_TYPE_WEIGHT,
   WIDGET_TYPE_COLOR,
-  WORK_ITEM_TYPE_VALUE_KEY_RESULT,
-  WORK_ITEM_TYPE_VALUE_OBJECTIVE,
-  WORK_ITEM_TYPE_VALUE_TASK,
 } from '../constants';
 import WorkItemAssigneesInline from './work_item_assignees_inline.vue';
 import WorkItemAssigneesWithEdit from './work_item_assignees_with_edit.vue';
@@ -105,13 +102,6 @@ export default {
     },
     workItemMilestone() {
       return this.isWidgetPresent(WIDGET_TYPE_MILESTONE);
-    },
-    showWorkItemParent() {
-      return (
-        this.workItemType === WORK_ITEM_TYPE_VALUE_OBJECTIVE ||
-        this.workItemType === WORK_ITEM_TYPE_VALUE_KEY_RESULT ||
-        this.workItemType === WORK_ITEM_TYPE_VALUE_TASK
-      );
     },
     workItemParent() {
       return this.isWidgetPresent(WIDGET_TYPE_HIERARCHY)?.parent;
@@ -282,7 +272,7 @@ export default {
         @error="$emit('error', $event)"
       />
     </template>
-    <template v-if="showWorkItemParent">
+    <template v-if="workItemHierarchy">
       <work-item-parent
         v-if="glFeatures.workItemsMvc2"
         class="gl-mb-5 gl-pt-5 gl-border-t gl-border-gray-50"
