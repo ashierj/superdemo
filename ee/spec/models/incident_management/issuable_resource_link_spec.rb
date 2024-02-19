@@ -33,6 +33,10 @@ RSpec.describe IncidentManagement::IssuableResourceLink, type: :model do
     end
   end
 
+  describe 'callbacks' do
+    it { expect(issuable_resource_link.is_unique).to be_truthy }
+  end
+
   describe 'link protocols' do
     using RSpec::Parameterized::TableSyntax
 

@@ -5,6 +5,7 @@ module IncidentManagement
     DEFAULT_LINK_TYPE = 'general'
 
     self.table_name = 'issuable_resource_links'
+    attribute :is_unique, default: true # TODO: to remove after https://gitlab.com/gitlab-org/gitlab/-/issues/437902
 
     belongs_to :issue, inverse_of: :issuable_resource_links
 
