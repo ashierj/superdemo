@@ -21,7 +21,8 @@ import WorkItemAssigneesInline from './work_item_assignees_inline.vue';
 import WorkItemAssigneesWithEdit from './work_item_assignees_with_edit.vue';
 import WorkItemDueDateInline from './work_item_due_date_inline.vue';
 import WorkItemDueDateWithEdit from './work_item_due_date_with_edit.vue';
-import WorkItemLabels from './work_item_labels.vue';
+import WorkItemLabelsInline from './work_item_labels_inline.vue';
+import WorkItemLabelsWithEdit from './work_item_labels_with_edit.vue';
 import WorkItemMilestoneInline from './work_item_milestone_inline.vue';
 import WorkItemMilestoneWithEdit from './work_item_milestone_with_edit.vue';
 import WorkItemParentInline from './work_item_parent_inline.vue';
@@ -30,7 +31,8 @@ import WorkItemParent from './work_item_parent_with_edit.vue';
 export default {
   components: {
     Participants,
-    WorkItemLabels,
+    WorkItemLabelsInline,
+    WorkItemLabelsWithEdit,
     WorkItemMilestoneInline,
     WorkItemMilestoneWithEdit,
     WorkItemAssigneesInline,
@@ -155,14 +157,26 @@ export default {
         @error="$emit('error', $event)"
       />
     </template>
-    <work-item-labels
-      v-if="workItemLabels"
-      :can-update="canUpdate"
-      :full-path="fullPath"
-      :work-item-id="workItem.id"
-      :work-item-iid="workItem.iid"
-      @error="$emit('error', $event)"
-    />
+    <template v-if="workItemLabels">
+      <work-item-labels-with-edit
+        v-if="glFeatures.workItemsMvc2"
+        class="gl-mb-5"
+        :can-update="canUpdate"
+        :full-path="fullPath"
+        :work-item-id="workItem.id"
+        :work-item-iid="workItem.iid"
+        :work-item-type="workItemType"
+        @error="$emit('error', $event)"
+      />
+      <work-item-labels-inline
+        v-else
+        :can-update="canUpdate"
+        :full-path="fullPath"
+        :work-item-id="workItem.id"
+        :work-item-iid="workItem.iid"
+        @error="$emit('error', $event)"
+      />
+    </template>
     <template v-if="workItemWeight">
       <work-item-weight
         v-if="glFeatures.workItemsMvc2"

@@ -1,38 +1,46 @@
 import { GlLabel } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
-import WorkItemLabels from '~/work_items/components/work_item_labels.vue';
+import WorkItemLabelsWithEdit from '~/work_items/components/work_item_labels_with_edit.vue';
 import { workItemByIidResponseFactory } from 'jest/work_items/mock_data';
 
 Vue.use(VueApollo);
 
-describe('WorkItemLabels component', () => {
-  let wrapper;
+const workItemId = 'gid://gitlab/WorkItem/1';
 
-  const findScopedLabel = () =>
-    wrapper.findAllComponents(GlLabel).filter((label) => label.props('scoped'));
+describe('WorkItemLabelsWithEdit component', () => {
+  let wrapper;
 
   const createComponent = ({
     canUpdate = true,
+    isGroup = false,
     workItemQueryHandler = jest.fn().mockResolvedValue(workItemByIidResponseFactory()),
+    workItemIid = '1',
+    fullPath = 'test-project-path',
+    issuesListPath = 'test-project-path/issues',
   } = {}) => {
-    wrapper = mount(WorkItemLabels, {
+    wrapper = shallowMountExtended(WorkItemLabelsWithEdit, {
       apolloProvider: createMockApollo([[workItemByIidQuery, workItemQueryHandler]]),
       provide: {
-        isGroup: false,
+        isGroup,
+        issuesListPath,
       },
       propsData: {
-        fullPath: 'test-project-path',
-        workItemId: 'gid://gitlab/WorkItem/1',
-        workItemIid: '1',
+        fullPath,
+        workItemId,
+        workItemIid,
         canUpdate,
+        workItemType: 'epic',
       },
     });
   };
+
+  const findScopedLabel = () =>
+    wrapper.findAllComponents(GlLabel).filter((label) => label.props('scoped'));
 
   describe('allows scoped labels', () => {
     it.each([true, false])('= %s', async (allowsScopedLabels) => {
