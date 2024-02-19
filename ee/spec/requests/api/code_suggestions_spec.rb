@@ -177,30 +177,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
             post_api
           end
-
-          context 'when request was proxied from self managed instance' do
-            let(:headers) { { 'User-Agent' => 'gitlab-workhorse' } }
-
-            include_examples 'a successful response'
-
-            context 'with instance admin feature flag is disabled' do
-              before do
-                stub_feature_flags(code_suggestions_for_instance_admin_enabled: false)
-              end
-
-              include_examples 'an unauthorized response'
-            end
-
-            it 'sets the access token realm to self-managed' do
-              expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(
-                current_user,
-                scopes: [:code_suggestions],
-                gitlab_realm: Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SELF_MANAGED
-              )
-
-              post_api
-            end
-          end
         end
 
         context 'when not on .org and .com' do

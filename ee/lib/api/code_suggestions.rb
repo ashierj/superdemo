@@ -20,14 +20,10 @@ module API
       authenticate!
 
       not_found! unless Feature.enabled?(:code_suggestions_tokens_api, type: :ops)
-      unauthorized! unless user_allowed?
+      unauthorized! unless current_user.can?(:access_code_suggestions)
     end
 
     helpers do
-      def user_allowed?
-        current_user.can?(:access_code_suggestions) && access_code_suggestions_when_proxied_to_saas?
-      end
-
       def model_gateway_headers(headers, gateway_token)
         telemetry_headers = headers.select { |k| /\Ax-gitlab-cs-/i.match?(k) }
 
@@ -50,32 +46,6 @@ module API
                                                      .duo_pro_add_on_available_namespace_ids
                                                      .join(',')
         }
-      end
-
-      # In case the request was proxied from the self-managed instance,
-      # we have an extra check on Gitlab.com if FF is enabled for self-managed admin.
-      # The FF is used for gradual rollout for handpicked self-managed customers interested to use code suggestions.
-      #
-      # NOTE: This code path is being phased out as part of working towards GA for code suggestions.
-      # See https://gitlab.com/groups/gitlab-org/-/epics/11114
-      def access_code_suggestions_when_proxied_to_saas?
-        proxied = proxied?
-
-        raise 'Proxying is only supported under .org or .com' if proxied && !Gitlab.org_or_com?
-
-        !proxied || Feature.enabled?(:code_suggestions_for_instance_admin_enabled, current_user)
-      end
-
-      def proxied?
-        !!request.headers['User-Agent']&.starts_with?('gitlab-workhorse')
-      end
-
-      def gitlab_realm
-        # NOTE: This code path is being phased out as part of working towards GA for code suggestions.
-        # See https://gitlab.com/groups/gitlab-org/-/epics/11114
-        return Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SELF_MANAGED if proxied?
-
-        super
       end
     end
 
