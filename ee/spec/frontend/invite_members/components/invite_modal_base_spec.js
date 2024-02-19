@@ -63,6 +63,7 @@ describe('EEInviteModalBase', () => {
     overageMembersModalAvailable = true,
     queryHandler = defaultReconciliationMock,
     showModal = true,
+    hasGitlabSubscription = false,
   } = {}) => {
     const mockCustomersDotClient = createMockClient([[getReconciliationStatus, queryHandler]]);
     const mockGitlabClient = createMockClient([
@@ -87,6 +88,7 @@ describe('EEInviteModalBase', () => {
       provide: {
         glFeatures,
         overageMembersModalAvailable,
+        hasGitlabSubscription,
       },
       stubs: {
         GlSprintf,
@@ -142,6 +144,14 @@ describe('EEInviteModalBase', () => {
       expect(instanceMemberRolesResponse).toHaveBeenCalledTimes(1);
     });
 
+    it('does not fetch instance-level roles when hasGitlabSubscription is true', async () => {
+      createComponent({ hasGitlabSubscription: true });
+      await nextTick();
+
+      expect(groupMemberRolesResponse).toHaveBeenCalledTimes(1);
+      expect(instanceMemberRolesResponse).not.toHaveBeenCalled();
+    });
+
     it('sets the `isLoadingRoles` while fetching', async () => {
       createComponent();
       // Need to wait one tick for the query to start loading, because it's controlled by skip().
@@ -159,20 +169,22 @@ describe('EEInviteModalBase', () => {
         createComponent({ props: { isProject: true } });
         await waitForPromises();
 
-        expect(findCEBase().props('accessLevels').customRoles).toMatchObject([
-          {
-            baseAccessLevel: 10,
-            memberRoleId: 103,
-            name: 'My role project 1',
-            description: 'My role project 1 description',
-          },
-          {
-            baseAccessLevel: 10,
-            memberRoleId: 104,
-            name: 'My role instance 1',
-            description: 'My role instance 1 description',
-          },
-        ]);
+        expect(findCEBase().props('accessLevels')).toMatchObject({
+          customRoles: [
+            {
+              baseAccessLevel: 10,
+              memberRoleId: 103,
+              name: 'My role project 1',
+              description: 'My role project 1 description',
+            },
+            {
+              baseAccessLevel: 10,
+              memberRoleId: 104,
+              name: 'My role instance 1',
+              description: 'My role instance 1 description',
+            },
+          ],
+        });
       });
     });
 
@@ -181,26 +193,28 @@ describe('EEInviteModalBase', () => {
         createComponent();
         await waitForPromises();
 
-        expect(findCEBase().props('accessLevels').customRoles).toMatchObject([
-          {
-            baseAccessLevel: 10,
-            memberRoleId: 100,
-            name: 'My role group 1',
-            description: 'My role group 1 description',
-          },
-          {
-            baseAccessLevel: 20,
-            memberRoleId: 101,
-            name: 'My role group 2',
-            description: 'My role group 2 description',
-          },
-          {
-            baseAccessLevel: 10,
-            memberRoleId: 104,
-            name: 'My role instance 1',
-            description: 'My role instance 1 description',
-          },
-        ]);
+        expect(findCEBase().props('accessLevels')).toMatchObject({
+          customRoles: [
+            {
+              baseAccessLevel: 10,
+              memberRoleId: 100,
+              name: 'My role group 1',
+              description: 'My role group 1 description',
+            },
+            {
+              baseAccessLevel: 20,
+              memberRoleId: 101,
+              name: 'My role group 2',
+              description: 'My role group 2 description',
+            },
+            {
+              baseAccessLevel: 10,
+              memberRoleId: 104,
+              name: 'My role instance 1',
+              description: 'My role instance 1 description',
+            },
+          ],
+        });
       });
     });
 
