@@ -31,7 +31,7 @@ export default {
     SidebarTodoWidget,
   },
   mixins: [glFeatureFlagMixin()],
-  inject: ['canUpdate', 'labelsFilterBasePath', 'issuableType'],
+  inject: ['canUpdate', 'labelsFilterBasePath', 'issuableType', 'allowSubEpics'],
   inheritAttrs: false,
   apollo: {
     activeBoardCard: {
@@ -151,6 +151,7 @@ export default {
           :issuable-type="issuableType"
         />
         <sidebar-ancestors-widget
+          v-if="allowSubEpics"
           :iid="activeBoardCard.iid"
           :full-path="fullPath"
           issuable-type="epic"

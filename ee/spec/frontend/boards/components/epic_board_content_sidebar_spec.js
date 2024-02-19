@@ -33,7 +33,7 @@ describe('EpicBoardContentSidebar', () => {
     },
   });
 
-  const createComponent = ({ glFeatures = {}, issuable = rawEpic } = {}) => {
+  const createComponent = ({ glFeatures = {}, issuable = rawEpic, allowSubEpics = false } = {}) => {
     mockApollo.clients.defaultClient.cache.writeQuery({
       query: activeBoardItemQuery,
       variables: {
@@ -52,6 +52,7 @@ describe('EpicBoardContentSidebar', () => {
         groupId: 1,
         issuableType: TYPE_EPIC,
         labelsFilterBasePath: '',
+        allowSubEpics,
         glFeatures,
       },
       stubs: {
@@ -131,7 +132,16 @@ describe('EpicBoardContentSidebar', () => {
   it('renders SidebarSubscriptionsWidget', () => {
     expect(wrapper.findComponent(SidebarSubscriptionsWidget).exists()).toBe(true);
   });
-  it('renders SidebarAncestorsWidget', () => {
+
+  it('does not render SidebarAncestorsWidget', () => {
+    expect(wrapper.findComponent(SidebarAncestorsWidget).exists()).toBe(false);
+  });
+
+  it('renders SidebarAncestorsWidget when allowSubEpics is true', () => {
+    createComponent({
+      allowSubEpics: true,
+    });
+
     expect(wrapper.findComponent(SidebarAncestorsWidget).exists()).toBe(true);
   });
 
