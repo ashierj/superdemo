@@ -20,8 +20,7 @@ module Admin
     end
 
     def admin_display_ai_powered_toggle?
-      start_date = CloudConnector::Access.service_start_date_for('duo_chat')
-      License.feature_available?(:ai_chat) && (start_date.nil? || start_date&.future?)
+      License.feature_available?(:ai_chat) && CloudConnector::AccessService.new.free_access_for?(:duo_chat)
     end
 
     private

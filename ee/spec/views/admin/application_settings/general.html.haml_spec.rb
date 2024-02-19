@@ -9,15 +9,24 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
   let_it_be(:app_settings) { build(:application_setting) }
 
   let(:code_suggestions_start_date) { CodeSuggestions::SelfManaged::SERVICE_START_DATE }
-  let(:duo_chat_start_date) { code_suggestions_start_date + 1.month }
-  let(:before_code_suggestions_start_date) { code_suggestions_start_date - 1.day }
+  let(:before_code_suggestions_start_date) { code_suggestions_start_date - 1.second }
+  let(:after_code_suggestions_start_date) { code_suggestions_start_date + 1.second }
+
+  let(:duo_chat_cut_off_date) { code_suggestions_start_date + 1.month }
+  let(:before_duo_chat_cut_off_date) { duo_chat_cut_off_date - 1.second }
+  let(:after_duo_chat_cut_off_date) { duo_chat_cut_off_date + 1.second }
+
+  let(:duo_chat) { CloudConnector::ConnectedService.new(name: :duo_chat, cut_off_date: duo_chat_cut_off_date) }
 
   subject { rendered }
 
   before do
     assign(:application_setting, app_settings)
     allow(view).to receive(:current_user).and_return(user)
-    allow(CloudConnector::Access).to receive(:service_start_date_for).with('duo_chat').and_return(duo_chat_start_date)
+
+    allow_next_instance_of(::CloudConnector::AccessService) do |instance|
+      allow(instance).to receive(:available_services).and_return({ duo_chat: duo_chat })
+    end
   end
 
   describe 'maintenance mode' do
@@ -255,9 +264,9 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
             stub_licensed_features(ai_chat: true)
           end
 
-          context 'when before the service start date' do
+          context 'when before the cut off date date' do
             around do |example|
-              travel_to(duo_chat_start_date - 1.day) do
+              travel_to(duo_chat_cut_off_date - 1.day) do
                 example.run
               end
             end
@@ -268,9 +277,9 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
             end
           end
 
-          context 'when at the service start date' do
+          context 'when after the cut off date' do
             around do |example|
-              travel_to(duo_chat_start_date) do
+              travel_to(duo_chat_cut_off_date + 1.second) do
                 example.run
               end
             end
@@ -281,8 +290,8 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
             end
           end
 
-          context 'when service start date is nil' do
-            let(:duo_chat_start_date) { nil }
+          context 'when cut off date is nil' do
+            let(:duo_chat_cut_off_date) { nil }
 
             around do |example|
               travel_to(before_code_suggestions_start_date) do
@@ -321,14 +330,14 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
       ref(:before_code_suggestions_start_date) | false | true  | true
       ref(:before_code_suggestions_start_date) | true  | false | true
       ref(:before_code_suggestions_start_date) | true  | true  | true
-      ref(:code_suggestions_start_date)        | false | false | false
-      ref(:code_suggestions_start_date)        | false | true  | false
-      ref(:code_suggestions_start_date)        | true  | false | true
-      ref(:code_suggestions_start_date)        | true  | true  | true
-      ref(:duo_chat_start_date)               | false | false | false
-      ref(:duo_chat_start_date)               | false | true  | false
-      ref(:duo_chat_start_date)               | true  | false | false
-      ref(:duo_chat_start_date)               | true  | true  | false
+      ref(:after_code_suggestions_start_date)  | false | false | false
+      ref(:after_code_suggestions_start_date)  | false | true  | false
+      ref(:after_code_suggestions_start_date)  | true  | false | true
+      ref(:after_code_suggestions_start_date)  | true  | true  | true
+      ref(:after_duo_chat_cut_off_date)        | false | false | false
+      ref(:after_duo_chat_cut_off_date)        | false | true  | false
+      ref(:after_duo_chat_cut_off_date)        | true  | false | false
+      ref(:after_duo_chat_cut_off_date)        | true  | true  | false
     end
 
     with_them do
