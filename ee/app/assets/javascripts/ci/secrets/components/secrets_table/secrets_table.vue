@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlCard, GlTableLite, GlSprintf, GlLink, GlLabel } from '@gitlab/ui';
+import { GlButton, GlCard, GlTableLite, GlSprintf, GlLabel } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserDate from '~/vue_shared/components/user_date.vue';
@@ -20,7 +20,6 @@ export default {
     GlCard,
     GlTableLite,
     GlSprintf,
-    GlLink,
     GlLabel,
     TimeAgo,
     UserDate,
@@ -78,14 +77,10 @@ export default {
       <gl-sprintf
         :message="
           s__(
-            'Secrets|Secrets represent sensitive information your CI job needs to complete work. This sensitive information can be items like API tokens, database credentials, or private keys. Unlike CI/CD variables, which are always presented to a job, secrets must be explicitly required by a job. %{linkStart}Learn more.%{linkEnd}',
+            'Secrets|Secrets represent sensitive information your CI job needs to complete work. This sensitive information can be items like API tokens, database credentials, or private keys. Unlike CI/CD variables, which are always presented to a job, secrets must be explicitly required by a job.',
           )
         "
-      >
-        <template #link="{ content }">
-          <gl-link href="#" target="_blank">{{ content }}</gl-link>
-        </template>
-      </gl-sprintf>
+      />
     </p>
 
     <gl-card
