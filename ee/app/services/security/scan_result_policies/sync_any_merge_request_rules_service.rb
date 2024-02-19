@@ -8,7 +8,8 @@ module Security
 
       def initialize(merge_request)
         @merge_request = merge_request
-        @violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService.new(merge_request)
+        @violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService
+                        .new(merge_request, :any_merge_request)
       end
 
       def execute

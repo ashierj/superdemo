@@ -12,7 +12,7 @@ module Security
       def initialize(merge_request:, pipeline:)
         @pipeline = pipeline
         @merge_request = merge_request
-        @violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService.new(merge_request)
+        @violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService.new(merge_request, :scan_finding)
       end
 
       def execute
@@ -27,10 +27,7 @@ module Security
 
         return if approval_rules_with_newly_detected_states.empty?
 
-        log_update_approval_rule('Evaluating MR approval rules from scan result policies',
-          pipeline_ids: related_pipeline_ids,
-          target_pipeline_ids: related_target_pipeline_ids
-        )
+        log_update_approval_rule('Evaluating MR approval rules from scan result policies', **validation_context)
 
         violated_rules, unviolated_rules = partition_rules(approval_rules_with_newly_detected_states)
 
@@ -45,6 +42,10 @@ module Security
       end
 
       private
+
+      def validation_context
+        { pipeline_ids: related_pipeline_ids, target_pipeline_ids: related_target_pipeline_ids }
+      end
 
       delegate :project, to: :pipeline
 
@@ -67,6 +68,9 @@ module Security
               approval_rule_id: approval_rule.id,
               approval_rule_name: approval_rule.name,
               missing_scans: missing_scans(approval_rule)
+            )
+            violations.add_error(
+              approval_rule.scan_result_policy_id, :scan_removed, missing_scans: missing_scans(approval_rule)
             )
 
             next true
@@ -136,19 +140,42 @@ module Security
         new_uuids = pipeline_uuids - target_pipeline_uuids
 
         if only_newly_detected?(approval_rule)
-          new_uuids.count > vulnerabilities_allowed
-        else
-          vulnerabilities_count = vulnerabilities_count_for_uuids(pipeline_uuids + target_pipeline_uuids, approval_rule)
-
-          if vulnerabilities_count[:exceeded_allowed_count]
-            true
-          else
-            total_count = vulnerabilities_count[:count]
-            total_count += new_uuids.count if include_newly_detected?(approval_rule)
-
-            total_count > vulnerabilities_allowed
-          end
+          violated = new_uuids.count > vulnerabilities_allowed
+          add_violation_data(approval_rule, newly_detected: new_uuids) if violated
+          return violated
         end
+
+        vulnerabilities_count = vulnerabilities_count_for_uuids(pipeline_uuids + target_pipeline_uuids, approval_rule)
+        previously_existing_uuids = (pipeline_uuids + target_pipeline_uuids - new_uuids).uniq
+
+        if vulnerabilities_count[:exceeded_allowed_count]
+          add_violation_data(approval_rule, newly_detected: new_uuids, previously_existing: previously_existing_uuids)
+          return true
+        end
+
+        total_count = vulnerabilities_count[:count]
+        total_count += new_uuids.count if include_newly_detected?(approval_rule)
+
+        violated = total_count > vulnerabilities_allowed
+
+        if violated
+          add_violation_data(approval_rule, newly_detected: new_uuids, previously_existing: previously_existing_uuids)
+        end
+
+        violated
+      end
+
+      def add_violation_data(rule, newly_detected: nil, previously_existing: nil)
+        violations.add_violation(
+          rule.scan_result_policy_id,
+          {
+            uuids: {
+              newly_detected: Security::ScanResultPolicyViolation.trim_violations(newly_detected),
+              previously_existing: Security::ScanResultPolicyViolation.trim_violations(previously_existing)
+            }.compact_blank
+          },
+          context: validation_context
+        )
       end
 
       def related_pipeline_sources

@@ -3,22 +3,41 @@
 module Security
   module SecurityOrchestrationPolicies
     class UpdateViolationsService
-      attr_reader :merge_request, :violated_policy_ids, :unviolated_policy_ids, :violation_data
+      attr_reader :merge_request, :violated_policy_ids, :unviolated_policy_ids, :violation_data, :report_type
 
-      def initialize(merge_request)
+      delegate :project, to: :merge_request
+
+      def initialize(merge_request, report_type)
         @merge_request = merge_request
         @violated_policy_ids = Set.new
         @unviolated_policy_ids = Set.new
         @violation_data = {}
+        @report_type = report_type
       end
 
       def add(violated_ids, unviolated_ids)
-        violated_policy_ids.merge(violated_ids)
-        unviolated_policy_ids.merge(unviolated_ids)
+        violated_policy_ids.merge(violated_ids.compact)
+        unviolated_policy_ids.merge(unviolated_ids.compact)
       end
 
-      def set_violation_data(policy_id, data)
-        @violation_data[policy_id] = data
+      def add_violation(policy_id, data, context: nil)
+        add([policy_id], [])
+        return if ::Feature.disabled?(:save_policy_violation_data, project)
+
+        @violation_data[policy_id] ||= {}
+        @violation_data[policy_id].deep_merge!({ context: context, violations: { report_type => data } }.compact_blank)
+      end
+
+      def add_error(policy_id, error, **extra_data)
+        add([policy_id], [])
+        return if ::Feature.disabled?(:save_policy_violation_data, project)
+
+        violation_data[policy_id] ||= {}
+        violation_data[policy_id][:errors] ||= []
+        violation_data[policy_id][:errors] << {
+          error: Security::ScanResultPolicyViolation::ERRORS[error],
+          **extra_data
+        }
       end
 
       def execute

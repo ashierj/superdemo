@@ -21,5 +21,16 @@ module Security
       ->(approval_rules) {
         where(scan_result_policy_id: approval_rules.pluck(:scan_result_policy_id))
       }
+
+    ERRORS = {
+      scan_removed: 'SCAN_REMOVED',
+      artifacts_missing: 'ARTIFACTS_MISSING'
+    }.freeze
+
+    MAX_VIOLATIONS = 20
+
+    def self.trim_violations(violations)
+      Array.wrap(violations)[..MAX_VIOLATIONS]
+    end
   end
 end

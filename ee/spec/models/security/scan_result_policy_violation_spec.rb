@@ -69,4 +69,21 @@ RSpec.describe Security::ScanResultPolicyViolation, feature_category: :security_
       it { is_expected.to contain_exactly scan_finding_violation }
     end
   end
+
+  describe '.trim_violations' do
+    subject(:trimmed_violations) { described_class.trim_violations(violations) }
+
+    let(:violations) { ['uuid'] * (Security::ScanResultPolicyViolation::MAX_VIOLATIONS + 2) }
+
+    it 'saves only MAX_VIOLATIONS+1 amount of violations' do
+      expect(trimmed_violations.size).to eq Security::ScanResultPolicyViolation::MAX_VIOLATIONS + 1
+      expect(trimmed_violations).to eq(violations[..Security::ScanResultPolicyViolation::MAX_VIOLATIONS])
+    end
+
+    context 'when violations are nil' do
+      let(:violations) { nil }
+
+      it { is_expected.to be_empty }
+    end
+  end
 end

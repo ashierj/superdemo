@@ -44,7 +44,8 @@ module Security
 
       return if license_approval_rules.empty?
 
-      violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService.new(merge_request)
+      violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService.new(merge_request,
+        :license_scanning)
       violated_rules, unviolated_rules = license_approval_rules.partition do |rule|
         violates_policy?(merge_request, rule, violations)
       end
@@ -100,7 +101,7 @@ module Security
         end
       end
 
-      set_violation_data(violations, rule, policy_denied_license_names) if violates_license_policy
+      save_violation_data(violations, rule, policy_denied_license_names) if violates_license_policy
       violates_license_policy
     end
 
@@ -194,14 +195,10 @@ module Security
       Gitlab::AppJsonLogger.info(message: 'Updating MR approval rule', **default_attributes.merge(attributes))
     end
 
-    def set_violation_data(violations, rule, policy_denied_licenses)
-      return if ::Feature.disabled?(:save_policy_violation_data, project)
+    def save_violation_data(violations, rule, policy_denied_licenses)
       return if policy_denied_licenses.blank?
 
-      violations.set_violation_data(
-        rule.scan_result_policy_id,
-        { violations: { licenses: policy_denied_licenses } }
-      )
+      violations.add_violation(rule.scan_result_policy_id, policy_denied_licenses)
     end
   end
 end

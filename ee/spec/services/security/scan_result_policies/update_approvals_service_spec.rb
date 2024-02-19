@@ -97,6 +97,34 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       end
     end
 
+    RSpec.shared_examples_for 'persists violation details' do
+      let(:expected_context) { { 'pipeline_ids' => [pipeline.id], 'target_pipeline_ids' => [target_pipeline.id] } }
+
+      it 'persists violation details' do
+        execute
+
+        expect(last_violation.violation_data)
+          .to match(
+            'violations' => {
+              'scan_finding' => { 'uuids' => expected_violations }
+            },
+            'context' => expected_context
+          )
+      end
+
+      context 'when feature flag "save_policy_violation_data" is disabled' do
+        before do
+          stub_feature_flags(save_policy_violation_data: false)
+        end
+
+        it 'does not persist violation details' do
+          execute
+
+          expect(last_violation.violation_data).to be_nil
+        end
+      end
+    end
+
     context 'when approval rules are empty' do
       let!(:report_approver_rule) { nil }
 
@@ -150,6 +178,28 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
           execute
         end
+
+        it 'persists the error in violation data' do
+          execute
+
+          expect(last_violation.violation_data)
+            .to eq('errors' => [{
+              'error' => Security::ScanResultPolicyViolation::ERRORS[:scan_removed],
+              'missing_scans' => ['dependency_scanning']
+            }])
+        end
+
+        context 'when feature flag "save_policy_violation_data" is disabled' do
+          before do
+            stub_feature_flags(save_policy_violation_data: false)
+          end
+
+          it 'does not persist the error in violation data' do
+            execute
+
+            expect(last_violation.violation_data).to be_nil
+          end
+        end
       end
 
       context 'when scan type does not match the approval rule scanners' do
@@ -196,6 +246,9 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       let(:approvals_required) { 0 }
 
       it_behaves_like 'triggers policy bot comment', :scan_finding, true, requires_approval: false
+      it_behaves_like 'persists violation details' do
+        let(:expected_violations) { { 'newly_detected' => array_including(uuids) } }
+      end
     end
 
     context 'when targeting an unprotected branch' do
@@ -226,6 +279,10 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
       it_behaves_like 'does not update approvals_required'
       it_behaves_like 'triggers policy bot comment', :scan_finding, true
+      it_behaves_like 'persists violation details' do
+        let(:expected_violations) { { 'newly_detected' => array_including(uuids) } }
+        let(:expected_context) { { 'pipeline_ids' => [pipeline.id], 'target_pipeline_ids' => [] } }
+      end
     end
 
     context 'with merged results pipeline' do
@@ -301,6 +358,10 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       it_behaves_like 'does not update approvals_required'
       it_behaves_like 'triggers policy bot comment', :scan_finding, true
 
+      it_behaves_like 'persists violation details' do
+        let(:expected_violations) { { 'newly_detected' => array_including(uuids) } }
+      end
+
       context 'when vulnerability_states are new_dismissed' do
         let(:vulnerability_states) { %w[new_dismissed] }
 
@@ -355,6 +416,15 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         it_behaves_like 'does not update approvals_required'
         it_behaves_like 'triggers policy bot comment', :scan_finding, true
 
+        it_behaves_like 'persists violation details' do
+          let(:expected_violations) do
+            {
+              'newly_detected' => [new_finding_uuid],
+              'previously_existing' => array_including(previously_existing_finding_uuids)
+            }
+          end
+        end
+
         context 'when there are no new dismissed vulnerabilities' do
           let(:vulnerabilities_allowed) { 0 }
 
@@ -402,6 +472,12 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
             it_behaves_like 'new vulnerability_states', ['new_dismissed']
             it_behaves_like 'does not update approvals_required'
+
+            it_behaves_like 'persists violation details' do
+              let(:expected_violations) do
+                { 'newly_detected' => [new_finding_uuid] }
+              end
+            end
           end
 
           context 'when vulnerability_states are new_dismissed and new_needs_triage' do
@@ -409,6 +485,12 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
             it_behaves_like 'new vulnerability_states', %w[new_dismissed new_needs_triage]
             it_behaves_like 'does not update approvals_required'
+
+            it_behaves_like 'persists violation details' do
+              let(:expected_violations) do
+                { 'newly_detected' => [new_finding_uuid] }
+              end
+            end
           end
 
           context 'when vulnerability_states are empty array' do
@@ -416,6 +498,12 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
             it_behaves_like 'new vulnerability_states', []
             it_behaves_like 'does not update approvals_required'
+
+            it_behaves_like 'persists violation details' do
+              let(:expected_violations) do
+                { 'newly_detected' => [new_finding_uuid] }
+              end
+            end
           end
 
           context 'when vulnerability_states is new_needs_triage' do
@@ -468,11 +556,19 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         it_behaves_like 'does not update approvals_required'
         it_behaves_like 'does not trigger policy bot comment'
 
+        it 'does not add violations' do
+          expect { execute }.not_to change { merge_request.scan_result_policy_violations.count }.from(0)
+        end
+
         context 'when vulnerabilities count does not exceed the allowed limit' do
           let(:vulnerabilities_allowed) { 6 }
 
           it_behaves_like 'does not update approvals_required'
           it_behaves_like 'does not trigger policy bot comment'
+
+          it 'does not add violations' do
+            expect { execute }.not_to change { merge_request.scan_result_policy_violations.count }.from(0)
+          end
         end
 
         context 'when vulnerability_states has only newly detected' do
@@ -505,6 +601,9 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
               it_behaves_like 'does not update approvals_required'
               it_behaves_like 'triggers policy bot comment', :scan_finding, true
+              it_behaves_like 'persists violation details' do
+                let(:expected_violations) { { 'previously_existing' => array_including(uuids) } }
+              end
             end
           end
         end
@@ -517,6 +616,10 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
         it_behaves_like 'does not update approvals_required'
         it_behaves_like 'triggers policy bot comment', :scan_finding, true
+        it_behaves_like 'persists violation details' do
+          let(:expected_violations) { { 'newly_detected' => array_including(uuids) } }
+          let(:expected_context) { { 'pipeline_ids' => [pipeline.id], 'target_pipeline_ids' => [] } }
+        end
       end
     end
 
