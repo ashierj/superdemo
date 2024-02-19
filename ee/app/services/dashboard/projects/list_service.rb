@@ -13,7 +13,7 @@ module Dashboard
       def execute(project_ids, include_unavailable: false)
         return Project.none unless License.feature_available?(feature)
 
-        project_ids = available_project_ids(project_ids) unless include_unavailable
+        project_ids = available_project_ids(project_ids, include_unavailable: include_unavailable)
         find_projects(project_ids)
       end
 
@@ -21,10 +21,14 @@ module Dashboard
 
       attr_reader :user, :feature
 
-      # see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/39847
-      def available_project_ids(project_ids)
+      def available_project_ids(project_ids, include_unavailable:)
+        # limiting selected projects
+        # see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/39847
         projects = Project.with_namespace.id_in(project_ids.first(PRESELECT_PROJECTS_LIMIT))
-        projects.select { |project| project.feature_available?(feature) }.map(&:id)
+
+        projects.select { |project| include_unavailable || project.feature_available?(feature) }
+                .select { |project| user.can?(:read_project, project) }
+                .map(&:id)
       end
 
       def find_projects(project_ids)

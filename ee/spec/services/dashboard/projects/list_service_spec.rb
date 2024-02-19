@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Dashboard::Projects::ListService, feature_category: :groups_and_projects do
+  using RSpec::Parameterized::TableSyntax
+
   let!(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
 
   let(:user) { create(:user) }
@@ -60,8 +62,6 @@ RSpec.describe Dashboard::Projects::ListService, feature_category: :groups_and_p
     describe 'checking license', :saas, :without_license do
       let(:projects) { [project] }
 
-      using RSpec::Parameterized::TableSyntax
-
       before do
         stub_application_setting(check_namespace_plan: true)
         create(:gitlab_subscription, :ultimate, namespace: namespace)
@@ -89,8 +89,6 @@ RSpec.describe Dashboard::Projects::ListService, feature_category: :groups_and_p
 
     describe 'checking plans', :saas do
       let(:projects) { [project] }
-
-      using RSpec::Parameterized::TableSyntax
 
       where(:check_namespace_plan, :plan, :available) do
         true  | :gold     | true
@@ -127,8 +125,6 @@ RSpec.describe Dashboard::Projects::ListService, feature_category: :groups_and_p
     describe 'checking availability of public projects on GitLab.com', :saas do
       let(:projects) { [project] }
 
-      using RSpec::Parameterized::TableSyntax
-
       where(:check_namespace_plan, :project_visibility, :namespace_visibility, :available) do
         public_visibility = Gitlab::VisibilityLevel::PUBLIC
         private_visibility = Gitlab::VisibilityLevel::PRIVATE
@@ -154,6 +150,64 @@ RSpec.describe Dashboard::Projects::ListService, feature_category: :groups_and_p
           it_behaves_like 'project found'
         else
           it_behaves_like 'project not found'
+        end
+      end
+    end
+
+    describe 'checking ip restrictions' do
+      before do
+        current_ip = '192.168.0.2'
+        allow(Gitlab::IpAddressState).to receive(:current).and_return(current_ip)
+
+        stub_application_setting(globally_allowed_ips: "")
+
+        stub_licensed_features(group_ip_restriction: true)
+      end
+
+      where(:ip_ranges, :project_available) do
+        nil                                      | true
+        ['192.168.0.0/24', '255.255.255.224/27'] | true
+        ['10.0.0.0/8', '255.255.255.224/27']     | false
+      end
+
+      with_them do
+        let(:group) do
+          create(:group).tap do |group|
+            ip_ranges&.each do |range|
+              create(:ip_restriction, group: group, range: range)
+            end
+          end
+        end
+
+        let(:projects) { [project.id] }
+
+        let(:project) { create(:project, group: group) }
+
+        if params[:project_available]
+          it_behaves_like 'project found'
+        else
+          it_behaves_like 'project not found'
+        end
+
+        context 'when project is under a sub-group' do
+          let(:project) do
+            sub_group = create(:group, parent: group)
+            create(:project, group: sub_group)
+          end
+
+          if params[:project_available]
+            it_behaves_like 'project found'
+          else
+            it_behaves_like 'project not found'
+          end
+        end
+
+        context 'when ip restriction feature is disabled' do
+          before do
+            stub_licensed_features(group_ip_restriction: false)
+          end
+
+          it_behaves_like 'project found'
         end
       end
     end
