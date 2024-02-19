@@ -25,7 +25,7 @@ module Tasks
       def self.create_task(task_id)
         lock_backup do
           backup_manager = ::Backup::Manager.new(backup_progress)
-          task = backup_manager.backup_tasks[task_id]
+          task = backup_manager.find_task(task_id)
 
           backup_manager.run_create_task(task)
         end
@@ -34,7 +34,7 @@ module Tasks
       def self.restore_task(task_id)
         lock_backup do
           backup_manager = ::Backup::Manager.new(backup_progress)
-          task = backup_manager.backup_tasks[task_id]
+          task = backup_manager.find_task(task_id)
 
           backup_manager.run_restore_task(task)
         end
