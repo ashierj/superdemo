@@ -57077,9 +57077,6 @@ msgstr ""
 msgid "You are not allowed to download code from this project."
 msgstr ""
 
-msgid "You are not allowed to log in using password"
-msgstr ""
-
 msgid "You are not allowed to reject a user"
 msgstr ""
 
