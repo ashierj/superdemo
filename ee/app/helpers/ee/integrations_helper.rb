@@ -24,6 +24,13 @@ module EE
         )
       end
 
+      if integration.is_a?(::Integrations::GoogleCloudPlatform::ArtifactRegistry)
+        form_data.merge!(
+          artifact_registry_path: project_google_cloud_platform_artifact_registry_index_path(project),
+          operating: integration.operating?.to_s
+        )
+      end
+
       form_data
     end
 

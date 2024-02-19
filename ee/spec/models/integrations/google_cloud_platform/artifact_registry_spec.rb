@@ -123,4 +123,10 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
       end
     end
   end
+
+  describe '#sections' do
+    subject { integration.sections }
+
+    it { is_expected.to eq([{ type: 'google_cloud_artifact_registry' }]) }
+  end
 end
