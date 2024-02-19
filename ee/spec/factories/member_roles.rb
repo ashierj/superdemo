@@ -7,6 +7,7 @@ FactoryBot.define do
     read_code { true }
 
     trait(:developer) { base_access_level { Gitlab::Access::DEVELOPER } }
+    trait(:maintainer) { base_access_level { Gitlab::Access::MAINTAINER } }
     trait(:reporter) { base_access_level { Gitlab::Access::REPORTER } }
     trait(:guest) { base_access_level { Gitlab::Access::GUEST } }
 

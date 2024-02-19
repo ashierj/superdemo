@@ -18,14 +18,24 @@ RSpec.describe 'User with admin_group_member custom role', feature_category: :gr
 
   describe Groups::GroupMembersController do
     describe '#update' do
-      it 'user can update a member via a custom role' do
+      it 'user can update a member to a guest via a custom role' do
         put group_group_member_path(group_id: group, id: group_member), params: {
           group_member: {
-            access_level: 50
+            access_level: Gitlab::Access::GUEST
           }
         }
 
         expect(response).to have_gitlab_http_status(:ok)
+      end
+
+      it 'user can not update a member to a maintainer via a custom role' do
+        put group_group_member_path(group_id: group, id: group_member), params: {
+          group_member: {
+            access_level: Gitlab::Access::MAINTAINER
+          }
+        }
+
+        expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
 
@@ -39,7 +49,7 @@ RSpec.describe 'User with admin_group_member custom role', feature_category: :gr
     end
 
     describe '#approve_access_request' do
-      let_it_be(:access_request) { create(:group_member, :access_request, group: group) }
+      let_it_be(:access_request) { create(:group_member, :guest, :access_request, group: group) }
 
       it 'user can delete a member via a custom role' do
         post approve_access_request_group_group_member_path(group_id: group, id: access_request)
