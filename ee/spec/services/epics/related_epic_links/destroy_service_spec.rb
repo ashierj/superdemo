@@ -8,19 +8,121 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portf
     let_it_be(:public_epic) { create(:epic, group: public_group) }
     let_it_be(:group) { create(:group, :private) }
     let_it_be(:guest) { create(:user).tap { |user| group.add_guest(user) } }
-    let_it_be(:source) { create(:epic, group: group) }
-    let_it_be(:target) { create(:epic, group: group) }
-    let_it_be(:issuable_link) { create(:related_epic_link, source: source, target: target) }
+    let_it_be_with_reload(:source) { create(:epic, group: group) }
+    let_it_be_with_reload(:target) { create(:epic, group: group) }
+    let_it_be_with_refind(:issuable_link) { create(:related_epic_link, source: source, target: target) }
 
     let(:user) { guest }
 
-    subject { described_class.new(issuable_link, issuable_link.source, user).execute }
+    subject(:execute) { described_class.new(issuable_link, issuable_link.source, user).execute }
 
     before do
       stub_licensed_features(epics: true, related_epics: true)
     end
 
     it_behaves_like 'a destroyable issuable link'
+
+    context 'with a synced work item' do
+      let_it_be_with_reload(:source) { create(:epic, :with_synced_work_item, group: group) }
+      let_it_be_with_reload(:target) { create(:epic, :with_synced_work_item, group: group) }
+      let_it_be(:work_item_link) { create(:work_item_link, source: source.work_item, target: target.work_item) }
+      let_it_be_with_refind(:issuable_link) { create(:related_epic_link, source: source, target: target) }
+
+      it_behaves_like 'syncs all data from an epic to a work item' do
+        let(:epic) { source }
+      end
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(epic_creation_with_synced_work_item: false)
+        end
+
+        it 'removes the epic but not the work item relation' do
+          expect { subject }.to change { issuable_link.class.count }.by(-1)
+          .and not_change { WorkItems::RelatedWorkItemLink.count }
+        end
+      end
+
+      context 'when feature flag is enabled' do
+        before do
+          stub_feature_flags(epic_creation_with_synced_work_item: group)
+        end
+
+        context 'when epic is the source' do
+          it 'removes the epic and the work item relation and does not create system notes' do
+            expect { subject }.to change { issuable_link.class.count }.by(-1)
+            .and change { WorkItems::RelatedWorkItemLink.count }.by(-1)
+
+            expect(source.reload.work_item.notes).to be_empty
+            expect(target.reload.work_item.notes).to be_empty
+          end
+        end
+
+        context 'when epic is the target' do
+          subject(:execute) { described_class.new(issuable_link, issuable_link.target, user).execute }
+
+          it 'removes the epic and the work item relation and does not create system notes' do
+            expect { subject }.to change { issuable_link.class.count }.by(-1)
+            .and change { WorkItems::RelatedWorkItemLink.count }.by(-1)
+
+            expect(source.reload.work_item.notes).to be_empty
+            expect(target.reload.work_item.notes).to be_empty
+          end
+        end
+
+        context 'when the source has no synced work item' do
+          let_it_be_with_reload(:source) { create(:epic, group: group) }
+          let_it_be_with_refind(:issuable_link) { create(:related_epic_link, source: source, target: target) }
+
+          it 'removes the epic but not the work item relation' do
+            expect { subject }.to change { issuable_link.class.count }.by(-1)
+            .and not_change { WorkItems::RelatedWorkItemLink.count }
+          end
+        end
+
+        context 'when the target has no synced work item' do
+          let_it_be_with_reload(:target) { create(:epic, group: group) }
+          let_it_be_with_refind(:issuable_link) { create(:related_epic_link, source: source, target: target) }
+
+          it 'removes the epic but not the work item relation' do
+            expect { subject }.to change { issuable_link.class.count }.by(-1)
+            .and not_change { WorkItems::RelatedWorkItemLink.count }
+          end
+        end
+
+        context 'when destroying the work item link fails' do
+          before do
+            allow_next_instance_of(WorkItems::RelatedWorkItemLinks::DestroyService) do |instance|
+              allow(instance).to receive(:execute).and_return({ status: :error, message: "Some error" })
+            end
+          end
+
+          it 'does not create an epic link nor a work item link', :aggregate_failures do
+            expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
+              .with({
+                message: "Not able to destroy work item links",
+                error_message: "Some error",
+                group_id: group.id,
+                source_id: source.id,
+                target_id: target.id
+              })
+
+            expect(Gitlab::ErrorTracking).to receive(:track_exception).with(
+              instance_of(Epics::SyncAsWorkItem::SyncAsWorkItemError),
+              { epic_id: source.id }
+            )
+
+            expect { execute }.to not_change { Epic::RelatedEpicLink.count }
+              .and not_change { WorkItems::RelatedWorkItemLink.count }
+          end
+
+          it 'returns an error' do
+            expect(execute)
+              .to eq({ status: :error, message: "Couldn't delete link due to an internal error.", http_status: 422 })
+          end
+        end
+      end
+    end
 
     context 'when user is not a guest in public source group' do
       let_it_be(:issuable_link) { create(:related_epic_link, source: public_epic, target: target) }

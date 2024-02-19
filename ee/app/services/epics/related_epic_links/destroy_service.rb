@@ -17,6 +17,21 @@ module Epics
         @epic = epic
       end
 
+      def execute
+        return super unless epic.work_item
+
+        ApplicationRecord.transaction do
+          result = super
+          sync_to_work_item! if result[:status] == :success
+          result
+        end
+
+      rescue Epics::SyncAsWorkItem::SyncAsWorkItemError => error
+        Gitlab::ErrorTracking.track_exception(error, epic_id: epic.id)
+
+        error(_("Couldn't delete link due to an internal error."), 422)
+      end
+
       private
 
       def permission_to_remove_relation?
@@ -53,6 +68,31 @@ module Epics
 
       def epic_is_link_target?
         strong_memoize(:epic_is_link_target) { epic == target }
+      end
+
+      def sync_to_work_item!
+        return unless epic.group.epic_synced_with_work_item_enabled?
+        return unless epic.work_item
+
+        return unless source.issue_id && target.issue_id
+
+        item_ids = epic_is_link_source? ? [target.issue_id] : [source.issue_id]
+
+        result = WorkItems::RelatedWorkItemLinks::DestroyService.new(epic.work_item, current_user, {
+          item_ids: item_ids,
+          extra_params: { synced_work_item: true }
+        }).execute
+        return result if result[:status] == :success
+
+        Gitlab::EpicWorkItemSync::Logger.error(
+          message: "Not able to destroy work item links",
+          error_message: result[:message],
+          group_id: epic.group.id,
+          target_id: target.id,
+          source_id: source.id
+        )
+
+        raise Epics::SyncAsWorkItem::SyncAsWorkItemError, result[:message]
       end
 
       def not_found_message
