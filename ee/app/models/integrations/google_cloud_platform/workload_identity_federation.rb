@@ -72,9 +72,14 @@ module Integrations
       def identity_provider_resource_name
         return unless parent.google_cloud_workload_identity_federation_enabled? && activated?
 
-        "//iam.googleapis.com/projects/#{workload_identity_federation_project_number}/" \
-          "locations/global/workloadIdentityPools/#{workload_identity_pool_id}/" \
-          "providers/#{workload_identity_pool_provider_id}"
+        "//#{identity_pool_resource_name}/providers/#{workload_identity_pool_provider_id}"
+      end
+
+      def identity_pool_resource_name
+        return unless parent.google_cloud_workload_identity_federation_enabled? && activated?
+
+        "iam.googleapis.com/projects/#{workload_identity_federation_project_number}/" \
+          "locations/global/workloadIdentityPools/#{workload_identity_pool_id}"
       end
     end
   end
