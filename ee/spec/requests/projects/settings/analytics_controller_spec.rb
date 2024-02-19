@@ -3,6 +3,8 @@
 require('spec_helper')
 
 RSpec.describe Projects::Settings::AnalyticsController, feature_category: :product_analytics_visualization do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be_with_reload(:project) { create(:project, group: group, project_setting: build(:project_setting)) }
@@ -213,5 +215,67 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
 
       expect(response).to have_gitlab_http_status(:not_found)
     end
+  end
+
+  shared_examples 'returns not found' do
+    it 'returns 404 response' do
+      send_analytics_settings_request
+      expect(response).to have_gitlab_http_status(:not_found)
+
+      send_analytics_settings_update_request
+      expect(response).to have_gitlab_http_status(:not_found)
+    end
+  end
+
+  shared_examples 'returns success' do
+    it 'returns 200 response' do
+      send_analytics_settings_request
+      expect(response).to have_gitlab_http_status(:ok)
+
+      send_analytics_settings_update_request
+      expect(response).to have_gitlab_http_status(:found)
+      expect(response).to redirect_to(project_settings_analytics_path(project))
+      expect(flash[:toast]).to eq("Analytics settings for '#{project.name}' were successfully updated.")
+    end
+  end
+
+  context 'with different access levels' do
+    before do
+      sign_in(user)
+      stub_licensed_features(combined_project_analytics_dashboards: true)
+      project.add_member(user, access_level)
+    end
+
+    where(:access_level, :example_to_run) do
+      nil         | 'returns not found'
+      :guest      | 'returns not found'
+      :reporter   | 'returns not found'
+      :developer  | 'returns not found'
+      :maintainer | 'returns success'
+      :owner      | 'returns success'
+    end
+
+    with_them do
+      let_it_be_with_reload(:user) { create(:user) }
+
+      it_behaves_like params[:example_to_run]
+    end
+  end
+
+  private
+
+  def send_analytics_settings_request
+    get project_settings_analytics_path(project)
+  end
+
+  def send_analytics_settings_update_request
+    params = {
+      project: {
+        project_setting_attributes: {
+          cube_api_key: 'cube_api_key'
+        }
+      }
+    }
+    patch project_settings_analytics_path(project, params)
   end
 end
