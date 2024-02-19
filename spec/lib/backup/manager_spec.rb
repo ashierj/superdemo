@@ -6,10 +6,10 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
   include StubENV
 
   let(:progress) { StringIO.new }
-  let(:definitions) { nil }
+  let(:backup_tasks) { nil }
   let(:options) { build(:backup_options, :skip_none) }
 
-  subject { described_class.new(progress, definitions: definitions) }
+  subject { described_class.new(progress, backup_tasks: backup_tasks) }
 
   before do
     # Rspec fails with `uninitialized constant RSpec::Support::Differ` when it
@@ -33,7 +33,7 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
     end
 
     let(:target) { instance_double(Backup::Targets::Target) }
-    let(:definitions) do
+    let(:backup_tasks) do
       { 'terraform_state' => terraform_state }
     end
 
@@ -80,7 +80,7 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
         post_restore_warning: post_restore_warning)
     end
 
-    let(:definitions) { { 'terraform_state' => terraform_state } }
+    let(:backup_tasks) { { 'terraform_state' => terraform_state } }
     let(:backup_information) { { backup_created_at: Time.zone.parse('2019-01-01'), gitlab_version: '12.3' } }
 
     before do
@@ -181,7 +181,7 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
 
     let(:target1) { instance_double(Backup::Targets::Target) }
     let(:target2) { instance_double(Backup::Targets::Target) }
-    let(:definitions) do
+    let(:backup_tasks) do
       { 'lfs' => lfs, 'pages' => pages }
     end
 
@@ -948,7 +948,7 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
 
     let(:target1) { instance_double(Backup::Targets::Target, pre_restore_warning: nil, post_restore_warning: nil) }
     let(:target2) { instance_double(Backup::Targets::Target, pre_restore_warning: nil, post_restore_warning: nil) }
-    let(:definitions) do
+    let(:backup_tasks) do
       { 'lfs' => lfs, 'pages' => pages }
     end
 
