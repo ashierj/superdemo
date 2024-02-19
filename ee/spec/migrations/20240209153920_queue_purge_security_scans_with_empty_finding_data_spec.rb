@@ -126,13 +126,33 @@ RSpec.describe QueuePurgeSecurityScansWithEmptyFindingData, feature_category: :v
     end
 
     context 'when there is a succeeded scan' do
-      let(:security_scan) do
+      let!(:security_scan) do
         security_scans.create!(
           project_id: project.id,
           pipeline_id: pipeline.id,
           build_id: ci_builds.first.id,
           scan_type: 1,
           status: succeded_scan_status)
+      end
+
+      context 'when there is no associated finding with the security scan' do
+        it 'schedules a new batched migration' do
+          reversible_migration do |migration|
+            migration.before -> {
+              expect(batched_migration).not_to have_scheduled_batched_migration
+            }
+
+            migration.after -> {
+              expect(batched_migration).to have_scheduled_batched_migration(
+                table_name: :security_scans,
+                column_name: :id,
+                interval: described_class::DELAY_INTERVAL,
+                batch_size: described_class::BATCH_SIZE,
+                sub_batch_size: described_class::SUB_BATCH_SIZE
+              )
+            }
+          end
+        end
       end
 
       context 'when the first associated finding has `finding_data`' do
