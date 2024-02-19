@@ -23,6 +23,7 @@ describe('ee/BoardContent', () => {
         issuableType,
         isIssueBoard,
         isEpicBoard,
+        allowSubEpics: isEpicBoard ?? false,
         isGroupBoard: true,
         disabled: false,
       },
