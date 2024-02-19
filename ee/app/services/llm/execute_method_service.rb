@@ -10,6 +10,7 @@ module Llm
       resolve_vulnerability: ::Llm::ResolveVulnerabilityService,
       summarize_comments: Llm::GenerateSummaryService,
       summarize_review: Llm::MergeRequests::SummarizeReviewService,
+      summarize_new_merge_request: Llm::SummarizeNewMergeRequestService,
       explain_code: Llm::ExplainCodeService,
       generate_description: Llm::GenerateDescriptionService,
       generate_commit_message: Llm::GenerateCommitMessageService,

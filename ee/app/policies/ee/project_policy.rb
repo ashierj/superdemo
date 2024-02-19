@@ -315,6 +315,16 @@ module EE
       end
 
       with_scope :subject
+      condition(:summarize_new_merge_request_enabled) do
+        ::Feature.enabled?(:add_ai_summary_for_new_mr, subject) &&
+          ::Gitlab::Llm::FeatureAuthorizer.new(
+            container: subject,
+            current_user: user,
+            feature_name: :summarize_new_merge_request
+          ).allowed?
+      end
+
+      with_scope :subject
       condition(:generate_description_enabled) do
         ::Gitlab::Llm::FeatureAuthorizer.new(
           container: subject,
@@ -847,6 +857,10 @@ module EE
       rule do
         fill_in_merge_request_template_enabled & can?(:create_merge_request_in)
       end.enable :fill_in_merge_request_template
+
+      rule do
+        summarize_new_merge_request_enabled & can?(:create_merge_request_in)
+      end.enable :summarize_new_merge_request
 
       rule do
         generate_description_enabled & can?(:create_issue)
