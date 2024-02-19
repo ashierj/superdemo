@@ -30,6 +30,9 @@ module EE
               # They only get the Repository settings which only show the Push Rules section for maintainers.
               add_item(repository_menu_item) if can?(context.current_user, :change_push_rules, context.group)
 
+              # Managing CI/CD settings is a custom ability independent of the access level.
+              add_item(ci_cd_menu_item) if can?(context.current_user, :admin_cicd_variables, context.group)
+
               add_item(billing_menu_item) if can?(context.current_user, :read_billing, context.group)
             end
           end
