@@ -60,6 +60,10 @@ FactoryBot.define do
       ai_action { :fill_in_merge_request_template }
     end
 
+    trait :summarize_new_merge_request do
+      ai_action { :summarize_new_merge_request }
+    end
+
     trait :generate_commit_message do
       ai_action { :generate_commit_message }
     end

@@ -14,6 +14,7 @@ module Gitlab
         :resolve_vulnerability,
         :generate_commit_message,
         :fill_in_merge_request_template,
+        :summarize_new_merge_request,
         :summarize_submitted_review
       ].freeze
       BETA_FEATURES = [:chat].freeze

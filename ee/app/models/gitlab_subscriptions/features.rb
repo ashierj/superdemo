@@ -245,6 +245,7 @@ module GitlabSubscriptions
       ssh_key_expiration_policy
       summarize_mr_changes
       summarize_my_mr_code_review
+      summarize_new_merge_request
       summarize_notes
       summarize_submitted_review
       stale_runner_cleanup_for_namespace
