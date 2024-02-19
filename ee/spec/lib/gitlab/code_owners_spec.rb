@@ -115,32 +115,49 @@ RSpec.describe Gitlab::CodeOwners, feature_category: :source_code_management do
           source_project: project,
           source_branch: 'feature',
           target_project: project,
-          target_branch: 'with-codeowners'
+          target_branch: 'with-codeowners',
+          merge_status: merge_status
         )
       end
 
+      let(:merge_status) { 'can_be_merged' }
+
       context 'when the feature is available' do
         context 'when merge_head_diff exists' do
-          before do
-            merge_head_diff = instance_double(MergeRequestDiff)
-            expect(merge_head_diff).to receive(:modified_paths).with(fallback_on_overflow: true).and_return(modified_paths)
-            expect(merge_request).to receive(:merge_head_diff).and_return(merge_head_diff)
-            expect(merge_request).not_to receive(:merge_request_diff).and_call_original
-          end
+          context 'and the merge request can be merged' do
+            let(:merge_head_diff) { instance_double(MergeRequestDiff) }
 
-          context 'when the changed file paths have matching code owners' do
-            let(:modified_paths) { ['docs/CODEOWNERS'] }
+            before do
+              expect(merge_head_diff).to receive(:modified_paths).with(fallback_on_overflow: true).and_return(modified_paths)
+              expect(merge_request).to receive(:merge_head_diff).and_return(merge_head_diff)
+              expect(merge_request).not_to receive(:merge_request_diff).and_call_original
+            end
 
-            it 'returns owners for merge request' do
-              expect(entries.first).to have_attributes(pattern: 'docs/CODEOWNERS', users: [code_owner])
+            context 'when the changed file paths have matching code owners' do
+              let(:modified_paths) { ['docs/CODEOWNERS'] }
+
+              it 'returns owners for merge request' do
+                expect(entries.first).to have_attributes(pattern: 'docs/CODEOWNERS', users: [code_owner])
+              end
+            end
+
+            context 'when the changed file paths do not have matching code owners' do
+              let(:modified_paths) { ['files/ruby/feature.rb'] }
+
+              it 'returns an empty array' do
+                expect(entries).to be_empty
+              end
             end
           end
 
-          context 'when the changed file paths do not have matching code owners' do
-            let(:modified_paths) { ['files/ruby/feature.rb'] }
+          context 'and the merge request cannot be merged' do
+            let(:merge_status) { 'cannot_be_merged' }
 
-            it 'returns an empty array' do
-              expect(entries).to be_empty
+            it 'falls back to merge_request_diff' do
+              expect(merge_request).not_to receive(:merge_head_diff)
+              expect(merge_request.merge_request_diff).to receive(:modified_paths).with(fallback_on_overflow: true).and_call_original
+
+              entries
             end
           end
         end
