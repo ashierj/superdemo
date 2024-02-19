@@ -18,8 +18,10 @@ module Keeps
       private
 
       def current_milestone
-        milestone = File.read(File.expand_path('../../VERSION', __dir__))
-        milestone.gsub(/^(\d+\.\d+).*$/, '\1').chomp
+        @current_milestone ||=
+          File.read(File.expand_path('../../VERSION', __dir__))
+          .gsub(/^(\d+\.\d+).*$/, '\1')
+          .chomp
       end
 
       def current_milestone_index
