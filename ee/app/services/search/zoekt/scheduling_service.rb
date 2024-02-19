@@ -6,12 +6,16 @@ module Search
       include Gitlab::Loggable
 
       TASKS = %i[
+        dot_com_rollout
         remove_expired_subscriptions
         node_assignment
       ].freeze
 
       BUFFER_FACTOR = 3
       WATERMARK_LIMIT = 0.8
+
+      DOT_COM_ROLLOUT_TARGET_BYTES = 100.gigabytes
+      DOT_COM_ROLLOUT_LIMIT = 2000
 
       attr_reader :task
 
@@ -35,6 +39,57 @@ module Search
       def logger
         @logger ||= ::Zoekt::Logger.build
       end
+
+      def execute_every(period, cache_key:)
+        Rails.cache.fetch([self.class.name, :execute_every, cache_key], expires_in: period) do
+          yield
+        end
+      end
+
+      # A temporary task to simplify the .com Zoekt rollout
+      # rubocop:disable CodeReuse/ActiveRecord -- this is a temporary task, which will be removed after the rollout
+      def dot_com_rollout
+        return false unless ::Gitlab::Saas.feature_available?(:exact_code_search)
+        return false if Feature.disabled?(:zoekt_dot_com_rollout)
+        return false if EnabledNamespace.with_missing_indices.exists?
+
+        execute_every 6.hours, cache_key: :dot_com_rollout do
+          size = 0
+          sizes = {}
+
+          indexed_namespaces_ids = Search::Zoekt::EnabledNamespace.find_each.map(&:root_namespace_id).to_set
+          namespaces_to_add = GitlabSubscription.with_a_paid_hosted_plan
+                                                .where('end_date > ? OR end_date IS NULL', Date.today)
+          scope = Group.includes(:root_storage_statistics)
+                        .where(parent_id: nil)
+                        .where(id: namespaces_to_add.select(:namespace_id))
+          scope.find_each do |n|
+            next if indexed_namespaces_ids.include?(n.id)
+
+            sizes[n.id] = n.root_storage_statistics.repository_size if n.root_storage_statistics
+          end
+
+          sorted = sizes.to_a.sort_by { |_k, v| v }
+
+          count = 0
+          sorted.take(DOT_COM_ROLLOUT_LIMIT).each do |id, s|
+            size += s
+            break count if size > DOT_COM_ROLLOUT_TARGET_BYTES
+
+            Search::Zoekt::EnabledNamespace.create!(root_namespace_id: id, search: false)
+            count += 1
+          end
+
+          logger.info(build_structured_payload(
+            task: :dot_com_rollout,
+            message: 'Rollout has been completed',
+            namespace_count: count
+          ))
+
+          count
+        end
+      end
+      # rubocop:enable CodeReuse/ActiveRecord
 
       def remove_expired_subscriptions
         return false unless ::Gitlab::Saas.feature_available?(:exact_code_search)

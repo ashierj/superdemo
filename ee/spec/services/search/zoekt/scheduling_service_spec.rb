@@ -42,6 +42,42 @@ RSpec.describe ::Search::Zoekt::SchedulingService, feature_category: :global_sea
     end
   end
 
+  describe '#dot_com_rollout' do
+    let(:task) { :dot_com_rollout }
+
+    it 'returns false unless saas' do
+      expect(execute_task).to eq(false)
+    end
+
+    it 'returns false if there are unassigned namespaces' do
+      create(:zoekt_enabled_namespace)
+
+      expect(execute_task).to eq(false)
+    end
+
+    context 'when on .com', :saas do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:subscription) { create(:gitlab_subscription, namespace: group) }
+      let_it_be(:root_storage_statistics) { create(:namespace_root_storage_statistics, namespace: group) }
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(zoekt_dot_com_rollout: false)
+        end
+
+        it 'returns false' do
+          expect(execute_task).to eq(false)
+        end
+      end
+
+      it 'assigns namespaces to a node' do
+        expect { execute_task }.to change { ::Search::Zoekt::EnabledNamespace.count }.by(1)
+
+        expect(::Search::Zoekt::EnabledNamespace.pluck(:root_namespace_id)).to contain_exactly(group.id)
+      end
+    end
+  end
+
   describe '#remove_expired_subscriptions' do
     let(:task) { :remove_expired_subscriptions }
 
