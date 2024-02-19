@@ -20,10 +20,10 @@ module GoogleCloudPlatform
   ApiError = Class.new(StandardError)
   AuthenticationError = Class.new(StandardError)
 
-  def self.credentials(audience:, encoded_jwt:)
+  def self.credentials(identity_provider_resource_name:, encoded_jwt:)
     {
       type: CREDENTIALS_TYPE,
-      audience: audience,
+      audience: identity_provider_resource_name,
       token_url: STS_URL,
       subject_token_type: SUBJECT_TOKEN_TYPE,
       credential_source: {

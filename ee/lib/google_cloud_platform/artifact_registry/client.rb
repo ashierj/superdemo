@@ -13,14 +13,11 @@ module GoogleCloudPlatform
       # This will use glgo and a workload identity federation instance to exchange
       # a JWT from GitLab for an access token to be used with the Google Cloud API.
       #
-      # +project+ The Project instance.
+      # +project_integration+ The project integration that contains project id and the identity
+      #                       provider resource name.
       # +user+ The User instance.
-      # +gcp_project_id+ The Google project_id as a string. Example: 'my-project'.
-      # +gcp_location+ The Google location string. Example: 'us-east1'.
-      # +gcp_repository+ The Google Artifact Registry repository name as a string. Example: 'repo'.
-      # +gcp_wlif+ The Google workload identity federation string. Similar to a URL but without the
-      #            protocol. Example:
-      #            '//iam.googleapis.com/projects/555/locations/global/workloadIdentityPools/pool/providers/sandbox'.
+      # +artifact_registry_location+ The Artifact Registry location string. Example: 'us-east1'.
+      # +artifact_registry_repository+ The Artifact Registry repository name as a string. Example: 'repo'.
       #
       # All parameters are required.
       #
@@ -28,13 +25,15 @@ module GoogleCloudPlatform
       #
       # +ArgumentError+ if one or more of the parameters is blank.
       # +RuntimeError+ if this is used outside the Saas instance.
-      def initialize(project:, user:, gcp_project_id:, gcp_location:, gcp_repository:, gcp_wlif:)
-        super(project: project, user: user, gcp_project_id: gcp_project_id, gcp_wlif: gcp_wlif)
+      def initialize(project_integration:, user:, artifact_registry_location:, artifact_registry_repository:)
+        super(project_integration: project_integration, user: user)
 
-        raise ArgumentError, BLANK_PARAMETERS_ERROR_MESSAGE if gcp_location.blank? || gcp_repository.blank?
+        if artifact_registry_location.blank? || artifact_registry_repository.blank?
+          raise ArgumentError, BLANK_PARAMETERS_ERROR_MESSAGE
+        end
 
-        @gcp_location = gcp_location
-        @gcp_repository = gcp_repository
+        @artifact_registry_location = artifact_registry_location
+        @artifact_registry_repository = artifact_registry_repository
       end
 
       # Get the Artifact Registry repository object and return it.
@@ -54,7 +53,7 @@ module GoogleCloudPlatform
         request = ::Google::Cloud::ArtifactRegistry::V1::GetRepositoryRequest.new(name: repository_full_name)
 
         handling_errors do
-          gcp_client.get_repository(request)
+          client.get_repository(request)
         end
       end
 
@@ -93,7 +92,7 @@ module GoogleCloudPlatform
           order_by: order_by
         )
         handling_errors do
-          gcp_client.list_docker_images(request).response
+          client.list_docker_images(request).response
         end
       end
 
@@ -116,13 +115,13 @@ module GoogleCloudPlatform
         request = ::Google::Cloud::ArtifactRegistry::V1::GetDockerImageRequest.new(name: name)
 
         handling_errors do
-          gcp_client.get_docker_image(request)
+          client.get_docker_image(request)
         end
       end
 
       private
 
-      def gcp_client
+      def client
         ::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Client.new do |config|
           json_key_io = StringIO.new(::Gitlab::Json.dump(credentials))
           ext_credentials = Google::Auth::ExternalAccount::Credentials.make_creds(
@@ -132,10 +131,12 @@ module GoogleCloudPlatform
           config.credentials = ::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Credentials.new(ext_credentials)
         end
       end
-      strong_memoize_attr :gcp_client
+      strong_memoize_attr :client
 
       def repository_full_name
-        "projects/#{gcp_project_id}/locations/#{@gcp_location}/repositories/#{@gcp_repository}"
+        "projects/#{google_cloud_project_id}/" \
+          "locations/#{@artifact_registry_location}/" \
+          "repositories/#{@artifact_registry_repository}"
       end
       strong_memoize_attr :repository_full_name
     end

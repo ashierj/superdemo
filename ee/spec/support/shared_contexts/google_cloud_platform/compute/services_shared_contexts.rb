@@ -21,10 +21,9 @@ RSpec.shared_context 'for a compute service' do
   before do
     allow(::GoogleCloudPlatform::Compute::Client).to receive(:new)
       .with(
-        project: project,
+        project_integration: project_integration,
         user: user,
-        gcp_project_id: google_cloud_project_id || project_integration.artifact_registry_project_id,
-        gcp_wlif: project_integration.wlif
+        params: params.slice(:google_cloud_project_id)
       ).and_return(client_double)
   end
 end

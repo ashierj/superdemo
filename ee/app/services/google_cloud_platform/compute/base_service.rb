@@ -70,19 +70,10 @@ module GoogleCloudPlatform
 
       def client
         ::GoogleCloudPlatform::Compute::Client.new(
-          project: project,
+          project_integration: project_integration,
           user: current_user,
-          gcp_project_id: gcp_project_id,
-          gcp_wlif: gcp_wlif
+          params: params.slice(:google_cloud_project_id)
         )
-      end
-
-      def gcp_project_id
-        params[:google_cloud_project_id] || project_integration.artifact_registry_project_id
-      end
-
-      def gcp_wlif
-        project_integration.wlif
       end
 
       def project_integration

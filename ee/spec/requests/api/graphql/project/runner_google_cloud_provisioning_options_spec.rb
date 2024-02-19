@@ -14,10 +14,9 @@ RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :fleet_
   let(:google_cloud_project_id) { 'project_id_override' }
   let(:expected_compute_client_args) do
     {
-      project: project,
+      project_integration: integration,
       user: current_user,
-      gcp_project_id: google_cloud_project_id,
-      gcp_wlif: integration.wlif
+      params: { google_cloud_project_id: google_cloud_project_id }
     }
   end
 

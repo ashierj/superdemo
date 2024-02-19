@@ -6,22 +6,21 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
   let_it_be(:project) { create(:project) }
   let_it_be(:rsa_key) { OpenSSL::PKey::RSA.generate(3072) }
   let_it_be(:rsa_key_data) { rsa_key.to_s }
+  let_it_be(:project_integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
 
-  let(:gcp_project_id) { 'cloud_project_id' }
-  let(:gcp_wlif) { '//wlif.test' }
+  let(:google_cloud_project_id) { 'project_id' }
+  let(:google_cloud_identity_provider_resource_name) { '//identity.provider.resource.name.test' }
 
   let(:user) { project.owner }
   let(:client) do
     described_class.new(
-      project: project,
-      user: user,
-      gcp_project_id: gcp_project_id,
-      gcp_wlif: gcp_wlif
+      project_integration: project_integration,
+      user: user
     )
   end
 
-  shared_context 'with a gcp client double' do |client_klass:|
-    let(:gcp_client_double) { instance_double(client_klass.to_s) }
+  shared_context 'with a client double' do |client_klass:|
+    let(:client_double) { instance_double(client_klass.to_s) }
     let(:config_double) { instance_double("#{client_klass}::Configuration") }
     let(:dummy_response) { Object.new }
 
@@ -35,15 +34,19 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
         .with(instance_of(::Google::Cloud::Compute::V1::Instances::Credentials))
       allow(client_klass).to receive(:new) do |_, &block|
         block.call(config_double)
-        gcp_client_double
+        client_double
       end
+
+      # required so that google auth gem will not trigger any API request
+      allow(project_integration).to receive(:identity_provider_resource_name)
+          .and_return('//identity.provider.resource.name.test')
     end
   end
 
-  shared_examples 'handling errors' do |gcp_client_method:|
+  shared_examples 'handling errors' do |client_method:|
     shared_examples 'transforming the error' do |message:, from_klass:, to_klass:|
       it "translates the error from #{from_klass} to #{to_klass}" do
-        expect(gcp_client_double).to receive(gcp_client_method).and_raise(from_klass, message)
+        expect(client_double).to receive(client_method).and_raise(from_klass, message)
 
         expect { subject }.to raise_error(to_klass, message)
       end
@@ -81,8 +84,8 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
       end
     end
 
-    context 'with a nil project' do
-      let(:project) { nil }
+    context 'with a nil project integration' do
+      let(:project_integration) { nil }
       let(:user) { build(:user) }
 
       it_behaves_like 'raising an error with',
@@ -98,14 +101,6 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
         ::GoogleCloudPlatform::BaseClient::BLANK_PARAMETERS_ERROR_MESSAGE
     end
 
-    %i[gcp_project_id gcp_wlif].each do |field|
-      context "with a nil #{field}" do
-        let(field) { nil }
-
-        it_behaves_like 'raising an error with', ArgumentError, described_class::BLANK_PARAMETERS_ERROR_MESSAGE
-      end
-    end
-
     context 'when not on saas' do
       before do
         stub_saas_features(google_cloud_support: false)
@@ -116,7 +111,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
   end
 
   describe '#regions' do
-    include_context 'with a gcp client double', client_klass: Google::Cloud::Compute::V1::Regions::Rest::Client
+    include_context 'with a client double', client_klass: Google::Cloud::Compute::V1::Regions::Rest::Client
 
     let(:filter) { nil }
     let(:max_results) { 500 }
@@ -132,7 +127,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
 
     shared_examples 'returning the expected response' do
       it 'returns the expected response' do
-        expect(gcp_client_double).to receive(:list) do |request|
+        expect(client_double).to receive(:list) do |request|
           expect(request).to be_a ::Google::Cloud::Compute::V1::ListRegionsRequest
           expect(request.filter).to eq(filter.to_s)
           expect(request.max_results).to eq(max_results)
@@ -172,11 +167,11 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
       it_behaves_like 'returning the expected response'
     end
 
-    it_behaves_like 'handling errors', gcp_client_method: :list
+    it_behaves_like 'handling errors', client_method: :list
   end
 
   describe '#zones' do
-    include_context 'with a gcp client double', client_klass: Google::Cloud::Compute::V1::Zones::Rest::Client
+    include_context 'with a client double', client_klass: Google::Cloud::Compute::V1::Zones::Rest::Client
 
     let(:filter) { nil }
     let(:max_results) { 500 }
@@ -192,7 +187,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
 
     shared_examples 'returning the expected response' do
       it 'returns the expected response' do
-        expect(gcp_client_double).to receive(:list) do |request|
+        expect(client_double).to receive(:list) do |request|
           expect(request).to be_a ::Google::Cloud::Compute::V1::ListZonesRequest
           expect(request.filter).to eq(filter.to_s)
           expect(request.max_results).to eq(max_results)
@@ -232,11 +227,11 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
       it_behaves_like 'returning the expected response'
     end
 
-    it_behaves_like 'handling errors', gcp_client_method: :list
+    it_behaves_like 'handling errors', client_method: :list
   end
 
   describe '#machine_types' do
-    include_context 'with a gcp client double', client_klass: Google::Cloud::Compute::V1::MachineTypes::Rest::Client
+    include_context 'with a client double', client_klass: Google::Cloud::Compute::V1::MachineTypes::Rest::Client
 
     let(:zone) { 'europe-west4-a' }
     let(:filter) { nil }
@@ -255,7 +250,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
 
     shared_examples 'returning the expected response' do
       it 'returns the expected response' do
-        expect(gcp_client_double).to receive(:list) do |request|
+        expect(client_double).to receive(:list) do |request|
           expect(request).to be_a ::Google::Cloud::Compute::V1::ListMachineTypesRequest
           expect(request.zone).to eq(zone.to_s)
           expect(request.filter).to eq(filter.to_s)
@@ -296,7 +291,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
       it_behaves_like 'returning the expected response'
     end
 
-    it_behaves_like 'handling errors', gcp_client_method: :list
+    it_behaves_like 'handling errors', client_method: :list
   end
 
   def stub_authentication_requests

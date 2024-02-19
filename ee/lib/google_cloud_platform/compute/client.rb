@@ -6,6 +6,7 @@ module GoogleCloudPlatform
   module Compute
     class Client < ::GoogleCloudPlatform::BaseClient
       include Gitlab::Utils::StrongMemoize
+      extend ::Gitlab::Utils::Override
 
       COMPUTE_API_ENDPOINT = 'https://compute.googleapis.com'
 
@@ -37,7 +38,7 @@ module GoogleCloudPlatform
       # Google Cloud API.
       def regions(filter: nil, max_results: 500, order_by: nil, page_token: nil)
         request = ::Google::Cloud::Compute::V1::ListRegionsRequest.new(
-          project: @gcp_project_id,
+          project: google_cloud_project_id,
           filter: filter,
           max_results: max_results,
           order_by: order_by,
@@ -76,7 +77,7 @@ module GoogleCloudPlatform
       # Google Cloud API.
       def zones(filter: nil, max_results: 500, order_by: nil, page_token: nil)
         request = ::Google::Cloud::Compute::V1::ListZonesRequest.new(
-          project: @gcp_project_id,
+          project: google_cloud_project_id,
           filter: filter,
           max_results: max_results,
           order_by: order_by,
@@ -116,7 +117,7 @@ module GoogleCloudPlatform
       # Google Cloud API.
       def machine_types(zone:, filter: nil, max_results: 500, order_by: nil, page_token: nil)
         request = ::Google::Cloud::Compute::V1::ListMachineTypesRequest.new(
-          project: @gcp_project_id,
+          project: google_cloud_project_id,
           zone: zone,
           filter: filter,
           max_results: max_results,
@@ -144,6 +145,11 @@ module GoogleCloudPlatform
         client_for(::Google::Cloud::Compute::V1::Zones::Rest::Client)
       end
       strong_memoize_attr :zones_client
+
+      override :google_cloud_project_id
+      def google_cloud_project_id
+        params[:google_cloud_project_id] || super
+      end
 
       def client_for(klass)
         klass.new do |config|

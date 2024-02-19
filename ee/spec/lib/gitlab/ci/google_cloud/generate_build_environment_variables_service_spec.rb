@@ -26,7 +26,7 @@ RSpec.describe ::Gitlab::Ci::GoogleCloud::GenerateBuildEnvironmentVariablesServi
 
     expect(Gitlab::Json.parse(execute.first[:value])).to match(
       'type' => 'external_account',
-      'audience' => integration.wlif,
+      'audience' => integration.identity_provider_resource_name,
       'subject_token_type' => 'urn:ietf:params:oauth:token-type:jwt',
       'token_url' => 'https://sts.googleapis.com/v1/token',
       'credential_source' => {
@@ -48,7 +48,7 @@ RSpec.describe ::Gitlab::Ci::GoogleCloud::GenerateBuildEnvironmentVariablesServi
       'project_id' => project.id.to_s,
       'user_id' => user.id.to_s,
       'aud' => 'https://auth.gcp.gitlab.com',
-      'wlif' => integration.wlif
+      'target_audience' => integration.identity_provider_resource_name
     ))
   end
 

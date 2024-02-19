@@ -75,16 +75,16 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
     it { is_expected.to eq([]) }
   end
 
-  describe '#wlif' do
-    let(:wlif) do
+  describe '#identity_provider_resource_name' do
+    let(:expected) do
       "//iam.googleapis.com/projects/#{integration.workload_identity_pool_project_number}/" \
         "locations/global/workloadIdentityPools/#{integration.workload_identity_pool_id}/" \
         "providers/#{integration.workload_identity_pool_provider_id}"
     end
 
-    subject { integration.wlif }
+    subject { integration.identity_provider_resource_name }
 
-    it { is_expected.to eq(wlif) }
+    it { is_expected.to eq(expected) }
   end
 
   describe '#testable?' do
