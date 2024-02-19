@@ -29,11 +29,10 @@ module Backup
       puts_time "Backup #{backup_id} is done."
     end
 
-    # @param [String] task_id
-    def run_create_task(task_id)
+    # @param [Gitlab::Backup::Tasks::Task] task
+    def run_create_task(task)
       build_backup_information
 
-      task = backup_tasks[task_id]
       destination_dir = backup_path.join(task.destination_path)
 
       unless task.enabled?
@@ -41,7 +40,7 @@ module Backup
         return
       end
 
-      if options.skip_task?(task_id)
+      if options.skip_task?(task.id)
         puts_time "Dumping #{task.human_name} ... ".color(:blue) + "[SKIPPED]".color(:cyan)
         return
       end
@@ -63,10 +62,10 @@ module Backup
       puts_time "Restore task is done."
     end
 
-    def run_restore_task(task_id)
+    # @param [Gitlab::Backup::Tasks::Task] task
+    def run_restore_task(task)
       read_backup_information
 
-      task = backup_tasks[task_id]
       destination_dir = backup_path.join(task.destination_path)
 
       unless task.enabled?
@@ -96,8 +95,19 @@ module Backup
       exit 1
     end
 
+    # Finds a task by id
+    #
+    # @param [String] task_id
+    # @return [Backup::Tasks::Task]
+    def find_task(task_id)
+      backup_tasks[task_id].tap do |task|
+        raise ArgumentError, "Cannot find task with name: #{task_id}" unless task
+      end
+    end
+
     private
 
+    # @return [Hash<String, Backup::Tasks::Task>]
     def backup_tasks
       @backup_tasks ||= {
         Backup::Tasks::Database.id => Backup::Tasks::Database.new(progress: progress, options: options),
@@ -124,9 +134,7 @@ module Backup
 
       build_backup_information
 
-      backup_tasks.each_key do |task_id|
-        run_create_task(task_id)
-      end
+      backup_tasks.each_value { |task| run_create_task(task) }
 
       write_backup_information
 
@@ -145,9 +153,9 @@ module Backup
       read_backup_information
       verify_backup_version
 
-      backup_tasks.each do |task_id, task|
-        if !options.skip_task?(task_id) && task.enabled?
-          run_restore_task(task_id)
+      backup_tasks.each_value do |task|
+        if !options.skip_task?(task.id) && task.enabled?
+          run_restore_task(task)
         end
       end
 
@@ -410,11 +418,11 @@ module Backup
     end
 
     def backup_contents
-      [MANIFEST_NAME] + backup_tasks.each do |task_id, task|
-        options.skip_task?(task_id) || # task skipped via CLI option
+      [MANIFEST_NAME] + backup_tasks.values.reject do |task|
+        options.skip_task?(task.id) || # task skipped via CLI option
           !task.enabled? || # task disabled via code/configuration
           (task.destination_optional && !File.exist?(backup_path.join(task.destination_path)))
-      end.values.map(&:destination_path)
+      end.map(&:destination_path)
     end
 
     def tar_file

@@ -37,31 +37,33 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
       { 'terraform_state' => terraform_state }
     end
 
-    it 'calls the named task' do
+    it 'runs the provided task' do
       expect(target).to receive(:dump)
       expect(Gitlab::BackupLogger).to receive(:info).with(message: 'Dumping terraform states ... ')
       expect(Gitlab::BackupLogger).to receive(:info).with(message: 'Dumping terraform states ... done')
 
-      subject.run_create_task('terraform_state')
+      subject.run_create_task(terraform_state)
     end
 
-    describe 'disabled' do
-      it 'informs the user' do
+    context 'when disabled' do
+      it 'does not run the task and informs the user' do
         allow(terraform_state).to receive(:enabled).and_return(false)
 
+        expect(target).not_to receive(:dump)
         expect(Gitlab::BackupLogger).to receive(:info).with(message: 'Dumping terraform states ... [DISABLED]')
 
-        subject.run_create_task('terraform_state')
+        subject.run_create_task(terraform_state)
       end
     end
 
-    describe 'skipped' do
-      it 'informs the user' do
+    context 'when skipped' do
+      it 'does not run the task and informs the user' do
         stub_env('SKIP', 'terraform_state')
 
+        expect(target).not_to receive(:dump)
         expect(Gitlab::BackupLogger).to receive(:info).with(message: 'Dumping terraform states ... [SKIPPED]')
 
-        subject.run_create_task('terraform_state')
+        subject.run_create_task(terraform_state)
       end
     end
   end
@@ -80,7 +82,10 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
         post_restore_warning: post_restore_warning)
     end
 
-    let(:backup_tasks) { { 'terraform_state' => terraform_state } }
+    let(:backup_tasks) do
+      { 'terraform_state' => terraform_state }
+    end
+
     let(:backup_information) { { backup_created_at: Time.zone.parse('2019-01-01'), gitlab_version: '12.3' } }
 
     before do
@@ -89,20 +94,22 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
       end
     end
 
-    it 'calls the named task' do
+    it 'runs the provided task' do
+      expect(target).to receive(:restore)
       expect(Gitlab::BackupLogger).to receive(:info).with(message: 'Restoring terraform states ... ').ordered
       expect(Gitlab::BackupLogger).to receive(:info).with(message: 'Restoring terraform states ... done').ordered
-      expect(target).to receive(:restore)
 
-      subject.run_restore_task('terraform_state')
+      subject.run_restore_task(terraform_state)
     end
 
-    describe 'disabled' do
-      it 'informs the user' do
+    context 'when disabled' do
+      it 'does not run the task and informs the user' do
         allow(terraform_state).to receive(:enabled).and_return(false)
+
+        expect(target).not_to receive(:restore)
         expect(Gitlab::BackupLogger).to receive(:info).with(message: 'Restoring terraform states ... [DISABLED]').ordered
 
-        subject.run_restore_task('terraform_state')
+        subject.run_restore_task(terraform_state)
       end
     end
 
@@ -116,7 +123,7 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
         expect(Gitlab::TaskHelpers).to receive(:ask_to_continue)
         expect(target).to receive(:restore)
 
-        subject.run_restore_task('terraform_state')
+        subject.run_restore_task(terraform_state)
       end
 
       it 'does not continue when the user quits' do
@@ -126,7 +133,7 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
         expect(Gitlab::TaskHelpers).to receive(:ask_to_continue).and_raise(Gitlab::TaskAbortedByUserError)
 
         expect do
-          subject.run_restore_task('terraform_state')
+          subject.run_restore_task(terraform_state)
         end.to raise_error(SystemExit)
       end
     end
@@ -141,7 +148,7 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
         expect(Gitlab::TaskHelpers).to receive(:ask_to_continue)
         expect(target).to receive(:restore)
 
-        subject.run_restore_task('terraform_state')
+        subject.run_restore_task(terraform_state)
       end
 
       it 'does not continue when the user quits' do
@@ -153,7 +160,7 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
         expect(Gitlab::TaskHelpers).to receive(:ask_to_continue).and_raise(Gitlab::TaskAbortedByUserError)
 
         expect do
-          subject.run_restore_task('terraform_state')
+          subject.run_restore_task(terraform_state)
         end.to raise_error(SystemExit)
       end
     end
