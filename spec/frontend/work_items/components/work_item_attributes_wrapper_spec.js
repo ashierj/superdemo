@@ -50,7 +50,7 @@ describe('WorkItemAttributesWrapper component', () => {
         hasIssuableHealthStatusFeature: true,
         projectNamespace: 'namespace',
         glFeatures: {
-          workItemsMvc: true,
+          workItemsBeta: true,
           workItemsMvc2,
         },
       },

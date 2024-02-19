@@ -310,7 +310,7 @@ export default {
       @error="$emit('error', $event)"
     />
     <participants
-      v-if="workItemParticipants && glFeatures.workItemsMvc"
+      v-if="workItemParticipants && glFeatures.workItemsBeta"
       class="gl-mb-5 gl-pt-5 gl-border-t gl-border-gray-50"
       :number-of-less-participants="10"
       :participants="workItemParticipants.participants.nodes"
