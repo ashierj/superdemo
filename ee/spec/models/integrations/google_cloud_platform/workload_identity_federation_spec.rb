@@ -126,4 +126,52 @@ RSpec.describe Integrations::GoogleCloudPlatform::WorkloadIdentityFederation, fe
       end
     end
   end
+
+  describe '#identity_pool_resource_name' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project_integration) { create(:google_cloud_platform_workload_identity_federation_integration) }
+    let_it_be(:group_integration) do
+      create(:google_cloud_platform_workload_identity_federation_integration, project: nil, group: group)
+    end
+
+    let(:resource_name) do
+      "iam.googleapis.com/projects/#{integration.workload_identity_federation_project_number}/" \
+        "locations/global/workloadIdentityPools/#{integration.workload_identity_pool_id}"
+    end
+
+    subject { integration.identity_pool_resource_name }
+
+    where(:integration, :active, :expected_resource_name) do
+      ref(:project_integration) | true | ref(:resource_name)
+      ref(:project_integration) | false | nil
+      ref(:group_integration) | true | ref(:resource_name)
+      ref(:group_integration) | false | nil
+    end
+
+    with_them do
+      before do
+        integration.update!(active: active) unless active
+      end
+
+      it { is_expected.to be_nil }
+
+      context 'when feature is available' do
+        before do
+          stub_saas_features(google_cloud_support: true)
+        end
+
+        it { is_expected.to eq(expected_resource_name) }
+      end
+
+      context 'when google_cloud_workload_identity_federation FF is disabled' do
+        before do
+          stub_feature_flags(google_cloud_workload_identity_federation: false)
+        end
+
+        it { is_expected.to be_nil }
+      end
+    end
+  end
 end
