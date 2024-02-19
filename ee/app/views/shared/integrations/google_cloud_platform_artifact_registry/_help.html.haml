@@ -1,0 +1,9 @@
+.info-well
+  .well-segment
+    %p
+      = s_("GoogleArtifactRegistry|Manage your artifacts in Google Artifact Registry:")
+    %ul
+      %li
+        = safe_format(s_("GoogleArtifactRegistry|View them in %{strong_start}Deploy &gt; Google Artifact Registry%{strong_end}."), tag_pair(tag.strong, :strong_start, :strong_end))
+      %li
+        = s_("GoogleArtifactRegistry|Push new ones from your CI/CD pipeline.")

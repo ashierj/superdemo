@@ -3,6 +3,8 @@
 module Integrations
   module GoogleCloudPlatform
     class ArtifactRegistry < Integration
+      SECTION_TYPE_GOOGLE_CLOUD_ARTIFACT_REGISTRY = 'google_cloud_artifact_registry'
+
       attribute :alert_events, default: false
       attribute :commit_events, default: false
       attribute :confidential_issues_events, default: false
@@ -28,31 +30,37 @@ module Integrations
 
       field :artifact_registry_project_id,
         required: true,
+        section: SECTION_TYPE_CONNECTION,
         title: -> { s_('GoogleCloudPlatformService|Google Cloud project ID') },
         description: -> { s_('GoogleCloudPlatformService|ID of the Google Cloud project.') }
 
       field :workload_identity_pool_project_number,
         required: true,
+        section: SECTION_TYPE_CONNECTION,
         title: -> { s_('GoogleCloudPlatformService|Workload Identity Pool project number') },
         description: -> { s_('GoogleCloudPlatformService|Project number of the Workload Identity Pool.') }
 
       field :workload_identity_pool_id,
         required: true,
+        section: SECTION_TYPE_CONNECTION,
         title: -> { s_('GoogleCloudPlatformService|Workload Identity Pool ID') },
         description: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool.') }
 
       field :workload_identity_pool_provider_id,
         required: true,
+        section: SECTION_TYPE_CONNECTION,
         title: -> { s_('GoogleCloudPlatformService|Workload Identity Pool provider ID') },
         description: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool provider.') }
 
       field :artifact_registry_location,
         required: true,
+        section: SECTION_TYPE_CONNECTION,
         title: -> { s_('GoogleCloudPlatformService|Location of Artifact Registry repository') },
         description: -> { s_('GoogleCloudPlatformService|Location of Artifact Registry repository.') }
 
       field :artifact_registry_repositories,
         required: true,
+        section: SECTION_TYPE_CONNECTION,
         title: -> { s_('GoogleCloudPlatformService|Repository of Artifact Registry') },
         help: -> { s_('GoogleCloudPlatformService|Repository of Artifact Registry.') },
         description: -> { s_('GoogleCloudPlatformService|Repository of Artifact Registry.') }
@@ -69,6 +77,14 @@ module Integrations
 
       def self.to_param
         'google_cloud_platform_artifact_registry'
+      end
+
+      def sections
+        [
+          {
+            type: SECTION_TYPE_GOOGLE_CLOUD_ARTIFACT_REGISTRY
+          }
+        ]
       end
 
       def self.supported_events

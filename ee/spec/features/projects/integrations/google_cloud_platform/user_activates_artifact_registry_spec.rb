@@ -14,6 +14,8 @@ RSpec.describe 'User activates Artifact Registry', feature_category: :package_re
   it 'activates integration', :js do
     visit_project_integration('Google Cloud Artifact Registry')
 
+    expect(page).not_to have_link('View artifacts')
+
     fill_in s_('GoogleCloudPlatformService|Workload Identity Pool project number'),
       with: integration.workload_identity_pool_project_number
     fill_in s_('GoogleCloudPlatformService|Workload Identity Pool ID'),
@@ -30,5 +32,7 @@ RSpec.describe 'User activates Artifact Registry', feature_category: :package_re
     click_save_integration
 
     expect(page).to have_content('Google Cloud Artifact Registry settings saved and active.')
+
+    expect(page).to have_link('View artifacts')
   end
 end
