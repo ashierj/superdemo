@@ -500,9 +500,18 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
             blob_path: "/#{occurrence.project.full_path}/-/blob/#{occurrence.commit_sha}/#{occurrence.input_file_path}",
             path: occurrence.input_file_path,
             top_level: false,
-            ancestors: nil
+            ancestors: []
           }
         )
+      end
+
+      context 'when ancestors is present' do
+        let(:ancestors) { [{ 'name' => 'name', 'version' => 'version' }] }
+        let(:occurrence) { build(:sbom_occurrence, source: source, ancestors: ancestors) }
+
+        it 'returns location data including ancestors' do
+          expect(location[:ancestors]).to eq(ancestors)
+        end
       end
 
       context 'when occurrence was found by trivy' do
@@ -517,7 +526,7 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
                          "#{occurrence.input_file_path}",
               path: occurrence.input_file_path,
               top_level: false,
-              ancestors: nil
+              ancestors: []
             }
           )
         end
@@ -532,7 +541,7 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
               blob_path: nil,
               path: nil,
               top_level: false,
-              ancestors: nil
+              ancestors: []
             }
           )
         end

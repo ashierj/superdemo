@@ -5,6 +5,14 @@ class DependencyEntity < Grape::Entity
 
   class AncestorEntity < Grape::Entity
     expose :name, :version
+
+    def name
+      object[:name] || object["name"]
+    end
+
+    def version
+      object[:version] || object["version"]
+    end
   end
 
   class LocationEntity < Grape::Entity

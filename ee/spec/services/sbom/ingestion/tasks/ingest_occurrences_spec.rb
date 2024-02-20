@@ -67,7 +67,8 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
           'vulnerability_count' => 1,
           'highest_severity' => 'high',
           'traversal_ids' => project.namespace.traversal_ids,
-          'archived' => project.archived
+          'archived' => project.archived,
+          'ancestors' => occurrence_map.ancestors
         )
       end
 

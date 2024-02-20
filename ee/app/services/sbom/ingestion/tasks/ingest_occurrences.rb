@@ -38,7 +38,8 @@ module Sbom
               highest_severity: occurrence_map.highest_severity,
               vulnerability_count: occurrence_map.vulnerability_count,
               traversal_ids: project.namespace.traversal_ids,
-              archived: project.archived
+              archived: project.archived,
+              ancestors: occurrence_map.ancestors
             }.tap do |attrs|
               if Feature.disabled?(:sbom_occurrences_vulnerabilities, project)
                 attrs.except!(:vulnerability_count, :highest_severity)

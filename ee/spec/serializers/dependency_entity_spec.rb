@@ -107,7 +107,7 @@ RSpec.describe DependencyEntity, feature_category: :dependency_management do
       subject { described_class.represent(sbom_occurrence, request: request).as_json }
 
       let(:project) { create(:project, :repository, :private, :in_group) }
-      let(:sbom_occurrence) { create(:sbom_occurrence, :mit, :bundler, project: project) }
+      let(:sbom_occurrence) { create(:sbom_occurrence, :mit, :bundler, :with_ancestors, project: project) }
 
       before do
         allow(request).to receive(:project).and_return(nil)
@@ -131,7 +131,7 @@ RSpec.describe DependencyEntity, feature_category: :dependency_management do
           "licenses" => sbom_occurrence.licenses,
           "component_id" => sbom_occurrence.component_version_id,
           "location" => {
-            "ancestors" => nil,
+            "ancestors" => sbom_occurrence.ancestors,
             "blob_path" => sbom_occurrence.location[:blob_path],
             "path" => sbom_occurrence.location[:path],
             "top_level" => sbom_occurrence.location[:top_level]
