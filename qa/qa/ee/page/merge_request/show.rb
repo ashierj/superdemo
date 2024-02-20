@@ -52,36 +52,16 @@ module QA
                 element 'dismiss-button'
                 element 'save-editing-dismissal'
                 element 'dismissal-comment'
+                element 'cancel-button'
+                element 'create-issue-button', "`${footerActionButtons[0].action}-button`" # rubocop:disable QA/ElementWithPattern -- create-issue is coming from footerActionButtons
               end
 
               view 'ee/app/assets/javascripts/security_dashboard/components/pipeline/vulnerability_dismissal_reason.vue' do
                 element 'dismissal-reason'
               end
 
-              view 'ee/app/assets/javascripts/vue_shared/security_reports/components/modal.vue' do
-                element 'vulnerability-modal-content'
-              end
-
               view 'ee/app/assets/javascripts/vue_shared/security_reports/components/event_item.vue' do
                 element 'event-item-content'
-              end
-
-              view 'ee/app/assets/javascripts/vue_shared/security_reports/components/modal_footer.vue' do
-                element 'resolve-split-button'
-                element 'create-issue-button'
-                element 'cancel-button'
-              end
-
-              view 'ee/app/assets/javascripts/vue_shared/security_reports/components/dismiss_button.vue' do
-                element 'dismiss-with-comment-button'
-              end
-
-              view 'ee/app/assets/javascripts/vue_shared/security_reports/components/dismissal_comment_box_toggle.vue' do
-                element 'dismiss-comment-field'
-              end
-
-              view 'ee/app/assets/javascripts/vue_shared/security_reports/components/dismissal_comment_modal_footer.vue' do
-                element 'add-and-dismiss-button'
               end
             end
           end
@@ -149,17 +129,11 @@ module QA
           end
 
           def add_comment_and_dismiss(comment)
-            if has_element?('dismiss-with-comment-button')
-              click_element('dismiss-with-comment-button')
-              find_element('dismiss-comment-field').fill_in with: comment, fill_options: { automatic_label_click: true }
-              click_element('add-and-dismiss-button')
-            else
-              click_element('dismiss-button')
-              find(dismissal_reason_selector, wait: 5).click
-              find(dismissal_reason_item_selector("not_applicable")).click
-              find_element('dismissal-comment').fill_in with: comment, fill_options: { automatic_label_click: true }
-              click_element('save-editing-dismissal')
-            end
+            click_element('dismiss-button')
+            find(dismissal_reason_selector, wait: 5).click
+            find(dismissal_reason_item_selector("not_applicable")).click
+            find_element('dismissal-comment').fill_in with: comment, fill_options: { automatic_label_click: true }
+            click_element('save-editing-dismissal')
 
             wait_until(reload: false) do
               has_no_element?('vulnerability-modal-content')
@@ -172,15 +146,6 @@ module QA
 
           def dismissal_reason_item_selector(reason)
             "[data-testid='listbox-item-#{reason}']"
-          end
-
-          def resolve_vulnerability_with_mr
-            previous_page = page.current_url
-            click_element 'resolve-split-button'
-
-            wait_until(max_duration: 15, reload: false) do
-              page.current_url != previous_page
-            end
           end
 
           def create_vulnerability_issue(name)
