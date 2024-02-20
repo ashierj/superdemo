@@ -6,6 +6,11 @@ module EE
       module CreateService
         extend ::Gitlab::Utils::Override
 
+        override :valid_to_create?
+        def valid_to_create?
+          super && !member_role_too_high?
+        end
+
         override :after_successful_save
         def after_successful_save
           super
@@ -25,6 +30,10 @@ module EE
           }
 
           ::Gitlab::Audit::Auditor.audit(audit_context)
+        end
+
+        def member_role_too_high?
+          group.assigning_role_too_high?(current_user, params[:shared_group_access])
         end
       end
     end
