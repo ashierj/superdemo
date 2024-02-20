@@ -534,4 +534,8 @@ RSpec.describe NamespaceSetting, feature_category: :groups_and_projects, type: :
       it { is_expected.to eq result }
     end
   end
+
+  describe '#duo_features_enabled' do
+    it_behaves_like 'a cascading namespace setting boolean attribute', settings_attribute_name: :duo_features_enabled
+  end
 end
