@@ -133,61 +133,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
   end
 
-  describe 'POST /code_suggestions/tokens' do
-    subject(:post_api) { post api('/code_suggestions/tokens', current_user), headers: headers }
-
-    context 'when user is not logged in' do
-      let(:current_user) { nil }
-
-      include_examples 'an unauthorized response'
-
-      context 'and access token is provided' do
-        it_behaves_like 'an endpoint authenticated with token'
-      end
-    end
-
-    context 'when user is logged in' do
-      let(:current_user) { authorized_user }
-
-      context 'when API feature flag is disabled' do
-        before do
-          stub_feature_flags(code_suggestions_tokens_api: false)
-        end
-
-        include_examples 'a not found response'
-      end
-
-      context 'with no access to code suggestions' do
-        let(:access_code_suggestions) { false }
-
-        include_examples 'an unauthorized response'
-      end
-
-      context 'with access to code suggestions' do
-        context 'when on .org or .com' do
-          include_examples 'a successful response'
-          it_behaves_like 'an endpoint authenticated with token'
-
-          it 'sets the access token realm to SaaS' do
-            expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(
-              current_user,
-              scopes: [:code_suggestions],
-              gitlab_realm: Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SAAS
-            )
-
-            post_api
-          end
-        end
-
-        context 'when not on .org and .com' do
-          let(:is_saas) { false }
-
-          include_examples 'a not found response'
-        end
-      end
-    end
-  end
-
   describe 'POST /code_suggestions/completions' do
     let(:access_code_suggestions) { true }
     let(:global_instance_id) { 'instance-ABC' }

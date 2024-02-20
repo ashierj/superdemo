@@ -1,6 +1,6 @@
 <script>
 import { GlAlert, GlButton, GlTooltipDirective } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { s__, sprintf } from '~/locale';
 import MetadataItem from '~/vue_shared/components/registry/metadata_item.vue';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 
@@ -40,6 +40,16 @@ export default {
     showActions() {
       return !this.isLoading && !this.showError;
     },
+    projectIdMetadata() {
+      return sprintf(s__('GoogleArtifactRegistry|Project ID: %{projectId}'), {
+        projectId: this.data.projectId,
+      });
+    },
+    repositoryMetadata() {
+      return sprintf(s__('GoogleArtifactRegistry|Repository: %{repository}'), {
+        repository: this.data.repository,
+      });
+    },
   },
   i18n: {
     settingsText: s__('GoogleArtifactRegistry|Configure in settings'),
@@ -74,19 +84,12 @@ export default {
       <metadata-item
         data-testid="repository-name"
         icon="folder"
-        :text="data.repository"
-        :text-tooltip="s__('GoogleArtifactRegistry|Repository name')"
-        size="xl"
+        :text="repositoryMetadata"
+        size="l"
       />
     </template>
     <template v-if="showMetadata" #metadata-project>
-      <metadata-item
-        data-testid="project-id"
-        icon="project"
-        :text="data.projectId"
-        :text-tooltip="s__('GoogleArtifactRegistry|Project ID')"
-        size="xl"
-      />
+      <metadata-item data-testid="project-id" icon="project" :text="projectIdMetadata" size="l" />
     </template>
     <gl-alert v-if="showError" variant="danger" :dismissible="false">
       {{ s__('GoogleArtifactRegistry|An error occurred while fetching the artifacts.') }}

@@ -23308,7 +23308,7 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Project"
 msgstr ""
 
-msgid "GoogleArtifactRegistry|Project ID"
+msgid "GoogleArtifactRegistry|Project ID: %{projectId}"
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Push new ones from your CI/CD pipeline."
@@ -23317,7 +23317,7 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Repository"
 msgstr ""
 
-msgid "GoogleArtifactRegistry|Repository name"
+msgid "GoogleArtifactRegistry|Repository: %{repository}"
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Tags"

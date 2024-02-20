@@ -50,36 +50,6 @@ module API
     end
 
     namespace 'code_suggestions' do
-      resources :tokens do
-        desc 'Create an access token' do
-          detail 'Creates an access token to access Code Suggestions.'
-          success Entities::CodeSuggestionsAccessToken
-          failure [
-            { code: 401, message: 'Unauthorized' },
-            { code: 404, message: 'Not found' }
-          ]
-        end
-        post do
-          not_found! unless Gitlab.org_or_com?
-
-          Gitlab::Tracking.event(
-            'API::CodeSuggestions',
-            :authenticate,
-            user: current_user,
-            label: 'code_suggestions'
-          )
-
-          Gitlab::InternalEvents.track_event(
-            'code_suggestions_authenticate',
-            user: current_user
-          )
-
-          token = Gitlab::CloudConnector::SelfIssuedToken.new(
-            current_user, scopes: [:code_suggestions], gitlab_realm: gitlab_realm)
-          present token, with: Entities::CodeSuggestionsAccessToken
-        end
-      end
-
       resources :completions do
         params do
           requires :current_file, type: Hash do
