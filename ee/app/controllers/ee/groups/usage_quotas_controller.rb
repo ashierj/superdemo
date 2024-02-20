@@ -15,6 +15,7 @@ module EE
           push_frontend_feature_flag(:data_transfer_monitoring, group)
           push_frontend_feature_flag(:limited_access_modal)
           push_frontend_feature_flag(:enable_add_on_users_filtering, group)
+          push_frontend_feature_flag(:enable_bulk_add_on_assignment, group, type: :wip)
           push_frontend_feature_flag(:product_analytics_usage_quota_annual_data, group)
           push_frontend_feature_flag(:product_analytics_billing, type: :wip)
         end
