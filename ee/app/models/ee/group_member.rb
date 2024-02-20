@@ -4,6 +4,7 @@ module EE
   module GroupMember
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
+    include ::Gitlab::Utils::StrongMemoize
 
     prepended do
       include UsageStatistics
@@ -66,6 +67,38 @@ module EE
 
     def enterprise_user_of_this_group?
       user&.user_detail&.enterprise_group_id == source_id
+    end
+
+    override :prevent_role_assignement?
+    def prevent_role_assignement?(current_user, params)
+      return false if current_user.can_admin_all_resources?
+
+      assigning_access_level ||= params[:access_level] || access_level
+      member_role_id = params[:member_role_id]
+      current_access_level = params[:current_access_level]
+
+      # first we need to check if there are possibly more custom abilities than current user has
+      return true if custom_role_abilities_too_high?(current_user, member_role_id)
+
+      # it is awlays allowed to downgrade member access level
+      # if there are not more custom abilities than current user has
+      return false if current_access_level && assigning_access_level < current_access_level
+
+      # prevent assignement in case the role access level is higher than current user's role
+      group.assigning_role_too_high?(current_user, assigning_access_level)
+    end
+
+    def custom_role_abilities_too_high?(current_user, member_role_id)
+      return false unless member_role_id
+
+      current_member = group.highest_group_member(current_user)
+
+      return false if current_member&.access_level == ::Gitlab::Access::OWNER
+
+      current_member_enabled_abilities = current_member.member_role&.enabled_permissions
+      new_member_enabled_abilities = MemberRole.find_by_id(member_role_id)&.enabled_permissions
+
+      (new_member_enabled_abilities - current_member_enabled_abilities).present?
     end
 
     private

@@ -166,6 +166,10 @@ module EE
       end
     end
 
+    def prevent_role_assignement?(_current_user, _params)
+      false
+    end
+
     private
 
     def group_allowed_email_domains
