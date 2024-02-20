@@ -244,51 +244,13 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
       end
     end
 
-    context 'when :use_sync_service_token_worker feature flag is disabled' do
-      before do
-        stub_feature_flags(use_sync_service_token_worker: false)
-      end
-
-      context 'with service access tokens', :freeze_time do
-        let(:expires_at) { (Time.current + 2.days).to_i }
-        let(:license_key) { build(:gitlab_license, :cloud).export }
-        let(:body) { { success: true, license: license_key, service_tokens: { code_suggestions: { token: 'token1', expires_at: expires_at } } }.to_json }
-
-        it 'calls CloudConnector::ServiceAccessTokensStorageService' do
-          expect_next_instance_of(CloudConnector::ServiceAccessTokensStorageService, 'token1', expires_at) do |instance|
-            expect(instance).to receive(:execute)
-          end
-
-          sync_seat_link
-        end
-
-        context 'when the request is not successful' do
-          let(:body) { { success: false, error: "Bad Request" }.to_json }
-
-          before do
-            stub_request(:post, seat_link_url)
-              .to_return(status: 400, body: body)
-          end
-
-          it 'does not call CloudConnector::ServiceAccessTokensStorageService' do
-            expect(CloudConnector::ServiceAccessTokensStorageService).not_to receive(:new)
-
-            expect { sync_seat_link }.to raise_error(
-              described_class::RequestError,
-              'Seat Link request failed! Code:400 Body:{"success":false,"error":"Bad Request"}'
-            )
-          end
-        end
-      end
-    end
-
     context 'when refresh_token is false' do
       subject(:sync_seat_link) do
         described_class.new.perform('2020-01-01T01:20:12+02:00', '123', 5, 4, false)
       end
 
-      it 'does not call Ai::SyncServiceTokenWorker' do
-        expect(Ai::SyncServiceTokenWorker).not_to receive(:perform_async)
+      it 'does not perform Cloud Connector access data sync' do
+        expect(CloudConnector::SyncServiceTokenWorker).not_to receive(:perform_async)
 
         sync_seat_link
       end
@@ -299,8 +261,8 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
         described_class.new.perform('2020-01-01T01:20:12+02:00', '123', 5, 4, true)
       end
 
-      it 'calls Ai::SyncServiceTokenWorker' do
-        expect(Ai::SyncServiceTokenWorker).to receive(:perform_async)
+      it 'performs Cloud Connector access data sync' do
+        expect(CloudConnector::SyncServiceTokenWorker).to receive(:perform_async)
 
         sync_seat_link
       end
