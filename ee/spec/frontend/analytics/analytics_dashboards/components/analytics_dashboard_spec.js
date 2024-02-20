@@ -27,6 +27,8 @@ import {
   EVENT_LABEL_CREATED_DASHBOARD,
   EVENT_LABEL_EDITED_DASHBOARD,
   EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
+  EVENT_LABEL_VIEWED_BUILTIN_DASHBOARD,
+  EVENT_LABEL_VIEWED_DASHBOARD,
 } from 'ee/analytics/analytics_dashboards/constants';
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { dashboard } from 'ee_jest/vue_shared/components/customizable_dashboard/mock_data';
@@ -530,28 +532,6 @@ describe('AnalyticsDashboard', () => {
       });
     });
 
-    describe('when a dashboard is user defined', () => {
-      beforeEach(() => {
-        mockDashboardResponse(TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
-
-        createWrapper({
-          routeSlug:
-            TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE.data.project.customizableDashboards
-              .nodes[0]?.slug,
-        });
-
-        return waitForPromises();
-      });
-
-      it(`tracks the "${EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD}" event`, () => {
-        expect(trackingSpy).toHaveBeenCalledWith(
-          undefined,
-          EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
-          expect.any(Object),
-        );
-      });
-    });
-
     describe('when a dashboard is new', () => {
       beforeEach(() => {
         createWrapper({
@@ -605,6 +585,34 @@ describe('AnalyticsDashboard', () => {
           );
         });
       });
+    });
+  });
+
+  describe.each`
+    userDefined | event
+    ${false}    | ${EVENT_LABEL_VIEWED_BUILTIN_DASHBOARD}
+    ${true}     | ${EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD}
+  `('when a dashboard is userDefined=$userDefined is viewed', ({ userDefined, event }) => {
+    beforeEach(() => {
+      setupDashboard(createDashboardGraphqlSuccessResponse(getGraphQLDashboard({ userDefined })));
+
+      return waitForPromises();
+    });
+
+    it(`tracks the "${event}" event`, () => {
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, event, expect.any(Object));
+    });
+
+    it(`tracks the "${EVENT_LABEL_VIEWED_DASHBOARD}" event`, () => {
+      expect(trackingSpy).toHaveBeenCalledWith(
+        undefined,
+        EVENT_LABEL_VIEWED_DASHBOARD,
+        expect.any(Object),
+      );
+    });
+
+    it('tracks exactly two events', () => {
+      expect(trackingSpy).toHaveBeenCalledTimes(2);
     });
   });
 
