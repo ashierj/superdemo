@@ -30,6 +30,8 @@ RSpec.describe GitlabSchema.types['Group'], feature_category: :groups_and_projec
   it { expect(described_class).to have_graphql_field(:amazon_s3_configurations) }
   it { expect(described_class).to have_graphql_field(:pending_members) }
   it { expect(described_class).to have_graphql_field(:value_streams) }
+  it { expect(described_class).to have_graphql_field(:saved_replies) }
+  it { expect(described_class).to have_graphql_field(:saved_reply) }
 
   describe 'vulnerabilities' do
     let_it_be(:group) { create(:group) }

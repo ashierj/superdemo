@@ -66,6 +66,10 @@ FactoryBot.define do
       end
     end
 
+    trait :with_ancestors do
+      ancestors { [{ name: 'libc', version: '1.2.3' }] }
+    end
+
     after(:build) do |occurrence|
       occurrence.uuid = Sbom::OccurrenceUUID.generate(
         project_id: occurrence.project.id,

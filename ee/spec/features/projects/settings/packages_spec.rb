@@ -22,10 +22,8 @@ RSpec.describe 'Project > Settings > Packages and registries > Dependency proxy 
 
       wait_for_requests
 
-      # rubocop:disable Capybara/TestidFinders -- Helper within_testid doesn't cover use case
-      expect(page).to be_axe_clean.within('[data-testid="packages-and-registries-project-settings"]')
+      expect(page).to be_axe_clean.within('[data-testid="packages-and-registries-project-settings"]') # rubocop:todo Capybara/TestidFinders -- Doesn't cover use case, see https://gitlab.com/gitlab-org/gitlab/-/issues/442224
                                   .skipping :'heading-order'
-      # rubocop:enable Capybara/TestidFinders
     end
 
     it 'shows available section' do

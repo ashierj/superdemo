@@ -607,6 +607,11 @@ module EE
         !@subject.licensed_feature_available?(:group_wikis) || !@subject.feature_available?(:wiki, @user)
       end
 
+      desc "Group has saved replies support"
+      condition(:supports_saved_replies) do
+        @subject.supports_saved_replies?
+      end
+
       rule { wiki_disabled }.policy do
         prevent(*create_read_update_admin_destroy(:wiki))
         prevent(:download_wiki_code)
@@ -686,6 +691,10 @@ module EE
 
       rule { can?(:admin_group_member) & sso_enforced }.policy do
         enable :read_saml_user
+      end
+
+      rule { supports_saved_replies & developer }.policy do
+        enable :read_saved_replies
       end
     end
 
