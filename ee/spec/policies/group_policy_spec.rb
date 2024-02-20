@@ -3299,4 +3299,44 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       it { is_expected.to be_disallowed(:read_limit_alert) }
     end
   end
+
+  context 'for :read_saved_replies' do
+    let(:current_user) { owner }
+
+    context 'when group_saved_replies_flag feature flag is disabled' do
+      before do
+        stub_feature_flags(group_saved_replies_flag: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_saved_replies) }
+    end
+
+    context 'when no license is present' do
+      before do
+        stub_licensed_features(group_saved_replies: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_saved_replies) }
+    end
+
+    context 'with correct license' do
+      before do
+        stub_licensed_features(group_saved_replies: true)
+      end
+
+      it { is_expected.to be_allowed(:read_saved_replies) }
+
+      context 'when the user is a developer' do
+        let(:current_user) { developer }
+
+        it { is_expected.to be_allowed(:read_saved_replies) }
+      end
+
+      context 'when the user is a guest member of the group' do
+        let(:current_user) { guest }
+
+        it { is_expected.to be_disallowed(:read_saved_replies) }
+      end
+    end
+  end
 end

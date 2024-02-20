@@ -213,6 +213,23 @@ module EE
           null: true,
           resolver: ::Resolvers::Analytics::CycleAnalytics::ValueStreamsResolver
 
+        field :saved_replies,
+          ::Types::Groups::SavedReplyType.connection_type,
+          null: true,
+          description: 'Saved replies available to the group. Available only when feature flag ' \
+                       '`group_saved_replies_flag` is enabled. This field can only be resolved ' \
+                       'for one group in any single request.',
+          alpha: { milestone: '16.10' } do
+            extension ::Gitlab::Graphql::Limit::FieldCallCount, limit: 1
+          end
+
+        field :saved_reply,
+          resolver: ::Resolvers::Groups::SavedReplyResolver,
+          description: 'Saved reply in the group. Available only when feature flag ' \
+                       '`group_saved_replies_flag` is enabled. This field can only ' \
+                       'be resolved for one group in any single request.',
+          alpha: { milestone: '16.10' }
+
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
         end
