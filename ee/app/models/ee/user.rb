@@ -24,7 +24,6 @@ module EE
     GROUP_WITH_AI_CHAT_ENABLED_CACHE_KEY = 'group_with_ai_chat_enabled'
 
     DUO_PRO_ADD_ON_CACHE_KEY = 'user-%{user_id}-code-suggestions-add-on-cache'
-    CODE_SUGGESTIONS_ENABLED_NAMESPACES_IDS_CACHE_KEY = 'user-%{user_id}-code-suggestions-enabled-namespaces-ids-cache'
 
     prepended do
       include UsageStatistics
@@ -617,17 +616,6 @@ module EE
         else
           GitlabSubscriptions::AddOnPurchase.for_user(self).for_code_suggestions.active.pluck(:namespace_id)
         end
-      end
-    end
-
-    def namespaces_ids_with_code_suggestions_enabled
-      cache_key = format(CODE_SUGGESTIONS_ENABLED_NAMESPACES_IDS_CACHE_KEY, user_id: self.id)
-
-      Rails.cache.fetch(cache_key, expires_in: 1.day) do
-        groups
-          .roots
-          .with_code_suggestions_enabled
-          .pluck(:id)
       end
     end
 
