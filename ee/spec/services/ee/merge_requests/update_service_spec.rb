@@ -462,8 +462,8 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
 
       subject(:execute) { update_merge_request(opts) }
 
-      it 'enqueues Security::UnenforceablePolicyRulesNotificationWorker' do
-        expect(Security::UnenforceablePolicyRulesNotificationWorker).to receive(:perform_async).with(merge_request.id)
+      it 'enqueues Security::SyncPolicyViolationCommentWorker' do
+        expect(Security::SyncPolicyViolationCommentWorker).to receive(:perform_async).with(merge_request.id)
 
         execute
       end
@@ -471,8 +471,8 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
       context 'when target_branch is not changing' do
         let(:opts) { {} }
 
-        it 'does not enqueue Security::UnenforceablePolicyRulesNotificationWorker' do
-          expect(Security::UnenforceablePolicyRulesNotificationWorker).not_to receive(:perform_async)
+        it 'does not enqueue Security::SyncPolicyViolationCommentWorker' do
+          expect(Security::SyncPolicyViolationCommentWorker).not_to receive(:perform_async)
 
           execute
         end

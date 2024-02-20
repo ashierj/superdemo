@@ -7,7 +7,16 @@
 - @force_desktop_expanded_sidebar = true
 
 - if Feature.enabled?(:usage_quotas_for_all_editions, @group)
+  = render Namespaces::FreeUserCap::UsageQuotaAlertComponent.new(namespace: @group.root_ancestor,
+    user: current_user,
+    content_class: 'gl-my-3')
+
+  = render Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent.new(namespace: @group.root_ancestor,
+    user: current_user,
+    content_class: 'gl-my-3')
+
   #js-usage-quotas-view{ data: { namespace_name: @group.name } }
+    #js-seat-usage-app{ data: group_seats_usage_quota_app_data(@group) }
     #js-namespace-storage-app{ data: storage_usage_app_data(@group) }
     - if can? current_user, :admin_ci_minutes, @group
       #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
