@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'open3'
+autoload :Open3, 'open3'
 
 module Gitlab
   module Backup
