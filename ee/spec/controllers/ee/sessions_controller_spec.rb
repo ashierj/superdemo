@@ -144,7 +144,7 @@ RSpec.describe SessionsController, :geo, feature_category: :system_access do
         post(:create, params: { user: { login: user.username, password: user.password } })
 
         expect(@request.env['warden']).not_to be_authenticated
-        expect(flash[:alert]).to include('You are not allowed to log in using password')
+        expect(flash[:alert]).to include(I18n.t('devise.failure.invalid'))
       end
     end
   end
