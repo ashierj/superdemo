@@ -29327,7 +29327,7 @@ ALTER TABLE ONLY namespace_settings
     ADD CONSTRAINT fk_20cf0eb2f9 FOREIGN KEY (default_compliance_framework_id) REFERENCES compliance_management_frameworks(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY ci_build_trace_metadata
-    ADD CONSTRAINT fk_21d25cac1a_p FOREIGN KEY (partition_id, trace_artifact_id) REFERENCES ci_job_artifacts(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fk_21d25cac1a_p FOREIGN KEY (partition_id, trace_artifact_id) REFERENCES p_ci_job_artifacts(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY users_star_projects
     ADD CONSTRAINT fk_22cd27ddfc FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
@@ -31295,7 +31295,7 @@ ALTER TABLE ONLY dependency_proxy_manifest_states
     ADD CONSTRAINT fk_rails_806cf07a3c FOREIGN KEY (dependency_proxy_manifest_id) REFERENCES dependency_proxy_manifests(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY ci_job_artifact_states
-    ADD CONSTRAINT fk_rails_80a9cba3b2_p FOREIGN KEY (partition_id, job_artifact_id) REFERENCES ci_job_artifacts(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fk_rails_80a9cba3b2_p FOREIGN KEY (partition_id, job_artifact_id) REFERENCES p_ci_job_artifacts(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY approval_merge_request_rules_users
     ADD CONSTRAINT fk_rails_80e6801803 FOREIGN KEY (approval_merge_request_rule_id) REFERENCES approval_merge_request_rules(id) ON DELETE CASCADE;
@@ -32229,12 +32229,6 @@ ALTER TABLE issue_search_data
 
 ALTER TABLE issue_search_data
     ADD CONSTRAINT issue_search_data_project_id_fkey FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY ci_build_trace_metadata
-    ADD CONSTRAINT tmp_fk_21d25cac1a_p FOREIGN KEY (partition_id, trace_artifact_id) REFERENCES p_ci_job_artifacts(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-ALTER TABLE ONLY ci_job_artifact_states
-    ADD CONSTRAINT tmp_fk_rails_80a9cba3b2_p FOREIGN KEY (partition_id, job_artifact_id) REFERENCES p_ci_job_artifacts(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY user_follow_users
     ADD CONSTRAINT user_follow_users_followee_id_fkey FOREIGN KEY (followee_id) REFERENCES users(id) ON DELETE CASCADE;

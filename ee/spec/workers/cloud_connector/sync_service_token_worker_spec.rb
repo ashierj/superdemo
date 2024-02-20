@@ -23,19 +23,6 @@ RSpec.describe CloudConnector::SyncServiceTokenWorker, type: :worker, feature_ca
         sync_service_token
       end
 
-      context 'when :use_sync_service_token_worker feature flag is disabled' do
-        before do
-          stub_feature_flags(use_sync_service_token_worker: false)
-        end
-
-        it 'does not call CloudConnector::SyncCloudConnectorAccessService' do
-          expect(::CloudConnector::SyncCloudConnectorAccessService).not_to receive(:new)
-          expect(worker).not_to receive(:log_extra_metadata_on_done)
-
-          sync_service_token
-        end
-      end
-
       context 'when SyncCloudConnectorAccessService fails' do
         let(:service_response) { ServiceResponse.error(message: 'Error') }
 
