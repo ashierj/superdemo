@@ -555,7 +555,10 @@ Feature.enabled?(:feature_flag_group, group)
 Feature.enabled?(:feature_flag_user, user)
 ```
 
-If you have a model's ID and do not need the model for anything other than checking the feature flag state, you can use `.actor_from_id` in order check the feature flag state without making a database query to retrieve the model.
+Models which `include FeatureGate` have an `.actor_from_id` class method.
+If you have the model's ID and do not need the model for anything other than checking the feature
+flag state, you can use `.actor_from_id` in order check the feature flag state without making a
+database query to retrieve the model.
 
 ```ruby
 # Bad -- Unnecessary query is executed

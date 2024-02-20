@@ -9,9 +9,13 @@ RSpec.describe FeatureGate do
     subject(:actor_from_id) { model_class.actor_from_id(model_id) }
 
     where(:model_class, :model_id, :expected) do
-      Project | 1 | 'Project:1'
-      Group   | 2 | 'Group:2'
-      User    | 3 | 'User:3'
+      Project                      | 1 | 'Project:1'
+      Group                        | 2 | 'Group:2'
+      User                         | 3 | 'User:3'
+      Ci::Runner                   | 4 | 'Ci::Runner:4'
+      Namespace                    | 5 | 'Namespace:5'
+      Namespaces::ProjectNamespace | 6 | 'Namespaces::ProjectNamespace:6'
+      Namespaces::UserNamespace    | 7 | 'Namespaces::UserNamespace:7'
     end
 
     with_them do
@@ -21,18 +25,22 @@ RSpec.describe FeatureGate do
     end
   end
 
-  describe 'User' do
-    describe '#flipper_id' do
-      context 'when user is not persisted' do
-        let(:user) { build(:user) }
+  describe '#flipper_id' do
+    where(:factory) { %i[project group user ci_runner namespace] }
 
-        it { expect(user.flipper_id).to be_nil }
+    with_them do
+      it 'returns nil when object is not persisted' do
+        actor = build(factory)
+
+        expect(actor.flipper_id).to be_nil
       end
 
-      context 'when user is persisted' do
-        let(:user) { create(:user) }
+      it 'returns flipper_id when object is persisted' do
+        # rubocop:disable Rails/SaveBang -- This is FactoryBot#create, not ActiveModel#create.
+        actor = create(factory)
+        # rubocop:enable Rails/SaveBang
 
-        it { expect(user.flipper_id).to eq "User:#{user.id}" }
+        expect(actor.flipper_id).to eq("#{actor.class.name}:#{actor.id}")
       end
     end
   end

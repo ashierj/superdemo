@@ -12,6 +12,6 @@ module FeatureGate
   def flipper_id
     return if new_record?
 
-    "#{self.class.name}:#{id}"
+    self.class.actor_from_id(id).flipper_id
   end
 end
