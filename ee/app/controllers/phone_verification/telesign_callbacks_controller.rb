@@ -40,6 +40,12 @@ module PhoneVerification
 
       user.create_phone_number_exemption!
       Gitlab::EtagCaching::Store.new.touch(verification_state_identity_verification_path)
+
+      Gitlab::AppLogger.info(
+        message: 'Phone number verification exemption created',
+        reason: 'Phone number country is blocked in Telesign',
+        username: user.username
+      )
     end
   end
 end
