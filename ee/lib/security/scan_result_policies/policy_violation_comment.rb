@@ -14,14 +14,14 @@ module Security
         any_merge_request: 'any_merge_request'
       }.freeze
       MESSAGE_REQUIRES_APPROVAL = <<~MARKDOWN
-        Security and compliance scanners enforced by your organization have completed and identified that approvals
-        are required due to one or more policy violations.
-        Review the policy's rules in the MR widget and assign reviewers to proceed.
+Security and compliance scanners enforced by your organization have completed and identified that approvals
+are required due to one or more policy violations.
+Review the policy's rules in the MR widget and assign reviewers to proceed.
 
-        Several factors can lead to a violation or required approval in your merge request:
+Several factors can lead to a violation or required approval in your merge request:
 
-        - If merge request approval policies enforced on your project include a scanner in the conditions, the scanner must be properly configured to run in both the source and target branch, the required jobs must complete, and a job artifact containing the scan results must be produced (even if empty).
-        - If any violation of a merge request approval policy's rules are found, approval is required.
+- If merge request approval policies enforced on your project include a scanner in the conditions, the scanner must be properly configured to run in both the source and target branch, the required jobs must complete, and a job artifact containing the scan results must be produced (even if empty).
+- If any violation of a merge request approval policy's rules are found, approval is required.
 - Approvals are assumed required until all pipelines associated with the merge base commit in the target branch, and all pipelines associated with the latest commit in the source branch, are complete and it's confirmed that no policy violations have occurred.
       MARKDOWN
 
