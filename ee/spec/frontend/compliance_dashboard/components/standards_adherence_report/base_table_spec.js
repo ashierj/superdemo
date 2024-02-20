@@ -108,8 +108,8 @@ describe('AdherencesBaseTable component', () => {
         'Project',
         'Check',
         'Standard',
-        'Last Scanned',
-        'More Information',
+        'Date since last status change',
+        'More information',
       ]);
     });
   });

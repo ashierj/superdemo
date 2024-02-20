@@ -12953,6 +12953,9 @@ msgstr ""
 msgid "ComplianceStandardsAdherence|Check"
 msgstr ""
 
+msgid "ComplianceStandardsAdherence|Date since last status change"
+msgstr ""
+
 msgid "ComplianceStandardsAdherence|Failure reason"
 msgstr ""
 
@@ -12974,13 +12977,10 @@ msgstr ""
 msgid "ComplianceStandardsAdherence|How to fix"
 msgstr ""
 
-msgid "ComplianceStandardsAdherence|Last Scanned"
-msgstr ""
-
 msgid "ComplianceStandardsAdherence|Merge request approval rules"
 msgstr ""
 
-msgid "ComplianceStandardsAdherence|More Information"
+msgid "ComplianceStandardsAdherence|More information"
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|No projects with standards adherence checks found"
