@@ -164,6 +164,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
         >
           <button
             aria-controls="reference-2"
+            aria-expanded="false"
             aria-haspopup="listbox"
             aria-labelledby="reference-1"
             class="btn btn-block btn-default btn-md gl-button gl-new-dropdown-toggle"
