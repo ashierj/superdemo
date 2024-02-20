@@ -78,8 +78,11 @@ module Gitlab
     private_class_method :loader_for_merge_request
 
     def self.paths_for_merge_request(merge_request, merge_request_diff)
-      # NOTE: merge_head_diff is preferred as we want to include latest changes from the target branch
-      merge_request_diff ||= merge_request.merge_head_diff || merge_request.merge_request_diff
+      # In general merge_head_diff is preferred as we want to include latest changes from the target branch.
+      # When there is a merge conflict merge_head_diff may be out of date and could be missing changes related to
+      # codeowners.  In that case we fall back to merge_request_diff
+      merge_request_diff ||= merge_request.merge_head_diff if merge_request.can_be_merged?
+      merge_request_diff ||= merge_request.merge_request_diff
 
       merge_request_diff.modified_paths(fallback_on_overflow: true)
     end
