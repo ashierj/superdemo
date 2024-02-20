@@ -505,13 +505,13 @@ group :test do
 
   gem 'capybara', '~> 3.40' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'capybara-screenshot', '~> 1.0.26' # rubocop:todo Gemfile/MissingFeatureCategory
-  gem 'selenium-webdriver', '~> 4.17' # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'selenium-webdriver', '~> 4.18', '>= 4.18.1' # rubocop:todo Gemfile/MissingFeatureCategory
 
   gem 'graphlyte', '~> 1.0.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
   gem 'shoulda-matchers', '~> 5.1.0', require: false # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'email_spec', '~> 2.2.0' # rubocop:todo Gemfile/MissingFeatureCategory
-  gem 'webmock', '~> 3.20.0' # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'webmock', '~> 3.21.2' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'rails-controller-testing' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'concurrent-ruby', '~> 1.1' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'test-prof', '~> 1.3.1' # rubocop:todo Gemfile/MissingFeatureCategory
