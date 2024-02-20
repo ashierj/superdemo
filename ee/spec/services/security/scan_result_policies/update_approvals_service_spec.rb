@@ -42,6 +42,8 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       end
     end
 
+    let_it_be(:scan_result_policy_read) { create(:scan_result_policy_read) }
+
     let!(:report_approver_rule) do
       create(:report_approver_rule, :scan_finding,
         merge_request: merge_request,
@@ -50,7 +52,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         vulnerabilities_allowed: vulnerabilities_allowed,
         severity_levels: severity_levels,
         vulnerability_states: vulnerability_states,
-        scan_result_policy_id: create(:scan_result_policy_read).id
+        scan_result_policy_read: scan_result_policy_read
       )
     end
 
@@ -170,10 +172,12 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       it_behaves_like 'triggers policy bot comment', :scan_finding, false
 
       context 'when there are other scan_finding violations' do
+        let_it_be(:protected_branch) { create(:protected_branch, project: project, name: 'master') }
         let_it_be(:scan_result_policy_read_other_scan_finding) { create(:scan_result_policy_read, project: project) }
         let_it_be(:approval_project_rule_other) do
           create(:approval_project_rule, :scan_finding, project: project, approvals_required: 1,
-            scan_result_policy_read: scan_result_policy_read_other_scan_finding)
+            scan_result_policy_read: scan_result_policy_read_other_scan_finding,
+            protected_branches: [protected_branch])
         end
 
         let_it_be(:approver_rule_other) do
@@ -196,6 +200,27 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       let(:approvals_required) { 0 }
 
       it_behaves_like 'triggers policy bot comment', :scan_finding, true, requires_approval: false
+    end
+
+    context 'when targeting an unprotected branch' do
+      let_it_be(:protected_branch) { create(:protected_branch, project: project, name: 'master') }
+      let!(:report_approver_project_rule) do
+        create(:approval_project_rule, :scan_finding, project: project,
+          approvals_required: approvals_required, scan_result_policy_read: scan_result_policy_read,
+          protected_branches: [protected_branch])
+      end
+
+      let!(:report_approver_rule) do
+        create(:report_approver_rule, :scan_finding, merge_request: merge_request,
+          approval_project_rule: report_approver_project_rule,
+          approvals_required: approvals_required, scan_result_policy_read: scan_result_policy_read)
+      end
+
+      before do
+        merge_request.update!(target_branch: 'non-protected')
+      end
+
+      it_behaves_like 'triggers policy bot comment', :scan_finding, false, requires_approval: false
     end
 
     context 'when target pipeline is nil' do
@@ -431,7 +456,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
               vulnerabilities_allowed: vulnerabilities_allowed,
               severity_levels: severity_levels,
               vulnerability_states: vulnerability_states,
-              scan_result_policy_id: create(:scan_result_policy_read).id
+              scan_result_policy_read: scan_result_policy_read
             )
           end
 
