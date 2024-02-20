@@ -13,7 +13,7 @@ RSpec.describe ComplianceManagement::Standards::ExportService, feature_category:
 
   let(:executed) { service.execute }
   let(:payload) { CSV.parse(executed.payload) }
-  let(:expected_header) { ["Status", "Project ID", "Check", "Standard", "Last Scanned"] }
+  let(:expected_header) { ["Status", "Project ID", "Check", "Standard", "Date since last status change"] }
 
   describe '#execute' do
     context 'without visibility to user' do

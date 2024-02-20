@@ -45,7 +45,7 @@ module ComplianceManagement
           'Project ID' => 'project_id',
           'Check' => 'check_name',
           'Standard' => 'standard',
-          'Last Scanned' => 'updated_at'
+          'Date since last status change' => 'updated_at'
         }
       end
     end

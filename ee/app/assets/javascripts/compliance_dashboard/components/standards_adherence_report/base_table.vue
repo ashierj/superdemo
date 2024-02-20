@@ -228,8 +228,8 @@ export default {
       project: s__('ComplianceStandardsAdherence|Project'),
       check: s__('ComplianceStandardsAdherence|Check'),
       standard: s__('ComplianceStandardsAdherence|Standard'),
-      lastScanned: s__('ComplianceStandardsAdherence|Last Scanned'),
-      moreInformation: s__('ComplianceStandardsAdherence|More Information'),
+      lastScanned: s__('ComplianceStandardsAdherence|Date since last status change'),
+      moreInformation: s__('ComplianceStandardsAdherence|More information'),
     },
   },
 };
