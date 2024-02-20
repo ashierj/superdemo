@@ -31,8 +31,23 @@ module EE
           ::Search::Zoekt.search?(group) && ::Search::Zoekt.enabled_for_user?(user)
       end
 
+      override :show_wiki_search_tab?
+      def show_wiki_search_tab?
+        return true if super
+
+        return false if project
+        return false unless show_elasticsearch_tabs?
+        return true if group
+
+        ::Feature.enabled?(:global_search_wiki_tab, user, type: :ops)
+      end
+
       def show_epics_search_tab?
-        project.nil? && !!options[:show_epics] && feature_flag_tab_enabled?(:global_search_epics_tab)
+        return false if project
+        return false unless options[:show_epics]
+        return true if group
+
+        ::Feature.enabled?(:global_search_epics_tab, user, type: :ops)
       end
     end
   end

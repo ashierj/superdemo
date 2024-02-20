@@ -7,7 +7,6 @@ RSpec.describe Search::Navigation, feature_category: :global_search do
     using RSpec::Parameterized::TableSyntax
 
     let_it_be(:user) { create(:user) }
-
     let(:project_double) { instance_double(Project) }
     let(:group_double) { instance_double(Group) }
     let(:group) { nil }
@@ -22,28 +21,137 @@ RSpec.describe Search::Navigation, feature_category: :global_search do
     subject(:tabs) { search_navigation.tabs }
 
     context 'for epics tab' do
-      where(:feature_flag, :project, :show_epics, :condition) do
-        false | nil | false | false
-        false | nil | nil | false
-        false | ref(:project_double) | true | false
-        false | ref(:project_double) | false | false
-        false | ref(:project_double) | nil | false
-        false | nil | true | false
-        true | nil | false | false
-        true | nil | nil | false
-        true | ref(:project_double) | true | false
-        true | ref(:project_double) | false | false
-        true | ref(:project_double) | nil | false
-        true | nil | true | true
+      context 'when project search' do
+        let(:project) { project_double }
+
+        where(:feature_flag, :show_epics, :condition) do
+          false | true  | false
+          false | false | false
+          true  | true  | false
+          true  | false | false
+        end
+
+        with_them do
+          let(:options) { { show_epics: show_epics } }
+
+          it 'data item condition is set correctly' do
+            stub_feature_flags(global_search_epics_tab: feature_flag)
+
+            expect(tabs[:epics][:condition]).to eq(condition)
+          end
+        end
       end
 
-      with_them do
-        let(:options) { { show_epics: show_epics } }
+      context 'when group search' do
+        let(:project) { nil }
+        let(:group) { group_double }
 
-        it 'data item condition is set correctly' do
-          stub_feature_flags(global_search_epics_tab: feature_flag)
+        where(:show_epics, :condition) do
+          false | false
+          true  | true
+          nil   | false
+        end
 
-          expect(tabs[:epics][:condition]).to eq(condition)
+        with_them do
+          let(:options) { { show_epics: show_epics } }
+
+          it 'data item condition is set correctly' do
+            expect(tabs[:epics][:condition]).to eq(condition)
+          end
+        end
+      end
+
+      context 'when global search' do
+        let(:project) { nil }
+        let(:group) { nil }
+
+        where(:feature_flag, :show_epics, :condition) do
+          false | false | false
+          true  | false | false
+          false | true  | false
+          true  | true  | true
+        end
+
+        with_them do
+          let(:options) { { show_epics: show_epics } }
+
+          it 'data item condition is set correctly' do
+            stub_feature_flags(global_search_epics_tab: feature_flag)
+
+            expect(tabs[:epics][:condition]).to eq(condition)
+          end
+        end
+      end
+    end
+
+    context 'for wiki tab' do
+      context 'when project search' do
+        let(:project) { project_double }
+        let(:group) { nil }
+
+        where(:tab_enabled_for_project, :condition) do
+          true  | true
+          false | false
+        end
+
+        with_them do
+          before do
+            allow(search_navigation).to receive(:tab_enabled_for_project?).and_return(tab_enabled_for_project)
+          end
+
+          it 'data item condition is set correctly' do
+            expect(tabs[:wiki_blobs][:condition]).to eq(condition)
+          end
+        end
+      end
+
+      context 'when group search' do
+        let(:project) { nil }
+        let(:group) { group_double }
+
+        where(:feature_flag, :show_elasticsearch_tabs, :condition) do
+          true  | true  | true
+          true  | false | false
+          false | true  | true
+          false | false | false
+        end
+
+        with_them do
+          let(:options) { { show_elasticsearch_tabs: show_elasticsearch_tabs } }
+
+          before do
+            stub_feature_flags(global_search_wiki_tab: feature_flag)
+          end
+
+          it 'data item condition is set correctly' do
+            expect(tabs[:wiki_blobs][:condition]).to eq(condition)
+          end
+        end
+      end
+
+      context 'when global search' do
+        let(:project) { nil }
+        let(:group) { nil }
+
+        where(:feature_flag, :show_elasticsearch_tabs, :condition) do
+          true  | true  | true
+          false | true  | false
+          false | false | false
+          true  | false | false
+          false | nil   | false
+          true  | nil   | false
+        end
+
+        with_them do
+          let(:options) { { show_elasticsearch_tabs: show_elasticsearch_tabs } }
+
+          before do
+            stub_feature_flags(global_search_wiki_tab: feature_flag)
+          end
+
+          it 'data item condition is set correctly' do
+            expect(tabs[:wiki_blobs][:condition]).to eq(condition)
+          end
         end
       end
     end
