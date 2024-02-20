@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe WorkItem do
+RSpec.describe WorkItem, feature_category: :team_planning do
   let_it_be(:reusable_project) { create(:project) }
 
   it 'has one `color`' do
@@ -491,6 +491,54 @@ RSpec.describe WorkItem do
         expect(create_work_item).to be_persisted
 
         expect(Issue::Metrics.count).to eq(0)
+      end
+    end
+  end
+
+  describe '#allowed_work_item_type_change' do
+    context 'when epic work item does not have a synced legacy epic' do
+      let(:work_item) { create(:work_item, :epic) }
+
+      it 'is does change work item type from epic to issue' do
+        work_item.assign_attributes(work_item_type: WorkItems::Type.default_by_type(:issue))
+
+        expect(work_item).to be_valid
+        expect(work_item.errors[:work_item_type_id]).to be_empty
+      end
+    end
+
+    context 'when epic work item has a synced legacy epic' do
+      let!(:epic) { create(:epic, :with_synced_work_item) }
+      let(:work_item) { epic.work_item }
+
+      it 'is does not change work item type from epic to issue' do
+        work_item.assign_attributes(work_item_type: WorkItems::Type.default_by_type(:issue))
+
+        expect(work_item).not_to be_valid
+        expect(work_item.errors[:work_item_type_id])
+          .to include(_('cannot be changed to issue when the work item is a legacy epic synced work item'))
+      end
+    end
+  end
+
+  describe '#before_destroy' do
+    context 'when epic work item does not have a synced legacy epic' do
+      let!(:work_item) { create(:work_item, :epic) }
+
+      it 'is does destroy the epic work item' do
+        expect { work_item.destroy! }.to change { WorkItem.count }.by(-1)
+      end
+    end
+
+    context 'when epic work item has a synced legacy epic' do
+      let!(:epic) { create(:epic, :with_synced_work_item) }
+      let(:work_item) { epic.work_item }
+
+      it 'is does not destroy the epic work item' do
+        expect { work_item.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
+        expect(work_item.errors[:base]).to include(
+          _('cannot be destroyed because this is a synced work item for a legacy epic')
+        )
       end
     end
   end
