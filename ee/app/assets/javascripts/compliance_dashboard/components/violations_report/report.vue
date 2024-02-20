@@ -2,7 +2,7 @@
 import { GlAlert, GlButton, GlKeysetPagination, GlLoadingIcon, GlTable } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { __, s__ } from '~/locale';
-import { sortObjectToString, sortStringToObject, thWidthClass } from '~/lib/utils/table_utility';
+import { sortObjectToString, sortStringToObject, thWidthPercent } from '~/lib/utils/table_utility';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
@@ -173,28 +173,28 @@ export default {
     {
       key: 'severityLevel',
       label: __('Severity'),
-      thClass: thWidthClass(10),
+      thClass: `gl-p-5! ${thWidthPercent(10)}`,
       tdClass: 'gl-vertical-align-middle!',
       sortable: true,
     },
     {
       key: 'violationReason',
       label: __('Violation'),
-      thClass: thWidthClass(15),
+      thClass: `gl-p-5! ${thWidthPercent(15)}`,
       tdClass: 'gl-vertical-align-middle!',
       sortable: true,
     },
     {
       key: 'mergeRequestTitle',
       label: __('Merge request'),
-      thClass: thWidthClass(40),
+      thClass: `gl-p-5! ${thWidthPercent(40)}`,
       tdClass: 'gl-vertical-align-middle!',
       sortable: true,
     },
     {
       key: 'mergedAt',
       label: __('Date merged'),
-      thClass: thWidthClass(20),
+      thClass: `gl-p-5! ${thWidthPercent(20)}`,
       tdClass: 'gl-vertical-align-middle!',
       sortable: true,
     },
