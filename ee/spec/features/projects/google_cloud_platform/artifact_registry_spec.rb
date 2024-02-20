@@ -21,9 +21,7 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
 
     wait_for_requests
 
-    # rubocop:disable Capybara/TestidFinders -- Helper within_testid doesn't cover use case
-    expect(page).to be_axe_clean.within('[data-testid="artifact-registry-list-page"]')
-    # rubocop:enable Capybara/TestidFinders
+    expect(page).to be_axe_clean.within('[data-testid="artifact-registry-list-page"]') # rubocop:todo Capybara/TestidFinders -- Doesn't cover use case, see https://gitlab.com/gitlab-org/gitlab/-/issues/442224
   end
 
   it 'has a page title set' do
