@@ -10,8 +10,7 @@ import GroupSecretsApp from './components/group_secrets_app.vue';
 import ProjectSecretsApp from './components/project_secrets_app.vue';
 import SecretsBreadcrumbs from './components/secrets_breadcrumbs.vue';
 
-const mockGroupSecretsData = [{ key: 'group_secret_1' }, { key: 'group_secret_2' }];
-const mockProjectSecretsData = [{ key: 'project_secret_1' }, { key: 'project_secret_2' }];
+import { mockGroupSecretsData, mockProjectSecretsData } from './mock_data';
 
 Vue.use(VueApollo);
 

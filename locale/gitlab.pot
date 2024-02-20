@@ -44236,6 +44236,9 @@ msgstr ""
 msgid "Secrets"
 msgstr ""
 
+msgid "Secrets|Actions"
+msgstr ""
+
 msgid "Secrets|Add a new secret to the group by following the instructions in the form below."
 msgstr ""
 
@@ -44245,22 +44248,37 @@ msgstr ""
 msgid "Secrets|Audit log"
 msgstr ""
 
+msgid "Secrets|Created"
+msgstr ""
+
+msgid "Secrets|Delete"
+msgstr ""
+
 msgid "Secrets|Edit %{key}"
+msgstr ""
+
+msgid "Secrets|Edit secret"
+msgstr ""
+
+msgid "Secrets|Last accessed"
+msgstr ""
+
+msgid "Secrets|Name"
 msgstr ""
 
 msgid "Secrets|New secret"
 msgstr ""
 
-msgid "Secrets|Secret details"
+msgid "Secrets|Revoke"
 msgstr ""
 
-msgid "Secrets|Secret name"
+msgid "Secrets|Secret details"
 msgstr ""
 
 msgid "Secrets|Secrets"
 msgstr ""
 
-msgid "Secrets|Secrets represent sensitive information your CI job needs to complete work. This sensitive information can be items like API tokens, database credentials, or private keys. Unlike CI/CD variables, which are always presented to a job, secrets must be explicitly required by a job. %{linkStart}Learn more.%{linkEnd}"
+msgid "Secrets|Secrets represent sensitive information your CI job needs to complete work. This sensitive information can be items like API tokens, database credentials, or private keys. Unlike CI/CD variables, which are always presented to a job, secrets must be explicitly required by a job."
 msgstr ""
 
 msgid "Secrets|Stored secrets"
