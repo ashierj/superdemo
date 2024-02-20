@@ -11,10 +11,10 @@ module Abuse
 
     idempotent!
 
-    attr_reader :user, :reporter
+    attr_reader :user, :reporter, :abuse_report
 
     def perform(abuse_report_id)
-      abuse_report = AbuseReport.find_by_id(abuse_report_id)
+      @abuse_report = AbuseReport.find_by_id(abuse_report_id)
       return unless abuse_report&.category == 'spam'
 
       @reporter = abuse_report.reporter
@@ -48,10 +48,10 @@ module Abuse
     def log_event
       Gitlab::AppLogger.info(
         message: "User ban",
-        user: user.username.to_s,
-        email: user.email.to_s,
-        ban_by: reporter.username.to_s,
-        reason: 'abuse report'
+        user_id: user.id,
+        username: user.username,
+        abuse_report_id: abuse_report.id,
+        reason: "Automatic ban triggered by abuse report for #{abuse_report.category}."
       )
     end
   end
