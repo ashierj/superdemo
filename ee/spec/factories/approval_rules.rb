@@ -6,6 +6,17 @@ FactoryBot.define do
     sequence(:name) { |n| "#{ApprovalRuleLike::DEFAULT_NAME}-#{n}" }
   end
 
+  factory :approval_merge_request_rules_approved_approver,
+    class: 'ApprovalRules::ApprovalMergeRequestRulesApprovedApprover' do
+    approval_merge_request_rule
+    user
+  end
+
+  factory :approval_merge_request_rules_group, class: 'ApprovalRules::ApprovalMergeRequestRulesGroup' do
+    approval_merge_request_rule
+    group
+  end
+
   factory :approval_merge_request_rule_source do
     approval_merge_request_rule
     approval_project_rule
@@ -107,9 +118,29 @@ FactoryBot.define do
     user
   end
 
+  factory :approval_project_rules_group, class: 'ApprovalRules::ApprovalProjectRulesGroup' do
+    approval_project_rule
+    group
+  end
+
   factory :approval_group_rule, class: 'ApprovalRules::ApprovalGroupRule' do
     group
     sequence(:name) { |n| "#{ApprovalRuleLike::DEFAULT_NAME}-#{n}" }
     rule_type { :regular }
+  end
+
+  factory :approval_group_rules_protected_branch, class: 'ApprovalRules::ApprovalGroupRulesProtectedBranch' do
+    approval_group_rule
+    protected_branch
+  end
+
+  factory :approval_group_rules_user, class: 'ApprovalRules::ApprovalGroupRulesUser' do
+    approval_group_rule
+    user
+  end
+
+  factory :approval_group_rules_group, class: 'ApprovalRules::ApprovalGroupRulesGroup' do
+    approval_group_rule
+    group
   end
 end
