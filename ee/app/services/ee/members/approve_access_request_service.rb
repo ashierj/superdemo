@@ -3,6 +3,8 @@
 module EE
   module Members
     module ApproveAccessRequestService
+      extend ::Gitlab::Utils::Override
+
       def after_execute(member:, skip_log_audit_event: false)
         super
 
@@ -10,6 +12,15 @@ module EE
       end
 
       private
+
+      override :can_approve_access_requester?
+      def can_approve_access_requester?(access_requester)
+        super && !member_role_too_high?(access_requester)
+      end
+
+      def member_role_too_high?(access_requester)
+        access_requester.prevent_role_assignement?(current_user, params)
+      end
 
       def log_audit_event(member:)
         audit_context = {

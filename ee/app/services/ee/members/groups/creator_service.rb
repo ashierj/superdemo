@@ -52,7 +52,7 @@ module EE
           return false if skip_authorization?
           return false if member_attributes[:access_level].blank?
 
-          member_attributes[:access_level] > member.group.max_member_access_for_user(current_user)
+          member.prevent_role_assignement?(current_user, member_attributes)
         end
       end
     end
