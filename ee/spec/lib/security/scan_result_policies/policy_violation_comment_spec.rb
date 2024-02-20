@@ -5,7 +5,8 @@ require 'spec_helper'
 RSpec.describe Security::ScanResultPolicies::PolicyViolationComment, feature_category: :security_policy_management do
   using RSpec::Parameterized::TableSyntax
 
-  let(:comment) { described_class.new(existing_comment) }
+  let_it_be(:project) { create(:project) }
+  let(:comment) { described_class.new(existing_comment, project) }
 
   def build_comment(reports: [], optional_approvals: [])
     build(:note,
@@ -104,9 +105,9 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationComment, feature_cat
   describe '#body' do
     subject { comment.body }
 
-    let_it_be(:violations_resolved) { 'Security policy violations have been resolved.' }
-    let_it_be(:violations_detected) { 'Policy violation(s) detected' }
-    let_it_be(:optional_approvals_detected) { 'Consider including optional reviewers' }
+    let_it_be(:violations_resolved) { ['Security policy violations have been resolved.'] }
+    let_it_be(:violations_detected) { ['Policy violation(s) detected', 'View policies enforced on your project'] }
+    let_it_be(:optional_approvals_detected) { ['Consider including optional reviewers'] }
 
     context 'when there is no existing comment and no reports' do
       let(:existing_comment) { nil }
@@ -133,7 +134,7 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationComment, feature_cat
       end
 
       it { is_expected.to start_with(described_class::MESSAGE_HEADER) }
-      it { is_expected.to include(expected_body) }
+      it { is_expected.to include(*expected_body) }
     end
   end
 end
