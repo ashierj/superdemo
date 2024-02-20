@@ -2,14 +2,19 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_category: :duo_chat do
+RSpec.describe Gitlab::Llm::Chain::Tools::IssueReader::Executor, feature_category: :duo_chat do
   RSpec.shared_examples 'success response' do
     it 'returns success response' do
       ai_request = double
       allow(ai_request).to receive(:request).and_return(ai_response)
       allow(context).to receive(:ai_request).and_return(ai_request)
+      resource_serialized = Ai::AiResource::Issue.new(resource)
+        .serialize_for_ai(
+          user: context.current_user,
+          content_limit: ::Gitlab::Llm::Chain::Tools::IssueReader::Prompts::Anthropic::MAX_CHARACTERS
+        ).to_xml(root: :root, skip_types: true, skip_instruct: true)
 
-      response = "I identified the issue #{identifier}. For more information use ResourceReader."
+      response = "Please use this information about identified issue: #{resource_serialized}"
 
       expect(tool.execute.content).to eq(response)
     end
@@ -26,7 +31,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
   describe '#name' do
     it 'returns tool name' do
-      expect(described_class::NAME).to eq('IssueIdentifier')
+      expect(described_class::NAME).to eq('IssueReader')
     end
 
     it 'returns tool human name' do
@@ -37,7 +42,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
   describe '#description' do
     it 'returns tool description' do
       expect(described_class::DESCRIPTION)
-        .to include('Useful tool when you need to identify a specific issue')
+        .to include('Useful tool when you need to retrieve information about specific issue')
     end
   end
 
@@ -46,8 +51,15 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
     let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be_with_reload(:project) { create(:project, group: group) }
 
+    before_all do
+      project.add_guest(user)
+    end
+
     before do
-      project.add_developer(user)
+      stub_const("::Gitlab::Llm::Chain::Tools::IssueReader::Prompts::Anthropic::MAX_CHARACTERS",
+        999999)
+      allow(tool).to receive(:provider_prompt_class)
+                       .and_return(::Gitlab::Llm::Chain::Tools::IssueReader::Prompts::Anthropic)
     end
 
     context 'when issue is identified' do
@@ -67,35 +79,11 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
         { input: "user input", suggestions: "Action: IssueIdentifier\nActionInput: #{issue1.iid}" }
       end
 
-      context 'when user does not have permission to read resource' do
-        context 'when is issue identified with iid' do
-          let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{issue2.iid}}" }
-
-          it_behaves_like 'issue not found response'
-        end
-
-        context 'when is issue identified with reference' do
-          let(:ai_response) do
-            "{\"ResourceIdentifierType\": \"url\", \"ResourceIdentifier\": #{issue2.to_reference(full: true)}}"
-          end
-
-          it_behaves_like 'issue not found response'
-        end
-
-        context 'when is issue identified with url' do
-          let(:url) { Gitlab::Routing.url_helpers.project_issue_url(project, issue2) }
-          let(:ai_response) { "{\"ResourceIdentifierType\": \"url\", \"ResourceIdentifier\": \"#{url}\"}" }
-
-          it_behaves_like 'issue not found response'
-        end
-      end
-
       context 'when user has permission to read resource' do
         before do
           stub_application_setting(check_namespace_plan: true)
           stub_licensed_features(ai_chat: true)
 
-          project.add_guest(user)
           allow(project.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
           project.root_ancestor.update!(experiment_features_enabled: true)
         end
@@ -129,6 +117,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
         context 'when issue is the current issue in context' do
           let(:identifier) { 'current' }
           let(:ai_response) { "current\", \"ResourceIdentifier\": \"#{identifier}\"}" }
+          let(:resource) { issue1 }
 
           it_behaves_like 'success response'
         end
@@ -136,6 +125,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
         context 'when issue is identified by iid' do
           let(:identifier) { issue2.iid }
           let(:ai_response) { "iid\", \"ResourceIdentifier\": #{identifier}}" }
+          let(:resource) { issue2 }
 
           it_behaves_like 'success response'
         end
@@ -146,13 +136,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
             "reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
           end
 
-          it_behaves_like 'success response'
-        end
-
-        # Skipped pending https://gitlab.com/gitlab-org/gitlab/-/issues/413509
-        xcontext 'when is issue identified with url' do
-          let(:identifier) { Gitlab::Saas.com_url + Gitlab::Routing.url_helpers.project_issue_path(project, issue2) }
-          let(:ai_response) { "{\"ResourceIdentifierType\": \"url\", \"ResourceIdentifier\": \"#{identifier}\"}" }
+          let(:resource) { issue2 }
 
           it_behaves_like 'success response'
         end
@@ -176,6 +160,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
           let(:identifier) { issue2.iid }
           let(:ai_response) { "iid\", \"ResourceIdentifier\": #{identifier}}" }
+          let(:resource) { issue2 }
 
           it_behaves_like 'success response'
 
@@ -198,6 +183,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           context 'when issue is the current issue in context' do
             let(:identifier) { issue2.iid }
             let(:ai_response) { "iid\", \"ResourceIdentifier\": #{identifier}}" }
+            let(:resource) { issue2 }
 
             it_behaves_like 'success response'
           end
@@ -218,6 +204,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           context 'when issue is the current issue in context' do
             let(:identifier) { 'current' }
             let(:ai_response) { "current\", \"ResourceIdentifier\": \"#{identifier}\"}" }
+            let(:resource) { issue1 }
 
             it_behaves_like 'success response'
           end
@@ -227,6 +214,8 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
             let(:ai_response) do
               "reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
             end
+
+            let(:resource) { issue2 }
 
             it_behaves_like 'success response'
           end
@@ -261,13 +250,6 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
               expect(tool.execute.content).to eq(response)
             end
-          end
-
-          xcontext 'when is issue identified with url' do
-            let(:identifier) { Gitlab::Saas.com_url + Gitlab::Routing.url_helpers.project_issue_path(project, issue2) }
-            let(:ai_response) { "url\", \"ResourceIdentifier\": \"#{identifier}\"}" }
-
-            it_behaves_like 'success response'
           end
         end
 

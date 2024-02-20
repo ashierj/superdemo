@@ -61,10 +61,9 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
 
   let(:tools) do
     [
-      ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
-      ::Gitlab::Llm::Chain::Tools::JsonReader,
+      ::Gitlab::Llm::Chain::Tools::IssueReader,
       ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
-      ::Gitlab::Llm::Chain::Tools::EpicIdentifier,
+      ::Gitlab::Llm::Chain::Tools::EpicReader,
       ::Gitlab::Llm::Chain::Tools::CiEditorAssistant
     ]
   end

@@ -34,7 +34,7 @@ module Gitlab
               # now the resource in context is being referenced in user input.
               context.resource = resource
 
-              content = "I identified the #{resource_name} #{json[:ResourceIdentifier]}. For more information use ResourceReader." # rubocop:disable Layout/LineLength
+              content = passed_content(json)
 
               logger.info_or_debug(context.current_user, message: "Answer", class: self.class.to_s, content: content)
               return Answer.new(status: :ok, context: context, content: content, tool: nil)
@@ -119,6 +119,10 @@ module Gitlab
 
             project_path = text.match(reference_pattern_by_type[type])&.values_at(:namespace, :project)
             context.current_user.authorized_projects.find_by_full_path(project_path.join('/')) if project_path
+          end
+
+          def passed_content(json)
+            "I identified the #{resource_name} #{json[:ResourceIdentifier]}. For more information use ResourceReader."
           end
         end
       end
