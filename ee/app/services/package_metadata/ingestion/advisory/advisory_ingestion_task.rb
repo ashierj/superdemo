@@ -20,7 +20,12 @@ module PackageMetadata
             returns: %w[advisory_xid source_xid id published_date])
 
           map = results.each_with_object({}) do |(advisory_xid, source_xid, id, published_date), acc|
-            acc[advisory_xid] = Hashie::Mash.new({ id: id, source_xid: source_xid, published_date: published_date })
+            acc[advisory_xid] = Hashie::Mash.new({
+              id: id,
+              source_xid: source_xid,
+              advisory_xid: advisory_xid,
+              published_date: published_date
+            })
           end
           advisory_map.merge!(map)
         end
