@@ -59,13 +59,13 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::IngestionService, feature_c
 
         if cs_ff_enabled
           expect(Gitlab::AppJsonLogger).to have_received(:info)
-            .with(message: 'Queued scan for advisory', source_xid: anything, advisory_xid: anything)
+            .with(message: 'Queued scan for advisory', source_xid: be_present, advisory_xid: be_present)
             .at_least(:once)
         end
 
         unless cs_ff_enabled
           expect(Gitlab::AppJsonLogger).to have_received(:warn)
-            .with(message: 'Skipped scan for advisory', source_xid: anything, advisory_xid: anything)
+            .with(message: 'Skipped scan for advisory', source_xid: be_present, advisory_xid: be_present)
             .at_least(:once)
         end
       end
