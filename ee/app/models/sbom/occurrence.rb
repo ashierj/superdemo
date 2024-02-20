@@ -133,7 +133,7 @@ module Sbom
         blob_path: input_file_blob_path,
         path: input_file_path,
         top_level: false,
-        ancestors: nil
+        ancestors: ancestors
       }
     end
 
