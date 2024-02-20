@@ -27,6 +27,8 @@ import {
   EVENT_LABEL_CREATED_DASHBOARD,
   EVENT_LABEL_EDITED_DASHBOARD,
   EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
+  EVENT_LABEL_VIEWED_BUILTIN_DASHBOARD,
+  EVENT_LABEL_VIEWED_DASHBOARD,
 } from '../constants';
 import getCustomizableDashboardQuery from '../graphql/queries/get_customizable_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_customizable_visualizations.query.graphql';
@@ -120,8 +122,12 @@ export default {
   },
   watch: {
     initialDashboard(initialDashboard) {
+      this.trackEvent(EVENT_LABEL_VIEWED_DASHBOARD);
+
       if (initialDashboard?.userDefined) {
         this.trackEvent(EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD);
+      } else {
+        this.trackEvent(EVENT_LABEL_VIEWED_BUILTIN_DASHBOARD);
       }
     },
   },
