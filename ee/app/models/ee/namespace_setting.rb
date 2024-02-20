@@ -90,13 +90,6 @@ module EE
           ::Gitlab::CurrentSettings.product_analytics_enabled?
       end
 
-      def ai_assist_ui_enabled?
-        ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-          ::Feature.enabled?(:ai_assist_ui) &&
-          ::Feature.enabled?(:ai_assist_flag, namespace) &&
-          namespace.root?
-      end
-
       def user_cap_enabled?
         new_user_signups_cap.present? && namespace.root?
       end
