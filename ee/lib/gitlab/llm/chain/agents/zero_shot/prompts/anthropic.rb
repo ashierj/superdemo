@@ -13,7 +13,7 @@ module Gitlab
                 human_role = ROLE_NAMES[Llm::AiMessage::ROLE_USER]
 
                 text = <<~PROMPT
-                  #{human_role}: #{base_prompt(options)}
+                  \n\n#{human_role}: #{base_prompt(options)}
                 PROMPT
 
                 history = truncated_conversation(options[:conversation], Requests::Anthropic::PROMPT_SIZE - text.size)
@@ -27,16 +27,23 @@ module Gitlab
               def self.truncated_conversation(conversation, limit)
                 return '' if conversation.blank?
 
-                result = ''
-                conversation.reverse_each do |message|
+                buffer = ''
+                conversation.reverse_each.reduce('') do |result, message|
                   role = ROLE_NAMES[message.role]
-                  new_str = "#{role}: #{message.content}\n\n#{result}"
-                  break if limit < new_str.size
+                  buffer = "\n\n#{role}: #{message.content}#{buffer}"
+                  break result if buffer.size + result.size > limit
 
-                  result = new_str
+                  # Anthropic requires prompts to start with a `\n\nHuman:` turn. Thus, we accumulate in `buffer` the
+                  # conversation turns while iterating, unitl we encounter a `\n\nHuman:` role, and then we add that
+                  # whole conversation block to the history
+                  # Ref: https://docs.anthropic.com/claude/reference/prompt-validation
+                  next result unless message.role == Llm::AiMessage::ROLE_USER
+
+                  new_str = "#{buffer}#{result}"
+                  buffer = '' # Reset the buffer for the next conversation block
+
+                  new_str
                 end
-
-                result
               end
             end
           end
