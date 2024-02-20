@@ -103,10 +103,9 @@ describe('Google Artifact Registry list page header', () => {
           createComponent();
 
           expect(findRepositoryNameSubHeader().props()).toMatchObject({
-            text: defaultProps.data.repository,
-            textTooltip: 'Repository name',
             icon: 'folder',
-            size: 'xl',
+            text: `Repository: ${defaultProps.data.repository}`,
+            size: 'l',
           });
         });
       });
@@ -116,10 +115,9 @@ describe('Google Artifact Registry list page header', () => {
           createComponent();
 
           expect(findProjectIDSubHeader().props()).toMatchObject({
-            text: defaultProps.data.projectId,
-            textTooltip: 'Project ID',
             icon: 'project',
-            size: 'xl',
+            text: `Project ID: ${defaultProps.data.projectId}`,
+            size: 'l',
           });
         });
       });
