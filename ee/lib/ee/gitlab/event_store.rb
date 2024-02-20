@@ -68,6 +68,12 @@ module EE
               project = ::Project.find_by_id(event.data['project_id'])
               ::Feature.enabled?(:sync_project_archival_status_to_sbom_occurrences, project)
             end
+          store.subscribe ::Vulnerabilities::ProcessArchivedEventsWorker,
+            to: ::Projects::ProjectArchivedEvent,
+            if: ->(event) {
+                  ::Feature.enabled?(:update_vuln_reads_archived_via_event,
+                    ::Project.find_by_id(event.data['project_id']), type: :gitlab_com_derisk)
+                }
         end
       end
     end
