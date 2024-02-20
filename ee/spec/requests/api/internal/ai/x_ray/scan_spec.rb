@@ -119,8 +119,7 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
 
             it 'calls ::CloudConnector::AccessService to obtain access token', :aggregate_failures do
               expect_next_instance_of(::CloudConnector::AccessService) do |instance|
-                expect(instance).to receive(:access_token).with([:code_suggestions], gitlab_realm)
-                                                          .and_return(ai_gateway_token)
+                expect(instance).to receive(:access_token).with([:code_suggestions]).and_return(ai_gateway_token)
               end
 
               post_api
@@ -197,8 +196,7 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
 
             it 'calls ::CloudConnector::AccessService to obtain access token', :aggregate_failures do
               expect_next_instance_of(::CloudConnector::AccessService) do |instance|
-                expect(instance).to receive(:access_token).with([:code_suggestions], gitlab_realm)
-                                                          .and_return(ai_gateway_token)
+                expect(instance).to receive(:access_token).with([:code_suggestions]).and_return(ai_gateway_token)
               end
 
               post_api

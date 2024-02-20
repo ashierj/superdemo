@@ -53,14 +53,12 @@ module API
 
             def model_gateway_headers(headers, gateway_token)
               {
-                'X-Gitlab-Instance-Id' => ::Gitlab::CurrentSettings.uuid.presence || GITLAB_INSTANCE_UUID_NOT_SET,
                 'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
-                'X-Gitlab-Realm' => gitlab_realm,
                 'X-Gitlab-Authentication-Type' => 'oidc',
                 'Authorization' => "Bearer #{gateway_token}",
                 'Content-Type' => 'application/json',
                 'User-Agent' => headers["User-Agent"] # Forward the User-Agent on to the model gateway
-              }.merge(saas_headers).transform_values { |v| Array(v) }
+              }.merge(saas_headers).merge(cloud_connector_headers(nil)).transform_values { |v| Array(v) }
             end
 
             def saas_headers
@@ -77,7 +75,7 @@ module API
             strong_memoize_attr :current_namespace
 
             def ai_gateway_token
-              ::CloudConnector::AccessService.new.access_token([:code_suggestions], gitlab_realm)
+              ::CloudConnector::AccessService.new.access_token([:code_suggestions])
             end
             strong_memoize_attr :ai_gateway_token
           end

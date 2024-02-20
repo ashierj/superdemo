@@ -68,7 +68,7 @@ module API
             documentation: { example: 'namespace/project' }
         end
         post do
-          token = ::CloudConnector::AccessService.new.access_token([:code_suggestions], gitlab_realm)
+          token = ::CloudConnector::AccessService.new.access_token([:code_suggestions])
 
           unauthorized! if token.nil?
 

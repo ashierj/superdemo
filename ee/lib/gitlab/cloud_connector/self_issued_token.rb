@@ -7,15 +7,11 @@ module Gitlab
       NOT_BEFORE_TIME = 5.seconds.to_i.freeze
       EXPIRES_IN = 1.hour.to_i.freeze
 
-      # Authentication realms
-      GITLAB_REALM_SAAS = 'saas'
-      GITLAB_REALM_SELF_MANAGED = 'self-managed'
-
       NoSigningKeyError = Class.new(StandardError)
 
       attr_reader :issued_at
 
-      def initialize(user, scopes:, gitlab_realm: GITLAB_REALM_SAAS)
+      def initialize(user, scopes:)
         @id = SecureRandom.uuid
         @audience = JWT_AUDIENCE
         @issuer = Doorkeeper::OpenidConnect.configuration.issuer
@@ -24,7 +20,6 @@ module Gitlab
         @expire_time = @issued_at + EXPIRES_IN
         @scopes = scopes
         @user = user
-        @gitlab_realm = gitlab_realm
       end
 
       def encoded
@@ -48,7 +43,7 @@ module Gitlab
 
       def claims
         {
-          gitlab_realm: @gitlab_realm,
+          gitlab_realm: Gitlab::CloudConnector.gitlab_realm,
           scopes: @scopes
         }
       end

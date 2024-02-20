@@ -10,15 +10,10 @@ module API
 
         {
           'X-Gitlab-Instance-Id' => instance_id,
-          'X-Gitlab-Global-User-Id' => user_id,
-          'X-Gitlab-Realm' => gitlab_realm
-        }
-      end
-
-      def gitlab_realm
-        return Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SAAS if Gitlab.org_or_com? # rubocop:disable Gitlab/AvoidGitlabInstanceChecks -- To align with ee/lib/api/code_suggestions.rb.
-
-        Gitlab::CloudConnector::SelfIssuedToken::GITLAB_REALM_SELF_MANAGED
+          'X-Gitlab-Realm' => Gitlab::CloudConnector.gitlab_realm
+        }.tap do |result|
+          result['X-Gitlab-Global-User-Id'] = user_id if user
+        end
       end
     end
   end
