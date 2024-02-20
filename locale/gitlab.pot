@@ -12946,6 +12946,9 @@ msgstr ""
 msgid "ComplianceStandardsAdherence|Check"
 msgstr ""
 
+msgid "ComplianceStandardsAdherence|Date since last status change"
+msgstr ""
+
 msgid "ComplianceStandardsAdherence|Failure reason"
 msgstr ""
 
@@ -12967,13 +12970,10 @@ msgstr ""
 msgid "ComplianceStandardsAdherence|How to fix"
 msgstr ""
 
-msgid "ComplianceStandardsAdherence|Last Scanned"
-msgstr ""
-
 msgid "ComplianceStandardsAdherence|Merge request approval rules"
 msgstr ""
 
-msgid "ComplianceStandardsAdherence|More Information"
+msgid "ComplianceStandardsAdherence|More information"
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|No projects with standards adherence checks found"
@@ -58424,7 +58424,13 @@ msgstr ""
 msgid "cannot be changed to %{new_type} when linked to a parent %{parent_type}."
 msgstr ""
 
+msgid "cannot be changed to %{new_type} when the work item is a legacy epic synced work item"
+msgstr ""
+
 msgid "cannot be changed to %{new_type} with these child item types."
+msgstr ""
+
+msgid "cannot be destroyed because this is a synced work item for a legacy epic"
 msgstr ""
 
 msgid "cannot be enabled"

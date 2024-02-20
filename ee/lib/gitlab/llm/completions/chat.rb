@@ -8,10 +8,9 @@ module Gitlab
 
         TOOLS = [
           ::Gitlab::Llm::Chain::Tools::CiEditorAssistant,
-          ::Gitlab::Llm::Chain::Tools::JsonReader,
-          ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
+          ::Gitlab::Llm::Chain::Tools::IssueReader,
           ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
-          ::Gitlab::Llm::Chain::Tools::EpicIdentifier
+          ::Gitlab::Llm::Chain::Tools::EpicReader
         ].freeze
 
         COMMAND_TOOLS = TOOLS + [

@@ -78,10 +78,18 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
       let(:sbom_scanner) { instance_double('Gitlab::LicenseScanning::SbomScanner', report: target_branch_report) }
       let(:target_branch_report) { create(:ci_reports_license_scanning_report) }
 
-      let(:case5) { [['GPL v3', 'A'], ['MIT', 'B'], ['GPL v3', 'C'], ['Apache 2', 'D']] }
-      let(:case4) { [['GPL v3', 'A'], ['MIT', 'B'], ['GPL v3', 'C']] }
-      let(:case3) { [['GPL v3', 'A'], ['MIT', 'B']] }
-      let(:case2) { [['GPL v3', 'A']] }
+      let(:case5) do
+        [
+          ['GPL v3', 'GNU 3', 'A'],
+          ['MIT', 'MIT License', 'B'],
+          ['GPL v3', 'GNU 3', 'C'],
+          ['Apache 2', 'Apache License 2', 'D']
+        ]
+      end
+
+      let(:case4) { [['GPL v3', 'GNU 3', 'A'], ['MIT', 'MIT License', 'B'], ['GPL v3', 'GNU 3', 'C']] }
+      let(:case3) { [['GPL v3', 'GNU 3', 'A'], ['MIT', 'MIT License', 'B']] }
+      let(:case2) { [['GPL v3', 'GNU 3', 'A']] }
       let(:case1) { [] }
 
       context 'when target branch pipeline is empty' do
@@ -189,70 +197,119 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
         end
       end
 
-      using RSpec::Parameterized::TableSyntax
+      describe 'possible combinations' do
+        using RSpec::Parameterized::TableSyntax
 
-      where(:target_branch, :pipeline_branch, :states, :policy_license, :policy_state, :result) do
-        ref(:case1) | ref(:case2) | ['newly_detected'] | 'GPL v3' | :denied  | true
-        ref(:case2) | ref(:case3) | ['newly_detected'] | 'GPL v3' | :denied  | false
-        ref(:case3) | ref(:case4) | ['newly_detected'] | 'GPL v3' | :denied  | true
-        ref(:case4) | ref(:case5) | ['newly_detected'] | 'GPL v3' | :denied  | false
-        ref(:case1) | ref(:case2) | ['detected'] | 'GPL v3' | :denied  | false
-        ref(:case2) | ref(:case3) | ['detected'] | 'GPL v3' | :denied  | true
-        ref(:case3) | ref(:case4) | ['detected'] | 'GPL v3' | :denied  | true
-        ref(:case4) | ref(:case5) | ['detected'] | 'GPL v3' | :denied  | true
+        where(:target_branch, :pipeline_branch, :states, :policy_license, :policy_state, :violated_license, :result) do
+          ref(:case1) | ref(:case2) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | true
+          ref(:case1) | ref(:case2) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | true
+          ref(:case2) | ref(:case3) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | false
+          ref(:case2) | ref(:case3) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | false
+          ref(:case3) | ref(:case4) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | true
+          ref(:case3) | ref(:case4) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | true
+          ref(:case4) | ref(:case5) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | false
+          ref(:case4) | ref(:case5) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | false
+          ref(:case1) | ref(:case2) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | false
+          ref(:case1) | ref(:case2) | ['detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | false
+          ref(:case2) | ref(:case3) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | true
+          ref(:case2) | ref(:case3) | ['detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | true
+          ref(:case3) | ref(:case4) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | true
+          ref(:case3) | ref(:case4) | ['detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | true
+          ref(:case4) | ref(:case5) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | true
+          ref(:case4) | ref(:case5) | ['detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | true
 
-        ref(:case1) | ref(:case2) | ['newly_detected'] | 'MIT' | :allowed  | true
-        ref(:case2) | ref(:case3) | ['newly_detected'] | 'MIT' | :allowed  | false
-        ref(:case3) | ref(:case4) | ['newly_detected'] | 'MIT' | :allowed  | true
-        ref(:case4) | ref(:case5) | ['newly_detected'] | 'MIT' | :allowed  | true
-        ref(:case1) | ref(:case2) | ['detected'] | 'MIT' | :allowed  | false
-        ref(:case2) | ref(:case3) | ['detected'] | 'MIT' | :allowed  | true
-        ref(:case3) | ref(:case4) | ['detected'] | 'MIT' | :allowed  | true
-        ref(:case4) | ref(:case5) | ['detected'] | 'MIT' | :allowed  | true
-      end
+          ref(:case1) | ref(:case2) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | 'GNU 3' | true
+          ref(:case1) | ref(:case2) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | 'GNU 3' | true
+          ref(:case2) | ref(:case3) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | nil | false
+          ref(:case3) | ref(:case4) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | 'GNU 3' | true
+          ref(:case3) | ref(:case4) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | 'GNU 3' | true
+          ref(:case4) | ref(:case5) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | 'Apache License 2' | true
+          ref(:case4) | ref(:case5) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | 'Apache License 2' | true
+          ref(:case1) | ref(:case2) | ['detected'] | ['MIT', 'MIT License'] | :allowed | nil | false
+          ref(:case1) | ref(:case2) | ['detected'] | [nil, 'MIT License'] | :allowed | nil | false
+          ref(:case2) | ref(:case3) | ['detected'] | ['MIT', 'MIT License'] | :allowed | 'GNU 3' | true
+          ref(:case2) | ref(:case3) | ['detected'] | [nil, 'MIT License'] | :allowed | 'GNU 3' | true
+          ref(:case3) | ref(:case4) | ['detected'] | ['MIT', 'MIT License'] | :allowed | 'GNU 3' | true
+          ref(:case3) | ref(:case4) | ['detected'] | [nil, 'MIT License'] | :allowed | 'GNU 3' | true
+          ref(:case4) | ref(:case5) | ['detected'] | ['MIT', 'MIT License'] | :allowed | 'GNU 3' | true
+          ref(:case4) | ref(:case5) | ['detected'] | [nil, 'MIT License'] | :allowed | 'GNU 3' | true
 
-      with_them do
-        let(:match_on_inclusion_license) { policy_state == :denied }
-        let(:target_branch_report) { create(:ci_reports_license_scanning_report) }
-        let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
-        let(:license_states) { states }
-        let(:license) { create(:software_license, name: policy_license) }
-
-        before do
-          target_branch.each do |ld|
-            target_branch_report.add_license(id: nil, name: ld[0]).add_dependency(name: ld[1])
-          end
-
-          pipeline_branch.each do |ld|
-            pipeline_report.add_license(id: nil, name: ld[0]).add_dependency(name: ld[1])
-          end
-
-          create(:software_license_policy, policy_state,
-            project: project,
-            software_license: license,
-            scan_result_policy_read: scan_result_policy_read
-          )
-
-          allow(service).to receive(:report).and_return(pipeline_report)
-          allow(service).to receive(:target_branch_report).and_return(target_branch_report)
+          # TODO: These cases fail. Related to https://gitlab.com/gitlab-org/gitlab/-/issues/438584
+          # When spdx_identifier is used in policy instead of name, match_on_inclusion_license is evaluated incorrectly
+          # ref(:case2) | ref(:case3) | ['newly_detected'] | [nil, 'MIT'] | :allowed | nil | false
+          # ref(:case2) | ref(:case2) | ['detected'] | [nil, 'GPL v3'] | :allowed | nil | false
         end
 
-        it 'syncs approvals_required' do
-          if result
-            expect { execute }.not_to change { license_finding_rule.reload.approvals_required }
-          else
-            expect { execute }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
-          end
-        end
+        with_them do
+          let(:match_on_inclusion_license) { policy_state == :denied }
+          let(:target_branch_report) { create(:ci_reports_license_scanning_report) }
+          let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
+          let(:license_states) { states }
+          let(:license) { create(:software_license, spdx_identifier: policy_license[0], name: policy_license[1]) }
 
-        it 'logs only violated rules' do
-          if result
-            expect(Gitlab::AppJsonLogger).to receive(:info).with(hash_including(message: 'Updating MR approval rule'))
-          else
-            expect(Gitlab::AppJsonLogger).not_to receive(:info)
+          before do
+            target_branch.each do |ld|
+              target_branch_report.add_license(id: ld[0], name: ld[1]).add_dependency(name: ld[2])
+            end
+
+            pipeline_branch.each do |ld|
+              pipeline_report.add_license(id: ld[0], name: ld[1]).add_dependency(name: ld[2])
+            end
+
+            create(:software_license_policy, policy_state,
+              project: project,
+              software_license: license,
+              scan_result_policy_read: scan_result_policy_read
+            )
+
+            allow(service).to receive(:report).and_return(pipeline_report)
+            allow(service).to receive(:target_branch_report).and_return(target_branch_report)
           end
 
-          execute
+          it 'syncs approvals_required' do
+            if result
+              expect { execute }.not_to change { license_finding_rule.reload.approvals_required }
+            else
+              expect { execute }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
+            end
+          end
+
+          it 'logs only violated rules' do
+            if result
+              expect(Gitlab::AppJsonLogger).to receive(:info).with(hash_including(message: 'Updating MR approval rule'))
+            else
+              expect(Gitlab::AppJsonLogger).not_to receive(:info)
+            end
+
+            execute
+          end
+
+          describe 'violation data' do
+            it 'persists violation data' do
+              if result
+                expect { execute }.to change { scan_result_policy_read.violations.count }.by(1)
+                expect(scan_result_policy_read.violations.last.violation_data)
+                  .to eq({ 'violations' => { 'licenses' => [violated_license] } })
+              else
+                expect { execute }.not_to change { scan_result_policy_read.violations.count }
+              end
+            end
+
+            context 'when feature flag "save_policy_violation_data" is disabled' do
+              before do
+                stub_feature_flags(save_policy_violation_data: false)
+              end
+
+              it 'adds violations without data' do
+                if result
+                  expect { execute }.to change { scan_result_policy_read.violations.count }.by(1)
+                  expect(scan_result_policy_read.violations.last.violation_data).to be_nil
+                else
+                  expect { execute }.not_to change { scan_result_policy_read.violations.count }
+                end
+              end
+            end
+          end
         end
       end
     end

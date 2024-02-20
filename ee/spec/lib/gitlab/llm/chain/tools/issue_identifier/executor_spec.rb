@@ -3,17 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_category: :duo_chat do
-  RSpec.shared_examples 'success response' do |ff_off|
+  RSpec.shared_examples 'success response' do
     it 'returns success response' do
       ai_request = double
       allow(ai_request).to receive(:request).and_return(ai_response)
       allow(context).to receive(:ai_request).and_return(ai_request)
 
-      response = if ff_off
-                   "I identified the issue #{identifier}."
-                 else
-                   "I identified the issue #{identifier}. For more information use ResourceReader."
-                 end
+      response = "I identified the issue #{identifier}. For more information use ResourceReader."
 
       expect(tool.execute.content).to eq(response)
     end

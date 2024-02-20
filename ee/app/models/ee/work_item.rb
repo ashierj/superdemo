@@ -8,6 +8,8 @@ module EE
     prepended do
       include FilterableByTestReports
 
+      before_destroy :check_if_can_be_destroyed, prepend: true
+
       has_one :progress, class_name: 'WorkItems::Progress', foreign_key: 'issue_id', inverse_of: :work_item
 
       has_one :color, class_name: 'WorkItems::Color', foreign_key: 'issue_id', inverse_of: :work_item
@@ -88,6 +90,34 @@ module EE
 
     def epic_work_item?
       work_item_type.base_type == ::WorkItems::Type.default_by_type(:epic)&.base_type
+    end
+
+    override :allowed_work_item_type_change
+    def allowed_work_item_type_change
+      super
+
+      return unless previous_type_was_epic?
+      return unless synced_epic.present?
+
+      errors.add(
+        :work_item_type_id,
+        format(
+          _('cannot be changed to %{new_type} when the work item is a legacy epic synced work item'),
+          new_type: work_item_type.name.downcase
+        )
+      )
+    end
+
+    def previous_type_was_epic?
+      changes["work_item_type_id"].first == ::WorkItems::Type.default_by_type(:epic).id
+    end
+
+    def check_if_can_be_destroyed
+      return unless work_item_type.base_type.casecmp(::WorkItems::Type::BASE_TYPES[:epic][:name]) == 0
+      return if !synced_epic.present? || synced_epic.destroyed?
+
+      errors.add(:base, _('cannot be destroyed because this is a synced work item for a legacy epic'))
+      throw :abort # rubocop:disable Cop/BanCatchThrow -- to stop work item being destroyed
     end
   end
 end

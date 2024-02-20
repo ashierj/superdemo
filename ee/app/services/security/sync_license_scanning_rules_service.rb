@@ -36,17 +36,17 @@ module Security
 
     def remove_required_license_finding_approval(merge_request)
       license_approval_rules = merge_request
-        .approval_rules
-        .report_approver
-        .license_scanning
-        .with_scan_result_policy_read
-        .including_scan_result_policy_read
+                                 .approval_rules
+                                 .report_approver
+                                 .license_scanning
+                                 .with_scan_result_policy_read
+                                 .including_scan_result_policy_read
 
       return if license_approval_rules.empty?
 
       violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService.new(merge_request)
       violated_rules, unviolated_rules = license_approval_rules.partition do |rule|
-        violates_policy?(merge_request, rule)
+        violates_policy?(merge_request, rule, violations)
       end
 
       update_required_approvals(merge_request, violated_rules, unviolated_rules)
@@ -66,32 +66,46 @@ module Security
     ##     with license type violating the policy.
     ##   - If match_on_inclusion_license is false, any detected licenses that does not match
     ##     the licenses from `license_types` should require approval
-    def violates_policy?(merge_request, rule)
+    def violates_policy?(merge_request, rule, violations)
       scan_result_policy_read = rule.scan_result_policy_read
-      check_denied_licenses = scan_result_policy_read.match_on_inclusion_license
       target_branch_report = target_branch_report(merge_request)
 
+      license_policies = license_policies(scan_result_policy_read)
+      license_ids_from_policy, license_names_from_policy = license_policy_ids_and_names(license_policies)
+      licenses_from_policy = join_ids_and_names(license_ids_from_policy, license_names_from_policy)
+
       license_ids, license_names = licenses_to_check(target_branch_report, scan_result_policy_read)
-      license_policies = project
+
+      if scan_result_policy_read.match_on_inclusion_license
+        all_denied_licenses = licenses_from_policy
+        policy_denied_license_names = (all_denied_licenses & licenses_from_report) - license_ids_from_policy
+        violates_license_policy = report.violates_for_licenses?(license_policies, license_ids, license_names)
+      else
+        # when match_on_inclusion_license is false, only the licenses mentioned in the policy are allowed
+        all_denied_licenses = (licenses_from_report - licenses_from_policy).uniq
+        comparison_licenses = join_ids_and_names(license_ids, license_names)
+        policy_denied_license_names = (comparison_licenses - licenses_from_policy).uniq - license_ids
+        violates_license_policy = policy_denied_license_names.present?
+      end
+
+      # when there are no license violations, but new dependency with policy licenses is added, require approval
+      if scan_result_policy_read.newly_detected?
+        new_license_dependency_map = new_dependencies_with_denied_licenses(target_branch_report, all_denied_licenses)
+        if new_license_dependency_map.present?
+          violates_license_policy = true
+          policy_denied_license_names = new_license_dependency_map.keys.uniq
+        end
+      end
+
+      set_violation_data(violations, rule, policy_denied_license_names) if violates_license_policy
+      violates_license_policy
+    end
+
+    def license_policies(scan_result_policy_read)
+      project
         .software_license_policies
         .including_license
         .for_scan_result_policy_read(scan_result_policy_read.id)
-
-      license_names_from_policy = license_names_from_policy(license_policies)
-      if check_denied_licenses
-        denied_licenses = license_names_from_policy
-        violates_license_policy = report.violates_for_licenses?(license_policies, license_ids, license_names)
-      else
-        # when match_on_inclusion_license is false, only allowed licenses are mentioned in policy
-        denied_licenses = (license_names_from_report - license_names_from_policy).uniq
-        license_names_from_ids = license_names_from_ids(license_ids, license_names)
-        violates_license_policy = (license_names_from_ids - license_names_from_policy).present?
-      end
-
-      return true if scan_result_policy_read.newly_detected? &&
-        new_dependency_with_denied_license?(target_branch_report, denied_licenses)
-
-      violates_license_policy
     end
 
     def licenses_to_check(target_branch_report, scan_result_policy_read)
@@ -112,23 +126,24 @@ module Security
       [license_ids, license_names]
     end
 
-    def license_names_from_policy(license_policies)
+    def license_policy_ids_and_names(license_policies)
       ids = license_policies.map(&:spdx_identifier)
       names = license_policies.map(&:name)
 
-      ids.concat(names).compact
+      [ids, names].map(&:compact)
     end
 
-    def license_names_from_ids(ids, names)
-      ids.concat(names).compact.uniq
+    def join_ids_and_names(ids, names)
+      (ids + names).compact.uniq
     end
 
-    def new_dependency_with_denied_license?(target_branch_report, denied_licenses)
-      dependencies_with_denied_licenses = report.licenses
-        .select { |license| denied_licenses.include?(license.name) || denied_licenses.include?(license.id) }
-        .flat_map(&:dependencies).map(&:name)
+    def new_dependencies_with_denied_licenses(target_branch_report, denied_licenses)
+      new_dependency_names_in_report = new_dependency_names(target_branch_report)
 
-      (dependencies_with_denied_licenses & new_dependency_names(target_branch_report)).present?
+      report.licenses
+            .select { |license| denied_licenses.include?(license.name) || denied_licenses.include?(license.id) }
+            .to_h { |license| [license.name, license.dependencies.map(&:name)] }
+            .select { |_license, dependency_names| (dependency_names & new_dependency_names_in_report).present? }
     end
 
     def target_branch_report(merge_request)
@@ -148,10 +163,10 @@ module Security
     end
     strong_memoize_attr :report
 
-    def license_names_from_report
+    def licenses_from_report
       report.license_names.concat(report.licenses.filter_map(&:id)).compact.uniq
     end
-    strong_memoize_attr :license_names_from_report
+    strong_memoize_attr :licenses_from_report
 
     def log_violated_rules(merge_request, rules)
       return unless rules.any?
@@ -174,6 +189,16 @@ module Security
         project_path: project.full_path
       }
       Gitlab::AppJsonLogger.info(message: 'Updating MR approval rule', **default_attributes.merge(attributes))
+    end
+
+    def set_violation_data(violations, rule, policy_denied_licenses)
+      return if ::Feature.disabled?(:save_policy_violation_data, project)
+      return if policy_denied_licenses.blank?
+
+      violations.set_violation_data(
+        rule.scan_result_policy_id,
+        { violations: { licenses: policy_denied_licenses } }
+      )
     end
   end
 end

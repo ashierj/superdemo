@@ -5,6 +5,8 @@ module Gitlab
     module Chain
       module Tools
         module JsonReader
+          # this tool is currently not used. As we may come back to using it in the future, at this moment I am not
+          # deleting it. New code regarding serializing resources should be added to "concerns/reader_tooling" module
           class Executor < Tool
             include Concerns::AiDependent
 
