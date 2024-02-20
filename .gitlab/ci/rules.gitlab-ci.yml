@@ -50,6 +50,9 @@
 .if-merge-request-approved-and-specific-devops-stage: &if-merge-request-approved-and-specific-devops-stage
   if: '($CI_MERGE_REQUEST_EVENT_TYPE == "merged_result" || $CI_MERGE_REQUEST_EVENT_TYPE == "detached") && ($CI_MERGE_REQUEST_LABELS =~ /pipeline:mr-approved/ && $CI_MERGE_REQUEST_LABELS =~ /devops::(create|govern|manage|plan|verify|package|monitor|data stores|fulfillment|systems)/)'
 
+.if-merge-request-and-specific-devops-stage: &if-merge-request-and-specific-devops-stage
+  if: '($CI_MERGE_REQUEST_EVENT_TYPE == "merged_result" || $CI_MERGE_REQUEST_EVENT_TYPE == "detached") && $CI_MERGE_REQUEST_LABELS =~ /devops::(create|govern|manage|plan|verify|package|monitor|data stores|fulfillment|systems)/'
+
 .if-merge-request-and-devops-fulfillment: &if-merge-request-and-devops-fulfillment
   if: '($CI_MERGE_REQUEST_EVENT_TYPE == "merged_result" || $CI_MERGE_REQUEST_EVENT_TYPE == "detached") && $CI_MERGE_REQUEST_LABELS =~ /devops::fulfillment/'
 
@@ -1726,12 +1729,16 @@
 .qa:rules:manual-omnibus-and-follow-up-e2e:
   rules:
     - !reference [".qa:rules:package-and-test-never-run", rules]
+    - <<: *if-merge-request-and-specific-devops-stage
+      when: never
     - !reference [".qa:rules:code-merge-request-manual", rules]
 
 # These are based on `.qa:rules:manual-omnibus-and-follow-up-e2e` but with manual jobs changed to automatic
 .qa:rules:follow-up-e2e:
   rules:
     - !reference [".qa:rules:package-and-test-never-run", rules]
+    - <<: *if-merge-request-and-specific-devops-stage
+      when: never
     - <<: *if-merge-request
       changes: *code-patterns
       allow_failure: true
@@ -1770,6 +1777,8 @@
       changes: *code-patterns
       when: never
     - <<: *if-force-ci
+      when: never
+    - <<: *if-merge-request-and-specific-devops-stage
       when: never
     # From .qa:rules:package-and-test-schedule
     - <<: *if-dot-com-gitlab-org-schedule
