@@ -96,11 +96,12 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
     before do
       sign_in(user)
 
-      visit search_path(project_id: project.id, repository_ref: repository_ref)
+      visit search_path(project_id: project.id, repository_ref: repository_ref, scope: scope)
     end
 
     context "when `repository_ref` is the default branch" do
       let(:repository_ref) { project.default_branch }
+      let(:scope) { "" }
 
       it 'displays that advanced search is enabled' do
         expect(page).to have_content('Advanced search is enabled.')
@@ -109,6 +110,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
 
     context "when `repository_ref` isn't the default branch" do
       let(:repository_ref) { Gitlab::Git::SHA1_BLANK_SHA }
+      let(:scope) { "blobs" }
 
       it 'displays that exact code search is disabled' do
         expect(page).to have_content('Advanced search is disabled')
@@ -118,6 +120,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
 
     context "when `repository_ref` is unset" do
       let(:repository_ref) { "" }
+      let(:scope) { "" }
 
       it 'displays that advanced search is enabled' do
         wait_for_requests
