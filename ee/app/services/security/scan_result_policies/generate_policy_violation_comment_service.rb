@@ -44,7 +44,7 @@ module Security
       end
 
       def comment
-        @comment ||= PolicyViolationComment.new(existing_comment).tap do |violation_comment|
+        @comment ||= PolicyViolationComment.new(existing_comment, project).tap do |violation_comment|
           violation_comment.remove_report_type(report_type)
           violation_comment.add_report_type(report_type, requires_approval) if violated_policy
         end
