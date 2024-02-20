@@ -47,11 +47,6 @@ class TrialRegistrationsController < RegistrationsController
   def resource
     @resource ||= Users::AuthorizedBuildService.new(current_user, sign_up_params).execute
   end
-
-  override :arkose_labs_enabled?
-  def arkose_labs_enabled?
-    super && Feature.enabled?(:arkose_labs_trial_signup_challenge)
-  end
 end
 
 TrialRegistrationsController.prepend_mod

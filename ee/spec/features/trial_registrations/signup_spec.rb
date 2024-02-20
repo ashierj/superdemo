@@ -5,7 +5,6 @@ require 'spec_helper'
 RSpec.describe 'Trial Sign Up', :saas, feature_category: :purchase do
   before do
     stub_application_setting(require_admin_approval_after_user_signup: false)
-    stub_feature_flags(arkose_labs_trial_signup_challenge: false)
   end
 
   let_it_be(:new_user) { build_stubbed(:user) }
@@ -30,17 +29,11 @@ RSpec.describe 'Trial Sign Up', :saas, feature_category: :purchase do
       end
     end
 
-    context 'when ArkoseLabs is enabled for trial signups', :js do
-      before do
-        stub_feature_flags(arkose_labs_trial_signup_challenge: true)
-      end
-
-      it_behaves_like 'creates a user with ArkoseLabs risk band' do
-        let(:signup_path) { new_trial_registration_path }
-        let(:user_email) { new_user.email }
-        let(:fill_and_submit_signup_form) do
-          fill_in_sign_up_form(new_user, 'Continue')
-        end
+    it_behaves_like 'creates a user with ArkoseLabs risk band' do
+      let(:signup_path) { new_trial_registration_path }
+      let(:user_email) { new_user.email }
+      let(:fill_and_submit_signup_form) do
+        fill_in_sign_up_form(new_user, 'Continue')
       end
     end
 
