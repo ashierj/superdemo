@@ -495,6 +495,7 @@ module EE
         enable :admin_group_member
         enable :update_group_member
         enable :destroy_group_member
+        enable :read_billable_member
       end
 
       rule { custom_roles_allowed & owner }.policy do
