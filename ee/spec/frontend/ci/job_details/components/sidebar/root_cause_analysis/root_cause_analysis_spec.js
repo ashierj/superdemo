@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { shallowMount } from '@vue/test-utils';
-import { GlButton, GlEmptyState, GlSkeletonLoader } from '@gitlab/ui';
+import { GlAlert, GlEmptyState, GlSkeletonLoader, GlExperimentBadge, GlDrawer } from '@gitlab/ui';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import RootCauseAnalysis from 'ee/ci/job_details/components/sidebar/root_cause_analysis/root_cause_analysis_app.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -44,9 +44,11 @@ describe('rootCauseAnalysis', () => {
   };
 
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
-  const findActionButton = () => wrapper.findComponent(GlButton);
+  const findActionButton = () => wrapper.findByTestId('root-cause-analysis-action-button');
   const findMarkdown = () => wrapper.findComponent(Markdown);
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
+  const findExperimentBadge = () => wrapper.findComponent(GlExperimentBadge);
+  const findAlert = () => wrapper.findComponent(GlAlert);
 
   const rootCauseQueryHandlerMock = jest.fn();
   const rootCauseMutationHandlerMock = jest.fn().mockResolvedValue({
@@ -79,13 +81,31 @@ describe('rootCauseAnalysis', () => {
 
     mockApollo = createMockApollo(handlers);
 
-    wrapper = shallowMount(RootCauseAnalysis, {
+    wrapper = shallowMountExtended(RootCauseAnalysis, {
       propsData,
       provide: { projectPath },
       apolloProvider: mockApollo,
       stubs: {
         GlEmptyState,
+        GlDrawer,
       },
+    });
+  };
+
+  const itHasLegalDisclaimer = () => {
+    describe('legal disclaimer', () => {
+      it('renders experiment badge', () => {
+        expect(findExperimentBadge().exists()).toBe(true);
+      });
+
+      it('renders warning alert', () => {
+        expect(findAlert().exists()).toBe(true);
+        expect(findAlert().props()).toMatchObject({
+          dismissible: false,
+          variant: 'tip',
+          showIcon: false,
+        });
+      });
     });
   };
 
@@ -93,6 +113,8 @@ describe('rootCauseAnalysis', () => {
     beforeEach(() => {
       createComponent();
     });
+
+    itHasLegalDisclaimer();
 
     it('the empty state is shown', () => {
       const emptyState = findEmptyState();
@@ -133,6 +155,8 @@ describe('rootCauseAnalysis', () => {
       createComponent({ propsData: { isShown: true }, rootCauseData: mockRootCauseQueryData });
       await waitForPromises();
     });
+
+    itHasLegalDisclaimer();
 
     it('the empty state is not shown', () => {
       const emptyState = findEmptyState();
