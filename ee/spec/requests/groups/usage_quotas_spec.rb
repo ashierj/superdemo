@@ -40,5 +40,35 @@ RSpec.describe 'view usage quotas', feature_category: :consumables_cost_manageme
         expect(response.body).not_to have_pushed_frontend_feature_flags(enableAddOnUsersFiltering: true)
       end
     end
+
+    context 'with enable_bulk_add_on_assignment enabled' do
+      before do
+        stub_feature_flags(enable_bulk_add_on_assignment: namespace)
+      end
+
+      it 'exposes the feature flag' do
+        request
+
+        expect(response.body).to have_pushed_frontend_feature_flags(enableBulkAddOnAssignment: true)
+      end
+
+      it 'does not expose the feature flag' do
+        get group_usage_quotas_path(create(:group))
+
+        expect(response.body).not_to have_pushed_frontend_feature_flags(enableBulkAddOnAssignment: true)
+      end
+    end
+
+    context 'with enable_bulk_add_on_assignment disabled' do
+      before do
+        stub_feature_flags(enable_bulk_add_on_assignment: false)
+      end
+
+      it 'does not expose feature flag' do
+        request
+
+        expect(response.body).not_to have_pushed_frontend_feature_flags(enableBulkAddOnAssignment: true)
+      end
+    end
   end
 end
