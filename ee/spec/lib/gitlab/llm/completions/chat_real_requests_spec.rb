@@ -123,14 +123,14 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
 
           # rubocop: disable Layout/LineLength -- keep table structure readable
           where(:input_template, :tools) do
-            'Please summarize %<issue_identifier>s' | %w[IssueIdentifier ResourceReader]
-            'Summarize %<issue_identifier>s with bullet points' | %w[IssueIdentifier ResourceReader]
-            'Can you list all the labels on %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader]
-            'How old is %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader]
-            'How many days ago %<issue_identifier>s was created?' | %w[IssueIdentifier ResourceReader]
-            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueIdentifier ResourceReader]
-            'Summarize the comments from %<issue_identifier>s into bullet points' | %w[IssueIdentifier ResourceReader]
-            'What should be the final solution for %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader]
+            'Please summarize %<issue_identifier>s' | %w[IssueReader]
+            'Summarize %<issue_identifier>s with bullet points' | %w[IssueReader]
+            'Can you list all the labels on %<issue_identifier>s?' | %w[IssueReader]
+            'How old is %<issue_identifier>s?' | %w[IssueReader]
+            'How many days ago %<issue_identifier>s was created?' | %w[IssueReader]
+            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueReader]
+            'Summarize the comments from %<issue_identifier>s into bullet points' | %w[IssueReader]
+            'What should be the final solution for %<issue_identifier>s?' | %w[IssueReader]
           end
           # rubocop: enable Layout/LineLength
 
@@ -145,12 +145,12 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
 
           # rubocop: disable Layout/LineLength -- keep table structure readable
           where(:input_template, :tools) do
-            'Please summarize %<issue_identifier>s' | %w[IssueIdentifier ResourceReader]
-            'Can you list all the labels on %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader]
-            'How old is %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader]
-            'How many days ago %<issue_identifier>s was created?' | %w[IssueIdentifier ResourceReader]
-            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueIdentifier ResourceReader]
-            'What should be the final solution for %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader]
+            'Please summarize %<issue_identifier>s' | %w[IssueReader]
+            'Can you list all the labels on %<issue_identifier>s?' | %w[IssueReader]
+            'How old is %<issue_identifier>s?' | %w[IssueReader]
+            'How many days ago %<issue_identifier>s was created?' | %w[IssueReader]
+            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueReader]
+            'What should be the final solution for %<issue_identifier>s?' | %w[IssueReader]
           end
           # rubocop: enable Layout/LineLength
 
@@ -198,11 +198,11 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
           # IssueIdentifier overrides context.resource
           # JsonReader takes resource from context
           # So JsonReader twice with different action input
-          'Can you provide more details about that issue?' | %w[IssueIdentifier ResourceReader]
+          'Can you provide more details about that issue?' | %w[IssueReader]
           'Can you reword your answer?' | []
           'Can you simplify your answer?' | []
           'Can you expand on your last paragraph?' | []
-          'Can you identify the unique use cases the commenters have raised on this issue?' | %w[IssueIdentifier ResourceReader]
+          'Can you identify the unique use cases the commenters have raised on this issue?' | %w[IssueReader]
         end
         # rubocop: enable Layout/LineLength
 
@@ -344,10 +344,10 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
 
           # rubocop: disable Layout/LineLength -- keep table structure readable
           where(:input_template, :tools) do
-            'Please summarize %<epic_identifier>s'                    | %w[EpicIdentifier ResourceReader]
-            'Can you list all labels on %{epic_identifier} epic?'     | %w[EpicIdentifier ResourceReader]
-            'How old is %<epic_identifier>s?' | %w[EpicIdentifier ResourceReader]
-            'How many days ago was %<epic_identifier>s epic created?' | %w[EpicIdentifier ResourceReader]
+            'Please summarize %<epic_identifier>s'                    | %w[EpicReader]
+            'Can you list all labels on %{epic_identifier} epic?'     | %w[EpicReader]
+            'How old is %<epic_identifier>s?' | %w[EpicReader]
+            'How many days ago was %<epic_identifier>s epic created?' | %w[EpicReader]
           end
           # rubocop: enable Layout/LineLength
 
@@ -360,8 +360,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
           let(:resource) { epic }
 
           where(:input_template, :tools) do
-            'Can you list all labels on this epic?'       | %w[EpicIdentifier ResourceReader]
-            'How many days ago was current epic created?' | %w[EpicIdentifier ResourceReader]
+            'Can you list all labels on this epic?'       | %w[EpicReader]
+            'How many days ago was current epic created?' | %w[EpicReader]
           end
 
           with_them do
@@ -400,7 +400,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
           # EpicIdentifier overrides context.resource
           # JsonReader takes resource from context
           # So JsonReader twice with different action input
-          'Can you provide more details about that epic?' | %w[EpicIdentifier ResourceReader]
+          'Can you provide more details about that epic?' | %w[EpicReader]
           # Translation would have to be explicitly allowed in prompt rules first
           'Can you reword your answer?' | []
           'Can you explain your third point in different words?' | []
