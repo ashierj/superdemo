@@ -352,8 +352,7 @@ module Users
     end
 
     def arkose_labs_enabled?
-      ::Feature.enabled?(:arkose_labs_oauth_signup_challenge) &&
-        ::Arkose::Settings.enabled?(user: @user, user_agent: request.user_agent)
+      ::Arkose::Settings.enabled?(user: @user, user_agent: request.user_agent)
     end
 
     def username
