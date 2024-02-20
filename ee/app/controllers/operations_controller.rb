@@ -87,7 +87,8 @@ class OperationsController < ApplicationController
     Dashboard::Projects::CreateService.new(
       current_user,
       current_user.ops_dashboard_projects,
-      feature: :operations_dashboard
+      feature: :operations_dashboard,
+      ability: :read_project
     ).execute(project_ids)
   end
 
