@@ -65,7 +65,9 @@ module Gitlab
       end
 
       def sql_type_for(attribute)
-        column_for_attribute(attribute).sql_type
+        col = column_for_attribute(attribute)
+
+        col.sql_type_metadata.sql_type
       end
 
       def values
