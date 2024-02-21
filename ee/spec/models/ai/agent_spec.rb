@@ -9,6 +9,7 @@ RSpec.describe Ai::Agent, feature_category: :mlops do
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
     it { is_expected.to have_many(:versions) }
+    it { is_expected.to have_one(:latest_version) }
   end
 
   describe 'validation' do

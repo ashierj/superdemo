@@ -21,6 +21,9 @@ module Ai
     belongs_to :agent, class_name: 'Ai::Agent'
     belongs_to :project
 
+    scope :order_by_agent_id_id_desc, -> { order('agent_id, id DESC') }
+    scope :latest_by_agent, -> { order_by_agent_id_id_desc.select('DISTINCT ON (agent_id) *') }
+
     private
 
     def validate_agent
