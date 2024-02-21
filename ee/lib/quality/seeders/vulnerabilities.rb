@@ -16,17 +16,17 @@ module Quality
 
         30.times do |rank|
           primary_identifier = create_identifier(rank)
-          vulnerability = create_vulnerability
-          occurrence = create_occurrence(vulnerability, rank, primary_identifier)
+          finding = create_finding(rank, primary_identifier)
+          vulnerability = create_vulnerability(finding: finding)
           # Create occurrence_identifier join models
-          occurrence.identifiers << primary_identifier
-          occurrence.identifiers << create_identifier(rank) if rank % 3 == 0
+          finding.identifiers << primary_identifier
+          finding.identifiers << create_identifier(rank) if rank % 3 == 0
 
           case rank % 3
           when 0
-            create_feedback(occurrence, 'dismissal')
+            create_feedback(finding, 'dismissal')
           when 1
-            create_feedback(occurrence, 'issue', vulnerability: vulnerability)
+            create_feedback(finding, 'issue', vulnerability: vulnerability)
           end
 
           print '.'
@@ -35,9 +35,10 @@ module Quality
 
       private
 
-      def create_vulnerability
+      def create_vulnerability(finding:)
         state_symbol = ::Vulnerability.states.keys.sample.to_sym
         vulnerability = build_vulnerability(state_symbol)
+        vulnerability.finding_id = finding.id
 
         case state_symbol
         when :resolved
@@ -62,13 +63,13 @@ module Quality
         )
       end
 
-      def create_occurrence(vulnerability, rank, primary_identifier)
-        scanner = FactoryBot.create(:vulnerabilities_scanner, project: vulnerability.project)
+      def create_finding(rank, primary_identifier)
+        scanner = FactoryBot.create(:vulnerabilities_scanner, project: project)
+
         FactoryBot.create(
           :vulnerabilities_finding,
           :with_pipeline,
           project: project,
-          vulnerability: vulnerability,
           scanner: scanner,
           severity: random_severity_level,
           confidence: random_confidence_level,
@@ -91,9 +92,9 @@ module Quality
         )
       end
 
-      def create_feedback(occurrence, type, vulnerability: nil)
+      def create_feedback(finding, type, vulnerability: nil)
         if type == 'issue'
-          issue = create_issue("Dismiss #{occurrence.name}")
+          issue = create_issue("Dismiss #{finding.name}")
           create_vulnerability_issue_link(vulnerability, issue)
         end
 
@@ -104,7 +105,7 @@ module Quality
           author: author,
           issue: issue,
           pipeline: pipeline,
-          project_fingerprint: occurrence.project_fingerprint
+          project_fingerprint: finding.project_fingerprint
         )
       end
 
