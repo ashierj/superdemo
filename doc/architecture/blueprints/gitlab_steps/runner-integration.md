@@ -32,11 +32,6 @@ message RunRequest {
     string id = 1;
     string work_dir = 2;
     map<string,string> env = 3;
-    option (buf.validate.message).cel = {
-        id: "env",
-        message: "env must be alphanumeric with underscores",
-        expression: "this.env.all(key, key.matches('^[a-zA-Z_][a-zA-Z0-9_]*$'))",
-    };
 
     enum StepType {
         unknown = 0;
