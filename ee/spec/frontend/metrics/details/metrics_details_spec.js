@@ -4,15 +4,16 @@ import { createMockClient } from 'helpers/mock_observability_client';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
-import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
+import * as urlUtility from '~/lib/utils/url_utility';
 import MetricsChart from 'ee/metrics/details/metrics_chart.vue';
 import FilteredSearch from 'ee/metrics/details/filter_bar/metrics_filtered_search.vue';
 import { ingestedAtTimeAgo } from 'ee/metrics/utils';
 import { prepareTokens } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 import axios from '~/lib/utils/axios_utils';
+import setWindowLocation from 'helpers/set_window_location_helper';
+import UrlSync from '~/vue_shared/components/url_sync.vue';
 
 jest.mock('~/alert');
-jest.mock('~/lib/utils/url_utility');
 jest.mock('~/lib/utils/axios_utils');
 jest.mock('ee/metrics/utils');
 
@@ -32,7 +33,7 @@ describe('MetricsDetails', () => {
   const findHeaderType = () => findHeader().find(`[data-testid="metric-type"]`);
   const findHeaderDescription = () => findHeader().find(`[data-testid="metric-description"]`);
   const findHeaderLastIngested = () => findHeader().find(`[data-testid="metric-last-ingested"]`);
-
+  const findUrlSync = () => wrapper.findComponent(UrlSync);
   const findChart = () => findMetricDetails().findComponent(MetricsChart);
   const findEmptyState = () => findMetricDetails().findComponent(GlEmptyState);
 
@@ -54,7 +55,7 @@ describe('MetricsDetails', () => {
   };
 
   beforeEach(() => {
-    isSafeURL.mockReturnValue(true);
+    jest.spyOn(urlUtility, 'isSafeURL').mockReturnValue(true);
 
     ingestedAtTimeAgo.mockReturnValue('3 days ago');
 
@@ -132,6 +133,24 @@ describe('MetricsDetails', () => {
     });
 
     describe('filtered search', () => {
+      beforeEach(async () => {
+        setWindowLocation(
+          '?type=Sum&foo.bar[]=eq-val' +
+            '&not%5Bfoo.bar%5D[]=not-eq-val' +
+            '&like%5Bfoo.baz%5D[]=like-val' +
+            '&not_like%5Bfoo.baz%5D[]=not-like-val' +
+            '&group_by_fn=avg' +
+            '&group_by_attrs[]=foo' +
+            '&group_by_attrs[]=bar' +
+            '&date_range=custom' +
+            '&date_start=2020-01-01T00%3A00%3A00.000Z' +
+            '&date_end=2020-01-02T00%3A00%3A00.000Z',
+        );
+        observabilityClientMock.fetchMetric.mockClear();
+        observabilityClientMock.fetchMetricSearchMetadata.mockClear();
+        await mountComponent();
+      });
+
       const findFilteredSearch = () => findMetricDetails().findComponent(FilteredSearch);
       it('renders the FilteredSearch component', () => {
         const filteredSearch = findFilteredSearch();
@@ -145,25 +164,97 @@ describe('MetricsDetails', () => {
         expect(findFilteredSearch().exists()).toBe(false);
       });
 
-      it('sets the default date range', () => {
-        expect(findFilteredSearch().props('dateRangeFilter')).toEqual({
-          endDate: new Date('2020-07-06T00:00:00.000Z'),
-          startDarte: new Date('2020-07-05T23:00:00.000Z'),
-          value: '1h',
-        });
-      });
-
       it('fetches metrics with filters', () => {
         expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(METRIC_ID, METRIC_TYPE, {
           abortController: expect.any(AbortController),
           filters: {
-            attributes: [],
+            attributes: {
+              'foo.bar': [
+                { operator: '=', value: 'eq-val' },
+                { operator: '!=', value: 'not-eq-val' },
+              ],
+              'foo.baz': [
+                { operator: '=~', value: 'like-val' },
+                { operator: '!~', value: 'not-like-val' },
+              ],
+            },
+            groupBy: {
+              func: 'avg',
+              attributes: ['foo', 'bar'],
+            },
             dateRange: {
-              endDate: new Date('2020-07-06T00:00:00.000Z'),
-              startDarte: new Date('2020-07-05T23:00:00.000Z'),
+              value: 'custom',
+              startDate: new Date('2020-01-01'),
+              endDate: new Date('2020-01-02'),
+            },
+          },
+        });
+      });
+
+      it('initialises filtered-search props with values from query', () => {
+        expect(findFilteredSearch().props('dateRangeFilter')).toEqual({
+          endDate: new Date('2020-01-02T00:00:00.000Z'),
+          startDate: new Date('2020-01-01T00:00:00.000Z'),
+          value: 'custom',
+        });
+
+        expect(findFilteredSearch().props('groupByFilter')).toEqual({
+          attributes: ['foo', 'bar'],
+          func: 'avg',
+        });
+
+        expect(findFilteredSearch().props('attributeFilters')).toEqual(
+          prepareTokens({
+            'foo.bar': [
+              { operator: '=', value: 'eq-val' },
+              { operator: '!=', value: 'not-eq-val' },
+            ],
+            'foo.baz': [
+              { operator: '=~', value: 'like-val' },
+              { operator: '!~', value: 'not-like-val' },
+            ],
+          }),
+        );
+      });
+
+      it('renders UrlSync and sets query prop', () => {
+        expect(findUrlSync().props('query')).toEqual({
+          'foo.bar': ['eq-val'],
+          'not[foo.bar]': ['not-eq-val'],
+          'like[foo.bar]': null,
+          'not_like[foo.bar]': null,
+          'foo.baz': null,
+          'not[foo.baz]': null,
+          'like[foo.baz]': ['like-val'],
+          'not_like[foo.baz]': ['not-like-val'],
+          group_by_fn: 'avg',
+          group_by_attrs: ['foo', 'bar'],
+          date_range: 'custom',
+          date_end: '2020-01-02T00:00:00.000Z',
+          date_start: '2020-01-01T00:00:00.000Z',
+        });
+      });
+
+      it('sets the default date range if not specified', async () => {
+        setWindowLocation('?type=Sum');
+
+        await mountComponent();
+
+        expect(findFilteredSearch().props('dateRangeFilter')).toEqual({
+          value: '1h',
+        });
+        expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(METRIC_ID, METRIC_TYPE, {
+          abortController: expect.any(AbortController),
+          filters: {
+            attributes: {},
+            groupBy: {},
+            dateRange: {
               value: '1h',
             },
           },
+        });
+        expect(findUrlSync().props('query')).toEqual({
+          date_range: '1h',
         });
       });
 
@@ -180,7 +271,7 @@ describe('MetricsDetails', () => {
         beforeEach(async () => {
           await setFilters(
             {
-              'key.one': [{ operator: '=', value: '12h' }],
+              'key.one': [{ operator: '=', value: 'test' }],
             },
             {
               endDate: new Date('2020-07-06T00:00:00.000Z'),
@@ -188,7 +279,7 @@ describe('MetricsDetails', () => {
               value: '30d',
             },
             {
-              func: 'avg',
+              func: 'sum',
               attributes: ['attr_1', 'attr_2'],
             },
           );
@@ -202,7 +293,7 @@ describe('MetricsDetails', () => {
               abortController: expect.any(AbortController),
               filters: {
                 attributes: {
-                  'key.one': [{ operator: '=', value: '12h' }],
+                  'key.one': [{ operator: '=', value: 'test' }],
                 },
                 dateRange: {
                   endDate: new Date('2020-07-06T00:00:00.000Z'),
@@ -210,12 +301,24 @@ describe('MetricsDetails', () => {
                   value: '30d',
                 },
                 groupBy: {
-                  func: 'avg',
+                  func: 'sum',
                   attributes: ['attr_1', 'attr_2'],
                 },
               },
             },
           );
+        });
+
+        it('updates the query on search submit', () => {
+          expect(findUrlSync().props('query')).toEqual({
+            'key.one': ['test'],
+            'not[key.one]': null,
+            'like[key.one]': null,
+            'not_like[key.one]': null,
+            group_by_fn: 'sum',
+            group_by_attrs: ['attr_1', 'attr_2'],
+            date_range: '30d',
+          });
         });
 
         it('updates FilteredSearch props', () => {
@@ -226,11 +329,11 @@ describe('MetricsDetails', () => {
           });
           expect(findFilteredSearch().props('attributeFilters')).toEqual(
             prepareTokens({
-              'key.one': [{ operator: '=', value: '12h' }],
+              'key.one': [{ operator: '=', value: 'test' }],
             }),
           );
           expect(findFilteredSearch().props('groupByFilter')).toEqual({
-            func: 'avg',
+            func: 'sum',
             attributes: ['attr_1', 'attr_2'],
           });
         });
@@ -275,11 +378,12 @@ describe('MetricsDetails', () => {
   describe('when observability is not enabled', () => {
     beforeEach(async () => {
       observabilityClientMock.isObservabilityEnabled.mockResolvedValue(false);
+      jest.spyOn(urlUtility, 'visitUrl').mockReturnValue({});
       await mountComponent();
     });
 
     it('redirects to metricsIndexUrl', () => {
-      expect(visitUrl).toHaveBeenCalledWith(defaultProps.metricsIndexUrl);
+      expect(urlUtility.visitUrl).toHaveBeenCalledWith(defaultProps.metricsIndexUrl);
     });
 
     it('does not fetch data', () => {
@@ -293,7 +397,7 @@ describe('MetricsDetails', () => {
     beforeEach(() => {
       observabilityClientMock.isObservabilityEnabled.mockResolvedValue(true);
       observabilityClientMock.fetchMetric.mockResolvedValue([]);
-      observabilityClientMock.fetchMetricSearchMetadata.mockResolvedValue([]);
+      observabilityClientMock.fetchMetricSearchMetadata.mockResolvedValue({});
     });
 
     describe.each([
