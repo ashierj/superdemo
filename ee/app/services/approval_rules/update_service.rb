@@ -10,7 +10,7 @@ module ApprovalRules
       @rule = approval_rule
       @keep_existing_hidden_groups = !Gitlab::Utils.to_boolean(params.delete(:remove_hidden_groups))
 
-      super(container: @rule.project, current_user: user, params: params)
+      super(container: container, current_user: user, params: params)
     end
 
     def filter_eligible_groups!
@@ -27,8 +27,10 @@ module ApprovalRules
       merge_request_activity_counter
         .track_approval_rule_edited_action(user: current_user)
 
-      ::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker
-        .perform_async({ 'project_id' => rule.project.id, 'user_id' => current_user&.id })
+      unless group_rule?
+        ::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker
+          .perform_async({ 'project_id' => rule.project.id, 'user_id' => current_user&.id })
+      end
 
       super
     end

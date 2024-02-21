@@ -21,10 +21,22 @@ module API
           success EE::API::Entities::GroupApprovalRule
         end
         params do
-          use :create_group_approval_rule
+          requires :name, type: String, desc: 'The name of the approval rule'
+          requires :approvals_required, type: Integer, desc: 'The number of required approvals for this rule'
+          use :group_approval_rule
         end
         post do
           create_group_approval_rule(present_with: EE::API::Entities::GroupApprovalRule)
+        end
+
+        params do
+          optional :name, type: String, desc: 'The name of the approval rule'
+          optional :approvals_required, type: Integer, desc: 'The number of required approvals for this rule'
+          use :group_approval_rule
+        end
+
+        put ':approval_rule_id' do
+          update_group_approval_rule(present_with: EE::API::Entities::GroupApprovalRule)
         end
       end
     end

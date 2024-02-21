@@ -64,6 +64,14 @@ RSpec.describe API::ProjectGoogleCloudIntegration, feature_category: :integratio
     let(:params) { { google_cloud_project_id: google_cloud_project_id } }
 
     it_behaves_like 'an endpoint generating a bash script for Google Cloud'
+
+    it 'includes attribute mapping' do
+      get(api(path, owner), params: params)
+      expect(response.body).to include('--attribute-mapping="')
+      expect(response.body).to include('google.subject=assertion.sub')
+      expect(response.body).to include('attribute.user_access_level=assertion.user_access_level')
+      expect(response.body).to include('attribute.reporter_access=assertion.reporter_access')
+    end
   end
 
   describe 'GET /projects/:id/scripts/google_cloud/create_iam_policy' do
