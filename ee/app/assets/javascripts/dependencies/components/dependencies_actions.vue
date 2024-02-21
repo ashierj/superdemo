@@ -4,7 +4,7 @@ import { GlSorting } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { omit } from 'lodash';
 import { __ } from '~/locale';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import GroupDependenciesFilteredSearch from 'ee/dependencies/components/filtered_search/group_dependencies_filtered_search.vue';
 import { NAMESPACE_PROJECT } from '../constants';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
 import {
@@ -21,10 +21,8 @@ export default {
   name: 'DependenciesActions',
   components: {
     GlSorting,
-    GroupDependenciesFilteredSearch: () =>
-      import('ee/dependencies/components/filtered_search/group_dependencies_filtered_search.vue'),
+    GroupDependenciesFilteredSearch,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType', 'belowGroupLimit'],
   props: {
     namespace: {
@@ -84,7 +82,7 @@ export default {
     class="gl-display-flex gl-p-5 gl-bg-gray-10 gl-border-t-1 gl-border-t-solid gl-border-gray-100 gl-align-items-flex-start"
   >
     <group-dependencies-filtered-search
-      v-if="glFeatures.groupLevelDependenciesFiltering && !isProjectNamespace"
+      v-if="!isProjectNamespace"
       class="gl-mr-3 gl-flex-grow-1 gl-min-w-0"
     />
     <gl-sorting

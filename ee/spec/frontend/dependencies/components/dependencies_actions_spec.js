@@ -30,7 +30,6 @@ describe('DependenciesActions component', () => {
       propsData: { ...propsData },
       provide: {
         ...objectBasicProp,
-        glFeatures: { groupLevelDependenciesFiltering: true },
         ...provide,
       },
     });
@@ -81,6 +80,10 @@ describe('DependenciesActions component', () => {
       );
     });
 
+    it('renders a filtered-search input', () => {
+      expect(wrapper.findComponent(GroupDependenciesFilteredSearch).exists()).toBe(true);
+    });
+
     describe('with the "belowGroupLimit" set to false', () => {
       beforeEach(async () => {
         factory({
@@ -104,23 +107,6 @@ describe('DependenciesActions component', () => {
         expect(store.dispatch.mock.calls).not.toEqual(
           expect.arrayContaining([[`${namespace}/setSortField`, 'license']]),
         );
-      });
-    });
-
-    describe('with the "groupLevelDependenciesFiltering" feature flag disabled', () => {
-      beforeEach(async () => {
-        factory({
-          propsData: { namespace },
-          provide: {
-            namespaceType: 'group',
-            glFeatures: { groupLevelDependenciesFiltering: false },
-          },
-        });
-        await nextTick();
-      });
-
-      it('does not render a filtered-search input', () => {
-        expect(wrapper.findComponent(GroupDependenciesFilteredSearch).exists()).toBe(false);
       });
     });
   });
