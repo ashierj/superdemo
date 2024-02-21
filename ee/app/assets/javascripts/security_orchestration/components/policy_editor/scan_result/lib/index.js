@@ -11,7 +11,7 @@ export * from './settings';
 export * from './vulnerability_states';
 export * from './filters';
 
-export const DEFAULT_PROJECT_SCAN_RESULT_POLICY = `type: approval_policy
+export const DEFAULT_SCAN_RESULT_POLICY = `type: approval_policy
 name: ''
 description: ''
 enabled: true
@@ -24,7 +24,7 @@ approval_settings:
   prevent_pushing_and_force_pushing: true
 `;
 
-export const DEFAULT_GROUP_SCAN_RESULT_POLICY = `type: approval_policy
+export const DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE = `type: approval_policy
 name: ''
 description: ''
 enabled: true
