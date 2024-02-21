@@ -12,14 +12,10 @@ import {
 import { generateSkeletonTableData } from 'ee/analytics/dashboards/utils';
 import ComparisonChart from 'ee/analytics/dashboards/components/comparison_chart.vue';
 import ComparisonTable from 'ee/analytics/dashboards/components/comparison_table.vue';
-import GroupVulnerabilitiesQuery from 'ee/analytics/dashboards/graphql/group_vulnerabilities.query.graphql';
-import ProjectVulnerabilitiesQuery from 'ee/analytics/dashboards/graphql/project_vulnerabilities.query.graphql';
-import GroupFlowMetricsQuery from 'ee/analytics/dashboards/graphql/group_flow_metrics.query.graphql';
-import ProjectFlowMetricsQuery from 'ee/analytics/dashboards/graphql/project_flow_metrics.query.graphql';
-import GroupDoraMetricsQuery from 'ee/analytics/dashboards/graphql/group_dora_metrics.query.graphql';
-import ProjectDoraMetricsQuery from 'ee/analytics/dashboards/graphql/project_dora_metrics.query.graphql';
-import GroupMergeRequestsQuery from 'ee/analytics/dashboards/graphql/group_merge_requests.query.graphql';
-import ProjectMergeRequestsQuery from 'ee/analytics/dashboards/graphql/project_merge_requests.query.graphql';
+import VulnerabilitiesQuery from 'ee/analytics/dashboards/graphql/vulnerabilities.query.graphql';
+import FlowMetricsQuery from 'ee/analytics/dashboards/graphql/flow_metrics.query.graphql';
+import DoraMetricsQuery from 'ee/analytics/dashboards/graphql/dora_metrics.query.graphql';
+import MergeRequestsQuery from 'ee/analytics/dashboards/graphql/merge_requests.query.graphql';
 import GroupContributorCountQuery from 'ee/analytics/dashboards/graphql/group_contributor_count.query.graphql';
 import { VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -88,28 +84,19 @@ describe('Comparison chart', () => {
   };
 
   const createMockApolloProvider = ({
-    isProject = false,
     flowMetricsRequest = flowMetricsRequestHandler,
     doraMetricsRequest = doraMetricsRequestHandler,
     vulnerabilityRequest = vulnerabilityRequestHandler,
     mergeRequestsRequest = mergeRequestsRequestHandler,
     contributorCountRequest = contributorCountRequestHandler,
   } = {}) => {
-    const flowMetricsQuery = isProject ? ProjectFlowMetricsQuery : GroupFlowMetricsQuery;
-    const doraMetricsQuery = isProject ? ProjectDoraMetricsQuery : GroupDoraMetricsQuery;
-    const vulnerabilitiesQuery = isProject
-      ? ProjectVulnerabilitiesQuery
-      : GroupVulnerabilitiesQuery;
-    const mergeRequestsQuery = isProject ? ProjectMergeRequestsQuery : GroupMergeRequestsQuery;
-    const contributorCountQuery = GroupContributorCountQuery;
-
     return createMockApollo(
       [
-        [flowMetricsQuery, flowMetricsRequest],
-        [doraMetricsQuery, doraMetricsRequest],
-        [vulnerabilitiesQuery, vulnerabilityRequest],
-        [mergeRequestsQuery, mergeRequestsRequest],
-        [contributorCountQuery, contributorCountRequest],
+        [FlowMetricsQuery, flowMetricsRequest],
+        [DoraMetricsQuery, doraMetricsRequest],
+        [VulnerabilitiesQuery, vulnerabilityRequest],
+        [MergeRequestsQuery, mergeRequestsRequest],
+        [GroupContributorCountQuery, contributorCountRequest],
       ],
       {},
       {
@@ -392,7 +379,7 @@ describe('Comparison chart', () => {
 
   describe('failed chart request', () => {
     const mockResolvedDoraMetricsResponse = {
-      data: { namespace: { id: 'fake-dora-metrics-request', dora: mockDoraMetricsResponseData } },
+      data: { group: { id: 'fake-dora-metrics-request', dora: mockDoraMetricsResponseData } },
     };
 
     beforeEach(async () => {
@@ -424,7 +411,7 @@ describe('Comparison chart', () => {
 
     beforeEach(async () => {
       setGraphqlQueryHandlerResponses();
-      mockApolloProvider = createMockApolloProvider({ isProject: true });
+      mockApolloProvider = createMockApolloProvider();
 
       await createWrapper({
         props: { isProject: true, requestPath: fakeProjectPath },
