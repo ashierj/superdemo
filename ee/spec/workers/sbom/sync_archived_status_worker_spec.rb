@@ -26,12 +26,4 @@ RSpec.describe Sbom::SyncArchivedStatusWorker, feature_category: :dependency_man
     expect { use_event }.to change { sbom_occurrence.reload.archived }.from(false).to(true)
       .and not_change { sbom_occurrence_outside_project.reload.archived }
   end
-
-  context 'when sync_project_archival_status_to_sbom_occurrences is disabled' do
-    before do
-      stub_feature_flags(sync_project_archival_status_to_sbom_occurrences: false)
-    end
-
-    it_behaves_like 'ignores the published event'
-  end
 end
