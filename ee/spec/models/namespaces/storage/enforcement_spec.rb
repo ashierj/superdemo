@@ -162,7 +162,7 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
 
     context 'with all possible scenarios' do
       where(
-        :should_check_namespace_plan,
+        :feature_available,
         :automatic_purchased_storage_allocation,
         :root_namespace_paid,
         :show_preenforcement_banner_enabled,
@@ -174,7 +174,7 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
         true  | true  | false | true  | 11  | 10 | 12 | true  # Over notification_limit, under enforcement_limit
         true  | true  | false | true  | 11  | 12 | 13 | false # Under notification_limit, under enforcement_limit
         true  | true  | false | true  | 12  | 10 | 11 | false # Over notification_limit, over enforcement_limit
-        false | true  | false | true  | 11  | 10 | 12 | false # Isolating :should_check_namespace_plan
+        false | true  | false | true  | 11  | 10 | 12 | false # Isolating :namespaces_storage_limit feature available
         true  | false | false | true  | 11  | 10 | 12 | false # Isolating :automatic_purchased_storage_allocation
         true  | true  | true  | true  | 11  | 10 | 12 | false # Isolating :root_namespace_paid
         true  | true  | false | false | 11  | 10 | 12 | false # Isolating :show_preenforcement_banner_enabled
@@ -182,9 +182,12 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
 
       with_them do
         before do
-          stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan,
+          stub_ee_application_setting(
             automatic_purchased_storage_allocation: automatic_purchased_storage_allocation,
-            enforce_namespace_storage_limit: true)
+            enforce_namespace_storage_limit: true
+          )
+
+          stub_saas_features(namespaces_storage_limit: feature_available)
 
           allow(group.root_ancestor).to receive(:paid?).and_return(root_namespace_paid)
           stub_feature_flags(namespace_storage_limit_show_preenforcement_banner: show_preenforcement_banner_enabled)
@@ -202,9 +205,11 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
 
     context 'when tracking pre-enforcement notifications', :use_clean_rails_memory_store_caching do
       before do
-        stub_ee_application_setting(should_check_namespace_plan: true,
+        stub_ee_application_setting(
           automatic_purchased_storage_allocation: true,
-          enforce_namespace_storage_limit: true)
+          enforce_namespace_storage_limit: true
+        )
+        stub_saas_features(namespaces_storage_limit: true)
 
         stub_feature_flags(namespace_storage_limit_show_preenforcement_banner: true)
 
