@@ -99,7 +99,12 @@ module API
             google_cloud_workload_identity_pool_provider_issuer_uri:
               ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.wlif_issuer_url(user_project),
             google_cloud_workload_identity_pool_attribute_mapping:
-              ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.jwt_claim_mapping_script_value
+              ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.jwt_claim_mapping_script_value,
+            api_integrations_url:
+              "#{Gitlab.config.gitlab.url}/api/v4/projects/#{params[:id]}/integrations/",
+            api_wlif_integration_url:
+              "#{Gitlab.config.gitlab.url}/api/v4/projects/#{params[:id]}/" \
+              "integrations/google-cloud-platform-workload-identity-federation"
           }
 
           template.result_with_hash(locals)
