@@ -337,6 +337,147 @@ RSpec.describe GroupMember, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#prevent_role_assignement?' do
+    let_it_be(:group) { create(:group) }
+    let_it_be_with_reload(:current_user) { create(:user) }
+    let_it_be_with_reload(:member) do
+      create(:group_member, access_level: Gitlab::Access::GUEST, group: group)
+    end
+
+    let(:member_role_id) { nil }
+    let(:access_level) { Gitlab::Access::GUEST }
+    let(:params) { { member_role_id: member_role_id, access_level: access_level } }
+
+    subject(:prevent_assignement?) { member.prevent_role_assignement?(current_user, params) }
+
+    context 'for custom roles assignement' do
+      let_it_be(:member_role_current_user) do
+        create(:member_role, :maintainer, admin_group_member: true, admin_merge_request: true, read_code: false)
+      end
+
+      let_it_be(:member_role_less_abilities) do
+        create(:member_role, :guest, admin_merge_request: true, read_code: false)
+      end
+
+      let_it_be(:member_role_more_abilities) do
+        create(:member_role, :guest, admin_merge_request: true, read_code: true)
+      end
+
+      before do
+        current_member = group.add_maintainer(current_user)
+        current_member.update!(member_role: member_role_current_user)
+      end
+
+      context 'with the same custom role as current user has' do
+        let(:member_role_id) { member_role_current_user.id }
+
+        it 'returns false' do
+          expect(prevent_assignement?).to eq(false)
+        end
+      end
+
+      context 'with the custom role having less abilities than current user has' do
+        let(:member_role_id) { member_role_less_abilities.id }
+
+        it 'returns false' do
+          expect(prevent_assignement?).to eq(false)
+        end
+      end
+
+      context 'with the custom role having more abilities than current user has' do
+        let(:member_role_id) { member_role_more_abilities.id }
+
+        context 'when current user is a MAINTAINER' do
+          it 'returns true' do
+            expect(prevent_assignement?).to eq(true)
+          end
+        end
+
+        context 'when current user is an admin', :enable_admin_mode do
+          before do
+            current_user.members.delete_all
+
+            current_user.update!(admin: true)
+          end
+
+          it 'returns false' do
+            expect(prevent_assignement?).to eq(false)
+          end
+        end
+      end
+    end
+
+    context 'for default access roles' do
+      let(:member_role_id) { nil }
+
+      context 'when current user is a DEVELOPER' do
+        before do
+          group.add_developer(current_user)
+        end
+
+        context 'without assigning_access_level param' do
+          let(:access_level) { nil }
+
+          it 'returns false' do
+            expect(prevent_assignement?).to eq(false)
+          end
+        end
+
+        context 'with MAINTAINER as access_role param' do
+          let(:access_level) { Gitlab::Access::MAINTAINER }
+
+          it 'returns true' do
+            expect(prevent_assignement?).to eq(true)
+          end
+        end
+      end
+
+      context 'when current user is a MAINTAINER' do
+        before do
+          group.add_maintainer(current_user)
+        end
+
+        context 'without assigning_access_level param' do
+          let(:access_level) { nil }
+
+          it 'returns true' do
+            expect(prevent_assignement?).to eq(false)
+          end
+        end
+
+        context 'with OWNER as access_role param' do
+          let(:access_level) { Gitlab::Access::OWNER }
+
+          it 'returns false' do
+            expect(prevent_assignement?).to eq(true)
+          end
+        end
+      end
+
+      context 'when current user is an admin', :enable_admin_mode do
+        before do
+          current_user.update!(admin: true)
+        end
+
+        context 'without assigning_access_level param' do
+          let(:access_level) { nil }
+
+          it 'returns false' do
+            expect(prevent_assignement?).to eq(false)
+          end
+        end
+
+        context 'with OWNER as access_role param' do
+          let(:access_level) { Gitlab::Access::OWNER }
+
+          it 'returns false' do
+            expect(prevent_assignement?).to eq(false)
+          end
+        end
+      end
+    end
+  end
+
   def webhook_data(group_member, event)
     {
       headers: { 'Content-Type' => 'application/json', 'User-Agent' => "GitLab/#{Gitlab::VERSION}", 'X-Gitlab-Event' => 'Member Hook' },
