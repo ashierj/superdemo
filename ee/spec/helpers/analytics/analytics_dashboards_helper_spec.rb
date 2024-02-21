@@ -53,6 +53,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
           allow(helper).to receive(:can?).with(user, :read_product_analytics, project).and_return(user_has_permission)
           allow(helper).to receive(:can?).with(user, :admin_project, project).and_return(user_can_admin_project)
+          allow(helper).to receive(:can?).with(user, :generate_cube_query, project).and_return(false)
         end
 
         subject(:data) { helper.analytics_dashboards_list_app_data(project) }
@@ -78,7 +79,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             root_namespace_full_path: group.name,
             root_namespace_name: group.full_path,
             features: (enabled && has_permission ? [:product_analytics] : []).to_json,
-            router_base: '/-/analytics/dashboards'
+            router_base: '/-/analytics/dashboards',
+            ai_generate_cube_query_enabled: 'false'
           }
         end
 
@@ -116,7 +118,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           root_namespace_full_path: group.name,
           root_namespace_name: group.full_path,
           features: [].to_json,
-          router_base: "/groups/#{sub_group.full_path}/-/analytics/dashboards"
+          router_base: "/groups/#{sub_group.full_path}/-/analytics/dashboards",
+          ai_generate_cube_query_enabled: 'false'
         }
       end
 
@@ -165,7 +168,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           root_namespace_full_path: group.name,
           root_namespace_name: group.full_path,
           features: [].to_json,
-          router_base: "/groups/#{group.full_path}/-/analytics/dashboards"
+          router_base: "/groups/#{group.full_path}/-/analytics/dashboards",
+          ai_generate_cube_query_enabled: 'false'
         }
       end
 
@@ -212,12 +216,47 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           allow(helper).to receive(:can?).with(user, :read_product_analytics,
             project).and_return(can_read_product_analytics)
           allow(helper).to receive(:can?).with(user, :admin_project, project).and_return(true)
+          allow(helper).to receive(:can?).with(user, :generate_cube_query, project).and_return(false)
         end
 
         subject(:data) { helper.analytics_dashboards_list_app_data(project) }
 
         it 'returns the expected tracking_key' do
           expect(data[:tracking_key]).to eq(expected)
+        end
+      end
+    end
+
+    describe 'ai_generate_cube_query_enabled' do
+      where(
+        :is_project,
+        :user_can_generate_cube_query,
+        :expected
+      ) do
+        true  | true  | 'true'
+        true  | false | 'false'
+        false | true  | 'false'
+        false | false | 'false'
+      end
+
+      with_them do
+        before do
+          project.project_setting.update!(product_analytics_instrumentation_key: 'snowplow-key')
+          stub_application_setting(product_analytics_configurator_connection_string: 'https://configurator.example.com')
+          stub_application_setting(product_analytics_enabled: true)
+          stub_feature_flags(product_analytics_dashboards: true)
+          stub_licensed_features(product_analytics: true)
+          allow(helper).to receive(:can?).with(user, :read_product_analytics,
+            is_project ? project : group).and_return(true)
+          allow(helper).to receive(:can?).with(user, :admin_project, is_project ? project : group).and_return(true)
+          allow(helper).to receive(:can?).with(user, :generate_cube_query,
+            is_project ? project : group).and_return(user_can_generate_cube_query)
+        end
+
+        subject(:data) { helper.analytics_dashboards_list_app_data(is_project ? project : group) }
+
+        it 'returns the expected tracking_key' do
+          expect(data[:ai_generate_cube_query_enabled]).to eq(expected)
         end
       end
     end
