@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Security::ComplianceFrameworkReportsController, feature_category: :compliance_management do
+RSpec.describe Groups::Security::ComplianceProjectFrameworkReportsController, feature_category: :compliance_management do
   let_it_be(:user) { create :user, name: 'UserName' }
   let_it_be(:group) { create :group, name: 'GroupName' }
 
@@ -11,7 +11,7 @@ RSpec.describe Groups::Security::ComplianceFrameworkReportsController, feature_c
   end
 
   describe 'GET /groups/*group_id/-/security/compliance_framework_reports(.:format)' do
-    subject(:request_export) { get group_security_compliance_framework_reports_path group, format: :csv }
+    subject(:request_export) { get group_security_compliance_project_framework_reports_path group, format: :csv }
 
     context 'when user does not have access to dashboard' do
       it 'renders not found' do
@@ -24,13 +24,14 @@ RSpec.describe Groups::Security::ComplianceFrameworkReportsController, feature_c
     context 'when user has access to compliance reports' do
       let(:email_notice_message) { 'After the report is generated, an email will be sent with the report attached.' }
 
-      before do
-        stub_licensed_features group_level_compliance_dashboard: true
+      before_all do
         group.add_owner user
       end
 
       it "defers email generation and redirects with message on following page" do
-        expect(ComplianceManagement::FrameworkExportMailerWorker).to(
+        stub_licensed_features group_level_compliance_dashboard: true
+
+        expect(ComplianceManagement::ProjectFrameworkExportMailerWorker).to(
           receive(:perform_async).with(user.id, group.id)
         )
 

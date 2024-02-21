@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ComplianceManagement
-  class FrameworkExportMailerWorker
+  class ProjectFrameworkExportMailerWorker
     ExportFailedError = Class.new StandardError
 
     include ApplicationWorker
@@ -17,9 +17,9 @@ module ComplianceManagement
       @user = User.find user_id
       @namespace = Namespace.find namespace_id
 
-      raise ExportFailedError, 'An error occurred generating the framework export' unless csv_export&.success?
+      raise ExportFailedError, 'An error occurred generating the project framework export' unless csv_export&.success?
 
-      Notify.compliance_frameworks_csv_email(
+      Notify.compliance_project_frameworks_csv_email(
         user: @user,
         group: @namespace,
         attachment: csv_export.payload,
@@ -32,11 +32,12 @@ module ComplianceManagement
     private
 
     def csv_export
-      @csv_export ||= ComplianceManagement::Frameworks::ExportService.new(user: @user, namespace: @namespace).execute
+      @csv_export ||= ComplianceManagement::ProjectFrameworks::ExportService.new(user: @user, namespace: @namespace)
+                                                                            .execute
     end
 
     def filename
-      "#{Date.current.iso8601}-compliance_framework_export-#{@namespace.id}.csv"
+      "#{Date.current.iso8601}-compliance_project_frameworks_export-#{@namespace.id}.csv"
     end
   end
 end

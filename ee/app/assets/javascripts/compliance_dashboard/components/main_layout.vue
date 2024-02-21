@@ -28,7 +28,7 @@ export default {
   mixins: [Tracking.mixin()],
   inject: [
     'mergeCommitsCsvExportPath',
-    'frameworksCsvExportPath',
+    'projectFrameworksCsvExportPath',
     'violationsCsvExportPath',
     'adherencesCsvExportPath',
     'complianceFrameworkReportUiEnabled',
@@ -92,7 +92,7 @@ export default {
       <template #actions>
         <reports-export
           class="gl-float-right"
-          :frameworks-csv-export-path="frameworksCsvExportPath"
+          :frameworks-csv-export-path="projectFrameworksCsvExportPath"
           :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
           :violations-csv-export-path="violationsCsvExportPath"
           :adherences-csv-export-path="adherencesCsvExportPath"
