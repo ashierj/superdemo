@@ -1,5 +1,5 @@
 import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg?raw';
-import mockGetJiraIssuesQuery from 'ee/integrations/jira/issues_list/graphql/queries/get_jira_issues.query.graphql';
+import getJiraIssuesQuery from 'ee/integrations/jira/issues_list/graphql/queries/get_jira_issues.query.graphql';
 
 export const mockProvide = {
   initialState: 'opened',
@@ -10,7 +10,7 @@ export const mockProvide = {
   issueCreateUrl: 'https://gitlab-jira.atlassian.net/secure/CreateIssue!default.jspa',
   emptyStatePath: '/assets/illustrations/empty-state/empty-issues-md.svg',
 
-  getIssuesQuery: mockGetJiraIssuesQuery,
+  getIssuesQuery: getJiraIssuesQuery,
   externalIssuesLogo: jiraLogo,
   externalIssueTrackerName: 'Jira',
   emptyStateNoIssueText:

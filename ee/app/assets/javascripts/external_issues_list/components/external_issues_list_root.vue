@@ -83,10 +83,13 @@ export default {
       return Boolean(!this.issuesListLoading && this.issues.length && this.totalIssues > 1);
     },
     hasFiltersApplied() {
-      return Boolean(this.filterParams.search || this.filterParams.labels);
+      return Boolean(
+        this.filterParams.projects || this.filterParams.labels || this.filterParams.search,
+      );
     },
     urlParams() {
       return {
+        'projects[]': this.filterParams.projects,
         'labels[]': this.filterParams.labels,
         search: this.filterParams.search,
         ...(this.currentPage === 1 ? {} : { page: this.currentPage }),
@@ -103,11 +106,12 @@ export default {
       variables() {
         return {
           issuesFetchPath: this.issuesFetchPath,
-          labels: this.filterParams.labels,
-          page: this.currentPage,
-          search: this.filterParams.search,
-          sort: this.sortedBy,
-          state: this.currentState,
+          page: this.currentPage, // navigation attributes
+          sort: this.sortedBy, // navigation attributes
+          state: this.currentState, // navigation attributes
+          projects: this.filterParams.projects, // filter attributes
+          labels: this.filterParams.labels, // filter attributes
+          search: this.filterParams.search, // filter attributes
         };
       },
       result({ data, error }) {
@@ -219,7 +223,10 @@ export default {
         filterParams.labels = labels;
       }
 
-      this.filterParams = filterParams;
+      this.filterParams = {
+        ...filterParams,
+        projects: this.filterParams.projects,
+      };
     },
   },
   alertSafeHtmlConfig: { ALLOW_TAGS: ['a'] },

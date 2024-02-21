@@ -3,19 +3,21 @@
 
 query jiraIssues(
   $issuesFetchPath: String
-  $search: String
-  $labels: String
+  $page: Integer
   $sort: String
   $state: String
-  $page: Integer
+  $projects: String
+  $labels: String
+  $search: String
 ) {
   externalIssues(
     issuesFetchPath: $issuesFetchPath
-    search: $search
-    labels: $labels
+    page: $page
     sort: $sort
     state: $state
-    page: $page
+    projects: $projects
+    labels: $labels
+    search: $search
   ) @client {
     errors
     pageInfo {

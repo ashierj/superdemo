@@ -214,6 +214,7 @@ Object {
   "truncateCounts": false,
   "urlParams": Object {
     "labels[]": undefined,
+    "projects[]": undefined,
     "search": undefined,
   },
   "useKeysetPagination": false,

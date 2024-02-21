@@ -61,8 +61,19 @@ describe('ExternalIssuesListRoot', () => {
   let wrapper;
   let mock;
 
-  const mockSearchTerm = 'test issue';
+  const mockProject = 'ES';
   const mockLabel = 'ecosystem';
+  const mockSearchTerm = 'test issue';
+  const expectedParams = {
+    with_labels_details: true,
+    per_page: 2,
+    page: 1,
+    sort: 'created_desc',
+    state: 'opened',
+    projects: undefined,
+    labels: undefined,
+    search: undefined,
+  };
 
   const findIssuableList = () => wrapper.findComponent(IssuableList);
   const findAlert = () => wrapper.findComponent(GlAlert);
@@ -82,11 +93,12 @@ describe('ExternalIssuesListRoot', () => {
   };
 
   const createComponent = ({
+    mountFn = shallowMount,
     apolloProvider = createMockApolloProvider(),
     provide = mockProvide,
     initialFilterParams = {},
   } = {}) => {
-    wrapper = shallowMount(ExternalIssuesListRoot, {
+    wrapper = mountFn(ExternalIssuesListRoot, {
       propsData: {
         initialFilterParams,
       },
@@ -124,12 +136,7 @@ describe('ExternalIssuesListRoot', () => {
         mockProvide.issuesFetchPath,
         expect.objectContaining({
           params: {
-            with_labels_details: true,
-            page: wrapper.vm.currentPage,
-            per_page: wrapper.vm.$options.defaultPageSize,
-            state: wrapper.vm.currentState,
-            sort: wrapper.vm.sortedBy,
-            search: wrapper.vm.filterParams.search,
+            ...expectedParams,
           },
         }),
       );
@@ -142,11 +149,26 @@ describe('ExternalIssuesListRoot', () => {
 
       createComponent({
         initialFilterParams: {
+          projects: [mockProject],
           labels: [mockLabel],
           search: mockSearchTerm,
         },
       });
       await waitForPromises();
+    });
+
+    it('calls `axios.get` with `issuesFetchPath` and query params', () => {
+      expect(axios.get).toHaveBeenCalledWith(
+        mockProvide.issuesFetchPath,
+        expect.objectContaining({
+          params: {
+            ...expectedParams,
+            projects: [mockProject],
+            labels: [mockLabel],
+            search: mockSearchTerm,
+          },
+        }),
+      );
     });
 
     it('renders issuable-list component with correct props', () => {
@@ -156,7 +178,33 @@ describe('ExternalIssuesListRoot', () => {
         { type: TOKEN_TYPE_LABEL, value: { data: mockLabel } },
         { type: FILTERED_SEARCH_TERM, value: { data: mockSearchTerm } },
       ]);
+      expect(issuableList.props('urlParams')['projects[]']).toEqual([mockProject]);
+      expect(issuableList.props('urlParams')['labels[]']).toEqual([mockLabel]);
       expect(issuableList.props('urlParams').search).toBe(mockSearchTerm);
+    });
+
+    describe('issuable-list events', () => {
+      it.each`
+        desc             | input                                 | expected
+        ${'with label'}  | ${[createLabelFilterEvent('label2')]} | ${{ labels: ['label2'] }}
+        ${'with search'} | ${[createSearchFilterEvent('foo')]}   | ${{ search: 'foo' }}
+      `(
+        '$desc, filter event sets "filterParams" value and calls fetchIssues',
+        async ({ input, expected }) => {
+          const issuableList = findIssuableList();
+
+          issuableList.vm.$emit('filter', input);
+          await waitForPromises();
+
+          expect(axios.get).toHaveBeenCalledWith(mockProvide.issuesFetchPath, {
+            params: {
+              ...expectedParams,
+              projects: [mockProject],
+              ...expected,
+            },
+          });
+        },
+      );
     });
   });
 
@@ -178,33 +226,23 @@ describe('ExternalIssuesListRoot', () => {
       it('renders issuable-list component with correct reference', async () => {
         jest.spyOn(axios, 'get').mockResolvedValue(resolvedValue);
 
-        wrapper = mount(ExternalIssuesListRoot, {
-          propsData: {
-            initialFilterParams: {},
-          },
-          provide: mockProvide,
-          apolloProvider: createMockApolloProvider(),
-        });
+        createComponent({ mountFn: mount });
         await waitForPromises();
+
         expect(wrapper.find('.issuable-info').text()).toContain(
           resolvedValue.data[0].references.relative,
         );
       });
 
-      it('renders issuable-list component with id when references is not presence', async () => {
+      it('renders issuable-list component with id when references is not present', async () => {
         jest.spyOn(axios, 'get').mockResolvedValue({
           ...resolvedValue,
           data: [mockJiraIssueNoReference],
         });
 
-        wrapper = mount(ExternalIssuesListRoot, {
-          propsData: {
-            initialFilterParams: {},
-          },
-          provide: mockProvide,
-          apolloProvider: createMockApolloProvider(),
-        });
+        createComponent({ mountFn: mount });
         await waitForPromises();
+
         // Since Jira transformer transforms references.relative into id, we can only test
         // whether it exists.
         expect(wrapper.find('.issuable-info').exists()).toBe(false);
@@ -220,13 +258,8 @@ describe('ExternalIssuesListRoot', () => {
 
         expect(axios.get).toHaveBeenCalledWith(mockProvide.issuesFetchPath, {
           params: {
-            labels: undefined,
-            page: 1,
-            per_page: 2,
-            search: undefined,
-            sort: 'created_desc',
+            ...expectedParams,
             state: 'closed',
-            with_labels_details: true,
           },
         });
         expect(issuableList.props('currentTab')).toBe('closed');
@@ -245,13 +278,8 @@ describe('ExternalIssuesListRoot', () => {
 
         expect(axios.get).toHaveBeenCalledWith(mockProvide.issuesFetchPath, {
           params: {
-            labels: undefined,
+            ...expectedParams,
             page: mockPage,
-            per_page: 2,
-            search: undefined,
-            sort: 'created_desc',
-            state: 'opened',
-            with_labels_details: true,
           },
         });
 
@@ -272,13 +300,8 @@ describe('ExternalIssuesListRoot', () => {
 
         expect(axios.get).toHaveBeenCalledWith(mockProvide.issuesFetchPath, {
           params: {
-            labels: undefined,
-            page: 1,
-            per_page: 2,
-            search: undefined,
-            sort: 'created_desc',
-            state: 'opened',
-            with_labels_details: true,
+            ...expectedParams,
+            sort: 'updated_asc',
           },
         });
         expect(issuableList.props('initialSortBy')).toBe(mockSortBy);
@@ -299,11 +322,7 @@ describe('ExternalIssuesListRoot', () => {
 
           expect(axios.get).toHaveBeenCalledWith(mockProvide.issuesFetchPath, {
             params: {
-              page: 1,
-              per_page: 2,
-              sort: 'created_desc',
-              state: 'opened',
-              with_labels_details: true,
+              ...expectedParams,
               ...expected,
             },
           });

@@ -31,8 +31,8 @@ import {
   BLOCK_BRANCH_MODIFICATION,
   buildSettingsList,
   createPolicyObject,
-  DEFAULT_PROJECT_SCAN_RESULT_POLICY,
-  DEFAULT_GROUP_SCAN_RESULT_POLICY,
+  DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE,
+  DEFAULT_SCAN_RESULT_POLICY,
   getInvalidBranches,
   fromYaml,
   policyToYaml,
@@ -112,11 +112,9 @@ export default {
     },
   },
   data() {
-    const isGroupLevel = this.namespaceType === NAMESPACE_TYPES.GROUP;
-    const hasPolicyScope = this.glFeatures.securityPoliciesPolicyScope && isGroupLevel;
-    const manifest = hasPolicyScope
-      ? DEFAULT_GROUP_SCAN_RESULT_POLICY
-      : DEFAULT_PROJECT_SCAN_RESULT_POLICY;
+    const manifest = this.glFeatures.securityPoliciesPolicyScope
+      ? DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE
+      : DEFAULT_SCAN_RESULT_POLICY;
 
     const defaultPolicyObject = fromYaml({ manifest });
 
