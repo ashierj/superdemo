@@ -51,6 +51,7 @@ describe('ComplianceFrameworksToggleList', () => {
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findAllLabels = () => wrapper.findAllComponents(GlLabel);
   const findHeader = () => wrapper.findByTestId('compliance-frameworks-header');
+  const findHiddenLabelText = () => wrapper.findByTestId('hidden-labels-text');
 
   describe('all frameworks', () => {
     beforeEach(() => {
@@ -129,6 +130,63 @@ describe('ComplianceFrameworksToggleList', () => {
     it('emits error when query is failing', async () => {
       await waitForPromises();
       expect(wrapper.emitted('framework-query-error')).toHaveLength(1);
+    });
+  });
+
+  describe('partial rendered list', () => {
+    const { length: DEFAULT_NODES_LENGTH } = defaultNodes;
+
+    it.each`
+      labelsToShow | expectedLength | expectedText
+      ${2}         | ${2}           | ${'+ 1 more'}
+      ${1}         | ${1}           | ${'+ 2 more'}
+    `('can show only partial list', async ({ labelsToShow, expectedLength, expectedText }) => {
+      createComponent({
+        propsData: {
+          labelsToShow,
+        },
+      });
+      await waitForPromises();
+
+      expect(findAllLabels()).toHaveLength(expectedLength);
+      expect(findHiddenLabelText().text()).toBe(expectedText);
+    });
+
+    it.each`
+      labelsToShow           | expectedLength          | hiddenTextExist
+      ${10}                  | ${DEFAULT_NODES_LENGTH} | ${false}
+      ${undefined}           | ${DEFAULT_NODES_LENGTH} | ${false}
+      ${NaN}                 | ${DEFAULT_NODES_LENGTH} | ${false}
+      ${null}                | ${DEFAULT_NODES_LENGTH} | ${false}
+      ${2}                   | ${2}                    | ${true}
+      ${defaultNodes.length} | ${DEFAULT_NODES_LENGTH} | ${false}
+    `(
+      'shows full list if labelsToShow is more than total number of labels',
+      async ({ labelsToShow, expectedLength, hiddenTextExist }) => {
+        createComponent({
+          propsData: {
+            labelsToShow,
+          },
+        });
+        await waitForPromises();
+
+        expect(findAllLabels()).toHaveLength(expectedLength);
+        expect(findHiddenLabelText().exists()).toBe(hiddenTextExist);
+      },
+    );
+  });
+
+  describe('custom header', () => {
+    it('renders custom header message', async () => {
+      createComponent({
+        propsData: {
+          customHeaderMessage: 'Test header',
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findHeader().text()).toBe('Test header');
     });
   });
 });
