@@ -35,7 +35,7 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component, fe
     end
 
     it 'has pricing info' do
-      expect(page).to have_content('$ 0')
+      expect(page).to have_content("#{component.currency_symbol} 0")
       expect(page).not_to have_content('Billed annually')
     end
 
@@ -62,7 +62,7 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component, fe
     end
 
     it 'has pricing info' do
-      expect(page).not_to have_content('$ 0')
+      expect(page).not_to have_content("#{component.currency_symbol} 0")
       expect(page).to have_content('Billed annually')
     end
 
@@ -101,7 +101,7 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component, fe
     let(:plan_name) { 'ultimate' }
 
     it 'has pricing info' do
-      expect(page).not_to have_content('$ 0')
+      expect(page).not_to have_content("#{component.currency_symbol} 0")
       expect(page).to have_content('Billed annually')
     end
 

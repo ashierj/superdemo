@@ -12,6 +12,11 @@ module Billing
       @current_plan = current_plan
     end
 
+    # JH need override the symbol
+    def currency_symbol
+      "$"
+    end
+
     private
 
     attr_reader :plan, :namespace, :current_plan
