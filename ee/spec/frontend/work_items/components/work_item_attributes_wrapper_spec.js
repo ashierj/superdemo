@@ -1,7 +1,8 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
-import WorkItemProgress from 'ee/work_items/components/work_item_progress.vue';
+import WorkItemProgressInline from 'ee/work_items/components/work_item_progress_inline.vue';
+import WorkItemProgressWithEdit from 'ee/work_items/components/work_item_progress_with_edit.vue';
 import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status_with_edit.vue';
 import WorkItemHealthStatusInline from 'ee/work_items/components/work_item_health_status_inline.vue';
 import WorkItemWeight from 'ee/work_items/components/work_item_weight_with_edit.vue';
@@ -32,7 +33,8 @@ describe('EE WorkItemAttributesWrapper component', () => {
   const findWorkItemIterationInline = () => wrapper.findComponent(WorkItemIterationInline);
   const findWorkItemWeight = () => wrapper.findComponent(WorkItemWeight);
   const findWorkItemWeightInline = () => wrapper.findComponent(WorkItemWeightInline);
-  const findWorkItemProgress = () => wrapper.findComponent(WorkItemProgress);
+  const findWorkItemProgressInline = () => wrapper.findComponent(WorkItemProgressInline);
+  const findWorkItemProgressWithEdit = () => wrapper.findComponent(WorkItemProgressWithEdit);
   const findWorkItemColorInline = () => wrapper.findComponent(WorkItemColorInline);
   const findWorkItemHealthStatus = () => wrapper.findComponent(WorkItemHealthStatus);
   const findWorkItemHealthStatusInline = () => wrapper.findComponent(WorkItemHealthStatusInline);
@@ -198,8 +200,26 @@ describe('EE WorkItemAttributesWrapper component', () => {
         const response = workItemResponseFactory({ progressWidgetPresent });
         createComponent({ workItem: response.data.workItem });
 
-        expect(findWorkItemProgress().exists()).toBe(exists);
+        expect(findWorkItemProgressWithEdit().exists()).toBe(exists);
       });
+    });
+
+    it('renders WorkItemProgressWithEdit when workItemsMvc2 enabled', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findWorkItemProgressWithEdit().exists()).toBe(true);
+      expect(findWorkItemProgressInline().exists()).toBe(false);
+    });
+
+    it('renders WorkItemProgressInline when workItemsMvc2 disabled', async () => {
+      createComponent({ workItemsMvc2: false });
+
+      await waitForPromises();
+
+      expect(findWorkItemProgressWithEdit().exists()).toBe(false);
+      expect(findWorkItemProgressInline().exists()).toBe(true);
     });
 
     it('emits an error event to the wrapper', async () => {
@@ -207,7 +227,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
       createComponent({ workItem: response.data.workItem });
       const updateError = 'Failed to update';
 
-      findWorkItemProgress().vm.$emit('error', updateError);
+      findWorkItemProgressWithEdit().vm.$emit('error', updateError);
       await nextTick();
 
       expect(wrapper.emitted('error')).toEqual([[updateError]]);
