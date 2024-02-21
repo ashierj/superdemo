@@ -30524,6 +30524,8 @@ Values for sorting catalog resources.
 | <a id="cicatalogresourcesortlatest_released_at_desc"></a>`LATEST_RELEASED_AT_DESC` | Latest release date by descending order. |
 | <a id="cicatalogresourcesortname_asc"></a>`NAME_ASC` | Name by ascending order. |
 | <a id="cicatalogresourcesortname_desc"></a>`NAME_DESC` | Name by descending order. |
+| <a id="cicatalogresourcesortstar_count_asc"></a>`STAR_COUNT_ASC` | Star count by ascending order. |
+| <a id="cicatalogresourcesortstar_count_desc"></a>`STAR_COUNT_DESC` | Star count by descending order. |
 
 ### `CiCatalogResourceVersionSort`
 
