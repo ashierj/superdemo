@@ -1,7 +1,7 @@
 import { GlForm, GlFormInput } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import WorkItemProgress from 'ee/work_items/components/work_item_progress.vue';
+import WorkItemProgressInline from 'ee/work_items/components/work_item_progress_inline.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
@@ -32,7 +32,7 @@ describe('WorkItemProgress component', () => {
     progress,
     mutationHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse),
   } = {}) => {
-    wrapper = mountExtended(WorkItemProgress, {
+    wrapper = mountExtended(WorkItemProgressInline, {
       apolloProvider: createMockApollo([[updateWorkItemMutation, mutationHandler]]),
       propsData: {
         canUpdate,

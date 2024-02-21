@@ -25,53 +25,132 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   end
 
   shared_examples 'work items progress' do
+    let(:progress_wrapper) { '[data-testid="work-item-progress-with-edit"]' }
     let(:form_selector) { '[data-testid="work-item-progress"]' }
     let(:input_selector) { '[data-testid="work-item-progress-input"]' }
 
-    it 'successfully sets the progress' do
-      find(input_selector).fill_in(with: '30')
-      send_keys(:tab) # Simulate blur
+    context 'when the work_items_mvc_2 is enabled' do
+      it 'successfully sets the progress' do
+        within(progress_wrapper) do
+          click_button 'Edit'
+        end
 
-      wait_for_requests
+        find(input_selector).fill_in(with: '30')
+        send_keys(:tab) # Simulate blur
 
-      expect(find(form_selector)).to have_content "30%"
-      expect(work_item.reload.progress.progress).to eq 30
-    end
+        wait_for_requests
 
-    it 'prevents typing values outside min and max range', :aggregate_failures do
-      page_body = page.find('body')
-      page.within(form_selector) do
-        progress_input = find(input_selector)
-        progress_input.native.send_keys('101')
+        expect(find(progress_wrapper)).to have_content "30%"
+        expect(work_item.reload.progress.progress).to eq 30
+      end
+
+      it 'prevents typing values outside min and max range', :aggregate_failures do
+        page_body = page.find('body')
+
+        within(progress_wrapper) do
+          click_button 'Edit'
+        end
+
+        page.within(form_selector) do
+          progress_input = find(input_selector)
+          progress_input.native.send_keys('101')
+        end
+
         page_body.click
+        expect(find(progress_wrapper)).to have_content "0%"
+      end
 
-        expect(progress_input.value).to eq('0')
+      it 'prevent typing special characters `+`, `-`, and `e`', :aggregate_failures do
+        page_body = page.find('body')
 
-        # Clear input
-        progress_input.set('')
-        progress_input.native.send_keys('-')
+        within(progress_wrapper) do
+          click_button 'Edit'
+        end
+
+        page.within(form_selector) do
+          find(input_selector).native.send_keys('+')
+        end
+
         page_body.click
+        expect(find(progress_wrapper)).to have_content "0%"
 
-        expect(progress_input.value).to eq('')
+        within(progress_wrapper) do
+          click_button 'Edit'
+        end
+
+        page.within(form_selector) do
+          find(input_selector).native.send_keys('-')
+        end
+
+        page_body.click
+        expect(find(progress_wrapper)).to have_content "0%"
+
+        within(progress_wrapper) do
+          click_button 'Edit'
+        end
+
+        page.within(form_selector) do
+          find(input_selector).native.send_keys('e')
+        end
+
+        page_body.click
+        expect(find(progress_wrapper)).to have_content "0%"
       end
     end
 
-    it 'prevent typing special characters `+`, `-`, and `e`', :aggregate_failures do
-      page_body = page.find('body')
-      page.within(form_selector) do
-        progress_input = find(input_selector)
+    context 'when the work_items_mvc_2 is disabled' do
+      before do
+        stub_feature_flags(work_items_mvc_2: false)
 
-        progress_input.native.send_keys('+')
-        page_body.click
-        expect(progress_input.value).to eq('0')
+        page.refresh
+        wait_for_all_requests
+      end
 
-        progress_input.native.send_keys('-')
-        page_body.click
-        expect(progress_input.value).to eq('0')
+      it 'successfully sets the progress' do
+        find(input_selector).fill_in(with: '30')
+        send_keys(:tab) # Simulate blur
 
-        progress_input.native.send_keys('e')
-        page_body.click
-        expect(progress_input.value).to eq('0')
+        wait_for_requests
+
+        expect(find(form_selector)).to have_content "30%"
+        expect(work_item.reload.progress.progress).to eq 30
+      end
+
+      it 'prevents typing values outside min and max range', :aggregate_failures do
+        page_body = page.find('body')
+        page.within(form_selector) do
+          progress_input = find(input_selector)
+          progress_input.native.send_keys('101')
+          page_body.click
+
+          expect(progress_input.value).to eq('0')
+
+          # Clear input
+          progress_input.set('')
+          progress_input.native.send_keys('-')
+          page_body.click
+
+          expect(progress_input.value).to eq('')
+        end
+      end
+
+      it 'prevent typing special characters `+`, `-`, and `e`', :aggregate_failures do
+        page_body = page.find('body')
+        page.within(form_selector) do
+          progress_input = find(input_selector)
+
+          progress_input.native.send_keys('+')
+          page_body.click
+          expect(progress_input.value).to eq('0')
+
+          progress_input.native.send_keys('-')
+          page_body.click
+          expect(progress_input.value).to eq('0')
+
+          progress_input.native.send_keys('e')
+          page_body.click
+          expect(progress_input.value).to eq('0')
+        end
       end
     end
   end
