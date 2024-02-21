@@ -1,12 +1,20 @@
 #import "./dora_metric_item.fragment.graphql"
 
-query groupDoraMetricsQuery(
+query doraMetricsQuery(
   $fullPath: ID!
   $startDate: Date!
   $endDate: Date!
   $interval: DoraMetricBucketingInterval!
 ) {
-  namespace: group(fullPath: $fullPath) {
+  project(fullPath: $fullPath) {
+    id
+    dora {
+      metrics(startDate: $startDate, endDate: $endDate, interval: $interval) {
+        ...DoraMetricItem
+      }
+    }
+  }
+  group(fullPath: $fullPath) {
     id
     dora {
       metrics(startDate: $startDate, endDate: $endDate, interval: $interval) {

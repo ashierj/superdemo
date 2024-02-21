@@ -57,7 +57,8 @@ export const mockGraphqlVulnerabilityResponse = (
 ) =>
   jest.fn().mockResolvedValue({
     data: {
-      namespace: {
+      project: null,
+      group: {
         id: 'fake-vulnerability-request',
         vulnerabilitiesCountByDay: { nodes: [mockDataResponse] },
       },
@@ -67,14 +68,16 @@ export const mockGraphqlVulnerabilityResponse = (
 export const mockGraphqlFlowMetricsResponse = (mockDataResponse = mockFlowMetricsResponseData) =>
   jest.fn().mockResolvedValue({
     data: {
-      namespace: { id: 'fake-flow-metrics-request', flowMetrics: mockDataResponse },
+      project: null,
+      group: { id: 'fake-flow-metrics-request', flowMetrics: mockDataResponse },
     },
   });
 
 export const mockGraphqlDoraMetricsResponse = (mockDataResponse = mockDoraMetricsResponseData) =>
   jest.fn().mockResolvedValue({
     data: {
-      namespace: { id: 'fake-dora-metrics-request', dora: mockDataResponse },
+      project: null,
+      group: { id: 'fake-dora-metrics-request', dora: mockDataResponse },
     },
   });
 
@@ -83,7 +86,8 @@ export const mockGraphqlMergeRequestsResponse = (
 ) =>
   jest.fn().mockResolvedValue({
     data: {
-      namespace: { id: 'fake-merge-requests-request', mergeRequests: mockDataResponse },
+      project: null,
+      group: { id: 'fake-merge-requests-request', mergeRequests: mockDataResponse },
     },
   });
 

@@ -5,14 +5,10 @@ import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { toYmd } from '~/analytics/shared/utils';
 import { CONTRIBUTOR_METRICS } from '~/analytics/shared/constants';
-import GroupVulnerabilitiesQuery from '../graphql/group_vulnerabilities.query.graphql';
-import ProjectVulnerabilitiesQuery from '../graphql/project_vulnerabilities.query.graphql';
-import GroupMergeRequestsQuery from '../graphql/group_merge_requests.query.graphql';
-import ProjectMergeRequestsQuery from '../graphql/project_merge_requests.query.graphql';
-import GroupFlowMetricsQuery from '../graphql/group_flow_metrics.query.graphql';
-import ProjectFlowMetricsQuery from '../graphql/project_flow_metrics.query.graphql';
-import GroupDoraMetricsQuery from '../graphql/group_dora_metrics.query.graphql';
-import ProjectDoraMetricsQuery from '../graphql/project_dora_metrics.query.graphql';
+import VulnerabilitiesQuery from '../graphql/vulnerabilities.query.graphql';
+import MergeRequestsQuery from '../graphql/merge_requests.query.graphql';
+import FlowMetricsQuery from '../graphql/flow_metrics.query.graphql';
+import DoraMetricsQuery from '../graphql/dora_metrics.query.graphql';
 import GroupContributorCountQuery from '../graphql/group_contributor_count.query.graphql';
 import { BUCKETING_INTERVAL_ALL, MERGE_REQUESTS_STATE_MERGED } from '../graphql/constants';
 import {
@@ -49,8 +45,9 @@ const DASHBOARD_TIME_PERIODS = generateDateRanges(now);
 const CHART_TIME_PERIODS = generateChartTimePeriods(now);
 
 const extractQueryResponseFromNamespace = ({ result, resultKey }) => {
-  if (result.data?.namespace) {
-    const { namespace } = result.data;
+  const { group = null, project = null } = result.data;
+  if (group || project) {
+    const namespace = group ?? project;
     return namespace[resultKey];
   }
   return {};
@@ -173,7 +170,7 @@ export default {
 
     async fetchDoraMetricsQuery({ startDate, endDate }, timePeriod) {
       const result = await this.$apollo.query({
-        query: this.isProject ? ProjectDoraMetricsQuery : GroupDoraMetricsQuery,
+        query: DoraMetricsQuery,
         variables: {
           fullPath: this.requestPath,
           interval: BUCKETING_INTERVAL_ALL,
@@ -194,7 +191,7 @@ export default {
 
     async fetchFlowMetricsQuery({ startDate, endDate }, timePeriod) {
       const result = await this.$apollo.query({
-        query: this.isProject ? ProjectFlowMetricsQuery : GroupFlowMetricsQuery,
+        query: FlowMetricsQuery,
         variables: {
           fullPath: this.requestPath,
           labelNames: this.filterLabels,
@@ -212,7 +209,7 @@ export default {
 
     async fetchMergeRequestsMetricsQuery({ startDate, endDate }, timePeriod) {
       const result = await this.$apollo.query({
-        query: this.isProject ? ProjectMergeRequestsQuery : GroupMergeRequestsQuery,
+        query: MergeRequestsQuery,
         variables: {
           fullPath: this.requestPath,
           startDate: toYmd(startDate),
@@ -234,7 +231,7 @@ export default {
 
     async fetchVulnerabilitiesMetricsQuery({ endDate }, timePeriod) {
       const result = await this.$apollo.query({
-        query: this.isProject ? ProjectVulnerabilitiesQuery : GroupVulnerabilitiesQuery,
+        query: VulnerabilitiesQuery,
         variables: {
           fullPath: this.requestPath,
 
