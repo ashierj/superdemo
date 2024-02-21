@@ -83,7 +83,7 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
 
     context 'when code suggestions are available' do
       it 'returns expected url' do
-        expected_url = "#{staging_customers_url}/gitlab/namespaces/#{subscription_name}/duo_pro_seats"
+        expected_url = "#{staging_customers_url}/gitlab/subscriptions/#{subscription_name}/duo_pro_seats"
         expect(helper.add_duo_pro_seats_url(subscription_name)).to eq expected_url
       end
     end

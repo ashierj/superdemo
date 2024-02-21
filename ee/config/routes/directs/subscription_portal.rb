@@ -48,6 +48,10 @@ direct :subscription_portal_add_duo_pro_seats do |group_id|
   Addressable::URI.join(subscription_portal_url, "/gitlab/namespaces/#{group_id}/duo_pro_seats").to_s
 end
 
+direct :subscription_portal_add_sm_duo_pro_seats do |subscription_name|
+  Addressable::URI.join(subscription_portal_url, "/gitlab/subscriptions/#{subscription_name}/duo_pro_seats").to_s
+end
+
 direct :subscription_portal_upgrade_subscription do |group_id, plan_id|
   Addressable::URI.join(subscription_portal_url, "/gitlab/namespaces/#{group_id}/upgrade/#{plan_id}").to_s
 end
