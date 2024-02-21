@@ -21,7 +21,24 @@ module ApprovalRules
       end
     end
 
+    def execute
+      return error("The feature approval_group_rules is not enabled.") if group_rule? && Feature.disabled?(
+        :approval_group_rules, rule.group)
+
+      super
+    end
+
     private
+
+    def container
+      return rule.group if group_rule?
+
+      rule.project
+    end
+
+    def group_rule?
+      rule.is_a?(ApprovalGroupRule)
+    end
 
     def save_rule_without_audit
       if rule.update(params)
