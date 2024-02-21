@@ -84,7 +84,7 @@ describe('AnalyticsVisualizationDesigner', () => {
     await waitForPromises();
   };
 
-  const createWrapper = (sourceDashboardSlug = '', options = { glFeatures: {} }) => {
+  const createWrapper = (sourceDashboardSlug = '', options = { provide: {} }) => {
     const mocks = {
       $toast: {
         show: showToast,
@@ -112,9 +112,8 @@ describe('AnalyticsVisualizationDesigner', () => {
       mocks,
       provide: {
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
-        glFeatures: {
-          ...options.glFeatures,
-        },
+        aiGenerateCubeQueryEnabled: false,
+        ...options.provide,
       },
     });
   };
@@ -491,19 +490,19 @@ describe('AnalyticsVisualizationDesigner', () => {
 
   describe('natural language querying', () => {
     it.each`
-      featureFlagState | visibility
-      ${true}          | ${'shows'}
-      ${false}         | ${'hides'}
+      providedFlagState | visibility
+      ${true}           | ${'shows'}
+      ${false}          | ${'hides'}
     `(
-      '$visibility the AI cube query generator when the "generateCubeQuery" feature flag is "$featureFlagState"',
-      ({ featureFlagState }) => {
+      '$visibility the AI cube query generator when "aiGenerateCubeQueryEnabled" is "$providedFlagState"',
+      ({ providedFlagState }) => {
         createWrapper('', {
-          glFeatures: {
-            generateCubeQuery: featureFlagState,
+          provide: {
+            aiGenerateCubeQueryEnabled: providedFlagState,
           },
         });
 
-        expect(findAiQueryGenerator().exists()).toBe(featureFlagState);
+        expect(findAiQueryGenerator().exists()).toBe(providedFlagState);
       },
     );
   });
