@@ -33,12 +33,6 @@ message RunRequest {
     string work_dir = 2;
     map<string,string> env = 3;
 
-    enum StepType {
-        unknown = 0;
-        step = 1;
-        script = 2;
-    }
-    StepType type = 4;
     repeated Step steps = 5;
     string ci_script = 6;
 }
