@@ -38675,6 +38675,9 @@ msgstr ""
 msgid "ProjectPage|Copy project ID: %{id}"
 msgstr ""
 
+msgid "ProjectPage|Created on"
+msgstr ""
+
 msgid "ProjectPage|Project ID copied to clipboard."
 msgstr ""
 
