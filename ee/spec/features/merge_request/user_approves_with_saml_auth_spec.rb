@@ -49,7 +49,8 @@ RSpec.describe 'Merge request > User approves with SAML auth', :js, feature_cate
     sign_in(user)
     visit sso_group_saml_providers_path group_id: group, token: group.saml_discovery_token
     wait_for_requests
-    page.within('.login-box') { click_link 'Authorize' }
+    has_testid?('saml-sso-signin-button')
+    click_link 'Authorize'
     wait_for_requests
   end
 

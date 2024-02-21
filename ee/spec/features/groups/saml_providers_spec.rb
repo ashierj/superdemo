@@ -300,9 +300,8 @@ RSpec.describe 'SAML provider settings', feature_category: :system_access do
           it 'displays sign in button' do
             expect(page).to have_current_path sso_group_saml_providers_path(group), ignore_query: true
 
-            within '.login-box' do
-              expect(page).to have_link 'Authorize'
-            end
+            has_testid?('saml-sso-signin-button')
+            expect(page).to have_link _('Authorize')
           end
 
           it "doesn't leak group information" do
