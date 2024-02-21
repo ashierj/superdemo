@@ -108,9 +108,7 @@ after a crash.
 The Step Runner gRPC service will be able to execute multiple `Run`
 payloads at once. That is, each call to `Run` will start a new goroutine
 and execute the steps until completion. Multiple calls to `Run` may be
-made simultaneously. This is also why components are cached by `location`,
-`version` and `hash`. Because we cannot be changing which ref we are on
-while multiple, concurrent executions are using the underlying files.
+made simultaneously.
 
 As steps are executed, step-result traces and sub-process IO are streamed
 back to GitLab Runner. This allows callers to follow execution, at the
