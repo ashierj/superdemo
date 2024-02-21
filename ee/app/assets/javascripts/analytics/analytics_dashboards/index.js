@@ -43,6 +43,7 @@ export default () => {
     rootNamespaceName,
     rootNamespaceFullPath,
     dataSourceClickhouse,
+    aiGenerateCubeQueryEnabled,
   } = el.dataset;
 
   const analyticsDashboardPointer = buildAnalyticsDashboardPointer(analyticsDashboardPointerJSON);
@@ -100,6 +101,7 @@ export default () => {
     apolloProvider,
     router,
     provide: {
+      aiGenerateCubeQueryEnabled: parseBoolean(aiGenerateCubeQueryEnabled),
       breadcrumbState,
       customDashboardsProject: analyticsDashboardPointer,
       canConfigureDashboardsProject: parseBoolean(canConfigureDashboardsProject),

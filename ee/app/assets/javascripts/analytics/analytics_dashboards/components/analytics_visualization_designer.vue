@@ -10,7 +10,6 @@ import { slugify } from '~/lib/utils/text_utility';
 import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { InternalEvents } from '~/tracking';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { createCubeJsApi } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { getVisualizationOptions } from 'ee/analytics/analytics_dashboards/utils/visualization_designer_options';
@@ -47,8 +46,11 @@ export default {
     VisualizationTypeSelector,
     VisualizationPreview,
   },
-  mixins: [InternalEvents.mixin(), glFeatureFlagMixin()],
+  mixins: [InternalEvents.mixin()],
   inject: {
+    aiGenerateCubeQueryEnabled: {
+      type: Boolean,
+    },
     customDashboardsProject: {
       type: Object,
       default: null,
@@ -114,9 +116,6 @@ export default {
     },
     showDimensionSelector() {
       return Boolean(this.queryState.query?.measures?.length);
-    },
-    showDuoQueryGenerator() {
-      return this.glFeatures.generateCubeQuery;
     },
   },
   beforeDestroy() {
@@ -368,7 +367,7 @@ export default {
       </div>
     </section>
     <ai-cube-query-generator
-      v-if="showDuoQueryGenerator"
+      v-if="aiGenerateCubeQueryEnabled"
       class="gl-mb-4"
       @query-generated="onQueryGenerated"
     />
