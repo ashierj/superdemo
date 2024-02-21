@@ -15,6 +15,7 @@ module Ai
 
     belongs_to :project
     has_many :versions, class_name: 'Ai::AgentVersion'
+    has_one :latest_version, -> { latest_by_agent }, class_name: 'Ai::AgentVersion', inverse_of: :agent
 
     scope :including_project, -> { includes(:project) }
     scope :for_project, ->(project) { where(project_id: project.id) }
