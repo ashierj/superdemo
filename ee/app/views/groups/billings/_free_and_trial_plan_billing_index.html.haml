@@ -22,9 +22,7 @@
       .gl-display-flex.gl-flex-wrap.gl-gap-3
         = render Pajamas::ButtonComponent.new(href: new_trial_path(namespace_id: namespace.id), category: 'primary', variant: 'confirm', button_options: { data: start_free_trial_data }) do
           = s_("BillingPlans|Start a free Ultimate trial")
-        - if Feature.enabled?(:duo_pro_trials, current_user, type: :wip)
-          = render Pajamas::ButtonComponent.new(href: new_trials_duo_pro_path(namespace_id: namespace.id), category: 'primary', variant: 'confirm') do
-            = s_("BillingPlans|Start a free Duo Pro trial")
+        = render 'duo_pro_trial_cta', namespace: namespace, button_category: 'secondary'
 
   - if namespace.trial_active?
     .gl-mb-9.gl-mx-auto.billing-plan-divider

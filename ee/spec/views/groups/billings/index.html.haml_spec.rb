@@ -72,7 +72,7 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
           render
 
           expect(rendered).to have_link(
-            'Start a free Duo Pro trial',
+            'Start a free GitLab Duo Pro trial',
             href: new_trials_duo_pro_path(namespace_id: group.id)
           )
         end
@@ -139,6 +139,10 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
           expect(rendered).to have_link('GitLab Duo Pro', href: 'https://about.gitlab.com/gitlab-duo/')
           hand_raise_selector = '.js-hand-raise-lead-button[data-track-label="code_suggestions_hand_raise_lead_form"]'
           expect(rendered).to have_selector(hand_raise_selector)
+          expect(rendered).to have_link(
+            'Start a free GitLab Duo Pro trial',
+            href: new_trials_duo_pro_path(namespace_id: group.id)
+          )
         end
       end
 
