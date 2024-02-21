@@ -58,7 +58,9 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
     let_it_be(:storage_banner_text) { "A namespace storage limit of 5 GiB will soon be enforced" }
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: true, automatic_purchased_storage_allocation: true)
+      stub_ee_application_setting(automatic_purchased_storage_allocation: true)
+      stub_saas_features(namespaces_storage_limit: true)
+
       set_used_storage(group, megabytes: 13)
       set_notification_limit(group, megabytes: 12)
       set_dashboard_limit(group, megabytes: 5_120, enabled: false)
