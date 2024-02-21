@@ -6,6 +6,11 @@ module Resolvers
       class ArtifactResolver < BaseResolver
         include Gitlab::Graphql::Authorize::AuthorizeResource
 
+        NO_ARTIFACT_REGISTRY_INTEGRATION_MESSAGE =
+          ::GoogleCloudPlatform::ArtifactRegistry::GetDockerImageService::ERROR_RESPONSES[
+            :no_artifact_registry_integration
+          ].message
+
         type ::Types::GoogleCloud::ArtifactRegistry::ArtifactDetailsType, null: true
 
         authorize :read_google_cloud_artifact_registry
@@ -36,10 +41,10 @@ module Resolvers
           description: 'Full project path.'
 
         def ready?(google_cloud_project_id:, location:, repository:, image:, project_path:)
-          project_integration = find_project_integration!(project_path)
+          artifact_registry_integration = find_artifact_registry_integration!(project_path)
 
           validate_on_integration(
-            project_integration,
+            artifact_registry_integration,
             field: :artifact_registry_project_id,
             value: google_cloud_project_id,
             argument: :googleCloudProjectId,
@@ -47,7 +52,7 @@ module Resolvers
           )
 
           validate_on_integration(
-            project_integration,
+            artifact_registry_integration,
             field: :artifact_registry_location,
             value: location,
             argument: :location,
@@ -55,7 +60,7 @@ module Resolvers
           )
 
           validate_on_integration(
-            project_integration,
+            artifact_registry_integration,
             field: :artifact_registry_repository,
             value: repository,
             argument: :repository,
@@ -90,19 +95,13 @@ module Resolvers
           end
         end
 
-        def find_project_integration!(project_path)
+        def find_artifact_registry_integration!(project_path)
           project = find_project!(project_path)
-          project_integration = project.google_cloud_platform_artifact_registry_integration
+          integration = project.google_cloud_platform_artifact_registry_integration
 
-          unless project_integration
-            message =
-              ::GoogleCloudPlatform::ArtifactRegistry::GetDockerImageService::ERROR_RESPONSES[:no_project_integration]
-                .message
+          raise_resource_not_available_error!(NO_ARTIFACT_REGISTRY_INTEGRATION_MESSAGE) unless integration
 
-            raise_resource_not_available_error!(message)
-          end
-
-          project_integration
+          integration
         end
 
         override :find_object
@@ -110,14 +109,14 @@ module Resolvers
           Project.find_by_full_path(full_path)
         end
 
-        def validate_on_integration(project_integration, field:, value:, argument:, field_title:)
-          return if value == project_integration.public_send(field) # rubocop:disable GitlabSecurity/PublicSend -- The `field` argument is considered safe
+        def validate_on_integration(integration, field:, value:, argument:, field_title:)
+          return if value == integration.public_send(field) # rubocop:disable GitlabSecurity/PublicSend -- The `field` argument is considered safe
 
           raise_argument_error!(
             argument_error_message(
               argument,
               title: field_title,
-              integration_title: project_integration.title
+              integration_title: integration.title
             )
           )
         end

@@ -7,13 +7,21 @@ module GoogleCloudPlatform
         saas_only: ServiceResponse.error(message: "This is a SaaS-only feature that can't run here"),
         feature_flag_disabled: ServiceResponse.error(message: 'Feature flag not enabled'),
         access_denied: ServiceResponse.error(message: 'Access denied'),
-        no_project_integration: ServiceResponse.error(message: 'Project Artifact Registry integration not set'),
-        project_integration_disabled: ServiceResponse.error(
-          message: 'Project Artifact Registry integration not active'
+        no_wlif_integration: ServiceResponse.error(
+          message: 'Google Cloud Identity and Access Management (IAM) project integration not set'
+        ),
+        wlif_integration_disabled: ServiceResponse.error(
+          message: 'Google Cloud Identity and Access Management (IAM) project integration not active'
+        ),
+        no_artifact_registry_integration: ServiceResponse.error(message: 'Artifact registry integration not set'),
+        artifact_registry_integration_disabled: ServiceResponse.error(
+          message: 'Artifact registry integration not active'
         ),
         authentication_error: ServiceResponse.error(message: 'Unable to authenticate against Google Cloud'),
         api_error: ServiceResponse.error(message: 'Unsuccessful Google Cloud API request')
       }.freeze
+
+      INTEGRATION_TYPE = Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.name
 
       def execute
         validation_response = validate_before_execute
@@ -24,13 +32,13 @@ module GoogleCloudPlatform
 
       private
 
-      delegate :artifact_registry_location, :artifact_registry_repository, to: :project_integration, private: true
-
       def validate_before_execute
         return ERROR_RESPONSES[:saas_only] unless Gitlab::Saas.feature_available?(:google_cloud_support)
         return ERROR_RESPONSES[:feature_flag_disabled] unless Feature.enabled?(:gcp_artifact_registry, project)
-        return ERROR_RESPONSES[:no_project_integration] unless project_integration.present?
-        return ERROR_RESPONSES[:project_integration_disabled] unless project_integration.active
+        return ERROR_RESPONSES[:no_wlif_integration] unless wlif_integration.present?
+        return ERROR_RESPONSES[:wlif_integration_disabled] unless wlif_integration.activated?
+        return ERROR_RESPONSES[:no_artifact_registry_integration] unless artifact_registry_integration.present?
+        return ERROR_RESPONSES[:artifact_registry_integration_disabled] unless artifact_registry_integration.activated?
 
         ERROR_RESPONSES[:access_denied] unless allowed?
       end
@@ -40,15 +48,14 @@ module GoogleCloudPlatform
       end
 
       def client
-        ::GoogleCloudPlatform::ArtifactRegistry::Client.new(
-          project_integration: project_integration,
-          user: current_user,
-          artifact_registry_location: artifact_registry_location,
-          artifact_registry_repository: artifact_registry_repository
-        )
+        ::GoogleCloudPlatform::ArtifactRegistry::Client.new(wlif_integration: wlif_integration, user: current_user)
       end
 
-      def project_integration
+      def wlif_integration
+        project.google_cloud_platform_workload_identity_federation_integration
+      end
+
+      def artifact_registry_integration
         project.google_cloud_platform_artifact_registry_integration
       end
 

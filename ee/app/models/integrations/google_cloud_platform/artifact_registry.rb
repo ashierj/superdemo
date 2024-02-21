@@ -20,31 +20,10 @@ module Integrations
       attribute :comment_on_event_enabled, default: false
 
       with_options if: :activated? do
-        validates :workload_identity_pool_project_number, presence: true
-        validates :workload_identity_pool_id, presence: true
-        validates :workload_identity_pool_provider_id, presence: true
         validates :artifact_registry_project_id, presence: true
         validates :artifact_registry_location, presence: true
         validates :artifact_registry_repositories, presence: true
       end
-
-      field :workload_identity_pool_project_number,
-        required: true,
-        section: SECTION_TYPE_CONNECTION,
-        title: -> { s_('GoogleCloudPlatformService|Workload Identity Pool project number') },
-        help: -> { s_('GoogleCloudPlatformService|Project number of the Workload Identity Pool.') }
-
-      field :workload_identity_pool_id,
-        required: true,
-        section: SECTION_TYPE_CONNECTION,
-        title: -> { s_('GoogleCloudPlatformService|Workload Identity Pool ID') },
-        help: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool.') }
-
-      field :workload_identity_pool_provider_id,
-        required: true,
-        section: SECTION_TYPE_CONNECTION,
-        title: -> { s_('GoogleCloudPlatformService|Workload Identity Pool provider ID') },
-        help: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool provider.') }
 
       field :artifact_registry_project_id,
         required: true,
@@ -90,10 +69,20 @@ module Integrations
         []
       end
 
-      def identity_provider_resource_name
-        "//iam.googleapis.com/projects/#{workload_identity_pool_project_number}/" \
-          "locations/global/workloadIdentityPools/#{workload_identity_pool_id}/" \
-          "providers/#{workload_identity_pool_provider_id}"
+      # TODO This will need an update when the integration handles multi repositories
+      # artifact_registry_repository will not be available anymore.
+      def repository_full_name
+        "projects/#{artifact_registry_project_id}/" \
+          "locations/#{artifact_registry_location}/" \
+          "repositories/#{artifact_registry_repository}"
+      end
+
+      def required_integration_activated?
+        !!project.google_cloud_platform_workload_identity_federation_integration&.activated?
+      end
+
+      def required_integration_class
+        ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation
       end
 
       # We will make the integration testable in https://gitlab.com/gitlab-org/gitlab/-/issues/438560

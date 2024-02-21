@@ -6,21 +6,14 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
   let_it_be(:project) { create(:project) }
   let_it_be(:rsa_key) { OpenSSL::PKey::RSA.generate(3072) }
   let_it_be(:rsa_key_data) { rsa_key.to_s }
-  let_it_be(:google_cloud_project_id) { 'project_id' }
-  let_it_be(:project_integration) do
-    create(
-      :google_cloud_platform_workload_identity_federation_integration,
-      project: project,
-      workload_identity_federation_project_id: 'default_project_id',
-      workload_identity_federation_project_number: '555',
-      workload_identity_pool_id: 'my_pool',
-      workload_identity_pool_provider_id: 'my_provider'
-    )
+  let_it_be_with_refind(:wlif_integration) do
+    create(:google_cloud_platform_workload_identity_federation_integration, project: project)
   end
 
+  let(:google_cloud_project_id) { 'project_id' }
   let(:params) { { google_cloud_project_id: google_cloud_project_id } }
   let(:user) { project.owner }
-  let(:client) { described_class.new(project_integration: project_integration, user: user, params: params) }
+  let(:client) { described_class.new(wlif_integration: wlif_integration, user: user, params: params) }
 
   shared_context 'with a client double' do |client_klass:|
     let(:client_double) { instance_double(client_klass.to_s) }
@@ -41,77 +34,12 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
       end
 
       # required so that google auth gem will not trigger any API request
-      allow(project_integration).to receive(:identity_provider_resource_name)
+      allow(wlif_integration).to receive(:identity_provider_resource_name)
         .and_return('//identity.provider.resource.name.test')
     end
   end
 
-  shared_examples 'handling errors' do |client_method:|
-    shared_examples 'transforming the error' do |message:, from_klass:, to_klass:|
-      it "translates the error from #{from_klass} to #{to_klass}" do
-        expect(client_double).to receive(client_method).and_raise(from_klass, message)
-
-        expect { subject }.to raise_error(to_klass, message)
-      end
-    end
-
-    it_behaves_like 'transforming the error',
-      message: "test #{described_class::GOOGLE_CLOUD_SUBJECT_TOKEN_ERROR_MESSAGE} test",
-      from_klass: RuntimeError,
-      to_klass: ::GoogleCloudPlatform::AuthenticationError
-
-    it_behaves_like 'transforming the error',
-      message: "test #{described_class::GOOGLE_CLOUD_TOKEN_EXCHANGE_ERROR_MESSAGE} test",
-      from_klass: RuntimeError,
-      to_klass: ::GoogleCloudPlatform::AuthenticationError
-
-    it_behaves_like 'transforming the error',
-      message: "test",
-      from_klass: RuntimeError,
-      to_klass: RuntimeError
-
-    it_behaves_like 'transforming the error',
-      message: "test",
-      from_klass: ::Google::Cloud::Error,
-      to_klass: ::GoogleCloudPlatform::ApiError
-  end
-
-  describe 'validations' do
-    before do
-      stub_saas_features(google_cloud_support: true)
-    end
-
-    shared_examples 'raising an error with' do |klass, message|
-      it "raises #{klass} error" do
-        expect { client }.to raise_error(klass, message)
-      end
-    end
-
-    context 'with a nil project integration' do
-      let(:project_integration) { nil }
-      let(:user) { build(:user) }
-
-      it_behaves_like 'raising an error with',
-        ArgumentError,
-        ::GoogleCloudPlatform::BaseClient::BLANK_PARAMETERS_ERROR_MESSAGE
-    end
-
-    context 'with a nil user' do
-      let(:user) { nil }
-
-      it_behaves_like 'raising an error with',
-        ArgumentError,
-        ::GoogleCloudPlatform::BaseClient::BLANK_PARAMETERS_ERROR_MESSAGE
-    end
-
-    context 'when not on saas' do
-      before do
-        stub_saas_features(google_cloud_support: false)
-      end
-
-      it_behaves_like 'raising an error with', RuntimeError, described_class::SAAS_ONLY_ERROR_MESSAGE
-    end
-  end
+  it_behaves_like 'handling google cloud client common validations'
 
   describe '#regions' do
     include_context 'with a client double', client_klass: Google::Cloud::Compute::V1::Regions::Rest::Client
@@ -150,10 +78,14 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
     context 'when google_cloud_project_id is missing' do
       let(:google_cloud_project_id) { nil }
 
-      # TODO: This should be replaced with a test to verify that the client defaults to the integration's
-      # workload_identity_project_id once the base client class migrates to it
-      it 'raises NoMethodError' do
-        expect { regions }.to raise_error(NoMethodError, /.+artifact_registry_project_id.+/)
+      it 'receives the project id from the wlif integration' do
+        expect(client_double).to receive(:list) do |request|
+          expect(request.project).to eq(wlif_integration.workload_identity_federation_project_id)
+
+          list_response
+        end
+
+        expect(regions).to eq(items: dummy_response, next_page_token: 'token')
       end
     end
 
@@ -181,7 +113,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
       it_behaves_like 'returning the expected response'
     end
 
-    it_behaves_like 'handling errors', client_method: :list
+    it_behaves_like 'handling google cloud client common errors', client_method: :list
   end
 
   describe '#zones' do
@@ -221,10 +153,14 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
     context 'when google_cloud_project_id is missing' do
       let(:google_cloud_project_id) { nil }
 
-      # TODO: This should be replaced with a test to verify that the client defaults to the integration's
-      # workload_identity_project_id once the base client class migrates to it
-      it 'raises NoMethodError' do
-        expect { zones }.to raise_error(NoMethodError, /.+artifact_registry_project_id.+/)
+      it 'receives the project id from the wlif integration' do
+        expect(client_double).to receive(:list) do |request|
+          expect(request.project).to eq(wlif_integration.workload_identity_federation_project_id)
+
+          list_response
+        end
+
+        expect(zones).to eq(items: dummy_response, next_page_token: 'token')
       end
     end
 
@@ -252,7 +188,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
       it_behaves_like 'returning the expected response'
     end
 
-    it_behaves_like 'handling errors', client_method: :list
+    it_behaves_like 'handling google cloud client common errors', client_method: :list
   end
 
   describe '#machine_types' do
@@ -296,10 +232,14 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
     context 'when google_cloud_project_id is missing' do
       let(:google_cloud_project_id) { nil }
 
-      # TODO: This should be replaced with a test to verify that the client defaults to the integration's
-      # workload_identity_project_id once the base client class migrates to it
-      it 'raises NoMethodError' do
-        expect { machine_types }.to raise_error(NoMethodError, /.+artifact_registry_project_id.+/)
+      it 'receives the project id from the wlif integration' do
+        expect(client_double).to receive(:list) do |request|
+          expect(request.project).to eq(wlif_integration.workload_identity_federation_project_id)
+
+          list_response
+        end
+
+        expect(machine_types).to eq(items: dummy_response, next_page_token: 'token')
       end
     end
 
@@ -327,7 +267,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
       it_behaves_like 'returning the expected response'
     end
 
-    it_behaves_like 'handling errors', client_method: :list
+    it_behaves_like 'handling google cloud client common errors', client_method: :list
   end
 
   def stub_authentication_requests

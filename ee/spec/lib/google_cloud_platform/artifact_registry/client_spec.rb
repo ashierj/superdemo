@@ -3,22 +3,21 @@
 require 'spec_helper'
 
 RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: :container_registry do
-  let_it_be(:project) { create(:project) }
+  let_it_be_with_reload(:project) { create(:project) }
   let_it_be(:rsa_key) { OpenSSL::PKey::RSA.generate(3072) }
   let_it_be(:rsa_key_data) { rsa_key.to_s }
-  let_it_be(:project_integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
+  let_it_be_with_refind(:wlif_integration) do
+    create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+  end
+
+  let_it_be_with_refind(:artifact_registry_integration) do
+    create(:google_cloud_platform_artifact_registry_integration, project: project)
+  end
 
   let(:user) { project.owner }
-  let(:artifact_registry_location) { project_integration&.artifact_registry_location }
-  let(:artifact_registry_repository) { project_integration&.artifact_registry_repository }
-  let(:client) do
-    described_class.new(
-      project_integration: project_integration,
-      user: user,
-      artifact_registry_location: artifact_registry_location,
-      artifact_registry_repository: artifact_registry_repository
-    )
-  end
+  let(:artifact_registry_location) { artifact_registry_integration&.artifact_registry_location }
+  let(:artifact_registry_repository) { artifact_registry_integration&.artifact_registry_repository }
+  let(:client) { described_class.new(wlif_integration: wlif_integration, user: user) }
 
   shared_context 'with a client double' do
     let(:client_double) { instance_double('::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Client') }
@@ -41,86 +40,26 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
       end
 
       # required so that google auth gem will not trigger any API request
-      allow(project_integration).to receive(:identity_provider_resource_name)
+      allow(wlif_integration).to receive(:identity_provider_resource_name)
           .and_return('//identity.provider.resource.name.test')
     end
   end
 
-  shared_examples 'handling errors' do |client_method:|
-    shared_examples 'transforming the error' do |message:, from_klass:, to_klass:|
-      it "translates the error from #{from_klass} to #{to_klass}" do
-        expect(client_double).to receive(client_method).and_raise(from_klass, message)
-
-        expect { subject }.to raise_error(to_klass, message)
-      end
-    end
-
-    it_behaves_like 'transforming the error',
-      message: "test #{described_class::GOOGLE_CLOUD_SUBJECT_TOKEN_ERROR_MESSAGE} test",
-      from_klass: RuntimeError,
-      to_klass: ::GoogleCloudPlatform::AuthenticationError
-
-    it_behaves_like 'transforming the error',
-      message: "test #{described_class::GOOGLE_CLOUD_TOKEN_EXCHANGE_ERROR_MESSAGE} test",
-      from_klass: RuntimeError,
-      to_klass: ::GoogleCloudPlatform::AuthenticationError
-
-    it_behaves_like 'transforming the error',
-      message: "test",
-      from_klass: RuntimeError,
-      to_klass: RuntimeError
-
-    it_behaves_like 'transforming the error',
-      message: "test",
-      from_klass: ::Google::Cloud::Error,
-      to_klass: ::GoogleCloudPlatform::ApiError
-  end
-
-  describe 'validations' do
-    before do
-      stub_saas_features(google_cloud_support: true)
-    end
-
-    shared_examples 'raising an error with' do |klass, message|
-      it "raises #{klass} error" do
-        expect { client }.to raise_error(klass, message)
-      end
-    end
-
-    context 'with a nil project integration' do
-      let(:project_integration) { nil }
-      let(:user) { build(:user) }
-
-      it_behaves_like 'raising an error with',
-        ArgumentError,
-        ::GoogleCloudPlatform::BaseClient::BLANK_PARAMETERS_ERROR_MESSAGE
-    end
-
-    context 'with a nil user' do
-      let(:user) { nil }
-
-      it_behaves_like 'raising an error with',
-        ArgumentError,
-        ::GoogleCloudPlatform::BaseClient::BLANK_PARAMETERS_ERROR_MESSAGE
-    end
-
-    %i[
-      artifact_registry_location
-      artifact_registry_repository
-    ].each do |field|
-      context "with a nil #{field}" do
-        let(field) { nil }
-
-        it_behaves_like 'raising an error with', ArgumentError, described_class::BLANK_PARAMETERS_ERROR_MESSAGE
-      end
-    end
-
-    context 'when not on saas' do
+  it_behaves_like 'handling google cloud client common validations' do
+    context 'with a nil artifact registry integration' do
       before do
-        stub_saas_features(google_cloud_support: false)
+        artifact_registry_integration.destroy!
       end
 
-      it_behaves_like 'raising an error with', RuntimeError, described_class::SAAS_ONLY_ERROR_MESSAGE
+      it_behaves_like 'raising an error with', ArgumentError, described_class::ARTIFACT_REGISTRY_INTEGRATION_DISABLED
+    end
+
+    context 'with a disabled integration' do
+      before do
+        artifact_registry_integration.update_column(:active, false)
+      end
+
+      it_behaves_like 'raising an error with', ArgumentError, described_class::ARTIFACT_REGISTRY_INTEGRATION_DISABLED
     end
   end
 
@@ -137,7 +76,7 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
       expect(repository).to eq(dummy_response)
     end
 
-    it_behaves_like 'handling errors', client_method: :get_repository
+    it_behaves_like 'handling google cloud client common errors', client_method: :get_repository
   end
 
   describe '#docker_images' do
@@ -190,7 +129,7 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
       it_behaves_like 'returning the expected response'
     end
 
-    it_behaves_like 'handling errors', client_method: :list_docker_images
+    it_behaves_like 'handling google cloud client common errors', client_method: :list_docker_images
   end
 
   describe '#docker_image' do
@@ -211,7 +150,7 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
       expect(docker_image).to eq(dummy_response)
     end
 
-    it_behaves_like 'handling errors', client_method: :get_docker_image
+    it_behaves_like 'handling google cloud client common errors', client_method: :get_docker_image
   end
 
   def stub_authentication_requests

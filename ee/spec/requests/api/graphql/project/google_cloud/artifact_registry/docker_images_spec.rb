@@ -8,13 +8,18 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
   include GoogleApi::CloudPlatformHelpers
 
   let_it_be_with_reload(:project) { create(:project) }
-  let_it_be_with_refind(:project_integration) do
+  let_it_be_with_refind(:wlif_integration) do
+    create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+  end
+
+  let_it_be_with_refind(:artifact_registry_integration) do
     create(:google_cloud_platform_artifact_registry_integration, project: project)
   end
 
   let_it_be(:artifact_registry_repository_url) do
-    "https://console.cloud.google.com/artifacts/docker/#{project_integration.artifact_registry_project_id}/" \
-      "#{project_integration.artifact_registry_location}/#{project_integration.artifact_registry_repository}"
+    "https://console.cloud.google.com/artifacts/docker/#{artifact_registry_integration.artifact_registry_project_id}/" \
+      "#{artifact_registry_integration.artifact_registry_location}/" \
+      "#{artifact_registry_integration.artifact_registry_repository}"
   end
 
   let(:user) { project.first_owner }
@@ -29,11 +34,12 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
 
   let(:docker_image) do
     Google::Cloud::ArtifactRegistry::V1::DockerImage.new(
-      name: "projects/#{project_integration.artifact_registry_project_id}/" \
-            "locations/#{project_integration.artifact_registry_location}/" \
-            "repositories/#{project_integration.artifact_registry_repository}/" \
+      name: "projects/#{artifact_registry_integration.artifact_registry_project_id}/" \
+            "locations/#{artifact_registry_integration.artifact_registry_location}/" \
+            "repositories/#{artifact_registry_integration.artifact_registry_repository}/" \
             "dockerImages/#{image}@#{digest}",
-      uri: "us-east1-docker.pkg.dev/#{project_integration.artifact_registry_project_id}/demo/#{image}@#{digest}",
+      uri: "us-east1-docker.pkg.dev/#{artifact_registry_integration.artifact_registry_project_id}/" \
+           "demo/#{image}@#{digest}",
       tags: ['97c58898'],
       image_size_bytes: 304_121_628,
       media_type: 'application/vnd.docker.distribution.manifest.v2+json',
@@ -87,11 +93,7 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
     stub_saas_features(google_cloud_support: true)
 
     allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
-      .with(
-        project_integration: project_integration,
-        user: user,
-        artifact_registry_location: project_integration.artifact_registry_location,
-        artifact_registry_repository: project_integration.artifact_registry_repository
+      .with(wlif_integration: wlif_integration, user: user
       ).and_return(client_double)
 
     allow(client_double).to receive(:docker_images)
@@ -104,8 +106,8 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
       request
 
       expect(repository_response).to eq({
-        'projectId' => project_integration.artifact_registry_project_id,
-        'repository' => project_integration.artifact_registry_repository,
+        'projectId' => artifact_registry_integration.artifact_registry_project_id,
+        'repository' => artifact_registry_integration.artifact_registry_repository,
         'artifactRegistryRepositoryUrl' => artifact_registry_repository_url,
         'artifacts' => {
           'nodes' => [{
@@ -199,20 +201,26 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
     it { is_expected.to be_nil }
   end
 
-  context 'when Google Cloud Artifact Registry integration is not present' do
-    before do
-      project_integration.destroy!
+  %i[wlif artifact_registry].each do |integration_type|
+    context "with the #{integration_type} integration" do
+      let(:integration) { public_send("#{integration_type}_integration") }
+
+      context 'when not present' do
+        before do
+          integration.destroy!
+        end
+
+        it { is_expected.to be_nil }
+      end
+
+      context 'when inactive' do
+        before do
+          integration.update_column(:active, false)
+        end
+
+        it { is_expected.to be_nil }
+      end
     end
-
-    it { is_expected.to be_nil }
-  end
-
-  context 'when Google Cloud Artifact Registry integration is inactive' do
-    before do
-      project_integration.update_column(:active, false)
-    end
-
-    it { is_expected.to be_nil }
   end
 
   def dummy_list_docker_images_response

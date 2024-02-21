@@ -6,13 +6,18 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
   include GoogleApi::CloudPlatformHelpers
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
-  let_it_be_with_refind(:project_integration) do
+  let_it_be_with_refind(:artifact_registry_integration) do
     create(:google_cloud_platform_artifact_registry_integration, project: project)
   end
 
+  let_it_be_with_refind(:wlif_integration) do
+    create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+  end
+
   let_it_be(:artifact_registry_repository_url) do
-    "https://console.cloud.google.com/artifacts/docker/#{project_integration.artifact_registry_project_id}/" \
-      "#{project_integration.artifact_registry_location}/#{project_integration.artifact_registry_repository}"
+    "https://console.cloud.google.com/artifacts/docker/#{artifact_registry_integration.artifact_registry_project_id}/" \
+      "#{artifact_registry_integration.artifact_registry_location}/" \
+      "#{artifact_registry_integration.artifact_registry_repository}"
   end
 
   let(:image) { 'ruby' }
@@ -24,16 +29,17 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
   let(:default_page_size) { ::GoogleCloudPlatform::ArtifactRegistry::ListDockerImagesService::DEFAULT_PAGE_SIZE }
   let(:next_page_token) { 'next_page_token' }
   let(:name) do
-    "projects/#{project_integration.artifact_registry_project_id}/" \
-      "locations/#{project_integration.artifact_registry_location}/" \
-      "repositories/#{project_integration.artifact_registry_repository}/" \
+    "projects/#{artifact_registry_integration.artifact_registry_project_id}/" \
+      "locations/#{artifact_registry_integration.artifact_registry_location}/" \
+      "repositories/#{artifact_registry_integration.artifact_registry_repository}/" \
       "dockerImages/#{image}@#{digest}"
   end
 
   let(:docker_image) do
     Google::Cloud::ArtifactRegistry::V1::DockerImage.new(
       name: name,
-      uri: "us-east1-docker.pkg.dev/#{project_integration.artifact_registry_project_id}/demo/#{image}@#{digest}",
+      uri: "us-east1-docker.pkg.dev/#{artifact_registry_integration.artifact_registry_project_id}/" \
+           "demo/#{image}@#{digest}",
       tags: ['97c58898'],
       image_size_bytes: 304_121_628,
       media_type: 'application/vnd.docker.distribution.manifest.v2+json',
@@ -51,12 +57,8 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
     stub_saas_features(google_cloud_support: true)
 
     allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
-      .with(
-        project_integration: project_integration,
-        user: user,
-        artifact_registry_location: project_integration.artifact_registry_location,
-        artifact_registry_repository: project_integration.artifact_registry_repository
-      ).and_return(client_double)
+      .with(wlif_integration: wlif_integration, user: user)
+      .and_return(client_double)
 
     allow(client_double).to receive(:docker_images)
       .with(page_token: page_token, page_size: page_size || default_page_size, order_by: order_by)
@@ -116,9 +118,9 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
     it 'has a page title set' do
       visit project_google_cloud_platform_artifact_registry_image_path(project, {
         image: "#{image}@#{digest}",
-        project: project_integration.artifact_registry_project_id,
-        repository: project_integration.artifact_registry_repository,
-        location: project_integration.artifact_registry_location
+        project: artifact_registry_integration.artifact_registry_project_id,
+        repository: artifact_registry_integration.artifact_registry_repository,
+        location: artifact_registry_integration.artifact_registry_location
       })
 
       expect(page).to have_text _('ruby@4ca5c21b')

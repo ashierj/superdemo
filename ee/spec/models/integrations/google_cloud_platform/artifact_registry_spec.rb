@@ -3,7 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_category: :package_registry do
-  subject(:integration) { build_stubbed(:google_cloud_platform_artifact_registry_integration) }
+  let_it_be_with_reload(:project) { create(:project) }
+
+  subject(:integration) { build_stubbed(:google_cloud_platform_artifact_registry_integration, project: project) }
 
   describe 'attributes' do
     describe 'default values' do
@@ -24,9 +26,6 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
   end
 
   describe 'validations' do
-    it { is_expected.to validate_presence_of(:workload_identity_pool_project_number) }
-    it { is_expected.to validate_presence_of(:workload_identity_pool_id) }
-    it { is_expected.to validate_presence_of(:workload_identity_pool_provider_id) }
     it { is_expected.to validate_presence_of(:artifact_registry_project_id) }
     it { is_expected.to validate_presence_of(:artifact_registry_location) }
     it { is_expected.to validate_presence_of(:artifact_registry_repositories) }
@@ -34,9 +33,6 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
     context 'when inactive integration' do
       subject(:integration) { build_stubbed(:google_cloud_platform_artifact_registry_integration, :inactive) }
 
-      it { is_expected.not_to validate_presence_of(:workload_identity_pool_project_number) }
-      it { is_expected.not_to validate_presence_of(:workload_identity_pool_id) }
-      it { is_expected.not_to validate_presence_of(:workload_identity_pool_provider_id) }
       it { is_expected.not_to validate_presence_of(:artifact_registry_project_id) }
       it { is_expected.not_to validate_presence_of(:artifact_registry_location) }
       it { is_expected.not_to validate_presence_of(:artifact_registry_repositories) }
@@ -75,16 +71,44 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
     it { is_expected.to eq([]) }
   end
 
-  describe '#identity_provider_resource_name' do
+  describe '#repository_full_name' do
     let(:expected) do
-      "//iam.googleapis.com/projects/#{integration.workload_identity_pool_project_number}/" \
-        "locations/global/workloadIdentityPools/#{integration.workload_identity_pool_id}/" \
-        "providers/#{integration.workload_identity_pool_provider_id}"
+      "projects/#{integration.artifact_registry_project_id}/" \
+        "locations/#{integration.artifact_registry_location}/" \
+        "repositories/#{integration.artifact_registry_repository}"
     end
 
-    subject { integration.identity_provider_resource_name }
+    subject { integration.repository_full_name }
 
     it { is_expected.to eq(expected) }
+  end
+
+  describe '#required_integration_activated?' do
+    subject { integration.required_integration_activated? }
+
+    it { is_expected.to be_falsey }
+
+    context 'with the required integration' do
+      let_it_be_with_refind(:wlif_integration) do
+        create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+      end
+
+      it { is_expected.to be_truthy }
+
+      context 'when it is disabled' do
+        before do
+          wlif_integration.update_column(:active, false)
+        end
+
+        it { is_expected.to be_falsey }
+      end
+    end
+  end
+
+  describe '#required_integration_class' do
+    subject { integration.required_integration_class }
+
+    it { is_expected.to eq(::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation) }
   end
 
   describe '#testable?' do
