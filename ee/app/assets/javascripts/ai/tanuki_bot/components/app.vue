@@ -4,7 +4,6 @@ import { mapActions, mapState } from 'vuex';
 import { GlDuoChat } from '@gitlab/ui';
 import { v4 as uuidv4 } from 'uuid';
 import { __, s__ } from '~/locale';
-import { renderMarkdown } from '~/notes/utils';
 import { renderGFM } from '~/behaviors/markdown/render_gfm';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { helpCenterState } from '~/super_sidebar/constants';
@@ -43,7 +42,6 @@ export default {
   mixins: [Tracking.mixin(), glFeatureFlagsMixin()],
   provide() {
     return {
-      renderMarkdown,
       renderGFM,
     };
   },
