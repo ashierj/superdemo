@@ -97,7 +97,9 @@ module API
             google_cloud_workload_identity_pool_provider_display_name:
               declared_params[:google_cloud_workload_identity_pool_provider_display_name],
             google_cloud_workload_identity_pool_provider_issuer_uri:
-              ::GoogleCloudPlatform::GLGO_BASE_URL
+              ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.wlif_issuer_url(user_project),
+            google_cloud_workload_identity_pool_attribute_mapping:
+              ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.jwt_claim_mapping_script_value
           }
 
           template.result_with_hash(locals)

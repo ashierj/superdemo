@@ -68,6 +68,34 @@ RSpec.describe Integrations::GoogleCloudPlatform::WorkloadIdentityFederation, fe
     it { is_expected.to eq([]) }
   end
 
+  describe '.wlif_issuer_url' do
+    subject { described_class.wlif_issuer_url(project) }
+
+    let_it_be(:project) { create(:project, :in_subgroup) }
+
+    it { is_expected.to start_with('https://') }
+    it { is_expected.to end_with("/oidc/#{project.root_namespace.path}") }
+    it { is_expected.not_to include(project.path) }
+  end
+
+  describe '.jwt_claim_mapping' do
+    subject { described_class.jwt_claim_mapping }
+
+    it { is_expected.to match(a_hash_including('attribute.developer_access' => 'assertion.developer_access')) }
+    it { is_expected.to match(a_hash_including('attribute.namespace_path' => 'assertion.namespace_path')) }
+    it { is_expected.to match(a_hash_including('attribute.user_access_level' => 'assertion.user_access_level')) }
+    it { is_expected.to match(a_hash_including('google.subject' => 'assertion.sub')) }
+  end
+
+  describe '.jwt_claim_mapping_script_value' do
+    subject { described_class.jwt_claim_mapping_script_value }
+
+    it { is_expected.to include('attribute.maintainer_access=assertion.maintainer_access,') }
+    it { is_expected.to include(',attribute.project_path=assertion.project_path,') }
+    it { is_expected.to include(',google.subject=assertion.sub') }
+    it { is_expected.not_to include(' ') }
+  end
+
   describe '#testable?' do
     subject { integration.testable? }
 

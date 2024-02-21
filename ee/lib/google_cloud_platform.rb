@@ -20,6 +20,10 @@ module GoogleCloudPlatform
   ApiError = Class.new(StandardError)
   AuthenticationError = Class.new(StandardError)
 
+  def self.glgo_base_url
+    GLGO_BASE_URL
+  end
+
   def self.credentials(identity_provider_resource_name:, encoded_jwt:)
     {
       type: CREDENTIALS_TYPE,
