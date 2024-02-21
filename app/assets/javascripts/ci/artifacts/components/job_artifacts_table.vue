@@ -12,6 +12,7 @@ import {
 } from '@gitlab/ui';
 import CiIcon from '~/vue_shared/components/ci_icon/ci_icon.vue';
 import { createAlert } from '~/alert';
+import { scrollToElement } from '~/lib/utils/common_utils';
 import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
@@ -209,6 +210,8 @@ export default {
           currentPage: page,
         };
       }
+
+      scrollToElement(this.$el);
     },
     handleRowToggle(toggleDetails, hasArtifacts, id, detailsShowing) {
       if (!hasArtifacts) return;
