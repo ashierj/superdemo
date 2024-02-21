@@ -4,9 +4,7 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
   it_behaves_like 'returning an error service response', message: "This is a SaaS-only feature that can't run here"
 
   context 'with saas only feature enabled' do
-    before do
-      stub_saas_features(google_cloud_support: true)
-    end
+    let(:google_cloud_support) { true }
 
     shared_examples 'logging an error' do |message:|
       it 'logs an error' do
@@ -36,7 +34,8 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
         project_integration.destroy!
       end
 
-      it_behaves_like 'returning an error service response', message: 'Project Artifact Registry integration not set'
+      it_behaves_like 'returning an error service response',
+        message: 'Google Cloud Identity and Access Management (IAM) project integration not set'
     end
 
     context 'with disabled integration' do
@@ -44,7 +43,8 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
         project_integration.update!(active: false)
       end
 
-      it_behaves_like 'returning an error service response', message: 'Project Artifact Registry integration not active'
+      it_behaves_like 'returning an error service response',
+        message: 'Google Cloud Identity and Access Management (IAM) project integration not active'
     end
 
     context 'when client raises AuthenticationError' do

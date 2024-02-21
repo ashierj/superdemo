@@ -7,8 +7,7 @@ module Gitlab
         def initialize(build)
           @build = build
 
-          # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/439200
-          @integration = build.project.google_cloud_platform_artifact_registry_integration
+          @integration = build.project.google_cloud_platform_workload_identity_federation_integration
         end
 
         def execute

@@ -6,18 +6,21 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
   let_it_be(:project) { create(:project) }
   let_it_be(:rsa_key) { OpenSSL::PKey::RSA.generate(3072) }
   let_it_be(:rsa_key_data) { rsa_key.to_s }
-  let_it_be(:project_integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
-
-  let(:google_cloud_project_id) { 'project_id' }
-  let(:google_cloud_identity_provider_resource_name) { '//identity.provider.resource.name.test' }
-
-  let(:user) { project.owner }
-  let(:client) do
-    described_class.new(
-      project_integration: project_integration,
-      user: user
+  let_it_be(:google_cloud_project_id) { 'project_id' }
+  let_it_be(:project_integration) do
+    create(
+      :google_cloud_platform_workload_identity_federation_integration,
+      project: project,
+      workload_identity_federation_project_id: 'default_project_id',
+      workload_identity_federation_project_number: '555',
+      workload_identity_pool_id: 'my_pool',
+      workload_identity_pool_provider_id: 'my_provider'
     )
   end
+
+  let(:params) { { google_cloud_project_id: google_cloud_project_id } }
+  let(:user) { project.owner }
+  let(:client) { described_class.new(project_integration: project_integration, user: user, params: params) }
 
   shared_context 'with a client double' do |client_klass:|
     let(:client_double) { instance_double(client_klass.to_s) }
@@ -39,7 +42,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
 
       # required so that google auth gem will not trigger any API request
       allow(project_integration).to receive(:identity_provider_resource_name)
-          .and_return('//identity.provider.resource.name.test')
+        .and_return('//identity.provider.resource.name.test')
     end
   end
 
@@ -129,6 +132,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
       it 'returns the expected response' do
         expect(client_double).to receive(:list) do |request|
           expect(request).to be_a ::Google::Cloud::Compute::V1::ListRegionsRequest
+          expect(request.project).to eq(google_cloud_project_id)
           expect(request.filter).to eq(filter.to_s)
           expect(request.max_results).to eq(max_results)
           expect(request.page_token).to eq(page_token.to_s)
@@ -142,6 +146,16 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
     end
 
     it_behaves_like 'returning the expected response'
+
+    context 'when google_cloud_project_id is missing' do
+      let(:google_cloud_project_id) { nil }
+
+      # TODO: This should be replaced with a test to verify that the client defaults to the integration's
+      # workload_identity_project_id once the base client class migrates to it
+      it 'raises NoMethodError' do
+        expect { regions }.to raise_error(NoMethodError, /.+artifact_registry_project_id.+/)
+      end
+    end
 
     context 'with a filter set' do
       let(:filter) { 'filter' }
@@ -189,6 +203,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
       it 'returns the expected response' do
         expect(client_double).to receive(:list) do |request|
           expect(request).to be_a ::Google::Cloud::Compute::V1::ListZonesRequest
+          expect(request.project).to eq(google_cloud_project_id)
           expect(request.filter).to eq(filter.to_s)
           expect(request.max_results).to eq(max_results)
           expect(request.page_token).to eq(page_token.to_s)
@@ -202,6 +217,16 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
     end
 
     it_behaves_like 'returning the expected response'
+
+    context 'when google_cloud_project_id is missing' do
+      let(:google_cloud_project_id) { nil }
+
+      # TODO: This should be replaced with a test to verify that the client defaults to the integration's
+      # workload_identity_project_id once the base client class migrates to it
+      it 'raises NoMethodError' do
+        expect { zones }.to raise_error(NoMethodError, /.+artifact_registry_project_id.+/)
+      end
+    end
 
     context 'with a filter set' do
       let(:filter) { 'filter' }
@@ -252,6 +277,7 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
       it 'returns the expected response' do
         expect(client_double).to receive(:list) do |request|
           expect(request).to be_a ::Google::Cloud::Compute::V1::ListMachineTypesRequest
+          expect(request.project).to eq(google_cloud_project_id)
           expect(request.zone).to eq(zone.to_s)
           expect(request.filter).to eq(filter.to_s)
           expect(request.max_results).to eq(max_results)
@@ -266,6 +292,16 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
     end
 
     it_behaves_like 'returning the expected response'
+
+    context 'when google_cloud_project_id is missing' do
+      let(:google_cloud_project_id) { nil }
+
+      # TODO: This should be replaced with a test to verify that the client defaults to the integration's
+      # workload_identity_project_id once the base client class migrates to it
+      it 'raises NoMethodError' do
+        expect { machine_types }.to raise_error(NoMethodError, /.+artifact_registry_project_id.+/)
+      end
+    end
 
     context 'with a filter set' do
       let(:filter) { 'filter' }

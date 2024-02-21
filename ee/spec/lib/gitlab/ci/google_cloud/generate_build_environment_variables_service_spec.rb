@@ -4,7 +4,10 @@ require 'spec_helper'
 
 RSpec.describe ::Gitlab::Ci::GoogleCloud::GenerateBuildEnvironmentVariablesService, '#execute', feature_category: :secrets_management do
   let_it_be_with_refind(:project) { create(:project) }
-  let_it_be_with_refind(:integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
+  let_it_be_with_refind(:project_integration) do
+    create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+  end
+
   let_it_be(:user) { create(:user) }
   let_it_be(:rsa_key) { OpenSSL::PKey::RSA.generate(3072) }
   let_it_be(:rsa_key_data) { rsa_key.to_s }
@@ -16,6 +19,7 @@ RSpec.describe ::Gitlab::Ci::GoogleCloud::GenerateBuildEnvironmentVariablesServi
 
   before do
     stub_application_setting(ci_jwt_signing_key: rsa_key_data)
+    stub_saas_features(google_cloud_support: true)
   end
 
   it 'returns variables containing valid config.json', :aggregate_failures do
@@ -26,7 +30,7 @@ RSpec.describe ::Gitlab::Ci::GoogleCloud::GenerateBuildEnvironmentVariablesServi
 
     expect(Gitlab::Json.parse(execute.first[:value])).to match(
       'type' => 'external_account',
-      'audience' => integration.identity_provider_resource_name,
+      'audience' => project_integration.identity_provider_resource_name,
       'subject_token_type' => 'urn:ietf:params:oauth:token-type:jwt',
       'token_url' => 'https://sts.googleapis.com/v1/token',
       'credential_source' => {
@@ -48,13 +52,13 @@ RSpec.describe ::Gitlab::Ci::GoogleCloud::GenerateBuildEnvironmentVariablesServi
       'project_id' => project.id.to_s,
       'user_id' => user.id.to_s,
       'aud' => 'https://auth.gcp.gitlab.com',
-      'target_audience' => integration.identity_provider_resource_name
+      'target_audience' => project_integration.identity_provider_resource_name
     ))
   end
 
   context 'when integration is not present' do
     before do
-      integration.destroy!
+      project_integration.destroy!
     end
 
     it { is_expected.to eq([]) }
@@ -62,7 +66,7 @@ RSpec.describe ::Gitlab::Ci::GoogleCloud::GenerateBuildEnvironmentVariablesServi
 
   context 'when integration is inactive' do
     before do
-      integration.update_column(:active, false)
+      project_integration.update_column(:active, false)
     end
 
     it { is_expected.to eq([]) }

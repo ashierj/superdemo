@@ -25,9 +25,9 @@ RSpec.describe GoogleCloudPlatform::Compute::ListMachineTypesService, feature_ca
     it_behaves_like 'a compute service handling validation errors', client_method: :machine_types
 
     context 'with saas only feature enabled' do
-      before do
-        stub_saas_features(google_cloud_support: true)
+      let(:google_cloud_support) { true }
 
+      before do
         allow(client_double).to receive(:machine_types)
           .with(zone: zone, filter: filter, max_results: max_results, page_token: page_token, order_by: order_by)
           .and_return(dummy_list_response)

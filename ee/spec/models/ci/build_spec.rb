@@ -1142,7 +1142,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
 
     context 'with integration active' do
       let!(:project) { create(:project) }
-      let!(:integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
+      let!(:integration) { create(:google_cloud_platform_workload_identity_federation_integration, project: project) }
       let!(:pipeline) { create(:ci_pipeline, project: project, status: 'success') }
 
       it 'includes the gcloud file variables' do

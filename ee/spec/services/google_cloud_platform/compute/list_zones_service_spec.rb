@@ -23,9 +23,9 @@ RSpec.describe GoogleCloudPlatform::Compute::ListZonesService, feature_category:
     it_behaves_like 'a compute service handling validation errors', client_method: :zones
 
     context 'with saas only feature enabled' do
-      before do
-        stub_saas_features(google_cloud_support: true)
+      let(:google_cloud_support) { true }
 
+      before do
         allow(client_double).to receive(:zones)
           .with(filter: filter, max_results: max_results, page_token: page_token, order_by: order_by)
           .and_return(dummy_list_response)
