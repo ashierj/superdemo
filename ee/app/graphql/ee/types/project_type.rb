@@ -363,6 +363,12 @@ module EE
           alpha: { milestone: '16.10' },
           description: 'Google Cloud Artifact Registry repository. ' \
                        'Returns `null` if `gcp_artifact_registry` feature flag is disabled'
+
+        field :ai_agent, ::Types::Ai::Agents::AgentType,
+          null: true,
+          alpha: { milestone: '16.10' },
+          description: 'Find a specific AI Agent.',
+          resolver: ::Resolvers::Ai::Agents::AgentDetailResolver
       end
 
       def tracking_key
