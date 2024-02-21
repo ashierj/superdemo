@@ -6,8 +6,10 @@ RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :fleet_
   include GraphqlHelpers
 
   let_it_be_with_refind(:project) { create(:project) }
-  let_it_be_with_refind(:integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
   let_it_be(:maintainer) { create(:user).tap { |user| project.add_maintainer(user) } }
+  let_it_be_with_refind(:integration) do
+    create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+  end
 
   let(:client_klass) { GoogleCloudPlatform::Compute::Client }
   let(:current_user) { maintainer }
