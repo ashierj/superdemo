@@ -5,6 +5,7 @@ import PipelineUsageApp from './pipelines/components/app.vue';
 import { parseProvideData as parseStorageTabProvideData } from './storage/utils';
 import { parseProvideData as parsePipelinesTabProvideData } from './pipelines/utils';
 import { PIPELINES_TAB_METADATA_EL_SELECTOR } from './constants';
+import { getCodeSuggestionsTabMetadata } from './code_suggestions/tab_metadata';
 import { getSeatTabMetadata } from './seats/tab_metadata';
 
 export const usageQuotasViewProvideData = {
@@ -25,6 +26,7 @@ const getPipelineTabMetadata = () => {
 
 export const usageQuotasTabsMetadata = [
   getSeatTabMetadata(),
+  getCodeSuggestionsTabMetadata(),
   getPipelineTabMetadata(),
   storageTabMetadata,
 ];

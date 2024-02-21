@@ -59,4 +59,8 @@ RSpec.describe ProjectSetting, feature_category: :groups_and_projects do
       end
     end
   end
+
+  describe '#duo_features_enabled' do
+    it_behaves_like 'a cascading project setting boolean attribute', settings_attribute_name: :duo_features_enabled
+  end
 end

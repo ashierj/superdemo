@@ -5,6 +5,8 @@ module EE
     extend ActiveSupport::Concern
 
     prepended do
+      cascading_attr :duo_features_enabled
+
       belongs_to :push_rule
 
       scope :has_vulnerabilities, -> { where('has_vulnerabilities IS TRUE') }
