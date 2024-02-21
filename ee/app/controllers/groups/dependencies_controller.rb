@@ -4,10 +4,6 @@ module Groups
   class DependenciesController < Groups::ApplicationController
     include GovernUsageGroupTracking
 
-    before_action only: :index do
-      push_frontend_feature_flag(:group_level_dependencies_filtering, group)
-    end
-
     before_action :authorize_read_dependency_list!
     before_action :validate_project_ids_limit!, only: :index
 
@@ -43,7 +39,7 @@ module Groups
     end
 
     def licenses
-      return render_not_authorized unless filtering_allowed?
+      return render_not_authorized unless below_group_limit?
 
       catalogue = Gitlab::SPDX::Catalogue.latest
 
@@ -77,7 +73,7 @@ module Groups
     end
 
     def dependencies_finder_params
-      if filtering_allowed?
+      if below_group_limit?
         params.permit(
           :page,
           :per_page,
@@ -120,10 +116,6 @@ module Groups
 
     def set_below_group_limit
       @below_group_limit = below_group_limit?
-    end
-
-    def filtering_allowed?
-      Feature.enabled?(:group_level_dependencies_filtering, group) && below_group_limit?
     end
 
     def below_group_limit?
