@@ -1475,6 +1475,9 @@ msgstr ""
 msgid "+ %{count} more"
 msgstr ""
 
+msgid "+ %{hiddenLabelsLength} more"
+msgstr ""
+
 msgid "+ %{itemsLength} more"
 msgstr ""
 
