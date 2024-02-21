@@ -13,7 +13,9 @@ described below. The rest of the proposal assumes both that the Step
 Runner binary exists in the target environment and that the gRPC service
 is running and listening on a local socket. Similarly this proposal does
 not address the life-cycle of the `Step Runner` service, and how to handle
-things like restarting the service if it dies.
+things like restarting the service if it dies, or upgrades.
+
+See [Deployment and Lifecycle Management](service-deployment.md) for relevant blueprint.
 
 ## Steps Service gRPC Definition
 
