@@ -58,7 +58,7 @@ export const transformJiraIssuesREST = (response) => {
 
 export default function jiraIssuesResolver(
   _,
-  { issuesFetchPath, search, page, state, sort, labels },
+  { issuesFetchPath, page, sort, state, projects, labels, search },
 ) {
   return axios
     .get(issuesFetchPath, {
@@ -66,8 +66,9 @@ export default function jiraIssuesResolver(
         with_labels_details: true,
         per_page: DEFAULT_PAGE_SIZE,
         page,
-        state,
         sort,
+        state,
+        projects,
         labels,
         search,
       },
