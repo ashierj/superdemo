@@ -110,11 +110,13 @@ module QA
             end
           end
 
-          def click_approve
+          def click_approve(verify: true)
             click_element 'approve-button'
+            return unless verify
+
             retry_until(reload: true, sleep_interval: 2, max_attempts: 5,
               message: 'Finding Revoke approval button unsuccessful') do
-              find_element 'approve-button', text: "Revoke approval"
+              verify_approved
             end
           end
 
@@ -271,6 +273,10 @@ module QA
             try_to_merge!
 
             finished_loading?
+          end
+
+          def verify_approved
+            find_element('approve-button', text: "Revoke approval")
           end
 
           private
