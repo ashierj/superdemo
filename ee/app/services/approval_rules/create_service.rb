@@ -19,23 +19,6 @@ module ApprovalRules
       super(container: container, current_user: user, params: params)
     end
 
-    def execute
-      return error("The feature approval_group_rules is not enabled.") if group_rule? && Feature.disabled?(
-        :approval_group_rules, @rule.group)
-
-      super
-    end
-
-    def container
-      return @rule.group if group_rule?
-
-      @rule.project
-    end
-
-    def group_rule?
-      @rule.is_a?(ApprovalGroupRule)
-    end
-
     def success
       # WIP, enable track_onboarding_progress for groups in further iteration,
       # See https://gitlab.com/gitlab-org/gitlab/-/issues/432799.

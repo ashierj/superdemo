@@ -6,6 +6,7 @@ RSpec.describe ApprovalRules::UpdateService, feature_category: :code_review_work
   let(:project) { create(:project) }
   let(:user) { project.creator }
   let(:approval_rule) { target.approval_rules.create!(name: 'foo', approvals_required: 2) }
+  let(:container) { project }
 
   shared_examples 'editable' do
     let(:new_approvers) { create_list(:user, 2) }
@@ -23,7 +24,6 @@ RSpec.describe ApprovalRules::UpdateService, feature_category: :code_review_work
 
       it 'updates approval, excluding non-eligible users and groups' do
         expect(result[:status]).to eq(:success)
-
         rule = result[:rule]
 
         expect(rule.name).to eq('security')
@@ -38,19 +38,11 @@ RSpec.describe ApprovalRules::UpdateService, feature_category: :code_review_work
 
         result
       end
-
-      it 'invokes ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker' do
-        expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
-          .to receive(:perform_async).with({ 'project_id' => approval_rule.project.id, 'user_id' => user.id })
-                                     .and_call_original
-
-        result
-      end
     end
 
     context 'when some users and groups are eligible' do
       before do
-        project.add_reporter new_approvers.first
+        container.add_reporter new_approvers.first
         new_groups.first.add_guest user
       end
 
@@ -153,10 +145,25 @@ RSpec.describe ApprovalRules::UpdateService, feature_category: :code_review_work
     end
   end
 
+  shared_examples_for 'invokes AtLeastTwoApprovalsWorker' do
+    it 'invokes ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker' do |_invokes|
+      expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
+        .to receive(:perform_async).with({ 'project_id' => approval_rule.project.id, 'user_id' => user.id })
+                                   .and_call_original
+
+      described_class.new(approval_rule, user, {
+        name: 'security',
+        approvals_required: 1
+      }).execute
+    end
+  end
+
   context 'when target is project' do
     let(:target) { project }
 
     it_behaves_like "editable"
+
+    it_behaves_like "invokes AtLeastTwoApprovalsWorker"
 
     context 'when protected_branch_ids param is present' do
       let(:protected_branch) { create(:protected_branch, project: target) }
@@ -348,5 +355,28 @@ RSpec.describe ApprovalRules::UpdateService, feature_category: :code_review_work
     let(:target) { create(:merge_request, source_project: project, target_project: project) }
 
     it_behaves_like "editable"
+    it_behaves_like "invokes AtLeastTwoApprovalsWorker"
+  end
+
+  context 'when target is a group' do
+    let(:target) { create(:group) }
+    let(:container) { target }
+    let(:group_user) { create(:user) }
+    let(:user) { group_user }
+
+    before do
+      target.add_owner(group_user)
+    end
+
+    it_behaves_like "editable"
+
+    it 'does not invoke ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker' do
+      expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker).not_to receive(:perform_async)
+
+      described_class.new(approval_rule, user, {
+        name: 'security',
+        approvals_required: 1
+      }).execute
+    end
   end
 end

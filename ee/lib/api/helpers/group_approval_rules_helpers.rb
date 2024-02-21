@@ -5,9 +5,7 @@ module API
     module GroupApprovalRulesHelpers
       extend Grape::API::Helpers
 
-      params :create_group_approval_rule do
-        requires :name, type: String, desc: 'The name of the approval rule'
-        requires :approvals_required, type: Integer, desc: 'The number of required approvals for this rule'
+      params :group_approval_rule do
         optional :rule_type, type: String, desc: 'The type of approval rule', documentation: { example: 'regular' }
         optional :user_ids, type: Array[Integer],
           coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce,
@@ -35,6 +33,22 @@ module API
         authorize_update_group_approval_rule!
 
         result = ::ApprovalRules::CreateService.new(user_group, current_user,
+          declared_params(include_missing: false)).execute
+
+        if result[:status] == :success
+          present result[:rule], with: present_with, current_user: current_user
+        else
+          render_api_error!(result[:message], result[:http_status] || 400)
+        end
+      end
+
+      def update_group_approval_rule(present_with:)
+        authorize_update_group_approval_rule!
+
+        approval_rule = user_group.approval_rules.find_by_id(params[:approval_rule_id])
+        not_found!('Approval Rule') unless approval_rule
+
+        result = ::ApprovalRules::UpdateService.new(approval_rule, current_user,
           declared_params(include_missing: false)).execute
 
         if result[:status] == :success
