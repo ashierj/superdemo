@@ -12,6 +12,8 @@ module FeatureGate
   def flipper_id
     return if new_record?
 
-    self.class.actor_from_id(id).flipper_id
+    # rubocop:disable Gitlab/ModuleWithInstanceVariables -- Memoization is an acceptable use of instance variable assignment
+    @flipper_id ||= self.class.actor_from_id(id).flipper_id
+    # rubocop:enable Gitlab/ModuleWithInstanceVariables
   end
 end
