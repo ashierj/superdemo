@@ -9,6 +9,8 @@ module Search
         foreign_key: :zoekt_node_id, inverse_of: :node, class_name: '::Search::Zoekt::Index'
       has_many :enabled_namespaces,
         through: :indices, source: :zoekt_enabled_namespace, class_name: '::Search::Zoekt::EnabledNamespace'
+      has_many :tasks,
+        foreign_key: :zoekt_node_id, inverse_of: :node, class_name: '::Search::Zoekt::Task'
 
       validates :index_base_url, presence: true
       validates :search_base_url, presence: true
