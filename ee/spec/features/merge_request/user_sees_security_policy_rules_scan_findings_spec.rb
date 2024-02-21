@@ -35,7 +35,7 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
       type: 'scan_finding',
       scanners: scanners,
       vulnerabilities_allowed: 0,
-      severity_levels: [],
+      severity_levels: severity_levels,
       vulnerability_states: [],
       branches: %w[master]
     }
@@ -53,7 +53,7 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
     end
 
     let!(:sast_finding) { create(:security_finding, severity: 'high', scan: pipeline_scan) }
-    let(:is_scan_finding_rule) { true }
+    let(:severity_levels) { [] }
     let!(:pipeline) do
       create(:ee_ci_pipeline, :success, :with_sast_report, merge_requests_as_head_pipeline: [merge_request],
         project: project, ref: merge_request.source_branch, sha: merge_request.diff_head_sha).tap do |p|
@@ -77,6 +77,39 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
         visit(merge_request_path)
         wait_for_requests
         expect(page).to have_content 'Merge blocked'
+      end
+    end
+
+    context 'with severity level defined' do
+      let(:scanners) { %w[sast] }
+
+      context 'when it matches with policy' do
+        let(:severity_levels) { %w[critical high] }
+
+        before do
+          create_policy_setup
+        end
+
+        it 'blocks the MR' do
+          visit(merge_request_path)
+          wait_for_requests
+          expect(page).to have_content 'Merge blocked'
+        end
+      end
+
+      context 'when it differs from policy' do
+        let(:severity_levels) { %w[low] }
+
+        before do
+          create_policy_setup
+        end
+
+        it 'does not block the MR' do
+          visit(merge_request_path)
+          wait_for_requests
+          expect(page).not_to have_content 'Merge blocked'
+          expect(page).to have_button('Merge', exact: true)
+        end
       end
     end
 
