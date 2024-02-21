@@ -7,14 +7,14 @@ module AuditEvents
     included do
       before_validation :assign_default_name
 
-      enum type: {
+      enum category: {
         http: 0,
         gcp: 1,
         aws: 2
       }
 
       validates :name, length: { maximum: 72 }
-      validates :type, presence: true
+      validates :category, presence: true
 
       validates :config, presence: true, json_schema: { filename: 'external_streaming_destination_config' }
       validates :secret_token, presence: true
