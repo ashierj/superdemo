@@ -18,7 +18,7 @@ module EE
       include ::Emails::InProductMarketing
       include ::Emails::MergeCommits
       include ::Emails::AbandonedTrialNotification
-      include ::Emails::ComplianceFrameworks
+      include ::Emails::ComplianceProjectFrameworks
       include ::Emails::ComplianceViolations
       include ::Emails::ComplianceStandards
       include ::Emails::Okr

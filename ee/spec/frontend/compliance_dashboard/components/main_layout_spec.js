@@ -19,7 +19,7 @@ describe('ComplianceReportsApp component', () => {
   const defaultInjects = {
     groupPath: 'group-path',
     mergeCommitsCsvExportPath: '/csv',
-    frameworksCsvExportPath: '/framework_report.csv',
+    projectFrameworksCsvExportPath: '/project_frameworks_report.csv',
     violationsCsvExportPath: '/compliance_violation_reports.csv',
     adherencesCsvExportPath: '/compliance_standards_adherences.csv',
   };
@@ -158,7 +158,7 @@ describe('ComplianceReportsApp component', () => {
             name: ROUTE_FRAMEWORKS,
           },
         },
-        { frameworksCsvExportPath: null },
+        { projectFrameworksCsvExportPath: null },
       );
 
       expect(findProjectFrameworksExportButton().exists()).toBe(false);
