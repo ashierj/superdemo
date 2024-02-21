@@ -14,7 +14,6 @@ data_category: optional
 instrumentation_class: AggregatedMetric
 options:
   aggregate:
-    operator: OR
     attribute: user_id
   events:
     - users_visiting_security_vulnerability_report
