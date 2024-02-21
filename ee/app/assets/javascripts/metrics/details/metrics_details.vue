@@ -8,13 +8,12 @@ import {
   prepareTokens,
   processFilters as processFilteredSearchFilters,
 } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
-import { periodToDate } from '~/observability/utils';
 import axios from '~/lib/utils/axios_utils';
+import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { ingestedAtTimeAgo } from '../utils';
 import MetricsChart from './metrics_chart.vue';
 import FilteredSearch from './filter_bar/metrics_filtered_search.vue';
-
-const DEFAULT_TIME_RANGE = '1h';
+import { filterObjToQuery, queryToFilterObj } from './filters';
 
 export default {
   i18n: {
@@ -30,6 +29,7 @@ export default {
     MetricsChart,
     GlEmptyState,
     FilteredSearch,
+    UrlSync,
   },
   props: {
     observabilityClient: {
@@ -51,19 +51,10 @@ export default {
     },
   },
   data() {
-    const defaultRange = periodToDate(DEFAULT_TIME_RANGE);
     return {
       metricData: [],
       searchMetadata: null,
-      // TODO get filters from query params https://gitlab.com/gitlab-org/opstrace/opstrace/-/work_items/2605
-      filters: {
-        attributes: [],
-        dateRange: {
-          value: DEFAULT_TIME_RANGE,
-          startDarte: defaultRange.min,
-          endDate: defaultRange.max,
-        },
-      },
+      filters: queryToFilterObj(window.location.search),
       apiAbortController: null,
       loading: false,
     };
@@ -80,6 +71,9 @@ export default {
     attributeFiltersValue() {
       // only attributes are used by the filtered_search component, so only those needs processing
       return prepareTokens(this.filters.attributes);
+    },
+    query() {
+      return filterObjToQuery(this.filters);
     },
   },
   created() {
@@ -164,6 +158,8 @@ export default {
   </div>
 
   <div v-else data-testid="metric-details" class="gl-m-7">
+    <url-sync :query="query" />
+
     <div data-testid="metric-header">
       <h1 class="gl-font-size-h1 gl-my-0" data-testid="metric-title">{{ header.title }}</h1>
       <p class="gl-my-0" data-testid="metric-type">

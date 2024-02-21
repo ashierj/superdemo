@@ -45,9 +45,9 @@ export default {
     return {
       shouldShowDateRangePicker: false,
       dateRange: this.dateRangeFilter,
-      groupBy: this.groupByFilter ?? {
-        attributes: defaultGroupByAttributes,
-        func: this.searchMetadata.default_group_by_function ?? '',
+      groupBy: {
+        attributes: this.groupByFilter?.attributes ?? defaultGroupByAttributes,
+        func: this.groupByFilter?.func ?? this.searchMetadata.default_group_by_function,
       },
     };
   },
