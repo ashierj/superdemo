@@ -92,7 +92,7 @@ export default {
       error() {
         createAlert({
           message: s__(
-            'SecurityReports|Error fetching the vulnerabilities over time. Please check your network connection and try again.',
+            'SecurityReports|Failed to retrieve the vulnerability data. Please refresh the page.',
           ),
         });
       },
