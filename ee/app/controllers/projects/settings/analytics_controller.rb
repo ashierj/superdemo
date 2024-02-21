@@ -7,6 +7,7 @@ module Projects
       feature_category :product_analytics_visualization
 
       before_action :authorize_analytics_settings!
+      before_action :authorize_modify_product_analytics_settings!
 
       def update
         params_to_update = update_params.to_h

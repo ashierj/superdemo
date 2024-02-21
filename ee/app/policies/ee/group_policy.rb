@@ -520,6 +520,7 @@ module EE
         enable :admin_group_member
         enable :update_group_member
         enable :destroy_group_member
+        enable :read_billable_member
       end
 
       rule { custom_roles_allowed & role_enables_manage_group_access_tokens & resource_access_token_feature_available }.policy do
