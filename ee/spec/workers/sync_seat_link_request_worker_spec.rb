@@ -276,8 +276,8 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
           .to_return(status: 400, body: body)
       end
 
-      it 'does not call Ai::SyncServiceTokenWorker' do
-        expect(Ai::SyncServiceTokenWorker).not_to receive(:perform_async)
+      it 'does not call CloudConnector::SyncServiceTokenWorker' do
+        expect(CloudConnector::SyncServiceTokenWorker).not_to receive(:perform_async)
 
         expect { sync_seat_link }.to raise_error(
           described_class::RequestError,
