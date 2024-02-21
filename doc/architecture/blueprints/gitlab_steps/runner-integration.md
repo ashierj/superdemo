@@ -32,9 +32,7 @@ message RunRequest {
     string id = 1;
     string work_dir = 2;
     map<string,string> env = 3;
-
-    repeated Step steps = 5;
-    string ci_script = 6;
+    string steps = 5;
 }
 
 message RunResponse {
