@@ -91,11 +91,6 @@ module EE
       merge_trains_service(noteable, project, author).abort(reason)
     end
 
-    # Called when 'merge when checks pass' is executed
-    def merge_when_checks_pass(noteable, project, author, sha)
-      merge_requests_service(noteable, project, author).merge_when_checks_pass(sha)
-    end
-
     # Called when 'add to merge train when pipeline succeeds' is executed
     def add_to_merge_train_when_pipeline_succeeds(noteable, project, author, sha)
       merge_trains_service(noteable, project, author).add_when_pipeline_succeeds(sha)
