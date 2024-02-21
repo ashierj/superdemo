@@ -9,6 +9,9 @@ module Search
 
       belongs_to :project, inverse_of: :zoekt_repository, class_name: 'Project'
 
+      has_many :tasks,
+        foreign_key: :zoekt_repository_id, inverse_of: :zoekt_repository, class_name: '::Search::Zoekt::Task'
+
       before_validation :set_project_identifier
 
       validates_presence_of :zoekt_index_id, :project_identifier, :state

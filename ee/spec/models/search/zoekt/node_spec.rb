@@ -19,6 +19,7 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
 
   describe 'relations' do
     it { is_expected.to have_many(:indices).inverse_of(:node) }
+    it { is_expected.to have_many(:tasks).inverse_of(:node) }
     it { is_expected.to have_many(:enabled_namespaces).through(:indices) }
   end
 
