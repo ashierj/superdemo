@@ -12,7 +12,7 @@ module Backup
       def cleanup_path = 'db'
 
       def target
-        ::Backup::Targets::Database.new(progress, options: options, force: options.force?)
+        ::Backup::Targets::Database.new(progress, options: options)
       end
     end
   end

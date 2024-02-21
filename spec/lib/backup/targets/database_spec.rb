@@ -7,7 +7,8 @@ RSpec.describe Backup::Targets::Database, :reestablished_active_record_base, fea
   let(:progress_output) { progress.string }
   let(:backup_id) { 'some_id' }
   let(:one_database_configured?) { base_models_for_backup.one? }
-  let(:backup_options) { Backup::Options.new }
+  let(:force) { true }
+  let(:backup_options) { Backup::Options.new(force: force) }
   let(:timeout_service) do
     instance_double(Gitlab::Database::TransactionTimeoutSettings, restore_timeouts: nil, disable_timeouts: nil)
   end
@@ -27,9 +28,7 @@ RSpec.describe Backup::Targets::Database, :reestablished_active_record_base, fea
   end
 
   describe '#dump', :delete do
-    let(:force) { true }
-
-    subject(:databases) { described_class.new(progress, force: force, options: backup_options) }
+    subject(:databases) { described_class.new(progress, options: backup_options) }
 
     it 'creates gzipped database dumps' do
       Dir.mktmpdir do |dir|
@@ -171,10 +170,9 @@ RSpec.describe Backup::Targets::Database, :reestablished_active_record_base, fea
   describe '#restore' do
     let(:cmd) { %W[#{Gem.ruby} -e $stdout.puts(1)] }
     let(:backup_dir) { Rails.root.join("spec/fixtures/") }
-    let(:force) { true }
     let(:rake_task) { instance_double(Rake::Task, invoke: true) }
 
-    subject(:databases) { described_class.new(progress, force: force, options: backup_options) }
+    subject(:databases) { described_class.new(progress, options: backup_options) }
 
     before do
       allow(Rake::Task).to receive(:[]).with(any_args).and_return(rake_task)

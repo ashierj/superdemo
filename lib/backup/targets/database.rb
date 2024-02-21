@@ -19,9 +19,10 @@ module Backup
       ].freeze
       IGNORED_ERRORS_REGEXP = Regexp.union(IGNORED_ERRORS).freeze
 
-      def initialize(progress, options:, force:)
+      def initialize(progress, options:)
         super(progress, options: options)
-        @force = force
+
+        @force = options.force?
       end
 
       override :dump
