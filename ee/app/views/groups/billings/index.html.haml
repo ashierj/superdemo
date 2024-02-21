@@ -35,7 +35,9 @@
 
             = safe_format(s_("CodeSuggestions|Boost productivity by using %{linkStart}Code Suggestions%{linkEnd} to write and understand code. Starting in February 2024, Code Suggestions will be part of %{duoLinkStart}GitLab Duo Pro%{duoLinkEnd}, available to Premium and Ultimate users for purchase now."),
               tag_pair(docs_link, :linkStart, :linkEnd), tag_pair(duo_pro_link, :duoLinkStart, :duoLinkEnd))
-          .js-hand-raise-lead-button{ data: code_suggestions_hand_raise_props(@group) }
+          .gl-display-flex.gl-gap-3
+            = render 'duo_pro_trial_cta', namespace: @group, button_category: 'primary'
+            .js-hand-raise-lead-button{ data: code_suggestions_hand_raise_props(@group) }
 
     - data_attributes = subscription_plan_data_attributes(@group, current_plan, read_only: read_only)
     #js-billing-plans{ data: data_attributes }

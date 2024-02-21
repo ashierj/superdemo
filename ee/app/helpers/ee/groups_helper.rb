@@ -128,7 +128,7 @@ module EE
         glm_content: 'code-suggestions',
         product_interaction: 'Requested Contact-Code Suggestions Add-On')
         .merge(track_action: 'click_button', track_label: 'code_suggestions_hand_raise_lead_form')
-        .merge(button_attributes: { 'data-testid': 'code_suggestions_hand_raise_lead_button' }.to_json)
+        .merge(button_attributes: { 'data-testid': 'code_suggestions_hand_raise_lead_button', category: 'tertiary', variant: 'confirm' }.to_json)
     end
 
     def code_suggestions_owner_alert_hand_raise_props(namespace)

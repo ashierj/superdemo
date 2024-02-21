@@ -458,7 +458,12 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
         create_hand_raise_lead_path: '/-/subscriptions/hand_raise_leads',
         track_action: 'click_button',
         track_label: 'code_suggestions_hand_raise_lead_form',
-        button_attributes: { 'data-testid': 'code_suggestions_hand_raise_lead_button' }.to_json
+        button_attributes:
+          {
+            'data-testid': 'code_suggestions_hand_raise_lead_button',
+            category: 'tertiary',
+            variant: 'confirm'
+          }.to_json
       }
 
       props = helper.code_suggestions_hand_raise_props(group)
