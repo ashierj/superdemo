@@ -64,7 +64,7 @@ module Namespaces
         # - the namespace is not being excluded from storage limits
 
         return false unless ::Feature.enabled?(:namespace_storage_limit_show_preenforcement_banner, root_namespace)
-        return false unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+        return false unless ::Gitlab::Saas.feature_available?(:namespaces_storage_limit)
         return false unless ::Gitlab::CurrentSettings.automatic_purchased_storage_allocation?
         return false if root_namespace.paid?
 
