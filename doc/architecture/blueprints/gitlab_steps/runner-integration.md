@@ -90,7 +90,7 @@ message ListResponse {
 }
 ```
 
-Steps are delivered to Step Runner as a YAML blob in the GitLab CI syntax.
+Steps are delivered to Step Runner as a JSON blob in the GitLab CI syntax.
 Runner interacts with Step Runner over the above gRPC service which is
 started on a local socket in the execution environment. This is the same
 way that Nesting serves a gRPC service in a dedicated Mac instance. The
