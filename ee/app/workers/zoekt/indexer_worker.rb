@@ -24,7 +24,8 @@ module Zoekt
       return unless ::Feature.enabled?(:index_code_with_zoekt)
       return unless ::License.feature_available?(:zoekt_code_search)
 
-      project = Project.find(project_id)
+      project = Project.find_by_id(project_id)
+      return false unless project
       return true unless project.use_zoekt?
       return true unless project.repository_exists?
       return true if project.empty_repo?
