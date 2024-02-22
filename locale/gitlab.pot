@@ -23362,28 +23362,28 @@ msgstr ""
 msgid "GoogleCloudPlatformService|Google Cloud project number for the Workload Identity Federation."
 msgstr ""
 
-msgid "GoogleCloudPlatformService|ID of the Google Cloud project."
-msgstr ""
-
 msgid "GoogleCloudPlatformService|ID of the Workload Identity Pool provider."
 msgstr ""
 
 msgid "GoogleCloudPlatformService|ID of the Workload Identity Pool."
 msgstr ""
 
-msgid "GoogleCloudPlatformService|Location of Artifact Registry repository"
-msgstr ""
-
-msgid "GoogleCloudPlatformService|Location of Artifact Registry repository."
-msgstr ""
-
 msgid "GoogleCloudPlatformService|Project number of the Workload Identity Pool."
 msgstr ""
 
-msgid "GoogleCloudPlatformService|Repository of Artifact Registry"
+msgid "GoogleCloudPlatformService|Project with the Artifact Registry repository."
 msgstr ""
 
-msgid "GoogleCloudPlatformService|Repository of Artifact Registry."
+msgid "GoogleCloudPlatformService|Repository location"
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Repository must be Docker format and Standard mode."
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Repository name"
+msgstr ""
+
+msgid "GoogleCloudPlatformService|To improve security, use a dedicated project for resources, separate from CI/CD and identity management projects. %{link_start}Where’s my project ID? %{icon}%{link_end}"
 msgstr ""
 
 msgid "GoogleCloudPlatformService|Workload Identity Pool ID"

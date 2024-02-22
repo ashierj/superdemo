@@ -24,9 +24,9 @@ RSpec.describe 'User activates Artifact Registry', feature_category: :package_re
       with: integration.workload_identity_pool_provider_id
     fill_in s_('GoogleCloudPlatformService|Google Cloud project ID'),
       with: integration.artifact_registry_project_id
-    fill_in s_('GoogleCloudPlatformService|Location of Artifact Registry repository'),
+    fill_in s_('GoogleCloudPlatformService|Repository location'),
       with: integration.artifact_registry_location
-    fill_in s_('GoogleCloudPlatformService|Repository of Artifact Registry'),
+    fill_in s_('GoogleCloudPlatformService|Repository name'),
       with: integration.artifact_registry_repositories
 
     click_save_integration

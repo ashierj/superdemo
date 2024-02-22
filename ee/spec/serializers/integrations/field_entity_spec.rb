@@ -34,6 +34,39 @@ RSpec.describe Integrations::FieldEntity do
         end
       end
     end
+
+    context 'with Google cloud artifact registry integration' do
+      let(:integration) { create(:google_cloud_platform_artifact_registry_integration) }
+
+      context 'with field with type text' do
+        let(:field) { integration_field('artifact_registry_project_id') }
+
+        before do
+          allow(ApplicationController.helpers).to receive(:sprite_icon).with('external-link').and_return('<svg></svg>')
+        end
+
+        it 'exposes correct attributes' do
+          expected_hash = {
+            section: 'connection',
+            type: 'text',
+            name: 'artifact_registry_project_id',
+            title: 'Google Cloud project ID',
+            placeholder: nil,
+            label_description: 'Project with the Artifact Registry repository.',
+            help: 'To improve security, use a dedicated project for resources, separate from CI/CD and identity ' \
+                  'management projects. <a target="_blank" rel="noopener noreferrer" href="' \
+                  'https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects">' \
+                  'Where’s my project ID? <svg></svg></a>',
+            required: true,
+            choices: nil,
+            value: 'dev-gcp-9abafed1',
+            checkbox_label: nil
+          }
+
+          is_expected.to include(expected_hash)
+        end
+      end
+    end
   end
 
   def integration_field(name)
