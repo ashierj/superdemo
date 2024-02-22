@@ -44,18 +44,28 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
 
     it 'includes conversation history' do
       expect(subject)
-        .to start_with("Human: question 1\n\nAssistant: response 1\n\nHuman: question 2\n\nAssistant: response 2\n\n")
+        .to start_with("\n\nHuman: question 1\n\nAssistant: response 1\n\nHuman: question 2\n\nAssistant: response 2")
     end
 
     context 'when conversation history does not fit prompt limit' do
-      before do
-        default_size = described_class.prompt(options.merge(conversation: []))[:prompt].size
+      let(:prompt_size) { described_class.prompt(options.merge(conversation: []))[:prompt].size }
 
-        stub_const("::Gitlab::Llm::Chain::Requests::Anthropic::PROMPT_SIZE", default_size + 40)
+      before do
+        stub_const("::Gitlab::Llm::Chain::Requests::Anthropic::PROMPT_SIZE", prompt_size + 50)
       end
 
       it 'includes truncated conversation history' do
-        expect(subject).to start_with("Assistant: response 2\n\n")
+        expect(subject).to start_with("\n\nHuman: question 2\n\nAssistant: response 2\n\n")
+      end
+
+      context 'when the truncated history would begin with an Assistant turn' do
+        before do
+          stub_const("::Gitlab::Llm::Chain::Requests::Anthropic::PROMPT_SIZE", prompt_size + 75)
+        end
+
+        it 'only includes history up to the latest fitting Human turn' do
+          expect(subject).to start_with("\n\nHuman: question 2\n\nAssistant: response 2\n\n")
+        end
       end
     end
 
@@ -64,13 +74,13 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
 
       it 'returns the agent version prompt' do
         expected_prompt = [
-          "Human: question 1\n\n",
-          "Assistant: response 1\n\n",
-          "Human: question 2\n\n",
-          "Assistant: response 2\n\n",
-          "Human: A custom prompt\n\n",
-          "Question: foo?\n",
-          "Thought: \n"
+          "\n\nHuman: question 1",
+          "\n\nAssistant: response 1",
+          "\n\nHuman: question 2",
+          "\n\nAssistant: response 2",
+          "\n\nHuman: A custom prompt",
+          "\n\nQuestion: foo?",
+          "\nThought: \n"
         ].join('')
 
         is_expected.to eq(expected_prompt)
