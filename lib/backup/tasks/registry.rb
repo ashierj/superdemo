@@ -12,7 +12,7 @@ module Backup
       def destination_path = 'registry.tar.gz'
 
       def target
-        ::Backup::Targets::Files.new(progress, storage_path, options: options)
+        @target ||= ::Backup::Targets::Files.new(progress, storage_path, options: options)
       end
 
       private

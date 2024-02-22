@@ -196,10 +196,6 @@ RSpec.describe Backup::Targets::Database, :reestablished_active_record_base, fea
 
         expect(progress_output).to include('Removing all tables. Press `Ctrl-C` within 5 seconds to abort')
       end
-
-      it 'has a pre restore warning' do
-        expect(databases.pre_restore_warning).not_to be_nil
-      end
     end
 
     context 'with an empty .gz file' do
@@ -251,7 +247,7 @@ RSpec.describe Backup::Targets::Database, :reestablished_active_record_base, fea
       let(:noise) { "must be owner of extension pg_trgm\nWARNING:  no privileges could be revoked for public\n" }
       let(:cmd) { %W[#{Gem.ruby} -e $stderr.write("#{noise}#{visible_error}")] }
 
-      it 'filters out noise from errors and has a post restore warning' do
+      it 'filters out noise from errors and store in errors attribute' do
         if one_database_configured?
           expect(Rake::Task['gitlab:db:drop_tables']).to receive(:invoke)
         else
@@ -263,7 +259,7 @@ RSpec.describe Backup::Targets::Database, :reestablished_active_record_base, fea
         expect(progress_output).to include("ERRORS")
         expect(progress_output).not_to include(noise)
         expect(progress_output).to include(visible_error)
-        expect(databases.post_restore_warning).not_to be_nil
+        expect(databases.errors).not_to be_empty
       end
     end
 
