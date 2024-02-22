@@ -664,6 +664,7 @@
   - "ee/config/custom_abilities/*.yml"
   - "doc/user/custom_roles/abilities.md"
   - "tooling/custom_roles/docs/templates/custom_abilities.md.erb"
+  - "ee/{lib/,spec/}tasks/gitlab/custom_roles/*"
 
 ##################
 # Conditions set #
