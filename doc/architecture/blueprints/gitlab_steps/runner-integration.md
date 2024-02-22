@@ -57,17 +57,11 @@ message FollowStepsResponse {
 
 message FollowLogsRequest {
     string id = 1;
-    int32 read_stdout = 2; // number of bytes previously read from stdout. i.e. offset into buffered stdout.
-    int32 read_stderr = 3; // number of bytes previously read from stderr. i.e. offset into buffered stderr.
+    int32 offset = 2;
 }
 
 message FollowLogsResponse {
-    enum StreamType {
-            stdout = 0;
-            stderr = 1;
-        }
-    bytes stream = 1;
-    StreamType stream_type = 2;
+    bytes data = 1;
 }
 
 message FinishRequest {
