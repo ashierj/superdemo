@@ -27,6 +27,11 @@ RSpec.describe Vulnerabilities::ProcessTransferEventsWorker, feature_category: :
     })
   end
 
+  before do
+    stub_feature_flags(update_vuln_reads_traversal_ids_via_event: [project, other_project,
+      project_without_vulnerabilities, group])
+  end
+
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :always
 
   subject(:use_event) { consume_event(subscriber: described_class, event: event) }

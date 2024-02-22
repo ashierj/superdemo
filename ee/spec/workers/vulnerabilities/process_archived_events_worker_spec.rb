@@ -17,6 +17,10 @@ RSpec.describe Vulnerabilities::ProcessArchivedEventsWorker, feature_category: :
     })
   end
 
+  before do
+    stub_feature_flags(update_vuln_reads_archived_via_event: [project, other_project, project_without_vulnerabilities])
+  end
+
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :sticky
 
   subject(:use_event) { consume_event(subscriber: described_class, event: event) }
