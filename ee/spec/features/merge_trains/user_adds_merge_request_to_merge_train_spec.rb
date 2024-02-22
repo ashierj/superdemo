@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe 'User adds a merge request to a merge train', :js, feature_category: :merge_trains do
-  include ContentEditorHelpers
-
   let_it_be_with_refind(:project) { create(:project, :repository) }
   let(:user) { project.owner }
 
