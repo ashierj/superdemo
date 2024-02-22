@@ -78,24 +78,19 @@ message CancelResponse {
 }
 
 message ListRequest {
-    // nothing for now, but we could add filters here
+    optional string id = 1;
 }
 
-message Job {
+message Status {
     string id = 1;
-    // are these sufficient statuses?
-    enum JobStatus {
-        running = 0;
-        suceeded = 1;
-        failed = 2;
-    }
-    JobStatus status = 2;
-    google.protobuf.Timestamp finished_time = 3;
-    // maybe we can add runtime here?
+    bool finished = 2;
+    int32 exit_code = 3;
+    google.protobuf.Timestamp start_time = 4;
+    google.protobuf.Timestamp end_time = 5;
 }
 
 message ListResponse {
-    repeated Job jobs = 1;
+    repeated Status jobs = 1;
 }
 ```
 
