@@ -58764,22 +58764,7 @@ msgstr ""
 msgid "ciReport|TTFB P95"
 msgstr ""
 
-msgid "ciReport|There was an error creating the issue. Please try again."
-msgstr ""
-
 msgid "ciReport|There was an error creating the merge request. Please try again."
-msgstr ""
-
-msgid "ciReport|There was an error dismissing the vulnerability. Please try again."
-msgstr ""
-
-msgid "ciReport|There was an error dismissing the vulnerability: %{error}"
-msgstr ""
-
-msgid "ciReport|There was an error reverting the dismissal. Please try again."
-msgstr ""
-
-msgid "ciReport|There was an error reverting the dismissal: %{error}"
 msgstr ""
 
 msgid "ciReport|This report contains all Code Quality issues in the source branch."

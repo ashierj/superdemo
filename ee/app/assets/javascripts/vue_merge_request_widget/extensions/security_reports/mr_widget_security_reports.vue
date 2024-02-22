@@ -3,29 +3,14 @@ import { GlBadge, GlButton } from '@gitlab/ui';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_content_row.vue';
-import toast from '~/vue_shared/plugins/global_toast';
-import { BV_SHOW_MODAL, BV_HIDE_MODAL } from '~/lib/utils/constants';
 import axios from '~/lib/utils/axios_utils';
-import { visitUrl } from '~/lib/utils/url_utility';
-import { s__, sprintf } from '~/locale';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
-import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
-import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
-import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.query.graphql';
-import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
-import revertFindingToDetectedMutation from 'ee/security_dashboard/graphql/mutations/revert_finding_to_detected.mutation.graphql';
-import createIssueMutation from 'ee/security_dashboard/graphql/mutations/finding_create_issue.mutation.graphql';
+import { s__ } from '~/locale';
 import SummaryHighlights from 'ee/vue_shared/security_reports/components/summary_highlights.vue';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 import { capitalizeFirstCharacter, convertToCamelCase } from '~/lib/utils/text_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { CRITICAL, HIGH } from '~/vulnerabilities/constants';
-import download from '~/lib/utils/downloader';
 import { DynamicScroller, DynamicScrollerItem } from 'vendor/vue-virtual-scroller';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
-import { getDismissalTransitionForVulnerability } from 'ee/vue_shared/security_reports/components/helpers';
 import SummaryText, { MAX_NEW_VULNERABILITIES } from './summary_text.vue';
 import SecurityTrainingPromoWidget from './security_training_promo_widget.vue';
 import { i18n, popovers, reportTypes } from './i18n';
@@ -33,7 +18,6 @@ import { i18n, popovers, reportTypes } from './i18n';
 export default {
   name: 'WidgetSecurityReports',
   components: {
-    FindingModal,
     VulnerabilityFindingModal: () =>
       import('ee/security_dashboard/components/pipeline/vulnerability_finding_modal.vue'),
     MrWidget,
@@ -46,7 +30,6 @@ export default {
     DynamicScroller,
     DynamicScrollerItem,
   },
-  mixins: [glFeatureFlagsMixin()],
   i18n,
   props: {
     mr: {
@@ -57,72 +40,11 @@ export default {
   data() {
     return {
       isLoading: true,
-      isCreatingIssue: false,
-      isDismissingFinding: false,
-      isCreatingMergeRequest: false,
       hasAtLeastOneReportWithMaxNewVulnerabilities: false,
       modalData: null,
       topLevelErrorMessage: '',
       collapsedData: {},
     };
-  },
-
-  apollo: {
-    securityReportFinding: {
-      manual: true,
-      query: findingQuery,
-      errorPolicy: 'none',
-      variables() {
-        return {
-          fullPath: this.mr.sourceProjectFullPath,
-          pipelineId: this.pipelineIid,
-          uuid: this.modalData.vulnerability.uuid,
-        };
-      },
-      error() {
-        this.modalData.error = this.$options.i18n.findingLoadingError;
-      },
-      result({ data }) {
-        const finding = data.project.pipeline.securityReportFinding;
-        const { mergeRequest, vulnerability } = finding;
-
-        if (mergeRequest) {
-          this.$set(this.modalData.vulnerability, 'hasMergeRequest', true);
-
-          const mergeRequestData = {
-            author: mergeRequest.author,
-            merge_request_path: mergeRequest.webUrl,
-            created_at: mergeRequest.createdAt,
-            merge_request_iid: mergeRequest.iid,
-          };
-
-          this.modalData.vulnerability.merge_request_links = [mergeRequestData];
-        }
-
-        const issue = finding.issueLinks?.nodes.find((x) => x.linkType === 'CREATED')?.issue;
-
-        if (issue) {
-          this.$set(this.modalData.vulnerability, 'hasIssue', true);
-
-          const issueData = {
-            author: issue.author,
-            created_at: issue.createdAt,
-            issue_url: issue.webUrl,
-            issue_iid: issue.iid,
-            link_type: 'created',
-          };
-
-          this.modalData.vulnerability.issue_links = [issueData];
-        }
-
-        this.modalData.vulnerability.state_transitions = vulnerability
-          ? vulnerability.stateTransitions.nodes.map(convertObjectPropsToSnakeCase)
-          : [];
-      },
-      skip() {
-        return !this.modalData;
-      },
-    },
   },
 
   computed: {
@@ -228,17 +150,6 @@ export default {
       return EXTENSION_ICONS.success;
     },
 
-    hasCreateIssuePath() {
-      return Boolean(
-        this.mr.createVulnerabilityFeedbackIssuePath ||
-          this.modalData?.vulnerability?.create_jira_issue_url,
-      );
-    },
-
-    canDismissFinding() {
-      return Boolean(this.mr.createVulnerabilityFeedbackDismissalPath);
-    },
-
     actionButtons() {
       return [
         {
@@ -247,10 +158,6 @@ export default {
           trackFullReportClicked: true,
         },
       ];
-    },
-
-    showStandaloneFindingModal() {
-      return this.glFeatures.standaloneFindingModalMergeRequestWidget && this.modalData;
     },
 
     endpoints() {
@@ -397,209 +304,7 @@ export default {
         error: null,
         title: finding.name,
         vulnerability: finding,
-        isShowingDeleteButtons: false,
       };
-
-      this.isDismissingFinding = false;
-
-      this.$root.$emit(BV_SHOW_MODAL, VULNERABILITY_MODAL_ID);
-    },
-
-    createNewIssue() {
-      this.isCreatingIssue = true;
-      const finding = this.modalData?.vulnerability;
-
-      this.$apollo
-        .mutate({
-          mutation: createIssueMutation,
-          variables: {
-            projectId: convertToGraphQLId(TYPENAME_PROJECT, finding.project.id),
-            findingUuid: finding.uuid,
-          },
-        })
-        .then(({ data }) => {
-          visitUrl(data.securityFindingCreateIssue.issue.webUrl);
-        })
-        .catch(() => {
-          this.isCreatingIssue = false;
-
-          this.modalData.error = s__(
-            'ciReport|There was an error creating the issue. Please try again.',
-          );
-        });
-    },
-
-    dismissFinding(comment, toastMsg, errorMsg) {
-      const finding = this.modalData?.vulnerability;
-
-      this.isDismissingFinding = true;
-
-      this.$apollo
-        .mutate({
-          mutation: dismissFindingMutation,
-          refetchQueries: [findingQuery],
-          variables: {
-            uuid: finding.uuid,
-            comment,
-          },
-        })
-        .then(({ data }) => {
-          const { errors } = data.securityFindingDismiss;
-
-          if (errors.length > 0) {
-            this.modalData.error = sprintf(
-              s__('ciReport|There was an error dismissing the vulnerability: %{error}'),
-              { error: errors[0] },
-            );
-
-            return;
-          }
-
-          this.modalData.vulnerability.state = 'dismissed';
-          this.hideModal();
-
-          toast(
-            toastMsg ||
-              sprintf(s__("SecurityReports|Dismissed '%{vulnerabilityName}'"), {
-                vulnerabilityName: finding.name,
-              }),
-          );
-        })
-        .catch(() => {
-          this.modalData.error =
-            errorMsg ||
-            s__('ciReport|There was an error dismissing the vulnerability. Please try again.');
-        })
-        .finally(() => {
-          this.isDismissingFinding = false;
-        });
-    },
-
-    revertDismissVulnerability() {
-      this.isDismissingFinding = true;
-
-      this.$apollo
-        .mutate({
-          mutation: revertFindingToDetectedMutation,
-          refetchQueries: [findingQuery],
-          variables: {
-            uuid: this.modalData.vulnerability.uuid,
-          },
-        })
-        .then(({ data }) => {
-          const { errors } = data.securityFindingRevertToDetected;
-
-          if (errors.length > 0) {
-            this.modalData.error = sprintf(
-              s__('ciReport|There was an error reverting the dismissal: %{error}'),
-              { error: errors[0] },
-            );
-
-            return;
-          }
-
-          this.modalData.vulnerability.state = 'detected';
-          this.modalData.vulnerability.dismissal_feedback = null;
-
-          this.hideModal();
-        })
-        .catch(() => {
-          this.modalData.error = s__(
-            'ciReport|There was an error reverting the dismissal. Please try again.',
-          );
-        })
-        .finally(() => {
-          this.isDismissingFinding = false;
-        });
-    },
-
-    openDismissalCommentBox() {
-      this.$set(this.modalData, 'isCommentingOnDismissal', true);
-    },
-
-    closeDismissalCommentBox() {
-      this.$set(this.modalData, 'isCommentingOnDismissal', false);
-    },
-
-    addDismissalComment(comment) {
-      const finding = this.modalData.vulnerability;
-
-      const isEditingDismissalContent = Boolean(
-        getDismissalTransitionForVulnerability(finding).comment,
-      );
-
-      const errorMsg = s__('SecurityReports|There was an error adding the comment.');
-      const toastMsg = isEditingDismissalContent
-        ? sprintf(s__("SecurityReports|Comment edited on '%{vulnerabilityName}'"), {
-            vulnerabilityName: finding.name,
-          })
-        : sprintf(s__("SecurityReports|Comment added to '%{vulnerabilityName}'"), {
-            vulnerabilityName: finding.name,
-          });
-
-      this.dismissFinding(comment, toastMsg, errorMsg);
-    },
-
-    hideDismissalDeleteButtons() {
-      this.modalData.isShowingDeleteButtons = false;
-    },
-
-    showDismissalDeleteButtons() {
-      this.modalData.isShowingDeleteButtons = true;
-    },
-
-    deleteDismissalComment() {
-      const { vulnerability: finding } = this.modalData;
-      const errorMsg = s__('SecurityReports|There was an error deleting the comment.');
-      const toastMsg = sprintf(s__("SecurityReports|Comment deleted on '%{vulnerabilityName}'"), {
-        vulnerabilityName: finding.name,
-      });
-
-      // This will cause the spinner to be displayed
-      this.isDismissingFinding = true;
-
-      this.dismissFinding(undefined, toastMsg, errorMsg);
-    },
-
-    createMergeRequest() {
-      const finding = this.modalData.vulnerability;
-
-      finding.target_branch = this.mr.sourceBranch;
-
-      this.isCreatingMergeRequest = true;
-
-      axios
-        .post(this.mr.createVulnerabilityFeedbackMergeRequestPath, {
-          vulnerability_feedback: {
-            feedback_type: 'merge_request',
-            category: finding.report_type,
-            project_fingerprint: finding.project_fingerprint,
-            finding_uuid: finding.uuid,
-            vulnerability_data: { ...finding, category: finding.report_type },
-          },
-        })
-        .then(({ data }) => {
-          const url = data.merge_request_links.at(-1).merge_request_path;
-
-          visitUrl(url);
-        })
-        .catch(() => {
-          this.isCreatingMergeRequest = false;
-          this.modalData.error = s__(
-            'ciReport|There was an error creating the merge request. Please try again.',
-          );
-        });
-    },
-
-    downloadPatch() {
-      download({
-        fileData: this.modalData.vulnerability.remediations[0].diff,
-        fileName: 'remediation.patch',
-      });
-    },
-
-    hideModal() {
-      this.$root.$emit(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);
     },
 
     clearModalData() {
@@ -656,37 +361,13 @@ export default {
     </template>
     <template #content>
       <vulnerability-finding-modal
-        v-if="showStandaloneFindingModal"
+        v-if="modalData"
         :finding-uuid="modalData.vulnerability.uuid"
         :pipeline-iid="pipelineIid"
         :project-full-path="mr.targetProjectFullPath"
         @hidden="clearModalData"
         @dismissed="updateFindingState('dismissed')"
         @detected="updateFindingState('detected')"
-      />
-      <finding-modal
-        v-else-if="modalData"
-        :visible="true"
-        :modal="modalData"
-        :is-dismissing-vulnerability="isDismissingFinding"
-        :is-creating-merge-request="isCreatingMergeRequest"
-        :is-creating-issue="isCreatingIssue"
-        :is-loading-additional-info="$apollo.queries.securityReportFinding.loading"
-        :can-create-issue="hasCreateIssuePath"
-        :can-dismiss-vulnerability="canDismissFinding"
-        @addDismissalComment="addDismissalComment"
-        @createMergeRequest="createMergeRequest"
-        @closeDismissalCommentBox="closeDismissalCommentBox"
-        @openDismissalCommentBox="openDismissalCommentBox"
-        @editVulnerabilityDismissalComment="openDismissalCommentBox"
-        @deleteDismissalComment="deleteDismissalComment"
-        @downloadPatch="downloadPatch"
-        @revertDismissVulnerability="revertDismissVulnerability"
-        @createNewIssue="createNewIssue"
-        @dismissVulnerability="dismissFinding"
-        @showDismissalDeleteButtons="showDismissalDeleteButtons"
-        @hideDismissalDeleteButtons="hideDismissalDeleteButtons"
-        @hidden="clearModalData"
       />
       <security-training-promo-widget
         :security-configuration-path="mr.securityConfigurationPath"
