@@ -73,7 +73,7 @@ describe('DevopsAdoptionTable', () => {
           const expected = Boolean(tooltipText);
 
           it(`${expected ? 'displays' : "doesn't display"} an information icon`, () => {
-            expect(headerWrapper.findComponent(GlIcon).exists()).toBe(expected);
+            expect(headerWrapper.find(`[data-testid="information-icon"]`).exists()).toBe(expected);
           });
 
           if (expected) {

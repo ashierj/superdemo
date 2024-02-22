@@ -10,7 +10,9 @@ exports[`Corpus table corpus management renders with the correct columns 1`] = `
     role="columnheader"
     scope="col"
   >
-    <div>
+    <div
+      class="gl-align-items-center gl-display-flex"
+    >
       Corpus name
     </div>
   </th>
@@ -20,7 +22,9 @@ exports[`Corpus table corpus management renders with the correct columns 1`] = `
     role="columnheader"
     scope="col"
   >
-    <div>
+    <div
+      class="gl-align-items-center gl-display-flex"
+    >
       Target
     </div>
   </th>
@@ -30,7 +34,9 @@ exports[`Corpus table corpus management renders with the correct columns 1`] = `
     role="columnheader"
     scope="col"
   >
-    <div>
+    <div
+      class="gl-align-items-center gl-display-flex"
+    >
       Last updated
     </div>
   </th>
@@ -40,7 +46,9 @@ exports[`Corpus table corpus management renders with the correct columns 1`] = `
     role="columnheader"
     scope="col"
   >
-    <div>
+    <div
+      class="gl-align-items-center gl-display-flex"
+    >
       Last used
     </div>
   </th>
@@ -50,7 +58,9 @@ exports[`Corpus table corpus management renders with the correct columns 1`] = `
     role="columnheader"
     scope="col"
   >
-    <div>
+    <div
+      class="gl-align-items-center gl-display-flex"
+    >
       Actions
     </div>
   </th>

@@ -158,8 +158,9 @@ export default {
             v-if="header.tooltip"
             v-gl-tooltip.hover="header.tooltip"
             name="information-o"
-            class="gl-text-gray-200 gl-ml-1"
-            :size="14"
+            class="gl-text-blue-500 gl-ml-3"
+            :size="16"
+            data-testid="information-icon"
           />
         </div>
       </template>

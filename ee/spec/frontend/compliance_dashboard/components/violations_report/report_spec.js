@@ -59,7 +59,7 @@ describe('ComplianceViolationsReport component', () => {
   const findViolationFilter = () => wrapper.findComponent(ViolationFilter);
   const findUrlSync = () => wrapper.findComponent(UrlSync);
 
-  const findTableHeaders = () => findViolationsTable().findAll('th div');
+  const findTableHeaders = () => findViolationsTable().findAll('th > div');
   const findTableRowData = (idx) =>
     findViolationsTable().findAll('tbody > tr').at(idx).findAll('td');
   const findSelectedRows = () => findViolationsTable().findAll('tr.b-table-row-selected');
@@ -206,7 +206,7 @@ describe('ComplianceViolationsReport component', () => {
     });
 
     it('has the correct table headers', () => {
-      const headerTexts = findTableHeaders().wrappers.map((h) => h.text());
+      const headerTexts = findTableHeaders().wrappers.map((h) => h.text().trim());
 
       expect(headerTexts).toStrictEqual([
         'Severity',
