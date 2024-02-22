@@ -30,11 +30,18 @@ service StepRunner {
     rpc List(ListRequest) returns (ListResponse);
 }
 
+message Job {
+    map<string,string> variables = 1;
+    string job_id = 2;
+    string pipeline_id = 3;
+    string build_dir = 4;
+}
+
 message RunRequest {
     string id = 1;
-    string work_dir = 2;
-    map<string,string> env = 3;
-    string steps = 5;
+    map<string,string> env = 2;
+    Job job = 3;
+    string steps = 4;
 }
 
 message RunResponse {
