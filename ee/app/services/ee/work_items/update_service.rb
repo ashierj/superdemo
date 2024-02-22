@@ -31,6 +31,13 @@ module EE
         super unless sync_work_item?
       end
 
+      override :can_set_confidentiality?
+      def can_set_confidentiality?(work_item)
+        return true if sync_work_item?
+
+        super
+      end
+
       def sync_work_item?
         extra_params&.fetch(:synced_work_item, false)
       end

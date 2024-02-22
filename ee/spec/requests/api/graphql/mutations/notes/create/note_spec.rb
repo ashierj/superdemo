@@ -66,5 +66,18 @@ RSpec.describe 'Adding a Note to an Epic', feature_category: :portfolio_manageme
       it_behaves_like 'work item supports health status widget updates via quick actions'
       it_behaves_like 'work item does not support health status widget updates via quick actions'
     end
+
+    context 'with work item epic' do
+      let_it_be(:noteable) { create(:work_item, :epic, namespace: group) }
+
+      it_behaves_like 'a Note mutation that creates a Note'
+
+      context 'when work item has synced epic' do
+        let_it_be(:synced_epic) { create(:epic, :with_synced_work_item, group: group) }
+        let_it_be(:noteable) { synced_epic.work_item }
+
+        it_behaves_like 'a Note mutation that does not create a Note'
+      end
+    end
   end
 end

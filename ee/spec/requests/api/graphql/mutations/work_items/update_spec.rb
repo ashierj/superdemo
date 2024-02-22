@@ -10,6 +10,7 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
   let_it_be(:reporter) { create(:user).tap { |user| group.add_reporter(user) } }
   let_it_be(:guest) { create(:user).tap { |user| group.add_guest(user) } }
   let_it_be(:project_work_item, refind: true) { create(:work_item, project: project) }
+  let_it_be(:synced_epic) { create(:epic, :with_synced_work_item, group: group) }
 
   let(:work_item) { project_work_item }
   let(:mutation) { graphql_mutation(:workItemUpdate, input.merge('id' => work_item.to_global_id.to_s), fields) }
@@ -22,6 +23,43 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
         post_graphql_mutation(mutation, current_user: current_user)
         work_item.reload
       end.not_to change(&work_item_change)
+    end
+  end
+
+  context 'when updating confidentiality' do
+    let(:current_user) { reporter }
+    let(:input) { { 'confidential' => true } }
+
+    let(:fields) do
+      <<~FIELDS
+        workItem {
+          confidential
+        }
+        errors
+      FIELDS
+    end
+
+    it 'successfully updates work item' do
+      expect do
+        post_graphql_mutation(mutation, current_user: current_user)
+        work_item.reload
+      end.to change(work_item, :confidential).from(false).to(true)
+
+      expect(response).to have_gitlab_http_status(:success)
+      expect(mutation_response['workItem']).to include(
+        'confidential' => true
+      )
+    end
+
+    context 'when the work item has synced epic' do
+      let_it_be(:work_item) { synced_epic.work_item }
+
+      it 'does not change confidentiality' do
+        expect do
+          post_graphql_mutation(mutation, current_user: current_user)
+          work_item.reload
+        end.to not_change(work_item, :confidential)
+      end
     end
   end
 
@@ -99,6 +137,14 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
           let(:iteration_id) { nil }
 
           it_behaves_like "work item's iteration is updated"
+        end
+
+        context 'when the work item has synced epic' do
+          let_it_be(:work_item) { synced_epic.work_item }
+
+          it_behaves_like 'work item is not updated' do
+            let(:work_item_change) { -> { work_item.iteration } }
+          end
         end
       end
 
@@ -230,6 +276,14 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
 
           it_behaves_like 'update work item weight widget'
         end
+
+        context 'when the work item has synced epic' do
+          let_it_be(:work_item) { synced_epic.work_item }
+
+          it_behaves_like 'work item is not updated' do
+            let(:work_item_change) { -> { work_item.weight } }
+          end
+        end
       end
 
       it_behaves_like 'work item is not updated' do
@@ -309,6 +363,14 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
               'endValue' => new_end_value
             }
           )
+        end
+
+        context 'when the work item has synced epic' do
+          let_it_be(:work_item) { synced_epic.work_item }
+
+          it_behaves_like 'work item is not updated' do
+            let(:work_item_change) { -> { work_item_progress } }
+          end
         end
       end
 
@@ -393,6 +455,14 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
               'type' => 'COLOR'
             }
           )
+        end
+
+        context 'when the work item has synced epic' do
+          let_it_be(:work_item) { synced_epic.work_item }
+
+          it_behaves_like 'work item is not updated' do
+            let(:work_item_change) { -> { work_item_color } }
+          end
         end
       end
 
@@ -500,6 +570,14 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
               "startDateIsFixed" => true,
               "startDateSourcingMilestone" => nil,
               "startDateSourcingWorkItem" => nil)
+          end
+
+          context 'when the work item has synced epic' do
+            let_it_be(:work_item) { synced_epic.work_item }
+
+            it_behaves_like 'work item is not updated' do
+              let(:work_item_change) { -> { work_item.dates_source&.start_date } }
+            end
           end
         end
 
@@ -639,6 +717,14 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
         let(:current_user) { reporter }
 
         it_behaves_like 'update work item status widget'
+
+        context 'when the work item has synced epic' do
+          let_it_be(:work_item) { synced_epic.work_item }
+
+          it_behaves_like 'work item is not updated' do
+            let(:work_item_change) { -> { work_item_status } }
+          end
+        end
 
         context 'when setting status to an invalid value' do
           # while a requirement can have a status 'unverified'
@@ -799,6 +885,14 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
             it_behaves_like 'work item is not updated' do
               let(:work_item_change) { -> { work_item.health_status } }
             end
+          end
+        end
+
+        context 'when the work item has synced epic' do
+          let_it_be(:work_item) { synced_epic.work_item }
+
+          it_behaves_like 'work item is not updated' do
+            let(:work_item_change) { -> { work_item.health_status } }
           end
         end
       end
