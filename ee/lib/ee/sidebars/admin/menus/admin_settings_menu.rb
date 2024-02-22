@@ -5,6 +5,7 @@ module EE
     module Admin
       module Menus
         module AdminSettingsMenu
+          include ::GitlabSubscriptions::SubscriptionHelper
           extend ::Gitlab::Utils::Override
 
           override :configure_menu_items
@@ -22,7 +23,9 @@ module EE
           private
 
           def roles_and_permissions_menu_item
-            return ::Sidebars::NilMenuItem.new(item_id: :roles_and_permissions) unless custom_roles_enabled?
+            if gitlab_com_subscription? || !custom_roles_enabled?
+              return ::Sidebars::NilMenuItem.new(item_id: :roles_and_permissions)
+            end
 
             ::Sidebars::MenuItem.new(
               title: _('Roles and Permissions'),
