@@ -74,40 +74,40 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignment, feature_category: :seat
       end
     end
 
-    describe '.for_active_code_suggestions_purchase' do
-      context 'when the assignment is for an active code suggestions purchase' do
+    describe '.for_active_gitlab_duo_pro_purchase' do
+      context 'when the assignment is for an active gitlab duo pro purchase' do
         it 'is included in the scope' do
-          purchase = create(:gitlab_subscription_add_on_purchase, :code_suggestions)
+          purchase = create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro)
           assignment = create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: purchase)
 
-          expect(described_class.for_active_code_suggestions_purchase).to eq [assignment]
+          expect(described_class.for_active_gitlab_duo_pro_purchase).to eq [assignment]
         end
       end
 
-      context 'when the assignment is for an expired code suggestions purchase' do
+      context 'when the assignment is for an expired gitlab duo pro purchase' do
         it 'is not included in the scope' do
-          purchase = create(:gitlab_subscription_add_on_purchase, :code_suggestions, expires_on: 1.week.ago)
+          purchase = create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, expires_on: 1.week.ago)
           create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: purchase)
 
-          expect(described_class.for_active_code_suggestions_purchase).to be_empty
+          expect(described_class.for_active_gitlab_duo_pro_purchase).to be_empty
         end
       end
 
-      context 'when the assignment is for a non-code suggestions add on' do
+      context 'when the assignment is for a non-gitlab duo pro add on' do
         it 'is not included in the scope' do
           add_on = create(:gitlab_subscription_add_on).tap { |add_on| add_on.update_column(:name, -1) }
           purchase = create(:gitlab_subscription_add_on_purchase, add_on: add_on)
           create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: purchase)
 
-          expect(described_class.for_active_code_suggestions_purchase).to be_empty
+          expect(described_class.for_active_gitlab_duo_pro_purchase).to be_empty
         end
       end
 
-      context 'when there are no assignments for an active code suggestions purchase' do
+      context 'when there are no assignments for an active gitlab duo pro purchase' do
         it 'returns an empty relation' do
-          create(:gitlab_subscription_add_on_purchase, :code_suggestions)
+          create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro)
 
-          expect(described_class.for_active_code_suggestions_purchase).to be_empty
+          expect(described_class.for_active_gitlab_duo_pro_purchase).to be_empty
         end
       end
     end

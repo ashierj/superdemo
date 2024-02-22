@@ -16,8 +16,8 @@ FactoryBot.define do
       expires_on { 2.days.ago }
     end
 
-    trait :code_suggestions do
-      add_on { association(:gitlab_subscription_add_on, :code_suggestions) }
+    trait :gitlab_duo_pro do
+      add_on { association(:gitlab_subscription_add_on, :gitlab_duo_pro) }
     end
 
     trait :product_analytics do

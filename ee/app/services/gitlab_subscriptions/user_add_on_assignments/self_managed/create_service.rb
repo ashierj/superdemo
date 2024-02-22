@@ -10,10 +10,10 @@ module GitlabSubscriptions
 
         attr_reader :add_on_purchase, :user
 
-        def eligible_for_code_suggestions_seat?
-          user.eligible_for_self_managed_code_suggestions?
+        def eligible_for_gitlab_duo_pro_seat?
+          user.eligible_for_self_managed_gitlab_duo_pro?
         end
-        strong_memoize_attr :eligible_for_code_suggestions_seat?
+        strong_memoize_attr :eligible_for_gitlab_duo_pro_seat?
       end
     end
   end

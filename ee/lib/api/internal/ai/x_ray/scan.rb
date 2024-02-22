@@ -27,7 +27,7 @@ module API
 
               if ::CodeSuggestions::SelfManaged::SERVICE_START_DATE.past?
                 ::GitlabSubscriptions::AddOnPurchase
-                  .for_code_suggestions
+                  .for_gitlab_duo_pro
                   .any?
               else # Before service start date
                 # TODO: Remove this else branch after the service start date
@@ -37,16 +37,16 @@ module API
 
             def x_ray_available?
               if Gitlab.org_or_com?
-                code_suggestions_add_on?
+                gitlab_duo_pro_add_on?
               else
                 ai_gateway_token.present?
               end
             end
 
-            def code_suggestions_add_on?
+            def gitlab_duo_pro_add_on?
               if ::Feature.enabled?(:purchase_code_suggestions)
                 ::GitlabSubscriptions::AddOnPurchase
-                  .for_code_suggestions
+                  .for_gitlab_duo_pro
                   .by_namespace_id(current_namespace.id)
                   .active
                   .any?

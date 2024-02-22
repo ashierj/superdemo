@@ -3,15 +3,15 @@
 FactoryBot.define do
   factory :gitlab_subscription_add_on, class: 'GitlabSubscriptions::AddOn' do
     name { GitlabSubscriptions::AddOn.names[:code_suggestions] }
-    description { 'AddOn for code suggestion features' }
+    description { GitlabSubscriptions::AddOn.descriptions[:code_suggestions] }
 
-    trait :code_suggestions do
+    trait :gitlab_duo_pro do
       name { GitlabSubscriptions::AddOn.names[:code_suggestions] }
     end
 
     trait :product_analytics do
       name { GitlabSubscriptions::AddOn.names[:product_analytics] }
-      description { 'AddOn for product analytics features' }
+      description { GitlabSubscriptions::AddOn.descriptions[:product_analytics] }
     end
   end
 end

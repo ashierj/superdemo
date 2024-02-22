@@ -6,7 +6,7 @@ module Types
       graphql_name 'GitlabSubscriptionsAddOnType'
       description 'Types of add-ons'
 
-      value 'CODE_SUGGESTIONS', value: :code_suggestions, description: 'Code suggestions seat add-on.'
+      value 'CODE_SUGGESTIONS', value: :code_suggestions, description: 'GitLab Duo Pro seat add-on.'
     end
   end
 end

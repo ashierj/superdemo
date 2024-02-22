@@ -439,13 +439,13 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
       end
 
       context 'when namespace has an active code suggestions add_on' do
-        let(:namespace) { create(:gitlab_subscription_add_on_purchase, :active, :code_suggestions).namespace }
+        let(:namespace) { create(:gitlab_subscription_add_on_purchase, :active, :gitlab_duo_pro).namespace }
 
         it { is_expected.to eq(false) }
       end
 
       context 'when namespace has an expired code suggestions add_on' do
-        let(:namespace) { create(:gitlab_subscription_add_on_purchase, :expired, :code_suggestions).namespace }
+        let(:namespace) { create(:gitlab_subscription_add_on_purchase, :expired, :gitlab_duo_pro).namespace }
 
         it { is_expected.to eq(true) }
       end

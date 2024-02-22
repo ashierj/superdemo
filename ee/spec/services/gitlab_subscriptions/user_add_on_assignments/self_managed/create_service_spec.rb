@@ -78,11 +78,7 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::SelfManaged::CreateSer
     end
 
     context 'when user is not eligible' do
-      let(:user) { create(:user) }
-
-      before do
-        allow(user).to receive(:eligible_for_self_managed_code_suggestions?).and_return(false)
-      end
+      let(:user) { create(:user, :bot) }
 
       it_behaves_like 'error response', 'INVALID_USER_MEMBERSHIP'
     end

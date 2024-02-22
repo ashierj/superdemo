@@ -2003,13 +2003,13 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
-  describe '#eligible_for_code_suggestions_seat?' do
+  describe '#eligible_for_gitlab_duo_pro_seat?' do
     let_it_be(:group) { create(:group) }
     let_it_be(:sub_group) { create(:group, parent: group) }
     let_it_be(:project) { create(:project, namespace: sub_group) }
     let_it_be(:user) { create(:user) }
 
-    let(:subject) { group.eligible_for_code_suggestions_seat?(user) }
+    let(:subject) { group.eligible_for_gitlab_duo_pro_seat?(user) }
 
     context 'when the user has non-minimal access via group' do
       before do
@@ -2064,10 +2064,10 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
-  describe '#code_suggestions_eligible_user_ids', :saas do
+  describe '#gitlab_duo_pro_eligible_user_ids', :saas do
     include_context 'for billable users setup'
 
-    subject(:eligible_user_ids) { group.code_suggestions_eligible_user_ids }
+    subject(:eligible_user_ids) { group.gitlab_duo_pro_eligible_user_ids }
 
     it 'includes distinct active users' do
       expect(eligible_user_ids).to match_array([

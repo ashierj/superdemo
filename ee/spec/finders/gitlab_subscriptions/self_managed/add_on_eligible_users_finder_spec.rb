@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::SelfManaged::AddOnEligibleUsersFinder, feature_category: :seat_cost_management do
   describe '#execute' do
-    let(:code_suggestions_finder) { described_class.new(add_on_type: :code_suggestions) }
+    let(:gitlab_duo_pro_finder) { described_class.new(add_on_type: :code_suggestions) }
 
     let_it_be(:active_user) { create(:user) }
     let_it_be(:bot) { create(:user, :bot) }
@@ -15,19 +15,19 @@ RSpec.describe GitlabSubscriptions::SelfManaged::AddOnEligibleUsersFinder, featu
     let_it_be(:group) { create(:group) }
     let_it_be(:guest_user) { create(:group_member, :guest, source: group).user }
 
-    it 'returns no users for non_code_suggestions add-on types' do
-      non_code_suggestions_finder = described_class.new(add_on_type: :some_other_addon)
-      expect(non_code_suggestions_finder.execute).to be_empty
+    it 'returns no users for non_gitlab_duo_pro add-on types' do
+      non_gitlab_duo_pro_finder = described_class.new(add_on_type: :some_other_addon)
+      expect(non_gitlab_duo_pro_finder.execute).to be_empty
     end
 
-    it 'returns billable users for code_suggestions' do
-      expect(code_suggestions_finder.execute).to include(active_user)
-      expect(code_suggestions_finder.execute).not_to include(bot, ghost, blocked_user, banned_user,
+    it 'returns billable users for gitlab duo pro' do
+      expect(gitlab_duo_pro_finder.execute).to include(active_user)
+      expect(gitlab_duo_pro_finder.execute).not_to include(bot, ghost, blocked_user, banned_user,
         pending_approval_user)
     end
 
-    it 'includes guest users for code_suggestions' do
-      expect(code_suggestions_finder.execute).to include(guest_user)
+    it 'includes guest users for gitlab duo pro' do
+      expect(gitlab_duo_pro_finder.execute).to include(guest_user)
     end
 
     it 'filters users by search term if provided' do

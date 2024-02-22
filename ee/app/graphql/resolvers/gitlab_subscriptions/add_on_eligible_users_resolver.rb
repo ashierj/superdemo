@@ -24,7 +24,7 @@ module Resolvers
       def resolve(add_on_type:, search: nil)
         authorize!(namespace)
 
-        return [] unless code_suggestions_available?(namespace)
+        return [] unless gitlab_duo_available?(namespace)
 
         users = ::GitlabSubscriptions::AddOnEligibleUsersFinder.new(
           namespace,

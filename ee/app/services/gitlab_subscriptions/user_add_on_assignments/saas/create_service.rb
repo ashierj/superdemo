@@ -10,10 +10,10 @@ module GitlabSubscriptions
 
         attr_reader :add_on_purchase, :user
 
-        def eligible_for_code_suggestions_seat?
-          namespace.eligible_for_code_suggestions_seat?(user)
+        def eligible_for_gitlab_duo_pro_seat?
+          namespace.eligible_for_gitlab_duo_pro_seat?(user)
         end
-        strong_memoize_attr :eligible_for_code_suggestions_seat?
+        strong_memoize_attr :eligible_for_gitlab_duo_pro_seat?
 
         def namespace
           @namespace ||= add_on_purchase.namespace

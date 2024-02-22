@@ -56,7 +56,7 @@ module GitlabSubscriptions
       def validate
         return ERROR_NO_SEATS_AVAILABLE unless seats_available?
 
-        ERROR_INVALID_USER_MEMBERSHIP unless eligible_for_code_suggestions_seat?
+        ERROR_INVALID_USER_MEMBERSHIP unless eligible_for_gitlab_duo_pro_seat?
       end
 
       def seats_available?
@@ -71,8 +71,8 @@ module GitlabSubscriptions
         add_on_purchase.already_assigned?(user)
       end
 
-      def eligible_for_code_suggestions_seat?
-        raise NotImplementedError, 'Subclasses must implement the eligible_for_code_suggestions_seat? method'
+      def eligible_for_gitlab_duo_pro_seat?
+        raise NotImplementedError, 'Subclasses must implement the eligible_for_gitlab_duo_pro_seat? method'
       end
 
       def log_event(message, error: nil, error_code: nil)
