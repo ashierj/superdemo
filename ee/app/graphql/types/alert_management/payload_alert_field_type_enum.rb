@@ -9,6 +9,7 @@ module Types
       value 'ARRAY', 'Array field type.', value: 'array'
       value 'DATETIME', 'DateTime field type.', value: 'datetime'
       value 'STRING', 'String field type.', value: 'string'
+      value 'NUMBER', 'Number field type.', value: 'number'
     end
   end
 end

@@ -34,7 +34,7 @@ module Gitlab
           name: 'end_time',
           label: 'End time',
           description: 'The resolved time of the incident.',
-          types: %w[datetime]
+          types: %w[datetime number]
         },
         {
           name: 'service',

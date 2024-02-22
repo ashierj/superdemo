@@ -10,7 +10,8 @@ module AlertManagement
     ARRAY_TYPE = 'array'
     DATETIME_TYPE = 'datetime'
     STRING_TYPE = 'string'
-    SUPPORTED_TYPES = [ARRAY_TYPE, DATETIME_TYPE, STRING_TYPE].freeze
+    NUMBER_TYPE = 'number'
+    SUPPORTED_TYPES = [ARRAY_TYPE, DATETIME_TYPE, STRING_TYPE, NUMBER_TYPE].freeze
 
     validates :project, presence: true
     validates :label, presence: true

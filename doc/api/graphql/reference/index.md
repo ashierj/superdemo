@@ -31692,6 +31692,7 @@ Values for alert field types used in the custom mapping.
 | ----- | ----------- |
 | <a id="alertmanagementpayloadalertfieldtypearray"></a>`ARRAY` | Array field type. |
 | <a id="alertmanagementpayloadalertfieldtypedatetime"></a>`DATETIME` | DateTime field type. |
+| <a id="alertmanagementpayloadalertfieldtypenumber"></a>`NUMBER` | Number field type. |
 | <a id="alertmanagementpayloadalertfieldtypestring"></a>`STRING` | String field type. |
 
 ### `AlertManagementSeverity`

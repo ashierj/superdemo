@@ -90,6 +90,8 @@ module Gitlab
           ::AlertManagement::AlertPayloadField::DATETIME_TYPE
         when String
           ::AlertManagement::AlertPayloadField::STRING_TYPE
+        when Integer
+          ::AlertManagement::AlertPayloadField::NUMBER_TYPE
         end
       end
 

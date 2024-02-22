@@ -56,7 +56,9 @@ module EE
           end
 
           def custom_mapping_type(attribute_name)
-            :time if custom_mapping.dig(attribute_name, 'type') == 'datetime'
+            return :time if custom_mapping.dig(attribute_name, 'type') == 'datetime'
+
+            :time_with_epoch_millis if attribute_name == 'end_time'
           end
         end
       end
