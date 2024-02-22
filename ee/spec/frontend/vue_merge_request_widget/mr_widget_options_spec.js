@@ -6,13 +6,7 @@ import { createMockSubscription as createMockApolloSubscription } from 'mock-apo
 import approvedByCurrentUser from 'test_fixtures/graphql/merge_requests/approvals/approvals.query.graphql.json';
 import getStateQueryResponse from 'test_fixtures/graphql/merge_requests/get_state.query.graphql.json';
 import readyToMergeResponse from 'test_fixtures/graphql/merge_requests/states/ready_to_merge.query.graphql.json';
-import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/license_compliance/index.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
-
-import {
-  registerExtension,
-  registeredExtensions,
-} from '~/vue_merge_request_widget/components/extensions';
 
 // Force Jest to transpile and cache
 // eslint-disable-next-line no-unused-vars
@@ -22,8 +16,6 @@ import MrWidgetOptions from 'ee/vue_merge_request_widget/mr_widget_options.vue';
 import WidgetContainer from 'ee/vue_merge_request_widget/components/widget/app.vue';
 import MrWidgetApprovals from 'ee_else_ce/vue_merge_request_widget/components/approvals/approvals.vue';
 import Loading from '~/vue_merge_request_widget/components/loading.vue';
-
-// EE Widget Extensions
 
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { TEST_HOST } from 'helpers/test_constants';
@@ -131,8 +123,6 @@ describe('ee merge request widget options', () => {
   });
 
   afterEach(() => {
-    registeredExtensions.extensions = [];
-
     // This is needed because the `fetchInitialData` is triggered while
     // the `mock.restore` is trying to clean up, causing a bunch of
     // unmocked requests...
@@ -276,50 +266,6 @@ describe('ee merge request widget options', () => {
         },
       });
       expect(wrapper.vm.service).toMatchObject(convertObjectPropsToCamelCase(paths));
-    });
-  });
-
-  describe('license scanning report', () => {
-    const licenseComparisonPath =
-      '/group-name/project-name/-/merge_requests/78/license_scanning_reports';
-    const licenseComparisonPathCollapsed =
-      '/group-name/project-name/-/merge_requests/78/license_scanning_reports_collapsed';
-    const fullReportPath = '/group-name/project-name/-/merge_requests/78/full_report';
-    const settingsPath = '/group-name/project-name/-/licenses#licenses';
-    const apiApprovalsPath = '/group-name/project-name/-/licenses#policies';
-
-    const updatedMrData = {
-      license_scanning_comparison_path: licenseComparisonPath,
-      license_scanning_comparison_collapsed_path: licenseComparisonPathCollapsed,
-      api_approvals_path: apiApprovalsPath,
-      license_scanning: {
-        settings_path: settingsPath,
-        full_report_path: fullReportPath,
-      },
-    };
-
-    // quarantine: https://gitlab.com/gitlab-org/quality/engineering-productivity/master-broken-incidents/-/issues/3778
-    // eslint-disable-next-line jest/no-disabled-tests
-    it.skip('should render the license widget when the extension is registered', async () => {
-      registerExtension(licenseComplianceExtension);
-      createComponent({
-        mountFn: mountExtended,
-        updatedMrData,
-      });
-      await waitForPromises();
-      expect(wrapper.findComponent({ name: 'WidgetLicenseCompliance' }).exists()).toBe(true);
-    });
-
-    // quarantine: https://gitlab.com/gitlab-org/gitlab/-/issues/427334
-    // eslint-disable-next-line jest/no-disabled-tests
-    it.skip('should not render the license widget when the extension is not registered', async () => {
-      createComponent({
-        mountFn: mountExtended,
-        updatedMrData,
-      });
-      await waitForPromises();
-      expect(findLoadingComponent().exists()).toBe(false);
-      expect(wrapper.findComponent({ name: 'WidgetLicenseCompliance' }).exists()).toBe(false);
     });
   });
 

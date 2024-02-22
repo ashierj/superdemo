@@ -11,12 +11,12 @@ module QA
             super
 
             base.class_eval do
-              view 'app/assets/javascripts/vue_merge_request_widget/components/extensions/base.vue' do
+              view 'app/assets/javascripts/vue_merge_request_widget/components/widget/widget.vue' do
                 element 'widget-extension'
                 element 'toggle-button'
               end
 
-              view 'app/assets/javascripts/vue_merge_request_widget/components/extensions/base.vue' do
+              view 'app/assets/javascripts/vue_merge_request_widget/components/widget/widget.vue' do
                 element 'extension-list-item'
               end
             end
