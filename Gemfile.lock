@@ -1955,7 +1955,7 @@ DEPENDENCIES
   gpgme (~> 2.0.23)
   grape (~> 2.0.0)
   grape-entity (~> 0.10.0)
-  grape-path-helpers (~> 2.0.0)
+  grape-path-helpers (~> 2.0.1)
   grape-swagger (~> 2.0.1)
   grape-swagger-entity (~> 0.5.1)
   grape_logging (~> 1.8)
