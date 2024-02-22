@@ -63,7 +63,6 @@ export default {
     />
     <mr-widget-approvals v-if="shouldRenderApprovals" :mr="mr" :service="service" />
     <report-widget-container>
-      <extensions-container v-if="hasExtensions" :mr="mr" />
       <widget-container v-if="mr" :mr="mr" />
     </report-widget-container>
     <div class="mr-section-container mr-widget-workflow">
