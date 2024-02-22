@@ -24,8 +24,8 @@ The Step Runner service gRPC definition is as follows:
 ```proto
 service StepRunner {
     rpc Run(RunRequest) returns (RunResponse);
-    rpc Follow(FollowRequest) returns (stream FollowResponse);
-    rpc FollowIO(FollowIORequest) returns (stream FollowIOResponse);
+    rpc FollowSteps(FollowStepsRequest) returns (stream FollowStepsResponse);
+    rpc FollowLogs(FollowLogsRequest) returns (stream FollowLogsResponse);
     rpc Cancel(CancelRequest) returns (CancelResponse);
     rpc List(ListRequest) returns (ListResponse);
 }
@@ -47,21 +47,21 @@ message RunRequest {
 message RunResponse {
 }
 
-message FollowRequest {
+message FollowStepsRequest {
     string id = 1;
 }
 
-message FollowResponse {
+message FollowStepsResponse {
     StepResult result = 1;
 }
 
-message FollowIORequest {
+message FollowLogsRequest {
     string id = 1;
     int32 read_stdout = 2; // number of bytes previously read from stdout. i.e. offset into buffered stdout.
     int32 read_stderr = 3; // number of bytes previously read from stderr. i.e. offset into buffered stderr.
 }
 
-message FollowIOResponse {
+message FollowLogsResponse {
     enum StreamType {
             stdout = 0;
             stderr = 1;
@@ -103,10 +103,10 @@ Steps are delivered to Step Runner as a JSON blob in the GitLab CI syntax.
 Runner interacts with Step Runner over the above gRPC service which is
 started on a local socket in the execution environment. This is the same
 way that Nesting serves a gRPC service in a dedicated Mac instance. The
-service has five RPCs, `Run`, `Follow`, `FollowIO`, `Cancel` and `List`.
+service has five RPCs, `Run`, `FollowSteps`, `FollowLogs`, `Cancel` and `List`.
 
-`Run` is the initial delivery of the steps. `Follow` requests a streaming
-response of step-result traces. `FollowIO` similarly requests a streaming
+`Run` is the initial delivery of the steps. `FollowSteps` requests a streaming
+response of step-result traces. `FollowLogs` similarly requests a streaming
 response of output (`stdout`/`stderr`) written by processes executed as
 part of running the steps. `Cancel` stops execution of the request (if
 still running) and cleans up resources as soon as possible. `List` lists
@@ -121,8 +121,8 @@ made simultaneously.
 
 As steps are executed, step-result traces and sub-process IO are streamed
 back to GitLab Runner. This allows callers to follow execution, at the
-step level for step-result traces (`Follow`), and as written for
-sub-process IO (`FollowIO`).
+step level for step-result traces (`FollowSteps`), and as written for
+sub-process IO (`FollowLogs`).
 
 All APIs excluding `List` are idempotent, meaning that multiple calls to
 the same API with the same parameters should return the same result. For
