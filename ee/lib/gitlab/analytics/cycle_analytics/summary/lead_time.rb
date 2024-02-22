@@ -26,9 +26,9 @@ module Gitlab
 
             dashboard_link =
               if @stage.namespace.is_a?(::Group)
-                helpers.group_issues_analytics_path(@stage.namespace)
+                helpers.group_issues_analytics_path(@stage.namespace, issues_analytics_params)
               else
-                helpers.project_analytics_issues_analytics_path(@stage.namespace.project)
+                helpers.project_analytics_issues_analytics_path(@stage.namespace.project, issues_analytics_params)
               end
 
             [
@@ -38,6 +38,12 @@ module Gitlab
                 "docs_link" => true,
                 "label" => s_('ValueStreamAnalytics|Go to docs') }
             ]
+          end
+
+          private
+
+          def issues_analytics_params
+            @options.slice(:author_username, :label_name, :milestone_title, :assignee_username).compact
           end
         end
       end

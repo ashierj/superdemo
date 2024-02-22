@@ -110,6 +110,30 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
         it 'returns the correct lead time' do
           expect(lead_time[:value]).to eq('1.0')
         end
+
+        it 'passes the author_username the issue analytics link' do
+          issues_analytics_link = lead_time[:links].first
+
+          expect(issues_analytics_link['url']).to include("?author_username=#{user.username}")
+        end
+      end
+
+      context 'when multiple filter params are given' do
+        before do
+          options.merge!(
+            label_name: %w[a b],
+            assignee_username: %w[c d],
+            milestone_title: 'milestone1'
+          )
+        end
+
+        it 'passes the supported params to the issue analytics link' do
+          issues_analytics_link = lead_time[:links].first
+
+          expected_params = options.slice(:author_username, :label_name, :milestone_title).to_query
+
+          expect(issues_analytics_link['url']).to include(expected_params)
+        end
       end
 
       context 'when unknown `author_username` is given' do
