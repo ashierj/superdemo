@@ -78,8 +78,8 @@ describe('ListTable', () => {
 
   it('sets the correct sort props', () => {
     expect(findTable().attributes()).toMatchObject({
-      'sort-by': 'name',
-      'sort-desc': 'true',
+      sortby: 'name',
+      sortdesc: 'true',
       'sort-icon-left': '',
       'no-sort-reset': '',
       'no-local-sorting': '',

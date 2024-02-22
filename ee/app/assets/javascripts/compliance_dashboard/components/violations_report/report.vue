@@ -241,7 +241,6 @@ export default {
       :sort-by="sortBy"
       :sort-desc="sortDesc"
       no-local-sorting
-      sort-icon-left
       show-empty
       stacked="lg"
       select-mode="single"

@@ -40,7 +40,7 @@ describe('ProjectsTable component', () => {
   const ROW_WITHOUT_FRAMEWORK_IDX = 1;
 
   const findTable = () => wrapper.findComponent(GlTable);
-  const findTableHeaders = () => findTable().findAll('th div');
+  const findTableHeaders = () => findTable().findAll('th > div');
   const findTableRowData = (idx) => findTable().findAll('tbody > tr').at(idx).findAll('td');
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findEmptyState = () => wrapper.findByTestId('projects-table-empty-state');
