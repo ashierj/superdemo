@@ -49007,7 +49007,7 @@ msgstr ""
 msgid "Sync LDAP"
 msgstr ""
 
-msgid "Sync now"
+msgid "Sync changes"
 msgstr ""
 
 msgid "Synced"
