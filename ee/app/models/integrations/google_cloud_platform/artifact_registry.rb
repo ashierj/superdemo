@@ -28,42 +28,41 @@ module Integrations
         validates :artifact_registry_repositories, presence: true
       end
 
-      field :artifact_registry_project_id,
-        required: true,
-        section: SECTION_TYPE_CONNECTION,
-        title: -> { s_('GoogleCloudPlatformService|Google Cloud project ID') },
-        description: -> { s_('GoogleCloudPlatformService|ID of the Google Cloud project.') }
-
       field :workload_identity_pool_project_number,
         required: true,
         section: SECTION_TYPE_CONNECTION,
         title: -> { s_('GoogleCloudPlatformService|Workload Identity Pool project number') },
-        description: -> { s_('GoogleCloudPlatformService|Project number of the Workload Identity Pool.') }
+        help: -> { s_('GoogleCloudPlatformService|Project number of the Workload Identity Pool.') }
 
       field :workload_identity_pool_id,
         required: true,
         section: SECTION_TYPE_CONNECTION,
         title: -> { s_('GoogleCloudPlatformService|Workload Identity Pool ID') },
-        description: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool.') }
+        help: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool.') }
 
       field :workload_identity_pool_provider_id,
         required: true,
         section: SECTION_TYPE_CONNECTION,
         title: -> { s_('GoogleCloudPlatformService|Workload Identity Pool provider ID') },
-        description: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool provider.') }
+        help: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool provider.') }
 
-      field :artifact_registry_location,
+      field :artifact_registry_project_id,
         required: true,
         section: SECTION_TYPE_CONNECTION,
-        title: -> { s_('GoogleCloudPlatformService|Location of Artifact Registry repository') },
-        description: -> { s_('GoogleCloudPlatformService|Location of Artifact Registry repository.') }
+        title: -> { s_('GoogleCloudPlatformService|Google Cloud project ID') },
+        label_description: -> { s_('GoogleCloudPlatformService|Project with the Artifact Registry repository.') },
+        help: -> { artifact_registry_project_id_help }
 
       field :artifact_registry_repositories,
         required: true,
         section: SECTION_TYPE_CONNECTION,
-        title: -> { s_('GoogleCloudPlatformService|Repository of Artifact Registry') },
-        help: -> { s_('GoogleCloudPlatformService|Repository of Artifact Registry.') },
-        description: -> { s_('GoogleCloudPlatformService|Repository of Artifact Registry.') }
+        title: -> { s_('GoogleCloudPlatformService|Repository name') },
+        help: -> { s_('GoogleCloudPlatformService|Repository must be Docker format and Standard mode.') }
+
+      field :artifact_registry_location,
+        required: true,
+        section: SECTION_TYPE_CONNECTION,
+        title: -> { s_('GoogleCloudPlatformService|Repository location') }
 
       alias_method :artifact_registry_repository, :artifact_registry_repositories
 
@@ -110,6 +109,18 @@ module Integrations
           { key: 'GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_NAME', value: artifact_registry_repository },
           { key: 'GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_LOCATION', value: artifact_registry_location }
         ]
+      end
+
+      def self.artifact_registry_project_id_help
+        url = 'https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects'
+
+        format(
+          s_('GoogleCloudPlatformService|To improve security, use a dedicated project for resources, separate from ' \
+             'CI/CD and identity management projects. %{link_start}Where’s my project ID? %{icon}%{link_end}'),
+          link_start: format('<a target="_blank" rel="noopener noreferrer" href="%{url}">', url: url).html_safe, # rubocop:disable Rails/OutputSafety -- It is fine to call html_safe here
+          link_end: '</a>'.html_safe,
+          icon: ApplicationController.helpers.sprite_icon('external-link').html_safe # rubocop:disable Rails/OutputSafety -- It is fine to call html_safe here
+        )
       end
     end
   end
