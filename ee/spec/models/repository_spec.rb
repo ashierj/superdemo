@@ -214,23 +214,87 @@ RSpec.describe Repository, feature_category: :source_code_management do
   end
 
   describe '#after_change_head' do
-    it 'creates a geo event on a Geo primary' do
-      stub_current_geo_node(primary_node)
+    shared_examples_for 'a repository change head' do
+      it 'creates a geo event on a Geo primary' do
+        stub_current_geo_node(primary_node)
 
-      event_params = {
-        event_name: :updated,
-        replicable_name: :project_repository
-      }
+        event_params = {
+          event_name: 'updated',
+          replicable_name: replicable_name
+        }
 
-      expect { repository.after_change_head }
-        .to change { ::Geo::Event.where(event_params).count }.by(1)
+        expect { repository.after_change_head }
+          .to change { ::Geo::Event.where(event_params).count }.by(1)
+      end
+
+      it 'does not create a geo event on a Geo secondary' do
+        stub_current_geo_node(secondary_node)
+
+        expect { repository.after_change_head }
+          .not_to change { ::Geo::Event.count }
+      end
     end
 
-    it 'does not create a geo event on a Geo secondary' do
-      stub_current_geo_node(secondary_node)
+    context 'for a project repository' do
+      let(:repository) { project.repository }
+      let(:replicable_name) { 'project_repository' }
 
-      expect { repository.after_change_head }
-        .not_to change { ::Geo::Event.count }
+      it_behaves_like 'a repository change head'
+    end
+
+    context 'for a project wiki repository' do
+      let(:repository) { project.wiki.repository }
+      let(:replicable_name) { 'project_wiki_repository' }
+
+      before do
+        project.create_wiki
+      end
+
+      it_behaves_like 'a repository change head'
+    end
+
+    context 'for a group wiki repository' do
+      let(:group_wiki) { create(:group_wiki) }
+      let(:repository) { group_wiki.repository }
+      let(:replicable_name) { 'group_wiki_repository' }
+
+      before do
+        group_wiki.create_wiki_repository
+      end
+
+      it_behaves_like 'a repository change head'
+    end
+
+    context 'for a design management repository' do
+      let(:design_management_repository) { create(:design_management_repository) }
+      let(:repository) { design_management_repository.repository }
+      let(:replicable_name) { 'design_management_repository' }
+
+      it_behaves_like 'a repository change head'
+    end
+
+    context 'for a project snippet repository' do
+      let(:project_snippet) { create(:project_snippet) }
+      let(:repository) { project_snippet.repository }
+      let(:replicable_name) { 'snippet_repository' }
+
+      before do
+        project_snippet.create_repository
+      end
+
+      it_behaves_like 'a repository change head'
+    end
+
+    context 'for a personal snippet repository' do
+      let(:personal_snippet) { create(:personal_snippet) }
+      let(:repository) { personal_snippet.repository }
+      let(:replicable_name) { 'snippet_repository' }
+
+      before do
+        personal_snippet.create_repository
+      end
+
+      it_behaves_like 'a repository change head'
     end
   end
 
@@ -332,23 +396,6 @@ RSpec.describe Repository, feature_category: :source_code_management do
 
     with_them do
       it { expect(repository.group).to eq(expected_value) }
-    end
-  end
-
-  describe '#log_geo_updated_event' do
-    context 'on a primary node' do
-      it 'creates a GeoEvent on a Geo primary' do
-        stub_current_geo_node(primary_node)
-
-        event_params = {
-          event_name: :updated,
-          replicable_name: :project_repository
-        }
-
-        expect { repository.after_change_head }
-          .to change { ::Geo::Event.where(event_params).count }
-          .by(1)
-      end
     end
   end
 end
