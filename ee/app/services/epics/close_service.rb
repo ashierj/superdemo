@@ -37,6 +37,13 @@ module Epics
         namespace: epic.group
       )
       log_audit_event(epic, "epic_closed_by_project_bot", "Closed epic #{epic.title}") if current_user.project_bot?
+      publish_event(epic)
+    end
+
+    def publish_event(epic)
+      ::Gitlab::EventStore.publish(
+        ::Epics::EpicUpdatedEvent.new(data: { id: epic.id, group_id: epic.group_id })
+      )
     end
   end
 end

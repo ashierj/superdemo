@@ -70,6 +70,21 @@ module EE
                   ::Feature.enabled?(:update_vuln_reads_archived_via_event,
                     ::Project.find_by_id(event.data['project_id']), type: :gitlab_com_derisk)
                 }
+
+          subscribe_to_epic_events(store)
+        end
+
+        def subscribe_to_epic_events(store)
+          store.subscribe ::WorkItems::ValidateEpicWorkItemSyncWorker,
+            to: ::Epics::EpicCreatedEvent,
+            if: ->(event) {
+                  ::Feature.enabled?(:validate_epic_work_item_sync, ::Group.find_by_id(event.data[:group_id]))
+                }
+          store.subscribe ::WorkItems::ValidateEpicWorkItemSyncWorker,
+            to: ::Epics::EpicUpdatedEvent,
+            if: ->(event) {
+                  ::Feature.enabled?(:validate_epic_work_item_sync, ::Group.find_by_id(event.data[:group_id]))
+                }
         end
       end
     end

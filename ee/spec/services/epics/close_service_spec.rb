@@ -42,6 +42,12 @@ RSpec.describe Epics::CloseService, feature_category: :portfolio_management do
             expect { subject.execute(epic) }.to change { epic.closed_at }
           end
 
+          it 'publishes an EpicUpdated event' do
+            expect { subject.execute(epic) }
+              .to publish_event(Epics::EpicUpdatedEvent)
+              .with({ id: epic.id, group_id: group.id })
+          end
+
           context 'with a synced work item' do
             let_it_be(:epic) { create(:epic, :with_synced_work_item, group: group) }
             let(:work_item) { epic.work_item }

@@ -38,6 +38,7 @@ module Epics
     def after_create(epic)
       assign_parent_epic_for(epic)
       assign_child_epic_for(epic)
+      publish_event(epic)
     end
 
     def set_date_params
@@ -48,6 +49,14 @@ module Epics
       if params[:due_date_fixed] && params[:due_date_is_fixed]
         params[:end_date] = params[:due_date_fixed]
       end
+    end
+
+    def publish_event(epic)
+      return unless publish_event?
+
+      ::Gitlab::EventStore.publish(
+        ::Epics::EpicCreatedEvent.new(data: { id: epic.id, group_id: epic.group_id })
+      )
     end
   end
 end

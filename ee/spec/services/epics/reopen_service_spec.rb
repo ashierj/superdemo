@@ -34,6 +34,12 @@ RSpec.describe Epics::ReopenService, feature_category: :portfolio_management do
             expect { subject.execute(epic) }.to change { epic.state }.from('closed').to('opened')
           end
 
+          it 'publishes an EpicUpdated event' do
+            expect { subject.execute(epic) }
+              .to publish_event(Epics::EpicUpdatedEvent)
+              .with({ id: epic.id, group_id: group.id })
+          end
+
           it 'removes closed_by' do
             expect { subject.execute(epic) }.to change { epic.closed_by }.to(nil)
           end

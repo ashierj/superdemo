@@ -12,6 +12,7 @@ module Epics
       @current_user = current_user
       @old_group = old_group
       @project = project
+      @epic_created_events = []
     end
 
     def execute
@@ -23,12 +24,17 @@ module Epics
         epics_to_transfer.find_each do |epic|
           new_epic = create_epic(epic)
 
+          add_epic_created_event(new_epic)
           update_issues_epic(epic, new_epic)
         end
       end
+
+      Gitlab::EventStore.publish_group(epic_created_events)
     end
 
     private
+
+    attr_reader :epic_created_events
 
     # rubocop: disable CodeReuse/ActiveRecord
     def epics_to_transfer
@@ -49,7 +55,14 @@ module Epics
       CreateService.new(
         group: project.group,
         current_user: current_user,
-        params: epic_params).execute_without_rate_limiting
+        params: epic_params,
+        publish_event: false).execute_without_rate_limiting
+    end
+
+    def add_epic_created_event(new_epic)
+      return unless new_epic
+
+      epic_created_events.push(::Epics::EpicCreatedEvent.new(data: { id: new_epic.id, group_id: new_epic.group_id }))
     end
 
     # rubocop: disable CodeReuse/ActiveRecord

@@ -44,11 +44,17 @@ module Epics
     # See the following links for more context:
     # - Original discussion thread: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/59182#note_555401711
     # - Issue to address inheritance problems: https://gitlab.com/gitlab-org/gitlab/-/issues/328438
-    def initialize(group:, current_user:, params: {})
+    def initialize(group:, current_user:, params: {}, publish_event: true)
+      @publish_event = publish_event
+
       super(container: group, current_user: current_user, params: params)
     end
 
     private
+
+    def publish_event?
+      @publish_event
+    end
 
     override :available_callbacks
     def available_callbacks
