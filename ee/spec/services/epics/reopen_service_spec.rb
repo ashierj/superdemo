@@ -71,7 +71,7 @@ RSpec.describe Epics::ReopenService, feature_category: :portfolio_management do
           end
 
           context 'with a synced work item' do
-            let_it_be(:epic) { create(:epic, :with_synced_work_item, group: group, state: :closed) }
+            let_it_be_with_reload(:epic) { create(:epic, :with_synced_work_item, group: group, state: :closed) }
             let(:work_item) { epic.work_item }
 
             subject { described_class.new(group: group, current_user: user).execute(epic) }
