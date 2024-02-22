@@ -5802,6 +5802,9 @@ msgstr ""
 msgid "Analytics|Visualization was saved successfully"
 msgstr ""
 
+msgid "Analytics|Would you like to replace your existing selection with a new visualization generated through GitLab Duo?"
+msgstr ""
+
 msgid "Analyze your dependencies for known vulnerabilities."
 msgstr ""
 
@@ -13763,6 +13766,9 @@ msgid "Continue editing"
 msgstr ""
 
 msgid "Continue to the next step"
+msgstr ""
+
+msgid "Continue with GitLab Duo"
 msgstr ""
 
 msgid "Continue with overages"

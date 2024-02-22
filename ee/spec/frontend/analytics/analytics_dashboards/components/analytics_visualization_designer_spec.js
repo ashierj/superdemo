@@ -505,5 +505,26 @@ describe('AnalyticsVisualizationDesigner', () => {
         expect(findAiQueryGenerator().exists()).toBe(providedFlagState);
       },
     );
+
+    it('will not prompt user when there are no existing changes to the query', () => {
+      createWrapper('', {
+        provide: {
+          aiGenerateCubeQueryEnabled: true,
+        },
+      });
+
+      expect(findAiQueryGenerator().props('warnBeforeReplacingQuery')).toBe(false);
+    });
+
+    it('ensures user will be prompted before generating when there are unsaved changes', async () => {
+      createWrapper('', {
+        provide: {
+          aiGenerateCubeQueryEnabled: true,
+        },
+      });
+      await setAllRequiredFields();
+
+      expect(findAiQueryGenerator().props('warnBeforeReplacingQuery')).toBe(true);
+    });
   });
 });

@@ -111,8 +111,11 @@ export default {
       return (
         this.visualizationTitle !== DEFAULT_VISUALIZATION_TITLE ||
         this.selectedVisualizationType !== DEFAULT_SELECTED_VISUALIZATION_TYPE ||
-        !isEqual({ ...this.queryState }, DEFAULT_VISUALIZATION_QUERY_STATE())
+        this.queryStateHasChanges
       );
+    },
+    queryStateHasChanges() {
+      return !isEqual({ ...this.queryState }, DEFAULT_VISUALIZATION_QUERY_STATE());
     },
     showDimensionSelector() {
       return Boolean(this.queryState.query?.measures?.length);
@@ -368,6 +371,7 @@ export default {
     </section>
     <ai-cube-query-generator
       v-if="aiGenerateCubeQueryEnabled"
+      :warn-before-replacing-query="queryStateHasChanges"
       class="gl-mb-4"
       @query-generated="onQueryGenerated"
     />
