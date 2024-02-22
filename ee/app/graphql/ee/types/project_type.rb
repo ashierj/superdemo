@@ -342,7 +342,7 @@ module EE
           ::Types::Ci::RunnerCloudProvisioningOptionsType,
           null: true,
           alpha: { milestone: '16.9' },
-          description: 'Options for provisioning the runner on Google Cloud. ' \
+          description: 'Options for provisioning the runner on a cloud provider. ' \
                        'Returns `null` if `:google_cloud_runner_provisioning` feature flag is disabled, ' \
                        'or the GitLab instance is not a SaaS instance.' do
                          argument :provider, ::Types::Ci::RunnerCloudProviderEnum, required: true,
