@@ -3599,4 +3599,28 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
     end
   end
+
+  describe 'provision_cloud_runner policy' do
+    let(:current_user) { maintainer }
+
+    it { is_expected.to be_disallowed(:provision_cloud_runner) }
+
+    context 'when SaaS-only feature is available' do
+      before do
+        stub_saas_features(google_cloud_support: true)
+      end
+
+      context 'the user is a maintainer' do
+        let(:current_user) { maintainer }
+
+        it { is_expected.to be_allowed(:provision_cloud_runner) }
+      end
+
+      context 'the user is a guest' do
+        let(:current_user) { guest }
+
+        it { is_expected.to be_disallowed(:provision_cloud_runner) }
+      end
+    end
+  end
 end

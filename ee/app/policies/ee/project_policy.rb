@@ -796,7 +796,10 @@ module EE
       rule { status_page_available & can?(:owner_access) }.enable :mark_issue_for_publication
       rule { status_page_available & can?(:developer_access) }.enable :publish_status_page
 
-      rule { google_cloud_support_available & can?(:maintainer_access) }.enable :read_runner_cloud_provisioning_options
+      rule { google_cloud_support_available & can?(:maintainer_access) }.policy do
+        enable :read_runner_cloud_provisioning_options
+        enable :provision_cloud_runner
+      end
 
       rule { hidden }.policy do
         prevent :download_code
