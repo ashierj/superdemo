@@ -1,4 +1,5 @@
-import { GlFormInput } from '@gitlab/ui';
+import { nextTick } from 'vue';
+import { GlAlert, GlFormInput } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import CustomStageFields from 'ee/analytics/cycle_analytics/components/create_value_stream_form/custom_stage_fields.vue';
 import CustomStageEventField from 'ee/analytics/cycle_analytics/components/create_value_stream_form/custom_stage_event_field.vue';
@@ -57,6 +58,7 @@ describe('CustomStageFields', () => {
   let wrapper = null;
 
   const findName = (index = 0) => wrapper.findByTestId(`custom-stage-name-${index}`);
+  const findFormError = () => wrapper.findComponent(GlAlert);
   const findStartEventLabel = (index = 0) =>
     wrapper.findByTestId(`custom-stage-start-event-label-${index}`);
   const findEndEventLabel = (index = 0) =>
@@ -89,6 +91,7 @@ describe('CustomStageFields', () => {
   describe.each([
     ['Start event label', findStartEventLabel],
     ['End event label', findEndEventLabel],
+    ['Form error alert', findFormError],
   ])('Default state', (field, finder) => {
     it(`field '${field}' is hidden by default`, () => {
       expect(finder().exists()).toBe(false);
@@ -139,6 +142,14 @@ describe('CustomStageFields', () => {
           { field: 'startEventLabelId', value: firstLabel.id },
         ]);
       });
+
+      it('will show an error alert emitted from the label field', async () => {
+        const message = 'test';
+        findStartEventLabelField().vm.$emit('error', message);
+
+        await nextTick();
+        expect(findFormError().text()).toBe(message);
+      });
     });
   });
 
@@ -183,6 +194,14 @@ describe('CustomStageFields', () => {
         expect(wrapper.emitted('input')[0]).toEqual([
           { field: 'endEventLabelId', value: firstLabel.id },
         ]);
+      });
+
+      it('will show an error alert emitted from the label field', async () => {
+        const message = 'test';
+        findEndEventLabelField().vm.$emit('error', message);
+
+        await nextTick();
+        expect(findFormError().text()).toBe(message);
       });
     });
   });

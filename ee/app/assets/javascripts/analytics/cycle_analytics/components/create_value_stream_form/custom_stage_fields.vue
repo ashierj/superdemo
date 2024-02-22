@@ -1,5 +1,5 @@
 <script>
-import { GlFormGroup, GlFormInput } from '@gitlab/ui';
+import { GlAlert, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { isLabelEvent, getLabelEventsIdentifiers } from '../../utils';
 import { i18n } from './constants';
 import CustomStageEventField from './custom_stage_event_field.vue';
@@ -7,12 +7,10 @@ import CustomStageEventLabelField from './custom_stage_event_label_field.vue';
 import StageFieldActions from './stage_field_actions.vue';
 import { startEventOptions, endEventOptions } from './utils';
 
-const findLabelNames = (labels = [], selectedLabelId) =>
-  labels.filter(({ id }) => id === selectedLabelId).map(({ title }) => title);
-
 export default {
   name: 'CustomStageFields',
   components: {
+    GlAlert,
     GlFormGroup,
     GlFormInput,
     CustomStageEventField,
@@ -54,6 +52,7 @@ export default {
   data() {
     return {
       labelEvents: getLabelEventsIdentifiers(this.stageEvents),
+      formError: '',
     };
   },
   computed: {
@@ -75,12 +74,6 @@ export default {
     hasMultipleStages() {
       return this.totalStages > 1;
     },
-    startEventLabelNames() {
-      return findLabelNames(this.defaultGroupLabels, this.stage.startEventLabelId);
-    },
-    endEventLabelNames() {
-      return findLabelNames(this.defaultGroupLabels, this.stage.endEventLabelId);
-    },
   },
   methods: {
     onSelectLabel(field, event) {
@@ -93,12 +86,18 @@ export default {
     fieldErrorMessage(key) {
       return this.errors[key]?.join('\n');
     },
+    setFormError(message = '') {
+      this.formError = message;
+    },
   },
   i18n,
 };
 </script>
 <template>
   <div data-testid="value-stream-stage-fields">
+    <gl-alert v-if="formError" class="gl-mb-4" variant="danger" @dismiss="setFormError">
+      {{ formError }}
+    </gl-alert>
     <div class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row">
       <div class="gl-flex-grow-1 gl-mr-2">
         <gl-form-group
@@ -132,12 +131,13 @@ export default {
           <custom-stage-event-label-field
             event-type="start-event"
             :index="index"
+            :selected-label-id="stage.startEventLabelId"
             :field-label="$options.i18n.FORM_FIELD_START_EVENT_LABEL"
             :requires-label="startEventRequiresLabel"
             :label-error="fieldErrorMessage('startEventLabelId')"
             :has-label-error="hasFieldErrors('startEventLabelId')"
-            :selected-label-names="startEventLabelNames"
             @update-label="onSelectLabel('startEventLabelId', $event)"
+            @error="setFormError"
           />
         </div>
         <div class="gl-display-flex gl-justify-content-between">
@@ -156,12 +156,13 @@ export default {
           <custom-stage-event-label-field
             event-type="end-event"
             :index="index"
+            :selected-label-id="stage.endEventLabelId"
             :field-label="$options.i18n.FORM_FIELD_END_EVENT_LABEL"
             :requires-label="endEventRequiresLabel"
             :label-error="fieldErrorMessage('endEventLabelId')"
             :has-label-error="hasFieldErrors('endEventLabelId')"
-            :selected-label-names="endEventLabelNames"
             @update-label="onSelectLabel('endEventLabelId', $event)"
+            @error="setFormError"
           />
         </div>
       </div>
