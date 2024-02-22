@@ -32,12 +32,6 @@ module Users
 
     def show
       push_frontend_feature_flag(:auto_request_phone_number_verification_exemption, @user, type: :gitlab_com_derisk)
-
-      # We to perform cookie migration for tracking from logged out to log in
-      # calling this before tracking gives us access to request where the
-      # signed cookie exist with the info we need for migration.
-      experiment(:free_trial_registration_redesign, actor: @user).run
-      experiment(:free_trial_registration_redesign, actor: @user).track(:show, label: 'identity_verification')
     end
 
     def verification_state

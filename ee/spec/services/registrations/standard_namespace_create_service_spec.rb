@@ -101,21 +101,6 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
         expect(execute).to be_success
       end
 
-      context 'with free_trial_registration_redesign experiment not called' do
-        subject(:service) { described_class.new(user, params) }
-
-        before do
-          stub_saas_features(onboarding: true)
-        end
-
-        it 'does not call the experiment DSL' do
-          allow(service).to receive(:experiment).and_call_original
-          expect(service).not_to receive(:experiment).with(:free_trial_registration_redesign, actor: user)
-
-          expect(service.execute).to be_success
-        end
-      end
-
       context 'with trial_discover_page experiment not called' do
         subject(:service) { described_class.new(user, params) }
 
@@ -258,21 +243,6 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
           expect do
             expect(execute).to be_success
           end.to change { Group.count }.by(0).and change { Project.count }
-        end
-      end
-
-      context 'with free_trial_registration_redesign experiment called' do
-        subject(:service) { described_class.new(user, params) }
-
-        before do
-          stub_saas_features(onboarding: true)
-        end
-
-        it 'tracks experiment assignment event' do
-          allow(service).to receive(:experiment).and_call_original
-          expect(service).to receive(:experiment).with(:free_trial_registration_redesign, actor: user)
-
-          expect(service.execute).to be_success
         end
       end
 
