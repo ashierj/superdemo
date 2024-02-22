@@ -27,7 +27,7 @@ service StepRunner {
     rpc FollowSteps(FollowStepsRequest) returns (stream FollowStepsResponse);
     rpc FollowLogs(FollowLogsRequest) returns (stream FollowLogsResponse);
     rpc Cancel(CancelRequest) returns (CancelResponse);
-    rpc List(ListRequest) returns (ListResponse);
+    rpc Status(StatusRequest) returns (StatusResponse);
 }
 
 message Job {
@@ -77,10 +77,6 @@ message CancelRequest {
 message CancelResponse {
 }
 
-message ListRequest {
-    optional string id = 1;
-}
-
 message Status {
     string id = 1;
     bool finished = 2;
@@ -89,7 +85,11 @@ message Status {
     google.protobuf.Timestamp end_time = 5;
 }
 
-message ListResponse {
+message StatusRequest {
+    string id = 1;
+}
+
+message StatusResponse {
     repeated Status jobs = 1;
 }
 ```
@@ -98,13 +98,13 @@ Steps are delivered to Step Runner as a JSON blob in the GitLab CI syntax.
 Runner interacts with Step Runner over the above gRPC service which is
 started on a local socket in the execution environment. This is the same
 way that Nesting serves a gRPC service in a dedicated Mac instance. The
-service has five RPCs, `Run`, `FollowSteps`, `FollowLogs`, `Cancel` and `List`.
+service has five RPCs, `Run`, `FollowSteps`, `FollowLogs`, `Cancel` and `Status`.
 
 `Run` is the initial delivery of the steps. `FollowSteps` requests a streaming
 response of step-result traces. `FollowLogs` similarly requests a streaming
 response of output (`stdout`/`stderr`) written by processes executed as
 part of running the steps. `Cancel` stops execution of the request (if
-still running) and cleans up resources as soon as possible. `List` lists
+still running) and cleans up resources as soon as possible. `Status` lists
 all active requests in the Step Runner service (including completed but
 not `Cancel`ed jobs), and can be used by a runner to for example recover
 after a crash.
@@ -119,7 +119,7 @@ back to GitLab Runner. This allows callers to follow execution, at the
 step level for step-result traces (`FollowSteps`), and as written for
 sub-process IO (`FollowLogs`).
 
-All APIs excluding `List` are idempotent, meaning that multiple calls to
+All APIs excluding `Status` are idempotent, meaning that multiple calls to
 the same API with the same parameters should return the same result. For
 example, If `Run` is called multiple times with the same arguments, only
 the first invocation should begin processing of the job request, and
