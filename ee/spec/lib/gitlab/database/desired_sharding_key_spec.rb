@@ -13,7 +13,10 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
   end
 
   let(:allowed_to_be_missing_not_null) do
-    []
+    [
+      # column is missing NOT NULL constraint, but `belongs_to` association has `optional: false`, so we are good.
+      'vulnerability_findings_remediations.vulnerability_occurrence_id'
+    ]
   end
 
   it 'must reference an allowed referenced table' do
