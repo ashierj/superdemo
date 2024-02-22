@@ -3,7 +3,18 @@
 require 'spec_helper'
 
 RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
+  include ShardingKeySpecHelpers
+
   let(:allowed_sharding_key_referenced_tables) { %w[projects namespaces organizations] }
+  let(:allowed_to_be_missing_foreign_key) do
+    [
+      'ci_job_artifact_states.job_artifact_id'
+    ]
+  end
+
+  let(:allowed_to_be_missing_not_null) do
+    []
+  end
 
   it 'must reference an allowed referenced table' do
     desired_sharding_key_entries.each do |entry|
@@ -56,6 +67,48 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
         end
       end
     end
+
+    it 'belongs to parent association via a foreign key column', :aggregate_failures do
+      all_tables_to_desired_sharding_key.each do |table_name, desired_sharding_key|
+        desired_sharding_key.each do |_, details|
+          referenced_table_name = details['backfill_via']['parent']['table']
+          column_name = details['backfill_via']['parent']['foreign_key']
+          if allowed_to_be_missing_foreign_key.include?("#{table_name}.#{column_name}")
+            expect(has_foreign_key?(table_name, column_name)).to eq(false),
+              "The column `#{table_name}.#{column_name}` has a foreign key so cannot be " \
+              "allowed_to_be_missing_foreign_key. " \
+              "If this is a foreign key referencing the specified table #{referenced_table_name} " \
+              "then you must remove it from allowed_to_be_missing_foreign_key"
+          else
+            expect(has_foreign_key?(table_name, column_name, to_table_name: referenced_table_name)).to eq(true),
+              "Missing a foreign key constraint for `#{table_name}.#{column_name}` " \
+              "referencing #{referenced_table_name}. " \
+              "All desired sharding keys must have a foreign key constraint"
+          end
+        end
+      end
+    end
+
+    it 'belongs to parent association via a non-nullable column', :aggregate_failures do
+      all_tables_to_desired_sharding_key.each do |table_name, desired_sharding_key|
+        desired_sharding_key.each do |_, details|
+          column_name = details['backfill_via']['parent']['foreign_key']
+
+          not_nullable = not_nullable?(table_name, column_name)
+          has_null_check_constraint = has_null_check_constraint?(table_name, column_name)
+
+          if allowed_to_be_missing_not_null.include?("#{table_name}.#{column_name}")
+            expect(not_nullable || has_null_check_constraint).to eq(false),
+              "You must remove `#{table_name}.#{column_name}` from allowed_to_be_missing_not_null " \
+              "since it now has a valid constraint."
+          else
+            expect(not_nullable || has_null_check_constraint).to eq(true),
+              "Missing a not null constraint for `#{table_name}.#{column_name}` . " \
+              "All desired sharding keys must be not nullable or have a NOT NULL check constraint"
+          end
+        end
+      end
+    end
   end
 
   context 'for tables that do not already have a backfilled, non-nullable sharding key on their parent' \
@@ -89,6 +142,12 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
       To choose an appropriate desired_sharding_key for this table please refer
       to our guidelines at https://docs.gitlab.com/ee/development/database/multiple_databases.html#defining-a-desired-sharding-key, or consult with the Tenant Scale group.
     HEREDOC
+  end
+
+  def all_tables_to_desired_sharding_key
+    desired_sharding_key_entries_not_awaiting_backfill_on_parent.map do |entry|
+      [entry.table_name, entry.desired_sharding_key]
+    end
   end
 
   def desired_sharding_key_entries
