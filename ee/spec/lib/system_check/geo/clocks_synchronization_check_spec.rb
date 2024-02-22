@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe SystemCheck::Geo::ClocksSynchronizationCheck, :silence_stdout, feature_category: :geo_replication do
-  let(:ntp_host_env) { 'ntp.ubuntu.com' }
-  let(:ntp_port_env) { '123' }
-  let(:ntp_timeout_env) { '30' }
+  let(:ntp_host_env) { 'pool.ntp.org' }
+  let(:ntp_port_env) { 'ntp' }
+  let(:ntp_timeout_env) { '60' }
 
   context 'with default accessor values' do
     describe '#ntp_host' do
@@ -28,6 +28,10 @@ RSpec.describe SystemCheck::Geo::ClocksSynchronizationCheck, :silence_stdout, fe
   end
 
   context 'with accessor values defined by ENV variables' do
+    let(:ntp_host_env) { 'ntp.ubuntu.com' }
+    let(:ntp_port_env) { '123' }
+    let(:ntp_timeout_env) { '30' }
+
     before do
       stub_env('NTP_HOST', ntp_host_env)
       stub_env('NTP_PORT', ntp_port_env)
@@ -55,6 +59,10 @@ RSpec.describe SystemCheck::Geo::ClocksSynchronizationCheck, :silence_stdout, fe
 
   describe '#multi_check' do
     context 'with custom valid host port and timeout' do
+      let(:ntp_host_env) { 'ntp.ubuntu.com' }
+      let(:ntp_port_env) { '123' }
+      let(:ntp_timeout_env) { '30' }
+
       before do
         stub_env('NTP_HOST', ntp_host_env)
         stub_env('NTP_PORT', ntp_port_env)
@@ -62,9 +70,8 @@ RSpec.describe SystemCheck::Geo::ClocksSynchronizationCheck, :silence_stdout, fe
       end
 
       it 'passes with a success message' do
-        ntp_response = instance_double(Net::NTP::Response, offset: 0.1234)
-        expect(Net::NTP).to receive(:get).with(ntp_host_env, ntp_port_env, ntp_timeout_env.to_i)
-          .and_return(ntp_response)
+        stub_ntp_response(offset: 0.1234)
+
         expect_pass
 
         expect(subject.multi_check).to be_truthy
@@ -73,9 +80,8 @@ RSpec.describe SystemCheck::Geo::ClocksSynchronizationCheck, :silence_stdout, fe
 
     context 'with default NTP connection params' do
       it 'passes with a success message' do
-        ntp_response = instance_double(Net::NTP::Response, offset: 0.1234)
-        expect(Net::NTP).to receive(:get).with('pool.ntp.org', 'ntp', Net::NTP::TIMEOUT.to_i)
-          .and_return(ntp_response)
+        stub_ntp_response(offset: 0.1234)
+
         expect_pass
 
         expect(subject.multi_check).to be_truthy
@@ -88,7 +94,7 @@ RSpec.describe SystemCheck::Geo::ClocksSynchronizationCheck, :silence_stdout, fe
 
         expect_warning('Connection to the NTP Server pool.ntp.org took more than 60 seconds (Timeout)')
 
-        subject.multi_check
+        expect(subject.multi_check).to be_falsey
       end
     end
 
@@ -97,15 +103,15 @@ RSpec.describe SystemCheck::Geo::ClocksSynchronizationCheck, :silence_stdout, fe
         allow(subject).to receive(:ntp_request).and_raise(Errno::ECONNREFUSED)
 
         expect_warning('NTP Server pool.ntp.org cannot be reached')
-        expect(subject).to receive(:for_more_information).with(subject.help_replication_check)
+        expect(subject).to receive(:for_more_information).with(subject.help_replication_check).and_call_original
 
-        subject.multi_check
+        expect(subject.multi_check).to be_falsey
       end
     end
 
     context 'when clock difference is greater than max_clock_difference' do
       it 'fails with a message' do
-        allow(subject).to receive(:max_clock_difference).and_return(-1)
+        stub_ntp_response(offset: 61.0)
 
         expect_failure('Clocks are not in sync with pool.ntp.org NTP server')
 
@@ -124,5 +130,11 @@ RSpec.describe SystemCheck::Geo::ClocksSynchronizationCheck, :silence_stdout, fe
 
   def expect_pass
     expect(subject).to receive(:print_pass).and_call_original
+  end
+
+  def stub_ntp_response(offset: 0.0)
+    ntp_response = instance_double(Net::NTP::Response, offset: offset)
+    expect(Net::NTP).to receive(:get).with(ntp_host_env, ntp_port_env, ntp_timeout_env.to_i)
+      .and_return(ntp_response)
   end
 end
