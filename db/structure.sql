@@ -611,15 +611,6 @@ BEGIN
 END;
 $$;
 
-CREATE FUNCTION trigger_eaec934fe6b2() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."id_convert_to_bigint" := NEW."id";
-  RETURN NEW;
-END;
-$$;
-
 CREATE FUNCTION trigger_ff16c1fd43ea() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -16143,7 +16134,6 @@ CREATE SEQUENCE system_access_microsoft_graph_access_tokens_id_seq
 ALTER SEQUENCE system_access_microsoft_graph_access_tokens_id_seq OWNED BY system_access_microsoft_graph_access_tokens.id;
 
 CREATE TABLE system_note_metadata (
-    id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     commit_count integer,
     action character varying,
     created_at timestamp without time zone NOT NULL,
@@ -29244,8 +29234,6 @@ CREATE TRIGGER trigger_b2d852e1e2cb BEFORE INSERT OR UPDATE ON ci_pipelines FOR 
 CREATE TRIGGER trigger_catalog_resource_sync_event_on_project_update AFTER UPDATE ON projects FOR EACH ROW WHEN ((((old.name)::text IS DISTINCT FROM (new.name)::text) OR (old.description IS DISTINCT FROM new.description) OR (old.visibility_level IS DISTINCT FROM new.visibility_level))) EXECUTE FUNCTION insert_catalog_resource_sync_event();
 
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
-
-CREATE TRIGGER trigger_eaec934fe6b2 BEFORE INSERT OR UPDATE ON system_note_metadata FOR EACH ROW EXECUTE FUNCTION trigger_eaec934fe6b2();
 
 CREATE TRIGGER trigger_ff16c1fd43ea BEFORE INSERT OR UPDATE ON geo_event_log FOR EACH ROW EXECUTE FUNCTION trigger_ff16c1fd43ea();
 
