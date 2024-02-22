@@ -25,7 +25,7 @@ module Gitlab
             validates :config, allowed_keys: ALLOWED_KEYS, only_one_of_keys: SUPPORTED_PROVIDERS
             validates :token, type: String, allow_nil: true
             validates :token, presence: {
-              if: ->(node) { node.config[:gcp_secret_manager].present? },
+              if: ->(node) { node.config.is_a?(Hash) && node.config[:gcp_secret_manager].present? },
               message: 'is required with gcp secrets manager'
             }
           end
