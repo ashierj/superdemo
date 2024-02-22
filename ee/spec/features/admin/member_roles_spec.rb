@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Instance-level Member Roles', :js, feature_category: :permissions do
+RSpec.describe 'Instance-level Member Roles', feature_category: :permissions do
   let_it_be(:admin) { create(:admin) }
 
   let(:name) { 'My custom role' }
@@ -52,7 +52,7 @@ RSpec.describe 'Instance-level Member Roles', :js, feature_category: :permission
       end
     end
 
-    context 'when on self-managed' do
+    context 'when on self-managed', :js do
       before do
         stub_saas_features(gitlab_com_subscriptions: false)
 
@@ -65,14 +65,12 @@ RSpec.describe 'Instance-level Member Roles', :js, feature_category: :permission
     context 'when on SaaS' do
       before do
         stub_saas_features(gitlab_com_subscriptions: true)
-
-        visit admin_application_settings_roles_and_permissions_path
       end
 
-      it 'shows an error message' do
-        create_role(access_level, name, [permission_name])
+      it 'renders 404' do
+        visit admin_application_settings_roles_and_permissions_path
 
-        expect(page).to have_content('Failed to create role')
+        expect(page).to have_gitlab_http_status(:not_found)
       end
     end
   end

@@ -53,6 +53,14 @@ RSpec.describe Admin::ApplicationSettings::RolesAndPermissionsController, :enabl
 
           expect(response).to have_gitlab_http_status(:ok)
         end
+
+        context 'when on SaaS' do
+          before do
+            stub_saas_features(gitlab_com_subscriptions: true)
+          end
+
+          it_behaves_like 'not found'
+        end
       end
     end
   end
