@@ -24,5 +24,15 @@ RSpec.describe 'devise/shared/_minimal_footer', feature_category: :acquisition d
     it { is_expected.not_to have_button(_('Cookie Preferences'), class: 'ot-sdk-show-settings') }
   end
 
-  it { is_expected.to have_css('.js-language-switcher') }
+  context 'with disable_preferred_language_cookie feature flag disabled (default)' do
+    before do
+      stub_feature_flags(disable_preferred_language_cookie: false)
+    end
+
+    it { is_expected.to have_css('.js-language-switcher') }
+  end
+
+  context 'with disable_preferred_language_cookie feature flag enabled' do
+    it { is_expected.not_to have_css('.js-language-switcher') }
+  end
 end
