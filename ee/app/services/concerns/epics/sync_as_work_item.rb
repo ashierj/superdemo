@@ -4,6 +4,8 @@ module Epics
   module SyncAsWorkItem
     SyncAsWorkItemError = Class.new(StandardError)
 
+    # Note: we do not need to sync `lock_version`.
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/439716
     ALLOWED_PARAMS = %i[
       title description confidential author created_at updated_at updated_by_id
       last_edited_by_id last_edited_at closed_by_id closed_at state_id external_key
