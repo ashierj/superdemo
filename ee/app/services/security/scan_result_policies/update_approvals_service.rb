@@ -138,7 +138,7 @@ module Security
         if only_newly_detected?(approval_rule)
           new_uuids.count > vulnerabilities_allowed
         else
-          vulnerabilities_count = vulnerabilities_count_for_uuids(pipeline_uuids, approval_rule)
+          vulnerabilities_count = vulnerabilities_count_for_uuids(pipeline_uuids + target_pipeline_uuids, approval_rule)
 
           if vulnerabilities_count[:exceeded_allowed_count]
             true
