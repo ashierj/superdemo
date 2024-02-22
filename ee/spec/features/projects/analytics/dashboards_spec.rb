@@ -79,7 +79,9 @@ RSpec.describe 'Analytics Dashboard - Value Streams Dashboard', :js, feature_cat
         it_behaves_like 'VSD renders as an analytics dashboard'
         it_behaves_like 'renders link to the feedback survey'
         it_behaves_like 'renders usage overview metrics'
-        it_behaves_like 'renders metrics comparison table'
+        it_behaves_like 'renders metrics comparison table' do
+          let(:group_name) { group.name }
+        end
 
         it 'renders the dora performers score with an error' do
           # Currently not supported at the project level
@@ -89,10 +91,6 @@ RSpec.describe 'Analytics Dashboard - Value Streams Dashboard', :js, feature_cat
           panel_title = format(_("DORA performers score for %{name} group"), name: group.name)
           expect(dora_performers_score).to have_content panel_title
           expect(dora_performers_score).to have_content _("Something went wrong.")
-        end
-
-        it 'renders a title for the metrics comparison table' do
-          expect(metric_table).to have_content format(_("Metrics comparison for %{name} group"), name: group.name)
         end
 
         it_behaves_like 'does not render contributor count'

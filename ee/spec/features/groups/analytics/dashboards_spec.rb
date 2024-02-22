@@ -11,8 +11,6 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :value_stream_manag
   let_it_be(:project) { create(:project, :repository, name: "vsd project", group: group) }
   let_it_be(:custom_vsd_fixture_path) { 'ee/spec/fixtures/analytics/valid_value_stream_dashboard_configuration.yaml' }
 
-  let(:metric_table) { find_by_testid('panel-dora-chart') }
-
   gridstack_grid_testid = "[data-testid='gridstack-grid']"
 
   it 'renders a 403 error for a user without permission' do
@@ -25,21 +23,6 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :value_stream_manag
   context 'with a valid user' do
     before_all do
       group.add_developer(user)
-    end
-
-    def create_custom_vsd(user, pointer_project, yaml_fixture_path)
-      repository_file_path = '.gitlab/analytics/dashboards/value_streams/value_streams.yaml'
-
-      yaml_configuration =
-        File.read(yaml_fixture_path)
-
-      pointer_project.repository.create_file(
-        user,
-        repository_file_path,
-        yaml_configuration,
-        message: "commit #{repository_file_path}",
-        branch_name: 'master'
-      )
     end
 
     context 'with group_level_analytics_dashboard license' do
@@ -65,7 +48,7 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :value_stream_manag
 
           before_all do
             create(:analytics_dashboards_pointer, namespace: group, target_project: pointer_project)
-            create_custom_vsd(user, pointer_project, custom_vsd_fixture_path)
+            create_custom_yaml_config(user, pointer_project, custom_vsd_fixture_path)
           end
 
           it 'renders custom dashboard link' do
@@ -85,72 +68,59 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :value_stream_manag
         it_behaves_like 'has value streams dashboard link'
       end
 
-      context 'for Value streams dashboard' do
-        context 'with builtin configuration' do
-          before do
-            visit_group_value_streams_dashboard(group)
-          end
-
-          it_behaves_like 'VSD renders as an analytics dashboard'
-          it_behaves_like 'renders link to the feedback survey'
-          it_behaves_like 'renders usage overview metrics'
-          it_behaves_like 'renders dora performers score'
-
-          it_behaves_like 'renders metrics comparison table'
-
-          it 'renders a title for the metrics comparison table' do
-            expect(metric_table).to have_content format(_("Metrics comparison for %{name} group"), name: group.name)
-          end
+      context 'with default configuration' do
+        before do
+          visit_group_value_streams_dashboard(group)
         end
 
-        context 'with custom configuration' do
-          context 'with valid attributes' do
-            let_it_be(:pointer_project) { create(:project, :repository, group: group) }
+        it_behaves_like 'VSD renders as an analytics dashboard'
+        it_behaves_like 'renders link to the feedback survey'
+      end
 
-            before_all do
-              create(:analytics_dashboards_pointer, namespace: group, target_project: pointer_project)
-              create_custom_vsd(user, pointer_project, custom_vsd_fixture_path)
-            end
+      context 'with valid custom configuration' do
+        let_it_be(:pointer_project) { create(:project, :repository, group: group) }
 
-            before do
-              visit_group_value_streams_dashboard(group, 'Custom VSD')
-            end
+        before_all do
+          create(:analytics_dashboards_pointer, namespace: group, target_project: pointer_project)
+          create_custom_yaml_config(user, pointer_project, custom_vsd_fixture_path)
+        end
 
-            it 'renders dashboard correctly' do
-              within find_by_testid('dashboard-description') do |panel|
-                expect(panel).to have_content _('VSD from fixture')
-              end
-              within find_by_testid('gridstack-grid') do |panel|
-                expect(panel).to have_content _('Custom Panel 1')
-              end
-            end
+        before do
+          visit_group_value_streams_dashboard(group, 'Custom VSD')
+        end
 
-            # Configuration fixture has usage overview panel
-            it_behaves_like 'renders usage overview metrics', false
+        it_behaves_like 'renders link to the feedback survey'
+
+        it 'renders custom title and description' do
+          within find_by_testid('dashboard-description') do |panel|
+            expect(panel).to have_content _('VSD from fixture')
           end
-
-          context 'with invalid attributes' do
-            let_it_be(:pointer_project) { create(:project, :repository, group: group) }
-            let_it_be(:invalid_custom_vsd_fixture_path) do
-              'ee/spec/fixtures/analytics/invalid_value_stream_dashboard_configuration.yaml'
-            end
-
-            before_all do
-              create(:analytics_dashboards_pointer, namespace: group, target_project: pointer_project)
-              create_custom_vsd(user, pointer_project, invalid_custom_vsd_fixture_path)
-            end
-
-            before do
-              visit_group_value_streams_dashboard(group, 'Invalid VSD')
-            end
-
-            it 'renders error' do
-              find_by_testid('panel-not-exists').hover
-
-              expect(page).to have_content(_('Something is wrong with your panel visualization configuration.'))
-              expect(page).to have_link(text: 'troubleshooting documentation')
-            end
+          within find_by_testid('gridstack-grid') do |panel|
+            expect(panel).to have_content _('Custom Panel 1')
           end
+        end
+      end
+
+      context 'with invalid custom configuration' do
+        let_it_be(:pointer_project) { create(:project, :repository, group: group) }
+        let_it_be(:invalid_custom_vsd_fixture_path) do
+          'ee/spec/fixtures/analytics/invalid_value_stream_dashboard_configuration.yaml'
+        end
+
+        before_all do
+          create(:analytics_dashboards_pointer, namespace: group, target_project: pointer_project)
+          create_custom_yaml_config(user, pointer_project, invalid_custom_vsd_fixture_path)
+        end
+
+        before do
+          visit_group_value_streams_dashboard(group, 'Invalid VSD')
+        end
+
+        it 'renders error' do
+          find_by_testid('panel-not-exists').hover
+
+          expect(page).to have_content(_('Something is wrong with your panel visualization configuration.'))
+          expect(page).to have_link(text: 'troubleshooting documentation')
         end
       end
     end
@@ -177,29 +147,6 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :value_stream_manag
       end
 
       it_behaves_like 'renders link to the feedback survey'
-      it_behaves_like 'renders dora performers score'
-
-      it_behaves_like 'renders metrics comparison table'
-
-      it 'renders a title for the metrics comparison table' do
-        comparison_title = find_by_testid('comparison-chart-title')
-
-        expect(comparison_title).to have_content format(_('Metrics comparison for %{name} group'), name: group.name)
-      end
-    end
-
-    context 'with clickhouse_data_collection disabled', :saas do
-      before do
-        stub_licensed_features(group_level_analytics_dashboard: true, dora4_analytics: true, security_dashboard: true,
-          cycle_analytics_for_groups: true)
-        stub_feature_flags(clickhouse_data_collection: false)
-
-        sign_in(user)
-
-        visit_group_value_streams_dashboard(group)
-      end
-
-      it_behaves_like 'does not render contributor count'
     end
   end
 end
