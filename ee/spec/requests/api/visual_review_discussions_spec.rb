@@ -16,14 +16,18 @@ RSpec.describe API::VisualReviewDiscussions, feature_category: :review_apps do
     let(:user) { token.user }
 
     let(:request) do
-      post api("/projects/#{project_id}/merge_requests/#{merge_request.iid}/visual_review_discussions"), params: note_params, headers: { 'Private-Token' => token.token }
+      post api("/projects/#{project_id}/merge_requests/#{merge_request.iid}/visual_review_discussions"),
+        params: note_params,
+        headers: { 'Private-Token' => token.token }
     end
 
     before do
-      create(:project_member,
-             user: user,
-             project: project,
-             access_level: ProjectMember::DEVELOPER)
+      create(
+        :project_member,
+        user: user,
+        project: project,
+        access_level: ProjectMember::DEVELOPER
+      )
     end
 
     it_behaves_like 'handling merge request feedback', :with_auth

@@ -4,8 +4,13 @@ require 'spec_helper'
 
 RSpec.describe Projects::ServiceDeskController, feature_category: :service_desk do
   let_it_be(:project) do
-    create(:project, :private, :custom_repo,
-           service_desk_enabled: true, files: { '.gitlab/issue_templates/service_desk.md' => 'template' })
+    create(
+      :project,
+      :private,
+      :custom_repo,
+      service_desk_enabled: true,
+      files: { '.gitlab/issue_templates/service_desk.md' => 'template' }
+    )
   end
 
   let_it_be(:template_project) { create(:project) }

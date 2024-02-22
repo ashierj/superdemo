@@ -356,8 +356,13 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
               another_project.add_member(user, user_permissions)
             end
 
-            create(:status_check_response, merge_request: merge_request,
-                                           external_status_check: rule, sha: merge_request.diff_head_sha, status: 'failed')
+            create(
+              :status_check_response,
+              merge_request: merge_request,
+              external_status_check: rule,
+              sha: merge_request.diff_head_sha,
+              status: 'failed'
+            )
           end
 
           it 'returns the correct status' do
@@ -378,8 +383,13 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
           let_it_be(:data) { merge_request.to_hook_data(user) }
 
           before do
-            create(:status_check_response, merge_request: merge_request,
-                                           external_status_check: rule, sha: merge_request.diff_head_sha, status: 'failed')
+            create(
+              :status_check_response,
+              merge_request: merge_request,
+              external_status_check: rule,
+              sha: merge_request.diff_head_sha,
+              status: 'failed'
+            )
           end
 
           it 'calls async execute with correct data' do
@@ -406,8 +416,13 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
 
         context 'when status check is passed' do
           before do
-            create(:status_check_response, merge_request: merge_request,
-                                           external_status_check: rule, sha: merge_request.diff_head_sha, status: 'passed')
+            create(
+              :status_check_response,
+              merge_request: merge_request,
+              external_status_check: rule,
+              sha: merge_request.diff_head_sha,
+              status: 'passed'
+            )
           end
 
           it 'returns unprocessable_entity response', :aggregate_failures do

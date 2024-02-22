@@ -15,11 +15,22 @@ RSpec.describe Projects::EnvironmentsController, feature_category: :continuous_d
       stub_licensed_features(protected_environments: true)
 
       create(:protected_environment, project: project, name: environment.name) do |protected_environment|
-        create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment)
+        create(
+          :protected_environment_approval_rule,
+          :maintainer_access,
+          protected_environment: protected_environment
+        )
+
+        create(
+          :protected_environment_approval_rule,
+          user: create(:user),
+          protected_environment: protected_environment
+        )
+
         create(:protected_environment_approval_rule,
-               user: create(:user), protected_environment: protected_environment)
-        create(:protected_environment_approval_rule,
-               group: create(:group), protected_environment: protected_environment)
+          group: create(:group),
+          protected_environment: protected_environment
+        )
       end
     end
 
@@ -27,9 +38,7 @@ RSpec.describe Projects::EnvironmentsController, feature_category: :continuous_d
   end
 
   def environment_params(opts = {})
-    opts.reverse_merge(namespace_id: project.namespace,
-                       project_id: project,
-                       id: environment.id)
+    opts.reverse_merge(namespace_id: project.namespace, project_id: project, id: environment.id)
   end
 
   def create_deployment_with_associations(commit_depth:)
@@ -39,8 +48,15 @@ RSpec.describe Projects::EnvironmentsController, feature_category: :continuous_d
     deployer = create(:user)
     pipeline = create(:ci_pipeline, project: environment.project)
     build = create(:ci_build, environment: environment.name, pipeline: pipeline, user: deployer)
-    create(:deployment, :blocked, environment: environment, deployable: build, user: deployer,
-                                  project: project, sha: commit.sha) do |deployment|
+    create(
+      :deployment,
+      :blocked,
+      environment: environment,
+      deployable: build,
+      user: deployer,
+      project: project,
+      sha: commit.sha
+    ) do |deployment|
       create_list(:deployment_approval, 2, deployment: deployment)
     end
   end
