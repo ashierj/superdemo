@@ -45,11 +45,6 @@ module Backup
         raise NotImplementedError
       end
 
-      # The target factory method
-      def target
-        raise NotImplementedError
-      end
-
       # Path to remove after a successful backup, uses #destination_path when not specified
       def cleanup_path = destination_path
 
@@ -66,6 +61,13 @@ module Backup
 
       # a string returned here will be displayed to the user after calling #restore
       def post_restore_warning = nil
+
+      private
+
+      # The target factory method
+      def target
+        raise NotImplementedError
+      end
     end
   end
 end

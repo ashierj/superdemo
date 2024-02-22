@@ -11,10 +11,6 @@ module Backup
 
       def cleanup_path = 'db'
 
-      def target
-        @target ||= ::Backup::Targets::Database.new(progress, options: options)
-      end
-
       def pre_restore_warning
         return if options.force
 
@@ -44,6 +40,10 @@ module Backup
       end
 
       private
+
+      def target
+        @target ||= ::Backup::Targets::Database.new(progress, options: options)
+      end
 
       def help_page_url(path, anchor = nil)
         ::Gitlab::Routing.url_helpers.help_page_url(path, anchor: anchor)

@@ -19,6 +19,8 @@ module Backup
 
       def destination_optional = true
 
+      private
+
       def target
         return @target if @target
 

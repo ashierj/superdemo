@@ -9,11 +9,11 @@ module Backup
 
       def destination_path = 'artifacts.tar.gz'
 
+      private
+
       def target
         @target ||= ::Backup::Targets::Files.new(progress, storage_path, options: options, excludes: ['tmp'])
       end
-
-      private
 
       def storage_path
         JobArtifactUploader.root
