@@ -584,16 +584,6 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
           it 'returns diff' do
             expect(diff[:added].first.classification).to eq('denied')
           end
-
-          context 'when the feature flag `license_compliance_widget_category` is disabled' do
-            before do
-              stub_feature_flags(license_compliance_widget_category: false)
-            end
-
-            it 'returns diff' do
-              expect(diff[:added].first.classification).to eq('unclassified')
-            end
-          end
         end
       end
 
