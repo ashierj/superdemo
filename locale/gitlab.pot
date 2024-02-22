@@ -13864,7 +13864,13 @@ msgstr ""
 msgid "ContributionAnalytics|There is too much data to calculate. Try lowering the period_limit setting in the insights configuration file."
 msgstr ""
 
+msgid "ContributionAnalytics|This page sources data from the %{link_start}analytical database ClickHouse%{link_end}, with a few minutes of delay."
+msgstr ""
+
 msgid "ContributionAnalytics|Total Contributions"
+msgstr ""
+
+msgid "ContributionAnalytics|Using ClickHouse"
 msgstr ""
 
 msgid "ContributionEvent|Accepted merge request %{targetLink} in %{resourceParentLink}."

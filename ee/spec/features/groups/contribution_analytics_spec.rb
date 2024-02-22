@@ -71,4 +71,45 @@ RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_
       end
     end
   end
+
+  describe('Contribution Analytics data source') do
+    let(:using_clickhouse_badge) { find_by_testid('using-clickhouse-badge') }
+
+    context 'when ClickHouse is the data source' do
+      before do
+        stub_feature_flags(clickhouse_data_collection: true)
+        visit_contribution_analytics
+      end
+
+      it 'displays `Using ClickHouse` badge' do
+        within_testid('contribution-analytics-header') do
+          expect(using_clickhouse_badge).to have_text('Using ClickHouse')
+        end
+      end
+
+      it 'displays popover upon hovering over `Using ClickHouse` badge' do
+        using_clickhouse_badge.hover
+
+        page.within('.gl-popover') do
+          expect(page).to have_content(
+            'This page sources data from the analytical database ClickHouse, ' \
+            'with a few minutes of delay.'
+          )
+        end
+      end
+    end
+
+    context 'when ClickHouse is not the data source' do
+      before do
+        stub_feature_flags(clickhouse_data_collection: false)
+        visit_contribution_analytics
+      end
+
+      it 'does not display `Using ClickHouse` badge' do
+        within_testid('contribution-analytics-header') do
+          expect(page).not_to have_content('Using ClickHouse')
+        end
+      end
+    end
+  end
 end
