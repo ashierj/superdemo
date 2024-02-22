@@ -565,30 +565,19 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     let_it_be_with_reload(:second_group) { create(:group) }
 
     context 'when on .org or .com' do
-      where(:add_on_enabled, :licensed, :group_1_cs_setting, :group_2_cs_setting, :cs_matcher) do
-        # without addon group settings are respected
-        false | true  | false | false | be_disallowed(:access_code_suggestions)
-        # with addon group settings are ignored
-        true  | false | false | false | be_allowed(:access_code_suggestions)
-        false | true  | false | true  | be_allowed(:access_code_suggestions)
-        false | true  | true  | true  | be_allowed(:access_code_suggestions)
-        false | false | false | false | be_disallowed(:access_code_suggestions)
-        false | false | false | true  | be_allowed(:access_code_suggestions)
-        false | false | true  | true  | be_allowed(:access_code_suggestions)
+      where(:code_suggestions_enabled_for_user, :code_suggestions_licensed, :cs_matcher) do
+        true  | true  | be_allowed(:access_code_suggestions)
+        false | true  | be_allowed(:access_code_suggestions)
+        true  | false | be_allowed(:access_code_suggestions)
+        false | false | be_allowed(:access_code_suggestions)
       end
 
       with_them do
         before do
-          stub_feature_flags(purchase_code_suggestions: add_on_enabled)
           allow(::Gitlab).to receive(:org_or_com?).and_return(true)
-
-          first_group.update_attribute(:code_suggestions, group_1_cs_setting)
-          second_group.update_attribute(:code_suggestions, group_2_cs_setting)
-
           first_group.add_owner(current_user)
-          second_group.add_owner(current_user)
-
-          stub_licensed_features(code_suggestions: licensed)
+          stub_licensed_features(code_suggestions: code_suggestions_licensed)
+          allow(current_user).to receive(:duo_pro_add_on_available?).and_return(code_suggestions_enabled_for_user)
         end
 
         it { is_expected.to cs_matcher }

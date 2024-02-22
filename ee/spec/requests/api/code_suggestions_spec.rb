@@ -496,10 +496,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             end
 
             it 'includes additional headers for SaaS' do
-              add_on_purchase.namespace.namespace_settings.update_attribute(:code_suggestions, false)
               group = create(:group)
               group.add_developer(authorized_user)
-              group.namespace_settings.update_attribute(:code_suggestions, true)
 
               post_api
 

@@ -70,14 +70,6 @@ module EE
         end
       end
 
-      condition(:code_suggestions_disabled_by_group) do
-        next false unless ::Gitlab.org_or_com?
-        next false if ::Feature.enabled?(:purchase_code_suggestions)
-        next false unless @user
-
-        @user.code_suggestions_disabled_by_group?
-      end
-
       condition(:duo_chat_enabled) do
         next true if ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
         next false unless ::License.feature_available?(:ai_chat)
@@ -174,7 +166,6 @@ module EE
 
       rule { code_suggestions_licensed & code_suggestions_enabled_for_user }
         .enable :access_code_suggestions
-      rule { code_suggestions_disabled_by_group }.prevent :access_code_suggestions
 
       rule { user_allowed_to_use_chat & duo_chat_enabled }.enable :access_duo_chat
 

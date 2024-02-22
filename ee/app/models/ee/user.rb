@@ -603,10 +603,6 @@ module EE
       namespace_bans.find_by!(namespace: namespace)
     end
 
-    def code_suggestions_disabled_by_group?
-      !groups.roots.joins(:namespace_settings).where(namespace_settings: { code_suggestions: true }).any?
-    end
-
     def duo_pro_add_on_available_namespace_ids
       cache_key = format(DUO_PRO_ADD_ON_CACHE_KEY, user_id: self.id)
 
