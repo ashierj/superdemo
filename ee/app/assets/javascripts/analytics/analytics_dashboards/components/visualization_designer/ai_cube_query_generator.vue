@@ -2,10 +2,11 @@
 import { GlButton, GlExperimentBadge, GlFormGroup, GlFormTextarea, GlIcon } from '@gitlab/ui';
 import { v4 as uuidv4 } from 'uuid';
 
+import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_action';
 import { fetchPolicies } from '~/lib/graphql';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT, TYPENAME_USER } from '~/graphql_shared/constants';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 
@@ -23,6 +24,12 @@ export default {
   inject: {
     namespaceId: {
       type: String,
+    },
+  },
+  props: {
+    warnBeforeReplacingQuery: {
+      type: Boolean,
+      required: true,
     },
   },
   data() {
@@ -49,6 +56,10 @@ export default {
         this.error = s__('Analytics|Enter a prompt to continue.');
         return;
       }
+      if (this.warnBeforeReplacingQuery) {
+        const confirmed = await this.confirmReplaceExistingQuery();
+        if (!confirmed) return;
+      }
 
       this.skipSubscription = false;
       this.submitting = true;
@@ -73,6 +84,17 @@ export default {
       errors.forEach((error) => Sentry.captureException(error));
 
       this.error = s__('Analytics|There was a problem generating your query. Please try again.');
+    },
+    confirmReplaceExistingQuery() {
+      return confirmAction(
+        s__(
+          'Analytics|Would you like to replace your existing selection with a new visualization generated through GitLab Duo?',
+        ),
+        {
+          primaryBtnText: __('Continue with GitLab Duo'),
+          cancelBtnText: __('Cancel'),
+        },
+      );
     },
   },
   apollo: {

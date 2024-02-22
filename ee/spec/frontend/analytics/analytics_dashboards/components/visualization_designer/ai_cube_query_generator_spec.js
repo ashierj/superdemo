@@ -8,6 +8,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
+import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_action';
 import generateCubeQueryMutation from 'ee/analytics/analytics_dashboards/graphql/mutations/generate_cube_query.mutation.graphql';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import AiCubeQueryGenerator from 'ee/analytics/analytics_dashboards/components/visualization_designer/ai_cube_query_generator.vue';
@@ -17,10 +18,15 @@ Vue.use(VueApollo);
 
 jest.mock('~/sentry/sentry_browser_wrapper');
 jest.mock('uuid');
+jest.mock('~/lib/utils/confirm_via_gl_modal/confirm_action');
 
 describe('AiCubeQueryGenerator', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
+  const prompt = 'Count of page views grouped weekly';
+  const generatedQuery = TEST_VISUALIZATION().data.query;
+  const error = new Error('oh no it failed!!1!');
+
   const generateCubeQueryMutationHandlerMock = jest.fn();
   const aiResponseSubscriptionHandlerMock = jest.fn();
 
@@ -31,7 +37,7 @@ describe('AiCubeQueryGenerator', () => {
     wrapper.findByTestId('generate-cube-query-submit-button');
   const findExperimentBadge = () => wrapper.findComponent(GlExperimentBadge);
 
-  const createWrapper = () => {
+  const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(AiCubeQueryGenerator, {
       provide: {
         namespaceId: 'gid://gitlab/Namespace/1',
@@ -40,6 +46,10 @@ describe('AiCubeQueryGenerator', () => {
         [generateCubeQueryMutation, generateCubeQueryMutationHandlerMock],
         [aiResponseSubscription, aiResponseSubscriptionHandlerMock],
       ]),
+      propsData: {
+        warnBeforeReplacingQuery: false,
+        ...props,
+      },
       stubs: {
         GlFormGroup,
       },
@@ -49,20 +59,23 @@ describe('AiCubeQueryGenerator', () => {
   beforeEach(() => {
     window.gon = { current_user_id: 1 };
     uuidv4.mockImplementation(() => 'mock-uuid');
-    createWrapper();
   });
 
   afterEach(() => {
     generateCubeQueryMutationHandlerMock.mockReset();
     aiResponseSubscriptionHandlerMock.mockReset();
+    confirmAction.mockReset();
   });
 
   it('renders an experiment badge', () => {
+    createWrapper();
+
     expect(findExperimentBadge().exists()).toBe(true);
   });
 
   describe('when no prompt has been entered', () => {
     beforeEach(() => {
+      createWrapper();
       findGenerateCubeQuerySubmitButton().vm.$emit('click');
 
       return waitForPromises();
@@ -78,10 +91,54 @@ describe('AiCubeQueryGenerator', () => {
     });
   });
 
+  describe('when visualization designer has existing unsaved changes', () => {
+    beforeEach(() => {
+      createWrapper({ warnBeforeReplacingQuery: true });
+    });
+
+    it('asks for confirmation when there are unsaved changes', () => {
+      findGenerateCubeQueryPromptInput().vm.$emit('input', prompt);
+      findGenerateCubeQuerySubmitButton().vm.$emit('click');
+
+      expect(confirmAction).toHaveBeenCalledWith(
+        'Would you like to replace your existing selection with a new visualization generated through GitLab Duo?',
+        {
+          cancelBtnText: 'Cancel',
+          primaryBtnText: 'Continue with GitLab Duo',
+        },
+      );
+    });
+
+    it('does not generate query when user cancels', () => {
+      confirmAction.mockResolvedValue(false);
+
+      findGenerateCubeQueryPromptInput().vm.$emit('input', prompt);
+      findGenerateCubeQuerySubmitButton().vm.$emit('click');
+
+      expect(generateCubeQueryMutationHandlerMock).not.toHaveBeenCalled();
+    });
+
+    it('generates query when user confirms', async () => {
+      confirmAction.mockResolvedValue(true);
+
+      aiResponseSubscriptionHandlerMock.mockResolvedValue({
+        data: {
+          aiCompletionResponse: {
+            errors: [],
+            content: JSON.stringify(generatedQuery),
+          },
+        },
+      });
+      findGenerateCubeQueryPromptInput().vm.$emit('input', prompt);
+      findGenerateCubeQuerySubmitButton().vm.$emit('click');
+      await waitForPromises();
+
+      expect(generateCubeQueryMutationHandlerMock).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('when a prompt is submitted', () => {
-    const prompt = 'Count of page views grouped weekly';
-    const generatedQuery = TEST_VISUALIZATION().data.query;
-    const error = new Error('oh no it failed!!1!');
+    beforeEach(() => createWrapper());
 
     describe('while loading', () => {
       beforeEach(() => {
