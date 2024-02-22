@@ -247,4 +247,20 @@ RSpec.describe Gitlab::Ci::Config::Entry::Secret do
       end
     end
   end
+
+  context 'when config is nil' do
+    let(:config) { nil }
+
+    it 'is not valid' do
+      expect(entry).not_to be_valid
+    end
+  end
+
+  context 'when config is not a hash' do
+    let(:config) { 123 }
+
+    it 'is not valid' do
+      expect(entry).not_to be_valid
+    end
+  end
 end
