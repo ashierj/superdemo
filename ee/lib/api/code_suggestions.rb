@@ -142,7 +142,7 @@ module API
 
           not_found! if projects.none?
 
-          forbidden! unless projects.first.code_suggestions_enabled?
+          forbidden! unless projects.first.project_setting.duo_features_enabled?
 
           status :ok
         end

@@ -44,15 +44,11 @@ module API
             end
 
             def gitlab_duo_pro_add_on?
-              if ::Feature.enabled?(:purchase_code_suggestions)
-                ::GitlabSubscriptions::AddOnPurchase
-                  .for_gitlab_duo_pro
-                  .by_namespace_id(current_namespace.id)
-                  .active
-                  .any?
-              else
-                current_namespace.namespace_settings.code_suggestions?
-              end
+              ::GitlabSubscriptions::AddOnPurchase
+                .for_gitlab_duo_pro
+                .by_namespace_id(current_namespace.id)
+                .active
+                .any?
             end
 
             def model_gateway_headers(headers, gateway_token)

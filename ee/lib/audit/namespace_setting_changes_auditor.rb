@@ -3,7 +3,6 @@
 module Audit
   class NamespaceSettingChangesAuditor < BaseChangesAuditor
     EVENT_NAME_PER_COLUMN = {
-      code_suggestions: 'code_suggestions_updated',
       experiment_features_enabled: 'experiment_features_enabled_updated'
     }.freeze
 

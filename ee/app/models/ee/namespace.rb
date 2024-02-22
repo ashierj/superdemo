@@ -143,8 +143,6 @@ module EE
       delegate(
         :experiment_features_enabled,
         :experiment_features_enabled=,
-        :code_suggestions,
-        :code_suggestions=,
         :product_analytics_enabled,
         :product_analytics_enabled=,
         to: :namespace_settings,

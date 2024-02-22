@@ -85,19 +85,21 @@ RSpec.describe Audit::GroupChangesAuditor do
       end
 
       context 'when namespace setting is updated' do
-        context 'when code_suggestions is changed' do
+        context 'when experiment_features_enabled is changed' do
           before do
-            group.namespace_settings.update!(code_suggestions: true)
+            stub_ee_application_setting(should_check_namespace_plan: true)
+            allow(group).to receive(:licensed_feature_available?).with(:experimental_features).and_return(true)
+            group.namespace_settings.update!(experiment_features_enabled: true)
           end
 
           it 'creates an audit event' do
-            group.namespace_settings.update!(code_suggestions: false)
+            group.namespace_settings.update!(experiment_features_enabled: false)
 
             expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
           end
 
           it 'does not create audit event if the value is unchanged' do
-            group.namespace_settings.update!(code_suggestions: true)
+            group.namespace_settings.update!(experiment_features_enabled: true)
 
             expect { foo_instance.execute }.not_to change(AuditEvent, :count)
           end

@@ -8,7 +8,8 @@ class NamespaceSetting < ApplicationRecord
 
   ignore_column :project_import_level, remove_with: '16.10', remove_after: '2024-02-22'
   ignore_column :third_party_ai_features_enabled, remove_with: '16.10', remove_after: '2024-02-22'
-  ignore_column %i[code suggestions delayed_project_removal lock_delayed_project_removal], remove_with: '16.10', remove_after: '2024-02-22'
+  ignore_column %i[delayed_project_removal lock_delayed_project_removal], remove_with: '16.10', remove_after: '2024-02-22'
+  ignore_column :code_suggestions, remove_with: '17.0', remove_after: '2024-05-16'
 
   cascading_attr :toggle_security_policy_custom_ci
   cascading_attr :toggle_security_policies_policy_scope
@@ -22,7 +23,6 @@ class NamespaceSetting < ApplicationRecord
   attribute :default_branch_protection_defaults, default: -> { {} }
 
   validates :enabled_git_access_protocol, inclusion: { in: enabled_git_access_protocols.keys }
-  validates :code_suggestions, allow_nil: false, inclusion: { in: [true, false] }
   validates :default_branch_protection_defaults, json_schema: { filename: 'default_branch_protection_defaults' }
   validates :default_branch_protection_defaults, bytesize: { maximum: -> { DEFAULT_BRANCH_PROTECTIONS_DEFAULT_MAX_SIZE } }
 
@@ -32,8 +32,6 @@ class NamespaceSetting < ApplicationRecord
   sanitizes! :default_branch_name
 
   before_validation :normalize_default_branch_name
-
-  after_create :set_code_suggestions_default
 
   chronic_duration_attr :runner_token_expiration_interval_human_readable, :runner_token_expiration_interval
   chronic_duration_attr :subgroup_runner_token_expiration_interval_human_readable, :subgroup_runner_token_expiration_interval
@@ -112,14 +110,6 @@ class NamespaceSetting < ApplicationRecord
 
   def normalize_default_branch_name
     self.default_branch_name = default_branch_name.presence
-  end
-
-  def set_code_suggestions_default
-    # users should have code suggestions disabled by default
-    return if namespace&.user_namespace?
-
-    # groups should have code suggestions enabled by default
-    update_column(:code_suggestions, true)
   end
 
   def allow_mfa_for_group

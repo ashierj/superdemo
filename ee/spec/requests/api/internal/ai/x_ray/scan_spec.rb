@@ -115,7 +115,6 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
           context 'with code suggestions enabled on instance level' do
             before do
               stub_ee_application_setting(instance_level_code_suggestions_enabled: true)
-              namespace.namespace_settings.update!(code_suggestions: true)
             end
 
             it 'calls ::CloudConnector::AccessService to obtain access token', :aggregate_failures do
@@ -296,16 +295,6 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
           end
 
           it_behaves_like 'successful send request via workhorse'
-        end
-
-        context 'with code suggestions disabled on namespace level' do
-          it 'returns UNAUTHORIZED status' do
-            namespace.namespace_settings.update!(code_suggestions: false)
-
-            post_api
-
-            expect(response).to have_gitlab_http_status(:unauthorized)
-          end
         end
       end
 
