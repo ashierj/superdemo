@@ -1933,6 +1933,18 @@ msgstr ""
 msgid "AIAgent|AI Agent: %{agentId}"
 msgstr ""
 
+msgid "AIAgent|Agent"
+msgstr ""
+
+msgid "AIAgent|Ask your agent"
+msgstr ""
+
+msgid "AIAgent|Try out your agent"
+msgstr ""
+
+msgid "AIAgent|Your agent's system prompt will be applied to the chat input."
+msgstr ""
+
 msgid "AIPoweredSM|AI-powered features"
 msgstr ""
 

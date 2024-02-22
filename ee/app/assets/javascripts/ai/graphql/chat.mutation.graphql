@@ -1,12 +1,18 @@
 mutation chat(
   $question: String!
   $resourceId: AiModelID!
+  $agentVersionId: AiAgentVersionID
   $clientSubscriptionId: String
   $currentFileContext: AiCurrentFileInput
 ) {
   aiAction(
     input: {
-      chat: { resourceId: $resourceId, content: $question, currentFile: $currentFileContext }
+      chat: {
+        resourceId: $resourceId
+        content: $question
+        agentVersionId: $agentVersionId
+        currentFile: $currentFileContext
+      }
       clientSubscriptionId: $clientSubscriptionId
     }
   ) {
