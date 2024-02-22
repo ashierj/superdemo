@@ -6,6 +6,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
   let(:group) { create(:group, :internal) }
   let(:user) { create(:user) }
   let(:epic) { create(:epic, group: group) }
+  let(:should_publish_event) { true }
 
   describe '#execute' do
     before do
@@ -27,7 +28,8 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
     end
 
     def update_epic(opts)
-      described_class.new(group: group, current_user: user, params: opts).execute(epic)
+      described_class.new(group: group, current_user: user, params: opts, publish_event: should_publish_event)
+        .execute(epic)
     end
 
     it_behaves_like 'issuable update service updating last_edited_at values' do
@@ -60,6 +62,22 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
           confidential: true
         )
         expect(epic).to be_closed
+      end
+    end
+
+    context 'when publish_event: true' do
+      it 'publishes an EpicUpdated event' do
+        expect { update_epic({ title: 'New title' }) }
+          .to publish_event(Epics::EpicUpdatedEvent)
+          .with({ id: epic.id, group_id: group.id })
+      end
+    end
+
+    context 'when publish_event: false' do
+      let(:should_publish_event) { false }
+
+      it 'publishes an EpicUpdated event' do
+        expect { update_epic({ title: 'New title' }) }.to not_publish_event(Epics::EpicUpdatedEvent)
       end
     end
 

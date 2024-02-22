@@ -111,6 +111,8 @@ module EE
           :start_date_sourcing_milestone, :due_date_sourcing_milestone)
       end
 
+      scope :with_work_item, -> { preload(:work_item) }
+
       scope :within_timeframe, -> (start_date, end_date) do
         epics = ::Epic.arel_table
         where(epics[:start_date].not_eq(nil).or(epics[:end_date].not_eq(nil)))

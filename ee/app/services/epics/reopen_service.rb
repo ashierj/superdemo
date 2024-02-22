@@ -35,6 +35,14 @@ module Epics
       )
 
       log_audit_event(epic, "epic_reopened_by_project_bot", "Reopened epic #{epic.title}") if current_user.project_bot?
+
+      publish_event(epic)
+    end
+
+    def publish_event(epic)
+      ::Gitlab::EventStore.publish(
+        ::Epics::EpicUpdatedEvent.new(data: { id: epic.id, group_id: epic.group_id })
+      )
     end
   end
 end

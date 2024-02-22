@@ -64,6 +64,12 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category
           end
         end
 
+        it 'publishes an EpicUpdated event' do
+          expect { subject.execute(issue) }
+            .to publish_event(Epics::EpicUpdatedEvent)
+            .with({ id: an_instance_of(Integer), group_id: group.id })
+        end
+
         it 'counts a usage ping event' do
           expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_issue_promoted_to_epic)
             .with(author: user, namespace: group)

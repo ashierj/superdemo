@@ -873,7 +873,7 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
       it 'creates a new epic with labels param as array' do
         # TODO: remove threshold after epic-work item sync
         # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
-        allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(122)
+        allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(125)
         params[:labels] = ['label1', 'label2', 'foo, bar', '&,?']
 
         post api(url, user), params: params
@@ -962,6 +962,10 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
 
       context 'when the request is correct' do
         before do
+          # TODO: reduce threshold after epic-work item sync
+          # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
+          allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(128)
+
           group.add_developer(user)
         end
 
@@ -1017,10 +1021,6 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
           include_context 'with labels'
 
           it 'updates the epic with labels param as array' do
-            # TODO: reduce threshold after epic-work item sync
-            # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
-            allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(125)
-
             params[:labels] = ['label1', 'label2', 'foo, bar', '&,?']
 
             put api(url, user), params: params

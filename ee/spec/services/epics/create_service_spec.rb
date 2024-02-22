@@ -12,6 +12,7 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
   let_it_be(:label2) { create(:group_label, group: group, title: 'priority::4', color: '#CC1111') }
   let_it_be(:synced_parent_work_item) { create(:work_item, :epic, namespace: group) }
   let_it_be(:parent_epic) { create(:epic, group: group, issue_id: synced_parent_work_item.id) }
+  let(:should_publish_event) { true }
   let(:base_attrs) do
     %i[
       title description confidential updated_by_id last_edited_by_id last_edited_at closed_by_id closed_at
@@ -43,7 +44,9 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
     }
   end
 
-  subject { described_class.new(group: group, current_user: user, params: params).execute }
+  subject do
+    described_class.new(group: group, current_user: user, params: params, publish_event: should_publish_event).execute
+  end
 
   before do
     group.add_reporter(user)
@@ -75,6 +78,20 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
       expect(epic.confidential).to be_truthy
       expect(epic.color.to_s).to eq('#c91c00')
       expect(NewEpicWorker).to have_received(:perform_async).with(epic.id, user.id)
+    end
+
+    it 'publishes an EpicCreated event' do
+      expect { subject }
+        .to publish_event(Epics::EpicCreatedEvent)
+        .with({ id: an_instance_of(Integer), group_id: group.id })
+    end
+
+    context 'when publish_event: false' do
+      let(:should_publish_event) { false }
+
+      it 'publishes an EpicCreated event' do
+        expect { subject }.to not_publish_event(Epics::EpicCreatedEvent)
+      end
     end
 
     context 'when syncing work item' do

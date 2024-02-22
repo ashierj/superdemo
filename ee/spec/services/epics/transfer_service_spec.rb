@@ -49,6 +49,15 @@ RSpec.describe Epics::TransferService, feature_category: :portfolio_management d
           expect(new_epic.confidential).to eq(epic.confidential)
         end
 
+        it 'publishes events for the new epics' do
+          expect(Gitlab::EventStore)
+            .to receive(:publish_group)
+            .with(array_including(an_instance_of(Epics::EpicCreatedEvent)))
+            .and_call_original
+
+          service.execute
+        end
+
         it 'does not recreate missing epics that are not applied to issues' do
           unassigned_epic = create(:epic, group: old_group)
           service.execute
