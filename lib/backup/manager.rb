@@ -5,8 +5,8 @@ module Backup
     FILE_NAME_SUFFIX = '_gitlab_backup.tar'
     MANIFEST_NAME = 'backup_information.yml'
 
-    # Use the content from a PIPE instead of an actual filepath (used by tar as input or output)
-    USE_PIPE_INSTEAD_OF_FILE = '-'
+    # Use the content from stdin instead of an actual filepath (used by tar as input or output)
+    USE_STDIN = '-'
 
     attr_reader :progress, :remote_storage, :options
 
@@ -238,7 +238,7 @@ module Backup
 
         tar_utils = ::Gitlab::Backup::Cli::Utils::Tar.new
         tar_command = tar_utils.pack_cmd(
-          archive_file: USE_PIPE_INSTEAD_OF_FILE,
+          archive_file: USE_STDIN,
           target_directory: backup_path,
           target: backup_contents)
 
