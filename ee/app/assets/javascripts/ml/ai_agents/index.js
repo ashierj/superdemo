@@ -13,7 +13,7 @@ export default () => {
     return false;
   }
 
-  const { basePath, projectPath } = el.dataset;
+  const { basePath, projectPath, userId } = el.dataset;
 
   const apolloProvider = new VueApollo({
     defaultClient: createDefaultClient(),
@@ -28,6 +28,7 @@ export default () => {
     router,
     provide: {
       projectPath,
+      userId,
     },
     render(h) {
       return h(BaseApp);
