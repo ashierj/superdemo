@@ -26,7 +26,7 @@ service StepRunner {
     rpc Run(RunRequest) returns (RunResponse);
     rpc FollowSteps(FollowStepsRequest) returns (stream FollowStepsResponse);
     rpc FollowLogs(FollowLogsRequest) returns (stream FollowLogsResponse);
-    rpc Cancel(CancelRequest) returns (CancelResponse);
+    rpc Finish(FinishRequest) returns (FinishResponse);
     rpc Status(StatusRequest) returns (StatusResponse);
 }
 
@@ -70,11 +70,11 @@ message FollowLogsResponse {
     StreamType stream_type = 2;
 }
 
-message CancelRequest {
+message FinishRequest {
     string id = 1;
 }
 
-message CancelResponse {
+message FinishResponse {
 }
 
 message Status {
@@ -98,15 +98,15 @@ Steps are delivered to Step Runner as a JSON blob in the GitLab CI syntax.
 Runner interacts with Step Runner over the above gRPC service which is
 started on a local socket in the execution environment. This is the same
 way that Nesting serves a gRPC service in a dedicated Mac instance. The
-service has five RPCs, `Run`, `FollowSteps`, `FollowLogs`, `Cancel` and `Status`.
+service has five RPCs, `Run`, `FollowSteps`, `FollowLogs`, `Finish` and `Status`.
 
 `Run` is the initial delivery of the steps. `FollowSteps` requests a streaming
 response of step-result traces. `FollowLogs` similarly requests a streaming
 response of output (`stdout`/`stderr`) written by processes executed as
-part of running the steps. `Cancel` stops execution of the request (if
+part of running the steps. `Finish` stops execution of the request (if
 still running) and cleans up resources as soon as possible. `Status` lists
 all active requests in the Step Runner service (including completed but
-not `Cancel`ed jobs), and can be used by a runner to for example recover
+not `Finish`ed jobs), and can be used by a runner to for example recover
 after a crash.
 
 The Step Runner gRPC service will be able to execute multiple `Run`
@@ -124,7 +124,7 @@ the same API with the same parameters should return the same result. For
 example, If `Run` is called multiple times with the same arguments, only
 the first invocation should begin processing of the job request, and
 subsequent invocations return a success status but otherwise do noting.
-Similarly, multiple calls to `Cancel` should finish and remove the
+Similarly, multiple calls to `Finish` should finish and remove the
 relevant job on the first call, and do nothing on subsequent calls.
 
 The `Step Runner` binary will include a command to proxy data from
@@ -155,12 +155,12 @@ they would be in traditional runner job execution.
 
 The service should not assume clients will be well-behaved, and should be
 able to handle clients that prematurely disconnect from either of the
-`Follow` APIs, and also clients that never call `Cancel` on a
+`Follow` APIs, and also clients that never call `Finish` on a
 corresponding `Run` request.
 
 Finally, to facilitate integrating steps into the below runner executors,
 it is recommended that steps provide a client library to coordinate
-execution of the `Run`/`Follow*`/`Cancel` APIs, and to handle reconnecting
+execution of the `Run`/`Follow*`/`Finish` APIs, and to handle reconnecting
 to the step-runner service in the event that the `Follow*` calls loose
 connectivity.
 
