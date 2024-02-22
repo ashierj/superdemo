@@ -49,16 +49,16 @@ RSpec.describe ::Search::Zoekt::SchedulingService, feature_category: :global_sea
       expect(execute_task).to eq(false)
     end
 
-    it 'returns false if there are unassigned namespaces' do
-      create(:zoekt_enabled_namespace)
-
-      expect(execute_task).to eq(false)
-    end
-
     context 'when on .com', :saas do
       let_it_be(:group) { create(:group) }
       let_it_be(:subscription) { create(:gitlab_subscription, namespace: group) }
       let_it_be(:root_storage_statistics) { create(:namespace_root_storage_statistics, namespace: group) }
+
+      it 'returns false if there are unassigned namespaces' do
+        create(:zoekt_enabled_namespace)
+
+        expect(execute_task).to eq(false)
+      end
 
       context 'when feature flag is disabled' do
         before do
@@ -68,6 +68,21 @@ RSpec.describe ::Search::Zoekt::SchedulingService, feature_category: :global_sea
         it 'returns false' do
           expect(execute_task).to eq(false)
         end
+      end
+
+      it 'enables search for namespaces' do
+        expiration_date = described_class::DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER.ago - 1.hour
+        ns = create(:zoekt_enabled_namespace, search: false, created_at: expiration_date)
+        create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
+
+        expect { execute_task }.to change { ns.reload.search }.from(false).to(true)
+      end
+
+      it 'skips recently enabled namespaces' do
+        ns = create(:zoekt_enabled_namespace, search: false)
+        create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
+
+        expect { execute_task }.not_to change { ns.reload.search }
       end
 
       it 'assigns namespaces to a node' do
