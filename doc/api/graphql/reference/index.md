@@ -18740,6 +18740,7 @@ Describes where code is deployed for a project.
 | <a id="environmentclusteragent"></a>`clusterAgent` | [`ClusterAgent`](#clusteragent) | Cluster agent of the environment. |
 | <a id="environmentcreatedat"></a>`createdAt` | [`Time`](#time) | When the environment was created. |
 | <a id="environmentdeployfreezes"></a>`deployFreezes` | [`[CiFreezePeriod!]`](#cifreezeperiod) | Deployment freeze periods of the environment. |
+| <a id="environmentdeploymentsdisplaycount"></a>`deploymentsDisplayCount` | [`String`](#string) | Number of deployments in the environment for display. Returns the precise number up to 999, and "999+" for counts exceeding this limit. |
 | <a id="environmentenvironmenttype"></a>`environmentType` | [`String`](#string) | Folder name of the environment. |
 | <a id="environmentexternalurl"></a>`externalUrl` | [`String`](#string) | External URL of the environment. |
 | <a id="environmentfluxresourcepath"></a>`fluxResourcePath` | [`String`](#string) | Flux resource path of the environment. |
