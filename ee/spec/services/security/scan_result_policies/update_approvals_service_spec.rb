@@ -10,9 +10,13 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     let(:vulnerability_states) { %w[detected newly_detected] }
     let(:approvals_required) { 2 }
 
+    let_it_be(:project) { create(:project, :repository) }
     let_it_be(:uuids) { Array.new(5) { SecureRandom.uuid } }
-    let_it_be_with_refind(:merge_request) { create(:merge_request, source_branch: 'feature', target_branch: 'master') }
-    let_it_be(:project) { merge_request.project }
+    let_it_be(:scanner) { create(:vulnerabilities_scanner, project: project) }
+    let_it_be_with_refind(:merge_request) do
+      create(:merge_request, source_project: project, target_project: project,
+        source_branch: 'feature', target_branch: 'master')
+    end
 
     let_it_be(:pipeline) do
       create(:ee_ci_pipeline, :success, :with_dependency_scanning_report, project: project,
@@ -37,12 +41,13 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     end
 
     let_it_be(:pipeline_findings) do
-      create_list(:security_finding, 5, scan: pipeline_scan, severity: 'high') do |finding, i|
-        finding.update_column(:uuid, uuids[i])
+      uuids.map do |uuid|
+        create(:security_finding, scan: pipeline_scan, scanner: scanner, severity: 'high', uuid: uuid)
       end
     end
 
-    let_it_be(:scan_result_policy_read) { create(:scan_result_policy_read) }
+    let_it_be(:scan_result_policy_read) { create(:scan_result_policy_read, project: project) }
+    let(:last_violation) { merge_request.scan_result_policy_violations.last }
 
     let!(:report_approver_rule) do
       create(:report_approver_rule, :scan_finding,
@@ -57,15 +62,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     end
 
     before do
-      create_list(:security_finding, 5, scan: target_scan, severity: 'high') do |finding, i|
-        finding.update_column(:uuid, uuids[i])
-      end
-
-      create_list(:vulnerabilities_finding, 5, project: project) do |finding, i|
-        vulnerability = create(:vulnerability, project: project)
-        finding.update_columns(uuid: uuids[i], vulnerability_id: vulnerability.id)
-      end
-
       allow(pipeline).to receive(:can_store_security_reports?).and_return(true)
     end
 
@@ -168,8 +164,8 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       let(:vulnerabilities_allowed) { 100 }
 
       it_behaves_like 'sets approvals_required to 0'
-
       it_behaves_like 'triggers policy bot comment', :scan_finding, false
+      it_behaves_like 'merge request without scan result violations'
 
       context 'when there are other scan_finding violations' do
         let_it_be(:protected_branch) { create(:protected_branch, project: project, name: 'master') }
@@ -229,7 +225,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       end
 
       it_behaves_like 'does not update approvals_required'
-
       it_behaves_like 'triggers policy bot comment', :scan_finding, true
     end
 
@@ -263,7 +258,8 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       end
 
       let!(:merge_base_pipeline_finding) do
-        create(:security_finding, scan: merge_base_pipeline_scan, severity: 'high', uuid: existing_uuid)
+        create(:security_finding, scan: merge_base_pipeline_scan, severity: 'high', scanner: scanner,
+          uuid: existing_uuid)
       end
 
       let(:vulnerability_states) { %w[newly_detected] }
@@ -276,7 +272,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
       context 'when there are no violated approval rules' do
         it_behaves_like 'sets approvals_required to 0'
-
         it_behaves_like 'triggers policy bot comment', :scan_finding, false
       end
 
@@ -284,7 +279,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         let(:existing_uuid) { SecureRandom.uuid }
 
         it_behaves_like 'does not update approvals_required'
-
         it_behaves_like 'triggers policy bot comment', :scan_finding, true
 
         context 'when no common ancestor pipeline has security reports' do
@@ -293,42 +287,40 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
           end
 
           it_behaves_like 'does not update approvals_required'
-
           it_behaves_like 'triggers policy bot comment', :scan_finding, true
         end
       end
     end
 
-    context 'when the number of findings in current pipeline exceed the allowed limit' do
-      context 'when vulnerability_states has only newly_detected' do
-        it_behaves_like 'new vulnerability_states', ['newly_detected']
+    context 'when there are findings in the current pipeline exceed the allowed limit' do
+      it_behaves_like 'new vulnerability_states', ['newly_detected']
+      it_behaves_like 'new vulnerability_states', ['new_needs_triage']
+      it_behaves_like 'new vulnerability_states', ['new_dismissed']
+      it_behaves_like 'new vulnerability_states', %w[new_dismissed new_needs_triage]
+
+      it_behaves_like 'does not update approvals_required'
+      it_behaves_like 'triggers policy bot comment', :scan_finding, true
+
+      context 'when vulnerability_states are new_dismissed' do
+        let(:vulnerability_states) { %w[new_dismissed] }
+
+        it_behaves_like 'sets approvals_required to 0'
+        it_behaves_like 'triggers policy bot comment', :scan_finding, false
       end
 
-      context 'when vulnerability_states has only new_needs_triage' do
-        it_behaves_like 'new vulnerability_states', ['new_needs_triage']
-      end
+      context 'when vulnerability_states are new_needs_triage' do
+        let(:vulnerability_states) { %w[new_needs_triage] }
 
-      context 'when vulnerability_states has only new_dismissed' do
-        it_behaves_like 'new vulnerability_states', ['new_dismissed']
-      end
-
-      context 'when vulnerability_states are new_dismissed and new_needs_triage' do
-        it_behaves_like 'new vulnerability_states', %w[new_dismissed new_needs_triage]
-      end
-
-      context 'when vulnerabilities count exceeds the allowed limit' do
         it_behaves_like 'does not update approvals_required'
-
         it_behaves_like 'triggers policy bot comment', :scan_finding, true
       end
 
-      context 'when new findings are introduced and it exceeds the allowed limit' do
+      context 'when new findings are introduced to previously existing findings and it exceeds the allowed limit' do
         let(:vulnerabilities_allowed) { 4 }
-        let(:new_finding_uuid) { SecureRandom.uuid }
-
-        before do
-          finding = pipeline_findings.last
-          finding.update_column(:uuid, new_finding_uuid)
+        let_it_be(:new_finding_uuid) { uuids[4] }
+        let_it_be(:previously_existing_finding_uuids) { uuids[0..3] }
+        let_it_be(:target_pipeline_findings) do
+          create_findings_with_vulnerabilities(target_scan, previously_existing_finding_uuids)
         end
 
         it 'logs update' do
@@ -361,25 +353,15 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         end
 
         it_behaves_like 'does not update approvals_required'
-
         it_behaves_like 'triggers policy bot comment', :scan_finding, true
 
         context 'when there are no new dismissed vulnerabilities' do
           let(:vulnerabilities_allowed) { 0 }
 
-          context 'when vulnerability_states is new_dismissed' do
-            let(:vulnerability_states) { %w[new_dismissed] }
-
-            it_behaves_like 'new vulnerability_states', ['new_dismissed']
-
-            it_behaves_like 'sets approvals_required to 0'
-          end
-
           context 'when vulnerability_states is new_needs_triage' do
             let(:vulnerability_states) { %w[new_needs_triage] }
 
             it_behaves_like 'new vulnerability_states', ['new_needs_triage']
-
             it_behaves_like 'does not update approvals_required'
           end
 
@@ -387,7 +369,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
             let(:vulnerability_states) { %w[new_dismissed new_needs_triage] }
 
             it_behaves_like 'new vulnerability_states', %w[new_dismissed new_needs_triage]
-
             it_behaves_like 'does not update approvals_required'
           end
 
@@ -395,8 +376,15 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
             let(:vulnerability_states) { [] }
 
             it_behaves_like 'new vulnerability_states', []
-
             it_behaves_like 'does not update approvals_required'
+          end
+
+          context 'when vulnerability_states is new_dismissed' do
+            let(:vulnerability_states) { %w[new_dismissed] }
+
+            it_behaves_like 'new vulnerability_states', ['new_dismissed']
+            it_behaves_like 'sets approvals_required to 0'
+            it_behaves_like 'merge request without scan result violations'
           end
         end
 
@@ -413,23 +401,13 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
             let(:vulnerability_states) { %w[new_dismissed] }
 
             it_behaves_like 'new vulnerability_states', ['new_dismissed']
-
             it_behaves_like 'does not update approvals_required'
-          end
-
-          context 'when vulnerability_states is new_needs_triage' do
-            let(:vulnerability_states) { %w[new_needs_triage] }
-
-            it_behaves_like 'new vulnerability_states', ['new_needs_triage']
-
-            it_behaves_like 'sets approvals_required to 0'
           end
 
           context 'when vulnerability_states are new_dismissed and new_needs_triage' do
             let(:vulnerability_states) { %w[new_dismissed new_needs_triage] }
 
             it_behaves_like 'new vulnerability_states', %w[new_dismissed new_needs_triage]
-
             it_behaves_like 'does not update approvals_required'
           end
 
@@ -437,14 +415,22 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
             let(:vulnerability_states) { [] }
 
             it_behaves_like 'new vulnerability_states', []
-
             it_behaves_like 'does not update approvals_required'
+          end
+
+          context 'when vulnerability_states is new_needs_triage' do
+            let(:vulnerability_states) { %w[new_needs_triage] }
+
+            it_behaves_like 'new vulnerability_states', ['new_needs_triage']
+            it_behaves_like 'sets approvals_required to 0'
+            it_behaves_like 'merge request without scan result violations'
           end
         end
 
         context 'when the approval rules had approvals removed' do
           let_it_be(:approval_project_rule) do
-            create(:approval_project_rule, :scan_finding, project: project, approvals_required: 2)
+            create(:approval_project_rule, :scan_finding, project: project, approvals_required: 2,
+              scan_result_policy_read: scan_result_policy_read)
           end
 
           let!(:report_approver_rule) do
@@ -474,56 +460,53 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
           create(:security_scan, :succeeded, pipeline: pipeline, scan_type: 'dependency_scanning')
         end
 
+        let_it_be(:target_pipeline_findings) { create_findings_with_vulnerabilities(target_scan, uuids) }
         let(:vulnerability_states) { %w[detected] }
 
-        context 'when vulnerability_states has newly_detected' do
-          let(:vulnerability_states) { %w[detected newly_detected] }
-
-          it_behaves_like 'sets approvals_required to 0'
-
-          it_behaves_like 'triggers policy bot comment', :scan_finding, false
-        end
-
-        context 'when vulnerability_states are empty array' do
-          let(:vulnerability_states) { [] }
-
-          it_behaves_like 'sets approvals_required to 0'
-        end
-
-        context 'when vulnerability_states has new_needs_triage' do
-          let(:vulnerability_states) { %w[detected new_needs_triage] }
-
-          it_behaves_like 'sets approvals_required to 0'
-
-          it_behaves_like 'triggers policy bot comment', :scan_finding, false
-        end
-
-        context 'when vulnerability_states has new_dismissed' do
-          let(:vulnerability_states) { %w[detected new_dismissed] }
-
-          it_behaves_like 'sets approvals_required to 0'
-
-          it_behaves_like 'triggers policy bot comment', :scan_finding, false
-        end
-
-        context 'when vulnerability_states has new_needs_triage and new_dismissed' do
-          let(:vulnerability_states) { %w[detected new_needs_triage new_dismissed] }
-
-          it_behaves_like 'sets approvals_required to 0'
-
-          it_behaves_like 'triggers policy bot comment', :scan_finding, false
-        end
-
-        context 'when vulnerabilities count exceeds the allowed limit' do
-          it_behaves_like 'does not update approvals_required'
-          it_behaves_like 'does not trigger policy bot comment'
-        end
+        # If vulnerability_states only include previously-existing statuses,
+        # the updates are handled by SyncPreexistingStatesApprovalRulesService
+        it_behaves_like 'does not update approvals_required'
+        it_behaves_like 'does not trigger policy bot comment'
 
         context 'when vulnerabilities count does not exceed the allowed limit' do
           let(:vulnerabilities_allowed) { 6 }
 
           it_behaves_like 'does not update approvals_required'
           it_behaves_like 'does not trigger policy bot comment'
+        end
+
+        context 'when vulnerability_states has only newly detected' do
+          let(:vulnerability_states) { %w[new_needs_triage new_dismissed] }
+
+          it_behaves_like 'sets approvals_required to 0'
+          it_behaves_like 'triggers policy bot comment', :scan_finding, false
+          it_behaves_like 'merge request without scan result violations'
+        end
+
+        context 'when vulnerability_states are empty array' do
+          let(:vulnerability_states) { [] }
+
+          it_behaves_like 'sets approvals_required to 0'
+          it_behaves_like 'triggers policy bot comment', :scan_finding, false
+          it_behaves_like 'merge request without scan result violations'
+        end
+
+        context 'when vulnerability_states include detected' do
+          let(:base_states) { %w[detected] }
+
+          [
+            %w[newly_detected],
+            %w[new_needs_triage],
+            %w[new_dismissed],
+            %w[new_needs_triage new_dismissed]
+          ].each do |states|
+            context "and #{states}" do
+              let(:vulnerability_states) { base_states + states }
+
+              it_behaves_like 'does not update approvals_required'
+              it_behaves_like 'triggers policy bot comment', :scan_finding, true
+            end
+          end
         end
       end
 
@@ -566,8 +549,8 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       end
 
       let_it_be(:related_pipeline_findings) do
-        create_list(:security_finding, 5, scan: related_pipeline_scan, severity: 'high') do |finding, i|
-          finding.update_column(:uuid, related_uuids[i])
+        related_uuids.each do |uuid|
+          create(:security_finding, scan: related_pipeline_scan, scanner: scanner, severity: 'high', uuid: uuid)
         end
       end
 
@@ -579,14 +562,12 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         )
       end
 
-      before do
-        create_list(:security_finding, 5, scan: related_target_scan, severity: 'high') do |finding, i|
-          finding.update_column(:uuid, related_uuids[i])
-        end
+      before_all do
+        related_uuids.each do |uuid|
+          create(:security_finding, scan: related_target_scan, scanner: scanner, severity: 'high', uuid: uuid)
 
-        create_list(:vulnerabilities_finding, 5, project: project) do |finding, i|
           vulnerability = create(:vulnerability, project: project)
-          finding.update_columns(uuid: related_uuids[i], vulnerability_id: vulnerability.id)
+          create(:vulnerabilities_finding, project: project, uuid: uuid, vulnerability: vulnerability)
         end
       end
 
@@ -614,7 +595,10 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
     context 'when the approval rule has vulnerability attributes' do
       let(:report_approver_rule) { nil }
-      let_it_be(:policy) { create(:scan_result_policy_read, vulnerability_attributes: { fix_available: true }) }
+      let_it_be(:policy) do
+        create(:scan_result_policy_read, project: project, vulnerability_attributes: { fix_available: true })
+      end
+
       let_it_be(:approval_rule) do
         create(:approval_project_rule, :scan_finding, project: project, scan_result_policy_read: policy)
       end
@@ -649,6 +633,15 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
           execute
         end
       end
+    end
+  end
+
+  def create_findings_with_vulnerabilities(scan, uuids)
+    uuids.each do |uuid|
+      create(:security_finding, scan: scan, scanner: scanner, severity: 'high', uuid: uuid)
+
+      vulnerability = create(:vulnerability, project: project)
+      create(:vulnerabilities_finding, project: project, scanner: scanner, uuid: uuid, vulnerability: vulnerability)
     end
   end
 end
