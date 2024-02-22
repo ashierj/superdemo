@@ -52,7 +52,7 @@ gem 'sprockets', '~> 3.7.0' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'view_component', '~> 3.8.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Supported DBs
-gem 'pg', '~> 1.5.4' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'pg', '~> 1.5.5' # rubocop:todo Gemfile/MissingFeatureCategory
 
 gem 'neighbor', '~> 0.2.3' # rubocop:todo Gemfile/MissingFeatureCategory
 
