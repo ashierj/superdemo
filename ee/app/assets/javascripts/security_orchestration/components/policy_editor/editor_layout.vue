@@ -138,11 +138,11 @@ export default {
       return this.namespaceType === NAMESPACE_TYPES.GROUP;
     },
     shouldShowScope() {
-      return (
-        this.glFeatures.securityPoliciesPolicyScope &&
-        this.securityPoliciesPolicyScopeToggleEnabled &&
-        this.isGroupLevel
-      );
+      const featureFlagEnabled = this.isGroupLevel
+        ? this.glFeatures.securityPoliciesPolicyScope
+        : this.glFeatures.securityPoliciesPolicyScopeProject;
+
+      return featureFlagEnabled && this.securityPoliciesPolicyScopeToggleEnabled;
     },
     deleteModalTitle() {
       return sprintf(s__('SecurityOrchestration|Delete policy: %{policy}'), {

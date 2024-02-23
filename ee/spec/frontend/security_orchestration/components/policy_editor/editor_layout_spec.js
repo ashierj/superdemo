@@ -300,21 +300,34 @@ describe('EditorLayout component', () => {
 
   describe('policy scope', () => {
     it.each`
-      flagEnabled | securityPoliciesPolicyScopeToggleEnabled | type                       | expectedResult
-      ${true}     | ${true}                                  | ${NAMESPACE_TYPES.GROUP}   | ${true}
-      ${true}     | ${true}                                  | ${NAMESPACE_TYPES.PROJECT} | ${false}
-      ${false}    | ${false}                                 | ${NAMESPACE_TYPES.GROUP}   | ${false}
-      ${false}    | ${false}                                 | ${NAMESPACE_TYPES.PROJECT} | ${false}
-      ${true}     | ${false}                                 | ${NAMESPACE_TYPES.GROUP}   | ${false}
-      ${true}     | ${false}                                 | ${NAMESPACE_TYPES.PROJECT} | ${false}
+      flagEnabledGroup | flagEnabledProject | securityPoliciesPolicyScopeToggleEnabled | type                       | expectedResult
+      ${true}          | ${false}           | ${true}                                  | ${NAMESPACE_TYPES.GROUP}   | ${true}
+      ${true}          | ${false}           | ${true}                                  | ${NAMESPACE_TYPES.PROJECT} | ${false}
+      ${false}         | ${false}           | ${false}                                 | ${NAMESPACE_TYPES.GROUP}   | ${false}
+      ${false}         | ${false}           | ${false}                                 | ${NAMESPACE_TYPES.PROJECT} | ${false}
+      ${true}          | ${false}           | ${false}                                 | ${NAMESPACE_TYPES.GROUP}   | ${false}
+      ${true}          | ${false}           | ${false}                                 | ${NAMESPACE_TYPES.PROJECT} | ${false}
+      ${false}         | ${false}           | ${true}                                  | ${NAMESPACE_TYPES.GROUP}   | ${false}
+      ${false}         | ${true}            | ${true}                                  | ${NAMESPACE_TYPES.PROJECT} | ${true}
+      ${false}         | ${false}           | ${false}                                 | ${NAMESPACE_TYPES.PROJECT} | ${false}
+      ${true}          | ${true}            | ${false}                                 | ${NAMESPACE_TYPES.GROUP}   | ${false}
     `(
       'renders policy scope conditionally for $namespaceType level based on feature flag',
-      ({ flagEnabled, securityPoliciesPolicyScopeToggleEnabled, type, expectedResult }) => {
+      ({
+        flagEnabledGroup,
+        flagEnabledProject,
+        securityPoliciesPolicyScopeToggleEnabled,
+        type,
+        expectedResult,
+      }) => {
         factory({
           provide: {
             securityPoliciesPolicyScopeToggleEnabled,
             namespaceType: type,
-            glFeatures: { securityPoliciesPolicyScope: flagEnabled },
+            glFeatures: {
+              securityPoliciesPolicyScope: flagEnabledGroup,
+              securityPoliciesPolicyScopeProject: flagEnabledProject,
+            },
           },
         });
 

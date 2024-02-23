@@ -44668,6 +44668,9 @@ msgstr ""
 msgid "SecurityOrchestration|Apply this policy to %{projectScopeType}named %{frameworkSelector}"
 msgstr ""
 
+msgid "SecurityOrchestration|Apply this policy to current project."
+msgstr ""
+
 msgid "SecurityOrchestration|Are you sure you want to delete this policy? This action cannot be undone."
 msgstr ""
 
@@ -44767,6 +44770,9 @@ msgstr ""
 msgid "SecurityOrchestration|Exceptions"
 msgstr ""
 
+msgid "SecurityOrchestration|Failed to fetch the scope information. Please refresh the page to try again."
+msgstr ""
+
 msgid "SecurityOrchestration|Failed to load cluster agents."
 msgstr ""
 
@@ -44777,6 +44783,9 @@ msgid "SecurityOrchestration|Failed to load group projects"
 msgstr ""
 
 msgid "SecurityOrchestration|Failed to load images."
+msgstr ""
+
+msgid "SecurityOrchestration|Fetching the scope information."
 msgstr ""
 
 msgid "SecurityOrchestration|Fill in branch name with project name in the format of %{boldStart}branch-name@project-path,%{boldEnd} separate with `,`"
