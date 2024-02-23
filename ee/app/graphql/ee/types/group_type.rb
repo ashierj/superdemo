@@ -208,6 +208,7 @@ module EE
           description: 'A pending membership of a user within this group.',
           resolver: Resolvers::PendingGroupMembersResolver,
           alpha: { milestone: '16.6' }
+
         field :value_streams,
           description: 'Value streams available to the group.',
           null: true,
@@ -229,6 +230,12 @@ module EE
                        '`group_saved_replies_flag` is enabled. This field can only ' \
                        'be resolved for one group in any single request.',
           alpha: { milestone: '16.10' }
+
+        field :value_stream_analytics,
+          ::Types::Analytics::ValueStreamAnalyticsType,
+          description: 'Information about Value Stream Analytics within the group.',
+          null: true,
+          resolver_method: :object
 
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)

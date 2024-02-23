@@ -369,6 +369,12 @@ module EE
           alpha: { milestone: '16.10' },
           description: 'Find a specific AI Agent.',
           resolver: ::Resolvers::Ai::Agents::AgentDetailResolver
+
+        field :value_stream_analytics,
+          ::Types::Analytics::ValueStreamAnalyticsType,
+          description: 'Information about Value Stream Analytics within the project.',
+          null: true,
+          resolver_method: :object
       end
 
       def tracking_key
