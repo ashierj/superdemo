@@ -1,5 +1,5 @@
 query groupContributorCountQuery($fullPath: ID!, $startDate: Date!, $endDate: Date!) {
-  namespace: group(fullPath: $fullPath) {
+  group(fullPath: $fullPath) {
     id
     contributors: valueStreamDashboardUsageOverview(
       identifier: CONTRIBUTORS
