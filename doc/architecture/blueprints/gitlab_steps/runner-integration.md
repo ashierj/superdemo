@@ -42,6 +42,7 @@ message Job {
     string job_id = 2;
     string pipeline_id = 3;
     string build_dir = 4;
+    repeated string token_prefixes = 5;
 }
 
 message RunRequest {
