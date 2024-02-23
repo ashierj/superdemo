@@ -33,9 +33,11 @@ module SystemCheck
       rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, SocketError
         print_warning("NTP Server #{ntp_host} cannot be reached")
         show_ntp_connection_error
+        false
       rescue Timeout::Error
         print_warning("Connection to the NTP Server #{ntp_host} took more than #{ntp_timeout} seconds (Timeout)")
         show_ntp_connection_error
+        false
       end
 
       def show_ntp_connection_error
