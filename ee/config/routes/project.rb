@@ -158,6 +158,8 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
         namespace :ml do
           resources :agents, path: 'agents(/*vueroute)', action: :index
         end
+
+        resources :compliance_frameworks, only: [:create]
       end
       # End of the /-/ scope.
 

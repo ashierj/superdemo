@@ -14,6 +14,13 @@ module ComplianceManagement
       validates :project, presence: true
 
       delegate :full_path, to: :project
+
+      def self.find_or_create_by_project(project, framework)
+        find_or_initialize_by(project: project).tap do |setting|
+          setting.framework_id = framework.id
+          setting.save
+        end
+      end
     end
   end
 end

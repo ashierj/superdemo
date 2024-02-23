@@ -28,14 +28,36 @@ RSpec.describe ComplianceManagement::UpdateDefaultFrameworkWorker, feature_categ
       stub_licensed_features(custom_compliance_frameworks: true, compliance_framework: true)
     end
 
-    it 'invokes Projects::UpdateService' do
-      params = [project, admin_bot, { compliance_framework_setting_attributes: { framework: framework.id } }]
-
-      expect_next_instance_of(::Projects::UpdateService, *params) do |project_update_service|
-        expect(project_update_service).to receive(:execute).and_call_original
+    context 'with assign_compliance_project_service feature enabled' do
+      before do
+        stub_feature_flags(assign_compliance_project_service: true)
       end
 
-      worker.perform(*job_args)
+      it 'invokes ComplianceManagement::Frameworks::AssignProjectService' do
+        params = [project, admin_bot, { framework: framework.id }]
+
+        expect_next_instance_of(ComplianceManagement::Frameworks::AssignProjectService, *params) do |assign_service|
+          expect(assign_service).to receive(:execute).and_call_original
+        end
+
+        worker.perform(*job_args)
+      end
+    end
+
+    context 'with assign_compliance_project_service feature disabled' do
+      before do
+        stub_feature_flags(assign_compliance_project_service: false)
+      end
+
+      it 'invokes Projects::UpdateService' do
+        params = [project, admin_bot, { compliance_framework_setting_attributes: { framework: framework.id } }]
+
+        expect_next_instance_of(::Projects::UpdateService, *params) do |project_update_service|
+          expect(project_update_service).to receive(:execute).and_call_original
+        end
+
+        worker.perform(*job_args)
+      end
     end
 
     context 'when admin mode is not enabled', :do_not_mock_admin_mode_setting do

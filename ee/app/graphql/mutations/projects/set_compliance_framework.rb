@@ -26,9 +26,15 @@ module Mutations
 
         authorize!(project)
 
-        ::Projects::UpdateService.new(project, current_user, compliance_framework_setting_attributes: {
-          framework: compliance_framework_id&.model_id
-        }).execute
+        if Feature.enabled?(:assign_compliance_project_service, project)
+          ::ComplianceManagement::Frameworks::AssignProjectService
+            .new(project, current_user, framework: compliance_framework_id&.model_id)
+            .execute
+        else
+          ::Projects::UpdateService.new(project, current_user, compliance_framework_setting_attributes: {
+            framework: compliance_framework_id&.model_id
+          }).execute
+        end
 
         { project: project, errors: errors_on_object(project) }
       end

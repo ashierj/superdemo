@@ -20667,6 +20667,9 @@ msgstr ""
 msgid "Failed to assign a user because no user was found."
 msgstr ""
 
+msgid "Failed to assign the framework to the project"
+msgstr ""
+
 msgid "Failed to assign you issues related to the merge request."
 msgstr ""
 

@@ -14,10 +14,16 @@ module ComplianceManagement
       project = Project.find(project_id)
 
       Gitlab::Auth::CurrentUserMode.bypass_session!(admin_bot.id) do
-        ::Projects::UpdateService.new(
-          project, admin_bot,
-          compliance_framework_setting_attributes: { framework: compliance_framework_id }
-        ).execute
+        if Feature.enabled?(:assign_compliance_project_service, project)
+          ::ComplianceManagement::Frameworks::AssignProjectService
+            .new(project, admin_bot, framework: compliance_framework_id)
+            .execute
+        else
+          ::Projects::UpdateService.new(
+            project, admin_bot,
+            compliance_framework_setting_attributes: { framework: compliance_framework_id }
+          ).execute
+        end
       end
     rescue ActiveRecord::RecordNotFound => e
       Gitlab::ErrorTracking.log_exception(e)
