@@ -10605,6 +10605,9 @@ msgstr ""
 msgid "CiStatusLabel|canceled"
 msgstr ""
 
+msgid "CiStatusLabel|canceling"
+msgstr ""
+
 msgid "CiStatusLabel|created"
 msgstr ""
 
@@ -10651,6 +10654,9 @@ msgid "CiStatusText|Blocked"
 msgstr ""
 
 msgid "CiStatusText|Canceled"
+msgstr ""
+
+msgid "CiStatusText|Canceling"
 msgstr ""
 
 msgid "CiStatusText|Created"
@@ -51193,6 +51199,9 @@ msgid "This job is deployed to %{environmentLink}."
 msgstr ""
 
 msgid "This job is in pending state and is waiting to be picked by a runner"
+msgstr ""
+
+msgid "This job is in the process of canceling"
 msgstr ""
 
 msgid "This job is performing tasks that must complete before it can start"
