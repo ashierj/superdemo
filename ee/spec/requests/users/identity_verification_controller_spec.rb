@@ -159,10 +159,8 @@ feature_category: :system_access do
 
   shared_examples 'it requires oauth users to go through ArkoseLabs challenge' do
     let(:user) { create(:omniauth_user, :unconfirmed) }
-    let(:arkose_labs_oauth_signup_challenge) { true }
 
     before do
-      stub_feature_flags(arkose_labs_oauth_signup_challenge: arkose_labs_oauth_signup_challenge)
       stub_session(verification_user_id: user.id)
 
       do_request
@@ -171,12 +169,6 @@ feature_category: :system_access do
     subject { response }
 
     it { is_expected.to redirect_to(arkose_labs_challenge_identity_verification_path) }
-
-    context 'when arkose_labs_oauth_signup_challenge feature flag is disabled' do
-      let(:arkose_labs_oauth_signup_challenge) { false }
-
-      it { is_expected.not_to redirect_to(arkose_labs_challenge_identity_verification_path) }
-    end
 
     context 'when user has an arkose_risk_band' do
       let(:user) { create(:omniauth_user, :unconfirmed, :low_risk) }
@@ -776,22 +768,12 @@ feature_category: :system_access do
     let_it_be(:user_without_risk_band) { create(:user) }
     let_it_be(:user_with_risk_band) { create(:user) }
 
-    let(:arkose_labs_oauth_signup_challenge) { true }
-
     before do
-      stub_feature_flags(arkose_labs_oauth_signup_challenge: arkose_labs_oauth_signup_challenge)
-
       stub_session(verification_user_id: user&.id)
       request
     end
 
     subject { response }
-
-    context 'when arkose_labs_oauth_signup_challenge feature flag is disabled' do
-      let(:arkose_labs_oauth_signup_challenge) { false }
-
-      it { is_expected.to have_gitlab_http_status(:not_found) }
-    end
 
     context 'when session contains no `verification_user_id`' do
       let(:user) { nil }
