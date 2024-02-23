@@ -97,21 +97,21 @@ service has five RPCs, `Run`, `FollowSteps`, `FollowLogs`, `Finish` and `Status`
 `Run` is the initial delivery of the steps. `FollowSteps` requests a streaming
 response of step-result traces. `FollowLogs` similarly requests a streaming
 response of output (`stdout`/`stderr`) written by processes executed as
-part of running the steps. `Finish` stops execution of the request (if
-still running) and cleans up resources as soon as possible. `Status` lists
-all active requests in the Step Runner service (including completed but
-not `Finish`ed jobs), and can be used by a runner to for example recover
-after a crash.
+part of running the steps, and logs produced by Step Runner itself.
+`Finish` stops execution of the request (if still running) and cleans up
+resources as soon as possible. `Status` lists all active requests in the
+Step Runner service (including completed but not `Finish`ed jobs), and can
+be used by a runner to for example recover after a crash.
 
 The Step Runner gRPC service will be able to execute multiple `Run`
 payloads at once. That is, each call to `Run` will start a new goroutine
 and execute the steps until completion. Multiple calls to `Run` may be
 made simultaneously.
 
-As steps are executed, step-result traces and sub-process IO are streamed
-back to GitLab Runner. This allows callers to follow execution, at the
-step level for step-result traces (`FollowSteps`), and as written for
-sub-process IO (`FollowLogs`).
+As steps are executed, step-result traces and sub-process logs are
+streamed back to GitLab Runner. This allows callers to follow execution,
+at the step level for step-result traces (`FollowSteps`), and as written
+for sub-process and Step Runner logs (`FollowLogs`).
 
 All APIs excluding `Status` are idempotent, meaning that multiple calls to
 the same API with the same parameters should return the same result. For
