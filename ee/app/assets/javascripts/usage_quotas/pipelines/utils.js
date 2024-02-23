@@ -1,4 +1,3 @@
-import { parseBoolean } from '~/lib/utils/common_utils';
 import { dateToYearMonthDate, newDateAsLocaleTime } from '~/lib/utils/datetime_utility';
 
 const formatMonthData = (cur) => {
@@ -53,49 +52,4 @@ export const formatIso8601Date = (year, monthIndex, day) => {
     .map(String)
     .map((s) => s.padStart(2, '0'))
     .join('-');
-};
-
-export const parseProvideData = (el) => {
-  if (!el) {
-    return {};
-  }
-
-  const {
-    pageSize,
-    namespacePath,
-    namespaceId,
-    namespaceActualPlanName,
-    userNamespace,
-    ciMinutesAnyProjectEnabled,
-    ciMinutesDisplayMinutesAvailableData,
-    ciMinutesLastResetDate,
-    ciMinutesMonthlyMinutesLimit,
-    ciMinutesMonthlyMinutesUsed,
-    ciMinutesMonthlyMinutesUsedPercentage,
-    ciMinutesPurchasedMinutesLimit,
-    ciMinutesPurchasedMinutesUsed,
-    ciMinutesPurchasedMinutesUsedPercentage,
-    buyAdditionalMinutesPath,
-    buyAdditionalMinutesTarget,
-  } = el.dataset;
-
-  return {
-    pageSize: Number(pageSize),
-    namespacePath,
-    namespaceId,
-    namespaceActualPlanName,
-    userNamespace: parseBoolean(userNamespace),
-    ciMinutesAnyProjectEnabled: parseBoolean(ciMinutesAnyProjectEnabled),
-    ciMinutesDisplayMinutesAvailableData: parseBoolean(ciMinutesDisplayMinutesAvailableData),
-    ciMinutesLastResetDate,
-    // Limit and Usage could be a number or a string (e.g. `Unlimited`) so we shouldn't parse these
-    ciMinutesMonthlyMinutesLimit,
-    ciMinutesMonthlyMinutesUsed,
-    ciMinutesMonthlyMinutesUsedPercentage,
-    ciMinutesPurchasedMinutesLimit,
-    ciMinutesPurchasedMinutesUsed,
-    ciMinutesPurchasedMinutesUsedPercentage,
-    buyAdditionalMinutesPath,
-    buyAdditionalMinutesTarget,
-  };
 };

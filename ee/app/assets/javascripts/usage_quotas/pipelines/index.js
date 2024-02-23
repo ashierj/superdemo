@@ -1,26 +1,13 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import apolloProvider from 'ee/usage_quotas/shared/provider';
-import { PIPELINES_TAB_METADATA_EL_SELECTOR } from '../constants';
-import PipelineUsageApp from './components/app.vue';
-import { parseProvideData } from './utils';
+import { getPipelineTabMetadata } from './tab_metadata';
 
 Vue.use(VueApollo);
 
 export default () => {
-  const el = document.querySelector(PIPELINES_TAB_METADATA_EL_SELECTOR);
+  const pipelineTabMetadata = getPipelineTabMetadata({ includeEl: true });
 
-  if (!el) {
-    return false;
-  }
+  if (!pipelineTabMetadata) return false;
 
-  return new Vue({
-    el,
-    name: 'PipelinesUsageView',
-    provide: parseProvideData(el),
-    apolloProvider,
-    render(createElement) {
-      return createElement(PipelineUsageApp);
-    },
-  });
+  return new Vue(pipelineTabMetadata.component);
 };
