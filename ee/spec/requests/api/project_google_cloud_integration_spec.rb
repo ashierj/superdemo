@@ -59,33 +59,6 @@ RSpec.describe API::ProjectGoogleCloudIntegration, feature_category: :integratio
     end
   end
 
-  describe 'GET /projects/:id/scripts/google_cloud/create_iam_policy' do
-    let(:path) { "/projects/#{project.id}/scripts/google_cloud/create_iam_policy" }
-    let(:params) do
-      {
-        google_cloud_project_id: google_cloud_project_id,
-        google_cloud_workload_identity_pool_id: 'wlif-gitlab',
-        oidc_claim_name: 'username',
-        oidc_claim_value: 'user@example.com',
-        google_cloud_iam_role: 'roles/compute.admin'
-      }
-    end
-
-    it 'returns 404' do
-      get(api(path, owner), params: params)
-
-      expect(response).to have_gitlab_http_status(:not_found)
-    end
-
-    context 'when SaaS feature is enabled' do
-      before do
-        stub_saas_features(google_cloud_support: true)
-      end
-
-      it_behaves_like 'an endpoint generating a bash script for Google Cloud'
-    end
-  end
-
   describe 'GET /projects/:id/google_cloud/setup/runner_deployment_project.sh' do
     let(:path) { "/projects/#{project.id}/google_cloud/setup/runner_deployment_project.sh" }
     let(:params) do
