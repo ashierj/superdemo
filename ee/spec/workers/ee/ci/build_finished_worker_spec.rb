@@ -196,15 +196,5 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
         expect { perform }.not_to change { Ci::FinishedBuildChSyncEvent.count }
       end
     end
-
-    context 'when ci_data_ingestion_to_click_house FF is disabled' do
-      before do
-        stub_feature_flags(ci_data_ingestion_to_click_house: false)
-      end
-
-      it 'does not save job on Ci::FinishedBuildChSyncEvent by default' do
-        expect { perform }.not_to change { Ci::FinishedBuildChSyncEvent.count }
-      end
-    end
   end
 end
