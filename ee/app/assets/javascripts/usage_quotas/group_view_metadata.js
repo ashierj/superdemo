@@ -1,11 +1,12 @@
 import { __ } from '~/locale';
 import { storageTabMetadata } from '~/usage_quotas/group_view_metadata';
-import { STORAGE_TAB_METADATA_EL_SELECTOR } from '~/usage_quotas/constants';
+import { STORAGE_TAB_METADATA_EL_SELECTOR, GROUP_VIEW_TYPE } from '~/usage_quotas/constants';
 import PipelineUsageApp from './pipelines/components/app.vue';
 import { parseProvideData as parseStorageTabProvideData } from './storage/utils';
 import { parseProvideData as parsePipelinesTabProvideData } from './pipelines/utils';
 import { PIPELINES_TAB_METADATA_EL_SELECTOR } from './constants';
 import { getCodeSuggestionsTabMetadata } from './code_suggestions/tab_metadata';
+import { getTransferTabMetadata } from './transfer/tab_metadata';
 import { getSeatTabMetadata } from './seats/tab_metadata';
 
 export const usageQuotasViewProvideData = {
@@ -29,4 +30,5 @@ export const usageQuotasTabsMetadata = [
   getCodeSuggestionsTabMetadata(),
   getPipelineTabMetadata(),
   storageTabMetadata,
+  getTransferTabMetadata(GROUP_VIEW_TYPE),
 ];
