@@ -24,9 +24,7 @@ RSpec.describe 'groups/settings/_enforce_ssh_certificates.html.haml', feature_ca
       allow(view).to receive(:f).and_return(form)
       allow(group).to receive(:ssh_certificates_available?).and_return(true)
 
-      expect(form).to receive(:gitlab_ui_checkbox_component).with(
-        :enforce_ssh_certificates, "Enforce SSH Certificates", anything
-      )
+      expect(form).to receive(:gitlab_ui_checkbox_component).with(:enforce_ssh_certificates, anything)
 
       render
 
