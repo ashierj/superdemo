@@ -6,12 +6,12 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
   let_it_be(:project) { create(:project, :repository) }
   let(:use_zoekt) { true }
 
-  subject { described_class.new }
+  subject(:worker) { described_class.new }
 
   before do
     # Mocking Project.find simplifies the stubs on project.use_zoekt? and
     # project.repository
-    allow(Project).to receive(:find).with(project.id).and_return(project)
+    allow(Project).to receive(:find_by_id).with(project.id).and_return(project)
     allow(project).to receive(:use_zoekt?).and_return(use_zoekt)
     stub_feature_flags(zoekt_random_force_reindexing: false)
   end
@@ -20,14 +20,14 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
     it 'sends the project to Zoekt for indexing' do
       expect(project.repository).to receive(:update_zoekt_index!)
 
-      subject.perform(project.id)
+      worker.perform(project.id)
     end
 
     it 'sends the project to Zoekt for indexing when force: true is set' do
       expect(project.repository).to receive(:update_zoekt_index!).with(force: true)
 
       options = { "force" => true }
-      subject.perform(project.id, options)
+      worker.perform(project.id, options)
     end
 
     context 'when index_code_with_zoekt is disabled' do
@@ -38,7 +38,7 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
       it 'does not send the project to Zoekt for indexing' do
         expect(project.repository).not_to receive(:update_zoekt_index!)
 
-        subject.perform(project.id)
+        worker.perform(project.id)
       end
     end
 
@@ -50,7 +50,7 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
       it 'does nothing' do
         expect(project.repository).not_to receive(:update_zoekt_index!)
 
-        subject.perform(project.id)
+        worker.perform(project.id)
       end
     end
 
@@ -60,7 +60,17 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
       it 'does not send the project to Zoekt for indexing' do
         expect(project.repository).not_to receive(:update_zoekt_index!)
 
-        subject.perform(project.id)
+        worker.perform(project.id)
+      end
+    end
+
+    context 'when project is not found' do
+      before do
+        allow(Project).to receive(:find_by_id).with(project.id).and_return(nil)
+      end
+
+      it 'returns false' do
+        expect(worker.perform(project.id)).to eq(false)
       end
     end
 
@@ -73,7 +83,7 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
       it 'sends the project to Zoekt for indexing with force: true' do
         expect(project.repository).to receive(:update_zoekt_index!).with(force: true)
 
-        subject.perform(project.id)
+        worker.perform(project.id)
       end
     end
 
@@ -89,7 +99,7 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
         expect(described_class).to receive(:perform_in)
           .with(Zoekt::IndexerWorker::RETRY_IN_IF_LOCKED, project.id, options)
 
-        subject.perform(project.id, options)
+        worker.perform(project.id, options)
       end
     end
 
@@ -99,7 +109,7 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
       it 'does nothing' do
         expect(project.repository).not_to receive(:update_zoekt_index!)
 
-        subject.perform(project.id)
+        worker.perform(project.id)
       end
     end
 
@@ -109,7 +119,7 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
       it 'does nothing' do
         expect(project.repository).not_to receive(:update_zoekt_index!)
 
-        subject.perform(project.id)
+        worker.perform(project.id)
       end
     end
   end
