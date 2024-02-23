@@ -121,7 +121,7 @@ RSpec.describe 'Admin updates EE-only settings' do
         expect(page).not_to have_content('Namespaces to index')
         expect(page).not_to have_content('Projects to index')
 
-        check 'Limit the number of namespaces and projects that can be indexed.'
+        check 'Limit the amount of namespace and project data to index'
 
         expect(page).to have_content('Namespaces to index')
         expect(page).to have_content('Projects to index')

@@ -3595,7 +3595,7 @@ msgstr ""
 msgid "AdminSettings|Let's Encrypt email"
 msgstr ""
 
-msgid "AdminSettings|Limit the number of namespaces and projects that can be indexed."
+msgid "AdminSettings|Limit the amount of namespace and project data to index"
 msgstr ""
 
 msgid "AdminSettings|Maximum downstream pipelines triggered in a project per user"
