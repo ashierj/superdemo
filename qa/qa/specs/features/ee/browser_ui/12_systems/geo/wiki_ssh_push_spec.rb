@@ -10,9 +10,9 @@ module QA
       end
 
       context 'when wiki commit' do
-        it 'is replicated to the secondary',
+        it 'new Git data is viewable in UI on secondary Geo sites',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348048' do
-          wiki_content = 'This tests replication of wikis via SSH'
+          wiki_content = 'Wikis should appear on secondary Geo sites after pushing via SSH to the primary'
           push_content = 'This is from the Geo wiki push via SSH!'
           project = nil
 
@@ -23,7 +23,7 @@ module QA
             # Create a new project and wiki
             project = create(:project, name: 'geo-wiki-ssh-project', description: 'Geo project for wiki SSH spec')
 
-            wiki = create(:project_wiki_page, project: project, title: 'Geo Replication Wiki', content: wiki_content)
+            wiki = create(:project_wiki_page, project: project, title: 'Geo Wiki test', content: wiki_content)
             wiki.visit!
             validate_content(wiki_content)
 
@@ -40,7 +40,7 @@ module QA
             validate_content(push_content)
           end
 
-          QA::Runtime::Logger.debug('*****Visiting the secondary geo node*****')
+          QA::Runtime::Logger.debug('*****Visiting the secondary Geo site*****')
 
           QA::Flow::Login.while_signed_in(address: :geo_secondary) do
             Page::Main::Menu.perform(&:go_to_projects)

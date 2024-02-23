@@ -6,7 +6,7 @@ module QA
       let(:file_name) { 'README.md' }
 
       context 'when regular git commit' do
-        it 'is replicated to the secondary',
+        it 'new Git data is viewable in UI on secondary Geo sites',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348050' do
           file_content = 'This is a Geo project! Commit from primary.'
           project = nil
@@ -32,7 +32,7 @@ module QA
             end
           end
 
-          QA::Runtime::Logger.debug('Visiting the secondary geo node')
+          QA::Runtime::Logger.debug('Visiting the secondary Geo site')
 
           QA::Flow::Login.while_signed_in(address: :geo_secondary) do
             Page::Main::Menu.perform(&:go_to_projects)
@@ -42,7 +42,7 @@ module QA
               dashboard.go_to_project(project.name)
             end
 
-            # Validate the content has been sync'd from the primary
+            # Validate the new content shows up on the secondary site
             Page::Project::Show.perform do |show|
               show.wait_for_repository_replication_with(file_name)
 
@@ -54,7 +54,7 @@ module QA
       end
 
       context 'when git-lfs commit' do
-        it 'is replicated to the secondary',
+        it 'new Git LFS data is viewable in UI on secondary Geo sites',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348049' do
           file_content = 'This is a Geo project!'
           lfs_file_display_message = 'The rendered file could not be displayed because it is stored in LFS.'
@@ -84,7 +84,7 @@ module QA
             end
           end
 
-          QA::Runtime::Logger.debug('Visiting the secondary geo node')
+          QA::Runtime::Logger.debug('Visiting the secondary Geo site')
 
           QA::Flow::Login.while_signed_in(address: :geo_secondary) do
             Page::Main::Menu.perform(&:go_to_projects)
@@ -94,7 +94,7 @@ module QA
               dashboard.go_to_project(project.name)
             end
 
-            # Validate the content has been sync'd from the primary
+            # Validate the new content shows up on the secondary site
             Page::Project::Show.perform do |show|
               show.wait_for_repository_replication_with(file_name)
 

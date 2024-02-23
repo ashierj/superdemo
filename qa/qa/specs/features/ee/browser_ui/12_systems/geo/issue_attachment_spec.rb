@@ -2,15 +2,15 @@
 
 module QA
   RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo do
-    describe 'GitLab Geo attachment replication' do
+    describe 'issue attachment' do
       let(:file_to_attach) { Runtime::Path.fixture('designs', 'banana_sample.gif') }
       let(:project) do
         create(:project, name: 'project-for-issues', description: 'project for adding issues')
       end
 
-      let(:issue) { create(:issue, title: 'My geo issue', project: project) }
+      let(:issue) { create(:issue, title: 'My Geo issue', project: project) }
 
-      it 'user uploads attachment to the primary node',
+      it 'is viewable on secondary Geo sites',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348052' do
         QA::Flow::Login.while_signed_in(address: :geo_primary) do
           issue.visit!
@@ -20,7 +20,7 @@ module QA
           end
         end
 
-        QA::Runtime::Logger.debug('Visiting the secondary geo node')
+        QA::Runtime::Logger.debug('Visiting the secondary Geo site')
 
         QA::Flow::Login.while_signed_in(address: :geo_secondary) do
           Page::Main::Menu.perform(&:go_to_projects)

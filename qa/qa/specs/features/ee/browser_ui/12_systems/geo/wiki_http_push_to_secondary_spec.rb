@@ -4,14 +4,17 @@ module QA
   # https://gitlab.com/gitlab-org/gitlab/issues/35706
   RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo do
     describe 'GitLab Geo Wiki HTTP push secondary' do
-      let(:wiki_content) { 'This tests wiki pushes via HTTP to secondary.' }
+      let(:wiki_content) do
+        'This tests that wikis are viewable in UI on secondary Geo sites after pushing via HTTP to a secondary'
+      end
+
       let(:push_content_secondary) { 'This is from the Geo wiki push to secondary!' }
       let(:git_push_http_path_prefix) { '/-/push_from_secondary' }
 
       wiki = nil
       project = nil
 
-      it 'is redirected to the primary and ultimately replicated to the secondary',
+      it 'is redirected to the primary and is viewable in UI on secondary Geo sites',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348053' do
         QA::Flow::Login.while_signed_in(address: :geo_primary) do
           # Create a new project and wiki
@@ -32,7 +35,7 @@ module QA
           end
         end
 
-        QA::Runtime::Logger.debug('Visiting the secondary geo node')
+        QA::Runtime::Logger.debug('Visiting the secondary Geo site')
 
         QA::Flow::Login.while_signed_in(address: :geo_secondary) do
           Page::Main::Menu.perform(&:go_to_projects)
@@ -44,7 +47,7 @@ module QA
 
           Page::Project::Menu.perform(&:go_to_wiki)
 
-          # Grab the HTTP URI for the secondary node and store as 'secondary_location'
+          # Grab the HTTP URI for the secondary site and store as 'secondary_location'
           Page::Project::Wiki::Show.perform do |show|
             show.wait_for_repository_replication
             show.click_clone_repository
@@ -55,7 +58,7 @@ module QA
             git_access.repository_location
           end
 
-          # Perform a git push over HTTP to the secondary node
+          # Perform a git push over HTTP to the secondary site
           push = Resource::Repository::WikiPush.fabricate! do |push|
             push.wiki = wiki
             push.repository_http_uri = secondary_location.uri

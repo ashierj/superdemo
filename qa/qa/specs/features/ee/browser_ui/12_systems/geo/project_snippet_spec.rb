@@ -8,7 +8,7 @@ module QA
       let(:file_name) { 'geo_snippet_file.md' }
       let(:file_content) { "### Geo snippet heading\n\n[Example link](https://example.com/)" }
 
-      it 'replicates to the Geo secondary site',
+      it 'is viewable on secondary Geo sites',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348073' do
         snippet = nil
 

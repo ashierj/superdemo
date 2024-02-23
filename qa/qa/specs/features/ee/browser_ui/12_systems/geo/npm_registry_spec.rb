@@ -49,7 +49,7 @@ module QA
       end
 
       # Test code is based on qa/specs/features/browser_ui/5_package/npm_registry_spec.rb
-      it 'replicates npm registry to secondary Geo site',
+      it 'is viewable on secondary Geo sites',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348085' do
         # Use a Node Docker container to publish the package
         with_fixtures([npmrc, package_json]) do |dir|
