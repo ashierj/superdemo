@@ -130,21 +130,6 @@ subsequent invocations return a success status but otherwise do noting.
 Similarly, multiple calls to `Finish` should finish and remove the
 relevant job on the first call, and do nothing on subsequent calls.
 
-The `Step Runner` binary will include a command to proxy data from
-(typically text-based) `stdin`/`stdout`/`stderr`-based protocols to the
-gRPC service. This command will run in the same host as the gRPC service,
-and will read input from `stdin`, forward it to the gRPC service over a
-local socket, receive output from the gRPC service over same socket, and
-forward it to the client via `stdout`/`stderr`. This command will enable
-clients (like runner) to transparently tunnel to the gRPC service via
-`stdin`/`stderr`/`stdout`-based protocols like SSH or `docker exec`, which
-will eliminate the need to expose the Step Runner service's gRPC port on
-Docker images, or set up SSH port forwarding on VMs, and allow runner to
-interact with `Step Runner` using established protocols (i.e. SSH and
-`docker exec`). `stdout` should be reserved for writing responses from the
-`Steps Runner` service, and `stderr` should be reserved for errors
-originating in the `proxy` command.
-
 The service should not assume clients will be well-behaved, and should be
 able to handle clients that prematurely disconnect from either of the
 `Follow` APIs, and also clients that never call `Finish` on a
@@ -195,6 +180,23 @@ the above format. The libraries used to mask variables should shared
 between `GitaLab Runner` and `Step Runner`. (See
 https://gitlab.com/gitlab-org/gitlab-runner/-/blob/main/helpers/trace/internal/tokensanitizer/token_masker.go
 https://gitlab.com/gitlab-org/gitlab-runner/-/blob/main/helpers/trace/internal/masker/masker.go).
+
+## Proxy Command
+
+The `Step Runner` binary will include a command to proxy data from
+(typically text-based) `stdin`/`stdout`/`stderr`-based protocols to the
+gRPC service. This command will run in the same host as the gRPC service,
+and will read input from `stdin`, forward it to the gRPC service over a
+local socket, receive output from the gRPC service over same socket, and
+forward it to the client via `stdout`/`stderr`. This command will enable
+clients (like runner) to transparently tunnel to the gRPC service via
+`stdin`/`stderr`/`stdout`-based protocols like SSH or `docker exec`, which
+will eliminate the need to expose the Step Runner service's gRPC port on
+Docker images, or set up SSH port forwarding on VMs, and allow runner to
+interact with `Step Runner` using established protocols (i.e. SSH and
+`docker exec`). `stdout` should be reserved for writing responses from the
+`Steps Runner` service, and `stderr` should be reserved for errors
+originating in the `proxy` command.
 
 ## Executors
 
