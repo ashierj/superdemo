@@ -177,7 +177,7 @@ export default {
       @dismiss="dismissJobFailedAlert"
     />
 
-    <header class="gl-md-display-flex gl-align-items-flex-start gl-my-5 gl-overflow-auto">
+    <header class="gl-md-display-flex gl-align-items-flex-start gl-my-5">
       <div class="gl-mr-auto">
         <h2 class="h4 gl-mb-2 gl-mt-0 gl-display-flex gl-align-items-center">
           {{ __('Dependencies') }}
@@ -209,7 +209,7 @@ export default {
         v-if="exportEndpoint"
         v-gl-tooltip.hover
         :title="s__('Dependencies|Export as JSON')"
-        class="gl-float-right gl-md-float-none gl-mt-3 gl-md-mt-0"
+        class="gl-mt-3 gl-md-mt-0"
         :icon="exportButtonIcon"
         data-testid="export"
         :loading="fetchingInProgress"
