@@ -204,7 +204,7 @@ export default {
         @keyup.escape="cancelEditing"
       />
     </gl-form>
-    <span v-else class="gl-my-3 gl-text-secondary" data-testid="progress-displayed-value">
+    <span v-else class="gl-my-3" data-testid="progress-displayed-value">
       {{ localProgress }}%
     </span>
   </div>
