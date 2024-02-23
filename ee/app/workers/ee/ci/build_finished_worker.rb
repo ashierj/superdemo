@@ -19,7 +19,7 @@ module EE
 
         ::Ci::InstanceRunnerFailedJobs.track(build) if build.failed?
 
-        if ::Feature.enabled?(:ci_data_ingestion_to_click_house) && finished_build_sync_event?(build)
+        if finished_build_sync_event?(build)
           # Use upsert since this code can be called more than once for the same build
           ::Ci::FinishedBuildChSyncEvent.upsert(
             { build_id: build.id, build_finished_at: build.finished_at },
