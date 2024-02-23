@@ -450,10 +450,20 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     context 'when merge train has a pipeline' do
       let(:train_car) { create(:merge_train_car, pipeline: pipeline) }
       let(:pipeline) { create(:ci_pipeline, :running) }
-      let(:build) { create(:ci_build, :running, pipeline: pipeline) }
+      let(:job) { create(:ci_build, :running, pipeline: pipeline) }
 
-      it 'cancels the jobs in the pipeline' do
-        expect { subject }.to change { build.reload.status }.from('running').to('canceled')
+      context 'when canceling is not supported' do
+        it 'cancels the jobs in the pipeline' do
+          expect { subject }.to change { job.reload.status }.from('running').to('canceled')
+        end
+      end
+
+      context 'when canceling is supported' do
+        include_context 'when canceling support'
+
+        it 'cancels the jobs in the pipeline' do
+          expect { subject }.to change { job.reload.status }.from('running').to('canceling')
+        end
       end
     end
   end

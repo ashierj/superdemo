@@ -36,6 +36,8 @@ module EE
           self.success!
         when 'failed'
           self.drop!
+        when 'canceling'
+          self.canceling!
         when 'canceled'
           self.cancel!
         when 'skipped'
