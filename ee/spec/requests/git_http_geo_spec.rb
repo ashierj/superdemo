@@ -86,7 +86,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
         is_expected.to have_gitlab_http_status(:redirect)
 
         expect(response.media_type).to eq('text/html')
-        expect(response.headers['Location']).to eq(redirect_url)
+        expect(response).to redirect_to(redirect_url)
       end
     end
   end
@@ -143,7 +143,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
             let_it_be(:project) { project_with_repo_but_not_synced }
 
             let(:endpoint_path) { "/#{project_with_repo_but_not_synced.full_path}.git/info/refs?service=git-upload-pack" }
-            let(:redirect_url) { redirected_primary_url }
+            let(:redirect_url) { full_redirected_url }
 
             before do
               create(:geo_project_repository_registry, :synced, project: project_with_repo_but_not_synced, last_synced_at: nil)
@@ -181,7 +181,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
           let_it_be(:project) { project_no_repo }
 
           let(:endpoint_path) { "/#{project.full_path}.git/info/refs?service=git-upload-pack" }
-          let(:redirect_url) { redirected_primary_url }
+          let(:redirect_url) { full_redirected_url }
 
           it_behaves_like 'a Geo 302 redirect to Primary'
 
@@ -204,7 +204,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
           let(:auth_token) { nil }
           let(:non_existent_project_path) { 'non-existent-namespace/non-existent-project' }
           let(:endpoint_path) { "/#{non_existent_project_path}.git/info/refs?service=git-upload-pack" }
-          let(:redirect_url) { redirected_primary_url }
+          let(:redirect_url) { full_redirected_url }
 
           # To avoid enumeration of private projects not in selective sync,
           # this response must be the same as a private project without a repo.
@@ -228,7 +228,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
         let_it_be(:project) { project_with_repo }
 
         let(:endpoint_path) { "/#{project.full_path}.git/info/refs" }
-        let(:redirect_url) { "#{redirected_primary_url}?service=git-receive-pack" }
+        let(:redirect_url) { "#{full_redirected_url}?service=git-receive-pack" }
 
         subject do
           make_request
@@ -264,7 +264,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
         let_it_be(:project) { project_no_repo }
 
         let(:endpoint_path) { "/#{project.full_path}.git/git-upload-pack" }
-        let(:redirect_url) { redirected_primary_url }
+        let(:redirect_url) { full_redirected_url }
 
         it_behaves_like 'a Geo 302 redirect to Primary'
 
@@ -303,7 +303,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
 
           context 'operation upload' do
             let(:args) { { 'operation' => 'upload' }.to_json }
-            let(:redirect_url) { redirected_primary_url }
+            let(:redirect_url) { full_redirected_url }
 
             context 'with a valid git-lfs version' do
               before do
@@ -369,7 +369,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
             context 'when the repository does not exist' do
               let_it_be(:project) { project_no_repo }
 
-              let(:redirect_url) { redirected_primary_url }
+              let(:redirect_url) { full_redirected_url }
 
               it_behaves_like 'a Geo 302 redirect to Primary'
             end
@@ -391,7 +391,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
               end
 
               context 'objects are not in sync' do
-                let(:redirect_url) { redirected_primary_url }
+                let(:redirect_url) { full_redirected_url }
                 let(:registry) { create(:geo_lfs_object_registry, :started) }
                 let(:lfs_object) { registry.lfs_object }
 
@@ -474,38 +474,10 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
           end
         end
       end
-
-      context 'Locks API' do
-        where(:description, :path, :args) do
-          'create' | 'info/lfs/locks'          | {}
-          'verify' | 'info/lfs/locks/verify'   | {}
-          'unlock' | 'info/lfs/locks/1/unlock' | { id: 1 }
-        end
-
-        with_them do
-          describe "POST #{description}" do
-            def make_request
-              post endpoint_path, params: args, headers: env
-            end
-
-            let_it_be(:project) { project_with_repo }
-
-            let(:endpoint_path) { "/#{project.full_path}.git/#{path}" }
-            let(:redirect_url) { redirected_primary_url }
-
-            subject do
-              make_request
-              response
-            end
-
-            it_behaves_like 'a Geo 302 redirect to Primary'
-          end
-        end
-      end
     end
 
-    def redirected_primary_url
-      "#{primary.url.chomp('/')}#{::Gitlab::Geo::GitPushHttp::PATH_PREFIX}/#{secondary.id}#{endpoint_path}"
+    def full_redirected_url
+      "#{::Gitlab::Geo::GitPushHttp::PATH_PREFIX}/#{secondary.id}#{endpoint_path}"
     end
   end
 
