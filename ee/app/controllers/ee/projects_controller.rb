@@ -132,6 +132,8 @@ module EE
 
       attrs += merge_request_rules_params
 
+      # this should be removed as part of assign_compliance_project_service FF removal
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/442302
       attrs += compliance_framework_params
 
       if project&.feature_available?(:auto_rollback)
@@ -190,6 +192,8 @@ module EE
       project&.feature_available?(:merge_trains)
     end
 
+    # this should be removed as part of assign_compliance_project_service FF removal
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/442302
     def compliance_framework_params
       return [] unless current_user.can?(:admin_compliance_framework, project)
 

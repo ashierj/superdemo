@@ -148,6 +148,8 @@ module EE
         publish_compliance_framework_changed_event
       end
 
+      # this should be removed as part of assign_compliance_project_service FF removal
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/442302
       def publish_compliance_framework_changed_event
         return unless project.compliance_framework_setting
 
@@ -201,6 +203,8 @@ module EE
         params[:mirror_branch_regex] = nil if params[:only_mirror_protected_branches]
       end
 
+      # this should be removed as part of assign_compliance_project_service FF removal
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/442302
       def compliance_framework_setting
         settings = params[:compliance_framework_setting_attributes]
         return unless settings.present?

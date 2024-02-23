@@ -39,4 +39,42 @@ RSpec.describe ComplianceManagement::ComplianceFramework::ProjectSettings do
       expect(subject.compliance_management_framework.name).to eq('my framework')
     end
   end
+
+  describe '.find_or_create_by_project' do
+    let_it_be(:framework) { create(:compliance_framework, namespace: project.group.root_ancestor) }
+
+    subject(:assign_framework) { described_class.find_or_create_by_project(project, framework) }
+
+    context 'when there is no compliance framework assigned to a project' do
+      it 'creates a new record' do
+        expect { assign_framework }.to change { described_class.count }.by(1)
+      end
+
+      it 'creates the compliance framework project settings' do
+        assign_framework
+
+        setting = described_class.last
+
+        expect(setting.project).to eq(project)
+        expect(setting.compliance_management_framework).to eq(framework)
+      end
+    end
+
+    context 'when there is a compliance framework assigned to a project' do
+      let_it_be(:project_setting) { create(:compliance_framework_project_setting, project: project) }
+
+      it 'does not create a new record' do
+        expect { assign_framework }.not_to change { described_class.count }
+      end
+
+      it 'updates the compliance framework project settings' do
+        assign_framework
+
+        setting = described_class.last
+
+        expect(setting.project).to eq(project)
+        expect(setting.compliance_management_framework).to eq(framework)
+      end
+    end
+  end
 end
