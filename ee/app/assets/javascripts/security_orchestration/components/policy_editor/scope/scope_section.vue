@@ -1,10 +1,14 @@
 <script>
-import { GlAlert, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
+import { isEmpty } from 'lodash';
+import { GlAlert, GlCollapsibleListbox, GlIcon, GlSprintf, GlLoadingIcon } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
+import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
 import GroupProjectsDropdown from '../../group_projects_dropdown.vue';
 import ComplianceFrameworkDropdown from './compliance_framework_dropdown.vue';
 import {
@@ -28,6 +32,13 @@ export default {
   PROJECT_SCOPE_TYPE_LISTBOX_ITEMS,
   EXCEPTION_TYPE_LISTBOX_ITEMS,
   i18n: {
+    policyScopeLoadingText: s__('SecurityOrchestration|Fetching the scope information.'),
+    policyScopeErrorText: s__(
+      'SecurityOrchestration|Failed to fetch the scope information. Please refresh the page to try again.',
+    ),
+    policyScopeFrameworkCopyProject: s__(
+      'SecurityOrchestration|Apply this policy to current project.',
+    ),
     policyScopeFrameworkCopy: s__(
       `SecurityOrchestration|Apply this policy to %{projectScopeType}named %{frameworkSelector}`,
     ),
@@ -45,14 +56,47 @@ export default {
   },
   name: 'ScopeSection',
   components: {
-    GlAlert,
-    GlCollapsibleListbox,
     ComplianceFrameworkDropdown,
+    GlAlert,
+    GlIcon,
+    GlCollapsibleListbox,
+    GlLoadingIcon,
     GlSprintf,
     GroupProjectsDropdown,
     PolicyPopover,
   },
-  inject: ['namespacePath', 'rootNamespacePath'],
+  apollo: {
+    linkedSppItems: {
+      query: getSppLinkedProjectsNamespaces,
+      variables() {
+        return {
+          fullPath: this.namespacePath,
+        };
+      },
+      update(data) {
+        const {
+          securityPolicyProjectLinkedProjects: { nodes: linkedProjects = [] },
+          securityPolicyProjectLinkedNamespaces: { nodes: linkedNamespaces = [] },
+        } = data?.project || {};
+
+        const items = [...linkedProjects, ...linkedNamespaces];
+
+        if (isEmpty(this.policyScope) && items.length > 1 && !this.isGroupLevel) {
+          this.triggerChanged({ compliance_frameworks: [] });
+        }
+
+        return items;
+      },
+      error() {
+        this.showLinkedSppItemsError = true;
+      },
+      skip() {
+        return this.shouldSkipDependenciesCheck;
+      },
+    },
+  },
+  mixins: [glFeatureFlagsMixin()],
+  inject: ['namespacePath', 'rootNamespacePath', 'namespaceType'],
   props: {
     policyScope: {
       type: Object,
@@ -83,9 +127,26 @@ export default {
       projectsPayloadKey,
       showAlert: false,
       errorDescription: '',
+      linkedSppItems: [],
+      showLinkedSppItemsError: false,
     };
   },
   computed: {
+    isGroupLevel() {
+      return this.namespaceType === NAMESPACE_TYPES.GROUP;
+    },
+    shouldSkipDependenciesCheck() {
+      return this.isGroupLevel || !this.glFeatures.securityPoliciesPolicyScopeProject;
+    },
+    groupProjectsFullPath() {
+      return this.isGroupLevel ? this.namespacePath : this.rootNamespacePath;
+    },
+    hasMultipleProjectsLinked() {
+      return this.linkedSppItems.length > 1;
+    },
+    showScopeSelector() {
+      return this.isGroupLevel || this.hasMultipleProjectsLinked;
+    },
     projectIds() {
       /**
        * Protection from manual yam input as objects
@@ -131,6 +192,9 @@ export default {
       return this.selectedProjectScopeType === PROJECTS_WITH_FRAMEWORK
         ? this.$options.i18n.policyScopeFrameworkCopy
         : this.$options.i18n.policyScopeProjectCopy;
+    },
+    showLoader() {
+      return this.$apollo.queries.linkedSppItems?.loading && !this.isGroupLevel;
     },
   },
   methods: {
@@ -180,59 +244,85 @@ export default {
       {{ errorDescription }}
     </gl-alert>
 
-    <div class="gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap gl-mt-2 gl-mb-6">
-      <gl-sprintf :message="policyScopeCopy">
-        <template #projectScopeType>
-          <gl-collapsible-listbox
-            data-testid="project-scope-type"
-            :items="$options.PROJECT_SCOPE_TYPE_LISTBOX_ITEMS"
-            :selected="selectedProjectScopeType"
-            :toggle-text="selectedProjectScopeText"
-            @select="selectProjectScopeType"
-          />
-        </template>
+    <div v-if="showLoader" class="gl-display-flex gl-gap-3 gl-align-items-baseline gl-mb-4">
+      <gl-loading-icon inline />
+      <span data-testid="loading-text">{{ $options.i18n.policyScopeLoadingText }}</span>
+    </div>
 
-        <template #frameworkSelector>
-          <div class="gl-display-inline-flex gl-align-items-center gl-flex-wrap gl-gap-3">
-            <compliance-framework-dropdown
-              :selected-framework-ids="complianceFrameworksIds"
-              :full-path="rootNamespacePath"
-              @framework-query-error="
-                setShowAlert($options.i18n.complianceFrameworkErrorDescription)
-              "
-              @select="setSelectedFrameworkIds"
+    <div v-else class="gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap gl-mt-2 gl-mb-6">
+      <template v-if="showLinkedSppItemsError">
+        <div
+          data-testid="policy-scope-project-error"
+          class="gl-display-flex gl-align-items-center gl-gap-3"
+        >
+          <gl-icon class="gl-text-red-500" name="status_warning" />
+          <p data-testid="policy-scope-project-error-text" class="gl-text-red-500 gl-m-0">
+            {{ $options.i18n.policyScopeErrorText }}
+          </p>
+        </div>
+      </template>
+
+      <template v-else-if="showScopeSelector">
+        <gl-sprintf :message="policyScopeCopy">
+          <template #projectScopeType>
+            <gl-collapsible-listbox
+              data-testid="project-scope-type"
+              :items="$options.PROJECT_SCOPE_TYPE_LISTBOX_ITEMS"
+              :selected="selectedProjectScopeType"
+              :toggle-text="selectedProjectScopeText"
+              @select="selectProjectScopeType"
             />
+          </template>
 
-            <policy-popover
-              :content="$options.i18n.complianceFrameworkPopoverContent"
-              :href="$options.COMPLIANCE_FRAMEWORK_PATH"
-              :title="$options.i18n.complianceFrameworkPopoverTitle"
-              target="compliance-framework-icon"
+          <template #frameworkSelector>
+            <div class="gl-display-inline-flex gl-align-items-center gl-flex-wrap gl-gap-3">
+              <compliance-framework-dropdown
+                :selected-framework-ids="complianceFrameworksIds"
+                :full-path="rootNamespacePath"
+                @framework-query-error="
+                  setShowAlert($options.i18n.complianceFrameworkErrorDescription)
+                "
+                @select="setSelectedFrameworkIds"
+              />
+
+              <policy-popover
+                :content="$options.i18n.complianceFrameworkPopoverContent"
+                :href="$options.COMPLIANCE_FRAMEWORK_PATH"
+                :title="$options.i18n.complianceFrameworkPopoverTitle"
+                target="compliance-framework-icon"
+              />
+            </div>
+          </template>
+
+          <template #exceptionType>
+            <gl-collapsible-listbox
+              v-if="showExceptionTypeDropdown"
+              data-testid="exception-type"
+              :items="$options.EXCEPTION_TYPE_LISTBOX_ITEMS"
+              :toggle-text="selectedExceptionTypeText"
+              :selected="selectedExceptionType"
+              @select="selectExceptionType"
             />
-          </div>
-        </template>
+          </template>
 
-        <template #exceptionType>
-          <gl-collapsible-listbox
-            v-if="showExceptionTypeDropdown"
-            data-testid="exception-type"
-            :items="$options.EXCEPTION_TYPE_LISTBOX_ITEMS"
-            :toggle-text="selectedExceptionTypeText"
-            :selected="selectedExceptionType"
-            @select="selectExceptionType"
-          />
-        </template>
+          <template #projectSelector>
+            <group-projects-dropdown
+              v-if="showGroupProjectsDropdown"
+              :group-full-path="groupProjectsFullPath"
+              :selected="projectIds"
+              state
+              @projects-query-error="setShowAlert($options.i18n.groupProjectErrorDescription)"
+              @select="setSelectedProjectIds"
+            />
+          </template>
+        </gl-sprintf>
+      </template>
 
-        <template #projectSelector>
-          <group-projects-dropdown
-            v-if="showGroupProjectsDropdown"
-            :group-full-path="namespacePath"
-            :selected="projectIds"
-            @projects-query-error="setShowAlert($options.i18n.groupProjectErrorDescription)"
-            @select="setSelectedProjectIds"
-          />
-        </template>
-      </gl-sprintf>
+      <template v-else>
+        <p data-testid="policy-scope-project-text">
+          {{ $options.i18n.policyScopeFrameworkCopyProject }}
+        </p>
+      </template>
     </div>
   </div>
 </template>

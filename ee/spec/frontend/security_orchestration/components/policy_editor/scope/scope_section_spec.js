@@ -1,10 +1,16 @@
-import { GlAlert, GlSprintf } from '@gitlab/ui';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
+import { GlAlert, GlSprintf, GlLoadingIcon, GlIcon } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import waitForPromises from 'helpers/wait_for_promises';
 import ScopeSection from 'ee/security_orchestration/components/policy_editor/scope/scope_section.vue';
 import ComplianceFrameworkDropdown from 'ee/security_orchestration/components/policy_editor/scope/compliance_framework_dropdown.vue';
 import GroupProjectsDropdown from 'ee/security_orchestration/components/group_projects_dropdown.vue';
+import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import {
   PROJECTS_WITH_FRAMEWORK,
   ALL_PROJECTS_IN_GROUP,
@@ -14,16 +20,42 @@ import {
 
 describe('PolicyScope', () => {
   let wrapper;
+  let requestHandler;
 
-  const createComponent = ({ propsData } = {}) => {
+  const createHandler = ({ projects = [], namespaces = [] } = {}) =>
+    jest.fn().mockResolvedValue({
+      data: {
+        project: {
+          id: '1',
+          securityPolicyProjectLinkedProjects: {
+            nodes: projects,
+          },
+          securityPolicyProjectLinkedNamespaces: {
+            nodes: namespaces,
+          },
+        },
+      },
+    });
+
+  const createMockApolloProvider = (handler) => {
+    Vue.use(VueApollo);
+    requestHandler = handler;
+
+    return createMockApollo([[getSppLinkedProjectsNamespaces, requestHandler]]);
+  };
+
+  const createComponent = ({ propsData, provide = {}, handler = createHandler() } = {}) => {
     wrapper = shallowMountExtended(ScopeSection, {
+      apolloProvider: createMockApolloProvider(handler),
       propsData: {
         policyScope: {},
         ...propsData,
       },
       provide: {
+        namespaceType: NAMESPACE_TYPES.GROUP,
         namespacePath: 'gitlab-org',
-        rootNamespacePath: 'gitlab-org',
+        rootNamespacePath: 'gitlab-org-root',
+        ...provide,
       },
       stubs: {
         GlSprintf,
@@ -36,6 +68,12 @@ describe('PolicyScope', () => {
   const findGroupProjectsDropdown = () => wrapper.findComponent(GroupProjectsDropdown);
   const findProjectScopeTypeDropdown = () => wrapper.findByTestId('project-scope-type');
   const findExceptionTypeDropdown = () => wrapper.findByTestId('exception-type');
+  const findPolicyScopeProjectText = () => wrapper.findByTestId('policy-scope-project-text');
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findLoadingText = () => wrapper.findByTestId('loading-text');
+  const findErrorMessage = () => wrapper.findByTestId('policy-scope-project-error');
+  const findErrorMessageText = () => wrapper.findByTestId('policy-scope-project-error-text');
+  const findIcon = () => wrapper.findComponent(GlIcon);
 
   beforeEach(() => {
     createComponent();
@@ -190,6 +228,7 @@ describe('PolicyScope', () => {
       expect(findExceptionTypeDropdown().props('selected')).toBe(EXCEPT_PROJECTS);
       expect(findExceptionTypeDropdown().exists()).toBe(true);
       expect(findGroupProjectsDropdown().exists()).toBe(true);
+      expect(findGroupProjectsDropdown().props('state')).toBe(true);
       expect(findGroupProjectsDropdown().props('selected')).toEqual([
         convertToGraphQLId(TYPENAME_PROJECT, 'id1'),
         convertToGraphQLId(TYPENAME_PROJECT, 'id2'),
@@ -236,5 +275,191 @@ describe('PolicyScope', () => {
       await findComplianceFrameworkDropdown().vm.$emit('framework-query-error');
       expect(findGlAlert().exists()).toBe(true);
     });
+  });
+
+  describe('project level', () => {
+    it('should check linked items on project level', () => {
+      createComponent({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+          glFeatures: {
+            securityPoliciesPolicyScopeProject: true,
+          },
+        },
+      });
+
+      expect(requestHandler).toHaveBeenCalledWith({ fullPath: 'gitlab-org' });
+    });
+
+    it('should not check linked items on group level', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findLoadingIcon().exists()).toBe(false);
+      expect(findComplianceFrameworkDropdown().exists()).toBe(true);
+      expect(requestHandler).toHaveBeenCalledTimes(0);
+      expect(findPolicyScopeProjectText().exists()).toBe(false);
+    });
+
+    it('show text message for project without linked items', async () => {
+      createComponent({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findPolicyScopeProjectText().text()).toBe('Apply this policy to current project.');
+    });
+
+    it('show compliance framework selector for projects with links', async () => {
+      createComponent({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+          glFeatures: {
+            securityPoliciesPolicyScopeProject: true,
+          },
+        },
+        handler: createHandler({
+          projects: [
+            { id: '1', name: 'name1' },
+            { id: '2', name: 'name2 ' },
+          ],
+          namespaces: [
+            { id: '1', name: 'name1' },
+            { id: '2', name: 'name2 ' },
+          ],
+        }),
+      });
+
+      await waitForPromises();
+
+      expect(findPolicyScopeProjectText().exists()).toBe(false);
+      expect(findComplianceFrameworkDropdown().exists()).toBe(true);
+    });
+
+    it('shows loading state', () => {
+      createComponent({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+          glFeatures: {
+            securityPoliciesPolicyScopeProject: true,
+          },
+        },
+      });
+
+      expect(findLoadingIcon().exists()).toBe(true);
+      expect(findLoadingText().text()).toBe('Fetching the scope information.');
+    });
+
+    it('shows error message when spp query fails', async () => {
+      createComponent({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+          glFeatures: {
+            securityPoliciesPolicyScopeProject: true,
+          },
+        },
+        handler: jest.fn().mockRejectedValue({}),
+      });
+
+      await waitForPromises();
+
+      expect(findErrorMessage().exists()).toBe(true);
+      expect(findErrorMessageText().text()).toBe(
+        'Failed to fetch the scope information. Please refresh the page to try again.',
+      );
+      expect(findIcon().props('name')).toBe('status_warning');
+    });
+
+    it('emits default policy scope on project level for SPP with multiple dependencies', async () => {
+      createComponent({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+          glFeatures: {
+            securityPoliciesPolicyScopeProject: true,
+          },
+        },
+        handler: createHandler({
+          projects: [
+            { id: '1', name: 'name1' },
+            { id: '2', name: 'name2 ' },
+          ],
+          namespaces: [
+            { id: '1', name: 'name1' },
+            { id: '2', name: 'name2 ' },
+          ],
+        }),
+      });
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('changed')).toEqual([[{ compliance_frameworks: [] }]]);
+    });
+
+    it('does not emit default policy scope on group level', async () => {
+      createComponent({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.GROUP,
+        },
+      });
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('changed')).toBeUndefined();
+    });
+
+    it('does not check dependencies on project level when ff is disabled', async () => {
+      createComponent({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+          glFeatures: {
+            securityPoliciesPolicyScopeProject: false,
+          },
+        },
+      });
+
+      await waitForPromises();
+
+      expect(requestHandler).toHaveBeenCalledTimes(0);
+      expect(findLoadingIcon().exists()).toBe(false);
+    });
+  });
+
+  describe('namespace', () => {
+    it.each`
+      namespaceType              | expectedResult
+      ${NAMESPACE_TYPES.GROUP}   | ${'gitlab-org'}
+      ${NAMESPACE_TYPES.PROJECT} | ${'gitlab-org-root'}
+    `(
+      'queries different namespaces on group and project level',
+      async ({ namespaceType, expectedResult }) => {
+        createComponent({
+          provide: {
+            namespaceType,
+            glFeatures: {
+              securityPoliciesPolicyScopeProject: true,
+            },
+          },
+          handler: createHandler({
+            projects: [
+              { id: '1', name: 'name1' },
+              { id: '2', name: 'name2 ' },
+            ],
+            namespaces: [
+              { id: '1', name: 'name1' },
+              { id: '2', name: 'name2 ' },
+            ],
+          }),
+        });
+
+        await waitForPromises();
+        await findProjectScopeTypeDropdown().vm.$emit('select', SPECIFIC_PROJECTS);
+
+        expect(findGroupProjectsDropdown().props('groupFullPath')).toBe(expectedResult);
+      },
+    );
   });
 });
