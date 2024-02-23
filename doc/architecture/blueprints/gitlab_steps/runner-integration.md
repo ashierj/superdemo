@@ -138,12 +138,17 @@ interact with `Step Runner` using established protocols (i.e. SSH and
 originating in the `proxy` command.
 
 Each `Run` request will include some parameters from the corresponding CI
-job. The `Run` request will include the corresponding CI job's build
-directory. All steps in a request should be invoked in that directory to
+job in the `Job` field of `RunRequest`. `Job` will include the corresponding CI job's build
+directory; all steps in a request should be invoked in that directory to
 preserve existing job script behavior. The `Run` request will also
 include the CI job's environment variables (i.e. the `variables` defined
-at the job and global levels in the CI configuration). Variables should be
-expanded by the Step Runner service since they may reference object in the
+at the job and global levels in the CI configuration). When a `Run`
+request is made by Runner, variables must be included in `Job.Variables`,
+and `RunRequest.Env` should be left empty. When the run request is
+processed, file-type variables will be written to file, variables will be
+expanded, copied into `RunRequest.Env`, and the `Job` field will be
+discarded from the remainder of the request. Variables should be expanded
+by the Step Runner service since they may reference object in the
 execution environment (like other environment variables or paths). This
 includes file-type variables, which should be written to the same path as
 they would be in traditional runner job execution.
