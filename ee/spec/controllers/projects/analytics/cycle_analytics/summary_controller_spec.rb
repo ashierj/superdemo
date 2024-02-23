@@ -46,7 +46,7 @@ RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController, feature_c
         subject
 
         lead_time = json_response.find { |result| result['identifier'] == 'cycle_time' }.symbolize_keys
-        expect(lead_time).to include({ value: expected_cycle_time.to_s, title: 'Cycle Time', unit: 'days' })
+        expect(lead_time).to include({ value: expected_cycle_time.to_s, title: 'Cycle time', unit: 'days' })
       end
 
       context 'when analytics_disabled features are disabled' do

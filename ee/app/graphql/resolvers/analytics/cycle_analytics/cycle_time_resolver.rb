@@ -12,7 +12,7 @@ module Resolvers
         def formatted_data(metric)
           super.merge(
             identifier: :cycle_time,
-            title: _('Cycle Time')
+            title: _('Cycle time')
           )
         end
       end

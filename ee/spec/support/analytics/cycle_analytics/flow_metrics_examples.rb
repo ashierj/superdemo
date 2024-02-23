@@ -85,7 +85,7 @@ RSpec.shared_examples 'value stream analytics flow metrics leadTime examples' do
       'identifier' => 'lead_time',
       'unit' => n_('day', 'days', 4),
       'value' => 4,
-      'title' => _('Lead Time'),
+      'title' => _('Lead time'),
       'links' => [
         { 'label' => s_('ValueStreamAnalytics|Dashboard'), 'url' => match(/issues_analytics/) },
         { 'label' => s_('ValueStreamAnalytics|Go to docs'), 'url' => match(/definitions/) }
@@ -211,7 +211,7 @@ RSpec.shared_examples 'value stream analytics flow metrics cycleTime examples' d
       'identifier' => 'cycle_time',
       'unit' => n_('day', 'days', 4),
       'value' => 4,
-      'title' => _('Cycle Time'),
+      'title' => _('Cycle time'),
       'links' => []
     })
   end

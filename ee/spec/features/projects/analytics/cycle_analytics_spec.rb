@@ -84,7 +84,7 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
         metrics_tiles = page.find(metrics_selector)
         expect(metrics_tiles).to have_content('Commit')
         expect(metrics_tiles).to have_content('Deploy')
-        expect(metrics_tiles).to have_content('New Issue')
+        expect(metrics_tiles).to have_content('New issue')
       end
     end
 

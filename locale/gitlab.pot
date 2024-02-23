@@ -15238,7 +15238,7 @@ msgstr ""
 msgid "Customize your pipeline configuration."
 msgstr ""
 
-msgid "Cycle Time"
+msgid "Cycle time"
 msgstr ""
 
 msgid "CycleAnalyticsEvent|%{label_reference} label was added to the issue"
@@ -28962,9 +28962,6 @@ msgstr ""
 msgid "Layout|Fluid"
 msgstr ""
 
-msgid "Lead Time"
-msgstr ""
-
 msgid "Lead Time for Changes"
 msgstr ""
 
@@ -32523,9 +32520,7 @@ msgid "New Identity"
 msgstr ""
 
 msgid "New Issue"
-msgid_plural "New Issues"
-msgstr[0] ""
-msgstr[1] ""
+msgstr ""
 
 msgid "New Jira import"
 msgstr ""
@@ -32624,7 +32619,9 @@ msgid "New incident has been created"
 msgstr ""
 
 msgid "New issue"
-msgstr ""
+msgid_plural "New issues"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "New issue title"
 msgstr ""

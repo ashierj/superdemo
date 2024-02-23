@@ -105,16 +105,16 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       it 'displays lifecycle metrics', :aggregate_failures do
         lead_time = page.all(card_metric_selector).first
 
-        expect(lead_time).to have_content(_('Lead Time'))
+        expect(lead_time).to have_content(_('Lead time'))
         expect(lead_time).to have_content('-')
 
         cycle_time = page.all(card_metric_selector)[1]
 
-        expect(cycle_time).to have_content(_('Cycle Time'))
+        expect(cycle_time).to have_content(_('Cycle time'))
         expect(cycle_time).to have_content('-')
 
         issue_count = page.all(card_metric_selector)[2]
-        expect(issue_count).to have_content(n_('New Issue', 'New Issues', 4))
+        expect(issue_count).to have_content(n_('New issue', 'New issues', 4))
 
         deploys_count = page.all(card_metric_selector)[3]
 

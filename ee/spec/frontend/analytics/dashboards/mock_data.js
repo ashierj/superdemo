@@ -568,7 +568,7 @@ export const mockFlowMetricsResponseData = {
     value: 10,
     identifier: 'issues',
     links: [],
-    title: 'New Issues',
+    title: 'New issues',
     __typename: 'ValueStreamAnalyticsMetric',
   },
   issues_completed: {
@@ -599,7 +599,7 @@ export const mockFlowMetricsResponseData = {
     value: null,
     identifier: 'cycle_time',
     links: [],
-    title: 'Cycle Time',
+    title: 'Cycle time',
     __typename: 'ValueStreamAnalyticsMetric',
   },
   lead_time: {
@@ -609,20 +609,20 @@ export const mockFlowMetricsResponseData = {
     links: [
       {
         label: 'Dashboard',
-        name: 'Lead Time',
+        name: 'Lead time',
         docsLink: null,
         url: '/groups/test-graphql-dora/-/issues_analytics',
         __typename: 'ValueStreamMetricLinkType',
       },
       {
         label: 'Go to docs',
-        name: 'Lead Time',
+        name: 'Lead time',
         docsLink: true,
         url: '/help/user/analytics/index#definitions',
         __typename: 'ValueStreamMetricLinkType',
       },
     ],
-    title: 'Lead Time',
+    title: 'Lead time',
     __typename: 'ValueStreamAnalyticsMetric',
   },
   deploys: {

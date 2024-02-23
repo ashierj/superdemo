@@ -6,7 +6,7 @@ module Gitlab
       module Summary
         class CycleTime < BaseTime
           def title
-            _('Cycle Time')
+            _('Cycle time')
           end
 
           def self.start_event_identifier

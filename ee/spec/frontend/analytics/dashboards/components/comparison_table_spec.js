@@ -13,7 +13,7 @@ describe('Comparison table', () => {
   let wrapper;
 
   const now = new Date();
-  const mockMetric = { identifier: 'lead_time', value: 'Lead Time' };
+  const mockMetric = { identifier: 'lead_time', value: 'Lead time' };
   const filterLabels = ['test::one', 'test::two'];
 
   const createWrapper = (props = {}) => {

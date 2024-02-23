@@ -23,10 +23,10 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTime, feature_cat
 
       expect(subject).to match_array(
         [
-          { "name" => _('Lead Time'),
+          { "name" => _('Lead time'),
             "url" => helpers.group_issues_analytics_path(stage.parent),
             "label" => s_('ValueStreamAnalytics|Dashboard') },
-          { "name" => _('Lead Time'),
+          { "name" => _('Lead time'),
             "url" => helpers.help_page_path('user/analytics/index', anchor: 'definitions'),
             "docs_link" => true,
             "label" => s_('ValueStreamAnalytics|Go to docs') }
@@ -43,10 +43,10 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTime, feature_cat
 
         expect(subject).to match_array(
           [
-            { "name" => _('Lead Time'),
+            { "name" => _('Lead time'),
               "url" => helpers.project_analytics_issues_analytics_path(project),
               "label" => s_('ValueStreamAnalytics|Dashboard') },
-            { "name" => _('Lead Time'),
+            { "name" => _('Lead time'),
               "url" => helpers.help_page_path('user/analytics/index', anchor: 'definitions'),
               "docs_link" => true,
               "label" => s_('ValueStreamAnalytics|Go to docs') }
