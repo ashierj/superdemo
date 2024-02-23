@@ -88,15 +88,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
   end
 
-  shared_examples 'a not found response' do
-    include_examples 'a response', 'not found' do
-      let(:result) { :not_found }
-      let(:response_body) do
-        { "message" => "404 Not Found" }
-      end
-    end
-  end
-
   shared_examples 'an endpoint authenticated with token' do |success_http_status = :created|
     let(:current_user) { nil }
     let(:access_token) { tokens[:api] }
@@ -368,12 +359,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         end
       end
 
-      context 'when user does not have active code suggestions purchase' do
-        let(:current_user) { authorized_user }
-
-        include_examples 'a not found response'
-      end
-
       context 'when user belongs to a namespace with an active code suggestions purchase' do
         let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
 
@@ -534,10 +519,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           it_behaves_like 'code completions endpoint'
 
           it_behaves_like 'an endpoint authenticated with token', :ok
-        end
-
-        context 'when the user is not assigned to the add-on' do
-          include_examples 'a not found response'
         end
       end
 

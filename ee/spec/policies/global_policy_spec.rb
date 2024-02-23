@@ -561,92 +561,21 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     let(:policy) { :access_code_suggestions }
 
     let_it_be_with_reload(:current_user) { create(:user) }
-    let_it_be_with_reload(:first_group) { create(:group) }
-    let_it_be_with_reload(:second_group) { create(:group) }
 
-    context 'when on .org or .com' do
-      where(:code_suggestions_enabled_for_user, :code_suggestions_licensed, :cs_matcher) do
-        true  | true  | be_allowed(:access_code_suggestions)
-        false | true  | be_allowed(:access_code_suggestions)
-        true  | false | be_allowed(:access_code_suggestions)
-        false | false | be_allowed(:access_code_suggestions)
-      end
-
-      with_them do
-        before do
-          allow(::Gitlab).to receive(:org_or_com?).and_return(true)
-          first_group.add_owner(current_user)
-          stub_licensed_features(code_suggestions: code_suggestions_licensed)
-          allow(current_user).to receive(:duo_pro_add_on_available?).and_return(code_suggestions_enabled_for_user)
-        end
-
-        it { is_expected.to cs_matcher }
-      end
+    where(:duo_pro_seat_assigned, :code_suggestions_licensed, :code_suggestions_enabled_for_user) do
+      true  | true  | be_allowed(:access_code_suggestions)
+      true  | false | be_disallowed(:access_code_suggestions)
+      false | true  | be_disallowed(:access_code_suggestions)
+      false | false | be_disallowed(:access_code_suggestions)
     end
 
-    context 'when not on .org or .com' do
-      context 'when it is before the code suggestions service start date' do
-        # TODO: When CS service start date has passed, we can remove this
-        around do |example|
-          travel_to(::CodeSuggestions::SelfManaged::SERVICE_START_DATE - 1.second) do
-            example.run
-          end
-        end
-
-        # :cs_seat_assigned should be ignored by the code here
-        where(:licensed, :instance_level_code_suggestions_enabled, :cs_seat_assigned, :cs_matcher) do
-          true  | false | true  | be_disallowed(:access_code_suggestions)
-          true  | false | false | be_disallowed(:access_code_suggestions)
-          true  | true  | true  | be_allowed(:access_code_suggestions)
-          true  | true  | false | be_allowed(:access_code_suggestions)
-          false | false | true  | be_disallowed(:access_code_suggestions)
-          false | false | false | be_disallowed(:access_code_suggestions)
-          false | true  | true  | be_disallowed(:access_code_suggestions)
-          false | true  | false | be_disallowed(:access_code_suggestions)
-        end
-
-        with_them do
-          before do
-            allow(::Gitlab).to receive(:org_or_com?).and_return(false)
-            stub_ee_application_setting(
-              instance_level_code_suggestions_enabled: instance_level_code_suggestions_enabled
-            )
-            stub_licensed_features(code_suggestions: licensed)
-          end
-
-          it { is_expected.to cs_matcher }
-        end
+    with_them do
+      before do
+        stub_licensed_features(code_suggestions: code_suggestions_licensed)
+        allow(current_user).to receive(:duo_pro_add_on_available?).and_return(duo_pro_seat_assigned)
       end
 
-      context 'when it is past the code suggestions service start date' do
-        around do |example|
-          travel_to(::CodeSuggestions::SelfManaged::SERVICE_START_DATE + 1.second) do
-            example.run
-          end
-        end
-
-        # :instance_level_code_suggestions_enabled should be ignored by the code here
-        where(:licensed, :instance_level_code_suggestions_enabled, :cs_seat_assigned, :cs_matcher) do
-          true  | false | true  | be_allowed(:access_code_suggestions)
-          true  | false | false | be_disallowed(:access_code_suggestions)
-          true  | true  | true  | be_allowed(:access_code_suggestions)
-          true  | true  | false | be_disallowed(:access_code_suggestions)
-          false | false | true  | be_disallowed(:access_code_suggestions)
-          false | false | false | be_disallowed(:access_code_suggestions)
-          false | true  | true  | be_disallowed(:access_code_suggestions)
-          false | true  | false | be_disallowed(:access_code_suggestions)
-        end
-
-        with_them do
-          before do
-            allow(::Gitlab).to receive(:org_or_com?).and_return(false)
-            stub_licensed_features(code_suggestions: licensed)
-            allow(current_user).to receive(:duo_pro_add_on_available?).and_return(cs_seat_assigned)
-          end
-
-          it { is_expected.to cs_matcher }
-        end
-      end
+      it { is_expected.to code_suggestions_enabled_for_user }
     end
   end
 
@@ -656,7 +585,8 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     let_it_be_with_reload(:current_user) { create(:user) }
 
     context 'when on .org or .com', :saas do
-      where(:group_with_ai_membership, :duo_pro_seat_assigned, :purchase_code_suggestions_ff, :cs_matcher) do
+      where(:group_with_ai_membership, :duo_pro_seat_assigned, :purchase_code_suggestions_ff,
+        :duo_chat_enabled_for_user) do
         false | false  | false | be_disallowed(policy)
         false | false  | true  | be_disallowed(policy)
         false | true   | false | be_disallowed(policy)
@@ -674,7 +604,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
           stub_feature_flags(purchase_code_suggestions: purchase_code_suggestions_ff)
         end
 
-        it { is_expected.to cs_matcher }
+        it { is_expected.to duo_chat_enabled_for_user }
       end
     end
 
@@ -683,7 +613,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
       let_it_be(:yesterday) { Time.current - 1.day }
 
       where(:licensed, :instance_level_ai_beta_features_enabled, :duo_chat_cut_off_date, :duo_pro_seat_assigned,
-        :cs_matcher) do
+        :duo_chat_enabled_for_user) do
         true  | false | ref(:tomorrow)  | false | be_disallowed(policy)
         true  | true  | ref(:tomorrow)  | false | be_allowed(policy)
         false | false | ref(:tomorrow)  | false | be_disallowed(policy)
@@ -709,7 +639,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
           end
         end
 
-        it { is_expected.to cs_matcher }
+        it { is_expected.to duo_chat_enabled_for_user }
       end
     end
   end
