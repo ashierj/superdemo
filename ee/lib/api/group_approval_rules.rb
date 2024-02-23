@@ -17,6 +17,20 @@ module API
     end
     resource :groups, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       segment ':id/approval_rules' do
+        desc 'Get all group approval rules' do
+          success EE::API::Entities::GroupApprovalRule
+        end
+        params do
+          use :pagination
+        end
+        get do
+          authorize_group_approval_rule!
+
+          group_approval_rules = paginate(user_group.approval_rules)
+
+          present group_approval_rules, with: EE::API::Entities::GroupApprovalRule
+        end
+
         desc 'Create new group approval rule' do
           success EE::API::Entities::GroupApprovalRule
         end
