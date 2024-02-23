@@ -3,28 +3,9 @@
 module EE
   module BranchRules
     module DestroyService
-      extend ::Gitlab::Utils::Override
-
-      # rubocop:disable Cop/AvoidReturnFromBlocks -- The overriden `execute`
-      # method yields and then raises an error. We use `return` here to exit
-      # the super method. If we used break it would break out of the block and
-      # continue execution of the super method causing the error to be raised.
-      override :execute
-      def execute
-        super do
-          case branch_rule
-          when ::Projects::AllBranchesRule
-            return destroy_all_branches_rule
-          when ::Projects::AllProtectedBranchesRule
-            return destroy_all_protected_branches_rule
-          end
-        end
-      end
-      # rubocop:enable Cop/AvoidReturnFromBlocks
-
       private
 
-      def destroy_all_branches_rule
+      def execute_on_all_branches_rule
         response = destroy_approval_project_rules
 
         return response if response.error?
@@ -32,7 +13,7 @@ module EE
         destroy_external_status_checks
       end
 
-      def destroy_all_protected_branches_rule
+      def execute_on_all_protected_branches_rule
         destroy_approval_project_rules
       end
 
