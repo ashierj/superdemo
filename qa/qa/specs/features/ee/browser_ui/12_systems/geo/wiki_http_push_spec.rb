@@ -4,17 +4,17 @@ module QA
   RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo do
     describe 'GitLab wiki HTTP push' do
       context 'when wiki commit' do
-        it 'is replicated to the secondary node',
+        it 'new Git data is viewable in UI on secondary Geo sites',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348051' do
-          wiki_content = 'This tests replication of wikis via HTTP'
+          wiki_content = 'Wikis should appear on secondary Geo sites after pushing via HTTP to the primary'
           push_content = 'This is from the Geo wiki push!'
           project = nil
 
           # Create new wiki and push wiki commit
           QA::Flow::Login.while_signed_in(address: :geo_primary) do
-            project = create(:project, name: 'geo-wiki-http-project', description: 'Geo project for wiki repo test')
+            project = create(:project, name: 'geo-wiki-http-project', description: 'Geo project for wiki test')
 
-            wiki = create(:project_wiki_page, project: project, title: 'Geo Replication Wiki', content: wiki_content)
+            wiki = create(:project_wiki_page, project: project, title: 'Geo Wiki test', content: wiki_content)
             wiki.visit!
             expect(page).to have_content(wiki_content)
 
@@ -29,8 +29,8 @@ module QA
             expect(page).to have_content(push_content)
           end
 
-          # Validate that wiki is synced on secondary node
-          QA::Runtime::Logger.debug('Visiting the secondary geo node')
+          # Validate that wiki content is accessible on the secondary Geo site
+          QA::Runtime::Logger.debug('Visiting the secondary Geo site')
 
           QA::Flow::Login.while_signed_in(address: :geo_secondary) do
             Page::Main::Menu.perform(&:go_to_projects)

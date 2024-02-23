@@ -38,7 +38,7 @@ module QA
       end
 
       # Test code is based on qa/specs/features/browser_ui/4_verify/locked_artifacts_spec.rb
-      it 'replicates the job log to the secondary Geo site',
+      it 'job logs are viewable on secondary Geo sites',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348010' do
         Runtime::Logger.debug('Visiting the secondary Geo site')
 
@@ -64,7 +64,7 @@ module QA
         end
       end
 
-      it 'replicates the job artifact to the secondary Geo site',
+      it 'job artifacts are viewable on secondary Geo sites',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348006' do
         artifact_page_retry_attempts = 12
 

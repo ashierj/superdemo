@@ -2,10 +2,10 @@
 
 module QA
   RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo do
-    describe 'GitLab Geo project rename replication' do
+    describe 'project rename with Geo' do
       let(:geo_project_renamed) { "geo-after-rename-#{SecureRandom.hex(8)}" }
 
-      it 'user renames project',
+      it 'a project rename is reflected on a secondary Geo site',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348055' do
         original_project_name = 'geo-before-rename'
         original_readme_content = "The original project name was #{original_project_name}"
@@ -43,8 +43,8 @@ module QA
           end
         end
 
-        # check renamed project exist on secondary node
-        QA::Runtime::Logger.debug('Visiting the secondary geo node')
+        # check project appears renamed on secondary site
+        QA::Runtime::Logger.debug('Visiting the secondary Geo site')
 
         QA::Flow::Login.while_signed_in(address: :geo_secondary) do
           Page::Main::Menu.perform(&:go_to_projects)

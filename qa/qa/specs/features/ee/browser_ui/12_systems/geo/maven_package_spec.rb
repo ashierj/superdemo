@@ -18,7 +18,7 @@ module QA
       let(:uri) { URI.parse(Runtime::Scenario.gitlab_address) }
       let(:gitlab_address_with_port) { Support::GitlabAddress.address_with_port }
 
-      it 'replicates to the secondary site',
+      it 'is viewable on secondary Geo sites',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348012' do
         pom_xml = {
           file_path: 'pom.xml',

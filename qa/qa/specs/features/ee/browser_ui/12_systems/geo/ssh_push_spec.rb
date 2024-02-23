@@ -12,7 +12,7 @@ module QA
       end
 
       context 'when regular git commit' do
-        it "is replicated to the secondary",
+        it "new Git data is viewable in UI on secondary Geo sites",
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348046' do
           key_title = "Geo SSH #{Time.now.to_f}"
           file_content = 'This is a Geo project! Commit from primary.'
@@ -43,17 +43,17 @@ module QA
             end
           end
 
-          QA::Runtime::Logger.debug('*****Visiting the secondary geo node*****')
+          QA::Runtime::Logger.debug('*****Visiting the secondary Geo site*****')
 
           QA::Flow::Login.while_signed_in(address: :geo_secondary) do
-            # Ensure project has replicated
+            # Ensure project is displayed
             Page::Main::Menu.perform(&:go_to_projects)
             Page::Dashboard::Projects.perform do |dashboard|
               dashboard.wait_for_project_replication(project.name)
               dashboard.go_to_project(project.name)
             end
 
-            # Validate the content has been sync'd from the primary
+            # Validate the content looks the same as on the primary site
             Page::Project::Show.perform do |show|
               show.wait_for_repository_replication_with(file_content)
 
@@ -65,7 +65,7 @@ module QA
       end
 
       context 'when git-lfs commit' do
-        it "is replicated to the secondary",
+        it "new Git LFS data is viewable in UI on secondary Geo sites",
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348047' do
           key_title = "Geo SSH LFS #{Time.now.to_f}"
           file_content = 'The rendered file could not be displayed because it is stored in LFS.'
@@ -100,17 +100,17 @@ module QA
             end
           end
 
-          QA::Runtime::Logger.debug('*****Visiting the secondary geo node*****')
+          QA::Runtime::Logger.debug('*****Visiting the secondary Geo site*****')
 
           QA::Flow::Login.while_signed_in(address: :geo_secondary) do
-            # Ensure project has replicated
+            # Ensure project is displayed
             Page::Main::Menu.perform(&:go_to_projects)
             Page::Dashboard::Projects.perform do |dashboard|
               dashboard.wait_for_project_replication(project.name)
               dashboard.go_to_project(project.name)
             end
 
-            # Validate the content has been sync'd from the primary
+            # Validate the content looks the same as on the primary site
             Page::Project::Show.perform do |show|
               show.wait_for_repository_replication_with(file_name)
 

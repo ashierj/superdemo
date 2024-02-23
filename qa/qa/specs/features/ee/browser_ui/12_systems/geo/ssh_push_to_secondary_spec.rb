@@ -13,7 +13,7 @@ module QA
       end
 
       context 'when regular git commit' do
-        it 'is proxied to the primary and ultimately replicated to the secondary',
+        it 'new Git data is viewable in UI on secondary Geo sites',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348058' do
           file_name = 'README.md'
           key_title = "Geo SSH to 2nd #{Time.now.to_f}"
@@ -40,11 +40,11 @@ module QA
             project.visit!
           end
 
-          QA::Runtime::Logger.debug('*****Visiting the secondary geo node*****')
+          QA::Runtime::Logger.debug('*****Visiting the secondary Geo site*****')
 
           QA::Flow::Login.while_signed_in(address: :geo_secondary) do
-            # Ensure the SSH key has replicated
-            expect(key).to be_replicated
+            # Ensure the SSH key is accessible on the secondary site
+            expect(key).to be_accessible_on_secondary
 
             # Ensure project has replicated
             Page::Main::Menu.perform(&:go_to_projects)
@@ -80,7 +80,7 @@ module QA
       end
 
       context 'when git-lfs commit' do
-        it 'is proxied to the primary and ultimately replicated to the secondary',
+        it 'new Git LFS data is viewable in UI on secondary Geo sites',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348057' do
           key_title = "Geo SSH LFS to 2nd #{Time.now.to_f}"
           file_name_primary = 'README.md'
@@ -108,13 +108,13 @@ module QA
             end
           end
 
-          QA::Runtime::Logger.debug('*****Visiting the secondary geo node*****')
+          QA::Runtime::Logger.debug('*****Visiting the secondary Geo site*****')
 
           QA::Flow::Login.while_signed_in(address: :geo_secondary) do
-            # Ensure the SSH key has replicated
-            expect(key).to be_replicated
+            # Ensure the SSH key is accessible on the secondary site
+            expect(key).to be_accessible_on_secondary
 
-            # Ensure project has replicated
+            # Ensure project is displayed
             Page::Main::Menu.perform(&:go_to_projects)
             Page::Dashboard::Projects.perform do |dashboard|
               dashboard.wait_for_project_replication(project.name)

@@ -9,7 +9,7 @@ module QA
       let(:file_content_secondary) { 'This is a Geo project! Commit from secondary.' }
 
       context 'when regular git commit' do
-        it 'is redirected to the primary and ultimately replicated to the secondary',
+        it 'is redirected to the primary and is viewable on the secondary Geo site',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348060' do
           file_name = 'README.md'
           project = nil
@@ -31,7 +31,7 @@ module QA
             project.visit!
           end
 
-          QA::Runtime::Logger.debug('Visiting the secondary geo node')
+          QA::Runtime::Logger.debug('Visiting the secondary Geo site')
 
           QA::Flow::Login.while_signed_in(address: :geo_secondary) do
             Page::Main::Menu.perform(&:go_to_projects)
@@ -69,7 +69,7 @@ module QA
       end
 
       context 'when git-lfs commit' do
-        it 'is redirected to the primary and ultimately replicated to the secondary',
+        it 'is redirected to the primary and is viewable on the secondary site',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348059' do
           file_name_primary = 'README.md'
           file_name_secondary = 'README_MORE.md'
@@ -92,7 +92,7 @@ module QA
             end
           end
 
-          QA::Runtime::Logger.debug('Visiting the secondary geo node')
+          QA::Runtime::Logger.debug('Visiting the secondary Geo site')
 
           QA::Flow::Login.while_signed_in(address: :geo_secondary) do
             Page::Main::Menu.perform(&:go_to_projects)
