@@ -60,14 +60,9 @@ module EE
       end
 
       condition(:code_suggestions_enabled_for_user) do
-        next true if ::Gitlab.org_or_com?
+        next false unless @user
 
-        if ::CodeSuggestions::SelfManaged::SERVICE_START_DATE.past?
-          @user.duo_pro_add_on_available?
-        else # Before service start date
-          # TODO: Remove this else branch after the service start date
-          ::Gitlab::CurrentSettings.instance_level_code_suggestions_enabled
-        end
+        @user.duo_pro_add_on_available?
       end
 
       condition(:duo_chat_enabled) do
@@ -164,8 +159,7 @@ module EE
         enable :admin_instance_external_audit_events
       end
 
-      rule { code_suggestions_licensed & code_suggestions_enabled_for_user }
-        .enable :access_code_suggestions
+      rule { code_suggestions_licensed & code_suggestions_enabled_for_user }.enable :access_code_suggestions
 
       rule { user_allowed_to_use_chat & duo_chat_enabled }.enable :access_duo_chat
 

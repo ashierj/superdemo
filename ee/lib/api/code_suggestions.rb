@@ -68,14 +68,6 @@ module API
             documentation: { example: 'namespace/project' }
         end
         post do
-          # rubocop: disable Style/SoleNestedConditional -- Feature Flag shouldn't be checked in the same condition.
-          if Gitlab.org_or_com?
-            if ::Feature.enabled?(:purchase_code_suggestions)
-              not_found! unless current_user.duo_pro_add_on_available?
-            end
-          end
-          # rubocop: enable Style/SoleNestedConditional
-
           token = ::CloudConnector::AccessService.new.access_token([:code_suggestions], gitlab_realm)
 
           unauthorized! if token.nil?
