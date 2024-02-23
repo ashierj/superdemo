@@ -215,7 +215,6 @@ export default {
           </div>
         </template>
       </gl-collapsible-listbox>
-      {{ hasValue }}
     </gl-form>
     <slot v-else-if="hasValue" name="readonly"></slot>
     <slot v-else name="none">
