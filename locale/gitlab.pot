@@ -47068,6 +47068,9 @@ msgstr ""
 msgid "SlackIntegration|- *Slash commands:* Quickly open, access, or close issues from Slack using the `%{slash_command}` command. Streamline your GitLab deployments with ChatOps."
 msgstr ""
 
+msgid "SlackIntegration|Access request canceled"
+msgstr ""
+
 msgid "SlackIntegration|Are you sure you want to unlink this Slack Workspace from this integration?"
 msgstr ""
 
@@ -47090,6 +47093,12 @@ msgid "SlackIntegration|Create and read issue data and comments."
 msgstr ""
 
 msgid "SlackIntegration|Download latest manifest file"
+msgstr ""
+
+msgid "SlackIntegration|Error exchanging OAuth token with Slack"
+msgstr ""
+
+msgid "SlackIntegration|Error exchanging OAuth token with Slack: %{error}"
 msgstr ""
 
 msgid "SlackIntegration|Generated for %{host} by GitLab %{version}."
@@ -47134,6 +47143,9 @@ msgstr ""
 msgid "SlackIntegration|Signing secret"
 msgstr ""
 
+msgid "SlackIntegration|Slack app not enabled on GitLab instance"
+msgstr ""
+
 msgid "SlackIntegration|Step 1: Create your GitLab for Slack app"
 msgstr ""
 
@@ -47141,6 +47153,9 @@ msgid "SlackIntegration|Step 2: Configure the app settings"
 msgstr ""
 
 msgid "SlackIntegration|This integration allows users to perform common operations on their projects by entering slash commands in Slack."
+msgstr ""
+
+msgid "SlackIntegration|Unauthorized"
 msgstr ""
 
 msgid "SlackIntegration|Update to the latest version"
