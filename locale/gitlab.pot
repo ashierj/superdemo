@@ -36353,7 +36353,7 @@ msgstr ""
 msgid "PipelineSchedules|There was a problem taking ownership of the pipeline schedule."
 msgstr ""
 
-msgid "PipelineSchedules|You have exceeded the maximum number of pipeline schedules for your plan. To create a new schedule, either increase your plan limit or delete an exisiting schedule."
+msgid "PipelineSchedules|You have exceeded the maximum number of pipeline schedules for your plan. To create a new schedule, either increase your plan limit or delete an existing schedule."
 msgstr ""
 
 msgid "PipelineSource|API"
