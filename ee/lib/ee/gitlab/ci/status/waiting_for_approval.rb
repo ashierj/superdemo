@@ -9,8 +9,8 @@ module EE
 
           def illustration
             {
-              image: 'illustrations/manual_action.svg',
-              size: 'svg-394',
+              image: 'illustrations/empty-state/empty-job-manual-md.svg',
+              size: '',
               title: _('Waiting for approvals'),
               content: format(
                 _("This job deploys to the protected environment \"%{environment}\", which requires approvals. " \
