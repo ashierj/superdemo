@@ -26531,7 +26531,7 @@ Project services.
 
 NOTE:
 **Deprecated** in 15.9.
-This will be renamed to `Project.integrations`.
+A `Project.integrations` field is proposed instead in [issue 389904](https://gitlab.com/gitlab-org/gitlab/-/issues/389904).
 
 Returns [`ServiceConnection`](#serviceconnection).
 
