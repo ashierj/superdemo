@@ -9,7 +9,7 @@ module Types
 
       field :id, Types::GlobalIDType[::Groups::SavedReply],
         null: false,
-        description: 'Global ID of the group saved reply.'
+        description: 'Global ID of the group-level saved reply.'
     end
   end
 end
