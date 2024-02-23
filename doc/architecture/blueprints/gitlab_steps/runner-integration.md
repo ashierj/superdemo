@@ -137,6 +137,19 @@ interact with `Step Runner` using established protocols (i.e. SSH and
 `Steps Runner` service, and `stderr` should be reserved for errors
 originating in the `proxy` command.
 
+The service should not assume clients will be well-behaved, and should be
+able to handle clients that prematurely disconnect from either of the
+`Follow` APIs, and also clients that never call `Finish` on a
+corresponding `Run` request.
+
+Finally, to facilitate integrating steps into the below runner executors,
+it is recommended that steps provide a client library to coordinate
+execution of the `Run`/`Follow*`/`Finish` APIs, and to handle reconnecting
+to the step-runner service in the event that the `Follow*` calls loose
+connectivity.
+
+## RunRequest Parameters
+
 Each `Run` request will include some parameters from the corresponding CI
 job in the `Job` field of `RunRequest`. `Job` will include the corresponding CI job's build
 directory; all steps in a request should be invoked in that directory to
@@ -153,16 +166,6 @@ execution environment (like other environment variables or paths). This
 includes file-type variables, which should be written to the same path as
 they would be in traditional runner job execution.
 
-The service should not assume clients will be well-behaved, and should be
-able to handle clients that prematurely disconnect from either of the
-`Follow` APIs, and also clients that never call `Finish` on a
-corresponding `Run` request.
-
-Finally, to facilitate integrating steps into the below runner executors,
-it is recommended that steps provide a client library to coordinate
-execution of the `Run`/`Follow*`/`Finish` APIs, and to handle reconnecting
-to the step-runner service in the event that the `Follow*` calls loose
-connectivity.
 
 ## Executors
 
