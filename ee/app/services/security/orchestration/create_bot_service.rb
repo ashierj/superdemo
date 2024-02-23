@@ -44,7 +44,8 @@ module Security
           username: username_and_email_generator.username,
           user_type: :security_policy_bot,
           skip_confirmation: true, # Bot users should always have their emails confirmed.
-          external: true
+          external: true,
+          avatar: Users::Internal.bot_avatar(image: 'security-bot.png')
         }
       end
 
