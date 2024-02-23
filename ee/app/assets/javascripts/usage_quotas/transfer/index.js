@@ -1,56 +1,24 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import createDefaultClient from '~/lib/graphql';
-import GroupTransferApp from './components/group_transfer_app.vue';
-import ProjectTransferApp from './components/project_transfer_app.vue';
+import { GROUP_VIEW_TYPE, PROJECT_VIEW_TYPE } from '~/usage_quotas/constants';
+import { getTransferTabMetadata } from './tab_metadata';
 
 export const initGroupTransferApp = () => {
-  const el = document.getElementById('js-group-transfer-app');
+  const transferTabMetadata = getTransferTabMetadata(GROUP_VIEW_TYPE, true);
 
-  if (!el) return false;
+  if (!transferTabMetadata) return false;
 
   Vue.use(VueApollo);
 
-  const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient(),
-  });
-
-  const { fullPath } = el.dataset;
-
-  return new Vue({
-    el,
-    apolloProvider,
-    provide: {
-      fullPath,
-    },
-    render(createElement) {
-      return createElement(GroupTransferApp);
-    },
-  });
+  return new Vue(transferTabMetadata.component);
 };
 
 export const initProjectTransferApp = () => {
-  const el = document.getElementById('js-project-transfer-app');
+  const transferTabMetadata = getTransferTabMetadata(PROJECT_VIEW_TYPE, true);
 
-  if (!el) return false;
+  if (!transferTabMetadata) return false;
 
   Vue.use(VueApollo);
 
-  const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient(),
-  });
-
-  const { fullPath } = el.dataset;
-
-  return new Vue({
-    el,
-    apolloProvider,
-    name: 'ProjectTransferApp',
-    provide: {
-      fullPath,
-    },
-    render(createElement) {
-      return createElement(ProjectTransferApp);
-    },
-  });
+  return new Vue(transferTabMetadata.component);
 };

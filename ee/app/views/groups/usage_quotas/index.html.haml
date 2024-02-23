@@ -22,6 +22,8 @@
     - if can? current_user, :admin_ci_minutes, @group
       #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
     #js-namespace-storage-app{ data: storage_usage_app_data(@group) }
+    - if Feature.enabled?(:data_transfer_monitoring, @group)
+      #js-group-transfer-app{ data: group_transfer_app_data(@group) }
 - else
   - if show_product_purchase_success_alert?
     = render 'product_purchase_success_alert', product_name: params[:purchased_product]
