@@ -122,7 +122,7 @@ export default {
           <th>{{ actions }}</th>
         </tr>
       </template>
-      <template #tbody="{ rules }">
+      <template #tbody="{ rules, name, members, approvalsRequired, branches, actions }">
         <template v-for="(rule, index) in rules">
           <empty-rule
             v-if="rule.ruleType === 'any_approver'"
@@ -134,14 +134,10 @@ export default {
             :can-edit="canEdit(rule)"
           />
           <tr v-else :key="index">
-            <td data-testid="approvals-table-name" :data-label="__('Rule')">
+            <td data-testid="approvals-table-name" :data-label="name">
               <rule-name :name="rule.name" />
             </td>
-            <td
-              class="gl-py-5!"
-              data-testid="approvals-table-members"
-              :data-label="__('Approvers')"
-            >
+            <td class="gl-py-5!" data-testid="approvals-table-members" :data-label="members">
               <user-avatar-list
                 :items="rule.eligibleApprovers"
                 :img-size="24"
@@ -153,21 +149,21 @@ export default {
               v-if="settings.allowMultiRule"
               class="gl-text-center"
               data-testid="approvals-table-branches"
-              :data-label="__('Target branch')"
+              :data-label="branches"
             >
               <rule-branches :rule="rule" />
             </td>
             <td
               class="gl-py-5!"
               data-testid="approvals-table-approvals-required"
-              :data-label="__('Approvals required')"
+              :data-label="approvalsRequired"
             >
               <rule-input :rule="rule" />
             </td>
             <td
               class="text-nowrap gl-md-pl-0! gl-md-pr-0!"
               data-testid="approvals-table-controls"
-              :data-label="__('Actions')"
+              :data-label="actions"
             >
               <rule-controls v-if="canEdit(rule)" :rule="rule" />
             </td>

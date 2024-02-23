@@ -3,6 +3,7 @@ import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
 import { __ } from '~/locale';
+import { TABLE_HEADERS } from '../../constants';
 import RuleInput from './rule_input.vue';
 import EmptyRuleName from './empty_rule_name.vue';
 import RuleBranches from './rule_branches.vue';
@@ -20,6 +21,7 @@ export default {
   i18n: {
     addApprovalRule: __('Add approval rule'),
   },
+  TABLE_HEADERS,
   props: {
     rule: {
       type: Object,
@@ -57,16 +59,20 @@ export default {
 
 <template>
   <tr>
-    <td colspan="2" :data-label="__('Rule')">
+    <td colspan="2" :data-label="$options.TABLE_HEADERS.name">
       <empty-rule-name :eligible-approvers-docs-path="eligibleApproversDocsPath" />
     </td>
-    <td v-if="showProtectedBranch" class="gl-text-center" :data-label="__('Target branch')">
+    <td
+      v-if="showProtectedBranch"
+      class="gl-text-center"
+      :data-label="$options.TABLE_HEADERS.branches"
+    >
       <rule-branches :rule="rule" />
     </td>
-    <td class="gl-py-5!" :data-label="__('Approvals required')">
+    <td class="gl-py-5!" :data-label="$options.TABLE_HEADERS.approvalsRequired">
       <rule-input :rule="rule" :is-mr-edit="isMrEdit" />
     </td>
-    <td class="gl-md-pl-0! gl-md-pr-0!" :data-label="__('Actions')">
+    <td class="gl-md-pl-0! gl-md-pr-0!" :data-label="$options.TABLE_HEADERS.actions">
       <div class="gl-my-n3! gl-px-5 gl-text-right">
         <gl-button
           v-if="!allowMultiRule && canEdit"

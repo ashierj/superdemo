@@ -42429,9 +42429,6 @@ msgstr ""
 msgid "Ruby"
 msgstr ""
 
-msgid "Rule"
-msgstr ""
-
 msgid "Rule name is already taken."
 msgstr ""
 
