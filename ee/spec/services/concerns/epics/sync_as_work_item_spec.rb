@@ -53,6 +53,7 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
             title: 'foo',
             title_html: 'foo',
             confidential: true,
+            relative_position: be_a_kind_of(Numeric),
             work_item_type: WorkItems::Type.default_by_type(:epic),
             extra_params: { synced_work_item: true }
           }

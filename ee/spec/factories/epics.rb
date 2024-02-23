@@ -56,7 +56,12 @@ FactoryBot.define do
       end
 
       after(:create) do |epic, _|
-        epic.work_item.update!(iid: epic.iid, created_at: epic.created_at, updated_at: epic.updated_at)
+        epic.work_item.update!(
+          iid: epic.iid,
+          created_at: epic.created_at,
+          updated_at: epic.updated_at,
+          relative_position: epic.id
+        )
       end
     end
   end
