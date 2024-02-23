@@ -6,15 +6,18 @@ RSpec.describe Members::UpdateService, feature_category: :groups_and_projects do
   let_it_be(:project) { create(:project, :public) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:member_user) { create(:user) }
+  let_it_be(:member_users) { create_list(:user, 2) }
+  let_it_be(:access_level) { Gitlab::Access::MAINTAINER }
   let(:permission) { :update }
   let(:expiration) { 2.days.from_now }
   let(:original_access_level) { Gitlab::Access::DEVELOPER }
-  let(:access_level) { Gitlab::Access::MAINTAINER }
-  let(:member) { source.members_and_requesters.find_by!(user_id: member_user.id) }
+  let(:member) { source.members_and_requesters.find_by!(user_id: member_users.first.id) }
   let(:params) do
     { access_level: access_level, expires_at: expiration }
   end
+
+  let(:members) { source.members_and_requesters.where(user_id: member_users).to_a }
+  let(:update_service) { described_class.new(current_user, params) }
 
   let(:audit_role_expiration_from) { nil }
   let(:audit_role_from) { "Default role: #{Gitlab::Access.human_access(original_access_level)}" }
@@ -51,10 +54,108 @@ RSpec.describe Members::UpdateService, feature_category: :groups_and_projects do
     end
   end
 
+  shared_examples 'member_promotion_management scenarios' do
+    context 'when current_user is an admin' do
+      let(:current_user) { create(:admin) }
+
+      it 'updates all members' do
+        allow(current_user).to receive(:can_admin_all_resources?).and_return(true)
+        result = update_service.execute(members, permission: permission)
+
+        expect(result[:status]).to eq(:success)
+        expect(result[:members]).to match_array(members)
+      end
+    end
+
+    context 'when current_user is not an admin' do
+      context 'when ActiveRecord::RecordInvalid is raised' do
+        it 'returns an error' do
+          allow(members.first).to receive(:member_promotion_management_required?).and_return(true)
+          allow(members.first).to receive(:queue_for_approval).and_raise(ActiveRecord::RecordInvalid)
+
+          result = update_service.execute(members, permission: permission)
+
+          expect(result[:status]).to eq(:error)
+          expect(result[:members]).to contain_exactly(members.first)
+        end
+      end
+
+      context 'when current_user can update the given members' do
+        it 'queues members requiring promotion management for approval and updates others' do
+          allow(members.first).to receive(:member_promotion_management_required?).and_return(true)
+          allow(members.second).to receive(:member_promotion_management_required?).and_return(false)
+
+          result = update_service.execute(members, permission: permission)
+
+          expect(result[:status]).to eq(:success)
+          expect(result[:members]).to contain_exactly(members.second)
+
+          member_approval = Members::MemberApproval.last
+          expect(member_approval.member).to eq(members.first)
+          expect(member_approval.member_namespace).to eq(members.first.member_namespace)
+          expect(member_approval.old_access_level).to eq(members.first.access_level)
+          expect(member_approval.new_access_level).to eq(access_level)
+          expect(member_approval.requested_by).to eq(current_user)
+          expect(result[:members_queued_for_approval]).to contain_exactly(member_approval)
+        end
+      end
+    end
+  end
+
+  shared_examples 'a service raising Gitlab::Access::AccessDeniedError' do
+    before do
+      member_users.each do |member_user|
+        source.add_guest(member_user)
+      end
+
+      allow(members.first).to receive(:member_promotion_management_required?).and_return(true)
+    end
+
+    it 'when permission denied it raises ::Gitlab::Access::AccessDeniedError' do
+      expect { update_service.execute(members, permission: permission) }
+        .to raise_error(Gitlab::Access::AccessDeniedError)
+    end
+  end
+
+  context 'when member_promotion_management feature is enabled' do
+    before do
+      stub_feature_flags(member_promotion_management: true)
+      stub_application_setting(enable_member_promotion_management: true)
+    end
+
+    context 'when user does not have permission to update' do
+      it_behaves_like 'a service raising Gitlab::Access::AccessDeniedError' do
+        let(:source) { project }
+      end
+
+      it_behaves_like 'a service raising Gitlab::Access::AccessDeniedError' do
+        let(:source) { group }
+      end
+    end
+
+    context 'when user have permission to update' do
+      before do
+        source.add_owner(current_user)
+
+        member_users.each do |member_user|
+          source.add_guest(member_user)
+        end
+      end
+
+      it_behaves_like 'member_promotion_management scenarios' do
+        let(:source) { project }
+      end
+
+      it_behaves_like 'member_promotion_management scenarios' do
+        let(:source) { group }
+      end
+    end
+  end
+
   context 'when current user can update the given member' do
     before_all do
-      project.add_developer(member_user)
-      group.add_developer(member_user)
+      project.add_developer(member_users.first)
+      group.add_developer(member_users.first)
 
       project.add_maintainer(current_user)
       group.add_owner(current_user)
