@@ -2,56 +2,46 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::GroupsController, :experiment, feature_category: :onboarding do
-  using RSpec::Parameterized::TableSyntax
-
+RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
+  let(:onboarding_enabled?) { true }
 
   let(:experiment) { instance_double(ApplicationExperiment) }
+
+  before do
+    stub_saas_features(onboarding: onboarding_enabled?)
+  end
 
   shared_examples 'finishing onboarding' do
     let_it_be(:url) { '_url_' }
     let_it_be(:onboarding_in_progress) { true }
-    let(:should_check_namespace_plan) { true }
 
     let_it_be(:user) do
-      create(:user, onboarding_in_progress: onboarding_in_progress).tap do |record|
-        create(:user_detail, user: record, onboarding_step_url: url)
+      create(:user, onboarding_in_progress: onboarding_in_progress) do |record|
+        create(:user_detail, user: record, onboarding_step_url: url, onboarding_status_step_url: url)
       end
     end
 
-    before do
-      stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
-    end
-
-    context 'when current user onboarding is disabled' do
-      let_it_be(:onboarding_in_progress) { false }
+    context 'when onboarding feature is not available' do
+      let(:onboarding_enabled?) { false }
 
       it 'does not finish onboarding' do
         subject
+        user.reload
 
         expect(user.user_detail.onboarding_step_url).to eq url
+        expect(user.onboarding_in_progress).to be(true)
       end
     end
 
-    context 'when not on SaaS' do
-      let(:should_check_namespace_plan) { false }
-
-      it 'does not finish onboarding' do
-        subject
-
-        expect(user.user_detail.onboarding_step_url).to eq url
-      end
-    end
-
-    context 'when onboarding is enabled' do
+    context 'when onboarding feature is available' do
       it 'finishes onboarding' do
         subject
         user.reload
 
         expect(user.user_detail.onboarding_step_url).to be_nil
-        expect(user.onboarding_in_progress).to be_falsey
+        expect(user.onboarding_in_progress).to be(false)
       end
     end
   end
@@ -69,7 +59,7 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
         sign_in(user)
       end
 
-      context 'when on .com', :saas do
+      context 'when onboarding feature is available' do
         it { is_expected.to have_gitlab_http_status(:ok) }
         it { is_expected.to render_template(:new) }
 
@@ -128,7 +118,9 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
         end
       end
 
-      context 'when not on .com' do
+      context 'when onboarding feature is not available' do
+        let(:onboarding_enabled?) { false }
+
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end
 
@@ -139,7 +131,6 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
   describe 'POST #create' do
     subject(:post_create) { post :create, params: params }
 
-    let(:com) { true }
     let(:params) { { group: group_params, project: project_params }.merge(extra_params) }
     let(:extra_params) { {} }
     let(:group_params) do
@@ -167,7 +158,6 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
     context 'with an authenticated user' do
       before do
         sign_in(user)
-        allow(::Gitlab).to receive(:com?).and_return(com)
       end
 
       it_behaves_like 'hides email confirmation warning'
@@ -271,7 +261,7 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
       end
 
       context 'with signup onboarding not enabled' do
-        let(:com) { false }
+        let(:onboarding_enabled?) { false }
 
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end
@@ -325,7 +315,7 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
         end
       end
 
-      context 'with import_url in the params', :saas do
+      context 'with import_url in the params' do
         let(:params) { { group: group_params, import_url: new_import_github_path } }
 
         let(:group_params) do
