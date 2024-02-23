@@ -158,10 +158,12 @@ execution of the `Run`/`Follow*`/`Finish` APIs, and to handle reconnecting
 to the step-runner service in the event that the `Follow*` calls loose
 connectivity.
 
+## Executors
+
 Here is how GitLab Runner will connect to Step Runner in each runner
 executor:
 
-## Instance
+### Instance
 
 The Instance executor is accessed via SSH, the same as today. However
 instead of starting a bash shell and piping in commands, it connects
@@ -172,7 +174,7 @@ dedicated Mac instances to make VMs.
 This requires that Step Runner is present and started in the job
 execution environment.
 
-## Docker
+### Docker
 
 The same requirement that Step Runner is present and the gRPC service is
 running is true for the Docker executor (and `docker-autoscaler`). However
@@ -183,7 +185,7 @@ the gRPC service in the container. The client can then write to the
 service, and read from its `stdout/stderr`, which will contain responses
 from the gRPC service.
 
-## Kubernetes
+### Kubernetes
 
 The Kubelet on Kubernetes Nodes exposes an exec API which will start a
 process in a container of a running Pod. We will use this exec create
