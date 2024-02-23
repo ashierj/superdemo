@@ -179,6 +179,15 @@ https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/4591. The
 logging library used to produce this format should be shared between
 `GitaLab Runner` and `Step Runner`.
 
+## Masking
+
+`Step Runner` will be responsible for masking sensitive variables or
+tokens. This should be done before the raw log message is formatted into
+the above format. The libraries used to mask variables should shared
+between `GitaLab Runner` and `Step Runner`. (See
+https://gitlab.com/gitlab-org/gitlab-runner/-/blob/main/helpers/trace/internal/tokensanitizer/token_masker.go
+https://gitlab.com/gitlab-org/gitlab-runner/-/blob/main/helpers/trace/internal/masker/masker.go).
+
 ## Executors
 
 Here is how GitLab Runner will connect to Step Runner in each runner
