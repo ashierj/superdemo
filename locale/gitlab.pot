@@ -30787,7 +30787,7 @@ msgstr ""
 msgid "Merge request dependencies"
 msgstr ""
 
-msgid "Merge request dependencies have been merged."
+msgid "Merge request dependencies must be merged."
 msgstr ""
 
 msgid "Merge request events"
