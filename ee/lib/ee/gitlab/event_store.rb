@@ -78,12 +78,14 @@ module EE
           store.subscribe ::WorkItems::ValidateEpicWorkItemSyncWorker,
             to: ::Epics::EpicCreatedEvent,
             if: ->(event) {
-                  ::Feature.enabled?(:validate_epic_work_item_sync, ::Group.find_by_id(event.data[:group_id]))
+                  ::Feature.enabled?(:validate_epic_work_item_sync, ::Group.actor_from_id(event.data[:group_id])) &&
+                    ::Epic.has_work_item.id_in(event.data[:id]).exists?
                 }
           store.subscribe ::WorkItems::ValidateEpicWorkItemSyncWorker,
             to: ::Epics::EpicUpdatedEvent,
             if: ->(event) {
-                  ::Feature.enabled?(:validate_epic_work_item_sync, ::Group.find_by_id(event.data[:group_id]))
+                  ::Feature.enabled?(:validate_epic_work_item_sync, ::Group.actor_from_id(event.data[:group_id])) &&
+                    ::Epic.has_work_item.id_in(event.data[:id]).exists?
                 }
         end
       end

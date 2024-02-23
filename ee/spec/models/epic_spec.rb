@@ -137,6 +137,15 @@ RSpec.describe Epic, feature_category: :portfolio_management do
         expect(described_class.from_id(epic2.id)).to match_array([epic2, epic3])
       end
     end
+
+    describe '.has_work_item' do
+      let_it_be(:epic_with_work_item) { create(:epic, :with_synced_work_item) }
+      let_it_be(:epic_without_work_item) { create(:epic) }
+
+      it 'returns only epics with a work item' do
+        expect(described_class.has_work_item).to match_array([epic_with_work_item])
+      end
+    end
   end
 
   describe 'validations' do

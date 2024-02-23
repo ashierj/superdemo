@@ -112,6 +112,7 @@ module EE
       end
 
       scope :with_work_item, -> { preload(:work_item) }
+      scope :has_work_item, -> { where.not(issue_id: nil) }
 
       scope :within_timeframe, -> (start_date, end_date) do
         epics = ::Epic.arel_table

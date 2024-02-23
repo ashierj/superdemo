@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe WorkItems::ValidateEpicWorkItemSyncWorker, feature_category: :team_planning do
   let_it_be(:group) { create(:group) }
-  let_it_be_with_reload(:epic) { create(:epic, group: group) }
+  let_it_be_with_reload(:epic) { create(:epic, :with_synced_work_item, group: group) }
 
   let(:data) { { id: epic.id, group_id: group.id } }
   let(:epic_created_event) { Epics::EpicCreatedEvent.new(data: data) }
@@ -39,6 +39,8 @@ RSpec.describe WorkItems::ValidateEpicWorkItemSyncWorker, feature_category: :tea
   end
 
   context 'when epic has no associated work item' do
+    let_it_be_with_reload(:epic) { create(:epic, group: group) }
+
     it 'does not log anything or tries to create a diff' do
       expect(Gitlab::EpicWorkItemSync::Logger).not_to receive(:warn)
       expect(Gitlab::EpicWorkItemSync::Diff).not_to receive(:new)
