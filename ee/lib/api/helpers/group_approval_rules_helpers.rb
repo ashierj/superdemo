@@ -23,14 +23,14 @@ module API
         not_found! unless ::Feature.enabled?(:approval_group_rules, user_group)
       end
 
-      def authorize_update_group_approval_rule!
+      def authorize_group_approval_rule!
         return if can?(current_user, :admin_group, user_group)
 
         authorize! :admin_merge_request_approval_settings, user_group
       end
 
       def create_group_approval_rule(present_with:)
-        authorize_update_group_approval_rule!
+        authorize_group_approval_rule!
 
         result = ::ApprovalRules::CreateService.new(user_group, current_user,
           declared_params(include_missing: false)).execute
@@ -43,7 +43,7 @@ module API
       end
 
       def update_group_approval_rule(present_with:)
-        authorize_update_group_approval_rule!
+        authorize_group_approval_rule!
 
         approval_rule = user_group.approval_rules.find_by_id(params[:approval_rule_id])
         not_found!('Approval Rule') unless approval_rule

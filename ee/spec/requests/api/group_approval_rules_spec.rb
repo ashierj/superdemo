@@ -44,6 +44,35 @@ RSpec.describe API::GroupApprovalRules, :aggregate_failures, feature_category: :
     end
   end
 
+  describe 'GET /groups/:id/approval_rules' do
+    let(:schema) { 'public_api/v4/group_approval_rules' }
+    let!(:approval_rules) { create_list(:approval_group_rule, 2, group: group) }
+    let(:url) { "/groups/#{group.id}/approval_rules" }
+    let(:current_user) { user_with_access }
+
+    subject(:request) { get api(url, current_user) }
+
+    it_behaves_like 'check for approval_group_rule feature flag'
+    it_behaves_like 'check that user can update approval rules'
+
+    it 'returns the group approval rules' do
+      request
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to match_response_schema(schema, dir: 'ee')
+      expect(json_response.pluck('id')).to match_array(approval_rules.map(&:id))
+    end
+
+    describe 'when pagination parameters are provided' do
+      it 'returns the paginated results' do
+        get api(url, current_user), params: { per_page: 1, page: 2 }
+
+        expect(json_response.size).to eq(1)
+        expect(json_response.dig(0, 'id')).to eq(approval_rules.last.id)
+      end
+    end
+  end
+
   describe 'POST /groups/:id/approval_rules' do
     let(:schema) { 'public_api/v4/group_approval_rule' }
     let(:url) { "/groups/#{group.id}/approval_rules" }
