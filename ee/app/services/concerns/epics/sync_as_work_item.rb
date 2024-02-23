@@ -52,6 +52,7 @@ module Epics
         work_item_type: WorkItems::Type.default_by_type(:epic),
         iid: epic.iid,
         created_at: epic.created_at,
+        relative_position: epic.id,
         extra_params: { synced_work_item: true }
       )
 

@@ -29,6 +29,7 @@ RSpec.shared_examples 'syncs all data from an epic to a work item' do
     expect(work_item.state).to eq(epic.state)
     expect(work_item.external_key).to eq(epic.external_key)
     expect(work_item.lock_version).to eq(epic.lock_version)
+    expect(work_item.relative_position).to eq(epic.id)
   end
 
   it 'sets the same epic data to the work item association', :aggregate_failures do
