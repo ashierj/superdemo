@@ -17,17 +17,8 @@ import ProjectSelector from '~/vue_shared/components/project_selector/project_se
 import DashboardProject from './project.vue';
 
 export default {
-  title: s__('OperationsDashboard|Operations Dashboard'),
   informationText: s__(
     'OperationsDashboard|The Operations and Environments dashboards share the same list of projects. When you add or remove a project from one, GitLab adds or removes the project from the other. %{linkStart}More information%{linkEnd}',
-  ),
-  moreInformationButton: s__('OperationsDashboard|More information'),
-  addProjectsSubmitButton: s__('OperationsDashboard|Add projects'),
-  addProjectsModalHeader: s__('OperationsDashboard|Add projects'),
-  dashboardHeader: s__('OperationsDashboard|Operations Dashboard'),
-  emptyStateTitle: s__(`OperationsDashboard|Add a project to the dashboard`),
-  emptyStateDescription: s__(
-    `OperationsDashboard|The operations dashboard provides a summary of each project's operational health, including pipeline and alert statuses.`,
   ),
   components: {
     DashboardProject,
@@ -83,9 +74,6 @@ export default {
         this.setProjects(projects);
       },
     },
-    showDashboard() {
-      return this.projects.length || this.isLoadingProjects;
-    },
     isSearchingProjects() {
       return this.searchCount > 0;
     },
@@ -94,7 +82,7 @@ export default {
     },
     actionPrimary() {
       return {
-        text: this.addProjectsSubmitButton,
+        text: s__('OperationsDashboard|Add projects'),
         attributes: {
           disabled: this.okDisabled,
           variant: 'confirm',
@@ -147,10 +135,10 @@ export default {
 </script>
 
 <template>
-  <div v-if="showDashboard" class="operations-dashboard">
+  <div class="operations-dashboard">
     <gl-modal
       :modal-id="$options.modalId"
-      :title="$options.addProjectsModalHeader"
+      :title="s__('OperationsDashboard|Add projects')"
       :action-primary="actionPrimary"
       :action-cancel="$options.modal.actionCancel"
       data-testid="add-projects-modal"
@@ -173,11 +161,8 @@ export default {
     </gl-modal>
 
     <div class="page-title-holder flex-fill d-flex gl-align-items-center">
-      <h1
-        class="page-title gl-font-size-h-display text-nowrap flex-fill"
-        data-testid="dashboard-title"
-      >
-        {{ $options.title }}
+      <h1 class="js-dashboard-title page-title gl-font-size-h-display text-nowrap flex-fill">
+        {{ s__('OperationsDashboard|Operations Dashboard') }}
       </h1>
       <gl-button
         v-if="projects.length"
@@ -186,7 +171,7 @@ export default {
         category="primary"
         data-testid="add-projects-button"
       >
-        {{ $options.addProjectsSubmitButton }}
+        {{ s__('OperationsDashboard|Add projects') }}
       </gl-button>
     </div>
     <p class="gl-mt-2 gl-mb-4">
@@ -211,30 +196,34 @@ export default {
       </vue-draggable>
 
       <gl-dashboard-skeleton v-else-if="isLoadingProjects" />
+
+      <gl-empty-state
+        v-else
+        :title="s__(`OperationsDashboard|Add a project to the dashboard`)"
+        :svg-path="emptyDashboardSvgPath"
+        :svg-height="150"
+      >
+        <template #description>
+          {{
+            s__(
+              `OperationsDashboard|The operations dashboard provides a summary of each project's operational health, including pipeline and alert statuses.`,
+            )
+          }}
+          <gl-link :href="emptyDashboardHelpPath" data-testid="documentation-link">{{
+            s__('OperationsDashboard|More information')
+          }}</gl-link
+          >.
+        </template>
+        <template #actions>
+          <gl-button
+            v-gl-modal="$options.modalId"
+            variant="confirm"
+            data-testid="add-projects-button"
+          >
+            {{ s__('OperationsDashboard|Add projects') }}
+          </gl-button>
+        </template>
+      </gl-empty-state>
     </div>
   </div>
-  <gl-empty-state
-    v-else
-    :title="$options.emptyStateTitle"
-    :description="$options.emptyStateDescription"
-    :svg-path="emptyDashboardSvgPath"
-  >
-    <template #actions>
-      <gl-button
-        v-gl-modal="$options.modalId"
-        variant="confirm"
-        data-testid="add-projects-button"
-        class="gl-mb-3 gl-mx-2"
-      >
-        {{ $options.addProjectsSubmitButton }}
-      </gl-button>
-      <gl-button
-        :href="emptyDashboardHelpPath"
-        data-testid="documentation-link"
-        class="gl-mb-3 gl-mx-2"
-      >
-        {{ $options.moreInformationButton }}
-      </gl-button>
-    </template>
-  </gl-empty-state>
 </template>
