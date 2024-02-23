@@ -8,6 +8,10 @@ RSpec.describe ConcurrencyLimit::ResumeWorker, feature_category: :global_search 
   let(:worker_with_concurrency_limit) { ElasticCommitIndexerWorker }
 
   describe '#perform' do
+    before do
+      allow(Gitlab::SidekiqMiddleware::ConcurrencyLimit::ConcurrencyLimitService).to receive(:resume_processing!)
+    end
+
     context 'when there are no jobs in the queue' do
       before do
         allow(Gitlab::SidekiqMiddleware::ConcurrencyLimit::ConcurrencyLimitService).to receive(:has_jobs_in_queue?)
@@ -50,7 +54,10 @@ RSpec.describe ConcurrencyLimit::ResumeWorker, feature_category: :global_search 
 
       it 'resumes processing if limit is not set' do
         nil_proc = -> { nil }
-        expect(::Gitlab::SidekiqMiddleware::ConcurrencyLimit::WorkersMap).to receive(:limit_for).and_return(nil_proc)
+        allow(Gitlab::SidekiqMiddleware::ConcurrencyLimit::WorkersMap).to receive(:limit_for)
+        expect(::Gitlab::SidekiqMiddleware::ConcurrencyLimit::WorkersMap).to receive(:limit_for)
+          .with(worker: worker_with_concurrency_limit)
+          .and_return(nil_proc)
         expect(Gitlab::SidekiqMiddleware::ConcurrencyLimit::ConcurrencyLimitService)
          .to receive(:resume_processing!)
          .with(worker_with_concurrency_limit.name, limit: described_class::DEFAULT_LIMIT)

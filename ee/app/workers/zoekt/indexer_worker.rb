@@ -19,6 +19,7 @@ module Zoekt
     sidekiq_options retry: 2
     idempotent!
     pause_control :zoekt
+    concurrency_limit -> { 30 if Feature.enabled?(:zoekt_limit_indexing_concurrency) }
 
     def perform(project_id, options = {})
       return unless ::Feature.enabled?(:index_code_with_zoekt)
