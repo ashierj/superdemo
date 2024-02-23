@@ -8,6 +8,10 @@ module EE
       # This module is responsible for determining if an incoming Geo secondary
       # bound HTTP request should be redirected to the Primary.
       #
+      # How? When #geo_redirect? returns true, we return a call to the push_to_secondary
+      # API on the same host. This call will be intercepted by workhorse, and proxied
+      # to the primary node.
+      #
       # Why?  A secondary is not allowed to perform any write actions, so any
       # request of this type needs to be sent through to the Primary.  By
       # redirecting within code, we allow clients to git pull/push using their
@@ -34,14 +38,19 @@ module EE
       #   * POST  /namespace/repo.git/info/lfs/objects/batch (and we examine
       #     params[:operation] to ensure we're dealing with an upload request)
       #
+      # Redirects can be disabled by setting http.followRedirects to false in
+      # the git config. If this is set, requests to an out of date secondary repository will error.
+      #
       # For more detail, see the following links:
       #
       # git: https://git-scm.com/book/en/v2/Git-Internals-Transfer-Protocols
       # git-lfs: https://github.com/git-lfs/git-lfs/blob/master/docs/api
+      # git-config: https://git-scm.com/docs/git-config#Documentation/git-config.txt-httpfollowRedirects
       #
+
       prepended do
         prepend_before_action do
-          redirect_to(geo_primary_full_url) if geo_redirect?
+          redirect_to(geo_redirect_path) if geo_redirect?
         end
 
         # Order of ActionController filters are important. IP must be set prior
@@ -59,8 +68,7 @@ module EE
         attr_reader :controller_name, :action_name
 
         CONTROLLER_AND_ACTIONS_TO_REDIRECT = {
-          'git_http' => %w[git_receive_pack],
-          'lfs_locks_api' => %w[create unlock verify]
+          'git_http' => %w[git_receive_pack]
         }.freeze
 
         def initialize(project, controller_name, action_name, service, synchronous_request_required)
@@ -231,10 +239,8 @@ module EE
         request.fullpath.sub(relative_url_root, '')
       end
 
-      def geo_primary_full_url
-        path = File.join(geo_secondary_referrer_path_prefix, geo_request_fullpath_for_primary)
-
-        ::Gitlab::Utils.append_path(::Gitlab::Geo.primary_node_url, path)
+      def geo_redirect_path
+        File.join(geo_secondary_referrer_path_prefix, geo_request_fullpath_for_primary)
       end
 
       def geo_secondary_referrer_path_prefix
