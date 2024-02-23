@@ -99,9 +99,10 @@ response of step-result traces. `FollowLogs` similarly requests a streaming
 response of output (`stdout`/`stderr`) written by processes executed as
 part of running the steps, and logs produced by Step Runner itself.
 `Finish` stops execution of the request (if still running) and cleans up
-resources as soon as possible. `Status` lists all active requests in the
-Step Runner service (including completed but not `Finish`ed jobs), and can
-be used by a runner to for example recover after a crash.
+resources as soon as possible. `Status` lists the status of the specified
+job, or if a job was not specified, of all active jobs in the Step Runner
+service (including completed but not `Finish`ed jobs). `Status` can for
+example be used by a runner to recover after a crash.
 
 The Step Runner gRPC service will be able to execute multiple `Run`
 payloads at once. That is, each call to `Run` will start a new goroutine
