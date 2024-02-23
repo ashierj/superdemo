@@ -57,6 +57,21 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
         end
       end
     end
+
+    context 'when promotion management is enabled' do
+      let(:requester) { create(:group_member, :access_request, group: group) }
+      let(:requester2) { create(:group_member, :access_request, group: group) }
+
+      let(:params) do
+        {
+          group_member: { access_level: Gitlab::Access::MAINTAINER },
+          group_id: group,
+          id: requester
+        }
+      end
+
+      it_behaves_like 'member promotion management'
+    end
   end
 
   describe 'GET #index' do

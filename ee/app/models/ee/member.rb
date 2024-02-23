@@ -115,6 +115,23 @@ module EE
         License.current.exclude_guests_from_active_count?
     end
 
+    def queue_for_approval(new_access_level, requested_by)
+      member_approvals.find_or_create_by(
+        member_namespace: member_namespace,
+        new_access_level: new_access_level,
+        status: ::Members::MemberApproval.statuses[:pending]
+      ) do |new_approval|
+        new_approval.old_access_level = access_level
+        new_approval.requested_by = requested_by
+      end
+    rescue ActiveRecord::RecordNotUnique
+      member_approvals.find_by(
+        member_namespace: member_namespace,
+        new_access_level: new_access_level,
+        status: ::Members::MemberApproval.statuses[:pending]
+      )
+    end
+
     def sso_enforcement
       unless ::Gitlab::Auth::GroupSaml::MembershipEnforcer.new(group).can_add_user?(user)
         troubleshoot_link_url = ::Gitlab::Routing.url_helpers.help_page_path('user/group/saml_sso/troubleshooting_scim')
