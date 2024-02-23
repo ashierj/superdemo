@@ -86,6 +86,11 @@ module Gitlab
             return failure_result(reason: 'Skipping transfer as there is no Primary node to download from')
           end
 
+          predownload_error_message = replicator.predownload_validation_failure
+          if predownload_error_message.present?
+            return failure_result(reason: "Skipping transfer due to validation error: #{predownload_error_message}")
+          end
+
           if file_storage?
             if File.directory?(absolute_path)
               return failure_result(reason: 'Skipping transfer as destination exist and is a directory')

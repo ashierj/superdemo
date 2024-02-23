@@ -25,33 +25,37 @@ module Geo
     def execute
       try_obtain_lease do
         start_time = Time.current
+        sync_successful = false
 
         registry.start!
 
-        download_result = ::Gitlab::Geo::Replication::BlobDownloader.new(replicator: @replicator).execute
+        begin
+          downloader = ::Gitlab::Geo::Replication::BlobDownloader.new(replicator: @replicator)
+          download_result = downloader.execute
 
-        mark_as_synced = download_result.success
+          sync_successful = process_download_result(download_result)
+        rescue StandardError => error
+          # if an exception raises here, it will be stuck in "started" state until
+          # the cleanup process forces it to failed much later.
+          # To avoid that, catch the error, mark sync as
+          # failed, and re-raise the exception here.
+          registry.failed!(
+            message: "Error while attempting to sync",
+            error: error
+          )
+          track_exception(error)
 
-        if mark_as_synced
-          registry.synced!
-        else
-          message = download_result.reason
-          error = download_result.extra_details&.delete(:error)
-
-          if error
-            Gitlab::ErrorTracking.track_exception(
-              error,
-              replicable_name: @replicator.replicable_name,
-              model_record_id: @replicator.model_record_id
-            )
+          raise error
+        ensure
+          # make sure we're not stuck in a started state still
+          if registry.started?
+            sync_successful ? registry.synced! : registry.failed!(message: "Unknown system error")
           end
-
-          registry.failed!(message: message, error: error, missing_on_primary: download_result.primary_missing_file)
         end
 
-        log_download(mark_as_synced, download_result, start_time)
+        log_download(sync_successful, download_result, start_time)
 
-        !!mark_as_synced
+        sync_successful
       end
     end
 
@@ -59,6 +63,22 @@ module Geo
 
     def registry
       @registry ||= @replicator.registry
+    end
+
+    def process_download_result(download_result)
+      if download_result.success
+        registry.synced!
+        return true
+      end
+
+      message = download_result.reason
+      error = download_result.extra_details&.delete(:error)
+
+      track_exception(error) if error
+
+      registry.failed!(message: message, error: error, missing_on_primary: download_result.primary_missing_file)
+
+      false
     end
 
     def log_download(mark_as_synced, download_result, start_time)
@@ -75,6 +95,14 @@ module Geo
       metadata.merge!(download_result.extra_details) if download_result.extra_details
 
       log_info("Blob download", metadata)
+    end
+
+    def track_exception(exception)
+      Gitlab::ErrorTracking.track_exception(
+        exception,
+        replicable_name: @replicator.replicable_name,
+        model_record_id: @replicator.model_record_id
+      )
     end
 
     def lease_key
