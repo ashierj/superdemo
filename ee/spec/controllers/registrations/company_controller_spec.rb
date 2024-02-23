@@ -2,12 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboarding do
+RSpec.describe Registrations::CompanyController, feature_category: :onboarding do
   let_it_be(:user) { create(:user) }
 
   let(:logged_in) { true }
+  let(:onboarding_enabled?) { true }
 
   before do
+    stub_saas_features(onboarding: onboarding_enabled?)
     sign_in(user) if logged_in
   end
 
@@ -24,15 +26,13 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
   end
 
   shared_examples 'a dot-com only feature' do
-    context 'when not on gitlab.com' do
-      before do
-        allow(::Gitlab).to receive(:com?).and_return(false)
-      end
+    context 'when onboarding is not available' do
+      let(:onboarding_enabled?) { false }
 
       it { is_expected.to have_gitlab_http_status(:not_found) }
     end
 
-    context 'when on gitlab.com' do
+    context 'when onboarding is available' do
       it { is_expected.to have_gitlab_http_status(:ok) }
     end
   end
@@ -145,13 +145,11 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
 
       context 'when saving onboarding_step_url' do
         let(:path) { new_users_sign_up_group_path(redirect_params) }
-        let(:should_check_namespace_plan) { true }
 
         before do
           allow_next_instance_of(GitlabSubscriptions::CreateCompanyLeadService) do |service|
             allow(service).to receive(:execute).and_return(ServiceResponse.success)
           end
-          stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
         end
 
         context 'when current user onboarding is disabled' do
@@ -159,26 +157,31 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
             post_create
 
             expect(user.user_detail.onboarding_step_url).to be_nil
+            expect(user.onboarding_status_step_url).to be_nil
           end
         end
 
-        context 'when onboarding and on SaaS' do
-          let_it_be(:user) { create(:user, onboarding_in_progress: true) }
+        context 'when user is onboarding' do
+          let_it_be(:user, reload: true) { create(:user, onboarding_in_progress: true) }
 
-          it 'stores onboarding url' do
-            post_create
+          context 'when onboarding feature is available' do
+            it 'stores onboarding url' do
+              post_create
 
-            expect(user.user_detail.onboarding_step_url).to eq(path)
+              expect(user.user_detail.onboarding_step_url).to eq(path)
+              expect(user.onboarding_status_step_url).to eq(path)
+            end
           end
-        end
 
-        context 'when not on SaaS' do
-          let(:should_check_namespace_plan) { false }
+          context 'when onboarding feature is not available' do
+            let(:onboarding_enabled?) { false }
 
-          it 'does not store onboarding url' do
-            post_create
+            it 'does not store onboarding url' do
+              post_create
 
-            expect(user.user_detail.onboarding_step_url).to be_nil
+              expect(user.user_detail.onboarding_step_url).to be_nil
+              expect(user.onboarding_status_step_url).to be_nil
+            end
           end
         end
       end

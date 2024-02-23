@@ -2,10 +2,16 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::WelcomeController, :saas, feature_category: :system_access do
+RSpec.describe Registrations::WelcomeController, feature_category: :system_access do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }
+
+  let(:onboarding_enabled?) { true }
+
+  before do
+    stub_saas_features(onboarding: onboarding_enabled?)
+  end
 
   describe '#show' do
     let(:show_params) { {} }
@@ -34,10 +40,8 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
         )
       end
 
-      context 'when not on gitlab.com' do
-        before do
-          allow(::Gitlab).to receive(:com?).and_return(false)
-        end
+      context 'when onboarding feature is not available' do
+        let(:onboarding_enabled?) { false }
 
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end
@@ -102,7 +106,6 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
 
       context 'when 2FA is required from group' do
         before do
-          stub_ee_application_setting(should_check_namespace_plan: true)
           user = create(:user, onboarding_in_progress: true, require_two_factor_authentication_from_group: true)
           sign_in(user)
         end
@@ -178,10 +181,8 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
         sign_in(user)
       end
 
-      context 'when not on gitlab.com' do
-        before do
-          allow(::Gitlab).to receive(:com?).and_return(false)
-        end
+      context 'when onboarding feature is not available' do
+        let(:onboarding_enabled?) { false }
 
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end
@@ -275,12 +276,8 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
         context 'when onboarding is enabled' do
           let_it_be(:user) do
             create(:user, onboarding_in_progress: true).tap do |record|
-              create(:user_detail, user: record, onboarding_step_url: '_url_')
+              create(:user_detail, user: record, onboarding_step_url: '_url_', onboarding_status_step_url: '_url_')
             end
-          end
-
-          before do
-            stub_ee_application_setting(should_check_namespace_plan: true)
           end
 
           context 'when the new user already has any accepted group membership' do
@@ -302,8 +299,8 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
               patch_update
               user.reload
 
-              expect(user.onboarding_in_progress).to be_falsey
               expect(user.user_detail.onboarding_step_url).to be_nil
+              expect(user.onboarding_in_progress).to be(false)
               expect(response).to redirect_to dashboard_projects_path
             end
           end
@@ -315,8 +312,8 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
                 user.reload
                 path = new_users_sign_up_group_path
 
-                expect(user.onboarding_in_progress).to be_truthy
                 expect(user.user_detail.onboarding_step_url).to eq(path)
+                expect(user.onboarding_in_progress).to be(true)
                 expect(response).to redirect_to path
               end
             end
@@ -430,8 +427,8 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
             it 'redirects to the company path and stores the url' do
               user.reload
 
-              expect(user.onboarding_in_progress).to be_truthy
               expect(user.user_detail.onboarding_step_url).to eq(redirect_path)
+              expect(user.onboarding_in_progress).to be(true)
               expect(user.onboarding_status_step_url).to eq(redirect_path)
               expect(user.onboarding_status_email_opt_in).to eq(true)
               expect(response).to redirect_to redirect_path
@@ -466,8 +463,9 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
               user.reload
               path = new_users_sign_up_group_path
 
-              expect(user.onboarding_in_progress).to be_truthy
               expect(user.user_detail.onboarding_step_url).to eq(path)
+              expect(user.onboarding_in_progress).to be(true)
+              expect(user.onboarding_status_step_url).to eq(path)
               expect(response).to redirect_to path
             end
 
@@ -501,8 +499,8 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
                   user.reload
                   path = new_users_sign_up_company_path(expected_params)
 
-                  expect(user.onboarding_in_progress).to be_truthy
                   expect(user.user_detail.onboarding_step_url).to eq(path)
+                  expect(user.onboarding_in_progress).to be(true)
                   expect(user.onboarding_status_step_url).to eq(path)
                   expect(user.onboarding_status_email_opt_in).to eq(opt_in)
                   expect(response).to redirect_to path
@@ -528,8 +526,9 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
                 user.reload
                 path = new_users_sign_up_group_path
 
-                expect(user.onboarding_in_progress).to be_truthy
                 expect(user.user_detail.onboarding_step_url).to eq(path)
+                expect(user.onboarding_in_progress).to be(true)
+                expect(user.onboarding_status_step_url).to eq(path)
                 expect(response).to redirect_to path
               end
             end
@@ -597,8 +596,9 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
                   }.merge(extra_params)
                 )
 
-                expect(user.onboarding_in_progress).to be_truthy
                 expect(user.user_detail.onboarding_step_url).to eq(path)
+                expect(user.onboarding_in_progress).to be(true)
+                expect(user.onboarding_status_step_url).to eq(path)
                 expect(response).to redirect_to path
               end
             end

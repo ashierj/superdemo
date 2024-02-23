@@ -15,6 +15,7 @@ RSpec.shared_examples EE::Onboarding::Redirectable do
       created_user = User.find_by_email(new_user_email)
       expect(created_user).to be_onboarding_in_progress
       expect(created_user.user_detail.onboarding_step_url).to eq(users_sign_up_welcome_path(glm_params))
+      expect(created_user.onboarding_status_step_url).to eq(users_sign_up_welcome_path(glm_params))
     end
   end
 
@@ -30,6 +31,7 @@ RSpec.shared_examples EE::Onboarding::Redirectable do
       created_user = User.find_by_email(new_user_email)
       expect(created_user).not_to be_onboarding_in_progress
       expect(created_user.user_detail.onboarding_step_url).to be_nil
+      expect(created_user.onboarding_status_step_url).to be_nil
     end
   end
 end
