@@ -22,22 +22,21 @@ RSpec.describe Geo::BlobDownloadService, feature_category: :geo_replication do
   describe "#execute" do
     let(:downloader) { double(:downloader) }
 
-    before do
-      expect(downloader).to receive(:execute).and_return(result)
-      expect(::Gitlab::Geo::Replication::BlobDownloader).to receive(:new).and_return(downloader)
-    end
-
-    context 'when exception is raised' do
+    context 'when the downloader result object contains an error' do
       let(:error) { StandardError.new('Error') }
       let(:result) do
         double(
           :result,
           success: false,
-          primary_missing_file:
-          false,
+          primary_missing_file: false,
           bytes_downloaded: 0,
           reason: 'foo',
           extra_details: { error: error })
+      end
+
+      before do
+        expect(downloader).to receive(:execute).and_return(result)
+        expect(::Gitlab::Geo::Replication::BlobDownloader).to receive(:new).and_return(downloader)
       end
 
       it 'tracks exception' do
@@ -70,7 +69,64 @@ RSpec.describe Geo::BlobDownloadService, feature_category: :geo_replication do
       end
     end
 
+    context 'when the replicator fails pre-download validation' do
+      before do
+        expect(replicator).to receive(:predownload_validation_failure).and_return(
+          "This upload is busted"
+        )
+      end
+
+      it "creates the registry" do
+        expect do
+          subject.execute
+        end.to change { registry_class.count }.by(1)
+      end
+
+      it "sets sync state to failed" do
+        subject.execute
+
+        expect(registry_class.last).to be_failed
+      end
+
+      it "captures the error details in the registry record" do
+        subject.execute
+        expect(registry_class.last.last_sync_failure).to include("This upload is busted")
+      end
+    end
+
+    context 'when exception is raised by the downloader' do
+      let(:error) { StandardError.new('Some data inconsistency') }
+
+      before do
+        expect(downloader).to receive(:execute).and_raise(error)
+        expect(::Gitlab::Geo::Replication::BlobDownloader).to receive(:new).and_return(downloader)
+      end
+
+      it 'marks the replicator registry record as failed' do
+        expect { subject.execute }.to raise_error(error)
+
+        registry = replicator.registry
+        expect(registry).to be_failed
+        expect(registry.last_sync_failure).to include("Error while attempting to sync")
+      end
+
+      it 'reports the exception' do
+        expect(Gitlab::ErrorTracking).to receive(:track_exception).with(
+          error,
+          replicable_name: replicator.replicable_name,
+          model_record_id: replicator.model_record_id
+        )
+
+        expect { subject.execute }.to raise_error(error)
+      end
+    end
+
     context "when it can obtain the exclusive lease" do
+      before do
+        expect(downloader).to receive(:execute).and_return(result)
+        expect(::Gitlab::Geo::Replication::BlobDownloader).to receive(:new).and_return(downloader)
+      end
+
       context "when the registry record does not exist" do
         context "when the downloader returns success" do
           let(:result) { double(:result, success: true, primary_missing_file: false, bytes_downloaded: 123, reason: nil, extra_details: nil) }

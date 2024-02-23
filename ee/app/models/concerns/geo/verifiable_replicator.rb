@@ -313,6 +313,23 @@ module Geo
       resource_exists? && skip_download_can_rely_on_verification?
     end
 
+    # Downloading replicators need to verify the state of the resource and its association
+    # prior to attempting downloads to avoid triggering exceptions. Call this method
+    # to trigger validation and receive an error detail message string if any issues are present.
+    #
+    # Override this method in subclasses to provide more context-specific error details
+    #
+    # NOTE: we've kept this implementation pretty simple so far for the sake of
+    #       detecting problems with replicating Upload and other blob data types.
+    #       If we find later that we need to add this more extensively, or detect
+    #       multiple errors (ala ActiveRecord models), we should revisit and refactor
+    #       this implementation
+    #
+    # @return [String|nil] an error message String if validation fails, nil if validation succeeds
+    def predownload_validation_failure
+      nil
+    end
+
     # @abstract
     # @return [String] a checksum representing the data
     def calculate_checksum
