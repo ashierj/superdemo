@@ -30,8 +30,15 @@ service StepRunner {
     rpc Status(StatusRequest) returns (StatusResponse);
 }
 
+message Variable {
+    string key = 1;
+    string value = 2;
+    bool file = 3;
+    bool masked = 4;
+}
+
 message Job {
-    map<string,string> variables = 1;
+    repeated Variable variables = 1;
     string job_id = 2;
     string pipeline_id = 3;
     string build_dir = 4;
