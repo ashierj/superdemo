@@ -166,6 +166,18 @@ execution environment (like other environment variables or paths). This
 includes file-type variables, which should be written to the same path as
 they would be in traditional runner job execution.
 
+## Log Format
+
+Log lines emitted buy the `FollowLogs` API should have the format
+
+```plaintext
+    <timestamp> <stream> <stdout/stderr> <append flag> <message>
+```
+
+This is the same log format introduce into runner in
+https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/4591. The
+logging library used to produce this format should be shared between
+`GitaLab Runner` and `Step Runner`.
 
 ## Executors
 
