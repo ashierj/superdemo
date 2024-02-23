@@ -107,7 +107,7 @@ export default {
     sort-icon-left
     no-sort-reset
     no-local-sorting
-    table-class="gl-table-layout-fixed"
+    table-class="gl-table-fixed"
     @sort-changed="$emit('sort-changed', $event)"
   >
     <template #cell(image)="{ item }">
