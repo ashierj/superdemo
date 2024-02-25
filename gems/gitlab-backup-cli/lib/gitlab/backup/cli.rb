@@ -7,12 +7,13 @@ module Gitlab
   module Backup
     # GitLab Backup CLI
     module Cli
-      autoload :VERSION, 'gitlab/backup/cli/version'
+      autoload :Commands, 'gitlab/backup/cli/commands'
+      autoload :Dependencies, 'gitlab/backup/cli/dependencies'
       autoload :Output, 'gitlab/backup/cli/output'
       autoload :Runner, 'gitlab/backup/cli/runner'
-      autoload :Utils, 'gitlab/backup/cli/utils'
-      autoload :Dependencies, 'gitlab/backup/cli/dependencies'
       autoload :Shell, 'gitlab/backup/cli/shell'
+      autoload :Utils, 'gitlab/backup/cli/utils'
+      autoload :VERSION, 'gitlab/backup/cli/version'
 
       Error = Class.new(StandardError)
 

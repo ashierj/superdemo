@@ -17,6 +17,9 @@ module Gitlab
         def version
           puts "GitLab Backup CLI (#{VERSION})" # rubocop:disable Rails/Output -- CLI output
         end
+
+        desc 'backup', 'Manage repositories, database and files backup creation'
+        subcommand 'backup', Commands::BackupSubcommand
       end
     end
   end
