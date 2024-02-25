@@ -11,7 +11,13 @@ module Gitlab
       autoload :Shell, 'gitlab/backup/cli/shell'
 
       Error = Class.new(StandardError)
-      # Your code goes here...
+
+      def self.rails_environment!
+        require APP_PATH
+
+        Rails.application.require_environment!
+        Rails.application.autoloaders
+      end
     end
   end
 end

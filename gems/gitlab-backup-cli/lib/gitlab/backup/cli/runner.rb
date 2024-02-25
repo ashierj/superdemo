@@ -21,13 +21,6 @@ module Gitlab
           puts "GitLab Backup CLI (#{VERSION})" # rubocop:disable Rails/Output -- CLI output
         end
 
-        private
-
-        def rails_environment!
-          require APP_PATH
-
-          Rails.application.load_tasks
-        end
       end
     end
   end
