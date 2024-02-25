@@ -17,9 +17,7 @@ module Gitlab
             ::Backup::Targets::Files.new(nil, storage_path, options: options, excludes: ['tmp'])
           end
 
-          def storage_path
-            Settings.terraform_state.storage_path
-          end
+          def storage_path = context.terraform_state_path
         end
       end
     end

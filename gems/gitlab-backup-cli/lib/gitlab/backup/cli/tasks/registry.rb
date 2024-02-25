@@ -19,10 +19,7 @@ module Gitlab
             ::Backup::Targets::Files.new(nil, storage_path, options: options)
           end
 
-          def storage_path
-            # TODO: Use configuration solver
-            Settings.registry.path
-          end
+          def storage_path = context.registry_path
         end
       end
     end

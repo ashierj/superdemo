@@ -17,10 +17,7 @@ module Gitlab
             ::Backup::Targets::Files.new(nil, storage_path, options: options, excludes: ['tmp'])
           end
 
-          def storage_path
-            # TODO: Use configuration solver
-            JobArtifactUploader.root
-          end
+          def storage_path = context.ci_job_artifacts_path
         end
       end
     end

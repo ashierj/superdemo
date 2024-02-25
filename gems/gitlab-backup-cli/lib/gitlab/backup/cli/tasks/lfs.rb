@@ -17,10 +17,7 @@ module Gitlab
             ::Backup::Targets::Files.new(nil, storage_path, options: options)
           end
 
-          def storage_path
-            # TODO: Use configuration solver
-            Settings.lfs.storage_path
-          end
+          def storage_path = context.ci_lfs_path
         end
       end
     end

@@ -21,10 +21,7 @@ module Gitlab
             ::Backup::Targets::Files.new(nil, storage_path, options: options, excludes: [LEGACY_PAGES_TMP_PATH])
           end
 
-          def storage_path
-            # TODO: Use configuration solver
-            Gitlab.config.pages.path
-          end
+          def storage_path = context.pages_path
         end
       end
     end

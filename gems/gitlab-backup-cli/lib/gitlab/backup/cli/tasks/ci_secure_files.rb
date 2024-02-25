@@ -17,10 +17,7 @@ module Gitlab
             ::Backup::Targets::Files.new(nil, storage_path, options: options, excludes: ['tmp'])
           end
 
-          def storage_path
-            # TODO: Use configuration solver
-            Settings.ci_secure_files.storage_path
-          end
+          def storage_path = context.ci_secure_files_path
         end
       end
     end

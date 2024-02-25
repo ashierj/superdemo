@@ -17,9 +17,7 @@ module Gitlab
             ::Backup::Targets::Files.new(nil, storage_path, options: options, excludes: ['tmp'])
           end
 
-          def storage_path
-            File.join(Gitlab.config.uploads.storage_path, 'uploads')
-          end
+          def storage_path = context.upload_path
         end
       end
     end
