@@ -9,6 +9,7 @@ module Gitlab
     module Cli
       autoload :Commands, 'gitlab/backup/cli/commands'
       autoload :Dependencies, 'gitlab/backup/cli/dependencies'
+      autoload :BackupMetadata, 'gitlab/backup/cli/backup_metadata'
       autoload :Output, 'gitlab/backup/cli/output'
       autoload :Runner, 'gitlab/backup/cli/runner'
       autoload :Shell, 'gitlab/backup/cli/shell'
