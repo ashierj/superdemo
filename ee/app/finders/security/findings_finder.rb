@@ -81,37 +81,10 @@ module Security
     end
 
     def security_findings
-      @security_findings ||= if Feature.enabled?(:security_findings_finder_lateral_join, project)
-                               load_security_findings_lateral
-                             else
-                               load_security_findings
-                             end
+      @security_findings ||= load_security_findings
     end
 
     def load_security_findings
-      pipeline.security_findings
-              .with_pipeline_entities
-              .with_scan
-              .with_scanner
-              .with_state_transitions
-              .with_issue_links
-              .with_merge_request_links
-              .by_partition_number(security_findings_partition_number)
-              .deduplicated
-              .ordered(params[:sort])
-              .merge(::Security::Scan.latest_successful)
-              .page(page)
-              .per(per_page)
-              .then { |relation| by_uuid(relation) }
-              .then { |relation| by_confidence_levels(relation) }
-              .then { |relation| by_report_types(relation) }
-              .then { |relation| by_severity_levels(relation) }
-              .then { |relation| by_scanner_external_ids(relation) }
-              .then { |relation| by_state(relation) }
-              .then { |relation| by_include_dismissed(relation) }
-    end
-
-    def load_security_findings_lateral
       # This method generates a query of the general form
       #
       #   SELECT security_findings.*
@@ -212,11 +185,7 @@ module Security
     def by_report_types(relation)
       return relation unless params[:report_type]
 
-      if Feature.enabled?(:security_findings_finder_lateral_join, project)
-        relation.merge(::Security::Scan.by_scan_types(params[:report_type]))
-      else
-        relation.by_report_types(params[:report_type])
-      end
+      relation.merge(::Security::Scan.by_scan_types(params[:report_type]))
     end
 
     def by_severity_levels(relation)

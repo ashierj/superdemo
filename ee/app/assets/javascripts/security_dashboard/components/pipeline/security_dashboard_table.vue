@@ -2,8 +2,6 @@
 import { GlAlert, GlCollapse, GlEmptyState, GlFormCheckbox, GlPagination } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState, mapGetters } from 'vuex';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import Pagination from '~/vue_shared/components/pagination_links.vue';
 import SecurityDashboardTableRow from './security_dashboard_table_row.vue';
 import SelectionSummary from './selection_summary_vuex.vue';
 
@@ -15,11 +13,9 @@ export default {
     GlEmptyState,
     GlFormCheckbox,
     GlPagination,
-    Pagination,
     SecurityDashboardTableRow,
     SelectionSummary,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: ['canAdminVulnerability'],
   computed: {
     ...mapState('vulnerabilities', [
@@ -45,10 +41,7 @@ export default {
       );
     },
     showCompactPagination() {
-      return Boolean(this.glFeatures.securityFindingsFinderLateralJoin && this.pageInfo?.page);
-    },
-    showNumberedPagination() {
-      return Boolean(!this.glFeatures.securityFindingsFinderLateralJoin && this.pageInfo?.total);
+      return Boolean(this.pageInfo?.page);
     },
     currentPage() {
       return this.pageInfo.page;
@@ -149,14 +142,6 @@ export default {
         align="center"
         class="gl-mt-3"
         @input="fetchPage"
-      />
-
-      <pagination
-        v-else-if="showNumberedPagination"
-        data-testid="numbered-pagination"
-        :change="fetchPage"
-        :page-info="pageInfo"
-        class="justify-content-center gl-mt-3"
       />
     </template>
   </div>
