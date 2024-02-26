@@ -68,7 +68,6 @@ module EE
 
       def execute_notification_worker?
         ::Namespaces::FreeUserCap.dashboard_limit_enabled? &&
-          ::Namespaces::FreeUserCap.over_user_limit_email_enabled?(source) &&
           source.is_a?(Group) && # only ever an invited group's members could affect this
           added_member_ids_with_users.any?
       end
@@ -82,7 +81,6 @@ module EE
 
       def append_added_member_ids_with_users(member:)
         return unless ::Namespaces::FreeUserCap.dashboard_limit_enabled?
-        return unless ::Namespaces::FreeUserCap.over_user_limit_email_enabled?(source)
         return unless new_and_attached_to_user?(member: member)
 
         added_member_ids_with_users << member.id

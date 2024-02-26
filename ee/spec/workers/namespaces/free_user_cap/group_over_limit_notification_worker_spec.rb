@@ -24,7 +24,6 @@ RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas,
     let_it_be(:project_with_another_top_level_group) { create(:project, namespace: another_top_level_group) }
 
     let(:added_member_ids) { [] }
-    let(:free_user_cap_over_limit_email_enabled) { true }
     let(:dashboard_limit_enabled) { true }
 
     before_all do
@@ -41,7 +40,6 @@ RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas,
     before do
       stub_ee_application_setting(dashboard_limit_enabled: dashboard_limit_enabled)
       stub_ee_application_setting(dashboard_limit: 5)
-      stub_feature_flags(free_user_cap_over_limit_email: free_user_cap_over_limit_email_enabled)
     end
 
     subject(:perform) { described_class.new.perform(invited_group.id, added_member_ids) }
@@ -107,16 +105,6 @@ RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas,
 
       context 'when invited_group does not exist' do
         subject(:perform) { described_class.new.perform(non_existing_record_id, added_member_ids) }
-
-        it 'does not run notify service' do
-          expect(::Namespaces::FreeUserCap::NotifyOverLimitService).not_to receive(:execute)
-
-          perform
-        end
-      end
-
-      context 'when free_user_cap_over_limit_email feature is disabled' do
-        let(:free_user_cap_over_limit_email_enabled) { false }
 
         it 'does not run notify service' do
           expect(::Namespaces::FreeUserCap::NotifyOverLimitService).not_to receive(:execute)

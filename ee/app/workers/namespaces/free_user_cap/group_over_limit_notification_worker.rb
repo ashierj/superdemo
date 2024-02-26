@@ -15,8 +15,6 @@ module Namespaces
         @group = Group.find_by_id(group_id)
         return unless @group.present? # could have been deleted by the time this runs
 
-        return unless ::Namespaces::FreeUserCap.over_user_limit_email_enabled?(@group)
-
         top_level_groups.each do |top_level_group|
           next unless ::Namespaces::FreeUserCap::Enforcement.new(top_level_group).over_from_adding_users?(member_ids)
 
