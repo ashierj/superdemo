@@ -4,7 +4,10 @@ import { GROUP_VIEW_TYPE, PROJECT_VIEW_TYPE } from '~/usage_quotas/constants';
 import { getTransferTabMetadata } from './tab_metadata';
 
 export const initGroupTransferApp = () => {
-  const transferTabMetadata = getTransferTabMetadata(GROUP_VIEW_TYPE, true);
+  const transferTabMetadata = getTransferTabMetadata({
+    viewType: GROUP_VIEW_TYPE,
+    includeEl: true,
+  });
 
   if (!transferTabMetadata) return false;
 
@@ -14,7 +17,10 @@ export const initGroupTransferApp = () => {
 };
 
 export const initProjectTransferApp = () => {
-  const transferTabMetadata = getTransferTabMetadata(PROJECT_VIEW_TYPE, true);
+  const transferTabMetadata = getTransferTabMetadata({
+    viewType: PROJECT_VIEW_TYPE,
+    includeEl: true,
+  });
 
   if (!transferTabMetadata) return false;
 

@@ -5,7 +5,7 @@ import { getCodeSuggestionsTabMetadata } from './tab_metadata';
 Vue.use(VueApollo);
 
 export default () => {
-  const codeSuggestionsTabMetadata = getCodeSuggestionsTabMetadata(true);
+  const codeSuggestionsTabMetadata = getCodeSuggestionsTabMetadata({ includeEl: true });
 
   if (!codeSuggestionsTabMetadata) return false;
 

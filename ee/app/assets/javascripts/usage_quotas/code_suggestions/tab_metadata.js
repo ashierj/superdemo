@@ -44,7 +44,7 @@ export const parseProvideData = (el) => {
   };
 };
 
-export const getCodeSuggestionsTabMetadata = (withMountElement = false) => {
+export const getCodeSuggestionsTabMetadata = ({ includeEl = false } = {}) => {
   const el = document.querySelector(CODE_SUGGESTIONS_TAB_METADATA_EL_SELECTOR);
 
   if (!el) return false;
@@ -61,7 +61,7 @@ export const getCodeSuggestionsTabMetadata = (withMountElement = false) => {
     },
   };
 
-  if (withMountElement) {
+  if (includeEl) {
     codeSuggestionsTabMetadata.component.el = el;
   }
 

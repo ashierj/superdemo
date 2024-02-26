@@ -1,26 +1,14 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import apolloProvider from 'ee/usage_quotas/shared/provider';
-import NamespaceStorageApp from '~/usage_quotas/storage/components/namespace_storage_app.vue';
-import { STORAGE_TAB_METADATA_EL_SELECTOR } from '~/usage_quotas/constants';
-import { parseProvideData } from './utils';
+import customApolloProvider from 'ee/usage_quotas/shared/provider';
+import { getStorageTabMetadata } from '~/usage_quotas/storage/tab_metadata';
 
 Vue.use(VueApollo);
 
 export default () => {
-  const el = document.querySelector(STORAGE_TAB_METADATA_EL_SELECTOR);
+  const storageTabMetadata = getStorageTabMetadata({ includeEl: true, customApolloProvider });
 
-  if (!el) {
-    return false;
-  }
+  if (!storageTabMetadata) return false;
 
-  return new Vue({
-    el,
-    apolloProvider,
-    name: 'NamespaceStorageApp',
-    provide: parseProvideData(el),
-    render(createElement) {
-      return createElement(NamespaceStorageApp);
-    },
-  });
+  return new Vue(storageTabMetadata.component);
 };

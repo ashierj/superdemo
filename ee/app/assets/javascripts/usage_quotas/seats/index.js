@@ -8,7 +8,7 @@ Vue.use(Vuex);
 Vue.use(VueApollo);
 
 export default () => {
-  const seatTabMetadata = getSeatTabMetadata(true);
+  const seatTabMetadata = getSeatTabMetadata({ includeEl: true });
 
   if (!seatTabMetadata) return false;
 

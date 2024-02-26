@@ -36,7 +36,7 @@ export const parseProvideData = (el) => {
   };
 };
 
-export const getSeatTabMetadata = (withMountElement = false) => {
+export const getSeatTabMetadata = ({ includeEl = false } = {}) => {
   const el = document.querySelector(SEATS_TAB_METADATA_EL_SELECTOR);
 
   if (!el) return false;
@@ -85,7 +85,7 @@ export const getSeatTabMetadata = (withMountElement = false) => {
     },
   };
 
-  if (withMountElement) {
+  if (includeEl) {
     seatTabMetadata.component.el = el;
   }
 

@@ -16,7 +16,7 @@ export const parseProvideData = (el) => {
   };
 };
 
-export const getTransferTabMetadata = (viewType, withMountElement = false) => {
+export const getTransferTabMetadata = ({ viewType = null, includeEl = false } = {}) => {
   let elSelector;
   let vueComponent;
 
@@ -47,7 +47,7 @@ export const getTransferTabMetadata = (viewType, withMountElement = false) => {
       },
     },
   };
-  if (withMountElement) {
+  if (includeEl) {
     transferTabMetadata.component.el = el;
   }
 
