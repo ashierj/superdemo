@@ -101,6 +101,28 @@ module EE
         object.merge_request_diffs.includes(includes)
       end
       # rubocop:enable CodeReuse/ActiveRecord
+
+      def mergeable
+        lazy_committers { object.mergeable? }
+      end
+
+      def detailed_merge_status
+        lazy_committers { super }
+      end
+
+      private
+
+      def lazy_committers
+        # No need to batch load committers and lazy load if we allow committers
+        # to approve since we're not going to filter committers so we can return
+        # early.
+        return yield unless object.merge_requests_disable_committers_approval?
+
+        object.commits.add_committers_to_batch_loader(with_merge_commits: true)
+        ::Gitlab::Graphql::Lazy.new do
+          yield
+        end
+      end
     end
   end
 end
