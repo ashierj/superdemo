@@ -16,7 +16,7 @@ module Gitlab
           private
 
           def target
-            ::Backup::Targets::Database.new(output, options: options)
+            ::Gitlab::Backup::Cli::Targets::Database.new(options: options)
           end
         end
       end

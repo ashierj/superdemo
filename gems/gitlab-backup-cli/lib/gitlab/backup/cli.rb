@@ -15,6 +15,7 @@ module Gitlab
       autoload :Runner, 'gitlab/backup/cli/runner'
       autoload :SourceContext, 'gitlab/backup/cli/source_context'
       autoload :Shell, 'gitlab/backup/cli/shell'
+      autoload :Targets, 'gitlab/backup/cli/targets'
       autoload :Tasks, 'gitlab/backup/cli/tasks'
       autoload :Utils, 'gitlab/backup/cli/utils'
       autoload :VERSION, 'gitlab/backup/cli/version'
