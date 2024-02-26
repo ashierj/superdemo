@@ -19,33 +19,6 @@ RSpec.describe Admin::ApplicationSettingsHelper, feature_category: :code_suggest
     end
   end
 
-  describe '#admin_display_code_suggestions_toggle?', :freeze_time, feature_category: :code_suggestions do
-    let(:feature_enabled) { true }
-
-    let(:today) { Date.current }
-    let(:tomorrow) { today + 1.day }
-
-    before do
-      stub_licensed_features(ai_chat: feature_enabled)
-      stub_const('CodeSuggestions::SelfManaged::SERVICE_START_DATE', service_start_date)
-    end
-
-    where(:service_start_date, :feature_available, :expectation) do
-      ref(:today) | true | false
-      ref(:today) | false | false
-      ref(:tomorrow) | true | true
-      ref(:tomorrow) | false | false
-    end
-
-    with_them do
-      it 'returns expectation' do
-        stub_licensed_features(code_suggestions: feature_available)
-
-        expect(helper.admin_display_code_suggestions_toggle?).to eq(expectation)
-      end
-    end
-  end
-
   describe '#admin_display_ai_powered_toggle?', :freeze_time, feature_category: :duo_chat do
     let(:feature_enabled) { true }
     let(:past) { Time.current - 1.second }

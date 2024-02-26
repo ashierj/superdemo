@@ -92,163 +92,72 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
           stub_licensed_features(code_suggestions: true)
         end
 
-        # TODO: clean up date-related tests after the Code Suggestions service start date (15.02.2024)
-        context 'when before the service start date' do
-          around do |example|
-            travel_to(CodeSuggestions::SelfManaged::SERVICE_START_DATE - 1.day) do
-              example.run
-            end
-          end
+        context 'without add on' do
+          it 'returns NOT_FOUND status' do
+            post_api
 
-          context 'with code suggestions disabled on instance level' do
-            before do
-              stub_ee_application_setting(instance_level_code_suggestions_enabled: false)
-            end
-
-            it 'returns NOT_FOUND status' do
-              post_api
-
-              expect(response).to have_gitlab_http_status(:not_found)
-            end
-          end
-
-          context 'with code suggestions enabled on instance level' do
-            before do
-              stub_ee_application_setting(instance_level_code_suggestions_enabled: true)
-            end
-
-            it 'calls ::CloudConnector::AccessService to obtain access token', :aggregate_failures do
-              expect_next_instance_of(::CloudConnector::AccessService) do |instance|
-                expect(instance).to receive(:access_token).with([:code_suggestions]).and_return(ai_gateway_token)
-              end
-
-              post_api
-
-              expect(response).to have_gitlab_http_status(:ok)
-            end
-
-            context 'when cloud connector access token is missing' do
-              before do
-                allow_next_instance_of(::CloudConnector::AccessService) do |instance|
-                  allow(instance).to receive(:access_token).and_return(nil)
-                end
-              end
-
-              it 'returns UNAUTHORIZED status' do
-                post_api
-
-                expect(response).to have_gitlab_http_status(:unauthorized)
-              end
-            end
-
-            context 'when cloud connector access token is valid' do
-              before do
-                allow_next_instance_of(::CloudConnector::AccessService) do |instance|
-                  allow(instance).to receive(:access_token).and_return(ai_gateway_token)
-                end
-              end
-
-              context 'when instance has uuid available' do
-                let(:instance_uuid) { 'some uuid' }
-
-                before do
-                  allow(Gitlab::CurrentSettings).to receive(:uuid).and_return(instance_uuid)
-                end
-
-                it_behaves_like 'successful send request via workhorse'
-              end
-
-              context 'when instance has custom hostname' do
-                let(:hostname) { 'gitlab.local' }
-
-                before do
-                  stub_config(gitlab: {
-                    protocol: 'http',
-                    host: hostname,
-                    url: "http://#{hostname}",
-                    relative_url_root: "http://#{hostname}"
-                  })
-                end
-
-                it_behaves_like 'successful send request via workhorse'
-              end
-            end
+            expect(response).to have_gitlab_http_status(:not_found)
           end
         end
 
-        context 'when it is past the code suggestions service start date' do
-          around do |example|
-            travel_to(::CodeSuggestions::SelfManaged::SERVICE_START_DATE + 1.second) do
-              example.run
+        context 'with add on' do
+          before_all { create(:gitlab_subscription_add_on_purchase, namespace: namespace) }
+
+          it 'calls ::CloudConnector::AccessService to obtain access token', :aggregate_failures do
+            expect_next_instance_of(::CloudConnector::AccessService) do |instance|
+              expect(instance).to receive(:access_token).with([:code_suggestions])
+                                                        .and_return(ai_gateway_token)
+            end
+
+            post_api
+
+            expect(response).to have_gitlab_http_status(:ok)
+          end
+
+          context 'when cloud connector access token is missing' do
+            before do
+              allow_next_instance_of(::CloudConnector::AccessService) do |instance|
+                allow(instance).to receive(:access_token).and_return(nil)
+              end
+            end
+
+            it 'returns UNAUTHORIZED status' do
+              post_api
+
+              expect(response).to have_gitlab_http_status(:unauthorized)
             end
           end
 
-          context 'with out add on' do
-            it 'returns NOT_FOUND status' do
-              post_api
-
-              expect(response).to have_gitlab_http_status(:not_found)
-            end
-          end
-
-          context 'with add on' do
-            before_all { create(:gitlab_subscription_add_on_purchase, namespace: namespace) }
-
-            it 'calls ::CloudConnector::AccessService to obtain access token', :aggregate_failures do
-              expect_next_instance_of(::CloudConnector::AccessService) do |instance|
-                expect(instance).to receive(:access_token).with([:code_suggestions]).and_return(ai_gateway_token)
+          context 'when cloud connector access token is valid' do
+            before do
+              allow_next_instance_of(::CloudConnector::AccessService) do |instance|
+                allow(instance).to receive(:access_token).and_return(ai_gateway_token)
               end
-
-              post_api
-
-              expect(response).to have_gitlab_http_status(:ok)
             end
 
-            context 'when cloud connector access token is missing' do
+            context 'when instance has uuid available' do
+              let(:instance_uuid) { 'some uuid' }
+
               before do
-                allow_next_instance_of(::CloudConnector::AccessService) do |instance|
-                  allow(instance).to receive(:access_token).and_return(nil)
-                end
+                allow(Gitlab::CurrentSettings).to receive(:uuid).and_return(instance_uuid)
               end
 
-              it 'returns UNAUTHORIZED status' do
-                post_api
-
-                expect(response).to have_gitlab_http_status(:unauthorized)
-              end
+              it_behaves_like 'successful send request via workhorse'
             end
 
-            context 'when cloud connector access token is valid' do
+            context 'when instance has custom hostname' do
+              let(:hostname) { 'gitlab.local' }
+
               before do
-                allow_next_instance_of(::CloudConnector::AccessService) do |instance|
-                  allow(instance).to receive(:access_token).and_return(ai_gateway_token)
-                end
+                stub_config(gitlab: {
+                  protocol: 'http',
+                  host: hostname,
+                  url: "http://#{hostname}",
+                  relative_url_root: "http://#{hostname}"
+                })
               end
 
-              context 'when instance has uuid available' do
-                let(:instance_uuid) { 'some uuid' }
-
-                before do
-                  allow(Gitlab::CurrentSettings).to receive(:uuid).and_return(instance_uuid)
-                end
-
-                it_behaves_like 'successful send request via workhorse'
-              end
-
-              context 'when instance has custom hostname' do
-                let(:hostname) { 'gitlab.local' }
-
-                before do
-                  stub_config(gitlab: {
-                    protocol: 'http',
-                    host: hostname,
-                    url: "http://#{hostname}",
-                    relative_url_root: "http://#{hostname}"
-                  })
-                end
-
-                it_behaves_like 'successful send request via workhorse'
-              end
+              it_behaves_like 'successful send request via workhorse'
             end
           end
         end

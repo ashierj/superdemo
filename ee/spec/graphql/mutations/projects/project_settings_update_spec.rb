@@ -44,7 +44,6 @@ RSpec.describe Mutations::Projects::ProjectSettingsUpdate, feature_category: :co
       context 'when duo addon is not available' do
         before do
           stub_licensed_features(code_suggestions: true)
-          stub_const("::CodeSuggestions::SelfManaged::SERVICE_START_DATE", Time.zone.parse('2000-02-15T00:00:00Z'))
         end
 
         it 'raises an error' do
@@ -52,18 +51,6 @@ RSpec.describe Mutations::Projects::ProjectSettingsUpdate, feature_category: :co
             mutation.resolve(full_path: project_without_addon.full_path,
               duo_features_enabled: duo_features_enabled)
           end.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-        end
-      end
-
-      context 'when instance has it disabled' do
-        before do
-          stub_licensed_features(code_suggestions: true)
-          stub_const("::CodeSuggestions::SelfManaged::SERVICE_START_DATE", Time.zone.parse('3000-02-15T00:00:00Z'))
-          stub_application_setting(instance_level_code_suggestions_enabled: false)
-        end
-
-        it 'raises an error' do
-          expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
         end
       end
 
