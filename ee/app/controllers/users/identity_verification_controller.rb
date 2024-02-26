@@ -82,14 +82,7 @@ module Users
       unless result.success?
         log_event(:phone, :failed_attempt, result.reason) unless result.reason == :related_to_high_risk_user
 
-        # Do not pass the `related_to_banned_user` reason to the frontend if the `identity_verification_auto_ban`
-        # feature flag is disabled, to allow re-submitting the form.
-        json_response = if Feature.disabled?(:identity_verification_auto_ban) &&
-            result.reason == :related_to_banned_user
-                          { message: result.message }
-                        else
-                          { message: result.message, reason: result.reason }
-                        end
+        json_response = { message: result.message, reason: result.reason }
 
         return render status: :bad_request, json: json_response
       end
@@ -147,14 +140,9 @@ module Users
       return render_404 unless json_request? && @user.credit_card_validation.present?
 
       if @user.credit_card_validation.used_by_banned_user?
-        json_response =
-          if Feature.enabled?(:identity_verification_auto_ban)
-            ::Users::AutoBanService.new(user: @user, reason: :banned_credit_card).execute
-            { message: user_banned_error_message, reason: :related_to_banned_user }
-          else
-            { message: s_('IdentityVerification|There was a problem with the credit card details you ' \
-                          'entered. Use a different credit card and try again.') }
-          end
+        ::Users::AutoBanService.new(user: @user, reason: :banned_credit_card).execute
+
+        json_response = { message: user_banned_error_message, reason: :related_to_banned_user }
 
         log_event(:credit_card, :failed_attempt, :related_to_banned_user)
         render status: :bad_request, json: json_response
