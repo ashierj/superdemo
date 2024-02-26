@@ -7,6 +7,7 @@ module CodeSuggestions
     VERTEX_AI = :vertex_ai
     ANTHROPIC = :anthropic
     ANTHROPIC_MODEL = 'claude-2.1'
+    SHORT_PROMPT_INPUT_CHARS = 50000
 
     def initialize(current_user, params:, unsafe_passthrough_params: {})
       @current_user = current_user
@@ -51,7 +52,8 @@ module CodeSuggestions
         instruction: instructions[:instruction],
         project: project,
         model_name: ANTHROPIC_MODEL,
-        current_user: current_user
+        current_user: current_user,
+        prompt_limit: Feature.enabled?(:code_suggestions_short_prompt, current_user) ? SHORT_PROMPT_INPUT_CHARS : nil
       )
     end
 
