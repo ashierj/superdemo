@@ -2833,7 +2833,7 @@ msgstr ""
 msgid "Add a reply"
 msgstr ""
 
-msgid "Add a suffix to Service Desk email address. %{linkStart}Learn more.%{linkEnd}"
+msgid "Add a suffix to Service Desk email address. %{linkStart}Learn more%{linkEnd}."
 msgstr ""
 
 msgid "Add a table"
@@ -51888,7 +51888,7 @@ msgstr ""
 msgid "To access this domain create a new DNS record"
 msgstr ""
 
-msgid "To add a custom suffix, set up a Service Desk email address. %{linkStart}Learn more.%{linkEnd}"
+msgid "To add a custom suffix, set up a Service Desk email address. %{linkStart}Learn more%{linkEnd}."
 msgstr ""
 
 msgid "To add the entry manually, provide the following details to the application on your phone."
