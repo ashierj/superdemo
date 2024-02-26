@@ -96,7 +96,7 @@ export const mockGraphqlContributorCountResponse = (
 ) =>
   jest.fn().mockResolvedValue({
     data: {
-      namespace: { id: 'fake-contributor-count-request', contributors: mockDataResponse },
+      group: { id: 'fake-contributor-count-request', contributors: mockDataResponse },
     },
   });
 
