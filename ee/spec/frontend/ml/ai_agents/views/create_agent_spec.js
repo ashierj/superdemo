@@ -13,7 +13,7 @@ import createAiAgentMutation from 'ee/ml/ai_agents/graphql/mutations/create_ai_a
 import createMockApollo from 'helpers/mock_apollo_helper';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 import { createAiAgentsResponses } from '../graphql/mocks';
 
@@ -38,7 +38,7 @@ describe('ee/ml/ai_agents/views/create_agent', () => {
     const requestHandlers = [[createAiAgentMutation, resolver]];
     apolloProvider = createMockApollo(requestHandlers);
 
-    wrapper = shallowMountExtended(CreateAgent, {
+    wrapper = mountExtended(CreateAgent, {
       apolloProvider,
       provide: { projectPath: 'project/path' },
       mocks: {
@@ -82,8 +82,8 @@ describe('ee/ml/ai_agents/views/create_agent', () => {
     const resolver = jest.fn().mockResolvedValue(createAiAgentMutation.success);
     mountComponent(resolver);
 
-    findInput().vm.$emit('input', 'agent_1');
-    findTextarea().vm.$emit('input', 'Do something');
+    await findInput().vm.$emit('input', 'agent_1');
+    await findTextarea().vm.$emit('input', 'Do something');
 
     await submitForm();
 
