@@ -1,14 +1,14 @@
 import { GlDisclosureDropdown, GlDisclosureDropdownItem } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import CustomRolesActions from 'ee/roles_and_permissions/components/custom_roles_actions.vue';
-
-const DEFAULT_CUSTOM_ROLE = { membersCount: 0 };
 
 describe('CustomRolesActions', () => {
   let wrapper;
 
-  const createComponent = ({ customRole = DEFAULT_CUSTOM_ROLE } = {}) => {
-    wrapper = shallowMount(CustomRolesActions, {
+  const mockCustomRole = { membersCount: 0 };
+
+  const createComponent = ({ customRole = mockCustomRole } = {}) => {
+    wrapper = mountExtended(CustomRolesActions, {
       propsData: { customRole },
     });
   };
@@ -17,8 +17,15 @@ describe('CustomRolesActions', () => {
   const findDropdownItem = (index) =>
     findDropdown().findAllComponents(GlDisclosureDropdownItem).at(index);
 
-  it('renders the actions dropdown', () => {
+  const findEditRole = () => findDropdownItem(0);
+  const findDeleteRole = () => findDropdownItem(1);
+
+  beforeEach(() => {
     createComponent();
+  });
+
+  it('renders the actions dropdown', () => {
+    expect(findDropdown().exists()).toBe(true);
 
     expect(findDropdown().props()).toMatchObject({
       icon: 'ellipsis_v',
@@ -27,26 +34,34 @@ describe('CustomRolesActions', () => {
     });
   });
 
-  it('renders the edit role action item', () => {
-    createComponent();
-
-    expect(findDropdownItem(0).props('item')).toMatchObject({ text: 'Edit role' });
+  describe('edit role', () => {
+    it('renders the edit role action item', () => {
+      expect(findEditRole().props('item')).toMatchObject({ text: 'Edit role' });
+    });
   });
 
-  describe('delete action', () => {
-    it('renders the action', () => {
-      createComponent();
-
-      expect(findDropdownItem(1).props('item')).toMatchObject({
+  describe('delete role', () => {
+    it('renders the delete role action item', () => {
+      expect(findDeleteRole().props('item')).toMatchObject({
         text: 'Delete role',
         extraAttrs: { class: 'gl-text-red-500!' },
       });
     });
 
-    it('disables the action when there are assigned users', () => {
-      createComponent({ customRole: { membersCount: 1 } });
+    it('emits `delete` event when delete role is clicked', async () => {
+      await findDeleteRole().find('button').trigger('click');
 
-      expect(findDropdownItem(1).props('item').extraAttrs.disabled).toBe(true);
+      expect(wrapper.emitted('delete')).toHaveLength(1);
+    });
+
+    describe('when `membersCount` of a custom role is greater than 0', () => {
+      beforeEach(() => {
+        createComponent({ customRole: { membersCount: 1 } });
+      });
+
+      it('disables the delete role action item', () => {
+        expect(findDeleteRole().props('item').extraAttrs.disabled).toBe(true);
+      });
     });
   });
 });

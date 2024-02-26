@@ -31058,6 +31058,9 @@ msgstr ""
 msgid "MemberRole|Actions"
 msgstr ""
 
+msgid "MemberRole|Are you sure you want to delete this custom role? Before you delete this custom role, make sure no group member has this role."
+msgstr ""
+
 msgid "MemberRole|Are you sure you want to delete this role?"
 msgstr ""
 
@@ -31089,6 +31092,9 @@ msgid "MemberRole|Custom role"
 msgstr ""
 
 msgid "MemberRole|Custom roles"
+msgstr ""
+
+msgid "MemberRole|Delete custom role?"
 msgstr ""
 
 msgid "MemberRole|Delete role"
