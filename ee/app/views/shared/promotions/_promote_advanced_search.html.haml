@@ -2,7 +2,7 @@
   = render Pajamas::BannerComponent.new(banner_options: {class: 'user-callout', data: {uid: 'promote_advanced_search_dismissed'}, id: 'promote_advanced_search'},
     close_options: {'aria-label' => _('Dismiss'), class: 'js-close-callout'}) do |c|
     - c.with_illustration do
-      = custom_icon('icon_search_avatar')
+      = image_tag image_path('illustrations/search-sm.svg')
     - c.with_title do
       - if Gitlab::CurrentSettings.should_check_namespace_plan?
         = s_('Promotions|Upgrade your plan to activate Advanced Search.')
