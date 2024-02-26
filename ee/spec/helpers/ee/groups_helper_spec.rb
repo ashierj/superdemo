@@ -454,7 +454,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
         last_name: 'Doe',
         company_name: 'ACME',
         glm_content: 'code-suggestions',
-        product_interaction: 'Requested Contact-Code Suggestions Add-On',
+        product_interaction: 'Requested Contact-Duo Pro Add-On',
         create_hand_raise_lead_path: '/-/subscriptions/hand_raise_leads',
         track_action: 'click_button',
         track_label: 'code_suggestions_hand_raise_lead_form',

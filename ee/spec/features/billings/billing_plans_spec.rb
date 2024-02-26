@@ -568,7 +568,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
         "namespace_id" => namespace.id,
         "comment" => '',
         "glm_content" => 'code-suggestions',
-        "product_interaction" => 'Requested Contact-Code Suggestions Add-On',
+        "product_interaction" => 'Requested Contact-Duo Pro Add-On',
         "work_email" => user.email,
         "uid" => user.id,
         "setup_for_company" => user.setup_for_company,

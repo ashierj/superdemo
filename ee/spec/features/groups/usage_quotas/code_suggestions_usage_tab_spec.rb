@@ -47,7 +47,7 @@ RSpec.describe 'Groups > Usage Quotas > Code Suggestions tab', :js, :saas, featu
       "namespace_id" => group.id,
       "comment" => '',
       "glm_content" => 'code-suggestions',
-      "product_interaction" => 'Requested Contact-Code Suggestions Add-On',
+      "product_interaction" => 'Requested Contact-Duo Pro Add-On',
       "work_email" => user.email,
       "uid" => user.id,
       "setup_for_company" => user.setup_for_company,
