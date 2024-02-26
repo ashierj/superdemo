@@ -14449,6 +14449,9 @@ msgstr ""
 msgid "Couldn't assign policy to project or group"
 msgstr ""
 
+msgid "Couldn't create link due to an internal error."
+msgstr ""
+
 msgid "Couldn't fetch the pinned file."
 msgstr ""
 

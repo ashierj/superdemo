@@ -94,6 +94,168 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService, feature_category: :portfo
       end
     end
 
+    context 'for synced epic work items' do
+      let(:current_user) { user }
+      let(:params) { { issuable_references: [epic_b.to_reference(full: true)] } }
+      let_it_be_with_reload(:epic_a) { create(:epic, group: group) }
+      let_it_be_with_reload(:epic_b) { create(:epic, group: group) }
+
+      subject(:execute) { described_class.new(epic_a, current_user, params).execute }
+
+      shared_examples 'only creates an epic link' do
+        it 'creates an epic link but no work item link' do
+          expect { execute }.to change { Epic::RelatedEpicLink.count }.by(1)
+            .and not_change { WorkItems::RelatedWorkItemLink.count }
+        end
+      end
+
+      context 'when no epic has a synced work item' do
+        it_behaves_like 'only creates an epic link'
+      end
+
+      context 'when source has a synced epic work item' do
+        let_it_be_with_reload(:epic_a) { create(:epic, :with_synced_work_item, group: group) }
+
+        it_behaves_like 'only creates an epic link'
+      end
+
+      context 'when target has a synced epic work item' do
+        let_it_be_with_reload(:epic_b) { create(:epic, :with_synced_work_item, group: group) }
+
+        it_behaves_like 'only creates an epic link'
+      end
+
+      context 'when both source and target have a synced epic work item' do
+        let_it_be(:epic_a) { create(:epic, :with_synced_work_item, group: group) }
+        let_it_be(:epic_b) { create(:epic, :with_synced_work_item, group: group) }
+
+        context 'when feature flag is disabled' do
+          before do
+            stub_feature_flags(epic_creation_with_synced_work_item: false)
+          end
+
+          it_behaves_like 'only creates an epic link'
+        end
+
+        context 'when feature flag is enabled' do
+          before do
+            stub_feature_flags(epic_creation_with_synced_work_item: group)
+          end
+
+          it_behaves_like 'syncs all data from an epic to a work item' do
+            let(:epic) { epic_a }
+          end
+
+          it 'creates a link for the epics and the synced work item' do
+            expect { execute }.to change { Epic::RelatedEpicLink.count }.by(1)
+              .and change { WorkItems::RelatedWorkItemLink.count }.by(1)
+
+            expect(WorkItems::RelatedWorkItemLink.find_by!(target: epic_b.work_item))
+              .to have_attributes(source: epic_a.work_item, link_type: IssuableLink::TYPE_RELATES_TO)
+          end
+
+          context 'when link type is blocking' do
+            let(:params) { { issuable_references: [epic_b.to_reference(full: true)], link_type: IssuableLink::TYPE_BLOCKS } }
+
+            it 'creates a blocking link' do
+              execute
+
+              expect(WorkItems::RelatedWorkItemLink.find_by!(target: epic_b.work_item))
+                .to have_attributes(source: epic_a.work_item, link_type: IssuableLink::TYPE_BLOCKS)
+            end
+          end
+
+          context 'when link type is blocked by' do
+            let(:params) { { issuable_references: [epic_b.to_reference(full: true)], link_type: IssuableLink::TYPE_IS_BLOCKED_BY } }
+
+            it 'creates a blocking link' do
+              execute
+
+              expect(WorkItems::RelatedWorkItemLink.find_by!(target: epic_a.work_item))
+                .to have_attributes(source: epic_b.work_item, link_type: IssuableLink::TYPE_BLOCKS)
+            end
+          end
+
+          context 'when multiple epics are referenced' do
+            let_it_be(:epic_c) { create(:epic, :with_synced_work_item, group: group) }
+
+            let(:params) { { issuable_references: [epic_b.to_reference(full: true), epic_c.to_reference(full: true)] } }
+
+            it 'creates a link for the epics and the synced work item' do
+              expect { execute }.to change { Epic::RelatedEpicLink.count }.by(2)
+                .and change { WorkItems::RelatedWorkItemLink.count }.by(2)
+
+              expect(WorkItems::RelatedWorkItemLink.where(source: epic_a.work_item)).to include(
+                an_object_having_attributes(target: epic_b.work_item, link_type: IssuableLink::TYPE_RELATES_TO),
+                an_object_having_attributes(target: epic_c.work_item, link_type: IssuableLink::TYPE_RELATES_TO)
+              )
+            end
+
+            context 'when epic does not have a synced work item' do
+              let_it_be(:epic_c) { create(:epic, group: group) }
+
+              it 'does create related work item links for the rest' do
+                expect { execute }.to change { Epic::RelatedEpicLink.count }.by(2)
+                  .and change { WorkItems::RelatedWorkItemLink.count }.by(1)
+              end
+            end
+          end
+
+          context 'when creating related work item links fails' do
+            before do
+              allow_next_instance_of(WorkItems::RelatedWorkItemLinks::CreateService) do |instance|
+                allow(instance).to receive(:execute).and_return({ status: :error, message: "Some error" })
+              end
+            end
+
+            it 'does not create an epic link nor a work item link' do
+              expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
+                .with({
+                  message: "Not able to create work item links",
+                  error_message: "Some error",
+                  group_id: group.id,
+                  epic_id: epic_a.id
+                })
+
+              expect(Gitlab::ErrorTracking).to receive(:track_exception).with(
+                instance_of(Epics::SyncAsWorkItem::SyncAsWorkItemError),
+                { epic_id: epic_a.id }
+              )
+
+              expect { execute }.to not_change { Epic::RelatedEpicLink.count }
+                .and not_change { WorkItems::RelatedWorkItemLink.count }
+            end
+
+            it 'returns an error' do
+              expect(execute)
+                .to eq({ status: :error, message: "Couldn't create link due to an internal error.", http_status: 422 })
+            end
+          end
+
+          context 'when creating related epic link fails' do
+            before do
+              allow_next_instance_of(Epic::RelatedEpicLink) do |instance|
+                allow(instance).to receive(:save).and_return(false)
+
+                errors = ActiveModel::Errors.new(instance).tap { |e| e.add(:source, 'error message') }
+                allow(instance).to receive(:errors).and_return(errors)
+              end
+            end
+
+            it 'does not create relationship', :aggregate_failures do
+              error_message = "#{epic_b.to_reference} cannot be added: error message"
+              service_result = execute
+
+              expect { service_result }.to not_change { Epic::RelatedEpicLink.count }
+                .and not_change { WorkItems::RelatedWorkItemLink.count }
+
+              expect(service_result).to eq(message: error_message, status: :error, http_status: 422)
+            end
+          end
+        end
+      end
+    end
+
     context 'event tracking' do
       shared_examples 'a recorded event' do
         it 'records event for each link created' do

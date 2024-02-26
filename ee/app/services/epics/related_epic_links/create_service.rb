@@ -10,7 +10,18 @@ module Epics
           return error(issuables_no_permission_error_message, 403)
         end
 
-        super
+        ApplicationRecord.transaction do
+          result = super
+
+          create_synced_work_item_links! if result[:status] == :success
+
+          result
+        end
+
+      rescue Epics::SyncAsWorkItem::SyncAsWorkItemError => error
+        Gitlab::ErrorTracking.track_exception(error, epic_id: issuable.id)
+
+        error(_("Couldn't create link due to an internal error."), 422)
       end
 
       def linkable_issuables(epics)
@@ -41,6 +52,36 @@ module Epics
 
       def link_class
         Epic::RelatedEpicLink
+      end
+
+      def create_synced_work_item_links!
+        return unless sync_to_work_item?
+
+        result = WorkItems::RelatedWorkItemLinks::CreateService.new(issuable.work_item, current_user,
+          {
+            target_issuable: referenced_synced_work_items,
+            link_type: params[:link_type],
+            synced_work_item: true
+          }
+        ).execute
+
+        return result if result[:status] == :success
+
+        Gitlab::EpicWorkItemSync::Logger.error(
+          message: "Not able to create work item links", error_message: result[:message], group_id: issuable.group.id,
+          epic_id: issuable.id
+        )
+
+        raise Epics::SyncAsWorkItem::SyncAsWorkItemError, result[:message]
+      end
+
+      def sync_to_work_item?
+        issuable.group.epic_synced_with_work_item_enabled? &&
+          issuable.work_item && referenced_issuables.any?(&:issue_id)
+      end
+
+      def referenced_synced_work_items
+        WorkItem.id_in(referenced_issuables.filter_map(&:issue_id))
       end
 
       def issuables_no_permission_error_message
