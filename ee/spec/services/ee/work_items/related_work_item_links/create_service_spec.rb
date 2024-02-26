@@ -70,6 +70,48 @@ RSpec.describe WorkItems::RelatedWorkItemLinks::CreateService, feature_category:
       it_behaves_like 'successful response', link_type: 'is_blocked_by'
     end
 
+    context 'when synced_work_item: true' do
+      before do
+        params[:synced_work_item] = true
+      end
+
+      it 'does not create notes' do
+        expect(Issuable::RelatedLinksCreateWorker).not_to receive(:perform_async)
+
+        link_items
+      end
+    end
+
+    context 'when there is an epic for the work item' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:epic) { create(:epic, :with_synced_work_item, group: group) }
+      let_it_be(:epic_a) { create(:epic, :with_synced_work_item, group: group) }
+      let_it_be(:epic_b) { create(:epic, :with_synced_work_item, group: group) }
+      let_it_be(:work_item) { epic.work_item }
+      let_it_be(:work_item_a) { epic_a.work_item }
+      let_it_be(:another_work_item) { epic_b.work_item }
+
+      let(:params) { { target_issuable: [work_item_a, another_work_item], synced_work_item: synced_work_item } }
+
+      before_all do
+        group.add_guest(user)
+      end
+
+      context 'when synced_work_item: true' do
+        let(:synced_work_item) { true }
+
+        it_behaves_like 'successful response', link_type: 'blocks'
+      end
+
+      context 'when synced_work_item is false' do
+        let(:synced_work_item) { false }
+
+        it 'does not create the links' do
+          expect { link_items }.to not_change { link_class.count }
+        end
+      end
+    end
+
     context 'when licensed feature `blocked_work_items` is not available' do
       before do
         stub_licensed_features(blocked_work_items: false)

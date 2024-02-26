@@ -61,6 +61,13 @@ RSpec.shared_examples 'syncs all data from an epic to a work item' do
       expect(work_item.dates_source.due_date_fixed).to eq(epic.due_date_fixed)
     end
 
+    if epic.unauthorized_related_epics
+      related_epic_issue_ids = epic.unauthorized_related_epics.map(&:issue_id)
+      related_work_item_ids = work_item.related_issues(authorize: false).map(&:id)
+
+      expect(related_work_item_ids).to match(related_epic_issue_ids)
+    end
+
     # Data we do not want to sync yet
     expect(work_item.notes).to be_empty
     expect(work_item.labels).to be_empty
