@@ -1853,7 +1853,7 @@ RSpec.describe ApprovalState do
     let!(:mr_diff_commit) { create(:merge_request_diff_commit, merge_request_diff: merge_request_diff, committer: mr_diff_commit_user) }
     let(:users) { User.where(id: [merge_request.author.id, user.id]) }
 
-    subject(:filtered_committers) { described_class.filter_committers(users, merge_request.reload) }
+    subject(:filtered_committers) { described_class.filter_committers(users, merge_request) }
 
     it 'does not filter by default' do
       expect(filtered_committers).to eq(users)
