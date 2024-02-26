@@ -51,29 +51,21 @@ module EE
             to: ::ProjectAuthorizations::AuthorizationsAddedEvent
           store.subscribe ::Security::RefreshComplianceFrameworkSecurityPoliciesWorker,
             to: ::Projects::ComplianceFrameworkChangedEvent
-          store.subscribe ::Sbom::ProcessTransferEventsWorker, to: ::Projects::ProjectTransferedEvent
-          store.subscribe ::Sbom::ProcessTransferEventsWorker, to: ::Groups::GroupTransferedEvent
-          store.subscribe ::Vulnerabilities::ProcessTransferEventsWorker,
-            to: ::Projects::ProjectTransferedEvent,
-            if: ->(event) {
-                  ::Feature.enabled?(:update_vuln_reads_traversal_ids_via_event,
-                    ::Project.find_by_id(event.data['project_id']), type: :gitlab_com_derisk)
-                }
-          store.subscribe ::Vulnerabilities::ProcessTransferEventsWorker,
-            to: ::Groups::GroupTransferedEvent,
-            if: ->(event) {
-                  ::Feature.enabled?(:update_vuln_reads_traversal_ids_via_event,
-                    ::Group.find_by_id(event.data['group_id']), type: :gitlab_com_derisk)
-                }
-          store.subscribe ::Sbom::SyncArchivedStatusWorker, to: ::Projects::ProjectArchivedEvent
-          store.subscribe ::Vulnerabilities::ProcessArchivedEventsWorker,
-            to: ::Projects::ProjectArchivedEvent,
-            if: ->(event) {
-                  ::Feature.enabled?(:update_vuln_reads_archived_via_event,
-                    ::Project.find_by_id(event.data['project_id']), type: :gitlab_com_derisk)
-                }
+
+          register_threat_insights_subscribers(store)
+
           subscribe_to_epic_events(store)
           subscribe_to_external_issue_links_events(store)
+        end
+
+        def register_threat_insights_subscribers(store)
+          store.subscribe ::Sbom::ProcessTransferEventsWorker, to: ::Projects::ProjectTransferedEvent
+          store.subscribe ::Sbom::ProcessTransferEventsWorker, to: ::Groups::GroupTransferedEvent
+          store.subscribe ::Sbom::SyncArchivedStatusWorker, to: ::Projects::ProjectArchivedEvent
+
+          store.subscribe ::Vulnerabilities::ProcessTransferEventsWorker, to: ::Projects::ProjectTransferedEvent
+          store.subscribe ::Vulnerabilities::ProcessTransferEventsWorker, to: ::Groups::GroupTransferedEvent
+          store.subscribe ::Vulnerabilities::ProcessArchivedEventsWorker, to: ::Projects::ProjectArchivedEvent
         end
 
         def subscribe_to_epic_events(store)

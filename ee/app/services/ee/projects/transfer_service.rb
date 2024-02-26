@@ -32,7 +32,6 @@ module EE
         unassign_policy_project
         sync_new_group_policies
         delete_compliance_framework_setting
-        schedule_vulnerability_reads_update
         update_compliance_standards_adherence
       end
 
@@ -64,13 +63,6 @@ module EE
 
       def delete_compliance_framework_setting
         project.compliance_framework_setting&.delete
-      end
-
-      def schedule_vulnerability_reads_update
-        return if ::Feature.enabled?(:update_vuln_reads_traversal_ids_via_event, project, type: :gitlab_com_derisk)
-        return unless project.project_setting&.has_vulnerabilities?
-
-        Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker.perform_async(project.id)
       end
 
       def update_compliance_standards_adherence
