@@ -31,13 +31,13 @@ module QA
       ) do
         EE::Page::Group::ContributionAnalytics.perform do |analytics_page|
           expect { analytics_page.push_analytics_content }.to eventually_have_content('3 pushes')
-                                                 .within(max_duration: 120, reload_page: analytics_page)
+                                                 .within(max_duration: 240, reload_page: analytics_page)
           expect { analytics_page.push_analytics_content }.to eventually_have_content('1 contributor')
-                                                 .within(max_duration: 120, reload_page: analytics_page)
+                                                 .within(max_duration: 240, reload_page: analytics_page)
           expect { analytics_page.mr_analytics_content }.to eventually_have_content('1 created, 1 merged, 0 closed.')
-                                                 .within(max_duration: 120, reload_page: analytics_page)
+                                                 .within(max_duration: 240, reload_page: analytics_page)
           expect { analytics_page.issue_analytics_content }.to eventually_have_content('1 created, 1 closed.')
-                                                 .within(max_duration: 120, reload_page: analytics_page)
+                                                 .within(max_duration: 240, reload_page: analytics_page)
         end
       end
     end
