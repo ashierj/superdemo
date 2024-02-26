@@ -10,7 +10,7 @@ info: "To determine the technical writer assigned to the Stage/Group associated 
 
 DETAILS:
 **Tier:** Free, Premium, Ultimate
-**Offering:** SaaS, self-managed
+**Offering:** GitLab.com, Self-managed, GitLab Dedicated
 
 When your team starts a new project, they need a workflow that balances efficiency
 with appropriate reviews. In GitLab, you can create user groups, combine those
