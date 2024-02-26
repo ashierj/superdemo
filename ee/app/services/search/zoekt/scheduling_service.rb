@@ -43,7 +43,12 @@ module Search
       end
 
       def execute_every(period, cache_key:)
-        Rails.cache.fetch([self.class.name, :execute_every, cache_key], expires_in: period) do
+        cache_key = [self.class.name.underscore, :execute_every, cache_key].join(':')
+
+        Gitlab::Redis::SharedState.with do |redis|
+          key_set = redis.set(cache_key, 1, ex: period, nx: true)
+          break false unless key_set
+
           yield
         end
       end

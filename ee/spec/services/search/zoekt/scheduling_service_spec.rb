@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Search::Zoekt::SchedulingService, feature_category: :global_search do
+RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_state, feature_category: :global_search do
   let(:logger) { instance_double('Logger') }
   let(:service) { described_class.new(task.to_s) }
   let_it_be(:node) { create(:zoekt_node, :enough_free_space) }
@@ -76,6 +76,25 @@ RSpec.describe ::Search::Zoekt::SchedulingService, feature_category: :global_sea
         create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
 
         expect { execute_task }.to change { ns.reload.search }.from(false).to(true)
+      end
+
+      context 'when there are multiple namespaces' do
+        before do
+          stub_const("#{described_class}::DOT_COM_ROLLOUT_SEARCH_LIMIT", 1)
+          stub_const("#{described_class}::DOT_COM_ROLLOUT_LIMIT", 0)
+        end
+
+        it 'skips second execution' do
+          expiration_date = described_class::DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER.ago - 1.hour
+          ns = create(:zoekt_enabled_namespace, search: false, created_at: expiration_date)
+          create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
+          ns2 = create(:zoekt_enabled_namespace, search: false, created_at: expiration_date)
+          create(:zoekt_index, :ready, zoekt_enabled_namespace: ns2)
+
+          expect { execute_task }.to change { ns.reload.search }.from(false).to(true)
+
+          expect { service.execute }.not_to change { ns2.reload.search }.from(false)
+        end
       end
 
       it 'skips recently enabled namespaces' do
