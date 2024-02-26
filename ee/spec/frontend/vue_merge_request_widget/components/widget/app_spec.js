@@ -13,6 +13,7 @@ import MrTerraformWidget from '~/vue_merge_request_widget/extensions/terraform/i
 import MrStatusChecksWidget from 'ee/vue_merge_request_widget/extensions/status_checks/index.vue';
 import MrBrowserPerformanceWidget from 'ee/vue_merge_request_widget/extensions/browser_performance/index.vue';
 import MrLoadPerformanceWidget from 'ee/vue_merge_request_widget/extensions/load_performance/index.vue';
+import MrLicenseComplianceWidget from 'ee/vue_merge_request_widget/extensions/license_compliance/index.vue';
 
 describe('MR Widget App', () => {
   let wrapper;
@@ -43,23 +44,42 @@ describe('MR Widget App', () => {
 
   describe('MRSecurityWidget', () => {
     it('mounts MrSecurityWidgetEE when user has necessary permissions', async () => {
-      createComponent({
-        mr: {
-          canReadVulnerabilities: true,
-        },
-      });
+      createComponent({ mr: { canReadVulnerabilities: true } });
+
       await waitForPromises();
+
       expect(wrapper.findComponent(MrSecurityWidgetEE).exists()).toBe(true);
     });
 
     it('mounts MrSecurityWidgetCE when user does not have necessary permissions', async () => {
+      createComponent({ mr: { canReadVulnerabilities: false } });
+
+      await waitForPromises();
+
+      expect(wrapper.findComponent(MrSecurityWidgetCE).exists()).toBe(true);
+    });
+  });
+
+  describe('License Compliance Widget', () => {
+    it('is mounted when the report is enabled and endpoint is provided', async () => {
       createComponent({
         mr: {
-          canReadVulnerabilities: false,
+          enabledReports: { licenseScanning: true },
+          licenseCompliance: { license_scanning: { full_report_path: 'full/report/path' } },
         },
       });
+
       await waitForPromises();
-      expect(wrapper.findComponent(MrSecurityWidgetCE).exists()).toBe(true);
+
+      expect(wrapper.findComponent(MrLicenseComplianceWidget).exists()).toBe(true);
+    });
+
+    it('is not mounted when the report is not enabled', async () => {
+      createComponent({ mr: { enabledReports: {} } });
+
+      await waitForPromises();
+
+      expect(wrapper.findComponent(MrLicenseComplianceWidget).exists()).toBe(false);
     });
   });
 
