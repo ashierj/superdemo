@@ -4565,6 +4565,79 @@ Input type: `GroupMemberBulkUpdateInput`
 | <a id="mutationgroupmemberbulkupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationgroupmemberbulkupdategroupmembers"></a>`groupMembers` | [`[GroupMember!]`](#groupmember) | Group members after mutation. |
 
+### `Mutation.groupSavedReplyCreate`
+
+NOTE:
+**Introduced** in 16.10.
+**Status**: Experiment.
+
+Input type: `GroupSavedReplyCreateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationgroupsavedreplycreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationgroupsavedreplycreatecontent"></a>`content` | [`String!`](#string) | Content of the saved reply. |
+| <a id="mutationgroupsavedreplycreategroupid"></a>`groupId` | [`GroupID!`](#groupid) | Group for the save reply. |
+| <a id="mutationgroupsavedreplycreatename"></a>`name` | [`String!`](#string) | Name of the saved reply. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationgroupsavedreplycreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationgroupsavedreplycreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationgroupsavedreplycreatesavedreply"></a>`savedReply` | [`GroupSavedReply`](#groupsavedreply) | Saved reply after mutation. |
+
+### `Mutation.groupSavedReplyDestroy`
+
+NOTE:
+**Introduced** in 16.10.
+**Status**: Experiment.
+
+Input type: `GroupSavedReplyDestroyInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationgroupsavedreplydestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationgroupsavedreplydestroyid"></a>`id` | [`GroupsSavedReplyID!`](#groupssavedreplyid) | Global ID of the group-level saved reply. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationgroupsavedreplydestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationgroupsavedreplydestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationgroupsavedreplydestroysavedreply"></a>`savedReply` | [`GroupSavedReply`](#groupsavedreply) | Saved reply after mutation. |
+
+### `Mutation.groupSavedReplyUpdate`
+
+NOTE:
+**Introduced** in 16.10.
+**Status**: Experiment.
+
+Input type: `GroupSavedReplyUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationgroupsavedreplyupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationgroupsavedreplyupdatecontent"></a>`content` | [`String!`](#string) | Content of the saved reply. |
+| <a id="mutationgroupsavedreplyupdateid"></a>`id` | [`GroupsSavedReplyID!`](#groupssavedreplyid) | Global ID of the group-level saved reply. |
+| <a id="mutationgroupsavedreplyupdatename"></a>`name` | [`String!`](#string) | Name of the saved reply. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationgroupsavedreplyupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationgroupsavedreplyupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationgroupsavedreplyupdatesavedreply"></a>`savedReply` | [`GroupSavedReply`](#groupsavedreply) | Saved reply after mutation. |
+
 ### `Mutation.groupUpdate`
 
 Input type: `GroupUpdateInput`
