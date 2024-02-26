@@ -94,7 +94,7 @@ module Gitlab
         end
 
         def access_token
-          ::CloudConnector::AccessService.new.access_token([:duo_chat], gitlab_realm)
+          ::CloudConnector::AccessService.new.access_token([:duo_chat])
         end
         strong_memoize_attr :access_token
 
