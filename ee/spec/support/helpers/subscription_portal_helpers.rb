@@ -13,10 +13,10 @@ module SubscriptionPortalHelpers
     stub_application_setting(customers_dot_jwt_signing_key: key)
   end
 
-  def stub_eoa_eligibility_request(namespace_id, eligible = false, free_upgrade_plan_id = nil, assisted_upgrade_plan_id = nil)
+  def stub_eoa_eligibility_request(namespace_id, eligible = false, free_upgrade_plan_id = nil)
     stub_full_request(graphql_url, method: :post)
       .with(
-        body: "{\"query\":\"{\\n  subscription(namespaceId: \\\"#{namespace_id}\\\") {\\n    eoaStarterBronzeEligible\\n    assistedUpgradePlanId\\n    freeUpgradePlanId\\n  }\\n}\\n\"}",
+        body: "{\"query\":\"{\\n  subscription(namespaceId: \\\"#{namespace_id}\\\") {\\n    eoaStarterBronzeEligible\\n    freeUpgradePlanId\\n  }\\n}\\n\"}",
         headers: {
           'Accept' => 'application/json',
           'Content-Type' => 'application/json',
@@ -27,7 +27,7 @@ module SubscriptionPortalHelpers
       .to_return(
         status: 200,
         headers: { 'Content-Type' => 'application/json' },
-        body: stubbed_eoa_eligibility_response_body(eligible, free_upgrade_plan_id, assisted_upgrade_plan_id)
+        body: stubbed_eoa_eligibility_response_body(eligible, free_upgrade_plan_id)
       )
   end
 
@@ -210,13 +210,12 @@ module SubscriptionPortalHelpers
     File.new(Rails.root.join('ee/spec/fixtures/gitlab_com_plans.json'))
   end
 
-  def stubbed_eoa_eligibility_response_body(eligible, free_upgrade_plan_id, assisted_upgrade_plan_id)
+  def stubbed_eoa_eligibility_response_body(eligible, free_upgrade_plan_id)
     {
       "data": {
         "subscription": {
           "eoaStarterBronzeEligible": eligible,
-          "assistedUpgradePlanId": free_upgrade_plan_id,
-          "freeUpgradePlanId": assisted_upgrade_plan_id
+          "freeUpgradePlanId": free_upgrade_plan_id
         }
       }
     }.to_json

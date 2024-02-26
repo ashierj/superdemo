@@ -92,7 +92,6 @@ module Gitlab
               {
                 subscription(namespaceId: "#{namespace_id}") {
                   eoaStarterBronzeEligible
-                  assistedUpgradePlanId
                   freeUpgradePlanId
                 }
               }
@@ -102,13 +101,11 @@ module Gitlab
 
             if response['errors'].blank?
               eligible = response.dig('data', 'subscription', 'eoaStarterBronzeEligible')
-              assisted_upgrade = response.dig('data', 'subscription', 'assistedUpgradePlanId')
               free_upgrade = response.dig('data', 'subscription', 'freeUpgradePlanId')
 
               {
                 success: true,
                 eligible_for_free_upgrade: eligible,
-                assisted_upgrade_plan_id: assisted_upgrade,
                 free_upgrade_plan_id: free_upgrade
               }
             else
