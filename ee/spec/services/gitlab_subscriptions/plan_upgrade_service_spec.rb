@@ -26,15 +26,12 @@ RSpec.describe GitlabSubscriptions::PlanUpgradeService, feature_category: :subsc
     end
 
     context 'when the response is successful' do
-      where(:eligible, :assisted_id, :free_id, :plan_id) do
-        true  | '111' | '222' | '111'
-        true  | nil   | '222' | '222'
-        true  | '111' | nil   | '111'
-        true  | nil   | nil   | nil
-        false | '111' | '222' | '111'
-        false | '111' | nil   | '111'
-        false | nil   | '222' | '222'
-        nil   | '111' | '222' | nil
+      where(:eligible, :free_id, :plan_id) do
+        true  | '222' | '222'
+        true  | nil   | nil
+        false | nil   | nil
+        false | '222' | '222'
+        nil   | '222' | nil
       end
 
       with_them do
@@ -42,7 +39,6 @@ RSpec.describe GitlabSubscriptions::PlanUpgradeService, feature_category: :subsc
           {
             success: true,
             eligible_for_free_upgrade: eligible,
-            assisted_upgrade_plan_id: assisted_id,
             free_upgrade_plan_id: free_id
           }
         end

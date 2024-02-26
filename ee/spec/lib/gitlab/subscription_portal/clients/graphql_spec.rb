@@ -206,7 +206,6 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
             success: true,
             data: { "data" => { "subscription" => {
               "eoaStarterBronzeEligible" => eligible,
-              "assistedUpgradePlanId" => assisted_plan_id,
               "freeUpgradePlanId" => free_plan_id
             } } }
           }
@@ -218,7 +217,6 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
           result = {
             success: true,
             eligible_for_free_upgrade: eligible,
-            assisted_upgrade_plan_id: assisted_plan_id,
             free_upgrade_plan_id: free_plan_id
           }
 
@@ -238,7 +236,6 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
           result = {
             success: true,
             eligible_for_free_upgrade: nil,
-            assisted_upgrade_plan_id: nil,
             free_upgrade_plan_id: nil
           }
 
