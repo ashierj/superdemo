@@ -49,6 +49,19 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION assign_p_ci_stages_id_value() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."id" IS NOT NULL THEN
+  RAISE WARNING 'Manually assigning ids is not allowed, the value will be ignored';
+END IF;
+NEW."id" := nextval('ci_stages_id_seq'::regclass);
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION assign_zoekt_tasks_id_value() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -6708,15 +6721,6 @@ CREATE TABLE p_ci_stages (
 )
 PARTITION BY LIST (partition_id);
 
-CREATE SEQUENCE ci_stages_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE ci_stages_id_seq OWNED BY p_ci_stages.id;
-
 CREATE TABLE ci_stages (
     project_id integer,
     created_at timestamp without time zone,
@@ -6725,11 +6729,20 @@ CREATE TABLE ci_stages (
     status integer,
     lock_version integer DEFAULT 0,
     "position" integer,
-    id bigint DEFAULT nextval('ci_stages_id_seq'::regclass) NOT NULL,
+    id bigint NOT NULL,
     partition_id bigint NOT NULL,
     pipeline_id bigint,
     CONSTRAINT check_81b431e49b CHECK ((lock_version IS NOT NULL))
 );
+
+CREATE SEQUENCE ci_stages_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE ci_stages_id_seq OWNED BY p_ci_stages.id;
 
 CREATE TABLE ci_subscriptions_projects (
     id bigint NOT NULL,
@@ -19079,8 +19092,6 @@ ALTER TABLE ONLY p_ci_builds_metadata ALTER COLUMN id SET DEFAULT nextval('ci_bu
 
 ALTER TABLE ONLY p_ci_job_annotations ALTER COLUMN id SET DEFAULT nextval('p_ci_job_annotations_id_seq'::regclass);
 
-ALTER TABLE ONLY p_ci_stages ALTER COLUMN id SET DEFAULT nextval('ci_stages_id_seq'::regclass);
-
 ALTER TABLE ONLY packages_build_infos ALTER COLUMN id SET DEFAULT nextval('packages_build_infos_id_seq'::regclass);
 
 ALTER TABLE ONLY packages_composer_cache_files ALTER COLUMN id SET DEFAULT nextval('packages_composer_cache_files_id_seq'::regclass);
@@ -29148,6 +29159,8 @@ CREATE TRIGGER assign_p_ci_builds_id_trigger BEFORE INSERT ON p_ci_builds FOR EA
 CREATE TRIGGER assign_p_ci_job_artifacts_id_trigger BEFORE INSERT ON p_ci_job_artifacts FOR EACH ROW EXECUTE FUNCTION assign_p_ci_job_artifacts_id_value();
 
 CREATE TRIGGER assign_p_ci_pipeline_variables_id_trigger BEFORE INSERT ON p_ci_pipeline_variables FOR EACH ROW EXECUTE FUNCTION assign_p_ci_pipeline_variables_id_value();
+
+CREATE TRIGGER assign_p_ci_stages_id_trigger BEFORE INSERT ON p_ci_stages FOR EACH ROW EXECUTE FUNCTION assign_p_ci_stages_id_value();
 
 CREATE TRIGGER assign_zoekt_tasks_id_trigger BEFORE INSERT ON zoekt_tasks FOR EACH ROW EXECUTE FUNCTION assign_zoekt_tasks_id_value();
 
