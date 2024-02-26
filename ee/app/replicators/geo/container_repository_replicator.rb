@@ -96,6 +96,11 @@ module Geo
       Geo::EventWorker.perform_async(replicable_name, EVENT_UPDATED, { 'model_record_id' => model_record.id })
     end
 
+    # Schedules a verification job after a model record is created/updated
+    def after_verifiable_update
+      verify_async if should_primary_verify_after_save?
+    end
+
     # Returns a checksum of the tag list
     #
     # @return [String] SHA256 hash of the repository tag list
