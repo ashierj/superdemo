@@ -99,5 +99,21 @@ RSpec.describe Sidebars::Projects::Menus::SettingsMenu, feature_category: :navig
         end
       end
     end
+
+    describe 'CI/CD' do
+      let(:item_id) { :ci_cd }
+
+      describe 'when the user is not an admin but has `admin_cicd_variables` custom ability' do
+        before do
+          allow(Ability).to receive(:allowed?).and_call_original
+          allow(Ability).to receive(:allowed?).with(user, :admin_project, project).and_return(false)
+          allow(Ability).to receive(:allowed?).with(user, :admin_cicd_variables, project).and_return(true)
+        end
+
+        it 'includes CI/CD menu item' do
+          expect(subject.title).to eql('CI/CD')
+        end
+      end
+    end
   end
 end
