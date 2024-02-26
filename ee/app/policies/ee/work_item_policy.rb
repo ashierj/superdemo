@@ -19,6 +19,7 @@ module EE
         prevent :create_todo
         prevent :update_subscription
         prevent :create_requirement_test_report
+        prevent :admin_parent_link
       end
     end
   end

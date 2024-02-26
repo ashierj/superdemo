@@ -16,7 +16,8 @@ RSpec.describe WorkItemPolicy, feature_category: :team_planning do
     it 'does not allow modifying issue' do
       expect(permissions(reporter, work_item)).to be_disallowed(
         :admin_work_item_link, :admin_work_item, :update_work_item, :set_work_item_metadata,
-        :create_note, :award_emoji, :create_todo, :update_subscription, :create_requirement_test_report
+        :create_note, :award_emoji, :create_todo, :update_subscription, :create_requirement_test_report,
+        :admin_parent_link
       )
     end
   end

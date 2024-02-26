@@ -45,7 +45,8 @@ module Epics
         parent_link = child_epic.work_item.parent_link
         return unless parent_link.present?
 
-        service_response = ::WorkItems::ParentLinks::DestroyService.new(parent_link, current_user).execute
+        service_response = ::WorkItems::ParentLinks::DestroyService
+                              .new(parent_link, current_user, { synced_work_item: true }).execute
         return if service_response[:status] == :success
 
         synced_work_item_error!(service_response[:message])
