@@ -68,8 +68,9 @@ module CodeSuggestions
         def existing_code_block
           return unless params[:prefix].present?
 
-          trimmed_prefix = prefix.to_s.last(MAX_INPUT_CHARS)
-          trimmed_suffix = suffix.to_s.first(MAX_INPUT_CHARS - trimmed_prefix.size)
+          limit = params[:prompt_limit] || MAX_INPUT_CHARS
+          trimmed_prefix = prefix.to_s.last(limit)
+          trimmed_suffix = suffix.to_s.first(limit - trimmed_prefix.size)
 
           <<~CODE
             <existing_code>

@@ -61,6 +61,7 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
     context 'when code generation' do
       let(:expected_class) { ::CodeSuggestions::Tasks::CodeGeneration }
       let(:expected_project) { nil }
+      let(:expected_limit) { described_class::SHORT_PROMPT_INPUT_CHARS }
       let(:expected_params) do
         {
           params: params.merge(
@@ -68,7 +69,8 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
             prefix: 'trimmed prefix',
             project: expected_project,
             model_name: described_class::ANTHROPIC_MODEL,
-            current_user: current_user
+            current_user: current_user,
+            prompt_limit: expected_limit
           ),
           unsafe_passthrough_params: {}
         }
@@ -83,6 +85,16 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
       end
 
       it_behaves_like 'correct task initializer'
+
+      context 'when code_suggestions_short_prompt flag is disabled' do
+        let(:expected_limit) { nil }
+
+        before do
+          stub_feature_flags(code_suggestions_short_prompt: false)
+        end
+
+        it_behaves_like 'correct task initializer'
+      end
 
       context 'with project' do
         let_it_be(:expected_project) { create(:project) }
