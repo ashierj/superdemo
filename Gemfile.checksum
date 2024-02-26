@@ -42,7 +42,7 @@
 {"name":"aws-sdk-s3","version":"1.143.0","platform":"ruby","checksum":"7a2cef087c73eacc2a50712440af97a9e3d8ea9ae80794b6a82794cf7c5f4ee9"},
 {"name":"aws-sigv4","version":"1.8.0","platform":"ruby","checksum":"84dd99768b91b93b63d1d8e53ee837cfd06ab402812772a7899a78f9f9117cbc"},
 {"name":"axe-core-api","version":"4.8.0","platform":"ruby","checksum":"88cf44fdbd5d501ae429f9ca6b37c4a46ba27ac673d478ab688eea3e353da62f"},
-{"name":"axe-core-rspec","version":"4.8.0","platform":"ruby","checksum":"b2c51fad40f3fc487d3de522e337d96d5144d88b3e2e00b87d2b53d17056d11e"},
+{"name":"axe-core-rspec","version":"4.8.2","platform":"ruby","checksum":"71e019e6750b75b8f6f177183a5f5f388481f2bc0564613750820858dc520492"},
 {"name":"axiom-types","version":"0.1.1","platform":"ruby","checksum":"c1ff113f3de516fa195b2db7e0a9a95fd1b08475a502ff660d04507a09980383"},
 {"name":"azure-storage-blob","version":"2.0.3","platform":"ruby","checksum":"61b76118843c91776bd24bee22c74adafeb7c4bb3a858a325047dae3b59d0363"},
 {"name":"azure-storage-common","version":"2.0.4","platform":"ruby","checksum":"608f4daab0e06b583b73dcffd3246ea39e78056de31630286b0cf97af7d6956b"},
