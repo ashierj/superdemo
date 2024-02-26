@@ -3,7 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::YamlProcessor, feature_category: :pipeline_composition do
-  subject(:result) { described_class.new(YAML.dump(config)).execute }
+  let(:opts) { {} }
+
+  subject(:result) { described_class.new(YAML.dump(config), opts).execute }
 
   describe 'Bridge Needs' do
     let(:config) do
@@ -332,6 +334,13 @@ RSpec.describe Gitlab::Ci::YamlProcessor, feature_category: :pipeline_compositio
   end
 
   describe 'identity', feature_category: :secrets_management do
+    let_it_be_with_refind(:project) { create(:project, :repository) }
+    let_it_be_with_refind(:integration) do
+      create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+    end
+
+    let(:google_cloud_support) { true }
+    let(:opts) { { project: project } }
     let(:config) do
       {
         build: {
@@ -342,13 +351,58 @@ RSpec.describe Gitlab::Ci::YamlProcessor, feature_category: :pipeline_compositio
     end
 
     before do
-      stub_saas_features(google_cloud_support: true)
+      stub_saas_features(google_cloud_support: google_cloud_support)
     end
 
-    it 'includes identity-related values' do
+    it 'includes identity-related values', :aggregate_failures do
       identity = result.builds.first.dig(:options, :identity)
 
       expect(identity).to eq('google_cloud')
+      expect(result.errors).to be_empty
+    end
+
+    context 'when SaaS feature is not available' do
+      let(:google_cloud_support) { false }
+
+      it 'returns error' do
+        expect(result.errors).to include(a_string_including(
+          s_("GoogleCloudPlatformService|The google_cloud_support feature is not available")))
+      end
+    end
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(ci_yaml_support_for_identity_provider: false)
+      end
+
+      it 'returns errors' do
+        expect(result.errors).to include(
+          'build job: ci_yaml_support_for_identity_provider feature flag is not enabled for this project')
+      end
+    end
+
+    context 'when project integration does not exist' do
+      before do
+        integration.destroy!
+      end
+
+      it 'returns error' do
+        expect(result.errors).to include(a_string_including(
+          s_('GoogleCloudPlatformService|The Google Cloud Identity and Access Management integration is not ' \
+             'configured for this project')))
+      end
+    end
+
+    context 'when project integration exists and is not enabled' do
+      before do
+        integration.update_column(:active, false)
+      end
+
+      it 'returns error' do
+        expect(result.errors).to include(a_string_including(
+          s_('GoogleCloudPlatformService|The Google Cloud Identity and Access Management integration is not enabled ' \
+             'for this project')))
+      end
     end
   end
 end

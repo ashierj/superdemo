@@ -41,16 +41,9 @@ module EE
             def value
               super.merge({
                 dast_configuration: dast_configuration_value,
-                identity: identity_available? ? identity_value : nil,
+                identity: identity_value,
                 secrets: secrets_value
               }.compact)
-            end
-
-            private
-
-            def identity_available?
-              ::Gitlab::Ci::YamlProcessor::FeatureFlags.enabled?(:ci_yaml_support_for_identity_provider, type: :beta) &&
-                ::Gitlab::Saas.feature_available?(:google_cloud_support)
             end
           end
         end
