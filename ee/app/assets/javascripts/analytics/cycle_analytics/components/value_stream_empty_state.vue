@@ -78,7 +78,6 @@ export default {
     <gl-empty-state
       v-else
       :svg-path="emptyStateSvgPath"
-      :svg-height="null"
       :title="title"
       :description="description"
       data-testid="vsa-empty-state"
