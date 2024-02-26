@@ -23419,6 +23419,15 @@ msgstr ""
 msgid "GoogleCloudPlatformService|Repository name"
 msgstr ""
 
+msgid "GoogleCloudPlatformService|The Google Cloud Identity and Access Management integration is not configured for this project"
+msgstr ""
+
+msgid "GoogleCloudPlatformService|The Google Cloud Identity and Access Management integration is not enabled for this project"
+msgstr ""
+
+msgid "GoogleCloudPlatformService|The google_cloud_support feature is not available"
+msgstr ""
+
 msgid "GoogleCloudPlatformService|To improve security, use a dedicated project for resources, separate from CI/CD and identity management projects. %{link_start}Where’s my project ID? %{icon}%{link_end}"
 msgstr ""
 

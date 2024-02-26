@@ -148,8 +148,6 @@ RSpec.describe Gitlab::Ci::Config::Entry::Job, feature_category: :pipeline_compo
   end
 
   describe 'identity', :aggregate_failures, feature_category: :secrets_management do
-    let(:feature_flag_enabled) { true }
-    let(:saas_feature_enabled) { true }
     let(:config) do
       {
         script: 'rspec',
@@ -158,30 +156,12 @@ RSpec.describe Gitlab::Ci::Config::Entry::Job, feature_category: :pipeline_compo
     end
 
     before do
-      stub_feature_flags(ci_yaml_support_for_identity_provider: feature_flag_enabled)
-      stub_saas_features(google_cloud_support: saas_feature_enabled)
-
       entry.compose!
     end
 
     it 'includes identity-related values' do
       expect(entry.value).to include(identity: 'google_cloud')
-    end
-
-    context 'when ci_yaml_support_for_identity_provider FF is disabled' do
-      let(:feature_flag_enabled) { false }
-
-      it 'does not include identity provider-related values' do
-        expect(entry.value).not_to match(a_hash_including(identity: anything))
-      end
-    end
-
-    context 'when feature is disabled' do
-      let(:saas_feature_enabled) { false }
-
-      it 'does not include identity-related values' do
-        expect(entry.value).not_to match(a_hash_including(identity: anything))
-      end
+      expect(entry.errors).to be_empty
     end
   end
 end
