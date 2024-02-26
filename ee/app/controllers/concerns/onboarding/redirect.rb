@@ -15,9 +15,11 @@ module Onboarding
     private
 
     def onboarding_redirect
-      return unless valid_for_onboarding_redirect?(current_user.user_detail.onboarding_step_url)
+      url = current_user.onboarding_status_step_url || current_user.user_detail.onboarding_step_url
 
-      redirect_to current_user.user_detail.onboarding_step_url
+      return unless valid_for_onboarding_redirect?(url)
+
+      redirect_to url
     end
 
     def user_onboarding?

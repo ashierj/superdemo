@@ -7,6 +7,7 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
   context 'with redirection due to onboarding', feature_category: :onboarding do
     let(:onboarding_in_progress) { true }
     let(:url) { '_onboarding_step_' }
+    let(:onboarding_status_step_url) { url }
     let(:onboarding_step_url) { url }
 
     let(:user) do
@@ -14,7 +15,8 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
         create(
           :user_detail,
           user: record,
-          onboarding_step_url: onboarding_step_url
+          onboarding_step_url: onboarding_step_url,
+          onboarding_status_step_url: onboarding_status_step_url
         )
       end
     end
@@ -29,6 +31,16 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
       end
 
       context 'when onboarding is enabled' do
+        context 'when onboarding_status_step_url is set' do
+          let(:onboarding_step_url) { nil }
+
+          it 'redirects to the onboarding step' do
+            get root_path
+
+            expect(response).to redirect_to(url)
+          end
+        end
+
         context 'when onboarding_step_url is set' do
           let(:onboarding_status_step_url) { nil }
 
@@ -40,6 +52,7 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
         end
 
         context 'when onboarding step url is not set' do
+          let(:onboarding_status_step_url) { nil }
           let(:onboarding_step_url) { nil }
 
           it 'does not redirect for a request away from onboarding' do

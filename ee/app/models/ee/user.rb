@@ -55,7 +55,7 @@ module EE
         to: :namespace
       delegate :provisioned_by_group, :provisioned_by_group=,
         :provisioned_by_group_id, :provisioned_by_group_id=,
-        :onboarding_step_url=, :onboarding_status_step_url, :onboarding_status_step_url=,
+        :onboarding_status_step_url, :onboarding_status_step_url=,
         :onboarding_status_email_opt_in, :onboarding_status_email_opt_in=, :onboarding_status,
         to: :user_detail, allow_nil: true
 

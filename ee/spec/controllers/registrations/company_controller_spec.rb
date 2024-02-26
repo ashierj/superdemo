@@ -156,7 +156,6 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
           it 'does not store onboarding url' do
             post_create
 
-            expect(user.user_detail.onboarding_step_url).to be_nil
             expect(user.onboarding_status_step_url).to be_nil
           end
         end
@@ -168,7 +167,6 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
             it 'stores onboarding url' do
               post_create
 
-              expect(user.user_detail.onboarding_step_url).to eq(path)
               expect(user.onboarding_status_step_url).to eq(path)
             end
           end
@@ -179,7 +177,6 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
             it 'does not store onboarding url' do
               post_create
 
-              expect(user.user_detail.onboarding_step_url).to be_nil
               expect(user.onboarding_status_step_url).to be_nil
             end
           end
