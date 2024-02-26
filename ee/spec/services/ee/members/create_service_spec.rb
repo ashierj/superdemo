@@ -185,7 +185,6 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
   context 'when part of a group that a free group invited', :saas, :sidekiq_inline do
     context 'when free group is over the limit' do
       let(:dashboard_limit_enabled) { true }
-      let(:free_user_cap_over_limit_email_enabled) { true }
       let_it_be(:owner) { create(:user) }
       let_it_be(:root_ancestor) do
         create(:group_with_plan, :private, plan: :free_plan).tap { |g| g.add_owner(owner) }
@@ -201,7 +200,6 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
       before do
         stub_ee_application_setting(dashboard_limit: 3)
         stub_ee_application_setting(dashboard_limit_enabled: dashboard_limit_enabled)
-        stub_feature_flags(free_user_cap_over_limit_email: free_user_cap_over_limit_email_enabled)
       end
 
       subject(:execute_service) { described_class.new(user, params.merge({ source: invited_group })).execute }
@@ -231,12 +229,6 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
 
       context 'when dashboard limit is not enabled' do
         let(:dashboard_limit_enabled) { false }
-
-        it_behaves_like 'notification does not get triggered'
-      end
-
-      context 'when free_user_cap_over_limit_email feature flag is not enabled' do
-        let(:free_user_cap_over_limit_email_enabled) { false }
 
         it_behaves_like 'notification does not get triggered'
       end
