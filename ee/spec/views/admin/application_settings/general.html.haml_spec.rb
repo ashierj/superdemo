@@ -8,14 +8,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
   let_it_be(:user) { create(:admin) }
   let_it_be(:app_settings) { build(:application_setting) }
 
-  let(:code_suggestions_start_date) { CodeSuggestions::SelfManaged::SERVICE_START_DATE }
-  let(:before_code_suggestions_start_date) { code_suggestions_start_date - 1.second }
-  let(:after_code_suggestions_start_date) { code_suggestions_start_date + 1.second }
-
-  let(:duo_chat_cut_off_date) { code_suggestions_start_date + 1.month }
-  let(:before_duo_chat_cut_off_date) { duo_chat_cut_off_date - 1.second }
-  let(:after_duo_chat_cut_off_date) { duo_chat_cut_off_date + 1.second }
-
+  let(:duo_chat_cut_off_date) { Time.zone.parse('2024-03-15T00:00:00Z') }
   let(:duo_chat) { CloudConnector::ConnectedService.new(name: :duo_chat, cut_off_date: duo_chat_cut_off_date) }
 
   subject { rendered }
@@ -168,74 +161,6 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
     end
   end
 
-  describe 'instance-level Code Suggestions settings', feature_category: :code_suggestions do
-    before do
-      allow(::Gitlab).to receive(:org_or_com?).and_return(gitlab_org_or_com?)
-      stub_licensed_features(code_suggestions: false)
-    end
-
-    shared_examples 'does not render Code Suggestions toggle' do
-      it 'does not render Code Suggestions toggle' do
-        render
-        expect(rendered).not_to have_field('application_setting_instance_level_code_suggestions_enabled')
-      end
-    end
-
-    context 'when on .com or .org' do
-      let(:gitlab_org_or_com?) { true }
-
-      it_behaves_like 'does not render Code Suggestions toggle'
-    end
-
-    context 'when not on .com and not on .org' do
-      let(:gitlab_org_or_com?) { false }
-
-      context 'with license', :with_license do
-        context 'with :code_suggestions feature available' do
-          before do
-            stub_licensed_features(code_suggestions: true)
-          end
-
-          # TODO: clean up date-related tests after the Code Suggestions service start date (16.9+)
-          context 'when before the service start date' do
-            around do |example|
-              travel_to(CodeSuggestions::SelfManaged::SERVICE_START_DATE - 1.day) do
-                example.run
-              end
-            end
-
-            it 'renders Code Suggestions toggle' do
-              render
-              expect(rendered).to have_field('application_setting_instance_level_code_suggestions_enabled')
-            end
-          end
-
-          context 'when at the service start date' do
-            around do |example|
-              travel_to(CodeSuggestions::SelfManaged::SERVICE_START_DATE) do
-                example.run
-              end
-            end
-
-            it_behaves_like 'does not render Code Suggestions toggle'
-          end
-        end
-
-        context 'with :code_suggestions feature not available' do
-          before do
-            stub_licensed_features(code_suggestions: false)
-          end
-
-          it_behaves_like 'does not render Code Suggestions toggle'
-        end
-      end
-
-      context 'with no license', :without_license do
-        it_behaves_like 'does not render Code Suggestions toggle'
-      end
-    end
-  end
-
   describe 'instance-level ai-powered beta features settings', feature_category: :duo_chat do
     before do
       allow(::Gitlab).to receive(:org_or_com?).and_return(gitlab_org_or_com?)
@@ -293,12 +218,6 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
           context 'when cut off date is nil' do
             let(:duo_chat_cut_off_date) { nil }
 
-            around do |example|
-              travel_to(before_code_suggestions_start_date) do
-                example.run
-              end
-            end
-
             it 'renders AI Beta features toggle' do
               render
               expect(rendered).to have_field('application_setting_instance_level_ai_beta_features_enabled')
@@ -321,29 +240,21 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
     end
   end
 
-  # Tests specific license-related UI change that happens on the Code Suggestions service start date:
-  # (internal) https://gitlab.com/gitlab-org/gitlab/-/issues/425047#note_1673643291
-  # TODO: clean-up after the Code Suggestions service start date (16.9+)
   describe 'entire instance-level ai-powered menu section visibility', feature_category: :duo_chat do
-    where(:current_date, :ai_chat_available, :code_suggestions_available, :expect_section_is_visible) do
-      ref(:before_code_suggestions_start_date) | false | false | false
-      ref(:before_code_suggestions_start_date) | false | true  | true
-      ref(:before_code_suggestions_start_date) | true  | false | true
-      ref(:before_code_suggestions_start_date) | true  | true  | true
-      ref(:after_code_suggestions_start_date)  | false | false | false
-      ref(:after_code_suggestions_start_date)  | false | true  | false
-      ref(:after_code_suggestions_start_date)  | true  | false | true
-      ref(:after_code_suggestions_start_date)  | true  | true  | true
-      ref(:after_duo_chat_cut_off_date)        | false | false | false
-      ref(:after_duo_chat_cut_off_date)        | false | true  | false
-      ref(:after_duo_chat_cut_off_date)        | true  | false | false
-      ref(:after_duo_chat_cut_off_date)        | true  | true  | false
+    let(:before_duo_chat_cut_off_date) { duo_chat_cut_off_date - 1.second }
+    let(:after_duo_chat_cut_off_date) { duo_chat_cut_off_date + 1.second }
+
+    where(:current_date, :ai_chat_available, :expect_section_is_visible) do
+      ref(:before_duo_chat_cut_off_date) | false | false
+      ref(:before_duo_chat_cut_off_date) | true  | true
+      ref(:after_duo_chat_cut_off_date)  | false | false
+      ref(:after_duo_chat_cut_off_date)  | true  | false
     end
 
     with_them do
       it 'sets entire ai-powered menu section visibility correctly' do
         allow(::Gitlab).to receive(:org_or_com?).and_return(false)
-        stub_licensed_features(ai_chat: ai_chat_available, code_suggestions: code_suggestions_available)
+        stub_licensed_features(ai_chat: ai_chat_available)
 
         travel_to(current_date) do
           render

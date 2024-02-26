@@ -25,14 +25,7 @@ module API
               return true if ::Gitlab.org_or_com?
               return false unless ::License.feature_available?(:code_suggestions)
 
-              if ::CodeSuggestions::SelfManaged::SERVICE_START_DATE.past?
-                ::GitlabSubscriptions::AddOnPurchase
-                  .for_gitlab_duo_pro
-                  .any?
-              else # Before service start date
-                # TODO: Remove this else branch after the service start date
-                ::Gitlab::CurrentSettings.instance_level_code_suggestions_enabled
-              end
+              ::GitlabSubscriptions::AddOnPurchase.for_gitlab_duo_pro.any?
             end
 
             def x_ray_available?
