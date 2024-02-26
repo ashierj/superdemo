@@ -43,12 +43,6 @@ module EE
           approval_rules: approval_merge_request_rules_preloads,
           target_project: [
             regular_or_any_approver_approval_rules: approval_project_rules_preloads
-          ],
-          merge_request_diff: [
-            merge_request_diff_commits: [
-              :commit_author,
-              :committer
-            ]
           ]
         }
       ]
