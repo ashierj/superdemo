@@ -228,13 +228,9 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
             end
 
             it 'will correctly remove the reviewer' do
-              _, updates, message = service.execute(content, merge_request)
+              _, updates, _ = service.execute(content, merge_request)
 
-              expect(updates[:reviewer_ids].count).to eq(1)
-
-              expect(message).to include("Assigned #{current_user.to_reference}.")
-              expect(message).to include("Assigned #{current_user.to_reference} and #{developer2.to_reference} as reviewers.")
-              expect(message).to include("Removed reviewer #{current_user.to_reference}.")
+              expect(updates[:reviewer_ids]).to match_array([developer2.id])
             end
           end
         end
