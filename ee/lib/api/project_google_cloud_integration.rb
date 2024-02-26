@@ -102,7 +102,7 @@ module API
               declared_params[:google_cloud_artifact_registry_project_id],
             identity_provider: wlif_integration.identity_pool_resource_name,
             oidc_claim_grants: [
-              { claim_name: 'guest_access', claim_value: 'true', iam_role: 'roles/artifactregistry.reader' },
+              { claim_name: 'reporter_access', claim_value: 'true', iam_role: 'roles/artifactregistry.reader' },
               { claim_name: 'developer_access', claim_value: 'true', iam_role: 'roles/artifactregistry.writer' }
             ],
             api_integrations_url:
