@@ -44,22 +44,18 @@ describe('MR Widget App', () => {
 
   describe('MRSecurityWidget', () => {
     it('mounts MrSecurityWidgetEE when user has necessary permissions', async () => {
-      createComponent({
-        mr: {
-          canReadVulnerabilities: true,
-        },
-      });
+      createComponent({ mr: { canReadVulnerabilities: true } });
+
       await waitForPromises();
+
       expect(wrapper.findComponent(MrSecurityWidgetEE).exists()).toBe(true);
     });
 
     it('mounts MrSecurityWidgetCE when user does not have necessary permissions', async () => {
-      createComponent({
-        mr: {
-          canReadVulnerabilities: false,
-        },
-      });
+      createComponent({ mr: { canReadVulnerabilities: false } });
+
       await waitForPromises();
+
       expect(wrapper.findComponent(MrSecurityWidgetCE).exists()).toBe(true);
     });
   });
@@ -72,17 +68,17 @@ describe('MR Widget App', () => {
           licenseCompliance: { license_scanning: { full_report_path: 'full/report/path' } },
         },
       });
+
       await waitForPromises();
+
       expect(wrapper.findComponent(MrLicenseComplianceWidget).exists()).toBe(true);
     });
 
-    it('is not mounted when not enabled', async () => {
-      createComponent({
-        mr: {
-          enabledReports: {},
-        },
-      });
+    it('is not mounted when the report is not enabled', async () => {
+      createComponent({ mr: { enabledReports: {} } });
+
       await waitForPromises();
+
       expect(wrapper.findComponent(MrLicenseComplianceWidget).exists()).toBe(false);
     });
   });
