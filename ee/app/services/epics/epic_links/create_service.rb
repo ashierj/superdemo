@@ -123,7 +123,7 @@ module Epics
         return true unless issuable.work_item && child_epic.work_item
 
         response = ::WorkItems::ParentLinks::CreateService
-         .new(issuable.work_item, current_user, { target_issuable: child_epic.work_item })
+         .new(issuable.work_item, current_user, { target_issuable: child_epic.work_item, synced_work_item: true })
          .execute
 
         if response[:status] == :success

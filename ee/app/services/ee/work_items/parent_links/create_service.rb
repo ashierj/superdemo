@@ -11,7 +11,14 @@ module EE
 
         override :create_notes_and_resource_event
         def create_notes_and_resource_event(work_item, _link)
-          return if work_item.synced_epic.present?
+          return if params.fetch(:synced_work_item, false)
+
+          super
+        end
+
+        override :can_admin_link?
+        def can_admin_link?(work_item)
+          return true if params.fetch(:synced_work_item, false)
 
           super
         end
