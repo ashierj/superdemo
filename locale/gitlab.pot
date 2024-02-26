@@ -5236,6 +5236,9 @@ msgstr ""
 msgid "An error occurred while getting issue counts"
 msgstr ""
 
+msgid "An error occurred while getting merge request counts"
+msgstr ""
+
 msgid "An error occurred while initializing path locks"
 msgstr ""
 
@@ -5264,6 +5267,9 @@ msgid "An error occurred while loading group members."
 msgstr ""
 
 msgid "An error occurred while loading issues"
+msgstr ""
+
+msgid "An error occurred while loading merge requests"
 msgstr ""
 
 msgid "An error occurred while loading merge requests."
@@ -21269,7 +21275,16 @@ msgstr ""
 msgid "Filter by merge requests that are currently closed and unmerged."
 msgstr ""
 
+msgid "Filter by merge requests that are currently closed."
+msgstr ""
+
 msgid "Filter by merge requests that are currently merged."
+msgstr ""
+
+msgid "Filter by merge requests that are currently opened."
+msgstr ""
+
+msgid "Filter by merge requests that are merged."
 msgstr ""
 
 msgid "Filter by milestone name"
@@ -46716,6 +46731,9 @@ msgid "Show all epics"
 msgstr ""
 
 msgid "Show all issues."
+msgstr ""
+
+msgid "Show all merge requests."
 msgstr ""
 
 msgid "Show all milestones"
