@@ -126,7 +126,7 @@ module EE
       hand_raise_props(
         namespace,
         glm_content: 'code-suggestions',
-        product_interaction: 'Requested Contact-Code Suggestions Add-On')
+        product_interaction: 'Requested Contact-Duo Pro Add-On')
         .merge(track_action: 'click_button', track_label: 'code_suggestions_hand_raise_lead_form')
         .merge(button_attributes: { 'data-testid': 'code_suggestions_hand_raise_lead_button', category: 'tertiary', variant: 'confirm' }.to_json)
     end
