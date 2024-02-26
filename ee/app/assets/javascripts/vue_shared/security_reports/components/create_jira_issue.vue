@@ -19,11 +19,6 @@ export default {
       type: Number,
       required: true,
     },
-    variant: {
-      type: String,
-      required: false,
-      default: 'success',
-    },
   },
   data() {
     return {
@@ -63,7 +58,7 @@ export default {
 
 <template>
   <gl-button
-    :variant="variant"
+    variant="confirm"
     category="secondary"
     :loading="isLoading"
     icon="external-link"
