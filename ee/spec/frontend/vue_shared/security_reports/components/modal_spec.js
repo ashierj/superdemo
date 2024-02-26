@@ -4,7 +4,6 @@ import { nextTick } from 'vue';
 import IssueNote from 'ee/vue_shared/security_reports/components/issue_note.vue';
 import MergeRequestNote from 'ee/vue_shared/security_reports/components/merge_request_note.vue';
 import Modal from 'ee/vue_shared/security_reports/components/modal.vue';
-import ModalFooter from 'ee/vue_shared/security_reports/components/modal_footer.vue';
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card_vuex.vue';
 import DismissalNote from 'ee/vue_shared/security_reports/components/dismissal_note.vue';
 import DismissalCommentBoxToggle from 'ee/vue_shared/security_reports/components/dismissal_comment_box_toggle.vue';
@@ -38,7 +37,6 @@ describe('Security Reports modal', () => {
   };
 
   const findModal = () => wrapper.findComponent(GlModal);
-  const findModalFooter = () => wrapper.findComponent(ModalFooter);
   const findIssueNote = () => wrapper.findComponent(IssueNote);
   const findDismissalNote = () => wrapper.findComponent(DismissalNote);
   const findDismissalCommentBoxToggle = () => wrapper.findComponent(DismissalCommentBoxToggle);
@@ -105,31 +103,6 @@ describe('Security Reports modal', () => {
       });
     });
 
-    describe('with not dismissed issue', () => {
-      it('allows the vulnerability to be dismissed', async () => {
-        mountComponent({ canDismissVulnerability: true }, mount);
-        await nextTick();
-
-        expect(findModalFooter().props('canDismissVulnerability')).toBe(true);
-      });
-    });
-
-    describe('with auto remediation available', () => {
-      it('can create merge request when there is no existing merge request', () => {
-        vulnerability.remediations = [{}];
-        mountComponent();
-
-        expect(findModalFooter().props('canCreateMergeRequest')).toBe(true);
-      });
-
-      it(`can't create merge request when there is an existing merge request`, () => {
-        vulnerability.merge_request_links = [{}];
-        mountComponent();
-
-        expect(findModalFooter().props('canCreateMergeRequest')).toBe(false);
-      });
-    });
-
     describe('data', () => {
       it('renders title', async () => {
         const propsData = {
@@ -139,35 +112,6 @@ describe('Security Reports modal', () => {
         await nextTick();
 
         expect(findModal().text()).toContain(propsData.modal.title);
-      });
-    });
-
-    describe('with a resolved issue', () => {
-      beforeEach(() => {
-        mountComponent({ modal: { vulnerability, isResolved: true } }, mount);
-      });
-
-      it('disallows any actions in the footer', () => {
-        expect(findModalFooter().props()).toMatchObject({
-          canCreateIssue: false,
-          canCreateMergeRequest: false,
-          canDownloadPatch: false,
-          canDismissVulnerability: false,
-        });
-      });
-    });
-  });
-
-  describe('without permissions', () => {
-    it('disallows any actions in the footer', async () => {
-      mountComponent({}, mount);
-      await nextTick();
-
-      expect(findModalFooter().props()).toMatchObject({
-        canCreateIssue: false,
-        canCreateMergeRequest: false,
-        canDownloadPatch: false,
-        canDismissVulnerability: false,
       });
     });
   });
@@ -221,23 +165,6 @@ describe('Security Reports modal', () => {
         expect(wrapper.findComponent(MergeRequestNote).exists()).toBe(isShown);
       },
     );
-  });
-
-  describe('with a resolved issue', () => {
-    beforeEach(() => {
-      const propsData = { modal: { vulnerability: {} } };
-      propsData.modal.isResolved = true;
-      mountComponent(propsData, mount);
-    });
-
-    it('disallows any actions in the footer', () => {
-      expect(wrapper.findComponent({ ref: 'footer' }).props()).toMatchObject({
-        canCreateIssue: false,
-        canCreateMergeRequest: false,
-        canDownloadPatch: false,
-        canDismissVulnerability: false,
-      });
-    });
   });
 
   describe('Vulnerability Details', () => {

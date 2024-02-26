@@ -6,7 +6,6 @@ import DismissalCommentModalFooter from 'ee/vue_shared/security_reports/componen
 import DismissalNote from 'ee/vue_shared/security_reports/components/dismissal_note.vue';
 import IssueNote from 'ee/vue_shared/security_reports/components/issue_note.vue';
 import MergeRequestNote from 'ee/vue_shared/security_reports/components/merge_request_note.vue';
-import ModalFooter from 'ee/vue_shared/security_reports/components/modal_footer.vue';
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card_vuex.vue';
 import VulnerabilityDetails from 'ee/vue_shared/security_reports/components/vulnerability_details.vue';
 import { __ } from '~/locale';
@@ -28,7 +27,6 @@ export default {
     GlAlert,
     GlModal,
     GlLoadingIcon,
-    ModalFooter,
     SolutionCard,
     VulnerabilityDetails,
   },
@@ -265,27 +263,6 @@ export default {
         @addCommentAndDismiss="addCommentAndDismiss"
         @addDismissalComment="addDismissalComment"
         @cancel="$emit('closeDismissalCommentBox')"
-      />
-      <modal-footer
-        v-else
-        ref="footer"
-        :vulnerability="vulnerability"
-        :disabled="modal.isShowingDeleteButtons"
-        :can-create-issue="canCreateIssueForThisVulnerability"
-        :can-create-merge-request="canCreateMergeRequestForThisVulnerability"
-        :can-download-patch="canDownloadPatchForThisVulnerability"
-        :can-dismiss-vulnerability="canDismissThisVulnerability"
-        :is-dismissed="Boolean(dismissalData)"
-        :is-creating-issue="isCreatingIssue"
-        :is-dismissing-vulnerability="isDismissingVulnerability"
-        :is-creating-merge-request="isCreatingMergeRequest"
-        @createMergeRequest="$emit('createMergeRequest')"
-        @createNewIssue="$emit('createNewIssue')"
-        @dismissVulnerability="$emit('dismissVulnerability')"
-        @openDismissalCommentBox="$emit('openDismissalCommentBox')"
-        @revertDismissVulnerability="$emit('revertDismissVulnerability')"
-        @downloadPatch="$emit('downloadPatch')"
-        @cancel="close"
       />
     </template>
   </gl-modal>
