@@ -1,53 +1,40 @@
 <script>
-import {
-  GlExperimentBadge,
-  GlForm,
-  GlFormInput,
-  GlFormGroup,
-  GlButton,
-  GlAlert,
-  GlFormTextarea,
-} from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { GlExperimentBadge } from '@gitlab/ui';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import AgentForm from '../components/agent_form.vue';
 import createAiAgent from '../graphql/mutations/create_ai_agent.mutation.graphql';
+import { I18N_CREATE_AGENT, I18N_DEFAULT_SAVE_ERROR } from '../constants';
 
 export default {
   name: 'CreateAiAgent',
   components: {
     TitleArea,
     GlExperimentBadge,
-    GlForm,
-    GlFormGroup,
-    GlFormInput,
-    GlFormTextarea,
-    GlButton,
-    GlAlert,
+    AgentForm,
   },
+  I18N_CREATE_AGENT,
+  I18N_DEFAULT_SAVE_ERROR,
   inject: ['projectPath'],
   data() {
     return {
-      errorMessage: undefined,
-      agentName: '',
-      agentPrompt: '',
+      errorMessage: '',
+      loading: false,
     };
   },
+  helpPagePath: helpPagePath('policy/experiment-beta-support', { anchor: 'experiment' }),
   methods: {
-    async createAgent() {
+    async createAgent(requestData) {
       this.errorMessage = '';
+      this.loading = true;
       try {
-        const variables = {
-          projectPath: this.projectPath,
-          name: this.agentName,
-          prompt: this.agentPrompt,
-        };
-
         const { data } = await this.$apollo.mutate({
           mutation: createAiAgent,
-          variables,
+          variables: requestData,
         });
+
+        this.loading = false;
 
         const [error] = data?.aiAgentCreate?.errors || [];
 
@@ -61,11 +48,11 @@ export default {
         }
       } catch (error) {
         Sentry.captureException(error);
-        this.errorMessage = s__('AIAgents|An error has occurred when saving the agent.');
+        this.errorMessage = this.$options.I18N_DEFAULT_SAVE_ERROR;
+        this.loading = false;
       }
     },
   },
-  helpPagePath: helpPagePath('policy/experiment-beta-support', { anchor: 'experiment' }),
 };
 </script>
 
@@ -80,22 +67,12 @@ export default {
       </template>
     </title-area>
 
-    <gl-alert v-if="errorMessage" :dismissible="false" variant="danger" class="gl-mb-3">
-      {{ errorMessage }}
-    </gl-alert>
-
-    <gl-form @submit.prevent="createAgent">
-      <gl-form-group :label="s__('AIAgents|Agent name')">
-        <gl-form-input v-model="agentName" data-testid="agent-name" />
-      </gl-form-group>
-
-      <gl-form-group :label="__('Prompt')" optional>
-        <gl-form-textarea v-model="agentPrompt" />
-      </gl-form-group>
-
-      <gl-button type="submit" variant="confirm" class="js-no-auto-disable">{{
-        s__('AIAgents|Create agent')
-      }}</gl-button>
-    </gl-form>
+    <agent-form
+      :project-path="projectPath"
+      :button-label="$options.I18N_CREATE_AGENT"
+      :error-message="errorMessage"
+      :loading="loading"
+      @submit="createAgent"
+    />
   </div>
 </template>
