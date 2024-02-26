@@ -1958,7 +1958,7 @@ DEPENDENCIES
   grape-path-helpers (~> 2.0.1)
   grape-swagger (~> 2.0.1)
   grape-swagger-entity (~> 0.5.1)
-  grape_logging (~> 1.8)
+  grape_logging (~> 1.8, >= 1.8.4)
   graphiql-rails (~> 1.8.0)
   graphlient (~> 0.6.0)
   graphlyte (~> 1.0.0)
