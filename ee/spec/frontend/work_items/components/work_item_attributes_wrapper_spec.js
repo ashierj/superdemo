@@ -9,6 +9,7 @@ import WorkItemWeight from 'ee/work_items/components/work_item_weight_with_edit.
 import WorkItemWeightInline from 'ee/work_items/components/work_item_weight_inline.vue';
 import WorkItemIterationInline from 'ee/work_items/components/work_item_iteration_inline.vue';
 import WorkItemColorInline from 'ee/work_items/components/work_item_color_inline.vue';
+import WorkItemColorWithEdit from 'ee/work_items/components/work_item_color_with_edit.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { workItemResponseFactory } from 'jest/work_items/mock_data';
@@ -36,6 +37,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
   const findWorkItemProgressInline = () => wrapper.findComponent(WorkItemProgressInline);
   const findWorkItemProgressWithEdit = () => wrapper.findComponent(WorkItemProgressWithEdit);
   const findWorkItemColorInline = () => wrapper.findComponent(WorkItemColorInline);
+  const findWorkItemColorWithEdit = () => wrapper.findComponent(WorkItemColorWithEdit);
   const findWorkItemHealthStatus = () => wrapper.findComponent(WorkItemHealthStatus);
   const findWorkItemHealthStatusInline = () => wrapper.findComponent(WorkItemHealthStatusInline);
 
@@ -240,13 +242,31 @@ describe('EE WorkItemAttributesWrapper component', () => {
       ${'when widget is returned from API'}     | ${true}            | ${true}
       ${'when widget is not returned from API'} | ${false}           | ${false}
     `('$description', ({ colorWidgetPresent, exists }) => {
-      it(`${colorWidgetPresent ? 'renders' : 'does not render'} progress component`, () => {
+      it(`${colorWidgetPresent ? 'renders' : 'does not render'} color component`, () => {
         const response = workItemResponseFactory({ colorWidgetPresent });
 
         createComponent({ workItem: response.data.workItem });
 
-        expect(findWorkItemColorInline().exists()).toBe(exists);
+        expect(findWorkItemColorWithEdit().exists()).toBe(exists);
       });
+    });
+
+    it('renders WorkItemColorWithEdit when workItemsMvc2 enabled', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findWorkItemColorWithEdit().exists()).toBe(true);
+      expect(findWorkItemColorInline().exists()).toBe(false);
+    });
+
+    it('renders WorkItemColorInline when workItemsMvc2 disabled', async () => {
+      createComponent({ workItemsMvc2: false });
+
+      await waitForPromises();
+
+      expect(findWorkItemColorWithEdit().exists()).toBe(false);
+      expect(findWorkItemColorInline().exists()).toBe(true);
     });
 
     it('emits an error event to the wrapper', async () => {
@@ -254,7 +274,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
       createComponent({ workItem: response.data.workItem });
       const updateError = 'Failed to update';
 
-      findWorkItemColorInline().vm.$emit('error', updateError);
+      findWorkItemColorWithEdit().vm.$emit('error', updateError);
       await nextTick();
 
       expect(wrapper.emitted('error')).toEqual([[updateError]]);
