@@ -8,13 +8,15 @@ RSpec.describe 'Group saved replies', feature_category: :code_review_workflow do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:saved_reply) { create(:group_saved_reply, group: group) }
+  let(:include_ancestor_groups) { false }
+  let(:group_path) { group.full_path }
 
   let(:query) do
     <<~QUERY
-      query groupSavedReplies($groupPath: ID!) {
+      query groupSavedReplies($groupPath: ID! $includeAncestorGroups: Boolean) {
         group(fullPath: $groupPath) {
           id
-          savedReplies {
+          savedReplies(includeAncestorGroups: $includeAncestorGroups) {
             nodes {
               id
               name
@@ -31,7 +33,8 @@ RSpec.describe 'Group saved replies', feature_category: :code_review_workflow do
       query,
       current_user: user,
       variables: {
-        groupPath: group.full_path
+        groupPath: group_path,
+        includeAncestorGroups: include_ancestor_groups
       }
     )
   end
@@ -45,10 +48,10 @@ RSpec.describe 'Group saved replies', feature_category: :code_review_workflow do
       stub_licensed_features(group_saved_replies: false)
     end
 
-    it 'returns empty array' do
+    it 'returns nil' do
       post_query
 
-      expect(saved_reply_graphl_response).to be_empty
+      expect(saved_reply_graphl_response).to be_nil
     end
   end
 
@@ -58,10 +61,10 @@ RSpec.describe 'Group saved replies', feature_category: :code_review_workflow do
       stub_licensed_features(group_saved_replies: true)
     end
 
-    it 'returns empty array' do
+    it 'returns nil' do
       post_query
 
-      expect(saved_reply_graphl_response).to be_empty
+      expect(saved_reply_graphl_response).to be_nil
     end
   end
 
@@ -74,6 +77,18 @@ RSpec.describe 'Group saved replies', feature_category: :code_review_workflow do
       post_query
 
       expect(saved_reply_graphl_response).to contain_exactly(a_graphql_entity_for(saved_reply, :name, :content))
+    end
+
+    context 'when group path is a sub-group' do
+      let_it_be(:subgroup) { create(:group, parent: group) }
+      let(:group_path) { subgroup.full_path }
+      let(:include_ancestor_groups) { true }
+
+      it 'includes saved replies from ancestor groups' do
+        post_query
+
+        expect(saved_reply_graphl_response).to contain_exactly(a_graphql_entity_for(saved_reply, :name, :content))
+      end
     end
   end
 
