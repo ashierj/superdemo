@@ -52304,6 +52304,9 @@ msgstr ""
 msgid "Too long"
 msgstr ""
 
+msgid "Too many failed authentication attempts from this IP"
+msgstr ""
+
 msgid "Too many namespaces enabled. Manage them through the console or the API."
 msgstr ""
 
