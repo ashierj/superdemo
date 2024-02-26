@@ -10,14 +10,11 @@ module EE
           extend ::Gitlab::Utils::Override
 
           override :find_groups
-          # rubocop: disable CodeReuse/ActiveRecord
           def find_groups(params, parent_id = nil)
             params.delete(:repository_storage) unless can?(current_user, :change_repository_storage)
 
             super(params, parent_id)
-              .preload(:ldap_group_links, :deletion_schedule, :saml_group_links)
           end
-          # rubocop: enable CodeReuse/ActiveRecord
 
           override :create_group
           def create_group
