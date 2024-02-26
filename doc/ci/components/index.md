@@ -187,7 +187,7 @@ Anyone can [create a component project](#create-a-component-project) and add it 
 the CI/CD Catalog, or contribute to an existing project to improve the available components.
 
 For a click-through demo, see [the CI/CD Catalog beta Product Tour](https://gitlab.navattic.com/cicd-catalog).
-<!-- Demo published on 2024-02-21 -->
+<!-- Demo published on 2024-01-24 -->
 
 ### View the CI/CD Catalog
 
