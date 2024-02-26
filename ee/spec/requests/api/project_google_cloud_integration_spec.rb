@@ -133,6 +133,13 @@ RSpec.describe API::ProjectGoogleCloudIntegration, feature_category: :integratio
         expect(response.body).to include('attribute.user_access_level=assertion.user_access_level')
         expect(response.body).to include('attribute.reporter_access=assertion.reporter_access')
       end
+
+      it 'uses the correct gcloud project flag' do
+        get(api(path, owner), params: params)
+
+        expect(response.body).to include(' --project=')
+        expect(response.body).not_to include(' -project=')
+      end
     end
   end
 

@@ -38,7 +38,7 @@ create_google_cloud_resources() {
       --display-name="<%= google_cloud_workload_identity_pool_display_name %>"
   fi
 
-  EXISTING_PROVIDER=$(gcloud iam workload-identity-pools providers describe "<%= google_cloud_workload_identity_pool_provider_id %>" --location="global" -project="<%= google_cloud_project_id %>" --workload-identity-pool="<%= google_cloud_workload_identity_pool_id %>" --format="value(name)" 2>/dev/null || true)
+  EXISTING_PROVIDER=$(gcloud iam workload-identity-pools providers describe "<%= google_cloud_workload_identity_pool_provider_id %>" --location="global" --project="<%= google_cloud_project_id %>" --workload-identity-pool="<%= google_cloud_workload_identity_pool_id %>" --format="value(name)" 2>/dev/null || true)
   if [ -n "${EXISTING_PROVIDER:-}" ]; then
     echo "A Provider with the ID '<%= google_cloud_workload_identity_pool_provider_id %>' already exists. Skipping."
   else
