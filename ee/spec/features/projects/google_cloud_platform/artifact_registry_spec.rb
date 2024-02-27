@@ -3,8 +3,42 @@
 require 'spec_helper'
 
 RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_registry do
+  include GoogleApi::CloudPlatformHelpers
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
+  let_it_be_with_refind(:project_integration) do
+    create(:google_cloud_platform_artifact_registry_integration, project: project)
+  end
+
+  let_it_be(:artifact_registry_repository_url) do
+    "https://console.cloud.google.com/artifacts/docker/#{project_integration.artifact_registry_project_id}/" \
+      "#{project_integration.artifact_registry_location}/#{project_integration.artifact_registry_repository}"
+  end
+
+  let(:image) { 'ruby' }
+  let(:digest) { 'sha256:4ca5c21b' }
+  let(:client_double) { instance_double('::GoogleCloudPlatform::ArtifactRegistry::Client') }
+  let(:page_token) { nil }
+  let(:order_by) { 'update_time desc' }
+  let(:page_size) { nil }
+  let(:default_page_size) { ::GoogleCloudPlatform::ArtifactRegistry::ListDockerImagesService::DEFAULT_PAGE_SIZE }
+  let(:next_page_token) { 'next_page_token' }
+
+  let(:docker_image) do
+    Google::Cloud::ArtifactRegistry::V1::DockerImage.new(
+      name: "projects/#{project_integration.artifact_registry_project_id}/" \
+            "locations/#{project_integration.artifact_registry_location}/" \
+            "repositories/#{project_integration.artifact_registry_repository}/" \
+            "dockerImages/#{image}@#{digest}",
+      uri: "us-east1-docker.pkg.dev/#{project_integration.artifact_registry_project_id}/demo/#{image}@#{digest}",
+      tags: ['97c58898'],
+      image_size_bytes: 304_121_628,
+      media_type: 'application/vnd.docker.distribution.manifest.v2+json',
+      build_time: Time.now.utc,
+      update_time: Time.now.utc,
+      upload_time: Time.now.utc
+    )
+  end
 
   before_all do
     project.add_developer(user)
@@ -13,6 +47,18 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
   before do
     stub_container_registry_config(enabled: true)
     stub_saas_features(google_cloud_support: true)
+
+    allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
+      .with(
+        project_integration: project_integration,
+        user: user,
+        artifact_registry_location: project_integration.artifact_registry_location,
+        artifact_registry_repository: project_integration.artifact_registry_repository
+      ).and_return(client_double)
+
+    allow(client_double).to receive(:docker_images)
+      .with(page_token: page_token, page_size: page_size || default_page_size, order_by: order_by)
+      .and_return(dummy_list_docker_images_response)
     sign_in(user)
   end
 
@@ -77,5 +123,12 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
 
   def visit_page
     visit project_google_cloud_platform_artifact_registry_index_path(project)
+  end
+
+  def dummy_list_docker_images_response
+    Google::Cloud::ArtifactRegistry::V1::ListDockerImagesResponse.new(
+      docker_images: [docker_image],
+      next_page_token: 'next_page_token'
+    )
   end
 end

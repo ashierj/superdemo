@@ -1,12 +1,22 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import resolvers from 'ee_component/packages_and_registries/google_artifact_registry/graphql/resolvers';
 import getArtifactDetailsQuery from 'ee_component/packages_and_registries/google_artifact_registry/graphql/queries/get_artifact_details.query.graphql';
 
 Vue.use(VueApollo);
 
-const defaultClient = createDefaultClient(resolvers);
+const defaultClient = createDefaultClient(
+  {},
+  {
+    cacheConfig: {
+      typePolicies: {
+        GoogleCloudArtifactRegistryRepository: {
+          keyFields: ['projectId'],
+        },
+      },
+    },
+  },
+);
 
 defaultClient.cache.writeQuery({
   query: getArtifactDetailsQuery,

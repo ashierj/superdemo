@@ -6,8 +6,15 @@ import waitForPromises from 'helpers/wait_for_promises';
 import List from 'ee_component/packages_and_registries/google_artifact_registry/pages/list.vue';
 import ListHeader from 'ee_component/packages_and_registries/google_artifact_registry/components/list/header.vue';
 import ListTable from 'ee_component/packages_and_registries/google_artifact_registry/components/list/table.vue';
+import getArtifactRegistryRepositoryQuery from 'ee_component/packages_and_registries/google_artifact_registry/graphql/queries/get_artifact_registry_repository.query.graphql';
 import getArtifactsQuery from 'ee_component/packages_and_registries/google_artifact_registry/graphql/queries/get_artifacts.query.graphql';
-import { headerData, getArtifactsQueryResponse, imageData } from '../mock_data';
+import {
+  headerData,
+  getArtifactRepositoryQueryResponse,
+  getArtifactsQueryResponse,
+  imageData,
+  pageInfo,
+} from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -23,9 +30,13 @@ describe('List', () => {
   const findListTable = () => wrapper.findComponent(ListTable);
 
   const createComponent = ({
-    resolver = jest.fn().mockResolvedValue(getArtifactsQueryResponse),
+    artifactRepositoryResolver = jest.fn().mockResolvedValue(getArtifactRepositoryQueryResponse),
+    resolver = jest.fn().mockResolvedValue(getArtifactsQueryResponse()),
   } = {}) => {
-    const requestHandlers = [[getArtifactsQuery, resolver]];
+    const requestHandlers = [
+      [getArtifactRegistryRepositoryQuery, artifactRepositoryResolver],
+      [getArtifactsQuery, resolver],
+    ];
 
     apolloProvider = createMockApollo(requestHandlers);
 
@@ -35,20 +46,30 @@ describe('List', () => {
     });
   };
 
-  it('calls apollo query with sort params', async () => {
-    const resolver = jest.fn().mockResolvedValue(getArtifactsQueryResponse);
+  it('calls get artifact repository apollo query with sort params', async () => {
+    const artifactRepositoryResolver = jest
+      .fn()
+      .mockResolvedValue(getArtifactRepositoryQueryResponse);
+    createComponent({ artifactRepositoryResolver });
+    await waitForPromises();
+
+    expect(artifactRepositoryResolver).toHaveBeenCalledTimes(1);
+    expect(artifactRepositoryResolver).toHaveBeenNthCalledWith(1, {
+      fullPath: 'gitlab-org/gitlab',
+    });
+  });
+
+  it('calls get artifacts apollo query with sort params', async () => {
+    const resolver = jest.fn().mockResolvedValue(getArtifactsQueryResponse());
     createComponent({ resolver });
     await waitForPromises();
 
     expect(resolver).toHaveBeenCalledTimes(1);
-    expect(resolver).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        first: 20,
-        fullPath: 'gitlab-org/gitlab',
-        sort: 'UPDATE_TIME_DESC',
-      }),
-    );
+    expect(resolver).toHaveBeenNthCalledWith(1, {
+      first: 20,
+      fullPath: 'gitlab-org/gitlab',
+      sort: 'UPDATE_TIME_DESC',
+    });
   });
 
   describe('list header', () => {
@@ -75,8 +96,8 @@ describe('List', () => {
     });
 
     it('renders the list header with error prop', async () => {
-      const resolver = jest.fn().mockRejectedValue(new Error('error'));
-      createComponent({ resolver });
+      const artifactRepositoryResolver = jest.fn().mockRejectedValue(new Error('error'));
+      createComponent({ artifactRepositoryResolver });
       await waitForPromises();
 
       expect(findListHeader().props()).toMatchObject({
@@ -103,17 +124,29 @@ describe('List', () => {
       await waitForPromises();
 
       expect(findListTable().props()).toMatchObject({
-        data: { nodes: [imageData] },
+        data: { nodes: [imageData], pageInfo },
         isLoading: false,
       });
     });
 
-    it('hides the list table when resolve fails error', async () => {
+    it('hides the list table when artifactRepositoryResolver errors', async () => {
+      const artifactRepositoryResolver = jest.fn().mockRejectedValue(new Error('error'));
+      createComponent({ artifactRepositoryResolver });
+      await waitForPromises();
+
+      expect(findListTable().exists()).toBe(false);
+    });
+
+    it('renders the list table with error prop', async () => {
       const resolver = jest.fn().mockRejectedValue(new Error('error'));
       createComponent({ resolver });
       await waitForPromises();
 
-      expect(findListTable().exists()).toBe(false);
+      expect(findListTable().props()).toMatchObject({
+        data: {},
+        isLoading: false,
+        errorMessage: 'error',
+      });
     });
 
     it('renders the list table with sort prop', () => {
@@ -124,7 +157,7 @@ describe('List', () => {
     });
 
     describe('when table emits sort-changed event', () => {
-      const resolver = jest.fn().mockResolvedValue(getArtifactsQueryResponse);
+      const resolver = jest.fn().mockResolvedValue(getArtifactsQueryResponse());
       beforeEach(async () => {
         createComponent({ resolver });
 
@@ -150,6 +183,84 @@ describe('List', () => {
           2,
           expect.objectContaining({
             sort: 'UPDATE_TIME_ASC',
+          }),
+        );
+      });
+    });
+
+    describe('when table emits next-page event', () => {
+      const resolver = jest.fn().mockResolvedValue(getArtifactsQueryResponse());
+      beforeEach(async () => {
+        createComponent({ resolver });
+        await waitForPromises();
+
+        findListTable().vm.$emit('next-page');
+      });
+
+      it('calls apollo query with updated pagination params', async () => {
+        await waitForPromises();
+
+        expect(resolver).toHaveBeenCalledTimes(2);
+        expect(resolver).toHaveBeenNthCalledWith(
+          2,
+          expect.objectContaining({
+            after: pageInfo.endCursor,
+          }),
+        );
+      });
+
+      it('resets pagination params when sorted', async () => {
+        await waitForPromises();
+
+        findListTable().vm.$emit('sort-changed', { sortBy: 'updateTime', sortDesc: false });
+
+        await waitForPromises();
+
+        expect(resolver).toHaveBeenCalledTimes(3);
+        expect(resolver).toHaveBeenNthCalledWith(3, {
+          first: 20,
+          fullPath: 'gitlab-org/gitlab',
+          sort: 'UPDATE_TIME_ASC',
+        });
+      });
+    });
+
+    describe('when table emits next-page event and then emits prev-page', () => {
+      const resolver = jest
+        .fn()
+        .mockResolvedValue(getArtifactsQueryResponse())
+        .mockResolvedValueOnce(getArtifactsQueryResponse())
+        .mockResolvedValueOnce(
+          getArtifactsQueryResponse({
+            pageInfo: {
+              ...pageInfo,
+              __typename: 'PageInfo',
+              startCursor: 'start',
+              endCursor: 'end',
+              hasPreviousPage: true,
+            },
+          }),
+        );
+
+      beforeEach(async () => {
+        createComponent({ resolver });
+        await waitForPromises();
+
+        findListTable().vm.$emit('next-page');
+        await waitForPromises();
+        findListTable().vm.$emit('next-page');
+        await waitForPromises();
+        findListTable().vm.$emit('prev-page');
+      });
+
+      it('calls apollo query with updated pagination params', async () => {
+        await waitForPromises();
+
+        expect(resolver).toHaveBeenCalledTimes(4);
+        expect(resolver).toHaveBeenNthCalledWith(
+          4,
+          expect.objectContaining({
+            after: 'start',
           }),
         );
       });

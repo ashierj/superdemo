@@ -47,7 +47,7 @@ describe('Google Artifact Registry list page header', () => {
 
       expect(findOpenInGoogleCloudLink().text()).toBe('Open in Google Cloud');
       expect(findOpenInGoogleCloudLink().attributes('href')).toBe(
-        defaultProps.data.gcpRepositoryUrl,
+        defaultProps.data.artifactRegistryRepositoryUrl,
       );
     });
 
