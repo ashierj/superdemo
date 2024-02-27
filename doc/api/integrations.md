@@ -894,7 +894,7 @@ GET /projects/:id/integrations/hangouts-chat
 ## Google Cloud Artifact Registry
 
 DETAILS:
-**Offering:** SaaS
+**Offering:** GitLab.com
 **Status:** Beta
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/425066) in GitLab 16.9 as a [Beta](../policy/experiment-beta-support.md) feature [with a flag](../administration/feature_flags.md) named `gcp_artifact_registry`. Disabled by default.
