@@ -11,28 +11,59 @@ module Vulnerabilities
     feature_category :vulnerability_management
 
     def handle_event(event)
-      bulk_arguments = ProjectSetting
-        .for_projects(project_ids(event))
-        .has_vulnerabilities
-        .pluck_primary_key
-        .zip
-
-      Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker.perform_bulk(bulk_arguments)
+      project_ids(event).each_slice(1_000) { |slice| bulk_schedule_worker(slice) }
     end
 
     private
 
+    def bulk_schedule_worker(project_ids)
+      Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker.perform_bulk(project_ids.zip)
+    end
+
     def project_ids(event)
       case event
       when ::Projects::ProjectTransferedEvent
-        [event.data[:project_id]]
+        vulnerable_project_ids(event.data[:project_id])
       when ::Groups::GroupTransferedEvent
         group = Group.find_by_id(event.data[:group_id])
 
-        return [] unless group
-
-        group.all_project_ids
+        project_ids_for(group)
       end
+    end
+
+    def project_ids_for(group)
+      return [] unless group
+
+      subgroup_ids_for(group).flat_map do |sub_group_id|
+        direct_project_ids_for(sub_group_id)
+      end
+    end
+
+    def subgroup_ids_for(group)
+      cursor = { current_id: group.id, depth: [group.id] }
+      iterator = Gitlab::Database::NamespaceEachBatch.new(namespace_class: Group, cursor: cursor)
+
+      group_ids = []
+
+      iterator.each_batch(of: 100) { |ids| group_ids += ids }
+
+      group_ids
+    end
+
+    def direct_project_ids_for(sub_group_id)
+      project_ids = []
+
+      Project.in_namespace(sub_group_id).each_batch(of: 100) do |batch|
+        project_ids += vulnerable_project_ids(batch)
+      end
+
+      project_ids
+    end
+
+    def vulnerable_project_ids(batch)
+      ProjectSetting.for_projects(batch)
+                    .has_vulnerabilities
+                    .pluck_primary_key
     end
   end
 end

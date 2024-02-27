@@ -93,7 +93,7 @@ RSpec.describe Vulnerabilities::ProcessTransferEventsWorker, feature_category: :
       let(:event) { project_event }
 
       it 'enqueues a vulnerability reads namespace id update job for the project id' do
-        expect(Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker).to receive(:perform_bulk).with([])
+        expect(Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker).not_to receive(:perform_bulk)
 
         use_event
       end
