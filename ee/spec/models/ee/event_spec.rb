@@ -240,4 +240,24 @@ RSpec.describe Event do
       end
     end
   end
+
+  describe '.contributable_target_types' do
+    subject { described_class.contributable_target_types }
+
+    context 'when epic_events_on_contributions_calendar feature flag is disabled' do
+      before do
+        stub_feature_flags(epic_events_on_contributions_calendar: false)
+      end
+
+      it { is_expected.to contain_exactly('MergeRequest', 'Issue', 'WorkItem') }
+    end
+
+    context 'when epic_events_on_contributions_calendar feature flag is enabled' do
+      before do
+        stub_feature_flags(epic_events_on_contributions_calendar: true)
+      end
+
+      it { is_expected.to contain_exactly('MergeRequest', 'Issue', 'WorkItem', 'Epic') }
+    end
+  end
 end
