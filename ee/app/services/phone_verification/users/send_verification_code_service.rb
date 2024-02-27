@@ -23,9 +23,7 @@ module PhoneVerification
         if related_to_banned_user?
           record.save!
 
-          if Feature.enabled?(:identity_verification_auto_ban)
-            ::Users::AutoBanService.new(user: user, reason: :banned_phone_number).execute
-          end
+          ::Users::AutoBanService.new(user: user, reason: :banned_phone_number).execute
 
           return error_related_to_banned_user
         end
@@ -105,15 +103,8 @@ module PhoneVerification
       end
 
       def error_related_to_banned_user
-        message = s_(
-          'PhoneVerification|There was a problem with the phone number you entered. ' \
-          'Enter a different phone number and try again.'
-        )
-
-        message = user_banned_error_message if Feature.enabled?(:identity_verification_auto_ban)
-
         ServiceResponse.error(
-          message: message,
+          message: user_banned_error_message,
           reason: :related_to_banned_user
         )
       end

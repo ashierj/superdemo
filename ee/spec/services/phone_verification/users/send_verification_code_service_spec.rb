@@ -134,38 +134,6 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
           expect(response.reason).to eq(:related_to_banned_user)
         end
       end
-
-      context 'when the `identity_verification_auto_ban` feature flag is disabled' do
-        before do
-          stub_feature_flags(identity_verification_auto_ban: false)
-        end
-
-        it 'does not ban the user' do
-          service.execute
-
-          expect(user).not_to be_banned
-        end
-
-        it 'saves the phone number validation record' do
-          service.execute
-
-          record = user.phone_number_validation
-
-          expect(record.international_dial_code).to eq(params[:international_dial_code])
-          expect(record.phone_number).to eq(params[:phone_number])
-        end
-
-        it 'returns an error', :aggregate_failures do
-          response = service.execute
-
-          expect(response).to be_a(ServiceResponse)
-          expect(response).to be_error
-          expect(response.message).to eq(s_(
-            'PhoneVerification|There was a problem with the phone number you entered. ' \
-            'Enter a different phone number and try again.'))
-          expect(response.reason).to eq(:related_to_banned_user)
-        end
-      end
     end
 
     context 'when intelligence score has already been determined' do
