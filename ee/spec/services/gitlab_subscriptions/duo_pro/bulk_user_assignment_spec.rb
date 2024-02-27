@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe DuoPro::BulkUserAssignment, feature_category: :purchase do
+RSpec.describe GitlabSubscriptions::DuoPro::BulkUserAssignment, feature_category: :seat_cost_management do
   describe '#initialize' do
     subject(:bulk_assignment) { described_class.new([], nil) }
 

@@ -33,7 +33,8 @@ RSpec.describe 'duo_pro:bulk_user_assignment', feature_category: :saas_provision
 
       before do
         add_on_purchase = create(:gitlab_subscription_add_on_purchase, :self_managed, quantity: 10, add_on: add_on)
-        allow_next_instance_of(DuoPro::BulkUserAssignment, %w[user1 user2 user3], add_on_purchase) do |instance|
+        allow_next_instance_of(GitlabSubscriptions::DuoPro::BulkUserAssignment, %w[user1 user2 user3],
+          add_on_purchase) do |instance|
           response = { successful_assignments: ['success'], failed_assignments: ['Failed'] }
           allow(instance).to receive(:execute).and_return(response)
         end
