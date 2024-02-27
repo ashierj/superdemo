@@ -4,7 +4,7 @@
   .form-group.gl-mt-5
     = label_tag do
       = _('Mirror branches')
-      .help-block.gl-font-weight-normal
+      .gl-font-weight-normal.form-text.text-muted
         = _('Choose which branches should be mirrored')
     .form-check
       = radio_button_tag :mirror_branch_setting, :all, true, class: 'form-check-input js-mirror-branch-setting'
