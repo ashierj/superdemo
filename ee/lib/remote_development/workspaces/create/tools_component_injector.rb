@@ -136,7 +136,7 @@ module RemoteDevelopment
         def self.tools_components(tools_dir, use_vscode_1_81)
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409775 - choose image based on which editor is passed.
           image_name = 'registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector'
-          image_tag = use_vscode_1_81 ? '7' : '8'
+          image_tag = use_vscode_1_81 ? '7' : '9'
 
           [
             {
