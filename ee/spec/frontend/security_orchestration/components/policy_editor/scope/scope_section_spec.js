@@ -55,6 +55,7 @@ describe('PolicyScope', () => {
         ...propsData,
       },
       provide: {
+        existingPolicy: null,
         namespaceType: NAMESPACE_TYPES.GROUP,
         namespacePath: 'gitlab-org',
         rootNamespacePath: 'gitlab-org-root',
@@ -79,6 +80,7 @@ describe('PolicyScope', () => {
   const findLoadingText = () => wrapper.findByTestId('loading-text');
   const findErrorMessage = () => wrapper.findByTestId('policy-scope-project-error');
   const findErrorMessageText = () => wrapper.findByTestId('policy-scope-project-error-text');
+  const findDefaultScopeSelector = () => wrapper.findByTestId('default-scope-selector');
   const findIcon = () => wrapper.findComponent(GlIcon);
 
   beforeEach(() => {
@@ -87,6 +89,7 @@ describe('PolicyScope', () => {
 
   it('should render framework dropdown in initial state', () => {
     expect(findProjectScopeTypeDropdown().props('selected')).toBe(ALL_PROJECTS_IN_GROUP);
+    expect(findProjectScopeTypeDropdown().props('disabled')).toBe(false);
     expect(findExceptionTypeDropdown().exists()).toBe(true);
     expect(findExceptionTypeDropdown().props('selected')).toBe(WITHOUT_EXCEPTIONS);
 
@@ -208,6 +211,7 @@ describe('PolicyScope', () => {
       });
 
       expect(findComplianceFrameworkDropdown().exists()).toBe(true);
+      expect(findComplianceFrameworkDropdown().props('disabled')).toBe(false);
       expect(findComplianceFrameworkDropdown().props('selectedFrameworkIds')).toEqual([
         'id1',
         'id2',
@@ -286,6 +290,84 @@ describe('PolicyScope', () => {
   });
 
   describe('project level', () => {
+    describe('security policy project', () => {
+      const createComponentForSPP = async ({ provide = {} } = {}) => {
+        createComponent({
+          provide: {
+            namespaceType: NAMESPACE_TYPES.PROJECT,
+            glFeatures: {
+              securityPoliciesPolicyScopeProject: true,
+            },
+            ...provide,
+          },
+          handler: createHandler({
+            projects: [
+              { id: '1', name: 'name1' },
+              { id: '2', name: 'name2 ' },
+            ],
+            namespaces: [
+              { id: '1', name: 'name1' },
+              { id: '2', name: 'name2 ' },
+            ],
+          }),
+        });
+
+        await waitForPromises();
+      };
+
+      describe('new policy', () => {
+        beforeEach(async () => {
+          await createComponentForSPP();
+        });
+
+        it('does not show the default scope option', () => {
+          expect(findDefaultScopeSelector().exists()).toBe(false);
+        });
+
+        it('shows the enabled policy scope selector', () => {
+          expect(findPolicyScopeProjectText().exists()).toBe(false);
+          expect(findProjectScopeTypeDropdown().props('disabled')).toBe(false);
+          expect(findExceptionTypeDropdown().exists()).toBe(true);
+        });
+      });
+
+      describe('existing policy', () => {
+        describe('no existing policy scope', () => {
+          beforeEach(async () => {
+            await createComponentForSPP({ provide: { existingPolicy: { name: 'A' } } });
+          });
+
+          it('displays the default scope and checks it', () => {
+            expect(findDefaultScopeSelector().exists()).toBe(true);
+            expect(findDefaultScopeSelector().attributes('checked')).toBe('true');
+          });
+
+          it('disables the scope dropdowns when default scope is set', () => {
+            expect(findProjectScopeTypeDropdown().exists()).toBe(true);
+            expect(findProjectScopeTypeDropdown().props('disabled')).toBe(true);
+            expect(findExceptionTypeDropdown().exists()).toBe(true);
+            expect(findExceptionTypeDropdown().props('disabled')).toBe(true);
+          });
+
+          it('enables the scope dropdowns when default scope is unchecked', async () => {
+            await findDefaultScopeSelector().vm.$emit('input', false);
+            expect(findProjectScopeTypeDropdown().props('disabled')).toBe(false);
+            expect(findExceptionTypeDropdown().props('disabled')).toBe(false);
+          });
+
+          it('adds the policy scope yaml when default scope is unchecked', async () => {
+            expect(wrapper.emitted('changed')).toEqual(undefined);
+            await findDefaultScopeSelector().vm.$emit('change');
+            expect(wrapper.emitted('changed')).toEqual([[{ projects: { excluding: [] } }]]);
+          });
+
+          it('does not emit default policy scope on load', () => {
+            expect(wrapper.emitted('changed')).toEqual(undefined);
+          });
+        });
+      });
+    });
+
     it('should check linked items on project level', () => {
       createComponent({
         provide: {

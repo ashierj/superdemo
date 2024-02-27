@@ -132,12 +132,12 @@ describe('EditorLayout component', () => {
       async ({ component, emit, findFn, value }) => {
         const vueComponent = findFn();
         expect(vueComponent.exists()).toBe(true);
-        expect(wrapper.emitted('set-policy-property')).toBeUndefined();
+        expect(wrapper.emitted('update-property')).toBeUndefined();
 
         vueComponent.vm.$emit(emit, value);
         await nextTick();
 
-        expect(wrapper.emitted('set-policy-property')).toEqual([[component, value]]);
+        expect(wrapper.emitted('update-property')).toEqual([[component, value]]);
       },
     );
 
@@ -347,7 +347,21 @@ describe('EditorLayout component', () => {
       });
 
       findScopeSection().vm.$emit('changed', payload);
-      expect(wrapper.emitted('set-policy-property')).toEqual([['policy_scope', payload]]);
+      expect(wrapper.emitted('update-property')).toEqual([['policy_scope', payload]]);
+    });
+
+    it('removes a policy scope property', () => {
+      factory({
+        provide: {
+          securityPoliciesPolicyScopeToggleEnabled: true,
+          namespaceType: NAMESPACE_TYPES.GROUP,
+          glFeatures: { securityPoliciesPolicyScope: true },
+        },
+      });
+
+      expect(wrapper.emitted('remove-property')).toEqual(undefined);
+      findScopeSection().vm.$emit('remove');
+      expect(wrapper.emitted('remove-property')).toEqual([['policy_scope']]);
     });
   });
 });

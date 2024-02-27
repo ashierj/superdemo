@@ -189,12 +189,15 @@ export default {
     savePolicy() {
       this.$emit('save-policy', this.selectedEditorMode);
     },
-    setPolicyProperty(property, value) {
+    removeProperty(property) {
+      this.$emit('remove-property', property);
+    },
+    updateProperty(property, value) {
       if (property === 'name') {
         this.showValidation = true;
       }
 
-      this.$emit('set-policy-property', property, value);
+      this.$emit('update-property', property, value);
     },
     updateYaml(manifest) {
       this.$emit('update-yaml', manifest);
@@ -227,7 +230,7 @@ export default {
                 :state="hasValidName || !showValidation"
                 :value="policy.name"
                 required
-                @input="setPolicyProperty('name', $event)"
+                @input="updateProperty('name', $event)"
               />
             </gl-form-group>
 
@@ -240,7 +243,7 @@ export default {
                 id="policyDescription"
                 :disabled="hasParsingError"
                 :value="policy.description"
-                @input="setPolicyProperty('description', $event)"
+                @input="updateProperty('description', $event)"
               />
             </gl-form-group>
 
@@ -249,7 +252,7 @@ export default {
                 :options="$options.STATUS_OPTIONS"
                 :disabled="hasParsingError"
                 :checked="policy.enabled"
-                @change="setPolicyProperty('enabled', $event)"
+                @change="updateProperty('enabled', $event)"
               />
             </gl-form-group>
 
@@ -264,7 +267,8 @@ export default {
 
               <scope-section
                 :policy-scope="policy.policy_scope"
-                @changed="setPolicyProperty('policy_scope', $event)"
+                @changed="updateProperty('policy_scope', $event)"
+                @remove="removeProperty('policy_scope')"
               />
             </dim-disable-container>
 

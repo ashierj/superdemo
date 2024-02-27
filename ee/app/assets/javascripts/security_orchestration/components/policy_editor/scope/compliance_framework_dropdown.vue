@@ -55,6 +55,11 @@ export default {
     };
   },
   props: {
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     fullPath: {
       type: String,
       required: true,
@@ -215,6 +220,7 @@ export default {
         searchable
         :category="listBoxCategory"
         :variant="listBoxVariant"
+        :disabled="disabled"
         :header-text="$options.i18n.complianceFrameworkHeader"
         :loading="loading"
         :no-results-text="$options.i18n.noFrameworksText"

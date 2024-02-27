@@ -248,16 +248,41 @@ describe('EditorComponent', () => {
   });
 
   describe('rule mode updates', () => {
-    it.each`
-      component        | oldValue | newValue
-      ${'name'}        | ${''}    | ${'new policy name'}
-      ${'description'} | ${''}    | ${'new description'}
-      ${'enabled'}     | ${true}  | ${false}
-    `('triggers a change on $component', ({ component, newValue, oldValue }) => {
-      factory();
-      expect(findPolicyEditorLayout().props('policy')[component]).toBe(oldValue);
-      findPolicyEditorLayout().vm.$emit('set-policy-property', component, newValue);
-      expect(findPolicyEditorLayout().props('policy')[component]).toBe(newValue);
+    describe('properties', () => {
+      it.each`
+        component         | oldValue     | newValue
+        ${'name'}         | ${''}        | ${'new policy name'}
+        ${'description'}  | ${''}        | ${'new description'}
+        ${'enabled'}      | ${true}      | ${false}
+        ${'policy_scope'} | ${undefined} | ${{ compliance_frameworks: [{ id: 'id1' }, { id: 'id2' }] }}
+      `('updates the $component property', ({ component, newValue, oldValue }) => {
+        factory();
+        expect(findPolicyEditorLayout().props('policy')[component]).toBe(oldValue);
+        findPolicyEditorLayout().vm.$emit('update-property', component, newValue);
+        expect(findPolicyEditorLayout().props('policy')[component]).toBe(newValue);
+      });
+
+      it('removes the policy scope property', async () => {
+        const oldValue = {
+          policy_scope: { compliance_frameworks: [{ id: 'id1' }, { id: 'id2' }] },
+        };
+
+        const features = {
+          securityPoliciesPolicyScope: true,
+        };
+
+        window.gon = { features };
+
+        factoryWithExistingPolicy({
+          policy: oldValue,
+          glFeatures: features,
+        });
+        expect(findPolicyEditorLayout().props('policy').policy_scope).toEqual(
+          oldValue.policy_scope,
+        );
+        await findPolicyEditorLayout().vm.$emit('remove-property', 'policy_scope');
+        expect(findPolicyEditorLayout().props('policy').policy_scope).toBe(undefined);
+      });
     });
 
     describe('rule section', () => {

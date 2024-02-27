@@ -38,6 +38,11 @@ export default {
     },
   },
   props: {
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     groupFullPath: {
       type: String,
       required: true,
@@ -165,6 +170,7 @@ export default {
     fluid-width
     :category="category"
     :variant="variant"
+    :disabled="disabled"
     :multiple="multiple"
     :loading="loading"
     :header-text="$options.i18n.projectDropdownHeader"
