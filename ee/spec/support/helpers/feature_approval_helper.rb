@@ -21,7 +21,7 @@ module FeatureApprovalHelper
   def expect_avatar(container, users)
     users = Array(users)
 
-    members = container.all('.js-members img.gl-avatar').map do |member|
+    members = container.all('[data-testid="approvals-table-members"] img.gl-avatar').map do |member|
       member['alt']
     end
 

@@ -134,10 +134,14 @@ export default {
             :can-edit="canEdit(rule)"
           />
           <tr v-else :key="index">
-            <td class="js-name" :data-label="__('Rule')">
+            <td data-testid="approvals-table-name" :data-label="__('Rule')">
               <rule-name :name="rule.name" />
             </td>
-            <td class="gl-py-5! js-members" :data-label="__('Approvers')">
+            <td
+              class="gl-py-5!"
+              data-testid="approvals-table-members"
+              :data-label="__('Approvers')"
+            >
               <user-avatar-list
                 :items="rule.eligibleApprovers"
                 :img-size="24"
@@ -147,15 +151,24 @@ export default {
             </td>
             <td
               v-if="settings.allowMultiRule"
-              class="js-branches gl-text-center"
+              class="gl-text-center"
+              data-testid="approvals-table-branches"
               :data-label="__('Target branch')"
             >
               <rule-branches :rule="rule" />
             </td>
-            <td class="gl-py-5! js-approvals-required" :data-label="__('Approvals required')">
+            <td
+              class="gl-py-5!"
+              data-testid="approvals-table-approvals-required"
+              :data-label="__('Approvals required')"
+            >
               <rule-input :rule="rule" />
             </td>
-            <td class="text-nowrap js-controls gl-md-pl-0! gl-md-pr-0!" :data-label="__('Actions')">
+            <td
+              class="text-nowrap gl-md-pl-0! gl-md-pr-0!"
+              data-testid="approvals-table-controls"
+              :data-label="__('Actions')"
+            >
               <rule-controls v-if="canEdit(rule)" :rule="rule" />
             </td>
           </tr>

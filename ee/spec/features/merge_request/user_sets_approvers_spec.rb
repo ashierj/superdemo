@@ -9,7 +9,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
   let(:user) { create(:user) }
   let(:project) { create(:project, :public, :repository) }
-  let(:config_selector) { '.js-approval-rules' }
+  let(:config_selector) { '[data-testid="mr-approval-rules"]' }
   let(:modal_selector) { '#mr-edit-approvals-create-modal' }
 
   before do

@@ -118,7 +118,7 @@ RSpec.describe "User creates a merge request", :js, feature_category: :code_revi
 
     click_button 'Approval rules'
 
-    page.within('.js-approval-rules') do
+    within_testid('mr-approval-rules') do
       expect(page).to have_css("img[alt=\"#{approver.name}\"]")
     end
 
