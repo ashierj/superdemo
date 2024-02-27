@@ -3876,4 +3876,38 @@ RSpec.describe User, feature_category: :system_access do
       it { is_expected.to eq(true) }
     end
   end
+
+  describe '#contributed_epic_groups' do
+    subject { user.contributed_epic_groups }
+
+    let(:user) { create(:user) }
+
+    let!(:group_with_events) { create(:group) }
+    let!(:group_without_events) { create(:group) }
+    let!(:group_aimed_for_deletion) do
+      create(:group).tap { |group| create(:group_deletion_schedule, group: group, deleting_user: user) }
+    end
+
+    before do
+      [group_with_events, group_without_events, group_aimed_for_deletion].each { |group| group.add_maintainer(user) }
+
+      create(
+        :event, :epic_create_event,
+        group: group_with_events,
+        author: user,
+        target: create(:epic, group: group_with_events)
+      )
+
+      create(
+        :event, :epic_create_event,
+        group: group_aimed_for_deletion,
+        author: user,
+        target: create(:epic, group: group_aimed_for_deletion)
+      )
+    end
+
+    it 'returns groups not aimed for deletion where epic events occured' do
+      expect(subject).to contain_exactly(group_with_events)
+    end
+  end
 end

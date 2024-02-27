@@ -671,6 +671,17 @@ module EE
       @skip_enterprise_user_email_change_restrictions
     end
 
+    def contributed_epic_groups
+      contributed_group_ids = ::Event.select(:group_id)
+        .epic_contributions
+        .where(author_id: self)
+        .created_after(Time.current - 1.year)
+        .distinct
+        .reorder(nil)
+
+      ::Group.where(id: contributed_group_ids).not_aimed_for_deletion
+    end
+
     protected
 
     override :password_required?
