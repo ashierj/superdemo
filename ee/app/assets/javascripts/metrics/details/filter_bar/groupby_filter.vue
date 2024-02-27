@@ -7,9 +7,10 @@ export default {
     GlCollapsibleListbox,
   },
   i18n: {
-    groupByPlaceholderMultipleSelect: s__('ObservabilityMetrics|multiple'),
-    groupByPlaceholderAllSelect: s__('ObservabilityMetrics|all'),
-    groupByPlaceholder: s__('ObservabilityMetrics|Select attributes'),
+    noAttributesSelectedLabel: s__('ObservabilityMetrics|Select attributes'),
+    noFunctionSelectedLabel: s__('ObservabilityMetrics|Select function'),
+    selectedAttributesHeader: s__('ObservabilityMetrics|Selected attributes'),
+    availableAttributesHeader: s__('ObservabilityMetrics|Attributes'),
   },
   props: {
     supportedFunctions: {
@@ -22,11 +23,13 @@ export default {
     },
     selectedAttributes: {
       type: Array,
-      required: true,
+      required: false,
+      default: () => [],
     },
     selectedFunction: {
       type: String,
-      required: true,
+      required: false,
+      default: undefined,
     },
   },
   data() {
@@ -39,23 +42,38 @@ export default {
     availableGroupByFunctions() {
       return this.supportedFunctions.map((func) => ({ value: func, text: func }));
     },
-    availableGroupByAttributes() {
-      return this.supportedAttributes.map((d) => ({ value: d, text: d }));
+    attributesItems() {
+      const notSelected = (option) => !this.groupByAttributes.includes(option);
+      return [
+        {
+          text: this.$options.i18n.selectedAttributesHeader,
+          options: this.groupByAttributes.map((attribute) => ({
+            value: attribute,
+            text: attribute,
+          })),
+        },
+        {
+          text: this.$options.i18n.availableAttributesHeader,
+          options: this.supportedAttributes
+            .filter(notSelected)
+            .map((attribute) => ({ value: attribute, text: attribute })),
+        },
+      ].filter((group) => group.options.length);
     },
-    groupByLabel() {
-      return this.groupByAttributes.length > 1 ? this.groupByAttributes.join(', ') : '';
-    },
-    groupByToggleText() {
+    groupByAttributesToggleText() {
       if (this.groupByAttributes.length > 0) {
-        if (this.groupByAttributes.length === 1) {
-          return this.groupByAttributes[0];
+        if (this.groupByAttributes.length > 1) {
+          return `${this.groupByAttributes[0]} +${this.groupByAttributes.length - 1}`;
         }
-        if (this.groupByAttributes.length === this.supportedAttributes.length) {
-          return this.$options.i18n.groupByPlaceholderAllSelect;
-        }
-        return this.$options.i18n.groupByPlaceholderMultipleSelect;
+        return this.groupByAttributes[0];
       }
-      return this.$options.i18n.groupByPlaceholder;
+      return this.$options.i18n.noAttributesSelectedLabel;
+    },
+    groupByFunctionToggleText() {
+      if (this.groupByFunction) {
+        return this.groupByFunction;
+      }
+      return this.$options.i18n.noFunctionSelectedLabel;
     },
   },
   methods: {
@@ -75,17 +93,17 @@ export default {
       v-model="groupByFunction"
       data-testid="group-by-function-dropdown"
       :items="availableGroupByFunctions"
+      :toggle-text="groupByFunctionToggleText"
       @select="onSelect"
     />
     <span>{{ __('by') }}</span>
     <gl-collapsible-listbox
       v-model="groupByAttributes"
       data-testid="group-by-attributes-dropdown"
-      :toggle-text="groupByToggleText"
+      :toggle-text="groupByAttributesToggleText"
       multiple
-      :items="availableGroupByAttributes"
+      :items="attributesItems"
       @select="onSelect"
     />
-    <span data-testid="group-by-label">{{ groupByLabel }}</span>
   </div>
 </template>

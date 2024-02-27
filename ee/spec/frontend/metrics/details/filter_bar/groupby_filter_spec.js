@@ -4,16 +4,17 @@ import GroupByFilter from 'ee/metrics/details/filter_bar/groupby_filter.vue';
 describe('GroupByFilter', () => {
   let wrapper;
 
-  const props = {
-    supportedAttributes: ['attribute_one', 'attributes_two', 'attributes_three'],
+  const defaultProps = {
+    supportedAttributes: ['attribute_one', 'attribute_two', 'attribute_three'],
     supportedFunctions: ['sum', 'avg'],
     selectedAttributes: ['attribute_one'],
     selectedFunction: 'sum',
   };
 
-  const mount = () => {
+  const mount = (props = {}) => {
     wrapper = shallowMountExtended(GroupByFilter, {
       propsData: {
+        ...defaultProps,
         ...props,
       },
     });
@@ -25,23 +26,63 @@ describe('GroupByFilter', () => {
 
   const findGroupByFunctionDropdown = () => wrapper.findByTestId('group-by-function-dropdown');
   const findGroupByAttributesDropdown = () => wrapper.findByTestId('group-by-attributes-dropdown');
-  const findGroupByLabel = () => wrapper.findByTestId('group-by-label');
 
   it('renders the group by function dropdown', () => {
     expect(findGroupByFunctionDropdown().props('items')).toEqual([
       { value: 'sum', text: 'sum' },
       { value: 'avg', text: 'avg' },
     ]);
-    expect(findGroupByFunctionDropdown().props('selected')).toEqual(props.selectedFunction);
+    expect(findGroupByFunctionDropdown().props('selected')).toEqual(defaultProps.selectedFunction);
   });
 
-  it('renders the group by attributes dropdown', () => {
+  it('renders the group by attributes dropdown in groups', () => {
     expect(findGroupByAttributesDropdown().props('items')).toEqual([
-      { value: 'attribute_one', text: 'attribute_one' },
-      { value: 'attributes_two', text: 'attributes_two' },
-      { value: 'attributes_three', text: 'attributes_three' },
+      {
+        text: 'Selected attributes',
+        options: [{ value: 'attribute_one', text: 'attribute_one' }],
+      },
+      {
+        text: 'Attributes',
+        options: [
+          { value: 'attribute_two', text: 'attribute_two' },
+          { value: 'attribute_three', text: 'attribute_three' },
+        ],
+      },
     ]);
-    expect(findGroupByAttributesDropdown().props('selected')).toEqual(props.selectedAttributes);
+    expect(findGroupByAttributesDropdown().props('selected')).toEqual(
+      defaultProps.selectedAttributes,
+    );
+  });
+
+  it('does not show the selected group if nothing is selected', () => {
+    mount({ selectedAttributes: [] });
+
+    expect(findGroupByAttributesDropdown().props('items')).toEqual([
+      {
+        text: 'Attributes',
+        options: [
+          { value: 'attribute_one', text: 'attribute_one' },
+          { value: 'attribute_two', text: 'attribute_two' },
+          { value: 'attribute_three', text: 'attribute_three' },
+        ],
+      },
+    ]);
+    expect(findGroupByAttributesDropdown().props('selected')).toEqual([]);
+  });
+
+  it('does not show the attributes group if everything is selected', () => {
+    mount({ selectedAttributes: [...defaultProps.supportedAttributes] });
+
+    expect(findGroupByAttributesDropdown().props('items')).toEqual([
+      {
+        text: 'Selected attributes',
+        options: [
+          { value: 'attribute_one', text: 'attribute_one' },
+          { value: 'attribute_two', text: 'attribute_two' },
+          { value: 'attribute_three', text: 'attribute_three' },
+        ],
+      },
+    ]);
   });
 
   it('emits groupBy on function change', async () => {
@@ -50,7 +91,7 @@ describe('GroupByFilter', () => {
     expect(wrapper.emitted('groupBy')).toEqual([
       [
         {
-          attributes: props.selectedAttributes,
+          attributes: defaultProps.selectedAttributes,
           func: 'avg',
         },
       ],
@@ -64,13 +105,13 @@ describe('GroupByFilter', () => {
       [
         {
           attributes: ['attribute_two'],
-          func: props.selectedFunction,
+          func: defaultProps.selectedFunction,
         },
       ],
     ]);
   });
 
-  it('updates the group-by toggle text depending on value', async () => {
+  it('updates the attributes dropdown toggle text depending on value', async () => {
     expect(findGroupByAttributesDropdown().props('toggleText')).toBe('attribute_one');
 
     await findGroupByAttributesDropdown().vm.$emit('select', ['attribute_two']);
@@ -79,7 +120,7 @@ describe('GroupByFilter', () => {
 
     await findGroupByAttributesDropdown().vm.$emit('select', ['attribute_two', 'attributes_one']);
 
-    expect(findGroupByAttributesDropdown().props('toggleText')).toBe('multiple');
+    expect(findGroupByAttributesDropdown().props('toggleText')).toBe('attribute_two +1');
 
     await findGroupByAttributesDropdown().vm.$emit('select', [
       'attribute_two',
@@ -87,22 +128,20 @@ describe('GroupByFilter', () => {
       'attributes_threww',
     ]);
 
-    expect(findGroupByAttributesDropdown().props('toggleText')).toBe('all');
+    expect(findGroupByAttributesDropdown().props('toggleText')).toBe('attribute_two +2');
 
     await findGroupByAttributesDropdown().vm.$emit('select', []);
 
     expect(findGroupByAttributesDropdown().props('toggleText')).toBe('Select attributes');
   });
 
-  it('updates the group-by label depending on value', async () => {
-    expect(findGroupByLabel().text()).toBe('');
+  it('updates the function dropdown text depending on value', async () => {
+    mount({ selectedFunction: undefined });
 
-    await findGroupByAttributesDropdown().vm.$emit('select', ['attribute_two']);
+    expect(findGroupByFunctionDropdown().props('toggleText')).toBe('Select function');
 
-    expect(findGroupByLabel().text()).toBe('');
+    await findGroupByFunctionDropdown().vm.$emit('select', 'avg');
 
-    await findGroupByAttributesDropdown().vm.$emit('select', ['attribute_two', 'attributes_one']);
-
-    expect(findGroupByLabel().text()).toBe('attribute_two, attributes_one');
+    expect(findGroupByFunctionDropdown().props('toggleText')).toBe('avg');
   });
 });

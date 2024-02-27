@@ -18,7 +18,7 @@ describe('MetricsFilteredSearch', () => {
     attribute_keys: ['attribute_one', 'attribute_two'],
     supported_aggregations: ['1m', '1h'],
     supported_functions: ['avg', 'sum', 'p50'],
-    default_group_by_attributes: ['host.name'],
+    default_group_by_attributes: ['attribute_one'],
     default_group_by_function: 'avg',
   };
 
@@ -102,7 +102,7 @@ describe('MetricsFilteredSearch', () => {
   });
 
   describe('group-by filter', () => {
-    it('renders the group-by filter with defaults from search metadata', () => {
+    it('renders the group-by filter with list of supported values from search metadata', () => {
       const groupBy = findGroupByFilter();
       expect(groupBy.exists()).toBe(true);
       expect(groupBy.props('supportedAttributes')).toEqual(defaultSearchMetadata.attribute_keys);
@@ -112,35 +112,59 @@ describe('MetricsFilteredSearch', () => {
     });
 
     it('sets selectedFunction to searchMetadata.default_group_by_function', () => {
-      expect(findGroupByFilter().props('selectedFunction')).toBe(
+      expect(findGroupByFilter().props('selectedFunction')).toEqual(
         defaultSearchMetadata.default_group_by_function,
       );
     });
 
+    it('ignores invalid default_group_by_function', () => {
+      mount({
+        searchMetadata: {
+          ...defaultSearchMetadata,
+          default_group_by_function: 'not-valid',
+        },
+      });
+
+      expect(findGroupByFilter().props('selectedFunction')).toBeUndefined();
+    });
+
+    it('handles missing default_group_by_function', () => {
+      mount({
+        searchMetadata: {
+          ...defaultSearchMetadata,
+          default_group_by_function: undefined,
+        },
+      });
+
+      expect(findGroupByFilter().props('selectedFunction')).toBeUndefined();
+    });
+
     it('sets selectedAttributes to searchMetadata.default_group_by_attributes', () => {
-      expect(findGroupByFilter().props('selectedAttributes')).toBe(
+      expect(findGroupByFilter().props('selectedAttributes')).toEqual(
         defaultSearchMetadata.default_group_by_attributes,
       );
     });
 
-    it('sets GroupByFilter selectedFunction prop to groupByFilter.func', () => {
+    it('ignores invalid default_group_by_attributes', () => {
       mount({
-        groupByFilter: {
-          func: 'sum',
+        searchMetadata: {
+          ...defaultSearchMetadata,
+          default_group_by_attributes: ['', ' ', 'not-valid'],
         },
       });
 
-      expect(findGroupByFilter().props('selectedFunction')).toBe('sum');
+      expect(findGroupByFilter().props('selectedAttributes')).toEqual([]);
     });
 
-    it('sets GroupByFilter selectedAttributes prop to groupByFilter.attributes', () => {
+    it('handles missing default_group_by_attributes', () => {
       mount({
-        groupByFilter: {
-          attributes: ['attribute_one'],
+        searchMetadata: {
+          ...defaultSearchMetadata,
+          default_group_by_attributes: undefined,
         },
       });
 
-      expect(findGroupByFilter().props('selectedAttributes')).toEqual(['attribute_one']);
+      expect(findGroupByFilter().props('selectedAttributes')).toEqual([]);
     });
 
     it(`handles default_group_by_attributes=['*']`, () => {
@@ -154,6 +178,26 @@ describe('MetricsFilteredSearch', () => {
       expect(findGroupByFilter().props('selectedAttributes')).toEqual([
         ...defaultSearchMetadata.attribute_keys,
       ]);
+    });
+
+    it('sets GroupByFilter selectedFunction prop to groupByFilter.func', () => {
+      mount({
+        groupByFilter: {
+          func: 'sum',
+        },
+      });
+
+      expect(findGroupByFilter().props('selectedFunction')).toEqual('sum');
+    });
+
+    it('sets GroupByFilter selectedAttributes prop to groupByFilter.attributes', () => {
+      mount({
+        groupByFilter: {
+          attributes: ['attribute_one'],
+        },
+      });
+
+      expect(findGroupByFilter().props('selectedAttributes')).toEqual(['attribute_one']);
     });
   });
 
@@ -251,7 +295,7 @@ describe('MetricsFilteredSearch', () => {
         },
       ],
     ]);
-    expect(findGroupByFilter().props('selectedFunction')).toBe(groupBy.func);
+    expect(findGroupByFilter().props('selectedFunction')).toEqual(groupBy.func);
     expect(findGroupByFilter().props('selectedAttributes')).toEqual(groupBy.attributes);
   });
 });

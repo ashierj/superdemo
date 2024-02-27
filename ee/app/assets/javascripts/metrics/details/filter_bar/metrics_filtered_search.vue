@@ -8,6 +8,23 @@ import { OPERATORS_LIKE_NOT } from '~/observability/constants';
 import DateRangeFilter from './date_range_filter.vue';
 import GroupByFilter from './groupby_filter.vue';
 
+function defaultGroupByFunction(searchMetadata) {
+  let defaultFunction;
+  if (searchMetadata.supported_functions.includes(searchMetadata.default_group_by_function)) {
+    defaultFunction = searchMetadata.default_group_by_function;
+  }
+  return defaultFunction;
+}
+function defaultGroupByAttributes(searchMetadata) {
+  let defaultAttributes = (searchMetadata.default_group_by_attributes ?? []).filter(
+    (attribute) => attribute === '*' || searchMetadata.attribute_keys.includes(attribute),
+  );
+  if (defaultAttributes.length === 1 && defaultAttributes[0] === '*') {
+    defaultAttributes = [...(searchMetadata.attribute_keys ?? [])];
+  }
+  return defaultAttributes;
+}
+
 export default {
   components: {
     FilteredSearch,
@@ -48,17 +65,13 @@ export default {
     },
   },
   data() {
-    let defaultGroupByAttributes = this.searchMetadata.default_group_by_attributes ?? [];
-    if (defaultGroupByAttributes.length === 1 && defaultGroupByAttributes[0] === '*') {
-      defaultGroupByAttributes = [...(this.searchMetadata.attribute_keys ?? [])];
-    }
     return {
       shouldShowDateRangePicker: false,
       filters: this.attributeFilters,
       dateRange: this.dateRangeFilter,
       groupBy: {
-        attributes: this.groupByFilter?.attributes ?? defaultGroupByAttributes,
-        func: this.groupByFilter?.func ?? this.searchMetadata.default_group_by_function,
+        attributes: this.groupByFilter?.attributes ?? defaultGroupByAttributes(this.searchMetadata),
+        func: this.groupByFilter?.func ?? defaultGroupByFunction(this.searchMetadata),
       },
     };
   },
