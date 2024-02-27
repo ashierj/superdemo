@@ -11,11 +11,22 @@ export default {
   i18n: {
     xAxisTitle: s__('ObservabilityMetrics|Date'),
     yAxisTitle: s__('ObservabilityMetrics|Value'),
+    cancelledText: s__('ObservabilityMetrics|Metrics search has been cancelled.'),
   },
   props: {
     metricData: {
       type: Array,
       required: true,
+    },
+    loading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    cancelled: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -89,34 +100,50 @@ export default {
 </script>
 
 <template>
-  <gl-line-chart
-    class="gl-mb-7"
-    :option="chartOption"
-    :data="chartData"
-    responsive
-    :format-tooltip-text="formatTooltipText"
-  >
-    <template #tooltip-title>
-      <div data-testid="metric-tooltip-title">{{ tooltipTitle }}</div>
-    </template>
+  <div class="gl-relative">
+    <gl-line-chart
+      disabled
+      :class="['gl-mb-7', { 'gl-opacity-3': loading || cancelled }]"
+      :option="chartOption"
+      :data="chartData"
+      responsive
+      :format-tooltip-text="formatTooltipText"
+    >
+      <template #tooltip-title>
+        <div data-testid="metric-tooltip-title">{{ tooltipTitle }}</div>
+      </template>
 
-    <template #tooltip-content>
-      <div
-        v-for="(metric, index) in tooltipContent"
-        :key="`${metric.seriesId}_${index}`"
-        data-testid="metric-tooltip-content"
-        class="gl-display-flex gl-justify-content-space-between gl-font-sm gl-mb-1"
-      >
-        <gl-chart-series-label :color="metric.color" class="gl-line-height-normal gl-mr-7">
-          <div v-for="attr in metric.attributes" :key="attr.key + attr.value">
-            <span class="gl-font-weight-bold">{{ attr.key }}: </span>{{ attr.value }}
+      <template #tooltip-content>
+        <div
+          v-for="(metric, index) in tooltipContent"
+          :key="`${metric.seriesId}_${index}`"
+          data-testid="metric-tooltip-content"
+          class="gl-display-flex gl-justify-content-space-between gl-font-sm gl-mb-1"
+        >
+          <gl-chart-series-label :color="metric.color" class="gl-line-height-normal gl-mr-7">
+            <div v-for="attr in metric.attributes" :key="attr.key + attr.value">
+              <span class="gl-font-weight-bold">{{ attr.key }}: </span>{{ attr.value }}
+            </div>
+          </gl-chart-series-label>
+
+          <div data-testid="metric-tooltip-value" class="gl-font-weight-bold">
+            {{ metric.value }}
           </div>
-        </gl-chart-series-label>
-
-        <div data-testid="metric-tooltip-value" class="gl-font-weight-bold">
-          {{ metric.value }}
         </div>
-      </div>
-    </template>
-  </gl-line-chart>
+      </template>
+    </gl-line-chart>
+
+    <div
+      v-if="cancelled"
+      class="gl-absolute gl-right-0 gl-left-0 gl-top-0 gl-bottom-0 gl-text-center gl-font-weight-bold gl-font-lg gl-py-13"
+    >
+      <span>{{ $options.i18n.cancelledText }}</span>
+    </div>
+  </div>
 </template>
+
+<style>
+.chart-cancelled-text {
+  padding-top: 30%;
+}
+</style>

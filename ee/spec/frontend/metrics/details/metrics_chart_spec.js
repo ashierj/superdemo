@@ -31,10 +31,12 @@ describe('MetricsChart', () => {
 
   let wrapper;
 
-  const mountComponent = (data = mockData) => {
+  const mountComponent = ({ data = mockData, loading = false, cancelled = false } = {}) => {
     wrapper = shallowMountExtended(MetricsChart, {
       propsData: {
         metricData: data,
+        loading,
+        cancelled,
       },
     });
   };
@@ -103,7 +105,7 @@ describe('MetricsChart', () => {
 
     it('does not add any unit to the y axis label if not in the data', () => {
       const data = [{ ...mockData[0], unit: '' }];
-      mountComponent(data);
+      mountComponent({ data });
       expect(findChart().props('option').yAxis.name).toBe('Value');
     });
   });
@@ -179,6 +181,52 @@ describe('MetricsChart', () => {
           attributeContainers.wrappers.forEach((c, j) => {
             expect(c.text()).toBe(expectedLabels[i][j]);
           });
+        });
+      });
+    });
+
+    describe('loading', () => {
+      it('changes the opacity when loading', () => {
+        mountComponent({ loading: true });
+
+        expect(findChart().classes()).toContain('gl-opacity-3');
+      });
+
+      it('does not change the opacity when not loading', () => {
+        mountComponent({ loading: false });
+
+        expect(findChart().classes()).not.toContain('gl-opacity-3');
+      });
+    });
+
+    describe('cancelled', () => {
+      const cancelledText = 'Metrics search has been cancelled.';
+
+      describe('when cancelled=true', () => {
+        beforeEach(() => {
+          mountComponent({ cancelled: true });
+        });
+
+        it('overrides the opacity', () => {
+          expect(findChart().classes()).toContain('gl-opacity-3');
+        });
+
+        it('shows the cancelled messaged', () => {
+          expect(wrapper.text()).toContain(cancelledText);
+        });
+      });
+
+      describe('when cancelled=false', () => {
+        beforeEach(() => {
+          mountComponent({ cancelled: false });
+        });
+
+        it('overrides the opacity', () => {
+          expect(findChart().classes()).not.toContain('gl-opacity-3');
+        });
+
+        it('shows the cancelled messaged', () => {
+          expect(wrapper.text()).not.toContain(cancelledText);
         });
       });
     });

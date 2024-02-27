@@ -43,8 +43,15 @@ describe('MetricsDetails', () => {
     metricsIndexUrl: METRICS_INDEX_URL,
   };
 
+  const showToast = jest.fn();
+
   const mountComponent = async (props = {}) => {
     wrapper = shallowMountExtended(MetricsDetails, {
+      mocks: {
+        $toast: {
+          show: showToast,
+        },
+      },
       propsData: {
         ...defaultProps,
         ...props,
@@ -68,6 +75,8 @@ describe('MetricsDetails', () => {
     expect(findLoadingIcon().exists()).toBe(true);
     expect(findMetricDetails().exists()).toBe(false);
     expect(observabilityClientMock.isObservabilityEnabled).toHaveBeenCalled();
+    expect(observabilityClientMock.fetchMetric).not.toHaveBeenCalled();
+    expect(observabilityClientMock.fetchMetricSearchMetadata).not.toHaveBeenCalled();
   });
 
   describe('when observability is enabled', () => {
@@ -108,6 +117,13 @@ describe('MetricsDetails', () => {
       observabilityClientMock.fetchMetricSearchMetadata.mockResolvedValue(mockSearchMetadata);
 
       await mountComponent();
+    });
+
+    it('renders the loading indicator while fetching data', () => {
+      mountComponent();
+
+      expect(findLoadingIcon().exists()).toBe(true);
+      expect(findMetricDetails().exists()).toBe(false);
     });
 
     it('fetches data', () => {
@@ -258,9 +274,86 @@ describe('MetricsDetails', () => {
         });
       });
 
+      describe('on search cancel', () => {
+        let abortSpy;
+        beforeEach(() => {
+          abortSpy = jest.spyOn(AbortController.prototype, 'abort');
+        });
+        it('does not abort the api call when canceled if a search was not initiated', () => {
+          findFilteredSearch().vm.$emit('cancel');
+
+          expect(abortSpy).not.toHaveBeenCalled();
+        });
+
+        it('aborts the api call when canceled if a search was initiated', () => {
+          findFilteredSearch().vm.$emit('submit', {
+            attributes: [],
+          });
+
+          expect(abortSpy).not.toHaveBeenCalled();
+
+          findFilteredSearch().vm.$emit('cancel');
+
+          expect(abortSpy).toHaveBeenCalled();
+        });
+
+        describe('when cancelled', () => {
+          beforeEach(async () => {
+            axios.isCancel = jest.fn().mockReturnValueOnce(true);
+            observabilityClientMock.fetchMetric.mockRejectedValueOnce('cancelled');
+            findFilteredSearch().vm.$emit('submit', {
+              attributes: [],
+            });
+            await waitForPromises();
+          });
+
+          it('renders a toast and message', () => {
+            expect(showToast).toHaveBeenCalledWith('Metrics search has been cancelled.', {
+              variant: 'danger',
+            });
+          });
+
+          it('sets cancelled prop on the chart component', () => {
+            expect(findChart().props('cancelled')).toBe(true);
+          });
+
+          it('reset cancelled prop after issuing a new search', async () => {
+            observabilityClientMock.fetchMetric.mockResolvedValue(mockMetricData);
+            findFilteredSearch().vm.$emit('submit', {
+              attributes: [],
+            });
+            await waitForPromises();
+
+            expect(findChart().props('cancelled')).toBe(false);
+          });
+        });
+      });
+
+      describe('while searching', () => {
+        beforeEach(() => {
+          observabilityClientMock.fetchMetric.mockReturnValue(new Promise(() => {}));
+
+          findFilteredSearch().vm.$emit('submit', {
+            attributes: [],
+          });
+        });
+
+        it('does not show the loading icon', () => {
+          expect(findLoadingIcon().exists()).toBe(false);
+        });
+
+        it('sets the loading prop on the filtered-search component', () => {
+          expect(findFilteredSearch().props('loading')).toBe(true);
+        });
+
+        it('sets the loading prop on the chart component', () => {
+          expect(findChart().props('loading')).toBe(true);
+        });
+      });
+
       describe('on search submit', () => {
         const setFilters = async (attributes, dateRange, groupBy) => {
-          findFilteredSearch().vm.$emit('filter', {
+          findFilteredSearch().vm.$emit('submit', {
             attributes: prepareTokens(attributes),
             dateRange,
             groupBy,
@@ -341,9 +434,11 @@ describe('MetricsDetails', () => {
     });
 
     it('renders the details chart', () => {
-      const chart = findMetricDetails().findComponent(MetricsChart);
+      const chart = findChart();
       expect(chart.exists()).toBe(true);
       expect(chart.props('metricData')).toEqual(mockMetricData);
+      expect(chart.props('cancelled')).toBe(false);
+      expect(chart.props('loading')).toBe(false);
     });
 
     it('renders the details header', () => {
@@ -438,15 +533,6 @@ describe('MetricsDetails', () => {
       expect(createAlert).toHaveBeenCalledWith({
         message: 'Error: Failed to load metrics details. Try reloading the page.',
       });
-    });
-
-    it('does not render an alert if the api call fails because cancelled', async () => {
-      observabilityClientMock.fetchMetric.mockRejectedValueOnce('cancelled');
-      axios.isCancel = jest.fn().mockReturnValue(true);
-
-      await mountComponent();
-
-      expect(createAlert).not.toHaveBeenCalled();
     });
   });
 });

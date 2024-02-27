@@ -1,4 +1,4 @@
-import { GlFilteredSearchToken } from '@gitlab/ui';
+import { GlFilteredSearchToken, GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import MetricsFilteredSearch from 'ee/metrics/details/filter_bar/metrics_filtered_search.vue';
 import DateRangeFilter from 'ee/metrics/details/filter_bar/date_range_filter.vue';
@@ -38,6 +38,7 @@ describe('MetricsFilteredSearch', () => {
   const findFilteredSearch = () => wrapper.findComponent(FilteredSearch);
   const findDateRangeFilter = () => wrapper.findComponent(DateRangeFilter);
   const findGroupByFilter = () => wrapper.findComponent(GroupByFilter);
+  const findSubmitButton = () => wrapper.findComponent(GlButton);
 
   it('renders the filtered search component with tokens based on attributes', () => {
     const filteredSeach = findFilteredSearch();
@@ -72,6 +73,32 @@ describe('MetricsFilteredSearch', () => {
     const dateRangesDropdown = findDateRangeFilter();
     expect(dateRangesDropdown.exists()).toBe(true);
     expect(dateRangesDropdown.props('selected')).toEqual(date);
+  });
+
+  it('renders a submit button', () => {
+    mount();
+
+    const button = findSubmitButton();
+    expect(button.props('variant')).toBe('confirm');
+    expect(button.text()).toBe('Search');
+    expect(button.findComponent(GlLoadingIcon).exists()).toBe(false);
+  });
+
+  describe('cancel button', () => {
+    beforeEach(() => {
+      mount({ loading: true });
+    });
+    it('renders a cancel button when loading', () => {
+      const button = findSubmitButton();
+      expect(button.props('variant')).toBe('danger');
+      expect(button.text()).toBe('Cancel');
+      expect(button.findComponent(GlLoadingIcon).exists()).toBe(true);
+    });
+
+    it('emits cancel when clicked', () => {
+      findSubmitButton().vm.$emit('click');
+      expect(wrapper.emitted('cancel')).toHaveLength(1);
+    });
   });
 
   describe('group-by filter', () => {
@@ -130,12 +157,16 @@ describe('MetricsFilteredSearch', () => {
     });
   });
 
-  it('emits the filter event when the attributes filter is changed', async () => {
+  it('emits the submit event when the attributes filter is changed and submit button is clicked', async () => {
     const filters = [{ attribute: 'namespace', operator: 'is not', value: 'test' }];
 
     await findFilteredSearch().vm.$emit('onFilter', filters);
 
-    expect(wrapper.emitted('filter')).toEqual([
+    expect(wrapper.emitted('submit')).toBeUndefined();
+
+    await findSubmitButton().vm.$emit('click');
+
+    expect(wrapper.emitted('submit')).toEqual([
       [
         {
           attributes: [{ attribute: 'namespace', operator: 'is not', value: 'test' }],
@@ -146,9 +177,10 @@ describe('MetricsFilteredSearch', () => {
         },
       ],
     ]);
+    expect(findFilteredSearch().props('initialFilterValue')).toEqual(filters);
   });
 
-  it('emits the filter event when the date range is changed and the filtered-search onFilter is emitted', async () => {
+  it('emits the filter event when the date range is changed and submit button is clicked', async () => {
     const dateRange = {
       value: '24h',
       startDate: new Date('2022-01-01'),
@@ -157,11 +189,11 @@ describe('MetricsFilteredSearch', () => {
 
     await findDateRangeFilter().vm.$emit('onDateRangeSelected', dateRange);
 
-    expect(wrapper.emitted('filter')).toBeUndefined();
+    expect(wrapper.emitted('submit')).toBeUndefined();
 
-    await findFilteredSearch().vm.$emit('onFilter', []);
+    await findSubmitButton().vm.$emit('click');
 
-    expect(wrapper.emitted('filter')).toEqual([
+    expect(wrapper.emitted('submit')).toEqual([
       [
         {
           attributes: [],
@@ -176,7 +208,7 @@ describe('MetricsFilteredSearch', () => {
     expect(findDateRangeFilter().props('selected')).toEqual(dateRange);
   });
 
-  it('emits the filter event with default group-by when onFilter is emitted', async () => {
+  it('emits the submit event with default group-by when submit button is clicked', async () => {
     mount(
       {},
       {
@@ -184,9 +216,9 @@ describe('MetricsFilteredSearch', () => {
         default_group_by_attributes: ['attribute_one', 'attribute_two'],
       },
     );
-    await findFilteredSearch().vm.$emit('onFilter', []);
+    await findSubmitButton().vm.$emit('click');
 
-    expect(wrapper.emitted('filter')).toEqual([
+    expect(wrapper.emitted('submit')).toEqual([
       [
         {
           attributes: [],
@@ -199,7 +231,7 @@ describe('MetricsFilteredSearch', () => {
     ]);
   });
 
-  it('emits the filter event when the group-by is changed and the filtered-search onFilter is emitted', async () => {
+  it('emits the submit event when the group-by is changed and submit button is clicked', async () => {
     const groupBy = {
       attributes: ['attribute_one'],
       func: 'sum',
@@ -207,11 +239,11 @@ describe('MetricsFilteredSearch', () => {
 
     await findGroupByFilter().vm.$emit('groupBy', groupBy);
 
-    expect(wrapper.emitted('filter')).toBeUndefined();
+    expect(wrapper.emitted('submit')).toBeUndefined();
 
-    await findFilteredSearch().vm.$emit('onFilter', []);
+    await findSubmitButton().vm.$emit('click');
 
-    expect(wrapper.emitted('filter')).toEqual([
+    expect(wrapper.emitted('submit')).toEqual([
       [
         {
           attributes: [],
