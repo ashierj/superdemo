@@ -6,6 +6,7 @@ import { DOCS_URL_IN_EE_DIR } from 'jh_else_ce/lib/utils/url_utility';
 const PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR = 'PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR';
 const PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITTERS = 'PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITTERS';
 const AT_LEAST_TWO_APPROVALS = 'AT_LEAST_TWO_APPROVALS';
+const AT_LEAST_ONE_NON_AUTHOR_APPROVAL = 'AT_LEAST_ONE_NON_AUTHOR_APPROVAL';
 
 export const FAIL_STATUS = 'FAIL';
 export const NO_STANDARDS_ADHERENCES_FOUND = s__(
@@ -23,6 +24,9 @@ export const STANDARDS_ADHERENCE_CHECK_LABELS = {
     'ComplianceStandardsAdherence|Prevent committers as approvers',
   ),
   [AT_LEAST_TWO_APPROVALS]: s__('ComplianceStandardsAdherence|At least two approvals'),
+  [AT_LEAST_ONE_NON_AUTHOR_APPROVAL]: s__(
+    'ComplianceStandardsAdherence|At least one non-author approval',
+  ),
 };
 
 export const STANDARDS_ADHERENCE_CHECK_DESCRIPTIONS = {
@@ -35,6 +39,9 @@ export const STANDARDS_ADHERENCE_CHECK_DESCRIPTIONS = {
   [AT_LEAST_TWO_APPROVALS]: s__(
     'ComplianceStandardsAdherence|Have a valid rule that prevents merge requests with less than two approvals from being merged',
   ),
+  [AT_LEAST_ONE_NON_AUTHOR_APPROVAL]: s__(
+    'ComplianceStandardsAdherence|Have a valid rule that prevents merge requests with less than one non-author approval from being merged',
+  ),
 };
 
 export const STANDARDS_ADHERENCE_CHECK_FAILURE_REASONS = {
@@ -46,6 +53,9 @@ export const STANDARDS_ADHERENCE_CHECK_FAILURE_REASONS = {
   ),
   [AT_LEAST_TWO_APPROVALS]: s__(
     'ComplianceStandardsAdherence|No rule is configured to require two approvals.',
+  ),
+  [AT_LEAST_ONE_NON_AUTHOR_APPROVAL]: s__(
+    'ComplianceStandardsAdherence|No rule is configured to require at least one non-author approval.',
   ),
 };
 
@@ -78,12 +88,15 @@ export const STANDARDS_ADHERENCE_CHECK_MR_FIX_LEARN_MORE_DOCS_LINKS = {
   [PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR]: `${DOCS_URL_IN_EE_DIR}/user/compliance/compliance_center/#prevent-authors-as-approvers`,
   [PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITTERS]: `${DOCS_URL_IN_EE_DIR}/user/compliance/compliance_center/#prevent-committers-as-approvers`,
   [AT_LEAST_TWO_APPROVALS]: `${DOCS_URL_IN_EE_DIR}/user/compliance/compliance_center/#at-least-two-approvals`,
+  [AT_LEAST_ONE_NON_AUTHOR_APPROVAL]: `${DOCS_URL_IN_EE_DIR}/user/compliance/compliance_center/#at-least-one-non-author-approval`,
 };
 
 const GITLAB = 'GITLAB';
+const SOC2 = __('SOC2');
 
 export const STANDARDS_ADHERENCE_STANARD_LABELS = {
   [GITLAB]: __('GitLab'),
+  [SOC2]: __('SOC 2'),
 };
 
 export const ALLOWED_FILTER_TOKENS = {
@@ -91,6 +104,7 @@ export const ALLOWED_FILTER_TOKENS = {
     PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR,
     PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITTERS,
     AT_LEAST_TWO_APPROVALS,
+    AT_LEAST_ONE_NON_AUTHOR_APPROVAL,
   ],
-  standards: [GITLAB],
+  standards: [GITLAB, SOC2],
 };

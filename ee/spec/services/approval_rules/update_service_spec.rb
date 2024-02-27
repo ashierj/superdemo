@@ -145,9 +145,20 @@ RSpec.describe ApprovalRules::UpdateService, feature_category: :code_review_work
     end
   end
 
-  shared_examples_for 'invokes AtLeastTwoApprovalsWorker' do
-    it 'invokes ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker' do |_invokes|
+  shared_examples_for 'invokes compliance standards adherence workers' do
+    it 'invokes ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker' do
       expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
+        .to receive(:perform_async).with({ 'project_id' => approval_rule.project.id, 'user_id' => user.id })
+                                   .and_call_original
+
+      described_class.new(approval_rule, user, {
+        name: 'security',
+        approvals_required: 1
+      }).execute
+    end
+
+    it 'invokes ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalWorker' do
+      expect(::ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalWorker)
         .to receive(:perform_async).with({ 'project_id' => approval_rule.project.id, 'user_id' => user.id })
                                    .and_call_original
 
@@ -163,7 +174,7 @@ RSpec.describe ApprovalRules::UpdateService, feature_category: :code_review_work
 
     it_behaves_like "editable"
 
-    it_behaves_like "invokes AtLeastTwoApprovalsWorker"
+    it_behaves_like "invokes compliance standards adherence workers"
 
     context 'when protected_branch_ids param is present' do
       let(:protected_branch) { create(:protected_branch, project: target) }
@@ -355,7 +366,7 @@ RSpec.describe ApprovalRules::UpdateService, feature_category: :code_review_work
     let(:target) { create(:merge_request, source_project: project, target_project: project) }
 
     it_behaves_like "editable"
-    it_behaves_like "invokes AtLeastTwoApprovalsWorker"
+    it_behaves_like "invokes compliance standards adherence workers"
   end
 
   context 'when target is a group' do
@@ -372,6 +383,15 @@ RSpec.describe ApprovalRules::UpdateService, feature_category: :code_review_work
 
     it 'does not invoke ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker' do
       expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker).not_to receive(:perform_async)
+
+      described_class.new(approval_rule, user, {
+        name: 'security',
+        approvals_required: 1
+      }).execute
+    end
+
+    it 'does not invoke ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalWorker' do
+      expect(::ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalWorker).not_to receive(:perform_async)
 
       described_class.new(approval_rule, user, {
         name: 'security',

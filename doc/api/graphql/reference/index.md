@@ -30915,6 +30915,7 @@ Name of the check for the compliance standard.
 
 | Value | Description |
 | ----- | ----------- |
+| <a id="compliancestandardsadherencechecknameat_least_one_non_author_approval"></a>`AT_LEAST_ONE_NON_AUTHOR_APPROVAL` | At least one non author approval. |
 | <a id="compliancestandardsadherencechecknameat_least_two_approvals"></a>`AT_LEAST_TWO_APPROVALS` | At least two approvals. |
 | <a id="compliancestandardsadherencechecknameprevent_approval_by_merge_request_author"></a>`PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR` | Prevent approval by merge request author. |
 | <a id="compliancestandardsadherencechecknameprevent_approval_by_merge_request_committers"></a>`PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITTERS` | Prevent approval by merge request committers. |
@@ -30926,6 +30927,7 @@ Name of the compliance standard.
 | Value | Description |
 | ----- | ----------- |
 | <a id="compliancestandardsadherencestandardgitlab"></a>`GITLAB` | Gitlab. |
+| <a id="compliancestandardsadherencestandardsoc2"></a>`SOC2` | Soc2. |
 
 ### `ComplianceStandardsAdherenceStatus`
 

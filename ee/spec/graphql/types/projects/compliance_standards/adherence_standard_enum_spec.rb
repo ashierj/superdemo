@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['ComplianceStandardsAdherenceStandard'], feature_category: :compliance_management do
   let(:fields) do
-    %w[GITLAB]
+    %w[GITLAB SOC2]
   end
 
   specify { expect(described_class.graphql_name).to eq('ComplianceStandardsAdherenceStandard') }

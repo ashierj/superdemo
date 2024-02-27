@@ -30,6 +30,9 @@ module ApprovalRules
       unless group_rule?
         ::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker
           .perform_async({ 'project_id' => rule.project.id, 'user_id' => current_user&.id })
+
+        ::ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalWorker
+          .perform_async({ 'project_id' => rule.project.id, 'user_id' => current_user&.id })
       end
 
       super

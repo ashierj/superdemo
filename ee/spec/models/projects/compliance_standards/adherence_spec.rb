@@ -81,6 +81,11 @@ RSpec.describe Projects::ComplianceStandards::Adherence, type: :model, feature_c
 
     let_it_be(:adherence_3) { create(:compliance_standards_adherence, project: subgroup_project) }
 
+    let_it_be(:adherence_4) do
+      create(:compliance_standards_adherence, standard: :soc2, project: subgroup_project,
+        check_name: :at_least_one_non_author_approval)
+    end
+
     describe '.for_projects' do
       it 'returns the adherence records for the specified projects', :aggregate_failures do
         expect(described_class.for_projects(project_1.id)).to contain_exactly(adherence_1)
@@ -111,7 +116,7 @@ RSpec.describe Projects::ComplianceStandards::Adherence, type: :model, feature_c
     describe '.for_group_and_its_subgroups' do
       it 'returns the adherence records for the specified group and its subgroups', :aggregate_failures do
         expect(described_class.for_group_and_its_subgroups(project_1.group))
-          .to contain_exactly(adherence_1, adherence_3)
+          .to contain_exactly(adherence_1, adherence_3, adherence_4)
 
         expect(described_class.for_group_and_its_subgroups(project_2.group)).to contain_exactly(adherence_2)
       end

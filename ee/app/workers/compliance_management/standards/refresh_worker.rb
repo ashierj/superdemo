@@ -14,7 +14,8 @@ module ComplianceManagement
       STANDARDS_ADHERENCE_CHECK_WORKERS = [
         ::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorGroupWorker,
         ::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterGroupWorker,
-        ::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsGroupWorker
+        ::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsGroupWorker,
+        ::ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalGroupWorker
       ].freeze
 
       TOTAL_STANDARDS_ADHERENCE_CHECKS = STANDARDS_ADHERENCE_CHECK_WORKERS.count
