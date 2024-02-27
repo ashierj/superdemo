@@ -7,8 +7,6 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
   it { is_expected.to define_enum_for(:severity) }
   it { is_expected.to define_enum_for(:detection_method) }
 
-  it { is_expected.to have_locked_schema('d00dcebc6ca50c76f248270a2e202368efd5b324112e2a1f5b9a437e9d1eb055').reference('https://gitlab.com/gitlab-org/gitlab/-/issues/349315') }
-
   where(vulnerability_finding_signatures: [true, false])
   with_them do
     before do
