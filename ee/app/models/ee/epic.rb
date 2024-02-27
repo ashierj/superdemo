@@ -92,6 +92,7 @@ module EE
       alias_attribute :parent_ids, :parent_id
       alias_attribute :issuing_parent_id, :group_id
       alias_method :issuing_parent, :group
+      alias_method :namespace, :group
 
       scope :in_parents, -> (parent_ids) { where(parent_id: parent_ids) }
       scope :inc_group, -> { includes(:group) }
