@@ -16,7 +16,8 @@ const TEST_RULES = createProjectRules();
 
 Vue.use(Vuex);
 
-const findCell = (tr, name) => tr.find(`td.js-${name}`);
+const findCell = (tr, dataTestIdSuffix) =>
+  tr.find(`[data-testid="approvals-table-${dataTestIdSuffix}"]`);
 
 const getRowData = (tr) => {
   const name = findCell(tr, 'name');

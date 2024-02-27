@@ -8,7 +8,7 @@ RSpec.describe 'Merge request > User sets approval rules', :js, feature_category
   include_context 'with project with approval rules'
 
   def page_rule_names
-    page.all('.js-approval-rules table .js-name')
+    page.all('[data-testid="approvals-table-name"]')
   end
 
   context "with project approval rules" do

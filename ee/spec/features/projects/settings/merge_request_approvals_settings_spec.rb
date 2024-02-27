@@ -11,7 +11,7 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
   let_it_be(:project) { create(:project, namespace: group) }
   let_it_be(:group_member) { create(:user) }
   let_it_be(:non_member) { create(:user) }
-  let_it_be(:config_selector) { '.js-approval-rules' }
+  let_it_be(:config_selector) { '[data-testid="mr-approval-rules"]' }
   let_it_be(:modal_selector) { '#project-settings-approvals-create-modal' }
 
   before do
@@ -46,7 +46,7 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
     end
     wait_for_requests
 
-    expect_avatar(find('.js-members'), user)
+    expect_avatar(find_by_testid('approvals-table-members'), user)
   end
 
   it 'adds approver group' do
@@ -67,7 +67,7 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
     wait_for_requests
 
     group_users = group.group_members.preload_users.map(&:user)
-    expect_avatar(find('.js-members'), group_users)
+    expect_avatar(find_by_testid('approvals-table-members'), group_users)
   end
 
   context 'with an approver group' do
@@ -81,14 +81,14 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
     it 'removes approver group' do
       visit project_settings_merge_requests_path(project)
 
-      expect_avatar(find('.js-members'), rule.approvers)
+      expect_avatar(find_by_testid('approvals-table-members'), rule.approvers)
 
       open_modal(text: 'Edit', expand: false)
       remove_approver(group.name)
       click_button "Update approval rule"
       wait_for_requests
 
-      expect_avatar(find('.js-members'), [non_group_approver])
+      expect_avatar(find_by_testid('approvals-table-members'), [non_group_approver])
     end
   end
 end

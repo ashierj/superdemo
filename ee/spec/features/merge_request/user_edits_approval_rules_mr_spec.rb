@@ -23,7 +23,7 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
   end
 
   def page_rule_names
-    page.all('.js-approval-rules table .js-name')
+    page.all('[data-testid="approvals-table-name"]')
   end
 
   before do

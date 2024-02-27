@@ -142,13 +142,13 @@ export default {
         <tr v-else :key="index">
           <td :data-label="__('Rule')">
             <div>
-              <div class="js-name">{{ rule.name }}</div>
+              <div data-testid="approvals-table-name">{{ rule.name }}</div>
               <div ref="indicator" class="text-muted">
                 {{ indicatorText(rule) }}
               </div>
             </div>
           </td>
-          <td class="gl-py-5! js-members" :data-label="__('Approvers')">
+          <td class="gl-py-5!" data-testid="approvals-table-members" :data-label="__('Approvers')">
             <user-avatar-list
               :items="rule.approvers"
               :img-size="24"
@@ -156,10 +156,18 @@ export default {
               class="gl-my-n2!"
             />
           </td>
-          <td class="js-approvals-required gl-text-right" :data-label="__('Approvals required')">
+          <td
+            class="gl-text-right"
+            data-testid="approvals-table-approvals-required"
+            :data-label="__('Approvals required')"
+          >
             <rule-input :rule="rule" />
           </td>
-          <td class="gl-md-pl-0! gl-md-pr-0! js-controls" :data-label="__('Actions')">
+          <td
+            class="gl-md-pl-0! gl-md-pr-0!"
+            data-testid="approvals-table-controls"
+            :data-label="__('Actions')"
+          >
             <rule-controls v-if="canEdit" :rule="rule" />
           </td>
         </tr>

@@ -72,7 +72,7 @@ export default {
 
 <template>
   <gl-card
-    class="gl-new-card js-approval-rules"
+    class="gl-new-card"
     header-class="gl-new-card-header"
     body-class="gl-new-card-body gl-px-0 gl-overflow-hidden"
     footer-class="gl-new-card-footer"

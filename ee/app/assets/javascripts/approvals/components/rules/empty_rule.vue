@@ -63,7 +63,7 @@ export default {
     <td v-if="showProtectedBranch" class="gl-text-center" :data-label="__('Target branch')">
       <rule-branches :rule="rule" />
     </td>
-    <td class="gl-py-5! js-approvals-required" :data-label="__('Approvals required')">
+    <td class="gl-py-5!" :data-label="__('Approvals required')">
       <rule-input :rule="rule" :is-mr-edit="isMrEdit" />
     </td>
     <td class="gl-md-pl-0! gl-md-pr-0!" :data-label="__('Actions')">

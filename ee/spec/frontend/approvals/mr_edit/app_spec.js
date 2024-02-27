@@ -28,6 +28,12 @@ describe('EE Approvals MREditApp', () => {
     });
   };
 
+  const findAllApprovalsTableNames = () =>
+    wrapper.findComponent(MRRules).findAll('[data-testid="approvals-table-name"]');
+  const findHiddenInputs = () =>
+    wrapper.find('[data-testid="mr-approval-rules"]').findComponent(MRRulesHiddenInputs);
+  const findSummaryText = () => wrapper.find('[data-testid="collapsedSummaryText"]');
+
   beforeEach(() => {
     axiosMock = new MockAdapter(axios);
     axiosMock.onGet('*');
@@ -56,13 +62,11 @@ describe('EE Approvals MREditApp', () => {
     });
 
     it('does not render MR rules', () => {
-      expect(wrapper.findComponent(MRRules).findAll('.js-name')).toHaveLength(0);
+      expect(findAllApprovalsTableNames()).toHaveLength(0);
     });
 
     it('renders hidden inputs', () => {
-      expect(wrapper.find('.js-approval-rules').findComponent(MRRulesHiddenInputs).exists()).toBe(
-        true,
-      );
+      expect(findHiddenInputs().exists()).toBe(true);
     });
   });
 
@@ -73,21 +77,17 @@ describe('EE Approvals MREditApp', () => {
       store.modules.approvals.state.rules = [{ id: 7, approvers: [] }];
 
       factory();
-      expect(wrapper.findComponent(MRRules).findAll('.js-name')).toHaveLength(1);
+      expect(findAllApprovalsTableNames()).toHaveLength(1);
     });
 
     it('renders hidden inputs', () => {
       store.modules.approvals.state.rules = [{ id: 7, approvers: [] }];
 
       factory();
-      expect(wrapper.find('.js-approval-rules').findComponent(MRRulesHiddenInputs).exists()).toBe(
-        true,
-      );
+      expect(findHiddenInputs().exists()).toBe(true);
     });
 
     describe('summary text', () => {
-      const findSummaryText = () => wrapper.find('[data-testid="collapsedSummaryText"]');
-
       it('optional approvals', () => {
         store.modules.approvals.state.rules = [];
         factory(true, true);

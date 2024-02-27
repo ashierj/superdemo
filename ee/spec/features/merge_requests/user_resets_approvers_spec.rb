@@ -34,13 +34,13 @@ RSpec.describe 'Merge Requests > User resets approvers', :js, feature_category: 
   it 'resets approvers for merge requests' do
     click_button 'Approval rules'
 
-    expect_avatar(find('.js-members'), first_user)
+    expect_avatar(find_by_testid('approvals-table-members'), first_user)
 
     click_button 'Reset to project defaults'
 
     wait_for_requests
 
-    expect_avatar(find('.js-members'), project_approvers)
+    expect_avatar(find_by_testid('approvals-table-members'), project_approvers)
 
     click_button 'Save changes'
 
