@@ -356,7 +356,7 @@ Sample raw job log:
 \e[0Ksection_start:1560896352:my_first_section\r\e[0KHeader of the 1st collapsible section
 this line should be hidden when collapsed
 \e[0Ksection_end:1560896353:my_first_section\r\e[0K
-``` 
+```
 
 Sample job console log:
 
@@ -364,9 +364,9 @@ Sample job console log:
 
 #### Use a script to improve display of collapsible sections
 
-To remove `echo` statements from the job output, you can move the job contents to a script file and invoke it from the job: 
+To remove `echo` statements from the job output, you can move the job contents to a script file and invoke it from the job:
 
-1. Create a script that can handle the section headers. For example: 
+1. Create a script that can handle the section headers. For example:
 
    ```shell
    # function for starting the section
