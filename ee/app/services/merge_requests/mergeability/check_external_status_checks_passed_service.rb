@@ -17,7 +17,7 @@ module MergeRequests
       end
 
       def skip?
-        false
+        params[:skip_external_status_check].present?
       end
 
       def cacheable?
@@ -27,9 +27,7 @@ module MergeRequests
       private
 
       def prevent_merge_unless_status_checks_passed?
-        project = merge_request.project
-        only_allow_merge_if_all_status_checks_passed_enabled?(project) &&
-          project.any_external_status_checks_not_passed?(merge_request)
+        merge_request.project.any_external_status_checks_not_passed?(merge_request)
       end
 
       def only_allow_merge_if_all_status_checks_passed_enabled?(project)

@@ -40,16 +40,16 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
     end
 
     where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :discussions_status,
-      :additional_feature_flag, :result) do
-      :running | 0 | true | true | false | true | true
-      :running | 0 | false | false | true | true | true
-      :success | 0 | false | false | true | true | false
-      :success | 0 | true | true | false | true | true
-      :success | 0 | true | true | true | false | false
-      :running | 1 | true | true | false | true | true
-      :success | 1 | true | true | false | true | true
-      :success | 1 | false | false | true | true | true
-      :running | 1 | false | false | true | true | true
+      :external_checks_pass, :additional_feature_flag, :result) do
+      :running | 0 | true | true | false | false | true | true
+      :running | 0 | false | false | true | true | true | true
+      :success | 0 | false | false | true | true | true | false
+      :success | 0 | true | true | false | false | true | true
+      :success | 0 | true | true | true | false | false | false
+      :running | 1 | true | true | false | false | true | true
+      :success | 1 | true | true | false | false | true | true
+      :success | 1 | false | false | true | true | true | true
+      :running | 1 | false | false | true | true | true | true
     end
 
     with_them do
@@ -60,11 +60,12 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
       let(:additional_feature_flag) { false }
       let(:feature_flag) { false }
 
-      where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :discussions_status, :result) do
-        :running | 0 | true  | true | false | false
-        :success | 0 | false | false | true | false
-        :running | 1 | false | false | true | false
-        :success | 1 | true | false | true | false
+      where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :discussions_status,
+        :external_checks_pass, :result) do
+        :running | 0 | true  | true | false | false | false
+        :success | 0 | false | false | true | true | false
+        :running | 1 | false | false | true | true | false
+        :success | 1 | true | false | true | false | false
       end
 
       with_them do

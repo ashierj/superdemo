@@ -32,6 +32,8 @@ module EE
           store.subscribe ::MergeRequests::CreateApprovalsResetNoteWorker, to: ::MergeRequests::ApprovalsResetEvent
           store.subscribe ::MergeRequests::ProcessApprovalAutoMergeWorker, to: ::MergeRequests::DraftStateChangeEvent
           store.subscribe ::MergeRequests::ProcessApprovalAutoMergeWorker, to: ::MergeRequests::UnblockedStateEvent
+          store.subscribe ::MergeRequests::ProcessApprovalAutoMergeWorker,
+            to: ::MergeRequests::ExternalStatusCheckPassedEvent
           store.subscribe ::PullMirrors::ReenableConfigurationWorker, to: ::GitlabSubscriptions::RenewedEvent
           store.subscribe ::Search::ElasticDefaultBranchChangedWorker,
             to: ::Repositories::DefaultBranchChangedEvent,

@@ -46,4 +46,56 @@ RSpec.describe MergeRequests::StatusCheckResponse, type: :model, feature_categor
       end
     end
   end
+
+  describe 'callbacks' do
+    subject(:response) { create(:status_check_response, status: status, merge_request: merge_request) }
+
+    let_it_be(:merge_request) { create(:merge_request) }
+
+    describe '#after_save' do
+      let(:status) { described_class.statuses[:passed] }
+
+      describe '.publish_new_passing_event' do
+        context 'when the check is passed' do
+          it 'sends an status passed event' do
+            expect { response }.to publish_event(::MergeRequests::ExternalStatusCheckPassedEvent).with({
+              merge_request_id: merge_request.id
+            })
+          end
+        end
+
+        context 'when the check is failed' do
+          let(:status) { described_class.statuses[:failed] }
+
+          it 'does not sends a status passed event' do
+            expect(::Gitlab::EventStore).not_to receive(:publish)
+
+            response
+          end
+        end
+
+        context 'when the check is pending' do
+          let(:status) { described_class.statuses[:pending] }
+
+          it 'does not send a status passed event' do
+            expect(::Gitlab::EventStore).not_to receive(:publish)
+
+            response
+          end
+        end
+
+        context 'when feature flag additional_merge_when_checks_ready is disabled' do
+          before do
+            stub_feature_flags(additional_merge_when_checks_ready: false)
+          end
+
+          it 'does not send a status passed event' do
+            expect(::Gitlab::EventStore).not_to receive(:publish)
+
+            response
+          end
+        end
+      end
+    end
+  end
 end

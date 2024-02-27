@@ -23,8 +23,22 @@ module MergeRequests
     validates :external_status_check, presence: true
     validates :sha, presence: true
 
+    after_commit :publish_new_passing_event, if: ->(check) { check.passed? }
+
     def self.timeout_eligible
       timeout_new.or(timeout_retried)
+    end
+
+    private
+
+    def publish_new_passing_event
+      return unless ::Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project)
+
+      ::Gitlab::EventStore.publish(
+        ::MergeRequests::ExternalStatusCheckPassedEvent.new(
+          data: { merge_request_id: merge_request.id }
+        )
+      )
     end
   end
 end
