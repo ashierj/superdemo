@@ -23791,6 +23791,9 @@ msgstr ""
 msgid "GroupPage|Group ID: %{id}"
 msgstr ""
 
+msgid "GroupPage|Group settings"
+msgstr ""
+
 msgid "GroupRoadmap|%{dateWord} – No end date"
 msgstr ""
 

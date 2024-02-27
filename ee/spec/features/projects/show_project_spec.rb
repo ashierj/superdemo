@@ -110,7 +110,9 @@ RSpec.describe 'Project show page', :feature, feature_category: :groups_and_proj
       it 'does not render settings button if user has no permissions', :js do
         visit project_path(project)
 
-        expect(page).not_to have_selector('[data-testid="project-settings-button"]')
+        find_by_testid('groups-projects-more-actions-dropdown').click
+
+        expect(page).not_to have_selector('[data-testid="settings-project-link"]')
       end
 
       it 'renders settings button if user has permissions', :js do
@@ -118,7 +120,9 @@ RSpec.describe 'Project show page', :feature, feature_category: :groups_and_proj
         sign_in(user)
         visit project_path(project)
 
-        expect(page).to have_selector('[data-testid="project-settings-button"]')
+        find_by_testid('groups-projects-more-actions-dropdown').click
+
+        expect(page).to have_selector('[data-testid="settings-project-link"]')
       end
     end
   end
