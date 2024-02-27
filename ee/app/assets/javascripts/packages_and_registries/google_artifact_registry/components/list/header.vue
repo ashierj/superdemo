@@ -62,7 +62,7 @@ export default {
     <template v-if="showActions" #right-actions>
       <div class="gl-display-flex gl-gap-3">
         <gl-button
-          :href="data.gcpRepositoryUrl"
+          :href="data.artifactRegistryRepositoryUrl"
           icon="external-link"
           target="_blank"
           category="primary"

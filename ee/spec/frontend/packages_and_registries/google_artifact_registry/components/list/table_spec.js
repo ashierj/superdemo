@@ -1,12 +1,19 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import { RouterLinkStub } from '@vue/test-utils';
-import { GlBadge, GlTable, GlTruncate } from '@gitlab/ui';
+import {
+  GlAlert,
+  GlBadge,
+  GlKeysetPagination,
+  GlLoadingIcon,
+  GlTable,
+  GlTruncate,
+} from '@gitlab/ui';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { useFakeDate } from 'helpers/fake_date';
 import ListTable from 'ee_component/packages_and_registries/google_artifact_registry/components/list/table.vue';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
-import { imageData } from '../../mock_data';
+import { imageData, pageInfo } from '../../mock_data';
 
 Vue.use(VueRouter);
 
@@ -16,6 +23,7 @@ describe('ListTable', () => {
   const getDefaultProps = (node = {}) => ({
     data: {
       nodes: [{ ...imageData, ...node }],
+      pageInfo,
     },
     sort: {
       sortBy: 'name',
@@ -25,7 +33,9 @@ describe('ListTable', () => {
 
   useFakeDate(2020, 1, 1);
 
+  const findAlert = () => wrapper.findComponent(GlAlert);
   const findTable = () => wrapper.findComponent(GlTable);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findClipboardButton = () => wrapper.findComponent(ClipboardButton);
   const findImageLink = () => wrapper.findComponent(RouterLinkStub);
   const findCells = () => wrapper.findAllByRole('cell');
@@ -35,6 +45,7 @@ describe('ListTable', () => {
   const findSecondTag = () => findBadges().at(1).findComponent(GlTruncate);
   const findMoreTagsBadge = () => wrapper.findByTestId('more-tags-badge');
   const findMoreTagsScreenReaderText = () => wrapper.findByTestId('more-tags-badge-sr-text');
+  const findPagination = () => wrapper.findComponent(GlKeysetPagination);
 
   const createComponent = (mountFn = shallowMountExtended, propsData = getDefaultProps()) => {
     wrapper = mountFn(ListTable, {
@@ -51,7 +62,21 @@ describe('ListTable', () => {
     createComponent();
   });
 
+  it('renders loading icon', () => {
+    createComponent(shallowMountExtended, { isLoading: true, sort: {} });
+
+    expect(findTable().attributes('busy')).toBe('true');
+    expect(findLoadingIcon().exists()).toBe(true);
+  });
+
+  it('renders alert when `errorMessage` exists', () => {
+    createComponent(shallowMountExtended, { errorMessage: 'Error', sort: {} });
+
+    expect(findAlert().text()).toBe('Error');
+  });
+
   it('renders a table with the correct header fields', () => {
+    expect(findTable().attributes('busy')).toBeUndefined();
     expect(findTable().props('fields')).toEqual([
       {
         key: 'image',
@@ -65,7 +90,7 @@ describe('ListTable', () => {
         tdClass: 'gl-pt-4!',
       },
       {
-        key: 'buildTime',
+        key: 'uploadTime',
         label: 'Created',
       },
       {
@@ -193,6 +218,24 @@ describe('ListTable', () => {
     it('renders the update time in the fourth column', () => {
       const updateTimeCell = findCells().at(3);
       expect(updateTimeCell.text()).toContain('1 month ago');
+    });
+  });
+
+  describe('pagination', () => {
+    it('renders', () => {
+      expect(findPagination().props()).toMatchObject({ ...pageInfo });
+    });
+
+    it('emits prev-page event', () => {
+      findPagination().vm.$emit('prev');
+
+      expect(wrapper.emitted('prev-page')).toHaveLength(1);
+    });
+
+    it('emits next-page event', () => {
+      findPagination().vm.$emit('next');
+
+      expect(wrapper.emitted('next-page')).toHaveLength(1);
     });
   });
 });
