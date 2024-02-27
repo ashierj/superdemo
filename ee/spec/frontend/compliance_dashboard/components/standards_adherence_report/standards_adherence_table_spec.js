@@ -153,7 +153,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
         await nextTick();
 
         expect(findDropdown().props('toggleText')).toBe('Checks');
-        expect(mockGraphQlSuccess).toHaveBeenCalledTimes(4);
+        expect(mockGraphQlSuccess).toHaveBeenCalledTimes(5);
       });
     });
   });

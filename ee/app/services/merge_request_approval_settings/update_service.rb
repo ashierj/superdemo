@@ -77,6 +77,9 @@ module MergeRequestApprovalSettings
 
       ::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterGroupWorker
         .perform_async({ 'group_id' => container.id, 'user_id' => current_user&.id })
+
+      ::ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalGroupWorker
+        .perform_async({ 'group_id' => container.id, 'user_id' => current_user&.id })
     end
 
     def run_compliance_checks_for_project
@@ -84,6 +87,9 @@ module MergeRequestApprovalSettings
         .perform_async({ 'project_id' => container.id, 'user_id' => current_user&.id })
 
       ::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker
+        .perform_async({ 'project_id' => container.id, 'user_id' => current_user&.id })
+
+      ::ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalWorker
         .perform_async({ 'project_id' => container.id, 'user_id' => current_user&.id })
     end
   end

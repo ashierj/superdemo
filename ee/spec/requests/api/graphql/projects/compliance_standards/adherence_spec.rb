@@ -37,6 +37,11 @@ RSpec.describe 'getting the project compliance standards adherence for a group',
       check_name: :prevent_approval_by_merge_request_author)
   end
 
+  let_it_be(:adherence_5) do
+    create(:compliance_standards_adherence, standard: :soc2, project: project_1,
+      check_name: :at_least_one_non_author_approval)
+  end
+
   let(:fields) do
     <<~GRAPHQL
       nodes {
@@ -63,6 +68,10 @@ RSpec.describe 'getting the project compliance standards adherence for a group',
 
   let(:adherence_3_output) do
     get_compliance_standards_adherence_values(adherence_3)
+  end
+
+  let(:adherence_5_output) do
+    get_compliance_standards_adherence_values(adherence_5)
   end
 
   let(:project_adherence) { graphql_data_at(:group, :project_compliance_standards_adherence, :nodes) }
@@ -128,7 +137,9 @@ RSpec.describe 'getting the project compliance standards adherence for a group',
       it 'finds all the project compliance standards adherence for the group and its subgroups' do
         post_graphql(query, current_user: current_user)
 
-        expect(project_adherence).to match_array([adherence_1_output, adherence_2_output, adherence_3_output])
+        expect(project_adherence).to match_array(
+          [adherence_1_output, adherence_2_output, adherence_3_output, adherence_5_output]
+        )
       end
     end
 
@@ -139,7 +150,7 @@ RSpec.describe 'getting the project compliance standards adherence for a group',
             post_graphql(query({ filters: { projectIds: [project_1.to_global_id.to_s, project_2.to_global_id.to_s] } }),
               current_user: current_user)
 
-            expect(project_adherence).to contain_exactly(adherence_1_output, adherence_2_output)
+            expect(project_adherence).to contain_exactly(adherence_1_output, adherence_2_output, adherence_5_output)
           end
         end
 
@@ -156,7 +167,9 @@ RSpec.describe 'getting the project compliance standards adherence for a group',
           it 'finds all the project compliance standards adherence for the group and its subgroups' do
             post_graphql(query({ filters: { projectIds: [] } }), current_user: current_user)
 
-            expect(project_adherence).to match_array([adherence_1_output, adherence_2_output, adherence_3_output])
+            expect(project_adherence).to match_array(
+              [adherence_1_output, adherence_2_output, adherence_3_output, adherence_5_output]
+            )
           end
         end
 

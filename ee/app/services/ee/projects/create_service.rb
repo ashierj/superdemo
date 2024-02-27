@@ -165,6 +165,9 @@ module EE
 
         ::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker
           .perform_async({ 'project_id' => project.id, 'user_id' => current_user.id })
+
+        ::ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalWorker
+          .perform_async({ 'project_id' => project.id, 'user_id' => current_user.id })
       end
 
       # When using a project template from a Group, the new project can only be created

@@ -65,7 +65,7 @@ RSpec.describe ComplianceManagement::Standards::RefreshService, feature_category
 
           expect(response).to be_success
           expect(response.payload).to eq({ started_at: Time.current.utc.to_s,
-                                           total_checks: "3", checks_completed: "0" })
+                                           total_checks: "4", checks_completed: "0" })
         end
       end
     end

@@ -57,11 +57,14 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :c
           stub_licensed_features(group_level_compliance_dashboard: true)
         end
 
-        it 'invokes prevent approval by author and committer workers', :sidekiq_inline, :aggregate_failures do
+        it 'invokes standards adherence workers', :sidekiq_inline, :aggregate_failures do
           expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
             .to receive(:perform_async).with({ 'project_id' => project.id, 'user_id' => user.id }).and_call_original
 
           expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
+            .to receive(:perform_async).with({ 'project_id' => project.id, 'user_id' => user.id }).and_call_original
+
+          expect(::ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalWorker)
             .to receive(:perform_async).with({ 'project_id' => project.id, 'user_id' => user.id }).and_call_original
 
           response = subject.execute
@@ -71,11 +74,15 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :c
           project_adherence = project.reload.compliance_standards_adherence
                                 .for_check_name(:prevent_approval_by_merge_request_author).first
 
-          project_adherence_2 = project.reload.compliance_standards_adherence
+          project_adherence_2 = project.compliance_standards_adherence
                                 .for_check_name(:prevent_approval_by_merge_request_committers).first
+
+          project_adherence_3 = project.compliance_standards_adherence
+                                  .for_check_name(:at_least_one_non_author_approval).first
 
           expect(project_adherence.status).to eq("success")
           expect(project_adherence_2.status).to eq("success")
+          expect(project_adherence_3.status).to eq("fail")
         end
       end
     end
@@ -137,6 +144,9 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :c
             .to receive(:perform_async).with({ 'group_id' => group.id, 'user_id' => user.id }).and_call_original
 
           expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterGroupWorker)
+            .to receive(:perform_async).with({ 'group_id' => group.id, 'user_id' => user.id }).and_call_original
+
+          expect(::ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalGroupWorker)
             .to receive(:perform_async).with({ 'group_id' => group.id, 'user_id' => user.id }).and_call_original
 
           response = subject.execute

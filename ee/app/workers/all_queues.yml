@@ -1101,6 +1101,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: compliance_management_standards_base
+  :worker_name: ComplianceManagement::Standards::BaseWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: compliance_management_standards_gitlab_at_least_two_approvals
   :worker_name: ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker
   :feature_category: :compliance_management
@@ -1112,24 +1121,6 @@
   :tags: []
 - :name: compliance_management_standards_gitlab_at_least_two_approvals_group
   :worker_name: ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsGroupWorker
-  :feature_category: :compliance_management
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
-- :name: compliance_management_standards_gitlab_base
-  :worker_name: ComplianceManagement::Standards::Gitlab::BaseWorker
-  :feature_category: :compliance_management
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
-- :name: compliance_management_standards_gitlab_group_base
-  :worker_name: ComplianceManagement::Standards::Gitlab::GroupBaseWorker
   :feature_category: :compliance_management
   :has_external_dependencies: false
   :urgency: :low
@@ -1173,8 +1164,35 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: compliance_management_standards_group_base
+  :worker_name: ComplianceManagement::Standards::GroupBaseWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: compliance_management_standards_refresh
   :worker_name: ComplianceManagement::Standards::RefreshWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: compliance_management_standards_soc2_at_least_one_non_author_approval
+  :worker_name: ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: compliance_management_standards_soc2_at_least_one_non_author_approval_group
+  :worker_name: ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalGroupWorker
   :feature_category: :compliance_management
   :has_external_dependencies: false
   :urgency: :low

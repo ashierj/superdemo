@@ -12997,6 +12997,9 @@ msgstr ""
 msgid "ComplianceStandardsAdherence|A rule is configured to require two approvals."
 msgstr ""
 
+msgid "ComplianceStandardsAdherence|At least one non-author approval"
+msgstr ""
+
 msgid "ComplianceStandardsAdherence|At least two approvals"
 msgstr ""
 
@@ -13016,6 +13019,9 @@ msgid "ComplianceStandardsAdherence|Group by"
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|Have a valid rule that prevents author-approved merge requests from being merged"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Have a valid rule that prevents merge requests with less than one non-author approval from being merged"
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|Have a valid rule that prevents merge requests with less than two approvals from being merged"
@@ -13040,6 +13046,9 @@ msgid "ComplianceStandardsAdherence|No rule is configured to prevent author appr
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|No rule is configured to prevent merge requests approved by committers."
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|No rule is configured to require at least one non-author approval."
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|No rule is configured to require two approvals."
@@ -43537,6 +43546,12 @@ msgid "SCIM|System for Cross-Domain Identity Management."
 msgstr ""
 
 msgid "SHA256"
+msgstr ""
+
+msgid "SOC 2"
+msgstr ""
+
+msgid "SOC2"
 msgstr ""
 
 msgid "SSH Key"

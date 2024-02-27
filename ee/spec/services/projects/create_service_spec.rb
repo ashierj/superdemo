@@ -536,7 +536,10 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
           expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
             .to receive(:perform_async).and_call_original
 
-          expect(created_project.compliance_standards_adherence.count).to eq(3)
+          expect(::ComplianceManagement::Standards::Soc2::AtLeastOneNonAuthorApprovalWorker)
+            .to receive(:perform_async).and_call_original
+
+          expect(created_project.compliance_standards_adherence.count).to eq(4)
         end
       end
 
