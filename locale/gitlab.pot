@@ -10563,9 +10563,6 @@ msgstr ""
 msgid "CiCatalog|Go to the project"
 msgstr ""
 
-msgid "CiCatalog|Last release at %{date}"
-msgstr ""
-
 msgid "CiCatalog|No component available"
 msgstr ""
 
@@ -10576,6 +10573,9 @@ msgid "CiCatalog|No result found"
 msgstr ""
 
 msgid "CiCatalog|Readme"
+msgstr ""
+
+msgid "CiCatalog|Released %{timeAgo}"
 msgstr ""
 
 msgid "CiCatalog|Released %{timeAgo} by %{author}"
