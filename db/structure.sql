@@ -23880,8 +23880,6 @@ CREATE UNIQUE INDEX index_approval_project_rules_users_1 ON approval_project_rul
 
 CREATE INDEX index_approval_project_rules_users_2 ON approval_project_rules_users USING btree (user_id);
 
-CREATE INDEX index_approval_project_rules_users_on_approval_project_rule_id ON approval_project_rules_users USING btree (approval_project_rule_id);
-
 CREATE UNIQUE INDEX index_approval_rule_name_for_code_owners_rule_type ON approval_merge_request_rules USING btree (merge_request_id, name) WHERE ((rule_type = 2) AND (section IS NULL));
 
 CREATE UNIQUE INDEX index_approval_rule_name_for_sectional_code_owners_rule_type ON approval_merge_request_rules USING btree (merge_request_id, name, section) WHERE (rule_type = 2);
@@ -23889,8 +23887,6 @@ CREATE UNIQUE INDEX index_approval_rule_name_for_sectional_code_owners_rule_type
 CREATE INDEX index_approval_rule_on_protected_environment_id ON protected_environment_approval_rules USING btree (protected_environment_id);
 
 CREATE INDEX index_approval_rules_code_owners_rule_type ON approval_merge_request_rules USING btree (merge_request_id) WHERE (rule_type = 2);
-
-CREATE INDEX index_approvals_on_merge_request_id ON approvals USING btree (merge_request_id);
 
 CREATE INDEX index_approvals_on_merge_request_id_and_created_at ON approvals USING btree (merge_request_id, created_at);
 
@@ -26250,8 +26246,6 @@ CREATE UNIQUE INDEX index_project_repositories_on_disk_path ON project_repositor
 
 CREATE UNIQUE INDEX index_project_repositories_on_project_id ON project_repositories USING btree (project_id);
 
-CREATE INDEX index_project_repositories_on_shard_id ON project_repositories USING btree (shard_id);
-
 CREATE INDEX index_project_repositories_on_shard_id_and_project_id ON project_repositories USING btree (shard_id, project_id);
 
 CREATE INDEX index_project_repository_storage_moves_on_project_id ON project_repository_storage_moves USING btree (project_id);
@@ -26449,8 +26443,6 @@ CREATE INDEX index_protected_tag_create_access_levels_on_deploy_key_id ON protec
 CREATE INDEX index_protected_tag_create_access_levels_on_group_id ON protected_tag_create_access_levels USING btree (group_id);
 
 CREATE INDEX index_protected_tag_create_access_levels_on_user_id ON protected_tag_create_access_levels USING btree (user_id);
-
-CREATE INDEX index_protected_tags_on_project_id ON protected_tags USING btree (project_id);
 
 CREATE UNIQUE INDEX index_protected_tags_on_project_id_and_name ON protected_tags USING btree (project_id, name);
 
