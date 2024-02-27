@@ -12,4 +12,6 @@ RSpec.describe GitlabSchema.types['GoogleCloudArtifactRegistryRepository'], feat
 
     expect(described_class).to include_graphql_fields(*expected_fields)
   end
+
+  it { expect(described_class).to require_graphql_authorizations(:read_google_cloud_artifact_registry) }
 end

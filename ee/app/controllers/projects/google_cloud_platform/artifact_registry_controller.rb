@@ -2,7 +2,10 @@
 
 module Projects
   module GoogleCloudPlatform
-    class ArtifactRegistryController < Projects::Registry::ApplicationController
+    class ArtifactRegistryController < ::Projects::ApplicationController
+      layout 'project'
+
+      before_action :authorize_read_google_cloud_artifact_registry!
       before_action :ensure_feature!
 
       feature_category :container_registry

@@ -800,6 +800,8 @@ module EE
         enable :read_runner_cloud_provisioning_options
         enable :provision_cloud_runner
       end
+      rule { google_cloud_support_available & can?(:reporter_access) }.enable :read_google_cloud_artifact_registry
+      rule { google_cloud_support_available & can?(:maintainer_access) }.enable :admin_google_cloud_artifact_registry
 
       rule { hidden }.policy do
         prevent :download_code

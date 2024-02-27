@@ -19,8 +19,8 @@ module EE
           private
 
           def google_artifact_registry_menu_item
-            if !context.project.gcp_artifact_registry_enabled? ||
-                container_registry_unavailable?
+            unless context.project.gcp_artifact_registry_enabled? &&
+                can?(context.current_user, :read_google_cloud_artifact_registry, context.project)
               return ::Sidebars::NilMenuItem.new(item_id: :google_artifact_registry)
             end
 

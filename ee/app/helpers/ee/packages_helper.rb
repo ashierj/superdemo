@@ -36,7 +36,8 @@ module EE
     end
 
     def show_google_cloud_artifact_registry_settings?(project)
-      project.gcp_artifact_registry_enabled? && show_container_registry_settings(project)
+      project.gcp_artifact_registry_enabled? &&
+        Ability.allowed?(current_user, :admin_google_cloud_artifact_registry, project)
     end
   end
 end

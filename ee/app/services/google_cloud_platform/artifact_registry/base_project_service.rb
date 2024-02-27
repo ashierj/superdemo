@@ -36,7 +36,7 @@ module GoogleCloudPlatform
       end
 
       def allowed?
-        can?(current_user, :read_container_image, project)
+        can?(current_user, :read_google_cloud_artifact_registry, project)
       end
 
       def client

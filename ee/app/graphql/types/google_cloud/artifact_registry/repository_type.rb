@@ -7,7 +7,7 @@ module Types
         graphql_name 'GoogleCloudArtifactRegistryRepository'
         description 'Represents a repository of Google Cloud Artifact Registry'
 
-        authorize :read_container_image
+        authorize :read_google_cloud_artifact_registry
 
         field :project_id,
           GraphQL::Types::String,
