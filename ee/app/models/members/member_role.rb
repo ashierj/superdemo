@@ -12,7 +12,8 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     :id,
     :name,
     :namespace_id,
-    :updated_at
+    :updated_at,
+    :occupies_seat
   ].freeze
   LEVELS = ::Gitlab::Access.options_with_owner.values.freeze
 
@@ -32,6 +33,8 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   validate :ensure_at_least_one_permission_is_enabled
 
   validates_associated :members
+
+  before_save :set_occupies_seat
 
   scope :elevating, -> do
     return none if elevating_permissions.empty?
@@ -66,7 +69,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
 
   class << self
     def elevating_permissions
-      all_customizable_permissions.keys - customizable_permissions_exempt_from_consuming_seat
+      MemberRole.all_customizable_permissions.reject { |_k, v| v[:skip_seat_consumption] }.keys
     end
 
     def all_customizable_permissions
@@ -170,5 +173,9 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     )
 
     throw :abort # rubocop:disable Cop/BanCatchThrow
+  end
+
+  def set_occupies_seat
+    self.occupies_seat = self.class.elevating_permissions.any? { |attr| self[attr] }
   end
 end

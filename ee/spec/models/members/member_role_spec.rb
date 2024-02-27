@@ -262,6 +262,28 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
     end
   end
 
+  describe 'before_save' do
+    describe '#set_occupies_seat' do
+      it 'sets to false when skip_seat_consumption for custom ability is true' do
+        member_role = create(:member_role, :read_code)
+
+        expect(member_role.occupies_seat).to be(false)
+      end
+
+      it 'sets to true when skip_seat_consumption for custom ability is false or nil' do
+        member_role = create(:member_role, :admin_terraform_state)
+
+        expect(member_role.occupies_seat).to be(true)
+      end
+
+      it 'sets to true when at least one custom ability has skip_seat_consumption set to false or nil' do
+        member_role = create(:member_role, :read_code, :admin_terraform_state)
+
+        expect(member_role.occupies_seat).to be(true)
+      end
+    end
+  end
+
   describe '.levels_sentence' do
     it 'returns the list of access levels with names' do
       expect(described_class.levels_sentence).to eq(
