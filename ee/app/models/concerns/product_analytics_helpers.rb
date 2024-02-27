@@ -21,7 +21,7 @@ module ProductAnalyticsHelpers
   end
 
   def product_analytics_stored_events_limit
-    return unless Feature.enabled?(:product_analytics_billing, type: :wip)
+    return unless product_analytics_billing_enabled?
 
     analytics_addon_quantity = GitlabSubscriptions::AddOnPurchase
                                  .active
@@ -92,5 +92,9 @@ module ProductAnalyticsHelpers
 
       response.error? || response.payload.dig('results', 0, 'data', 0, 'TrackedEvents.count').to_i == 0
     end
+  end
+
+  def product_analytics_billing_enabled?
+    root_ancestor.present? && ::Feature.enabled?(:product_analytics_billing, root_ancestor, type: :wip)
   end
 end

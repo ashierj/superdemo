@@ -24,16 +24,16 @@ module GitlabSubscriptions
       }
     end
 
-    def self.find_or_create_by_name(add_on_name)
-      check_add_on_availability!(add_on_name)
+    def self.find_or_create_by_name(add_on_name, namespace = nil)
+      check_add_on_availability!(add_on_name, namespace)
 
       create_with(description: GitlabSubscriptions::AddOn.descriptions[add_on_name.to_sym])
         .find_or_create_by!(name: add_on_name)
     end
 
-    def self.check_add_on_availability!(add_on_name)
+    def self.check_add_on_availability!(add_on_name, namespace)
       raise ::ArgumentError if
-        add_on_name.eql?("product_analytics") && ::Feature.disabled?(:product_analytics_billing, type: :wip)
+        add_on_name.eql?("product_analytics") && ::Feature.disabled?(:product_analytics_billing, namespace, type: :wip)
     end
   end
 end
