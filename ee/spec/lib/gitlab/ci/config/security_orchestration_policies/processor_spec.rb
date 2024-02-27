@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, feature_category: :security_policy_management do
-  subject { described_class.new(config, ci_context, ref, source).perform }
+  subject(:perform_service) { described_class.new(config, ci_context, ref, source).perform }
 
   let_it_be(:config) { { image: 'image:1.0.0' } }
 
@@ -16,23 +16,38 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
 
   let_it_be(:namespace) { create(:group) }
   let_it_be(:namespace_policies_repository) { create(:project, :repository) }
-  let_it_be(:namespace_security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: namespace, security_policy_management_project: namespace_policies_repository) }
+  let_it_be(:namespace_security_orchestration_policy_configuration) do
+    create(
+      :security_orchestration_policy_configuration,
+      :namespace,
+      namespace: namespace,
+      security_policy_management_project: namespace_policies_repository
+    )
+  end
+
   let_it_be(:namespace_policy) do
     build(:scan_execution_policy, actions: [
-            { scan: 'sast' },
-            { scan: 'secret_detection' }
-          ])
+      { scan: 'sast' },
+      { scan: 'secret_detection' }
+    ])
   end
 
   let_it_be_with_refind(:project) { create(:project, :repository, group: namespace) }
 
   let_it_be(:policies_repository) { create(:project, :repository, group: namespace) }
-  let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: policies_repository) }
+  let_it_be(:security_orchestration_policy_configuration) do
+    create(
+      :security_orchestration_policy_configuration,
+      project: project,
+      security_policy_management_project: policies_repository
+    )
+  end
+
   let_it_be(:policy) do
     build(:scan_execution_policy, actions: [
-            { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
-            { scan: 'secret_detection' }
-          ])
+      { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
+      { scan: 'secret_detection' }
+    ])
   end
 
   let_it_be(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
@@ -52,7 +67,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
     let_it_be(:source) { 'ondemand_dast_scan' }
 
     it 'does not modify the config' do
-      expect(subject).to eq(config)
+      expect(perform_service).to eq(config)
     end
   end
 
@@ -82,9 +97,9 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
           end
 
           it 'extends config with additional jobs without overriden values', :aggregate_failures do
-            expect(subject.keys).to include(expected_jobs)
-            expect(subject.values).to include(expected_configuration)
-            expect(subject[extended_job]).not_to include(
+            expect(perform_service.keys).to include(expected_jobs)
+            expect(perform_service.values).to include(expected_configuration)
+            expect(perform_service[extended_job]).not_to include(
               rules: [{ if: '$CI_COMMIT_BRANCH == "develop"' }],
               needs: [{ job: 'build-job', artifacts: true }]
             )
@@ -95,12 +110,12 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
           let(:config) { { stages: %w[build test release], image: 'image:1.0.0' } }
 
           it 'does not include scan-policies stage' do
-            expect(subject[:stages]).to eq(%w[build test release dast])
+            expect(perform_service[:stages]).to eq(%w[build test release dast])
           end
 
           it 'extends config with additional jobs' do
-            expect(subject.keys).to include(expected_jobs)
-            expect(subject.values).to include(expected_configuration)
+            expect(perform_service.keys).to include(expected_jobs)
+            expect(perform_service.values).to include(expected_configuration)
           end
         end
 
@@ -111,12 +126,12 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
             let(:config) { { stages: %w[build not-test release], image: 'image:1.0.0' } }
 
             it 'includes scan-policies stage after build stage' do
-              expect(subject[:stages]).to eq(%w[build scan-policies not-test release dast])
+              expect(perform_service[:stages]).to eq(%w[build scan-policies not-test release dast])
             end
 
             it 'extends config with additional jobs' do
-              expect(subject.keys).to include(expected_jobs)
-              expect(subject.values).to include(expected_configuration)
+              expect(perform_service.keys).to include(expected_jobs)
+              expect(perform_service.values).to include(expected_configuration)
             end
           end
 
@@ -124,12 +139,12 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
             let(:config) { { stages: %w[not-test release], image: 'image:1.0.0' } }
 
             it 'includes scan-policies stage as a first stage' do
-              expect(subject[:stages]).to eq(%w[scan-policies not-test release dast])
+              expect(perform_service[:stages]).to eq(%w[scan-policies not-test release dast])
             end
 
             it 'extends config with additional jobs' do
-              expect(subject.keys).to include(expected_jobs)
-              expect(subject.values).to include(expected_configuration)
+              expect(perform_service.keys).to include(expected_jobs)
+              expect(perform_service.values).to include(expected_configuration)
             end
           end
         end
@@ -150,13 +165,13 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
 
     it 'does not modify the config', :aggregate_failures do
       expect(config).not_to receive(:deep_merge)
-      expect(subject).to eq(config)
+      expect(perform_service).to eq(config)
     end
   end
 
   context 'when feature is not licensed' do
     it 'does not modify the config' do
-      expect(subject).to eq(config)
+      expect(perform_service).to eq(config)
     end
   end
 
@@ -171,7 +186,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
       let(:ref) { 'refs/head/another-branch' }
 
       it 'does not modify the config' do
-        expect(subject).to eq(config)
+        expect(perform_service).to eq(config)
       end
     end
 
@@ -179,7 +194,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
       let(:ref) { 'refs/tags/v1.1.0' }
 
       it 'does not modify the config' do
-        expect(subject).to eq(config)
+        expect(perform_service).to eq(config)
       end
     end
 
@@ -190,13 +205,16 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
         let_it_be(:config) { {} }
 
         it 'adds a workflow rule' do
-          expect(subject).to include({ workflow: { rules: [when: 'always'] } })
+          expect(perform_service).to include({ workflow: { rules: [when: 'always'] } })
         end
       end
 
       context 'when DAST profiles are not found' do
         it 'does not modify the config' do
-          expect(subject[:'dast-on-demand-0']).to eq({ allow_failure: true, script: 'echo "Error during On-Demand Scan execution: Dast site profile was not provided" && false' })
+          expect(perform_service[:'dast-on-demand-0']).to eq({
+            allow_failure: true,
+            script: 'echo "Error during On-Demand Scan execution: Dast site profile was not provided" && false'
+          })
         end
       end
 
@@ -320,12 +338,12 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
           end
 
           it 'does not includes the custom job' do
-            expect(subject[:custom_job]).to be_nil
+            expect(perform_service[:custom_job]).to be_nil
           end
         end
 
         it 'does not include the custom job' do
-          expect(subject[:custom_job]).to be_nil
+          expect(perform_service[:custom_job]).to be_nil
         end
 
         context 'when toggle_security_policy_custom_ci is enabled for the group' do
@@ -334,25 +352,30 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
           end
 
           it 'includes the custom job' do
-            expect(subject[:custom_job]).to eq({ stage: '.pipeline-policy-test', script: ['echo "Defined in security policy"'] })
-          end
-
-          it 'injects stages in the right order' do
-            expect(subject[:stages]).to eq(%w[.pipeline-policy-pre .pre build test .pipeline-policy-test deploy .post .pipeline-policy-post])
+            expect(perform_service[:custom_job]).to eq(
+              {
+                stage: '.pipeline-policy-test',
+                script: ['echo "Defined in security policy"']
+              }
+            )
           end
 
           context 'when test stage does not exist' do
             let(:config) { { stages: %w[build deploy] } }
 
             it 'injects .pipeline-policy-test after build' do
-              expect(subject[:stages]).to eq(%w[.pipeline-policy-pre build .pipeline-policy-test scan-policies deploy .pipeline-policy-post])
+              expect(perform_service[:stages]).to eq(
+                %w[.pipeline-policy-pre build .pipeline-policy-test scan-policies deploy .pipeline-policy-post]
+              )
             end
 
             context 'when the build stage does not exist' do
               let(:config) { { stages: %w[deploy] } }
 
               it 'injects .pipeline-policy-test at the beginning' do
-                expect(subject[:stages]).to eq(%w[.pipeline-policy-pre .pipeline-policy-test scan-policies deploy .pipeline-policy-post])
+                expect(perform_service[:stages]).to eq(
+                  %w[.pipeline-policy-pre .pipeline-policy-test scan-policies deploy .pipeline-policy-post]
+                )
               end
             end
           end
@@ -370,7 +393,9 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
             end
 
             it 'ignores custom stages' do
-              expect(subject[:stages]).to eq(%w[.pipeline-policy-pre .pre build test .pipeline-policy-test deploy .post .pipeline-policy-post])
+              expect(perform_service[:stages]).to eq(
+                %w[.pipeline-policy-pre .pre build test .pipeline-policy-test deploy .post .pipeline-policy-post]
+              )
             end
           end
         end
