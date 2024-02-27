@@ -157,6 +157,12 @@ module EE
           null: true, description: 'Member roles available for the instance.',
           resolver: ::Resolvers::MemberRoles::RolesResolver,
           alpha: { milestone: '16.7' }
+        field :google_cloud_artifact_registry_repository_artifact,
+          ::Types::GoogleCloud::ArtifactRegistry::ArtifactDetailsType,
+          null: true,
+          description: 'Details about an artifact in the Google Cloud Artifact Registry.',
+          resolver: ::Resolvers::GoogleCloud::ArtifactRegistry::ArtifactResolver,
+          alpha: { milestone: '16.10' }
       end
 
       def vulnerability(id:)
