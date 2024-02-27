@@ -532,6 +532,9 @@ msgstr ""
 msgid "%{address} is an invalid IP address range"
 msgstr ""
 
+msgid "%{argument_name} must be formatted correctly. For example: 1h 30m."
+msgstr ""
+
 msgid "%{author_link} cloned %{original_issue} to %{new_issue}."
 msgstr ""
 
