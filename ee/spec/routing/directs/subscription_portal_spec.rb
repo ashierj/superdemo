@@ -81,10 +81,10 @@ RSpec.describe 'Custom URLs', 'Subscription Portal', feature_category: :subscrip
     it { is_expected.to eq("#{staging_customers_url}/gitlab/namespaces/#{group_id}/extra_seats") }
   end
 
-  describe 'subscription_portal_add_duo_pro_seats' do
+  describe 'subscription_portal_add_saas_duo_pro_seats' do
     let(:group_id) { 153 }
 
-    subject { subscription_portal_add_duo_pro_seats_url(group_id) }
+    subject { subscription_portal_add_saas_duo_pro_seats_url(group_id) }
 
     it { is_expected.to eq("#{staging_customers_url}/gitlab/namespaces/#{group_id}/duo_pro_seats") }
   end
