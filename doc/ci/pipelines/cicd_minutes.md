@@ -377,7 +377,7 @@ See our [pipeline efficiency guide](pipeline_efficiency.md) for more details.
 
 DETAILS:
 **Tier:** Premium, Ultimate
-**Offering:** Self-managed
+**Offering:** Self-managed, GitLab Dedicated
 
 An administrator can reset the compute usage for a namespace for the current month.
 

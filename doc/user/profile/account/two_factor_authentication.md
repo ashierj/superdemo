@@ -488,7 +488,7 @@ a GitLab global administrator disable 2FA for your account:
 
 DETAILS:
 **Tier:** Free, Premium, Ultimate
-**Offering:** Self-managed
+**Offering:** Self-managed, GitLab Dedicated
 
 - Take care that 2FA keeps working after [restoring a GitLab backup](../../../administration/backup_restore/index.md).
 - To ensure 2FA authorizes correctly with a time-based one-time password (TOTP) server, synchronize your GitLab

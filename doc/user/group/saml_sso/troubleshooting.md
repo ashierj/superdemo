@@ -79,7 +79,7 @@ When the certificate used for your identity provider changes (for example when u
 
 DETAILS:
 **Tier:** Free, Premium, Ultimate
-**Offering:** Self-managed
+**Offering:** Self-managed, GitLab Dedicated
 
 You can find the base64-encoded SAML Response in the [`production_json.log`](../../../administration/logs/index.md#production_jsonlog).
 This response is sent from the identity provider, and contains user information that is consumed by GitLab.
@@ -325,7 +325,7 @@ If a subset of users are receiving a `404` after signing in to the IdP, first ve
 
 DETAILS:
 **Tier:** Free, Premium, Ultimate
-**Offering:** Self-managed
+**Offering:** Self-managed, GitLab Dedicated
 
 If you see a "500 error" in GitLab when you are redirected back from the SAML
 sign-in page, this could indicate that:
@@ -339,7 +339,7 @@ sign-in page, this could indicate that:
 
 DETAILS:
 **Tier:** Free, Premium, Ultimate
-**Offering:** Self-managed
+**Offering:** Self-managed, GitLab Dedicated
 
 If you see a "422 error" in GitLab when you are redirected from the SAML
 sign-in page, you might have an incorrectly configured Assertion Consumer
@@ -369,7 +369,7 @@ To implement this workaround:
 
 DETAILS:
 **Tier:** Free, Premium, Ultimate
-**Offering:** Self-managed
+**Offering:** Self-managed, GitLab Dedicated
 
 The following are the most likely reasons that a user is blocked when signing in through SAML:
 
