@@ -10,7 +10,7 @@ module API
 
     helpers ::API::Helpers::GroupApprovalRulesHelpers
 
-    feature_category :source_code_management
+    feature_category :security_policy_management
 
     params do
       requires :id, type: String, desc: 'The ID of a group'

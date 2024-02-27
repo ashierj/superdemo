@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::GroupApprovalRules, :aggregate_failures, feature_category: :source_code_management do
+RSpec.describe API::GroupApprovalRules, :aggregate_failures, feature_category: :security_policy_management do
   let_it_be(:group) { create(:group_with_members) }
   let_it_be(:user_with_access) { create(:user) }
   let_it_be(:project) do

@@ -9,7 +9,7 @@ module ApprovalRules
     sidekiq_options retry: 3
     idempotent!
 
-    feature_category :source_code_management
+    feature_category :security_policy_management
 
     def perform(rule_id, data)
       rule = MergeRequests::ExternalStatusCheck.find(rule_id)

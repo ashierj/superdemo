@@ -995,7 +995,7 @@
   :tags: []
 - :name: approval_rules_external_approval_rule_payload
   :worker_name: ApprovalRules::ExternalApprovalRulePayloadWorker
-  :feature_category: :source_code_management
+  :feature_category: :security_policy_management
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
