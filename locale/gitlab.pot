@@ -42569,6 +42569,9 @@ msgstr ""
 msgid "Runners|Administrator"
 msgstr ""
 
+msgid "Runners|After you complete the steps below, an autoscaling fleet of runners is available to execute your CI/CD jobs in Google Cloud. Based on demand, a runner manager automatically creates temporary runners."
+msgstr ""
+
 msgid "Runners|All"
 msgstr ""
 
@@ -42656,13 +42659,7 @@ msgstr ""
 msgid "Runners|Configuration"
 msgstr ""
 
-msgid "Runners|Configuration instructions"
-msgstr ""
-
 msgid "Runners|Containers"
-msgstr ""
-
-msgid "Runners|Continue to runner details"
 msgstr ""
 
 msgid "Runners|Copy and paste the following command into your command line to register the runner."
@@ -42757,7 +42754,7 @@ msgstr ""
 msgid "Runners|Environment"
 msgstr ""
 
-msgid "Runners|Execution environment"
+msgid "Runners|Environment in Google Cloud where runners execute CI/CD jobs. Runners are created in temporary virtual machines based on demand."
 msgstr ""
 
 msgid "Runners|Executor"
@@ -42784,6 +42781,9 @@ msgstr ""
 msgid "Runners|Fleet dashboard"
 msgstr ""
 
+msgid "Runners|For most CI/CD jobs, use a %{linkStart}N2D standard machine type.%{linkEnd}"
+msgstr ""
+
 msgid "Runners|Get started with runners"
 msgstr ""
 
@@ -42791,12 +42791,6 @@ msgid "Runners|GitLab Runner must be installed before you can register a runner.
 msgstr ""
 
 msgid "Runners|Go to %{groupLink} to enable them."
-msgstr ""
-
-msgid "Runners|Go to runners page"
-msgstr ""
-
-msgid "Runners|Google Cloud"
 msgstr ""
 
 msgid "Runners|Google Cloud project ID"
@@ -42818,9 +42812,6 @@ msgid "Runners|Idle"
 msgstr ""
 
 msgid "Runners|If both settings are disabled, new runners cannot be registered."
-msgstr ""
-
-msgid "Runners|If you haven't already, configure your Google Cloud project to connect to this GitLab project and use the runner."
 msgstr ""
 
 msgid "Runners|In GitLab Runner 15.6, the use of registration tokens and runner parameters in the 'register' command was deprecated. They have been replaced by authentication tokens. %{linkStart}How does this impact my current registration workflow?%{linkEnd}"
@@ -43010,9 +43001,6 @@ msgstr ""
 msgid "Runners|Project"
 msgstr ""
 
-msgid "Runners|Project for the new runner."
-msgstr ""
-
 msgid "Runners|Project runners"
 msgstr ""
 
@@ -43148,9 +43136,6 @@ msgstr ""
 msgid "Runners|Runners"
 msgstr ""
 
-msgid "Runners|Runners are created based on demand, in temporary virtual machine (VM) instances. The VMs use the Google Container-Optimized OS and Docker Engine with support for auto-scaling"
-msgstr ""
-
 msgid "Runners|Runners are either:"
 msgstr ""
 
@@ -43196,6 +43181,9 @@ msgstr ""
 msgid "Runners|Separate multiple tags with a comma. For example, %{example}."
 msgstr ""
 
+msgid "Runners|Setup instructions"
+msgstr ""
+
 msgid "Runners|Show only inherited"
 msgstr ""
 
@@ -43223,7 +43211,13 @@ msgstr ""
 msgid "Runners|Step 1"
 msgstr ""
 
+msgid "Runners|Step 1: Specify environment"
+msgstr ""
+
 msgid "Runners|Step 2"
+msgstr ""
+
+msgid "Runners|Step 2: Set up GitLab Runner"
 msgstr ""
 
 msgid "Runners|Step 3 (optional)"
@@ -43308,7 +43302,7 @@ msgstr ""
 msgid "Runners|This runner is outdated, an upgrade is recommended"
 msgstr ""
 
-msgid "Runners|To improve security, use a dedicated project for CI/CD, separate from resources and identity management projects."
+msgid "Runners|To improve security, use a dedicated project for CI/CD, separate from resources and identity management projects. %{linkStart}Where’s my project ID in Google Cloud?%{linkEnd}"
 msgstr ""
 
 msgid "Runners|To install Runner in Kubernetes follow the instructions described in the GitLab documentation."
@@ -43324,6 +43318,9 @@ msgid "Runners|To register them, go to the %{link_start}group's Runners page%{li
 msgstr ""
 
 msgid "Runners|To view the runner, go to %{runnerListName}."
+msgstr ""
+
+msgid "Runners|To view the setup instructions, complete the previous form. The instructions help you set up an autoscaling fleet of runners to execute your CI/CD jobs in Google Cloud."
 msgstr ""
 
 msgid "Runners|Token expiry"
@@ -43383,10 +43380,16 @@ msgstr ""
 msgid "Runners|Version starts with"
 msgstr ""
 
+msgid "Runners|View available zones"
+msgstr ""
+
 msgid "Runners|View installation instructions"
 msgstr ""
 
 msgid "Runners|View metrics"
+msgstr ""
+
+msgid "Runners|View runners"
 msgstr ""
 
 msgid "Runners|View runners list"
@@ -43396,9 +43399,6 @@ msgid "Runners|Wait time (secs)"
 msgstr ""
 
 msgid "Runners|Wait time to pick a job"
-msgstr ""
-
-msgid "Runners|Where’s my project ID in Google Cloud?"
 msgstr ""
 
 msgid "Runners|Windows 2019 Shell with manual scaling and optional scheduling. %{percentage} spot."
