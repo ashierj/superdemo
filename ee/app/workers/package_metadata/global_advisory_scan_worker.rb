@@ -9,6 +9,7 @@ module PackageMetadata
     urgency :low
     deduplicate :until_executed
     idempotent!
+    concurrency_limit -> { 10 }
 
     def handle_event(event)
       advisory = Advisory.with_affected_packages.find_by_id(event.data[:advisory_id])
