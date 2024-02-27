@@ -51,6 +51,10 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
     end
 
     context 'when the product_analytics_billing flag is enabled' do
+      before do
+        stub_feature_flags(product_analytics_billing: group)
+      end
+
       it { is_expected.to be_zero }
 
       context 'when 1 product_analytics add-on has been purchased' do

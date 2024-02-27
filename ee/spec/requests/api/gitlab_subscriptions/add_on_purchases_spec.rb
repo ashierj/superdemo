@@ -104,7 +104,7 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
 
         context 'when product_analytics_billing flag is enabled' do
           before do
-            stub_feature_flags(product_analytics_billing: true)
+            stub_feature_flags(product_analytics_billing: namespace)
           end
 
           context 'when the add-on is product_analytics' do

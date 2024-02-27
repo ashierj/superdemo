@@ -10,7 +10,7 @@ module API
         authenticated_as_admin!
 
         @namespace = find_namespace!(params[:id])
-        @add_on = find_or_create_subscription_add_on!(params[:add_on_name])
+        @add_on = find_or_create_subscription_add_on!(params[:add_on_name], @namespace)
       end
 
       resource :namespaces, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
