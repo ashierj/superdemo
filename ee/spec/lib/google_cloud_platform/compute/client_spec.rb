@@ -56,12 +56,12 @@ RSpec.describe GoogleCloudPlatform::Compute::Client, feature_category: :fleet_vi
     end
 
     it_behaves_like 'transforming the error',
-      message: "test #{described_class::GCP_SUBJECT_TOKEN_ERROR_MESSAGE} test",
+      message: "test #{described_class::GOOGLE_CLOUD_SUBJECT_TOKEN_ERROR_MESSAGE} test",
       from_klass: RuntimeError,
       to_klass: ::GoogleCloudPlatform::AuthenticationError
 
     it_behaves_like 'transforming the error',
-      message: "test #{described_class::GCP_TOKEN_EXCHANGE_ERROR_MESSAGE} test",
+      message: "test #{described_class::GOOGLE_CLOUD_TOKEN_EXCHANGE_ERROR_MESSAGE} test",
       from_klass: RuntimeError,
       to_klass: ::GoogleCloudPlatform::AuthenticationError
 
