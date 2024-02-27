@@ -32,12 +32,13 @@ describe('IdentityVerificationArkoseApp', () => {
   const findArkoseLabsVerificationTokenInput = () =>
     findForm().find(`input[name="${VERIFICATION_TOKEN_INPUT_NAME}"]`);
 
-  const createComponent = () => {
+  const createComponent = ({ props } = { props: {} }) => {
     wrapper = mount(IdentityVerificationArkoseApp, {
       propsData: {
         publicKey: MOCK_PUBLIC_KEY,
         domain: MOCK_DOMAIN,
         sessionVerificationPath: MOCK_SESSION_VERIFICATION_PATH,
+        ...props,
       },
     });
   };
@@ -125,6 +126,41 @@ describe('IdentityVerificationArkoseApp', () => {
 
     it('submits the form', () => {
       expect(formSubmitSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('Arkose configuration', () => {
+    const setConfig = jest.fn();
+    const defaultConfig = {
+      mode: 'inline',
+      selector: `.${CHALLENGE_CONTAINER_CLASS}`,
+      onShown: expect.any(Function),
+      onCompleted: expect.any(Function),
+    };
+
+    beforeEach(() => {
+      setConfig.mockClear();
+      initArkoseLabsScript.mockImplementation(() => ({ setConfig }));
+    });
+
+    it('is executed with the default config options', async () => {
+      createComponent();
+
+      await nextTick();
+
+      expect(setConfig).toHaveBeenCalledTimes(1);
+      expect(setConfig).toHaveBeenCalledWith(defaultConfig);
+    });
+
+    describe('when Data Exchange payload is present', () => {
+      it('is included in the configuration object', async () => {
+        createComponent({ props: { dataExchangePayload: 'payload' } });
+
+        await nextTick();
+
+        expect(setConfig).toHaveBeenCalledTimes(1);
+        expect(setConfig).toHaveBeenCalledWith({ data: { blob: 'payload' }, ...defaultConfig });
+      });
     });
   });
 });
