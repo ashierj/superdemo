@@ -550,6 +550,7 @@ listed in the descriptions of the relevant settings.
 | `recaptcha_private_key`                  | string           | required by: `recaptcha_enabled`     | Private key for reCAPTCHA. |
 | `recaptcha_site_key`                     | string           | required by: `recaptcha_enabled`     | Site key for reCAPTCHA. |
 | `receive_max_input_size`                 | integer          | no                                   | Maximum push size (MB). |
+| `remember_me_enabled`                    | boolean          | no                                   | Enable [**Remember me** setting](../administration/settings/account_and_limit_settings.md#turn-remember-me-on-or-off). [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/369133) in GitLab 16.0. |
 | `repository_checks_enabled`              | boolean          | no                                   | GitLab periodically runs `git fsck` in all project and wiki repositories to look for silent disk corruption issues. |
 | `repository_size_limit`                  | integer          | no                                   | Size limit per repository (MB). Premium and Ultimate only. |
 | `repository_storages_weighted`           | hash of strings to integers | no                        | (GitLab 13.1 and later) Hash of names of taken from `gitlab.yml` to [weights](../administration/repository_storage_paths.md#configure-where-new-repositories-are-stored). New projects are created in one of these stores, chosen by a weighted random selection. |
