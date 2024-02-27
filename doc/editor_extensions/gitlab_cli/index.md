@@ -80,7 +80,7 @@ command you forgot, or provide suggestions on how to run commands to perform oth
 
 ## Install the CLI
 
-Installation instructions are available in the GLab
+Installation instructions are available in the `glab`
 [`README`](https://gitlab.com/gitlab-org/cli/#installation).
 
 ## Authenticate with GitLab
