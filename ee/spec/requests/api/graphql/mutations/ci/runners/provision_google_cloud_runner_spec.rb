@@ -9,7 +9,7 @@ RSpec.describe 'ProvisionGoogleCloudRunner', feature_category: :fleet_visibility
   let_it_be(:runner) { create(:ci_runner, :project, projects: [project]) }
   let_it_be(:user) { project.owner }
 
-  let(:google_cloud_project_id) { 'google_project_id' }
+  let(:google_cloud_project_id) { 'google-project-id' }
   let(:region) { 'us-central1' }
   let(:zone) { 'us-central1-a' }
   let(:machine_type) { 'n2d-standard-2' }
@@ -22,7 +22,7 @@ RSpec.describe 'ProvisionGoogleCloudRunner', feature_category: :fleet_visibility
       provisioning_project_id: google_cloud_project_id,
       provisioning_region: region,
       provisioning_zone: zone,
-      provisioning_machine_type: machine_type,
+      ephemeral_machine_type: machine_type,
       runner_token: runner_token
     }
   end
@@ -65,24 +65,33 @@ RSpec.describe 'ProvisionGoogleCloudRunner', feature_category: :fleet_visibility
       post_response
       expect_graphql_errors_to_be_empty
 
-      expect(graphql_data_at(:provision_google_cloud_runner, :provisioning_steps)).to match(
-        [
-          {
-            'instructions' => a_string_including(
-              "# TODO: Test provisioning runner #{runner_token} on project '#{google_cloud_project_id}'"),
-            'languageIdentifier' => 'terraform',
-            'title' => 'Terraform script'
-          }
-        ]
-      )
+      steps = graphql_data_at(:provision_google_cloud_runner, :provisioning_steps)
+      expect(steps).to match([
+        {
+          'instructions' => /google_project += "#{google_cloud_project_id}"/,
+          'languageIdentifier' => 'terraform',
+          'title' => 'Save the Terraform script to a file'
+        },
+        {
+          'instructions' => /gitlab_runner="#{runner_token}"/,
+          'languageIdentifier' => 'shell',
+          'title' => 'Apply the Terraform script'
+        }
+      ])
     end
 
     context 'with nil runner token' do
       let(:runner_token) { nil }
 
-      it 'is successful' do
+      it 'is successful and generates a unique deployment id' do
         post_response
         expect_graphql_errors_to_be_empty
+
+        steps = graphql_data_at(:provision_google_cloud_runner, :provisioning_steps)
+        expect(steps).to match([
+          a_hash_including('instructions' => /name = "grit[A-Za-z0-9_\-]{8}"/),
+          an_instance_of(Hash)
+        ])
       end
 
       context 'when user does not have permissions to create runner' do
@@ -94,8 +103,7 @@ RSpec.describe 'ProvisionGoogleCloudRunner', feature_category: :fleet_visibility
         it 'returns an error' do
           post_response
 
-          expect_graphql_errors_to_include("The resource that you are attempting to access does not exist " \
-                                           "or you don't have permission to perform this action")
+          expect_graphql_errors_to_include('The user is not allowed to create a runner')
         end
       end
     end
@@ -103,7 +111,7 @@ RSpec.describe 'ProvisionGoogleCloudRunner', feature_category: :fleet_visibility
     context 'with invalid runner token' do
       let(:runner_token) { 'invalid-token' }
 
-      it_behaves_like 'a request returning an error', 'runnerToken is invalid'
+      it_behaves_like 'a request returning an error', 'The runner authentication token is invalid'
     end
 
     context 'when user is not authorized' do
