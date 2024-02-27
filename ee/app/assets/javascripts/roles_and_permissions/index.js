@@ -3,29 +3,56 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import ListMemberRoles from './components/list_member_roles.vue';
+import CustomRolesApp from './components/app.vue';
 
 Vue.use(GlToast);
 Vue.use(VueApollo);
 
-export const initRolesAndPermissions = () => {
-  const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient(),
-  });
+const apolloProvider = new VueApollo({
+  defaultClient: createDefaultClient(),
+});
 
+export const initRolesAndPermissions = () => {
   const el = document.querySelector('#js-roles-and-permissions');
 
   if (!el) {
     return null;
   }
 
+  const { groupFullPath } = el.dataset;
+
   return new Vue({
     el,
-    apolloProvider,
     name: 'RolesAndPermissionsRoot',
-    render(h) {
-      return h(ListMemberRoles, {
-        props: { groupFullPath: el.dataset.groupFullPath },
+    apolloProvider,
+    render(createElement) {
+      return createElement(ListMemberRoles, {
+        props: { groupFullPath },
       });
+    },
+  });
+};
+
+export const initCustomRolesApp = () => {
+  const el = document.querySelector('#js-roles-and-permissions');
+
+  if (!el) {
+    return null;
+  }
+
+  const { documentationPath, emptyStateSvgPath, groupFullPath } = el.dataset;
+
+  return new Vue({
+    el,
+    name: 'CustomRolesRoot',
+    apolloProvider,
+    provide: {
+      documentationPath,
+      emptyStateSvgPath,
+      groupFullPath,
+    },
+    render(createElement) {
+      return createElement(CustomRolesApp);
     },
   });
 };

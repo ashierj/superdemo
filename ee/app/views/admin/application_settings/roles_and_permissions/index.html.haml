@@ -1,5 +1,5 @@
 - return unless License.feature_available?(:custom_roles)
 - page_title _('Roles and Permissions')
 
-#js-roles-and-permissions
+#js-roles-and-permissions{ data: member_roles_data }
   = gl_loading_icon(css_class: 'gl-my-5', size: 'md')

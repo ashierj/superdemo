@@ -1,5 +1,5 @@
 - return unless @group.licensed_feature_available?(:custom_roles)
 - page_title _('Roles and Permissions')
 
-#js-roles-and-permissions{ data: { group_full_path: @group.full_path } }
+#js-roles-and-permissions{ data: member_roles_data.merge({ group_full_path: @group.full_path }) }
   = gl_loading_icon(css_class: 'gl-my-5', size: 'md')
