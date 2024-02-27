@@ -45,6 +45,23 @@ RSpec.describe ServicePing::ServicePingSettings do
     end
   end
 
+  describe '#license_operational_metric_enabled?' do
+    where(:customer_service_enabled, :expected_license_operational_metric_enabled) do
+      true  | true
+      false | false
+    end
+
+    with_them do
+      before do
+        create_current_license(operational_metrics_enabled: customer_service_enabled)
+      end
+
+      it 'returns the correct value for license_operational_metric_enabled?' do
+        expect(described_class.license_operational_metric_enabled?).to eq(expected_license_operational_metric_enabled)
+      end
+    end
+  end
+
   describe '#enabled?' do
     where(:usage_ping_enabled, :customer_service_enabled, :expected_enabled) do
       true  | true  | true
