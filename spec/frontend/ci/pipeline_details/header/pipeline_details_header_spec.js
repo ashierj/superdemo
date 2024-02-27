@@ -147,7 +147,7 @@ describe('Pipeline details header', () => {
     });
 
     it('displays total jobs', () => {
-      expect(findTotalJobs().text()).toBe('3 Jobs');
+      expect(findTotalJobs().text()).toBe('3 jobs');
     });
 
     it('has link to commit', () => {

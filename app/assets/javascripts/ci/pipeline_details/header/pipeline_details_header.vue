@@ -14,7 +14,7 @@ import {
 import { BUTTON_TOOLTIP_RETRY, BUTTON_TOOLTIP_CANCEL } from '~/ci/constants';
 import { timeIntervalInWords } from '~/lib/utils/datetime_utility';
 import { setUrlFragment, redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
-import { __, s__, sprintf, formatNumber } from '~/locale';
+import { __, n__, s__, sprintf, formatNumber } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import CiIcon from '~/vue_shared/components/ci_icon/ci_icon.vue';
@@ -249,8 +249,10 @@ export default {
       return this.pipeline?.commit?.title || '';
     },
     totalJobsText() {
-      return sprintf(__('%{jobs} Jobs'), {
-        jobs: this.pipeline?.totalJobs || 0,
+      const totalJobs = this.pipeline?.totalJobs || 0;
+
+      return sprintf(n__('%{jobs} job', '%{jobs} jobs', totalJobs), {
+        jobs: totalJobs,
       });
     },
     triggeredText() {

@@ -812,8 +812,10 @@ msgstr ""
 msgid "%{jobName} job is being retried"
 msgstr ""
 
-msgid "%{jobs} Jobs"
-msgstr ""
+msgid "%{jobs} job"
+msgid_plural "%{jobs} jobs"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "%{key} is not a valid URL."
 msgstr ""
