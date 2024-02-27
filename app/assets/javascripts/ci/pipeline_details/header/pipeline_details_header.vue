@@ -134,17 +134,6 @@ export default {
       default: '',
     },
   },
-  props: {
-    yamlErrors: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    trigger: {
-      type: Boolean,
-      required: true,
-    },
-  },
   apollo: {
     pipeline: {
       context() {
@@ -327,17 +316,14 @@ export default {
     isScheduledPipeline() {
       return this.pipeline.source === SCHEDULE_SOURCE;
     },
-    isInvalidPipeline() {
-      return Boolean(this.yamlErrors);
-    },
     failureReason() {
       return this.pipeline.failureReason;
     },
     badges() {
       return {
         schedule: this.isScheduledPipeline,
-        trigger: this.trigger,
-        invalid: this.isInvalidPipeline,
+        trigger: this.pipeline.trigger,
+        invalid: this.pipeline.yamlErrors,
         child: this.pipeline.child,
         latest: this.pipeline.latest,
         mergeTrainPipeline: this.isMergeTrainPipeline,
@@ -347,6 +333,9 @@ export default {
         autoDevops: this.isAutoDevopsPipeline,
         stuck: this.pipeline.stuck,
       };
+    },
+    yamlErrorMessages() {
+      return this.pipeline?.yamlErrorMessages || '';
     },
   },
   methods: {
@@ -543,7 +532,7 @@ export default {
             <gl-badge
               v-if="badges.invalid"
               v-gl-tooltip
-              :title="yamlErrors"
+              :title="yamlErrorMessages"
               variant="danger"
               size="sm"
             >
