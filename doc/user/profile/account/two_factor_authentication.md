@@ -474,7 +474,7 @@ After signing in, immediately set up 2FA with a new device.
 
 DETAILS:
 **Tier:** Premium, Ultimate
-**Offering:** SaaS
+**Offering:** GitLab.com
 
 If other methods are unavailable, have a GitLab support contact submit a [support ticket](https://support.gitlab.com) to request
 a GitLab global administrator disable 2FA for your account:
