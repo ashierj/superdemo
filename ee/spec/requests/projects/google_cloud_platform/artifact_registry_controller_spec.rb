@@ -4,11 +4,10 @@ require 'spec_helper'
 
 RSpec.describe Projects::GoogleCloudPlatform::ArtifactRegistryController, feature_category: :container_registry do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :private) }
+  let_it_be_with_reload(:project) { create(:project, :private) }
 
   before do
-    sign_in(user)
-    stub_container_registry_config(enabled: true)
+    sign_in(user) if user
     stub_saas_features(google_cloud_support: true)
   end
 
@@ -38,6 +37,16 @@ RSpec.describe Projects::GoogleCloudPlatform::ArtifactRegistryController, featur
     end
 
     context 'when user does not have access to registry' do
+      it_behaves_like 'returning response status', :not_found
+    end
+
+    context 'with a public project and anonymous user' do
+      let(:user) { nil }
+
+      before do
+        project.update!(visibility: Gitlab::VisibilityLevel::PUBLIC)
+      end
+
       it_behaves_like 'returning response status', :not_found
     end
   end

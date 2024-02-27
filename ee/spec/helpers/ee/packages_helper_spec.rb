@@ -47,6 +47,11 @@ RSpec.describe EE::PackagesHelper, feature_category: :package_registry do
   describe '#google_artifact_registry_data' do
     subject(:data) { helper.google_artifact_registry_data(project) }
 
+    before do
+      allow(helper).to receive(:current_user).and_return(user)
+      instance_variable_set(:@project, project)
+    end
+
     it { is_expected.to include(full_path: project.full_path) }
 
     it { is_expected.to include(endpoint: project_google_cloud_platform_artifact_registry_index_path(project)) }
@@ -54,7 +59,8 @@ RSpec.describe EE::PackagesHelper, feature_category: :package_registry do
     describe 'settings_path' do
       before do
         allow(project).to receive(:gcp_artifact_registry_enabled?).and_return(true)
-        allow(helper).to receive(:show_container_registry_settings).with(project).and_return(true)
+        allow(Ability).to receive(:allowed?).with(user, :admin_google_cloud_artifact_registry, project)
+          .and_return(true)
       end
 
       it do
@@ -65,14 +71,6 @@ RSpec.describe EE::PackagesHelper, feature_category: :package_registry do
       context 'when gcp_artifact_registry_enabled? is false' do
         before do
           allow(project).to receive(:gcp_artifact_registry_enabled?).and_return(false)
-        end
-
-        it { is_expected.to include(settings_path: '') }
-      end
-
-      context 'when show_container_registry_settings is false' do
-        before do
-          allow(helper).to receive(:show_container_registry_settings).with(project).and_return(false)
         end
 
         it { is_expected.to include(settings_path: '') }

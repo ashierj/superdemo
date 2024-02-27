@@ -3623,4 +3623,50 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
     end
   end
+
+  describe 'read_google_cloud_artifact_registry' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:saas_feature_enabled, :current_user, :match_expected_result) do
+      true  | ref(:owner)      | be_allowed(:read_google_cloud_artifact_registry)
+      true  | ref(:reporter)   | be_allowed(:read_google_cloud_artifact_registry)
+      true  | ref(:guest)      | be_disallowed(:read_google_cloud_artifact_registry)
+      true  | ref(:non_member) | be_disallowed(:read_google_cloud_artifact_registry)
+      false | ref(:owner)      | be_disallowed(:read_google_cloud_artifact_registry)
+      false | ref(:reporter)   | be_disallowed(:read_google_cloud_artifact_registry)
+      false | ref(:guest)      | be_disallowed(:read_google_cloud_artifact_registry)
+      false | ref(:non_member) | be_disallowed(:read_google_cloud_artifact_registry)
+    end
+
+    with_them do
+      before do
+        stub_saas_features(google_cloud_support: saas_feature_enabled)
+      end
+
+      it { is_expected.to match_expected_result }
+    end
+  end
+
+  describe 'admin_google_cloud_artifact_registry' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:saas_feature_enabled, :current_user, :match_expected_result) do
+      true  | ref(:owner)      | be_allowed(:admin_google_cloud_artifact_registry)
+      true  | ref(:maintainer) | be_allowed(:admin_google_cloud_artifact_registry)
+      true  | ref(:developer)  | be_disallowed(:admin_google_cloud_artifact_registry)
+      true  | ref(:non_member) | be_disallowed(:admin_google_cloud_artifact_registry)
+      false | ref(:owner)      | be_disallowed(:admin_google_cloud_artifact_registry)
+      false | ref(:maintainer) | be_disallowed(:admin_google_cloud_artifact_registry)
+      false | ref(:developer)  | be_disallowed(:admin_google_cloud_artifact_registry)
+      false | ref(:non_member) | be_disallowed(:admin_google_cloud_artifact_registry)
+    end
+
+    with_them do
+      before do
+        stub_saas_features(google_cloud_support: saas_feature_enabled)
+      end
+
+      it { is_expected.to match_expected_result }
+    end
+  end
 end

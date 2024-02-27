@@ -11,7 +11,6 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
   end
 
   before do
-    stub_container_registry_config(enabled: true)
     stub_saas_features(google_cloud_support: true)
     sign_in(user)
   end

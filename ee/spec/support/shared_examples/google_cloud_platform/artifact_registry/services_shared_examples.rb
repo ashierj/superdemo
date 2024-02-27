@@ -23,6 +23,26 @@ RSpec.shared_examples 'an artifact registry service handling validation errors' 
 
       it_behaves_like 'returning an error service response',
         message: described_class::ERROR_RESPONSES[:access_denied].message
+
+      context 'as a guest' do
+        before_all do
+          project.add_guest(user)
+        end
+
+        it_behaves_like 'returning an error service response',
+          message: described_class::ERROR_RESPONSES[:access_denied].message
+      end
+
+      context 'as anonymous' do
+        let_it_be(:user) { nil }
+
+        before do
+          project.update!(visibility: Gitlab::VisibilityLevel::PUBLIC)
+        end
+
+        it_behaves_like 'returning an error service response',
+          message: described_class::ERROR_RESPONSES[:access_denied].message
+      end
     end
 
     context 'with gcp_artifact_registry disabled' do

@@ -23,6 +23,8 @@ RSpec.describe Sidebars::Projects::Menus::PackagesRegistriesMenu, feature_catego
         end
       end
 
+      it { is_expected.not_to be_nil }
+
       context 'when feature flag is turned off' do
         before do
           stub_feature_flags(gcp_artifact_registry: false)
@@ -39,25 +41,17 @@ RSpec.describe Sidebars::Projects::Menus::PackagesRegistriesMenu, feature_catego
         it_behaves_like 'the menu item is not added to list of menu items'
       end
 
-      context 'when user can read container images' do
-        context 'when config registry setting is disabled' do
-          before do
-            stub_container_registry_config(enabled: false)
-          end
+      context 'when user is guest' do
+        let_it_be(:user) { create(:user) }
 
-          it_behaves_like 'the menu item is not added to list of menu items'
+        before_all do
+          project.add_guest(user)
         end
 
-        context 'when config registry setting is enabled' do
-          it 'the menu item is added to list of menu items' do
-            stub_container_registry_config(enabled: true)
-
-            is_expected.not_to be_nil
-          end
-        end
+        it_behaves_like 'the menu item is not added to list of menu items'
       end
 
-      context 'when user cannot read container images' do
+      context 'when user is anonymous' do
         let(:user) { nil }
 
         it_behaves_like 'the menu item is not added to list of menu items'
