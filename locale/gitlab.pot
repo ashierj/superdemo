@@ -33917,6 +33917,9 @@ msgstr ""
 msgid "ObservabilityLogs|Warning"
 msgstr ""
 
+msgid "ObservabilityMetrics|Cancel"
+msgstr ""
+
 msgid "ObservabilityMetrics|Date"
 msgstr ""
 
@@ -33941,10 +33944,16 @@ msgstr ""
 msgid "ObservabilityMetrics|Metrics"
 msgstr ""
 
+msgid "ObservabilityMetrics|Metrics search has been cancelled."
+msgstr ""
+
 msgid "ObservabilityMetrics|Name"
 msgstr ""
 
 msgid "ObservabilityMetrics|No data found for the selected metric."
+msgstr ""
+
+msgid "ObservabilityMetrics|Search"
 msgstr ""
 
 msgid "ObservabilityMetrics|Search metrics starting with..."

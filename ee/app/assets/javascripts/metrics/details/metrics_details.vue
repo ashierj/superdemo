@@ -23,6 +23,7 @@ export default {
     metricType: s__('ObservabilityMetrics|Type'),
     lastIngested: s__('ObservabilityMetrics|Last ingested'),
     noData: s__('ObservabilityMetrics|No data found for the selected metric.'),
+    cancelledWarning: s__('ObservabilityMetrics|Metrics search has been cancelled.'),
   },
   components: {
     GlLoadingIcon,
@@ -52,11 +53,12 @@ export default {
   },
   data() {
     return {
-      metricData: [],
+      metricData: null,
       searchMetadata: null,
       filters: queryToFilterObj(window.location.search),
       apiAbortController: null,
       loading: false,
+      queryCancelled: false,
     };
   },
   computed: {
@@ -116,6 +118,7 @@ export default {
       }
     },
     async fetchMetricData() {
+      this.queryCancelled = false;
       this.loading = true;
       try {
         this.apiAbortController = new AbortController();
@@ -125,7 +128,9 @@ export default {
           { filters: this.filters, abortController: this.apiAbortController },
         );
       } catch (e) {
-        if (!axios.isCancel(e)) {
+        if (axios.isCancel(e)) {
+          this.cancel();
+        } else {
           createAlert({
             message: this.$options.i18n.error,
           });
@@ -138,7 +143,7 @@ export default {
     goToMetricsIndex() {
       visitUrl(this.metricsIndexUrl);
     },
-    onFilter({ attributes, dateRange, groupBy }) {
+    onSubmit({ attributes, dateRange, groupBy }) {
       this.filters = {
         // only attributes are used by the filtered_search component, so only those needs processing
         attributes: processFilteredSearchFilters(attributes),
@@ -147,13 +152,23 @@ export default {
       };
       this.fetchMetricData();
     },
+    onCancel() {
+      this.apiAbortController?.abort();
+    },
+    cancel() {
+      this.$toast.show(this.$options.i18n.cancelledWarning, {
+        variant: 'danger',
+      });
+      this.queryCancelled = true;
+    },
   },
   EMPTY_CHART_SVG,
 };
 </script>
 
 <template>
-  <div v-if="loading" class="gl-py-5">
+  <!-- only show the spinner ont the first load -->
+  <div v-if="loading && !metricData" class="gl-py-5">
     <gl-loading-icon size="lg" />
   </div>
 
@@ -174,13 +189,21 @@ export default {
     <div class="gl-my-6">
       <filtered-search
         v-if="searchMetadata"
+        :loading="loading"
         :search-metadata="searchMetadata"
         :attribute-filters="attributeFiltersValue"
         :date-range-filter="filters.dateRange"
         :group-by-filter="filters.groupBy"
-        @filter="onFilter"
+        @submit="onSubmit"
+        @cancel="onCancel"
       />
-      <metrics-chart v-if="metricData.length > 0" :metric-data="metricData" />
+
+      <metrics-chart
+        v-if="metricData && metricData.length"
+        :metric-data="metricData"
+        :loading="loading"
+        :cancelled="queryCancelled"
+      />
       <gl-empty-state v-else :svg-path="$options.EMPTY_CHART_SVG">
         <template #title>
           <p class="gl-font-lg gl-my-0">{{ $options.i18n.noData }}</p>

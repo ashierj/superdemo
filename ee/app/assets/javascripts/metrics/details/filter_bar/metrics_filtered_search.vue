@@ -1,5 +1,6 @@
 <script>
-import { GlFilteredSearchToken } from '@gitlab/ui';
+import { GlFilteredSearchToken, GlButton, GlLoadingIcon } from '@gitlab/ui';
+
 import { s__ } from '~/locale';
 import { OPERATORS_IS_NOT } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
@@ -12,9 +13,13 @@ export default {
     FilteredSearch,
     DateRangeFilter,
     GroupByFilter,
+    GlButton,
+    GlLoadingIcon,
   },
   i18n: {
     searchInputPlaceholder: s__('ObservabilityMetrics|Filter attributes...'),
+    search: s__('ObservabilityMetrics|Search'),
+    cancel: s__('ObservabilityMetrics|Cancel'),
   },
   props: {
     searchMetadata: {
@@ -36,6 +41,11 @@ export default {
       required: false,
       default: () => {},
     },
+    loading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     let defaultGroupByAttributes = this.searchMetadata.default_group_by_attributes ?? [];
@@ -44,6 +54,7 @@ export default {
     }
     return {
       shouldShowDateRangePicker: false,
+      filters: this.attributeFilters,
       dateRange: this.dateRangeFilter,
       groupBy: {
         attributes: this.groupByFilter?.attributes ?? defaultGroupByAttributes,
@@ -63,11 +74,7 @@ export default {
   },
   methods: {
     onFilter(filters) {
-      this.$emit('filter', {
-        attributes: filters,
-        dateRange: this.dateRange,
-        groupBy: this.groupBy,
-      });
+      this.filters = filters;
     },
     onDateRangeSelected({ value, startDate, endDate }) {
       this.dateRange = { value, startDate, endDate };
@@ -75,13 +82,24 @@ export default {
     onGroupBy({ attributes, func }) {
       this.groupBy = { attributes, func };
     },
+    onSubmit() {
+      if (this.loading) {
+        this.$emit('cancel');
+      } else {
+        this.$emit('submit', {
+          attributes: this.filters,
+          dateRange: this.dateRange,
+          groupBy: this.groupBy,
+        });
+      }
+    },
   },
 };
 </script>
 
 <template>
   <div
-    class="gl-mt-3 gl-mb-9 gl-py-5 gl-px-3 gl-bg-gray-10 gl-border-b-1 gl-border-b-solid gl-border-t-1 gl-border-t-solid gl-border-gray-100"
+    class="gl-mt-3 gl-mb-6 gl-py-5 gl-px-3 gl-bg-gray-10 gl-border-b-1 gl-border-b-solid gl-border-t-1 gl-border-t-solid gl-border-gray-100"
   >
     <filtered-search
       class="filtered-search-box gl-display-flex gl-border-none"
@@ -89,8 +107,9 @@ export default {
       namespace="metrics-details-filtered-search"
       :search-input-placeholder="$options.i18n.searchInputPlaceholder"
       :tokens="availableTokens"
-      :initial-filter-value="attributeFilters"
+      :initial-filter-value="filters"
       terms-as-tokens
+      :show-search-button="false"
       @onFilter="onFilter"
     />
 
@@ -107,5 +126,20 @@ export default {
       :selected-function="groupBy.func"
       @groupBy="onGroupBy"
     />
+
+    <gl-button
+      type="submit"
+      :variant="loading ? 'danger' : 'confirm'"
+      class="gl-my-5 gl-mb-0!"
+      @click="onSubmit"
+    >
+      <template v-if="loading">
+        <gl-loading-icon size="sm" inline color="light" />
+        {{ $options.i18n.cancel }}
+      </template>
+      <template v-else>
+        {{ $options.i18n.search }}
+      </template>
+    </gl-button>
   </div>
 </template>
