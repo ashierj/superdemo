@@ -1,6 +1,6 @@
 ---
 name: manage_group_access_tokens
-description: Allows manage access to the group access tokens.
+description: Create, read, update, and delete group access tokens. When creating a token, users with this custom permission must select a role for that token that has the same or fewer permissions as the default role used as the base for the custom role.
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/428353
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/140115
 feature_category: system_access
