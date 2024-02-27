@@ -6,7 +6,7 @@ module Gitlab
       module Summary
         class LeadTime < BaseTime
           def title
-            _('Lead Time')
+            _('Lead time')
           end
 
           def self.start_event_identifier
@@ -32,8 +32,8 @@ module Gitlab
               end
 
             [
-              { "name" => _('Lead Time'), "url" => dashboard_link, "label" => s_('ValueStreamAnalytics|Dashboard') },
-              { "name" => _('Lead Time'),
+              { "name" => _('Lead time'), "url" => dashboard_link, "label" => s_('ValueStreamAnalytics|Dashboard') },
+              { "name" => _('Lead time'),
                 "url" => helpers.help_page_path('user/analytics/index', anchor: 'definitions'),
                 "docs_link" => true,
                 "label" => s_('ValueStreamAnalytics|Go to docs') }

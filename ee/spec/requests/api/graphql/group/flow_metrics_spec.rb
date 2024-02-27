@@ -65,7 +65,7 @@ RSpec.describe 'getting group flow metrics', feature_category: :value_stream_man
           'identifier' => 'issues',
           'unit' => nil,
           'value' => 2,
-          'title' => n_('New Issue', 'New Issues', 2)
+          'title' => n_('New issue', 'New issues', 2)
         })
       end
     end
