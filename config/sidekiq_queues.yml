@@ -777,6 +777,8 @@
   - 1
 - - vulnerability_exports_export_deletion
   - 1
+- - vulnerability_external_issue_links_update_vulnerability_read
+  - 1
 - - web_hook
   - 1
 - - web_hooks_log_destroy

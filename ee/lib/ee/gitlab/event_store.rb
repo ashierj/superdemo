@@ -72,8 +72,8 @@ module EE
                   ::Feature.enabled?(:update_vuln_reads_archived_via_event,
                     ::Project.find_by_id(event.data['project_id']), type: :gitlab_com_derisk)
                 }
-
           subscribe_to_epic_events(store)
+          subscribe_to_external_issue_links_events(store)
         end
 
         def subscribe_to_epic_events(store)
@@ -86,6 +86,20 @@ module EE
             to: ::Epics::EpicUpdatedEvent,
             if: ->(event) {
                   ::Feature.enabled?(:validate_epic_work_item_sync, ::Group.find_by_id(event.data[:group_id]))
+                }
+        end
+
+        def subscribe_to_external_issue_links_events(store)
+          store.subscribe ::VulnerabilityExternalIssueLinks::UpdateVulnerabilityRead,
+            to: ::Vulnerabilities::LinkToExternalIssueTrackerCreated,
+            if: ->(event) {
+                  ::Feature.enabled?(:handle_vulnerability_external_issue_link_via_events, event.project)
+                }
+
+          store.subscribe ::VulnerabilityExternalIssueLinks::UpdateVulnerabilityRead,
+            to: ::Vulnerabilities::LinkToExternalIssueTrackerRemoved,
+            if: ->(event) {
+                  ::Feature.enabled?(:handle_vulnerability_external_issue_link_via_events, event.project)
                 }
         end
       end
