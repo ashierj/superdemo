@@ -2208,6 +2208,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: vulnerability_external_issue_links_update_vulnerability_read
+  :worker_name: VulnerabilityExternalIssueLinks::UpdateVulnerabilityRead
+  :feature_category: :vulnerability_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: work_items_update_parent_objectives_progress
   :worker_name: WorkItems::UpdateParentObjectivesProgressWorker
   :feature_category: :team_planning
