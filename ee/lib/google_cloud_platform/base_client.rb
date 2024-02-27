@@ -4,8 +4,8 @@ module GoogleCloudPlatform
   class BaseClient
     CLOUD_PLATFORM_SCOPE = 'https://www.googleapis.com/auth/cloud-platform'
 
-    GCP_SUBJECT_TOKEN_ERROR_MESSAGE = 'Unable to retrieve glgo token'
-    GCP_TOKEN_EXCHANGE_ERROR_MESSAGE = 'Token exchange failed'
+    GOOGLE_CLOUD_SUBJECT_TOKEN_ERROR_MESSAGE = 'Unable to retrieve glgo token'
+    GOOGLE_CLOUD_TOKEN_EXCHANGE_ERROR_MESSAGE = 'Token exchange failed'
 
     SAAS_ONLY_ERROR_MESSAGE = "This is a SaaS-only feature that can't run here"
     BLANK_PARAMETERS_ERROR_MESSAGE = 'All Google Cloud parameters are required'
@@ -69,7 +69,8 @@ module GoogleCloudPlatform
     def handling_errors
       yield
     rescue RuntimeError => e
-      if e.message.include?(GCP_SUBJECT_TOKEN_ERROR_MESSAGE) || e.message.include?(GCP_TOKEN_EXCHANGE_ERROR_MESSAGE)
+      if e.message.include?(GOOGLE_CLOUD_SUBJECT_TOKEN_ERROR_MESSAGE) ||
+          e.message.include?(GOOGLE_CLOUD_TOKEN_EXCHANGE_ERROR_MESSAGE)
         raise ::GoogleCloudPlatform::AuthenticationError, e.message
       end
 
