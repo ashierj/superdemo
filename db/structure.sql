@@ -11640,7 +11640,6 @@ CREATE TABLE namespace_settings (
     emails_enabled boolean DEFAULT true NOT NULL,
     code_suggestions boolean DEFAULT false NOT NULL,
     experiment_features_enabled boolean DEFAULT false NOT NULL,
-    third_party_ai_features_enabled boolean DEFAULT true NOT NULL,
     default_branch_protection_defaults jsonb DEFAULT '{}'::jsonb NOT NULL,
     service_access_tokens_expiration_enforced boolean DEFAULT true NOT NULL,
     product_analytics_enabled boolean DEFAULT false NOT NULL,
