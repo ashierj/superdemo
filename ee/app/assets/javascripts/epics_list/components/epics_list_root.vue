@@ -2,7 +2,7 @@
 import { GlButton, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 
-import EpicsFilteredSearchMixin from 'ee/roadmap/mixins/filtered_search_mixin';
+import EpicsFilteredSearchMixin from 'jh_else_ee/roadmap/mixins/filtered_search_mixin';
 
 import { createAlert } from '~/alert';
 
