@@ -175,6 +175,12 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
         expect { post provider, params: { group_id: group } }.to change { AuthenticationEvent.count }.by(1)
       end
 
+      it 'logs saml_response for debugging' do
+        expect(Gitlab::AuthLogger).to receive(:info).with(payload_type: 'saml_response', saml_response: nil)
+
+        post provider, params: { group_id: group, RelayState: '.example.com' }
+      end
+
       include_examples 'works with session enforcement'
     end
 
