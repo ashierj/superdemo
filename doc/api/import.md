@@ -58,7 +58,7 @@ curl --request POST \
       "single_endpoint_notes_import": true,
       "attachments_import": true,
       "collaborators_import": true
-    },
+    }
 }'
 ```
 
