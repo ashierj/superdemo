@@ -70,7 +70,11 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
         it_behaves_like 'does not update approvals'
       end
 
-      context 'when pipeline is not latest' do
+      context 'when pipeline is for diff_head_sha' do
+        it_behaves_like 'updates approvals'
+      end
+
+      context 'when pipeline is not for diff_head_sha' do
         let_it_be(:pipeline) do
           create(:ee_ci_pipeline, project: project, ref: merge_request.source_branch)
         end

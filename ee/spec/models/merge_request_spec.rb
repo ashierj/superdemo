@@ -2422,6 +2422,46 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
+  describe '#head_sha_pipeline?' do
+    let_it_be_with_refind(:merge_request) do
+      create(:merge_request, :with_merge_request_pipeline, source_project: project)
+    end
+
+    subject(:head_sha_pipeline) { merge_request.head_sha_pipeline?(pipeline) }
+
+    context 'when the pipeline is the head pipeline' do
+      let_it_be(:pipeline) do
+        create(:ee_ci_pipeline,
+          project: project,
+          ref: merge_request.source_branch,
+          sha: merge_request.diff_head_sha
+        )
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when the pipeline is merged_results_pipeline' do
+      let_it_be(:pipeline) do
+        create(:ci_pipeline, :merged_result_pipeline, :success, project: project, merge_request: merge_request)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when the pipeline is base_pipeline' do
+      let_it_be(:pipeline) do
+        create(:ee_ci_pipeline,
+          project: project,
+          ref: merge_request.source_branch,
+          sha: merge_request.diff_base_sha
+        )
+      end
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
   describe '#latest_scan_finding_comparison_pipeline' do
     let_it_be(:project) { create(:project, :public, :repository) }
     let_it_be_with_refind(:merge_request) do

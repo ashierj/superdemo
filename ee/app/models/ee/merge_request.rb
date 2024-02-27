@@ -443,6 +443,10 @@ module EE
       find_common_ancestor_pipeline_with_security_reports
     end
 
+    def head_sha_pipeline?(pipeline)
+      pipeline.source_sha == diff_head_sha || pipeline.sha == diff_head_sha
+    end
+
     override :can_suggest_reviewers?
     def can_suggest_reviewers?
       open? && modified_paths.any?

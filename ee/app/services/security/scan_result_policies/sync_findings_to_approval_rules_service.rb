@@ -43,9 +43,9 @@ module Security
       end
 
       def merge_requests_for_pipeline
-        return MergeRequest.none unless pipeline.latest?
-
-        pipeline.all_merge_requests.opened
+        pipeline.all_merge_requests.opened.select do |mr|
+          mr.head_sha_pipeline?(pipeline)
+        end
       end
 
       def merge_requests_targeting_pipeline_ref
