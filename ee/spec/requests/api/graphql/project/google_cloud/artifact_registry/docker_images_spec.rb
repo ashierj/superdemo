@@ -110,19 +110,11 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
         'artifacts' => {
           'nodes' => [{
             'name' => docker_image.name,
-            'uri' => docker_image.uri,
             'tags' => docker_image.tags,
-            'imageSizeBytes' => docker_image.image_size_bytes.to_s,
-            'mediaType' => docker_image.media_type,
-            'buildTime' => Time.now.iso8601,
-            'updateTime' => Time.now.iso8601,
             'uploadTime' => Time.now.iso8601,
-            'projectId' => project_integration.artifact_registry_project_id,
-            'location' => project_integration.artifact_registry_location,
-            'repository' => project_integration.artifact_registry_repository,
+            'updateTime' => Time.now.iso8601,
             'image' => image,
-            'digest' => digest,
-            'artifactRegistryImageUrl' => "https://#{docker_image.uri}"
+            'digest' => digest
           }],
           'pageInfo' => {
             'endCursor' => end_cursor,
