@@ -5,8 +5,8 @@ module EE
     module ServicePingSettings
       extend ::Gitlab::Utils::Override
 
-      override :enabled?
-      def enabled?
+      override :license_operational_metric_enabled?
+      def license_operational_metric_enabled?
         ::License.current&.customer_service_enabled? || super
       end
     end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ServicePing::PermitDataCategories do
+RSpec.describe ServicePing::PermitDataCategories, feature_category: :service_ping do
   describe '#execute' do
     subject(:permitted_categories) { described_class.new.execute }
 
@@ -25,6 +25,30 @@ RSpec.describe ServicePing::PermitDataCategories do
     end
 
     context 'with current license' do
+      using RSpec::Parameterized::TableSyntax
+
+      where(:usage_ping_enabled, :operational_metrics_enabled, :optional_metrics_enabled, :expected_data_categories) do
+        false | false | false | %w[standard subscription operational]
+        true  | false | false | %w[standard subscription operational]
+        true  | false | true  | %w[standard subscription operational optional]
+        true  | true  | false | %w[standard subscription operational]
+        true  | true  | true  | %w[standard subscription operational optional]
+        false | true  | true  | %w[standard subscription operational optional]
+        false | true  | false | %w[standard subscription operational]
+      end
+
+      with_them do
+        before do
+          stub_config_setting(usage_ping_enabled: usage_ping_enabled)
+          create_current_license(operational_metrics_enabled: operational_metrics_enabled)
+          stub_application_setting(include_optional_metrics_in_service_ping: optional_metrics_enabled)
+        end
+
+        it 'returns expected categories' do
+          expect(permitted_categories).to match_array(expected_data_categories)
+        end
+      end
+
       context 'when usage ping setting is set to true' do
         before do
           stub_config_setting(usage_ping_enabled: true)
@@ -77,7 +101,7 @@ RSpec.describe ServicePing::PermitDataCategories do
           end
 
           it 'returns all categories' do
-            expect(permitted_categories).to match_array(%w[standard subscription operational])
+            expect(permitted_categories).to match_array(%w[standard subscription operational optional])
           end
         end
 

@@ -12,15 +12,10 @@ module EE
 
       override :execute
       def execute
-        return super unless ::License.current.present?
-        return super unless ::ServicePing::ServicePingSettings.enabled_and_consented?
+        optional_enabled = ::Gitlab::CurrentSettings.include_optional_metrics_in_service_ping?
 
-        optional_enabled = ::Gitlab::CurrentSettings.usage_ping_enabled?
-        customer_service_enabled = ::License.current.customer_service_enabled?
-
-        [STANDARD_CATEGORY, SUBSCRIPTION_CATEGORY].tap do |categories|
-          categories << OPERATIONAL_CATEGORY << OPTIONAL_CATEGORY if optional_enabled
-          categories << OPERATIONAL_CATEGORY if customer_service_enabled
+        [STANDARD_CATEGORY, SUBSCRIPTION_CATEGORY, OPERATIONAL_CATEGORY].tap do |categories|
+          categories << OPTIONAL_CATEGORY if optional_enabled
         end.to_set
       end
     end
