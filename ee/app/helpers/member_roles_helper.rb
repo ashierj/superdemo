@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
 module MemberRolesHelper
+  def member_roles_data
+    {
+      documentation_path: help_page_path('user/custom_roles'),
+      empty_state_svg_path: image_path('illustrations/empty-state/empty-devops-md.svg')
+    }
+  end
+
   def manage_member_roles_path(source)
     root_group = source&.root_ancestor
     return unless root_group&.custom_roles_enabled?

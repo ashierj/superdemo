@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe MemberRolesHelper, feature_category: :permissions do
+  include ApplicationHelper
+
   let_it_be(:user) { build_stubbed(:user) }
   let_it_be(:source) { build_stubbed(:group) }
   let_it_be(:root_group) { source.root_ancestor }
@@ -10,6 +12,19 @@ RSpec.describe MemberRolesHelper, feature_category: :permissions do
   before do
     stub_licensed_features(custom_roles: true)
     allow(helper).to receive(:current_user).and_return(user)
+  end
+
+  describe '#member_roles_data' do
+    subject(:member_roles_data) { helper.member_roles_data }
+
+    let(:expected_data) do
+      {
+        documentation_path: help_page_path('user/custom_roles'),
+        empty_state_svg_path: start_with('/assets/illustrations/empty-state/empty-devops-md')
+      }
+    end
+
+    it { is_expected.to match(hash_including(expected_data)) }
   end
 
   describe '#manage_member_roles_path' do
