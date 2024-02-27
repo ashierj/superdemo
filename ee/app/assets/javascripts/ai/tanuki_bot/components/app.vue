@@ -181,6 +181,7 @@ export default {
   <div>
     <gl-duo-chat
       v-if="helpCenterState.showTanukiBotChatDrawer"
+      id="duo-chat"
       :title="$options.i18n.gitlabChat"
       :messages="messages"
       :error="error"
@@ -189,7 +190,6 @@ export default {
       badge-type="beta"
       :badge-help-page-url="$options.helpPagePath"
       :tool-name="toolName"
-      class="gl-z-index-9999"
       @send-chat-prompt="onSendChatPrompt"
       @chat-hidden="onChatClose"
       @track-feedback="onTrackFeedback"
