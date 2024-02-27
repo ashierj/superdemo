@@ -137,12 +137,14 @@ RSpec.describe API::Releases, feature_category: :release_orchestration do
     let(:params) { { description: 'Best release ever!' } }
 
     let!(:release) do
-      create(:release,
-             project: project,
-             tag: 'v0.1',
-             name: 'New release',
-             released_at: '2018-03-01T22:00:00Z',
-             description: 'Super nice release')
+      create(
+        :release,
+        project: project,
+        tag: 'v0.1',
+        name: 'New release',
+        released_at: '2018-03-01T22:00:00Z',
+        description: 'Super nice release'
+      )
     end
 
     it 'creates an AuditEvent when a release is updated' do
@@ -261,11 +263,13 @@ RSpec.describe API::Releases, feature_category: :release_orchestration do
   describe 'POST /projects/:id/releases/:tag_name/evidence' do
     let(:tag_name) { 'v0.1' }
     let!(:release) do
-      create(:release,
-             project: project,
-             tag: 'v0.1',
-             name: 'New release',
-             description: 'Super nice release')
+      create(
+        :release,
+        project: project,
+        tag: 'v0.1',
+        name: 'New release',
+        description: 'Super nice release'
+      )
     end
 
     it 'accepts the request' do
@@ -335,11 +339,13 @@ RSpec.describe API::Releases, feature_category: :release_orchestration do
 
   describe 'DELETE /projects/:id/releases/:tag_name' do
     let!(:release) do
-      create(:release,
-             project: project,
-             tag: 'v0.1',
-             name: 'New release',
-             description: 'Super nice release')
+      create(
+        :release,
+        project: project,
+        tag: 'v0.1',
+        name: 'New release',
+        description: 'Super nice release'
+      )
     end
 
     it 'creates an AuditEvent when a release is deleted' do

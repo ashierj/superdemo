@@ -46,9 +46,11 @@ RSpec.describe Groups::ProtectedEnvironmentsController, feature_category: :conti
 
     context 'with invalid params' do
       let(:params) do
-        attributes_for(:protected_environment,
-                        name: '',
-                        deploy_access_levels_attributes: [{ group_id: subgroup_1.id }])
+        attributes_for(
+          :protected_environment,
+          name: '',
+          deploy_access_levels_attributes: [{ group_id: subgroup_1.id }]
+        )
       end
 
       it 'does not create a new ProtectedEnvironment' do
@@ -91,7 +93,7 @@ RSpec.describe Groups::ProtectedEnvironmentsController, feature_category: :conti
 
     subject do
       put group_protected_environment_path(group_id: group, id: protected_environment.id),
-          params: { protected_environment: params }, as: :json
+        params: { protected_environment: params }, as: :json
     end
 
     it 'updates the protected environment', :aggregate_failures do

@@ -123,8 +123,7 @@ RSpec.describe Groups::Epics::RelatedEpicLinksController, feature_category: :por
 
         list_service_response = listing_service.new(epic, user).execute
         expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).to eq('message' => nil,
-                                    'issuables' => list_service_response.as_json)
+        expect(json_response).to eq('message' => nil, 'issuables' => list_service_response.as_json)
       end
 
       it 'delegates the creation of the related epic link to Epics::RelatedEpicLinks::CreateService' do
@@ -174,7 +173,10 @@ RSpec.describe Groups::Epics::RelatedEpicLinksController, feature_category: :por
           list_service_response = listing_service.new(epic, user).execute
 
           expect(response).to have_gitlab_http_status(:not_found)
-          expect(json_response).to eq('message' => 'No matching epic found. Make sure that you are adding a valid epic URL.', 'issuables' => list_service_response.as_json)
+          expect(json_response).to eq(
+            'message' => 'No matching epic found. Make sure that you are adding a valid epic URL.',
+            'issuables' => list_service_response.as_json
+          )
         end
       end
 
@@ -183,8 +185,6 @@ RSpec.describe Groups::Epics::RelatedEpicLinksController, feature_category: :por
   end
 
   def related_epics_params(opts = {})
-    opts.reverse_merge(group_id: epic.group,
-                       epic_id: epic.iid,
-                       format: :json)
+    opts.reverse_merge(group_id: epic.group, epic_id: epic.iid, format: :json)
   end
 end

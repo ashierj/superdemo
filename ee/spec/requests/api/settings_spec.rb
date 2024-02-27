@@ -43,8 +43,7 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
       it_behaves_like 'PUT request permissions for admin mode'
 
       subject(:api_request) do
-        put api(path, admin, admin_mode: true),
-        params: params
+        put api(path, admin, admin_mode: true), params: params
       end
 
       it 'sets setting when licensed feature is there' do
@@ -72,11 +71,11 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
         project_ids = create_list(:project, 2).map(&:id)
 
         put api('/application/settings', admin, admin_mode: true),
-            params: {
-              elasticsearch_limit_indexing: true,
-              elasticsearch_project_ids: project_ids.join(','),
-              elasticsearch_namespace_ids: namespace_ids.join(',')
-            }
+          params: {
+            elasticsearch_limit_indexing: true,
+            elasticsearch_project_ids: project_ids.join(','),
+            elasticsearch_namespace_ids: namespace_ids.join(',')
+          }
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response['elasticsearch_limit_indexing']).to eq(true)
@@ -92,12 +91,12 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
         create(:elasticsearch_indexed_project).project.id
 
         put api('/application/settings', admin, admin_mode: true),
-            params: {
-              elasticsearch_namespace_ids: []
-            }.to_json,
-            headers: {
-              'CONTENT_TYPE' => 'application/json'
-            }
+          params: {
+            elasticsearch_namespace_ids: []
+          }.to_json,
+          headers: {
+            'CONTENT_TYPE' => 'application/json'
+          }
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response['elasticsearch_namespace_ids']).to eq([])

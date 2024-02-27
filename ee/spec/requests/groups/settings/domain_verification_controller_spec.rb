@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
-                                                               feature_category: :system_access do
+  feature_category: :system_access do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, path: 'my.project', pages_https_only: false, group: group) }

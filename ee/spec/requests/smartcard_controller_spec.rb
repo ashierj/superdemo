@@ -30,8 +30,8 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
 
         expect(response).to have_gitlab_http_status(:redirect)
         expect(response.location).to(
-          eq(extract_certificate_smartcard_url(host: smartcard_host,
-                                               port: smartcard_port)))
+          eq(extract_certificate_smartcard_url(host: smartcard_host, port: smartcard_port))
+        )
       end
 
       context 'with provider param' do
@@ -43,9 +43,8 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
 
           expect(response).to have_gitlab_http_status(:redirect)
           expect(response.location).to(
-            eq(extract_certificate_smartcard_url(host: smartcard_host,
-                                                 port: smartcard_port,
-                                                 provider: provider)))
+            eq(extract_certificate_smartcard_url(host: smartcard_host, port: smartcard_port, provider: provider))
+          )
         end
       end
     end
@@ -80,13 +79,11 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
     let(:params) { {} }
 
     subject do
-      get(extract_certificate_smartcard_path, headers: nginx_certificate_headers,
-                                              params: params)
+      get(extract_certificate_smartcard_path, headers: nginx_certificate_headers, params: params)
     end
 
     before do
-      stub_config_setting(host: 'example.com',
-                          port: 443)
+      stub_config_setting(host: 'example.com', port: 443)
       stub_smartcard_config(
         client_certificate_required_host: smartcard_host,
         client_certificate_required_port: smartcard_port
@@ -106,11 +103,12 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
         subject
 
         expect(response).to have_gitlab_http_status(:redirect)
-        expect(response.location).to(
-          eq(verify_certificate_smartcard_url(host: ::Gitlab.config.gitlab.host,
-                                              port: ::Gitlab.config.gitlab.port,
-                                              client_certificate: encrypted_certificate,
-                                              nonce: nonce)))
+        expect(response.location).to(eq(verify_certificate_smartcard_url(
+          host: ::Gitlab.config.gitlab.host,
+          port: ::Gitlab.config.gitlab.port,
+          client_certificate: encrypted_certificate,
+          nonce: nonce
+        )))
       end
 
       context 'with provider param' do
@@ -121,12 +119,13 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
           subject
 
           expect(response).to have_gitlab_http_status(:redirect)
-          expect(response.location).to(
-            eq(verify_certificate_smartcard_url(host: ::Gitlab.config.gitlab.host,
-                                                port: ::Gitlab.config.gitlab.port,
-                                                client_certificate: encrypted_certificate,
-                                                nonce: nonce,
-                                                provider: provider)))
+          expect(response.location).to(eq(verify_certificate_smartcard_url(
+            host: ::Gitlab.config.gitlab.host,
+            port: ::Gitlab.config.gitlab.port,
+            client_certificate: encrypted_certificate,
+            nonce: nonce,
+            provider: provider
+          )))
         end
       end
 
@@ -366,8 +365,7 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
       end
 
       subject(:verify_smartcard) do
-        get(verify_certificate_smartcard_path,
-            params: params.merge({ provider: 'ldapmain' }))
+        get(verify_certificate_smartcard_path, params: params.merge({ provider: 'ldapmain' }))
       end
 
       before do
@@ -388,11 +386,11 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
 
       context 'when ldap is an active directory server' do
         let(:ldap_search_params) do
-          { attributes: array_including('dn', 'cn', 'mail', 'uid', 'userid'),
+          {
+            attributes: array_including('dn', 'cn', 'mail', 'uid', 'userid'),
             base: ldap_user_search_scope,
-            filter: Net::LDAP::Filter.eq(
-              'altSecurityIdentities',
-              "X509:<I>#{issuer_dn}<SR>2a") }
+            filter: Net::LDAP::Filter.eq('altSecurityIdentities', "X509:<I>#{issuer_dn}<SR>2a")
+          }
         end
 
         before do
