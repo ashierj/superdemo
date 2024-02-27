@@ -36,6 +36,7 @@ describe('Dependencies actions', () => {
     perPage: 20,
     total: 100,
     totalPages: 5,
+    type: 'offset',
   };
 
   const headers = {
@@ -45,6 +46,14 @@ describe('Dependencies actions', () => {
     'X-Prev-Page': pageInfo.previousPage,
     'X-Total': pageInfo.total,
     'X-Total-Pages': pageInfo.totalPages,
+  };
+
+  const cursorHeaders = {
+    'X-Next-Page': 'eyJpZCI6IjYyIiwiX2tkIjoibiJ9',
+    'X-Page': 'eyJpZCI6IjQyIiwiX2tkIjoibiJ9',
+    'X-Page-Type': 'cursor',
+    'X-Per-Page': 20,
+    'X-Prev-Page': 'eyJpZCI6IjQyIiwiX2tkIjoicCJ9',
   };
 
   const mockResponseExportEndpoint = {
@@ -143,6 +152,36 @@ describe('Dependencies actions', () => {
         ],
         [],
       ));
+
+    describe('with cursor pagination headers', () => {
+      it('commits the correct pagination info', () => {
+        testAction(
+          actions.receiveDependenciesSuccess,
+          {
+            headers: cursorHeaders,
+            data: mockDependenciesResponse,
+          },
+          getInitialState(),
+          [
+            {
+              type: types.RECEIVE_DEPENDENCIES_SUCCESS,
+              payload: {
+                dependencies: mockDependenciesResponse.dependencies,
+                reportInfo: mockDependenciesResponse.report,
+                pageInfo: {
+                  type: 'cursor',
+                  endCursor: cursorHeaders['X-Next-Page'],
+                  hasNextPage: true,
+                  hasPreviousPage: true,
+                  startCursor: cursorHeaders['X-Prev-Page'],
+                },
+              },
+            },
+          ],
+          [],
+        );
+      });
+    });
   });
 
   describe('receiveDependenciesError', () => {

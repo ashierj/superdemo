@@ -30,9 +30,33 @@ export const setInitialState = ({ commit }, payload) => commit(types.SET_INITIAL
 
 export const requestDependencies = ({ commit }) => commit(types.REQUEST_DEPENDENCIES);
 
+const parseCursorPagination = (headers) => {
+  return {
+    type: headers['X-PAGE-TYPE'],
+    endCursor: headers['X-NEXT-PAGE'],
+    hasNextPage: headers['X-NEXT-PAGE'] !== '',
+    hasPreviousPage: headers['X-PREV-PAGE'] !== '',
+    startCursor: headers['X-PREV-PAGE'],
+  };
+};
+
+const parseOffsetPagination = (headers) => {
+  return {
+    ...parseIntPagination(headers),
+    type: 'offset',
+  };
+};
+
+const parsePagination = (headers) => {
+  const paginateWithCursor = headers['X-PAGE-TYPE'] === 'cursor';
+  if (paginateWithCursor) {
+    return parseCursorPagination(headers);
+  }
+  return parseOffsetPagination(headers);
+};
+
 export const receiveDependenciesSuccess = ({ commit }, { headers, data }) => {
-  const normalizedHeaders = normalizeHeaders(headers);
-  const pageInfo = parseIntPagination(normalizedHeaders);
+  const pageInfo = parsePagination(normalizeHeaders(headers));
   const { dependencies, report: reportInfo } = data;
   const convertedDependencies = dependencies.map((item) =>
     convertObjectPropsToCamelCase(item, {
@@ -50,26 +74,35 @@ export const receiveDependenciesSuccess = ({ commit }, { headers, data }) => {
 export const receiveDependenciesError = ({ commit }, error) =>
   commit(types.RECEIVE_DEPENDENCIES_ERROR, error);
 
+const queryParametersFor = (state, params) => {
+  if (state.pageInfo.type === 'cursor') {
+    return {
+      cursor: params.cursor,
+    };
+  }
+
+  const { searchFilterParameters } = state;
+  const queryParams = {
+    sort_by: state.sortField,
+    sort: state.sortOrder,
+    page: state.pageInfo.page || 1,
+    filter: state.filter,
+    ...searchFilterParameters,
+    ...params,
+  };
+
+  return queryParams;
+};
+
 export const fetchDependencies = ({ state, dispatch }, params) => {
   if (!state.endpoint) {
     return;
   }
 
-  const { searchFilterParameters } = state;
-
   dispatch('requestDependencies');
 
   axios
-    .get(state.endpoint, {
-      params: {
-        sort_by: state.sortField,
-        sort: state.sortOrder,
-        page: state.pageInfo.page || 1,
-        filter: state.filter,
-        ...searchFilterParameters,
-        ...params,
-      },
-    })
+    .get(state.endpoint, { params: queryParametersFor(state, params) })
     .then((response) => {
       if (isValidResponse(response)) {
         dispatch('receiveDependenciesSuccess', response);

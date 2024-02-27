@@ -84,21 +84,31 @@ RSpec.describe Explore::DependenciesController, feature_category: :dependency_ma
             sign_in(user)
           end
 
-          it 'renders a JSON response' do
-            bundler_occurrence = create(:sbom_occurrence, :mit, :bundler, project: project)
+          context "with occurrences" do
+            let_it_be(:per_page) { 20 }
+            let_it_be(:occurrences) { create_list(:sbom_occurrence, 2 * per_page, :mit, project: project) }
+            let(:cursor) { Sbom::Occurrence.order(:id).keyset_paginate(per_page: per_page).cursor_for_next_page }
 
-            get explore_dependencies_path, as: :json
+            it 'renders a JSON response', :aggregate_failures do
+              get explore_dependencies_path(cursor: cursor), as: :json
 
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(response).to include_limited_pagination_headers
-            expect(json_response["dependencies"]).to match_array([
-              {
-                'name' => bundler_occurrence.name,
-                'packager' => bundler_occurrence.packager,
-                'version' => bundler_occurrence.version,
-                'location' => bundler_occurrence.location.as_json
-              }
-            ])
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(response).to include_keyset_url_params
+              expect(response).to include_limited_pagination_headers
+
+              expect(response.headers['X-Page-Type']).to eql('cursor')
+              expect(response.headers['X-Per-Page']).to eql(per_page)
+
+              expected_occurrences = occurrences[per_page...(per_page + per_page)].map do |occurrences|
+                {
+                  'name' => occurrences.name,
+                  'packager' => occurrences.packager,
+                  'version' => occurrences.version,
+                  'location' => occurrences.location.as_json
+                }
+              end
+              expect(json_response["dependencies"]).to match_array(expected_occurrences)
+            end
           end
 
           it 'avoids N+1 database queries' do
