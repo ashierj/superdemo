@@ -8,6 +8,7 @@ import VulnerabilityFindingModal from 'ee/security_dashboard/components/pipeline
 import SummaryText from 'ee/vue_merge_request_widget/extensions/security_reports/summary_text.vue';
 import SummaryHighlights from 'ee/vue_shared/security_reports/components/summary_highlights.vue';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
+import api from '~/api';
 import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_content_row.vue';
 import axios from '~/lib/utils/axios_utils';
@@ -114,6 +115,7 @@ describe('MR Widget Security Reports', () => {
   const findDynamicScroller = () => wrapper.findByTestId('dynamic-content-scroller');
 
   beforeEach(() => {
+    jest.spyOn(api, 'trackRedisCounterEvent').mockImplementation(() => {});
     mockAxios = new MockAdapter(axios);
   });
 

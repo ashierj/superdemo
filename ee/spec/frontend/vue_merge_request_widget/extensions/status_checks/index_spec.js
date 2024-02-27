@@ -1,6 +1,7 @@
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+import api from '~/api';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 
 import {
@@ -57,6 +58,7 @@ describe('Status checks extension', () => {
   };
 
   beforeEach(() => {
+    jest.spyOn(api, 'trackRedisCounterEvent').mockImplementation(() => {});
     mock = new MockAdapter(axios);
   });
 

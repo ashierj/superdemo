@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
+import api from '~/api';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import LoadPerformanceWidget from 'ee/vue_merge_request_widget/extensions/load_performance/index.vue';
@@ -29,6 +30,7 @@ describe('Load performance widget', () => {
   };
 
   beforeEach(() => {
+    jest.spyOn(api, 'trackRedisCounterEvent').mockImplementation(() => {});
     mock = new MockAdapter(axios);
   });
 

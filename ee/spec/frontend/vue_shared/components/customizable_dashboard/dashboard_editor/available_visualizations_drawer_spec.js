@@ -1,5 +1,6 @@
 import { GlAlert, GlDrawer, GlLoadingIcon, GlFormCheckbox } from '@gitlab/ui';
 import AvailableVisualizationsDrawer from 'ee/vue_shared/components/customizable_dashboard/dashboard_editor/available_visualizations_drawer.vue';
+import api from '~/api';
 import { humanize } from '~/lib/utils/text_utility';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
@@ -77,6 +78,7 @@ describe('AvailableVisualizationsDrawer', () => {
 
   describe('when the drawer is open', () => {
     beforeEach(() => {
+      jest.spyOn(api, 'trackRedisCounterEvent').mockImplementation(() => {});
       createWrapper({ open: true });
     });
 

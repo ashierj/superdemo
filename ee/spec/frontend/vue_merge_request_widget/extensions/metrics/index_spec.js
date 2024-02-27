@@ -1,4 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
+import api from '~/api';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { trimText } from 'helpers/text_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -42,6 +43,7 @@ describe('Metrics extension', () => {
   };
 
   beforeEach(() => {
+    jest.spyOn(api, 'trackRedisCounterEvent').mockImplementation(() => {});
     mock = new MockAdapter(axios);
   });
 
