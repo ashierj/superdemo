@@ -1,6 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import api from '~/api';
 import axios from '~/lib/utils/axios_utils';
 import ActionButtons from '~/vue_merge_request_widget/components/widget/action_buttons.vue';
 import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
@@ -65,6 +66,7 @@ describe('License Compliance extension', () => {
   };
 
   beforeEach(() => {
+    jest.spyOn(api, 'trackRedisCounterEvent').mockImplementation(() => {});
     mock = new MockAdapter(axios);
   });
 
