@@ -1,6 +1,7 @@
 <script>
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
+import { GlKeysetPagination } from '@gitlab/ui';
 import TablePagination from '~/vue_shared/components/pagination/table_pagination.vue';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
 import DependenciesTable from './dependencies_table.vue';
@@ -9,6 +10,7 @@ export default {
   name: 'PaginatedDependenciesTable',
   components: {
     DependenciesTable,
+    GlKeysetPagination,
     TablePagination,
   },
   inject: ['vulnerabilitiesEndpoint'],
@@ -27,7 +29,14 @@ export default {
       },
       shouldShowPagination() {
         const { isLoading, errorLoading, pageInfo } = this.module;
-        return Boolean(!isLoading && !errorLoading && pageInfo);
+        return Boolean(!isLoading && !errorLoading && !this.showKeysetPagination && pageInfo);
+      },
+      showKeysetPagination() {
+        const { isLoading, errorLoading, pageInfo } = this.module;
+
+        if (isLoading || errorLoading || !pageInfo) return false;
+
+        return pageInfo.hasNextPage || pageInfo.hasPreviousPage;
       },
     }),
   },
@@ -35,6 +44,9 @@ export default {
     ...mapActions({
       fetchPage(dispatch, page) {
         return dispatch(`${this.namespace}/fetchDependencies`, { page });
+      },
+      fetchCursorPage(dispatch, cursor) {
+        return dispatch(`${this.namespace}/fetchDependencies`, { cursor });
       },
       fetchVulnerabilities(dispatch, item) {
         return dispatch(`${this.namespace}/fetchVulnerabilities`, {
@@ -63,5 +75,12 @@ export default {
       :page-info="module.pageInfo"
       align="center"
     />
+    <div v-if="showKeysetPagination" class="gl-text-center gl-mt-5">
+      <gl-keyset-pagination
+        v-bind="module.pageInfo"
+        @prev="fetchCursorPage"
+        @next="fetchCursorPage"
+      />
+    </div>
   </div>
 </template>

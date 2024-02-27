@@ -12,7 +12,6 @@
 
 module Explore
   class DependenciesController < ::Explore::ApplicationController
-    DEFAULT_PAGE_SIZE = 20
     feature_category :dependency_management
     urgency :low
 
@@ -28,7 +27,9 @@ module Explore
           render status: :ok
         end
         format.json do
-          render json: serializer.represent(dependencies)
+          render json: serializer.represent(
+            dependencies.keyset_paginate(cursor: finder_params[:cursor], per_page: per_page)
+          )
         end
       end
     end
@@ -43,7 +44,7 @@ module Explore
     end
 
     def finder_params
-      params.permit(:page, :per_page)
+      params.permit(:cursor)
     end
 
     def serializer
@@ -59,14 +60,17 @@ module Explore
     def dependencies
       finder
         .execute
-        .page(finder_params[:page])
-        .per(DEFAULT_PAGE_SIZE)
         .with_component
         .with_project_namespace
         .with_project_route
         .with_source
         .with_version
-        .without_count
+    end
+
+    def per_page
+      Gitlab::Pagination::Keyset::Page
+        .new(per_page: params[:per_page].to_i)
+        .per_page
     end
 
     def authorize_explore_dependencies!
