@@ -60,6 +60,17 @@ describe('ee/deployments/components/deployment_approvals.vue', () => {
     );
   });
 
+  describe('has approved', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('should hide the comment form', () => {
+      expect(findCommentBox().exists()).toBe(false);
+      expect(findButtons()).toHaveLength(0);
+    });
+  });
+
   describe('can approve', () => {
     beforeEach(() => {
       createComponent({
@@ -89,7 +100,12 @@ describe('ee/deployments/components/deployment_approvals.vue', () => {
     `(
       'fires the $status action when appropriate button clicked',
       async ({ buttonFinder, otherButton, status }) => {
-        mockApprove.mockReturnValue(new Promise(() => {}));
+        let resolveFn;
+        mockApprove.mockReturnValue(
+          new Promise((resolve) => {
+            resolveFn = resolve;
+          }),
+        );
         const button = buttonFinder();
         button.vm.$emit('click');
 
@@ -105,6 +121,12 @@ describe('ee/deployments/components/deployment_approvals.vue', () => {
             status,
           },
         });
+
+        resolveFn({ data: { approveDeployment: { errors: [], deploymentApproval: null } } });
+        await waitForPromises();
+
+        expect(wrapper.emitted('change')).toEqual([[]]);
+        expect(findCommentBox().props('value')).toBe('');
       },
     );
 

@@ -17,6 +17,7 @@ const { deployment } = mockDeploymentFixture.data.project;
 const PROJECT_PATH = 'group/project';
 const ENVIRONMENT_NAME = mockEnvironmentFixture.data.project.environment.name;
 const DEPLOYMENT_IID = deployment.iid;
+const GRAPHQL_ETAG_KEY = 'project/environments';
 
 describe('~/deployments/components/show_deployment.vue', () => {
   let wrapper;
@@ -40,6 +41,7 @@ describe('~/deployments/components/show_deployment.vue', () => {
         projectPath: PROJECT_PATH,
         environmentName: ENVIRONMENT_NAME,
         deploymentIid: DEPLOYMENT_IID,
+        graphqlEtagKey: GRAPHQL_ETAG_KEY,
       },
     });
     return waitForPromises();
@@ -62,5 +64,13 @@ describe('~/deployments/components/show_deployment.vue', () => {
     expect(wrapper.findComponent(DeploymentTimeline).props()).toEqual({
       approvalSummary: deployment.approvalSummary,
     });
+  });
+
+  it('refetches the deployment on approval change', async () => {
+    deploymentQueryResponse.mockClear();
+    wrapper.findComponent(DeploymentApprovals).vm.$emit('change');
+    await waitForPromises();
+
+    expect(deploymentQueryResponse).toHaveBeenCalled();
   });
 });
