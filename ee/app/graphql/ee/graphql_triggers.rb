@@ -11,6 +11,10 @@ module EE
           ai_action: message.ai_action.to_s
         }
 
+        if message.agent_version_id.present?
+          subscription_arguments[:agent_version_id] = Ai::AgentVersion.find_by_id(message.agent_version_id)&.to_gid
+        end
+
         if message.client_subscription_id && !message.user?
           subscription_arguments[:client_subscription_id] = message.client_subscription_id
         end
