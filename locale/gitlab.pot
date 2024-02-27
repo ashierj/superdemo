@@ -33937,6 +33937,9 @@ msgstr ""
 msgid "ObservabilityLogs|Warning"
 msgstr ""
 
+msgid "ObservabilityMetrics|Attributes"
+msgstr ""
+
 msgid "ObservabilityMetrics|Cancel"
 msgstr ""
 
@@ -33982,22 +33985,22 @@ msgstr ""
 msgid "ObservabilityMetrics|Select attributes"
 msgstr ""
 
+msgid "ObservabilityMetrics|Select function"
+msgstr ""
+
+msgid "ObservabilityMetrics|Selected attributes"
+msgstr ""
+
 msgid "ObservabilityMetrics|Type"
 msgstr ""
 
 msgid "ObservabilityMetrics|Value"
 msgstr ""
 
-msgid "ObservabilityMetrics|all"
-msgstr ""
-
 msgid "ObservabilityMetrics|is like"
 msgstr ""
 
 msgid "ObservabilityMetrics|is not like"
-msgstr ""
-
-msgid "ObservabilityMetrics|multiple"
 msgstr ""
 
 msgid "Observability|Enable"
