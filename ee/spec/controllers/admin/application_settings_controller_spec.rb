@@ -394,32 +394,6 @@ RSpec.describe Admin::ApplicationSettingsController do
     end
   end
 
-  describe 'PATCH #general', feature_category: :shared do
-    before do
-      sign_in(admin)
-    end
-
-    context 'when instance_level_code_suggestions_enabled is enabled' do
-      it 'triggers Cloud Connector access data sync' do
-        expect(::CloudConnector::SyncServiceTokenWorker).to receive(:perform_async)
-
-        settings = { instance_level_code_suggestions_enabled: '1' }
-
-        patch :general, params: { application_setting: settings }
-      end
-    end
-
-    context 'when instance_level_code_suggestions_enabled is disabled' do
-      it 'does not trigger Cloud Connector access data sync' do
-        expect(::CloudConnector::SyncServiceTokenWorker).not_to receive(:perform_async)
-
-        settings = { instance_level_code_suggestions_enabled: '0' }
-
-        patch :general, params: { application_setting: settings }
-      end
-    end
-  end
-
   describe '#advanced_search', feature_category: :global_search do
     before do
       sign_in(admin)

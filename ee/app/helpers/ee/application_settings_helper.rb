@@ -46,7 +46,6 @@ module EE
         :geo_status_timeout,
         :help_text,
         :instance_level_ai_beta_features_enabled,
-        :instance_level_code_suggestions_enabled,
         :lock_memberships_to_ldap,
         :lock_memberships_to_saml,
         :max_personal_access_token_lifetime,
