@@ -293,10 +293,8 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
       context 'when action is custom' do
         let_it_be(:ci_configuration) do
           <<~CI_CONFIG
-          stages:
-            - custom_stage
           custom_job:
-            stage: custom_stage
+            stage: .pipeline-policy-test
             script:
               - echo "Defined in security policy"
           CI_CONFIG
@@ -324,18 +322,10 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
           it 'does not includes the custom job' do
             expect(subject[:custom_job]).to be_nil
           end
-
-          it 'does not add stages' do
-            expect(subject[:stages]).to be_nil
-          end
         end
 
         it 'does not include the custom job' do
           expect(subject[:custom_job]).to be_nil
-        end
-
-        it 'does not add stages' do
-          expect(subject[:stages]).to be_nil
         end
 
         context 'when toggle_security_policy_custom_ci is enabled for the group' do
@@ -344,20 +334,34 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
           end
 
           it 'includes the custom job' do
-            expect(subject[:custom_job]).to eq({ stage: 'custom_stage', script: ['echo "Defined in security policy"'] })
+            expect(subject[:custom_job]).to eq({ stage: '.pipeline-policy-test', script: ['echo "Defined in security policy"'] })
           end
 
-          it 'includes policy custom stage plus default stages' do
-            expect(subject[:stages]).to eq(%w[.pre build test deploy custom_stage .post])
+          it 'injects stages in the right order' do
+            expect(subject[:stages]).to eq(%w[.pipeline-policy-pre .pre build test .pipeline-policy-test deploy .post .pipeline-policy-post])
           end
 
-          context 'when action includes edge stages in the wrong order' do
+          context 'when test stage does not exist' do
+            let(:config) { { stages: %w[build deploy] } }
+
+            it 'injects .pipeline-policy-test after build' do
+              expect(subject[:stages]).to eq(%w[.pipeline-policy-pre build .pipeline-policy-test scan-policies deploy .pipeline-policy-post])
+            end
+
+            context 'when the build stage does not exist' do
+              let(:config) { { stages: %w[deploy] } }
+
+              it 'injects .pipeline-policy-test at the beginning' do
+                expect(subject[:stages]).to eq(%w[.pipeline-policy-pre .pipeline-policy-test scan-policies deploy .pipeline-policy-post])
+              end
+            end
+          end
+
+          context 'when custom stages are defined in the security policy config' do
             let_it_be(:ci_configuration) do
               <<~CI_CONFIG
               stages:
                 - custom_stage
-                - .post
-                - .pre
               custom_job:
                 stage: custom_stage
                 script:
@@ -365,30 +369,8 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
               CI_CONFIG
             end
 
-            it 'puts edge stages in the correct order and adds default stages' do
-              expect(subject[:stages]).to eq(%w[.pre build test deploy custom_stage .post])
-            end
-          end
-
-          context 'when project CI contains stages too' do
-            let(:config) do
-              {
-                stages: %w[ci_config_test ci_config_deploy],
-                image: 'image:1.0.0',
-                job1: {
-                  stage: 'build'
-                },
-                job2: {
-                  stage: 'test2'
-                },
-                job3: {
-                  stage: 'release'
-                }
-              }
-            end
-
-            it 'contains both stages sets in the right order' do
-              expect(subject[:stages]).to eq(%w[scan-policies ci_config_test ci_config_deploy custom_stage])
+            it 'ignores custom stages' do
+              expect(subject[:stages]).to eq(%w[.pipeline-policy-pre .pre build test .pipeline-policy-test deploy .post .pipeline-policy-post])
             end
           end
         end

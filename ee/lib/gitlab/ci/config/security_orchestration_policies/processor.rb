@@ -10,6 +10,9 @@ module Gitlab
 
           DEFAULT_BUILD_STAGE = 'build'
           DEFAULT_SCAN_POLICY_STAGE = 'scan-policies'
+          DEFAULT_POLICY_PRE_STAGE = '.pipeline-policy-pre'
+          DEFAULT_POLICY_TEST_STAGE = '.pipeline-policy-test'
+          DEFAULT_POLICY_POST_STAGE = '.pipeline-policy-post'
           DEFAULT_STAGES = Gitlab::Ci::Config::Entry::Stages.default
 
           def initialize(config, context, ref, source)
@@ -31,12 +34,9 @@ module Gitlab
             merged_config = @config.deep_merge(merged_security_policy_config)
 
             if custom_scan_actions_enabled? && active_scan_custom_actions.any?
-              stages = merged_config.fetch(:stages, [])
-
               merged_config = merged_config.deep_merge(scan_custom_actions[:pipeline_scan])
 
-              # The stages array will not be merged by `deep_merge` so it has to be merged seperately.
-              merged_config[:stages] = stages + merged_config[:stages]
+              merged_config[:stages] = insert_custom_scan_stages(merged_config[:stages])
             end
 
             merged_config[:stages] = cleanup_stages(merged_config[:stages])
@@ -58,14 +58,9 @@ module Gitlab
           end
 
           def cleanup_stages(stages)
-            stages = stages.uniq
+            stages.uniq!
 
             return if stages == DEFAULT_STAGES
-
-            if stages.include?('.post') && stages.last != '.post'
-              stages.delete('.post')
-              stages.push('.post')
-            end
 
             stages
           end
@@ -117,7 +112,7 @@ module Gitlab
             on_demand_scan_job_names = on_demand_scan_template.keys
 
             if on_demand_scan_template.present?
-              defined_stages << DEFAULT_ON_DEMAND_STAGE
+              insert_stage_before_or_append(defined_stages, DEFAULT_ON_DEMAND_STAGE, ['.post'])
               merged_config.except!(*on_demand_scan_job_names).deep_merge!(on_demand_scan_template)
             end
           end
@@ -128,7 +123,7 @@ module Gitlab
 
             if pipeline_scan_template.present?
               unless defined_stages.include?(DEFAULT_SECURITY_JOB_STAGE)
-                insert_scan_policy_stage_after_build_stage_or_first(defined_stages)
+                insert_stage_after_or_prepend(defined_stages, DEFAULT_SCAN_POLICY_STAGE, [DEFAULT_BUILD_STAGE])
                 pipeline_scan_template = pipeline_scan_template.transform_values { |job_config| job_config.merge(stage: DEFAULT_SCAN_POLICY_STAGE) }
               end
 
@@ -136,15 +131,40 @@ module Gitlab
             end
           end
 
-          def insert_scan_policy_stage_after_build_stage_or_first(defined_stages)
-            build_stage_index = defined_stages.index(DEFAULT_BUILD_STAGE)
-            if build_stage_index.nil?
-              defined_stages.unshift(DEFAULT_SCAN_POLICY_STAGE)
-            else
-              defined_stages.insert(build_stage_index + 1, DEFAULT_SCAN_POLICY_STAGE)
+          def insert_custom_scan_stages(config_stages)
+            config_stages.append(DEFAULT_POLICY_POST_STAGE)
+
+            insert_stage_after_or_prepend(config_stages, DEFAULT_POLICY_TEST_STAGE, %w[test build .pre])
+
+            config_stages.unshift(DEFAULT_POLICY_PRE_STAGE)
+          end
+
+          def insert_stage_after_or_prepend(stages, insert_stage_name, after_stages)
+            after_stages.each do |stage|
+              stage_index = stages.index(stage)
+
+              next unless stage_index
+
+              stages.insert(stage_index + 1, insert_stage_name)
+
+              return stages
             end
 
-            defined_stages
+            stages.unshift(insert_stage_name)
+          end
+
+          def insert_stage_before_or_append(stages, insert_stage_name, before_stages)
+            before_stages.each do |stage|
+              stage_index = stages.index(stage)
+
+              next unless stage_index
+
+              stages.insert(stage_index, insert_stage_name)
+
+              return stages
+            end
+
+            stages << insert_stage_name
           end
 
           def active_scan_template_actions
