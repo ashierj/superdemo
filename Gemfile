@@ -301,7 +301,7 @@ gem 'discordrb-webhooks', '~> 3.5', require: false, feature_category: :integrati
 
 # Jira integration
 gem 'jira-ruby', '~> 2.3.0', feature_category: :integrations
-gem 'atlassian-jwt', '~> 0.2.0', feature_category: :integrations
+gem 'atlassian-jwt', '~> 0.2.1', feature_category: :integrations
 
 # Slack integration
 gem 'slack-messenger', '~> 2.3.4', feature_category: :integrations
