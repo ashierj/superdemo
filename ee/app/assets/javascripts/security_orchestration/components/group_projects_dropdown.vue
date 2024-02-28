@@ -10,6 +10,8 @@ import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 export default {
   i18n: {
     projectDropdownHeader: __('Select projects'),
+    selectAllLabel: __('Select all'),
+    clearAllLabel: __('Clear all'),
   },
   name: 'GroupProjectsDropdown',
   components: {
@@ -84,10 +86,14 @@ export default {
         selected: this.formattedSelectedProjectsIds,
         items: this.projectItems,
         itemTypeName: __('projects'),
+        useAllSelected: !this.hasNextPage,
       });
     },
     loading() {
       return this.$apollo.queries.projects.loading;
+    },
+    hasNextPage() {
+      return this.projectsPageInfo.hasNextPage;
     },
     projectItems() {
       return this.projects?.reduce((acc, { id, name }) => {
@@ -100,6 +106,15 @@ export default {
     },
     projectsIds() {
       return this.projects.map(({ id }) => id);
+    },
+    resetButtonLabel() {
+      return this.multiple ? this.$options.i18n.clearAllLabel : '';
+    },
+    category() {
+      return this.state ? 'primary' : 'secondary';
+    },
+    variant() {
+      return this.state ? 'default' : 'danger';
     },
   },
   created() {
@@ -148,12 +163,15 @@ export default {
     is-check-centered
     searchable
     fluid-width
-    :toggle-class="{ 'gl-inset-border-1-red-500!': !state }"
+    :category="category"
+    :variant="variant"
     :multiple="multiple"
     :loading="loading"
     :header-text="$options.i18n.projectDropdownHeader"
-    :infinite-scroll="projectsPageInfo.hasNextPage"
+    :infinite-scroll="hasNextPage"
     :infinite-scroll-loading="loading"
+    :reset-button-label="resetButtonLabel"
+    :show-select-all-button-label="$options.i18n.selectAllLabel"
     :searching="loading"
     :selected="existingFormattedSelectedProjectsIds"
     :placement="placement"
@@ -161,6 +179,8 @@ export default {
     :toggle-text="dropdownPlaceholder"
     @bottom-reached="fetchMoreGroupProjects"
     @search="debouncedSearch"
+    @reset="selectProjects([])"
     @select="selectProjects"
+    @select-all="selectProjects(projectsIds)"
   />
 </template>

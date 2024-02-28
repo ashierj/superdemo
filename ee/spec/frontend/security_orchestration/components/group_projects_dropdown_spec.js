@@ -191,6 +191,26 @@ describe('GroupProjectsDropdown', () => {
         expect(requestHandlers.getGroupProjects).toHaveBeenCalledTimes(2);
       });
 
+      it.each`
+        hasNextPage | expectedText
+        ${true}     | ${'1 +1 more'}
+        ${false}    | ${'All projects'}
+      `(
+        'selects all projects only when all projects loaded',
+        async ({ hasNextPage, expectedText }) => {
+          createComponent({
+            propsData: {
+              selected: defaultNodesIds,
+            },
+            handlers: mockApolloHandlers(defaultNodes, hasNextPage),
+          });
+
+          await waitForPromises();
+
+          expect(findDropdown().props('toggleText')).toBe(expectedText);
+        },
+      );
+
       describe('when the fetch query throws an error', () => {
         it('emits an error event', async () => {
           createComponent({
@@ -229,6 +249,46 @@ describe('GroupProjectsDropdown', () => {
       await waitForPromises();
 
       expect(findDropdown().props('selected')).toEqual(defaultNodesIds);
+    });
+  });
+
+  describe('validation', () => {
+    it('renders default dropdown when validation passes', () => {
+      createComponent({
+        propsData: {
+          state: true,
+        },
+      });
+
+      expect(findDropdown().props('variant')).toEqual('default');
+      expect(findDropdown().props('category')).toEqual('primary');
+    });
+
+    it('renders danger dropdown when validation passes', () => {
+      createComponent();
+
+      expect(findDropdown().props('variant')).toEqual('danger');
+      expect(findDropdown().props('category')).toEqual('secondary');
+    });
+  });
+
+  describe('select all', () => {
+    it('selects all projects', async () => {
+      createComponent();
+      await waitForPromises();
+
+      findDropdown().vm.$emit('select-all');
+
+      expect(wrapper.emitted('select')).toEqual([[defaultNodes]]);
+    });
+
+    it('resets all projects', async () => {
+      createComponent();
+      await waitForPromises();
+
+      findDropdown().vm.$emit('reset');
+
+      expect(wrapper.emitted('select')).toEqual([[[]]]);
     });
   });
 });
