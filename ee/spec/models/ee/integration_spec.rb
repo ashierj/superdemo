@@ -15,6 +15,26 @@ RSpec.describe Integration, feature_category: :integrations do
 
       it { is_expected.to include('google_cloud_platform_workload_identity_federation') }
     end
+
+    describe 'git_guardian_integration feature flag' do
+      context 'when feature flag is enabled' do
+        it 'includes git_guardian in Integration.project_specific_integration_names' do
+          expect(described_class.integration_names)
+            .to include('git_guardian')
+        end
+      end
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(git_guardian_integration: false)
+        end
+
+        it 'does not include git_guardian Integration.project_specific_integration_names' do
+          expect(described_class.integration_names)
+           .not_to include('git_guardian')
+        end
+      end
+    end
   end
 
   describe '.project_specific_integration_names' do
@@ -65,26 +85,6 @@ RSpec.describe Integration, feature_category: :integrations do
       it 'handles the name' do
         expect(described_class.integration_name_to_type(:google_cloud_platform_artifact_registry))
           .to eq('Integrations::GoogleCloudPlatform::ArtifactRegistry')
-      end
-    end
-
-    describe 'git_guardian_integration feature flag' do
-      context 'when feature flag is enabled' do
-        it 'includes git_guardian in Integration.project_specific_integration_names' do
-          expect(described_class.project_specific_integration_names)
-            .to include('git_guardian')
-        end
-      end
-
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(git_guardian_integration: false)
-        end
-
-        it 'does not include git_guardian Integration.project_specific_integration_names' do
-          expect(described_class.project_specific_integration_names)
-           .not_to include('git_guardian')
-        end
       end
     end
   end
