@@ -11,6 +11,9 @@ module QA
     let(:plan) { ULTIMATE_SELF_MANAGED }
 
     before do
+      # As the screenshot may contain the sensitive information, it is being disabled for this test.
+      Capybara::Screenshot.autosave_on_failure = false
+
       # Ensure the Gitlab instance does not already have an active license
       EE::Resource::License.delete_all
 
@@ -24,6 +27,7 @@ module QA
 
     after do
       EE::Resource::License.delete_all
+      Capybara::Screenshot.autosave_on_failure = true
     end
 
     context 'Cloud activation code' do
