@@ -1668,11 +1668,6 @@ msgid_plural "%{merge_requests} open merge requests"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "1 pipeline"
-msgid_plural "%d pipelines"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "1 role"
 msgid_plural "%d roles"
 msgstr[0] ""
@@ -36146,22 +36141,19 @@ msgstr ""
 msgid "PipelineCharts|CI/CD Analytics"
 msgstr ""
 
-msgid "PipelineCharts|Failed:"
+msgid "PipelineCharts|Failed pipelines"
 msgstr ""
 
-msgid "PipelineCharts|Overall statistics"
+msgid "PipelineCharts|Success ratio"
 msgstr ""
 
-msgid "PipelineCharts|Success ratio:"
-msgstr ""
-
-msgid "PipelineCharts|Successful:"
+msgid "PipelineCharts|Successful pipelines"
 msgstr ""
 
 msgid "PipelineCharts|There was an error parsing the data for the charts."
 msgstr ""
 
-msgid "PipelineCharts|Total:"
+msgid "PipelineCharts|Total pipelines"
 msgstr ""
 
 msgid "PipelineEditorFileTree|Configuration files added with the include keyword"
@@ -36948,6 +36940,9 @@ msgid "Pipeline|Run pipeline"
 msgstr ""
 
 msgid "Pipeline|Running"
+msgstr ""
+
+msgid "Pipeline|See details"
 msgstr ""
 
 msgid "Pipeline|Skipped"
