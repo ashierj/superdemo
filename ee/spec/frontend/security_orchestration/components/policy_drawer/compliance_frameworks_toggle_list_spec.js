@@ -82,9 +82,21 @@ describe('ComplianceFrameworksToggleList', () => {
     it('renders header for all compliance frameworks', async () => {
       await waitForPromises();
 
-      expect(findHeader().text()).toBe(
-        'This applies to 2 projects associated with following compliance frameworks:',
-      );
+      expect(findHeader().text()).toBe('2 projects which have compliance framework:');
+    });
+  });
+
+  describe('single framework', () => {
+    beforeEach(() => {
+      createComponent({
+        handlers: mockApolloHandlers([defaultNodes[1]]),
+      });
+    });
+
+    it('renders header for single compliance frameworks', async () => {
+      await waitForPromises();
+
+      expect(findHeader().text()).toBe('1 project which has compliance framework:');
     });
   });
 

@@ -1029,6 +1029,9 @@ msgstr ""
 msgid "%{policy_link} (notifying after %{elapsed_time} minutes unless %{status})"
 msgstr ""
 
+msgid "%{projectLength} %{projects}:"
+msgstr ""
+
 msgid "%{project_name}"
 msgstr ""
 
@@ -44701,6 +44704,11 @@ msgstr ""
 msgid "SecurityOrchestration|%{licenses} and %{lastLicense}"
 msgstr ""
 
+msgid "SecurityOrchestration|%{projects} which has compliance framework:"
+msgid_plural "SecurityOrchestration|%{projects} which have compliance framework:"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "SecurityOrchestration|%{scanners}"
 msgstr ""
 
@@ -45199,9 +45207,6 @@ msgid "SecurityOrchestration|This %{namespaceType} does not contain any security
 msgstr ""
 
 msgid "SecurityOrchestration|This %{namespaceType} is not linked to a security policy project"
-msgstr ""
-
-msgid "SecurityOrchestration|This applies to %{projects} associated with following compliance frameworks:"
 msgstr ""
 
 msgid "SecurityOrchestration|This applies to following compliance frameworks:"

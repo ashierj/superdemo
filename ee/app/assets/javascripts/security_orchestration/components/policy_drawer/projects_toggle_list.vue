@@ -4,6 +4,7 @@ import { GlLoadingIcon } from '@gitlab/ui';
 import { s__, n__, sprintf, __ } from '~/locale';
 import getGroupProjects from 'ee/security_orchestration/graphql/queries/get_group_projects.query.graphql';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { mapShortIdsToFullGraphQlFormat } from 'ee/security_orchestration/components/policy_drawer/utils';
 import ToggleList from './toggle_list.vue';
 
@@ -31,7 +32,7 @@ export default {
       query: getGroupProjects,
       variables() {
         return {
-          fullPath: this.namespacePath,
+          fullPath: this.groupProjectsFullPath,
           projectIds: mapShortIdsToFullGraphQlFormat(TYPENAME_PROJECT, this.projectIds),
         };
       },
@@ -46,7 +47,7 @@ export default {
       },
     },
   },
-  inject: ['namespacePath'],
+  inject: ['namespaceType', 'namespacePath', 'rootNamespacePath'],
   props: {
     projectIds: {
       type: Array,
@@ -54,6 +55,21 @@ export default {
       default: () => [],
     },
     including: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    projectsToShow: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    bulletStyle: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    inlineList: {
       type: Boolean,
       required: false,
       default: false,
@@ -67,6 +83,12 @@ export default {
     };
   },
   computed: {
+    isGroupLevel() {
+      return this.namespaceType === NAMESPACE_TYPES.GROUP;
+    },
+    groupProjectsFullPath() {
+      return this.isGroupLevel ? this.namespacePath : this.rootNamespacePath;
+    },
     loading() {
       return this.$apollo.queries.projects?.loading;
     },
@@ -79,6 +101,13 @@ export default {
     customButtonText() {
       return this.allProjects ? this.$options.i18n.allProjectsButtonText : null;
     },
+    projectIncludingText() {
+      const projects = n__('project', 'projects', this.projects.length);
+      return sprintf(__('%{projectLength} %{projects}:'), {
+        projectLength: this.projects.length,
+        projects,
+      });
+    },
     header() {
       if (this.allProjects) {
         return this.renderHeader(this.$options.i18n.allProjectsText);
@@ -88,7 +117,7 @@ export default {
         return this.$options.i18n.allProjectsExceptText;
       }
 
-      return this.$options.i18n.includingProjectsText;
+      return this.projectIncludingText;
     },
     projectNames() {
       return this.projects.map(({ name }) => name);
@@ -138,13 +167,15 @@ export default {
 
       <toggle-list
         v-if="projects.length"
-        bullet-style
+        :bullet-style="bulletStyle"
         :custom-button-text="$options.i18n.showMoreProjectsLabel"
         :custom-close-button-text="$options.i18n.hideMoreProjectsLabel"
+        :inline-list="inlineList"
         :has-next-page="projectsPageInfo.hasNextPage"
         :default-button-text="customButtonText"
         :default-close-button-text="$options.i18n.hideProjectsButtonText"
         :items="projectNames"
+        :items-to-show="projectsToShow"
         :page="page"
         @load-next-page="fetchNextPage"
       />

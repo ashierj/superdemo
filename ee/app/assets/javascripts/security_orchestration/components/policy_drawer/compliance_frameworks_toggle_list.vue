@@ -91,7 +91,8 @@ export default {
 
       const projects = n__('project', 'projects', this.projectsLength);
 
-      const message = this.customHeaderMessage || COMPLIANCE_FRAMEWORKS_DESCRIPTION;
+      const message =
+        this.customHeaderMessage || COMPLIANCE_FRAMEWORKS_DESCRIPTION(this.projectsLength);
       return sprintf(message, {
         projects: __(`${this.projectsLength} ${projects}`),
       });
