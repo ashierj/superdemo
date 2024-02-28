@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :fleet_visibility do
+RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :runner do
   include GraphqlHelpers
 
   let_it_be_with_refind(:project) { create(:project) }
@@ -12,7 +12,7 @@ RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :fleet_
   end
 
   let(:current_user) { maintainer }
-  let(:google_cloud_project_id) { 'project_id_override' }
+  let(:google_cloud_project_id) { 'project-id-override' }
   let(:inner_fragment) { query_graphql_fragment('CiRunnerGoogleCloudProvisioningOptions') }
   let(:query) do
     graphql_query_for(
@@ -246,6 +246,16 @@ RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :fleet_
 
       expect(options_response).to be_a(String)
       expect(options_response).to include google_cloud_project_id
+    end
+  end
+
+  context 'when cloud_project_id is invalid' do
+    let(:google_cloud_project_id) { 'project_id_override' }
+
+    it 'returns an error' do
+      request
+
+      expect_graphql_errors_to_include('"project_id_override" is not a valid project name')
     end
   end
 

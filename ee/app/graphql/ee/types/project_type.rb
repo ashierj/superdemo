@@ -347,7 +347,7 @@ module EE
                        'or the GitLab instance is not a SaaS instance.' do
                          argument :provider, ::Types::Ci::RunnerCloudProviderEnum, required: true,
                            description: 'Identifier of the cloud provider.'
-                         argument :cloud_project_id, GraphQL::Types::String, required: true,
+                         argument :cloud_project_id, ::Types::GoogleCloud::ProjectType, required: true,
                            description: 'Identifier of the cloud project.'
                        end
 
