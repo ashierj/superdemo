@@ -83,6 +83,9 @@ const onGroupPermissionsFormSubmit = (event) => {
 
 export const initGroupPermissionsFormSubmit = () => {
   const groupPermissionsForm = document.querySelector('.js-general-permissions-form');
+  if (!groupPermissionsForm) {
+    return;
+  }
   const confirmModalWrapper = document.createElement('div');
 
   confirmModalWrapper.className = confirmModalWrapperClassName;

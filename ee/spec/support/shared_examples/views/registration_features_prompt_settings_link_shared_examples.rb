@@ -7,6 +7,7 @@ RSpec.shared_examples 'renders registration features settings link' do
   context 'as regular user' do
     before do
       allow(view).to receive(:current_user) { user }
+      allow(view).to receive(:can?).with(user, :admin_group, anything).and_return(false)
     end
 
     it 'does not render settings link', :aggregate_failures do
@@ -17,6 +18,7 @@ RSpec.shared_examples 'renders registration features settings link' do
   context 'as admin' do
     before do
       allow(view).to receive(:current_user) { admin }
+      allow(view).to receive(:can?).with(admin, :admin_group, anything).and_return(true)
     end
 
     it 'renders settings link', :aggregate_failures do

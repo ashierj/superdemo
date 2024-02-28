@@ -3284,6 +3284,24 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
       it_behaves_like 'custom roles abilities'
     end
+
+    context 'for a custom role with the `remove_group` ability' do
+      let(:member_role_abilities) { { remove_group: true } }
+      let(:allowed_abilities) { [:remove_group, :view_edit_page] }
+
+      it_behaves_like 'custom roles abilities'
+
+      context 'when the group is a top level group' do
+        before do
+          create_member_role(parent_group_member_guest)
+          stub_licensed_features(custom_roles: true)
+        end
+
+        subject { described_class.new(current_user, parent_group) }
+
+        it { is_expected.to be_disallowed(*allowed_abilities) }
+      end
+    end
   end
 
   context 'for :read_limit_alert' do

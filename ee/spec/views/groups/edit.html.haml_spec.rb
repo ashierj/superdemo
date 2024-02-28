@@ -170,4 +170,22 @@ RSpec.describe 'groups/edit.html.haml', feature_category: :groups_and_projects d
       it_behaves_like 'does not render allowed_email_domain setting'
     end
   end
+
+  context 'when rendering for a user that is not an owner', feature_category: :permissions do
+    before do
+      group.add_guest(user)
+    end
+
+    subject { render }
+
+    it { is_expected.not_to have_text(_('Remove group')) }
+
+    context 'when the user can remove groups' do
+      before do
+        allow(view).to receive(:can?).with(user, :remove_group, group).and_return(true)
+      end
+
+      it { is_expected.to have_text(_('Remove group')) }
+    end
+  end
 end

@@ -12,9 +12,7 @@ module EE
       include GeoInstrumentation
       include GitlabSubscriptions::SeatCountAlert
 
-      alias_method :ee_authorize_admin_group!, :authorize_admin_group!
-
-      before_action :ee_authorize_admin_group!, only: [:restore]
+      before_action :authorize_remove_group!, only: [:destroy, :restore]
       before_action :check_subscription!, only: [:destroy]
 
       before_action do

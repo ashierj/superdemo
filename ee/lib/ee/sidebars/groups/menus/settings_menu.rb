@@ -21,23 +21,19 @@ module EE
               add_item(billing_menu_item)
               add_item(reporting_menu_item)
             else
-              if can?(context.current_user, :read_resource_access_tokens, context.group)
-                # Managing group acccess tokens is a custom ability independent of the access level.
-                add_item(access_tokens_menu_item)
-              end
-
-              # Push Rules are the only group setting that can also be edited by maintainers.
-              # They only get the Repository settings which only show the Push Rules section for maintainers.
-              add_item(repository_menu_item) if can?(context.current_user, :change_push_rules, context.group)
-
-              # Managing CI/CD settings is a custom ability independent of the access level.
-              add_item(ci_cd_menu_item) if can?(context.current_user, :admin_cicd_variables, context.group)
-
-              add_item(billing_menu_item) if can?(context.current_user, :read_billing, context.group)
+              add_menu_item_for_ability(general_menu_item, :remove_group)
+              add_menu_item_for_ability(access_tokens_menu_item, :read_resource_access_tokens)
+              add_menu_item_for_ability(repository_menu_item, :change_push_rules)
+              add_menu_item_for_ability(ci_cd_menu_item, :admin_cicd_variables)
+              add_menu_item_for_ability(billing_menu_item, :read_billing)
             end
           end
 
           private
+
+          def add_menu_item_for_ability(menu_item, ability)
+            add_item(menu_item) if can?(context.current_user, ability, context.group)
+          end
 
           def roles_and_permissions_menu_item
             return ::Sidebars::NilMenuItem.new(item_id: :roles_and_permissions) unless custom_roles_enabled?

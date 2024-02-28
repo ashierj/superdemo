@@ -1272,6 +1272,7 @@ RSpec.describe User, feature_category: :system_access do
              OR manage_project_access_tokens = true
              OR read_dependency = true
              OR read_vulnerability = true
+             OR remove_group = true
              OR remove_project = true\)\)\)\)'.squish # allow_cross_joins_across_databases
       end
 
