@@ -17381,7 +17381,13 @@ msgstr ""
 msgid "Deployment|Add approval comment"
 msgstr ""
 
+msgid "Deployment|Approval Comments"
+msgstr ""
+
 msgid "Deployment|Approve deployment"
+msgstr ""
+
+msgid "Deployment|Approved"
 msgstr ""
 
 msgid "Deployment|Branch"
@@ -17436,6 +17442,9 @@ msgid "Deployment|Open URL"
 msgstr ""
 
 msgid "Deployment|Reject"
+msgstr ""
+
+msgid "Deployment|Rejected"
 msgstr ""
 
 msgid "Deployment|Related Tags"
