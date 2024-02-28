@@ -114,6 +114,11 @@ msgid_plural "%d Scanned URLs"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d Thread"
+msgid_plural "%d Threads"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d URL scanned"
 msgid_plural "%d URLs scanned"
 msgstr[0] ""
