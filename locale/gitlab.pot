@@ -18505,7 +18505,7 @@ msgstr ""
 msgid "DuoProTrial|We just need some additional information to activate your trial."
 msgstr ""
 
-msgid "Duplicate page: A page with that title already exists"
+msgid "Duplicate page: A page with that title already exists in the file %{file}"
 msgstr ""
 
 msgid "Duration"
