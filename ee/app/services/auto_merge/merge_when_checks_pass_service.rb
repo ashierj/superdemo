@@ -12,11 +12,15 @@ module AutoMerge
 
     override :process
     def process(merge_request)
-      logger.info("Processing Automerge")
+      logger.info("Processing Automerge - MWCP")
+
+      return if merge_request.project.has_ci? && !merge_request.diff_head_pipeline_success?
+
+      logger.info("Pipeline Success - MWCP")
 
       return unless merge_request.mergeable?
 
-      logger.info("Merge request mergeable")
+      logger.info("Merge request mergeable - MWCP")
 
       merge_request.merge_async(merge_request.merge_user_id, merge_request.merge_params)
     end
