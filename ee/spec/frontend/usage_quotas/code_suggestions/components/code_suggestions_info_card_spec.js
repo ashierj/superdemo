@@ -108,59 +108,77 @@ describe('CodeSuggestionsInfoCard', () => {
   });
 
   describe('add seats button', () => {
-    describe('when link is present', () => {
-      beforeEach(async () => {
-        createComponent();
-
+    describe('with self-managed', () => {
+      it('renders button if addDuoProHref link is passed', async () => {
+        createComponent({ provide: { isSaas: false } });
         // wait for apollo to load
         await waitForPromises();
-      });
-
-      it('renders button if addDuoProHref link is passed', () => {
         expect(findAddSeatsButton().exists()).toBe(true);
       });
 
-      it('renders button with the correct attributes', () => {
-        expect(findAddSeatsButton().attributes()).toMatchObject({
-          href: defaultProvide.addDuoProHref,
-          target: '_blank',
+      it('does not render add seats button if link is empty', async () => {
+        createComponent({ provide: { isSaas: false, addDuoProHref: '' } });
+        // wait for apollo to load
+        await waitForPromises();
+        expect(findAddSeatsButton().exists()).toBe(false);
+      });
+    });
+
+    describe('with saas', () => {
+      describe('when link is present', () => {
+        beforeEach(async () => {
+          createComponent();
+
+          // wait for apollo to load
+          await waitForPromises();
+        });
+
+        it('renders button if addDuoProHref link is passed', () => {
+          expect(findAddSeatsButton().exists()).toBe(true);
+        });
+
+        it('renders button with the correct attributes', () => {
+          expect(findAddSeatsButton().attributes()).toMatchObject({
+            href: defaultProvide.addDuoProHref,
+            target: '_blank',
+          });
         });
       });
-    });
 
-    it('does not render add seats button if link is empty', async () => {
-      createComponent({ provide: { addDuoProHref: '' } });
-      // wait for apollo to load
-      await waitForPromises();
-      expect(findAddSeatsButton().exists()).toBe(false);
-    });
-
-    it('does not render add seats button if canAddDuoProSeats is false', async () => {
-      createComponent({
-        apolloData: {
-          subscription: {
-            canAddSeats: false,
-            canRenew: false,
-            communityPlan: false,
-            canAddDuoProSeats: false,
-          },
-          userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
-        },
+      it('does not render add seats button if link is empty', async () => {
+        createComponent({ provide: { addDuoProHref: '' } });
+        // wait for apollo to load
+        await waitForPromises();
+        expect(findAddSeatsButton().exists()).toBe(false);
       });
 
-      // wait for apollo to load
-      await waitForPromises();
+      it('does not render add seats button if canAddDuoProSeats is false', async () => {
+        createComponent({
+          apolloData: {
+            subscription: {
+              canAddSeats: false,
+              canRenew: false,
+              communityPlan: false,
+              canAddDuoProSeats: false,
+            },
+            userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
+          },
+        });
 
-      expect(findAddSeatsButton().exists()).toBe(false);
-    });
+        // wait for apollo to load
+        await waitForPromises();
 
-    it('does not render add seats button if  groupId is null', async () => {
-      createComponent({ props: { groupId: null } });
+        expect(findAddSeatsButton().exists()).toBe(false);
+      });
 
-      // wait for apollo to load
-      await waitForPromises();
+      it('does not render add seats button if  groupId is null', async () => {
+        createComponent({ props: { groupId: null } });
 
-      expect(findAddSeatsButton().exists()).toBe(false);
+        // wait for apollo to load
+        await waitForPromises();
+
+        expect(findAddSeatsButton().exists()).toBe(false);
+      });
     });
 
     describe('tracking', () => {
