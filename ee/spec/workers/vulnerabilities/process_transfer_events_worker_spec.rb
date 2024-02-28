@@ -27,30 +27,13 @@ RSpec.describe Vulnerabilities::ProcessTransferEventsWorker, feature_category: :
     })
   end
 
-  before do
-    stub_feature_flags(update_vuln_reads_traversal_ids_via_event: [project, other_project,
-      project_without_vulnerabilities, group])
-  end
-
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :always
 
   subject(:use_event) { consume_event(subscriber: described_class, event: event) }
 
   context 'when the associated project has vulnerabilities' do
-    before do
-      project.project_setting.update!(has_vulnerabilities: true)
-    end
-
     context 'when a project transfered event is published', :sidekiq_inline do
       let(:event) { project_event }
-
-      context 'when update_vuln_reads_on_project_transfer_via_event is disabled' do
-        before do
-          stub_feature_flags(update_vuln_reads_traversal_ids_via_event: false)
-        end
-
-        it_behaves_like 'ignores the published event'
-      end
 
       it_behaves_like 'subscribes to event'
 
@@ -65,14 +48,6 @@ RSpec.describe Vulnerabilities::ProcessTransferEventsWorker, feature_category: :
 
     context 'when a group transfered event is published', :sidekiq_inline do
       let(:event) { group_event }
-
-      context 'when update_vuln_reads_on_project_transfer_via_event is disabled' do
-        before do
-          stub_feature_flags(update_vuln_reads_traversal_ids_via_event: false)
-        end
-
-        it_behaves_like 'ignores the published event'
-      end
 
       it_behaves_like 'subscribes to event'
 
