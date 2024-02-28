@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PendingMembersApp renders pending members 1`] = `
+exports[`PendingMembersApp when there are pending members renders pending members 1`] = `
 Array [
   <div
     class="gl-border-0 gl-border-b-1! gl-border-gray-100 gl-border-solid gl-display-flex gl-justify-content-space-between gl-p-5"
