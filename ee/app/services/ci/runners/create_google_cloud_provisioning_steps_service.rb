@@ -19,12 +19,12 @@ module Ci
         ServiceResponse.success(payload: {
           provisioning_steps: [
             {
-              title: 'Save the Terraform script to a file',
+              title: s_('Runners|Save the Terraform script to a file'),
               language_identifier: 'terraform',
               instructions: instructions[:terraform_script]
             },
             {
-              title: 'Apply the Terraform script',
+              title: s_('Runners|Apply the Terraform script'),
               language_identifier: 'shell',
               instructions: instructions[:shell_script]
             }
@@ -72,9 +72,9 @@ module Ci
       end
 
       def deployment_name
-        # Unique in context of Google Cloud project, no longer than 12 characters
-        unique_id = runner&.short_sha || Devise.friendly_token(8)
-        "grit#{unique_id}"[0..DEPLOYMENT_NAME_MAX_LENGTH - 1]
+        # Unique in context of Google Cloud project, no longer than DEPLOYMENT_NAME_MAX_LENGTH characters
+        unique_id = runner&.short_sha || Devise.friendly_token(Ci::Runner::RUNNER_SHORT_SHA_LENGTH)
+        "grit-#{unique_id}"[0..DEPLOYMENT_NAME_MAX_LENGTH - 1]
       end
       strong_memoize_attr :deployment_name
 
@@ -113,15 +113,15 @@ module Ci
       end
 
       def provisioning_project_id
-        params[:provisioning_project_id]
+        params[:google_cloud_project_id]
       end
 
       def provisioning_region
-        params[:provisioning_region]
+        params[:region]
       end
 
       def provisioning_zone
-        params[:provisioning_zone]
+        params[:zone]
       end
 
       def ephemeral_machine_type

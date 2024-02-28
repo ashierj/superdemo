@@ -69,7 +69,7 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
 end
 
 RSpec.shared_examples 'overriding the google cloud project id' do
-  let(:google_cloud_project_id) { 'project_id_override' }
+  let(:google_cloud_project_id) { 'project-id-override' }
   let(:extra_params) { { google_cloud_project_id: google_cloud_project_id } }
 
   it 'returns results by calling the specified project id' do

@@ -7,10 +7,10 @@ module Types
       graphql_name 'CiRunnerCloudProvisioningMachineType'
       description 'Machine type used for runner cloud provisioning.'
 
-      field :zone, GraphQL::Types::String,
+      field :zone, Types::GoogleCloud::ZoneType,
         null: true, description: 'Zone of the machine type.'
 
-      field :name, GraphQL::Types::String,
+      field :name, Types::GoogleCloud::MachineTypeType,
         null: true, description: 'Name of the machine type.'
 
       field :description, GraphQL::Types::String,

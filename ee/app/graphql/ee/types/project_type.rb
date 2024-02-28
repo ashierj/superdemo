@@ -338,11 +338,11 @@ module EE
           method: :downstream_project_subscriptions,
           description: 'Pipeline subscriptions for projects subscribed to the project.'
 
-        field :runner_cloud_provisioning_options,
-          ::Types::Ci::RunnerCloudProvisioningOptionsType,
+        field :runner_cloud_provisioning,
+          ::Types::Ci::RunnerCloudProvisioningType,
           null: true,
           alpha: { milestone: '16.9' },
-          description: 'Options for provisioning the runner on a cloud provider. ' \
+          description: 'Information used for provisioning the runner on a cloud provider. ' \
                        'Returns `null` if `:google_cloud_runner_provisioning` feature flag is disabled, ' \
                        'or the GitLab instance is not a SaaS instance.' do
                          argument :provider, ::Types::Ci::RunnerCloudProviderEnum, required: true,
@@ -420,7 +420,7 @@ module EE
         end
       end
 
-      def runner_cloud_provisioning_options(provider:, cloud_project_id:)
+      def runner_cloud_provisioning(provider:, cloud_project_id:)
         return if ::Feature.disabled?(:google_cloud_runner_provisioning, project)
 
         {

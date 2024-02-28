@@ -2,18 +2,18 @@
 
 module Types
   module Ci
-    class RunnerCloudProvisioningOptionsType < BaseUnion
-      graphql_name 'CiRunnerCloudProvisioningOptions'
-      description 'Options for runner cloud provisioning.'
+    class RunnerCloudProvisioningType < BaseUnion
+      graphql_name 'CiRunnerCloudProvisioning'
+      description 'Information used in runner cloud provisioning.'
 
       UnexpectedProviderType = Class.new(StandardError)
 
-      possible_types ::Types::Ci::RunnerGoogleCloudProvisioningOptionsType
+      possible_types ::Types::Ci::RunnerGoogleCloudProvisioningType
 
       def self.resolve_type(object, _context)
         case object[:provider]
         when :google_cloud
-          ::Types::Ci::RunnerGoogleCloudProvisioningOptionsType
+          ::Types::Ci::RunnerGoogleCloudProvisioningType
         else
           raise UnexpectedProviderType, 'Unsupported CI runner cloud provider'
         end

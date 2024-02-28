@@ -14,9 +14,9 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
   let(:runner_token) { runner.token }
   let(:params) do
     {
-      provisioning_project_id: google_cloud_project_id,
-      provisioning_region: region,
-      provisioning_zone: zone,
+      google_cloud_project_id: google_cloud_project_id,
+      region: region,
+      zone: zone,
       ephemeral_machine_type: machine_type,
       runner_token: runner_token
     }
@@ -45,12 +45,12 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
         {
           instructions: a_string_including("google_project = \"#{google_cloud_project_id}\""),
           language_identifier: 'terraform',
-          title: 'Save the Terraform script to a file'
+          title: s_('Runners|Save the Terraform script to a file')
         },
         {
           instructions: /gitlab_runner="#{runner_token}"/,
           language_identifier: 'shell',
-          title: 'Apply the Terraform script'
+          title: s_('Runners|Apply the Terraform script')
         }
       ])
     end
@@ -63,14 +63,14 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
 
         steps = execute.payload[:provisioning_steps]
         expect(steps).to match([
-          a_hash_including(instructions: /name = "grit[A-Za-z0-9_\-]{8}"/),
+          a_hash_including(instructions: /name = "grit-[A-Za-z0-9_\-]{8}"/),
           an_instance_of(Hash)
         ])
       end
 
       context 'when new deployment name is invalid' do
         it 'returns internal error' do
-          expect(Devise).to receive(:friendly_token).with(8).and_return('1234567/')
+          expect(Devise).to receive(:friendly_token).with(Ci::Runner::RUNNER_SHORT_SHA_LENGTH).and_return('1234567/')
 
           expect(execute.status).to eq :error
           expect(execute.reason).to eq :internal_error

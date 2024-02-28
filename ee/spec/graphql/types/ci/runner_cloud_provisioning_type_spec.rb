@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['CiRunnerCloudProvisioningOptions'], feature_category: :fleet_visibility do
+RSpec.describe GitlabSchema.types['CiRunnerCloudProvisioning'], feature_category: :runner do
   it 'returns all possible types' do
     expect(described_class.possible_types).to include(
-      ::Types::Ci::RunnerGoogleCloudProvisioningOptionsType
+      ::Types::Ci::RunnerGoogleCloudProvisioningType
     )
   end
 
@@ -13,7 +13,7 @@ RSpec.describe GitlabSchema.types['CiRunnerCloudProvisioningOptions'], feature_c
     using RSpec::Parameterized::TableSyntax
 
     where(:provider, :expected_type) do
-      :google_cloud | ::Types::Ci::RunnerGoogleCloudProvisioningOptionsType
+      :google_cloud | ::Types::Ci::RunnerGoogleCloudProvisioningType
     end
 
     subject(:resolved_type) do
@@ -28,7 +28,7 @@ RSpec.describe GitlabSchema.types['CiRunnerCloudProvisioningOptions'], feature_c
       let(:provider) { :unknown }
 
       it 'raises an error' do
-        expect { resolved_type }.to raise_error(Types::Ci::RunnerCloudProvisioningOptionsType::UnexpectedProviderType)
+        expect { resolved_type }.to raise_error(Types::Ci::RunnerCloudProvisioningType::UnexpectedProviderType)
       end
     end
   end

@@ -797,7 +797,7 @@ module EE
       rule { status_page_available & can?(:developer_access) }.enable :publish_status_page
 
       rule { google_cloud_support_available & can?(:maintainer_access) }.policy do
-        enable :read_runner_cloud_provisioning_options
+        enable :read_runner_cloud_provisioning_info
         enable :provision_cloud_runner
       end
       rule { google_cloud_support_available & can?(:reporter_access) }.enable :read_google_cloud_artifact_registry

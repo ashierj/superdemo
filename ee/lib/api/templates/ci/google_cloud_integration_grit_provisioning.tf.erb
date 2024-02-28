@@ -39,7 +39,6 @@ module "runner-deployment" {
   google_region  = local.google_region
   google_zone    = local.google_zone
 
-  # Unique in context of Google Cloud project, no longer than 12 characters
   name = "<%= deployment_name %>"
 
   gitlab_url = "<%= gitlab_url %>"
