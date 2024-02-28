@@ -128,3 +128,11 @@ export const DROPDOWN_OPTION_PROJECT_GROUPS = s__('ApprovalRule|project groups')
 export const DROPDOWN_OPTION_ALL_GROUPS = s__('ApprovalRule|all groups');
 
 export const GROUP_OPTIONS = [DROPDOWN_OPTION_ALL_GROUPS, DROPDOWN_OPTION_PROJECT_GROUPS];
+
+export const TABLE_HEADERS = {
+  name: s__('ApprovalRule|Rule'),
+  members: s__('ApprovalRule|Approvers'),
+  approvalsRequired: s__('ApprovalRule|Approvals required'),
+  branches: __('Target branch'),
+  actions: __('Actions'),
+};

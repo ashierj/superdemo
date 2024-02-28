@@ -10,7 +10,7 @@ import MREditModule from 'ee/approvals/stores/modules/mr_edit';
 import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list.vue';
 import { createEmptyRule, createMRRule, createMRRuleWithSource } from '../mock_data';
 
-const { HEADERS } = Rules;
+const { TABLE_HEADERS } = Rules;
 
 Vue.use(Vuex);
 
@@ -166,10 +166,10 @@ describe('EE Approvals MRRules', () => {
       factory();
 
       expect(findHeaders()).toEqual([
-        HEADERS.name,
-        HEADERS.members,
-        HEADERS.approvalsRequired,
-        HEADERS.actions,
+        TABLE_HEADERS.name,
+        TABLE_HEADERS.members,
+        TABLE_HEADERS.approvalsRequired,
+        TABLE_HEADERS.actions,
       ]);
     });
 
@@ -177,7 +177,11 @@ describe('EE Approvals MRRules', () => {
       store.modules.approvals.state.rules = [createEmptyRule()];
       factory();
 
-      expect(findHeaders()).toEqual([HEADERS.members, HEADERS.approvalsRequired, HEADERS.actions]);
+      expect(findHeaders()).toEqual([
+        TABLE_HEADERS.members,
+        TABLE_HEADERS.approvalsRequired,
+        TABLE_HEADERS.actions,
+      ]);
     });
 
     it('shows message if no approvers are visible', () => {
@@ -192,10 +196,10 @@ describe('EE Approvals MRRules', () => {
       factory();
 
       expect(findHeaders()).toEqual([
-        HEADERS.name,
-        HEADERS.members,
-        HEADERS.approvalsRequired,
-        HEADERS.actions,
+        TABLE_HEADERS.name,
+        TABLE_HEADERS.members,
+        TABLE_HEADERS.approvalsRequired,
+        TABLE_HEADERS.actions,
       ]);
     });
 
@@ -274,7 +278,7 @@ describe('EE Approvals MRRules', () => {
       store.modules.approvals.state.rules = [createEmptyRule()];
       factory();
 
-      expect(findHeaders()).not.toContain(HEADERS.name);
+      expect(findHeaders()).not.toContain(TABLE_HEADERS.name);
     });
 
     it('does not show approvers header for regular rule', () => {
@@ -282,10 +286,10 @@ describe('EE Approvals MRRules', () => {
       factory();
 
       expect(findHeaders()).toEqual([
-        HEADERS.name,
-        HEADERS.members,
-        HEADERS.approvalsRequired,
-        HEADERS.actions,
+        TABLE_HEADERS.name,
+        TABLE_HEADERS.members,
+        TABLE_HEADERS.approvalsRequired,
+        TABLE_HEADERS.actions,
       ]);
     });
 
