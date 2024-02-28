@@ -1,4 +1,4 @@
-import { GlPagination, GlBadge, GlAvatarLabeled, GlModal } from '@gitlab/ui';
+import { GlPagination, GlBadge, GlAvatarLabeled, GlEmptyState, GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
@@ -97,28 +97,46 @@ describe('PendingMembersApp', () => {
     });
   });
 
-  it('renders pending members', () => {
-    const pendingMembers = findPendingMembers();
+  describe('when there are pending members', () => {
+    it('renders pending members', () => {
+      const pendingMembers = findPendingMembers();
 
-    expect(pendingMembers.length).toBe(mockDataMembers.data.length);
-    expect(findPendingMembers().wrappers.map((w) => w.html())).toMatchSnapshot();
-  });
+      expect(pendingMembers.length).toBe(mockDataMembers.data.length);
+      expect(findPendingMembers().wrappers.map((w) => w.html())).toMatchSnapshot();
+    });
 
-  it('pagination is rendered and passed correct values', () => {
-    const pagination = findPagination();
+    it('pagination is rendered and passed correct values', () => {
+      const pagination = findPagination();
 
-    expect(pagination.props()).toMatchObject({
-      perPage: 5,
-      totalItems: 300,
+      expect(pagination.props()).toMatchObject({
+        perPage: 5,
+        totalItems: 300,
+      });
+    });
+
+    it('render badge for approved invited members', () => {
+      createComponent({
+        stubs: { GlBadge, GlAvatarLabeled },
+        initialGetters: { tableItems: () => [mockInvitedApprovedMember] },
+        initialState: { members: [mockInvitedApprovedMember] },
+      });
+      expect(wrapper.findComponent(GlBadge).text()).toEqual('Awaiting member signup');
     });
   });
 
-  it('render badge for approved invited members', () => {
-    createComponent({
-      stubs: { GlBadge, GlAvatarLabeled },
-      initialGetters: { tableItems: () => [mockInvitedApprovedMember] },
-      initialState: { members: [mockInvitedApprovedMember] },
+  describe('when there are no pending members', () => {
+    beforeEach(() => {
+      createComponent({ initialGetters: { tableItems: () => [] } });
     });
-    expect(wrapper.findComponent(GlBadge).text()).toEqual('Awaiting member signup');
+
+    it('does not render pending members', () => {
+      expect(findPendingMembers().length).toBe(0);
+    });
+    it('renders empty state', () => {
+      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
+      expect(wrapper.findComponent(GlEmptyState).props('title')).toBe(
+        'There are no pending members left to approve. High five!',
+      );
+    });
   });
 });

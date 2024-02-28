@@ -35885,6 +35885,9 @@ msgstr ""
 msgid "Pending sync…"
 msgstr ""
 
+msgid "PendingMembers|There are no pending members left to approve. High five!"
+msgstr ""
+
 msgid "People without permission will never get a notification and won't be able to comment."
 msgstr ""
 

@@ -7,11 +7,13 @@ import {
   GlAvatarLink,
   GlBadge,
   GlButton,
+  GlEmptyState,
   GlPagination,
   GlModal,
   GlModalDirective,
   GlLoadingIcon,
 } from '@gitlab/ui';
+import EmptyTodosSvg from '@gitlab/svgs/dist/illustrations/empty-todos-md.svg';
 import { n__, sprintf } from '~/locale';
 import { AVATAR_SIZE } from 'ee/usage_quotas/seats/constants';
 import {
@@ -31,6 +33,7 @@ export default {
     GlAvatarLink,
     GlBadge,
     GlButton,
+    GlEmptyState,
     GlPagination,
     GlModal,
     GlLoadingIcon,
@@ -67,6 +70,7 @@ export default {
       'approveAllMembersLoading',
       'approveAllMembersDisabled',
       'userCapSet',
+      'members',
     ]),
     ...mapGetters(['tableItems']),
     currentPage: {
@@ -116,6 +120,7 @@ export default {
   LABEL_APPROVE_ALL,
   LABEL_CONFIRM,
   PENDING_MEMBERS_TITLE,
+  EmptyTodosSvg,
 };
 </script>
 <template>
@@ -151,8 +156,16 @@ export default {
         <gl-alert v-if="alertMessage" :variant="alertVariant" @dismiss="dismissAlert">
           {{ alertMessage }}
         </gl-alert>
+        <gl-empty-state
+          v-if="!tableItems.length"
+          :title="s__('PendingMembers|There are no pending members left to approve. High five!')"
+          :svg-path="$options.EmptyTodosSvg"
+          :svg-height="220"
+          class="gl-py-8"
+        />
         <div
           v-for="item in tableItems"
+          v-else
           :key="item.id"
           class="gl-p-5 gl-border-0 gl-border-b-1! gl-border-gray-100 gl-border-solid gl-display-flex gl-justify-content-space-between"
           data-testid="pending-members"
