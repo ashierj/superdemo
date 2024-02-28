@@ -42629,6 +42629,9 @@ msgstr ""
 msgid "Runners|An upgrade is recommended for this runner"
 msgstr ""
 
+msgid "Runners|Apply the Terraform script"
+msgstr ""
+
 msgid "Runners|Arch/Platform"
 msgstr ""
 
@@ -43188,6 +43191,9 @@ msgid "Runners|Running Jobs"
 msgstr ""
 
 msgid "Runners|Runs untagged jobs"
+msgstr ""
+
+msgid "Runners|Save the Terraform script to a file"
 msgstr ""
 
 msgid "Runners|Search description..."

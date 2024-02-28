@@ -2,15 +2,15 @@
 
 module Types
   module Ci
-    class RunnerGoogleCloudProvisioningOptionsType < BaseObject
-      graphql_name 'CiRunnerGoogleCloudProvisioningOptions'
-      description 'Options for runner Google Cloud provisioning.'
+    class RunnerGoogleCloudProvisioningType < BaseObject
+      graphql_name 'CiRunnerGoogleCloudProvisioning'
+      description 'Information used for runner Google Cloud provisioning.'
 
       SHELL_SCRIPT_TEMPLATE_PATH = 'ee/lib/api/templates/google_cloud_integration_runner_project_setup.sh.erb'
 
       include Gitlab::Graphql::Authorize::AuthorizeResource
 
-      authorize :read_runner_cloud_provisioning_options
+      authorize :read_runner_cloud_provisioning_info
 
       field :regions, Types::Ci::RunnerCloudProvisioningRegionType.connection_type,
         description: 'Regions available for provisioning a runner.',
@@ -25,7 +25,7 @@ module Types
         connection_extension: Gitlab::Graphql::Extensions::ForwardOnlyExternallyPaginatedArrayExtension,
         max_page_size: GoogleCloudPlatform::Compute::ListZonesService::MAX_RESULTS_LIMIT,
         default_page_size: GoogleCloudPlatform::Compute::ListZonesService::MAX_RESULTS_LIMIT do
-          argument :region, GraphQL::Types::String, required: false,
+          argument :region, Types::GoogleCloud::RegionType, required: false,
             description: 'Region to retrieve zones for. Returns all zones if not specified.'
         end
 
@@ -36,11 +36,16 @@ module Types
         connection_extension: Gitlab::Graphql::Extensions::ForwardOnlyExternallyPaginatedArrayExtension,
         max_page_size: GoogleCloudPlatform::Compute::ListMachineTypesService::MAX_RESULTS_LIMIT,
         default_page_size: GoogleCloudPlatform::Compute::ListMachineTypesService::MAX_RESULTS_LIMIT do
-          argument :zone, GraphQL::Types::String, required: true, description: 'Zone to retrieve machine types for.'
+          argument :zone, Types::GoogleCloud::ZoneType, required: true,
+            description: 'Zone to retrieve machine types for.'
         end
 
       field :project_setup_shell_script, GraphQL::Types::String, null: true,
         description: 'Instructions for setting up a Google Cloud project.'
+
+      field :provisioning_steps,
+        null: true,
+        resolver: ::Resolvers::Ci::RunnerGoogleCloudProvisioningStepsResolver
 
       def self.authorized?(object, context)
         super(object[:project], context)

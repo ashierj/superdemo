@@ -7,7 +7,7 @@ module Types
       graphql_name 'CiRunnerCloudProvisioningRegion'
       description 'Region used for runner cloud provisioning.'
 
-      field :name, GraphQL::Types::String,
+      field :name, Types::GoogleCloud::RegionType,
         null: true, description: 'Name of the region.'
 
       field :description, GraphQL::Types::String,

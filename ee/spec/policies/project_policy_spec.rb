@@ -3576,10 +3576,10 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
-  describe 'read_runner_cloud_provisioning_options policy' do
+  describe 'read_runner_cloud_provisioning_info policy' do
     let(:current_user) { maintainer }
 
-    it { is_expected.to be_disallowed(:read_runner_cloud_provisioning_options) }
+    it { is_expected.to be_disallowed(:read_runner_cloud_provisioning_info) }
 
     context 'when SaaS-only feature is available' do
       before do
@@ -3589,13 +3589,13 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       context 'the user is a maintainer' do
         let(:current_user) { maintainer }
 
-        it { is_expected.to be_allowed(:read_runner_cloud_provisioning_options) }
+        it { is_expected.to be_allowed(:read_runner_cloud_provisioning_info) }
       end
 
       context 'the user is a guest' do
         let(:current_user) { guest }
 
-        it { is_expected.to be_disallowed(:read_runner_cloud_provisioning_options) }
+        it { is_expected.to be_disallowed(:read_runner_cloud_provisioning_info) }
       end
     end
   end

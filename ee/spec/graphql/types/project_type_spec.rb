@@ -30,7 +30,7 @@ RSpec.describe GitlabSchema.types['Project'] do
       security_policy_project_linked_projects security_policy_project_linked_namespaces
       dependencies merge_requests_disable_committers_approval has_jira_vulnerability_issue_creation_enabled
       ci_subscriptions_projects ci_subscribed_projects ai_agents ai_agent duo_features_enabled
-      runner_cloud_provisioning_options google_cloud_artifact_registry_repository
+      runner_cloud_provisioning google_cloud_artifact_registry_repository
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
@@ -492,9 +492,9 @@ RSpec.describe GitlabSchema.types['Project'] do
     it { is_expected.to have_graphql_resolver(Resolvers::Ai::Agents::FindAgentResolver) }
   end
 
-  describe 'runnerCloudProvisioningOptions', feature_category: :runner do
-    subject { described_class.fields['runnerCloudProvisioningOptions'] }
+  describe 'runnerCloudProvisioning', feature_category: :runner do
+    subject { described_class.fields['runnerCloudProvisioning'] }
 
-    it { is_expected.to have_graphql_type(::Types::Ci::RunnerCloudProvisioningOptionsType) }
+    it { is_expected.to have_graphql_type(::Types::Ci::RunnerCloudProvisioningType) }
   end
 end

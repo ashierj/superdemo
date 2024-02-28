@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :runner do
+RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
   include GraphqlHelpers
 
   let_it_be_with_refind(:project) { create(:project) }
@@ -13,13 +13,13 @@ RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :runner
 
   let(:current_user) { maintainer }
   let(:google_cloud_project_id) { 'project-id-override' }
-  let(:inner_fragment) { query_graphql_fragment('CiRunnerGoogleCloudProvisioningOptions') }
+  let(:inner_fragment) { query_graphql_fragment('CiRunnerGoogleCloudProvisioning') }
   let(:query) do
     graphql_query_for(
       :project, { fullPath: project.full_path },
       query_graphql_field(
-        :runner_cloud_provisioning_options, { provider: :GOOGLE_CLOUD, cloud_project_id: google_cloud_project_id },
-        "... on CiRunnerGoogleCloudProvisioningOptions {
+        :runner_cloud_provisioning, { provider: :GOOGLE_CLOUD, cloud_project_id: google_cloud_project_id },
+        "... on CiRunnerGoogleCloudProvisioning {
           #{inner_fragment}
         }"
       )
@@ -28,7 +28,7 @@ RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :runner
 
   let(:options_response) do
     request
-    graphql_data_at('project', 'runnerCloudProvisioningOptions')
+    graphql_data_at('project', 'runnerCloudProvisioning')
   end
 
   subject(:request) do
@@ -37,6 +37,16 @@ RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :runner
 
   before do
     stub_saas_features(google_cloud_support: true)
+  end
+
+  context 'when cloud_project_id is invalid' do
+    let(:google_cloud_project_id) { 'project_id_override' }
+
+    it 'returns an error' do
+      request
+
+      expect_graphql_errors_to_include('"project_id_override" is not a valid project name')
+    end
   end
 
   describe 'collections' do
@@ -231,13 +241,26 @@ RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :runner
         expect_graphql_errors_to_include(/integration not active/)
       end
     end
+
+    private
+
+    def google_cloud_object_list(compute_type, returned_nodes, next_page_token:)
+      item_type = "Google::Cloud::Compute::V1::#{compute_type}"
+
+      # rubocop:disable RSpec/VerifiedDoubles -- these generated objects don't actually expose the methods
+      double("#{item_type}List",
+        items: returned_nodes.map { |props| double(item_type, **props) },
+        next_page_token: next_page_token
+      )
+      # rubocop:enable RSpec/VerifiedDoubles
+    end
   end
 
   describe 'projectSetupShellScript' do
     let(:inner_fragment) { 'projectSetupShellScript' }
     let(:options_response) do
       request
-      graphql_data_at('project', 'runnerCloudProvisioningOptions', 'projectSetupShellScript')
+      graphql_data_at('project', 'runnerCloudProvisioning', 'projectSetupShellScript')
     end
 
     it 'returns a script' do
@@ -249,17 +272,102 @@ RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :runner
     end
   end
 
-  context 'when cloud_project_id is invalid' do
-    let(:google_cloud_project_id) { 'project_id_override' }
+  describe 'provisioningSteps' do
+    let_it_be(:runner) { create(:ci_runner, :project, projects: [project]) }
 
-    it 'returns an error' do
+    let(:region) { 'us-central1' }
+    let(:zone) { 'us-central1-a' }
+    let(:machine_type) { 'n2d-standard-2' }
+    let(:runner_token) { runner.token }
+    let(:args) do
+      {
+        region: region,
+        zone: zone,
+        ephemeral_machine_type: machine_type,
+        runner_token: runner_token
+      }
+    end
+
+    let(:inner_fragment) do
+      query_graphql_field(:provisioning_steps, args,
+        all_graphql_fields_for('CiRunnerCloudProvisioningStep'), '[CiRunnerCloudProvisioningStep!]')
+    end
+
+    let(:options_response) do
       request
+      graphql_data_at('project', 'runnerCloudProvisioning', 'provisioningSteps')
+    end
 
-      expect_graphql_errors_to_include('"project_id_override" is not a valid project name')
+    it 'returns provisioning steps', :aggregate_failures do
+      request
+      expect_graphql_errors_to_be_empty
+
+      expect(options_response).to match([
+        {
+          'instructions' => /google_project += "#{google_cloud_project_id}"/,
+          'languageIdentifier' => 'terraform',
+          'title' => 'Save the Terraform script to a file'
+        },
+        {
+          'instructions' => /gitlab_runner="#{runner_token}"/,
+          'languageIdentifier' => 'shell',
+          'title' => 'Apply the Terraform script'
+        }
+      ])
+    end
+
+    context 'with nil runner token' do
+      let(:runner_token) { nil }
+
+      it 'is successful and generates a unique deployment id' do
+        request
+        expect_graphql_errors_to_be_empty
+
+        expect(options_response).to match([
+          a_hash_including('instructions' => /name = "grit-[A-Za-z0-9_\-]{8}"/),
+          an_instance_of(Hash)
+        ])
+      end
+
+      context 'when user does not have permissions to create runner' do
+        before do
+          allow(Ability).to receive(:allowed?).and_call_original
+          allow(Ability).to receive(:allowed?).with(current_user, :create_runner, anything).and_return(false)
+        end
+
+        it 'returns an error' do
+          request
+
+          expect_graphql_errors_to_include(s_('Runners|The user is not allowed to create a runner'))
+        end
+      end
+    end
+
+    context 'with invalid runner token' do
+      let(:runner_token) { 'invalid-token' }
+
+      it 'returns an error' do
+        request
+
+        expect_graphql_errors_to_include(s_('Runners|The runner authentication token is invalid'))
+      end
+    end
+
+    context 'when user cannot provision runners' do
+      before do
+        allow(Ability).to receive(:allowed?).and_call_original
+        allow(Ability).to receive(:allowed?).with(current_user, :provision_cloud_runner, project).and_return(false)
+      end
+
+      it 'returns an error' do
+        request
+
+        expect_graphql_errors_to_include("You don't have permissions to provision cloud runners")
+      end
     end
   end
 
-  context 'when user does not have required permissions' do
+  context 'when user is not a maintainer or higher' do
     let(:current_user) { create(:user).tap { |user| project.add_developer(user) } }
 
     it { is_expected.to be nil }
@@ -279,18 +387,5 @@ RSpec.describe 'runnerGoogleCloudProvisioningOptions', feature_category: :runner
     end
 
     it { is_expected.to be nil }
-  end
-
-  private
-
-  def google_cloud_object_list(compute_type, returned_nodes, next_page_token:)
-    item_type = "Google::Cloud::Compute::V1::#{compute_type}"
-
-    # rubocop:disable RSpec/VerifiedDoubles -- these generated objects don't actually expose the methods
-    double("#{item_type}List",
-      items: returned_nodes.map { |props| double(item_type, **props) },
-      next_page_token: next_page_token
-    )
-    # rubocop:enable RSpec/VerifiedDoubles
   end
 end

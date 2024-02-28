@@ -58,7 +58,7 @@ module GoogleCloudPlatform
       end
 
       def allowed?
-        can?(current_user, :read_runner_cloud_provisioning_options, project)
+        can?(current_user, :read_runner_cloud_provisioning_info, project)
       end
 
       def valid_order_by?(value)

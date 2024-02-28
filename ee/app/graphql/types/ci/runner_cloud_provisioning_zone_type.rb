@@ -7,7 +7,7 @@ module Types
       graphql_name 'CiRunnerCloudProvisioningZone'
       description 'Zone used for runner cloud provisioning.'
 
-      field :name, GraphQL::Types::String,
+      field :name, Types::GoogleCloud::ZoneType,
         null: true, description: 'Name of the zone.'
 
       field :description, GraphQL::Types::String,
