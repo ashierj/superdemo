@@ -3,6 +3,7 @@ query getRunnerUsageByProject {
     project {
       id
       name
+      nameWithNamespace
       avatarUrl
       webUrl
     }

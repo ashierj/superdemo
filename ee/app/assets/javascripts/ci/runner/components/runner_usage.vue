@@ -5,6 +5,7 @@ import { s__, formatNumber } from '~/locale';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import { INSTANCE_TYPE } from '~/ci/runner/constants';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import TooltipOnTruncate from '~/vue_shared/directives/tooltip_on_truncate';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 
 import RunnerUsageQuery from '../graphql/performance/runner_usage.query.graphql';
@@ -20,6 +21,9 @@ export default {
     GlButton,
     GlLink,
     GlTableLite,
+  },
+  directives: {
+    TooltipOnTruncate,
   },
   data() {
     return {
@@ -50,9 +54,6 @@ export default {
         return `#${id} (${shortSha}) - ${description}`;
       }
       return `#${id} (${shortSha})`;
-    },
-    findClosestTd(el) {
-      return el.closest('td');
     },
     async onClick() {
       const confirmed = await confirmAction(
@@ -151,11 +152,15 @@ export default {
       <gl-table-lite
         :fields="$options.topProjectsFields"
         :items="topProjects"
-        class="runners-top-result-table runners-dashboard-half-gap-4"
+        class="runners-usage-table runners-top-result-table runners-dashboard-half-gap-4"
         data-testid="top-projects-table"
       >
         <template #cell(project)="{ value }">
-          <template v-if="value">
+          <div
+            v-if="value"
+            v-tooltip-on-truncate="value.nameWithNamespace"
+            class="gl-white-space-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
+          >
             <gl-avatar
               :label="value.name"
               :src="value.avatarUrl"
@@ -163,25 +168,31 @@ export default {
               :size="16"
               :entity-name="value.name"
             />
-            <gl-link :href="value.webUrl" class="gl-text-body!"> {{ value.name }} </gl-link>
-          </template>
+            <gl-link :href="value.webUrl" class="gl-text-body!">
+              {{ value.nameWithNamespace }}
+            </gl-link>
+          </div>
           <template v-else> {{ s__('Runners|Other projects') }} </template>
         </template>
-
         <template #cell(ciMinutesUsed)="{ value }">{{ formatNumber(value) }}</template>
       </gl-table-lite>
 
       <gl-table-lite
         :fields="$options.topRunnersFields"
         :items="topRunners"
-        class="runners-top-result-table runners-dashboard-half-gap-4"
+        class="runners-usage-table runners-top-result-table runners-dashboard-half-gap-4"
         data-testid="top-runners-table"
       >
         <template #cell(runner)="{ value }">
-          <gl-link v-if="value" :href="value.adminUrl" class="gl-text-body!">
-            {{ runnerName(value) }}
-          </gl-link>
-          <template v-else> {{ s__('Runners|Other runners') }} </template>
+          <div
+            v-tooltip-on-truncate
+            class="gl-white-space-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
+          >
+            <gl-link v-if="value" :href="value.adminUrl" class="gl-text-body!">
+              {{ runnerName(value) }}
+            </gl-link>
+            <template v-else> {{ s__('Runners|Other runners') }} </template>
+          </div>
         </template>
         <template #cell(ciMinutesUsed)="{ value }">{{ formatNumber(value) }}</template>
       </gl-table-lite>
