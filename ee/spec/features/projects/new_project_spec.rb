@@ -81,6 +81,8 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
     end
 
     shared_examples 'CI/CD for GitHub' do
+      let(:scopes) { ['repo', 'read:org'] }
+
       it 'creates CI/CD project from GitHub' do
         visit new_project_path
         click_link 'Run CI/CD for external repository'
@@ -91,17 +93,21 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
 
         expect(page).to have_text('Authenticate with GitHub')
 
-        octokit = instance_double(Octokit::Client)
+        octokit = instance_double(Octokit::Client,
+          access_token: 'fake-token',
+          organizations: [])
 
         allow_next_instance_of(Gitlab::GithubImport::Clients::Proxy) do |proxy|
           allow(proxy).to receive(:repos).and_return({ repos: [repo] })
         end
         allow_next_instance_of(Gitlab::GithubImport::Client) do |client|
           allow(client).to receive(:user).and_return({ login: 'my-user' })
+          allow(client).to receive_message_chain(:octokit, :rate_limit)
           allow(client).to receive(:octokit).and_return(octokit)
+          allow(client).to receive_message_chain(:octokit, :scopes).and_return(scopes)
         end
-        allow(octokit).to receive(:access_token).and_return('fake-token')
-        allow(octokit).to receive(:organizations).and_return([])
+
+        allow(octokit).to receive_message_chain(:rate_limit, :remaining).and_return(100)
 
         fill_in 'personal_access_token', with: 'fake-token'
 

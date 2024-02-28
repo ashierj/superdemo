@@ -22778,13 +22778,13 @@ msgstr ""
 msgid "Gitea import"
 msgstr ""
 
+msgid "GithubImporter|%{code_start}read:org%{code_end} (optional): Used to import collaborators from GitHub repositories."
+msgstr ""
+
 msgid "GithubImporter|%{code_start}repo%{code_end}: Used to display a list of your public and private repositories that are available to connect to."
 msgstr ""
 
 msgid "GithubImporter|%{code_start}repo%{code_end}: Used to display a list of your public and private repositories that are available to import from."
-msgstr ""
-
-msgid "GithubImporter|%{code_start}repo.org%{code_end} (optional): Used to import collaborators from GitHub repositories."
 msgstr ""
 
 msgid "GithubImporter|%{noteable_type} comment %{note_id}"
@@ -22868,6 +22868,9 @@ msgstr ""
 msgid "GithubImport|Create and provide your GitHub %{link_start}personal access token%{link_end}. You must select the following scopes:"
 msgstr ""
 
+msgid "GithubImport|Fine-grained personal access tokens are not officially supported. It is recommended to use a classic token instead."
+msgstr ""
+
 msgid "GithubImport|Import failed due to a GitHub error: %{original} (HTTP %{code})"
 msgstr ""
 
@@ -22884,6 +22887,15 @@ msgid "GithubImport|To import GitHub repositories, you must first authorize GitL
 msgstr ""
 
 msgid "GithubImport|You are not allowed to import projects in this namespace."
+msgstr ""
+
+msgid "GithubImport|Your GitHub access token does not have the correct scope to import collaborators. Please use a token with the '%{scope}' scope."
+msgstr ""
+
+msgid "GithubImport|Your GitHub access token does not have the correct scope to import. Please use a token with the '%{repo}' scope, and with the '%{read_org}' scope if importing collaborators."
+msgstr ""
+
+msgid "GithubImport|Your GitHub access token does not have the correct scope to import. Please use a token with the '%{scope}' scope."
 msgstr ""
 
 msgid "GithubIntegration|Create a %{token_link_start}personal access token%{token_link_end} with %{status_html} access granted and paste it here."
@@ -25710,6 +25722,9 @@ msgid "ImportProjects|The repository could not be created."
 msgstr ""
 
 msgid "ImportProjects|Update of imported projects with realtime changes failed"
+msgstr ""
+
+msgid "ImportProjects|Your fine-grained personal access token may not support collaborator import. Please use a classic token with %{codeStart}read:org%{codeEnd} scope to import collaborators. See the %{linkStart}documentation%{linkEnd} for further details."
 msgstr ""
 
 msgid "Imported requirements"
