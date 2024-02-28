@@ -7042,7 +7042,7 @@ msgstr ""
 msgid "AuditStreams|Add a new secret access key"
 msgstr ""
 
-msgid "AuditStreams|Add an HTTP endpoint to manage audit logs in third-party systems."
+msgid "AuditStreams|Add an HTTP endpoint to manage audit logs in third-party systems. This is great for keeping everything in one place."
 msgstr ""
 
 msgid "AuditStreams|Add another custom header"
@@ -7169,9 +7169,6 @@ msgid "AuditStreams|Streams"
 msgstr ""
 
 msgid "AuditStreams|This could include sensitive information. Make sure you trust the destination endpoint."
-msgstr ""
-
-msgid "AuditStreams|This is great for keeping everything one place."
 msgstr ""
 
 msgid "AuditStreams|Use the AWS console to view the secret access key. To change the secret access key, replace it with a new secret access key."

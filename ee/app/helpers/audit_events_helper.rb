@@ -57,7 +57,7 @@ module AuditEventsHelper
       export_url: export_url
     }.tap do |data|
       data.merge!({
-        empty_state_svg_path: image_path('illustrations/cloud.svg'),
+        empty_state_svg_path: image_path('illustrations/empty-state/empty-radar-md.svg'),
         group_path: 'instance',
         show_streams: License.feature_available?(:external_audit_events).to_s,
         audit_event_definitions: audit_event_definitions.to_json

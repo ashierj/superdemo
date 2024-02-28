@@ -10,7 +10,7 @@
   is_last_page: @is_last_page.to_json,
   group_path: @group.full_path,
   show_streams: show_streams_for_group?(@group).to_s,
-  empty_state_svg_path: image_path('illustrations/cloud.svg'),
+  empty_state_svg_path: image_path('illustrations/empty-state/empty-radar-md.svg'),
   filter_token_options: group_audit_event_tokens(@group.id).to_json,
   filter_token_values: filter_view_only_own_events_token_values(view_only).to_json,
   filter_view_only: view_only.to_s,

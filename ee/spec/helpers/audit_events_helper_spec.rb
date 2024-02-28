@@ -176,7 +176,8 @@ RSpec.describe AuditEventsHelper, feature_category: :audit_events do
         [:is_last_page, "true"],
         [:filter_token_options, admin_audit_event_tokens.to_json],
         [:export_url, export_url],
-        [:empty_state_svg_path, ActionController::Base.helpers.image_path('illustrations/cloud.svg')],
+        [:empty_state_svg_path,
+          ActionController::Base.helpers.image_path('illustrations/empty-state/empty-radar-md.svg')],
         [:group_path, "instance"],
         [:show_streams, "true"],
         [:audit_event_definitions, audit_event_definitions.to_json]
