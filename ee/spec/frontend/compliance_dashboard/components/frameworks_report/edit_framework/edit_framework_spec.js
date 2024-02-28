@@ -3,6 +3,7 @@ import VueApollo from 'vue-apollo';
 import { GlAlert, GlLoadingIcon } from '@gitlab/ui';
 import * as Utils from 'ee/groups/settings/compliance_frameworks/utils';
 import EditFramework from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/edit_framework.vue';
+import PoliciesSection from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/policies_section.vue';
 import DeleteModal from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/delete_modal.vue';
 import createComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/mutations/create_compliance_framework.mutation.graphql';
 import updateComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/mutations/update_compliance_framework.mutation.graphql';
@@ -28,6 +29,7 @@ describe('Edit Framework Form', () => {
     groupPath: 'group-1',
     pipelineConfigurationFullPathEnabled: true,
     pipelineConfigurationEnabled: true,
+    securityPoliciesPolicyScopeToggleEnabled: true,
   };
 
   const showDeleteModal = jest.fn();
@@ -43,15 +45,15 @@ describe('Edit Framework Form', () => {
 
   function createComponent(
     mountFn = mountExtended,
-    requestHandlers = [],
-    routeParams = { id: '1' },
+    { requestHandlers = [], routeParams = { id: '1' }, provide = {} } = {},
   ) {
     return mountFn(EditFramework, {
       apolloProvider: createMockApollo(requestHandlers),
-      provide: provideData,
+      provide: { ...provideData, ...provide },
       propsData,
       stubs: {
         ColorPicker: true,
+        PoliciesSection: true,
         DeleteModal: stubComponent(DeleteModal, {
           template: '<div></div>',
           methods: { show: showDeleteModal },
@@ -82,19 +84,24 @@ describe('Edit Framework Form', () => {
 
   it('does not attempt to load framework if no id provided in url', async () => {
     const queryFn = jest.fn();
-    wrapper = createComponent(shallowMountExtended, [[getComplianceFrameworkQuery, queryFn]], {});
+    wrapper = createComponent(shallowMountExtended, {
+      requestHandlers: [[getComplianceFrameworkQuery, queryFn]],
+      routeParams: {},
+    });
 
     await waitForPromises();
     expect(queryFn).not.toHaveBeenCalled();
   });
 
   it('loads framework if id provided in url', async () => {
-    wrapper = createComponent(mountExtended, [
-      [
-        getComplianceFrameworkQuery,
-        () => ({ ...createComplianceFrameworksReportResponse(), default: true }),
+    wrapper = createComponent(mountExtended, {
+      requestHandlers: [
+        [
+          getComplianceFrameworkQuery,
+          () => ({ ...createComplianceFrameworksReportResponse(), default: true }),
+        ],
       ],
-    ]);
+    });
 
     await waitForPromises();
     const values = Object.fromEntries(new FormData(wrapper.find('form').element));
@@ -156,11 +163,13 @@ describe('Edit Framework Form', () => {
       [updateComplianceFrameworkMutation, jest.fn()],
     ];
 
-    wrapper = createComponent(
-      mountExtended,
-      [[getComplianceFrameworkQuery, createComplianceFrameworksReportResponse], ...stubHandlers],
+    wrapper = createComponent(mountExtended, {
+      requestHandlers: [
+        [getComplianceFrameworkQuery, createComplianceFrameworksReportResponse],
+        ...stubHandlers,
+      ],
       routeParams,
-    );
+    });
     await waitForPromises();
 
     const form = wrapper.find('form');
@@ -171,7 +180,7 @@ describe('Edit Framework Form', () => {
 
   describe('Delete button', () => {
     it('does not render delete button if creating new framework', async () => {
-      wrapper = createComponent(shallowMountExtended, [], {});
+      wrapper = createComponent(shallowMountExtended, { routeParams: {} });
       await waitForPromises();
 
       expect(findDeleteButton().exists()).toBe(false);
@@ -201,13 +210,15 @@ describe('Edit Framework Form', () => {
             resolveDeleteFrameworkMutation = resolve;
           }),
       );
-      wrapper = createComponent(shallowMountExtended, [
-        [
-          getComplianceFrameworkQuery,
-          () => ({ ...createComplianceFrameworksReportResponse(), default: true }),
+      wrapper = createComponent(shallowMountExtended, {
+        requestHandlers: [
+          [
+            getComplianceFrameworkQuery,
+            () => ({ ...createComplianceFrameworksReportResponse(), default: true }),
+          ],
+          [deleteComplianceFrameworkMutation, deleteFrameworkMutationFn],
         ],
-        [deleteComplianceFrameworkMutation, deleteFrameworkMutationFn],
-      ]);
+      });
       await waitForPromises();
 
       findDeleteModal().vm.$emit('delete');
@@ -219,6 +230,36 @@ describe('Edit Framework Form', () => {
       await waitForPromises();
 
       expect(routerBack).toHaveBeenCalled();
+    });
+  });
+
+  describe('Policies section', () => {
+    it('does not render policies section if creating new framework', async () => {
+      wrapper = createComponent(shallowMountExtended, { routeParams: {} });
+      await waitForPromises();
+      expect(wrapper.findComponent(PoliciesSection).exists()).toBe(false);
+    });
+
+    describe('when editing framework', () => {
+      it('does not render policies section if experiment is not enabled', async () => {
+        wrapper = createComponent(shallowMountExtended, {
+          provide: {
+            securityPoliciesPolicyScopeToggleEnabled: false,
+          },
+        });
+        await waitForPromises();
+        expect(wrapper.findComponent(PoliciesSection).exists()).toBe(false);
+      });
+
+      it('render policies section if experiment is enabled', async () => {
+        wrapper = createComponent(shallowMountExtended, {
+          provide: {
+            securityPoliciesPolicyScopeToggleEnabled: true,
+          },
+        });
+        await waitForPromises();
+        expect(wrapper.findComponent(PoliciesSection).exists()).toBe(true);
+      });
     });
   });
 });
