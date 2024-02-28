@@ -16,8 +16,5 @@ distribution:
 - ee
 tier:
 - ultimate
-options:
-  events:
-  - export_runner_usage_by_project_as_csv
 events:
 - name: export_runner_usage_by_project_as_csv

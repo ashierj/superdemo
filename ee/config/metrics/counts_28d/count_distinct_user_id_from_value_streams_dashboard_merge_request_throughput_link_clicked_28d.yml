@@ -7,7 +7,7 @@ product_group: optimize
 performance_indicator_type: []
 value_type: number
 status: active
-milestone: "16.7"
+milestone: '16.7'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/138553
 time_frame: 28d
 data_source: internal_events
@@ -16,9 +16,6 @@ distribution:
 - ee
 tier:
 - ultimate
-options:
-  events:
-    - value_streams_dashboard_merge_request_throughput_link_clicked
 events:
-  - name: value_streams_dashboard_merge_request_throughput_link_clicked
-    unique: user.id
+- name: value_streams_dashboard_merge_request_throughput_link_clicked
+  unique: user.id

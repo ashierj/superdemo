@@ -16,8 +16,5 @@ distribution:
 - ee
 tier:
 - ultimate
-options:
-  events:
-  - insights_merge_request_chart_item_clicked
 events:
 - name: insights_merge_request_chart_item_clicked

@@ -17,8 +17,5 @@ distribution:
 tier:
 - premium
 - ultimate
-options:
-  events:
-  - include_repository_xray_data_into_code_generation_prompt
 events:
 - name: include_repository_xray_data_into_code_generation_prompt
