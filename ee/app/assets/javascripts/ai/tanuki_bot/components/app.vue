@@ -162,13 +162,14 @@ export default {
     onCalloutDismissed() {
       this.helpCenterState.showTanukiBotChatDrawer = true;
     },
-    onTrackFeedback({ extendedTextFeedback, feedbackChoices } = {}) {
+    onTrackFeedback({ feedbackChoices, didWhat, improveWhat } = {}) {
       this.track(TANUKI_BOT_TRACKING_EVENT_NAME, {
         action: 'click_button',
         label: 'response_feedback',
         property: feedbackChoices,
         extra: {
-          extendedFeedback: extendedTextFeedback,
+          improveWhat,
+          didWhat,
           prompt_location: 'after_content',
         },
       });
