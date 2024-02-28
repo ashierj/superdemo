@@ -70,6 +70,7 @@ module GitlabSubscriptions
       def user_already_assigned?
         add_on_purchase.already_assigned?(user)
       end
+      strong_memoize_attr :user_already_assigned?
 
       def eligible_for_gitlab_duo_pro_seat?
         raise NotImplementedError, 'Subclasses must implement the eligible_for_gitlab_duo_pro_seat? method'
