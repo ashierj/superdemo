@@ -8,7 +8,7 @@ module Resolvers
 
         type ::Types::GoogleCloud::ArtifactRegistry::ArtifactDetailsType, null: true
 
-        authorize :read_container_image
+        authorize :read_google_cloud_artifact_registry
 
         argument :google_cloud_project_id,
           GraphQL::Types::String,
