@@ -1,6 +1,8 @@
 import { GlTable, GlLabel } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import LogsTable from 'ee/logs/list/logs_table.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { mockLogs } from './mock_data';
 
 describe('LogsTable', () => {
@@ -15,6 +17,11 @@ describe('LogsTable', () => {
   };
 
   const getRows = () => wrapper.findComponent(GlTable).findAll(`[data-testid="log-row"]`);
+  const getRow = (idx) => getRows().at(idx);
+  const clickRow = async (idx) => {
+    getRow(idx).trigger('click');
+    await nextTick();
+  };
 
   it('renders logs as table', () => {
     mountComponent();
@@ -23,7 +30,7 @@ describe('LogsTable', () => {
     expect(rows.length).toBe(mockLogs.length);
     mockLogs.forEach((m, i) => {
       const row = getRows().at(i);
-      expect(row.find(`[data-testid="log-timestamp"]`).text()).toBe(m.timestamp);
+      expect(row.find(`[data-testid="log-timestamp"]`).text()).toBe(formatDate(m.timestamp));
       expect(row.find(`[data-testid="log-service"]`).text()).toBe(m.service_name);
       expect(row.find(`[data-testid="log-message"]`).text()).toBe(m.body);
     });
@@ -31,13 +38,13 @@ describe('LogsTable', () => {
 
   describe('label', () => {
     it.each([
-      [1, 'Trace', '#808080'],
-      [5, 'Debug', '#808080'],
-      [9, 'Info', '#808080'],
-      [13, 'Warning', '#ed9121'],
-      [17, 'Error', '#dc143c'],
-      [21, 'Fatal', '#c21e56'],
-      [100, 'Debug', '#808080'],
+      [1, 'Trace', '#a4a3a8'],
+      [5, 'Debug', '#a4a3a8'],
+      [9, 'Info', '#428fdc'],
+      [13, 'Warning', '#e9be74'],
+      [17, 'Error', '#dd2b0e'],
+      [21, 'Fatal', '#dd2b0e'],
+      [100, 'Debug', '#a4a3a8'],
     ])('sets the proper label when log severity is %d', (severity, title, color) => {
       mountComponent({
         logs: [{ severity_number: severity }],
@@ -61,5 +68,12 @@ describe('LogsTable', () => {
 
     link.trigger('click');
     expect(wrapper.emitted('reload')).toHaveLength(1);
+  });
+
+  it('emits log-selected on row-clicked', async () => {
+    mountComponent();
+
+    await clickRow(0);
+    expect(wrapper.emitted('log-selected')[0]).toEqual([{ fingerprint: mockLogs[0].fingerprint }]);
   });
 });

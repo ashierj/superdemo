@@ -1,5 +1,6 @@
 export const mockLogs = [
   {
+    fingerprint: 'log-1',
     timestamp: '2024-01-28T10:36:08.2960655Z',
     trace_id: 'trace-id',
     span_id: 'span-id',
@@ -28,6 +29,7 @@ export const mockLogs = [
     },
   },
   {
+    fingerprint: 'log-2',
     timestamp: '2024-01-28T10:36:08.2960655Z',
     trace_id: 'trace-id',
     span_id: 'span-id',
@@ -56,6 +58,7 @@ export const mockLogs = [
     },
   },
   {
+    fingerprint: 'log-3',
     timestamp: '2024-01-28T10:36:08.2960655Z',
     trace_id: 'trace-id',
     span_id: 'span-id',
@@ -84,6 +87,7 @@ export const mockLogs = [
     },
   },
   {
+    fingerprint: 'log-4',
     timestamp: '2024-01-28T10:36:08.2960655Z',
     trace_id: 'trace-id',
     span_id: 'span-id',
@@ -112,6 +116,7 @@ export const mockLogs = [
     },
   },
   {
+    fingerprint: 'log-5',
     timestamp: '2024-01-28T10:36:08.2960655Z',
     trace_id: 'trace-id',
     span_id: 'span-id',
