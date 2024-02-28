@@ -12,6 +12,12 @@ module GitlabSubscriptions
       end
     end
 
+    def duo_pro_bulk_user_assignment_available?(namespace = nil)
+      return false unless gitlab_duo_available?(namespace)
+
+      Feature.enabled?(:gitlab_com_duo_pro_bulk_user_assignment, namespace) if gitlab_com_subscription?
+    end
+
     def add_duo_pro_seats_url(subscription_name)
       return unless gitlab_duo_available?
 
