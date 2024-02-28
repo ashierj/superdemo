@@ -14,6 +14,7 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
     let_it_be(:issue3) { create(:issue, project: project) }
     let_it_be(:valid_reference) { issue.to_reference(full: true) }
     let_it_be(:epic, reload: true) { create(:epic, group: group) }
+    let_it_be(:synced_epic, reload: true) { create(:epic, :with_synced_work_item, group: group) }
 
     def assign_issue(references)
       params = { issuable_references: references }
@@ -163,6 +164,135 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
               expect { described_class.new(epic, user, params).execute }
                 .not_to exceed_query_limit(control_count)
                 .with_threshold(24)
+            end
+
+            context 'when epic has synced work item' do
+              let_it_be(:user) { create(:user) }
+
+              let(:epic) { synced_epic }
+              let(:error_message) { "#{issue.to_reference} cannot be added: error message" }
+
+              before_all do
+                group.add_reporter(user)
+                project.add_reporter(user)
+              end
+
+              shared_examples 'does not create relationships' do
+                it 'does not create relationships for the epic or the work item' do
+                  service_response = subject
+                  expect { service_response }.to not_change { EpicIssue.count }
+                    .and(not_change { WorkItems::ParentLink.count })
+
+                  expect(service_response[:message])
+                    .to eq("#{issue.to_reference} cannot be added: Couldn't add issue due to an internal error.")
+                end
+
+                it 'logs error' do
+                  allow(Gitlab::EpicWorkItemSync::Logger).to receive(:error).and_call_original
+                  expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error).with({
+                    error_message: error_message,
+                    group_id: group.id,
+                    message: 'Not able to sync child issue',
+                    epic_id: epic.id,
+                    issue_id: issue.id
+                  })
+
+                  subject
+                end
+
+                it 'does not trigger issuableEpicUpdated' do
+                  expect(GraphqlTriggers).not_to receive(:issuable_epic_updated)
+                end
+
+                it 'does not create a system note' do
+                  expect { subject }.not_to change { Note.count }
+                end
+
+                it 'does not call NewEpicIssueWorker' do
+                  expect(Epics::NewEpicIssueWorker).not_to receive(:perform_async)
+
+                  subject
+                end
+              end
+
+              it 'syncs link with work item parent link' do
+                expect { subject }.to change { EpicIssue.count }.by(1)
+                  .and(change { WorkItems::ParentLink.count }.by(1))
+
+                expect(created_link).to have_attributes(epic: epic)
+                expect(created_link.issue_id).to eq(epic.work_item.child_links[0].work_item_id)
+                expect(created_link.relative_position).to eq(epic.work_item.child_links[0].relative_position)
+              end
+
+              it 'triggers the issuable_epic_updated subscription' do
+                expect(GraphqlTriggers).to receive(:issuable_epic_updated).with(issue).and_call_original
+
+                subject
+              end
+
+              it 'calls NewEpicIssueWorker' do
+                expect(Epics::NewEpicIssueWorker).to receive(:perform_async)
+                  .with({ epic_id: epic.id, issue_id: issue.id, user_id: user.id })
+
+                subject
+              end
+
+              context 'when work item link creation fails' do
+                before do
+                  allow_next_instance_of(::WorkItems::ParentLink) do |instance|
+                    allow(instance).to receive(:save).and_return(false)
+
+                    errors = ActiveModel::Errors.new(instance).tap { |e| e.add(:work_item, 'error message') }
+                    allow(instance).to receive(:errors).and_return(errors)
+                  end
+                end
+
+                it_behaves_like 'does not create relationships'
+              end
+
+              context 'when syncing a relative position fails' do
+                before do
+                  allow_next_instance_of(WorkItems::ParentLink) do |instance|
+                    allow(instance).to receive(:update).and_return(false)
+                  end
+                end
+
+                it_behaves_like 'does not create relationships' do
+                  let(:error_message) { "" }
+                end
+              end
+
+              context 'when epic issue link creation fails' do
+                let_it_be(:epic, reload: true) { create(:epic, :with_synced_work_item, :confidential, group: group) }
+
+                before do
+                  allow_next_instance_of(::EpicIssue) do |instance|
+                    allow(instance).to receive(:save!).and_return(false)
+
+                    errors = ActiveModel::Errors.new(instance).tap { |e| e.add(:epic, 'error message') }
+                    allow(instance).to receive(:errors).and_return(errors)
+                  end
+                end
+
+                it 'does not create relationships for the epic or the work item' do
+                  expect { subject }.to not_change { EpicIssue.count }
+                    .and(not_change { WorkItems::ParentLink.count })
+                end
+              end
+
+              context 'when epic_creation_with_synced_work_item feature flag is disabled' do
+                before do
+                  stub_feature_flags(epic_creation_with_synced_work_item: false)
+                end
+
+                it 'create relationship only for the epic' do
+                  expect { subject }.to change { EpicIssue.count }.by(1)
+                    .and(not_change { WorkItems::ParentLink.count })
+
+                  expect(created_link).to have_attributes(epic: epic)
+                  expect(epic.work_item.child_links).to be_empty
+                end
+              end
             end
           end
 

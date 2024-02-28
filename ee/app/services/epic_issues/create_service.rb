@@ -13,16 +13,18 @@ module EpicIssues
 
       link.epic = issuable
       link.move_to_start
+      schedule_new_link_worker(link, referenced_issue, params)
 
-      link.run_after_commit do
-        params.merge!(epic_id: link.epic.id, issue_id: referenced_issue.id)
-        Epics::NewEpicIssueWorker.perform_async(params)
+      transaction_result = ApplicationRecord.transaction do
+        create_synced_work_item_link!(link) if link.save
       end
 
-      link.save
+      ::GraphqlTriggers.issuable_epic_updated(referenced_issue) if transaction_result
 
-      ::GraphqlTriggers.issuable_epic_updated(referenced_issue)
-
+      link
+    rescue Epics::SyncAsWorkItem::SyncAsWorkItemError => error
+      Gitlab::ErrorTracking.track_exception(error, epic_id: issuable.id)
+      link.errors.add(:base, _("Couldn't add issue due to an internal error."))
       link
     end
     # rubocop: enable CodeReuse/ActiveRecord
@@ -57,6 +59,44 @@ module EpicIssues
 
     def previous_related_issuables
       @related_issues ||= issuable.issues.to_a
+    end
+
+    def schedule_new_link_worker(link, referenced_issue, params)
+      link.run_after_commit do
+        params.merge!(epic_id: link.epic.id, issue_id: referenced_issue.id)
+        Epics::NewEpicIssueWorker.perform_async(params)
+      end
+    end
+
+    def create_synced_work_item_link!(epic_issue_link)
+      return true unless issuable.group.epic_synced_with_work_item_enabled? && issuable.work_item
+
+      child_work_items = WorkItem.id_in(epic_issue_link.issue_id)
+      response = ::WorkItems::ParentLinks::CreateService
+                   .new(issuable.work_item, current_user, { target_issuable: child_work_items, synced_work_item: true })
+                   .execute
+
+      if response[:status] == :success
+        sync_relative_position!(epic_issue_link, response[:created_references].first)
+      else
+        sync_work_item_parent_error!(response[:message], epic_issue_link)
+      end
+    end
+
+    def sync_relative_position!(epic_issue_link, work_item_link)
+      return true unless epic_issue_link && work_item_link
+      return true if work_item_link.update(relative_position: epic_issue_link.relative_position)
+
+      sync_work_item_parent_error!(work_item_link.errors.full_messages.to_sentence, epic_issue_link)
+    end
+
+    def sync_work_item_parent_error!(message, epic_issue_link)
+      Gitlab::EpicWorkItemSync::Logger.error(
+        message: 'Not able to sync child issue', error_message: message, group_id: issuable.group.id,
+        epic_id: issuable.id, issue_id: epic_issue_link.issue_id
+      )
+
+      raise Epics::SyncAsWorkItem::SyncAsWorkItemError, message
     end
   end
 end
