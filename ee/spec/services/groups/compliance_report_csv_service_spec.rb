@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Groups::ComplianceReportCsvService, :freeze_time, feature_category: :compliance_management do
   subject(:service) { described_class.new(user, group, filters) }
 
-  let(:from) { 10.years.ago }
+  let(:from) { DateTime.parse('2014-01-01') }
   let(:filters) { { from: from, to: Time.current } }
 
   let_it_be(:user) { create(:user, name: 'John Cena') }
