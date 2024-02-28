@@ -23428,25 +23428,19 @@ msgstr ""
 msgid "GoogleCloudPlatformService|Connect Google Cloud Artifact Registry to GitLab."
 msgstr ""
 
-msgid "GoogleCloudPlatformService|Connect Google Cloud Workload Identity Federation to GitLab."
+msgid "GoogleCloudPlatformService|Example: %{code_open}314053285323%{code_close}"
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Example: %{code_open}my-sample-project-191923%{code_close}"
 msgstr ""
 
 msgid "GoogleCloudPlatformService|Google Cloud Artifact Registry"
 msgstr ""
 
-msgid "GoogleCloudPlatformService|Google Cloud Identity and Access Management"
+msgid "GoogleCloudPlatformService|Google Cloud IAM"
 msgstr ""
 
 msgid "GoogleCloudPlatformService|Google Cloud project ID"
-msgstr ""
-
-msgid "GoogleCloudPlatformService|Google Cloud project ID for the Workload Identity Federation."
-msgstr ""
-
-msgid "GoogleCloudPlatformService|Google Cloud project number"
-msgstr ""
-
-msgid "GoogleCloudPlatformService|Google Cloud project number for the Workload Identity Federation."
 msgstr ""
 
 msgid "GoogleCloudPlatformService|ID of the Workload Identity Pool provider."
@@ -23455,10 +23449,25 @@ msgstr ""
 msgid "GoogleCloudPlatformService|ID of the Workload Identity Pool."
 msgstr ""
 
+msgid "GoogleCloudPlatformService|Manage permissions for Google Cloud resources with Identity and Access Management (IAM)."
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Pool ID"
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Project ID"
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Project number"
+msgstr ""
+
 msgid "GoogleCloudPlatformService|Project number of the Workload Identity Pool."
 msgstr ""
 
 msgid "GoogleCloudPlatformService|Project with the Artifact Registry repository."
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Provider ID"
 msgstr ""
 
 msgid "GoogleCloudPlatformService|Repository location"
