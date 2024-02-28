@@ -1,4 +1,4 @@
-export const MOCK_GEO_REPLICATION_SVG_PATH = 'illustrations/empty-state/geo-replication-empty.svg';
+export const MOCK_GEO_REPLICATION_SVG_PATH = 'illustrations/empty-state/empty-geo-md.svg';
 
 export const MOCK_REPLICABLE_TYPE = 'designs';
 
