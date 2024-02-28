@@ -57,6 +57,7 @@ const mockRunnerUsageByProject = [
     project: {
       id: 'gid://gitlab/Project/1',
       name: 'Project1',
+      nameWithNamespace: 'Group1 / Project1',
       avatarUrl: '/project1.png',
       webUrl: '/group1/project1',
       __typename: 'Project',
@@ -68,6 +69,7 @@ const mockRunnerUsageByProject = [
     project: {
       id: 'gid://gitlab/Project/22',
       name: 'Project2',
+      nameWithNamespace: 'Group1 / Project2',
       avatarUrl: '/project2.png',
       webUrl: '/group1/project2',
       __typename: 'Project',

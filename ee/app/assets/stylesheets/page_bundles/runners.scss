@@ -27,14 +27,20 @@
 }
 
 
-.runners-top-result-table {
+.runners-usage-table {
+  th,
   td {
-    white-space: nowrap;
-    text-overflow:ellipsis;
-    overflow: hidden;
-    max-width: 1px;
     padding-top: $gl-spacing-scale-3 !important;
     padding-bottom: $gl-spacing-scale-3 !important;
+  }
+
+  th {
+    font-size: 0.75rem !important;
+    color: $gl-text-color-secondary !important;
+  }
+
+  td {
+    max-width: 1px; // allows td content to truncate
   }
 
   tr:last-child td {
