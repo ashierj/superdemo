@@ -1,6 +1,6 @@
 import { GlBadge } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import mockDeploymentFixture from 'test_fixtures/graphql/deployments/graphql/queries/deployment.query.graphql.json';
+import mockDeploymentFixture from 'test_fixtures/ee/graphql/deployments/graphql/queries/deployment.query.graphql.json';
 import mockEnvironmentFixture from 'test_fixtures/graphql/deployments/graphql/queries/environment.query.graphql.json';
 import DeploymentHeader from '~/deployments/components/deployment_header.vue';
 

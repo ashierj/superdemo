@@ -1,0 +1,4 @@
+export const APPROVAL_STATUSES = {
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+};
