@@ -41,12 +41,13 @@ export default {
       return parseInt(this.groupId, 10);
     },
     shouldShowAddSeatsButton() {
-      return (
-        !this.isLoading &&
-        this.addDuoProHref &&
-        this.groupId &&
-        this.subscriptionPermissions?.canAddDuoProSeats
-      );
+      if (this.isLoading || !this.addDuoProHref) {
+        return false;
+      }
+      if (this.isSaaS) {
+        return this.groupId && this.subscriptionPermissions?.canAddDuoProSeats;
+      }
+      return true;
     },
     isLoading() {
       return this.$apollo.queries.subscriptionPermissions.loading;
