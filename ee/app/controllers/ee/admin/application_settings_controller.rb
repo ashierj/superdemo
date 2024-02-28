@@ -25,9 +25,6 @@ module EE
         before_action :verify_namespace_plan_check_enabled, only: [:namespace_storage]
         before_action :indexing_status, only: [:advanced_search]
 
-        after_action :sync_cloud_connector_access_data,
-          only: [:general], if: :instance_level_code_suggestions_enabled_submitted?
-
         feature_category :sm_provisioning, [:seat_link_payload]
         feature_category :source_code_management, [:templates]
         feature_category :global_search, [:advanced_search]
@@ -207,13 +204,6 @@ module EE
 
       def sync_cloud_connector_access_data
         ::CloudConnector::SyncServiceTokenWorker.perform_async
-      end
-
-      def instance_level_code_suggestions_enabled_submitted?
-        return false unless submitted?
-        return false unless params[:application_setting]
-
-        params[:application_setting][:instance_level_code_suggestions_enabled].to_i.nonzero?
       end
 
       def microsoft_application_namespace
