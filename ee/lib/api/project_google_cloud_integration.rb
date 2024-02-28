@@ -8,6 +8,8 @@ module API
 
     before { authorize_admin_project }
     before do
+      not_found! unless ::Gitlab::Saas.feature_available?(:google_cloud_support)
+
       unless ::Feature.enabled?(:google_cloud_integration_onboarding, user_project.root_namespace, type: :beta)
         not_found!
       end
@@ -108,6 +110,27 @@ module API
                 Gitlab.config.gitlab.url,
                 api_v4_projects_integrations_path(id: params[:id])
               )
+          }
+
+          template.result_with_hash(locals)
+        end
+
+        desc 'Get shell script to set up Google Cloud project for runner deployment' do
+          detail 'This feature is experimental.'
+        end
+        params do
+          requires :google_cloud_project_id, types: String
+        end
+        get '/runner_deployment_project.sh' do
+          env['api.format'] = :binary
+          content_type 'text/plain'
+
+          template_path = File.join(
+            'ee', 'lib', 'api', 'templates', 'google_cloud_integration_runner_project_setup.sh.erb')
+          template = ERB.new(File.read(template_path))
+
+          locals = {
+            google_cloud_project_id: declared_params[:google_cloud_project_id]
           }
 
           template.result_with_hash(locals)

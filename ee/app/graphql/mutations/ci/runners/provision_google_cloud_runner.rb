@@ -24,7 +24,7 @@ module Mutations
         argument :project_path, GraphQL::Types::ID,
           required: true,
           description: 'Project to create the runner in.'
-        argument :provisioning_project_id, ::GraphQL::Types::String,
+        argument :provisioning_project_id, ::Types::GoogleCloud::ProjectType,
           required: true,
           description: 'Identifier of the project where the runner is provisioned.'
         argument :provisioning_region, ::Types::GoogleCloud::RegionType,

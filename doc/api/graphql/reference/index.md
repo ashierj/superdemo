@@ -6785,7 +6785,7 @@ Input type: `ProvisionGoogleCloudRunnerInput`
 | <a id="mutationprovisiongooglecloudrunnerdryrun"></a>`dryRun` | [`Boolean`](#boolean) | If true, returns the Terraform script without executing it. Defaults to false. True is currently not supported. |
 | <a id="mutationprovisiongooglecloudrunnerephemeralmachinetype"></a>`ephemeralMachineType` | [`GoogleCloudMachineType!`](#googlecloudmachinetype) | Name of the machine type to use for running jobs. |
 | <a id="mutationprovisiongooglecloudrunnerprojectpath"></a>`projectPath` | [`ID!`](#id) | Project to create the runner in. |
-| <a id="mutationprovisiongooglecloudrunnerprovisioningprojectid"></a>`provisioningProjectId` | [`String!`](#string) | Identifier of the project where the runner is provisioned. |
+| <a id="mutationprovisiongooglecloudrunnerprovisioningprojectid"></a>`provisioningProjectId` | [`GoogleCloudProject!`](#googlecloudproject) | Identifier of the project where the runner is provisioned. |
 | <a id="mutationprovisiongooglecloudrunnerprovisioningregion"></a>`provisioningRegion` | [`GoogleCloudRegion!`](#googlecloudregion) | Name of the region to provision the runner in. |
 | <a id="mutationprovisiongooglecloudrunnerprovisioningzone"></a>`provisioningZone` | [`GoogleCloudZone!`](#googlecloudzone) | Name of the zone to provision the runner in. |
 | <a id="mutationprovisiongooglecloudrunnerrunnertoken"></a>`runnerToken` | [`String`](#string) | Authentication token of the runner. |
@@ -26514,7 +26514,7 @@ Returns [`CiRunnerCloudProvisioningOptions`](#cirunnercloudprovisioningoptions).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="projectrunnercloudprovisioningoptionscloudprojectid"></a>`cloudProjectId` | [`String!`](#string) | Identifier of the cloud project. |
+| <a id="projectrunnercloudprovisioningoptionscloudprojectid"></a>`cloudProjectId` | [`GoogleCloudProject!`](#googlecloudproject) | Identifier of the cloud project. |
 | <a id="projectrunnercloudprovisioningoptionsprovider"></a>`provider` | [`CiRunnerCloudProvider!`](#cirunnercloudprovider) | Identifier of the cloud provider. |
 
 ##### `Project.runners`
@@ -33807,6 +33807,10 @@ Global identifiers are encoded as strings.
 ### `GoogleCloudMachineType`
 
 Represents a Google Cloud Compute machine type.
+
+### `GoogleCloudProject`
+
+Represents a Google Cloud Compute project.
 
 ### `GoogleCloudRegion`
 

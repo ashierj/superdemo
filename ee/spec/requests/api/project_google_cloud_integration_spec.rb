@@ -71,21 +71,68 @@ RSpec.describe API::ProjectGoogleCloudIntegration, feature_category: :integratio
       }
     end
 
-    it_behaves_like 'an endpoint generating a bash script for Google Cloud'
+    it 'returns 404' do
+      get(api(path, owner), params: params)
+
+      expect(response).to have_gitlab_http_status(:not_found)
+    end
+
+    context 'when SaaS feature is enabled' do
+      before do
+        stub_saas_features(google_cloud_support: true)
+      end
+
+      it_behaves_like 'an endpoint generating a bash script for Google Cloud'
+    end
+  end
+
+  describe 'GET /projects/:id/google_cloud/setup/runner_deployment_project.sh' do
+    let(:path) { "/projects/#{project.id}/google_cloud/setup/runner_deployment_project.sh" }
+    let(:params) do
+      {
+        google_cloud_project_id: google_cloud_project_id
+      }
+    end
+
+    it 'returns 404' do
+      get(api(path, owner), params: params)
+
+      expect(response).to have_gitlab_http_status(:not_found)
+    end
+
+    context 'when SaaS feature is enabled' do
+      before do
+        stub_saas_features(google_cloud_support: true)
+      end
+
+      it_behaves_like 'an endpoint generating a bash script for Google Cloud'
+    end
   end
 
   describe 'GET /projects/:id/google_cloud/setup/wlif.sh' do
     let(:path) { "/projects/#{project.id}/google_cloud/setup/wlif.sh" }
     let(:params) { { google_cloud_project_id: google_cloud_project_id } }
 
-    it_behaves_like 'an endpoint generating a bash script for Google Cloud'
-
-    it 'includes attribute mapping' do
+    it 'returns 404' do
       get(api(path, owner), params: params)
-      expect(response.body).to include('--attribute-mapping="')
-      expect(response.body).to include('google.subject=assertion.sub')
-      expect(response.body).to include('attribute.user_access_level=assertion.user_access_level')
-      expect(response.body).to include('attribute.reporter_access=assertion.reporter_access')
+
+      expect(response).to have_gitlab_http_status(:not_found)
+    end
+
+    context 'when SaaS feature is enabled' do
+      before do
+        stub_saas_features(google_cloud_support: true)
+      end
+
+      it_behaves_like 'an endpoint generating a bash script for Google Cloud'
+
+      it 'includes attribute mapping' do
+        get(api(path, owner), params: params)
+        expect(response.body).to include('--attribute-mapping="')
+        expect(response.body).to include('google.subject=assertion.sub')
+        expect(response.body).to include('attribute.user_access_level=assertion.user_access_level')
+        expect(response.body).to include('attribute.reporter_access=assertion.reporter_access')
+      end
     end
   end
 
@@ -96,24 +143,32 @@ RSpec.describe API::ProjectGoogleCloudIntegration, feature_category: :integratio
         google_cloud_project_id: google_cloud_project_id }
     end
 
-    before do
-      stub_saas_features(google_cloud_support: true)
+    it 'returns 404' do
+      get(api(path, owner), params: params)
+
+      expect(response).to have_gitlab_http_status(:not_found)
     end
 
-    context 'when Workload Identity Federation integration exists' do
+    context 'when SaaS feature is enabled' do
       before do
-        create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+        stub_saas_features(google_cloud_support: true)
       end
 
-      it_behaves_like 'an endpoint generating a bash script for Google Cloud'
-    end
+      context 'when Workload Identity Federation integration exists' do
+        before do
+          create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+        end
 
-    context 'when Workload Identity Federation integration does not exist' do
-      it 'returns error' do
-        get(api(path, owner), params: params)
+        it_behaves_like 'an endpoint generating a bash script for Google Cloud'
+      end
 
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response['message']).to eq('Workload Identity Federation is not configured')
+      context 'when Workload Identity Federation integration does not exist' do
+        it 'returns error' do
+          get(api(path, owner), params: params)
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response['message']).to eq('Workload Identity Federation is not configured')
+        end
       end
     end
   end
