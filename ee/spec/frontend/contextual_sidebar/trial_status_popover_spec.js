@@ -154,6 +154,7 @@ describe('TrialStatusPopover component', () => {
         'data-track-category': trackingEvents.trialEndedCategory,
         'data-track-action': trackingEvents.contactSalesBtnClick.action,
         'data-track-label': trackingEvents.contactSalesBtnClick.label,
+        'data-track-experiment': 'trial_discover_page',
       });
     });
 

@@ -186,6 +186,7 @@ export default {
         :data-track-category="handRaiseLeadBtnTracking.category"
         :data-track-action="handRaiseLeadBtnTracking.action"
         :data-track-label="handRaiseLeadBtnTracking.label"
+        data-track-experiment="trial_discover_page"
       ></div>
 
       <gitlab-experiment name="trial_discover_page">
