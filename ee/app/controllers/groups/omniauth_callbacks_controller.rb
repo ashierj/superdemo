@@ -6,8 +6,6 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
 
   skip_before_action :verify_authenticity_token, only: [:failure, :group_saml]
 
-  before_action :log_saml_response, only: [:group_saml]
-
   feature_category :system_access
   urgency :low
 
@@ -191,9 +189,5 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
     }
 
     ::Gitlab::Audit::Auditor.audit(audit_context)
-  end
-
-  def log_saml_response
-    Gitlab::AuthLogger.info(payload_type: 'saml_response', saml_response: ParameterFilters::SamlResponse.filter(params['SAMLResponse'].dup))
   end
 end
