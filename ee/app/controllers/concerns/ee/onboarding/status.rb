@@ -47,7 +47,7 @@ module EE
       end
 
       def trial?
-        enabled? && (::Gitlab::Utils.to_boolean(params[:trial], default: false) || redirect_to_trial?)
+        enabled? && (::Gitlab::Utils.to_boolean(params[:trial], default: false) || trial_from_stored_location?)
       end
 
       def oauth?
@@ -141,16 +141,18 @@ module EE
       end
 
       def stored_redirect_location
-        return unless session
-
         # side effect free look at devise stored_location_for(:redirect)
         session['redirect_return_to']
       end
 
-      def redirect_to_trial?
-        return false unless stored_redirect_location
+      def trial_from_stored_location?
+        return false unless session
 
-        uri = URI.parse(stored_redirect_location)
+        # for regular signup it will be in `redirect`, but for SSO it will be in `user`
+        redirect_to_location = stored_redirect_location || stored_user_location
+        return false unless redirect_to_location
+
+        uri = URI.parse(redirect_to_location)
 
         return false unless uri.query
 

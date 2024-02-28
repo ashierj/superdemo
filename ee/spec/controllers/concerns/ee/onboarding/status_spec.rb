@@ -200,27 +200,45 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
   end
 
   describe '#trial?' do
-    where(:params, :redirect_to_trial?, :enabled?, :expected_result) do
-      { trial: 'true' } | false | false | false
-      { trial: 'false' } | false | true | false
-      { trial: 'true' } | false | true | true
-      { trial: 'false' } | true | false | false
-      { trial: 'false' } | true | true | true
-      { trial: 'true' } | true | true | true
-      {} | false | true | false
-      {} | false | false | false
-      { trial: '' } | false | false | false
-      { trial: '' } | false | true | false
+    let(:user_on_trial) { { 'user_return_to' => 'some/path?trial=true' } }
+    let(:user_not_on_trial) { { 'user_return_to' => 'some/path?trial=false' } }
+    let(:redirect_on_trial) { { 'redirect_return_to' => 'some/path?trial=true' } }
+    let(:redirect_not_on_trial) { { 'redirect_return_to' => 'some/path?trial=false' } }
+    let(:combined_not_on_trial) do
+      { 'redirect_return_to' => 'some/path?trial=false', 'user_return_to' => 'some/path?trial=true' }
+    end
+
+    let(:combined_on_trial) do
+      { 'redirect_return_to' => 'some/path?trial=true', 'user_return_to' => 'some/path?trial=false' }
+    end
+
+    where(:params, :session, :onboarding_enabled?, :expected_result) do
+      { trial: 'true' }  | {}                          | false | false
+      { trial: 'false' } | {}                          | true  | false
+      { trial: 'true' }  | {}                          | true  | true
+      { trial: 'false' } | ref(:user_on_trial)         | false | false
+      { trial: 'false' } | ref(:user_on_trial)         | true  | true
+      { trial: 'true' }  | ref(:user_on_trial)         | true  | true
+      { trial: 'false' } | ref(:redirect_on_trial)     | false | false
+      { trial: 'false' } | ref(:redirect_on_trial)     | true  | true
+      { trial: 'true' }  | ref(:redirect_on_trial)     | true  | true
+      { trial: 'false' } | ref(:user_not_on_trial)     | true  | false
+      { trial: 'false' } | ref(:redirect_not_on_trial) | true  | false
+      { trial: 'false' } | ref(:combined_on_trial)     | true  | true
+      {}                 | {}                          | true  | false
+      {}                 | {}                          | false | false
+      { trial: '' }      | {}                          | false | false
+      { trial: '' }      | {}                          | true  | false
+      { trial: '' }      | nil                         | true  | false
     end
 
     with_them do
-      let(:instance) { described_class.new(params, nil, nil) }
+      let(:instance) { described_class.new(params, session, nil) }
 
       subject { instance.trial? }
 
       before do
-        allow(instance).to receive(:enabled?).and_return(enabled?)
-        allow(instance).to receive(:redirect_to_trial?).and_return(redirect_to_trial?)
+        stub_saas_features(onboarding: onboarding_enabled?)
       end
 
       it { is_expected.to eq(expected_result) }
@@ -405,29 +423,6 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
       let(:session) { {} }
 
       it { is_expected.to be_nil }
-    end
-  end
-
-  describe '#redirect_to_trial?' do
-    let(:instance) { described_class.new(nil, nil, nil) }
-
-    subject { instance.send(:redirect_to_trial?) }
-
-    where(:stored_redirect_location, :expected_result) do
-      nil | false
-      '' | false
-      '/some/path' | false
-      '/some/path?query=true' | false
-      '/some/path?trial=false' | false
-      '/some/path?trial=true' | true
-    end
-
-    with_them do
-      before do
-        allow(instance).to receive(:stored_redirect_location).and_return(stored_redirect_location)
-      end
-
-      it { is_expected.to eq(expected_result) }
     end
   end
 end

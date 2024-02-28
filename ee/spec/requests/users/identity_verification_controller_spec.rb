@@ -865,57 +865,77 @@ feature_category: :system_access do
 
   describe 'GET success' do
     let(:stored_user_return_to_path) { '/user/return/to/path' }
+    let(:return_to_entries) { { user_return_to: stored_user_return_to_path } }
     let(:user) { confirmed_user }
-    let!(:member_invite) { create(:project_member, :invited, invite_email: user.email) }
 
     before do
-      stub_session(verification_user_id: user.id, user_return_to: stored_user_return_to_path)
-      get success_identity_verification_path
+      stub_session({ verification_user_id: user.id }.merge(return_to_entries))
     end
 
-    context 'when not yet verified' do
-      let(:user) { unconfirmed_user }
+    context 'for an invite' do
+      let!(:member_invite) { create(:project_member, :invited, invite_email: user.email) }
 
-      it 'redirects back to identity_verification_path' do
-        expect(response).to redirect_to(identity_verification_path)
-      end
-    end
-
-    context 'when verified' do
-      it 'accepts pending invitations' do
-        expect(member_invite.reload).not_to be_invite
+      before do
+        get success_identity_verification_path
       end
 
-      it 'signs in the user' do
-        expect(request.env['warden']).to be_authenticated
+      context 'when not yet verified' do
+        let(:user) { unconfirmed_user }
+
+        it 'redirects back to identity_verification_path' do
+          expect(response).to redirect_to(identity_verification_path)
+        end
       end
 
-      it 'deletes the verification_user_id from the session' do
-        expect(request.session.has_key?(:verification_user_id)).to eq(false)
+      context 'when verified' do
+        it 'accepts pending invitations' do
+          expect(member_invite.reload).not_to be_invite
+        end
+
+        it 'signs in the user' do
+          expect(request.env['warden']).to be_authenticated
+        end
+
+        it 'deletes the verification_user_id from the session' do
+          expect(request.session.has_key?(:verification_user_id)).to eq(false)
+        end
       end
-    end
 
-    it 'renders the template with the after_sign_in_path_for variable', :aggregate_failures do
-      expect(response).to have_gitlab_http_status(:ok)
-      expect(response).to render_template('successful_verification', layout: 'minimal')
-      expect(assigns(:redirect_url)).to eq(stored_user_return_to_path)
-    end
-
-    context 'when user is in subscription onboarding', :saas do
-      let(:stored_user_return_to_path) { new_subscriptions_path(plan_id: 'bronze_id') }
-
-      it 'does not empty out the stored location for user', :aggregate_failures do
+      it 'renders the template with the after_sign_in_path_for variable', :aggregate_failures do
         expect(response).to have_gitlab_http_status(:ok)
         expect(assigns(:redirect_url)).to eq(stored_user_return_to_path)
-        expect(controller.stored_location_for(:user)).to eq(stored_user_return_to_path)
+      end
+
+      it 'tracks phone_verification_for_low_risk_users registration_completed event', :experiment do
+        expect(experiment(:phone_verification_for_low_risk_users))
+          .to track(:registration_completed).on_next_instance.with_context(user: user)
+
+        get success_identity_verification_path
       end
     end
 
-    it 'tracks phone_verification_for_low_risk_users registration_completed event', :experiment do
-      expect(experiment(:phone_verification_for_low_risk_users))
-        .to track(:registration_completed).on_next_instance.with_context(user: user)
+    context 'for trial registration' do
+      before do
+        stub_saas_features(onboarding: true)
 
-      get success_identity_verification_path
+        get success_identity_verification_path
+      end
+
+      context 'when it is an sso registration' do
+        let(:stored_user_return_to_path) { '/user/return/to/path?trial=true' }
+
+        it 'detects a trial from stored user location' do
+          expect(assigns(:tracking_label)).to eq(::Onboarding::Status::TRACKING_LABEL[:trial])
+        end
+      end
+
+      context 'when it is a non sso registration' do
+        let(:return_to_entries) { { redirect_return_to: '/user/return/to/path?trial=true' } }
+
+        it 'detects a trial from stored redirect location' do
+          expect(assigns(:tracking_label)).to eq(::Onboarding::Status::TRACKING_LABEL[:trial])
+        end
+      end
     end
   end
 
