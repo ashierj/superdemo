@@ -35441,6 +35441,9 @@ msgstr ""
 msgid "PackageRegistry|Package protection rule deleted."
 msgstr ""
 
+msgid "PackageRegistry|Package protection rule updated."
+msgstr ""
+
 msgid "PackageRegistry|Package protection rules"
 msgstr ""
 
