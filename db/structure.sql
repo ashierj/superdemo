@@ -17294,6 +17294,8 @@ CREATE TABLE vulnerability_occurrences (
     location jsonb,
     detection_method smallint DEFAULT 0 NOT NULL,
     uuid uuid DEFAULT '00000000-0000-0000-0000-000000000000'::uuid NOT NULL,
+    initial_pipeline_id bigint,
+    latest_pipeline_id bigint,
     CONSTRAINT check_4a3a60f2ba CHECK ((char_length(solution) <= 7000)),
     CONSTRAINT check_ade261da6b CHECK ((char_length(description) <= 15000)),
     CONSTRAINT check_f602da68dd CHECK ((char_length(cve) <= 48400))
