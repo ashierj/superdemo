@@ -158,10 +158,9 @@ export const ADD_STREAM_EDITOR_I18N = {
 
 export const AUDIT_STREAMS_EMPTY_STATE_I18N = {
   TITLE: s__('AuditStreams|Setup streaming for audit events'),
-  DESCRIPTION_1: s__(
-    'AuditStreams|Add an HTTP endpoint to manage audit logs in third-party systems.',
+  DESCRIPTION: s__(
+    'AuditStreams|Add an HTTP endpoint to manage audit logs in third-party systems. This is great for keeping everything in one place.',
   ),
-  DESCRIPTION_2: s__('AuditStreams|This is great for keeping everything one place.'),
 };
 
 export const AUDIT_STREAMS_NETWORK_ERRORS = {
