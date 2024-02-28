@@ -37139,9 +37139,6 @@ msgstr ""
 msgid "Please accept the Terms of Service before continuing."
 msgstr ""
 
-msgid "Please add a comment in the text area above"
-msgstr ""
-
 msgid "Please check the configuration file for this chart"
 msgstr ""
 
@@ -60529,18 +60526,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "vulnerability|Add a comment"
-msgstr ""
-
-msgid "vulnerability|Add a comment or reason for dismissal"
-msgstr ""
-
-msgid "vulnerability|Add comment"
-msgstr ""
-
-msgid "vulnerability|Add comment & dismiss"
-msgstr ""
-
-msgid "vulnerability|Save comment"
 msgstr ""
 
 msgid "vulnerability|dismissed"
