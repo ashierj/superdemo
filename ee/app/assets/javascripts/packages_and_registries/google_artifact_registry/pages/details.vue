@@ -10,7 +10,7 @@ export default {
     DetailsHeader,
     ImageDetails,
   },
-  inject: ['breadCrumbState'],
+  inject: ['breadCrumbState', 'fullPath'],
   apollo: {
     artifact: {
       query: getArtifactDetailsQuery,
@@ -18,7 +18,7 @@ export default {
         return this.queryVariables;
       },
       update(data) {
-        return data.googleCloudRegistryArtifactDetails ?? {};
+        return data.googleCloudArtifactRegistryRepositoryArtifact ?? {};
       },
       result() {
         this.updateBreadcrumb();
@@ -63,10 +63,11 @@ export default {
     },
     queryVariables() {
       return {
-        project: this.$route.params.project,
+        googleCloudProjectId: this.$route.params.projectId,
         location: this.$route.params.location,
         repository: this.$route.params.repository,
         image: this.imageParams,
+        projectPath: this.fullPath,
       };
     },
   },

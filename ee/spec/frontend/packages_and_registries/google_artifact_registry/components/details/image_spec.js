@@ -2,6 +2,7 @@ import { GlBadge, GlSkeletonLoader, GlTruncate } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import ArtifactRegistryImageDetails from 'ee_component/packages_and_registries/google_artifact_registry/components/details/image.vue';
+import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import { imageData, imageDetailsFields } from '../../mock_data';
 
 describe('ArtifactRegistryImageDetails', () => {
@@ -15,6 +16,7 @@ describe('ArtifactRegistryImageDetails', () => {
     isLoading: false,
   };
 
+  const findClipboardButton = () => wrapper.findComponent(ClipboardButton);
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findAllTags = () => wrapper.findByTestId('tags').findAllComponents(GlBadge);
   const findList = () => wrapper.findByTestId('image-details');
@@ -39,7 +41,7 @@ describe('ArtifactRegistryImageDetails', () => {
     expect(findList().exists()).toBe(true);
   });
 
-  it.each(['mediaType', 'project', 'location', 'repository', 'image', 'digest'])(
+  it.each(['mediaType', 'projectId', 'location', 'repository', 'image', 'digest'])(
     'renders %s',
     (field) => {
       createComponent();
@@ -47,6 +49,15 @@ describe('ArtifactRegistryImageDetails', () => {
       expect(wrapper.findByTestId(field).text()).toContain(defaultProps.data[field]);
     },
   );
+
+  it('renders clipboard button for digest', () => {
+    createComponent();
+
+    expect(findClipboardButton().props()).toMatchObject({
+      text: defaultProps.data.digest,
+      title: 'Copy digest',
+    });
+  });
 
   it.each(['buildTime', 'uploadTime', 'updateTime'])('renders formatted %s', (field) => {
     createComponent();

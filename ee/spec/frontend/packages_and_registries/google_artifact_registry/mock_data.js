@@ -21,7 +21,7 @@ export const imageDetailsFields = {
   imageSizeBytes: 2827903,
   buildTime: '2023-12-07T11:48:47.598511Z',
   mediaType: 'application/vnd.docker.distribution.manifest.v2+json',
-  project: 'dev-package-container-96a3ff34',
+  projectId: 'dev-package-container-96a3ff34',
   location: 'us-east1',
   repository: 'myrepo',
   artifactRegistryImageUrl:
@@ -77,9 +77,10 @@ export const getArtifactsQueryResponse = (override = {}) => ({
 
 export const getArtifactDetailsQueryResponse = {
   data: {
-    googleCloudRegistryArtifactDetails: {
+    googleCloudArtifactRegistryRepositoryArtifact: {
       ...imageData,
       ...imageDetailsFields,
+      __typename: 'GoogleCloudArtifactRegistryDockerImageDetails',
     },
   },
 };

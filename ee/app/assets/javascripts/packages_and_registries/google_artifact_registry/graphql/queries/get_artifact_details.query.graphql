@@ -1,24 +1,32 @@
-query getArtifactDetails($image: String, $location: String, $repository: String, $project: String) {
-  googleCloudRegistryArtifactDetails(
+query getArtifactDetails(
+  $googleCloudProjectId: String!
+  $image: String!
+  $location: String!
+  $projectPath: ID!
+  $repository: String!
+) {
+  googleCloudArtifactRegistryRepositoryArtifact(
+    googleCloudProjectId: $googleCloudProjectId
     image: $image
     location: $location
+    projectPath: $projectPath
     repository: $repository
-    project: $project
   ) {
-    name
-    image
-    digest
-    tags
-    buildTime
-    updateTime
-
-    uri
-    imageSizeBytes
-    uploadTime
-    mediaType
-    project
-    location
-    repository
-    artifactRegistryImageUrl
+    ... on GoogleCloudArtifactRegistryDockerImageDetails {
+      name
+      image
+      digest
+      tags
+      buildTime
+      updateTime
+      uri
+      imageSizeBytes
+      uploadTime
+      mediaType
+      projectId
+      location
+      repository
+      artifactRegistryImageUrl
+    }
   }
 }

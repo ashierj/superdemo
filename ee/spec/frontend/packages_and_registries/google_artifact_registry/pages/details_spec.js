@@ -21,11 +21,12 @@ describe('Details', () => {
 
   const provide = {
     breadCrumbState,
+    fullPath: 'gitlab-org/gitlab',
   };
 
   const defaultRouteParams = {
     image: 'alpine@sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
-    project: 'dev-package-container-96a3ff34',
+    projectId: 'dev-package-container-96a3ff34',
     location: 'us-east1',
     repository: 'myrepo',
   };
