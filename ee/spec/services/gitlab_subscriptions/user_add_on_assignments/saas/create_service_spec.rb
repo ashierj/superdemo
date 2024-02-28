@@ -43,6 +43,22 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::Saas::CreateService, f
 
         expect { subject }.to change { Rails.cache.read(cache_key) }.from(false).to(nil)
       end
+
+      it 'creates an iterable trigger' do
+        expect(::Onboarding::CreateIterableTriggerWorker).to receive(:perform_async).with(
+          hash_including(
+            first_name: user.first_name,
+            last_name: user.last_name,
+            work_email: user.email,
+            namespace_id: namespace.id,
+            product_interaction: "duo_pro_add_on_seat_assigned",
+            preferred_language: 'English',
+            opt_in: user.onboarding_status_email_opt_in
+          )
+        )
+
+        subject
+      end
     end
 
     shared_examples 'error response' do |error|
@@ -62,6 +78,14 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::Saas::CreateService, f
       end
     end
 
+    shared_examples 'does not create an iterable trigger' do
+      it do
+        expect(::Onboarding::CreateIterableTriggerWorker).not_to receive(:perform_async)
+
+        subject
+      end
+    end
+
     it_behaves_like 'success response'
 
     context 'when user is already assigned' do
@@ -73,6 +97,8 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::Saas::CreateService, f
         expect { response }.not_to change { add_on_purchase.assigned_users.count }
         expect(response).to be_success
       end
+
+      it_behaves_like 'does not create an iterable trigger'
     end
 
     context 'when seats are not available' do
@@ -178,6 +204,13 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::Saas::CreateService, f
           expect(response.errors).to include('NO_SEATS_AVAILABLE')
         end
       end
+    end
+
+    context 'with add_on other than duo_pro' do
+      let(:add_on) { create(:gitlab_subscription_add_on, :product_analytics) }
+      let(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, namespace: namespace, add_on: add_on) }
+
+      it_behaves_like 'does not create an iterable trigger'
     end
   end
 end
