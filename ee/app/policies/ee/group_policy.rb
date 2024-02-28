@@ -252,6 +252,15 @@ module EE
         ).has_ability?
       end
 
+      desc "Custom role on group that enables removing groups"
+      condition(:role_enables_remove_group) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :remove_group
+        ).has_ability?
+      end
+
       rule { owner & unique_project_download_limit_enabled }.policy do
         enable :ban_group_member
       end
@@ -559,6 +568,10 @@ module EE
 
       rule { custom_roles_allowed & role_enables_admin_cicd_variables }.policy do
         enable :admin_cicd_variables
+      end
+
+      rule { custom_roles_allowed & role_enables_remove_group & has_parent }.policy do
+        enable :remove_group
       end
 
       rule { can?(:read_group_security_dashboard) }.policy do

@@ -3,7 +3,7 @@
 module Groups
   class MarkForDeletionService < Groups::BaseService
     def execute
-      return error(_('You are not authorized to perform this action')) unless can?(current_user, :admin_group, group)
+      return error(_('You are not authorized to perform this action')) unless can?(current_user, :remove_group, group)
       return error(_('Group has been already marked for deletion')) if group.marked_for_deletion?
 
       result = create_deletion_schedule

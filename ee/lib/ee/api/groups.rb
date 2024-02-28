@@ -219,7 +219,7 @@ module EE
 
           desc 'Restore a group.'
           post ':id/restore', feature_category: :groups_and_projects do
-            authorize! :admin_group, user_group
+            authorize! :remove_group, user_group
             break not_found! unless user_group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
 
             result = ::Groups::RestoreService.new(user_group, current_user).execute
