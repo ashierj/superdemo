@@ -3,10 +3,12 @@ import { GlBadge, GlSkeletonLoader, GlTruncate } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { s__ } from '~/locale';
+import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 
 export default {
   name: 'ImageDetails',
   components: {
+    ClipboardButton,
     GlBadge,
     GlSkeletonLoader,
     GlTruncate,
@@ -41,9 +43,9 @@ export default {
           label: s__('GoogleArtifactRegistry|Media type'),
           value: this.data.mediaType,
         },
-        project: {
-          label: s__('GoogleArtifactRegistry|Project'),
-          value: this.data.project,
+        projectId: {
+          label: s__('GoogleArtifactRegistry|Project ID'),
+          value: this.data.projectId,
         },
         location: {
           label: s__('GoogleArtifactRegistry|Location'),
@@ -80,6 +82,11 @@ export default {
       });
     },
   },
+  methods: {
+    isDigest(key) {
+      return key === 'digest';
+    },
+  },
 };
 </script>
 
@@ -89,10 +96,19 @@ export default {
     <li
       v-for="[key, row] in rows"
       :key="key"
-      class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-pb-2"
+      class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-md-align-items-center"
+      :class="{ 'gl-py-2': !isDigest(key) }"
     >
       <span class="gl-font-weight-bold gl-md-flex-basis-13">{{ row.label }}</span>
-      <span class="gl-word-break-word" :data-testid="key">{{ row.value }}</span>
+      <span class="gl-display-flex gl-align-items-center">
+        <span class="gl-word-break-word" :data-testid="key">{{ row.value }}</span>
+        <clipboard-button
+          v-if="isDigest(key)"
+          :title="s__('GoogleArtifactRegistry|Copy digest')"
+          :text="row.value"
+          category="tertiary"
+        />
+      </span>
     </li>
     <li class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row">
       <span class="gl-font-weight-bold gl-md-flex-basis-13">{{

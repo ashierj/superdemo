@@ -23,13 +23,16 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
   let(:page_size) { nil }
   let(:default_page_size) { ::GoogleCloudPlatform::ArtifactRegistry::ListDockerImagesService::DEFAULT_PAGE_SIZE }
   let(:next_page_token) { 'next_page_token' }
+  let(:name) do
+    "projects/#{project_integration.artifact_registry_project_id}/" \
+      "locations/#{project_integration.artifact_registry_location}/" \
+      "repositories/#{project_integration.artifact_registry_repository}/" \
+      "dockerImages/#{image}@#{digest}"
+  end
 
   let(:docker_image) do
     Google::Cloud::ArtifactRegistry::V1::DockerImage.new(
-      name: "projects/#{project_integration.artifact_registry_project_id}/" \
-            "locations/#{project_integration.artifact_registry_location}/" \
-            "repositories/#{project_integration.artifact_registry_repository}/" \
-            "dockerImages/#{image}@#{digest}",
+      name: name,
       uri: "us-east1-docker.pkg.dev/#{project_integration.artifact_registry_project_id}/demo/#{image}@#{digest}",
       tags: ['97c58898'],
       image_size_bytes: 304_121_628,
@@ -106,15 +109,22 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
   end
 
   describe 'details page' do
+    before do
+      allow(client_double).to receive(:docker_image).with(name: name).and_return(docker_image)
+    end
+
     it 'has a page title set' do
       visit project_google_cloud_platform_artifact_registry_image_path(project, {
-        image: 'alpine@sha256:6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
-        project: 'dev-package-container-96a3ff34',
-        repository: 'myrepo',
-        location: 'us-east1'
+        image: "#{image}@#{digest}",
+        project: project_integration.artifact_registry_project_id,
+        repository: project_integration.artifact_registry_repository,
+        location: project_integration.artifact_registry_location
       })
 
-      expect(page).to have_text _('alpine@6a0657acfef7')
+      expect(page).to have_text _('ruby@4ca5c21b')
+      expect(page).to have_link _('Open in Google Cloud')
+      expect(page).to have_button _('Copy image URI')
+      expect(page).to have_button _('Copy digest')
     end
   end
 

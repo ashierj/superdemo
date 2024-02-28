@@ -23383,6 +23383,9 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Configure in settings"
 msgstr ""
 
+msgid "GoogleArtifactRegistry|Copy digest"
+msgstr ""
+
 msgid "GoogleArtifactRegistry|Copy image URI"
 msgstr ""
 
@@ -23413,7 +23416,7 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Open in Google Cloud"
 msgstr ""
 
-msgid "GoogleArtifactRegistry|Project"
+msgid "GoogleArtifactRegistry|Project ID"
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Project ID: %{projectId}"
