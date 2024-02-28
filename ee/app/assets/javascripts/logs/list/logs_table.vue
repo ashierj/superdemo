@@ -4,16 +4,17 @@ import { s__ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 
 const severityConfig = [
-  { range: [1, 4], title: s__('ObservabilityLogs|Trace'), color: '#808080' },
-  { range: [5, 8], title: s__('ObservabilityLogs|Debug'), color: '#808080' },
-  { range: [9, 12], title: s__('ObservabilityLogs|Info'), color: '#808080' },
-  { range: [13, 16], title: s__('ObservabilityLogs|Warning'), color: '#ed9121' },
-  { range: [17, 20], title: s__('ObservabilityLogs|Error'), color: '#dc143c' },
-  { range: [21, 24], title: s__('ObservabilityLogs|Fatal'), color: '#c21e56' },
+  { range: [1, 4], title: s__('ObservabilityLogs|Trace'), color: '#a4a3a8' },
+  { range: [5, 8], title: s__('ObservabilityLogs|Debug'), color: '#a4a3a8' },
+  { range: [9, 12], title: s__('ObservabilityLogs|Info'), color: '#428fdc' },
+  { range: [13, 16], title: s__('ObservabilityLogs|Warning'), color: '#e9be74' },
+  { range: [17, 20], title: s__('ObservabilityLogs|Error'), color: '#dd2b0e' },
+  { range: [21, 24], title: s__('ObservabilityLogs|Fatal'), color: '#dd2b0e' },
 ];
-
 const defaultSeverity = severityConfig[1]; // default: Debug
 
+const tdClass = 'gl-px-2! gl-py-3! gl-mx-0';
+const thClass = 'gl-px-2!';
 export default {
   i18n: {
     title: s__('ObservabilityLogs|Logs'),
@@ -25,25 +26,29 @@ export default {
       key: 'timestamp',
       label: s__('ObservabilityLogs|Date'),
       tdAttr: { 'data-testid': 'log-timestamp' },
+      thClass: `${thClass} gl-w-10p`,
+      tdClass,
     },
     {
       key: 'severity_number',
       label: s__('ObservabilityLogs|Level'),
       tdAttr: { 'data-testid': 'log-level' },
-      thClass: 'gl-w-10p',
+      thClass: `${thClass} gl-w-5p`,
+      tdClass,
     },
     {
       key: 'service_name',
       label: s__('ObservabilityLogs|Service'),
       tdAttr: { 'data-testid': 'log-service' },
-      tdClass: 'gl-word-break-word',
+      thClass: `${thClass} gl-w-5p`,
+      tdClass: `${tdClass} gl-word-break-word`,
     },
     {
       key: 'body',
       label: s__('ObservabilityLogs|Message'),
       tdAttr: { 'data-testid': 'log-message' },
-      thClass: 'gl-w-half',
-      tdClass: 'gl-text-truncate',
+      thClass: `${thClass} gl-w-80p`,
+      tdClass,
     },
   ],
   components: {
@@ -72,6 +77,9 @@ export default {
       );
       return severity || defaultSeverity;
     },
+    onRowClicked(item) {
+      this.$emit('log-selected', { fingerprint: item.fingerprint });
+    },
   },
 };
 </script>
@@ -81,18 +89,29 @@ export default {
     <h4 class="gl-display-block gl-md-display-none! gl-my-5">{{ $options.i18n.title }}</h4>
 
     <gl-table
-      :items="logs"
+      :items="formattedLogs"
       :fields="$options.fields"
       show-empty
       fixed
-      stacked="md"
+      stacked="sm"
+      selectable
+      select-mode="single"
+      selected-variant="secondary"
       :tbody-tr-attr="{ 'data-testid': 'log-row' }"
+      @row-clicked="onRowClicked"
     >
       <template #cell(severity_number)="{ item }">
         <gl-label
+          size="sm"
           :background-color="severityLabel(item.severity_number).color"
           :title="severityLabel(item.severity_number).title"
         />
+      </template>
+
+      <template #cell(body)="{ item }">
+        <div class="gl-text-truncate">
+          {{ item.body }}
+        </div>
       </template>
       <!-- no date template -->
       <template #empty>
