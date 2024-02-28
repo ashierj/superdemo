@@ -267,8 +267,6 @@ module EE
 
       # If this request comes from a gitlab runner, allow some checks that are synchronous
       def synchronous_request_required?
-        return false unless ::Feature.enabled?(:geo_proxy_check_pipeline_refs)
-
         !!request.headers['user-agent']&.include?('gitlab-runner')
       end
     end
