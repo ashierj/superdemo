@@ -48097,9 +48097,6 @@ msgstr ""
 msgid "Stage"
 msgstr ""
 
-msgid "Stage:"
-msgstr ""
-
 msgid "Standard"
 msgstr ""
 
