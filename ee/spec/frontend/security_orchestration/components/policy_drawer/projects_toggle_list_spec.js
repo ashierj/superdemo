@@ -7,6 +7,7 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import getGroupProjects from 'ee/security_orchestration/graphql/queries/get_group_projects.query.graphql';
 import ToggleList from 'ee/security_orchestration/components/policy_drawer/toggle_list.vue';
 
@@ -53,11 +54,18 @@ describe('ProjectsToggleList', () => {
     return createMockApollo([[getGroupProjects, requestHandlers.getGroupProjects]]);
   };
 
-  const createComponent = ({ propsData = {}, handlers = mockApolloHandlers() } = {}) => {
+  const createComponent = ({
+    propsData = {},
+    provide = {},
+    handlers = mockApolloHandlers(),
+  } = {}) => {
     wrapper = shallowMountExtended(ProjectsToggleList, {
       apolloProvider: createMockApolloProvider(handlers),
       provide: {
+        namespaceType: NAMESPACE_TYPES.GROUP,
         namespacePath: 'gitlab-org',
+        rootNamespacePath: 'gitlab-org-root',
+        ...provide,
       },
       propsData: {
         projectIds: [],
@@ -128,11 +136,10 @@ describe('ProjectsToggleList', () => {
         projectIds: [defaultNodesIds[0]],
       });
     });
-
     it('should render header for specific projects', async () => {
       await waitForPromises();
 
-      expect(findHeader().text()).toBe('Following projects:');
+      expect(findHeader().text()).toBe('2 projects:');
     });
   });
 
@@ -202,6 +209,41 @@ describe('ProjectsToggleList', () => {
 
       expect(findToggleList().props('page')).toBe(3);
       expect(findToggleList().props('items')).toHaveLength(6);
+    });
+  });
+
+  describe('project level', () => {
+    it('should render toggle list with specific projects on project level', async () => {
+      createComponent({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+        },
+      });
+
+      await waitForPromises();
+      expect(findLoadingIcon().exists()).toBe(false);
+      expect(findToggleList().exists()).toBe(true);
+
+      expect(requestHandlers.getGroupProjects).toHaveBeenCalledWith({
+        fullPath: 'gitlab-org-root',
+        projectIds: [],
+      });
+    });
+  });
+
+  describe('partial list', () => {
+    it('renders partial lists for projects', async () => {
+      createComponent({
+        propsData: {
+          projectsToShow: 3,
+          inlineList: true,
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findToggleList().props('itemsToShow')).toBe(3);
+      expect(findToggleList().props('inlineList')).toBe(true);
     });
   });
 });

@@ -19,8 +19,9 @@ describe('ToggleList', () => {
   };
 
   const findToggleButton = () => wrapper.findComponent(GlButton);
-  const findAllBranchExceptions = () => wrapper.findAllByTestId('list-item');
-  const findExceptionList = () => wrapper.findByTestId('items-list');
+  const findAllListItems = () => wrapper.findAllByTestId('list-item');
+  const findItemsList = () => wrapper.findByTestId('items-list');
+  const findHiddenItemsText = () => wrapper.findByTestId('hidden-items-text');
 
   describe('initial state', () => {
     beforeEach(() => {
@@ -30,17 +31,17 @@ describe('ToggleList', () => {
     it('should hide extra exceptions when length is over 5', () => {
       expect(findToggleButton().exists()).toBe(true);
       expect(findToggleButton().text()).toBe('+ 5 more');
-      expect(findAllBranchExceptions()).toHaveLength(5);
-      expect(findExceptionList().classes()).toContain('gl-list-style-none');
+      expect(findAllListItems()).toHaveLength(5);
+      expect(findItemsList().classes()).toContain('gl-list-style-none');
     });
 
     it('should show all branches when show all is clicked', async () => {
-      expect(findAllBranchExceptions()).toHaveLength(5);
+      expect(findAllListItems()).toHaveLength(5);
 
       findToggleButton().vm.$emit('click');
       await nextTick();
 
-      expect(findAllBranchExceptions()).toHaveLength(10);
+      expect(findAllListItems()).toHaveLength(10);
       expect(findToggleButton().text()).toBe('Hide extra items');
     });
   });
@@ -52,7 +53,7 @@ describe('ToggleList', () => {
           customButtonText: 'Hide custom items',
         },
       });
-      expect(findAllBranchExceptions()).toHaveLength(5);
+      expect(findAllListItems()).toHaveLength(5);
       expect(findToggleButton().text()).toBe('Hide custom items');
     });
 
@@ -78,7 +79,7 @@ describe('ToggleList', () => {
         },
       });
 
-      expect(findAllBranchExceptions()).toHaveLength(3);
+      expect(findAllListItems()).toHaveLength(3);
       expect(findToggleButton().exists()).toBe(false);
     });
 
@@ -89,7 +90,7 @@ describe('ToggleList', () => {
         },
       });
 
-      expect(findExceptionList().classes()).not.toContain('gl-list-style-none');
+      expect(findItemsList().classes()).not.toContain('gl-list-style-none');
     });
   });
 
@@ -102,7 +103,7 @@ describe('ToggleList', () => {
         },
       });
 
-      expect(findAllBranchExceptions()).toHaveLength(5);
+      expect(findAllListItems()).toHaveLength(5);
       expect(findToggleButton().text()).toBe('+ 15 more');
 
       findToggleButton().vm.$emit('click');
@@ -119,12 +120,82 @@ describe('ToggleList', () => {
         },
       });
 
-      expect(findAllBranchExceptions()).toHaveLength(20);
+      expect(findAllListItems()).toHaveLength(20);
       expect(findToggleButton().text()).toBe('Hide extra items');
 
       findToggleButton().vm.$emit('click');
 
       expect(wrapper.emitted('load-next-page')).toBeUndefined();
+    });
+  });
+
+  describe('partial rendered list', () => {
+    const { length: DEFAULT_ITEMS_LENGTH } = MOCK_BRANCH_EXCEPTIONS();
+
+    it.each`
+      itemsToShow | expectedLength | expectedText
+      ${2}        | ${2}           | ${'+ 8 more'}
+      ${1}        | ${1}           | ${'+ 9 more'}
+    `('can show only partial list', ({ itemsToShow, expectedLength, expectedText }) => {
+      createComponent({
+        propsData: {
+          itemsToShow,
+        },
+      });
+
+      expect(findAllListItems()).toHaveLength(expectedLength);
+      expect(findHiddenItemsText().text()).toBe(expectedText);
+      expect(findToggleButton().exists()).toBe(false);
+    });
+
+    it.each`
+      itemsToShow             | expectedLength | hiddenTextExist | toggleButtonExist
+      ${10}                   | ${5}           | ${false}        | ${true}
+      ${undefined}            | ${5}           | ${false}        | ${true}
+      ${NaN}                  | ${5}           | ${false}        | ${true}
+      ${null}                 | ${5}           | ${false}        | ${true}
+      ${2}                    | ${2}           | ${true}         | ${false}
+      ${DEFAULT_ITEMS_LENGTH} | ${5}           | ${false}        | ${true}
+    `(
+      'shows full list if itemsToShow is more than total number of items',
+      ({ itemsToShow, expectedLength, hiddenTextExist, toggleButtonExist }) => {
+        createComponent({
+          propsData: {
+            itemsToShow,
+          },
+        });
+
+        expect(findAllListItems()).toHaveLength(expectedLength);
+        expect(findHiddenItemsText().exists()).toBe(hiddenTextExist);
+        expect(findToggleButton().exists()).toBe(toggleButtonExist);
+      },
+    );
+  });
+
+  describe('inline list', () => {
+    it('renders unstyled unordered list by default', () => {
+      createComponent();
+
+      expect(findItemsList().element.tagName).toBe('UL');
+      expect(findAllListItems().at(0).element.tagName).toBe('LI');
+      expect(findItemsList().classes()).toContain('gl-list-style-none');
+    });
+
+    it('renders div for inline list', () => {
+      createComponent({
+        propsData: {
+          inlineList: true,
+        },
+      });
+
+      expect(findItemsList().element.tagName).toBe('DIV');
+      expect(findAllListItems().at(0).element.tagName).toBe('SPAN');
+      expect(findItemsList().classes()).toEqual([
+        'gl-m-0',
+        'gl-display-flex',
+        'gl-flex-wrap',
+        'gl-gap-2',
+      ]);
     });
   });
 });
