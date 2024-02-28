@@ -14,7 +14,8 @@ module EE
       TRACKING_LABEL = {
         free: 'free_registration',
         trial: 'trial_registration',
-        invite: 'invite_registration'
+        invite: 'invite_registration',
+        subscription: 'subscription_registration'
       }.freeze
 
       module ClassMethods
@@ -59,6 +60,7 @@ module EE
       def tracking_label
         return TRACKING_LABEL[:trial] if trial?
         return TRACKING_LABEL[:invite] if invite?
+        return TRACKING_LABEL[:subscription] if subscription?
 
         TRACKING_LABEL[:free]
       end
