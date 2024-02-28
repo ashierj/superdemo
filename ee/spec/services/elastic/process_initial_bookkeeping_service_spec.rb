@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::ProcessInitialBookkeepingService, :elastic, feature_category: :global_search do
+RSpec.describe Elastic::ProcessInitialBookkeepingService, feature_category: :global_search do
   include EE::GeoHelpers
 
   let_it_be(:project) { create(:project) }
@@ -64,7 +64,7 @@ RSpec.describe Elastic::ProcessInitialBookkeepingService, :elastic, feature_cate
     end
   end
 
-  describe '#execute' do
+  describe '#execute', :clean_gitlab_redis_shared_state do
     let(:refs) { [::Gitlab::Elastic::DocumentReference.new(Issue, 1, 'issue', 'project')] }
 
     it 'increments the custom indexing sli apdex' do
