@@ -26,34 +26,47 @@ module Integrations
 
       field :workload_identity_federation_project_id,
         required: true,
-        title: -> { s_('GoogleCloudPlatformService|Google Cloud project ID') },
-        description: -> {
-          s_('GoogleCloudPlatformService|Google Cloud project ID for the Workload Identity Federation.')
+        title: -> { s_('GoogleCloudPlatformService|Project ID') },
+        help: -> {
+          format(
+            s_('GoogleCloudPlatformService|Example: %{code_open}my-sample-project-191923%{code_close}'),
+            {
+              code_open: '<code>',
+              code_close: '</code>'
+            }
+          )
         }
 
       field :workload_identity_federation_project_number,
         required: true,
-        title: -> { s_('GoogleCloudPlatformService|Google Cloud project number') },
-        description: -> {
-          s_('GoogleCloudPlatformService|Google Cloud project number for the Workload Identity Federation.')
+        title: -> { s_('GoogleCloudPlatformService|Project number') },
+        help: -> {
+          format(
+            s_('GoogleCloudPlatformService|Example: %{code_open}314053285323%{code_close}'),
+            {
+              code_open: '<code>',
+              code_close: '</code>'
+            }
+          )
         }
 
       field :workload_identity_pool_id,
         required: true,
-        title: -> { s_('GoogleCloudPlatformService|Workload Identity Pool ID') },
-        description: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool.') }
+        title: -> { s_('GoogleCloudPlatformService|Pool ID') }
 
       field :workload_identity_pool_provider_id,
         required: true,
-        title: -> { s_('GoogleCloudPlatformService|Workload Identity Pool provider ID') },
-        description: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool provider.') }
+        title: -> { s_('GoogleCloudPlatformService|Provider ID') }
 
       def self.title
-        s_('GoogleCloudPlatformService|Google Cloud Identity and Access Management')
+        s_('GoogleCloudPlatformService|Google Cloud IAM')
       end
 
       def self.description
-        s_('GoogleCloudPlatformService|Connect Google Cloud Workload Identity Federation to GitLab.')
+        s_(
+          'GoogleCloudPlatformService|' \
+          'Manage permissions for Google Cloud resources with Identity and Access Management (IAM).'
+        )
       end
 
       def self.to_param

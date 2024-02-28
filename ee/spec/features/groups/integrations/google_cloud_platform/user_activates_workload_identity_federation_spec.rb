@@ -15,16 +15,16 @@ RSpec.describe 'User activates Workload Identity Federation', feature_category: 
     visit_group_integration(integration.title)
 
     fill_in(
-      s_('GoogleCloudPlatformService|Google Cloud project ID'),
+      s_('GoogleCloudPlatformService|Project ID'),
       with: integration.workload_identity_federation_project_id)
     fill_in(
-      s_('GoogleCloudPlatformService|Google Cloud project number'),
+      s_('GoogleCloudPlatformService|Project number'),
       with: integration.workload_identity_federation_project_number)
     fill_in(
-      s_('GoogleCloudPlatformService|Workload Identity Pool ID'),
+      s_('GoogleCloudPlatformService|Pool ID'),
       with: integration.workload_identity_pool_id)
     fill_in(
-      s_('GoogleCloudPlatformService|Workload Identity Pool provider ID'),
+      s_('GoogleCloudPlatformService|Provider ID'),
       with: integration.workload_identity_pool_provider_id)
 
     click_save_integration
