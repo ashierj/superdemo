@@ -7,7 +7,7 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
   include GraphqlHelpers
   include GoogleApi::CloudPlatformHelpers
 
-  let_it_be(:project) { create(:project) }
+  let_it_be_with_reload(:project) { create(:project) }
   let_it_be_with_refind(:project_integration) do
     create(:google_cloud_platform_artifact_registry_integration, project: project)
   end
@@ -169,6 +169,16 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
 
   context 'when an user does not have required permissions' do
     let(:user) { create(:user).tap { |user| project.add_guest(user) } }
+
+    it { is_expected.to be_nil }
+  end
+
+  context 'with an anonymous user on a public project' do
+    let(:user) { nil }
+
+    before do
+      project.update!(visibility: Gitlab::VisibilityLevel::PUBLIC)
+    end
 
     it { is_expected.to be_nil }
   end

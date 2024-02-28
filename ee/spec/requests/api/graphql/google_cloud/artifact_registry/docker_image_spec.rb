@@ -6,7 +6,7 @@ require 'google/cloud/artifact_registry/v1'
 RSpec.describe 'getting the google cloud docker image linked to a project', :freeze_time, feature_category: :container_registry do
   include GraphqlHelpers
 
-  let_it_be(:project) { create(:project) }
+  let_it_be_with_reload(:project) { create(:project) }
 
   let_it_be_with_refind(:project_integration) do
     create(
@@ -139,6 +139,16 @@ RSpec.describe 'getting the google cloud docker image linked to a project', :fre
 
   context 'when an user does not have required permissions' do
     let(:user) { create(:user).tap { |user| project.add_guest(user) } }
+
+    it_behaves_like 'returning a blank response'
+  end
+
+  context 'with an anonymous user on a public project' do
+    let(:user) { nil }
+
+    before do
+      project.update!(visibility: Gitlab::VisibilityLevel::PUBLIC)
+    end
 
     it_behaves_like 'returning a blank response'
   end
