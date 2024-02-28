@@ -6,20 +6,20 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
   include SubscriptionPortalHelper
 
   describe '#gitlab_duo_available?' do
-    context 'when GitLab is SaaS' do
+    context 'when GitLab is .com' do
       let_it_be(:namespace) { build_stubbed(:group) }
 
       before do
         stub_saas_features(gitlab_com_subscriptions: true)
       end
 
-      context 'when SaaS feature flag is globally enabled' do
+      context 'when .com feature flag is globally enabled' do
         it 'returns true' do
           expect(helper.gitlab_duo_available?(namespace)).to be_truthy
         end
       end
 
-      context 'when SaaS feature flag is globally disabled' do
+      context 'when .com feature flag is globally disabled' do
         before do
           stub_feature_flags(hamilton_seat_management: false)
         end
@@ -28,7 +28,7 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
           expect(helper.gitlab_duo_available?(namespace)).to be_falsy
         end
 
-        context 'when SaaS feature flag is enabled for a specific namespace' do
+        context 'when .com feature flag is enabled for a specific namespace' do
           before do
             stub_feature_flags(hamilton_seat_management: namespace)
           end
@@ -58,6 +58,86 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
 
         it 'returns false' do
           expect(helper.gitlab_duo_available?).to be_falsy
+        end
+      end
+    end
+  end
+
+  describe '#duo_pro_bulk_user_assignment_available?' do
+    context 'when GitLab is .com' do
+      let_it_be(:namespace) { build_stubbed(:group) }
+
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+      end
+
+      context 'when duo pro is available' do
+        context 'when .com feature flag is globally enabled' do
+          it 'returns true' do
+            expect(helper.duo_pro_bulk_user_assignment_available?(namespace)).to be_truthy
+          end
+
+          context 'when disabled for a specific namespace' do
+            before do
+              stub_feature_flags(gitlab_com_duo_pro_bulk_user_assignment: false, thing: namespace)
+            end
+
+            it 'returns false' do
+              expect(helper.duo_pro_bulk_user_assignment_available?(namespace)).to be_falsey
+            end
+          end
+        end
+
+        context 'when .com feature flag is globally disabled' do
+          before do
+            stub_feature_flags(gitlab_com_duo_pro_bulk_user_assignment: false)
+          end
+
+          it 'returns false' do
+            expect(helper.duo_pro_bulk_user_assignment_available?(namespace)).to be_falsey
+          end
+
+          context 'when .com feature flag is enabled for a specific namespace' do
+            before do
+              stub_feature_flags(gitlab_com_duo_pro_bulk_user_assignment: namespace)
+            end
+
+            it 'returns true' do
+              expect(helper.duo_pro_bulk_user_assignment_available?(namespace)).to be_truthy
+            end
+          end
+        end
+      end
+
+      context 'when duo pro is not available' do
+        before do
+          stub_feature_flags(hamilton_seat_management: false)
+        end
+
+        it 'returns false' do
+          expect(helper.duo_pro_bulk_user_assignment_available?).to be_falsey
+        end
+      end
+    end
+
+    context 'when GitLab is not .com' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: false)
+      end
+
+      context 'when duo pro is available' do
+        it 'returns false' do
+          expect(helper.duo_pro_bulk_user_assignment_available?).to be_falsey
+        end
+      end
+
+      context 'when duo pro is not available' do
+        before do
+          stub_feature_flags(self_managed_code_suggestions: false)
+        end
+
+        it 'returns false' do
+          expect(helper.duo_pro_bulk_user_assignment_available?).to be_falsey
         end
       end
     end
