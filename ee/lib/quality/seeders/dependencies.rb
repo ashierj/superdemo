@@ -94,7 +94,7 @@ module Quality
       end
 
       def generate_suffix
-        Time.now.to_i
+        SecureRandom.uuid
       end
     end
   end
