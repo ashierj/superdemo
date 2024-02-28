@@ -2,7 +2,7 @@ import { GlButton } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import Component, { i18n } from 'ee/vue_shared/security_reports/components/create_jira_issue.vue';
+import Component from 'ee/vue_shared/security_reports/components/create_jira_issue.vue';
 import vulnerabilityExternalIssueLinkCreate from 'ee/vue_shared/security_reports/graphql/vulnerability_external_issue_link_create.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -52,14 +52,13 @@ describe('create_jira_issue', () => {
   it('should render button with correct text in default variant', () => {
     createComponent();
 
-    expect(findButton().exists()).toBe(true);
-    expect(findButton().text()).toBe(i18n.createNewIssueLinkText);
+    expect(findButton().text()).toBe('Create Jira issue');
   });
 
-  it('should render button in correct variant as passed in as props', () => {
-    createComponent({ propsData: { variant: 'info' } });
+  it('should render button in confirm variant', () => {
+    createComponent();
 
-    expect(findButton().props().variant).toBe('info');
+    expect(findButton().props('variant')).toBe('confirm');
   });
 
   describe('given a pending response', () => {
