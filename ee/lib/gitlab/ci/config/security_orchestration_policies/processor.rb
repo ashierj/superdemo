@@ -177,7 +177,7 @@ module Gitlab
 
           def active_scan_actions
             scan_actions do |configuration|
-              configuration.active_policies_scan_actions_for_project(ref, project)
+              configuration.active_policies_pipeline_scan_actions_for_project(ref, project)
             end
           end
 
