@@ -16,9 +16,6 @@ distribution:
 - ee
 tier:
 - ultimate
-options:
-  events:
-  - user_viewed_builtin_dashboard
 events:
 - name: user_viewed_builtin_dashboard
   unique: user.id

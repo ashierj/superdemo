@@ -16,9 +16,6 @@ distribution:
 - ee
 tier:
 - ultimate
-options:
-  events:
-  - value_streams_dashboard_contributor_count_link_clicked
 events:
 - name: value_streams_dashboard_contributor_count_link_clicked
   unique: user.id

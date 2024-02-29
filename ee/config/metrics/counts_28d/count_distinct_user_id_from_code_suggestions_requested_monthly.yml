@@ -17,9 +17,6 @@ distribution:
 tier:
 - premium
 - ultimate
-options:
-  events:
-  - code_suggestions_requested
 events:
 - name: code_suggestions_requested
   unique: user.id
