@@ -4,7 +4,11 @@ module QA
   include Support::Helpers::Plan
   include Support::Helpers::Zuora
 
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :purchase do
+  RSpec.describe 'Fulfillment', :requires_admin,
+    quarantine: {
+      type: :bug,
+      issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/439500"
+    }, only: { subdomain: :staging }, product_group: :purchase do
     describe 'Purchase compute minutes' do
       let(:purchase_quantity) { 5 }
       let(:expected_initial_minutes) { COMPUTE_MINUTES[:compute_minutes] * purchase_quantity }
