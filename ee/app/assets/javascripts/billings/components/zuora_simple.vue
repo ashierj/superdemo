@@ -331,7 +331,7 @@ export default {
       {{ error }}
     </gl-alert>
     <div v-if="isLoading" :style="style" data-testid="loading-container">
-      <gl-loading-icon size="lg" class="gl-relative gl-top-half gl-w-full" />
+      <gl-loading-icon size="lg" class="gl-relative gl-top-1/2 gl-w-full" />
     </div>
     <div
       id="zuora_payment"
