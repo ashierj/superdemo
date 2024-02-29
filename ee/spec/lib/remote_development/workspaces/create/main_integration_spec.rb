@@ -43,7 +43,13 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
     }
   end
 
-  let(:value) { { current_user: current_user, params: params } }
+  let(:settings) do
+    {
+      project_cloner_image: 'alpine/git:2.36.3'
+    }
+  end
+
+  let(:value) { { current_user: current_user, params: params, settings: settings } }
 
   subject(:response) do
     described_class.main(value)

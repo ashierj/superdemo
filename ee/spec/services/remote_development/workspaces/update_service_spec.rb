@@ -6,6 +6,7 @@ RSpec.describe RemoteDevelopment::Workspaces::UpdateService, feature_category: :
   let(:workspace) { build_stubbed(:workspace) }
   let(:user) { instance_double(User) }
   let(:params) { instance_double(Hash) }
+  let(:settings) { instance_double(Hash) }
 
   describe '#execute' do
     subject(:service_response) do
@@ -13,8 +14,14 @@ RSpec.describe RemoteDevelopment::Workspaces::UpdateService, feature_category: :
     end
 
     before do
+      allow(RemoteDevelopment::Settings).to receive(:get_all_settings).and_return(settings)
       allow(RemoteDevelopment::Workspaces::Update::Main)
-        .to receive(:main).with(workspace: workspace, current_user: user, params: params).and_return(response_hash)
+        .to receive(:main).with(
+          workspace: workspace,
+          current_user: user,
+          params: params,
+          settings: settings
+        ).and_return(response_hash)
     end
 
     context 'when success' do

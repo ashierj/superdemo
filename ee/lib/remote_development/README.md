@@ -11,6 +11,7 @@
 - [Railway Oriented Programming and the Result Class](#railway-oriented-programming-and-the-result-class)
 - [Benefits](#benefits)
 - [Differences from standard GitLab patterns](#differences-from-standard-gitlab-patterns)
+- [Remote Development Settings](#settings)
 - [FAQ](#faq)
 
 ## TL;DR and Quickstart
@@ -37,18 +38,35 @@ In the Remote Development feature, we strive to maintain a clean, layered archit
 ```mermaid
 flowchart TB
     direction TB
-    Client --> r
-    subgraph r[Rails Routing/Controllers]
-        direction TB
-        subgraph g[Grape/GraphQL API]
+    Client --> controllers
+    subgraph monolith[Rails Monolith]
+        subgraph routinglayer[Remote Development/GitLab Agent for Kubernetes: Routing/Controller layer]
             direction TB
-            subgraph s[Remote Development Services]
+            controllers[Controllers]
+            subgraph apilayer[Remote Development / GitLab Agent For Kubernetes: Grape/GraphQL API layer]
                 direction TB
-                dl[Domain Logic]
+                apis[Grape APIs & GraphQL Resolvers/Mutations]
+                subgraph service[Remote Development: Service layer]
+                    direction TB
+                    services[Services]
+                    subgraph domainlogiclayer[Remote Development: Domain Logic layer]
+                    domainlogic[Domain Logic modules]
+                    end
+                end
             end
         end
-        dl --> ActiveRecord
-        dl --> o[Other domain services]
+        subgraph settingslayer[Remote Development: Settings layer]
+          settings[RemoteDevelopment::Settings module]
+        end
+        models[ActiveRecord models]
+        domainlogic --> otherdomainservices[Other domain services]
+        controllers --> apis
+        apis --> services
+        services --> domainlogic
+        domainlogic --> models
+        controllers --> settings
+        services --> settings
+        models --> settings
     end
 ```
 
@@ -85,7 +103,7 @@ Although Ruby is traditionally weakly-typed, without null safety and little supp
 
 ### Union types
 
-We also simulate ["Union Types"](https://en.wikipedia.org/wiki/Union_type) in Ruby. We do this through the use of a module which defines multiple class constants of the same type. The `RemoteDevelopment::Messages` module is an example of this. 
+We also simulate ["Union Types"](https://en.wikipedia.org/wiki/Union_type) in Ruby. We do this through the use of a module which defines multiple class constants of the same type. The `RemoteDevelopment::Messages` module is an example of this.
 
 ### Pattern matching with types
 
@@ -94,25 +112,25 @@ We also simulate ["Union Types"](https://en.wikipedia.org/wiki/Union_type) in Ru
 - The `case ... in` structure can be used to pattern-match on types. When used with the approach of throwing an exception in the `else` clause, this can provide exhaustive type checking at runtime.
 
 #### Rightward assignment pattern matching and destructuring with types
-    
+
 Example: Given a `Hash` `x` with an entry `y` which is an `Integer`, the following code would destructure the integer into `i`:
 
 ```ruby
 x = {y: 1}
 x => {y: Integer => i}
 puts i # 1
-``` 
+```
 
 If `y` was not an integer type, a `NoMatchingPatternError` runtime exception with a descriptive message would be thrown:
 
 ```ruby
 x = {y: "Not an Integer"}
 x => {y: Integer => i} #  {:y=>"Not an Integer"}: Integer === "Not an integer" does not return true (NoMatchingPatternError)
-``` 
+```
 
 - This is a powerful new feature of Ruby 3 which allows for type safety without requiring the use of type safety tools such as RBS or Sorbet.
 - Although rightward pattern matching with types is still an [experimental feature](https://rubychangelog.com/versions-latest/), it has been stable with [little negative feedback](https://bugs.ruby-lang.org/issues/17260)).
-- Also, Matz has [stated his committment to the support of rightward assignement for pattern matching](https://bugs.ruby-lang.org/issues/17260#note-1). 
+- Also, Matz has [stated his committment to the support of rightward assignement for pattern matching](https://bugs.ruby-lang.org/issues/17260#note-1).
 - But even if the experimental support for types in rightward assignment was removed, it would be straightforward to change all occurrences to remove the types and go back to regular rightward assignment. We would just lose the type safety.
 
 Also note that `#deconstruct_keys` must be implemented in order to use these pattern matching features.
@@ -128,9 +146,9 @@ Also note that the destructuring a hash or array, even without the type checks (
 ### Null safety
 
 When accessing a `Hash` entry by key, where we expect that the value must present (or otherwise an upstream bug exists), we prefer to use `Hash#fetch`
-instead of `Hash#[]`. 
+instead of `Hash#[]`.
 
-However, this is only necessary in cases cases where it is not possible or desireable to otherwise use type safety or 
+However, this is only necessary in cases cases where it is not possible or desireable to otherwise use type safety or
 
 ## Functional patterns
 
@@ -148,7 +166,7 @@ Wherever possible, we use immutable state. This leads to fewer state-related bug
 
 ["Higher order functions"](https://en.wikipedia.org/wiki/Higher-order_function) are the basis of many (or most) functional patterns. Ruby supports this by allowing lambdas, procs, or method object references to be passed as arguments to other methods.
 
-In the Remote Development feature, we accomplish this by passing lambdas or "singleton" (class) `Method` objects as arguments. 
+In the Remote Development feature, we accomplish this by passing lambdas or "singleton" (class) `Method` objects as arguments.
 
 Note that we do not use procs (and enforce their non-usage), because of their behavior with regard to arguments and the `return` keyword.
 
@@ -193,7 +211,7 @@ We prefer mixins/modules instead of superclasses/inheritance for sharing code. T
 
 ### Other OO patterns
 
-We _currently_ do not make heavy or explicit use of [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) or [composition over inheritance](https://en.wikipedia.org/wiki/Composition_over_inheritance). But, we may adopt these patterns in the future if they provide benefits. 
+We _currently_ do not make heavy or explicit use of [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) or [composition over inheritance](https://en.wikipedia.org/wiki/Composition_over_inheritance). But, we may adopt these patterns in the future if they provide benefits.
 
 ## Railway Oriented Programming and the Result class
 
@@ -350,6 +368,80 @@ If these service classes need to be changed or standardized in the future (e.g. 
 Since much of the Domain Logic layer logic is in classes with a single singleton (class) method entry point, there is no need to have `describe .method do` blocks in specs for these classes. Omitting it saves two characters worth of indentation line length. And most of these classes and methods are named with a standard and predictable convention anyway, such as `Authorizer.authorize` and `Creator.create`.
 
 We also tend to group all base `let` fixture declarations in the top-level global describe block rather than trying to sort them out into their specific contexts, for ease of writing/maintenance/readability/consistency. Only `let` declarations which override a global one of the same name are included in a specific context.
+
+## Remote Development Settings
+
+### Overview of Remote Development Settings module
+
+Remote Development has a dedicated module in the domain logic for handling settings. It is
+`RemoteDevelopment::Settings`. The goals of this module are:
+
+1. Allow various methods to be used for providing settings depending on which are appropriate, including:
+    - Default values
+    - One of the following:
+      - `::Gitlab::CurrentSettings`
+      - `::Settings` (not yet supported)
+      - Cascading settings via `CascadingNamespaceSettingAttribute` (not yet supported)
+   - Environment variables, with the required prefix of `GITLAB_REMOTE_DEVELOPMENT_`
+    - Any other current or future method
+1. Perform type checking of provided settings.
+1. Provide precedence rules (or validation errors/exceptions, if appropriate) if the same setting is
+   defined by multiple methods. See the [Precedence of settings](#precedence-of-settings) section
+   below for more details.
+1. Allow usage of the same settings module from both the backend domain logic as well as the frontend
+   Vue components, by obtaining necessary settings values in the Rails controller and passing them
+   through to the frontend.
+1. Use inversion of control, or dependency injection, to avoid coupling the
+   Remote Development domain logic to the rest of the monolith. At the domain logic layer
+   all settings are injected and represented as a simple Hash. This injection approach also allows the
+   Settings module to be used from controllers, models, or services without introducing
+   direct circular dependencies at the class/module level.
+
+### Adding a new setting
+
+To add a new Remote Development setting with a default value which is automatically configurable
+via an ENV var, add a new entry in `ee/lib/remote_development/settings/defaults_initializer.rb`
+
+### Reading settings
+
+To read a single setting, use `RemoteDevelopment::Settings.get_single_setting(:setting_name)`
+
+To read all settings, use `RemoteDevelopment::Settings.get_all_settings`
+
+NOTE: A setting _MUST_ have an entry defined in `ee/lib/remote_development/settings/defaults_initializer.rb`
+to be read, but the default value can be `nil`. This will likely be the case when you want to use
+a setting from `Gitlab::CurrentSettings`.
+
+### Precedence of settings
+
+If a setting can be defined via multiple means (e.g. via an `ENV` var the `Settings` model),
+there is a clear and simple set of precedence rules for which one "wins". These follow the
+order of the steps in the
+[RoP `Main` class of the Remote Development Settings module](./settings/main.rb):
+
+1. First, the default value is used
+1. Next, one of the following values are used if defined and not `nil`:
+   1.`::Gitlab::CurrentSettings`
+   1.`::Gitlab::Settings` (not yet implemented)
+   1. Cascading settings via `CascadingNamespaceSettingAttribute` (not yet implemented)
+1. Next, an ENV values is used if defined (i.e. not `nil`). The ENV var is intentionally placed as
+   the last step and highest precedence, so it can always be used to easily override any settings for
+   local or temporary testing.
+
+In future iterations, we may want to provide more control of where a specific setting comes from,
+or providing specific precedence rules to override the default precedence rules. For example, we could
+allow them to be specified as a new field in the defaults declaration:
+
+```
+      def self.default_settings
+        # third/last field is "sources to read from and their order"
+        {
+          default_branch_name: [UNDEFINED, String, [:env, :current_settings]], # reads ENV var first, which can be overridden by CurrentSettings
+          default_max_hours_before_termination: [24, Integer, [:current_settings, :env]], # reads CurrentSettings first, which can be overridden by ENV var
+          max_hours_before_termination_limit: [120, Integer] # Uses default precedence
+        }
+      end
+```
 
 ## FAQ
 

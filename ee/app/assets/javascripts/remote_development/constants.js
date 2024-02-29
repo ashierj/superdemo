@@ -3,7 +3,6 @@ import { s__ } from '~/locale';
 
 export const DEFAULT_DEVFILE_PATH = '.devfile.yaml';
 export const DEFAULT_EDITOR = 'webide';
-export const DEFAULT_MAX_HOURS_BEFORE_TERMINATION = 24;
 
 /* eslint-disable @gitlab/require-i18n-strings */
 export const WORKSPACE_STATES = {

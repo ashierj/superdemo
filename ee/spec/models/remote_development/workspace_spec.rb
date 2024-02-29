@@ -93,17 +93,28 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
   end
 
   describe 'validations' do
-    it 'validates max_hours_before_termination is no more than 120' do
-      workspace.max_hours_before_termination = described_class::MAX_HOURS_BEFORE_TERMINATION_LIMIT
-      expect(workspace).to be_valid
+    context "on max_hours_before_termination" do
+      let(:limit) { 42 }
 
-      workspace.max_hours_before_termination = described_class::MAX_HOURS_BEFORE_TERMINATION_LIMIT + 1
-      expect(workspace).not_to be_valid
+      before do
+        allow(RemoteDevelopment::Settings)
+          .to receive(:get_single_setting).with(:max_hours_before_termination_limit) { limit }
+      end
+
+      it 'validates max_hours_before_termination is no more than limit specified by settings' do
+        workspace.max_hours_before_termination = limit
+        expect(workspace).to be_valid
+
+        workspace.max_hours_before_termination = limit + 1
+        expect(workspace).not_to be_valid
+      end
     end
 
-    it 'validates editor is webide' do
-      workspace.editor = 'not-webide'
-      expect(workspace).not_to be_valid
+    context "on editor" do
+      it 'validates editor is webide' do
+        workspace.editor = 'not-webide'
+        expect(workspace).not_to be_valid
+      end
     end
 
     context 'on remote_development_agent_config' do
@@ -265,23 +276,23 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
       let_it_be(:agent1, reload: true) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
       let_it_be(:agent2, reload: true) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
       let_it_be(:workspace1) do
-        create(:workspace, agent: agent1,  desired_state: ::RemoteDevelopment::Workspaces::States::RUNNING)
+        create(:workspace, agent: agent1, desired_state: ::RemoteDevelopment::Workspaces::States::RUNNING)
       end
 
       let_it_be(:workspace2) do
-        create(:workspace, agent: agent1,  desired_state: ::RemoteDevelopment::Workspaces::States::TERMINATED)
+        create(:workspace, agent: agent1, desired_state: ::RemoteDevelopment::Workspaces::States::TERMINATED)
       end
 
       let_it_be(:workspace3) do
-        create(:workspace, agent: agent1,  desired_state: ::RemoteDevelopment::Workspaces::States::STOPPED)
+        create(:workspace, agent: agent1, desired_state: ::RemoteDevelopment::Workspaces::States::STOPPED)
       end
 
       let_it_be(:workspace4) do
-        create(:workspace, agent: agent2,  desired_state: ::RemoteDevelopment::Workspaces::States::TERMINATED)
+        create(:workspace, agent: agent2, desired_state: ::RemoteDevelopment::Workspaces::States::TERMINATED)
       end
 
       let_it_be(:workspace5) do
-        create(:workspace, agent: agent2,  desired_state: ::RemoteDevelopment::Workspaces::States::RUNNING)
+        create(:workspace, agent: agent2, desired_state: ::RemoteDevelopment::Workspaces::States::RUNNING)
       end
 
       it "returns the correct count for the current agent" do

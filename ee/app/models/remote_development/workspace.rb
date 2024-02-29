@@ -8,8 +8,6 @@ module RemoteDevelopment
     include RemoteDevelopment::Workspaces::States
     include ::Gitlab::Utils::StrongMemoize
 
-    MAX_HOURS_BEFORE_TERMINATION_LIMIT = 120
-
     ignore_column :url_domain, remove_with: '16.9', remove_after: '2019-01-19'
 
     belongs_to :user, inverse_of: :workspaces
@@ -37,7 +35,9 @@ module RemoteDevelopment
     validates :desired_state, inclusion: { in: VALID_DESIRED_STATES }
     validates :actual_state, inclusion: { in: VALID_ACTUAL_STATES }
     validates :editor, inclusion: { in: ['webide'], message: "'webide' is currently the only supported editor" }
-    validates :max_hours_before_termination, numericality: { less_than_or_equal_to: MAX_HOURS_BEFORE_TERMINATION_LIMIT }
+    validates :max_hours_before_termination, numericality: {
+      less_than_or_equal_to: :max_hours_before_termination_limit
+    }
 
     validate :enforce_permanent_termination
     validate :enforce_quotas, on: :create
@@ -115,6 +115,10 @@ module RemoteDevelopment
     end
 
     private
+
+    def max_hours_before_termination_limit
+      RemoteDevelopment::Settings.get_single_setting(:max_hours_before_termination_limit)
+    end
 
     def validate_agent_config_present_and_enabled
       unless agent&.remote_development_agent_config

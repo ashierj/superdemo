@@ -25,6 +25,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::ProjectClonerComponentInje
         data_volume: {
           path: "/projects"
         }
+      },
+      settings: {
+        project_cloner_image: 'alpine/git:2.36.3'
       }
     }
   end

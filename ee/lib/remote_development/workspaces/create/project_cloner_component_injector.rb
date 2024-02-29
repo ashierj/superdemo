@@ -12,17 +12,19 @@ module RemoteDevelopment
           value => {
             processed_devfile: Hash => processed_devfile,
             volume_mounts: Hash => volume_mounts,
-            params: Hash => params
+            params: Hash => params,
+            settings: Hash => settings
           }
           volume_mounts => { data_volume: Hash => data_volume }
           data_volume => { path: String => volume_path }
           params => { project: Project => project }
+          settings => {
+            project_cloner_image: String => image,
+          }
 
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/408448
           #       replace the alpine/git docker image with one that is published by gitlab for security / reliability
           #       reasons
-          image_name = 'alpine/git'
-          image_tag = '2.36.3'
           clone_dir = "#{volume_path}/#{project.path}"
           project_url = project.http_url_to_repo
           project_ref = project.default_branch
@@ -47,7 +49,7 @@ module RemoteDevelopment
           cloner_component = {
             'name' => 'gl-cloner-injector',
             'container' => {
-              'image' => "#{image_name}:#{image_tag}",
+              'image' => image,
               'args' => [container_args],
               # command has been overridden here as the default command in the alpine/git
               # container invokes git directly
