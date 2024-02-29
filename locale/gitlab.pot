@@ -28025,6 +28025,9 @@ msgstr ""
 msgid "JiraService|For example, AB"
 msgstr ""
 
+msgid "JiraService|For example, AB,CD"
+msgstr ""
+
 msgid "JiraService|IDs must be a list of numbers that can be split with , or ;"
 msgstr ""
 
@@ -28062,6 +28065,9 @@ msgid "JiraService|Jira personal access token (Jira Data Center and Jira Server 
 msgstr ""
 
 msgid "JiraService|Jira project key"
+msgstr ""
+
+msgid "JiraService|Jira project keys"
 msgstr ""
 
 msgid "JiraService|Leave blank to use your current configuration"
