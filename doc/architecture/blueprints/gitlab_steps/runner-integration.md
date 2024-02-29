@@ -147,7 +147,12 @@ calls.
 The service should not assume clients will be well-behaved, and should be
 able to handle clients that never call or prematurely disconnect from
 either of the `Follow` APIs, and also clients that never call `Finish` on
-a corresponding `Run` request.
+a corresponding `Run` request. To this end the `Step Runner` process
+should periodically perform a scan to identify and prune stale or
+runaway/stuck jobs. A stale job could be a job that has finished some
+specified time ago (and has not been `Finish`ed). A runaway job is a job
+that has been running some (long) specified amount of time, possibly
+without producing output.
 
 Finally, to facilitate integrating steps into the below runner executors,
 it is recommended that steps provide a client library to coordinate
