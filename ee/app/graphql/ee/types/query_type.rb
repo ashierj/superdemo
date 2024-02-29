@@ -160,7 +160,7 @@ module EE
         field :google_cloud_artifact_registry_repository_artifact,
           ::Types::GoogleCloud::ArtifactRegistry::ArtifactDetailsType,
           null: true,
-          description: 'Details about an artifact in the Google Cloud Artifact Registry.',
+          description: 'Details about an artifact in the Google Artifact Registry.',
           resolver: ::Resolvers::GoogleCloud::ArtifactRegistry::ArtifactResolver,
           alpha: { milestone: '16.10' }
       end

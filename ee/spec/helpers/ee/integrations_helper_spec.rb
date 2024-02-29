@@ -55,10 +55,10 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
       end
     end
 
-    context 'with Google Cloud Artifact Registry integration' do
+    context 'with Google Artifact Registry integration' do
       let_it_be_with_refind(:integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
 
-      it 'includes Google Cloud Artifact Registry fields' do
+      it 'includes Google Artifact Registry fields' do
         is_expected.to include(
           artifact_registry_path: project_google_cloud_platform_artifact_registry_index_path(project),
           operating: 'true'

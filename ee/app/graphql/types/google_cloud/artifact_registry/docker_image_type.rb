@@ -6,7 +6,7 @@ module Types
       # rubocop:disable Graphql/AuthorizeTypes -- authorization happens in the service, called from the resolver
       class DockerImageType < BaseObject
         graphql_name 'GoogleCloudArtifactRegistryDockerImage'
-        description 'Represents a docker artifact of Google Cloud Artifact Registry'
+        description 'Represents a docker artifact of Google Artifact Registry'
 
         include ::Gitlab::Utils::StrongMemoize
 

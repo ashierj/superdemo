@@ -12,7 +12,7 @@ RSpec.describe 'User activates Artifact Registry', feature_category: :package_re
   end
 
   it 'activates integration', :js do
-    visit_project_integration('Google Cloud Artifact Registry')
+    visit_project_integration('Google Artifact Registry')
 
     expect(page).not_to have_link('View artifacts')
 
@@ -25,7 +25,7 @@ RSpec.describe 'User activates Artifact Registry', feature_category: :package_re
 
     click_save_integration
 
-    expect(page).to have_content('Google Cloud Artifact Registry settings saved and active.')
+    expect(page).to have_content('Google Artifact Registry settings saved and active.')
 
     expect(page).to have_link('View artifacts')
   end

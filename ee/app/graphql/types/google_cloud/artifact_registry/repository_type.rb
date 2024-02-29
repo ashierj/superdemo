@@ -5,7 +5,7 @@ module Types
     module ArtifactRegistry
       class RepositoryType < BaseObject
         graphql_name 'GoogleCloudArtifactRegistryRepository'
-        description 'Represents a repository of Google Cloud Artifact Registry'
+        description 'Represents a repository of Google Artifact Registry'
 
         authorize :read_google_cloud_artifact_registry
 
@@ -17,7 +17,7 @@ module Types
         field :repository,
           GraphQL::Types::String,
           null: false,
-          description: 'Repository on the Google Cloud Artifact Registry.'
+          description: 'Repository on the Google Artifact Registry.'
 
         field :artifact_registry_repository_url,
           GraphQL::Types::String,
@@ -27,7 +27,7 @@ module Types
         field :artifacts,
           Types::GoogleCloud::ArtifactRegistry::ArtifactType.connection_type,
           null: true,
-          description: 'Google Cloud Artifact Registry repository artifacts. ' \
+          description: 'Google Artifact Registry repository artifacts. ' \
                        'Returns `null` if `gcp_artifact_registry` feature flag is disabled or GitLab.com feature ' \
                        'is unavailable.',
           resolver: ::Resolvers::GoogleCloud::ArtifactRegistry::RepositoryArtifactsResolver,

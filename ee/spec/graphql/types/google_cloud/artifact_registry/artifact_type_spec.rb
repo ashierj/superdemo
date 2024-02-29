@@ -17,7 +17,7 @@ RSpec.describe GitlabSchema.types['GoogleCloudArtifactRegistryArtifact'], featur
       it 'raises the error' do
         expect do
           mapping
-        end.to raise_error(Gitlab::Graphql::Errors::BaseError, 'Unsupported Google Cloud Artifact Registry type Hash')
+        end.to raise_error(Gitlab::Graphql::Errors::BaseError, 'Unsupported Google Artifact Registry type Hash')
       end
     end
   end

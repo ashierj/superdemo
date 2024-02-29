@@ -81,7 +81,7 @@ RSpec.describe API::Integrations, feature_category: :integrations do
     end
   end
 
-  describe 'Google Cloud Artifact Registry' do
+  describe 'Google Artifact Registry' do
     shared_examples 'handling google artifact registry conditions' do |unavailable_status: :not_found|
       shared_examples 'does not change integrations count' do
         it do

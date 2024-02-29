@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe GitlabSchema.types['GoogleCloudArtifactRegistryDockerImageDetails'], feature_category: :container_registry do
   specify do
     expect(described_class.description)
-      .to eq('Represents details about docker artifact of Google Cloud Artifact Registry')
+      .to eq('Represents details about docker artifact of Google Artifact Registry')
   end
 
   it 'includes all expected fields' do

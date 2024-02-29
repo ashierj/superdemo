@@ -361,7 +361,7 @@ module EE
           ::Types::GoogleCloud::ArtifactRegistry::RepositoryType,
           null: true,
           alpha: { milestone: '16.10' },
-          description: 'Google Cloud Artifact Registry repository. ' \
+          description: 'Google Artifact Registry repository. ' \
                        'Returns `null` if `gcp_artifact_registry` feature flag is disabled'
 
         field :ai_agent, ::Types::Ai::Agents::AgentType,

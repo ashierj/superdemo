@@ -6,7 +6,7 @@ module Types
       # rubocop:disable Graphql/AuthorizeTypes -- authorization happens in the service, called from the resolver
       class DockerImageDetailsType < DockerImageType
         graphql_name 'GoogleCloudArtifactRegistryDockerImageDetails'
-        description 'Represents details about docker artifact of Google Cloud Artifact Registry'
+        description 'Represents details about docker artifact of Google Artifact Registry'
 
         field :uri,
           GraphQL::Types::String,
@@ -38,7 +38,7 @@ module Types
         field :repository,
           GraphQL::Types::String,
           null: false,
-          description: 'Repository on the Google Cloud Artifact Registry.'
+          description: 'Repository on the Google Artifact Registry.'
 
         field :artifact_registry_image_url,
           GraphQL::Types::String,

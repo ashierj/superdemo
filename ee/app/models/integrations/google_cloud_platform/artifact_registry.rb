@@ -46,11 +46,11 @@ module Integrations
       alias_method :artifact_registry_repository, :artifact_registry_repositories
 
       def self.title
-        s_('GoogleCloudPlatformService|Google Cloud Artifact Registry')
+        s_('GoogleCloudPlatformService|Google Artifact Registry')
       end
 
       def self.description
-        s_('GoogleCloudPlatformService|Connect Google Cloud Artifact Registry to GitLab.')
+        s_('GoogleCloudPlatformService|Manage your artifacts in Google Artifact Registry.')
       end
 
       def self.to_param
