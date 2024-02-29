@@ -68,7 +68,7 @@ module API
             documentation: { example: 'namespace/project' }
         end
         post do
-          token = ::CloudConnector::AccessService.new.access_token([:code_suggestions])
+          token = ::CloudConnector::AccessService.new.access_token(scopes: [:code_suggestions])
 
           unauthorized! if token.nil?
 

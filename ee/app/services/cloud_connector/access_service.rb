@@ -7,8 +7,8 @@ module CloudConnector
     # rubocop:disable Gitlab/AvoidGitlabInstanceChecks -- we don't have dedicated SM/.com Cloud Connector features
     # or other checks that would allow us to identify where the code is running. We rely on instance checks for now.
     # Will be addressed in https://gitlab.com/gitlab-org/gitlab/-/issues/437725
-    def access_token(scopes)
-      Gitlab.org_or_com? ? saas_token(scopes) : self_managed_token
+    def access_token(scopes:, extra_claims: {})
+      Gitlab.org_or_com? ? saas_token(scopes, extra_claims) : self_managed_token
     end
 
     # We allow free usage of cloud connected feature on Self-Managed if:
@@ -35,8 +35,8 @@ module CloudConnector
       ::CloudConnector::ServiceAccessToken.active.last&.token
     end
 
-    def saas_token(scopes)
-      Gitlab::CloudConnector::SelfIssuedToken.new(nil, scopes: scopes).encoded
+    def saas_token(scopes, extra_claims)
+      Gitlab::CloudConnector::SelfIssuedToken.new(nil, scopes: scopes, extra_claims: extra_claims).encoded
     end
 
     def access_record
