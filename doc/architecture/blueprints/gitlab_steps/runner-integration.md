@@ -52,10 +52,11 @@ message Masking {
 
 message RunRequest {
     string id = 1;
-    map<string,string> env = 2;
-    Masking masking = 3;
-    Job job = 4;
-    string steps = 5;
+    string work_dir = 2;
+    map<string,string> env = 3;
+    Masking masking = 4;
+    Job job = 5;
+    string steps = 6;
 }
 
 message RunResponse {
@@ -172,11 +173,12 @@ be injected into the environment when each step is executed.
 
 The optional `Job` parameter will include select parameters from the
 corresponding CI job. `Job` will include the corresponding CI job's build
-directory; all steps in a request should be invoked in that directory to
-preserve existing job script behavior. The `Run` request will also include
-the CI job's environment variables (i.e. the `variables` defined at the
-job and global levels in the CI configuration). When a `Run` request is
-made by Runner, variables must be included in `Job.Variables`, and
+directory; `Job.BuildDir` should be copied to `RunRequest.WorkDir`, and
+all steps in a request should be invoked in that directory to preserve
+existing job script behavior. The `RunRequest` will also include the CI
+job's environment variables (i.e. the `variables` defined at the job and
+global levels in the CI configuration). When a `RunRequest` is made by
+Runner, variables must be included in `Job.Variables`, and
 `RunRequest.Env` should be left empty. When the run request is processed,
 file-type variables will be written to file, variables will be expanded,
 copied into `RunRequest.Env`, and the `Job` field will be discarded from
