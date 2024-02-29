@@ -51,6 +51,7 @@ export const getCodeSuggestionsTabMetadata = ({ includeEl = false } = {}) => {
 
   const codeSuggestionsTabMetadata = {
     title: s__('UsageQuota|GitLab Duo Pro'),
+    hash: '#code-suggestions-usage-tab',
     component: {
       name: 'CodeSuggestionsUsageTab',
       apolloProvider,

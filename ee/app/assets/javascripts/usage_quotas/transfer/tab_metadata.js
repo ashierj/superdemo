@@ -38,6 +38,7 @@ export const getTransferTabMetadata = ({ viewType = null, includeEl = false } = 
 
   const transferTabMetadata = {
     title: __('Transfer'),
+    hash: '#transfer-quota-tab',
     component: {
       name: 'TransferTab',
       apolloProvider,

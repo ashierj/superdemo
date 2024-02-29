@@ -53790,6 +53790,9 @@ msgstr ""
 msgid "UsageQuota|Learn more about usage quotas."
 msgstr ""
 
+msgid "UsageQuota|Loading Usage Quotas tabs"
+msgstr ""
+
 msgid "UsageQuota|Local proxy used for frequently-accessed upstream Docker images."
 msgstr ""
 
@@ -53935,9 +53938,6 @@ msgid "UsageQuota|Usage by month"
 msgstr ""
 
 msgid "UsageQuota|Usage by project"
-msgstr ""
-
-msgid "UsageQuota|Usage of group resources across the projects in the %{namespaceName} group"
 msgstr ""
 
 msgid "UsageQuota|Usage of group resources across the projects in the %{strong_start}%{group_name}%{strong_end} group"
