@@ -10,6 +10,7 @@ module EE
 
     EE_INTEGRATION_NAMES = %w[
       google_cloud_platform_workload_identity_federation
+      git_guardian
     ].freeze
 
     EE_PROJECT_SPECIFIC_INTEGRATION_NAMES = %w[
@@ -33,13 +34,14 @@ module EE
           names.delete('google_cloud_platform_workload_identity_federation')
         end
 
+        names.delete('git_guardian') unless ::Feature.enabled?(:git_guardian_integration)
+
         names
       end
 
       override :project_specific_integration_names
       def project_specific_integration_names
         names = super + EE_PROJECT_SPECIFIC_INTEGRATION_NAMES
-        names.append('git_guardian') if ::Feature.enabled?(:git_guardian_integration)
 
         unless ::Gitlab::Saas.feature_available?(:google_cloud_support)
           names.delete('google_cloud_platform_artifact_registry')
