@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Deployments::Approval do
+RSpec.describe Deployments::Approval, feature_category: :continuous_delivery do
   describe 'associations' do
     it { is_expected.to belong_to(:user) }
     it { is_expected.to belong_to(:deployment) }
@@ -13,7 +13,7 @@ RSpec.describe Deployments::Approval do
     subject { create(:deployment_approval) }
 
     it { is_expected.to validate_presence_of(:user) }
-    it { is_expected.to validate_uniqueness_of(:user).scoped_to(:deployment_id) }
+    it { is_expected.to validate_uniqueness_of(:user).scoped_to([:deployment_id, :approval_rule_id]) }
     it { is_expected.to validate_presence_of(:deployment) }
     it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_length_of(:comment).is_at_most(255) }

@@ -12,7 +12,9 @@ module Deployments
       foreign_key: :approval_rule_id,
       inverse_of: :deployment_approvals
 
-    validates :user, presence: true, uniqueness: { scope: :deployment_id }
+    validates :user,
+      presence: true,
+      uniqueness: { scope: [:deployment_id, :approval_rule_id] }
     validates :deployment, presence: true
     validates :status, presence: true
     validates :comment, length: { maximum: 255 }
