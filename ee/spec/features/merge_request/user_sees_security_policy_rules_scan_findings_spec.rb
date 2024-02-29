@@ -30,13 +30,14 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
   let_it_be(:approver_roles) { ['maintainer'] }
   let!(:protected_branch) { create(:protected_branch, project: project, name: merge_request.target_branch) }
   let!(:pipeline) { nil }
+  let(:vuln_states) { [] }
   let(:policy_rule) do
     {
       type: 'scan_finding',
       scanners: scanners,
       vulnerabilities_allowed: 0,
       severity_levels: severity_levels,
-      vulnerability_states: [],
+      vulnerability_states: vuln_states,
       branches: %w[master]
     }
   end
@@ -53,9 +54,11 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
     end
 
     let(:severity_levels) { [] }
+    let(:branch_ref) { merge_request.source_branch }
+    let(:sha) { merge_request.diff_head_sha }
     let!(:pipeline) do
       create(:ee_ci_pipeline, :success, :with_sast_report, merge_requests_as_head_pipeline: [merge_request],
-        project: project, ref: merge_request.source_branch, sha: merge_request.diff_head_sha).tap do |p|
+        project: project, ref: branch_ref, sha: sha).tap do |p|
         pipeline_scan = create(:security_scan, :succeeded, project: project, pipeline: p, scan_type: 'sast')
         create(:security_finding, severity: 'high', scan: pipeline_scan)
       end
@@ -135,12 +138,28 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
           scanners: scanners,
           vulnerabilities_allowed: 0,
           severity_levels: severity_levels,
-          vulnerability_states: [],
+          vulnerability_states: vuln_states,
           branch_type: 'protected'
         }
       end
 
       before do
+        create_policy_setup
+      end
+
+      it 'blocks the MR' do
+        visit(merge_request_path)
+        wait_for_requests
+        expect(page).to have_content 'Merge blocked'
+      end
+    end
+
+    context 'when policy is defined for pre-existing vulnerabilities' do
+      let(:scanners) { %w[sast] }
+      let(:vuln_states) { %w[detected] }
+
+      before do
+        create(:vulnerabilities_finding, :detected, project: project)
         create_policy_setup
       end
 
