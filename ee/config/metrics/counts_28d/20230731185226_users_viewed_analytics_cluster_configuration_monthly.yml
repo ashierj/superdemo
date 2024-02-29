@@ -16,9 +16,6 @@ distribution:
   - ee
 tier:
   - ultimate
-options:
-  events:
-    - user_viewed_cluster_configuration
 events:
   - name: user_viewed_cluster_configuration
     unique: user.id
