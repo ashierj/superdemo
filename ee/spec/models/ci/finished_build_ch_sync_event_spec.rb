@@ -93,6 +93,8 @@ RSpec.describe Ci::FinishedBuildChSyncEvent, type: :model, feature_category: :fl
 
       context 'when the partition contains unprocessed records' do
         before do
+          travel_to DateTime.new(2023, 12, 10) # use fixed date to avoid leap day failures
+
           described_class.create!(build_id: 1, build_finished_at: 2.hours.ago, processed: true)
           described_class.create!(build_id: 2, build_finished_at: 10.minutes.ago)
           described_class.create!(build_id: 3, build_finished_at: 1.minute.ago)
