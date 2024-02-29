@@ -8,6 +8,8 @@ module Resolvers
       MAX_PROJECTS_LIMIT = 500
       DEFAULT_PROJECTS_LIMIT = 5
 
+      authorize :read_runner_usage
+
       type [Types::Ci::RunnerUsageByProjectType], null: true
       description <<~MD
         Runner usage in minutes by project. Available only to admins.
@@ -32,9 +34,7 @@ module Resolvers
                      "Defaults to #{DEFAULT_PROJECTS_LIMIT} if unspecified. Maximum of #{MAX_PROJECTS_LIMIT}."
 
       def resolve(from_date: nil, to_date: nil, runner_type: nil, projects_limit: nil)
-        unless current_user&.can?(:read_jobs_statistics)
-          raise_resource_not_available_error!("You don't have permissions to view CI jobs statistics")
-        end
+        authorize! :global
 
         from_date ||= 1.month.ago.beginning_of_month.to_date
         to_date ||= 1.month.ago.end_of_month.to_date
