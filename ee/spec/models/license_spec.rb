@@ -1332,6 +1332,8 @@ RSpec.describe License, feature_category: :sm_provisioning do
       let(:license) { create(:license, starts_at: nil, expires_at: Date.current + 1.month) }
 
       before do
+        travel_to DateTime.new(2023, 12, 10) # use fixed date to avoid leap day failures
+
         create(:historical_data, recorded_at: Date.yesterday.ago(1.year), active_user_count: 15)
         create(:historical_data, recorded_at: Date.current.ago(1.year), active_user_count: 12)
         create(:historical_data, recorded_at: license.expires_at.ago(2.days), active_user_count: 10)
