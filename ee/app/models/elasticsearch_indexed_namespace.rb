@@ -4,13 +4,15 @@ class ElasticsearchIndexedNamespace < ApplicationRecord
   include ElasticsearchIndexedContainer
   include EachBatch
 
+  EXPIRED_SUBSCRIPTION_GRACE_PERIOD = 30.days
+
   self.primary_key = :namespace_id
 
   belongs_to :namespace
 
   validates :namespace_id, presence: true, uniqueness: true
 
-  scope :namespace_in, -> (namespaces) { where(namespace_id: namespaces) }
+  scope :namespace_in, ->(namespaces) { where(namespace_id: namespaces) }
 
   BATCH_OPERATION_SIZE = 1000
 

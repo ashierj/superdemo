@@ -41,6 +41,11 @@ class GitlabSubscription < ApplicationRecord
     with_hosted_plan(Plan::PAID_HOSTED_PLANS)
   end
 
+  scope :with_a_paid_or_trial_hosted_plan, -> do
+    joins(:hosted_plan).where('plans.name' => Plan::PAID_HOSTED_PLANS)
+    .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422013')
+  end
+
   scope :preload_for_refresh_seat, -> { preload([{ namespace: :route }, :hosted_plan]) }
 
   scope :max_seats_used_changed_between, -> (from:, to:) do
@@ -58,20 +63,8 @@ class GitlabSubscription < ApplicationRecord
 
   scope :not_expired, -> (before_date: Date.today) { where('end_date IS NULL OR end_date >= ?', before_date) }
 
-  DAYS_AFTER_EXPIRATION_BEFORE_REMOVING_FROM_INDEX = 30
-
-  # We set a threshold for expiration before removing them from
-  # the index
-  def self.yield_long_expired_indexed_namespaces(&blk)
-    # Since the gitlab_subscriptions table will keep growing in size and the
-    # number of expired subscriptions will keep growing it is best to use
-    # `each_batch` to ensure we don't end up timing out the query. This may
-    # mean that the number of queries keeps growing but each one should be
-    # incredibly fast.
-    subscriptions = GitlabSubscription.where('end_date < ?', Date.today - DAYS_AFTER_EXPIRATION_BEFORE_REMOVING_FROM_INDEX)
-    subscriptions.each_batch(column: :namespace_id) do |relation|
-      ElasticsearchIndexedNamespace.where(namespace_id: relation.select(:namespace_id)).each(&blk)
-    end
+  scope :namespace_id_in, ->(namespace_ids) do
+    where(namespace_id: namespace_ids)
   end
 
   def legacy?
@@ -156,7 +149,7 @@ class GitlabSubscription < ApplicationRecord
   end
 
   def automatically_index_in_elasticsearch?
-    return false unless ::Gitlab.com?
+    return false unless ::Gitlab::Saas.feature_available?(:advanced_search)
     return false if expired?
 
     # We only index paid groups or trials on dot com for now.

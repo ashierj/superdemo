@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ElasticsearchIndexedNamespace, :saas do
+RSpec.describe ElasticsearchIndexedNamespace, :saas, feature_category: :global_search do
   before do
     stub_ee_application_setting(elasticsearch_indexing: true)
   end

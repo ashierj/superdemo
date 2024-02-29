@@ -23,6 +23,7 @@ module EE
           duo_chat_on_saas
           exact_code_search
           overage_members_modal
+          advanced_search
         ].freeze
 
       CONFIG_FILE_ROOT = 'ee/config/saas_features'
