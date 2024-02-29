@@ -9,7 +9,7 @@ namespace :gitlab do
           number_of_rows = 14010
           filename = "vertex_gitlab_docs.json"
           sha = 'da2fdc03eb702357c6104ab4a95ed998ae8febda'
-          url = "https://gitlab.com/gitlab-org/enablement-section/tanuki-bot/-/raw/#{sha}/pgvector/vertex/#{filename}?inline=false"
+          url = "https://gitlab.com/gitlab-org/core-platform-section/tanuki-bot/-/raw/#{sha}/pgvector/vertex/#{filename}?inline=false"
 
           Dir.mktmpdir do |dir|
             embeddings_model = ::Embedding::Vertex::GitlabDocumentation
