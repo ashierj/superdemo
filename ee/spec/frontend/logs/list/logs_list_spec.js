@@ -1,4 +1,5 @@
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlLoadingIcon, GlInfiniteScroll, GlSprintf } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import LogsTable from 'ee/logs/list/logs_table.vue';
 import LogsDrawer from 'ee/logs/list/logs_drawer.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -15,6 +16,14 @@ describe('LogsList', () => {
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findLogsTable = () => wrapper.findComponent(LogsTable);
+  const findInfiniteScrolling = () => wrapper.findComponent(GlInfiniteScroll);
+  const findInfiniteScrollingLegend = () =>
+    findInfiniteScrolling().find('[data-testid="logs-infinite-scrolling-legend"]');
+
+  const bottomReached = async () => {
+    findInfiniteScrolling().vm.$emit('bottomReached');
+    await waitForPromises();
+  };
 
   const findDrawer = () => wrapper.findComponent(LogsDrawer);
   const isDrawerOpen = () => findDrawer().props('open');
@@ -25,13 +34,16 @@ describe('LogsList', () => {
       propsData: {
         observabilityClient: observabilityClientMock,
       },
+      stubs: {
+        GlSprintf,
+      },
     });
     await waitForPromises();
   };
 
   beforeEach(() => {
     observabilityClientMock = {
-      fetchLogs: jest.fn().mockResolvedValue(mockLogs),
+      fetchLogs: jest.fn().mockResolvedValue({ logs: mockLogs, nextPageToken: 'page-2' }),
     };
   });
 
@@ -126,6 +138,96 @@ describe('LogsList', () => {
 
       expect(isDrawerOpen()).toBe(false);
       expect(getDrawerSelectedLog()).toBe(null);
+    });
+  });
+
+  describe('infinite scrolling / pagination', () => {
+    describe('when data is returned', () => {
+      beforeEach(async () => {
+        await mountComponent();
+      });
+
+      it('renders the list with infinite scrolling', () => {
+        const infiniteScrolling = findInfiniteScrolling();
+        expect(infiniteScrolling.exists()).toBe(true);
+        expect(infiniteScrolling.props('fetchedItems')).toBe(mockLogs.length);
+        expect(infiniteScrolling.getComponent(LogsTable).exists()).toBe(true);
+      });
+
+      it('fetches the next page when bottom reached', async () => {
+        const nextPageResponse = {
+          logs: [{ fingerprint: 'log-1' }],
+          next_page_token: 'page-3',
+        };
+        observabilityClientMock.fetchLogs.mockReturnValueOnce(nextPageResponse);
+
+        await bottomReached();
+
+        expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
+          pageSize: 100,
+          pageToken: 'page-2',
+        });
+
+        expect(findInfiniteScrolling().props('fetchedItems')).toBe(
+          mockLogs.length + nextPageResponse.logs.length,
+        );
+        expect(findLogsTable().props('logs')).toEqual([...mockLogs, ...nextPageResponse.logs]);
+      });
+
+      it('after reaching the last page, on bottom reached, it keeps fetching logs from the last available page', async () => {
+        // Initial call from mounting
+        expect(observabilityClientMock.fetchLogs).toHaveBeenCalledTimes(1);
+        expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
+          pageSize: 100,
+          pageToken: null,
+        });
+
+        // hit last page (no logs, no page token)
+        observabilityClientMock.fetchLogs.mockReturnValue({
+          logs: [],
+        });
+        await bottomReached();
+
+        expect(observabilityClientMock.fetchLogs).toHaveBeenCalledTimes(2);
+        expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
+          pageSize: 100,
+          pageToken: 'page-2',
+        });
+
+        await bottomReached();
+
+        expect(observabilityClientMock.fetchLogs).toHaveBeenCalledTimes(3);
+        expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
+          pageSize: 100,
+          pageToken: 'page-2',
+        });
+      });
+
+      it('shows the number of fetched items as the legend', () => {
+        expect(findInfiniteScrollingLegend().text()).toBe(`Showing ${mockLogs.length} logs`);
+      });
+
+      it('shows the spinner when fetching the next page', async () => {
+        bottomReached();
+        await nextTick();
+
+        expect(findInfiniteScrolling().findComponent(GlLoadingIcon).exists()).toBe(true);
+        expect(findInfiniteScrollingLegend().exists()).toBe(false);
+      });
+    });
+
+    describe('when no data is returned', () => {
+      beforeEach(async () => {
+        observabilityClientMock.fetchLogs.mockReturnValue({
+          logs: [],
+        });
+        await mountComponent();
+      });
+
+      // an empty legend is needed to override the default legend
+      it('shows an empty legend when there are 0 items', () => {
+        expect(findInfiniteScrollingLegend().text()).toBe('');
+      });
     });
   });
 });
