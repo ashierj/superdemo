@@ -74,7 +74,7 @@ export default {
       }, 0);
     },
     formattedCombinedEgressNodes() {
-      return numberToHumanSizeSplit(this.combinedEgressNodes);
+      return numberToHumanSizeSplit({ size: this.combinedEgressNodes });
     },
     combinedEgressNodesValue() {
       const [value] = this.formattedCombinedEgressNodes;
