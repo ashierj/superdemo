@@ -9,6 +9,7 @@ import {
 } from '@gitlab/ui';
 import { __, n__, s__ } from '~/locale';
 import { captureException } from '~/sentry/sentry_browser_wrapper';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { isFinished } from '~/deployments/utils';
 import MultipleApprovalRulesTable from 'ee/environments/components/multiple_approval_rules_table.vue';
 import approveDeploymentMutation from '../graphql/mutations/approve_deployment.mutation.graphql';
@@ -56,6 +57,15 @@ export default {
     remainingCharacterCount() {
       return MAX_CHARACTER_COUNT - this.comment.length;
     },
+    hasApprovedDeployment() {
+      return this.approvalSummary.rules
+        .flatMap((rule) => {
+          return rule.approvals;
+        })
+        .some((approval) => {
+          return getIdFromGraphQLId(approval.user.id) === gon.current_user_id;
+        });
+    },
     commentCharacterCountClasses() {
       return {
         'gl-text-orange-500':
@@ -90,6 +100,7 @@ export default {
       return (
         this.canApproveDeployment &&
         this.approvalSummary.status === 'PENDING_APPROVAL' &&
+        !this.hasApprovedDeployment &&
         !this.isFinished(this.deployment)
       );
     },
@@ -128,6 +139,8 @@ export default {
           if (errors.length) {
             [this.errorMessage] = errors;
           }
+          this.$emit('change');
+          this.comment = '';
         })
         .catch((err) => {
           this.errorMessage = this.$options.i18n.genericError;
