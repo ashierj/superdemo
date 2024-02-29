@@ -119,6 +119,25 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
         expect(described_class.not_expired).to contain_exactly(ultimate_subscription, free_subscription)
       end
     end
+
+    describe '.with_a_paid_or_trial_hosted_plan' do
+      let_it_be(:ultimate_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan) }
+      let_it_be(:premium_subscription) { create(:gitlab_subscription, hosted_plan: premium_plan) }
+      let_it_be(:gold_subscription) { create(:gitlab_subscription, hosted_plan: gold_plan, trial: nil) }
+      let_it_be(:trial_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan, trial: true) }
+      let_it_be(:free_subscription) { create(:gitlab_subscription, :free) }
+
+      it 'returns relevant subscriptions' do
+        matching_subscriptions = [
+          ultimate_subscription,
+          premium_subscription,
+          gold_subscription,
+          trial_subscription
+        ]
+
+        expect(described_class.with_a_paid_or_trial_hosted_plan).to match_array(matching_subscriptions)
+      end
+    end
   end
 
   describe '#calculate_seats_in_use' do
@@ -911,36 +930,6 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
           'gitlab_subscription_created_at' => db_created_at
         )
       end
-    end
-  end
-
-  describe '.yield_long_expired_indexed_namespaces' do
-    let_it_be(:not_expired_subscription1) { create(:gitlab_subscription, :bronze, end_date: Date.today + 2) }
-    let_it_be(:not_expired_subscription2) { create(:gitlab_subscription, :bronze, end_date: Date.today + 100) }
-    let_it_be(:recently_expired_subscription) { create(:gitlab_subscription, :bronze, end_date: Date.today - 4) }
-    let_it_be(:expired_subscription1) { create(:gitlab_subscription, :bronze, end_date: Date.today - 31) }
-    let_it_be(:expired_subscription2) { create(:gitlab_subscription, :bronze, end_date: Date.today - 40) }
-
-    before do
-      allow(::Gitlab).to receive(:com?).and_return(true)
-      ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: not_expired_subscription1.namespace_id)
-      ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: not_expired_subscription2.namespace_id)
-      ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: recently_expired_subscription.namespace_id)
-      ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: expired_subscription1.namespace_id)
-      ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: expired_subscription2.namespace_id)
-    end
-
-    it 'yields ElasticsearchIndexedNamespace that belong to subscriptions that expired over a week ago' do
-      results = []
-
-      described_class.yield_long_expired_indexed_namespaces do |result|
-        results << result
-      end
-
-      expect(results).to contain_exactly(
-        expired_subscription1.namespace.elasticsearch_indexed_namespace,
-        expired_subscription2.namespace.elasticsearch_indexed_namespace
-      )
     end
   end
 

@@ -3,35 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker, :saas, feature_category: :global_search do
-  subject { described_class.new }
-
-  let(:not_expired_subscription1) { create(:gitlab_subscription, :bronze, end_date: Date.today + 2) }
-  let(:not_expired_subscription2) { create(:gitlab_subscription, :bronze, end_date: Date.today + 100) }
-  let(:recently_expired_subscription) { create(:gitlab_subscription, :bronze, end_date: Date.today - 4) }
-  let(:expired_subscription1) { create(:gitlab_subscription, :bronze, end_date: Date.today - 31) }
-  let(:expired_subscription2) { create(:gitlab_subscription, :bronze, end_date: Date.today - 35) }
-
-  before do
-    allow(::Gitlab).to receive(:com?).and_return(true)
-    ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: not_expired_subscription1.namespace_id)
-    ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: not_expired_subscription2.namespace_id)
-    ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: recently_expired_subscription.namespace_id)
-    ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: expired_subscription1.namespace_id)
-    ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: expired_subscription2.namespace_id)
-  end
+  subject(:worker) { described_class.new }
 
   it_behaves_like 'an idempotent worker' do
-    it 'finds the subscriptions that expired over a week ago that are in the index and deletes them' do
-      expect(ElasticNamespaceIndexerWorker).to receive(:perform_async).with(expired_subscription1.namespace_id, :delete)
-      expect(ElasticNamespaceIndexerWorker).to receive(:perform_async).with(expired_subscription2.namespace_id, :delete)
+    it 'calls ::Search::Elastic::DestroyExpiredSubscriptionService service' do
+      expect_next_instance_of(::Search::Elastic::DestroyExpiredSubscriptionService) do |service|
+        expect(service).to receive(:execute).and_return(5)
+      end
+      expect(worker).to receive(:log_extra_metadata_on_done).with(:namespaces_removed_count, 5)
 
-      subject
-
-      expect(ElasticsearchIndexedNamespace.all.pluck(:namespace_id)).to contain_exactly(
-        not_expired_subscription1.namespace_id,
-        not_expired_subscription2.namespace_id,
-        recently_expired_subscription.namespace_id
-      )
+      worker.perform
     end
   end
 
@@ -41,18 +22,9 @@ RSpec.describe ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker, :s
     end
 
     it 'does nothing' do
-      expect { subject.perform }.not_to change { ElasticsearchIndexedNamespace.count }
-    end
-  end
+      expect(::Search::Elastic::DestroyExpiredSubscriptionService).not_to receive(:new)
 
-  context 'when the exclusive lease is already locked' do
-    before do
-      # Don't yield
-      expect(subject).to receive(:in_lock).with(described_class.name.underscore, ttl: 1.hour, retries: 0)
-    end
-
-    it 'does nothing' do
-      expect { subject.perform }.not_to change { ElasticsearchIndexedNamespace.count }
+      expect(worker.perform).to eq(false)
     end
   end
 end

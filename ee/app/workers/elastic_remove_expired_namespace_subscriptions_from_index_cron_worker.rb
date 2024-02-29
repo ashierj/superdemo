@@ -8,20 +8,16 @@ class ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker
   data_consistency :always
 
   include Gitlab::ExclusiveLeaseHelpers
-  include CronjobQueue
+  include CronjobQueue # rubocop:disable Scalability/CronWorkerContext -- This is a cron job
 
   feature_category :global_search
   idempotent!
 
   def perform
-    return unless ::Gitlab.com?
+    return false unless ::Gitlab::Saas.feature_available?(:advanced_search)
 
-    in_lock(self.class.name.underscore, ttl: 1.hour, retries: 0) do
-      GitlabSubscription.yield_long_expired_indexed_namespaces do |indexed_namespace|
-        with_context(namespace: indexed_namespace.namespace, caller_id: self.class.name) do
-          indexed_namespace.destroy!
-        end
-      end
-    end
+    namespaces_removed = ::Search::Elastic::DestroyExpiredSubscriptionService.new.execute
+
+    log_extra_metadata_on_done(:namespaces_removed_count, namespaces_removed)
   end
 end
