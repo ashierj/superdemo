@@ -33,6 +33,17 @@ module EE
             end
           end
 
+          override :resource_paths
+          def resource_paths
+            paths = super
+            return paths unless group.present?
+
+            paths.merge({
+              milestones_path: url_helpers.group_milestones_path(group, format: :json),
+              labels_path: url_helpers.group_labels_path(group, format: :json)
+            })
+          end
+
           private
 
           def render_value_stream_dashboard_link?
@@ -64,17 +75,6 @@ module EE
               full_path: "groups/#{group.full_path}",
               type: namespace.type
             }
-          end
-
-          override :resource_paths
-          def resource_paths
-            paths = super
-            return paths unless group.present?
-
-            paths.merge({
-              milestones_path: url_helpers.group_milestones_path(group, format: :json),
-              labels_path: url_helpers.group_labels_path(group, format: :json)
-            })
           end
 
           override :use_aggregated_backend?
