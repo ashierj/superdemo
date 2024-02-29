@@ -23,10 +23,12 @@ module IdentityVerification
 
     def assume_low_risk!(reason:)
       ::UserCustomAttribute.upsert_custom_attribute(user_id: user.id, key: ASSUMED_LOW_RISK_ATTR_KEY, value: reason)
+      log_assumed_risk(level: 'low', reason: reason)
     end
 
     def assume_high_risk!(reason:)
       ::UserCustomAttribute.upsert_custom_attribute(user_id: user.id, key: ASSUMED_HIGH_RISK_ATTR_KEY, value: reason)
+      log_assumed_risk(level: 'high', reason: reason)
     end
 
     def assumed_high_risk?
@@ -56,6 +58,16 @@ module IdentityVerification
       return unless risk_band_attr.present?
 
       risk_band_attr.value.downcase
+    end
+
+    def log_assumed_risk(level:, reason:)
+      Gitlab::AppLogger.info(
+        message: self.class.to_s,
+        event: "User assumed #{level} risk.",
+        reason: reason,
+        user_id: user.id,
+        username: user.username
+      )
     end
   end
 end

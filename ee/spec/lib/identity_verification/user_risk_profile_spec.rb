@@ -12,6 +12,13 @@ RSpec.describe IdentityVerification::UserRiskProfile, feature_category: :instanc
     subject(:call_method) { risk_profile.assume_low_risk!(reason: 'Because') }
 
     it 'creates a custom attribute with correct attribute values for the user', :aggregate_failures do
+      expect(Gitlab::AppLogger).to receive(:info).with(
+        message: 'IdentityVerification::UserRiskProfile',
+        event: 'User assumed low risk.',
+        reason: 'Because',
+        user_id: user.id,
+        username: user.username
+      )
       expect { call_method }.to change { user.custom_attributes.count }.by(1)
 
       record = user.custom_attributes.last
@@ -24,6 +31,13 @@ RSpec.describe IdentityVerification::UserRiskProfile, feature_category: :instanc
     subject(:call_method) { risk_profile.assume_high_risk!(reason: 'Because') }
 
     it 'creates a custom attribute with correct attribute values for the user', :aggregate_failures do
+      expect(Gitlab::AppLogger).to receive(:info).with(
+        message: 'IdentityVerification::UserRiskProfile',
+        event: 'User assumed high risk.',
+        reason: 'Because',
+        user_id: user.id,
+        username: user.username
+      )
       expect { call_method }.to change { user.custom_attributes.count }.by(1)
 
       record = user.custom_attributes.last
