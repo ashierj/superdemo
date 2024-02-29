@@ -8,7 +8,7 @@ module Security
 
       def initialize(merge_request)
         @merge_request = merge_request
-        @violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService.new(merge_request)
+        @violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService.new(merge_request, :scan_finding)
       end
 
       def execute
@@ -52,12 +52,14 @@ module Security
       end
 
       def preexisting_findings_count_violated?(approval_rule)
-        vulnerabilities_count = vulnerabilities_count(approval_rule)
+        vulnerabilities = vulnerabilities(approval_rule)
 
-        vulnerabilities_count > approval_rule.vulnerabilities_allowed
+        violated = vulnerabilities.count > approval_rule.vulnerabilities_allowed
+        save_violations(approval_rule, vulnerabilities) if violated
+        violated
       end
 
-      def vulnerabilities_count(approval_rule)
+      def vulnerabilities(approval_rule)
         finder_params = {
           limit: approval_rule.vulnerabilities_allowed + 1,
           state: states_without_newly_detected(approval_rule.vulnerability_states_for_branch),
@@ -67,7 +69,7 @@ module Security
           false_positive: approval_rule.vulnerability_attribute_false_positive,
           vulnerability_age: approval_rule.scan_result_policy_read&.vulnerability_age
         }
-        ::Security::ScanResultPolicies::VulnerabilitiesFinder.new(project, finder_params).execute.count
+        ::Security::ScanResultPolicies::VulnerabilitiesFinder.new(project, finder_params).execute
       end
 
       def log_violated_rules(rules)
@@ -92,6 +94,18 @@ module Security
         Gitlab::AppJsonLogger.info(
           message: 'Updating MR approval rule with pre_existing states',
           **default_attributes.merge(attributes)
+        )
+      end
+
+      def save_violations(approval_rule, vulnerabilities)
+        return if ::Feature.disabled?(:save_policy_violation_data, project)
+
+        violated_uuids = vulnerabilities.with_findings
+                                        .limit(Security::ScanResultPolicyViolation::MAX_VIOLATIONS)
+                                        .map(&:finding_uuid)
+        violations.add_violation(
+          approval_rule.scan_result_policy_id,
+          { uuids: { previously_existing: violated_uuids } }
         )
       end
     end

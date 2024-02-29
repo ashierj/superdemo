@@ -89,11 +89,12 @@ RSpec.describe Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesS
       let!(:approver_rule) do
         create(:report_approver_rule, :scan_finding, merge_request: merge_request,
           approval_project_rule: approval_project_rule, approvals_required: approvals_required,
-          vulnerability_states: ['detected'])
+          vulnerability_states: ['detected'],
+          scan_result_policy_read: scan_result_policy_read)
       end
 
       context 'when vulnerabilities count matches the pre-existing states' do
-        before do
+        let_it_be(:vulnerabilities) do
           create_list(:vulnerability, 5, :with_finding,
             severity: :low,
             report_type: :sast,
@@ -102,9 +103,10 @@ RSpec.describe Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesS
           )
         end
 
+        let(:uuids) { vulnerabilities.map(&:finding_uuid) }
+
         it_behaves_like 'does not update approval rules'
-        it_behaves_like 'triggers policy bot comment', :scan_finding, false
-        it_behaves_like 'merge request without scan result violations', previous_violation: false
+        it_behaves_like 'triggers policy bot comment', :scan_finding, true
 
         it 'logs update' do
           expect(::Gitlab::AppJsonLogger)
@@ -122,12 +124,32 @@ RSpec.describe Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesS
 
           execute
         end
+
+        it 'persists violation details' do
+          execute
+
+          expect(merge_request.scan_result_policy_violations.last.violation_data)
+            .to match({ 'violations' => { 'scan_finding' => { 'uuids' => { 'previously_existing' => uuids } } } })
+        end
+
+        context 'when feature flag "save_policy_violation_data" is disabled' do
+          before do
+            stub_feature_flags(save_policy_violation_data: false)
+          end
+
+          it 'does not persist violation details' do
+            execute
+
+            expect(merge_request.scan_result_policy_violations.last.violation_data).to be_nil
+          end
+        end
       end
 
       context 'when vulnerabilities count does not match the pre-existing states' do
         it_behaves_like 'sets approvals_required to 0'
         it_behaves_like 'triggers policy bot comment', :scan_finding, false
         it_behaves_like 'does not log violations'
+        it_behaves_like 'merge request without scan result violations', previous_violation: false
 
         context 'when there are other scan_finding violations' do
           let_it_be(:scan_result_policy_read_other_scan_finding) { create(:scan_result_policy_read, project: project) }

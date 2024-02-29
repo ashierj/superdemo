@@ -308,7 +308,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
               if result
                 expect { execute }.to change { scan_result_policy_read.violations.count }.by(1)
                 expect(scan_result_policy_read.violations.last.violation_data)
-                  .to eq({ 'violations' => { 'licenses' => [violated_license] } })
+                  .to eq({ 'violations' => { 'license_scanning' => [violated_license] } })
               else
                 expect { execute }.not_to change { scan_result_policy_read.violations.count }
               end
