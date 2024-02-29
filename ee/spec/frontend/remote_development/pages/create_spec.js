@@ -33,6 +33,7 @@ jest.mock('~/lib/logger');
 jest.mock('~/alert');
 
 describe('remote_development/pages/create.vue', () => {
+  const DEFAULT_MAX_HOURS_BEFORE_TERMINATION = 42;
   const selectedProjectFixture = {
     fullPath: 'gitlab-org/gitlab',
     nameWithNamespace: 'GitLab Org / GitLab',
@@ -96,6 +97,9 @@ describe('remote_development/pages/create.vue', () => {
     // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     wrapper = shallowMountExtended(WorkspaceCreate, {
       apolloProvider: mockApollo,
+      provide: {
+        defaultMaxHoursBeforeTermination: DEFAULT_MAX_HOURS_BEFORE_TERMINATION,
+      },
       stubs: {
         GlFormSelect: GlFormSelectStub,
         GlSprintf,

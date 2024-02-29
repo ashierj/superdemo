@@ -31,7 +31,8 @@ module RemoteDevelopment
           #       shape and contents of the params payload.
           original_params: params,
           agent: agent,
-          logger: logger
+          logger: logger,
+          settings: ::RemoteDevelopment::Settings.get_all_settings
         )
 
         # Type-check payload using rightward assignment

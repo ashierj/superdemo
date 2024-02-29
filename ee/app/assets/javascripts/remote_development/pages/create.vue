@@ -25,7 +25,6 @@ import {
   DEFAULT_EDITOR,
   ROUTES,
   PROJECT_VISIBILITY,
-  DEFAULT_MAX_HOURS_BEFORE_TERMINATION,
 } from '../constants';
 
 export const i18n = {
@@ -73,6 +72,7 @@ export default {
     SearchProjectsListbox,
     GetProjectDetailsQuery,
   },
+  inject: ['defaultMaxHoursBeforeTermination'],
   data() {
     return {
       selectedProject: null,
@@ -82,7 +82,7 @@ export default {
       hasDevFile: null,
       projectId: null,
       rootRef: null,
-      maxHoursBeforeTermination: DEFAULT_MAX_HOURS_BEFORE_TERMINATION,
+      maxHoursBeforeTermination: this.defaultMaxHoursBeforeTermination,
       projectDetailsLoaded: false,
       error: '',
     };

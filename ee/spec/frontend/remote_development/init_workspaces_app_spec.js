@@ -1,9 +1,11 @@
+import { escape } from 'lodash';
+import { GlEmptyState } from '@gitlab/ui';
 import { createWrapper } from '@vue/test-utils';
 import { injectVueAppBreadcrumbs } from '~/lib/utils/breadcrumbs';
-import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { initWorkspacesApp } from 'ee/remote_development/init_workspaces_app';
 import WorkspaceList from 'ee/remote_development/pages/list.vue';
 import WorkspacesBreadcrumbs from 'ee/remote_development/components/common/workspaces_breadcrumbs.vue';
+import { resetHTMLFixture, setHTMLFixture } from 'helpers/fixtures';
 
 jest.mock('~/lib/logger');
 jest.mock('~/lib/utils/breadcrumbs');
@@ -12,7 +14,12 @@ describe('ee/remote_development/init_workspaces_app', () => {
   let wrapper;
 
   beforeEach(() => {
-    setHTMLFixture(`<div id='js-workspaces'></div>`);
+    const options = JSON.stringify({
+      workspaces_list_path: '/aaa',
+      empty_state_svg_path: '/bbb',
+    });
+
+    setHTMLFixture(`<div id="js-workspaces" data-options="${escape(options)}"></div>`);
   });
 
   afterEach(() => {
@@ -24,8 +31,18 @@ describe('ee/remote_development/init_workspaces_app', () => {
       wrapper = createWrapper(initWorkspacesApp());
     });
 
-    it('renders list state', () => {
-      expect(wrapper.findComponent(WorkspaceList).exists()).toBe(true);
+    it('creates router', () => {
+      expect(wrapper.vm.$router.options.base).toBe('/aaa');
+    });
+
+    it('renders empty state', () => {
+      expect(wrapper.findComponent(GlEmptyState).props('svgPath')).toBe('/bbb');
+    });
+
+    it('renders list component', () => {
+      const workspaceListComponent = wrapper.findComponent(WorkspaceList);
+
+      expect(workspaceListComponent.exists()).toBe(true);
     });
 
     it('inits breadcrumbs', () => {

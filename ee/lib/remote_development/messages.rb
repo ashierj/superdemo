@@ -33,6 +33,10 @@ module RemoteDevelopment
     # Workspace reconcile errors
     WorkspaceReconcileParamsValidationFailed = Class.new(Message)
 
+    # Settings errors
+    SettingsEnvironmentVariableReadFailed = Class.new(Message)
+    SettingsCurrentSettingsReadFailed = Class.new(Message)
+
     #---------------------------------------------------------
     # Domain Events - message name should describe the outcome
     #---------------------------------------------------------
@@ -45,6 +49,9 @@ module RemoteDevelopment
     WorkspaceCreateSuccessful = Class.new(Message)
     WorkspaceUpdateSuccessful = Class.new(Message)
     WorkspaceReconcileSuccessful = Class.new(Message)
+
+    # Settings domain events
+    SettingsGetSuccessful = Class.new(Message)
 
     # Workspace DB events
     PersonalAccessTokenModelCreateFailed = Class.new(Message)

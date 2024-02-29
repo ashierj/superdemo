@@ -22,7 +22,11 @@ module RemoteDevelopment
       # @param [Hash] params
       # @return [ServiceResponse]
       def execute(params:)
-        response_hash = Create::Main.main(current_user: current_user, params: params)
+        response_hash = Create::Main.main(
+          current_user: current_user,
+          params: params,
+          settings: ::RemoteDevelopment::Settings.get_all_settings
+        )
 
         # Type-check payload using rightward assignment
         response_hash[:payload] => { workspace: Workspace } if response_hash[:payload]

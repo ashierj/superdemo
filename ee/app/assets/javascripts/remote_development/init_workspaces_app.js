@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { injectVueAppBreadcrumbs } from '~/lib/utils/breadcrumbs';
+import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import WorkspacesBreadcrumbs from './components/common/workspaces_breadcrumbs.vue';
 import App from './pages/app.vue';
 import createRouter from './router/index';
@@ -21,7 +22,10 @@ const initWorkspacesApp = () => {
     return null;
   }
 
-  const { workspacesListPath, emptyStateSvgPath } = el.dataset;
+  const { workspacesListPath, ...options } = convertObjectPropsToCamelCase(
+    JSON.parse(el.dataset.options),
+  );
+  // noinspection JSUnresolvedReference -- Avoids error on options property access. Adding `@returns {Object|Array}` to convertObjectPropsToCamelCase didn't help. TODO: Report and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/
   const router = createRouter({
     base: workspacesListPath,
   });
@@ -31,10 +35,7 @@ const initWorkspacesApp = () => {
     name: 'WorkspacesRoot',
     router,
     apolloProvider: createApolloProvider(),
-    provide: {
-      workspacesListPath,
-      emptyStateSvgPath,
-    },
+    provide: options,
     render: (createElement) => createElement(App),
   });
 };

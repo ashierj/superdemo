@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe RemoteDevelopment::AgentConfig::UpdateService, feature_category: :remote_development do
   let(:agent) { instance_double(Clusters::Agent) }
   let(:config) { instance_double(Hash) }
+  let(:settings) { instance_double(Hash) }
   let(:agent_config) { instance_double(RemoteDevelopment::RemoteDevelopmentAgentConfig) }
   let(:licensed) { true }
 
@@ -13,8 +14,9 @@ RSpec.describe RemoteDevelopment::AgentConfig::UpdateService, feature_category: 
   end
 
   before do
+    allow(RemoteDevelopment::Settings).to receive(:get_all_settings).and_return(settings)
     allow(RemoteDevelopment::AgentConfig::Main)
-      .to receive(:main).with(agent: agent, config: config).and_return(response_hash)
+      .to receive(:main).with(agent: agent, config: config, settings: settings).and_return(response_hash)
   end
 
   context 'when success' do

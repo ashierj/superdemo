@@ -5,10 +5,12 @@ require 'spec_helper'
 RSpec.describe ::RemoteDevelopment::Workspaces::ReconcileService, feature_category: :remote_development do
   let(:agent) { instance_double(Clusters::Agent, id: 1) }
   let(:params) { instance_double(Hash) }
+  let(:settings) { instance_double(Hash) }
   let(:workspace_rails_infos) { [] }
 
   describe '#execute' do
     subject(:service_response) do
+      allow(RemoteDevelopment::Settings).to receive(:get_all_settings).and_return(settings)
       described_class.new.execute(agent: agent, params: params)
     end
 
@@ -17,7 +19,8 @@ RSpec.describe ::RemoteDevelopment::Workspaces::ReconcileService, feature_catego
         .to receive(:main).with(
           agent: agent,
           original_params: params,
-          logger: instance_of(RemoteDevelopment::Logger)
+          logger: instance_of(RemoteDevelopment::Logger),
+          settings: settings
         ).and_return(response_hash)
     end
 

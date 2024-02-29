@@ -32,7 +32,11 @@ module RemoteDevelopment
         #       and still attempt to return an appropriate ServiceResponse object, even though it is ignored,
         #       so that abstracts us somewhat from whatever we decide to do with this error handling at the Service
         #       layer.
-        response_hash = Main.main(agent: agent, config: config)
+        response_hash = Main.main(
+          agent: agent,
+          config: config,
+          settings: ::RemoteDevelopment::Settings.get_all_settings
+        )
 
         # TODO: https://gitlab.com/groups/gitlab-org/-/epics/10461 - Add at least some logging here.
         create_service_response(response_hash)
