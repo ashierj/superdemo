@@ -30193,9 +30193,6 @@ msgstr ""
 msgid "Max authenticated Git LFS requests per period per user"
 msgstr ""
 
-msgid "Max file size is 200 KiB."
-msgstr ""
-
 msgid "Max role"
 msgstr ""
 
@@ -38448,6 +38445,9 @@ msgid "Profiles|Tell us about yourself in fewer than 250 characters."
 msgstr ""
 
 msgid "Profiles|The ability to update your name has been disabled by your administrator."
+msgstr ""
+
+msgid "Profiles|The ideal image size is 192 x 192 pixels."
 msgstr ""
 
 msgid "Profiles|The maximum file size allowed is 200KB."
