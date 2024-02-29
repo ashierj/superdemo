@@ -431,12 +431,12 @@ module EE
       end
 
       def google_cloud_artifact_registry_repository
-        unless project.gcp_artifact_registry_enabled? &&
-            project.google_cloud_platform_artifact_registry_integration&.active
-          return
-        end
+        integrations_available = project.google_cloud_workload_identity_federation_enabled? &&
+          project.gcp_artifact_registry_enabled? &&
+          project.google_cloud_platform_workload_identity_federation_integration&.operating? &&
+          project.google_cloud_platform_artifact_registry_integration&.operating?
 
-        project
+        project if integrations_available
       end
     end
   end

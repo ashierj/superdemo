@@ -48,8 +48,8 @@ module GoogleCloudPlatform
 
         return ERROR_RESPONSES[:access_denied] unless allowed?
 
-        return ERROR_RESPONSES[:no_integration] unless project_integration
-        return ERROR_RESPONSES[:integration_not_active] unless project_integration.active
+        return ERROR_RESPONSES[:no_integration] unless wlif_integration
+        return ERROR_RESPONSES[:integration_not_active] unless wlif_integration.active
 
         return ERROR_RESPONSES[:max_results_out_of_bounds] unless (1..MAX_RESULTS_LIMIT).cover?(max_results)
         return ERROR_RESPONSES[:invalid_order_by] unless valid_order_by?(order_by)
@@ -74,21 +74,16 @@ module GoogleCloudPlatform
 
       def client
         ::GoogleCloudPlatform::Compute::Client.new(
-          project_integration: project_integration,
+          wlif_integration: wlif_integration,
           user: current_user,
-          params: {
-            # NOTE: This can be replaced with `params: params.slice(:google_cloud_project_id).compact` once
-            # GoogleCloudPlatform::BaseClient#google_cloud_project_id is modified to use the
-            # google_cloud_platform_workload_identity_federation_integration
-            google_cloud_project_id: params[:google_cloud_project_id] || workload_identity_federation_project_id
-          }
+          params: params.slice(:google_cloud_project_id).compact
         )
       end
 
-      def project_integration
+      def wlif_integration
         project.google_cloud_platform_workload_identity_federation_integration
       end
-      strong_memoize_attr :project_integration
+      strong_memoize_attr :wlif_integration
 
       def max_results
         params[:max_results]

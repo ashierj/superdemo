@@ -14,9 +14,6 @@ FactoryBot.define do
     project
     type { 'Integrations::GoogleCloudPlatform::ArtifactRegistry' }
     active { true }
-    workload_identity_pool_project_number { '917659427920' }
-    workload_identity_pool_id { 'gitlab-gcp-demo' }
-    workload_identity_pool_provider_id { 'gitlab-gcp-prod-gitlab-org' }
     artifact_registry_project_id { 'dev-gcp-9abafed1' }
     artifact_registry_location { 'us-east1' }
     artifact_registry_repositories { 'demo, my-repo' }

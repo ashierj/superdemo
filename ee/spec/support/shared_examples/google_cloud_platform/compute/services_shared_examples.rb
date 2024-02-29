@@ -31,7 +31,7 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
 
     context 'with no integration' do
       before do
-        project_integration.destroy!
+        wlif_integration.destroy!
       end
 
       it_behaves_like 'returning an error service response',
@@ -40,7 +40,7 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
 
     context 'with disabled integration' do
       before do
-        project_integration.update!(active: false)
+        wlif_integration.update!(active: false)
       end
 
       it_behaves_like 'returning an error service response',
@@ -74,7 +74,7 @@ RSpec.shared_examples 'overriding the google cloud project id' do
 
   it 'returns results by calling the specified project id' do
     expect(::GoogleCloudPlatform::Compute::Client).to receive(:new)
-      .with(project_integration: project_integration, user: user, params: extra_params) do |**args|
+      .with(wlif_integration: wlif_integration, user: user, params: extra_params) do |**args|
         expect(args.dig(:params, :google_cloud_project_id)).to eq(google_cloud_project_id)
 
         client_double

@@ -2,17 +2,18 @@
 
 RSpec.shared_context 'for an artifact registry service' do
   let_it_be_with_reload(:project) { create(:project, :private) }
-  let_it_be_with_refind(:project_integration) do
+  let_it_be_with_refind(:artifact_registry_integration) do
     create(
       :google_cloud_platform_artifact_registry_integration,
       project: project,
       artifact_registry_project_id: 'gcp_project_id',
       artifact_registry_location: 'location',
-      artifact_registry_repositories: 'repository1,repository2', # only repository1 is taken into account
-      workload_identity_pool_project_number: '555',
-      workload_identity_pool_id: 'my_pool',
-      workload_identity_pool_provider_id: 'my_provider'
+      artifact_registry_repositories: 'repository1,repository2' # only repository1 is taken into account
     )
+  end
+
+  let_it_be_with_refind(:wlif_integration) do
+    create(:google_cloud_platform_workload_identity_federation_integration, project: project)
   end
 
   let(:user) { project.owner }
@@ -22,11 +23,7 @@ RSpec.shared_context 'for an artifact registry service' do
 
   before do
     allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
-      .with(
-        project_integration: project_integration,
-        user: user,
-        artifact_registry_location: project_integration.artifact_registry_location,
-        artifact_registry_repository: project_integration.artifact_registry_repository
-      ).and_return(client_double)
+      .with(wlif_integration: wlif_integration, user: user)
+      .and_return(client_double)
   end
 end

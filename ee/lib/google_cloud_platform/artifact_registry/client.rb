@@ -8,16 +8,15 @@ module GoogleCloudPlatform
       include Gitlab::Utils::StrongMemoize
 
       DEFAULT_PAGE_SIZE = 10
+      ARTIFACT_REGISTRY_INTEGRATION_DISABLED = 'The Google Cloud Artifact Registry project integration is disabled'
 
       # Initialize and build a new ArtifactRegistry client.
       # This will use glgo and a workload identity federation instance to exchange
       # a JWT from GitLab for an access token to be used with the Google Cloud API.
       #
-      # +project_integration+ The project integration that contains project id and the identity
-      #                       provider resource name.
+      # +wlif_integration+ The project integration that contains project id and the identity provider resource name.
+      #                    Must be an instance of Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.
       # +user+ The User instance.
-      # +artifact_registry_location+ The Artifact Registry location string. Example: 'us-east1'.
-      # +artifact_registry_repository+ The Artifact Registry repository name as a string. Example: 'repo'.
       #
       # All parameters are required.
       #
@@ -25,15 +24,10 @@ module GoogleCloudPlatform
       #
       # +ArgumentError+ if one or more of the parameters is blank.
       # +RuntimeError+ if this is used outside the Saas instance.
-      def initialize(project_integration:, user:, artifact_registry_location:, artifact_registry_repository:)
-        super(project_integration: project_integration, user: user)
+      def initialize(wlif_integration:, user:)
+        super(wlif_integration: wlif_integration, user: user)
 
-        if artifact_registry_location.blank? || artifact_registry_repository.blank?
-          raise ArgumentError, BLANK_PARAMETERS_ERROR_MESSAGE
-        end
-
-        @artifact_registry_location = artifact_registry_location
-        @artifact_registry_repository = artifact_registry_repository
+        raise ArgumentError, ARTIFACT_REGISTRY_INTEGRATION_DISABLED unless artifact_registry_integration&.activated?
       end
 
       # Get the Artifact Registry repository object and return it.
@@ -121,6 +115,8 @@ module GoogleCloudPlatform
 
       private
 
+      delegate :repository_full_name, to: :artifact_registry_integration, private: true
+
       def client
         ::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Client.new do |config|
           json_key_io = StringIO.new(::Gitlab::Json.dump(credentials))
@@ -133,12 +129,9 @@ module GoogleCloudPlatform
       end
       strong_memoize_attr :client
 
-      def repository_full_name
-        "projects/#{google_cloud_project_id}/" \
-          "locations/#{@artifact_registry_location}/" \
-          "repositories/#{@artifact_registry_repository}"
+      def artifact_registry_integration
+        project.google_cloud_platform_artifact_registry_integration
       end
-      strong_memoize_attr :repository_full_name
     end
   end
 end

@@ -54,22 +54,28 @@ RSpec.shared_examples 'an artifact registry service handling validation errors' 
         message: described_class::ERROR_RESPONSES[:feature_flag_disabled].message
     end
 
-    context 'with no integration' do
-      before do
-        project_integration.destroy!
+    %i[wlif artifact_registry].each do |integration_type|
+      context "with #{integration_type}" do
+        let(:integration) { public_send("#{integration_type}_integration") }
+
+        context 'when not present' do
+          before do
+            integration.destroy!
+          end
+
+          it_behaves_like 'returning an error service response',
+            message: described_class::ERROR_RESPONSES["no_#{integration_type}_integration".to_sym].message
+        end
+
+        context 'when disabled' do
+          before do
+            integration.update!(active: false)
+          end
+
+          it_behaves_like 'returning an error service response',
+            message: described_class::ERROR_RESPONSES["#{integration_type}_integration_disabled".to_sym].message
+        end
       end
-
-      it_behaves_like 'returning an error service response',
-        message: described_class::ERROR_RESPONSES[:no_project_integration].message
-    end
-
-    context 'with disabled integration' do
-      before do
-        project_integration.update!(active: false)
-      end
-
-      it_behaves_like 'returning an error service response',
-        message: described_class::ERROR_RESPONSES[:project_integration_disabled].message
     end
 
     context 'when client raises AuthenticationError' do

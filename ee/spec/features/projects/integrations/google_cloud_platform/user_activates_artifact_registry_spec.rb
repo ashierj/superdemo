@@ -16,12 +16,6 @@ RSpec.describe 'User activates Artifact Registry', feature_category: :package_re
 
     expect(page).not_to have_link('View artifacts')
 
-    fill_in s_('GoogleCloudPlatformService|Workload Identity Pool project number'),
-      with: integration.workload_identity_pool_project_number
-    fill_in s_('GoogleCloudPlatformService|Workload Identity Pool ID'),
-      with: integration.workload_identity_pool_id
-    fill_in s_('GoogleCloudPlatformService|Workload Identity Pool provider ID'),
-      with: integration.workload_identity_pool_provider_id
     fill_in s_('GoogleCloudPlatformService|Google Cloud project ID'),
       with: integration.artifact_registry_project_id
     fill_in s_('GoogleCloudPlatformService|Repository location'),

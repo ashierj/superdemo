@@ -8,7 +8,7 @@ RSpec.describe 'getting the google cloud docker image linked to a project', :fre
 
   let_it_be_with_reload(:project) { create(:project) }
 
-  let_it_be_with_refind(:project_integration) do
+  let_it_be_with_refind(:artifact_registry_integration) do
     create(
       :google_cloud_platform_artifact_registry_integration,
       project: project,
@@ -16,18 +16,22 @@ RSpec.describe 'getting the google cloud docker image linked to a project', :fre
     )
   end
 
+  let_it_be_with_refind(:wlif_integration) do
+    create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+  end
+
   let_it_be(:user) { project.first_owner }
 
-  let(:location) { project_integration.artifact_registry_location }
-  let(:google_cloud_project_id) { project_integration.artifact_registry_project_id }
-  let(:repository) { project_integration.artifact_registry_repository }
+  let(:location) { artifact_registry_integration.artifact_registry_location }
+  let(:google_cloud_project_id) { artifact_registry_integration.artifact_registry_project_id }
+  let(:repository) { artifact_registry_integration.artifact_registry_repository }
   let(:image) { 'ruby' }
   let(:digest) { 'sha256:4ca5c21b' }
   let(:client_double) { instance_double('::GoogleCloudPlatform::ArtifactRegistry::Client') }
 
   let(:uri) do
     "#{location}-docker.pkg.dev/#{google_cloud_project_id}/" \
-      "#{project_integration.artifact_registry_repository}/#{image}@#{digest}"
+      "#{artifact_registry_integration.artifact_registry_repository}/#{image}@#{digest}"
   end
 
   let(:name) do
@@ -82,12 +86,8 @@ RSpec.describe 'getting the google cloud docker image linked to a project', :fre
     stub_saas_features(google_cloud_support: true)
 
     allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
-      .with(
-        project_integration: project_integration,
-        user: user,
-        artifact_registry_location: location,
-        artifact_registry_repository: repository
-      ).and_return(client_double)
+      .with(wlif_integration: wlif_integration, user: user)
+      .and_return(client_double)
 
     allow(client_double).to receive(:docker_image).with(name: name).and_return(docker_image)
   end
@@ -169,20 +169,26 @@ RSpec.describe 'getting the google cloud docker image linked to a project', :fre
     it_behaves_like 'returning a blank response'
   end
 
-  context 'when Google Cloud Artifact Registry integration is not present' do
-    before do
-      project_integration.destroy!
+  %i[wlif artifact_registry].each do |integration_type|
+    context "with the #{integration_type} integration" do
+      let(:integration) { public_send("#{integration_type}_integration") }
+
+      context 'when not present' do
+        before do
+          integration.destroy!
+        end
+
+        it_behaves_like 'returning a blank response'
+      end
+
+      context 'when inactive' do
+        before do
+          integration.update_column(:active, false)
+        end
+
+        it_behaves_like 'returning a blank response'
+      end
     end
-
-    it_behaves_like 'returning a blank response'
-  end
-
-  context 'when Google Cloud Artifact Registry integration is inactive' do
-    before do
-      project_integration.update_column(:active, false)
-    end
-
-    it_behaves_like 'returning a blank response'
   end
 
   context 'with invalid arguments' do

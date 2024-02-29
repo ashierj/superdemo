@@ -7,7 +7,7 @@ RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
 
   let_it_be_with_refind(:project) { create(:project) }
   let_it_be(:maintainer) { create(:user).tap { |user| project.add_maintainer(user) } }
-  let_it_be_with_refind(:integration) do
+  let_it_be_with_refind(:wlif_integration) do
     create(:google_cloud_platform_workload_identity_federation_integration, project: project)
   end
 
@@ -53,7 +53,7 @@ RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
     let(:client_klass) { GoogleCloudPlatform::Compute::Client }
     let(:expected_compute_client_args) do
       {
-        project_integration: integration,
+        wlif_integration: wlif_integration,
         user: current_user,
         params: { google_cloud_project_id: google_cloud_project_id }
       }
@@ -222,7 +222,7 @@ RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
 
     context 'when integration is not present' do
       before do
-        integration.destroy!
+        wlif_integration.destroy!
       end
 
       it 'returns error' do
@@ -233,7 +233,7 @@ RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
 
     context 'when integration is inactive' do
       before do
-        integration.update_column(:active, false)
+        wlif_integration.update_column(:active, false)
       end
 
       it 'returns error' do
