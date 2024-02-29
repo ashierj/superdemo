@@ -45,11 +45,17 @@ message Job {
     repeated string token_prefixes = 5;
 }
 
+message Masking {
+    repeated string phrases = 1;
+    repeated string token_prefixes = 2;
+}
+
 message RunRequest {
     string id = 1;
     map<string,string> env = 2;
-    Job job = 3;
-    string steps = 4;
+    Masking masking = 3;
+    Job job = 4;
+    string steps = 5;
 }
 
 message RunResponse {
@@ -173,9 +179,14 @@ the remainder of the request. Variables should be expanded by the Step
 Runner service since they may reference object in the execution
 environment (like other environment variables or paths). This includes
 file-type variables, which should be written to the same path as they
-are be in traditional runner job execution.
+are be in traditional runner job execution. Similarly, from
+`Job.Variables`, phrases to be masked should be extracted and used to
+populate `Masking.Phrases`, and `Job.TokenPrefixes` should be copied into
+`Masking.TokenPrefixes`.
 
-Clients other than Runner wishing to run steps can omit the `Job` field.
+Clients other than Runner wishing to run steps can omit the `Job` field,
+and in this case the `Masking` and `Env` fields should be populated
+directly by the caller.
 
 ## Log Format
 
