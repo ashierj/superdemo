@@ -52,6 +52,9 @@ module EE
           store.subscribe ::Security::RefreshComplianceFrameworkSecurityPoliciesWorker,
             to: ::Projects::ComplianceFrameworkChangedEvent
 
+          store.subscribe ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler,
+            to: ::WorkItems::WorkItemCreatedEvent
+
           register_threat_insights_subscribers(store)
 
           subscribe_to_epic_events(store)

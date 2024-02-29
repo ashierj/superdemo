@@ -33,6 +33,13 @@ module EE
         super
       end
 
+      override :publish_event
+      def publish_event(work_item)
+        return if sync_work_item?
+
+        super
+      end
+
       def sync_work_item?
         extra_params&.fetch(:synced_work_item, false)
       end
