@@ -2842,9 +2842,6 @@ msgstr ""
 msgid "Add a homepage to your wiki that contains information about your project and GitLab will display it here instead of this message."
 msgstr ""
 
-msgid "Add a new comment template"
-msgstr ""
-
 msgid "Add a new issue"
 msgstr ""
 
@@ -30067,6 +30064,9 @@ msgstr ""
 msgid "Manage git repositories with fine-grained access controls that keep your code secure."
 msgstr ""
 
+msgid "Manage group comment templates"
+msgstr ""
+
 msgid "Manage group labels"
 msgstr ""
 
@@ -30092,6 +30092,9 @@ msgid "Manage two-factor authentication"
 msgstr ""
 
 msgid "Manage usage"
+msgstr ""
+
+msgid "Manage your comment templates"
 msgstr ""
 
 msgid "Manage your subscription"

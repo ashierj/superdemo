@@ -168,4 +168,34 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
       end
     end
   end
+
+  describe '#new_comment_template_paths' do
+    let_it_be(:group) { create(:group) }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(user)
+    end
+
+    context 'when user does not have permission' do
+      before do
+        allow(helper).to receive(:can?).with(user, :create_saved_replies, group).and_return(false)
+      end
+
+      it { expect(helper.new_comment_template_paths(group).size).to eq(1) }
+    end
+
+    context 'when user has permission' do
+      before do
+        allow(helper).to receive(:can?).with(user, :create_saved_replies, group).and_return(true)
+      end
+
+      it 'returns array with group comment templates path' do
+        expect(helper.new_comment_template_paths(group).size).to eq(2)
+        expect(helper.new_comment_template_paths(group).last).to eq({
+          text: "Manage group comment templates",
+          path: group_comment_templates_path(group)
+        })
+      end
+    end
+  end
 end
