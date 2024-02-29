@@ -23,6 +23,11 @@ RSpec.describe Resolvers::SecurityOrchestration::ApprovalPolicyResolver, feature
         user_approvers: [],
         group_approvers: [],
         all_group_approvers: [],
+        policy_scope: {
+          compliance_frameworks: [],
+          excluding_projects: [],
+          including_projects: []
+        },
         role_approvers: [],
         source: {
           inherited: false,
