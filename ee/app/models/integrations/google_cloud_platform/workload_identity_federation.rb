@@ -27,6 +27,9 @@ module Integrations
       field :workload_identity_federation_project_id,
         required: true,
         title: -> { s_('GoogleCloudPlatformService|Project ID') },
+        description: -> {
+          s_('GoogleCloudPlatformService|Google Cloud project ID for the Workload Identity Federation.')
+        },
         help: -> {
           format(
             s_('GoogleCloudPlatformService|Example: %{code_open}my-sample-project-191923%{code_close}'),
@@ -40,6 +43,9 @@ module Integrations
       field :workload_identity_federation_project_number,
         required: true,
         title: -> { s_('GoogleCloudPlatformService|Project number') },
+        description: -> {
+          s_('GoogleCloudPlatformService|Google Cloud project number for the Workload Identity Federation.')
+        },
         help: -> {
           format(
             s_('GoogleCloudPlatformService|Example: %{code_open}314053285323%{code_close}'),
@@ -52,11 +58,13 @@ module Integrations
 
       field :workload_identity_pool_id,
         required: true,
-        title: -> { s_('GoogleCloudPlatformService|Pool ID') }
+        title: -> { s_('GoogleCloudPlatformService|Pool ID') },
+        description: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool.') }
 
       field :workload_identity_pool_provider_id,
         required: true,
-        title: -> { s_('GoogleCloudPlatformService|Provider ID') }
+        title: -> { s_('GoogleCloudPlatformService|Provider ID') },
+        description: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool provider.') }
 
       def self.title
         s_('GoogleCloudPlatformService|Google Cloud IAM')
