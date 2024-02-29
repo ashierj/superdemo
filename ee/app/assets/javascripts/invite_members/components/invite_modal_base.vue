@@ -40,7 +40,7 @@ export default {
   },
   apolloProvider,
   mixins: [glFeatureFlagsMixin()],
-  inject: ['overageMembersModalAvailable'],
+  inject: ['overageMembersModalAvailable', 'hasGitlabSubscription'],
   inheritAttrs: false,
   props: {
     accessLevels: {
@@ -120,7 +120,7 @@ export default {
         Sentry.captureException(error);
       },
       skip() {
-        return this.isGroupInvite || !this.isVisible;
+        return this.hasGitlabSubscription || this.isGroupInvite || !this.isVisible;
       },
     },
     memberRoles: {

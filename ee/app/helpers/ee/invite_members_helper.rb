@@ -2,6 +2,7 @@
 
 module EE
   module InviteMembersHelper
+    include GitlabSubscriptions::SubscriptionHelper
     extend ::Gitlab::Utils::Override
 
     override :common_invite_group_modal_data
@@ -9,7 +10,8 @@ module EE
       super.merge(
         free_user_cap_enabled: ::Namespaces::FreeUserCap::Enforcement.new(source.root_ancestor).enforce_cap?.to_s,
         free_users_limit: ::Namespaces::FreeUserCap.dashboard_limit,
-        overage_members_modal_available: overage_members_modal_available.to_s
+        overage_members_modal_available: overage_members_modal_available.to_s,
+        has_gitlab_subscription: gitlab_com_subscription?.to_s
       )
     end
 
@@ -31,6 +33,7 @@ module EE
 
       dataset[:manage_member_roles_path] = manage_member_roles_path(source)
       dataset[:overage_members_modal_available] = overage_members_modal_available.to_s
+      dataset[:has_gitlab_subscription] = gitlab_com_subscription?.to_s
 
       dataset
     end
