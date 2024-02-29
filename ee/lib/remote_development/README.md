@@ -1,4 +1,4 @@
-# `ee/lib/remote_development` overview
+# Remote Development Rails domain developer documentation: `ee/lib/remote_development` overview
 
 ## Table of Contents
 
