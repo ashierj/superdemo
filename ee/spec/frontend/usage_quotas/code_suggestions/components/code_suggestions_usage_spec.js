@@ -234,7 +234,7 @@ describe('GitLab Duo Pro Usage', () => {
 
       it('captures the error', () => {
         expect(Sentry.captureException).toHaveBeenCalledWith(error, {
-          tags: { vue_component: wrapper.vm.$options.name },
+          tags: { vue_component: 'CodeSuggestionsUsage' },
         });
       });
 
@@ -270,7 +270,7 @@ describe('GitLab Duo Pro Usage', () => {
 
       it('captures the error', () => {
         expect(Sentry.captureException).toHaveBeenCalledWith(error, {
-          tags: { vue_component: wrapper.vm.$options.name },
+          tags: { vue_component: 'CodeSuggestionsUsage' },
         });
       });
 
