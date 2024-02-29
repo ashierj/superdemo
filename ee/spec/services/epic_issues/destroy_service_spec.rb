@@ -17,6 +17,59 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
 
     subject { described_class.new(epic_issue, user).execute }
 
+    shared_examples 'removes relationship with the issue' do
+      it 'returns success message' do
+        is_expected.to eq(message: 'Relation was removed', status: :success)
+      end
+
+      it 'creates 2 system notes' do
+        expect { subject }.to change { Note.count }.from(0).to(2)
+      end
+
+      it 'creates a note for epic correctly' do
+        subject
+        note = Note.find_by(noteable_id: epic.id, noteable_type: 'Epic')
+
+        expect(note.note).to eq("removed issue #{issue.to_reference(epic.group)}")
+        expect(note.author).to eq(user)
+        expect(note.project).to be_nil
+        expect(note.noteable_type).to eq('Epic')
+        expect(note.system_note_metadata.action).to eq('epic_issue_removed')
+      end
+
+      it 'creates a note for issue correctly' do
+        subject
+        note = Note.find_by(noteable_id: issue.id, noteable_type: 'Issue')
+
+        expect(note.note).to eq("removed from epic #{epic.to_reference(issue.project)}")
+        expect(note.author).to eq(user)
+        expect(note.project).to eq(issue.project)
+        expect(note.noteable_type).to eq('Issue')
+        expect(note.system_note_metadata.action).to eq('issue_removed_from_epic')
+      end
+
+      it 'counts an usage ping event' do
+        expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_issue_removed)
+          .with(author: user, namespace: group)
+
+        subject
+      end
+
+      it 'triggers issuableEpicUpdated' do
+        expect(GraphqlTriggers).to receive(:issuable_epic_updated).with(issue)
+
+        subject
+      end
+
+      context 'refresh epic dates' do
+        it 'calls UpdateDatesService' do
+          expect(Epics::UpdateDatesService).to receive(:new).with([epic_issue.epic]).and_call_original
+
+          subject
+        end
+      end
+    end
+
     context 'when epics feature is disabled' do
       let(:user) { guest }
 
@@ -43,54 +96,87 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
           expect { subject }.to change { EpicIssue.count }.from(1).to(0)
         end
 
-        it 'returns success message' do
-          is_expected.to eq(message: 'Relation was removed', status: :success)
-        end
+        it_behaves_like 'removes relationship with the issue'
 
-        it 'creates 2 system notes' do
-          expect { subject }.to change { Note.count }.from(0).to(2)
-        end
+        context 'when epic has a synced work item' do
+          let_it_be(:child_issue, reload: true) { create(:issue, project: project) }
+          let_it_be(:epic, reload: true) { create(:epic, :with_synced_work_item, group: group) }
+          let_it_be(:epic_issue, refind: true) { create(:epic_issue, epic: epic, issue: child_issue) }
+          let_it_be(:work_item_issue) { WorkItem.find(child_issue.id) }
 
-        it 'creates a note for epic correctly' do
-          subject
-          note = Note.find_by(noteable_id: epic.id, noteable_type: 'Epic')
+          before do
+            create(:parent_link, work_item_parent_id: epic.issue_id, work_item_id: child_issue.id)
+            allow(GraphqlTriggers).to receive(:issuable_epic_updated).and_call_original
+            allow(Epics::UpdateDatesService).to receive(:new).and_call_original
+          end
 
-          expect(note.note).to eq("removed issue #{issue.to_reference(epic.group)}")
-          expect(note.author).to eq(user)
-          expect(note.project).to be_nil
-          expect(note.noteable_type).to eq('Epic')
-          expect(note.system_note_metadata.action).to eq('epic_issue_removed')
-        end
+          it 'removes the epic and work item link' do
+            expect { subject }.to change { EpicIssue.count }.by(-1)
+              .and(change { WorkItems::ParentLink.count }.by(-1))
+          end
 
-        it 'creates a note for issue correctly' do
-          subject
-          note = Note.find_by(noteable_id: issue.id, noteable_type: 'Issue')
+          context 'when feature flag is disabled' do
+            before do
+              stub_feature_flags(epic_creation_with_synced_work_item: false)
+            end
 
-          expect(note.note).to eq("removed from epic #{epic.to_reference(issue.project)}")
-          expect(note.author).to eq(user)
-          expect(note.project).to eq(issue.project)
-          expect(note.noteable_type).to eq('Issue')
-          expect(note.system_note_metadata.action).to eq('issue_removed_from_epic')
-        end
+            it 'only removes the epic link' do
+              expect { subject }.to change { EpicIssue.count }.by(-1)
+                .and not_change { WorkItems::ParentLink.count }
+            end
+          end
 
-        it 'counts an usage ping event' do
-          expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_issue_removed)
-            .with(author: user, namespace: group)
+          it_behaves_like 'removes relationship with the issue' do
+            let(:issue) { child_issue }
+          end
 
-          subject
-        end
+          context 'when destroying work item parent link fails' do
+            before do
+              allow_next_instance_of(::WorkItems::ParentLinks::DestroyService) do |service|
+                allow(service).to receive(:execute).and_return({ status: :error, message: 'error message' })
+              end
+            end
 
-        it 'triggers issuableEpicUpdated' do
-          expect(GraphqlTriggers).to receive(:issuable_epic_updated).with(issue)
+            it 'does not remove parent epic or destroy work item parent link' do
+              expect { subject }.to not_change { EpicIssue.count }
+                .and(not_change { WorkItems::ParentLink.count })
 
-          subject
-        end
+              expect(epic.reload.issues).to include(child_issue)
+              expect(epic.work_item.reload.work_item_children).to include(work_item_issue)
+              expect(GraphqlTriggers).not_to have_received(:issuable_epic_updated)
+              expect(Epics::UpdateDatesService).not_to have_received(:new)
+            end
 
-        context 'refresh epic dates' do
-          it 'calls UpdateDatesService' do
-            expect(Epics::UpdateDatesService).to receive(:new).with([epic_issue.epic]).and_call_original
+            it 'logs error' do
+              allow(Gitlab::EpicWorkItemSync::Logger).to receive(:error).and_call_original
+              expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error).with({
+                error_message: 'error message',
+                group_id: group.id,
+                message: 'Not able to destroy work item links',
+                epic_id: epic.id,
+                issue_id: child_issue.id
+              })
 
-            subject
+              subject
+            end
+          end
+
+          context 'when destroying epic issue link fails' do
+            before do
+              allow(epic_issue).to receive(:destroy!)
+                .and_raise(ActiveRecord::RecordNotDestroyed.new(epic_issue), 'error message')
+            end
+
+            it 'raises an error and does not remove relationships' do
+              expect { subject }.to raise_error(ActiveRecord::RecordNotDestroyed)
+                .and(not_change { EpicIssue.count })
+                .and(not_change { WorkItems::ParentLink.count })
+
+              expect(epic.reload.issues).to include(child_issue)
+              expect(epic.work_item.reload.work_item_children).to include(work_item_issue)
+              expect(GraphqlTriggers).not_to have_received(:issuable_epic_updated)
+              expect(Epics::UpdateDatesService).not_to have_received(:new)
+            end
           end
         end
 
