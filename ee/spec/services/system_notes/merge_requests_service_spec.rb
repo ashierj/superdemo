@@ -13,22 +13,6 @@ RSpec.describe SystemNotes::MergeRequestsService, feature_category: :code_review
 
   let(:service) { described_class.new(noteable: noteable, project: project, author: author) }
 
-  describe '.merge_when_checks_pass' do
-    let(:pipeline) { build(:ci_pipeline) }
-
-    subject { service.merge_when_checks_pass(pipeline.sha) }
-
-    it_behaves_like 'a system note' do
-      let(:action) { 'merge' }
-    end
-
-    it "posts the 'merge when checks pass' system note" do
-      expect(subject.note).to(
-        match("enabled an automatic merge when all merge checks for #{pipeline.sha} pass")
-      )
-    end
-  end
-
   describe '#approvals_reset' do
     let(:cause) { :new_push }
     let_it_be(:approvers) { create_list(:user, 3) }

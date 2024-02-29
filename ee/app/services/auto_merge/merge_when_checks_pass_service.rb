@@ -25,6 +25,20 @@ module AutoMerge
       end
     end
 
+    override :cancel
+    def cancel(merge_request)
+      super do
+        SystemNoteService.cancel_auto_merge(merge_request, project, current_user)
+      end
+    end
+
+    override :abort
+    def abort(merge_request, reason)
+      super do
+        SystemNoteService.abort_auto_merge(merge_request, project, current_user, reason)
+      end
+    end
+
     private
 
     def add_system_note(merge_request)
