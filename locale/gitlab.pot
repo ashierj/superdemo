@@ -52710,6 +52710,9 @@ msgstr ""
 msgid "Tracing|Traces"
 msgstr ""
 
+msgid "Tracing|You must select a Service and Operation first."
+msgstr ""
+
 msgid "Tracing|longer than"
 msgstr ""
 
