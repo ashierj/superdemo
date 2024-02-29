@@ -18,7 +18,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::ProjectClonerComponentInje
   let(:value) do
     {
       params: {
-        project: project
+        project: project,
+        devfile_ref: "master"
       },
       processed_devfile: input_processed_devfile,
       volume_mounts: {

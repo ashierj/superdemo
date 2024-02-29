@@ -109,10 +109,9 @@ describe('ee_component/vue_shared/components/web_ide_link', () => {
         expect(findLoadingIcon().exists()).toBe(true);
       });
 
-      describe('when project hasDevFile and cluster agents', () => {
+      describe('when project has cluster agents', () => {
         beforeEach(async () => {
           findGetProjectDetailsQuery().vm.$emit('result', {
-            hasDevFile: true,
             clusterAgents: [{}],
           });
 
@@ -134,12 +133,10 @@ describe('ee_component/vue_shared/components/web_ide_link', () => {
         });
       });
 
-      describe.each([
-        { hasDevFile: false, clusterAgents: [{}] },
-        { hasDevFile: true, clusterAgents: [] },
-      ])('when does not have devfile or cluster agents', (result) => {
+      // TODO: This doesn't need to be a describe.each anymore...
+      describe('when does not have cluster agents', () => {
         beforeEach(async () => {
-          findGetProjectDetailsQuery().vm.$emit('result', result);
+          findGetProjectDetailsQuery().vm.$emit('result', { clusterAgents: [] });
 
           await nextTick();
         });

@@ -5,7 +5,6 @@ import { logError } from '~/lib/logger';
 import getProjectDetailsQuery from 'ee/remote_development/graphql/queries/get_project_details.query.graphql';
 import getGroupClusterAgentsQuery from 'ee/remote_development/graphql/queries/get_group_cluster_agents.query.graphql';
 import GetProjectDetailsQuery from 'ee/remote_development/components/common/get_project_details_query.vue';
-import { DEFAULT_DEVFILE_PATH } from 'ee/remote_development/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -75,7 +74,6 @@ describe('remote_development/components/create/get_project_details_query', () =>
 
       expect(getProjectDetailsQueryHandler).toHaveBeenCalledWith({
         projectFullPath: projectFullPathFixture,
-        devFilePath: DEFAULT_DEVFILE_PATH,
       });
     });
   });
@@ -125,7 +123,6 @@ describe('remote_development/components/create/get_project_details_query', () =>
         rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
         nameWithNamespace: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.nameWithNamespace,
         fullPath: projectFullPathFixture,
-        hasDevFile: false,
       });
     });
   });
@@ -165,7 +162,6 @@ describe('remote_development/components/create/get_project_details_query', () =>
         rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
         nameWithNamespace: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.nameWithNamespace,
         fullPath: projectFullPathFixture,
-        hasDevFile: false,
       });
     });
   });
@@ -191,7 +187,6 @@ describe('remote_development/components/create/get_project_details_query', () =>
           },
         ],
         fullPath: 'gitlab-org/gitlab',
-        hasDevFile: false,
         id: 'gid://gitlab/Project/1',
         nameWithNamespace: 'GitLab Org / Subgroup / GitLab',
         rootRef: 'main',
@@ -242,7 +237,6 @@ describe('remote_development/components/create/get_project_details_query', () =>
         rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
         nameWithNamespace: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.nameWithNamespace,
         fullPath: projectFullPathFixture,
-        hasDevFile: false,
       });
     });
 
@@ -260,49 +254,6 @@ describe('remote_development/components/create/get_project_details_query', () =>
         await buildWrapper();
 
         expect(wrapper.emitted('error')).toEqual([[]]);
-      });
-    });
-
-    describe('when the project repository has .devfile in the root repository', () => {
-      beforeEach(() => {
-        const customMockData = cloneDeep(GET_PROJECT_DETAILS_QUERY_RESULT);
-
-        customMockData.data.project.repository.blobs.nodes.push({
-          id: DEFAULT_DEVFILE_PATH,
-          path: DEFAULT_DEVFILE_PATH,
-        });
-
-        getProjectDetailsQueryHandler.mockReset();
-        getProjectDetailsQueryHandler.mockResolvedValueOnce(customMockData);
-      });
-
-      it('emits result event with hasDevFile property that equals true', async () => {
-        await buildWrapper();
-
-        expect(wrapper.emitted('result')[0][0]).toMatchObject({
-          hasDevFile: true,
-        });
-      });
-    });
-
-    describe('when the project repository does not have .devfile in the root repository', () => {
-      beforeEach(() => {
-        const customMockData = cloneDeep(GET_PROJECT_DETAILS_QUERY_RESULT);
-
-        customMockData.data.project.repository.blobs.nodes = customMockData.data.project.repository.blobs.nodes.filter(
-          (blob) => blob.path !== DEFAULT_DEVFILE_PATH,
-        );
-
-        getProjectDetailsQueryHandler.mockReset();
-        getProjectDetailsQueryHandler.mockResolvedValueOnce(customMockData);
-      });
-
-      it('emits result event with hasDevFile property that equals false', async () => {
-        await buildWrapper();
-
-        expect(wrapper.emitted('result')[0][0]).toMatchObject({
-          hasDevFile: false,
-        });
       });
     });
   });
@@ -323,11 +274,10 @@ describe('remote_development/components/create/get_project_details_query', () =>
       getProjectDetailsQueryHandler.mockResolvedValueOnce(customMockData);
     });
 
-    it('emits result event with hasDevFile property that equals false and rootRef null', async () => {
+    it('emits result event with rootRef null', async () => {
       await buildWrapper();
 
       expect(wrapper.emitted('result')[0][0]).toMatchObject({
-        hasDevFile: false,
         rootRef: null,
       });
     });
@@ -363,7 +313,6 @@ describe('remote_development/components/create/get_project_details_query', () =>
       expect(wrapper.emitted('result')[0][0]).toEqual({
         clusterAgents: [],
         id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
-        hasDevFile: false,
         rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
         nameWithNamespace: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.nameWithNamespace,
         fullPath: projectFullPathFixture,
@@ -427,7 +376,6 @@ describe('remote_development/components/create/get_project_details_query', () =>
       expect(wrapper.emitted('result')[1]).toEqual([
         {
           clusterAgents: [],
-          hasDevFile: false,
           id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
           rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
           fullPath: projectFullPath,

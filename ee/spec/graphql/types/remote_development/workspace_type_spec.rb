@@ -7,7 +7,8 @@ RSpec.describe GitlabSchema.types['Workspace'], feature_category: :remote_develo
     %i[
       id cluster_agent project_id user name namespace max_hours_before_termination
       desired_state desired_state_updated_at actual_state responded_to_agent_at
-      url editor devfile_ref devfile_path devfile processed_devfile deployment_resource_version created_at updated_at
+      url editor devfile_ref devfile_path devfile_web_url devfile processed_devfile
+      deployment_resource_version created_at updated_at
     ]
   end
 

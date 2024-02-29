@@ -1,30 +1,41 @@
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
 import { cloneDeep } from 'lodash';
-import { GlFormSelect, GlForm, GlFormInput, GlLink, GlSprintf } from '@gitlab/ui';
+import {
+  GlForm,
+  GlFormSelect,
+  GlIcon,
+  GlLink,
+  GlSprintf,
+  GlFormInput,
+  GlFormInputGroup,
+  GlPopover,
+} from '@gitlab/ui';
+import RefSelector from '~/ref/components/ref_selector.vue';
 import SearchProjectsListbox from 'ee/remote_development/components/create/search_projects_listbox.vue';
 import GetProjectDetailsQuery from 'ee/remote_development/components/common/get_project_details_query.vue';
-import WorkspaceCreate, { i18n } from 'ee/remote_development/pages/create.vue';
+import WorkspaceCreate, { devfileHelpPath, i18n } from 'ee/remote_development/pages/create.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import {
-  DEFAULT_EDITOR,
   DEFAULT_DESIRED_STATE,
-  DEFAULT_DEVFILE_PATH,
+  DEFAULT_EDITOR,
   ROUTES,
   WORKSPACES_LIST_PAGE_SIZE,
 } from 'ee/remote_development/constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import { logError } from '~/lib/logger';
 import { createAlert } from '~/alert';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import workspaceCreateMutation from 'ee/remote_development/graphql/mutations/workspace_create.mutation.graphql';
 import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
 import {
   GET_PROJECT_DETAILS_QUERY_RESULT,
   USER_WORKSPACES_LIST_QUERY_RESULT,
-  WORKSPACE_QUERY_RESULT,
   WORKSPACE_CREATE_MUTATION_RESULT,
+  WORKSPACE_QUERY_RESULT,
 } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -102,17 +113,22 @@ describe('remote_development/pages/create.vue', () => {
       },
       stubs: {
         GlFormSelect: GlFormSelectStub,
+        GlFormInputGroup,
         GlSprintf,
       },
       mocks: {
         $router: mockRouter,
       },
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
+      },
     });
   };
 
+  const projectGid = GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id;
+  const projectId = String(getIdFromGraphQLId(projectGid));
   const findSearchProjectsListbox = () => wrapper.findComponent(SearchProjectsListbox);
   const findNoAgentsGlAlert = () => wrapper.findByTestId('no-agents-alert');
-  const findNoDevFileGlAlert = () => wrapper.findByTestId('no-dev-file-alert');
   const findCreateWorkspaceErrorGlAlert = () =>
     wrapper.findByTestId('create-workspace-error-alert');
   const findClusterAgentsFormGroup = () =>
@@ -120,19 +136,63 @@ describe('remote_development/pages/create.vue', () => {
   const findGetProjectDetailsQuery = () => wrapper.findComponent(GetProjectDetailsQuery);
   const findCreateWorkspaceButton = () => wrapper.findByTestId('create-workspace');
   const findClusterAgentsFormSelect = () => wrapper.findComponent(GlFormSelectStub);
-  const findMaxHoursBeforeTerminationField = () => wrapper.findComponent(GlFormInput);
+
+  const findDevfileRefField = () => wrapper.findByTestId('devfile-ref');
+  const findDevfileRefRefSelector = () => findDevfileRefField().findComponent(RefSelector);
+  const findDevfileRefFieldParts = () => {
+    const field = findDevfileRefField();
+    const icon = field.findComponent(GlIcon);
+
+    return {
+      label: field.find('label').text(),
+      icon: icon.attributes('name'),
+      iconTooltip: getBinding(icon.element, 'gl-tooltip').value,
+    };
+  };
+
+  const findDevfilePathField = () => wrapper.findByTestId('devfile-path');
+  const findDevfilePathInputGroup = () => findDevfilePathField().findComponent(GlFormInputGroup);
+  const findDevfilePathInput = () => findDevfilePathInputGroup().findComponent(GlFormInput);
+  const findDevfilePathFieldParts = () => {
+    const field = findDevfilePathField();
+    const popover = field.findComponent(GlPopover);
+
+    return {
+      label: field.find('label').text(),
+      inputPrepend: findDevfilePathInputGroup().text(),
+      inputPlaceholder: findDevfilePathInput().attributes('placeholder'),
+      popoverText: popover.text(),
+      popoverLinkHref: popover.findComponent(GlLink).attributes('href'),
+      popoverLinkText: popover.findComponent(GlLink).text(),
+    };
+  };
+
+  const findMaxHoursBeforeTerminationField = () =>
+    wrapper.findByTestId('max-hours-before-termination');
+  const findMaxHoursBeforeTerminationInputGroup = () =>
+    findMaxHoursBeforeTerminationField().findComponent(GlFormInputGroup);
+  const findMaxHoursBeforeTerminationInput = () =>
+    findMaxHoursBeforeTerminationInputGroup().findComponent(GlFormInput);
+  const findMaxHoursBeforeTerminationFieldParts = () => {
+    const field = findMaxHoursBeforeTerminationField();
+    const inputAppendText = findMaxHoursBeforeTerminationInputGroup().text();
+
+    return {
+      label: field.attributes('label'),
+      inputAppendText,
+    };
+  };
+
   const emitGetProjectDetailsQueryResult = ({
     clusterAgents = [],
-    hasDevFile = false,
     groupPath = GET_PROJECT_DETAILS_QUERY_RESULT.data.project.group.fullPath,
-    id = GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
+    id = projectGid,
     rootRef = rootRefFixture,
     nameWithNamespace,
     fullPath,
   }) =>
     findGetProjectDetailsQuery().vm.$emit('result', {
       clusterAgents,
-      hasDevFile,
       groupPath,
       rootRef,
       id,
@@ -190,21 +250,16 @@ describe('remote_development/pages/create.vue', () => {
       expect(findClusterAgentsFormGroup().exists()).toBe(false);
     });
 
-    it('does not display max hours before termination field', () => {
-      expect(findMaxHoursBeforeTerminationField().exists()).toBe(false);
+    it('does not display devfile ref field', () => {
+      expect(findDevfileRefField().exists()).toBe(false);
     });
 
-    describe('when a project does not have a .devfile file', () => {
-      it('does not display a devfile alert', async () => {
-        createWrapper();
+    it('does not display devfile path field', () => {
+      expect(findDevfilePathField().exists()).toBe(false);
+    });
 
-        await selectProject();
-        await emitGetProjectDetailsQueryResult({
-          hasDevFile: false,
-        });
-
-        expect(findNoDevFileGlAlert().exists()).toBe(false);
-      });
+    it('does not display max hours before termination field', () => {
+      expect(findMaxHoursBeforeTerminationField().exists()).toBe(false);
     });
   });
 
@@ -227,58 +282,59 @@ describe('remote_development/pages/create.vue', () => {
     it('populates cluster agents form select with cluster agents', () => {
       expect(findClusterAgentsFormSelect().props().options).toBe(clusterAgentsFixture);
     });
-
-    describe('when a project have a .devfile file', () => {
-      it('does not display a devfile alert', async () => {
-        createWrapper();
-
-        await selectProject();
-        await emitGetProjectDetailsQueryResult({
-          hasDevFile: true,
-          clusterAgents: clusterAgentsFixture,
-        });
-
-        expect(findNoDevFileGlAlert().exists()).toBe(false);
-      });
-    });
-
-    describe('when a project does not have a .devfile file', () => {
-      it('displays a devfile alert', async () => {
-        createWrapper();
-
-        await selectProject();
-        await emitGetProjectDetailsQueryResult({
-          hasDevFile: false,
-          clusterAgents: clusterAgentsFixture,
-        });
-
-        expect(findNoDevFileGlAlert().props()).toMatchObject({
-          title: i18n.invalidProjectAlert.title,
-          variant: 'danger',
-          dismissible: false,
-        });
-      });
-
-      it('disables the "Create Workspace" button', () => {
-        expect(findCreateWorkspaceButton().props().disabled).toBe(true);
-      });
-    });
   });
 
-  describe('when a project and a cluster agent are selected and the project has a devfile', () => {
+  describe('when a project and a cluster agent are selected', () => {
     beforeEach(async () => {
       createWrapper();
 
       await selectProject();
       await emitGetProjectDetailsQueryResult({
         clusterAgents: clusterAgentsFixture,
-        hasDevFile: true,
       });
       await selectClusterAgent();
     });
 
     it('enables create workspace button', () => {
       expect(findCreateWorkspaceButton().props().disabled).toBe(false);
+    });
+
+    it('populates devfile ref selector with project ID', () => {
+      expect(findDevfileRefRefSelector().props().projectId).toBe(projectId);
+    });
+
+    describe('devfile ref field', () => {
+      it('renders parts', () => {
+        expect(findDevfileRefFieldParts()).toEqual({
+          label: 'Git reference',
+          icon: 'information-o',
+          iconTooltip: 'The branch, tag, or commit hash GitLab uses to create your workspace.',
+        });
+      });
+    });
+
+    describe('devfile path field', () => {
+      it('renders parts', () => {
+        expect(findDevfilePathFieldParts()).toEqual({
+          inputPrepend: 'gitlab-org / gitlab /',
+          inputPlaceholder: 'Path to devfile',
+          label: 'Devfile location',
+          popoverLinkHref: devfileHelpPath,
+          popoverLinkText: 'Learn more.',
+          popoverText: expect.stringMatching(
+            `${i18n.form.devfileLocation.contentParagraph1} ${i18n.form.devfileLocation.contentParagraph2}`,
+          ),
+        });
+      });
+    });
+
+    describe('max hours before termination field', () => {
+      it('renders parts', () => {
+        expect(findMaxHoursBeforeTerminationFieldParts()).toEqual({
+          label: 'Workspace automatically terminates after',
+          inputAppendText: 'hours',
+        });
+      });
     });
 
     describe('when selecting a project again', () => {
@@ -294,11 +350,16 @@ describe('remote_development/pages/create.vue', () => {
     describe('when clicking Create Workspace button', () => {
       it('submits workspaceCreate mutation', async () => {
         const maxHoursBeforeTermination = 10;
-
-        findMaxHoursBeforeTerminationField().vm.$emit(
+        findMaxHoursBeforeTerminationInput().vm.$emit(
           'input',
           maxHoursBeforeTermination.toString(),
         );
+
+        const devfileRef = 'mybranch';
+        findDevfileRefRefSelector().vm.$emit('input', devfileRef);
+
+        const devfilePath = 'path/to/mydevfile.yaml';
+        findDevfilePathInput().vm.$emit('input', devfilePath);
 
         await nextTick();
         await submitCreateWorkspaceForm();
@@ -306,12 +367,12 @@ describe('remote_development/pages/create.vue', () => {
         expect(workspaceCreateMutationHandler).toHaveBeenCalledWith({
           input: {
             clusterAgentId: selectedClusterAgentIDFixture,
-            projectId: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
+            projectId: projectGid,
             editor: DEFAULT_EDITOR,
             desiredState: DEFAULT_DESIRED_STATE,
-            devfilePath: DEFAULT_DEVFILE_PATH,
+            devfilePath,
             maxHoursBeforeTermination,
-            devfileRef: rootRefFixture,
+            devfileRef,
           },
         });
       });

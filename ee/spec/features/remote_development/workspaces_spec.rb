@@ -57,8 +57,8 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         find_by_testid("listbox-item-#{project.full_path}").click
         wait_for_requests
         # noinspection RubyMismatchedArgumentType - TODO: Try suggestions in https://youtrack.jetbrains.com/issue/RUBY-25400/Programmatically-defined-constants-always-produce-Unresolved-reference-error#focus=Comments-27-8161148.0-0
-        select agent.name, from: 'Select cluster agent'
-        fill_in 'Time before automatic termination', with: '20'
+        select agent.name, from: 'Cluster agent'
+        fill_in 'Workspace automatically terminates after', with: '20'
         click_button 'Create workspace'
 
         # We look for the project GID because that's all we know about the workspace at this point. For the new UI,

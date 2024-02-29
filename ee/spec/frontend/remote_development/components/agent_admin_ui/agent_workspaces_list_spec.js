@@ -10,12 +10,12 @@ import WorkspaceEmptyState from 'ee/remote_development/components/list/empty_sta
 import WorkspacesTable from 'ee/remote_development/components/list/workspaces_table.vue';
 import WorkspacesListPagination from 'ee/remote_development/components/list/workspaces_list_pagination.vue';
 import agentWorkspacesListQuery from 'ee/remote_development/graphql/queries/agent_workspaces_list.query.graphql';
-import userWorkspacesProjectsNamesQuery from 'ee/remote_development/graphql/queries/user_workspaces_projects_names.query.graphql';
-import { populateWorkspacesWithProjectNames } from 'ee/remote_development/services/utils';
+import getProjectsDetailsQuery from 'ee/remote_development/graphql/queries/get_projects_details.query.graphql';
+import { populateWorkspacesWithProjectDetails } from 'ee/remote_development/services/utils';
 import {
-  AGENT_WORKSPACES_LIST_QUERY_RESULT,
   AGENT_WORKSPACES_LIST_QUERY_EMPTY_RESULT,
-  WORKSPACES_PROJECT_NAMES_QUERY_RESULT,
+  AGENT_WORKSPACES_LIST_QUERY_RESULT,
+  GET_PROJECTS_DETAILS_QUERY_RESULT,
 } from '../../mock_data';
 
 jest.mock('~/lib/logger');
@@ -30,19 +30,19 @@ describe('remote_development/components/agent_admin_ui/agent_workspaces_list.vue
   let wrapper;
   let mockApollo;
   let agentWorkspacesListQueryHandler;
-  let userWorkspacesProjectNamesQueryHandler;
+  let getProjectsDetailsQueryHandler;
 
   const buildMockApollo = () => {
     agentWorkspacesListQueryHandler = jest
       .fn()
       .mockResolvedValueOnce(AGENT_WORKSPACES_LIST_QUERY_RESULT);
-    userWorkspacesProjectNamesQueryHandler = jest
+    getProjectsDetailsQueryHandler = jest
       .fn()
-      .mockResolvedValueOnce(WORKSPACES_PROJECT_NAMES_QUERY_RESULT);
+      .mockResolvedValueOnce(GET_PROJECTS_DETAILS_QUERY_RESULT);
 
     mockApollo = createMockApollo([
       [agentWorkspacesListQuery, agentWorkspacesListQueryHandler],
-      [userWorkspacesProjectsNamesQuery, userWorkspacesProjectNamesQueryHandler],
+      [getProjectsDetailsQuery, getProjectsDetailsQueryHandler],
     ]);
   };
   const createWrapper = () => {
@@ -118,9 +118,9 @@ describe('remote_development/components/agent_admin_ui/agent_workspaces_list.vue
 
     it('provides workspaces data to the workspaces table', () => {
       expect(findTable(wrapper).props('workspaces')).toEqual(
-        populateWorkspacesWithProjectNames(
+        populateWorkspacesWithProjectDetails(
           AGENT_WORKSPACES_LIST_QUERY_RESULT.data.project.clusterAgent.workspaces.nodes,
-          WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes,
+          GET_PROJECTS_DETAILS_QUERY_RESULT.data.projects.nodes,
         ),
       );
     });
@@ -188,9 +188,9 @@ describe('remote_development/components/agent_admin_ui/agent_workspaces_list.vue
   });
 
   describe.each`
-    query                            | queryHandlerFactory
-    ${'userWorkspaces'}              | ${() => agentWorkspacesListQueryHandler}
-    ${'userWorkspacesProjectsNames'} | ${() => userWorkspacesProjectNamesQueryHandler}
+    query                | queryHandlerFactory
+    ${'userWorkspaces'}  | ${() => agentWorkspacesListQueryHandler}
+    ${'projectsDetails'} | ${() => getProjectsDetailsQueryHandler}
   `('when $query query fails', ({ queryHandlerFactory }) => {
     const ERROR = new Error('Something bad!');
 

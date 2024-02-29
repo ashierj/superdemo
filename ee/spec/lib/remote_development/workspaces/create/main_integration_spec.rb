@@ -14,6 +14,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
   let(:group) { create(:group, name: 'test-group').tap { |group| group.add_developer(user) } }
   let(:current_user) { user }
   let(:random_string) { 'abcdef' }
+  let(:devfile_ref) { 'master' }
   let(:devfile_path) { '.devfile.yaml' }
   let(:devfile_fixture_name) { 'example.devfile.yaml' }
   let(:devfile_yaml) { read_devfile(devfile_fixture_name) }
@@ -38,7 +39,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
       editor: editor,
       max_hours_before_termination: 24,
       desired_state: RemoteDevelopment::Workspaces::States::RUNNING,
-      devfile_ref: 'main',
+      devfile_ref: devfile_ref,
       devfile_path: devfile_path
     }
   end
@@ -56,14 +57,16 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
   end
 
   context 'when params are valid' do
+    before do
+      allow(project.repository).to receive_message_chain(:blob_at_branch, :data) { devfile_yaml }
+    end
+
     context 'when devfile is valid' do
       before do
         allow(SecureRandom).to receive(:alphanumeric) { random_string }
       end
 
       it 'creates a new workspace and returns success', :aggregate_failures do
-        allow(project.repository).to receive_message_chain(:blob_at_branch, :data) { devfile_yaml }
-
         # NOTE: This example is structured and ordered to give useful and informative error messages in case of failures
         expect { response }.to change { RemoteDevelopment::Workspace.count }.by(1)
 
@@ -100,8 +103,6 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
       let(:devfile_fixture_name) { 'example.invalid-components-entry-missing-devfile.yaml' }
 
       it 'does not create the workspace and returns error' do
-        allow(project.repository).to receive_message_chain(:blob_at_branch, :data) { devfile_yaml }
-
         expect { response }.not_to change { RemoteDevelopment::Workspace.count }
 
         expect(response).to eq({
@@ -117,14 +118,18 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
     context 'when devfile is not found' do
       let(:devfile_path) { 'not-found.yaml' }
 
-      it 'does not create the workspace and returns error', :aggregate_failures do
+      before do
         allow(project.repository).to receive(:blob_at_branch).and_return(nil)
+      end
 
+      it 'does not create the workspace and returns error', :aggregate_failures do
         expect { response }.not_to change { RemoteDevelopment::Workspace.count }
 
         expect(response).to eq({
           status: :error,
-          message: "Workspace create devfile load failed: Devfile could not be loaded from project",
+          message:
+            "Workspace create devfile load failed: Devfile path '#{devfile_path}' at ref '#{devfile_ref}' " \
+              "does not exist in project repository", # rubocop:disable Layout/LineEndStringConcatenationIndentation -- RubyMine formatting conflict. See https://gitlab.com/gitlab-org/gitlab/-/issues/442626
           reason: :bad_request
         })
       end

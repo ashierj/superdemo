@@ -3,7 +3,6 @@ import { uniqBy } from 'lodash';
 import { logError } from '~/lib/logger';
 import getProjectDetailsQuery from '../../graphql/queries/get_project_details.query.graphql';
 import getGroupClusterAgentsQuery from '../../graphql/queries/get_group_cluster_agents.query.graphql';
-import { DEFAULT_DEVFILE_PATH } from '../../constants';
 
 export default {
   props: {
@@ -19,7 +18,6 @@ export default {
       variables() {
         return {
           projectFullPath: this.projectFullPath,
-          devFilePath: DEFAULT_DEVFILE_PATH,
         };
       },
       skip() {
@@ -39,9 +37,6 @@ export default {
 
         const { nameWithNamespace, repository, group, id } = result.data.project;
 
-        const hasDevFile = repository
-          ? repository.blobs.nodes.some(({ path }) => path === DEFAULT_DEVFILE_PATH)
-          : false;
         const rootRef = repository ? repository.rootRef : null;
 
         if (!group) {
@@ -51,7 +46,6 @@ export default {
             fullPath: this.projectFullPath,
             nameWithNamespace,
             clusterAgents: [],
-            hasDevFile,
             rootRef,
           });
           return;
@@ -81,7 +75,6 @@ export default {
           fullPath: this.projectFullPath,
           nameWithNamespace,
           clusterAgents: uniqClusterAgents,
-          hasDevFile,
           rootRef,
         });
       },
@@ -97,6 +90,10 @@ export default {
         });
 
         if (error) {
+          // NOTE: It seems to be impossible to have test coverage for this line
+          //       with the current version of mock-apollo-client. Any type of
+          //       mock error is always thrown and caught below instead of
+          //       being returned.
           return { error };
         }
 

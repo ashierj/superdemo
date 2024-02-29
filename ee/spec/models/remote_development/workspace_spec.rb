@@ -62,6 +62,15 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
     end
   end
 
+  describe '#devfile_web_url' do
+    subject(:workspace) { build(:workspace) }
+
+    it 'returns web url to devfile' do
+      # noinspection HttpUrlsUsage - suppress RubyMine warning for insecure http link.
+      expect(workspace.devfile_web_url).to eq("http://#{Gitlab.config.gitlab.host}/#{workspace.project.path_with_namespace}/-/blob/main/.devfile.yaml")
+    end
+  end
+
   describe '.before_save' do
     describe 'when creating new record', :freeze_time do
       # NOTE: The workspaces factory overrides the desired_state_updated_at to be earlier than

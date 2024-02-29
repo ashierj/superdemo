@@ -15,6 +15,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::DevfileFetcher, feature_
   let_it_be(:project) { create(:project, :in_group, :repository) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
   let(:random_string) { 'abcdef' }
+  let(:devfile_ref) { 'main' }
   let(:devfile_path) { '.devfile.yaml' }
   let(:devfile_fixture_name) { 'example.devfile.yaml' }
   let(:devfile_yaml) { read_devfile(devfile_fixture_name) }
@@ -28,7 +29,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::DevfileFetcher, feature_
       editor: editor,
       max_hours_before_termination: 24,
       desired_state: RemoteDevelopment::Workspaces::States::RUNNING,
-      devfile_ref: 'main',
+      devfile_ref: devfile_ref,
       devfile_path: devfile_path
     }
   end
@@ -69,11 +70,26 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::DevfileFetcher, feature_
       end
     end
 
-    context 'when devfile is not found' do
+    context 'when devfile_path does not exist' do
       let(:devfile_path) { 'not-found.yaml' }
 
       before do
         allow(project.repository).to receive(:blob_at_branch).and_return(nil)
+      end
+
+      it 'returns an err Result containing error details' do
+        expect(result).to be_err_result do |message|
+          expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateDevfileLoadFailed)
+          message.context => { details: String => error_details }
+          expect(error_details)
+            .to eq("Devfile path '#{devfile_path}' at ref '#{devfile_ref}' does not exist in project repository")
+        end
+      end
+    end
+
+    context 'when devfile blob data could not be loaded' do
+      before do
+        allow(project.repository).to receive_message_chain(:blob_at_branch, :data) { '' }
       end
 
       it 'returns an err Result containing error details' do

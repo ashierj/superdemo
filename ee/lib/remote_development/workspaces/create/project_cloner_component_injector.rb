@@ -17,7 +17,10 @@ module RemoteDevelopment
           }
           volume_mounts => { data_volume: Hash => data_volume }
           data_volume => { path: String => volume_path }
-          params => { project: Project => project }
+          params => {
+            project: Project => project,
+            devfile_ref: String => devfile_ref,
+          }
           settings => {
             project_cloner_image: String => image,
           }
@@ -27,7 +30,6 @@ module RemoteDevelopment
           #       reasons
           clone_dir = "#{volume_path}/#{project.path}"
           project_url = project.http_url_to_repo
-          project_ref = project.default_branch
 
           # The project is cloned only if one doesn't exist already.
           # This done to avoid resetting user's modifications to the workspace.
@@ -39,7 +41,7 @@ module RemoteDevelopment
           container_args = <<~SH.chomp
             if [ ! -d '#{clone_dir}' ];
             then
-              git clone --branch #{Shellwords.shellescape(project_ref)} #{Shellwords.shellescape(project_url)} #{Shellwords.shellescape(clone_dir)};
+              git clone --branch #{Shellwords.shellescape(devfile_ref)} #{Shellwords.shellescape(project_url)} #{Shellwords.shellescape(clone_dir)};
             fi
           SH
 

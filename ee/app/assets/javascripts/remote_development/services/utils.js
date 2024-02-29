@@ -1,6 +1,6 @@
-import userWorkspacesProjectsNamesQuery from '../graphql/queries/user_workspaces_projects_names.query.graphql';
+import getProjectsDetailsQuery from '../graphql/queries/get_projects_details.query.graphql';
 
-export const populateWorkspacesWithProjectNames = (workspaces, projects) => {
+export const populateWorkspacesWithProjectDetails = (workspaces, projects) => {
   return workspaces.map((workspace) => {
     const project = projects.find((p) => p.id === workspace.projectId);
 
@@ -10,14 +10,14 @@ export const populateWorkspacesWithProjectNames = (workspaces, projects) => {
     };
   });
 };
-export const fetchProjectNames = async (apollo, workspaces) => {
+export const fetchProjectsDetails = async (apollo, workspaces) => {
   const projectIds = workspaces.map(({ projectId }) => projectId);
 
   try {
     const {
       data: { projects },
     } = await apollo.query({
-      query: userWorkspacesProjectsNamesQuery,
+      query: getProjectsDetailsQuery,
       variables: { ids: projectIds },
     });
 

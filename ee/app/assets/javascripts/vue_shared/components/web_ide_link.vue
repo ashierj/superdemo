@@ -59,9 +59,9 @@ export default {
     onDropdownHidden() {
       this.isDropdownVisible = false;
     },
-    onProjectDetailsResult({ hasDevFile, clusterAgents }) {
+    onProjectDetailsResult({ clusterAgents }) {
       this.projectDetailsLoaded = true;
-      this.supportsWorkspaces = hasDevFile && clusterAgents.length > 0;
+      this.supportsWorkspaces = clusterAgents.length > 0;
     },
     onProjectDetailsError() {
       this.projectDetailsLoaded = true;

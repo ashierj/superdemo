@@ -6,12 +6,12 @@ import App from 'ee/remote_development/pages/app.vue';
 import WorkspacesList from 'ee/remote_development/pages/list.vue';
 import createRouter from 'ee/remote_development/router/index';
 import CreateWorkspace from 'ee/remote_development/pages/create.vue';
-import userWorkspacesProjectsNamesQuery from 'ee/remote_development/graphql/queries/user_workspaces_projects_names.query.graphql';
+import getProjectsDetailsQuery from 'ee/remote_development/graphql/queries/get_projects_details.query.graphql';
 import { ROUTES } from 'ee/remote_development/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
 import {
-  WORKSPACES_PROJECT_NAMES_QUERY_RESULT,
+  GET_PROJECTS_DETAILS_QUERY_RESULT,
   USER_WORKSPACES_LIST_QUERY_EMPTY_RESULT,
 } from '../mock_data';
 
@@ -46,8 +46,8 @@ describe('remote_development/router/index.js', () => {
           jest.fn().mockResolvedValue(USER_WORKSPACES_LIST_QUERY_EMPTY_RESULT),
         ],
         [
-          userWorkspacesProjectsNamesQuery,
-          jest.fn().mockResolvedValueOnce(WORKSPACES_PROJECT_NAMES_QUERY_RESULT),
+          getProjectsDetailsQuery,
+          jest.fn().mockResolvedValueOnce(GET_PROJECTS_DETAILS_QUERY_RESULT),
         ],
       ]),
       provide: {
