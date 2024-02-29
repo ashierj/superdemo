@@ -40,6 +40,11 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanExecutionP
           {
             name: policy[:name],
             description: policy[:description],
+            policy_scope: {
+              compliance_frameworks: [],
+              including_projects: [],
+              excluding_projects: []
+            },
             edit_path: Gitlab::Routing.url_helpers.edit_project_security_policy_url(
               project, id: CGI.escape(policy[:name]), type: 'scan_execution_policy'
             ),

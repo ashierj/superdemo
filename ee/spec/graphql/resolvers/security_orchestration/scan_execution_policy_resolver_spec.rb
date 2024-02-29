@@ -36,6 +36,11 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver, fe
         description: 'This policy enforces to run DAST for every pipeline within the project',
         edit_path: edit_project_policy_path(project, policy),
         enabled: true,
+        policy_scope: {
+          compliance_frameworks: [],
+          including_projects: [],
+          excluding_projects: []
+        },
         yaml: YAML.dump(policy.deep_stringify_keys),
         updated_at: policy_configuration.policy_last_updated_at,
         source: {
@@ -131,6 +136,11 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver, fe
                   enabled: true,
                   yaml: YAML.dump(policy.deep_stringify_keys),
                   updated_at: group_policy_configuration.policy_last_updated_at,
+                  policy_scope: {
+                    compliance_frameworks: [],
+                    including_projects: [],
+                    excluding_projects: []
+                  },
                   source: {
                     project: nil,
                     namespace: group,
@@ -186,6 +196,11 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver, fe
                   enabled: true,
                   yaml: YAML.dump(policy.deep_stringify_keys),
                   updated_at: policy_configuration.policy_last_updated_at,
+                  policy_scope: {
+                    compliance_frameworks: [],
+                    including_projects: [],
+                    excluding_projects: []
+                  },
                   source: {
                     project: project,
                     namespace: nil,
@@ -199,6 +214,11 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver, fe
                   enabled: true,
                   yaml: YAML.dump(policy.deep_stringify_keys),
                   updated_at: group_policy_configuration.policy_last_updated_at,
+                  policy_scope: {
+                    compliance_frameworks: [],
+                    including_projects: [],
+                    excluding_projects: []
+                  },
                   source: {
                     project: nil,
                     namespace: group,
