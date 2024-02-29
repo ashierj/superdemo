@@ -78,7 +78,7 @@ describe('Sidebar Ancestors Widget', () => {
           },
         ],
       ] = wrapper.emitted('fetch-error');
-      expect(message).toBe(wrapper.vm.$options.i18n.fetchingError);
+      expect(message).toBe('An error occurred while fetching ancestors');
       expect(networkError).toEqual(mockError);
     });
   });
