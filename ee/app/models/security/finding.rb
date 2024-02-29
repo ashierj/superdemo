@@ -42,6 +42,7 @@ module Security
 
     has_many :state_transitions, through: :vulnerability
     has_many :issue_links, through: :vulnerability
+    has_many :external_issue_links, through: :vulnerability
     has_many :merge_request_links, through: :vulnerability
 
     has_many :feedbacks,
@@ -117,6 +118,7 @@ module Security
     scope :with_vulnerability, -> { includes(:vulnerability) }
     scope :with_state_transitions, -> { with_vulnerability.includes(:state_transitions) }
     scope :with_issue_links, -> { with_vulnerability.includes(:issue_links) }
+    scope :with_external_issue_links, -> { with_vulnerability.includes(:external_issue_links) }
     scope :with_merge_request_links, -> { with_vulnerability.includes(:merge_request_links) }
     scope :deduplicated, -> { where(deduplicated: true) }
     scope :grouped_by_scan_type, -> { joins(:scan).group('security_scans.scan_type') }

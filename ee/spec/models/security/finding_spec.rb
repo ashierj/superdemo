@@ -16,6 +16,7 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     it { is_expected.to have_one(:vulnerability).through(:vulnerability_finding) }
     it { is_expected.to have_many(:state_transitions).through(:vulnerability) }
     it { is_expected.to have_many(:issue_links).through(:vulnerability) }
+    it { is_expected.to have_many(:external_issue_links).through(:vulnerability) }
     it { is_expected.to have_many(:merge_request_links).through(:vulnerability) }
 
     it {

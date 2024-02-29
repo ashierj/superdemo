@@ -28,6 +28,14 @@ RSpec.describe Vulnerabilities::FindingEntity, feature_category: :vulnerability_
     )
   end
 
+  let(:vulnerability) do
+    build(
+      :vulnerability,
+      project: project,
+      finding_id: occurrence.id
+    )
+  end
+
   let(:flags) do
     [
       build(:vulnerabilities_flag)
@@ -134,6 +142,65 @@ RSpec.describe Vulnerabilities::FindingEntity, feature_category: :vulnerability_
 
         it 'does contains create jira issue path' do
           expect(subject[:create_jira_issue_url]).to be_present
+        end
+
+        context 'and an external link to a Vulnerability is present' do
+          let!(:external_issue_link) do
+            create(
+              :vulnerabilities_external_issue_link,
+              vulnerability: vulnerability,
+              author: user
+            )
+          end
+
+          let(:reporter) do
+            {
+              'displayName' => 'reporter',
+              'avatarUrls' => { '48x48' => 'http://reporter.avatar' },
+              'name' => 'reporter@reporter.com'
+            }
+          end
+
+          let(:assignee) do
+            {
+              'displayName' => 'assignee',
+              'avatarUrls' => { '48x48' => 'http://assignee.avatar' },
+              'name' => 'assignee@assignee.com'
+            }
+          end
+
+          let(:jira_issue_attributes) do
+            {
+              summary: 'Title with <h1>HTML</h1>',
+              created: '2020-06-25T15:39:30.000+0000',
+              updated: '2020-06-26T15:38:32.000+0000',
+              resolutiondate: '2020-06-27T13:23:51.000+0000',
+              labels: ['backend'],
+              fields: {
+                'reporter' => reporter,
+                'assignee' => assignee
+              },
+              project: {
+                key: 'GL'
+              },
+              key: 'GL-5',
+              status: {
+                name: 'To Do'
+              }
+            }
+          end
+
+          let(:new_entity) { instance_double('Vulnerabilities::ExternalIssueLinkEntity') }
+
+          before do
+            occurrence.vulnerability = vulnerability
+            allow(Vulnerabilities::ExternalIssueLinkEntity).to receive(:new).and_return(new_entity)
+            allow(new_entity).to receive(:presented).and_return(jira_issue_attributes)
+          end
+
+          it 'contains the external issue details' do
+            expect(subject[:external_issue_links]).not_to be_empty
+          end
         end
       end
 

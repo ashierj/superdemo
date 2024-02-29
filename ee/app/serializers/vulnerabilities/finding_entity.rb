@@ -36,6 +36,7 @@ class Vulnerabilities::FindingEntity < Grape::Entity
 
   expose :state_transitions, using: Vulnerabilities::StateTransitionEntity
   expose :issue_links, using: Vulnerabilities::IssueLinkEntity
+  expose :external_issue_links, using: Vulnerabilities::ExternalIssueLinkEntity
   expose :merge_request_links, using: Vulnerabilities::MergeRequestLinkEntity
 
   expose :metadata, merge: true, if: ->(occurrence, _) { occurrence.raw_metadata } do
