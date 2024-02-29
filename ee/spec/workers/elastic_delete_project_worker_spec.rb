@@ -77,6 +77,39 @@ RSpec.describe ElasticDeleteProjectWorker, :elastic, feature_category: :global_s
     expect { worker.perform(non_existing_record_id, "project_#{non_existing_record_id}") }.not_to raise_error
   end
 
+  context 'when there is a version conflict in remove_project_document' do
+    before do
+      allow(::Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
+      allow(helper.client).to receive(:delete_by_query).and_raise(Elasticsearch::Transport::Transport::Errors::Conflict)
+      allow(helper).to receive(:remove_wikis_from_the_standalone_index).and_return(nil)
+    end
+
+    it 'enqueues the worker to try again' do
+      expect(described_class).to receive(:perform_in).with(1.minute, 1, 2, {}).twice
+
+      expect { worker.perform(1, 2) }.not_to raise_error
+    end
+  end
+
+  context 'when there is a version conflict in remove_children_documents' do
+    before do
+      allow(::Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
+      allow(helper.client).to receive(:delete_by_query).and_raise(Elasticsearch::Transport::Transport::Errors::Conflict)
+      allow(helper).to receive(:remove_wikis_from_the_standalone_index).and_return(nil)
+
+      ::Elastic::ProcessInitialBookkeepingService.track!(project)
+      ::Elastic::ProcessInitialBookkeepingService.maintain_indexed_associations(project, [:issues])
+
+      ensure_elasticsearch_index!
+    end
+
+    it 'enqueues the worker to try again' do
+      expect(described_class).to receive(:perform_in).with(1.minute, project.id, project.es_id, {}).once
+
+      expect { worker.perform(project.id, project.es_id) }.not_to raise_error
+    end
+  end
+
   context 'when namespace_routing_id is passed in options' do
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, group: group) }
