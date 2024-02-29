@@ -14,7 +14,7 @@ const i18n = {
   scanResultPolicyTitle: s__('SecurityOrchestration|Merge request approval policy'),
   scanResultPolicyTitlePopoverTitle: s__('SecurityOrchestration|Updated policy name'),
   scanResultPolicyTitlePopoverDesc: s__(
-    'SecurityOrchestration|The Scan result policy is now called the Merge request approval policy to better align with its purpose. For more details, see the release notes.',
+    'SecurityOrchestration|The Scan result policy is now called the Merge request approval policy to better align with its purpose.',
   ),
   scanResultPolicySubTitle: s__('SecurityOrchestraation|(Formerly Scan result policy)'),
   scanResultPolicyDesc: s__(
