@@ -32,7 +32,10 @@ describe('ProductAnalyticsGroupUsage', () => {
   const findError = () => wrapper.findComponent(GlAlert);
   const findUsageOverview = () => wrapper.findComponent(ProductAnalyticsGroupUsageOverview);
   const findChart = () => wrapper.findComponent(ProductAnalyticsGroupMonthlyUsageChart);
-  const findLearnMoreLink = () => wrapper.findByTestId('product-analytics-usage-quota-learn-more');
+  const findUsageQuotaLearnMoreLink = () =>
+    wrapper.findByTestId('product-analytics-usage-quota-learn-more');
+  const findDataRetentionLearnMoreLink = () =>
+    wrapper.findByTestId('product-analytics-data-retention-learn-more');
 
   const mockProjectsUsageDataHandler = jest.fn();
 
@@ -63,8 +66,19 @@ describe('ProductAnalyticsGroupUsage', () => {
   it('renders a section header', () => {
     createComponent();
 
-    expect(findLearnMoreLink().attributes('href')).toBe(
+    expect(findUsageQuotaLearnMoreLink().attributes('href')).toBe(
       '/help/user/product_analytics/index#product-analytics-usage-quota',
+    );
+  });
+
+  it('specified the data retention policy', () => {
+    createComponent();
+
+    expect(wrapper.text()).toContain(
+      'If GitLab manages your cluster, then GitLab retains your analytics data for 1 year.',
+    );
+    expect(findDataRetentionLearnMoreLink().attributes('href')).toBe(
+      '/help/user/product_analytics/index#data-retention',
     );
   });
 

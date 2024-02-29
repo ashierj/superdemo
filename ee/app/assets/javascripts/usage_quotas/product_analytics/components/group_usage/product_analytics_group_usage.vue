@@ -91,8 +91,11 @@ export default {
       });
     },
   },
-  LEARN_MORE_URL: helpPagePath('/user/product_analytics/index', {
+  USAGE_QUOTA_LEARN_MORE_URL: helpPagePath('/user/product_analytics/index', {
     anchor: 'product-analytics-usage-quota',
+  }),
+  DATA_RETENTION_LEARN_MORE_URL: helpPagePath('/user/product_analytics/index', {
+    anchor: 'data-retention',
   }),
 };
 </script>
@@ -103,14 +106,21 @@ export default {
       <gl-sprintf
         :message="
           s__(
-            'ProductAnalytics|Product analytics usage is calculated based on the total number of events received from projects within the group. Contact your account manager if you need additional event quota. %{linkStart}Learn more%{linkEnd}.',
+            'ProductAnalytics|Product analytics usage is calculated based on the total number of events received from projects within the group. Contact your account manager if you need additional event quota. %{usageQuotaLinkStart}Learn more%{usageQuotaLinkEnd}. If GitLab manages your cluster, then GitLab retains your analytics data for 1 year. %{dataRetentionLinkStart}Learn more about data retention policy%{dataRetentionLinkEnd}.',
           )
         "
       >
-        <template #link="{ content }">
+        <template #usageQuotaLink="{ content }">
           <gl-link
-            :href="$options.LEARN_MORE_URL"
+            :href="$options.USAGE_QUOTA_LEARN_MORE_URL"
             data-testid="product-analytics-usage-quota-learn-more"
+            >{{ content }}</gl-link
+          >
+        </template>
+        <template #dataRetentionLink="{ content }">
+          <gl-link
+            :href="$options.DATA_RETENTION_LEARN_MORE_URL"
+            data-testid="product-analytics-data-retention-learn-more"
             >{{ content }}</gl-link
           >
         </template>

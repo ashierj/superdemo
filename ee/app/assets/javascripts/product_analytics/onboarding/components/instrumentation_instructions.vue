@@ -39,7 +39,7 @@ export default {
   i18n: {
     sdkClientsTitle: s__('ProductAnalytics|SDK clients'),
     sdkHost: s__('ProductAnalytics|SDK host'),
-    sdkHostDescription: s__('ProductAnalytics|The host to send all tracking events to'),
+    sdkHostDescription: s__('ProductAnalytics|The receiver of tracking events'),
     sdkAppId: s__('ProductAnalytics|SDK application ID'),
     sdkAppIdDescription: s__('ProductAnalytics|The sender of tracking events'),
     instrumentAppDescription: s__(
