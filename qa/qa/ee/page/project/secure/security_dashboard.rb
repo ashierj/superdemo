@@ -82,8 +82,14 @@ module QA
               click_element('export-vulnerabilities-button')
             end
 
+            def vuln_report_page_exists?
+              find_element('breadcrumb-current-link', wait: 5).text == 'Vulnerability report'
+            end
+
             def wait_for_vuln_report_to_load
-              wait_until(max_duration: 40, sleep_interval: 2, message: "Vulnerability report not loaded yet") do
+              raise QA::Page::Base::ElementNotFound, "Vulnerability page not loaded" unless vuln_report_page_exists?
+
+              wait_until(max_duration: 40, sleep_interval: 10, message: "Vulnerability report not loaded yet") do
                 has_element?('vulnerability-report-header')
               end
               wait_for_requests
