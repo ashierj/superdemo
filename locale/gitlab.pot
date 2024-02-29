@@ -14851,9 +14851,6 @@ msgstr ""
 msgid "CreateValueStreamForm|Create from no template"
 msgstr ""
 
-msgid "CreateValueStreamForm|Create new Value Stream"
-msgstr ""
-
 msgid "CreateValueStreamForm|Create value stream"
 msgstr ""
 
@@ -14894,6 +14891,9 @@ msgid "CreateValueStreamForm|Minimum length %{minLength} characters"
 msgstr ""
 
 msgid "CreateValueStreamForm|Name is required"
+msgstr ""
+
+msgid "CreateValueStreamForm|New Value Stream"
 msgstr ""
 
 msgid "CreateValueStreamForm|New stage"
