@@ -5,7 +5,7 @@ components:
   - name: tooling-container
     attributes:
       gl/inject-editor: true
-      gl/use-vscode-1-81: false
+      gl/use-vscode-1-81: true
     container:
       image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
       args:
@@ -54,7 +54,7 @@ components:
       mountSources: true
   - name: gl-tools-injector
     container:
-      image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:9
+      image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:7
       env:
         - name: GL_TOOLS_DIR
           value: "/projects/.gl-tools"
