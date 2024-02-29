@@ -23,12 +23,7 @@ class Projects::Analytics::IssuesAnalyticsController < Projects::ApplicationCont
       format.html
 
       format.json do
-        @chart_data = if Feature.enabled?(:new_issues_analytics_chart_data, project.namespace)
-                        Analytics::IssuesAnalytics.new(issues: issuables_collection, months_back: params[:months_back])
-                          .monthly_counters
-                      else
-                        IssuablesAnalytics.new(issuables: issuables_collection, months_back: params[:months_back]).data
-                      end
+        @chart_data = IssuablesAnalytics.new(issuables: issuables_collection, months_back: params[:months_back]).data
 
         render json: @chart_data
       end
