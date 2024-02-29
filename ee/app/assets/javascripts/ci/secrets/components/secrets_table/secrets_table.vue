@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlCard, GlTableLite, GlSprintf, GlLabel } from '@gitlab/ui';
+import { GlButton, GlCard, GlTableLite, GlSprintf, GlLabel, GlPagination } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserDate from '~/vue_shared/components/user_date.vue';
@@ -10,6 +10,8 @@ import {
   EDIT_ROUTE_NAME,
   SCOPED_LABEL_COLOR,
   UNSCOPED_LABEL_COLOR,
+  INITIAL_PAGE,
+  PAGE_SIZE,
 } from '../../constants';
 import SecretActionsCell from './secret_actions_cell.vue';
 
@@ -21,20 +23,32 @@ export default {
     GlTableLite,
     GlSprintf,
     GlLabel,
+    GlPagination,
     TimeAgo,
     UserDate,
     SecretActionsCell,
   },
   props: {
     secrets: {
-      type: Array,
+      type: Object,
       required: false,
-      default: () => [],
+      default: () => {},
     },
+  },
+  data() {
+    return {
+      currentPage: INITIAL_PAGE,
+    };
   },
   computed: {
     secretsCount() {
-      return this.secrets.length;
+      return this.secrets?.count || 0;
+    },
+    secretsNodes() {
+      return this.secrets?.nodes || [];
+    },
+    showPagination() {
+      return this.secretsCount > PAGE_SIZE;
     },
   },
   methods: {
@@ -68,6 +82,7 @@ export default {
   ],
   LONG_DATE_FORMAT_WITH_TZ,
   NEW_ROUTE_NAME,
+  PAGE_SIZE,
 };
 </script>
 <template>
@@ -101,7 +116,7 @@ export default {
           </gl-button>
         </div>
       </template>
-      <gl-table-lite :fields="$options.fields" :items="secrets" stacked="md" class="gl-mb-0">
+      <gl-table-lite :fields="$options.fields" :items="secretsNodes" stacked="md" class="gl-mb-0">
         <template #cell(name)="{ item: { key, name, labels } }">
           <router-link
             data-testid="secret-details-link"
@@ -135,5 +150,18 @@ export default {
         </template>
       </gl-table-lite>
     </gl-card>
+    <gl-pagination
+      v-if="showPagination"
+      v-model="currentPage"
+      :per-page="$options.PAGE_SIZE"
+      :total-items="secretsCount"
+      :prev-text="__('Prev')"
+      :next-text="__('Next')"
+      :label-next-page="__('Go to next page')"
+      :label-prev-page="__('Go to previous page')"
+      align="center"
+      class="gl-mt-5"
+      @input="$emit('onPageChange', $event)"
+    />
   </div>
 </template>

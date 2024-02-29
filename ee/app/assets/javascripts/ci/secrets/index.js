@@ -2,6 +2,9 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { injectVueAppBreadcrumbs } from '~/lib/utils/breadcrumbs';
+import { TYPENAME_GROUP, TYPENAME_PROJECT } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { resolvers, cacheConfig } from './graphql/settings';
 import getGroupSecretsQuery from './graphql/queries/client/get_group_secrets.query.graphql';
 import getProjectSecretsQuery from './graphql/queries/client/get_project_secrets.query.graphql';
 import createRouter from './router';
@@ -15,7 +18,7 @@ import { mockGroupSecretsData, mockProjectSecretsData } from './mock_data';
 Vue.use(VueApollo);
 
 const apolloProvider = new VueApollo({
-  defaultClient: createDefaultClient(),
+  defaultClient: createDefaultClient(resolvers, { cacheConfig }),
 });
 
 const initSecretsApp = (el, app, props, basePath) => {
@@ -48,8 +51,10 @@ export const initGroupSecretsApp = () => {
     variables: { fullPath: groupPath },
     data: {
       group: {
-        id: groupId,
+        id: convertToGraphQLId(TYPENAME_GROUP, groupId),
+        fullPath: groupPath,
         secrets: {
+          count: mockGroupSecretsData.length,
           nodes: mockGroupSecretsData,
         },
       },
@@ -73,8 +78,10 @@ export const initProjectSecretsApp = () => {
     variables: { fullPath: projectPath },
     data: {
       project: {
-        id: projectId,
+        id: convertToGraphQLId(TYPENAME_PROJECT, projectId),
+        fullPath: projectPath,
         secrets: {
+          count: mockProjectSecretsData.length,
           nodes: mockProjectSecretsData,
         },
       },
