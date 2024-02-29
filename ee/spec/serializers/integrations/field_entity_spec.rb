@@ -35,7 +35,7 @@ RSpec.describe Integrations::FieldEntity do
       end
     end
 
-    context 'with Google cloud artifact registry integration' do
+    context 'with Google Artifact Registry integration' do
       let(:integration) { create(:google_cloud_platform_artifact_registry_integration) }
 
       context 'with field with type text' do

@@ -42,14 +42,14 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
   describe '.title' do
     subject { described_class.title }
 
-    it { is_expected.to eq(s_('GoogleCloudPlatformService|Google Cloud Artifact Registry')) }
+    it { is_expected.to eq(s_('GoogleCloudPlatformService|Google Artifact Registry')) }
   end
 
   describe '.description' do
     subject { described_class.description }
 
     it do
-      is_expected.to eq(s_('GoogleCloudPlatformService|Connect Google Cloud Artifact Registry to GitLab.'))
+      is_expected.to eq(s_('GoogleCloudPlatformService|Manage your artifacts in Google Artifact Registry.'))
     end
   end
 

@@ -28,12 +28,12 @@ module Resolvers
         argument :repository,
           GraphQL::Types::String,
           required: true,
-          description: 'Repository on the Google Cloud Artifact Registry.'
+          description: 'Repository on the Google Artifact Registry.'
 
         argument :image,
           GraphQL::Types::String,
           required: true,
-          description: "Name of the image in the Google Cloud Artifact Registry."
+          description: "Name of the image in the Google Artifact Registry."
 
         argument :project_path,
           GraphQL::Types::ID,

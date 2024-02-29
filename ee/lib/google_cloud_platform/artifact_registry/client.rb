@@ -8,7 +8,7 @@ module GoogleCloudPlatform
       include Gitlab::Utils::StrongMemoize
 
       DEFAULT_PAGE_SIZE = 10
-      ARTIFACT_REGISTRY_INTEGRATION_DISABLED = 'The Google Cloud Artifact Registry project integration is disabled'
+      ARTIFACT_REGISTRY_INTEGRATION_DISABLED = 'The Google Artifact Registry project integration is disabled'
 
       # Initialize and build a new ArtifactRegistry client.
       # This will use glgo and a workload identity federation instance to exchange

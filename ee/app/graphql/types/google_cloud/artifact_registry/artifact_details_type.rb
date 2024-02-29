@@ -5,7 +5,7 @@ module Types
     module ArtifactRegistry
       class ArtifactDetailsType < BaseUnion
         graphql_name 'GoogleCloudArtifactRegistryArtifactDetails'
-        description 'Details type of Google Cloud Artifact Registry artifacts'
+        description 'Details type of Google Artifact Registry artifacts'
 
         possible_types ::Types::GoogleCloud::ArtifactRegistry::DockerImageDetailsType
 
@@ -15,7 +15,7 @@ module Types
             ::Types::GoogleCloud::ArtifactRegistry::DockerImageDetailsType
           else
             raise ::Gitlab::Graphql::Errors::BaseError,
-              "Unsupported Google Cloud Artifact Registry type #{object.class.name}"
+              "Unsupported Google Artifact Registry type #{object.class.name}"
           end
         end
       end
