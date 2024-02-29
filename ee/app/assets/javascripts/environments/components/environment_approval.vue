@@ -292,7 +292,7 @@ export default {
       @primary="approve"
       @secondary="reject"
     >
-      <gl-loading-icon v-if="isLoading" size="lg" class="gl-absolute gl-top-half gl-left-50p" />
+      <gl-loading-icon v-if="isLoading" size="lg" class="gl-absolute gl-top-1/2 gl-left-1/2" />
       <div v-else>
         <p>
           <gl-sprintf :message="$options.i18n.message">
