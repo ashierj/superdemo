@@ -12,6 +12,7 @@ export const WORKSPACE = {
   url: `${TEST_HOST}/workspace/1`,
   devfileRef: 'main',
   devfilePath: '.devfile.yaml',
+  devfileWebUrl: 'http://gdk.test:3000/gitlab-org/gitlab-shell/-/blob/main/.devfile.yaml',
   createdAt: '2023-05-01T18:24:34Z',
 };
 
@@ -39,6 +40,7 @@ export const USER_WORKSPACES_LIST_QUERY_RESULT = {
             url: 'https://8000-workspace-1-1-idmi02.workspaces.localdev.me?tkn=password',
             devfileRef: 'main',
             devfilePath: '.devfile.yaml',
+            devfileWebUrl: 'http://gdk.test:3000/gitlab-org/gitlab-shell/-/blob/main/.devfile.yaml',
             projectId: 'gid://gitlab/Project/1',
             createdAt: '2023-04-29T18:24:34Z',
           },
@@ -51,6 +53,7 @@ export const USER_WORKSPACES_LIST_QUERY_RESULT = {
             url: 'https://8000-workspace-1-1-rfu27q.workspaces.localdev.me?tkn=password',
             devfileRef: 'main',
             devfilePath: '.devfile.yaml',
+            devfileWebUrl: 'http://gdk.test:3000/gitlab-org/gitlab-shell/-/blob/main/.devfile.yaml',
             projectId: 'gid://gitlab/Project/1',
             createdAt: '2023-05-01T18:24:34Z',
           },
@@ -100,6 +103,8 @@ export const AGENT_WORKSPACES_LIST_QUERY_RESULT = {
               url: 'https://8000-workspace-1-1-idmi02.workspaces.localdev.me?tkn=password',
               devfileRef: 'main',
               devfilePath: '.devfile.yaml',
+              devfileWebUrl:
+                'http://gdk.test:3000/gitlab-org/gitlab-shell/-/blob/main/.devfile.yaml',
               projectId: 'gid://gitlab/Project/1',
               createdAt: '2023-04-29T18:24:34Z',
             },
@@ -112,6 +117,8 @@ export const AGENT_WORKSPACES_LIST_QUERY_RESULT = {
               url: 'https://8000-workspace-1-1-rfu27q.workspaces.localdev.me?tkn=password',
               devfileRef: 'main',
               devfilePath: '.devfile.yaml',
+              devfileWebUrl:
+                'http://gdk.test:3000/gitlab-org/gitlab-shell/-/blob/main/.devfile.yaml',
               projectId: 'gid://gitlab/Project/1',
               createdAt: '2023-05-01T18:24:34Z',
             },
@@ -176,17 +183,26 @@ export const GET_PROJECT_DETAILS_QUERY_RESULT = {
       nameWithNamespace: 'GitLab Org / Subgroup / GitLab',
       repository: {
         rootRef: 'main',
-        blobs: {
-          nodes: [
-            { id: '.editorconfig', path: '.editorconfig' },
-            { id: '.eslintrc.js', path: '.eslintrc.js' },
-          ],
-        },
       },
       group: {
         id: 'gid://gitlab/Group/80',
         fullPath: 'gitlab-org/subgroup',
       },
+    },
+  },
+};
+
+export const GET_PROJECTS_DETAILS_QUERY_RESULT = {
+  data: {
+    projects: {
+      nodes: [
+        {
+          id: 'gid://gitlab/Project/1',
+          nameWithNamespace: 'Gitlab Org / Gitlab Shell',
+          __typename: 'Project',
+        },
+      ],
+      __typename: 'ProjectConnection',
     },
   },
 };
@@ -295,21 +311,6 @@ export const WORKSPACE_UPDATE_MUTATION_RESULT = {
         actualState: WORKSPACE_STATES.running,
         desiredState: WORKSPACE_DESIRED_STATES.restartRequested,
       },
-    },
-  },
-};
-
-export const WORKSPACES_PROJECT_NAMES_QUERY_RESULT = {
-  data: {
-    projects: {
-      nodes: [
-        {
-          id: 'gid://gitlab/Project/1',
-          nameWithNamespace: 'Gitlab Org / Gitlab Shell',
-          __typename: 'Project',
-        },
-      ],
-      __typename: 'ProjectConnection',
     },
   },
 };

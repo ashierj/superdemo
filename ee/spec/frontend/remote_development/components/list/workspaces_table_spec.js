@@ -7,11 +7,11 @@ import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import WorkspacesTable from 'ee/remote_development/components/list/workspaces_table.vue';
 import WorkspaceActions from 'ee/remote_development/components/common/workspace_actions.vue';
 import WorkspaceStateIndicator from 'ee/remote_development/components/common/workspace_state_indicator.vue';
-import { populateWorkspacesWithProjectNames } from 'ee/remote_development/services/utils';
+import { populateWorkspacesWithProjectDetails } from 'ee/remote_development/services/utils';
 import { WORKSPACE_STATES, WORKSPACE_DESIRED_STATES } from 'ee/remote_development/constants';
 import {
   USER_WORKSPACES_LIST_QUERY_RESULT,
-  WORKSPACES_PROJECT_NAMES_QUERY_RESULT,
+  GET_PROJECTS_DETAILS_QUERY_RESULT,
 } from '../../mock_data';
 
 jest.mock('~/lib/logger');
@@ -29,12 +29,21 @@ const findTableRowsAsData = (wrapper) =>
       workspaceState: tds.at(0).findComponent(WorkspaceStateIndicator).props('workspaceState'),
       nameText: tds.at(1).text(),
       createdAt: tds.at(2).findComponent(TimeAgoTooltip).props().time,
-      actionsProps: tds.at(4).findComponent(WorkspaceActions).props(),
+      actionsProps: tds.at(5).findComponent(WorkspaceActions).props(),
     };
 
-    if (tds.at(3).findComponent(GlLink).exists()) {
-      rowData.previewText = tds.at(3).text();
-      rowData.previewHref = tds.at(3).findComponent(GlLink).attributes('href');
+    const td3 = tds.at(3);
+    const devfileLink = td3.findComponent(GlLink);
+    if (devfileLink.exists()) {
+      rowData.devfileText = td3.text();
+      rowData.devfileHref = devfileLink.attributes('href');
+      rowData.devfileTooltipTitle = devfileLink.attributes('title');
+      rowData.devfileTooltipAriaLabel = devfileLink.attributes('aria-label');
+    }
+
+    if (tds.at(4).findComponent(GlLink).exists()) {
+      rowData.previewText = tds.at(4).text();
+      rowData.previewHref = tds.at(4).findComponent(GlLink).attributes('href');
     }
 
     return rowData;
@@ -51,9 +60,9 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
   };
 
   const createWrapper = ({
-    workspaces = populateWorkspacesWithProjectNames(
+    workspaces = populateWorkspacesWithProjectDetails(
       USER_WORKSPACES_LIST_QUERY_RESULT.data.currentUser.workspaces.nodes,
-      WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes,
+      GET_PROJECTS_DETAILS_QUERY_RESULT.data.projects.nodes,
     ),
   } = {}) => {
     updateWorkspaceMutationMock = jest.fn();
@@ -97,9 +106,9 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
 
     it('displays user workspaces correctly', () => {
       expect(findTableRowsAsData(wrapper)).toEqual(
-        populateWorkspacesWithProjectNames(
+        populateWorkspacesWithProjectDetails(
           USER_WORKSPACES_LIST_QUERY_RESULT.data.currentUser.workspaces.nodes,
-          WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes,
+          GET_PROJECTS_DETAILS_QUERY_RESULT.data.projects.nodes,
         ).map((x) => {
           return {
             nameText: `${x.projectName}   ${x.name}`,
@@ -110,6 +119,9 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
               desiredState: x.desiredState,
               compact: false,
             },
+            devfileText: `${x.devfilePath} on ${x.devfileRef}`,
+            devfileHref: x.devfileWebUrl,
+            devfileTooltipTitle: x.devfileWebUrl,
             ...(x.actualState === WORKSPACE_STATES.running
               ? {
                   previewText: x.url,

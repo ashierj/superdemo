@@ -114,6 +114,10 @@ module RemoteDevelopment
       URI::HTTPS.build(host: "#{url_prefix}.#{dns_zone}", query: url_query_string).to_s
     end
 
+    def devfile_web_url
+      project.http_url_to_repo.gsub(/\.git$/, "/-/blob/#{devfile_ref}/#{devfile_path}")
+    end
+
     private
 
     def max_hours_before_termination_limit

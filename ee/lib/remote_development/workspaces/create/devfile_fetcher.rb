@@ -27,9 +27,18 @@ module RemoteDevelopment
           end
 
           repository = project.repository
-          devfile_yaml = repository.blob_at_branch(devfile_ref, devfile_path)&.data
 
-          unless devfile_yaml
+          devfile_blob = repository.blob_at_branch(devfile_ref, devfile_path)
+
+          unless devfile_blob
+            return Result.err(WorkspaceCreateDevfileLoadFailed.new(
+              details: "Devfile path '#{devfile_path}' at ref '#{devfile_ref}' does not exist in project repository"
+            ))
+          end
+
+          devfile_yaml = devfile_blob.data
+
+          unless devfile_yaml.present?
             return Result.err(WorkspaceCreateDevfileLoadFailed.new(details: "Devfile could not be loaded from project"))
           end
 

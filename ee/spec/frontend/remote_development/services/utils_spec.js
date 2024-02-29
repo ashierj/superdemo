@@ -1,7 +1,7 @@
-import { populateWorkspacesWithProjectNames } from 'ee/remote_development/services/utils';
+import { populateWorkspacesWithProjectDetails } from 'ee/remote_development/services/utils';
 
 describe('ee/remote_development/services/utils', () => {
-  describe('populateWorkspacesWithProjectNames', () => {
+  describe('populateWorkspacesWithProjectDetails', () => {
     describe('when the workspace references an existing project', () => {
       it('sets the projectName property to the project nameWithNamespace property', () => {
         const workspaces = [
@@ -16,7 +16,7 @@ describe('ee/remote_development/services/utils', () => {
           },
         ];
 
-        expect(populateWorkspacesWithProjectNames(workspaces, projects)).toEqual([
+        expect(populateWorkspacesWithProjectDetails(workspaces, projects)).toEqual([
           {
             projectId: 'foo',
             projectName: 'Foo',
@@ -39,7 +39,7 @@ describe('ee/remote_development/services/utils', () => {
           },
         ];
 
-        expect(populateWorkspacesWithProjectNames(workspaces, projects)).toEqual([
+        expect(populateWorkspacesWithProjectDetails(workspaces, projects)).toEqual([
           {
             projectId: 'bar',
             projectName: 'bar',

@@ -1,4 +1,4 @@
-query userWorkspacesProjectsNames($ids: [ID!]) {
+query getProjectsDetails($ids: [ID!]) {
   projects(ids: $ids) {
     nodes {
       id

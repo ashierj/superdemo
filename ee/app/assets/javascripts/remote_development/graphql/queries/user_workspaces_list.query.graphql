@@ -26,6 +26,7 @@ query userWorkspacesList(
         url
         devfileRef
         devfilePath
+        devfileWebUrl
         createdAt
       }
       pageInfo {

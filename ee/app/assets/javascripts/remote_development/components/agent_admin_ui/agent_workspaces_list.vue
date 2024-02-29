@@ -7,7 +7,7 @@ import {
   WORKSPACES_LIST_POLL_INTERVAL,
 } from '../../constants';
 import agentWorkspacesListQuery from '../../graphql/queries/agent_workspaces_list.query.graphql';
-import { fetchProjectNames, populateWorkspacesWithProjectNames } from '../../services/utils';
+import { fetchProjectsDetails, populateWorkspacesWithProjectDetails } from '../../services/utils';
 import WorkspacesList from '../common/workspaces_list.vue';
 
 export const i18n = {
@@ -51,7 +51,7 @@ export default {
           return;
         }
         const workspaces = data?.project?.clusterAgent?.workspaces?.nodes;
-        const result = await fetchProjectNames(this.$apollo, workspaces);
+        const result = await fetchProjectsDetails(this.$apollo, workspaces);
 
         if (result.error) {
           this.error = i18n.loadingWorkspacesFailed;
@@ -60,7 +60,7 @@ export default {
           return;
         }
 
-        this.workspaces = populateWorkspacesWithProjectNames(workspaces, result.projects);
+        this.workspaces = populateWorkspacesWithProjectDetails(workspaces, result.projects);
         this.pageInfo = data?.project?.clusterAgent?.workspaces?.pageInfo;
       },
     },

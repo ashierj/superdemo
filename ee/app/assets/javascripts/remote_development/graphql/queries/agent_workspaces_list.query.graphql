@@ -22,6 +22,7 @@ query agentWorkspaces(
           url
           devfileRef
           devfilePath
+          devfileWebUrl
           createdAt
         }
         pageInfo {

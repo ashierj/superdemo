@@ -1,4 +1,4 @@
-query getProjectDetails($projectFullPath: ID!, $devFilePath: String!) {
+query getProjectDetails($projectFullPath: ID!) {
   project(fullPath: $projectFullPath) {
     id
     nameWithNamespace
@@ -8,12 +8,6 @@ query getProjectDetails($projectFullPath: ID!, $devFilePath: String!) {
     }
     repository {
       rootRef
-      blobs(paths: [$devFilePath]) {
-        nodes {
-          id
-          path
-        }
-      }
     }
   }
 }

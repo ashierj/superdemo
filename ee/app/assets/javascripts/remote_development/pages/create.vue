@@ -8,13 +8,18 @@ import {
   GlFormInput,
   GlFormSelect,
   GlFormInputGroup,
+  GlIcon,
+  GlPopover,
   GlSprintf,
+  GlTooltipDirective,
   GlLink,
 } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import { createAlert } from '~/alert';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { logError } from '~/lib/logger';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import RefSelector from '~/ref/components/ref_selector.vue';
 import GetProjectDetailsQuery from '../components/common/get_project_details_query.vue';
 import SearchProjectsListbox from '../components/create/search_projects_listbox.vue';
 import workspaceCreateMutation from '../graphql/mutations/workspace_create.mutation.graphql';
@@ -28,13 +33,28 @@ import {
 } from '../constants';
 
 export const i18n = {
+  devfileRefHelp: s__(
+    'Workspaces|The branch, tag, or commit hash GitLab uses to create your workspace.',
+  ),
   title: s__('Workspaces|New workspace'),
   subtitle: s__('Workspaces|A workspace is a virtual sandbox environment for your code in GitLab.'),
   form: {
-    devfileProject: s__('Workspaces|Select project'),
-    agentId: s__('Workspaces|Select cluster agent'),
-    editor: s__('Workspaces|Select default editor'),
-    maxHoursBeforeTermination: s__('Workspaces|Time before automatic termination'),
+    devfileProject: s__('Workspaces|Project'),
+    gitReference: s__('Workspaces|Git reference'),
+    devfileLocation: {
+      label: s__('Workspaces|Devfile location'),
+      title: s__('Workspaces|What is a devfile?'),
+      contentParagraph1: s__(
+        'Workspaces|A devfile defines the development environment for a GitLab project. A workspace must have a valid devfile in the Git reference you use.',
+      ),
+      contentParagraph2: s__(
+        'Workspaces|If your devfile is not in the root directory of your project, specify a relative path.',
+      ),
+      linkText: s__('Workspaces|Learn more.'),
+    },
+    pathToDevfile: s__('Workspaces|Path to devfile'),
+    agentId: s__('Workspaces|Cluster agent'),
+    maxHoursBeforeTermination: s__('Workspaces|Workspace automatically terminates after'),
     maxHoursSuffix: __('hours'),
   },
   invalidProjectAlert: {
@@ -57,6 +77,7 @@ export const i18n = {
 };
 
 const clusterAgentsHelpPath = helpPagePath('user/clusters/agent/install/index.md');
+export const devfileHelpPath = helpPagePath('user/workspace/index.md#devfile');
 
 export default {
   components: {
@@ -67,10 +88,16 @@ export default {
     GlFormInputGroup,
     GlFormSelect,
     GlFormInput,
+    GlIcon,
+    GlPopover,
     GlSprintf,
     GlLink,
+    RefSelector,
     SearchProjectsListbox,
     GetProjectDetailsQuery,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   inject: ['defaultMaxHoursBeforeTermination'],
   data() {
@@ -79,9 +106,9 @@ export default {
       selectedAgent: null,
       isCreatingWorkspace: false,
       clusterAgents: [],
-      hasDevFile: null,
+      devfileRef: '',
+      devfilePath: DEFAULT_DEVFILE_PATH,
       projectId: null,
-      rootRef: null,
       maxHoursBeforeTermination: this.defaultMaxHoursBeforeTermination,
       projectDetailsLoaded: false,
       error: '',
@@ -94,35 +121,49 @@ export default {
     displayClusterAgentsAlert() {
       return this.projectDetailsLoaded && this.emptyAgents;
     },
-    displayNoDevFileAlert() {
-      return this.projectDetailsLoaded && !this.displayClusterAgentsAlert && !this.hasDevFile;
-    },
     saveWorkspaceEnabled() {
-      return this.selectedProject && this.selectedAgent && this.hasDevFile;
+      return this.selectedProject && this.selectedAgent;
     },
     selectedProjectFullPath() {
       return this.selectedProject?.fullPath || this.$router.currentRoute.query?.project;
     },
+    selectedProjectFullPathDisplay() {
+      return `${this.selectedProjectFullPath.split('/').join(' / ')} /`;
+    },
+    projectApiId() {
+      if (!this.projectId) {
+        return '';
+      }
+      return String(getIdFromGraphQLId(this.projectId));
+    },
+  },
+  watch: {
+    emptyAgents(newValue) {
+      if (!newValue) {
+        this.focusAgentSelectDropdown();
+      }
+    },
+  },
+  mounted() {
+    this.focusFirstElement();
   },
   methods: {
-    onProjectDetailsResult({
-      fullPath,
-      nameWithNamespace,
-      hasDevFile,
-      clusterAgents,
-      id,
-      rootRef,
-    }) {
+    onProjectDetailsResult({ fullPath, nameWithNamespace, clusterAgents, id, rootRef }) {
       // This scenario happens when the selected project is specified in the URL as a query param
       if (!this.selectedProject) {
         this.setSelectedProject({ fullPath, nameWithNamespace });
       }
 
       this.projectDetailsLoaded = true;
-      this.hasDevFile = hasDevFile;
-      this.clusterAgents = clusterAgents;
       this.projectId = id;
-      this.rootRef = rootRef;
+      this.devfileRef = rootRef;
+
+      this.clusterAgents = clusterAgents;
+
+      // Select the first agent if there are any
+      if (clusterAgents.length > 0) {
+        this.selectedAgent = clusterAgents[0].value;
+      }
     },
     onProjectDetailsError() {
       createAlert({ message: i18n.fetchProjectDetailsFailedMessage });
@@ -153,8 +194,8 @@ export default {
               clusterAgentId: this.selectedAgent,
               editor: DEFAULT_EDITOR,
               desiredState: DEFAULT_DESIRED_STATE,
-              devfilePath: DEFAULT_DEVFILE_PATH,
-              devfileRef: this.rootRef,
+              devfileRef: this.devfileRef,
+              devfilePath: this.devfilePath,
               maxHoursBeforeTermination: parseInt(this.maxHoursBeforeTermination, 10),
             },
           },
@@ -185,16 +226,28 @@ export default {
         this.isCreatingWorkspace = false;
       }
     },
+    focusFirstElement() {
+      const formElement = this.$refs.form.$el;
+
+      formElement.elements?.[0]?.focus();
+    },
+    focusAgentSelectDropdown() {
+      this.$nextTick(() => {
+        // noinspection JSUnresolvedReference - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
+        this.$refs.agentSelect.$el.focus();
+      });
+    },
   },
   i18n,
   ROUTES,
   PROJECT_VISIBILITY,
   clusterAgentsHelpPath,
+  devfileHelpPath,
 };
 </script>
 <template>
-  <div class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row">
-    <div class="gl-flex-basis-third gl-mr-5">
+  <div class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-gap-5">
+    <div class="gl-flex-basis-third">
       <div class="gl-display-flex gl-align-items-center">
         <h2 ref="pageTitle" class="page-title gl-font-size-h-display">
           {{ $options.i18n.title }}
@@ -209,12 +262,13 @@ export default {
       @result="onProjectDetailsResult"
       @error="onProjectDetailsError"
     />
-    <gl-form class="gl-mt-6 gl-flex-basis-two-thirds" @submit.prevent="createWorkspace">
+    <gl-form ref="form" class="gl-mt-6 gl-flex-basis-two-thirds" @submit.prevent="createWorkspace">
       <gl-form-group
         :label="$options.i18n.form.devfileProject"
         label-for="workspace-devfile-project-id"
       >
         <search-projects-listbox
+          id="workspace-search-projects-listbox"
           :value="selectedProject"
           data-testid="workspace-devfile-project-id-field"
           @input="onSelectProjectFromListbox"
@@ -233,25 +287,17 @@ export default {
             </template>
           </gl-sprintf>
         </gl-alert>
-        <gl-alert
-          v-if="displayNoDevFileAlert"
-          data-testid="no-dev-file-alert"
-          class="gl-mt-3"
-          :title="$options.i18n.invalidProjectAlert.title"
-          variant="danger"
-          :dismissible="false"
-        >
-          {{ $options.i18n.invalidProjectAlert.noDevFileContent }}
-        </gl-alert>
       </gl-form-group>
-      <div v-if="!emptyAgents">
+      <template v-if="!emptyAgents">
         <gl-form-group
+          class="gl-mb-3"
           :label="$options.i18n.form.agentId"
           label-for="workspace-cluster-agent-id"
           data-testid="workspace-cluster-agent-form-group"
         >
           <gl-form-select
             id="workspace-cluster-agent-id"
+            ref="agentSelect"
             v-model="selectedAgent"
             :options="clusterAgents"
             required
@@ -260,27 +306,92 @@ export default {
             data-testid="workspace-cluster-agent-id-field"
           />
         </gl-form-group>
-        <gl-form-group
-          :label="$options.i18n.form.maxHoursBeforeTermination"
-          label-for="workspace-cluster-max-hours-before-termination"
-        >
-          <gl-form-input-group>
-            <gl-form-input
-              id="workspace-cluster-max-hours-before-termination"
-              v-model="maxHoursBeforeTermination"
-              type="number"
-              required
-              autocomplete="off"
-              width="xs"
-            />
-            <template #append>
-              <div class="input-group-text">{{ __('hours') }}</div>
-            </template>
-          </gl-form-input-group>
-        </gl-form-group>
-      </div>
-      <div>
+        <template v-if="selectedAgent">
+          <gl-form-group class="gl-mb-2" data-testid="devfile-ref">
+            <label
+              class="gl-display-flex gl-align-items-center gl-gap-3"
+              for="workspace-devfile-ref"
+            >
+              {{ $options.i18n.form.gitReference }}
+              <gl-icon
+                v-gl-tooltip="$options.i18n.devfileRefHelp"
+                name="information-o"
+                :size="14"
+              />
+            </label>
+            <div class="gl-display-flex">
+              <ref-selector
+                id="workspace-devfile-ref"
+                v-model="devfileRef"
+                :project-id="projectApiId"
+              />
+            </div>
+          </gl-form-group>
+          <gl-form-group data-testid="devfile-path">
+            <div
+              class="gl-display-flex gl-flex-direction-row gl-align-items-center gl-gap-3 gl-mb-3"
+            >
+              <label class="gl-display-flex gl-mb-0" for="workspace-devfile-path">
+                {{ $options.i18n.form.devfileLocation.label }}
+              </label>
+              <gl-icon
+                id="devfile-location-popover"
+                class="gl-text-blue-600"
+                name="question-o"
+                :size="14"
+              />
+              <gl-popover
+                triggers="hover focus"
+                :title="$options.i18n.form.devfileLocation.title"
+                placement="top"
+                target="devfile-location-popover"
+              >
+                <div class="gl-display-flex gl-flex-direction-column">
+                  <p>{{ $options.i18n.form.devfileLocation.contentParagraph1 }}</p>
+                  <p>{{ $options.i18n.form.devfileLocation.contentParagraph2 }}</p>
+                </div>
+                <gl-link :href="$options.devfileHelpPath" target="_blank">
+                  {{ $options.i18n.form.devfileLocation.linkText }}
+                </gl-link>
+              </gl-popover>
+            </div>
+            <gl-form-input-group>
+              <template #prepend>
+                <div class="input-group-text">{{ selectedProjectFullPathDisplay }}</div>
+              </template>
+              <gl-form-input
+                id="workspace-devfile-path"
+                v-model="devfilePath"
+                :placeholder="$options.i18n.form.pathToDevfile"
+              />
+            </gl-form-input-group>
+          </gl-form-group>
+          <gl-form-group
+            data-testid="max-hours-before-termination"
+            :label="$options.i18n.form.maxHoursBeforeTermination"
+            label-for="workspace-max-hours-before-termination"
+          >
+            <gl-form-input-group>
+              <gl-form-input
+                id="workspace-max-hours-before-termination"
+                v-model="maxHoursBeforeTermination"
+                type="number"
+                required
+                autocomplete="off"
+                width="xs"
+              />
+              <template #append>
+                <div class="input-group-text">
+                  {{ $options.i18n.form.maxHoursSuffix }}
+                </div>
+              </template>
+            </gl-form-input-group>
+          </gl-form-group>
+        </template>
+      </template>
+      <div class="gl-display-flex gl-gap-3">
         <gl-button
+          class="gl-display-flex"
           :loading="isCreatingWorkspace"
           :disabled="!saveWorkspaceEnabled"
           type="submit"
@@ -289,7 +400,11 @@ export default {
         >
           {{ $options.i18n.submitButton.create }}
         </gl-button>
-        <gl-button class="gl-ml-3" data-testid="cancel-workspace" :to="$options.ROUTES.index">
+        <gl-button
+          class="gl-display-flex"
+          data-testid="cancel-workspace"
+          :to="$options.ROUTES.index"
+        >
           {{ $options.i18n.cancelButton }}
         </gl-button>
       </div>

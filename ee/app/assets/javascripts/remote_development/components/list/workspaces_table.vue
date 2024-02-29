@@ -1,6 +1,6 @@
 <script>
-import { GlTableLite, GlLink } from '@gitlab/ui';
-import { __ } from '~/locale';
+import { GlTableLite, GlLink, GlTooltipDirective } from '@gitlab/ui';
+import { __, sprintf } from '~/locale';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { WORKSPACE_STATES } from '../../constants';
 import WorkspaceStateIndicator from '../common/workspace_state_indicator.vue';
@@ -27,6 +27,7 @@ const sortWorkspacesByTerminatedState = (workspaceA, workspaceB) => {
 export const i18n = {
   tableColumnHeaders: {
     name: __('Name'),
+    devfile: __('Devfile'),
     preview: __('Preview'),
     created: __('Created'),
   },
@@ -41,6 +42,9 @@ export default {
     UpdateWorkspaceMutation,
     TimeAgoTooltip,
   },
+  directives: {
+    GlTooltip: GlTooltipDirective,
+  },
   props: {
     workspaces: {
       type: Array,
@@ -50,6 +54,14 @@ export default {
   computed: {
     sortedWorkspaces() {
       return [...this.workspaces].sort(sortWorkspacesByTerminatedState);
+    },
+  },
+  methods: {
+    devfileRefAndPathDisplay(ref, path) {
+      if (!ref || !path) {
+        return '';
+      }
+      return sprintf(__(`%{path} on %{ref}`), { ref, path });
     },
   },
   fields: [
@@ -68,17 +80,22 @@ export default {
     {
       key: 'name',
       label: i18n.tableColumnHeaders.name,
-      thClass: 'gl-w-25p',
+      thClass: 'gl-w-20p',
     },
     {
       key: 'created',
       label: i18n.tableColumnHeaders.created,
+      thClass: 'gl-w-15p',
+    },
+    {
+      key: 'devfile',
+      label: i18n.tableColumnHeaders.devfile,
       thClass: 'gl-w-20p',
     },
     {
       key: 'preview',
       label: i18n.tableColumnHeaders.preview,
-      thClass: 'gl-w-30p',
+      thClass: 'gl-w-20p',
     },
     {
       key: 'actions',
@@ -117,15 +134,27 @@ export default {
             :time="item.createdAt"
           />
         </template>
+        <template #cell(devfile)="{ item }">
+          <gl-link
+            v-gl-tooltip
+            :title="item.devfileWebUrl"
+            :href="item.devfileWebUrl"
+            class="workspace-list-link"
+            target="_blank"
+            :data-testid="`${item.name}-link`"
+          >
+            {{ devfileRefAndPathDisplay(item.devfileRef, item.devfilePath) }}
+          </gl-link>
+        </template>
         <template #cell(preview)="{ item }">
           <gl-link
             v-if="item.actualState === $options.WORKSPACE_STATES.running"
             :href="item.url"
-            class="workspace-preview-link"
+            class="workspace-list-link"
             target="_blank"
-            data-testid="`${item.name}-link`"
-            >{{ item.url }}</gl-link
-          >
+            :data-testid="`${item.name}-link`"
+            >{{ item.url }}
+          </gl-link>
         </template>
         <template #cell(actions)="{ item }">
           <workspace-actions
