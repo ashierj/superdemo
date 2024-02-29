@@ -44,12 +44,12 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::ToolsComponentInjector, fe
     end
   end
 
-  context "when devfile attribute gl/use-vscode-1-81 is false" do
-    let(:expected_processed_devfile_name) { 'example.tools-injected-vscode-1-85-devfile.yaml' }
+  context "when devfile attribute gl/use-vscode-1-81 is true" do
+    let(:expected_processed_devfile_name) { 'example.tools-injected-vscode-1-81-devfile.yaml' }
 
     before do
       tools_component = input_processed_devfile['components'].find { |c| c.dig('attributes', 'gl/inject-editor') }
-      tools_component['attributes']['gl/use-vscode-1-81'] = false
+      tools_component['attributes']['gl/use-vscode-1-81'] = true
     end
 
     it 'injects the tools injector component' do

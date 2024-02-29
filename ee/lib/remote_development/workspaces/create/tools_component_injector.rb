@@ -28,7 +28,7 @@ module RemoteDevelopment
           )
 
           tools_component = processed_devfile['components'].find { |c| c.dig('attributes', 'gl/inject-editor') }
-          use_vscode_1_81_attribute = tools_component.fetch('attributes', {}).fetch('gl/use-vscode-1-81', true)
+          use_vscode_1_81_attribute = tools_component.fetch('attributes', {}).fetch('gl/use-vscode-1-81', false)
           use_vscode_1_81 = [true, "true"].include? use_vscode_1_81_attribute
           inject_tools_component(processed_devfile, tools_dir, use_vscode_1_81)
 
