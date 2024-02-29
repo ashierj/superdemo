@@ -103,16 +103,8 @@ describe('UsageByMonth', () => {
         });
       });
 
-      it('displays title', () => {
-        expect(
-          findGlAreaChart().vm.$scopedSlots['tooltip-title']()[0].text,
-        ).toMatchInterpolatedText('Feb 2023 (Month)');
-      });
-
-      it('displays value as human size', () => {
-        expect(
-          findGlAreaChart().vm.$scopedSlots['tooltip-content']()[0].text,
-        ).toMatchInterpolatedText('6.2 GiB');
+      it('displays title and value as human size', () => {
+        expect(findGlAreaChart().text()).toBe('Feb 2023 (Month)  6.2 GiB');
       });
     });
   });
