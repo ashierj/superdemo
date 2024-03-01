@@ -7,16 +7,16 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import { DEFAULT_PER_PAGE } from '~/api';
 import { organizations as nodes, pageInfo, pageInfoEmpty } from '~/organizations/mock_data';
-import organizationsQuery from '~/organizations/shared/graphql/queries/organizations.query.graphql';
-import OrganizationsIndexApp from '~/organizations/index/components/app.vue';
+import organizationsQuery from '~/admin/organizations/index/graphql/queries/organizations.query.graphql';
+import OrganizationsIndexApp from '~/admin/organizations/index/components/app.vue';
 import OrganizationsView from '~/organizations/shared/components/organizations_view.vue';
-import { MOCK_NEW_ORG_URL } from '../../shared/mock_data';
+import { MOCK_NEW_ORG_URL } from 'jest/organizations/shared/mock_data';
 
 jest.mock('~/alert');
 
 Vue.use(VueApollo);
 
-describe('OrganizationsIndexApp', () => {
+describe('AdminOrganizationsIndexApp', () => {
   let wrapper;
   let mockApollo;
 
@@ -32,10 +32,7 @@ describe('OrganizationsIndexApp', () => {
 
   const successHandler = jest.fn().mockResolvedValue({
     data: {
-      currentUser: {
-        id: 'gid://gitlab/User/1',
-        organizations,
-      },
+      organizations,
     },
   });
 
@@ -55,7 +52,7 @@ describe('OrganizationsIndexApp', () => {
   });
 
   // Finders
-  const findOrganizationHeaderText = () => wrapper.findByText('Organizations');
+  const findOrganizationHeaderText = () => wrapper.findByRole('heading', { name: 'Organizations' });
   const findNewOrganizationButton = () => wrapper.findComponent(GlButton);
   const findOrganizationsView = () => wrapper.findComponent(OrganizationsView);
 
@@ -127,10 +124,7 @@ describe('OrganizationsIndexApp', () => {
       createComponent(
         jest.fn().mockResolvedValue({
           data: {
-            currentUser: {
-              id: 'gid://gitlab/User/1',
-              organizations: organizationEmpty,
-            },
+            organizations: organizationEmpty,
           },
         }),
       );
@@ -169,8 +163,7 @@ describe('OrganizationsIndexApp', () => {
 
     it('renders error message', () => {
       expect(createAlert).toHaveBeenCalledWith({
-        message:
-          'An error occurred loading user organizations. Please refresh the page to try again.',
+        message: 'An error occurred loading organizations. Please refresh the page to try again.',
         error,
         captureError: true,
       });

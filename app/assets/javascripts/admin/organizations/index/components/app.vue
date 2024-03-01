@@ -1,24 +1,21 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
-import { createAlert } from '~/alert';
-import { DEFAULT_PER_PAGE } from '~/api';
 import OrganizationsView from '~/organizations/shared/components/organizations_view.vue';
-import organizationsQuery from '../../shared/graphql/queries/organizations.query.graphql';
+import { DEFAULT_PER_PAGE } from '~/api';
+import { createAlert } from '~/alert';
+import organizationsQuery from '../graphql/queries/organizations.query.graphql';
 
 export default {
-  name: 'OrganizationsIndexApp',
+  name: 'AdminOrganizationsIndexApp',
   i18n: {
-    organizations: __('Organizations'),
+    pageTitle: __('Organizations'),
     newOrganization: s__('Organization|New organization'),
     errorMessage: s__(
-      'Organization|An error occurred loading user organizations. Please refresh the page to try again.',
+      'Organization|An error occurred loading organizations. Please refresh the page to try again.',
     ),
   },
-  components: {
-    GlButton,
-    OrganizationsView,
-  },
+  components: { GlButton, OrganizationsView },
   inject: ['newOrganizationUrl'],
   data() {
     return {
@@ -38,7 +35,7 @@ export default {
         return this.pagination;
       },
       update(data) {
-        return data.currentUser.organizations;
+        return data.organizations;
       },
       error(error) {
         createAlert({ message: this.$options.i18n.errorMessage, error, captureError: true });
@@ -75,14 +72,15 @@ export default {
 </script>
 
 <template>
-  <section>
-    <div v-if="showHeader" class="gl-display-flex gl-align-items-center">
-      <h1 class="gl-my-4 gl-font-size-h-display">{{ $options.i18n.organizations }}</h1>
-      <div class="gl-ml-auto">
-        <gl-button :href="newOrganizationUrl" variant="confirm">{{
-          $options.i18n.newOrganization
-        }}</gl-button>
-      </div>
+  <div class="gl-py-6">
+    <div
+      v-if="showHeader"
+      class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-mb-5"
+    >
+      <h1 class="gl-m-0 gl-font-size-h-display">{{ $options.i18n.pageTitle }}</h1>
+      <gl-button :href="newOrganizationUrl" variant="confirm">{{
+        $options.i18n.newOrganization
+      }}</gl-button>
     </div>
     <organizations-view
       :organizations="organizations"
@@ -90,5 +88,5 @@ export default {
       @next="onNext"
       @prev="onPrev"
     />
-  </section>
+  </div>
 </template>
