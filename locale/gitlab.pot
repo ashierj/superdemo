@@ -11128,6 +11128,9 @@ msgstr ""
 msgid "Close milestone"
 msgstr ""
 
+msgid "Close sidebar widget"
+msgstr ""
+
 msgid "Close this %{quick_action_target}"
 msgstr ""
 
