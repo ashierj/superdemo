@@ -35,184 +35,58 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     subject(:execute) { instance.execute }
 
     describe '.enabled_for?', :use_clean_rails_redis_caching do
-      context 'for saas', :saas do
-        let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be_with_reload(:group) { create(:group) }
+      let(:authorizer_response) { instance_double(Gitlab::Llm::Utils::Authorizer::Response, allowed?: allowed) }
 
-        context 'when user present and container is not present' do
-          where(:ai_duo_chat_switch_enabled, :ai_chat_available_to_user, :result) do
-            [
-              [true, true, true],
-              [true, false, false],
-              [false, true, false],
-              [false, false, false]
-            ]
-          end
-
-          with_them do
-            before do
-              stub_feature_flags(ai_duo_chat_switch: ai_duo_chat_switch_enabled)
-              allow(user).to receive(:any_group_with_ai_chat_available?).and_return(ai_chat_available_to_user)
-            end
-
-            it 'returns correct result' do
-              expect(described_class.enabled_for?(user: user)).to be(result)
-            end
-          end
+      context 'when user present and container is not present' do
+        where(:ai_duo_chat_switch_enabled, :allowed, :result) do
+          [
+            [true, true, true],
+            [true, false, false],
+            [false, true, false],
+            [false, false, false]
+          ]
         end
 
-        context 'when user and container are both present' do
-          context 'when container is a group with AI enabled' do
-            include_context 'with ai chat enabled for group on SaaS'
-
-            context 'when user is a member of the group' do
-              before_all do
-                group.add_guest(user)
-              end
-
-              context 'when container is a group' do
-                it 'returns true' do
-                  expect(
-                    described_class.enabled_for?(user: user, container: group)
-                  ).to be(true)
-                end
-              end
-
-              context 'when container is a project' do
-                let_it_be(:project) { create(:project, group: group) }
-
-                it 'returns true' do
-                  expect(
-                    described_class.enabled_for?(user: user, container: project)
-                  ).to be(true)
-                end
-              end
-
-              context 'when the group does not have an Ultimate SaaS license' do
-                let_it_be(:group) { create(:group) }
-
-                it 'returns false' do
-                  allow(user).to receive(:any_group_with_ai_chat_available?).and_return(true)
-                  # add user as a member of the non-licensed group to ensure the
-                  # test isn't failing at the membership check
-                  group.add_guest(user)
-
-                  expect(
-                    described_class.enabled_for?(user: user, container: group)
-                  ).to be(false)
-                end
-              end
-            end
-
-            context 'when user is not a member of the group' do
-              context 'when the user has AI enabled via another group' do
-                it 'returns false' do
-                  allow(user).to receive(:any_group_with_ai_chat_available?).and_return(true)
-
-                  expect(
-                    described_class.enabled_for?(user: user, container: group)
-                  ).to be(false)
-                end
-              end
-            end
+        with_them do
+          before do
+            stub_feature_flags(ai_duo_chat_switch: ai_duo_chat_switch_enabled)
+            allow(Gitlab::Llm::Chain::Utils::ChatAuthorizer).to receive(:user).with(user: user)
+              .and_return(authorizer_response)
           end
 
-          context 'when container is not a group with AI enabled' do
-            context 'when user has AI enabled' do
-              before do
-                allow(user).to receive(:any_group_with_ai_chat_available?).and_return(true)
-              end
-
-              context 'when container is a group' do
-                include_context 'with ai features disabled and licensed chat for group on SaaS'
-
-                it 'returns false' do
-                  allow(user).to receive(:any_group_with_ai_chat_available?).and_return(true)
-
-                  expect(
-                    described_class.enabled_for?(user: user, container: group)
-                  ).to be(false)
-                end
-              end
-
-              context 'when container is a project in a personal namespace' do
-                let_it_be(:project) { create(:project, namespace: user.namespace) }
-
-                it 'returns false' do
-                  expect(
-                    described_class.enabled_for?(user: user, container: project)
-                  ).to be(false)
-                end
-              end
-            end
-          end
-        end
-
-        context 'when user not present, container is present' do
-          include_context 'with ai chat enabled for group on SaaS'
-
-          it 'returns false' do
-            expect(
-              described_class.enabled_for?(user: nil, container: group)
-            ).to be(false)
+          it 'returns correct result' do
+            expect(described_class.enabled_for?(user: user)).to be(result)
           end
         end
       end
 
-      context 'for self-managed' do
-        let_it_be_with_reload(:group) { create(:group) }
-
-        let_it_be(:user) { create(:user) }
-
-        context 'for self-managed' do
-          before do
-            allow(Gitlab).to receive(:org_or_com?).and_return(false)
-          end
-
-          context 'with experiments and beta enabled' do
-            before do
-              stub_application_setting(instance_level_ai_beta_features_enabled: true)
-            end
-
-            context 'without licensed feature' do
-              before do
-                stub_licensed_features(ai_chat: false)
-              end
-
-              it 'returns false' do
-                expect(described_class.enabled_for?(user: user)).to eq(false)
-              end
-            end
-
-            context 'with licensed feature' do
-              before do
-                stub_licensed_features(ai_chat: true)
-              end
-
-              it 'returns true' do
-                expect(described_class.enabled_for?(user: user)).to eq(true)
-              end
-            end
-          end
-
-          context 'with experiments and beta disabled' do
-            before do
-              stub_application_setting(instance_level_ai_beta_features_enabled: false)
-            end
-
-            it 'returns false' do
-              expect(described_class.enabled_for?(user: user)).to eq(false)
-            end
-          end
+      context 'when user and container are both present' do
+        where(:ai_duo_chat_switch_enabled, :allowed, :result) do
+          [
+            [true, true, true],
+            [true, false, false],
+            [false, true, false],
+            [false, false, false]
+          ]
         end
 
-        context 'when user not present, container is present' do
-          include_context 'with experiment features enabled for self-managed'
-
-          it 'returns false' do
-            expect(
-              described_class.enabled_for?(user: nil, container: group)
-            ).to be(false)
+        with_them do
+          before do
+            stub_feature_flags(ai_duo_chat_switch: ai_duo_chat_switch_enabled)
+            allow(Gitlab::Llm::Chain::Utils::ChatAuthorizer).to receive(:container).with(user: user, container: group)
+              .and_return(authorizer_response)
           end
+
+          it 'returns correct result' do
+            expect(described_class.enabled_for?(user: user, container: group)).to be(result)
+          end
+        end
+      end
+
+      context 'when user is not present' do
+        it 'returns false' do
+          expect(described_class.enabled_for?(user: nil)).to be(false)
         end
       end
     end

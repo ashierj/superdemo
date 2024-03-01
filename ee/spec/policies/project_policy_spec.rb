@@ -3533,6 +3533,29 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
+  context 'access_duo_features' do
+    using RSpec::Parameterized::TableSyntax
+
+    let(:project) { private_project }
+
+    where(:current_user, :duo_features_enabled, :cs_matcher) do
+      ref(:guest) | true | be_allowed(:access_duo_features)
+      ref(:guest) | false | be_disallowed(:access_duo_features)
+      nil | true | be_disallowed(:access_duo_features)
+      nil | false | be_disallowed(:access_duo_features)
+    end
+
+    with_them do
+      before do
+        project.update!(duo_features_enabled: duo_features_enabled)
+      end
+
+      it do
+        is_expected.to cs_matcher
+      end
+    end
+  end
+
   describe 'on_demand_scans_enabled policy' do
     using RSpec::Parameterized::TableSyntax
     let(:current_user) { owner }

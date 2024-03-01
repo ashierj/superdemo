@@ -22,7 +22,7 @@ module Gitlab
               resource = identify_resource(json[:ResourceIdentifierType], json[:ResourceIdentifier])
 
               # if resource not found then return an error as the answer.
-              authorizer = Utils::Authorizer.resource(
+              authorizer = Utils::ChatAuthorizer.resource(
                 resource: resource,
                 user: context.current_user)
 
@@ -74,7 +74,7 @@ module Gitlab
           end
 
           def authorize
-            Utils::Authorizer.user(user: context.current_user).allowed?
+            Utils::ChatAuthorizer.user(user: context.current_user).allowed?
           end
 
           def identify_resource(resource_identifier_type, resource_identifier)

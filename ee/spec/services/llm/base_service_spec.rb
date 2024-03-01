@@ -40,13 +40,26 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
     it_behaves_like 'schedules completion worker' do
       let(:action_name) { :test }
     end
+  end
 
-    context 'when resource is nil' do
-      let(:resource) { nil }
+  shared_examples 'authorizing a resource' do
+    let(:authorizer_response) { instance_double(Gitlab::Llm::Utils::Authorizer::Response, allowed?: allowed) }
 
-      it 'is successful' do
-        expect(subject.execute).to be_success
-      end
+    before do
+      allow(Gitlab::Llm::Utils::Authorizer).to receive(:resource).with(resource: resource, user: user)
+        .and_return(authorizer_response)
+    end
+
+    context 'when the resource is authorized' do
+      let(:allowed) { true }
+
+      it_behaves_like 'success when implemented'
+    end
+
+    context 'when the resource is nnot authorized' do
+      let(:allowed) { false }
+
+      it_behaves_like 'returns an error'
     end
   end
 
@@ -87,13 +100,13 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
         context 'when resource is an issue' do
           let_it_be(:resource) { create(:issue, project: project) }
 
-          it_behaves_like 'success when implemented'
+          it_behaves_like 'authorizing a resource'
         end
 
         context 'when resource is a user' do
           let_it_be(:resource) { user }
 
-          it_behaves_like 'success when implemented'
+          it_behaves_like 'authorizing a resource'
         end
 
         context 'when resource is nil' do
@@ -110,6 +123,17 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
     let_it_be(:project) { create(:project, group: group) }
     let_it_be(:resource) { create(:issue, project: project) }
 
-    it_behaves_like 'returns an error'
+    context 'when user has no access' do
+      it_behaves_like 'returns an error'
+    end
+
+    context 'when user has access' do
+      before do
+        project.add_developer(user)
+        group.add_developer(user)
+      end
+
+      it_behaves_like 'authorizing a resource'
+    end
   end
 end
