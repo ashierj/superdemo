@@ -1,4 +1,4 @@
-import { GlButton, GlIcon, GlLoadingIcon } from '@gitlab/ui';
+import { GlButton, GlIcon, GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -21,6 +21,7 @@ describe('EpicLane', () => {
   const findIssuesLaneLists = () => wrapper.findAllComponents(IssuesLaneList);
   const findEpicLane = () => wrapper.findByTestId('board-epic-lane');
   const findEpicLaneIssueCount = () => wrapper.findByTestId('epic-lane-issue-count');
+  const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
 
   const listIssuesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupIssuesResponse());
   const errorMessage = 'Failed to fetch issues';
@@ -65,6 +66,18 @@ describe('EpicLane', () => {
     beforeEach(async () => {
       createComponent();
       await waitForPromises();
+    });
+
+    it('has the right CSS class applied to the epic lane header', () => {
+      expect(findEpicLane().classes()).toContain('board-epic-lane-shadow');
+    });
+
+    it('adds a shadow to the epic lane header when the intersection observer is hidden', async () => {
+      expect(findEpicLane().classes()).not.toContain('show');
+      findIntersectionObserver().vm.$emit('disappear');
+
+      await nextTick();
+      expect(findEpicLane().classes()).toContain('show');
     });
 
     it('displays count of issues in epic which belong to board', () => {
