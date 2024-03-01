@@ -2767,13 +2767,13 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     context 'when a user is assigned to custom roles in both group and project' do
       before do
-        stub_licensed_features(custom_roles: true)
+        stub_licensed_features(custom_roles: true, dependency_scanning: true)
 
         create_member_role(group_member_guest, { read_dependency: true })
         create_member_role(project_member_guest, { read_code: true })
       end
 
-      it { is_expected.to be_disallowed(:read_dependency) }
+      it { is_expected.to be_allowed(:read_dependency) }
       it { is_expected.to be_allowed(:read_code) }
     end
 

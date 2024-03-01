@@ -7,6 +7,9 @@ RSpec.describe Preloaders::UserMemberRolesInGroupsPreloader, feature_category: :
   let_it_be(:root_group) { create(:group, :private) }
   let_it_be(:group) { create(:group, :private, parent: root_group) }
   let_it_be(:group_member) { create(:group_member, :guest, user: user, source: group) }
+  let_it_be(:root_group_member) do
+    create(:group_member, :guest, user: user, source: root_group)
+  end
 
   let(:group_list) { [group] }
 
@@ -60,10 +63,6 @@ RSpec.describe Preloaders::UserMemberRolesInGroupsPreloader, feature_category: :
       end
 
       context 'when user is a member of the group in multiple ways' do
-        let_it_be(:root_group_member) do
-          create(:group_member, :guest, user: user, source: root_group)
-        end
-
         it 'group value array includes the ability' do
           create_member_role(ability, group_member)
           create(:member_role, :guest, namespace: root_group).tap do |record|
@@ -73,6 +72,15 @@ RSpec.describe Preloaders::UserMemberRolesInGroupsPreloader, feature_category: :
           end
 
           expect(result[group.id]).to match_array(expected_abilities)
+        end
+      end
+
+      context 'when a user is assigned to different custom roles in group and subgroup' do
+        it 'returns abilities assigned to the custom role inside both group and subgroup' do
+          create_member_role(ability, group_member)
+          create_member_role(:read_vulnerability, root_group_member)
+
+          expect(result[group.id]).to match_array(expected_abilities.push(:read_vulnerability).uniq)
         end
       end
 

@@ -56,7 +56,7 @@ module Preloaders
               .where("members.source_type = 'Project' AND members.source_id = project_ids.project_id")
               .with_user(user)
               .where(permission_condition)
-              .limit(1).to_sql}
+              .to_sql}
           ) UNION ALL
           (
             #{Member.select(permissions.join(', '))
@@ -64,12 +64,12 @@ module Preloaders
               .where("members.source_type = 'Namespace' AND members.source_id IN (SELECT UNNEST(project_ids.namespace_ids) as ids)")
               .with_user(user)
               .where(permission_condition)
-              .limit(1).to_sql}
+              .to_sql}
           ) UNION ALL
           (
             SELECT #{result_default}
           )
-          LIMIT 1
+
         ) AS custom_permissions
         GROUP BY project_ids.project_id;
       SQL
