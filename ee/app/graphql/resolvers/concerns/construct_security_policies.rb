@@ -13,7 +13,6 @@ module ConstructSecurityPolicies
         edit_path: edit_path(policy, :scan_execution_policy),
         enabled: policy[:enabled],
         yaml: YAML.dump(policy.slice(*POLICY_YAML_ATTRIBUTES).deep_stringify_keys),
-        policy_scope: policy_scope(policy[:policy_scope]),
         updated_at: policy[:config].policy_last_updated_at,
         source: {
           project: policy[:project],
@@ -33,7 +32,6 @@ module ConstructSecurityPolicies
         edit_path: edit_path(policy, :approval_policy),
         enabled: policy[:enabled],
         yaml: YAML.dump(policy.slice(*POLICY_YAML_ATTRIBUTES).deep_stringify_keys),
-        policy_scope: policy_scope(policy[:policy_scope]),
         updated_at: policy[:config].policy_last_updated_at,
         user_approvers: approvers[:users],
         group_approvers: approvers[:groups],
@@ -51,12 +49,6 @@ module ConstructSecurityPolicies
   def approvers(policy)
     Security::SecurityOrchestrationPolicies::FetchPolicyApproversService
       .new(policy: policy, container: object, current_user: current_user)
-      .execute
-  end
-
-  def policy_scope(scope_yaml)
-    Security::SecurityOrchestrationPolicies::PolicyScopeFetcher
-      .new(policy_scope: scope_yaml, container: object, current_user: current_user)
       .execute
   end
 
