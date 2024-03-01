@@ -12,6 +12,11 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
     create(:zoekt_index, :ready, zoekt_enabled_namespace: enabled_namespace, node: node)
   end
 
+  let_it_be(:unassigned_group) { create(:group) }
+  let_it_be_with_reload(:enabled_namespace_without_index) do
+    create(:zoekt_enabled_namespace, namespace: unassigned_group)
+  end
+
   describe '#fetch_node_id' do
     subject(:fetch_node_id) { described_class.fetch_node_id(container) }
 
@@ -131,7 +136,7 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
       it { is_expected.to eq(true) }
     end
 
-    context 'when Zoekt::EnabledNamespace not found' do
+    context 'when Zoekt::Index is not found' do
       let(:container) { build(:project) }
 
       it { is_expected.to eq(false) }
@@ -141,6 +146,12 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
       let(:container) { instance_double(Issue) }
 
       it { expect { index }.to raise_error(ArgumentError) }
+    end
+
+    context 'when group is unassigned' do
+      let(:container) { unassigned_group }
+
+      it { is_expected.to eq(false) }
     end
   end
 end
