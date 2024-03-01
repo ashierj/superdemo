@@ -1,6 +1,6 @@
 ---
 description: Tracks the number of requests that have exceeded the rate limit for the `POST /code_suggestions/completions` API endpoint.
-category: InternalEventTracking
+internal_events: true
 action: code_suggestions_rate_limit_exceeded
 label_description:
 property_description:

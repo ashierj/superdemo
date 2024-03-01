@@ -1,6 +1,6 @@
 ---
 description: This event tracks unique monthly users triggering Git operations on Geo secondary sites.
-category: InternalEventTracking
+internal_events: true
 action: geo_secondary_git_op_action
 label_description:
 property_description:

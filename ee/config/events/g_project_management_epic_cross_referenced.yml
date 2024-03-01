@@ -1,6 +1,6 @@
 ---
 description: An epic has been cross referenced
-category: InternalEventTracking
+internal_events: true
 action: g_project_management_epic_cross_referenced
 label_description:
 property_description:

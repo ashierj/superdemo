@@ -1,6 +1,6 @@
 ---
 description: Triggered when an Insights merge request chart item is clicked.
-category: InternalEventTracking
+internal_events: true
 action: insights_merge_request_chart_item_clicked
 identifiers:
 - project

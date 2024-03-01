@@ -1,6 +1,6 @@
 ---
 description: An epic has been reopened
-category: InternalEventTracking
+internal_events: true
 action: g_project_management_epic_reopened
 label_description:
 property_description:

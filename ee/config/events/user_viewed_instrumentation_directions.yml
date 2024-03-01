@@ -1,6 +1,6 @@
 ---
 description: User viewed analytics instrumentation directions
-category: InternalEventTracking
+internal_events: true
 action: user_viewed_instrumentation_directions
 label_description:
 property_description:

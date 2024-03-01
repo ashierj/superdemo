@@ -1,6 +1,6 @@
 ---
 description: Export runner usage as CSV
-category: InternalEventTracking
+internal_events: true
 action: export_runner_usage_by_project_as_csv
 identifiers:
 - user

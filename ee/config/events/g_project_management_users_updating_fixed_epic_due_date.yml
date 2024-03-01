@@ -1,6 +1,6 @@
 ---
 description: An epic's fixed due date has been updated
-category: InternalEventTracking
+internal_events: true
 action: g_project_management_users_updating_fixed_epic_due_date
 label_description:
 property_description:

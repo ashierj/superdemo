@@ -1,6 +1,6 @@
 ---
 description: An epic has been awarded an emoji
-category: InternalEventTracking
+internal_events: true
 action: g_project_management_users_awarding_epic_emoji
 label_description:
 property_description:

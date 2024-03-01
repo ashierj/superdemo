@@ -1,6 +1,6 @@
 ---
 description: An epic's emoji award has been removed
-category: InternalEventTracking
+internal_events: true
 action: g_project_management_users_removing_epic_emoji
 label_description:
 property_description:

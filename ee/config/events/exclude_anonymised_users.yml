@@ -1,6 +1,6 @@
 ---
 description: Triggered when a user opts to filter out anonymous users on an analytics dashboard.
-category: InternalEventTracking
+internal_events: true
 action: exclude_anonymised_users
 label_description:
 property_description:

@@ -1,6 +1,6 @@
 ---
 description: Triggered when a user visits any builtin / GitLab provided dashboard.
-category: InternalEventTracking
+internal_events: true
 action: user_viewed_builtin_dashboard
 identifiers:
 - project
