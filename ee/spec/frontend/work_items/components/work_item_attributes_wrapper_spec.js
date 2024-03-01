@@ -45,7 +45,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
     workItem = workItemQueryResponse.data.workItem,
     handler = successHandler,
     confidentialityMock = [updateWorkItemMutation, jest.fn()],
-    workItemsMvc2 = true,
+    workItemsBeta = true,
   } = {}) => {
     wrapper = shallowMount(WorkItemAttributesWrapper, {
       apolloProvider: createMockApollo([
@@ -64,7 +64,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
         hasIssuableHealthStatusFeature: true,
         projectNamespace: 'namespace',
         glFeatures: {
-          workItemsMvc2,
+          workItemsBeta,
         },
       },
     });
@@ -80,7 +80,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
         iterationWidgetPresent ? 'renders' : 'does not render'
       } iteration component`, async () => {
         const response = workItemResponseFactory({ iterationWidgetPresent });
-        createComponent({ workItem: response.data.workItem, workItemsMvc2: false });
+        createComponent({ workItem: response.data.workItem, workItemsBeta: false });
         await waitForPromises();
 
         expect(findWorkItemIterationInline().exists()).toBe(exists);
@@ -88,7 +88,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
     });
 
     it('emits an error event to the wrapper', async () => {
-      createComponent({ workItemsMvc2: false });
+      createComponent({ workItemsBeta: false });
       const updateError = 'Failed to update';
 
       findWorkItemIterationInline().vm.$emit('error', updateError);
@@ -114,7 +114,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
       });
     });
 
-    it('renders WorkItemWeight when workItemsMvc2 enabled', async () => {
+    it('renders WorkItemWeight when workItemsBeta enabled', async () => {
       createComponent();
 
       await waitForPromises();
@@ -123,8 +123,8 @@ describe('EE WorkItemAttributesWrapper component', () => {
       expect(findWorkItemWeightInline().exists()).toBe(false);
     });
 
-    it('renders WorkItemWeightInline when workItemsMvc2 disabled', async () => {
-      createComponent({ workItemsMvc2: false });
+    it('renders WorkItemWeightInline when workItemsBeta disabled', async () => {
+      createComponent({ workItemsBeta: false });
 
       await waitForPromises();
 
@@ -162,7 +162,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
       });
     });
 
-    it('renders WorkItemHealthStatus when workItemsMvc2 enabled', async () => {
+    it('renders WorkItemHealthStatus when workItemsBeta enabled', async () => {
       createComponent();
 
       await waitForPromises();
@@ -171,8 +171,8 @@ describe('EE WorkItemAttributesWrapper component', () => {
       expect(findWorkItemHealthStatusInline().exists()).toBe(false);
     });
 
-    it('renders WorkItemHealthStatusInline when workItemsMvc2 disabled', async () => {
-      createComponent({ workItemsMvc2: false });
+    it('renders WorkItemHealthStatusInline when workItemsBeta disabled', async () => {
+      createComponent({ workItemsBeta: false });
 
       await waitForPromises();
 
@@ -206,7 +206,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
       });
     });
 
-    it('renders WorkItemProgressWithEdit when workItemsMvc2 enabled', async () => {
+    it('renders WorkItemProgressWithEdit when workItemsBeta enabled', async () => {
       createComponent();
 
       await waitForPromises();
@@ -215,8 +215,8 @@ describe('EE WorkItemAttributesWrapper component', () => {
       expect(findWorkItemProgressInline().exists()).toBe(false);
     });
 
-    it('renders WorkItemProgressInline when workItemsMvc2 disabled', async () => {
-      createComponent({ workItemsMvc2: false });
+    it('renders WorkItemProgressInline when workItemsBeta disabled', async () => {
+      createComponent({ workItemsBeta: false });
 
       await waitForPromises();
 
@@ -251,7 +251,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
       });
     });
 
-    it('renders WorkItemColorWithEdit when workItemsMvc2 enabled', async () => {
+    it('renders WorkItemColorWithEdit when workItemsBeta enabled', async () => {
       createComponent();
 
       await waitForPromises();
@@ -260,8 +260,8 @@ describe('EE WorkItemAttributesWrapper component', () => {
       expect(findWorkItemColorInline().exists()).toBe(false);
     });
 
-    it('renders WorkItemColorInline when workItemsMvc2 disabled', async () => {
-      createComponent({ workItemsMvc2: false });
+    it('renders WorkItemColorInline when workItemsBeta disabled', async () => {
+      createComponent({ workItemsBeta: false });
 
       await waitForPromises();
 

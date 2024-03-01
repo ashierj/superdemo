@@ -29,7 +29,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     let(:form_selector) { '[data-testid="work-item-progress"]' }
     let(:input_selector) { '[data-testid="work-item-progress-input"]' }
 
-    context 'when the work_items_mvc_2 is enabled' do
+    context 'when the work_items_beta is enabled' do
       it 'successfully sets the progress' do
         within(progress_wrapper) do
           click_button 'Edit'
@@ -98,9 +98,9 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       end
     end
 
-    context 'when the work_items_mvc_2 is disabled' do
+    context 'when the work_items_beta is disabled' do
       before do
-        stub_feature_flags(work_items_mvc_2: false)
+        stub_feature_flags(work_items_beta: false)
 
         page.refresh
         wait_for_all_requests
@@ -196,9 +196,9 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       visit work_items_path
     end
 
-    context 'when work_items_mvc_2 is disabled' do
+    context 'when work_items_beta is disabled' do
       before do
-        stub_feature_flags(work_items_mvc_2: false)
+        stub_feature_flags(work_items_beta: false)
 
         page.refresh
         wait_for_all_requests
@@ -447,9 +447,9 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       visit work_items_path
     end
 
-    context 'when work_items_mvc_2 is disabled' do
+    context 'when work_items_beta is disabled' do
       before do
-        stub_feature_flags(work_items_mvc_2: false)
+        stub_feature_flags(work_items_beta: false)
 
         page.refresh
         wait_for_all_requests
