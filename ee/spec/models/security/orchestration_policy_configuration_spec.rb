@@ -1987,67 +1987,76 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
   end
 
-  describe "#active_policies_scan_actions_for_project" do
+  shared_context 'for policies with pipeline and scheduled rules' do
     before do
-      allow(Gitlab::Git).to receive(:branch_ref?).with(default_branch).and_return(true)
-      allow(Gitlab::Git).to receive(:ref_name).with(default_branch).and_return(default_branch)
-
-      allow_next_instance_of(Security::SecurityOrchestrationPolicies::PolicyBranchesService) do |service|
-        allow(service).to receive(:scan_execution_branches).and_return(Set[default_branch]).exactly(:once)
-      end
+      allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
     end
 
     let(:policy_yaml) do
       build(:orchestration_policy_yaml, scan_execution_policy: scan_execution_policies, scan_result_policy: scan_result_policies)
     end
 
-    let(:scan_execution_policies) do
-      [dast_policy, container_scanning_policy]
-    end
+    let(:scan_execution_policies) { [dast_policy, container_scanning_policy, sast_policy_with_schedule] }
 
     let(:dast_policy) do
-      build(:scan_execution_policy, actions: [{ scan: 'dast',
-                                                site_profile: 'Site Profile',
-                                                scanner_profile: 'Scanner Profile' }])
+      build(:scan_execution_policy,
+        actions: [{ scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }])
     end
 
-    let(:container_scanning_policy) do
-      build(:scan_execution_policy, actions: [{ scan: 'container_scanning' }])
+    let(:container_scanning_policy) { build(:scan_execution_policy, actions: [{ scan: 'container_scanning' }]) }
+    let(:sast_policy_with_schedule) { build(:scan_execution_policy, :with_schedule, actions: [{ scan: 'sast' }]) }
+    let(:scan_result_policies) { [build(:scan_result_policy)] }
+
+    let_it_be(:project) { create(:project, :repository) }
+    let(:security_orchestration_policy_configuration) do
+      create(:security_orchestration_policy_configuration, project: project,
+        security_policy_management_project: security_policy_management_project)
     end
+  end
 
-    let(:scan_result_policies) do
-      [build(:scan_result_policy)]
+  describe "#active_policies_scan_actions_for_project" do
+    include_context 'for policies with pipeline and scheduled rules'
+
+    subject(:active_scan_actions) { security_orchestration_policy_configuration.active_policies_scan_actions_for_project('refs/heads/master', project) }
+
+    context "with matched branches" do
+      it "returns active scan policies" do
+        expect(active_scan_actions).to contain_exactly(
+          *dast_policy[:actions],
+          *container_scanning_policy[:actions],
+          *sast_policy_with_schedule[:actions]
+        )
+      end
     end
-
-    let(:project) { security_orchestration_policy_configuration.project }
-
-    subject(:active_scan_actions) { security_orchestration_policy_configuration.active_policies_scan_actions_for_project(default_branch, project) }
 
     context 'with policy scope' do
+      let(:policy_applicable) { true }
+
       before do
         allow_next_instance_of(Security::SecurityOrchestrationPolicies::PolicyBranchesService) do |service|
           allow(service).to receive(:scan_execution_branches).and_return(Set[default_branch])
         end
 
         allow_next_instance_of(Security::SecurityOrchestrationPolicies::PolicyScopeService) do |service|
-          allow(service).to receive(:policy_applicable?).and_return(true)
+          allow(service).to receive(:policy_applicable?).and_return(policy_applicable)
         end
       end
 
       it 'returns active scan policies' do
-        expect(active_scan_actions).to match_array([*dast_policy[:actions], *container_scanning_policy[:actions]])
+        expect(active_scan_actions)
+          .to contain_exactly(
+            *dast_policy[:actions],
+            *container_scanning_policy[:actions],
+            *sast_policy_with_schedule[:actions]
+          )
       end
-    end
 
-    context "with matched branches" do
-      before do
-        allow_next_instance_of(Security::SecurityOrchestrationPolicies::PolicyBranchesService) do |service|
-          allow(service).to receive(:scan_execution_branches).and_return(Set[default_branch])
+      context 'when policy is not applicable' do
+        let(:policy_applicable) { false }
+
+        it 'is empty' do
+          expect(active_scan_actions).to be_empty
         end
-      end
-
-      it "returns active scan policies" do
-        expect(active_scan_actions).to match_array([*dast_policy[:actions], *container_scanning_policy[:actions]])
       end
     end
 
@@ -2057,17 +2066,11 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       end
 
       it "filters" do
-        expect(active_scan_actions).to match_array(dast_policy[:actions])
+        expect(active_scan_actions).to contain_exactly(*dast_policy[:actions], *sast_policy_with_schedule[:actions])
       end
     end
 
     context "with scan policies targeting other branch" do
-      before do
-        allow_next_instance_of(Security::SecurityOrchestrationPolicies::PolicyBranchesService) do |service|
-          allow(service).to receive(:scan_execution_branches).and_return(Set[default_branch], Set[])
-        end
-      end
-
       let(:container_scanning_policy) do
         build(
           :scan_execution_policy,
@@ -2077,8 +2080,25 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       end
 
       it "filters" do
-        expect(active_scan_actions).to match_array(dast_policy[:actions])
+        expect(active_scan_actions).to contain_exactly(*dast_policy[:actions], *sast_policy_with_schedule[:actions])
       end
+    end
+  end
+
+  describe 'active_policies_pipeline_scan_actions_for_project' do
+    include_context 'for policies with pipeline and scheduled rules'
+
+    subject(:active_scan_actions) { security_orchestration_policy_configuration.active_policies_pipeline_scan_actions_for_project('refs/heads/master', project) }
+
+    it 'invokes active_policies_scan_actions_for_project' do
+      expect(security_orchestration_policy_configuration)
+        .to receive(:active_policies_scan_actions_for_project).and_call_original
+
+      active_scan_actions
+    end
+
+    it 'excludes the scheduled rules' do
+      expect(active_scan_actions).to contain_exactly(*dast_policy[:actions], *container_scanning_policy[:actions])
     end
   end
 end
