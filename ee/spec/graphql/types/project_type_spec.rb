@@ -8,6 +8,7 @@ RSpec.describe GitlabSchema.types['Project'] do
 
   let_it_be(:namespace) { create(:group) }
   let_it_be(:project) { create(:project) }
+  let_it_be(:pending_delete_project) { create(:project, marked_for_deletion_at: Time.current) }
   let_it_be(:user) { create(:user) }
   let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project, severity: :high) }
 
@@ -17,6 +18,7 @@ RSpec.describe GitlabSchema.types['Project'] do
     stub_licensed_features(security_dashboard: true)
 
     project.add_developer(user)
+    pending_delete_project.add_developer(user)
   end
 
   it 'includes the ee specific fields' do
@@ -30,7 +32,7 @@ RSpec.describe GitlabSchema.types['Project'] do
       security_policy_project_linked_projects security_policy_project_linked_namespaces
       dependencies merge_requests_disable_committers_approval has_jira_vulnerability_issue_creation_enabled
       ci_subscriptions_projects ci_subscribed_projects ai_agents ai_agent duo_features_enabled
-      runner_cloud_provisioning google_cloud_artifact_registry_repository
+      runner_cloud_provisioning google_cloud_artifact_registry_repository marked_for_deletion_on
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
@@ -496,5 +498,44 @@ RSpec.describe GitlabSchema.types['Project'] do
     subject { described_class.fields['runnerCloudProvisioning'] }
 
     it { is_expected.to have_graphql_type(::Types::Ci::RunnerCloudProvisioningType) }
+  end
+
+  describe 'marked_for_deletion_on', feature_category: :groups_and_projects do
+    let_it_be(:query) do
+      %(
+        query {
+          project(fullPath: "#{pending_delete_project.full_path}") {
+            markedForDeletionOn
+          }
+        }
+      )
+    end
+
+    subject(:marked_for_deletion_on) do
+      result = GitlabSchema.execute(query, context: { current_user: user }).as_json
+      result.dig('data', 'project', 'markedForDeletionOn')
+    end
+
+    context 'when feature is available' do
+      before do
+        stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
+      end
+
+      it 'returns correct date' do
+        marked_for_deletion_on_time = Time.zone.parse(marked_for_deletion_on)
+
+        expect(marked_for_deletion_on_time).to be_within(1.day).of(Time.current)
+      end
+    end
+
+    context 'when feature is not available' do
+      before do
+        stub_licensed_features(adjourned_deletion_for_projects_and_groups: false)
+      end
+
+      it 'returns nil' do
+        expect(marked_for_deletion_on).to be nil
+      end
+    end
   end
 end

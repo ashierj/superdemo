@@ -375,6 +375,11 @@ module EE
           description: 'Information about Value Stream Analytics within the project.',
           null: true,
           resolver_method: :object
+
+        field :marked_for_deletion_on, ::Types::TimeType,
+          null: true,
+          description: 'Date when project was scheduled to be deleted.',
+          alpha: { milestone: '16.10' }
       end
 
       def tracking_key
@@ -437,6 +442,14 @@ module EE
           project.google_cloud_platform_artifact_registry_integration&.operating?
 
         project if integrations_available
+      end
+
+      def marked_for_deletion_on
+        ## marked_for_deletion_at is deprecated in our v5 REST API in favor of marked_for_deletion_on
+        ## https://docs.gitlab.com/ee/api/projects.html#removals-in-api-v5
+        return unless project.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
+
+        project.marked_for_deletion_at
       end
     end
   end
