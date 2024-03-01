@@ -6,5 +6,5 @@
       - profile_name = '<b>Full DAST scan - weekly</b>'.html_safe
       = s_("OnDemandScans|Pre-scan verification for %{profile_name} completed with").html_safe % { profile_name: profile_name }
     - c.with_actions do
-      = render Pajamas::ButtonComponent.new(href: "#", target: '_blank', button_options: { rel: 'noopener noreferrer' }) do
+      = render Pajamas::ButtonComponent.new(href: "#", target: '_blank') do
         = s_("OnDemandScans|View results")
