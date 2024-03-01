@@ -12,8 +12,6 @@ module EE
       ULTIMATE_TRIAL = 'ultimate_trial'
       NEW_USER_SIGNUPS_CAP_REACHED = 'new_user_signups_cap_reached'
       PERSONAL_ACCESS_TOKEN_EXPIRY = 'personal_access_token_expiry'
-      EOA_BRONZE_PLAN_BANNER = 'eoa_bronze_plan_banner'
-      EOA_BRONZE_PLAN_END_DATE = '2022-01-26'
       CL_SUBSCRIPTION_ACTIVATION = 'cloud_licensing_subscription_activation_banner'
       PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY = 'profile_personal_access_token_expiry'
       CODE_SUGGESTIONS_GA_OWNER_ALERT = 'code_suggestions_ga_owner_alert'
@@ -46,15 +44,6 @@ module EE
         return false if new_user_signups_cap.nil?
 
         new_user_signups_cap.to_i <= ::User.billable.count
-      end
-
-      def show_eoa_bronze_plan_banner?(namespace)
-        return false unless ::Feature.enabled?(:show_billing_eoa_banner)
-        return false unless Date.current < eoa_bronze_plan_end_date
-        return false unless namespace.bronze_plan?
-        return false if user_dismissed?(EOA_BRONZE_PLAN_BANNER)
-
-        (namespace.group_namespace? && namespace.has_owner?(current_user.id)) || !namespace.group_namespace?
       end
 
       override :dismiss_two_factor_auth_recovery_settings_check
@@ -100,10 +89,6 @@ module EE
         return super if object.is_a?(Project)
 
         current_user.dismissed_callout_for_group?(group: object, **query)
-      end
-
-      def eoa_bronze_plan_end_date
-        Date.parse(EOA_BRONZE_PLAN_END_DATE)
       end
 
       def hashed_storage_enabled?

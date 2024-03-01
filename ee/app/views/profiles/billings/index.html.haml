@@ -5,9 +5,6 @@
 - data_attributes = subscription_plan_data_attributes(namespace, current_plan)
 - @force_desktop_expanded_sidebar = true
 
-= content_for :flash_message do
-  = render 'shared/billings/eoa_bronze_plan_banner', namespace: namespace, eoa_bronze_plan_end_date: eoa_bronze_plan_end_date
-
 - if current_plan
   = render 'billing_plan_header', namespace: namespace, current_plan: current_plan
 

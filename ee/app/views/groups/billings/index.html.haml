@@ -12,9 +12,6 @@
     current_plan: current_plan,
     top_level_group: @top_level_group
 - else
-  = content_for :flash_message do
-    = render 'shared/billings/eoa_bronze_plan_banner', namespace: @group, eoa_bronze_plan_end_date: eoa_bronze_plan_end_date
-
   - current_plan = subscription_plan_info(@plans_data, @group.actual_plan_name)
 
   - if @group.paid? && !@group.trial?
