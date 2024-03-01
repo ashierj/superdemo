@@ -258,3 +258,6 @@ module Types
     end
   end
 end
+
+# JH required
+::Types::EpicType.prepend_mod
