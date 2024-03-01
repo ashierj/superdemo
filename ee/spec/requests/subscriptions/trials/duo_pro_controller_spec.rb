@@ -99,7 +99,7 @@ RSpec.describe Subscriptions::Trials::DuoProController, feature_category: :purch
     match do |response|
       expect(response).to have_gitlab_http_status(:ok)
 
-      expect(response.body).to include(s_('DuoProTrial|Start your free Duo Pro trial'))
+      expect(response.body).to include(s_('DuoProTrial|Start your free GitLab Duo Pro trial'))
 
       expect(response.body).to include(
         s_('DuoProTrial|We just need some additional information to activate your trial.')
@@ -111,7 +111,7 @@ RSpec.describe Subscriptions::Trials::DuoProController, feature_category: :purch
     match do |response|
       expect(response).to have_gitlab_http_status(:ok)
 
-      expect(response.body).to include(s_('DuoProTrial|Create a group to start your Duo Pro trial'))
+      expect(response.body).to include(s_('DuoProTrial|Create a group to start your GitLab Duo Pro trial'))
     end
   end
 
