@@ -50,7 +50,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Executor, feature_catego
   describe '#execute' do
     context 'when context is authorized' do
       before do
-        allow(Gitlab::Llm::Chain::Utils::Authorizer).to receive(:context_allowed?)
+        allow(Gitlab::Llm::Chain::Utils::ChatAuthorizer).to receive(:context_allowed?)
           .and_return(true)
       end
 
@@ -114,7 +114,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Executor, feature_catego
 
     context 'when context is not authorized' do
       before do
-        allow(Gitlab::Llm::Chain::Utils::Authorizer).to receive_message_chain(:context_authorized, :allowed?)
+        allow(Gitlab::Llm::Chain::Utils::ChatAuthorizer).to receive_message_chain(:context_authorized, :allowed?)
           .and_return(false)
       end
 

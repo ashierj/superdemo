@@ -27,7 +27,7 @@ module Gitlab
           # We need to implement it for all models we want to take into considerations
           raise ArgumentError, "#{resource.class} is not a valid AiResource class" unless resource_wrapper_class
 
-          return '' unless Utils::Authorizer.resource(resource: resource, user: current_user).allowed?
+          return '' unless Utils::ChatAuthorizer.resource(resource: resource, user: current_user).allowed?
 
           resource_wrapper_class.new(resource).serialize_for_ai(
             user: current_user,

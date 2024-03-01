@@ -413,6 +413,8 @@ module EE
         team_member?
       end
 
+      condition(:duo_features_enabled, scope: :subject) { @subject.duo_features_enabled }
+
       rule { visual_review_bot }.policy do
         prevent :read_note
         enable :create_note
@@ -934,6 +936,8 @@ module EE
       end
 
       rule { membership_for_chat & chat_allowed_for_parent_group & chat_available_for_user }.enable :access_duo_chat
+
+      rule { can?(:read_project) & duo_features_enabled }.enable :access_duo_features
     end
 
     override :lookup_access_level!

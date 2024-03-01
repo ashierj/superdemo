@@ -246,7 +246,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueReader::Executor, feature_categor
             it 'returns success response' do
               allow(tool).to receive(:request).and_return(ai_response)
 
-              response = 'This feature is only allowed in groups that enable this feature.'
+              response = 'This feature is only allowed in groups or projects that enable this feature.'
 
               expect(tool.execute.content).to eq(response)
             end

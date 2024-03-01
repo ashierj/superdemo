@@ -68,7 +68,7 @@ module Llm
     end
 
     def ai_allowed?(project)
-      Gitlab::Llm::Chain::Utils::Authorizer
+      Gitlab::Llm::Chain::Utils::ChatAuthorizer
         .container(container: project, user: @current_user)
         .allowed?
     end

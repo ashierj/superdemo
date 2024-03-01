@@ -65,6 +65,8 @@ RSpec.describe Llm::GenerateSummaryService, :saas, feature_category: :ai_abstrac
 
       context 'with notes' do
         before do
+          stub_licensed_features(epics: true)
+
           create_pair(:note_on_epic, noteable: resource)
         end
 

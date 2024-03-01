@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_chat do
+RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo_chat do
   context 'for saas', :saas do
     let_it_be(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
     let_it_be_with_reload(:project) {  create(:project, group: group) }
@@ -70,7 +70,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
           it 'returns false if container is not authorized' do
             expect(authorizer.context(context: context).allowed?).to be(false)
             expect(authorizer.context(context: context).message)
-              .to eq('This feature is only allowed in groups that enable this feature.')
+              .to eq('This feature is only allowed in groups or projects that enable this feature.')
           end
         end
       end
@@ -158,19 +158,40 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
     end
 
     describe '.container' do
-      it "calls policy with the appropriate arguments" do
-        expect(user).to receive(:can?).with(:access_duo_chat, container)
+      shared_examples 'container authorizer' do
+        before do
+          allow(user).to receive(:can?).with(:access_duo_features, container).and_return(duo_features_enabled)
+        end
 
-        authorizer.container(container: context.container, user: user)
+        context 'when container has duo_features enabled' do
+          let(:duo_features_enabled) { true }
+
+          it "calls policy with the appropriate arguments" do
+            expect(user).to receive(:can?).with(:access_duo_chat, container)
+
+            authorizer.container(container: container, user: user)
+          end
+        end
+
+        context 'when container has duo_features disabled' do
+          let(:duo_features_enabled) { false }
+
+          it 'returns an unauthorized response' do
+            expect(authorizer.container(container: container, user: user).allowed?).to be(false)
+          end
+        end
       end
 
-      it 'uses resource from argument' do
-        new_container = create(:group)
-        allow(user).to receive(:can?).with(:admin_all_resources).and_call_original
+      it_behaves_like 'container authorizer'
 
-        expect(user).to receive(:can?).at_least(:once).with(:access_duo_chat, new_container)
+      context 'with a group' do
+        let(:container) { create(:group) }
 
-        authorizer.container(container: new_container, user: user)
+        before do
+          allow(user).to receive(:can?).with(:admin_all_resources).and_call_original
+        end
+
+        it_behaves_like 'container authorizer'
       end
     end
 
@@ -200,15 +221,6 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
           expect(user).to receive(:can?).with('read_issue', resource)
 
           authorizer.resource(resource: context.resource, user: context.current_user)
-        end
-
-        it 'uses resource from argument' do
-          new_resource = build(:epic)
-
-          expect(new_resource).to receive(:resource_parent).and_return(group)
-          expect(user).to receive(:can?).with('read_epic', new_resource)
-
-          authorizer.resource(resource: new_resource, user: context.current_user)
         end
       end
 
@@ -423,15 +435,6 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_cha
           expect(user).to receive(:can?).with('read_issue', resource)
 
           authorizer.resource(resource: context.resource, user: context.current_user)
-        end
-
-        it 'uses resource from argument' do
-          new_resource = build(:epic)
-
-          expect(new_resource).to receive(:resource_parent).and_return(group)
-          expect(user).to receive(:can?).with('read_epic', new_resource)
-
-          authorizer.resource(resource: new_resource, user: context.current_user)
         end
       end
 

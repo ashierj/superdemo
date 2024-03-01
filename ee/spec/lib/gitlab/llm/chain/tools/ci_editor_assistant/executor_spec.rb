@@ -32,7 +32,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::CiEditorAssistant::Executor, feature_c
   describe '#execute' do
     context 'when context is not authorized' do
       before do
-        allow(Gitlab::Llm::Chain::Utils::Authorizer).to receive(:context_allowed?)
+        allow(Gitlab::Llm::Chain::Utils::ChatAuthorizer).to receive(:context_allowed?)
           .and_return(false)
       end
 
@@ -46,7 +46,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::CiEditorAssistant::Executor, feature_c
 
     context 'when context is authorized' do
       before do
-        allow(Gitlab::Llm::Chain::Utils::Authorizer).to receive(:context_allowed?)
+        allow(Gitlab::Llm::Chain::Utils::ChatAuthorizer).to receive(:context_allowed?)
           .and_return(true)
       end
 

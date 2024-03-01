@@ -23,6 +23,7 @@ module Llm
     end
 
     def valid?
+      return false if resource && !Gitlab::Llm::Utils::Authorizer.resource(resource: resource, user: user).allowed?
       return false if resource.respond_to?(:resource_parent) && !resource.resource_parent.member?(user)
 
       ai_integration_enabled? && user_can_send_to_ai?

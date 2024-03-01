@@ -3031,6 +3031,33 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
   end
 
+  context 'access_duo_features' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:current_user, :duo_features_enabled, :cs_matcher) do
+      ref(:guest) | true | be_allowed(:access_duo_features)
+      ref(:guest) | false | be_disallowed(:access_duo_features)
+      nil | true | be_disallowed(:access_duo_features)
+      nil | false | be_disallowed(:access_duo_features)
+    end
+
+    with_them do
+      before do
+        group.namespace_settings.update!(duo_features_enabled: duo_features_enabled)
+      end
+
+      it do
+        is_expected.to cs_matcher
+      end
+    end
+
+    context 'when the group is not yet persisted' do
+      subject { described_class.new(admin, build(:group)) }
+
+      it { is_expected.to be_disallowed(:access_duo_features) }
+    end
+  end
+
   describe ':read_saml_user' do
     let_it_be(:user) { non_group_member }
     let_it_be(:subgroup) { create(:group, :private, parent: group) }

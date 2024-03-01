@@ -79,7 +79,7 @@ module Gitlab
             end
 
             def authorize
-              Utils::Authorizer.context_allowed?(context: context)
+              Utils::ChatAuthorizer.context_allowed?(context: context)
             end
           end
         end

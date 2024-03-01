@@ -16,7 +16,13 @@ module Gitlab
 
         return false unless user
 
-        container ? user.can?(:access_duo_chat, container) : user.can?(:access_duo_chat)
+        authorizer_response = if container
+                                Gitlab::Llm::Chain::Utils::ChatAuthorizer.container(container: container, user: user)
+                              else
+                                Gitlab::Llm::Chain::Utils::ChatAuthorizer.user(user: user)
+                              end
+
+        authorizer_response.allowed?
       end
 
       def self.show_breadcrumbs_entry_point?(user:, container: nil)
