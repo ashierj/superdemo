@@ -13,6 +13,7 @@ module Gitlab
           DEFAULT_POLICY_PRE_STAGE = '.pipeline-policy-pre'
           DEFAULT_POLICY_TEST_STAGE = '.pipeline-policy-test'
           DEFAULT_POLICY_POST_STAGE = '.pipeline-policy-post'
+          RESERVED_STAGES = [DEFAULT_POLICY_PRE_STAGE, DEFAULT_POLICY_TEST_STAGE, DEFAULT_POLICY_POST_STAGE].freeze
           DEFAULT_STAGES = Gitlab::Ci::Config::Entry::Stages.default
 
           def initialize(config, context, ref, source)
@@ -34,6 +35,8 @@ module Gitlab
             merged_config = @config.deep_merge(merged_security_policy_config)
 
             if custom_scan_actions_enabled? && active_scan_custom_actions.any?
+              merged_config = clean_up_reserved_stages_jobs(merged_config)
+
               merged_config = merged_config.deep_merge(scan_custom_actions[:pipeline_scan])
 
               merged_config[:stages] = insert_custom_scan_stages(merged_config[:stages])
@@ -135,6 +138,14 @@ module Gitlab
 
               merged_config.except!(*pipeline_scan_job_names).deep_merge!(pipeline_scan_template)
             end
+          end
+
+          def clean_up_reserved_stages_jobs(config)
+            jobs_to_reject = config.except(*Config::Entry::Root.reserved_nodes_names).select do |_, content|
+              RESERVED_STAGES.include?(content[:stage])
+            end.keys
+
+            config.except(*jobs_to_reject)
           end
 
           def insert_custom_scan_stages(config_stages)

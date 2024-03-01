@@ -391,6 +391,30 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
           it 'does not includes the custom job' do
             expect(perform_service[:custom_job]).to be_nil
           end
+
+          context 'and project has jobs in reserved stages' do
+            let(:config) do
+              {
+                stages: %w[.pipeline-policy-test],
+                reserved_stage_test_job: {
+                  stage: '.pipeline-policy-test',
+                  script: [
+                    'echo "Hello World"'
+                  ]
+                }
+              }
+            end
+
+            it 'does not remove the reserved stages and jobs', :aggregate_failures do
+              expect(perform_service[:reserved_stage_test_job]).to eq(
+                {
+                  script: ['echo "Hello World"'],
+                  stage: ".pipeline-policy-test"
+                }
+              )
+              expect(perform_service[:stages]).to include('.pipeline-policy-test')
+            end
+          end
         end
 
         it 'does not include the custom job' do
@@ -409,6 +433,24 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
                 script: ['echo "Defined in security policy"']
               }
             )
+          end
+
+          context 'and project has jobs in reserved stages' do
+            let(:config) do
+              {
+                stages: %w[.pipeline-policy-test],
+                test_job: {
+                  stage: '.pipeline-policy-test',
+                  script: [
+                    'echo "Hello World"'
+                  ]
+                }
+              }
+            end
+
+            it 'removes project jobs in reserved stages' do
+              expect(perform_service.key?(:test_job)).to eq(false)
+            end
           end
 
           context 'when test stage does not exist' do
