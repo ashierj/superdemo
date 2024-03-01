@@ -32,6 +32,13 @@ module Audit
         model: model,
         event_type: 'squash_commit_template_updated'
       )
+      audit_changes(
+        :duo_features_enabled,
+        as: 'duo_features_enabled',
+        entity: @project,
+        model: model,
+        event_type: 'duo_features_enabled_updated'
+      )
     end
 
     def attributes_from_auditable_model(column)
