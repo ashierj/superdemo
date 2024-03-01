@@ -1,7 +1,6 @@
 subscription aiCompletionResponse(
   $userId: UserID
   $resourceId: AiModelID
-  $agentVersionId: AiAgentVersionID
   $clientSubscriptionId: String
   $aiAction: AiAction
   $htmlResponse: Boolean = true
@@ -9,7 +8,6 @@ subscription aiCompletionResponse(
   aiCompletionResponse(
     userId: $userId
     resourceId: $resourceId
-    agentVersionId: $agentVersionId
     aiAction: $aiAction
     clientSubscriptionId: $clientSubscriptionId
   ) {
