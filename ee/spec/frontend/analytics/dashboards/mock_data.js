@@ -190,7 +190,7 @@ export const mockSubsetChartsTimePeriods = MOCK_CHART_TIME_PERIODS.slice(4).map(
 export const mockComparativeTableData = [
   {
     metric: {
-      value: 'Deployment Frequency',
+      value: 'Deployment frequency',
       identifier: 'deployment_frequency',
     },
     thisMonth: {
@@ -208,7 +208,7 @@ export const mockComparativeTableData = [
   },
   {
     metric: {
-      value: 'Lead Time for Changes',
+      value: 'Lead time for changes',
       identifier: 'lead_time_for_changes',
     },
     invertTrendColor: true,
@@ -227,7 +227,7 @@ export const mockComparativeTableData = [
   },
   {
     metric: {
-      value: 'Time to Restore Service',
+      value: 'Time to restore service',
       identifier: 'time_to_restore_service',
     },
     invertTrendColor: true,
@@ -246,7 +246,7 @@ export const mockComparativeTableData = [
   },
   {
     metric: {
-      value: 'Change Failure Rate',
+      value: 'Change failure rate',
       identifier: 'change_failure_rate',
     },
     invertTrendColor: true,
@@ -402,7 +402,7 @@ export const mockComparativeTableData = [
   {
     metric: {
       identifier: 'vulnerability_critical',
-      value: 'Critical Vulnerabilities over time',
+      value: 'Critical vulnerabilities over time',
     },
     invertTrendColor: true,
     lastMonth: {
@@ -421,7 +421,7 @@ export const mockComparativeTableData = [
   {
     metric: {
       identifier: 'vulnerability_high',
-      value: 'High Vulnerabilities over time',
+      value: 'High vulnerabilities over time',
     },
     invertTrendColor: true,
     lastMonth: {

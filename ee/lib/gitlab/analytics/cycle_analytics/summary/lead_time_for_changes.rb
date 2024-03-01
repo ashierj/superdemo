@@ -6,7 +6,7 @@ module Gitlab
       module Summary
         class LeadTimeForChanges < BaseDoraSummary
           def title
-            s_('CycleAnalytics|Lead Time for Changes')
+            s_('CycleAnalytics|Lead time for changes')
           end
 
           def links
@@ -20,10 +20,10 @@ module Gitlab
               end
 
             [
-              { "name" => _('Lead Time for Changes'),
+              { "name" => _('Lead time for changes'),
                 "url" => dashboard_link,
                 "label" => s_('ValueStreamAnalytics|Dashboard') },
-              { "name" => _('Lead Time for Changes'),
+              { "name" => _('Lead time for changes'),
                 "url" => helpers.help_page_path('user/analytics/index', anchor: 'definitions'),
                 "docs_link" => true,
                 "label" => s_('ValueStreamAnalytics|Go to docs') }

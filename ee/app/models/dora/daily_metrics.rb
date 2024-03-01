@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Dora
-  # DevOps Research and Assessment (DORA) key metrics. Deployment Frequency,
-  # Lead Time for Changes, Change Failure Rate and Time to Restore Service
+  # DevOps Research and Assessment (DORA) key metrics. Deployment frequency,
+  # lead time for changes, change failure rate and Time to restore service
   # are tracked as daily summary.
   # Reference: https://cloud.google.com/blog/products/devops-sre/using-the-four-keys-to-measure-your-devops-performance
   class DailyMetrics < ApplicationRecord

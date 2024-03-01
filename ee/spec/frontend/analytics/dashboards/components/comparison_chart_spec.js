@@ -373,7 +373,7 @@ describe('Comparison chart', () => {
     it('will show an alert if the table data failed to load', () => {
       expect(Sentry.captureException).toHaveBeenCalled();
       expect(findTableErrorAlert().exists()).toBe(true);
-      expect(findTableErrorAlert().text()).toBe('Deployment Frequency');
+      expect(findTableErrorAlert().text()).toBe('Deployment frequency');
     });
   });
 
@@ -402,7 +402,7 @@ describe('Comparison chart', () => {
     it('will show an alert if the chart data failed to load', () => {
       expect(Sentry.captureException).toHaveBeenCalled();
       expect(findChartErrorAlert().exists()).toBe(true);
-      expect(findChartErrorAlert().text()).toBe('Deployment Frequency');
+      expect(findChartErrorAlert().text()).toBe('Deployment frequency');
     });
   });
 

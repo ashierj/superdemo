@@ -72,11 +72,11 @@ data: [{ 'lead_time_for_changes' => 5.days.to_i }] })
       expect(subject).to match_array(
         [
           {
-            "name" => _('Lead Time for Changes'),
+            "name" => _('Lead time for changes'),
             "url" => helpers.group_analytics_ci_cd_analytics_path(stage.parent, tab: 'lead-time'),
             "label" => s_('ValueStreamAnalytics|Dashboard')
           },
-          { "name" => _('Lead Time for Changes'),
+          { "name" => _('Lead time for changes'),
             "url" => helpers.help_page_path('user/analytics/index', anchor: 'definitions'),
             "docs_link" => true,
             "label" => s_('ValueStreamAnalytics|Go to docs') }
@@ -95,11 +95,11 @@ data: [{ 'lead_time_for_changes' => 5.days.to_i }] })
         expect(subject).to match_array(
           [
             {
-              "name" => _('Lead Time for Changes'),
+              "name" => _('Lead time for changes'),
               "url" => helpers.charts_project_pipelines_path(stage.namespace.project, chart: 'lead-time'),
               "label" => s_('ValueStreamAnalytics|Dashboard')
             },
-            { "name" => _('Lead Time for Changes'),
+            { "name" => _('Lead time for changes'),
               "url" => helpers.help_page_path('user/analytics/index', anchor: 'definitions'),
               "docs_link" => true,
               "label" => s_('ValueStreamAnalytics|Go to docs') }

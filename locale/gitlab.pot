@@ -9884,9 +9884,6 @@ msgstr ""
 msgid "Certificate Subject"
 msgstr ""
 
-msgid "Change Failure Rate"
-msgstr ""
-
 msgid "Change action"
 msgstr ""
 
@@ -9903,6 +9900,9 @@ msgid "Change branches"
 msgstr ""
 
 msgid "Change confidentiality"
+msgstr ""
+
+msgid "Change failure rate"
 msgstr ""
 
 msgid "Change label"
@@ -15409,7 +15409,7 @@ msgstr ""
 msgid "CycleAnalytics|Average time to completion (days)"
 msgstr ""
 
-msgid "CycleAnalytics|Change Failure Rate"
+msgid "CycleAnalytics|Change failure rate"
 msgstr ""
 
 msgid "CycleAnalytics|Create a custom value stream to view metrics about stages specific to your development process. Use your value stream to visualize your DevSecOps lifecycle, determine the velocity of your group, and identify inefficient processes."
@@ -15430,7 +15430,7 @@ msgstr ""
 msgid "CycleAnalytics|If you have recently upgraded your GitLab license from a tier without this feature, it can take up to 30 minutes for data to collect and display."
 msgstr ""
 
-msgid "CycleAnalytics|Lead Time for Changes"
+msgid "CycleAnalytics|Lead time for changes"
 msgstr ""
 
 msgid "CycleAnalytics|New value stream…"
@@ -15474,7 +15474,7 @@ msgstr ""
 msgid "CycleAnalytics|There is no data for 'Total time' available. Adjust the current filters."
 msgstr ""
 
-msgid "CycleAnalytics|Time to Restore Service"
+msgid "CycleAnalytics|Time to restore service"
 msgstr ""
 
 msgid "CycleAnalytics|Total time"
@@ -15524,13 +15524,10 @@ msgstr ""
 msgid "DORA4Metrics|By enabling this feature, you accept the %{url}"
 msgstr ""
 
-msgid "DORA4Metrics|Change Failure Rate"
-msgstr ""
-
-msgid "DORA4Metrics|Change Failure Rate (Quality)"
-msgstr ""
-
 msgid "DORA4Metrics|Change failure rate"
+msgstr ""
+
+msgid "DORA4Metrics|Change failure rate (Quality)"
 msgstr ""
 
 msgid "DORA4Metrics|Change failure rate (percentage)"
@@ -15539,7 +15536,7 @@ msgstr ""
 msgid "DORA4Metrics|Contributor count"
 msgstr ""
 
-msgid "DORA4Metrics|Critical Vulnerabilities over time"
+msgid "DORA4Metrics|Critical vulnerabilities over time"
 msgstr ""
 
 msgid "DORA4Metrics|Cycle time"
@@ -15557,13 +15554,10 @@ msgstr ""
 msgid "DORA4Metrics|Days from merge to deploy"
 msgstr ""
 
-msgid "DORA4Metrics|Deployment Frequency"
-msgstr ""
-
-msgid "DORA4Metrics|Deployment Frequency (Velocity)"
-msgstr ""
-
 msgid "DORA4Metrics|Deployment frequency"
+msgstr ""
+
+msgid "DORA4Metrics|Deployment frequency (Velocity)"
 msgstr ""
 
 msgid "DORA4Metrics|Deploys"
@@ -15613,7 +15607,7 @@ msgstr ""
 msgid "DORA4Metrics|High"
 msgstr ""
 
-msgid "DORA4Metrics|High Vulnerabilities over time"
+msgid "DORA4Metrics|High vulnerabilities over time"
 msgstr ""
 
 msgid "DORA4Metrics|Issues closed"
@@ -15622,16 +15616,13 @@ msgstr ""
 msgid "DORA4Metrics|Issues created"
 msgstr ""
 
-msgid "DORA4Metrics|Lead Time for Changes"
-msgstr ""
-
-msgid "DORA4Metrics|Lead Time for Changes (Velocity)"
-msgstr ""
-
 msgid "DORA4Metrics|Lead time"
 msgstr ""
 
 msgid "DORA4Metrics|Lead time for changes"
+msgstr ""
+
+msgid "DORA4Metrics|Lead time for changes (Velocity)"
 msgstr ""
 
 msgid "DORA4Metrics|Lead time for changes (median days)"
@@ -15739,13 +15730,10 @@ msgstr ""
 msgid "DORA4Metrics|This visualization is not supported for project namespaces."
 msgstr ""
 
-msgid "DORA4Metrics|Time to Restore Service"
-msgstr ""
-
-msgid "DORA4Metrics|Time to Restore Service (Quality)"
-msgstr ""
-
 msgid "DORA4Metrics|Time to restore service"
+msgstr ""
+
+msgid "DORA4Metrics|Time to restore service (Quality)"
 msgstr ""
 
 msgid "DORA4Metrics|Time to restore service (median days)"
@@ -17248,9 +17236,6 @@ msgid "Deployment"
 msgstr ""
 
 msgid "Deployment #%{iid}"
-msgstr ""
-
-msgid "Deployment Frequency"
 msgstr ""
 
 msgid "Deployment Target|%{linkStart}How to provision or deploy to Kubernetes clusters from GitLab?%{linkEnd}"
@@ -29070,10 +29055,10 @@ msgstr ""
 msgid "Layout|Fluid"
 msgstr ""
 
-msgid "Lead Time for Changes"
+msgid "Lead time"
 msgstr ""
 
-msgid "Lead time"
+msgid "Lead time for changes"
 msgstr ""
 
 msgid "Learn GitLab"
@@ -51688,10 +51673,10 @@ msgstr ""
 msgid "Time to Merge"
 msgstr ""
 
-msgid "Time to Restore Service"
+msgid "Time to merge"
 msgstr ""
 
-msgid "Time to merge"
+msgid "Time to restore service"
 msgstr ""
 
 msgid "Time to subtract exceeds the total time spent"

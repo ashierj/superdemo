@@ -45,21 +45,21 @@ export const SUPPORTED_CONTRIBUTOR_METRICS = [CONTRIBUTOR_METRICS.COUNT];
 
 export const TABLE_METRICS = {
   [DORA_METRICS.DEPLOYMENT_FREQUENCY]: {
-    label: s__('DORA4Metrics|Deployment Frequency'),
+    label: s__('DORA4Metrics|Deployment frequency'),
     units: UNITS.PER_DAY,
   },
   [DORA_METRICS.LEAD_TIME_FOR_CHANGES]: {
-    label: s__('DORA4Metrics|Lead Time for Changes'),
+    label: s__('DORA4Metrics|Lead time for changes'),
     invertTrendColor: true,
     units: UNITS.DAYS,
   },
   [DORA_METRICS.TIME_TO_RESTORE_SERVICE]: {
-    label: s__('DORA4Metrics|Time to Restore Service'),
+    label: s__('DORA4Metrics|Time to restore service'),
     invertTrendColor: true,
     units: UNITS.DAYS,
   },
   [DORA_METRICS.CHANGE_FAILURE_RATE]: {
-    label: s__('DORA4Metrics|Change Failure Rate'),
+    label: s__('DORA4Metrics|Change failure rate'),
     invertTrendColor: true,
     units: UNITS.PERCENT,
   },
@@ -101,12 +101,12 @@ export const TABLE_METRICS = {
     units: UNITS.COUNT,
   },
   [VULNERABILITY_METRICS.CRITICAL]: {
-    label: s__('DORA4Metrics|Critical Vulnerabilities over time'),
+    label: s__('DORA4Metrics|Critical vulnerabilities over time'),
     invertTrendColor: true,
     units: UNITS.COUNT,
   },
   [VULNERABILITY_METRICS.HIGH]: {
-    label: s__('DORA4Metrics|High Vulnerabilities over time'),
+    label: s__('DORA4Metrics|High vulnerabilities over time'),
     invertTrendColor: true,
     units: UNITS.COUNT,
   },
@@ -190,7 +190,7 @@ export const DORA_PERFORMERS_SCORE_CATEGORIES = {
 export const DORA_PERFORMERS_SCORE_METRICS = [
   // score definitions are listed in order from 'High' to 'Low' and accessed using the series index
   {
-    label: s__('DORA4Metrics|Deployment Frequency (Velocity)'),
+    label: s__('DORA4Metrics|Deployment frequency (Velocity)'),
     scoreDefinitions: [
       s__('DORA4Metrics|Have 30 or more deploys to production per day.'),
       s__('DORA4Metrics|Have between 1 to 29 deploys to production per day.'),
@@ -198,7 +198,7 @@ export const DORA_PERFORMERS_SCORE_METRICS = [
     ],
   },
   {
-    label: s__('DORA4Metrics|Lead Time for Changes (Velocity)'),
+    label: s__('DORA4Metrics|Lead time for changes (Velocity)'),
     scoreDefinitions: [
       s__(
         'DORA4Metrics|Took 7 days or less to go from code committed to code successfully running in production.',
@@ -212,7 +212,7 @@ export const DORA_PERFORMERS_SCORE_METRICS = [
     ],
   },
   {
-    label: s__('DORA4Metrics|Time to Restore Service (Quality)'),
+    label: s__('DORA4Metrics|Time to restore service (Quality)'),
     scoreDefinitions: [
       s__(
         'DORA4Metrics|Took 1 day or less to restore service when a service incident or a defect that impacts users occurs.',
@@ -226,7 +226,7 @@ export const DORA_PERFORMERS_SCORE_METRICS = [
     ],
   },
   {
-    label: s__('DORA4Metrics|Change Failure Rate (Quality)'),
+    label: s__('DORA4Metrics|Change failure rate (Quality)'),
     scoreDefinitions: [
       sprintf(
         s__('DORA4Metrics|Made 15%% or less changes to production resulted in degraded service.'),
