@@ -116,5 +116,24 @@ RSpec.describe GraphqlTriggers, feature_category: :shared do
         end
       end
     end
+
+    context 'with agent_version_id' do
+      let(:agent_version) { create(:ai_agent_version) }
+      let(:message) { build(:ai_message, user: user, resource: user, agent_version_id: agent_version.id) }
+
+      it 'triggers ai_completion_response with agent_version_id as global id' do
+        expect(GitlabSchema.subscriptions).to receive(:trigger).with(
+          :ai_completion_response,
+          {
+            user_id: message.user.to_gid,
+            agent_version_id: agent_version.to_gid,
+            ai_action: message.ai_action.to_s
+          },
+          message.to_h
+        ).and_call_original
+
+        subject
+      end
+    end
   end
 end
