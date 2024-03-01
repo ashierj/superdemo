@@ -32033,9 +32033,6 @@ msgstr ""
 msgid "Modal updated"
 msgstr ""
 
-msgid "ModalButton|Add projects"
-msgstr ""
-
 msgid "Modal|Close"
 msgstr ""
 
@@ -34809,6 +34806,9 @@ msgid "OperationsDashboard|Add a project to the dashboard"
 msgstr ""
 
 msgid "OperationsDashboard|Add projects"
+msgstr ""
+
+msgid "OperationsDashboard|Cancel"
 msgstr ""
 
 msgid "OperationsDashboard|More information"

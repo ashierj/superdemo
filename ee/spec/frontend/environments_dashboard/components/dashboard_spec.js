@@ -1,8 +1,8 @@
 import { GlButton, GlEmptyState, GlModal, GlSprintf, GlLink, GlPagination } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import component from 'ee/environments_dashboard/components/dashboard/dashboard.vue';
 import Environment from 'ee/environments_dashboard/components/dashboard/environment.vue';
 import ProjectHeader from 'ee/environments_dashboard/components/dashboard/project_header.vue';
@@ -50,7 +50,7 @@ describe('dashboard', () => {
       environmentsDashboardHelpPath: '/help/user/operations_dashboard/index.html',
     };
 
-    wrapper = shallowMount(component, {
+    wrapper = shallowMountExtended(component, {
       propsData,
       store,
       stubs: { GlSprintf },
@@ -62,53 +62,24 @@ describe('dashboard', () => {
   });
 
   const findPagination = () => wrapper.findComponent(GlPagination);
+  const findDashboardTitle = () => wrapper.findByTestId('dashboard-title');
+  const findPageLimitsMessage = () => wrapper.findByTestId('page-limits-message');
 
-  it('should match the snapshot', () => {
-    expect(wrapper.element).toMatchSnapshot();
-  });
-
-  it('renders the dashboard title', () => {
-    expect(wrapper.find('.js-dashboard-title').text()).toBe('Environments Dashboard');
-  });
-
-  it('should render the empty state component', () => {
-    expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
-  });
-
-  it('should not render pagination in empty state', () => {
-    expect(findPagination().exists()).toBe(false);
-  });
-
-  describe('page limits information message', () => {
-    let message;
-
-    beforeEach(() => {
-      message = wrapper.find('.js-page-limits-message');
+  describe('empty state', () => {
+    it('should render the empty state component', () => {
+      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
     });
 
-    it('renders the message', () => {
-      expect(trimText(message.text())).toBe(
-        'This dashboard displays 3 environments per project, and is linked to the Operations Dashboard. When you add or remove a project from one dashboard, GitLab adds or removes the project from the other. More information',
-      );
+    it('should not the render title', () => {
+      expect(findDashboardTitle().exists()).toBe(false);
     });
 
-    it('includes the correct documentation link in the message', () => {
-      const helpLink = message.findComponent(GlLink);
-
-      expect(helpLink.text()).toBe('More information');
-      expect(helpLink.attributes('href')).toBe(propsData.environmentsDashboardHelpPath);
-    });
-  });
-
-  describe('add projects button', () => {
-    let button;
-
-    beforeEach(() => {
-      button = wrapper.findComponent(GlButton);
+    it('should not the render description', () => {
+      expect(findPageLimitsMessage().exists()).toBe(false);
     });
 
-    it('is labelled correctly', () => {
-      expect(button.text()).toBe('Add projects');
+    it('should not render pagination', () => {
+      expect(findPagination().exists()).toBe(false);
     });
   });
 
@@ -123,6 +94,43 @@ describe('dashboard', () => {
         },
         { id: 1, name: 'test', namespace: { name: 'test', id: 0 }, environments: [environment] },
       ];
+    });
+
+    it('renders the dashboard title', () => {
+      expect(findDashboardTitle().text()).toBe('Environments Dashboard');
+    });
+
+    describe('page limits information message', () => {
+      let message;
+
+      beforeEach(() => {
+        message = findPageLimitsMessage();
+      });
+
+      it('renders the message', () => {
+        expect(trimText(message.text())).toBe(
+          'This dashboard displays 3 environments per project, and is linked to the Operations Dashboard. When you add or remove a project from one dashboard, GitLab adds or removes the project from the other. More information',
+        );
+      });
+
+      it('includes the correct documentation link in the message', () => {
+        const helpLink = message.findComponent(GlLink);
+
+        expect(helpLink.text()).toBe('More information');
+        expect(helpLink.attributes('href')).toBe(propsData.environmentsDashboardHelpPath);
+      });
+    });
+
+    describe('add projects button', () => {
+      let button;
+
+      beforeEach(() => {
+        button = wrapper.findComponent(GlButton);
+      });
+
+      it('is labelled correctly', () => {
+        expect(button.text()).toBe('Add projects');
+      });
     });
 
     describe('project header', () => {
