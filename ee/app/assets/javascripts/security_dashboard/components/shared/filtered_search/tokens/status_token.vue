@@ -12,18 +12,17 @@ import { s__, n__ } from '~/locale';
 import QuerystringSync from '../../filters/querystring_sync.vue';
 import { GROUPS } from '../../filters/status_filter.vue';
 import { ALL_ID as ALL_STATUS_VALUE } from '../../filters/constants';
+import eventHub from '../event_hub';
 
 const { detected, confirmed } = VULNERABILITY_STATE_OBJECTS;
 
 const ALL_DISMISSED_VALUE = GROUPS[1].options[0].value;
 const DISMISSAL_REASON_VALUES = GROUPS[1].options.slice(1).map(({ value }) => value);
-const DEFAULT_VALUES = [detected.searchParamValue, confirmed.searchParamValue];
 const OPTIONS = [...GROUPS[0].options, ...GROUPS[1].options];
-const VALID_VALUES = OPTIONS.map(({ value }) => value);
 
 export default {
-  VALID_VALUES,
-  DEFAULT_VALUES,
+  DEFAULT_VALUES: [detected.searchParamValue, confirmed.searchParamValue],
+  VALID_VALUES: OPTIONS.map(({ value }) => value),
   GROUPS,
 
   components: {
@@ -50,8 +49,11 @@ export default {
     },
   },
   data() {
+    const defaultSelected = this.value.data || this.$options.DEFAULT_VALUES;
+
     return {
-      selectedStatuses: DEFAULT_VALUES,
+      selectedStatuses: defaultSelected,
+      querySyncValues: defaultSelected,
     };
   },
   computed: {
@@ -82,14 +84,41 @@ export default {
     },
   },
   methods: {
+    resetSelected() {
+      this.selectedStatuses = [];
+      this.emitFiltersChanged();
+    },
+
+    emitFiltersChanged() {
+      const dismissalReason = this.selectedStatuses.filter((value) =>
+        DISMISSAL_REASON_VALUES.includes(value),
+      );
+
+      const state = this.selectedStatuses.filter(
+        (value) => !DISMISSAL_REASON_VALUES.includes(value) && value !== ALL_STATUS_VALUE,
+      );
+
+      this.querySyncValues = this.selectedStatuses;
+      eventHub.$emit('filters-changed', { state, dismissalReason });
+    },
+
     updateSelectedFromQS(selected) {
       if (selected.includes(ALL_STATUS_VALUE)) {
         this.selectedStatuses = [ALL_STATUS_VALUE];
       } else if (selected.length > 0) {
         this.selectedStatuses = selected;
       } else {
-        this.selectedStatuses = DEFAULT_VALUES;
+        // This happens when we clear the token and re-select `Status`
+        // to open the dropdown. At that stage we simply want to wait
+        // for the user to select new statuses.
+        if (!this.value.data) {
+          return;
+        }
+
+        this.selectedStatuses = this.value.data || this.$options.DEFAULT_VALUES;
       }
+
+      this.emitFiltersChanged();
     },
 
     toggleSelectedStatus(selectedValue) {
@@ -145,8 +174,9 @@ export default {
 
 <template>
   <querystring-sync
+    ref="qs"
     querystring-key="state"
-    :value="selectedStatuses"
+    :value="querySyncValues"
     :valid-values="$options.VALID_VALUES"
     @input="updateSelectedFromQS"
   >
@@ -157,6 +187,8 @@ export default {
       :value="tokenValue"
       v-on="$listeners"
       @select="toggleSelectedStatus"
+      @destroy="resetSelected"
+      @complete="emitFiltersChanged"
     >
       <template #view>
         {{ toggleText }}
