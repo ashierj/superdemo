@@ -22,5 +22,5 @@ Default.args = {
   toastMessage: 'Shared Survey Banner Test ToastMessage',
   storageKey: 'testStorageKey',
   bannerId: 'testbannerID',
-  svgPath: 'https://gitlab-org.gitlab.io/gitlab-svgs/dist/illustrations/monitoring/tracing.svg',
+  svgPath: 'https://gitlab-org.gitlab.io/gitlab-svgs/dist/illustrations/chat-sm.svg',
 };
