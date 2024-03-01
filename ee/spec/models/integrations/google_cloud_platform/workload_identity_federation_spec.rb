@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Integrations::GoogleCloudPlatform::WorkloadIdentityFederation, feature_category: :integrations do
+  it_behaves_like Integrations::HasAvatar
+
   subject(:integration) { build_stubbed(:google_cloud_platform_workload_identity_federation_integration) }
 
   describe 'attributes' do
