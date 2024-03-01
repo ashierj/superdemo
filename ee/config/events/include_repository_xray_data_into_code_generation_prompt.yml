@@ -1,6 +1,6 @@
 ---
 description: Repository X-Ray data being included into code generation prompt
-category: InternalEventTracking
+internal_events: true
 action: include_repository_xray_data_into_code_generation_prompt
 identifiers:
 - project

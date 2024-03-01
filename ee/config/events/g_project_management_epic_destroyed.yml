@@ -1,6 +1,6 @@
 ---
 description: An epic has been destroyed
-category: InternalEventTracking
+internal_events: true
 action: g_project_management_epic_destroyed
 label_description:
 property_description:

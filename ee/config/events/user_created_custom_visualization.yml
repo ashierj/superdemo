@@ -1,6 +1,6 @@
 ---
 description: Triggered when a user saves a new custom visualization in the visualization designer.
-category: InternalEventTracking
+internal_events: true
 action: user_created_custom_visualization
 label_description:
 property_description:

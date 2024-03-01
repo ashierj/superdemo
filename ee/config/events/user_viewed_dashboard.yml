@@ -1,6 +1,6 @@
 ---
 description: Triggered when a user visits any analytics dashboard.
-category: InternalEventTracking
+internal_events: true
 action: user_viewed_dashboard
 identifiers:
 - project

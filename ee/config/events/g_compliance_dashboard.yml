@@ -1,6 +1,6 @@
 ---
 description: User looked at the compliance report
-category: InternalEventTracking
+internal_events: true
 action: g_compliance_dashboard
 label_description:
 property_description:

@@ -1,6 +1,6 @@
 ---
 description: An epic has been set to confidential
-category: InternalEventTracking
+internal_events: true
 action: g_project_management_users_setting_epic_confidential
 label_description:
 property_description:

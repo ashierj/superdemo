@@ -1,6 +1,6 @@
 ---
 description: "Triggered when the Value Streams Dashboard's 'Contributor count' drill-down link is clicked."
-category: InternalEventTracking
+internal_events: true
 action: value_streams_dashboard_contributor_count_link_clicked
 identifiers:
 - project

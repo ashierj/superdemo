@@ -1,6 +1,6 @@
 ---
 description: Triggered when a user visits any user defined custom dashboard.
-category: InternalEventTracking
+internal_events: true
 action: user_viewed_custom_dashboard
 label_description:
 property_description:

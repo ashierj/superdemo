@@ -1,6 +1,6 @@
 ---
 description: An epic task has been unchecked
-category: InternalEventTracking
+internal_events: true
 action: project_management_users_unchecking_epic_task
 label_description:
 property_description:
