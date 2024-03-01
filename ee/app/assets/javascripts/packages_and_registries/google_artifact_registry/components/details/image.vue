@@ -99,8 +99,8 @@ export default {
       class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-md-align-items-center"
       :class="{ 'gl-py-2': !isDigest(key) }"
     >
-      <span class="gl-font-weight-bold gl-md-flex-basis-13">{{ row.label }}</span>
-      <span class="gl-display-flex gl-align-items-center">
+      <span class="gl-font-weight-bold gl-md-flex-basis-13 gl-flex-shrink-0">{{ row.label }}</span>
+      <span>
         <span class="gl-word-break-word" :data-testid="key">{{ row.value }}</span>
         <clipboard-button
           v-if="isDigest(key)"
@@ -110,8 +110,8 @@ export default {
         />
       </span>
     </li>
-    <li class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row">
-      <span class="gl-font-weight-bold gl-md-flex-basis-13">{{
+    <li class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-py-2">
+      <span class="gl-font-weight-bold gl-md-flex-basis-13 gl-flex-shrink-0">{{
         s__('GoogleArtifactRegistry|Tags')
       }}</span>
       <span class="gl-display-flex gl-gap-2 gl-flex-wrap" data-testid="tags">

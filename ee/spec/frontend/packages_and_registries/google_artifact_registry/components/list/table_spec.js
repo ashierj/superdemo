@@ -105,7 +105,6 @@ describe('ListTable', () => {
     expect(findTable().attributes()).toMatchObject({
       sortby: 'name',
       sortdesc: 'true',
-      'sort-icon-left': '',
       'no-sort-reset': '',
       'no-local-sorting': '',
     });
