@@ -3625,7 +3625,7 @@ msgstr ""
 msgid "AdminSettings|Limit the amount of namespace and project data to index"
 msgstr ""
 
-msgid "AdminSettings|Maximum downstream pipelines triggered in a project per user"
+msgid "AdminSettings|Maximum downstream pipeline trigger rate"
 msgstr ""
 
 msgid "AdminSettings|Maximum duration of a session for Git operations when 2FA is enabled."
@@ -3787,7 +3787,7 @@ msgstr ""
 msgid "AdminSettings|The latest artifacts for all jobs in the most recent successful pipelines in each project are stored and do not expire."
 msgstr ""
 
-msgid "AdminSettings|The maximum number of downstream pipelines triggered in a project per user."
+msgid "AdminSettings|The maximum number of downstream pipelines that can be triggered per minute (for a given project, user, and commit)."
 msgstr ""
 
 msgid "AdminSettings|The maximum number of included files per pipeline."
