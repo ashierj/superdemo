@@ -22,9 +22,15 @@ module Gitlab
 
       ALLOWED_TIME_RANGE_S = 1.second
 
-      def initialize(epic, work_item)
+      # strict_equal: true
+      #   We expect that a work item is fully synced with the epic, including all relations.
+      # strict_equal: false
+      #   Allows that relations are partially synced. For example when the backfill did not run yet but we already start
+      #   creating related links. We only check against links that have a work item.
+      def initialize(epic, work_item, strict_equal: false)
         @epic = epic
         @work_item = work_item
+        @strict_equal = strict_equal
         @mismatched_attributes = []
       end
 
@@ -33,6 +39,13 @@ module Gitlab
         check_updated_at
         check_namespace
         check_color
+        check_hierarchy
+        check_relative_position
+        check_start_date_is_fixed
+        check_start_date_fixed
+        check_due_date_is_fixed
+        check_due_date_fixed
+        check_related_epic_links
 
         mismatched_attributes
       end
@@ -64,7 +77,57 @@ module Gitlab
         mismatched_attributes.push("color")
       end
 
-      attr_reader :epic, :work_item
+      def check_hierarchy
+        return if epic.parent.nil? && work_item.work_item_parent.nil?
+        return if epic.parent&.issue_id == work_item.work_item_parent&.id
+
+        mismatched_attributes.push("parent_id")
+      end
+
+      def check_relative_position
+        return if epic.relative_position.nil? && work_item.parent_link&.relative_position.nil?
+        return if epic.relative_position == work_item.parent_link&.relative_position
+
+        mismatched_attributes.push("relative_position")
+      end
+
+      def check_start_date_is_fixed
+        return if epic.start_date_is_fixed == work_item.dates_source&.start_date_is_fixed
+
+        mismatched_attributes.push("start_date_is_fixed")
+      end
+
+      def check_start_date_fixed
+        return if epic.start_date_fixed == work_item.dates_source&.start_date_fixed
+
+        mismatched_attributes.push("start_date_fixed")
+      end
+
+      def check_due_date_is_fixed
+        return if epic.due_date_is_fixed == work_item.dates_source&.due_date_is_fixed
+
+        mismatched_attributes.push("due_date_is_fixed")
+      end
+
+      def check_due_date_fixed
+        return if epic.due_date_fixed == work_item.dates_source&.due_date_fixed
+
+        mismatched_attributes.push("due_date_fixed")
+      end
+
+      def check_related_epic_links
+        related_epic_issues = epic.unauthorized_related_epics
+        related_epic_issues = related_epic_issues.has_work_item unless strict_equal
+
+        related_epic_issue_ids = related_epic_issues.map(&:issue_id)
+        related_work_item_ids = work_item.related_issues(authorize: false).map(&:id)
+
+        return if related_work_item_ids == related_epic_issue_ids
+
+        mismatched_attributes.push("related_links")
+      end
+
+      attr_reader :epic, :work_item, :strict_equal
       attr_accessor :mismatched_attributes
     end
   end
