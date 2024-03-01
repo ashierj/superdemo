@@ -14,7 +14,7 @@ RSpec.describe MergeTrains::AddMergeRequestService, feature_category: :continuou
     create(:merge_request,
       source_project: project, source_branch: 'feature',
       target_project: project, target_branch: 'master',
-      merge_status: 'unchecked')
+      merge_status: 'can_be_merged')
   end
 
   let(:service) { described_class.new(merge_request, user, params) }

@@ -243,7 +243,7 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
       create(:merge_request,
              source_project: project, source_branch: 'feature',
              target_project: project, target_branch: 'master',
-             merge_status: 'unchecked')
+             merge_status: 'can_be_merged')
     end
 
     let(:params) { {} }

@@ -4,6 +4,7 @@ module AutoMerge
   class MergeWhenChecksPassService < AutoMerge::BaseService
     extend Gitlab::Utils::Override
 
+    override :execute
     def execute(merge_request)
       super do
         add_system_note(merge_request)
@@ -49,9 +50,18 @@ module AutoMerge
       end
     end
 
+    override :available_for
     def available_for?(merge_request)
       super do
-        check_availability(merge_request)
+        if Feature.disabled?(:refactor_auto_merge, merge_request.project, type: :gitlab_com_derisk)
+          check_availability(merge_request)
+        else
+          next false if Feature.disabled?(:merge_when_checks_pass, merge_request.project)
+          next false if merge_request.project.merge_trains_enabled?
+          next false if merge_request.mergeable? && !merge_request.diff_head_pipeline&.active?
+
+          next true
+        end
       end
     end
 
@@ -68,10 +78,12 @@ module AutoMerge
       )
     end
 
+    # rubocop: disable Metrics/CyclomaticComplexity -- Going to be removed once refactor FF is removed
     def check_availability(merge_request)
       return false if Feature.disabled?(:merge_when_checks_pass, merge_request.project)
       return false unless merge_request.approval_feature_available?
       return false if merge_request.project.merge_trains_enabled?
+      return false if merge_request.mergeable? && !merge_request.diff_head_pipeline&.active?
 
       merge_request.diff_head_pipeline&.active? ||
         !merge_request.approved? ||
@@ -82,6 +94,7 @@ module AutoMerge
           !merge_request.mergeable_discussions_state?)
         )
     end
+    # rubocop: enable Metrics/CyclomaticComplexity
 
     def notify(merge_request)
       return unless merge_request.saved_change_to_auto_merge_enabled?

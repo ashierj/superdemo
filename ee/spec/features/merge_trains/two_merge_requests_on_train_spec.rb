@@ -14,14 +14,14 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
     create(:merge_request,
       source_branch: 'feature', source_project: project,
       target_branch: 'master', target_project: project,
-      merge_status: 'unchecked')
+      merge_status: 'can_be_merged')
   end
 
   let(:merge_request_2) do
     create(:merge_request,
       source_branch: 'signed-commits', source_project: project,
       target_branch: 'master', target_project: project,
-      merge_status: 'unchecked')
+      merge_status: 'can_be_merged')
   end
 
   let(:ci_yaml) do
