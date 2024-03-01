@@ -48,7 +48,7 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
           title: s_('Runners|Save the Terraform script to a file')
         },
         {
-          instructions: /gitlab_runner="#{runner_token}"/,
+          instructions: /runner_token="#{runner_token}"/,
           language_identifier: 'shell',
           title: s_('Runners|Apply the Terraform script')
         }
