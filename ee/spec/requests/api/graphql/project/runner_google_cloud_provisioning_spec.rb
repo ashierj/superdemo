@@ -309,7 +309,7 @@ RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
           'title' => 'Save the Terraform script to a file'
         },
         {
-          'instructions' => /gitlab_runner="#{runner_token}"/,
+          'instructions' => /runner_token="#{runner_token}"/,
           'languageIdentifier' => 'shell',
           'title' => 'Apply the Terraform script'
         }
