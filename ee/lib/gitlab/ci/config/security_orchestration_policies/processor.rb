@@ -54,7 +54,10 @@ module Gitlab
           def custom_scan_actions_enabled?
             return false if project.group.nil?
 
-            Feature.enabled?(:compliance_pipeline_in_policies, project) && project.group.namespace_settings.toggle_security_policy_custom_ci?
+            Feature.enabled?(
+              :compliance_pipeline_in_policies,
+              project
+            ) && project.group.namespace_settings.toggle_security_policy_custom_ci?
           end
 
           def cleanup_stages(stages)
@@ -70,7 +73,8 @@ module Gitlab
           end
 
           def valid_security_orchestration_policy_configurations
-            @valid_security_orchestration_policy_configurations ||= ::Gitlab::Security::Orchestration::ProjectPolicyConfigurations.new(@project).all
+            @valid_security_orchestration_policy_configurations ||=
+              ::Gitlab::Security::Orchestration::ProjectPolicyConfigurations.new(@project).all
           end
 
           def prepare_on_demand_scans_template
@@ -124,7 +128,9 @@ module Gitlab
             if pipeline_scan_template.present?
               unless defined_stages.include?(DEFAULT_SECURITY_JOB_STAGE)
                 insert_stage_after_or_prepend(defined_stages, DEFAULT_SCAN_POLICY_STAGE, [DEFAULT_BUILD_STAGE])
-                pipeline_scan_template = pipeline_scan_template.transform_values { |job_config| job_config.merge(stage: DEFAULT_SCAN_POLICY_STAGE) }
+                pipeline_scan_template = pipeline_scan_template.transform_values do |job_config|
+                  job_config.merge(stage: DEFAULT_SCAN_POLICY_STAGE)
+                end
               end
 
               merged_config.except!(*pipeline_scan_job_names).deep_merge!(pipeline_scan_template)
@@ -185,9 +191,9 @@ module Gitlab
             return [] if valid_security_orchestration_policy_configurations.blank?
 
             valid_security_orchestration_policy_configurations
-              .flat_map { |security_orchestration_policy_configuration| yield(security_orchestration_policy_configuration) }
-              .compact
-              .uniq
+              .flat_map do |security_orchestration_policy_configuration|
+                yield(security_orchestration_policy_configuration)
+              end.compact.uniq
           end
 
           def observe_processing_duration(duration)
