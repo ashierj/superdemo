@@ -7,7 +7,7 @@ product_group: geo
 performance_indicator_type: []
 value_type: number
 status: active
-milestone: "16.7"
+milestone: '16.7'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/133435
 time_frame: 28d
 data_source: internal_events
@@ -17,9 +17,6 @@ distribution:
 tier:
 - premium
 - ultimate
-options:
-  events:
-    - geo_secondary_git_op_action
 events:
-  - name: geo_secondary_git_op_action
-    unique: user.id
+- name: geo_secondary_git_op_action
+  unique: user.id
