@@ -8,11 +8,6 @@ module Types
         graphql_name 'GoogleCloudArtifactRegistryDockerImageDetails'
         description 'Represents details about docker artifact of Google Cloud Artifact Registry'
 
-        field :uri,
-          GraphQL::Types::String,
-          null: false,
-          description: 'Google Cloud URI to access the image.'
-
         field :image_size_bytes,
           GraphQL::Types::String,
           description: 'Calculated size of the image.'
