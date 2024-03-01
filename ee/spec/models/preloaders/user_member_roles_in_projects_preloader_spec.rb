@@ -4,7 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category: :permissions do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :private, :in_group) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:subgroup) { create(:group, parent: group) }
+  let_it_be(:project) { create(:project, :private, group: subgroup) }
   let_it_be(:project_member) { create(:project_member, :guest, user: user, source: project) }
 
   let(:project_list) { [project] }
@@ -17,7 +19,7 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
   end
 
   def create_member_role(ability, member)
-    build(:member_role, :guest, namespace: project.group, read_code: false).tap do |record|
+    build(:member_role, :guest, namespace: group, read_code: false).tap do |record|
       record[ability] = true
       ability_requirements(ability).each do |requirement|
         record[requirement] = true
@@ -57,7 +59,7 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
 
             context 'when saas', :saas do
               let_it_be(:subscription) do
-                create(:gitlab_subscription, namespace: project.group, hosted_plan: create(:ultimate_plan))
+                create(:gitlab_subscription, namespace: group, hosted_plan: create(:ultimate_plan))
               end
 
               before do
@@ -70,7 +72,7 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
                   described_class.new(projects: projects, user: user).execute
                 end
 
-                projects << create(:project, :private, group: create(:group, parent: project.group))
+                projects << create(:project, :private, group: create(:group, parent: group))
 
                 expect do
                   described_class.new(projects: projects, user: user).execute
@@ -101,13 +103,26 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
       end
 
       context 'when a user is assigned to custom roles in both group and project' do
-        let_it_be(:group_member) { create(:group_member, :guest, user: user, source: project.group) }
+        let_it_be(:group_member) { create(:group_member, :guest, user: user, source: group) }
 
-        it 'returns abilities assigned to the custom role inside project' do
+        it 'returns abilities assigned to the custom role inside both project and group' do
           create_member_role(ability, group_member)
           create_member_role(:read_code, project_member)
 
-          expect(result[project.id]).to match_array([:read_code])
+          expect(result[project.id]).to match_array(expected_abilities.push(:read_code).uniq)
+        end
+      end
+
+      context 'when a user is assigned to custom roles in group, subgroup and project' do
+        let_it_be(:group_member) { create(:group_member, :guest, user: user, source: group) }
+        let_it_be(:sub_group_member) { create(:group_member, :guest, user: user, source: subgroup) }
+
+        it 'returns abilities assigned to the custom role inside both project and group' do
+          create_member_role(ability, group_member)
+          create_member_role(:read_code, project_member)
+          create_member_role(:read_vulnerability, sub_group_member)
+
+          expect(result[project.id]).to match_array(expected_abilities.concat([:read_code, :read_vulnerability]).uniq)
         end
       end
 
@@ -122,7 +137,7 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
       context 'when user has custom role that enables custom permission outside of project hierarchy' do
         it 'ignores custom role outside of project hierarchy' do
           # subgroup is within parent group of project but not above project
-          subgroup = create(:group, parent: project.group)
+          subgroup = create(:group, parent: group)
           subgroup_member = create(:group_member, :guest, user: user, source: subgroup)
           create_member_role(ability, subgroup_member)
 
