@@ -56,12 +56,12 @@ data: [{ 'time_to_restore_service' => 5.days.to_i }] })
       expect(subject).to match_array(
         [
           {
-            "name" => _('Time to Restore Service'),
+            "name" => _('Time to restore service'),
             "url" => helpers.group_analytics_ci_cd_analytics_path(stage.parent, tab: 'time-to-restore-service'),
             "label" => s_('ValueStreamAnalytics|Dashboard')
           },
           {
-            "name" => _('Time to Restore Service'),
+            "name" => _('Time to restore service'),
             "url" => helpers.help_page_path('user/analytics/index', anchor: 'time-to-restore-service'),
             "docs_link" => true,
             "label" => s_('ValueStreamAnalytics|Go to docs')
@@ -81,12 +81,12 @@ data: [{ 'time_to_restore_service' => 5.days.to_i }] })
         expect(subject).to match_array(
           [
             {
-              "name" => _('Time to Restore Service'),
+              "name" => _('Time to restore service'),
               "url" => helpers.charts_project_pipelines_path(project, chart: 'time-to-restore-service'),
               "label" => s_('ValueStreamAnalytics|Dashboard')
             },
             {
-              "name" => _('Time to Restore Service'),
+              "name" => _('Time to restore service'),
               "url" => helpers.help_page_path('user/analytics/index', anchor: 'time-to-restore-service'),
               "docs_link" => true,
               "label" => s_('ValueStreamAnalytics|Go to docs')

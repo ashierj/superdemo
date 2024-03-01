@@ -6,7 +6,7 @@ module Gitlab
       module Summary
         class ChangeFailureRate < BaseDoraSummary
           def title
-            s_('CycleAnalytics|Change Failure Rate')
+            s_('CycleAnalytics|Change failure rate')
           end
 
           def unit
@@ -39,12 +39,12 @@ module Gitlab
 
             [
               {
-                "name" => _('Change Failure Rate'),
+                "name" => _('Change failure rate'),
                 "url" => dashboard_link,
                 "label" => s_('ValueStreamAnalytics|Dashboard')
               },
               {
-                "name" => _('Change Failure Rate'),
+                "name" => _('Change failure rate'),
                 "url" => helpers.help_page_path('user/analytics/index', anchor: 'change-failure-rate'),
                 "docs_link" => true,
                 "label" => s_('ValueStreamAnalytics|Go to docs')

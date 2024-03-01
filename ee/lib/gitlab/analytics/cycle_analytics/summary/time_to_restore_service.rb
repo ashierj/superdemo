@@ -6,7 +6,7 @@ module Gitlab
       module Summary
         class TimeToRestoreService < BaseDoraSummary
           def title
-            s_('CycleAnalytics|Time to Restore Service')
+            s_('CycleAnalytics|Time to restore service')
           end
 
           def links
@@ -22,12 +22,12 @@ module Gitlab
 
             [
               {
-                "name" => _('Time to Restore Service'),
+                "name" => _('Time to restore service'),
                 "url" => dashboard_link,
                 "label" => s_('ValueStreamAnalytics|Dashboard')
               },
               {
-                "name" => _('Time to Restore Service'),
+                "name" => _('Time to restore service'),
                 "url" => helpers.help_page_path('user/analytics/index', anchor: 'time-to-restore-service'),
                 "docs_link" => true,
                 "label" => s_('ValueStreamAnalytics|Go to docs')

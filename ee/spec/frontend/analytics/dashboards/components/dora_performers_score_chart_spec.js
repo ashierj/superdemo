@@ -37,10 +37,10 @@ describe('DoraPerformersScoreChart', () => {
     mockDataResponse: mockEmptyDoraPerformersScoreResponseData,
   });
   const mockGroupBy = [
-    'Deployment Frequency (Velocity)',
-    'Lead Time for Changes (Velocity)',
-    'Time to Restore Service (Quality)',
-    'Change Failure Rate (Quality)',
+    'Deployment frequency (Velocity)',
+    'Lead time for changes (Velocity)',
+    'Time to restore service (Quality)',
+    'Change failure rate (Quality)',
   ];
   const panelTitleWithProjectsCount = (projectsCount = mockProjectsCount) =>
     `Total projects (${projectsCount}) with DORA metrics`;

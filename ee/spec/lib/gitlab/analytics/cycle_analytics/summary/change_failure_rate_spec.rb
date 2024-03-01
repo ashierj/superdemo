@@ -58,12 +58,12 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::ChangeFailureRate, fe
       expect(subject).to match_array(
         [
           {
-            "name" => _('Change Failure Rate'),
+            "name" => _('Change failure rate'),
             "url" => helpers.group_analytics_ci_cd_analytics_path(group, tab: 'change-failure-rate'),
             "label" => s_('ValueStreamAnalytics|Dashboard')
           },
           {
-            "name" => _('Change Failure Rate'),
+            "name" => _('Change failure rate'),
             "url" => helpers.help_page_path('user/analytics/index', anchor: 'change-failure-rate'),
             "docs_link" => true,
             "label" => s_('ValueStreamAnalytics|Go to docs')
@@ -81,12 +81,12 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::ChangeFailureRate, fe
         expect(subject).to match_array(
           [
             {
-              "name" => _('Change Failure Rate'),
+              "name" => _('Change failure rate'),
               "url" => helpers.charts_project_pipelines_path(project, chart: 'change-failure-rate'),
               "label" => s_('ValueStreamAnalytics|Dashboard')
             },
             {
-              "name" => _('Change Failure Rate'),
+              "name" => _('Change failure rate'),
               "url" => helpers.help_page_path('user/analytics/index', anchor: 'change-failure-rate'),
               "docs_link" => true,
               "label" => s_('ValueStreamAnalytics|Go to docs')

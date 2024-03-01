@@ -419,11 +419,11 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
 
     context 'when no data available' do
       it 'returns no data' do
-        expect(lead_time_for_changes[:title]).to eq(s_('CycleAnalytics|Lead Time for Changes'))
+        expect(lead_time_for_changes[:title]).to eq(s_('CycleAnalytics|Lead time for changes'))
         expect(lead_time_for_changes[:value]).to eq('-')
-        expect(time_to_restore_service[:title]).to eq(s_('CycleAnalytics|Time to Restore Service'))
+        expect(time_to_restore_service[:title]).to eq(s_('CycleAnalytics|Time to restore service'))
         expect(time_to_restore_service[:value]).to eq('-')
-        expect(change_failure_rate[:title]).to eq(s_('CycleAnalytics|Change Failure Rate'))
+        expect(change_failure_rate[:title]).to eq(s_('CycleAnalytics|Change failure rate'))
         expect(change_failure_rate[:value]).to eq('0')
       end
     end
