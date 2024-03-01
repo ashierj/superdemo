@@ -1,13 +1,18 @@
 import { GlFilteredSearchToken } from '@gitlab/ui';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueRouter from 'vue-router';
 import StatusToken from 'ee/security_dashboard/components/shared/filtered_search/tokens/status_token.vue';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
+import eventHub from 'ee/security_dashboard/components/shared/filtered_search/event_hub';
 import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import { stubComponent } from 'helpers/stub_component';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
+Vue.use(VueRouter);
+
 describe('Status Token component', () => {
   let wrapper;
+  let router;
 
   const mockConfig = {
     multiSelect: true,
@@ -21,7 +26,10 @@ describe('Status Token component', () => {
     stubs,
     mountFn = shallowMountExtended,
   } = {}) => {
+    router = new VueRouter({ mode: 'history' });
+
     wrapper = mountFn(StatusToken, {
+      router,
       propsData: {
         config: mockConfig,
         value,
@@ -52,6 +60,7 @@ describe('Status Token component', () => {
       }),
     );
 
+    findFilteredSearchToken().vm.$emit('complete');
     await nextTick();
   };
 
@@ -154,13 +163,46 @@ describe('Status Token component', () => {
       expect(isOptionChecked('USED_IN_TESTS')).toBe(true);
       expect(isOptionChecked('DISMISSED')).toBe(false);
     });
+
+    it('emits filters-changed event when a filter is selected', async () => {
+      const spy = jest.fn();
+      eventHub.$on('filters-changed', spy);
+
+      // Select 2 states
+      await clickDropdownItem('CONFIRMED', 'RESOLVED');
+      expect(spy).toHaveBeenCalledWith({ dismissalReason: [], state: ['CONFIRMED', 'RESOLVED'] });
+
+      // Select a dismissal reason. It should not unselect the previous states.
+      await clickDropdownItem('ACCEPTABLE_RISK');
+
+      expect(spy).toHaveBeenCalledWith({
+        dismissalReason: ['ACCEPTABLE_RISK'],
+        state: ['CONFIRMED', 'RESOLVED'],
+      });
+    });
+  });
+
+  describe('on clear', () => {
+    beforeEach(async () => {
+      createWrapper({ mountFn: mountExtended, stubs: { QuerystringSync: false } });
+      await nextTick();
+    });
+
+    it('resetting emits filters-changed event and clears the query string', () => {
+      const spy = jest.fn();
+      eventHub.$on('filters-changed', spy);
+
+      findFilteredSearchToken().vm.$emit('destroy');
+
+      expect(spy).toHaveBeenCalledWith({ dismissalReason: [], state: [] });
+    });
   });
 
   describe('toggle text', () => {
     const findSlotView = () => wrapper.findAllByTestId('filtered-search-token-segment').at(2);
 
     beforeEach(async () => {
-      createWrapper({ value: {}, mountFn: mountExtended });
+      createWrapper({ mountFn: mountExtended });
 
       // Let's set initial state as ALL. It's easier to manipulate because
       // selecting a new value should unselect this value automatically and

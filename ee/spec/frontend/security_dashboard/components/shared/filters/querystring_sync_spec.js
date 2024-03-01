@@ -142,5 +142,16 @@ describe('Querystring Sync component', () => {
 
       expect(spy).toHaveBeenCalledWith('popstate', wrapper.vm.emitQuerystringIds);
     });
+
+    it('clears the querystring when the component is destroyed', () => {
+      router.replace({ query: { values: 'abc' } });
+      createWrapper();
+
+      expect(router.currentRoute.query).toHaveProperty('values');
+
+      wrapper.destroy();
+
+      expect(router.currentRoute.query).not.toHaveProperty('values');
+    });
   });
 });

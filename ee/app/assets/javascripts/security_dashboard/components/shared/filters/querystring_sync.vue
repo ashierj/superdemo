@@ -31,14 +31,7 @@ export default {
   },
   watch: {
     value() {
-      const ids = this.cleanUpIds(this.value);
-      // To prevent a console error, don't update the querystring if the IDs are the same as the
-      // existing querystring.
-      if (isEqual(ids, this.querystringIds)) {
-        return;
-      }
-
-      this.$router.push({ query: this.getQuerystringObject(ids) });
+      this.updateQueryString();
     },
   },
   created() {
@@ -55,9 +48,23 @@ export default {
     window.addEventListener('popstate', this.emitQuerystringIds);
   },
   destroyed() {
+    // If this component is being unmounted, it means we are removing the filter from
+    // page. This occurs, for instance, in the vulnerability report filtered search component.
+    // When the user clicks on X to remove a filter, querystring-sync gets unmounted.
+    // For those cases, we need to reset the query string parameters as well.
+    this.updateQueryString([]);
     window.removeEventListener('popstate', this.emitQuerystringIds);
   },
   methods: {
+    updateQueryString(ids = this.cleanUpIds(this.value)) {
+      // To prevent a console error, don't update the querystring if the IDs are the same as the
+      // existing querystring.
+      if (isEqual(ids, this.querystringIds)) {
+        return;
+      }
+
+      this.$router.push({ query: this.getQuerystringObject(ids) });
+    },
     emitQuerystringIds() {
       this.$emit('input', this.querystringIds);
     },
