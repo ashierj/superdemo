@@ -11,7 +11,6 @@ module Types
       field :name, GraphQL::Types::String, null: false, description: 'Name of the policy.'
       field :updated_at, Types::TimeType, null: false, description: 'Timestamp of when the policy YAML was last updated.'
       field :yaml, GraphQL::Types::String, null: false, description: 'YAML definition of the policy.'
-      field :policy_scope, ::Types::SecurityOrchestration::PolicyScopeType, null: true, description: 'Scope of the policy.'
     end
   end
 end
