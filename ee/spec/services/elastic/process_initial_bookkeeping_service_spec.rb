@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::ProcessInitialBookkeepingService, feature_category: :global_search do
+RSpec.describe Elastic::ProcessInitialBookkeepingService, :elastic, feature_category: :global_search do
   include EE::GeoHelpers
 
   let_it_be(:project) { create(:project) }
