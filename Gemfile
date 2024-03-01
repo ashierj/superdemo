@@ -215,7 +215,7 @@ gem 'typhoeus', '~> 1.4.0' # Used with Elasticsearch to support http keep-alive 
 
 # Markdown and HTML processing
 gem 'html-pipeline', '~> 2.14.3', feature_category: :team_planning
-gem 'deckar01-task_list', '2.3.3', feature_category: :team_planning
+gem 'deckar01-task_list', '2.3.4', feature_category: :team_planning
 gem 'gitlab-markup', '~> 1.9.0', require: 'github/markup' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'commonmarker', '~> 0.23.10', feature_category: :team_planning
 gem 'kramdown', '~> 2.3.1' # rubocop:todo Gemfile/MissingFeatureCategory
