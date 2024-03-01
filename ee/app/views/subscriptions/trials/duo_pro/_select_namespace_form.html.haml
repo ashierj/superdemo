@@ -1,5 +1,5 @@
 - @body_class = 'duo-pro-trials'
-- page_title s_('DuoProTrial|Start your free Duo Pro trial')
+- page_title s_('DuoProTrial|Start your free GitLab Duo Pro trial')
 - content_for :page_specific_javascripts do
   = render 'layouts/google_tag_manager_head'
   = render 'layouts/one_trust'
@@ -12,9 +12,9 @@
 
       %h2.gl-pb-5.gl-my-0
         - if any_trial_eligible_namespaces?
-          = s_('DuoProTrial|Apply your Duo Pro trial to a new or existing group')
+          = s_('DuoProTrial|Apply your GitLab Duo Pro trial to a new or existing group')
         - else
-          = s_('DuoProTrial|Create a group to start your Duo Pro trial')
+          = s_('DuoProTrial|Create a group to start your GitLab Duo Pro trial')
 
       = yield :before_form
 

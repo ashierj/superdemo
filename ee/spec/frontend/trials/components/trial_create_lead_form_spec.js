@@ -1,11 +1,11 @@
-import { GlButton, GlForm } from '@gitlab/ui';
+import { GlButton, GlForm, GlSprintf } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
 import TrialCreateLeadForm from 'ee/trials/components/trial_create_lead_form.vue';
 import CountryOrRegionSelector from 'jh_else_ee/trials/components/country_or_region_selector.vue';
-import { TRIAL_FORM_SUBMIT_TEXT } from 'ee/trials/constants';
+import { TRIAL_FORM_SUBMIT_TEXT, TRIAL_TERMS_TEXT } from 'ee/trials/constants';
 import { trackSaasTrialSubmit } from 'ee/google_tag_manager';
 import { FORM_DATA, SUBMIT_PATH, GTM_SUBMIT_EVENT_LABEL } from './mock_data';
 
@@ -35,6 +35,7 @@ describe('TrialCreateLeadForm', () => {
   const findForm = () => wrapper.findComponent(GlForm);
   const findButton = () => wrapper.findComponent(GlButton);
   const findFormInput = (testId) => wrapper.findByTestId(testId);
+  const findTermsSprintf = () => wrapper.findComponent(GlSprintf);
 
   describe('rendering', () => {
     beforeEach(() => {
@@ -62,6 +63,10 @@ describe('TrialCreateLeadForm', () => {
       ];
 
       visibleFields.forEach((f) => expect(findFormInput(f).exists()).toBe(true));
+    });
+
+    it('has correct terms and conditions content', () => {
+      expect(findTermsSprintf().attributes('message')).toBe(TRIAL_TERMS_TEXT);
     });
   });
 
