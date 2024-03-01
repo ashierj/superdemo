@@ -2,6 +2,14 @@
 
 module Arkose
   class Settings
+    def self.arkose_client_id
+      ::Gitlab::CurrentSettings.arkose_labs_client_xid
+    end
+
+    def self.arkose_client_secret
+      ::Gitlab::CurrentSettings.arkose_labs_client_secret
+    end
+
     def self.arkose_public_api_key
       ::Gitlab::CurrentSettings.arkose_labs_public_api_key || ENV['ARKOSE_LABS_PUBLIC_KEY']
     end

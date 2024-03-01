@@ -5,6 +5,26 @@ require 'spec_helper'
 RSpec.describe Arkose::Settings, feature_category: :instance_resiliency do
   using RSpec::Parameterized::TableSyntax
 
+  describe '.arkose_client_id' do
+    subject { described_class.arkose_client_id }
+
+    before do
+      stub_application_setting(arkose_labs_client_xid: 'client_id')
+    end
+
+    it { is_expected.to eq 'client_id' }
+  end
+
+  describe '.arkose_client_secret' do
+    subject { described_class.arkose_client_secret }
+
+    before do
+      stub_application_setting(arkose_labs_client_secret: 'client_secret')
+    end
+
+    it { is_expected.to eq 'client_secret' }
+  end
+
   describe '.arkose_public_api_key' do
     subject { described_class.arkose_public_api_key }
 
