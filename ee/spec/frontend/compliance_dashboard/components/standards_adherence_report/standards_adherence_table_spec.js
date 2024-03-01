@@ -1,7 +1,7 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { mount } from '@vue/test-utils';
-import { GlDisclosureDropdown, GlDisclosureDropdownItem } from '@gitlab/ui';
+import { GlDisclosureDropdown } from '@gitlab/ui';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -33,8 +33,6 @@ describe('ComplianceStandardsAdherenceTable component', () => {
 
   const findFilters = () => wrapper.findComponent(Filters);
   const findDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
-  const findDropdownItem = (index) =>
-    findDropdown().findAllComponents(GlDisclosureDropdownItem).at(index);
 
   function createComponent(props = {}, resolverMock = mockGraphQlLoading, queryParams = {}) {
     const currentQueryParams = { ...queryParams };
@@ -52,7 +50,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
         data() {
           return {
             projects: {
-              list: [{ id: 'gid://gitlab/Project/1' }],
+              list: [{ name: 'Project 1', id: 'gid://gitlab/Project/1' }],
             },
           };
         },
@@ -136,7 +134,12 @@ describe('ComplianceStandardsAdherenceTable component', () => {
 
   describe('grouping', () => {
     it('contains the correct dropdown options', () => {
-      expect(findDropdown().props('items')).toEqual([{ text: 'None' }, { text: 'Checks' }]);
+      expect(findDropdown().props('items')).toEqual([
+        { text: 'None' },
+        { text: 'Checks' },
+        { text: 'Projects' },
+        { text: 'Standards' },
+      ]);
     });
 
     describe('by none', () => {
@@ -148,12 +151,31 @@ describe('ComplianceStandardsAdherenceTable component', () => {
 
     describe('by checks', () => {
       it('fetches the grouped adherences', async () => {
-        expect(findDropdownItem(1).props('item').text).toBe('Checks');
-        findDropdownItem(1).find('button').trigger('click');
+        findDropdown().vm.$emit('action', { text: 'Checks' });
         await nextTick();
 
         expect(findDropdown().props('toggleText')).toBe('Checks');
         expect(mockGraphQlSuccess).toHaveBeenCalledTimes(5);
+      });
+    });
+
+    describe('by projects', () => {
+      it('fetches the grouped adherences', async () => {
+        findDropdown().vm.$emit('action', { text: 'Projects' });
+        await nextTick();
+
+        expect(findDropdown().props('toggleText')).toBe('Projects');
+        expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('by standards', () => {
+      it('fetches the grouped adherences', async () => {
+        findDropdown().vm.$emit('action', { text: 'Standards' });
+        await nextTick();
+
+        expect(findDropdown().props('toggleText')).toBe('Standards');
+        expect(mockGraphQlSuccess).toHaveBeenCalledTimes(3);
       });
     });
   });

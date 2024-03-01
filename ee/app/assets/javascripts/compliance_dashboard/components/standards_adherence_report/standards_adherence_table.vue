@@ -1,12 +1,12 @@
 <script>
 import { GlAlert, GlDisclosureDropdown } from '@gitlab/ui';
-import { __, s__ } from '~/locale';
+import { s__ } from '~/locale';
 import { mapStandardsAdherenceQueryToFilters } from 'ee/compliance_dashboard/utils';
 import getProjectsInComplianceStandardsAdherence from 'ee/compliance_dashboard/graphql/compliance_projects_in_standards_adherence.query.graphql';
-import { ALLOWED_FILTER_TOKENS } from './constants';
-import GroupChecks from './group_checks.vue';
-import Filters from './filters.vue';
+import { ALLOWED_FILTER_TOKENS, NONE, CHECKS, PROJECTS, STANDARDS } from './constants';
 import AdherencesBaseTable from './base_table.vue';
+import Filters from './filters.vue';
+import GroupAdherences from './group_adherences.vue';
 
 export default {
   name: 'ComplianceStandardsAdherenceTable',
@@ -15,7 +15,7 @@ export default {
     GlDisclosureDropdown,
     Filters,
     AdherencesBaseTable,
-    GroupChecks,
+    GroupAdherences,
   },
   props: {
     groupPath: {
@@ -31,7 +31,7 @@ export default {
         list: [],
       },
       filters: {},
-      selected: this.$options.i18n.noneText,
+      selected: NONE,
     };
   },
   apollo: {
@@ -54,10 +54,16 @@ export default {
     dropdownItems() {
       return [
         {
-          text: this.$options.i18n.noneText,
+          text: NONE,
         },
         {
-          text: this.$options.i18n.checksText,
+          text: CHECKS,
+        },
+        {
+          text: PROJECTS,
+        },
+        {
+          text: STANDARDS,
         },
       ];
     },
@@ -107,9 +113,10 @@ export default {
     ),
     groupByText: s__('ComplianceStandardsAdherence|Group by'),
     filterByText: s__('ComplianceStandardsAdherence|Filter by'),
-    noneText: __('None'),
-    checksText: __('Checks'),
   },
+  NONE,
+  CHECKS,
+  PROJECTS,
 };
 </script>
 
@@ -146,11 +153,31 @@ export default {
         />
       </div>
     </div>
-    <div v-if="selected === 'Checks'">
-      <group-checks :group-path="groupPath" :filters="filters" />
+    <div v-if="selected !== $options.NONE">
+      <group-adherences
+        :group-path="groupPath"
+        :filters="filters"
+        :selected="selected"
+        :projects="projects.list"
+      />
     </div>
     <div v-else>
       <adherences-base-table :group-path="groupPath" :filters="filters" />
     </div>
   </section>
 </template>
+
+<style>
+.gl-accordion-item-header {
+  .gl-button-text {
+    font-weight: bold;
+    color: black;
+    font-size: 14px;
+    margin-left: 10px;
+
+    .gl-dark & {
+      color: var(--gl-text-color);
+    }
+  }
+}
+</style>

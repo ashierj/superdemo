@@ -42,6 +42,16 @@ export default {
       required: false,
       default: '',
     },
+    projectId: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    standard: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {
@@ -85,6 +95,14 @@ export default {
     queryFilters() {
       if (this.check) {
         return { checkName: this.check };
+      }
+
+      if (this.projectId) {
+        return { projectIds: this.projectId };
+      }
+
+      if (this.standard) {
+        return { standard: this.standard };
       }
 
       return {};
@@ -282,8 +300,8 @@ export default {
         {{ adherenceCheckName(checkName) }}
       </template>
 
-      <template #cell(standard)="{ item: { standard } }">
-        {{ adherenceStandardLabel(standard) }}
+      <template #cell(standard)="{ item }">
+        {{ adherenceStandardLabel(item.standard) }}
       </template>
 
       <template #cell(lastScanned)="{ item: { updatedAt } }">
