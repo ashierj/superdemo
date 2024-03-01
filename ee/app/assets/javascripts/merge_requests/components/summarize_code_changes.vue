@@ -1,9 +1,11 @@
 <script>
 import { GlButton, GlBadge, GlIcon, GlPopover, GlOutsideDirective as Outside } from '@gitlab/ui';
+import { CONTENT_EDITOR_PASTE } from '~/vue_shared/constants';
 import { updateText } from '~/lib/utils/text_markdown';
 import { TYPENAME_PROJECT, TYPENAME_USER } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
+import markdownEditorEventHub from '~/vue_shared/components/markdown/eventhub';
 import aiActionMutation from 'ee/graphql_shared/mutations/ai_action.mutation.graphql';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 
@@ -31,14 +33,19 @@ export default {
         result({ data: { aiCompletionResponse } }) {
           if (aiCompletionResponse) {
             const { content } = aiCompletionResponse;
-            const textArea = document.querySelector('.js-gfm-input');
+            const textArea = document.querySelector('textarea.js-gfm-input');
 
-            updateText({
-              textArea,
-              tag: content,
-              cursorOffset: 0,
-              wrap: false,
-            });
+            if (textArea) {
+              updateText({
+                textArea,
+                tag: content,
+                cursorOffset: 0,
+                wrap: false,
+              });
+            } else {
+              markdownEditorEventHub.$emit(CONTENT_EDITOR_PASTE, content);
+            }
+
             this.loading = false;
           }
         },
