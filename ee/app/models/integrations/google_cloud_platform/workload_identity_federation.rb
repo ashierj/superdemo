@@ -3,6 +3,8 @@
 module Integrations
   module GoogleCloudPlatform
     class WorkloadIdentityFederation < Integration
+      include HasAvatar
+
       attribute :alert_events, default: false
       attribute :commit_events, default: false
       attribute :confidential_issues_events, default: false
