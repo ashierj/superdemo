@@ -37,7 +37,7 @@ export default {
     viewPolicyProjectButtonText: s__('SecurityOrchestration|View policy project'),
     migrationTitle: s__('SecurityOrchestration|Updated policy name'),
     migrationDescription: s__(
-      'SecurityOrchestration|The %{oldNameStart}Scan result policy%{oldNameEnd} is now called the %{newNameStart}Merge request approval policy%{newNameEnd} to better align with its purpose. For more details, see the release notes.',
+      'SecurityOrchestration|The %{oldNameStart}Scan result policy%{oldNameEnd} is now called the %{newNameStart}Merge request approval policy%{newNameEnd} to better align with its purpose.',
     ),
   },
   data() {
