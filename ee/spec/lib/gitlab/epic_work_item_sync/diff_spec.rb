@@ -3,10 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::EpicWorkItemSync::Diff, feature_category: :team_planning do
-  describe '#attributes' do
-    subject(:attributes) { described_class.new(epic, work_item).attributes }
+  let(:strict_equal) { false }
 
-    let(:epic) { create(:epic, :with_synced_work_item) }
+  describe '#attributes' do
+    subject(:attributes) { described_class.new(epic, work_item, strict_equal: strict_equal).attributes }
+
+    let_it_be(:group) { create(:group) }
+    let_it_be_with_reload(:epic) { create(:epic, :with_synced_work_item, group: group) }
     let(:work_item) { epic.work_item }
 
     context 'when epic and work item are equal' do
@@ -84,6 +87,128 @@ RSpec.describe Gitlab::EpicWorkItemSync::Diff, feature_category: :team_planning 
         end
 
         it { is_expected.to include("color") }
+      end
+    end
+
+    describe 'hierarchy' do
+      let_it_be(:parent_epic) { create(:epic, :with_synced_work_item, group: group) }
+      let_it_be_with_reload(:epic) { create(:epic, :with_synced_work_item, group: group, parent: parent_epic) }
+
+      context 'when epic and work item hierarchy are equal' do
+        before do
+          create(:parent_link, work_item_parent: parent_epic.work_item, work_item: epic.work_item)
+        end
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when epic and work item hierarchy are not equal' do
+        before do
+          create(:parent_link, work_item_parent: create(:work_item, :epic), work_item: epic.work_item)
+        end
+
+        it { is_expected.to include("parent_id") }
+      end
+
+      context 'when relative_position is equal' do
+        let_it_be_with_reload(:epic) do
+          create(:epic, :with_synced_work_item, group: group, parent: parent_epic, relative_position: 10)
+        end
+
+        before do
+          create(:parent_link, work_item_parent: parent_epic.work_item, work_item: epic.work_item,
+            relative_position: 10)
+        end
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when relative_position is not equal' do
+        let_it_be_with_reload(:epic) do
+          create(:epic, :with_synced_work_item, group: group, parent: parent_epic, relative_position: 9)
+        end
+
+        before do
+          create(:parent_link, work_item_parent: parent_epic.work_item, work_item: epic.work_item,
+            relative_position: 10)
+        end
+
+        it { is_expected.to include("relative_position") }
+      end
+    end
+
+    describe 'start dates' do
+      let_it_be(:expected_start_date) { Time.current.to_date }
+      let_it_be(:expected_due_date) { expected_start_date + 2.days }
+      let_it_be_with_reload(:epic) do
+        create(:epic, :with_synced_work_item, group: group, start_date_fixed: expected_start_date,
+          due_date_fixed: expected_due_date, start_date_is_fixed: true, due_date_is_fixed: true
+        )
+      end
+
+      context 'when it is equal' do
+        before do
+          create(
+            :work_items_dates_source,
+            :fixed,
+            work_item: work_item,
+            start_date: expected_start_date,
+            due_date: expected_due_date)
+        end
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when it is different' do
+        it { is_expected.to include("start_date_fixed", "due_date_fixed", "start_date_is_fixed", "due_date_is_fixed") }
+      end
+    end
+
+    describe 'related epic links' do
+      let_it_be_with_reload(:target) { create(:epic, :with_synced_work_item, group: group) }
+      let(:source) { epic }
+
+      context 'when epic and work item related epic links are equal' do
+        before do
+          create(:related_epic_link, source: source, target: target)
+          create(:work_item_link, source: source.work_item, target: target.work_item)
+        end
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when epic has links without a synced work item and work items has no links' do
+        let_it_be_with_reload(:target) { create(:epic, group: group) }
+
+        before do
+          create(:related_epic_link, source: source, target: target)
+        end
+
+        context 'when strict_equal is false' do
+          it { is_expected.to be_empty }
+        end
+
+        context 'when strict_equal is true' do
+          let(:strict_equal) { true }
+
+          it { is_expected.to include("related_links") }
+        end
+      end
+
+      context 'when work item has no related link but epic has' do
+        before do
+          create(:related_epic_link, source: source, target: target)
+        end
+
+        it { is_expected.to include("related_links") }
+      end
+
+      context 'when eipc has no related link but the work item has' do
+        before do
+          create(:work_item_link, source: source.work_item, target: target.work_item)
+        end
+
+        it { is_expected.to include("related_links") }
       end
     end
   end
