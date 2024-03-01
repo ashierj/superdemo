@@ -11,7 +11,6 @@ import {
   trackTrialAcceptTerms,
   trackCheckout,
   trackTransaction,
-  trackAddToCartUsageTab,
   getNamespaceId,
   trackCompanyForm,
 } from 'ee/google_tag_manager';
@@ -164,32 +163,7 @@ describe('ee/google_tag_manager/index', () => {
         },
       ],
     }),
-    createTestCase(trackAddToCartUsageTab, {
-      links: [
-        {
-          cls: 'js-buy-additional-minutes',
-          expectation: {
-            event: 'EECproductAddToCart',
-            ecommerce: {
-              currencyCode: 'USD',
-              add: {
-                products: [
-                  {
-                    name: 'CI/CD Minutes',
-                    id: '0003',
-                    price: '10',
-                    brand: 'GitLab',
-                    category: 'DevOps',
-                    variant: 'add-on',
-                    quantity: 1,
-                  },
-                ],
-              },
-            },
-          },
-        },
-      ],
-    }),
+
     createTestCase(trackCombinedGroupProjectForm, {
       forms: [
         {
