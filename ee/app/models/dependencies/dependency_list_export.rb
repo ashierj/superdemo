@@ -5,6 +5,7 @@ module Dependencies
 
     mount_file_store_uploader AttachmentUploader
 
+    belongs_to :organization, class_name: 'Organizations::Organization'
     belongs_to :project
     belongs_to :group
     belongs_to :pipeline, class_name: 'Ci::Pipeline'
@@ -49,17 +50,19 @@ module Dependencies
     end
 
     def exportable
-      pipeline || project || group
+      pipeline || project || group || organization
     end
 
     def exportable=(value)
       case value
       when Project
-        make_project_level_export(value)
+        self.project = value
       when Group
-        make_group_level_export(value)
+        self.group = value
+      when Organizations::Organization
+        self.organization = value
       when Ci::Pipeline
-        make_pipeline_level_export(value)
+        self.pipeline = value
       else
         raise "Can not assign #{value.class} as exportable"
       end
@@ -67,26 +70,8 @@ module Dependencies
 
     private
 
-    def make_project_level_export(project)
-      self.project = project
-      self.group = nil
-      self.pipeline = nil
-    end
-
-    def make_group_level_export(group)
-      self.project = nil
-      self.group = group
-      self.pipeline = nil
-    end
-
-    def make_pipeline_level_export(pipeline)
-      self.project = nil
-      self.group = nil
-      self.pipeline = pipeline
-    end
-
     def only_one_exportable
-      errors.add(:base, 'Only one exportable is required') unless [project, group, pipeline].one?
+      errors.add(:base, 'Only one exportable is required') unless [project, group, pipeline, organization].one?
     end
   end
 end

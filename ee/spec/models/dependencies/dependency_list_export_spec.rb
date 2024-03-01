@@ -27,6 +27,8 @@ RSpec.describe Dependencies::DependencyListExport, feature_category: :dependency
     end
 
     describe 'only one exportable can be set' do
+      using RSpec::Parameterized::TableSyntax
+
       let(:expected_error) { { error: 'Only one exportable is required' } }
 
       subject { export.errors.details[:base] }
@@ -35,52 +37,40 @@ RSpec.describe Dependencies::DependencyListExport, feature_category: :dependency
         export.validate
       end
 
-      context 'when project and group is set' do
-        let(:export) { build(:dependency_list_export, project: project, group: group) }
+      where(:args, :valid) do
+        organization = build_stubbed(:organization)
+        group = build_stubbed(:group, organization: organization)
+        project = build_stubbed(:project, organization: organization, group: group)
+        pipeline = build_stubbed(:ci_pipeline, project: project)
 
-        it { is_expected.to include(expected_error) }
+        [
+          [{ organization: organization, group: group, project: project, pipeline: pipeline }, false],
+          [{ organization: organization, group: group, project: project, pipeline: nil }, false],
+          [{ organization: organization, group: group, project: nil, pipeline: pipeline }, false],
+          [{ organization: organization, group: group, project: nil, pipeline: nil }, false],
+          [{ organization: organization, group: nil, project: project, pipeline: pipeline }, false],
+          [{ organization: organization, group: nil, project: project, pipeline: nil }, false],
+          [{ organization: organization, group: nil, project: nil, pipeline: pipeline }, false],
+          [{ organization: organization, group: nil, project: nil, pipeline: nil }, true],
+          [{ organization: nil, group: group, project: project, pipeline: pipeline }, false],
+          [{ organization: nil, group: group, project: project, pipeline: nil }, false],
+          [{ organization: nil, group: group, project: nil, pipeline: pipeline }, false],
+          [{ organization: nil, group: group, project: nil, pipeline: nil }, true],
+          [{ organization: nil, group: nil, project: project, pipeline: pipeline }, false],
+          [{ organization: nil, group: nil, project: project, pipeline: nil }, true],
+          [{ organization: nil, group: nil, project: nil, pipeline: pipeline }, true],
+          [{ organization: nil, group: nil, project: nil, pipeline: nil }, false]
+        ]
       end
 
-      context 'when project and pipeline is set' do
-        let(:export) { build(:dependency_list_export, project: project, pipeline: pipeline) }
+      with_them do
+        let(:export) { build(:dependency_list_export, args) }
 
-        it { is_expected.to include(expected_error) }
-      end
-
-      context 'when pipeline and group is set' do
-        let(:export) { build(:dependency_list_export, pipeline: pipeline, group: group) }
-
-        it { is_expected.to include(expected_error) }
-      end
-
-      context 'when project, group and pipeline is set' do
-        let(:export) { build(:dependency_list_export, project: project, group: group, pipeline: pipeline) }
-
-        it { is_expected.to include(expected_error) }
-      end
-
-      context 'when none is set' do
-        let(:export) { build(:dependency_list_export, project: nil, group: nil, pipeline: nil) }
-
-        it { is_expected.to include(expected_error) }
-      end
-
-      context 'when only project is set' do
-        let(:export) { build(:dependency_list_export, project: project, group: nil) }
-
-        it { is_expected.not_to include(expected_error) }
-      end
-
-      context 'when only group is set' do
-        let(:export) { build(:dependency_list_export, project: nil, group: group, pipeline: nil) }
-
-        it { is_expected.not_to include(expected_error) }
-      end
-
-      context 'when only pipeline is set' do
-        let(:export) { build(:dependency_list_export, project: nil, group: nil, pipeline: pipeline) }
-
-        it { is_expected.not_to include(expected_error) }
+        if params[:valid]
+          it { is_expected.not_to include(expected_error) }
+        else
+          it { is_expected.to include(expected_error) }
+        end
       end
     end
   end
@@ -177,42 +167,18 @@ RSpec.describe Dependencies::DependencyListExport, feature_category: :dependency
   end
 
   describe '#exportable=' do
-    context 'when the given argument is a project' do
-      let(:export) { build(:dependency_list_export, group: group, pipeline: pipeline) }
+    let(:export) { build(:dependency_list_export) }
+    let(:organization) { build_stubbed(:organization) }
 
-      it 'assigns the project and unassigns the group' do
-        expect { export.exportable = project }.to change { export.project }.to(project)
-                                              .and change { export.group }.to(nil)
-                                              .and change { export.pipeline }.to(nil)
-      end
+    it 'sets the correct association' do
+      expect { export.exportable = project }.to change { export.project }.to(project)
+      expect { export.exportable = group }.to change { export.group }.to(group)
+      expect { export.exportable = pipeline }.to change { export.pipeline }.to(pipeline)
+      expect { export.exportable = organization }.to change { export.organization }.to(organization)
     end
 
-    context 'when the given argument is a group' do
-      let(:export) { build(:dependency_list_export, project: project, pipeline: pipeline) }
-
-      it 'assigns the group and unassigns the project' do
-        expect { export.exportable = group }.to change { export.group }.to(group)
-                                            .and change { export.project }.to(nil)
-                                            .and change { export.pipeline }.to(nil)
-      end
-    end
-
-    context 'when the given argument is a pipeline' do
-      let(:export) { build(:dependency_list_export, group: group, project: project) }
-
-      it 'assigns the pipeline and unassigns the group' do
-        expect { export.exportable = pipeline }.to change { export.pipeline }.to(pipeline)
-                                            .and change { export.project }.to(nil)
-                                            .and change { export.group }.to(nil)
-      end
-    end
-
-    context 'when the given argument is neither a project, group or pipeline' do
-      let(:export) { build(:dependency_list_export) }
-
-      it 'raises an error' do
-        expect { export.exportable = nil }.to raise_error(RuntimeError)
-      end
+    it 'raises when exportable is an unknown type' do
+      expect { export.exportable = nil }.to raise_error(RuntimeError)
     end
   end
 end
