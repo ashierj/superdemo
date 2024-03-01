@@ -504,7 +504,7 @@ group :test do
   gem 'rspec_profiling', '~> 0.0.6', feature_category: :tooling
   gem 'rspec-benchmark', '~> 0.6.0', feature_category: :tooling
   gem 'rspec-parameterized', '~> 1.0', require: false, feature_category: :tooling
-  gem 'os', '~> 1.1', feature_category: :tooling
+  gem 'os', '~> 1.1', '>= 1.1.4', feature_category: :tooling
 
   gem 'capybara', '~> 3.40' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'capybara-screenshot', '~> 1.0.26' # rubocop:todo Gemfile/MissingFeatureCategory
