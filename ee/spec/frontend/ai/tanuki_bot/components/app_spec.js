@@ -279,7 +279,8 @@ describe('GitLab Duo Chat', () => {
         createComponent();
         findGlDuoChat().vm.$emit('track-feedback', {
           feedbackChoices: ['foo', 'bar'],
-          extendedTextFeedback: 'baz',
+          improveWhat: 'improveWhat',
+          didWhat: 'didWhat',
         });
 
         await waitForPromises();
@@ -288,7 +289,8 @@ describe('GitLab Duo Chat', () => {
           label: 'response_feedback',
           property: ['foo', 'bar'],
           extra: {
-            extendedFeedback: 'baz',
+            improveWhat: 'improveWhat',
+            didWhat: 'didWhat',
             prompt_location: 'after_content',
           },
         });
