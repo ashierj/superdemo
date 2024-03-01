@@ -166,7 +166,7 @@ function resolveCompilationTargets() {
 }
 
 function createPostCSSProcessor() {
-    return postcss([autoprefixer()]);
+  return postcss([autoprefixer()]);
 }
 
 export async function compileAllStyles({ shouldWatch = false }) {
@@ -184,6 +184,8 @@ export async function compileAllStyles({ shouldWatch = false }) {
     // post-processing steps, because we would compress
     // _after_ things like auto-prefixer, etc. happened
     style: shouldWatch ? 'expanded' : 'compressed',
+    sourceMap: shouldWatch,
+    sourceMapIncludeSources: shouldWatch,
   };
 
   let fileWatcher = null;
@@ -207,6 +209,14 @@ export async function compileAllStyles({ shouldWatch = false }) {
     }
     content = await processor.process(content.css, {
       from: source,
+      map: content.sourceMap
+        ? {
+            from: source,
+            prev: content.sourceMap,
+            inline: true,
+            sourcesContent: true,
+          }
+        : false,
     });
     // Create target folder if it doesn't exist
     await mkdir(path.dirname(dest), { recursive: true });
