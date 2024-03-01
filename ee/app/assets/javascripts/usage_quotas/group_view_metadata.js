@@ -12,4 +12,4 @@ export const usageQuotasTabsMetadata = [
   getPipelineTabMetadata(),
   getStorageTabMetadata({ customApolloProvider }),
   getTransferTabMetadata({ viewType: GROUP_VIEW_TYPE }),
-];
+].filter(Boolean);

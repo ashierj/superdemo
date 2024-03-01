@@ -46,7 +46,7 @@ RSpec.describe 'Profile > Usage Quota', :js, feature_category: :consumables_cost
       end
 
       it 'shows the correct quota status' do
-        page.within('#pipelines-quota-tab') do
+        within_testid('#pipelines-quota-tab') do
           expect(page).to have_content(usage_text)
         end
       end
