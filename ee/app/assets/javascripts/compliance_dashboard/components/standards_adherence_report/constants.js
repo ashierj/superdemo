@@ -8,6 +8,11 @@ const PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITTERS = 'PREVENT_APPROVAL_BY_MERGE_
 const AT_LEAST_TWO_APPROVALS = 'AT_LEAST_TWO_APPROVALS';
 const AT_LEAST_ONE_NON_AUTHOR_APPROVAL = 'AT_LEAST_ONE_NON_AUTHOR_APPROVAL';
 
+export const NONE = s__('ComplianceStandardsAdherence|None');
+export const CHECKS = s__('ComplianceStandardsAdherence|Checks');
+export const PROJECTS = s__('ComplianceStandardsAdherence|Projects');
+export const STANDARDS = s__('ComplianceStandardsAdherence|Standards');
+
 export const FAIL_STATUS = 'FAIL';
 export const NO_STANDARDS_ADHERENCES_FOUND = s__(
   'ComplianceStandardsAdherence|No projects with standards adherence checks found',
