@@ -27,7 +27,7 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
   end
 
   it 'returns an error' do
-    expect(execute.status).to eq :error
+    expect(execute).to be_error
     expect(execute.reason).to eq :insufficient_permissions
     expect(execute.message).to eq s_('Runners|The user is not allowed to provision a cloud runner')
   end
@@ -38,7 +38,7 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
     end
 
     it 'returns provisioning steps' do
-      expect(execute.status).to eq :success
+      expect(execute).to be_success
 
       steps = execute.payload[:provisioning_steps]
       expect(steps).to match([
@@ -59,11 +59,11 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
       let(:runner_token) { nil }
 
       it 'is successful and generates a unique deployment id' do
-        expect(execute.status).to eq :success
+        expect(execute).to be_success
 
         steps = execute.payload[:provisioning_steps]
         expect(steps).to match([
-          a_hash_including(instructions: /name = "grit-[A-Za-z0-9_\-]{8}"/),
+          a_hash_including(instructions: /name = "grit-[a-z0-9\-]{8}"/),
           an_instance_of(Hash)
         ])
       end
@@ -72,7 +72,7 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
         it 'returns internal error' do
           expect(Devise).to receive(:friendly_token).with(Ci::Runner::RUNNER_SHORT_SHA_LENGTH).and_return('1234567/')
 
-          expect(execute.status).to eq :error
+          expect(execute).to be_error
           expect(execute.reason).to eq :internal_error
           expect(execute.message).to eq s_('Runners|The deployment name is invalid')
         end
@@ -85,7 +85,7 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
         end
 
         it 'returns an error' do
-          expect(execute.status).to eq :error
+          expect(execute).to be_error
           expect(execute.reason).to eq :insufficient_permissions
           expect(execute.message).to eq s_('Runners|The user is not allowed to create a runner')
         end
@@ -96,17 +96,23 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
       let(:runner_token) { 'invalid-token' }
 
       it 'returns an error' do
-        expect(execute.status).to eq :error
+        expect(execute).to be_error
         expect(execute.reason).to eq :invalid_argument
         expect(execute.message).to eq s_('Runners|The runner authentication token is invalid')
       end
+    end
+
+    context 'with runner token containing invalid characters for deployment name' do
+      let(:runner) { create(:ci_runner, :project, projects: [project], token: 'U_tok-a') }
+
+      it { is_expected.to be_success }
     end
 
     context 'with invalid region name' do
       let(:region) { '" invalid-region "' }
 
       it 'uses a sanitized value' do
-        expect(execute.status).to eq :success
+        expect(execute).to be_success
 
         steps = execute.payload[:provisioning_steps]
         expect(steps).to match([
@@ -120,7 +126,7 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
       let(:zone) { '" invalid-zone "' }
 
       it 'uses a sanitized value' do
-        expect(execute.status).to eq :success
+        expect(execute).to be_success
 
         steps = execute.payload[:provisioning_steps]
         expect(steps).to match([
@@ -134,7 +140,7 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
       let(:machine_type) { '" invalid-machine-type "' }
 
       it 'uses a sanitized value' do
-        expect(execute.status).to eq :success
+        expect(execute).to be_success
 
         steps = execute.payload[:provisioning_steps]
         expect(steps).to match([
@@ -151,7 +157,7 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
         allow(Ability).to receive(:allowed?).and_call_original
         expect(Ability).to receive(:allowed?).with(current_user, :provision_cloud_runner, project).and_call_original
 
-        expect(execute.status).to eq :error
+        expect(execute).to be_error
         expect(execute.reason).to eq :insufficient_permissions
         expect(execute.message).to eq s_('Runners|The user is not allowed to provision a cloud runner')
       end
@@ -163,7 +169,7 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
       end
 
       it 'returns an error' do
-        expect(execute.status).to eq :error
+        expect(execute).to be_error
         expect(execute.reason).to eq :google_cloud_provisioning_disabled
         expect(execute.message).to eq s_('Runners|Google Cloud provisioning is disabled for this project')
       end
