@@ -293,6 +293,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
     end
 
     describe "member_check" do
+      let(:protocol) { 'http' }
       let(:changes) { "#{start_sha} #{end_sha} refs/heads/master" }
 
       before do
