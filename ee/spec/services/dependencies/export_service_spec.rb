@@ -83,7 +83,40 @@ RSpec.describe Dependencies::ExportService, feature_category: :dependency_manage
     end
 
     context 'when export type is dependency_list' do
+      let(:timestamp) { Time.current.utc.strftime('%FT%H%M') }
       let(:export_type) { :dependency_list }
+
+      context 'when the exportable is an organization' do
+        subject(:execute) { described_class.new(export).execute }
+
+        let_it_be(:organization) { create(:organization) }
+        let_it_be(:project) { create(:project, organization: organization) }
+        let_it_be(:occurrences) { create_list(:sbom_occurrence, 2, project: project) }
+        let(:export) { create(:dependency_list_export, project: nil, exportable: organization) }
+        let(:expected_filename) { "#{organization.to_param}_dependencies_#{timestamp}.csv" }
+
+        it { expect(execute).to be_present }
+        it { expect { execute }.to change { export.file.filename }.to(expected_filename) }
+
+        it 'includes a header in the export file' do
+          header = '"Name","Version","Packager","Location"'
+          expect { execute }.to change { export.file.read }.to(include(header))
+        end
+
+        it 'includes a row for each occurrence' do
+          execute
+
+          content = export.file.read
+          occurrences.map do |occurrence|
+            expect(content).to include(CSV.generate_line([
+              occurrence.component_name,
+              occurrence.version,
+              occurrence.package_manager,
+              occurrence.send(:input_file_blob_path)
+            ], force_quotes: true))
+          end
+        end
+      end
 
       context 'when the exportable is a project' do
         let_it_be(:project) { create(:project) }
@@ -100,7 +133,7 @@ RSpec.describe Dependencies::ExportService, feature_category: :dependency_manage
 
         it_behaves_like 'export service', Dependencies::ExportSerializers::ProjectDependenciesService do
           let(:dependency_list_export) do
-            create(:dependency_list_export, exportable: project, status: status, export_type: export_type)
+            create(:dependency_list_export, project: nil, exportable: project, status: status, export_type: export_type)
           end
         end
       end
@@ -120,7 +153,7 @@ RSpec.describe Dependencies::ExportService, feature_category: :dependency_manage
 
         it_behaves_like 'export service', Dependencies::ExportSerializers::GroupDependenciesService do
           let(:dependency_list_export) do
-            create(:dependency_list_export, exportable: group, status: status, export_type: export_type)
+            create(:dependency_list_export, project: nil, exportable: group, status: status, export_type: export_type)
           end
         end
       end
@@ -148,7 +181,12 @@ RSpec.describe Dependencies::ExportService, feature_category: :dependency_manage
 
         it_behaves_like 'export service', Dependencies::ExportSerializers::Sbom::PipelineService do
           let(:dependency_list_export) do
-            create(:dependency_list_export, exportable: pipeline, status: status, export_type: export_type)
+            create(:dependency_list_export, {
+              project: nil,
+              exportable: pipeline,
+              status: status,
+              export_type: export_type
+            })
           end
         end
       end

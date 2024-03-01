@@ -4,6 +4,7 @@ module Dependencies
   class ExportService
     SERIALIZER_SERVICES = {
       dependency_list: {
+        Organizations::Organization => ExportSerializers::OrganizationDependenciesService,
         Project => ExportSerializers::ProjectDependenciesService,
         Group => ExportSerializers::GroupDependenciesService
       },
@@ -36,7 +37,17 @@ module Dependencies
     def create_export
       dependency_list_export.start!
 
-      create_export_file
+      if exportable.is_a?(Organizations::Organization)
+        Tempfile.open('dependencies') do |file|
+          serializer = serializer_service.new(dependency_list_export)
+          serializer.each { |item| file << item }
+
+          dependency_list_export.file = file
+          dependency_list_export.file.filename = serializer.filename
+        end
+      else
+        create_export_file
+      end
 
       dependency_list_export.finish!
     rescue StandardError, Dependencies::ExportSerializers::Sbom::PipelineService::SchemaValidationError

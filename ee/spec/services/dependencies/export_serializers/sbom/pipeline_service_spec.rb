@@ -20,7 +20,7 @@ RSpec.describe Dependencies::ExportSerializers::Sbom::PipelineService, feature_c
   end
 
   describe '#execute' do
-    let(:dependency_list_export) { create(:dependency_list_export, exportable: pipeline) }
+    let(:dependency_list_export) { create(:dependency_list_export, project: nil, exportable: pipeline) }
 
     let(:service_class) { described_class.new(dependency_list_export) }
 
