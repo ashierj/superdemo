@@ -306,6 +306,16 @@ module EE
         end
       end
 
+      def with_api_scopes
+        super()
+          .preload(
+            :ldap_group_links,
+            :deletion_schedule,
+            :saml_group_links,
+            :file_template_project,
+            group_wiki_repository: :shard)
+      end
+
       private
 
       # Used when all groups that user is fetching epics for belongs to the same hierarchy.
