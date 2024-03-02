@@ -29,6 +29,7 @@ module EE
 
         check_membership_lock!
         check_quota!
+        check_seats!
       end
 
       def check_quota!
@@ -46,6 +47,14 @@ module EE
 
         @membership_locked = true # rubocop:disable Gitlab/ModuleWithInstanceVariables
         raise ::Members::CreateService::MembershipLockedError
+      end
+
+      def check_seats!
+        root_namespace = source.root_ancestor
+
+        return unless root_namespace.block_seat_overages? && !root_namespace.seats_available_for?(invites)
+
+        raise ::Members::CreateService::SeatLimitExceededError, s_('AddMember|Not enough seats for this many users.')
       end
 
       def invite_quota_exceeded?

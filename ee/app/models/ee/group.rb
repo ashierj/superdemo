@@ -540,6 +540,18 @@ module EE
       project
     end
 
+    override :block_seat_overages?
+    def block_seat_overages?
+      ::Feature.enabled?(:block_seat_overages, self, type: :gitlab_com_derisk) &&
+        ::Gitlab::Saas.feature_available?(:gitlab_com_subscriptions)
+    end
+
+    def seats_available_for?(invites)
+      return true unless gitlab_subscription
+
+      gitlab_subscription.seats >= (billable_members_count + invites.count)
+    end
+
     def calculate_reactive_cache
       billable_members_count
     end

@@ -594,6 +594,10 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
         json_response
       end
 
+      before do
+        stub_feature_flags(block_seat_overages: false)
+      end
+
       context 'for regular user' do
         let(:user) { create(:user) }
 
@@ -612,6 +616,24 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
         let(:user) { create(:user, :enterprise_user, enterprise_group: another_group) }
 
         it_behaves_like 'member response with hidden email'
+      end
+
+      context 'when block seat overages is enabled and there are no seats left in the group' do
+        before do
+          stub_feature_flags(block_seat_overages: true)
+        end
+
+        it 'rejects the request' do
+          user = create(:user)
+
+          post api(url, owner), params: { user_id: user.id, access_level: Gitlab::Access::GUEST }
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response).to eq({
+            'message' => 'Not enough seats for this many users.',
+            'status' => 'error'
+          })
+        end
       end
     end
 
@@ -932,6 +954,10 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
         post api(url, owner), params: { user_id: user.id, access_level: Gitlab::Access::GUEST }
         expect(response).to have_gitlab_http_status(:created)
         json_response
+      end
+
+      before do
+        stub_feature_flags(block_seat_overages: false)
       end
 
       context 'for regular user' do
