@@ -2099,6 +2099,12 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#block_seat_overages?' do
+    it 'returns false' do
+      expect(namespace.block_seat_overages?).to eq(false)
+    end
+  end
+
   def create_project(repository_size:, lfs_objects_size:, repository_size_limit:)
     create(:project, namespace: namespace, repository_size_limit: repository_size_limit).tap do |project|
       create(:project_statistics, project: project, repository_size: repository_size, lfs_objects_size: lfs_objects_size)

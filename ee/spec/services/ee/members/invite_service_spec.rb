@@ -77,6 +77,10 @@ RSpec.describe Members::InviteService, :aggregate_failures, :saas, feature_categ
     context 'without a plan' do
       let(:plan) { nil }
 
+      before do
+        stub_feature_flags(block_seat_overages: false)
+      end
+
       it 'successfully creates members' do
         expect { result }.to change(ProjectMember, :count).by(2)
         expect(result[:status]).to eq(:success)
@@ -84,6 +88,10 @@ RSpec.describe Members::InviteService, :aggregate_failures, :saas, feature_categ
     end
 
     context 'with Audit Event logging' do
+      before do
+        stub_feature_flags(block_seat_overages: false)
+      end
+
       context 'when there are valid members created' do
         it 'creates Audit Events' do
           expect { result }.to change { AuditEvent.count }.by(2)

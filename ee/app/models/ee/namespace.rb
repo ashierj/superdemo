@@ -514,6 +514,10 @@ module EE
       ::Feature.enabled?(:saas_user_caps, root_ancestor)
     end
 
+    def block_seat_overages?
+      false
+    end
+
     def capacity_left_for_user?(_user)
       true
     end

@@ -22,6 +22,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
 
   before do
     stub_subscription_request_seat_usage(true)
+    stub_feature_flags(block_seat_overages: false)
   end
 
   context 'with overage modal concerns' do

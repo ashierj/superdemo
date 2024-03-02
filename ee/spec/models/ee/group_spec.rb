@@ -3592,4 +3592,89 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it { is_expected.to eq(false) }
     end
   end
+
+  describe '#block_seat_overages?' do
+    context 'when gitlab subscriptions are available' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+      end
+
+      it 'returns true when the feature flag is enabled' do
+        expect(group.block_seat_overages?).to eq(true)
+      end
+
+      it 'returns false when the feature flag is disabled' do
+        stub_feature_flags(block_seat_overages: false)
+
+        expect(group.block_seat_overages?).to eq(false)
+      end
+    end
+
+    context 'when gitlab subscriptions are not available' do
+      it 'returns false when the feature flag is enabled' do
+        expect(group.block_seat_overages?).to eq(false)
+      end
+
+      it 'returns false when the feature flag is disabled' do
+        stub_feature_flags(block_seat_overages: false)
+
+        expect(group.block_seat_overages?).to eq(false)
+      end
+    end
+  end
+
+  describe '#seats_available_for?' do
+    context 'with a subscription', :saas do
+      let_it_be(:group, refind: true) { create(:group_with_plan, plan: :premium_plan) }
+
+      before_all do
+        group.gitlab_subscription.update!(seats: 5)
+      end
+
+      it 'returns true if there are enough seats' do
+        user_ids = [1, 2, 3]
+
+        expect(group.seats_available_for?(user_ids)).to eq(true)
+      end
+
+      it 'returns false if there are not enough seats' do
+        user_ids = [1, 2, 3, 4, 5, 6]
+
+        expect(group.seats_available_for?(user_ids)).to eq(false)
+      end
+
+      it 'returns true if there are exactly enough seats remaining' do
+        user_ids = [1, 2, 3, 4, 5]
+
+        expect(group.seats_available_for?(user_ids)).to eq(true)
+      end
+
+      it 'counts members in subgroups as consuming seats' do
+        subgroup = create(:group, parent: group)
+        subgroup.add_developer(create(:user))
+        user_ids = [1, 2, 3, 4, 5]
+
+        expect(group.seats_available_for?(user_ids)).to eq(false)
+      end
+
+      it 'returns true if passed an empty enumerable' do
+        expect(group.seats_available_for?([])).to eq(true)
+      end
+
+      it 'returns true if there are no seats remaining and the passed enumerable is empty' do
+        group.gitlab_subscription.update!(seats: 1)
+        group.add_maintainer(create(:user))
+
+        expect(group.seats_available_for?([])).to eq(true)
+      end
+    end
+
+    context 'without a subscription' do
+      it 'returns true' do
+        user_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+        expect(group.seats_available_for?(user_ids)).to eq(true)
+      end
+    end
+  end
 end

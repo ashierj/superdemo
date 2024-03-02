@@ -92,6 +92,57 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
       it_behaves_like 'restricted email error', "The member's email address is not allowed for this group. Go to the group’s &#39;Settings &gt; General&#39; page, and check &#39;Restrict membership by email domain&#39;.", :success
     end
 
+    context 'when block seat overages is enabled for the group', :saas do
+      let_it_be(:group, refind: true) { create(:group_with_plan, plan: :premium_plan) }
+      let_it_be(:owner) { create(:user) }
+      let_it_be(:user) { create(:user) }
+
+      before_all do
+        group.add_owner(owner)
+      end
+
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+        stub_feature_flags(block_seat_overages: true)
+      end
+
+      it 'adds the member when there are open seats in the subscription' do
+        post api(url, owner), params: { access_level: Member::DEVELOPER, user_id: user.id }
+
+        expect(group.members.map(&:user_id)).to contain_exactly(owner.id, user.id)
+        expect(response).to have_gitlab_http_status(:created)
+        expect(json_response).to eq({ 'status' => 'success' })
+      end
+
+      it 'rejects the member when there are not enough seats in the subscription' do
+        group.gitlab_subscription.update!(seats: 1)
+
+        post api(url, owner), params: { access_level: Member::DEVELOPER, user_id: user.id }
+
+        expect(group.members.map(&:user_id)).to contain_exactly(owner.id)
+        expect(json_response).to eq({
+          'status' => 'error',
+          'message' => 'Not enough seats for this many users.'
+        })
+      end
+
+      context 'when the feature flag is disabled' do
+        before do
+          stub_feature_flags(block_seat_overages: false)
+        end
+
+        it 'adds the member even when there are not enough seats in the subscription' do
+          group.gitlab_subscription.update!(seats: 1)
+
+          post api(url, owner), params: { access_level: Member::DEVELOPER, user_id: user.id }
+
+          expect(group.members.map(&:user_id)).to contain_exactly(owner.id, user.id)
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response).to eq({ 'status' => 'success' })
+        end
+      end
+    end
+
     context 'with free user cap considerations', :saas do
       let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
@@ -282,6 +333,58 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
       context 'when the group is restricted by admin signup restrictions' do
         it_behaves_like 'admin signup restrictions email error - allowlist', "The member's email address is not allowed for this project. Go to the &#39;Admin area &gt; Sign-up restrictions&#39;, and check &#39;Allowed domains for sign-ups&#39;.", :created
         it_behaves_like 'admin signup restrictions email error - email restrictions', "The member's email address is not allowed for this project. Go to the &#39;Admin area &gt; Sign-up restrictions&#39;, and check &#39;Email restrictions for sign-ups&#39;.", :created
+      end
+    end
+
+    context "when block seat overages is enabled for the project's group", :saas do
+      let_it_be(:group, refind: true) { create(:group_with_plan, plan: :premium_plan) }
+      let_it_be(:project, refind: true) { create(:project, namespace: group) }
+      let_it_be(:owner) { create(:user) }
+      let_it_be(:user) { create(:user) }
+
+      before_all do
+        group.add_owner(owner)
+      end
+
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+        stub_feature_flags(block_seat_overages: true)
+      end
+
+      it 'adds the member when there are open seats in the subscription' do
+        post api(url, owner), params: { access_level: Member::DEVELOPER, user_id: user.id }
+
+        expect(project.members.map(&:user_id)).to contain_exactly(user.id)
+        expect(response).to have_gitlab_http_status(:created)
+        expect(json_response).to eq({ 'status' => 'success' })
+      end
+
+      it 'rejects the member when there are not enough seats in the subscription' do
+        group.gitlab_subscription.update!(seats: 1)
+
+        post api(url, owner), params: { access_level: Member::DEVELOPER, user_id: user.id }
+
+        expect(project.members.map(&:user_id)).to be_empty
+        expect(json_response).to eq({
+          'status' => 'error',
+          'message' => 'Not enough seats for this many users.'
+        })
+      end
+
+      context 'when the feature flag is disabled' do
+        before do
+          stub_feature_flags(block_seat_overages: false)
+        end
+
+        it 'adds the member even when there are not enough seats in the subscription' do
+          group.gitlab_subscription.update!(seats: 1)
+
+          post api(url, owner), params: { access_level: Member::DEVELOPER, user_id: user.id }
+
+          expect(project.members.map(&:user_id)).to contain_exactly(user.id)
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response).to eq({ 'status' => 'success' })
+        end
       end
     end
   end
