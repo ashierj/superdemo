@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_category: :package_registry do
   let_it_be_with_reload(:project) { create(:project) }
 
+  it_behaves_like Integrations::HasAvatar
+
   subject(:integration) { build_stubbed(:google_cloud_platform_artifact_registry_integration, project: project) }
 
   describe 'attributes' do
