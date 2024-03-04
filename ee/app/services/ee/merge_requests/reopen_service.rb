@@ -8,6 +8,8 @@ module EE
       override :execute
       def execute(merge_request)
         super.tap do
+          delete_approvals(merge_request)
+
           if current_user.project_bot?
             log_audit_event(merge_request, 'merge_request_reopened_by_project_bot',
               "Reopened merge request #{merge_request.title}")
