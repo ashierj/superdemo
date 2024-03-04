@@ -58663,9 +58663,6 @@ msgstr ""
 msgid "cannot be changed to %{new_type} with these child item types."
 msgstr ""
 
-msgid "cannot be destroyed because this is a synced work item for a legacy epic"
-msgstr ""
-
 msgid "cannot be enabled"
 msgstr ""
 

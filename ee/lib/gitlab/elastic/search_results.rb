@@ -33,7 +33,9 @@ module Gitlab
         when 'projects'
           eager_load(projects, page, per_page, preload_method, [:route, :namespace, :topics, :creator])
         when 'issues'
-          eager_load(issues, page, per_page, preload_method, project: [:route, :namespace], labels: [], timelogs: [], assignees: [])
+          eager_load(issues, page, per_page, preload_method,
+            project: [:route, :namespace], labels: [], timelogs: [], assignees: [], synced_epic: [], work_item_type: []
+          )
         when 'merge_requests'
           eager_load(merge_requests, page, per_page, preload_method, target_project: [:route, :namespace])
         when 'milestones'

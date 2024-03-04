@@ -8,13 +8,9 @@ module EE
     prepended do
       include FilterableByTestReports
 
-      before_destroy :check_if_can_be_destroyed, prepend: true
-
       has_one :progress, class_name: 'WorkItems::Progress', foreign_key: 'issue_id', inverse_of: :work_item
 
       has_one :color, class_name: 'WorkItems::Color', foreign_key: 'issue_id', inverse_of: :work_item
-
-      has_one :synced_epic, class_name: 'Epic', foreign_key: 'issue_id', inverse_of: :work_item
 
       delegate :reminder_frequency, to: :progress, allow_nil: true
 
@@ -110,14 +106,6 @@ module EE
 
     def previous_type_was_epic?
       changes["work_item_type_id"].first == ::WorkItems::Type.default_by_type(:epic).id
-    end
-
-    def check_if_can_be_destroyed
-      return unless work_item_type.base_type.casecmp(::WorkItems::Type::BASE_TYPES[:epic][:name]) == 0
-      return if !synced_epic.present? || synced_epic.destroyed?
-
-      errors.add(:base, _('cannot be destroyed because this is a synced work item for a legacy epic'))
-      throw :abort # rubocop:disable Cop/BanCatchThrow -- to stop work item being destroyed
     end
   end
 end

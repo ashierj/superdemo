@@ -21,6 +21,10 @@ RSpec.describe Issue, feature_category: :team_planning do
     it { is_expected.to have_one(:requirement) }
     it { is_expected.to have_many(:test_reports) }
     it { is_expected.to have_many(:issuable_resource_links) }
+
+    it 'has one `synced_epic`' do
+      is_expected.to have_one(:synced_epic).class_name('Epic').with_foreign_key('issue_id').inverse_of(:work_item)
+    end
   end
 
   context 'scopes' do
