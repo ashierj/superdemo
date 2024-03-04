@@ -47409,6 +47409,9 @@ msgstr ""
 msgid "SlackIntegration|GitLab for Slack"
 msgstr ""
 
+msgid "SlackIntegration|GitLab for Slack app configured on the group or instance level and can only be modified there."
+msgstr ""
+
 msgid "SlackIntegration|GitLab for Slack was successfully installed."
 msgstr ""
 
