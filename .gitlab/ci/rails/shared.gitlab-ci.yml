@@ -112,7 +112,7 @@ include:
           --related-issues-file "rspec/${CI_JOB_ID}-failed-test-issues.json";
       fi
 
-      if [ "$CREATE_RAILS_FLAKY_TEST_ISSUES" == "true" && -f "rspec/rspec-retry-${CI_JOB_ID}.json" ]; then
+      if [ "$CREATE_RAILS_FLAKY_TEST_ISSUES" == "true" ] && [ -f "rspec/rspec-retry-${CI_JOB_ID}.json" ]; then
         bundle exec flaky-test-issues \
           --token "${RAILS_FLAKY_TEST_PROJECT_TOKEN}" \
           --project "gitlab-org/quality/engineering-productivity/flaky-tests" \
