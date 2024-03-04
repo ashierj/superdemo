@@ -2,13 +2,12 @@
 // Since app/assets/javascripts/packages_and_registries/shared/components/registry_breadcrumb.vue
 // can only handle two levels of breadcrumbs, but we have three levels here.
 // So we extended the registry_breadcrumb.vue component with harbor_registry_breadcrumb.vue to support multiple levels of breadcrumbs
-import { GlBreadcrumb, GlIcon } from '@gitlab/ui';
+import { GlBreadcrumb } from '@gitlab/ui';
 import { isArray, last } from 'lodash';
 
 export default {
   components: {
     GlBreadcrumb,
-    GlIcon,
   },
   computed: {
     rootRoute() {

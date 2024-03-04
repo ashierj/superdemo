@@ -3,12 +3,11 @@
 // until this gitlab-ui issue is resolved: https://gitlab.com/gitlab-org/gitlab-ui/-/issues/1079
 //
 // See the CSS workaround in app/assets/stylesheets/pages/registry.scss when this file is changed.
-import { GlBreadcrumb, GlIcon } from '@gitlab/ui';
+import { GlBreadcrumb } from '@gitlab/ui';
 
 export default {
   components: {
     GlBreadcrumb,
-    GlIcon,
   },
   computed: {
     rootRoute() {
