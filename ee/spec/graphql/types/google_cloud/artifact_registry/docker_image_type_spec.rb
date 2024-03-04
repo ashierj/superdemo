@@ -8,7 +8,7 @@ RSpec.describe GitlabSchema.types['GoogleCloudArtifactRegistryDockerImage'], fea
   end
 
   it 'includes all expected fields' do
-    expected_fields = %w[name tags upload_time update_time image digest]
+    expected_fields = %w[name tags upload_time update_time image digest uri]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
   end

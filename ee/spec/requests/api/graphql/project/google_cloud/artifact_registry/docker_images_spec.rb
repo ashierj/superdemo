@@ -113,6 +113,7 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
           'nodes' => [{
             'name' => docker_image.name,
             'tags' => docker_image.tags,
+            'uri' => docker_image.uri,
             'uploadTime' => Time.now.iso8601,
             'updateTime' => Time.now.iso8601,
             'image' => image,

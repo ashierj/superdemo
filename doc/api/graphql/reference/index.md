@@ -19971,6 +19971,7 @@ Represents a docker artifact of Google Artifact Registry.
 | <a id="googlecloudartifactregistrydockerimagetags"></a>`tags` | [`[String!]`](#string) | Tags attached to the image. |
 | <a id="googlecloudartifactregistrydockerimageupdatetime"></a>`updateTime` | [`Time`](#time) | Time when the image was last updated. |
 | <a id="googlecloudartifactregistrydockerimageuploadtime"></a>`uploadTime` | [`Time`](#time) | Time when the image was uploaded. |
+| <a id="googlecloudartifactregistrydockerimageuri"></a>`uri` | [`String!`](#string) | Google Cloud URI to access the image. |
 
 ### `GoogleCloudArtifactRegistryDockerImageDetails`
 

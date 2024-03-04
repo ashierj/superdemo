@@ -10,7 +10,7 @@ RSpec.describe GitlabSchema.types['GoogleCloudArtifactRegistryDockerImageDetails
 
   it 'includes all expected fields' do
     expected_fields = %w[
-      name uri tags image_size_bytes upload_time
+      name tags image_size_bytes upload_time
       media_type build_time update_time project_id
       location repository image digest artifact_registry_image_url
     ]
