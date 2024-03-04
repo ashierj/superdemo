@@ -9,6 +9,8 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
   let_it_be(:guest) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:resource) { create(:work_item, :task, project: project) }
+  let_it_be(:agent) { create(:ai_agent, project: project) }
+  let_it_be(:agent_version) { create(:ai_agent_version, agent: agent) }
 
   let_it_be(:external_issue) { create(:issue) }
   let_it_be(:external_issue_url) do
@@ -21,7 +23,15 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
   let(:request_id) { 'uuid' }
   let(:content) { "Some AI response #{external_issue_url}+" }
   let(:extras) { { sources: [{ source_url: 'foo', source_some_metadata: 'bar' }] }.deep_stringify_keys }
-  let(:params) { { user_id: current_user&.to_gid, resource_id: resource.to_gid, client_subscription_id: 'id' } }
+  let(:params) do
+    {
+      user_id: current_user&.to_gid,
+      resource_id: resource.to_gid,
+      agent_version_id: agent_version.to_gid,
+      client_subscription_id: 'id'
+    }
+  end
+
   let(:content_html) do
     "<p data-sourcepos=\"1:1-1:#{content.size}\" dir=\"auto\">Some AI response " \
       "<a href=\"#{external_issue_url}+\">#{external_issue_url}+</a></p>"
@@ -140,6 +150,12 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
 
     context 'when resource_id is not part of the subscription' do
       let(:params) { { user_id: current_user.to_gid } }
+
+      it_behaves_like 'on success'
+    end
+
+    context 'when agent_version_id is null' do
+      let(:params) { { user_id: current_user.to_gid, agent_version_id: nil } }
 
       it_behaves_like 'on success'
     end
