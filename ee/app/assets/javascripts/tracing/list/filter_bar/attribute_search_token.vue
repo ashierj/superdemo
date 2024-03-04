@@ -1,10 +1,10 @@
 <script>
-import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
 import { s__ } from '~/locale';
+import BaseSearchToken from './tracing_base_search_token.vue';
 
 export default {
   components: {
-    BaseToken,
+    BaseSearchToken,
   },
   i18n: {
     placeholderName: s__('Tracing|name'),
@@ -30,21 +30,15 @@ export default {
         placeholder: `${this.$options.i18n.placeholderName}=${this.$options.i18n.placeholderValue}`,
       };
     },
-    tokenConfig() {
-      return {
-        ...this.config,
-        suggestionsDisabled: true,
-      };
-    },
   },
 };
 </script>
 
 <template>
-  <base-token
+  <base-search-token
     v-bind="$attrs"
     :active="active"
-    :config="tokenConfig"
+    :config="config"
     :value="value"
     :data-segment-input-attributes="inputAttributes"
     v-on="$listeners"
