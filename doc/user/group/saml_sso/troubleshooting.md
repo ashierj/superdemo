@@ -248,6 +248,12 @@ The workaround is that a GitLab group Owner uses the [SAML API](../../../api/sam
 The `extern_uid` value must match the Name ID value sent by the SAML identity provider (IdP). Depending on the IdP configuration
 this may be a generated unique ID, an email address, or other value.
 
+### Message: "Certificate element missing in response (ds:x509certificate) and not cert provided at settings"
+
+This error suggests that the IdP is not configured to include the X.509 certificate in the response. In the docs on [additional configuration for SAML apps on your IdP](../../../integration/saml.md#additional-configuration-for-saml-apps-on-your-idp), we note that it is required to include the X.509 certificate in the response.
+
+To resolve this problem, adjust your IdP to include the X.509 certificate in the SAML response.
+
 ## Other user sign in issues
 
 ### Verify `NameID`
