@@ -2,8 +2,7 @@
 import { uniq, flatten, uniqBy } from 'lodash';
 import { GlSkeletonLoader, GlAlert } from '@gitlab/ui';
 import { sprintf } from '~/locale';
-import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
-import getGroupOrProject from '../graphql/get_group_or_project.query.graphql';
+import GroupOrProjectProvider from 'ee/analytics/dashboards/components/group_or_project_provider.vue';
 import filterLabelsQueryBuilder, { LABEL_PREFIX } from '../graphql/filter_labels_query_builder';
 import {
   DASHBOARD_DESCRIPTION_GROUP,
@@ -22,6 +21,7 @@ export default {
     ComparisonChartLabels,
     GlAlert,
     GlSkeletonLoader,
+    GroupOrProjectProvider,
   },
   props: {
     title: {
@@ -29,24 +29,16 @@ export default {
       required: false,
       default: '',
     },
+    fullPath: {
+      type: String,
+      required: true,
+    },
     data: {
       type: Object,
       required: true,
     },
   },
   apollo: {
-    groupOrProject: {
-      query: getGroupOrProject,
-      variables() {
-        return { fullPath: this.fullPath };
-      },
-      skip() {
-        return !this.fullPath;
-      },
-      update(data) {
-        return data;
-      },
-    },
     filterLabelsResults: {
       query() {
         return filterLabelsQueryBuilder(this.filterLabelsQuery, this.isProject);
@@ -72,19 +64,15 @@ export default {
   },
   data() {
     return {
-      groupOrProject: null,
+      namespace: null,
+      isProject: false,
+      hasNamespaceError: false,
       filterLabelsResults: [],
     };
   },
   computed: {
     loading() {
-      return (
-        this.$apollo.queries.groupOrProject.loading ||
-        this.$apollo.queries.filterLabelsResults.loading
-      );
-    },
-    fullPath() {
-      return this.data?.namespace;
+      return this.$apollo.queries.filterLabelsResults.loading;
     },
     filterLabelsQuery() {
       return this.data?.filter_labels || [];
@@ -102,21 +90,12 @@ export default {
       }
       return uniq(metrics);
     },
-    namespace() {
-      return this.groupOrProject?.group || this.groupOrProject?.project;
-    },
-    isProject() {
-      // eslint-disable-next-line no-underscore-dangle
-      return this.namespace?.__typename === TYPENAME_PROJECT;
-    },
     defaultTitle() {
       const name = this.namespace?.name;
       const text = this.isProject ? DASHBOARD_DESCRIPTION_PROJECT : DASHBOARD_DESCRIPTION_GROUP;
       return sprintf(text, { name });
     },
     loadNamespaceError() {
-      if (this.namespace) return '';
-
       const { fullPath } = this;
       return sprintf(DASHBOARD_NAMESPACE_LOAD_ERROR, { fullPath });
     },
@@ -127,45 +106,61 @@ export default {
       return sprintf(DASHBOARD_LABELS_LOAD_ERROR, { labels });
     },
   },
+  methods: {
+    handleNamespaceError() {
+      this.hasNamespaceError = true;
+    },
+    handleResolveNamespace({ group, project, isProject }) {
+      this.namespace = group ?? project;
+      this.isProject = isProject;
+    },
+  },
 };
 </script>
 <template>
-  <div v-if="loading">
-    <gl-skeleton-loader :lines="1" />
-  </div>
-  <gl-alert
-    v-else-if="loadNamespaceError"
-    class="gl-mt-5"
-    variant="danger"
-    :dismissible="false"
-    data-testid="load-namespace-error"
+  <group-or-project-provider
+    #default="{ isNamespaceLoading }"
+    :full-path="fullPath"
+    @done="handleResolveNamespace"
+    @error="handleNamespaceError"
   >
-    {{ loadNamespaceError }}
-  </gl-alert>
-  <div v-else>
-    <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
-      <h5 data-testid="comparison-chart-title">{{ title || defaultTitle }}</h5>
-      <comparison-chart-labels
-        v-if="hasFilterLabels"
-        :labels="filterLabelsResults"
-        :web-url="namespace.webUrl"
-      />
+    <div v-if="loading || isNamespaceLoading">
+      <gl-skeleton-loader :lines="1" />
     </div>
-
     <gl-alert
-      v-if="loadLabelsError"
+      v-else-if="hasNamespaceError"
+      class="gl-mt-5"
       variant="danger"
       :dismissible="false"
-      data-testid="load-labels-error"
+      data-testid="load-namespace-error"
     >
-      {{ loadLabelsError }}
+      {{ loadNamespaceError }}
     </gl-alert>
-    <comparison-chart
-      v-else
-      :request-path="fullPath"
-      :is-project="isProject"
-      :exclude-metrics="excludeMetrics"
-      :filter-labels="filterLabelNames"
-    />
-  </div>
+    <div v-else>
+      <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
+        <h5 data-testid="comparison-chart-title">{{ title || defaultTitle }}</h5>
+        <comparison-chart-labels
+          v-if="hasFilterLabels"
+          :labels="filterLabelsResults"
+          :web-url="namespace.webUrl"
+        />
+      </div>
+
+      <gl-alert
+        v-if="loadLabelsError"
+        variant="danger"
+        :dismissible="false"
+        data-testid="load-labels-error"
+      >
+        {{ loadLabelsError }}
+      </gl-alert>
+      <comparison-chart
+        v-else
+        :request-path="fullPath"
+        :is-project="isProject"
+        :exclude-metrics="excludeMetrics"
+        :filter-labels="filterLabelNames"
+      />
+    </div>
+  </group-or-project-provider>
 </template>

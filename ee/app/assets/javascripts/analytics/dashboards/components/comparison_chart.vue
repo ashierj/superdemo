@@ -2,7 +2,6 @@
 import { GlAlert } from '@gitlab/ui';
 import { uniq } from 'lodash';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import { joinPaths } from '~/lib/utils/url_utility';
 import { toYmd } from '~/analytics/shared/utils';
 import { CONTRIBUTOR_METRICS } from '~/analytics/shared/constants';
 import VulnerabilitiesQuery from '../graphql/vulnerabilities.query.graphql';
@@ -92,9 +91,6 @@ export default {
     };
   },
   computed: {
-    namespaceRequestPath() {
-      return this.isProject ? this.requestPath : joinPaths('groups', this.requestPath);
-    },
     filteredQueries() {
       return [
         { metrics: SUPPORTED_DORA_METRICS, queryFn: this.fetchDoraMetricsQuery },
@@ -303,7 +299,7 @@ export default {
     >
     <comparison-table
       :table-data="tableData"
-      :request-path="namespaceRequestPath"
+      :request-path="requestPath"
       :is-project="isProject"
       :now="$options.now"
       :filter-labels="filterLabels"

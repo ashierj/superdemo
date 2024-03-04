@@ -1,44 +1,90 @@
+import { GlLoadingIcon } from '@gitlab/ui';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import DoraPerformersScore from 'ee/analytics/analytics_dashboards/components/visualizations/dora_performers_score.vue';
 import DoraChart from 'ee/analytics/dashboards/components/dora_performers_score_chart.vue';
+import GroupOrProjectProvider from 'ee/analytics/dashboards/components/group_or_project_provider.vue';
+import GetGroupOrProjectQuery from 'ee/analytics/dashboards/graphql/get_group_or_project.query.graphql';
+import { mockGroup, mockProject } from 'ee_jest/analytics/dashboards/mock_data';
+
+Vue.use(VueApollo);
 
 describe('DoraPerformersScore Visualization', () => {
   let wrapper;
+  let mockGroupOrProjectRequestHandler;
 
-  const namespace = {
-    title: 'Awesome Co. project',
-    requestPath: 'some/fake/path',
-    isProject: false,
-  };
+  const namespace = 'some/fake/path';
 
-  const createWrapper = (props = {}) => {
+  const mockNamespaceProvider = (args = {}) => ({
+    render() {
+      return this.$scopedSlots.default({
+        group: mockGroup,
+        project: null,
+        isProject: false,
+        isNamespaceLoading: false,
+        ...args,
+      });
+    },
+  });
+
+  const createWrapper = ({ props = {}, group = null, project = null, stubs } = {}) => {
+    mockGroupOrProjectRequestHandler = jest.fn().mockReturnValueOnce({ data: { group, project } });
+
     wrapper = shallowMountExtended(DoraPerformersScore, {
+      apolloProvider: createMockApollo([
+        [GetGroupOrProjectQuery, mockGroupOrProjectRequestHandler],
+      ]),
       propsData: {
         data: { namespace },
         options: {},
         ...props,
       },
+      stubs: {
+        GroupOrProjectProvider,
+        ...stubs,
+      },
     });
   };
 
   const findChart = () => wrapper.findComponent(DoraChart);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+
+  describe('isLoadingNamespace = true', () => {
+    it('displays a loading state', () => {
+      createWrapper({
+        group: mockGroup,
+        stubs: { GroupOrProjectProvider: mockNamespaceProvider({ isNamespaceLoading: true }) },
+      });
+
+      expect(findLoadingIcon().exists()).toBe(true);
+    });
+  });
 
   describe('for groups', () => {
     beforeEach(() => {
-      createWrapper();
+      createWrapper({ group: mockGroup });
+    });
+
+    it('does not display a loading state', () => {
+      expect(findLoadingIcon().exists()).toBe(false);
+    });
+
+    it('resolves the namespace', () => {
+      expect(mockGroupOrProjectRequestHandler).toHaveBeenCalled();
     });
 
     it('renders the panel', () => {
       expect(findChart().props().data).toMatchObject({
-        namespace: namespace.requestPath,
+        namespace,
       });
     });
   });
 
   describe('for projects', () => {
-    const projectNamespace = { ...namespace, isProject: true };
     beforeEach(() => {
-      createWrapper({ data: { namespace: projectNamespace } });
+      createWrapper({ project: mockProject });
     });
 
     it('does not render the panel', () => {
