@@ -19,7 +19,7 @@ module Projects
           render status: :ok
         end
         format.json do
-          ::Gitlab::UsageDataCounters::LicensesList.count(:views)
+          Gitlab::InternalEvents.track_event('licenses_list_viewed', project: project, user: current_user)
 
           license_compliance = project.license_compliance
           render json: serializer.represent(
