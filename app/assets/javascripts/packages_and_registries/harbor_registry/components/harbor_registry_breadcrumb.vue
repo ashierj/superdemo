@@ -58,11 +58,5 @@ export default {
 </script>
 
 <template>
-  <gl-breadcrumb :key="isLoaded" :items="allCrumbs">
-    <template #separator>
-      <span class="gl-mx-n5">
-        <gl-icon name="chevron-lg-right" :size="8" />
-      </span>
-    </template>
-  </gl-breadcrumb>
+  <gl-breadcrumb :key="isLoaded" :items="allCrumbs" />
 </template>
