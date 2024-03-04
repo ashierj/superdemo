@@ -12,7 +12,8 @@ RSpec.describe GoogleCloudPlatform::Compute::ListMachineTypesService, feature_ca
     let(:max_results) { 50 }
     let(:page_token) { 'token' }
     let(:order_by) { 'name asc' }
-    let(:service) { described_class.new(project: project, current_user: user, zone: zone, params: params) }
+    let(:service) { described_class.new(container: project, current_user: user, zone: zone, params: params) }
+
     let(:params) do
       {
         google_cloud_project_id: google_cloud_project_id, filter: filter,

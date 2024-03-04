@@ -17,7 +17,7 @@ RSpec.describe GitlabSchema.types['CiRunnerCloudProvisioning'], feature_category
     end
 
     subject(:resolved_type) do
-      described_class.resolve_type({ project: nil, provider: provider, cloud_project_id: 'some_project_id' }, {})
+      described_class.resolve_type({ container: nil, provider: provider, cloud_project_id: 'some_project_id' }, {})
     end
 
     with_them do

@@ -7,8 +7,9 @@ RSpec.shared_context 'for a compute service' do
   end
 
   let(:user) { create(:user).tap { |user| project.add_owner(user) } }
-  let(:service) { described_class.new(project: project, current_user: user, params: params) }
   let(:client_double) { instance_double('::GoogleCloudPlatform::Compute::Client') }
+  let(:service) { described_class.new(container: project, current_user: user, params: params) }
+
   let(:google_cloud_project_id) { nil }
   let(:google_cloud_support) { false }
 

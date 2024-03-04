@@ -42,6 +42,19 @@ module EE
           description: 'Find iteration cadences.',
           resolver: ::Resolvers::Iterations::CadencesResolver
 
+        field :runner_cloud_provisioning,
+          ::Types::Ci::RunnerCloudProvisioningType,
+          null: true,
+          alpha: { milestone: '16.10' },
+          description: 'Information used for provisioning the runner on a cloud provider. ' \
+                       'Returns `null` if `:google_cloud_runner_provisioning` feature flag is disabled, ' \
+                       'or the GitLab instance is not a SaaS instance.' do
+          argument :provider, ::Types::Ci::RunnerCloudProviderEnum, required: true,
+            description: 'Identifier of the cloud provider.'
+          argument :cloud_project_id, ::Types::GoogleCloud::ProjectType, required: true,
+            description: 'Identifier of the cloud project.'
+        end
+
         field :vulnerabilities, ::Types::VulnerabilityType.connection_type,
           null: true,
           extras: [:lookahead],
@@ -238,6 +251,16 @@ module EE
 
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
+        end
+
+        def runner_cloud_provisioning(provider:, cloud_project_id:)
+          return if ::Feature.disabled?(:google_cloud_runner_provisioning, object.root_ancestor)
+
+          {
+            container: object,
+            provider: provider,
+            cloud_project_id: cloud_project_id
+          }
         end
       end
     end

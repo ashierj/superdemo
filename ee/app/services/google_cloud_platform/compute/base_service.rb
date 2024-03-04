@@ -2,9 +2,7 @@
 
 module GoogleCloudPlatform
   module Compute
-    class BaseService < ::BaseProjectService
-      include BaseServiceUtility
-
+    class BaseService < ::BaseContainerService
       VALID_ORDER_BY_COLUMNS = %w[creationTimestamp name].freeze
       VALID_ORDER_BY_DIRECTIONS = %w[asc desc].freeze
 
@@ -37,19 +35,17 @@ module GoogleCloudPlatform
 
       private
 
-      delegate :identity_provider_resource_name, :workload_identity_federation_project_id, to: :project_integration
-
       def validate_before_execute
         return ERROR_RESPONSES[:saas_only] unless Gitlab::Saas.feature_available?(:google_cloud_support)
 
-        unless Feature.enabled?(:google_cloud_runner_provisioning, project)
+        if Feature.disabled?(:google_cloud_runner_provisioning, container.root_ancestor)
           return ERROR_RESPONSES[:feature_flag_disabled]
         end
 
         return ERROR_RESPONSES[:access_denied] unless allowed?
 
         return ERROR_RESPONSES[:no_integration] unless wlif_integration
-        return ERROR_RESPONSES[:integration_not_active] unless wlif_integration.active
+        return ERROR_RESPONSES[:integration_not_active] unless wlif_integration.operating?
 
         return ERROR_RESPONSES[:max_results_out_of_bounds] unless (1..MAX_RESULTS_LIMIT).cover?(max_results)
         return ERROR_RESPONSES[:invalid_order_by] unless valid_order_by?(order_by)
@@ -58,7 +54,7 @@ module GoogleCloudPlatform
       end
 
       def allowed?
-        can?(current_user, :read_runner_cloud_provisioning_info, project)
+        can?(current_user, :read_runner_cloud_provisioning_info, container)
       end
 
       def valid_order_by?(value)
@@ -81,7 +77,7 @@ module GoogleCloudPlatform
       end
 
       def wlif_integration
-        project.google_cloud_platform_workload_identity_federation_integration
+        container.google_cloud_platform_workload_identity_federation_integration
       end
       strong_memoize_attr :wlif_integration
 
@@ -104,15 +100,15 @@ module GoogleCloudPlatform
       def handling_client_errors
         yield
       rescue ::GoogleCloudPlatform::AuthenticationError => e
-        log_error_with_project_id(message: e.message)
+        log_error_with_container_id(message: e.message)
         ERROR_RESPONSES[:google_cloud_authentication_error]
       rescue ::GoogleCloudPlatform::ApiError => e
-        log_error_with_project_id(message: e.message)
+        log_error_with_container_id(message: e.message)
         ServiceResponse.error(message: "#{GCP_API_ERROR_MESSAGE}: #{e.message}")
       end
 
-      def log_error_with_project_id(message:)
-        log_error(class_name: self.class.name, project_id: project.id, message: message)
+      def log_error_with_container_id(message:)
+        log_error(class_name: self.class.name, container_id: container.id, message: message)
       end
     end
   end

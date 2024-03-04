@@ -5,8 +5,8 @@ module GoogleCloudPlatform
     class ListMachineTypesService < ::GoogleCloudPlatform::Compute::BaseService
       MISSING_ZONE_ERROR_RESPONSE = ServiceResponse.error(message: 'Zone value must be provided').freeze
 
-      def initialize(project:, current_user:, zone:, params: {})
-        super(project: project, current_user: current_user, params: params.merge(zone: zone))
+      def initialize(container:, current_user:, zone:, params: {})
+        super(container: container, current_user: current_user, params: params.merge(zone: zone))
       end
 
       private
