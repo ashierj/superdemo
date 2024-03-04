@@ -20,7 +20,7 @@ module Groups
 
         load_visualizations
 
-        @data_source_clickhouse = Feature.enabled?(:clickhouse_data_collection, @group)
+        @data_source_clickhouse = ::Gitlab::ClickHouse.enabled_for_analytics?(@group)
       end
 
       layout 'group'
