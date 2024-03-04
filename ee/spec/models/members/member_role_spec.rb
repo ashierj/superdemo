@@ -19,6 +19,42 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
     it { is_expected.to validate_presence_of(:base_access_level) }
     it { is_expected.to validate_inclusion_of(:base_access_level).in_array(described_class::LEVELS) }
 
+    describe 'name uniqueness validation' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:existing_member_role) { create(:member_role, name: 'foo', namespace: group) }
+
+      context 'when creating a new record' do
+        it 'is invalid when name already exists for a namespace' do
+          member_role = build(:member_role, name: 'foo', namespace: group)
+
+          expect(member_role).not_to be_valid
+          expect(member_role.errors[:name]).to include('has already been taken')
+        end
+
+        it 'is valid when name exists for another namespace' do
+          member_role = build(:member_role, name: 'foo', namespace: create(:namespace))
+
+          expect(member_role).to be_valid
+        end
+
+        it 'is invalid creating a duplicate name for instance' do
+          create(:member_role, :instance, name: 'foo')
+          member_role = build(:member_role, :instance, name: 'foo')
+
+          expect(member_role).not_to be_valid
+        end
+      end
+
+      context 'when updating an old record' do
+        it 'is invalid when name already exists for a namespace' do
+          member_role = create(:member_role, name: 'foo 2', namespace: group)
+          member_role.name = 'foo'
+
+          expect(member_role).to be_valid
+        end
+      end
+    end
+
     context 'when running on Gitlab.com' do
       before do
         stub_saas_features(gitlab_com_subscriptions: true)
