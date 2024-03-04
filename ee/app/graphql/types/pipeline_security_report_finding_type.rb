@@ -8,6 +8,8 @@ module Types
 
     authorize :read_security_resource
 
+    expose_permissions Types::PermissionTypes::PipelineSecurityReportFinding
+
     field :report_type,
           type: VulnerabilityReportTypeEnum,
           null: true,
