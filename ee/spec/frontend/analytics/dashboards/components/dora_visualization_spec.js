@@ -1,7 +1,6 @@
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import { GlSkeletonLoader } from '@gitlab/ui';
-import { TYPENAME_GROUP, TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -9,8 +8,10 @@ import { METRICS_WITHOUT_LABEL_FILTERING } from 'ee/analytics/dashboards/constan
 import DoraVisualization from 'ee/analytics/dashboards/components/dora_visualization.vue';
 import ComparisonChartLabels from 'ee/analytics/dashboards/components/comparison_chart_labels.vue';
 import ComparisonChart from 'ee/analytics/dashboards/components/comparison_chart.vue';
-import getGroupOrProjectQuery from 'ee/analytics/dashboards/graphql/get_group_or_project.query.graphql';
+import GroupOrProjectProvider from 'ee/analytics/dashboards/components/group_or_project_provider.vue';
+import GetGroupOrProjectQuery from 'ee/analytics/dashboards/graphql/get_group_or_project.query.graphql';
 import filterLabelsQueryBuilder from 'ee/analytics/dashboards/graphql/filter_labels_query_builder';
+import { mockGroup, mockProject } from '../mock_data';
 import { mockFilterLabelsResponse } from '../helpers';
 
 Vue.use(VueApollo);
@@ -18,30 +19,34 @@ Vue.use(VueApollo);
 describe('DoraVisualization', () => {
   let wrapper;
 
-  const mockGroup = {
-    id: 'gid://gitlab/Group/10',
-    name: 'Group 10',
-    webUrl: 'gdk.test/groups/group-10',
-    __typename: TYPENAME_GROUP,
-  };
-  const mockProject = {
-    id: 'gid://gitlab/Project/20',
-    name: 'Project 20',
-    webUrl: 'gdk.test/group-10/project-20',
-    __typename: TYPENAME_PROJECT,
-  };
+  const mockNamespaceProvider = (args = {}) => ({
+    render() {
+      return this.$scopedSlots.default({
+        group: mockGroup,
+        project: null,
+        isProject: false,
+        isNamespaceLoading: false,
+        ...args,
+      });
+    },
+  });
 
   const createWrapper = async ({
     props = {},
-    group = null,
-    project = null,
     filterLabelsResolver = null,
+    groupOrProjectResolver = null,
+    isProject = false,
+    stubs = { GroupOrProjectProvider },
   } = {}) => {
     const filterLabels = props.data?.filter_labels || [];
     const apolloProvider = createMockApollo([
-      [getGroupOrProjectQuery, jest.fn().mockResolvedValue({ data: { group, project } })],
       [
-        filterLabelsQueryBuilder(filterLabels, !group),
+        GetGroupOrProjectQuery,
+        groupOrProjectResolver ||
+          jest.fn().mockResolvedValueOnce({ data: { group: mockGroup, project: null } }),
+      ],
+      [
+        filterLabelsQueryBuilder(filterLabels, isProject),
         filterLabelsResolver ||
           jest.fn().mockResolvedValue({ data: mockFilterLabelsResponse(filterLabels) }),
       ],
@@ -50,9 +55,11 @@ describe('DoraVisualization', () => {
     wrapper = shallowMountExtended(DoraVisualization, {
       apolloProvider,
       propsData: {
-        data: { namespace: 'test/one' },
+        fullPath: 'test/one',
+        data: {},
         ...props,
       },
+      stubs,
     });
 
     await waitForPromises();
@@ -71,12 +78,28 @@ describe('DoraVisualization', () => {
   const findTitle = () => wrapper.findByTestId('comparison-chart-title');
 
   it('shows a loading skeleton when fetching group/project details', () => {
-    createWrapper();
+    createWrapper({
+      stubs: { GroupOrProjectProvider: mockNamespaceProvider({ isNamespaceLoading: true }) },
+    });
+
     expect(findSkeletonLoader().exists()).toBe(true);
   });
 
+  it('requests the namespace data', async () => {
+    const handler = jest.fn().mockResolvedValueOnce();
+    await createWrapper({
+      groupOrProjectResolver: handler,
+    });
+
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
+
   it('shows an error alert if it failed to fetch group/project', async () => {
-    await createWrapper();
+    await createWrapper({
+      fullPath: 'test/one',
+      groupOrProjectResolver: jest.fn().mockRejectedValueOnce(),
+    });
+
     expect(findNamespaceErrorAlert().exists()).toBe(true);
     expect(findNamespaceErrorAlert().text()).toBe(
       'Failed to load comparison chart for Namespace: test/one',
@@ -84,65 +107,71 @@ describe('DoraVisualization', () => {
   });
 
   it('passes data attributes to the comparison chart', async () => {
-    const requestPath = 'test';
+    const fullPath = 'test';
     const excludeMetrics = ['one', 'two'];
-    await createWrapper({
-      props: { data: { namespace: requestPath, exclude_metrics: excludeMetrics } },
-      group: mockGroup,
-    });
+
+    await createWrapper({ props: { fullPath, data: { exclude_metrics: excludeMetrics } } });
     expect(findComparisonChart().props()).toEqual(
-      expect.objectContaining({
-        requestPath,
-        excludeMetrics,
-      }),
+      expect.objectContaining({ requestPath: fullPath, excludeMetrics }),
     );
   });
 
   it('renders a group with the default title', async () => {
-    await createWrapper({ group: mockGroup });
+    await createWrapper();
+
     expect(findTitle().text()).toEqual(`Metrics comparison for ${mockGroup.name} group`);
-    expect(findComparisonChart().props('isProject')).toBe(false);
   });
 
   it('renders a project with the default title', async () => {
-    await createWrapper({ project: mockProject });
+    await createWrapper({
+      isProject: true,
+      groupOrProjectResolver: jest
+        .fn()
+        .mockResolvedValueOnce({ data: { group: null, project: mockProject } }),
+    });
     expect(findTitle().text()).toEqual(`Metrics comparison for ${mockProject.name} project`);
-    expect(findComparisonChart().props('isProject')).toBe(true);
   });
 
   it('renders the custom title from the `title` prop', async () => {
     const title = 'custom title';
-    await createWrapper({ props: { title }, group: mockGroup });
+
+    await createWrapper({ props: { title } });
     expect(findTitle().text()).toEqual(title);
   });
 
   describe('filter_labels', () => {
-    const namespace = 'test';
+    const fullPath = 'test';
 
     it('does not show labels when not defined', async () => {
-      await createWrapper({
-        props: { data: { namespace } },
-        group: mockGroup,
-      });
+      await createWrapper({ props: { fullPath } });
       expect(findComparisonChartLabels().exists()).toBe(false);
       expect(findComparisonChart().props('filterLabels')).toEqual([]);
     });
 
     it('does not show labels when empty', async () => {
-      await createWrapper({
-        props: { data: { namespace, filter_labels: [] } },
-        group: mockGroup,
-      });
+      await createWrapper({ props: { fullPath, data: { filter_labels: [] } } });
       expect(findComparisonChartLabels().exists()).toBe(false);
       expect(findComparisonChart().props('filterLabels')).toEqual([]);
     });
 
+    it('shows a loader when loading', async () => {
+      const testLabels = ['testA', 'testB'];
+
+      await createWrapper({
+        props: { fullPath, data: { filter_labels: testLabels } },
+        filterLabelsResolver: jest.fn().mockImplementation(() => new Promise(() => {})),
+      });
+
+      expect(findSkeletonLoader().exists()).toBe(true);
+      expect(findComparisonChart().exists()).toBe(false);
+    });
+
     it('shows an error alert if it failed to fetch labels', async () => {
       const testLabels = ['testA', 'testB'];
+
       await createWrapper({
-        props: { data: { namespace, filter_labels: testLabels } },
+        props: { fullPath, data: { filter_labels: testLabels } },
         filterLabelsResolver: jest.fn().mockRejectedValue(),
-        group: mockGroup,
       });
 
       expect(findComparisonChartLabels().exists()).toBe(false);
@@ -156,9 +185,9 @@ describe('DoraVisualization', () => {
     it('removes duplicate labels from the result', async () => {
       const dupLabel = 'testA';
       const testLabels = [dupLabel, dupLabel, dupLabel];
+
       await createWrapper({
-        props: { data: { namespace, filter_labels: testLabels } },
-        group: mockGroup,
+        props: { fullPath, data: { filter_labels: testLabels } },
       });
 
       expect(findComparisonChartLabels().exists()).toBe(true);
@@ -170,9 +199,9 @@ describe('DoraVisualization', () => {
     it('in addition to `exclude_metrics`, will exclude incompatible metrics', async () => {
       const testLabels = ['testA'];
       const excludeMetrics = ['cycle_time'];
+
       await createWrapper({
-        props: { data: { namespace, filter_labels: testLabels, exclude_metrics: excludeMetrics } },
-        group: mockGroup,
+        props: { fullPath, data: { filter_labels: testLabels, exclude_metrics: excludeMetrics } },
       });
 
       expect(findComparisonChart().props()).toEqual(
