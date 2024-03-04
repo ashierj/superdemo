@@ -9,7 +9,7 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
     shared_examples 'logging an error' do |message:|
       it 'logs an error' do
         expect(service).to receive(:log_error)
-          .with(class_name: described_class.name, project_id: project.id, message: message)
+          .with(class_name: described_class.name, container_id: project.id, message: message)
 
         subject
       end

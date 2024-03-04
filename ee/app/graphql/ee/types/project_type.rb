@@ -426,10 +426,10 @@ module EE
       end
 
       def runner_cloud_provisioning(provider:, cloud_project_id:)
-        return if ::Feature.disabled?(:google_cloud_runner_provisioning, project)
+        return if ::Feature.disabled?(:google_cloud_runner_provisioning, project.root_ancestor)
 
         {
-          project: project,
+          container: project,
           provider: provider,
           cloud_project_id: cloud_project_id
         }

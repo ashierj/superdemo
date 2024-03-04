@@ -27,14 +27,14 @@ module Resolvers
       alias_method :provisioning_args_hash, :object
 
       def resolve(region:, zone:, ephemeral_machine_type:, runner_token:)
-        project = provisioning_args_hash[:project]
+        container = provisioning_args_hash[:container]
 
-        unless Ability.allowed?(current_user, :provision_cloud_runner, project)
+        unless Ability.allowed?(current_user, :provision_cloud_runner, container)
           raise_resource_not_available_error!("You don't have permissions to provision cloud runners")
         end
 
         response = ::Ci::Runners::CreateGoogleCloudProvisioningStepsService.new(
-          project: project,
+          container: container,
           current_user: current_user,
           params: {
             google_cloud_project_id: provisioning_args_hash[:cloud_project_id], runner_token: runner_token,

@@ -4,7 +4,7 @@ module Ci
   module Runners
     # Creates the scripts required to provision a runner in a Google Cloud project
     #
-    class CreateGoogleCloudProvisioningStepsService < BaseProjectService
+    class CreateGoogleCloudProvisioningStepsService < BaseContainerService
       # From https://gitlab.com/gitlab-org/ci-cd/runner-tools/grit/-/blob/4607443d96f808af8dd049acea455b6e26e67991/modules/internal/validation/name/name.tf
       DEPLOYMENT_NAME_MAX_LENGTH = 20
       DEPLOYMENT_NAME_REGEXP = /^(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?)$/ # See https://cloud.google.com/compute/docs/naming-resources
@@ -35,14 +35,15 @@ module Ci
       private
 
       def validate
-        if Feature.disabled?(:google_cloud_runner_provisioning, project)
+        if Feature.disabled?(:google_cloud_runner_provisioning, container.root_ancestor)
           return ServiceResponse.error(
-            message: s_('Runners|Google Cloud provisioning is disabled for this project'),
+            message: format(s_('Runners|Google Cloud provisioning is disabled for %{container_type}'),
+              container_type: container.class.name.downcase),
             reason: :google_cloud_provisioning_disabled
           )
         end
 
-        unless Ability.allowed?(current_user, :provision_cloud_runner, project)
+        unless Ability.allowed?(current_user, :provision_cloud_runner, container)
           return ServiceResponse.error(
             message: s_('Runners|The user is not allowed to provision a cloud runner'),
             reason: :insufficient_permissions
@@ -56,7 +57,7 @@ module Ci
           )
         end
 
-        if runner.nil? && !Ability.allowed?(current_user, :create_runner, project)
+        if runner.nil? && !Ability.allowed?(current_user, :create_runner, container)
           return ServiceResponse.error(
             message: s_('Runners|The user is not allowed to create a runner'),
             reason: :insufficient_permissions

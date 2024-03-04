@@ -42937,7 +42937,7 @@ msgstr ""
 msgid "Runners|Google Cloud project ID"
 msgstr ""
 
-msgid "Runners|Google Cloud provisioning is disabled for this project"
+msgid "Runners|Google Cloud provisioning is disabled for %{container_type}"
 msgstr ""
 
 msgid "Runners|Group"
