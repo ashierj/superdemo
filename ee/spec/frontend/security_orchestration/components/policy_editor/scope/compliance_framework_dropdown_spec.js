@@ -341,17 +341,20 @@ describe('ComplianceFrameworkDropdown', () => {
       showError | variant      | category       | groupErrorAttribute
       ${false}  | ${'default'} | ${'primary'}   | ${'true'}
       ${true}   | ${'danger'}  | ${'secondary'} | ${null}
-    `('should render error state', ({ showError, variant, category, groupErrorAttribute }) => {
-      createComponent({
-        propsData: {
-          showError,
-        },
-      });
+    `(
+      `should render variant $variant and category $category when showError is $showError`,
+      ({ showError, variant, category, groupErrorAttribute }) => {
+        createComponent({
+          propsData: {
+            showError,
+          },
+        });
 
-      expect(findGlFormGroup().element.getAttribute('state')).toBe(groupErrorAttribute);
-      expect(findDropdown().props('variant')).toBe(variant);
-      expect(findDropdown().props('category')).toBe(category);
-    });
+        expect(findGlFormGroup().element.getAttribute('state')).toBe(groupErrorAttribute);
+        expect(findDropdown().props('variant')).toBe(variant);
+        expect(findDropdown().props('category')).toBe(category);
+      },
+    );
   });
 
   describe('full id format', () => {

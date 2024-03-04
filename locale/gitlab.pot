@@ -45452,6 +45452,15 @@ msgstr ""
 msgid "SecurityOrchestration|You don't have any security policies yet"
 msgstr ""
 
+msgid "SecurityOrchestration|You must select one or more compliance frameworks to which this policy should apply."
+msgstr ""
+
+msgid "SecurityOrchestration|You must select one or more projects to be excluded from this policy."
+msgstr ""
+
+msgid "SecurityOrchestration|You must select one or more projects to which this policy should apply."
+msgstr ""
+
 msgid "SecurityOrchestration|a license scanner found license violations"
 msgstr ""
 

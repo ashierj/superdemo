@@ -9,6 +9,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import ScopeSection from 'ee/security_orchestration/components/policy_editor/scope/scope_section.vue';
 import ComplianceFrameworkDropdown from 'ee/security_orchestration/components/policy_editor/scope/compliance_framework_dropdown.vue';
 import GroupProjectsDropdown from 'ee/security_orchestration/components/group_projects_dropdown.vue';
+import ScopeSectionAlert from 'ee/security_orchestration/components/policy_editor/scope/scope_section_alert.vue';
 import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import {
@@ -59,6 +60,7 @@ describe('PolicyScope', () => {
       },
       stubs: {
         GlSprintf,
+        ScopeSectionAlert,
       },
     });
   };
@@ -70,6 +72,7 @@ describe('PolicyScope', () => {
   const findExceptionTypeDropdown = () => wrapper.findByTestId('exception-type');
   const findPolicyScopeProjectText = () => wrapper.findByTestId('policy-scope-project-text');
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findScopeSectionAlert = () => wrapper.findComponent(ScopeSectionAlert);
   const findLoadingText = () => wrapper.findByTestId('loading-text');
   const findErrorMessage = () => wrapper.findByTestId('policy-scope-project-error');
   const findErrorMessageText = () => wrapper.findByTestId('policy-scope-project-error-text');
@@ -461,5 +464,80 @@ describe('PolicyScope', () => {
         expect(findGroupProjectsDropdown().props('groupFullPath')).toBe(expectedResult);
       },
     );
+  });
+
+  describe('error message and validation', () => {
+    const findScopeAlert = () => findScopeSectionAlert().findComponent(GlAlert);
+
+    it('should show alert when compliance frameworks are empty', async () => {
+      createComponent({
+        propsData: {
+          policyScope: {
+            compliance_frameworks: [],
+          },
+        },
+      });
+
+      expect(findScopeAlert().exists()).toBe(false);
+      expect(findComplianceFrameworkDropdown().props('showError')).toBe(false);
+
+      await findComplianceFrameworkDropdown().vm.$emit('select', ['id1']);
+
+      expect(findScopeAlert().exists()).toBe(true);
+      expect(findComplianceFrameworkDropdown().props('showError')).toBe(true);
+    });
+
+    it('should show alert when specific projects are empty', async () => {
+      createComponent({
+        propsData: {
+          policyScope: {
+            projects: {
+              including: [],
+            },
+          },
+        },
+      });
+
+      expect(findScopeAlert().exists()).toBe(false);
+
+      await findGroupProjectsDropdown().vm.$emit('select', ['id1']);
+
+      expect(findScopeAlert().exists()).toBe(true);
+      expect(findGroupProjectsDropdown().props('state')).toBe(false);
+      expect(findScopeSectionAlert().props()).toEqual({
+        complianceFrameworksEmpty: true,
+        isDirty: true,
+        isProjectsWithoutExceptions: true,
+        projectEmpty: true,
+        projectScopeType: SPECIFIC_PROJECTS,
+      });
+    });
+
+    it('should show alert when excluding projects are empty', async () => {
+      createComponent({
+        propsData: {
+          policyScope: {
+            projects: {
+              excluding: [],
+            },
+          },
+        },
+      });
+
+      expect(findScopeAlert().exists()).toBe(false);
+
+      await findGroupProjectsDropdown().vm.$emit('select', ['id1']);
+
+      expect(findScopeAlert().exists()).toBe(true);
+      expect(findGroupProjectsDropdown().props('state')).toBe(false);
+
+      expect(findScopeSectionAlert().props()).toEqual({
+        complianceFrameworksEmpty: true,
+        isDirty: true,
+        isProjectsWithoutExceptions: false,
+        projectEmpty: true,
+        projectScopeType: ALL_PROJECTS_IN_GROUP,
+      });
+    });
   });
 });
