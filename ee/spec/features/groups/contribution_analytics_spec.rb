@@ -77,7 +77,7 @@ RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_
 
     context 'when ClickHouse is the data source' do
       before do
-        stub_feature_flags(clickhouse_data_collection: true)
+        allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
         visit_contribution_analytics
       end
 
@@ -101,7 +101,7 @@ RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_
 
     context 'when ClickHouse is not the data source' do
       before do
-        stub_feature_flags(clickhouse_data_collection: false)
+        allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(false)
         visit_contribution_analytics
       end
 

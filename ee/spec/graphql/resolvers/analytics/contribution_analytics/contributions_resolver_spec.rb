@@ -99,7 +99,7 @@ RSpec.describe Resolvers::Analytics::ContributionAnalytics::ContributionsResolve
       include ClickHouseHelpers
 
       before do
-        stub_feature_flags(clickhouse_data_collection: true)
+        allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
 
         insert_events_into_click_house
       end

@@ -36,7 +36,7 @@ module Gitlab
       end
 
       def db_collector_klass
-        return ClickHouseDataCollector if Feature.enabled?(:clickhouse_data_collection, group)
+        return ClickHouseDataCollector if ::Gitlab::ClickHouse.enabled_for_analytics?(@group)
 
         PostgresqlDataCollector
       end

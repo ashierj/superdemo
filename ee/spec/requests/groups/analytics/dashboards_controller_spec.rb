@@ -125,7 +125,7 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
   shared_examples 'sets data source instance variable correctly' do
     context 'when clickhouse data collection is enabled for group' do
       before do
-        stub_feature_flags(clickhouse_data_collection: true)
+        allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
       end
 
       specify do
@@ -137,7 +137,7 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
 
     context 'when clickhouse data collection is not enabled' do
       before do
-        stub_feature_flags(clickhouse_data_collection: false)
+        allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(false)
       end
 
       specify do

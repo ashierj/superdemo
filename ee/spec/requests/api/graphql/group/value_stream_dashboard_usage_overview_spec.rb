@@ -54,7 +54,7 @@ RSpec.describe 'Loading usage overvierw for a group', feature_category: :value_s
 
     before do
       stub_licensed_features(group_level_analytics_dashboard: true)
-      stub_feature_flags(clickhouse_data_collection: false)
+      allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(false)
     end
 
     it 'returns GraphQL error' do

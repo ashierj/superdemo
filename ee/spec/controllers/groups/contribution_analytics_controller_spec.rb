@@ -167,9 +167,9 @@ RSpec.describe Groups::ContributionAnalyticsController, feature_category: :value
     end
 
     describe 'data source instance variable' do
-      context 'when clickhouse data collection is enabled for that group' do
+      context 'when clickhouse data collection is enabled' do
         before do
-          stub_feature_flags(clickhouse_data_collection: true)
+          allow(Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
         end
 
         specify do
@@ -181,7 +181,7 @@ RSpec.describe Groups::ContributionAnalyticsController, feature_category: :value
 
       context 'when clickhouse data collection is not enabled' do
         before do
-          stub_feature_flags(clickhouse_data_collection: false)
+          allow(Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(false)
         end
 
         specify do
@@ -272,7 +272,7 @@ RSpec.describe Groups::ContributionAnalyticsController, feature_category: :value
 
     context 'when clickhouse is the data source', :click_house do
       before do
-        stub_feature_flags(clickhouse_data_collection: true)
+        allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
       end
 
       it_behaves_like 'correct data is returned'
