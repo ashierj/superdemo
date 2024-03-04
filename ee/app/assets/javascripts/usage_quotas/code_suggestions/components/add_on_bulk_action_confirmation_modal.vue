@@ -1,0 +1,91 @@
+<script>
+import { GlButton, GlModal } from '@gitlab/ui';
+import { s__, n__ } from '~/locale';
+import { ASSIGN_SEATS_BULK_ACTION } from 'ee/usage_quotas/code_suggestions/constants';
+
+export default {
+  name: 'AddOnBulkActionConfirmationModal',
+  components: {
+    GlButton,
+    GlModal,
+  },
+  props: {
+    userCount: {
+      type: Number,
+      required: true,
+    },
+    bulkAction: {
+      type: String,
+      required: true,
+    },
+  },
+  computed: {
+    isBulkActionToAssignSeats() {
+      return this.bulkAction === ASSIGN_SEATS_BULK_ACTION;
+    },
+    confirmationText() {
+      return s__('Billing|Are you sure you want to continue?');
+    },
+    modalTitle() {
+      if (this.isBulkActionToAssignSeats) {
+        return s__('Billing|Confirm bulk seat allocation');
+      }
+      return s__('Billing|Confirm bulk seat unassignment');
+    },
+    modalBodyText() {
+      let actionText;
+
+      if (this.isBulkActionToAssignSeats) {
+        actionText = n__(
+          'Billing|This action will assign a GitLab Duo Pro seat to 1 user',
+          'Billing|This action will assign a GitLab Duo Pro seat to %d users',
+          this.userCount,
+        );
+      } else {
+        actionText = n__(
+          'Billing|This action will remove GitLab Duo Pro seat from 1 user',
+          'Billing|This action will remove GitLab Duo Pro seats from %d users',
+          this.userCount,
+        );
+      }
+
+      return `${actionText}. ${this.confirmationText}`;
+    },
+  },
+  methods: {
+    hide() {
+      this.$emit('cancel');
+    },
+  },
+};
+</script>
+
+<template>
+  <gl-modal
+    modal-id="add-on-bulk-action-confirmation-modal"
+    :title="modalTitle"
+    :visible="true"
+    size="sm"
+    @hide="hide"
+  >
+    <p data-testid="bulk-action-confirmation-modal-body">{{ modalBodyText }}</p>
+
+    <template #modal-footer>
+      <div class="gl-display-flex gl-flex-direction-row gl-justify-content-end gl-flex-wrap gl-m-0">
+        <gl-button data-testid="bulk-action-cancel-button" @click="hide">
+          {{ __('Cancel') }}
+        </gl-button>
+        <gl-button
+          v-if="isBulkActionToAssignSeats"
+          variant="confirm"
+          data-testid="assign-confirmation-button"
+        >
+          {{ s__('Billing|Assign seats') }}
+        </gl-button>
+        <gl-button v-else variant="danger" data-testid="unassign-confirmation-button">
+          {{ s__('Billing|Remove seats') }}
+        </gl-button>
+      </div>
+    </template>
+  </gl-modal>
+</template>

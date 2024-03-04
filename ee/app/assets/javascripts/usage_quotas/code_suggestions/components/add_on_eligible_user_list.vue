@@ -3,6 +3,7 @@ import {
   GlAvatarLabeled,
   GlAvatarLink,
   GlBadge,
+  GlButton,
   GlFormCheckbox,
   GlSkeletonLoader,
   GlTable,
@@ -14,10 +15,15 @@ import { s__, n__, sprintf } from '~/locale';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { ADD_ON_ERROR_DICTIONARY } from 'ee/usage_quotas/error_constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { addOnEligibleUserListTableFields } from 'ee/usage_quotas/code_suggestions/constants';
+import {
+  addOnEligibleUserListTableFields,
+  ASSIGN_SEATS_BULK_ACTION,
+  UNASSIGN_SEATS_BULK_ACTION,
+} from 'ee/usage_quotas/code_suggestions/constants';
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import CodeSuggestionsAddonAssignment from 'ee/usage_quotas/code_suggestions/components/code_suggestions_addon_assignment.vue';
+import AddOnBulkActionConfirmationModal from 'ee/usage_quotas/code_suggestions/components/add_on_bulk_action_confirmation_modal.vue';
 
 export default {
   name: 'AddOnEligibleUserList',
@@ -26,11 +32,13 @@ export default {
     SafeHtml,
   },
   components: {
+    AddOnBulkActionConfirmationModal,
     CodeSuggestionsAddonAssignment,
     ErrorAlert,
     GlAvatarLabeled,
     GlAvatarLink,
     GlBadge,
+    GlButton,
     GlFormCheckbox,
     GlKeysetPagination,
     GlSkeletonLoader,
@@ -68,9 +76,13 @@ export default {
     return {
       addOnAssignmentError: undefined,
       selectedUsers: [],
+      bulkAction: undefined,
+      isConfirmationModalVisible: false,
     };
   },
   addOnErrorDictionary: ADD_ON_ERROR_DICTIONARY,
+  assignSeatsBulkAction: ASSIGN_SEATS_BULK_ACTION,
+  unassignSeatsBulkAction: UNASSIGN_SEATS_BULK_ACTION,
   avatarSize: 32,
   computed: {
     hasMaxRoleField() {
@@ -179,6 +191,14 @@ export default {
     unselectAllUsers() {
       this.selectedUsers = [];
     },
+    showConfirmationModal(bulkAction) {
+      this.isConfirmationModalVisible = true;
+      this.bulkAction = bulkAction;
+    },
+    handleCancelBulkAction() {
+      this.isConfirmationModalVisible = false;
+      this.bulkAction = undefined;
+    },
   },
 };
 </script>
@@ -200,6 +220,22 @@ export default {
       class="gl-display-flex gl-bg-gray-10 gl-p-5 gl-mt-5 gl-align-items-center gl-justify-content-space-between"
     >
       <span v-safe-html="pluralisedSelectedUsers" data-testid="selected-users-summary"></span>
+      <div class="gl-display-flex gl-gap-3">
+        <gl-button
+          data-testid="unassign-seats-button"
+          variant="danger"
+          category="secondary"
+          @click="showConfirmationModal($options.unassignSeatsBulkAction)"
+          >{{ s__('Billing|Remove seat') }}</gl-button
+        >
+        <gl-button
+          data-testid="assign-seats-button"
+          variant="confirm"
+          category="primary"
+          @click="showConfirmationModal($options.assignSeatsBulkAction)"
+          >{{ s__('Billing|Assign seat') }}</gl-button
+        >
+      </div>
     </div>
     <gl-table
       :items="tableItems"
@@ -286,5 +322,12 @@ export default {
     <div v-if="showPagination" class="gl-display-flex gl-justify-content-center gl-mt-5">
       <gl-keyset-pagination v-bind="pageInfo" @prev="prevPage" @next="nextPage" />
     </div>
+
+    <add-on-bulk-action-confirmation-modal
+      v-if="isConfirmationModalVisible"
+      :bulk-action="bulkAction"
+      :user-count="selectedUsers.length"
+      @cancel="handleCancelBulkAction"
+    />
   </section>
 </template>
