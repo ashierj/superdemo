@@ -3571,8 +3571,8 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
-  describe '#google_cloud_workload_identity_federation_enabled?' do
-    subject { group.google_cloud_workload_identity_federation_enabled? }
+  describe '#google_cloud_support_enabled?' do
+    subject { group.google_cloud_support_enabled? }
 
     it { is_expected.to eq(false) }
 
@@ -3584,9 +3584,9 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it { is_expected.to eq(true) }
     end
 
-    context 'when google_cloud_workload_identity_federation FF is disabled' do
+    context 'when google_cloud_support FF is disabled' do
       before do
-        stub_feature_flags(google_cloud_workload_identity_federation: false)
+        stub_feature_flags(google_cloud_support_feature_flag: false)
       end
 
       it { is_expected.to eq(false) }

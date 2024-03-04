@@ -150,9 +150,9 @@ RSpec.describe Integrations::GoogleCloudPlatform::WorkloadIdentityFederation, fe
         end
       end
 
-      context 'when google_cloud_workload_identity_federation FF is disabled' do
+      context 'when google_cloud_support_feature_flag FF is disabled' do
         before do
-          stub_feature_flags(google_cloud_workload_identity_federation: false)
+          stub_feature_flags(google_cloud_support_feature_flag: false)
         end
 
         it { is_expected.to be_nil }
@@ -198,9 +198,9 @@ RSpec.describe Integrations::GoogleCloudPlatform::WorkloadIdentityFederation, fe
         it { is_expected.to eq(expected_resource_name) }
       end
 
-      context 'when google_cloud_workload_identity_federation FF is disabled' do
+      context 'when google_cloud_support_feature_flag FF is disabled' do
         before do
-          stub_feature_flags(google_cloud_workload_identity_federation: false)
+          stub_feature_flags(google_cloud_support_feature_flag: false)
         end
 
         it { is_expected.to be_nil }

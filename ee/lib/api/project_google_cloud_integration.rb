@@ -9,10 +9,7 @@ module API
     before { authorize_admin_project }
     before do
       not_found! unless ::Gitlab::Saas.feature_available?(:google_cloud_support)
-
-      unless ::Feature.enabled?(:google_cloud_integration_onboarding, user_project.root_namespace, type: :beta)
-        not_found!
-      end
+      not_found! unless ::Feature.enabled?(:google_cloud_support_feature_flag, user_project.root_ancestor)
     end
 
     params do
@@ -89,7 +86,7 @@ module API
           content_type 'text/plain'
 
           wlif_integration = user_project.google_cloud_platform_workload_identity_federation_integration
-          unless user_project.google_cloud_workload_identity_federation_enabled? && wlif_integration&.activated?
+          unless user_project.google_cloud_support_enabled? && wlif_integration&.activated?
             render_api_error!('Workload Identity Federation is not configured', 400)
           end
 

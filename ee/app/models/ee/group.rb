@@ -963,8 +963,8 @@ module EE
       users_without_bots(members, merge_condition: merge_condition)
     end
 
-    def google_cloud_workload_identity_federation_enabled?
-      ::Feature.enabled?(:google_cloud_workload_identity_federation, self) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
+    def google_cloud_support_enabled?
+      ::Feature.enabled?(:google_cloud_support_feature_flag, self.root_ancestor) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
     end
 
     def assigning_role_too_high?(current_user, access_level)

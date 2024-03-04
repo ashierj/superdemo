@@ -45,9 +45,9 @@ RSpec.shared_examples 'an artifact registry service handling validation errors' 
       end
     end
 
-    context 'with gcp_artifact_registry disabled' do
+    context 'with google_cloud_support_feature_flag FF disabled' do
       before do
-        stub_feature_flags(gcp_artifact_registry: false)
+        stub_feature_flags(google_cloud_support_feature_flag: false)
       end
 
       it_behaves_like 'returning an error service response',
