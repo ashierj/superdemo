@@ -65,9 +65,13 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
             end
           end
 
-          it 'counts usage of the feature' do
-            expect(::Gitlab::UsageDataCounters::LicensesList).to receive(:count).with(:views)
+          it_behaves_like 'internal event tracking' do
+            let(:event) { 'licenses_list_viewed' }
 
+            subject(:track_event) { get_licenses }
+          end
+
+          it 'counts usage of the feature' do
             get_licenses
           end
 
