@@ -5,7 +5,7 @@ class QueueBackfillSbomOccurrencesTraversalIdsAndArchived < Gitlab::Database::Mi
 
   MIGRATION = "BackfillSbomOccurrencesTraversalIdsAndArchived"
   DELAY_INTERVAL = 2.minutes
-  BATCH_SIZE = 1000
+  BATCH_SIZE = 10_000
   SUB_BATCH_SIZE = 100
 
   restrict_gitlab_migration gitlab_schema: :gitlab_main
