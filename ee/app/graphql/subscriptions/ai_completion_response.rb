@@ -13,6 +13,10 @@ module Subscriptions
       required: false,
       description: 'ID of the user.'
 
+    argument :agent_version_id, ::Types::GlobalIDType[::Ai::AgentVersion],
+      required: false,
+      description: 'ID of the AI agent version.'
+
     argument :client_subscription_id, ::GraphQL::Types::String,
       required: false,
       description: 'Client generated ID that be subscribed to, to receive a response for the mutation.'
