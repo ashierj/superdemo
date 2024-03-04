@@ -12658,7 +12658,7 @@ msgstr ""
 msgid "CompareRevisions|Tags"
 msgstr ""
 
-msgid "CompareRevisions|There isn't anything to compare."
+msgid "CompareRevisions|There isn't anything to compare"
 msgstr ""
 
 msgid "CompareRevisions|There was an error while loading the branch/tag list. Please try again."
@@ -52196,6 +52196,9 @@ msgstr ""
 msgid "To further protect your account, consider configuring a two-factor authentication method: %{mfa_link}."
 msgstr ""
 
+msgid "To get a valid comparison, select two different branches."
+msgstr ""
+
 msgid "To get started you enter your FogBugz URL and login information below. In the next steps, you'll be able to map users and select the projects you want to import."
 msgstr ""
 
@@ -58013,9 +58016,6 @@ msgid "You will receive notifications only for comments in which you were @menti
 msgstr ""
 
 msgid "You'll be charged for %{true_up_start}users over license%{true_up_end} on a quarterly or annual basis, depending on the terms of your agreement."
-msgstr ""
-
-msgid "You'll need to use different branch names to get a valid comparison."
 msgstr ""
 
 msgid "You're about to leave GitLab"
