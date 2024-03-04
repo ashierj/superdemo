@@ -14,7 +14,8 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
       errors: ['some error1', 'another error'],
       role: 'user',
       content: 'response',
-      user: user
+      user: user,
+      referer_url: 'http://127.0.0.1:3000'
     }
   end
 
@@ -48,6 +49,7 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
       expect(last.role).to eq('user')
       expect(last.ai_action).to eq('chat')
       expect(last.timestamp).not_to be_nil
+      expect(last.referer_url).to eq('http://127.0.0.1:3000')
     end
 
     context 'with MAX_MESSAGES limit' do

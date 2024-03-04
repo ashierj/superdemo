@@ -101,7 +101,7 @@ module Gitlab
 
       def dump_message(message)
         # Message is stored only partially. Some data might be missing after reloading from storage.
-        result = message.to_h.slice(*%w[id request_id role content])
+        result = message.to_h.slice(*%w[id request_id role content referer_url])
 
         result['errors'] = message.errors&.to_json
         result['extras'] = message.extras&.to_json
