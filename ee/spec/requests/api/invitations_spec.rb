@@ -371,6 +371,17 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
         })
       end
 
+      it 'adds the member when the member is already in the group when all the seats are taken' do
+        group.gitlab_subscription.update!(seats: 2)
+        group.add_guest(user)
+
+        post api(url, owner), params: { access_level: Member::DEVELOPER, user_id: user.id }
+
+        expect(project.members.flat_map { |m| [m.user_id, m.access_level] }).to eq([user.id, Member::DEVELOPER])
+        expect(response).to have_gitlab_http_status(:created)
+        expect(json_response).to eq({ 'status' => 'success' })
+      end
+
       context 'when the feature flag is disabled' do
         before do
           stub_feature_flags(block_seat_overages: false)

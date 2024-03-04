@@ -546,10 +546,14 @@ module EE
         ::Gitlab::Saas.feature_available?(:gitlab_com_subscriptions)
     end
 
-    def seats_available_for?(invites)
+    def seats_available_for?(user_ids)
       return true unless gitlab_subscription
 
-      gitlab_subscription.seats >= (billable_members_count + invites.count)
+      billable_ids = billed_user_ids[:user_ids].to_a
+
+      new_user_ids = user_ids - billable_ids
+
+      gitlab_subscription.seats >= (billable_ids.count + new_user_ids.count)
     end
 
     def calculate_reactive_cache
