@@ -42839,6 +42839,9 @@ msgstr ""
 msgid "Runners|Created by %{user} %{timeAgo}"
 msgstr ""
 
+msgid "Runners|Creator"
+msgstr ""
+
 msgid "Runners|Delete"
 msgstr ""
 
