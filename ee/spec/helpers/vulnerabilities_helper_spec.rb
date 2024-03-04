@@ -420,7 +420,7 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
         end
 
         it 'returns finding information' do
-          rendered_markdown = '<h1 data-sourcepos="1:1-1:9" dir="auto">&#x000A;<a id="user-content-finding" class="anchor" href="#finding" aria-hidden="true"></a>Finding</h1>'
+          rendered_markdown = '<h1 data-sourcepos="1:1-1:9" dir="auto">&#x000A;<a href="#finding" aria-hidden="true" class="anchor" id="user-content-finding"></a>Finding</h1>'
 
           expect(subject[:description_html]).to eq(rendered_markdown)
         end
@@ -433,7 +433,7 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
         end
 
         it 'returns finding information' do
-          rendered_markdown = '<h1 data-sourcepos="1:1-1:15" dir="auto">&#x000A;<a id="user-content-vulnerability" class="anchor" href="#vulnerability" aria-hidden="true"></a>Vulnerability</h1>'
+          rendered_markdown = '<h1 data-sourcepos="1:1-1:15" dir="auto">&#x000A;<a href="#vulnerability" aria-hidden="true" class="anchor" id="user-content-vulnerability"></a>Vulnerability</h1>'
 
           expect(subject[:description_html]).to eq(rendered_markdown)
         end
