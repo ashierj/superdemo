@@ -3,6 +3,8 @@
 module Integrations
   module GoogleCloudPlatform
     class ArtifactRegistry < Integration
+      include HasAvatar
+
       SECTION_TYPE_GOOGLE_CLOUD_ARTIFACT_REGISTRY = 'google_cloud_artifact_registry'
 
       attribute :alert_events, default: false
