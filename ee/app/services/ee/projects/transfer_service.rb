@@ -31,7 +31,7 @@ module EE
         delete_scan_result_policies(old_group)
         unassign_policy_project
         sync_new_group_policies
-        delete_compliance_framework_setting
+        delete_compliance_framework_setting(old_group)
         update_compliance_standards_adherence
       end
 
@@ -61,7 +61,9 @@ module EE
         ::Security::ScanResultPolicies::SyncProjectWorker.perform_async(project.id)
       end
 
-      def delete_compliance_framework_setting
+      def delete_compliance_framework_setting(old_group)
+        return if old_group == project.group&.root_ancestor
+
         project.compliance_framework_setting&.delete
       end
 
