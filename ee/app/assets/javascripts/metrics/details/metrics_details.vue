@@ -1,5 +1,5 @@
 <script>
-import { GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
+import { GlLoadingIcon, GlEmptyState, GlSprintf } from '@gitlab/ui';
 import EMPTY_CHART_SVG from '@gitlab/svgs/dist/illustrations/chart-empty-state.svg?url';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
@@ -10,6 +10,7 @@ import {
 } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 import axios from '~/lib/utils/axios_utils';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
+import { TIME_RANGE_OPTIONS } from '~/observability/constants';
 import { ingestedAtTimeAgo } from '../utils';
 import MetricsChart from './metrics_chart.vue';
 import FilteredSearch from './filter_bar/metrics_filtered_search.vue';
@@ -22,10 +23,10 @@ export default {
     ),
     metricType: s__('ObservabilityMetrics|Type'),
     lastIngested: s__('ObservabilityMetrics|Last ingested'),
-    noData: s__('ObservabilityMetrics|No data found for the selected metric.'),
     cancelledWarning: s__('ObservabilityMetrics|Metrics search has been cancelled.'),
   },
   components: {
+    GlSprintf,
     GlLoadingIcon,
     MetricsChart,
     GlEmptyState,
@@ -76,6 +77,16 @@ export default {
     },
     query() {
       return filterObjToQuery(this.filters);
+    },
+    noDataTimeText() {
+      const selectedValue = this.filters?.dateRange?.value;
+      if (selectedValue) {
+        const option = TIME_RANGE_OPTIONS.find((timeOption) => timeOption.value === selectedValue);
+        if (option) {
+          return `(${option.title.toLowerCase()})`;
+        }
+      }
+      return '';
     },
   },
   created() {
@@ -206,8 +217,19 @@ export default {
       />
       <gl-empty-state v-else :svg-path="$options.EMPTY_CHART_SVG">
         <template #title>
-          <p class="gl-font-lg gl-my-0">{{ $options.i18n.noData }}</p>
-          <p class="gl-font-md gl-my-0">
+          <p class="gl-font-lg gl-my-0">
+            <gl-sprintf
+              :message="
+                s__('ObservabilityMetrics|No data found for the selected time range %{time}')
+              "
+            >
+              <template #time>
+                {{ noDataTimeText }}
+              </template>
+            </gl-sprintf>
+          </p>
+
+          <p class="gl-font-md gl-my-1">
             <strong>{{ $options.i18n.lastIngested }}:&nbsp;</strong>{{ header.lastIngested }}
           </p>
         </template>
