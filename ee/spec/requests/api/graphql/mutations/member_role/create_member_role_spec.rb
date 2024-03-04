@@ -9,10 +9,11 @@ RSpec.describe 'creating member role', feature_category: :system_access do
   let_it_be_with_reload(:current_user) { create(:user) }
 
   let(:name) { 'member role name' }
+  let(:group_path) { group.path }
   let(:permissions) { MemberRole.all_customizable_permissions.keys.map(&:to_s).map(&:upcase) }
   let(:input) do
     {
-      group_path: group.path,
+      group_path: group_path,
       base_access_level: 'GUEST',
       permissions: permissions
     }
@@ -62,6 +63,8 @@ RSpec.describe 'creating member role', feature_category: :system_access do
 
   context 'without the custom roles feature' do
     before do
+      input.delete(:group_path)
+
       stub_licensed_features(custom_roles: false)
     end
 
@@ -85,16 +88,14 @@ RSpec.describe 'creating member role', feature_category: :system_access do
       context 'with maintainer role' do
         before_all do
           group.add_maintainer(current_user)
+
+          stub_feature_flags(restrict_member_roles: false)
         end
 
         it_behaves_like 'a mutation that returns a top-level access error'
       end
 
-      context 'with owner role' do
-        before_all do
-          group.add_owner(current_user)
-        end
-
+      shared_examples 'handling group-level custom roles' do
         context 'when on self-managed' do
           context 'when restrict_member_roles feature-flag is disabled' do
             before do
@@ -102,6 +103,14 @@ RSpec.describe 'creating member role', feature_category: :system_access do
             end
 
             it_behaves_like 'a mutation that creates a member role'
+
+            context 'with invalid group_path' do
+              let(:group_path) { 'invalid_path' }
+
+              it_behaves_like 'a mutation that returns top-level errors',
+                errors: ["The resource that you are attempting to access does not exist " \
+                         "or you don't have permission to perform this action"]
+            end
           end
 
           context 'when restrict_member_roles feature-flag is enabled' do
@@ -109,7 +118,17 @@ RSpec.describe 'creating member role', feature_category: :system_access do
               stub_feature_flags(restrict_member_roles: true)
             end
 
-            it_behaves_like 'a mutation that returns a top-level access error'
+            context 'with valid group_path' do
+              it_behaves_like 'a mutation that returns top-level errors',
+                errors: ['group_path argument is not allowed on self-managed instances.']
+            end
+
+            context 'with invalid group_path' do
+              let(:group_path) { 'invalid_path' }
+
+              it_behaves_like 'a mutation that returns top-level errors',
+                errors: ['group_path argument is not allowed on self-managed instances.']
+            end
           end
         end
 
@@ -144,6 +163,22 @@ RSpec.describe 'creating member role', feature_category: :system_access do
             it_behaves_like 'an invalid argument to the mutation', argument_name: 'baseAccessLevel'
           end
         end
+      end
+
+      context 'with owner role' do
+        before_all do
+          group.add_owner(current_user)
+        end
+
+        it_behaves_like 'handling group-level custom roles'
+      end
+
+      context 'with admin', :enable_admin_mode do
+        before do
+          current_user.update!(admin: true)
+        end
+
+        it_behaves_like 'handling group-level custom roles'
       end
     end
 
