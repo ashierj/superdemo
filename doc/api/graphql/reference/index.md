@@ -8510,10 +8510,6 @@ Input type: `VulnerabilitiesDismissInput`
 
 ### `Mutation.vulnerabilitiesRemoveAllFromProject`
 
-DETAILS:
-**Introduced** in GitLab 16.7.
-**Status**: Experiment.
-
 Input type: `VulnerabilitiesRemoveAllFromProjectInput`
 
 #### Arguments
