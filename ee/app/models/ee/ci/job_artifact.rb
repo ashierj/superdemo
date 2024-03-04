@@ -10,7 +10,7 @@ module EE
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
 
-    SECURITY_REPORT_FILE_TYPES = %w[sast secret_detection dependency_scanning container_scanning cluster_image_scanning dast coverage_fuzzing api_fuzzing].freeze
+    SECURITY_REPORT_FILE_TYPES = EE::Enums::Ci::JobArtifact.security_report_file_types
 
     prepended do
       include ::Geo::ReplicableModel
@@ -22,20 +22,7 @@ module EE
 
       has_one :job_artifact_state, autosave: false, inverse_of: :job_artifact, class_name: '::Geo::JobArtifactState'
 
-      EE_REPORT_FILE_TYPES = {
-        license_scanning: %w[license_scanning].freeze,
-        dependency_list: %w[dependency_scanning].freeze,
-        metrics: %w[metrics].freeze,
-        container_scanning: %w[container_scanning].freeze,
-        cluster_image_scanning: %w[cluster_image_scanning].freeze,
-        dast: %w[dast].freeze,
-        requirements: %w[requirements].freeze,
-        requirements_v2: %w[requirements_v2].freeze,
-        coverage_fuzzing: %w[coverage_fuzzing].freeze,
-        api_fuzzing: %w[api_fuzzing].freeze,
-        browser_performance: %w[browser_performance performance].freeze,
-        sbom: %w[cyclonedx].freeze
-      }.freeze
+      EE_REPORT_FILE_TYPES = EE::Enums::Ci::JobArtifact.ee_report_file_types
 
       scope :security_reports, -> (file_types: SECURITY_REPORT_FILE_TYPES) do
         requested_file_types = *file_types
