@@ -93,7 +93,7 @@ module Integrations
       end
 
       def ci_variables
-        return [] unless project.gcp_artifact_registry_enabled? && activated?
+        return [] unless project.google_cloud_support_enabled? && activated?
 
         [
           { key: 'GOOGLE_ARTIFACT_REGISTRY_PROJECT_ID', value: artifact_registry_project_id },

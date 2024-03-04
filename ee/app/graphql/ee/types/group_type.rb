@@ -47,7 +47,7 @@ module EE
           null: true,
           alpha: { milestone: '16.10' },
           description: 'Information used for provisioning the runner on a cloud provider. ' \
-                       'Returns `null` if `:google_cloud_runner_provisioning` feature flag is disabled, ' \
+                       'Returns `null` if `:google_cloud_support_feature_flag` feature flag is disabled, ' \
                        'or the GitLab instance is not a SaaS instance.' do
           argument :provider, ::Types::Ci::RunnerCloudProviderEnum, required: true,
             description: 'Identifier of the cloud provider.'
@@ -254,7 +254,7 @@ module EE
         end
 
         def runner_cloud_provisioning(provider:, cloud_project_id:)
-          return if ::Feature.disabled?(:google_cloud_runner_provisioning, object.root_ancestor)
+          return if ::Feature.disabled?(:google_cloud_support_feature_flag, object.root_ancestor)
 
           {
             container: object,

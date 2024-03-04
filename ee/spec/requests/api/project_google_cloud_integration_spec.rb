@@ -48,7 +48,7 @@ RSpec.describe API::ProjectGoogleCloudIntegration, feature_category: :integratio
 
     context 'when feature flag is disabled' do
       before do
-        stub_feature_flags(google_cloud_integration_onboarding: false)
+        stub_feature_flags(google_cloud_support_feature_flag: false)
       end
 
       it 'returns error' do

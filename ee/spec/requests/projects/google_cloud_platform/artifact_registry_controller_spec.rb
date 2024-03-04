@@ -21,7 +21,7 @@ RSpec.describe Projects::GoogleCloudPlatform::ArtifactRegistryController, featur
 
       context 'when feature flag is disabled' do
         before do
-          stub_feature_flags(gcp_artifact_registry: false)
+          stub_feature_flags(google_cloud_support_feature_flag: false)
         end
 
         it_behaves_like 'returning response status', :not_found

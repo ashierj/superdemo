@@ -2049,9 +2049,9 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
       it { is_expected.not_to include('google_cloud_platform_artifact_registry') }
 
-      context 'when gcp_artifact_registry FF is disabled' do
+      context 'when google_cloud_support_feature_flag FF is disabled' do
         before do
-          stub_feature_flags(gcp_artifact_registry: false)
+          stub_feature_flags(google_cloud_support_feature_flag: false)
         end
 
         it { is_expected.to include('google_cloud_platform_artifact_registry') }
@@ -2069,9 +2069,9 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     context 'workload identity federation' do
       it { is_expected.to include('google_cloud_platform_workload_identity_federation') }
 
-      context 'when google_cloud_workload_identity_federation FF is disabled' do
+      context 'when google_cloud_support_feature_flag FF is disabled' do
         before do
-          stub_feature_flags(google_cloud_workload_identity_federation: false)
+          stub_feature_flags(google_cloud_support_feature_flag: false)
         end
 
         it { is_expected.to include('google_cloud_platform_workload_identity_federation') }
@@ -4445,8 +4445,8 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     end
   end
 
-  describe '#gcp_artifact_registry_enabled?' do
-    subject { project.gcp_artifact_registry_enabled? }
+  describe '#google_cloud_support_enabled?' do
+    subject { project.google_cloud_support_enabled? }
 
     let_it_be(:project) { build_stubbed(:project) }
 
@@ -4464,33 +4464,9 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       it { is_expected.to eq(false) }
     end
 
-    context 'when gcp_artifact_registry feature is disabled' do
+    context 'when google_cloud_support_feature_flag feature is disabled' do
       before do
-        stub_feature_flags(gcp_artifact_registry: false)
-      end
-
-      it { is_expected.to eq(false) }
-    end
-  end
-
-  describe '#google_cloud_workload_identity_federation_enabled?' do
-    subject { project.google_cloud_workload_identity_federation_enabled? }
-
-    let(:project) { build_stubbed(:project) }
-
-    it { is_expected.to eq(false) }
-
-    context 'when feature is available' do
-      before do
-        stub_saas_features(google_cloud_support: true)
-      end
-
-      it { is_expected.to eq(true) }
-    end
-
-    context 'when google_cloud_workload_identity_federation FF is disabled' do
-      before do
-        stub_feature_flags(google_cloud_workload_identity_federation: false)
+        stub_feature_flags(google_cloud_support_feature_flag: false)
       end
 
       it { is_expected.to eq(false) }

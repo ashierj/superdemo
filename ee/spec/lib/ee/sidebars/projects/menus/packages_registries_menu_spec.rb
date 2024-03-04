@@ -27,7 +27,7 @@ RSpec.describe Sidebars::Projects::Menus::PackagesRegistriesMenu, feature_catego
 
       context 'when feature flag is turned off' do
         before do
-          stub_feature_flags(gcp_artifact_registry: false)
+          stub_feature_flags(google_cloud_support_feature_flag: false)
         end
 
         it_behaves_like 'the menu item is not added to list of menu items'
