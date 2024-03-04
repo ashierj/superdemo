@@ -47,7 +47,7 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
   end
 
   describe '#redirect_to_company_form?' do
-    where(:setup_for_company?, :trial?, :expected_result) do
+    where(:convert_to_automatic_trial?, :trial?, :expected_result) do
       true  | false | true
       false | false | false
       false | true  | true
@@ -60,7 +60,7 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
 
       before do
         allow(instance).to receive(:trial?).and_return(trial?)
-        allow(instance).to receive(:setup_for_company?).and_return(setup_for_company?)
+        allow(instance).to receive(:convert_to_automatic_trial?).and_return(convert_to_automatic_trial?)
       end
 
       it { is_expected.to eq(expected_result) }
@@ -182,6 +182,30 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
       let(:trial_onboarding_flow?) { true }
 
       it { is_expected.to eq('trial_registration') }
+    end
+  end
+
+  describe '#registration_type' do
+    let_it_be(:memberless_user) { create(:user) }
+    let(:subscription_return) { { 'user_return_to' => ::Gitlab::Routing.url_helpers.new_subscriptions_path } }
+
+    where(:params, :session, :current_user, :expected_result) do
+      { trial: 'true' }  | {}                                  | ref(:memberless_user) | 'trial'
+      { trial: 'true' }  | {}                                  | ref(:user)            | 'trial'
+      { trial: 'true' }  | ref(:subscription_return)           | ref(:user)            | 'trial'
+      {}                 | {}                                  | ref(:user)            | 'invite'
+      {}                 | ref(:subscription_return)           | ref(:user)            | 'invite'
+      {}                 | ref(:subscription_return)           | ref(:memberless_user) | 'subscription'
+      {}                 | { 'user_return_to' => 'some/path' } | ref(:memberless_user) | 'free'
+      {}                 | {}                                  | ref(:memberless_user) | 'free'
+    end
+
+    with_them do
+      let(:instance) { described_class.new(params, session, current_user) }
+
+      subject { instance.registration_type }
+
+      it { is_expected.to eq(expected_result) }
     end
   end
 

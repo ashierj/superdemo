@@ -59,7 +59,17 @@ module Registrations
     def update_params
       params.require(:user)
             .permit(:role, :setup_for_company, :registration_objective, :onboarding_status_email_opt_in)
-            .merge(onboarding_status_email_opt_in: parsed_opt_in)
+            .merge(onboarding_status_params)
+    end
+
+    def onboarding_status_params
+      status_params = { onboarding_status_email_opt_in: parsed_opt_in }
+
+      return status_params unless onboarding_status.convert_to_automatic_trial?
+
+      # Now we are in automatic trial and we'll update our status as such, initial_registration_type
+      # will be how we know if they weren't a trial originally from here on out.
+      status_params.merge(onboarding_status_registration_type: ::Onboarding::Status::REGISTRATION_TYPE[:trial])
     end
 
     def passed_through_params

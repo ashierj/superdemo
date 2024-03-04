@@ -444,6 +444,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
               expect(user.onboarding_in_progress).to be(true)
               expect(user.onboarding_status_step_url).to eq(redirect_path)
               expect(user.onboarding_status_email_opt_in).to eq(true)
+              expect(user.onboarding_status_registration_type).to eq(::Onboarding::Status::REGISTRATION_TYPE[:trial])
               expect(response).to redirect_to redirect_path
             end
 
@@ -478,6 +479,8 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
 
               expect(user.onboarding_in_progress).to be(true)
               expect(user.onboarding_status_step_url).to eq(path)
+              expect(user.onboarding_status_registration_type)
+                .not_to eq(::Onboarding::Status::REGISTRATION_TYPE[:trial])
               expect(response).to redirect_to path
             end
 

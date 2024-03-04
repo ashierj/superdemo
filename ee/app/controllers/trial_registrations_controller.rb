@@ -38,6 +38,11 @@ class TrialRegistrationsController < RegistrationsController
     ::Gitlab::Utils.add_url_parameters(super, { trial: true })
   end
 
+  override :onboarding_status_params
+  def onboarding_status_params
+    super.merge(trial: true)
+  end
+
   override :sign_up_params_attributes
   def sign_up_params_attributes
     [:first_name, :last_name, :username, :email, :password]

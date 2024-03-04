@@ -278,16 +278,36 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
     end
 
     context 'when user is not registered yet' do
-      let(:user) { build_stubbed(:user, email: 'new@example.com') }
+      let_it_be(:user) { build_stubbed(:user, email: 'new@example.com') }
+      let_it_be(:new_user_email) { user.email }
+      let(:base_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_' } }
+      let(:redirect_params) { glm_params }
 
-      it_behaves_like EE::Onboarding::Redirectable do
-        let(:glm_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_', trial: true } }
-        let(:new_user_email) { user.email }
+      subject(:post_create) { post provider }
 
-        subject(:post_create) { post provider }
+      before do
+        request.env['omniauth.params'] = glm_params.stringify_keys
+      end
 
-        before do
-          request.env['omniauth.params'] = glm_params.stringify_keys
+      context 'with trial SSO' do
+        it_behaves_like EE::Onboarding::Redirectable, 'trial' do
+          let(:glm_params) { base_params.merge(trial: true) }
+        end
+      end
+
+      context 'with free SSO' do
+        it_behaves_like EE::Onboarding::Redirectable, 'free' do
+          let(:glm_params) { base_params }
+        end
+      end
+
+      context 'with invited by email' do
+        before_all do
+          create(:group_member, :invited, invite_email: new_user_email)
+        end
+
+        it_behaves_like EE::Onboarding::Redirectable, 'invite' do
+          let(:glm_params) { base_params }
         end
       end
     end
