@@ -16005,7 +16005,6 @@ four standard [pagination arguments](#pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="cicatalogresourceversionsname"></a>`name` | [`String`](#string) | Name of the version. |
-| <a id="cicatalogresourceversionssort"></a>`sort` | [`CiCatalogResourceVersionSort`](#cicatalogresourceversionsort) | Sort versions by given criteria. |
 
 ### `CiCatalogResourceComponent`
 
@@ -30659,17 +30658,6 @@ Values for sorting catalog resources.
 | <a id="cicatalogresourcesortname_desc"></a>`NAME_DESC` | Name by descending order. |
 | <a id="cicatalogresourcesortstar_count_asc"></a>`STAR_COUNT_ASC` | Star count by ascending order. |
 | <a id="cicatalogresourcesortstar_count_desc"></a>`STAR_COUNT_DESC` | Star count by descending order. |
-
-### `CiCatalogResourceVersionSort`
-
-Values for sorting catalog resource versions.
-
-| Value | Description |
-| ----- | ----------- |
-| <a id="cicatalogresourceversionsortcreated_asc"></a>`CREATED_ASC` | Created at ascending order. |
-| <a id="cicatalogresourceversionsortcreated_desc"></a>`CREATED_DESC` | Created at descending order. |
-| <a id="cicatalogresourceversionsortreleased_at_asc"></a>`RELEASED_AT_ASC` | Released at by ascending order. |
-| <a id="cicatalogresourceversionsortreleased_at_desc"></a>`RELEASED_AT_DESC` | Released at by descending order. |
 
 ### `CiConfigIncludeType`
 
