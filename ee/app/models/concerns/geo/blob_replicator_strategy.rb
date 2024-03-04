@@ -180,18 +180,6 @@ module Geo
 
     private
 
-    def should_primary_verify_after_save?
-      return false unless self.class.verification_enabled?
-
-      # Optimization: If the data is immutable, then there is no need to
-      # recalculate checksum when a record is created (some models calculate
-      # checksum as part of creation) or updated. Note that reverification
-      # should still run as usual.
-      return false if immutable? && primary_checksum.present?
-
-      checksummable?
-    end
-
     def download
       ::Geo::BlobDownloadService.new(replicator: self).execute
     end
