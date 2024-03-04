@@ -50693,6 +50693,9 @@ msgstr ""
 msgid "There are no closed merge requests"
 msgstr ""
 
+msgid "There are no commits yet"
+msgstr ""
+
 msgid "There are no commits yet."
 msgstr ""
 

@@ -22,7 +22,7 @@ import {
 
 const TEST_PROJECT_FULL_PATH = '/namespace/project';
 const TEST_CORPUS_HELP_PATH = '/docs/corpus-management';
-const TEST_EMPTY_STATE_SVG_PATH = '/illustrations/no_commits.svg';
+const TEST_EMPTY_STATE_SVG_PATH = '/illustrations/empty-state/empty-commit-md.svg';
 
 describe('EE - CorpusManagement', () => {
   let wrapper;
