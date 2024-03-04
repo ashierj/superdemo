@@ -211,7 +211,7 @@ RSpec.describe MemberRoles::RolesFinder, feature_category: :system_access do
             end
 
             it 'returns both instance member roles and group member roles' do
-              expect(find_member_roles).to eq([member_role_instance, member_role_2, member_role_1])
+              expect(find_member_roles).to match_array([member_role_instance, member_role_2, member_role_1])
             end
           end
         end

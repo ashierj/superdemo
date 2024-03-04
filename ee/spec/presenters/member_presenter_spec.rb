@@ -36,7 +36,7 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
 
       context 'when user has a custom role' do
         it 'returns custom roles' do
-          member_role = create(:member_role, :guest, namespace: root_group)
+          member_role = create(:member_role, :guest, name: 'Custom', namespace: root_group)
           member_root.member_role = member_role
           member_root.access_level = Gitlab::Access::GUEST
 
