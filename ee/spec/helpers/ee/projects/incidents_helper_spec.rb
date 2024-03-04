@@ -33,7 +33,7 @@ RSpec.describe Projects::IncidentsHelper do
         'incident-template-name' => 'incident',
         'incident-type' => 'incident',
         'issue-path' => issue_path,
-        'empty-list-svg-path' => match_asset_path('/assets/illustrations/incident-empty-state.svg'),
+        'empty-list-svg-path' => match_asset_path('/assets/illustrations/empty-state/empty-scan-alert-md.svg'),
         'published-available' => 'false',
         'sla-feature-available' => 'false',
         'text-query': 'search text',
