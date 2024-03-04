@@ -520,26 +520,4 @@ RSpec.describe WorkItem, feature_category: :team_planning do
       end
     end
   end
-
-  describe '#before_destroy' do
-    context 'when epic work item does not have a synced legacy epic' do
-      let!(:work_item) { create(:work_item, :epic) }
-
-      it 'is does destroy the epic work item' do
-        expect { work_item.destroy! }.to change { WorkItem.count }.by(-1)
-      end
-    end
-
-    context 'when epic work item has a synced legacy epic' do
-      let!(:epic) { create(:epic, :with_synced_work_item) }
-      let(:work_item) { epic.work_item }
-
-      it 'is does not destroy the epic work item' do
-        expect { work_item.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
-        expect(work_item.errors[:base]).to include(
-          _('cannot be destroyed because this is a synced work item for a legacy epic')
-        )
-      end
-    end
-  end
 end

@@ -1294,5 +1294,18 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
         end
       end
     end
+
+    context 'when accessing sync epic work item' do
+      let_it_be(:epic) { create(:epic, :with_synced_work_item, group: group) }
+      let(:work_item) { epic.work_item }
+      let(:work_item_fields) { "id title" }
+
+      it 'can access sync epic work item' do
+        post_graphql(query, current_user: current_user)
+
+        expect(work_item_data['id']).to eq(work_item.to_gid.to_s)
+        expect(work_item_data['title']).to eq(work_item.title)
+      end
+    end
   end
 end
