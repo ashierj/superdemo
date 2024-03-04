@@ -250,9 +250,11 @@ this may be a generated unique ID, an email address, or other value.
 
 ### Message: "Certificate element missing in response (ds:x509certificate) and not cert provided at settings"
 
-This error suggests that the IdP is not configured to include the X.509 certificate in the response. In the docs on [additional configuration for SAML apps on your IdP](../../../integration/saml.md#additional-configuration-for-saml-apps-on-your-idp), we note that it is required to include the X.509 certificate in the response.
+This error suggests that the IdP is not configured to include the X.509 certificate in the SAML response. The X.509 certificate must be included in the response. 
 
-To resolve this problem, adjust your IdP to include the X.509 certificate in the SAML response.
+To resolve this problem, configure your IdP to include the X.509 certificate in the SAML response.
+
+For more information, see the documentation on [additional configuration for SAML apps on your IdP](../../../integration/saml.md#additional-configuration-for-saml-apps-on-your-idp).
 
 ## Other user sign in issues
 
