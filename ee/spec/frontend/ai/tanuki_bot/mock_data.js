@@ -47,6 +47,13 @@ export const MOCK_USER_MESSAGE = {
   extras: null,
 };
 
+export const MOCK_FAILING_USER_MESSAGE = {
+  content: 'User message that caused an error',
+  role: MESSAGE_TYPES.USER,
+  requestId: null,
+  errors: ['Oh darn, you are not allowed to use AI!'],
+};
+
 export const MOCK_CHUNK_MESSAGE = {
   chunkId: 1,
   content: 'chunk',

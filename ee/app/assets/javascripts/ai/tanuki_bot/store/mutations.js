@@ -1,4 +1,4 @@
-import { isObject } from 'lodash';
+import { isObject, uniqueId } from 'lodash';
 import { GENIE_CHAT_MODEL_ROLES, CHAT_MESSAGE_TYPES } from '../../constants';
 import * as types from './mutation_types';
 
@@ -62,7 +62,15 @@ export default {
             ...newMessageData,
           });
         } else {
-          state.messages.push(newMessageData);
+          const extraData = {};
+          // If the user prompt in question failed being answered,
+          // it might not have an id and we want to reset
+          // the loading state.
+          if (newMessageData.errors?.length) {
+            extraData.requestId = newMessageData.requestId ?? uniqueId('failing-request');
+            isLastMessage = true;
+          }
+          state.messages.push({ ...newMessageData, ...extraData });
         }
       }
 
