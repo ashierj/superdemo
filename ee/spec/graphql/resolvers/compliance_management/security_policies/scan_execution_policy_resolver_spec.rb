@@ -12,7 +12,8 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanExecutionP
     create(:compliance_framework_security_policy, policy_configuration: policy_configuration, framework: framework)
   end
 
-  let_it_be(:policy) { build(:scan_execution_policy, name: 'Run DAST in every pipeline') }
+  let_it_be(:policy_scope) { { compliance_frameworks: [{ id: framework.id }] } }
+  let_it_be(:policy) { build(:scan_execution_policy, name: 'Run DAST in every pipeline', policy_scope: policy_scope) }
 
   describe '#resolve' do
     subject(:resolve_policies) do
