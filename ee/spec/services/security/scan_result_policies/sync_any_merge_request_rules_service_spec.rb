@@ -18,8 +18,8 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
     subject(:execute) { service.execute }
 
     let(:approvals_required) { 1 }
-    let(:signed_commit) { instance_double(Commit, has_signature?: true) }
-    let(:unsigned_commit) { instance_double(Commit, has_signature?: false) }
+    let(:signed_commit) { instance_double(Commit, has_signature?: true, short_id: 'abcd1234') }
+    let(:unsigned_commit) { instance_double(Commit, has_signature?: false, short_id: 'dcba5678') }
     let_it_be(:protected_branch) do
       create(:protected_branch, name: merge_request.target_branch, project: project)
     end
@@ -59,6 +59,10 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
 
       it_behaves_like 'does not update approval rules'
       it_behaves_like 'does not trigger policy bot comment'
+
+      it 'creates no violation records' do
+        expect { execute }.not_to change { merge_request.scan_result_policy_violations.count }
+      end
     end
 
     describe 'approval rules' do
@@ -108,7 +112,7 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
           it_behaves_like 'triggers policy bot comment', :any_merge_request, true, requires_approval: false
         end
 
-        context 'when approval are required but approval_merge_request_rules have been made optional' do
+        context 'when approvals are required but approval_merge_request_rules have been made optional' do
           let!(:approval_project_rule) do
             create(:approval_project_rule, :any_merge_request, project: project, approvals_required: 1,
               scan_result_policy_read: scan_result_policy_read)
@@ -127,11 +131,11 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
           it_behaves_like 'triggers policy bot comment', :any_merge_request, true
         end
 
-        where(:policy_commits, :merge_request_commits) do
-          :unsigned | [ref(:unsigned_commit)]
-          :unsigned | [ref(:signed_commit), ref(:unsigned_commit)]
-          :any      | [ref(:signed_commit)]
-          :any      | [ref(:unsigned_commit)]
+        where(:policy_commits, :merge_request_commits, :expected_violation) do
+          :unsigned | [ref(:unsigned_commit)] | ['dcba5678']
+          :unsigned | [ref(:signed_commit), ref(:unsigned_commit)] | ['dcba5678']
+          :any      | [ref(:signed_commit)] | true
+          :any      | [ref(:unsigned_commit)] | true
         end
 
         with_them do
@@ -145,6 +149,25 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
             execute
           end
 
+          it 'persists violation details' do
+            expect { execute }
+              .to change { merge_request.scan_result_policy_violations.last&.violation_data }
+                              .from(nil)
+                              .to('violations' => { 'any_merge_request' => { 'commits' => expected_violation } })
+          end
+
+          context 'when feature flag "save_policy_violation_data" is disabled' do
+            before do
+              stub_feature_flags(save_policy_violation_data: false)
+            end
+
+            it 'does not persist violation details' do
+              execute
+
+              expect(merge_request.scan_result_policy_violations.last.violation_data).to be_nil
+            end
+          end
+
           it_behaves_like 'when no policy is applicable due to the policy scope' do
             it_behaves_like 'does not update approval rules'
           end
@@ -155,15 +178,20 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
         let!(:approver_rule) { nil }
 
         context 'when policies target commits' do
+          let(:violation) { merge_request.scan_result_policy_violations.first }
           let_it_be(:scan_result_policy_read_with_commits, reload: true) do
             create(:scan_result_policy_read, project: project, commits: :unsigned, rule_idx: 0)
           end
 
+          before do
+            allow(merge_request).to receive(:commits).and_return([unsigned_commit])
+          end
+
           it 'creates violations for policies that have no approval rules' do
             expect { execute }.to change { merge_request.scan_result_policy_violations.count }.by(1)
-            expect(merge_request.scan_result_policy_violations.first.scan_result_policy_read).to(
-              eq scan_result_policy_read_with_commits
-            )
+            expect(violation.scan_result_policy_read).to(eq scan_result_policy_read_with_commits)
+            expect(violation.violation_data)
+              .to match('violations' => { 'any_merge_request' => { 'commits' => ['dcba5678'] } })
           end
 
           context 'with previous violation for policy that is now unviolated' do

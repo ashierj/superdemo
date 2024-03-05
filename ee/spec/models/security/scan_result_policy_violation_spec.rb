@@ -20,20 +20,52 @@ RSpec.describe Security::ScanResultPolicyViolation, feature_category: :security_
       it { is_expected.not_to allow_value('string').for(:violation_data) }
       it { is_expected.to allow_value({}).for(:violation_data) }
 
-      it do
+      it 'allows combination of all possible values' do
         is_expected.to allow_value(
-          { violations: { uuids: { newly_detected: ['123'], previously_existing: ['456'] }, licenses: ['MIT'] },
-            context: { pipeline_ids: [123], target_pipeline_ids: [456] } }
+          {
+            violations: {
+              scan_finding: { uuids: { newly_detected: ['123'], previously_existing: ['456'] } },
+              license_scanning: { licenses: ['MIT'] },
+              any_merge_request: { commits: ['abcd1234'] }
+            },
+            context: { pipeline_ids: [123], target_pipeline_ids: [456] },
+            errors: [{ error: 'SCAN_REMOVED', missing_scans: ['sast'] }]
+          }
         ).for(:violation_data)
       end
 
-      it do
-        is_expected.to allow_value(
-          { errors: [{ error: 'SCAN_REMOVED', missing_scans: ['sast'] }] }
-        ).for(:violation_data)
+      describe 'errors' do
+        it do
+          is_expected.to allow_value(
+            { errors: [{ error: 'SCAN_REMOVED', missing_scans: ['sast'] }] }
+          ).for(:violation_data)
+        end
       end
 
       it { is_expected.not_to allow_value({ errors: [{}] }).for(:violation_data) }
+
+      describe 'violations' do
+        using RSpec::Parameterized::TableSyntax
+
+        describe 'commits' do
+          where(:report_type, :data, :valid) do
+            :any_merge_request | { commits: ['abcd1234'] } | true
+            :any_merge_request | { commits: true }         | true
+            :any_merge_request | { commits: 'abcd1234' }   | false
+            :any_merge_request | { commits: [] }           | false
+          end
+
+          with_them do
+            it do
+              if valid
+                expect(violation).to allow_value(violations: { report_type => data }).for(:violation_data)
+              else
+                expect(violation).not_to allow_value(violations: { report_type => data }).for(:violation_data)
+              end
+            end
+          end
+        end
+      end
     end
   end
 
