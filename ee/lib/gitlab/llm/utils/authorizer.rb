@@ -11,7 +11,7 @@ module Gitlab
         end
 
         def self.container(container:, user:)
-          if Feature.disabled?(:duo_features_enabled_setting, user) || user.can?(:access_duo_features, container)
+          if user.can?(:access_duo_features, container)
             Response.new(allowed: true)
           else
             Response.new(allowed: false, message: container_not_allowed_message(container, user))
