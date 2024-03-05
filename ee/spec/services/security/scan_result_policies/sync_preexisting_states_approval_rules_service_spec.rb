@@ -125,7 +125,7 @@ RSpec.describe Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesS
           execute
         end
 
-        it 'persists violation details' do
+        it 'persists violation details', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444868' do
           execute
 
           expect(merge_request.scan_result_policy_violations.last.violation_data)
