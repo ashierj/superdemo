@@ -10,6 +10,7 @@ module Security
         @merge_request = merge_request
         @violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService
                         .new(merge_request, :any_merge_request)
+        @violations_by_policy = {}
       end
 
       def execute
@@ -20,7 +21,7 @@ module Security
 
       private
 
-      attr_reader :merge_request, :violations
+      attr_reader :merge_request, :violations, :violations_by_policy
 
       delegate :project, to: :merge_request, private: true
 
@@ -36,22 +37,30 @@ module Security
 
         log_violated_rules(violated_rules)
         # rubocop:disable CodeReuse/ActiveRecord
+        violated_policies_ids -= unviolated_rules.pluck(:scan_result_policy_id)
         violations.add(
-          violated_policies_ids - unviolated_rules.pluck(:scan_result_policy_id),
+          violated_policies_ids,
           unviolated_policies_ids + unviolated_rules.pluck(:scan_result_policy_id)
         )
         # rubocop:enable CodeReuse/ActiveRecord
+        save_violation_data(violated_policies_ids)
         violations.execute
         generate_policy_bot_comment(merge_request, violated_rules, :any_merge_request)
       end
 
       def evaluate_policy_violations(scan_result_policy_reads)
-        has_unsigned_commits = !merge_request.commits(load_from_gitaly: true).all?(&:has_signature?)
+        unsigned_commits = merge_request.commits(load_from_gitaly: true)
+                                         .select { |commit| !commit.has_signature? }.map(&:short_id)
         violated, unviolated = scan_result_policy_reads.partition do |scan_result_policy_read|
-          next false unless scan_result_policy_read.commits_any? ||
-            (scan_result_policy_read.commits_unsigned? && has_unsigned_commits)
+          targets_any_commits = scan_result_policy_read.commits_any?
+          next false unless targets_any_commits || (scan_result_policy_read.commits_unsigned? && unsigned_commits.any?)
 
-          policy_affected_by_target_branch?(scan_result_policy_read)
+          policy_affected_by_target_branch?(scan_result_policy_read).tap do |violated|
+            next unless violated
+
+            violations_by_policy[scan_result_policy_read.id] =
+              targets_any_commits ? true : Security::ScanResultPolicyViolation.trim_violations(unsigned_commits)
+          end
         end
         [violated.pluck(:id), unviolated.pluck(:id)] # rubocop:disable CodeReuse/ActiveRecord
       end
@@ -135,6 +144,12 @@ module Security
           project_path: merge_request.project.full_path
         }
         Gitlab::AppJsonLogger.info(message: 'Updating MR approval rule', **default_attributes.merge(attributes))
+      end
+
+      def save_violation_data(violated_policy_ids)
+        violated_policy_ids.each do |policy_id|
+          violations.add_violation(policy_id, { commits: violations_by_policy[policy_id] })
+        end
       end
     end
   end
