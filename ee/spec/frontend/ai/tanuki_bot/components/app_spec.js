@@ -144,10 +144,9 @@ describe('GitLab Duo Chat', () => {
       expect(findGlDuoChat().exists()).toBe(true);
     });
 
-    it('sets correct `badge-type` and `badge-help-page-url` props on the chat compnent', () => {
+    it('sets correct `badge-type` and `badge-help-page-url` props on the chat component', () => {
       createComponent();
-      expect(findGlDuoChat().props('badgeType')).toBe('beta');
-      expect(findGlDuoChat().props('badgeHelpPageUrl')).toContain('#beta');
+      expect(findGlDuoChat().props('badgeType')).toBe(null);
     });
 
     it('renders the duo-chat-callout component', () => {

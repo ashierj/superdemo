@@ -1,5 +1,5 @@
 <script>
-import { GlPopover, GlLink, GlBadge } from '@gitlab/ui';
+import { GlPopover, GlLink } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
 import DUO_CHAT_ILLUSTRATION from './callout_illustration.svg?url';
@@ -21,7 +21,6 @@ export default {
   components: {
     GlPopover,
     GlLink,
-    GlBadge,
     UserCalloutDismisser,
   },
   beforeMount() {
@@ -87,9 +86,6 @@ export default {
         />
         <h5 class="gl-my-3 gl-mr-3">
           {{ $options.i18n.POPOVER_LABEL }}
-          <gl-badge size="sm" variant="muted" href="" icon-size="sm">
-            {{ __('Beta') }}
-          </gl-badge>
         </h5>
         <p class="gl-m-0 gl-w-70p" data-testid="duo-chat-callout-description">
           {{ $options.i18n.POPOVER_DESCRIPTION }}
