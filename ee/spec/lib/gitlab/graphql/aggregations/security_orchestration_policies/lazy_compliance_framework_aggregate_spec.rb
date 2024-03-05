@@ -5,10 +5,13 @@ require 'spec_helper'
 RSpec.describe Gitlab::Graphql::Aggregations::SecurityOrchestrationPolicies::LazyComplianceFrameworkAggregate, feature_category: :security_policy_management do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project) }
-  let_it_be(:framework) { create(:compliance_framework) }
-  let_it_be(:other_framework) { create(:compliance_framework) }
-  let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
-  let_it_be(:compliance_framework_security_policy) do
+  let_it_be_with_reload(:framework) { create(:compliance_framework) }
+  let_it_be_with_reload(:other_framework) { create(:compliance_framework) }
+  let_it_be_with_reload(:policy_configuration) do
+    create(:security_orchestration_policy_configuration, project: project)
+  end
+
+  let_it_be_with_reload(:compliance_framework_security_policy) do
     create(:compliance_framework_security_policy, policy_configuration: policy_configuration, framework: framework)
   end
 
@@ -45,8 +48,15 @@ RSpec.describe Gitlab::Graphql::Aggregations::SecurityOrchestrationPolicies::Laz
   end
 
   describe '#execute' do
-    let(:scan_execution_policy) { build(:scan_execution_policy, name: 'SEP 1') }
-    let(:scan_result_policy) { build(:scan_result_policy, name: 'SRP 1') }
+    let(:policy_scope) { { compliance_frameworks: [{ id: framework.id }] } }
+    let(:scan_execution_policy) do
+      build(:scan_execution_policy, name: 'SEP 1', policy_scope: policy_scope)
+    end
+
+    let(:scan_result_policy) do
+      build(:scan_result_policy, name: 'SRP 1', policy_scope: policy_scope)
+    end
+
     let(:policy_yaml) do
       build(:orchestration_policy_yaml,
         scan_execution_policy: [scan_execution_policy],
@@ -94,6 +104,26 @@ RSpec.describe Gitlab::Graphql::Aggregations::SecurityOrchestrationPolicies::Laz
         lazy_aggregate.execute
 
         expect(lazy_aggregate.lazy_state[:pending_frameworks]).to be_empty
+      end
+
+      context 'when policy is not scoped to the loaded framework' do
+        let(:policy_scope) { { compliance_frameworks: [{ id: other_framework.id }] } }
+
+        it 'does not return policies' do
+          policies = lazy_aggregate.execute
+
+          expect(policies.count).to eq(0)
+        end
+      end
+
+      context 'when policy_scope is empty' do
+        let(:policy_scope) { {} }
+
+        it 'does not return policies' do
+          policies = lazy_aggregate.execute
+
+          expect(policies.count).to eq(0)
+        end
       end
     end
   end

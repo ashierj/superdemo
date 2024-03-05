@@ -12,7 +12,8 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanResultPoli
     create(:compliance_framework_security_policy, policy_configuration: policy_configuration, framework: framework)
   end
 
-  let_it_be(:policy) { build(:scan_result_policy, name: 'Enforce approvals') }
+  let_it_be(:policy_scope) { { compliance_frameworks: [{ id: framework.id }] } }
+  let_it_be(:policy) { build(:scan_result_policy, name: 'Enforce approvals', policy_scope: policy_scope) }
 
   describe '#resolve' do
     subject(:resolve_policies) do
