@@ -19,4 +19,4 @@
     %span.gl-mr-1= s_('UsageQuota|Loading Usage Quotas tabs')
     = render Pajamas::SpinnerComponent.new(inline: true, size: :md)
   #js-pipeline-usage-app{ data: pipeline_usage_app_data(@namespace) }
-  #js-namespace-storage-app{ data: storage_usage_app_data(@namespace) }
+  #js-storage-usage-app{ data: storage_usage_app_data(@namespace) }

@@ -2,7 +2,7 @@ import { parseBoolean } from '~/lib/utils/common_utils';
 import { storageTypeHelpPaths as helpLinks } from '~/usage_quotas/storage/constants';
 import { NAMESPACE_ENFORCEMENT_TYPE, PROJECT_ENFORCEMENT_TYPE } from './constants';
 
-export const parseProvideData = (el) => {
+export const parseNamespaceProvideData = (el) => {
   if (!el) {
     return {};
   }

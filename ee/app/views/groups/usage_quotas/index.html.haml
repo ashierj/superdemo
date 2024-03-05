@@ -37,9 +37,9 @@
       #js-code-suggestions-usage-app{ data: code_suggestions_usage_app_data(@group) }
     - if can? current_user, :admin_ci_minutes, @group
       #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
-    #js-namespace-storage-app{ data: storage_usage_app_data(@group) }
+    #js-storage-usage-app{ data: storage_usage_app_data(@group) }
     - if Feature.enabled?(:data_transfer_monitoring, @group)
-      #js-group-transfer-app{ data: group_transfer_app_data(@group) }
+      #js-transfer-usage-app{ data: group_transfer_app_data(@group) }
 - else
   = gl_tabs_nav({ class: 'js-storage-tabs' }) do
     = gl_tab_link_to '#seats-quota-tab', data: { testid: 'seats-tab' }, item_active: true do
@@ -75,9 +75,9 @@
     .tab-pane#pipelines-quota-tab
       #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
     .tab-pane#storage-quota-tab
-      #js-namespace-storage-app{ data: storage_usage_app_data(@group) }
+      #js-storage-usage-app{ data: storage_usage_app_data(@group) }
     - if Feature.enabled?(:data_transfer_monitoring, @group)
       .tab-pane#transfer-quota-tab
-        #js-group-transfer-app{ data: group_transfer_app_data(@group) }
+        #js-transfer-usage-app{ data: group_transfer_app_data(@group) }
     .tab-pane#product-analytics-usage-quota-tab
       #js-product-analytics-usage-quota-app{ data: product_analytics_usage_quota_app_data(@group) }

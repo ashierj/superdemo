@@ -1,6 +1,8 @@
+import { PROFILE_VIEW_TYPE } from '~/usage_quotas/constants';
 import { getStorageTabMetadata } from '~/usage_quotas/storage/tab_metadata';
 import { getPipelineTabMetadata } from './pipelines/tab_metadata';
 
-export const usageQuotasTabsMetadata = [getPipelineTabMetadata(), getStorageTabMetadata()].filter(
-  Boolean,
-);
+export const usageQuotasTabsMetadata = [
+  getPipelineTabMetadata(),
+  getStorageTabMetadata({ viewType: PROFILE_VIEW_TYPE }),
+].filter(Boolean);
