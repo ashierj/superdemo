@@ -3626,6 +3626,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
   describe '#seats_available_for?' do
     context 'with a subscription', :saas do
       let_it_be(:group, refind: true) { create(:group_with_plan, plan: :premium_plan) }
+      let_it_be(:user) { create(:user) }
 
       before_all do
         group.gitlab_subscription.update!(seats: 5)
@@ -3651,19 +3652,26 @@ RSpec.describe Group, feature_category: :groups_and_projects do
 
       it 'counts members in subgroups as consuming seats' do
         subgroup = create(:group, parent: group)
-        subgroup.add_developer(create(:user))
+        subgroup.add_developer(user)
         user_ids = [1, 2, 3, 4, 5]
 
         expect(group.seats_available_for?(user_ids)).to eq(false)
       end
 
-      it 'returns true if passed an empty enumerable' do
+      it 'considers if users are already consuming a seat' do
+        group.gitlab_subscription.update!(seats: 1)
+        group.add_developer(user)
+
+        expect(group.seats_available_for?([user.id])).to eq(true)
+      end
+
+      it 'returns true if passed an empty array' do
         expect(group.seats_available_for?([])).to eq(true)
       end
 
-      it 'returns true if there are no seats remaining and the passed enumerable is empty' do
+      it 'returns true if there are no seats remaining and the passed array is empty' do
         group.gitlab_subscription.update!(seats: 1)
-        group.add_maintainer(create(:user))
+        group.add_maintainer(user)
 
         expect(group.seats_available_for?([])).to eq(true)
       end

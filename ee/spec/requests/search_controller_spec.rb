@@ -89,7 +89,7 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
         let(:object) { :note }
         let(:creation_args) { { project: project, note: 'foo' } }
         let(:params) { { search: 'foo', scope: 'notes' } }
-        let(:threshold) { 0 }
+        let(:threshold) { 1 } # required for avatar cache clearance: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/122639
 
         it_behaves_like 'an efficient database result'
       end
@@ -98,7 +98,7 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
         let(:object) { :milestone }
         let(:creation_args) { { project: project } }
         let(:params) { { search: 'title', scope: 'milestones' } }
-        let(:threshold) { 0 }
+        let(:threshold) { 1 } # required for avatar cache clearance: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/122639
 
         it_behaves_like 'an efficient database result'
       end
@@ -107,7 +107,7 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
         let(:object) { :user }
         let(:creation_args) { { name: 'georgia' } }
         let(:params) { { search: 'georgia', scope: 'users' } }
-        let(:threshold) { 0 }
+        let(:threshold) { 1 } # required for avatar cache clearance: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/122639
 
         it_behaves_like 'an efficient database result'
       end
@@ -116,7 +116,7 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
         let(:object) { :epic }
         let(:creation_args) { { group: group } }
         let(:params) { { group_id: group.id, search: 'title', scope: 'epics' } }
-        let(:threshold) { 0 }
+        let(:threshold) { 1 } # required for avatar cache clearance: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/122639
 
         before do
           stub_licensed_features(epics: true)

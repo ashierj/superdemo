@@ -1,4 +1,5 @@
 import { isUndefined } from 'lodash';
+import { TYPENAME_GROUP, TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import { nMonthsBefore } from '~/lib/utils/datetime_utility';
 
 const METRIC_IDENTIFIERS = [
@@ -792,3 +793,17 @@ export const mockDoraPerformersScoreChartData = [
     data: [1, 1, 1, 1],
   },
 ];
+
+export const mockGroup = {
+  id: 'gid://gitlab/Group/10',
+  name: 'Group 10',
+  webUrl: 'gdk.test/groups/group-10',
+  __typename: TYPENAME_GROUP,
+};
+
+export const mockProject = {
+  id: 'gid://gitlab/Project/20',
+  name: 'Project 20',
+  webUrl: 'gdk.test/group-10/project-20',
+  __typename: TYPENAME_PROJECT,
+};

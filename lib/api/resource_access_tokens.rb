@@ -153,9 +153,9 @@ module API
           token = find_token(resource, params[:token_id]) if resource_accessible
 
           if token
-            response = if source_type == "project"
-                         ::ProjectAccessTokens::RotateService.new(current_user, token, resource)
+            response = ::ResourceAccessTokens::RotateService.new(current_user, token, resource)
                                    .execute(declared_params)
+<<<<<<< HEAD
                        elsif source_type == "group"
                          ::GroupAccessTokens::RotateService.new(current_user, token, resource)
                                    .execute(declared_params)
@@ -163,6 +163,8 @@ module API
                          ::PersonalAccessTokens::RotateService.new(current_user, token)
                                      .execute(declared_params)
                        end
+=======
+>>>>>>> source-project/master
 
             if response.success?
               status :ok
