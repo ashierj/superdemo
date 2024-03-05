@@ -10,10 +10,6 @@ RSpec.describe Projects::UpdateMirrorService do
   subject(:service) { described_class.new(project, project.first_owner) }
 
   describe "#execute" do
-    before do
-      allow(project).to receive(:lfs_enabled?).and_return(false)
-    end
-
     context 'unlicensed' do
       before do
         stub_licensed_features(repository_mirrors: false)
@@ -371,15 +367,10 @@ RSpec.describe Projects::UpdateMirrorService do
       context 'when repository does not change' do
         before do
           allow(project).to receive(:lfs_enabled?).and_return(true)
-          stub_fetch_mirror(project, repository: project.repository, tags_changed: false)
-          allow(project.repository).to receive(:checksum).and_return('some checksum')
         end
 
-        it 'update LFS objects' do
-          expect(Projects::LfsPointers::LfsImportService).to receive(:new).and_call_original
-          expect_next_instance_of(Projects::LfsPointers::LfsObjectDownloadListService) do |instance|
-            expect(instance).to receive(:each_list_item)
-          end
+        it 'does not attempt to update LFS objects' do
+          expect(Projects::LfsPointers::LfsImportService).not_to receive(:new)
 
           service.execute
         end
@@ -422,11 +413,21 @@ RSpec.describe Projects::UpdateMirrorService do
               end
             end
 
-            it 'fails mirror operation' do
+            # Uncomment once https://gitlab.com/gitlab-org/gitlab-foss/issues/61834 is closed
+            # it 'fails mirror operation' do
+            #   expect_any_instance_of(Projects::LfsPointers::LfsImportService).to receive(:execute).and_return(status: :error, message: 'error message')
+
+            #   result = subject.execute
+
+            #   expect(result[:status]).to eq :error
+            #   expect(result[:message]).to eq 'error message'
+            # end
+
+            # Remove once https://gitlab.com/gitlab-org/gitlab-foss/issues/61834 is closed
+            it 'does not fail mirror operation' do
               result = subject.execute
 
-              expect(result[:status]).to eq :error
-              expect(result[:message]).to eq error_message
+              expect(result[:status]).to eq :success
             end
 
             it 'logs the error' do
