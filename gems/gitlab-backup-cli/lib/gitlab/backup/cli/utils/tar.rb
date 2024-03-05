@@ -16,7 +16,7 @@ module Gitlab
 
           def cmd
             @cmd ||= if gtar_available?
-                       # It looks like we can get GNU tar by running 'gtar'
+                       # In BSD/Darwin we can get GNU tar by running 'gtar' instead
                        'gtar'
                      else
                        'tar'
