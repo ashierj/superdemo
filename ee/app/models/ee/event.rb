@@ -21,18 +21,6 @@ module EE
     end
 
     EPIC_ACTIONS = [:created, :closed, :reopened].freeze
-    EE_CONTRIBUTABLE_TARGET_TYPES = %w[Epic].freeze
-
-    class_methods do
-      extend ::Gitlab::Utils::Override
-
-      override :contributable_target_types
-      def contributable_target_types
-        return super unless ::Feature.enabled?(:epic_events_on_contributions_calendar)
-
-        super + EE_CONTRIBUTABLE_TARGET_TYPES
-      end
-    end
 
     override :capabilities
     def capabilities
