@@ -43518,6 +43518,9 @@ msgstr ""
 msgid "Runners|To view the setup instructions, complete the previous form. The instructions help you set up an autoscaling fleet of runners to execute your CI/CD jobs in Google Cloud."
 msgstr ""
 
+msgid "Runners|To view the setup instructions, make sure all form fields are completed and correct."
+msgstr ""
+
 msgid "Runners|Token expiry"
 msgstr ""
 
