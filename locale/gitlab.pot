@@ -8152,6 +8152,11 @@ msgstr ""
 msgid "Billing|%{user} was successfully approved"
 msgstr ""
 
+msgid "Billing|%{value} user selected"
+msgid_plural "Billing|%{value} users selected"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Billing|Add seats"
 msgstr ""
 
@@ -10143,6 +10148,9 @@ msgid "Check your Docker images for known vulnerabilities."
 msgstr ""
 
 msgid "Check your sign-up restrictions"
+msgstr ""
+
+msgid "Checkbox"
 msgstr ""
 
 msgid "Checkin reminder has been enabled."

@@ -1,4 +1,5 @@
 import { s__ } from '~/locale';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import apolloProvider from '../shared/provider';
 import { CODE_SUGGESTIONS_TAB_METADATA_EL_SELECTOR } from '../constants';
 import CodeSuggestionsUsage from './components/code_suggestions_usage.vue';
@@ -19,6 +20,7 @@ export const parseProvideData = (el) => {
     trackLabel,
     userName,
     addDuoProHref,
+    duoProBulkUserAssignmentAvailable,
   } = el.dataset;
 
   return {
@@ -27,6 +29,7 @@ export const parseProvideData = (el) => {
     createHandRaiseLeadPath,
     addDuoProHref,
     isSaaS: true,
+    isBulkAddOnAssignmentEnabled: parseBoolean(duoProBulkUserAssignmentAvailable),
     buttonAttributes: buttonAttributes && { ...JSON.parse(buttonAttributes), variant: 'confirm' },
     user: {
       namespaceId,

@@ -3,13 +3,15 @@ import {
   GlAvatarLabeled,
   GlAvatarLink,
   GlBadge,
+  GlFormCheckbox,
   GlSkeletonLoader,
   GlTable,
   GlTooltipDirective,
   GlKeysetPagination,
 } from '@gitlab/ui';
-import { pick } from 'lodash';
-import { s__ } from '~/locale';
+import { pick, escape } from 'lodash';
+import { s__, n__, sprintf } from '~/locale';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { ADD_ON_ERROR_DICTIONARY } from 'ee/usage_quotas/error_constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { addOnEligibleUserListTableFields } from 'ee/usage_quotas/code_suggestions/constants';
@@ -21,6 +23,7 @@ export default {
   name: 'AddOnEligibleUserList',
   directives: {
     GlTooltip: GlTooltipDirective,
+    SafeHtml,
   },
   components: {
     CodeSuggestionsAddonAssignment,
@@ -28,11 +31,13 @@ export default {
     GlAvatarLabeled,
     GlAvatarLink,
     GlBadge,
+    GlFormCheckbox,
     GlKeysetPagination,
     GlSkeletonLoader,
     GlTable,
   },
   mixins: [glFeatureFlagMixin()],
+  inject: { isBulkAddOnAssignmentEnabled: { default: false } },
   props: {
     addOnPurchaseId: {
       type: String,
@@ -62,6 +67,7 @@ export default {
   data() {
     return {
       addOnAssignmentError: undefined,
+      selectedUsers: [],
     };
   },
   addOnErrorDictionary: ADD_ON_ERROR_DICTIONARY,
@@ -87,10 +93,17 @@ export default {
       return s__('Billing|No users to display.');
     },
     tableFieldsConfiguration() {
+      let fieldConfig = ['user', 'codeSuggestionsAddon', 'emailWide', 'lastActivityTimeWide'];
+
       if (this.isFilteringEnabled && this.hasMaxRoleField) {
-        return ['user', 'codeSuggestionsAddon', 'email', 'maxRole', 'lastActivityTime'];
+        fieldConfig = ['user', 'codeSuggestionsAddon', 'email', 'maxRole', 'lastActivityTime'];
       }
-      return ['user', 'codeSuggestionsAddon', 'emailWide', 'lastActivityTimeWide'];
+
+      if (this.isBulkAddOnAssignmentEnabled) {
+        fieldConfig = ['checkbox', ...fieldConfig];
+      }
+
+      return fieldConfig;
     },
     tableFields() {
       return Object.values(pick(addOnEligibleUserListTableFields, this.tableFieldsConfiguration));
@@ -98,16 +111,42 @@ export default {
     tableItems() {
       return this.users.map((node) => ({
         ...node,
-        username: `@${node?.username}`,
+        usernameWithHandle: `@${node?.username}`,
         addOnAssignments: node?.addOnAssignments?.nodes,
       }));
+    },
+    isSelectAllUsersChecked() {
+      return !this.isLoading && this.users.length === this.selectedUsers.length;
+    },
+    isSelectAllUsersIndeterminate() {
+      return this.isAnyUserSelected && !this.isSelectAllUsersChecked;
+    },
+    isAnyUserSelected() {
+      return Boolean(this.selectedUsers.length);
+    },
+    pluralisedSelectedUsers() {
+      return sprintf(
+        n__(
+          'Billing|%{value} user selected',
+          'Billing|%{value} users selected',
+          this.selectedUsers.length,
+        ),
+        { value: `<strong>${escape(this.selectedUsers.length)}</strong>` },
+        false,
+      );
     },
   },
   methods: {
     nextPage() {
+      // Retaining user selection on page navigation will be carried out in
+      // https://gitlab.com/gitlab-org/gitlab/-/issues/443401
+      this.unselectAllUsers();
       this.$emit('next', this.pageInfo.endCursor);
     },
     prevPage() {
+      // Retaining user selection on page navigation will be carried out in
+      // https://gitlab.com/gitlab-org/gitlab/-/issues/443401
+      this.unselectAllUsers();
       this.$emit('prev', this.pageInfo.startCursor);
     },
     handleAddOnAssignmentError(errorCode) {
@@ -119,6 +158,26 @@ export default {
     },
     scrollToTop() {
       scrollToElement(this.$el);
+    },
+    isUserSelected(item) {
+      return this.selectedUsers.includes(item.username);
+    },
+    handleUserSelection(user, value) {
+      if (value) {
+        this.selectedUsers.push(user.username);
+      } else {
+        this.selectedUsers = this.selectedUsers.filter((username) => username !== user.username);
+      }
+    },
+    handleSelectAllUsers(value) {
+      if (value) {
+        this.selectedUsers = this.users.map((user) => user.username);
+      } else {
+        this.unselectAllUsers();
+      }
+    },
+    unselectAllUsers() {
+      this.selectedUsers = [];
     },
   },
 };
@@ -136,6 +195,12 @@ export default {
       :dismissible="true"
       @dismiss="clearAddOnAssignmentError"
     />
+    <div
+      v-if="isAnyUserSelected"
+      class="gl-display-flex gl-bg-gray-10 gl-p-5 gl-mt-5 gl-align-items-center gl-justify-content-space-between"
+    >
+      <span v-safe-html="pluralisedSelectedUsers" data-testid="selected-users-summary"></span>
+    </div>
     <gl-table
       :items="tableItems"
       :fields="tableFields"
@@ -155,6 +220,24 @@ export default {
           </gl-skeleton-loader>
         </div>
       </template>
+      <template #head(checkbox)>
+        <gl-form-checkbox
+          v-if="isBulkAddOnAssignmentEnabled"
+          class="gl-min-h-5"
+          :checked="isSelectAllUsersChecked"
+          :indeterminate="isSelectAllUsersIndeterminate"
+          data-testid="select-all-users"
+          @change="handleSelectAllUsers"
+        />
+      </template>
+      <template #cell(checkbox)="{ item }">
+        <gl-form-checkbox
+          v-if="isBulkAddOnAssignmentEnabled"
+          class="gl-min-h-5"
+          :checked="isUserSelected(item)"
+          @change="handleUserSelection(item, $event)"
+        />
+      </template>
       <template #cell(user)="{ item }">
         <slot name="user-cell" :item="item">
           <div class="gl-display-flex">
@@ -163,7 +246,7 @@ export default {
                 :src="item.avatarUrl"
                 :size="$options.avatarSize"
                 :label="item.name"
-                :sub-label="item.username"
+                :sub-label="item.usernameWithHandle"
               />
             </gl-avatar-link>
           </div>
