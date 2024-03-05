@@ -255,6 +255,14 @@ module EE
           description: 'Security policy project suggestions',
           resolver: ::Resolvers::SecurityOrchestration::SecurityPolicyProjectSuggestionsResolver
 
+        field :duo_features_enabled, GraphQL::Types::Boolean,
+          alpha: { milestone: '16.10' },
+          description: 'Indicates whether GitLab Duo features are enabled for the group.'
+
+        field :lock_duo_features_enabled, GraphQL::Types::Boolean,
+          alpha: { milestone: '16.10' },
+          description: 'Indicates if the GitLab Duo features enabled setting is enforced for all subgroups.'
+
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
         end
