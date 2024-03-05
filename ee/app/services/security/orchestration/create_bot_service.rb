@@ -45,7 +45,8 @@ module Security
           user_type: :security_policy_bot,
           skip_confirmation: true, # Bot users should always have their emails confirmed.
           external: true,
-          avatar: Users::Internal.bot_avatar(image: 'security-bot.png')
+          avatar: Users::Internal.bot_avatar(image: 'security-bot.png'),
+          organization_id: project.organization_id
         }
       end
 
