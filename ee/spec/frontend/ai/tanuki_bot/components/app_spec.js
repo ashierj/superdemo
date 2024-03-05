@@ -10,6 +10,7 @@ import { GENIE_CHAT_RESET_MESSAGE, GENIE_CHAT_CLEAN_MESSAGE } from 'ee/ai/consta
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from 'ee/ai/tanuki_bot/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
+import duoUserFeedbackMutation from 'ee/ai/graphql/duo_user_feedback.mutation.graphql';
 import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -43,7 +44,23 @@ describe('GitLab Duo Chat', () => {
 
   const subscriptionHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_SUCCESS_RES);
   const chatMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
+  const duoUserFeedbackMutationHandlerMock = jest.fn().mockResolvedValue({});
   const queryHandlerMock = jest.fn().mockResolvedValue(MOCK_CHAT_CACHED_MESSAGES_RES);
+
+  const feedbackData = {
+    feedbackChoices: ['useful', 'not_relevant'],
+    didWhat: 'provided clarity',
+    improveWhat: 'more examples',
+    message: {
+      requestId: '1234567890',
+      id: 'abcdefgh',
+      role: 'user',
+      content: 'test',
+      extras: {
+        exampleExtraContent: 1,
+      },
+    },
+  };
 
   const findCallout = () => wrapper.findComponent(DuoChatCallout);
 
@@ -62,6 +79,7 @@ describe('GitLab Duo Chat', () => {
     const apolloProvider = createMockApollo([
       [aiResponseSubscription, subscriptionHandlerMock],
       [chatMutation, chatMutationHandlerMock],
+      [duoUserFeedbackMutation, duoUserFeedbackMutationHandlerMock],
       [getAiMessages, queryHandlerMock],
     ]);
 
@@ -294,6 +312,34 @@ describe('GitLab Duo Chat', () => {
             prompt_location: 'after_content',
           },
         });
+      });
+
+      it('calls the feedback GraphQL mutation when message is passed', async () => {
+        createComponent();
+        findGlDuoChat().vm.$emit('track-feedback', feedbackData);
+
+        await waitForPromises();
+        expect(duoUserFeedbackMutationHandlerMock).toHaveBeenCalledWith({
+          input: {
+            aiMessageId: feedbackData.message.id,
+          },
+        });
+      });
+
+      it('updates Vuex store correctly when message is passed', async () => {
+        createComponent();
+        findGlDuoChat().vm.$emit('track-feedback', feedbackData);
+
+        await waitForPromises();
+        expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.objectContaining({
+            requestId: feedbackData.message.requestId,
+            role: feedbackData.message.role,
+            content: feedbackData.message.content,
+            extras: { ...feedbackData.message.extras, hasFeedback: true },
+          }),
+        );
       });
     });
   });

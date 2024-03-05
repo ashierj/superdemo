@@ -11,6 +11,7 @@ import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completio
 import DuoChatCallout from 'ee/ai/components/global_callout/duo_chat_callout.vue';
 import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
+import duoUserFeedbackMutation from 'ee/ai/graphql/duo_user_feedback.mutation.graphql';
 import Tracking from '~/tracking';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { i18n, GENIE_CHAT_RESET_MESSAGE, GENIE_CHAT_CLEAN_MESSAGE } from 'ee/ai/constants';
@@ -162,7 +163,7 @@ export default {
     onCalloutDismissed() {
       this.helpCenterState.showTanukiBotChatDrawer = true;
     },
-    onTrackFeedback({ feedbackChoices, didWhat, improveWhat } = {}) {
+    onTrackFeedback({ feedbackChoices, didWhat, improveWhat, message } = {}) {
       this.track(TANUKI_BOT_TRACKING_EVENT_NAME, {
         action: 'click_button',
         label: 'response_feedback',
@@ -173,6 +174,29 @@ export default {
           prompt_location: 'after_content',
         },
       });
+
+      if (message) {
+        const { id, requestId, extras, role, content } = message;
+        this.$apollo
+          .mutate({
+            mutation: duoUserFeedbackMutation,
+            variables: {
+              input: {
+                aiMessageId: id,
+              },
+            },
+          })
+          .catch(() => {
+            // silent failure because of fire and forget
+          });
+
+        this.addDuoChatMessage({
+          requestId,
+          role,
+          content,
+          extras: { ...extras, hasFeedback: true },
+        });
+      }
     },
   },
 };
