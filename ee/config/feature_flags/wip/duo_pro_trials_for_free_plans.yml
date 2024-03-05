@@ -1,0 +1,9 @@
+---
+name: duo_pro_trials_for_free_plans
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/443734
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/146332
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/444294
+milestone: '16.10'
+group: group::acquisition
+type: wip
+default_enabled: false

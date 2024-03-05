@@ -68,25 +68,49 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
       end
 
       context 'with Duo Pro trial link' do
-        it 'renders the link' do
-          render
+        context 'when duo_pro_trials and duo_pro_trials_for_free_plans is enabled' do
+          before do
+            stub_feature_flags(duo_pro_trials: true)
+            stub_feature_flags(duo_pro_trials_for_free_plans: true)
+          end
 
-          expect(rendered).to have_link(
-            'Start a free GitLab Duo Pro trial',
-            href: new_trials_duo_pro_path(namespace_id: group.id)
-          )
+          it 'renders the link' do
+            render
+
+            expect(rendered).to have_link(
+              'Start a free GitLab Duo Pro trial',
+              href: new_trials_duo_pro_path(namespace_id: group.id)
+            )
+          end
         end
 
-        context 'when duo_pro_trials is disabled' do
+        context 'when duo_pro_trials_for_free_plans is enabled' do
           before do
             stub_feature_flags(duo_pro_trials: false)
+            stub_feature_flags(duo_pro_trials_for_free_plans: true)
           end
 
           it 'does not render the link' do
             render
 
             expect(rendered).not_to have_link(
-              'Start a free Duo Pro trial',
+              'Start a free GitLab Duo Pro trial',
+              href: new_trials_duo_pro_path(namespace_id: group.id)
+            )
+          end
+        end
+
+        context 'when duo_pro_trials is enabled' do
+          before do
+            stub_feature_flags(duo_pro_trials: true)
+            stub_feature_flags(duo_pro_trials_for_free_plans: false)
+          end
+
+          it 'does not render the link' do
+            render
+
+            expect(rendered).not_to have_link(
+              'Start a free GitLab Duo Pro trial',
               href: new_trials_duo_pro_path(namespace_id: group.id)
             )
           end
@@ -128,6 +152,40 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
         expect(rendered).to have_selector('#js-billing-plans')
       end
 
+      context 'with Duo Pro trial link' do
+        context 'when duo_pro_trials is enabled' do
+          before do
+            stub_feature_flags(duo_pro_trials: true)
+            stub_feature_flags(duo_pro_trials_for_free_plans: false)
+          end
+
+          it 'renders the link' do
+            render
+
+            expect(rendered).to have_link(
+              'Start a free GitLab Duo Pro trial',
+              href: new_trials_duo_pro_path(namespace_id: group.id)
+            )
+          end
+        end
+
+        context 'when duo_pro_trials_for_free_plans is enabled' do
+          before do
+            stub_feature_flags(duo_pro_trials: false)
+            stub_feature_flags(duo_pro_trials_for_free_plans: true)
+          end
+
+          it 'does not render the link' do
+            render
+
+            expect(rendered).not_to have_link(
+              'Start a free GitLab Duo Pro trial',
+              href: new_trials_duo_pro_path(namespace_id: group.id)
+            )
+          end
+        end
+      end
+
       context 'with code suggestions' do
         it 'renders the code suggestions component' do
           render
@@ -139,10 +197,6 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
           expect(rendered).to have_link('GitLab Duo Pro', href: 'https://about.gitlab.com/gitlab-duo/')
           hand_raise_selector = '.js-hand-raise-lead-button[data-track-label="code_suggestions_hand_raise_lead_form"]'
           expect(rendered).to have_selector(hand_raise_selector)
-          expect(rendered).to have_link(
-            'Start a free GitLab Duo Pro trial',
-            href: new_trials_duo_pro_path(namespace_id: group.id)
-          )
         end
       end
 
