@@ -36,8 +36,12 @@ module Gitlab
 
             policy_configurations_by_frameworks.each do |framework, configurations|
               policies = security_policies(configurations)
-              scan_result_policies = construct_scan_result_policies(policies[:scan_result_policies])
-              scan_execution_policies = construct_scan_execution_policies(policies[:scan_execution_policies])
+              scan_result_policies = construct_scan_result_policies(
+                filter_policies_by_scope(policies[:scan_result_policies], framework.id)
+              )
+              scan_execution_policies = construct_scan_execution_policies(
+                filter_policies_by_scope(policies[:scan_execution_policies], framework.id)
+              )
 
               @lazy_state[:loaded_objects][framework.id] ||= {}
               @lazy_state[:loaded_objects][framework.id][:scan_result_policies] = Array.wrap(
@@ -48,6 +52,14 @@ module Gitlab
             end
 
             @lazy_state[:pending_frameworks].clear
+          end
+
+          def filter_policies_by_scope(policies, framework_id)
+            policies.select do |policy|
+              policy.dig(:policy_scope, :compliance_frameworks)&.any? do |compliance_framework|
+                compliance_framework[:id] == framework_id
+              end
+            end
           end
 
           def security_policies(configurations)
