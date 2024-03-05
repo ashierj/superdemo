@@ -9,10 +9,6 @@ module EE
 
       override :execute
       def execute
-        super
-
-        publish_event
-
         unless can_update_prevent_forking?
           group.errors.add(
             :prevent_forking_outside_group,
@@ -26,6 +22,19 @@ module EE
             s_('GroupSettings|Service access tokens expiration enforced setting was not saved')
           )
         end
+
+        validate_settings_param_for_admin(
+          param_key: :duo_features_enabled,
+          user_policy: :admin_group
+        )
+        validate_settings_param_for_admin(
+          param_key: :lock_duo_features_enabled,
+          user_policy: :admin_group
+        )
+
+        super
+
+        publish_event
       end
 
       private

@@ -177,6 +177,8 @@ module EE
         only_allow_merge_if_all_discussions_are_resolved
         experiment_features_enabled
         service_access_tokens_expiration_enforced
+        duo_features_enabled
+        lock_duo_features_enabled
       ].freeze
 
       override :allowed_namespace_settings_params

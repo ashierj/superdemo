@@ -32,6 +32,9 @@ RSpec.describe GitlabSchema.types['Group'], feature_category: :groups_and_projec
   it { expect(described_class).to have_graphql_field(:value_streams) }
   it { expect(described_class).to have_graphql_field(:saved_replies) }
   it { expect(described_class).to have_graphql_field(:saved_reply) }
+  it { expect(described_class).to have_graphql_field(:value_stream_analytics) }
+  it { expect(described_class).to have_graphql_field(:duo_features_enabled) }
+  it { expect(described_class).to have_graphql_field(:lock_duo_features_enabled) }
 
   describe 'vulnerabilities' do
     let_it_be(:group) { create(:group) }
