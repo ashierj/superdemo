@@ -142,6 +142,36 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
               expect(perform_service[:stages]).to eq(%w[scan-policies not-test release dast])
             end
 
+            context 'when .pre stage is available' do
+              let(:config) { { stages: %w[.pre not-test release], image: 'image:1.0.0' } }
+
+              it 'includes scan-policies stage as a first stage after .pre' do
+                expect(subject[:stages]).to eq(%w[.pre scan-policies not-test release dast])
+              end
+
+              context 'and .pre is before build stage' do
+                let(:config) { { stages: %w[.pre build not-test release], image: 'image:1.0.0' } }
+
+                it 'includes scan-policies stage as a first stage after .pre or build' do
+                  expect(subject[:stages]).to eq(%w[.pre build scan-policies not-test release dast])
+                end
+              end
+
+              context 'and .pre is not first in the list and after build stage' do
+                let(:config) { { stages: %w[build .pre not-test release], image: 'image:1.0.0' } }
+
+                it 'includes scan-policies stage as a first stage after .pre or build' do
+                  expect(subject[:stages]).to eq(%w[build .pre scan-policies not-test release dast])
+                end
+              end
+            end
+
+            context 'when .pre stage is not available' do
+              it 'includes scan-policies stage as a first stage' do
+                expect(subject[:stages]).to eq(%w[scan-policies not-test release dast])
+              end
+            end
+
             it 'extends config with additional jobs' do
               expect(perform_service.keys).to include(expected_jobs)
               expect(perform_service.values).to include(expected_configuration)
