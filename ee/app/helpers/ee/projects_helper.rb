@@ -140,6 +140,12 @@ module EE
       ::License.feature_available?(:ci_cd_projects) && import_sources_enabled?
     end
 
+    def show_archived_project_banner?(project)
+      return false if project&.marked_for_deletion?
+
+      super
+    end
+
     override :remote_mirror_setting_enabled?
     def remote_mirror_setting_enabled?
       ::Gitlab::CurrentSettings.import_sources.any? && ::License.feature_available?(:ci_cd_projects) && ::Gitlab::CurrentSettings.current_application_settings.mirror_available
