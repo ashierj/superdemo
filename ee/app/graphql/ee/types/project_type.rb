@@ -211,6 +211,12 @@ module EE
               null: true,
               description: 'Namespaces linked to the project, when used as Security Policy Project.'
 
+        field :security_policy_project_suggestions,
+          ::Types::ProjectType.connection_type,
+          null: true,
+          description: 'Security policy project suggestions',
+          resolver: ::Resolvers::SecurityOrchestration::SecurityPolicyProjectSuggestionsResolver
+
         field :network_policies,
               ::Types::NetworkPolicyType.connection_type,
               null: true,

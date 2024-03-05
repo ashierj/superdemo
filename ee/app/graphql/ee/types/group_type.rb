@@ -249,6 +249,12 @@ module EE
           null: true,
           resolver_method: :object
 
+        field :security_policy_project_suggestions,
+          ::Types::ProjectType.connection_type,
+          null: true,
+          description: 'Security policy project suggestions',
+          resolver: ::Resolvers::SecurityOrchestration::SecurityPolicyProjectSuggestionsResolver
+
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
         end
