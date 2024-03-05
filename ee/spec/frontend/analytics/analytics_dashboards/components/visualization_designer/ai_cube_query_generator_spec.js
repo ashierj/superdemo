@@ -5,6 +5,7 @@ import { GlExperimentBadge, GlFormGroup } from '@gitlab/ui';
 
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { mockTracking } from 'helpers/tracking_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -27,6 +28,7 @@ describe('AiCubeQueryGenerator', () => {
   const generatedQuery = TEST_VISUALIZATION().data.query;
   const error = new Error('oh no it failed!!1!');
 
+  let trackingSpy;
   const generateCubeQueryMutationHandlerMock = jest.fn();
   const aiResponseSubscriptionHandlerMock = jest.fn();
 
@@ -41,6 +43,7 @@ describe('AiCubeQueryGenerator', () => {
     wrapper = shallowMountExtended(AiCubeQueryGenerator, {
       provide: {
         namespaceId: 'gid://gitlab/Namespace/1',
+        currentUserId: 1,
       },
       apolloProvider: createMockApollo([
         [generateCubeQueryMutation, generateCubeQueryMutationHandlerMock],
@@ -57,8 +60,8 @@ describe('AiCubeQueryGenerator', () => {
   };
 
   beforeEach(() => {
-    window.gon = { current_user_id: 1 };
     uuidv4.mockImplementation(() => 'mock-uuid');
+    trackingSpy = mockTracking(undefined, window.document, jest.spyOn);
   });
 
   afterEach(() => {
@@ -156,6 +159,14 @@ describe('AiCubeQueryGenerator', () => {
 
         findGenerateCubeQueryPromptInput().vm.$emit('input', prompt);
         findGenerateCubeQuerySubmitButton().vm.$emit('click');
+      });
+
+      it('should track the prompt has been submitted', () => {
+        expect(trackingSpy).toHaveBeenCalledWith(
+          undefined,
+          'user_submitted_gitlab_duo_query_from_visualization_designer',
+          expect.any(Object),
+        );
       });
 
       it('sends a request to the server', () => {
