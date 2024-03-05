@@ -127,7 +127,7 @@ module Gitlab
 
             if pipeline_scan_template.present?
               unless defined_stages.include?(DEFAULT_SECURITY_JOB_STAGE)
-                insert_stage_after_or_prepend(defined_stages, DEFAULT_SCAN_POLICY_STAGE, [DEFAULT_BUILD_STAGE])
+                insert_stage_after_or_prepend(defined_stages, DEFAULT_SCAN_POLICY_STAGE, ['.pre', DEFAULT_BUILD_STAGE])
                 pipeline_scan_template = pipeline_scan_template.transform_values do |job_config|
                   job_config.merge(stage: DEFAULT_SCAN_POLICY_STAGE)
                 end
@@ -146,31 +146,23 @@ module Gitlab
           end
 
           def insert_stage_after_or_prepend(stages, insert_stage_name, after_stages)
-            after_stages.each do |stage|
-              stage_index = stages.index(stage)
+            stage_index = after_stages.filter_map { |stage| stages.index(stage) }.max
 
-              next unless stage_index
-
+            if stage_index.nil?
+              stages.unshift(insert_stage_name)
+            else
               stages.insert(stage_index + 1, insert_stage_name)
-
-              return stages
             end
-
-            stages.unshift(insert_stage_name)
           end
 
           def insert_stage_before_or_append(stages, insert_stage_name, before_stages)
-            before_stages.each do |stage|
-              stage_index = stages.index(stage)
+            stage_index = before_stages.filter_map { |stage| stages.index(stage) }.min
 
-              next unless stage_index
-
+            if stage_index.nil?
+              stages << insert_stage_name
+            else
               stages.insert(stage_index, insert_stage_name)
-
-              return stages
             end
-
-            stages << insert_stage_name
           end
 
           def active_scan_template_actions
