@@ -90,6 +90,22 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
 
         expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, /\ARegular expression '\+' is invalid/)
       end
+
+      context 'when a commit is created from web' do
+        let(:protocol) { 'web' }
+
+        it 'does not raise an error if the rule fails for the committer' do
+          allow_any_instance_of(Commit).to receive(:committer_email).and_return('ana@invalid.com')
+
+          expect { subject.validate! }.not_to raise_error
+        end
+
+        it 'returns an error if the rule fails for the author' do
+          allow_any_instance_of(Commit).to receive(:author_email).and_return('joan@invalid.com')
+
+          expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Author's email 'joan@invalid.com' does not follow the pattern '.*@valid.com'")
+        end
+      end
     end
 
     context 'existing member rules' do
@@ -102,6 +118,15 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
           allow_any_instance_of(Commit).to receive(:author_email).and_return(user_email)
 
           expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Author '#{user_email}' is not a member of team")
+        end
+
+        it 'returns an error if private commit email is not associated with a committer' do
+          user_email = "#{non_existing_record_id}-foo@#{::Gitlab::CurrentSettings.current_application_settings.commit_email_hostname}"
+
+          allow_any_instance_of(Commit).to receive(:author_email).and_return(user.private_commit_email)
+          allow_any_instance_of(Commit).to receive(:committer_email).and_return(user_email)
+
+          expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Committer '#{user_email}' is not a member of team")
         end
 
         it 'returns true when private commit email was associated to a user' do
@@ -121,6 +146,14 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
 
         it 'returns an error if the commit author is not a GitLab member' do
           expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Author 'some@mail.com' is not a member of team")
+        end
+
+        context 'when a commit is created from web' do
+          let(:protocol) { 'web' }
+
+          it 'does not raise an error' do
+            expect { subject.validate! }.not_to raise_error
+          end
         end
       end
     end
@@ -164,7 +197,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
           context 'but the change is made in the web application' do
             let(:protocol) { 'web' }
 
-            it 'does not return an error' do
+            it 'does not raise an error' do
               expect { subject.validate! }.not_to raise_error
             end
           end
@@ -241,6 +274,29 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
                 .to raise_error(Gitlab::GitAccess::ForbiddenError,
                                 "Committer email '#{user.email}' is not verified.")
             end
+
+            context 'when a commit is created from web' do
+              let(:protocol) { 'web' }
+              let(:author_email) { user.email }
+
+              before do
+                allow_any_instance_of(Commit).to receive(:author_email).and_return(author_email)
+              end
+
+              it 'raises an error' do
+                expect { subject.validate! }
+                  .to raise_error(Gitlab::GitAccess::ForbiddenError,
+                                  "Committer email '#{user.email}' is not verified.")
+              end
+
+              context 'when email of author is confirmed' do
+                let(:author_email) { create(:email, :confirmed, user: user).email }
+
+                it 'does not raise an error' do
+                  expect { subject.validate! }.not_to raise_error
+                end
+              end
+            end
           end
         end
 
@@ -264,6 +320,29 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
               expect { subject.validate! }
                 .to raise_error(Gitlab::GitAccess::ForbiddenError,
                                 "You cannot push commits for '#{email.email}'. You can only push commits if the committer email is one of your own verified emails.")
+            end
+
+            context 'when a commit is created from web' do
+              let(:protocol) { 'web' }
+              let(:author_email) { email.email }
+
+              before do
+                allow_any_instance_of(Commit).to receive(:author_email).and_return(author_email)
+              end
+
+              it 'raises an error' do
+                expect { subject.validate! }
+                  .to raise_error(Gitlab::GitAccess::ForbiddenError,
+                                  "You cannot push commits for '#{author_email}'. You can only push commits if the committer email is one of your own verified emails.")
+              end
+
+              context 'when email of author is confirmed' do
+                let(:author_email) { create(:email, :confirmed, user: user).email }
+
+                it 'does not raise an error' do
+                  expect { subject.validate! }.not_to raise_error
+                end
+              end
             end
           end
         end
