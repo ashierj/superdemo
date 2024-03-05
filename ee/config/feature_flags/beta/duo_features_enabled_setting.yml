@@ -1,9 +1,0 @@
----
-name: duo_features_enabled_setting
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/441486
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/145333
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/443740
-milestone: '16.10'
-group: group::ai framework
-type: beta
-default_enabled: false
