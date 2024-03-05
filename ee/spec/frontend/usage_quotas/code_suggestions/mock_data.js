@@ -59,6 +59,19 @@ export const mockSMUserWithNoAddOnAssignment = {
   __typename: 'AddOnUser',
 };
 
+export const mockAnotherSMUserWithNoAddOnAssignment = {
+  id: 'gid://gitlab/User/3',
+  username: 'userthree',
+  name: 'User Three',
+  publicEmail: null,
+  avatarUrl: 'path/to/img_userthree',
+  webUrl: 'path/to/userthree',
+  lastActivityOn: '2023-03-19',
+  maxRole: null,
+  addOnAssignments: { nodes: [], __typename: 'UserAddOnAssignmentConnection' },
+  __typename: 'AddOnUser',
+};
+
 export const mockUserWithAddOnAssignment = {
   ...mockSMUserWithAddOnAssignment,
   membershipType: null,
@@ -69,7 +82,16 @@ export const mockUserWithNoAddOnAssignment = {
   membershipType: null,
 };
 
-export const eligibleUsers = [mockUserWithAddOnAssignment, mockUserWithNoAddOnAssignment];
+export const mockAnotherUserWithNoAddOnAssignment = {
+  ...mockAnotherSMUserWithNoAddOnAssignment,
+  membershipType: null,
+};
+
+export const eligibleUsers = [
+  mockUserWithAddOnAssignment,
+  mockUserWithNoAddOnAssignment,
+  mockAnotherUserWithNoAddOnAssignment,
+];
 export const eligibleSMUsers = [mockSMUserWithAddOnAssignment, mockSMUserWithNoAddOnAssignment];
 export const eligibleUsersWithMaxRole = eligibleUsers.map((user) => ({
   ...user,

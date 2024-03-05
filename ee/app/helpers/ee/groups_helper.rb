@@ -94,7 +94,12 @@ module EE
     end
 
     def code_suggestions_usage_app_data(group)
-      data = { full_path: group.full_path, group_id: group.id, add_duo_pro_href: duo_pro_url(group) }
+      data = {
+        full_path: group.full_path,
+        group_id: group.id,
+        add_duo_pro_href: duo_pro_url(group),
+        duo_pro_bulk_user_assignment_available: duo_pro_bulk_user_assignment_available?(group).to_s
+      }
 
       return data unless ::Feature.enabled?(:cs_connect_with_sales, group)
 
