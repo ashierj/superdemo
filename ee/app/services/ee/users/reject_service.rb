@@ -16,7 +16,7 @@ module EE
 
       def log_audit_event(user)
         ::Gitlab::Audit::Auditor.audit({
-          name: 'user_approved',
+          name: 'user_rejected',
           message: _('Instance access request rejected'),
           author: current_user,
           scope: user,
