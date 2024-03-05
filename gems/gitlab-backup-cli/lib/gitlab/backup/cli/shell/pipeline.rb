@@ -8,7 +8,7 @@ module Gitlab
           # Result data structure from running a pipeline
           #
           # @attr [String] stderr
-          # @attr [Array<Process::Status>] status
+          # @attr [Array<Process::Status>] status_list
           # @attr [Float] duration
           Result = Struct.new(:stderr, :status_list, :duration, keyword_init: true)
 

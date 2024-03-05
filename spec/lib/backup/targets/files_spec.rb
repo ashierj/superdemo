@@ -12,18 +12,17 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
   let(:status_1) { instance_double(Process::Status, success?: false, exitstatus: 1) }
   let(:pipeline_status_success) { Gitlab::Backup::Cli::Shell::Pipeline::Result.new(status_list: [status_0, status_0]) }
   let(:pipeline_status_failed) { Gitlab::Backup::Cli::Shell::Pipeline::Result.new(status_list: [status_1, status_1]) }
-  let(:restore_target) { File.realpath(Dir.mktmpdir('files-target-restore')) }
+  let(:tmp_backup_restore_dir) { Dir.mktmpdir('files-target-restore') }
+  let(:restore_target) { File.realpath(tmp_backup_restore_dir) }
   let(:backup_target) do
-    tmpdir = Dir.mktmpdir('files-target-backup')
-
     %w[@pages.tmp lost+found @hashed].each do |folder|
-      path = Pathname(tmpdir).join(folder, 'something', 'else')
+      path = Pathname(tmp_backup_restore_dir).join(folder, 'something', 'else')
 
       FileUtils.mkdir_p(path)
       FileUtils.touch(path.join('artifacts.zip'))
     end
 
-    File.realpath(tmpdir)
+    File.realpath(tmp_backup_restore_dir)
   end
 
   before do
@@ -36,8 +35,7 @@ RSpec.describe Backup::Targets::Files, feature_category: :backup_restore do
   end
 
   after do
-    FileUtils.rm_rf(restore_target)
-    FileUtils.rm_rf(backup_target)
+    FileUtils.rm_rf([restore_target, backup_target], secure: true)
   end
 
   describe '#restore' do

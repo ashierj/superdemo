@@ -12,7 +12,7 @@ RSpec.describe Gitlab::Backup::Cli::Shell::Pipeline do
   it { respond_to :shell_commands }
 
   describe '#initialize' do
-    it 'accept single argument' do
+    it 'accepts a single argument' do
       expect { pipeline.new(printf_command) }.not_to raise_exception
     end
 

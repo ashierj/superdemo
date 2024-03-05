@@ -44,11 +44,7 @@ module Gitlab
 
             # Ensure single target or multiple targets are converted to string before adding to args,
             # to avoid type conversion errors with Pathname
-            if target.respond_to?(:map)
-              tar_args += target.map(&:to_s)
-            else
-              tar_args << target.to_s
-            end
+            tar_args += Array(target).map(&:to_s)
 
             Shell::Command.new(cmd, *tar_args)
           end
