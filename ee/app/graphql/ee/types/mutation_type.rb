@@ -152,6 +152,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::Streaming::HTTP::NamespaceFilters::Create
         mount_mutation ::Mutations::AuditEvents::Streaming::HTTP::NamespaceFilters::Delete
         mount_mutation ::Mutations::Ai::Agents::Create, alpha: { milestone: '16.8' }
+        mount_mutation ::Mutations::Ai::Agents::Update, alpha: { milestone: '16.10' }
         mount_mutation ::Mutations::ComplianceManagement::Standards::RefreshAdherenceChecks
         mount_mutation ::Mutations::Groups::SavedReplies::Create, alpha: { milestone: '16.10' }
         mount_mutation ::Mutations::Groups::SavedReplies::Update, alpha: { milestone: '16.10' }
