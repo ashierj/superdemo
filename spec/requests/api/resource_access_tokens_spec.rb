@@ -575,19 +575,14 @@ RSpec.describe API::ResourceAccessTokens, feature_category: :system_access do
 
       context 'when service raises an error' do
         let(:error_message) { 'boom!' }
-<<<<<<< HEAD
         let(:personal_token_service) { PersonalAccessTokens::RotateService }
         let(:project_token_service) { ProjectAccessTokens::RotateService }
         let(:group_token_service) { GroupAccessTokens::RotateService }
-=======
-        let(:resource_token_service) { ResourceAccessTokens::RotateService }
->>>>>>> source-project/master
 
         before do
           resource.add_maintainer(project_bot)
           resource.add_owner(user)
 
-<<<<<<< HEAD
           if source_type == 'project'
             allow_next_instance_of(project_token_service) do |service|
               allow(service).to receive(:execute).and_return(ServiceResponse.error(message: error_message))
@@ -600,10 +595,6 @@ RSpec.describe API::ResourceAccessTokens, feature_category: :system_access do
             allow_next_instance_of(personal_token_service) do |service|
               allow(service).to receive(:execute).and_return(ServiceResponse.error(message: error_message))
             end
-=======
-          allow_next_instance_of(resource_token_service) do |service|
-            allow(service).to receive(:execute).and_return(ServiceResponse.error(message: error_message))
->>>>>>> source-project/master
           end
         end
 
