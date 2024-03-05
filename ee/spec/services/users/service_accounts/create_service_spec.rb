@@ -52,6 +52,8 @@ RSpec.describe Users::ServiceAccounts::CreateService, feature_category: :user_ma
           expect(result.status).to eq(:error)
           expect(result.message).to eq('Email has already been taken and Username has already been taken')
         end
+
+        it_behaves_like 'service account creation with customized params'
       end
 
       context 'when subscription is of premium tier' do
@@ -80,6 +82,8 @@ RSpec.describe Users::ServiceAccounts::CreateService, feature_category: :user_ma
           it_behaves_like 'service account creation success' do
             let(:username_prefix) { "service_account" }
           end
+
+          it_behaves_like 'service account creation with customized params'
 
           it 'correctly returns active model errors' do
             service = described_class.new(current_user)

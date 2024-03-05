@@ -17,7 +17,7 @@ module API
       resource :service_accounts do
         desc 'Create a service account user' do
           detail 'Create a service account user'
-          success Entities::UserBasic
+          success Entities::UserSafe
           failure [
             { code: 400, message: '400 Bad request' },
             { code: 401, message: '401 Unauthorized' },
@@ -25,12 +25,18 @@ module API
             { code: 404, message: '404 Group not found' }
           ]
         end
+
+        params do
+          optional :name, type: String, desc: 'Name of the user'
+          optional :username, type: String, desc: 'Username of the user'
+        end
+
         post do
           response = ::Namespaces::ServiceAccounts::CreateService
-                       .new(current_user, { namespace_id: params[:id] }).execute
+                       .new(current_user, declared_params.merge(namespace_id: params[:id])).execute
 
           if response.status == :success
-            present response.payload, with: ::API::Entities::UserSafe, current_user: current_user
+            present response.payload, with: Entities::UserSafe, current_user: current_user
           else
             bad_request!(response.message)
           end

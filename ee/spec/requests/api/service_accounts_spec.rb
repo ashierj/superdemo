@@ -8,7 +8,9 @@ RSpec.describe API::ServiceAccounts, :aggregate_failures, feature_category: :use
   let(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
 
   describe "POST /service_accounts" do
-    subject(:perform_request_as_admin) { post api("/service_accounts", admin, admin_mode: true) }
+    subject(:perform_request_as_admin) { post api("/service_accounts", admin, admin_mode: true), params: params }
+
+    let_it_be(:params) { {} }
 
     context 'when feature is licensed' do
       before do
@@ -22,6 +24,37 @@ RSpec.describe API::ServiceAccounts, :aggregate_failures, feature_category: :use
 
           expect(response).to have_gitlab_http_status(:created)
           expect(json_response['username']).to start_with('service_account')
+        end
+
+        context 'when params are provided' do
+          let_it_be(:params) do
+            {
+              name: 'John Doe',
+              username: 'test'
+            }
+          end
+
+          it "creates user with provided details" do
+            perform_request_as_admin
+
+            expect(response).to have_gitlab_http_status(:created)
+            expect(json_response['username']).to eq(params[:username])
+            expect(json_response['name']).to eq(params[:name])
+            expect(json_response.keys).to match_array(%w[avatar_url id locked name state username web_url])
+          end
+
+          context 'when user with the username already exists' do
+            before do
+              post api("/service_accounts", admin, admin_mode: true), params: params
+            end
+
+            it 'returns error' do
+              perform_request_as_admin
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(json_response['message']).to include('Username has already been taken')
+            end
+          end
         end
 
         it 'returns bad request error when service returns bad request' do

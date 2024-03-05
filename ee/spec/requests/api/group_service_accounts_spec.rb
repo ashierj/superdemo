@@ -13,7 +13,9 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
   end
 
   describe "POST /groups/:id/service_accounts" do
-    subject(:perform_request) { post api("/groups/#{group_id}/service_accounts", user) }
+    subject(:perform_request) { post api("/groups/#{group_id}/service_accounts", user), params: params }
+
+    let_it_be(:params) { {} }
 
     context 'when the feature is licensed' do
       let(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
@@ -36,7 +38,38 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
 
             expect(response).to have_gitlab_http_status(:created)
             expect(json_response['username']).to start_with("service_account_group_#{group_id}")
-            expect(json_response.keys).to match_array(%w[id username name])
+            expect(json_response.keys).to match_array(%w[id name username])
+          end
+
+          context 'when params are provided' do
+            let_it_be(:params) do
+              {
+                name: 'John Doe',
+                username: 'test'
+              }
+            end
+
+            it "creates user with provided details" do
+              perform_request
+
+              expect(response).to have_gitlab_http_status(:created)
+              expect(json_response['username']).to eq(params[:username])
+              expect(json_response['name']).to eq(params[:name])
+              expect(json_response.keys).to match_array(%w[id name username])
+            end
+
+            context 'when user with the username already exists' do
+              before do
+                post api("/groups/#{group_id}/service_accounts", user), params: params
+              end
+
+              it 'returns error' do
+                perform_request
+
+                expect(response).to have_gitlab_http_status(:bad_request)
+                expect(json_response['message']).to include('Username has already been taken')
+              end
+            end
           end
 
           it "returns bad request when service returns bad request" do
