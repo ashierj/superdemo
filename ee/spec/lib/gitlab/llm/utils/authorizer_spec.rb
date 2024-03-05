@@ -12,44 +12,31 @@ RSpec.describe Gitlab::Llm::Utils::Authorizer, feature_category: :ai_abstraction
   describe '.container' do
     subject(:response) { described_class.container(container: container, user: user) }
 
-    context 'when the duo_features_enabled_setting feature flag is enabled' do
-      before do
-        allow(user).to receive(:can?).with(:access_duo_features, container).and_return(allowed)
-      end
+    before do
+      allow(user).to receive(:can?).with(:access_duo_features, container).and_return(allowed)
+    end
 
-      context 'when user is allowed' do
-        let(:allowed) { true }
+    context 'when user is allowed' do
+      let(:allowed) { true }
 
-        it "returns an authorized response" do
-          expect(response.allowed?).to be(true)
-        end
-      end
-
-      context 'when user is not allowed' do
-        let(:allowed) { false }
-
-        it "returns an error not found response when the user isn't a member of the container" do
-          expect(response.allowed?).to be(false)
-          expect(response.message).to eq("I am sorry, I am unable to find what you are looking for.")
-        end
-
-        it "returns a not allowed response when the user is a member of the container" do
-          container.add_guest(user)
-
-          expect(response.allowed?).to be(false)
-          expect(response.message).to eq("This feature is only allowed in groups or projects that enable this feature.")
-        end
+      it "returns an authorized response" do
+        expect(response.allowed?).to be(true)
       end
     end
 
-    context 'when the duo_features_enabled_setting feature flag is disabled' do
-      before do
-        stub_feature_flags(duo_features_enabled_setting: false)
+    context 'when user is not allowed' do
+      let(:allowed) { false }
+
+      it "returns an error not found response when the user isn't a member of the container" do
+        expect(response.allowed?).to be(false)
+        expect(response.message).to eq("I am sorry, I am unable to find what you are looking for.")
       end
 
-      it 'returns an authorized response without checking for the access_duo_features ability' do
-        expect(user).not_to receive(:can?).with(:access_duo_features, container)
-        expect(response.allowed?).to be(true)
+      it "returns a not allowed response when the user is a member of the container" do
+        container.add_guest(user)
+
+        expect(response.allowed?).to be(false)
+        expect(response.message).to eq("This feature is only allowed in groups or projects that enable this feature.")
       end
     end
   end
