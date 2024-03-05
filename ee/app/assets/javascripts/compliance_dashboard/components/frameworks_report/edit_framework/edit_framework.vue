@@ -119,6 +119,10 @@ export default {
     disableSubmitBtn() {
       return !this.isBasicInformationValid;
     },
+
+    shouldRenderPolicySection() {
+      return this.securityPoliciesPolicyScopeToggleEnabled && !this.isNewFramework;
+    },
   },
 
   methods: {
@@ -225,7 +229,7 @@ export default {
         />
 
         <policies-section
-          v-if="securityPoliciesPolicyScopeToggleEnabled && !isNewFramework"
+          v-if="shouldRenderPolicySection"
           :full-path="groupPath"
           :graphql-id="graphqlId"
         />
