@@ -147,6 +147,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                                     class="gl-new-dropdown-item-content"
                                     href="/group-name/project-name/-/merge_requests/78/full_report"
                                     tabindex="-1"
+                                    target="_self"
                                   >
                                     <span
                                       class="gl-new-dropdown-item-text-wrapper"
@@ -443,6 +444,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                                     class="gl-new-dropdown-item-content"
                                     href="/group-name/project-name/-/merge_requests/78/full_report"
                                     tabindex="-1"
+                                    target="_self"
                                   >
                                     <span
                                       class="gl-new-dropdown-item-text-wrapper"
