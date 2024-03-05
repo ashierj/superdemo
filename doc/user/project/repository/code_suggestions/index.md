@@ -29,7 +29,7 @@ With GitLab Duo Code Suggestions, you get:
   code based on the context of your comment and the rest of your code.
 
 <i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
-[Watch a video overview](https://youtu.be/xQUlrbIWo8o). Or [view a click-through demo](https://gitlab.navattic.com/code-suggestions).
+[View a click-through demo](https://gitlab.navattic.com/code-suggestions).
 <!-- Video published on 2023-12-09 --> <!-- Demo published on 2024-02-01 -->
 
 ## Use Code Suggestions
@@ -39,7 +39,8 @@ Prerequisites:
 - You must have [one of the supported IDE extensions](supported_extensions.md#supported-editor-extensions).
 - Your organization must have purchased the GitLab Duo Pro add-on and
   [assigned you a seat](../../../../subscriptions/subscription-add-ons.md#assign-gitlab-duo-pro-seats).
-- For self-managed GitLab, you must have GitLab 16.8 or later.
+- For self-managed GitLab, you must have GitLab 16.8 or later, and have
+  [configured proxy settings](../../../../subscriptions/subscription-add-ons.md#configure-network-and-proxy-settings).
 
 To use Code Suggestions:
 
@@ -78,6 +79,10 @@ you might write something like:
 
 AI is non-deterministic, so you may not get the same suggestion every time with the same input.
 To generate quality code, write clear, descriptive, specific tasks.
+
+### Best practice examples
+
+For use cases and best practices, follow the [GitLab Duo examples documentation](../../../gitlab_duo_examples.md).
 
 ## Response time
 

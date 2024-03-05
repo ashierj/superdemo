@@ -9,10 +9,7 @@ module API
     before { authorize_admin_project }
     before do
       not_found! unless ::Gitlab::Saas.feature_available?(:google_cloud_support)
-
-      unless ::Feature.enabled?(:google_cloud_integration_onboarding, user_project.root_namespace, type: :beta)
-        not_found!
-      end
+      not_found! unless ::Feature.enabled?(:google_cloud_support_feature_flag, user_project.root_ancestor)
     end
 
     params do
@@ -89,7 +86,7 @@ module API
           content_type 'text/plain'
 
           wlif_integration = user_project.google_cloud_platform_workload_identity_federation_integration
-          unless user_project.google_cloud_workload_identity_federation_enabled? && wlif_integration&.activated?
+          unless user_project.google_cloud_support_enabled? && wlif_integration&.activated?
             render_api_error!('Workload Identity Federation is not configured', 400)
           end
 
@@ -131,39 +128,6 @@ module API
 
           locals = {
             google_cloud_project_id: declared_params[:google_cloud_project_id]
-          }
-
-          template.result_with_hash(locals)
-        end
-      end
-
-      namespace ':id/scripts/google_cloud/' do
-        desc 'Get shell script to create IAM policy for the Workload Identity Federation principal' do
-          detail 'This feature is experimental.'
-        end
-        params do
-          requires :google_cloud_project_id, types: String
-          requires :google_cloud_workload_identity_pool_id, types: String
-          requires :oidc_claim_name, types: String
-          requires :oidc_claim_value, types: String
-          requires :google_cloud_iam_role, types: String
-        end
-        get '/create_iam_policy' do
-          env['api.format'] = :binary
-          content_type 'text/plain'
-
-          template_path = File.join(
-            'ee', 'lib', 'api', 'templates', 'google_cloud_integration_iam_policy_create.sh.erb')
-          template = ERB.new(File.read(template_path))
-
-          locals = {
-            google_cloud_project_id:
-              declared_params[:google_cloud_project_id],
-            google_cloud_workload_identity_pool_id:
-              declared_params[:google_cloud_workload_identity_pool_id],
-            oidc_claim_name: declared_params[:oidc_claim_name],
-            oidc_claim_value: declared_params[:oidc_claim_value],
-            google_cloud_iam_role: declared_params[:google_cloud_iam_role]
           }
 
           template.result_with_hash(locals)

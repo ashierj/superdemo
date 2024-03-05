@@ -47,7 +47,6 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     push_frontend_feature_flag(:merge_blocked_component, current_user)
     push_frontend_feature_flag(:mention_autocomplete_backend_filtering, project)
     push_frontend_feature_flag(:pinned_file, project)
-    push_frontend_feature_flag(:merge_request_diff_generated_subscription, project)
   end
 
   around_action :allow_gitaly_ref_name_caching, only: [:index, :show, :diffs, :discussions]
@@ -641,6 +640,15 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
       file_hash: params[:pin],
       diff_head: true
     )
+  end
+
+  def append_info_to_payload(payload)
+    super
+
+    return unless action_name == 'diffs' && @merge_request&.merge_request_diff.present?
+
+    payload[:metadata] ||= {}
+    payload[:metadata]['meta.diffs_files_count'] = @merge_request.merge_request_diff.files_count
   end
 end
 

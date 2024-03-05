@@ -221,7 +221,7 @@ export default {
             :src="item.avatarUrl"
             :size="$options.avatarSize"
             :label="item.name"
-            :sub-label="item.username"
+            :sub-label="item.usernameWithHandle"
           >
             <template #meta>
               <gl-badge v-if="userMembershipType(item)" size="sm" variant="muted">

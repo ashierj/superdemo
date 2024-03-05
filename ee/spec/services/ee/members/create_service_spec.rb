@@ -200,6 +200,7 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
       before do
         stub_ee_application_setting(dashboard_limit: 3)
         stub_ee_application_setting(dashboard_limit_enabled: dashboard_limit_enabled)
+        stub_feature_flags(block_seat_overages: false)
       end
 
       subject(:execute_service) { described_class.new(user, params.merge({ source: invited_group })).execute }
@@ -295,6 +296,31 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
 
         expect(member.member_role).to be_nil
         expect(member.access_level).to eq(Member::GUEST)
+      end
+    end
+  end
+
+  context 'with block seat overages enabled', :saas do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group_with_plan, plan: :premium_plan) }
+    let_it_be(:project) { create(:project, group: group) }
+
+    before_all do
+      project.add_maintainer(user)
+    end
+
+    before do
+      stub_saas_features(gitlab_com_subscriptions: true)
+      stub_feature_flags(block_seat_overages: true)
+    end
+
+    context 'with invited emails' do
+      let(:invites) { ['email@example.com'] }
+
+      it 'removes invite emails from the seat check' do
+        group.gitlab_subscription.update!(seats: 1)
+
+        expect { execute_service }.to change { project.members.count }.by(1)
       end
     end
   end

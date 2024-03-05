@@ -252,14 +252,6 @@ export const pushEECproductAddToCartEvent = () => {
   });
 };
 
-export const trackAddToCartUsageTab = () => {
-  const getStartedButton = document.querySelector('.js-buy-additional-minutes');
-  if (!getStartedButton) {
-    return;
-  }
-  getStartedButton.addEventListener('click', pushEECproductAddToCartEvent);
-};
-
 export const trackCombinedGroupProjectForm = () => {
   if (!isSupported()) {
     return;

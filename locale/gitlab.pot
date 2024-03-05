@@ -1939,6 +1939,9 @@ msgstr ""
 msgid "AIAgents|New agent"
 msgstr ""
 
+msgid "AIAgents|The requested agent was not found."
+msgstr ""
+
 msgid "AIAgent|AI Agent: %{agentId}"
 msgstr ""
 
@@ -1954,10 +1957,16 @@ msgstr ""
 msgid "AIAgent|Create agent"
 msgstr ""
 
+msgid "AIAgent|Edit Ai Agent"
+msgstr ""
+
 msgid "AIAgent|Prompt (optional)"
 msgstr ""
 
 msgid "AIAgent|Try out your agent"
+msgstr ""
+
+msgid "AIAgent|Update agent"
 msgstr ""
 
 msgid "AIAgent|Your agent's system prompt will be applied to the chat input."
@@ -3094,6 +3103,9 @@ msgstr ""
 msgid "AddMember|No users specified."
 msgstr ""
 
+msgid "AddMember|Not enough seats for this many users."
+msgstr ""
+
 msgid "AddMember|Too many users specified (limit is %{user_limit})"
 msgstr ""
 
@@ -3625,7 +3637,7 @@ msgstr ""
 msgid "AdminSettings|Limit the amount of namespace and project data to index"
 msgstr ""
 
-msgid "AdminSettings|Maximum downstream pipelines triggered in a project per user"
+msgid "AdminSettings|Maximum downstream pipeline trigger rate"
 msgstr ""
 
 msgid "AdminSettings|Maximum duration of a session for Git operations when 2FA is enabled."
@@ -3787,7 +3799,7 @@ msgstr ""
 msgid "AdminSettings|The latest artifacts for all jobs in the most recent successful pipelines in each project are stored and do not expire."
 msgstr ""
 
-msgid "AdminSettings|The maximum number of downstream pipelines triggered in a project per user."
+msgid "AdminSettings|The maximum number of downstream pipelines that can be triggered per minute (for a given project, user, and commit)."
 msgstr ""
 
 msgid "AdminSettings|The maximum number of included files per pipeline."
@@ -6210,6 +6222,9 @@ msgstr ""
 msgid "Applying"
 msgstr ""
 
+msgid "Applying a template will replace the existing content. Any changes you have made will be lost."
+msgstr ""
+
 msgid "Applying a template will replace the existing issue description. Any changes you have made will be lost."
 msgstr ""
 
@@ -8145,6 +8160,11 @@ msgstr ""
 
 msgid "Billing|%{user} was successfully approved"
 msgstr ""
+
+msgid "Billing|%{value} user selected"
+msgid_plural "Billing|%{value} users selected"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Billing|Add seats"
 msgstr ""
@@ -10139,6 +10159,9 @@ msgstr ""
 msgid "Check your sign-up restrictions"
 msgstr ""
 
+msgid "Checkbox"
+msgstr ""
+
 msgid "Checkin reminder has been enabled."
 msgstr ""
 
@@ -10539,10 +10562,10 @@ msgstr ""
 msgid "CiCatalog|Back to the CI/CD Catalog"
 msgstr ""
 
-msgid "CiCatalog|CI/CD Catalog resource"
+msgid "CiCatalog|CI/CD Catalog project"
 msgstr ""
 
-msgid "CiCatalog|CI/CD catalog resource"
+msgid "CiCatalog|CI/CD Catalog resource"
 msgstr ""
 
 msgid "CiCatalog|Component ID not found, or you do not have permission to access component."
@@ -10611,10 +10634,10 @@ msgstr ""
 msgid "CiCatalog|There was a problem fetching the CI/CD Catalog setting."
 msgstr ""
 
-msgid "CiCatalog|There was an error fetching CI/CD Catalog resources."
+msgid "CiCatalog|There was an error fetching CI/CD Catalog projects."
 msgstr ""
 
-msgid "CiCatalog|There was an error fetching the CI/CD Catalog resource count."
+msgid "CiCatalog|There was an error fetching the CI/CD Catalog project count."
 msgstr ""
 
 msgid "CiCatalog|This project is no longer a CI/CD Catalog resource."
@@ -14446,10 +14469,16 @@ msgstr ""
 msgid "Could not create wiki page"
 msgstr ""
 
+msgid "Could not create wiki template"
+msgstr ""
+
 msgid "Could not delete chat nickname %{chat_name}."
 msgstr ""
 
 msgid "Could not delete wiki page"
+msgstr ""
+
+msgid "Could not delete wiki template"
 msgstr ""
 
 msgid "Could not draw the lines for job relationships"
@@ -14504,6 +14533,9 @@ msgid "Could not save configuration. Please refresh the page, or try again later
 msgstr ""
 
 msgid "Could not update wiki page"
+msgstr ""
+
+msgid "Could not update wiki template"
 msgstr ""
 
 msgid "Could not upload your designs as one or more files uploaded are not supported."
@@ -14863,9 +14895,6 @@ msgstr ""
 msgid "CreateValueStreamForm|Create from no template"
 msgstr ""
 
-msgid "CreateValueStreamForm|Create new Value Stream"
-msgstr ""
-
 msgid "CreateValueStreamForm|Create value stream"
 msgstr ""
 
@@ -14906,6 +14935,9 @@ msgid "CreateValueStreamForm|Minimum length %{minLength} characters"
 msgstr ""
 
 msgid "CreateValueStreamForm|Name is required"
+msgstr ""
+
+msgid "CreateValueStreamForm|New Value Stream"
 msgstr ""
 
 msgid "CreateValueStreamForm|New stage"
@@ -18505,28 +18537,43 @@ msgstr ""
 msgid "Due to inactivity, this project is scheduled to be deleted on %{deletion_date}. %{link_start}Why is this scheduled?%{link_end}"
 msgstr ""
 
-msgid "DuoProTrial|Accelerate coding"
-msgstr ""
-
 msgid "DuoProTrial|Activate my trial"
 msgstr ""
 
-msgid "DuoProTrial|Apply your Duo Pro trial to a new or existing group"
+msgid "DuoProTrial|Apply your GitLab Duo Pro trial to a new or existing group"
 msgstr ""
 
-msgid "DuoProTrial|Billions of lines of code at your fingertips"
+msgid "DuoProTrial|Chat"
 msgstr ""
 
-msgid "DuoProTrial|Create a group to start your Duo Pro trial"
+msgid "DuoProTrial|Code completion and code generation with Code Suggestions"
 msgstr ""
 
-msgid "DuoProTrial|Keep your Source Code protected"
+msgid "DuoProTrial|Code explanation"
+msgstr ""
+
+msgid "DuoProTrial|Code refactorization"
+msgstr ""
+
+msgid "DuoProTrial|Create a group to start your GitLab Duo Pro trial"
+msgstr ""
+
+msgid "DuoProTrial|GitLab Duo Pro is designed to make teams more efficient throughout the software development lifecycle with:"
+msgstr ""
+
+msgid "DuoProTrial|GitLab Duo Pro is only available for purchase for Premium and Ultimate users."
+msgstr ""
+
+msgid "DuoProTrial|Organizational controls"
 msgstr ""
 
 msgid "DuoProTrial|Start your free Duo Pro trial"
 msgstr ""
 
-msgid "DuoProTrial|Support in your language of choice"
+msgid "DuoProTrial|Start your free GitLab Duo Pro trial"
+msgstr ""
+
+msgid "DuoProTrial|Test generation"
 msgstr ""
 
 msgid "DuoProTrial|We just need some additional information to activate your trial."
@@ -18725,6 +18772,9 @@ msgid "Edit single file"
 msgstr ""
 
 msgid "Edit table"
+msgstr ""
+
+msgid "Edit template"
 msgstr ""
 
 msgid "Edit this file only."
@@ -20806,6 +20856,9 @@ msgid "Failed to deploy to"
 msgstr ""
 
 msgid "Failed to enqueue the rebase operation, possibly due to a long-lived transaction. Try again later."
+msgstr ""
+
+msgid "Failed to fetch Namespace: %{fullPath}"
 msgstr ""
 
 msgid "Failed to fetch the iteration for this issue. Please try again."
@@ -23401,7 +23454,7 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Copy image URI"
 msgstr ""
 
-msgid "GoogleArtifactRegistry|Copy image name"
+msgid "GoogleArtifactRegistry|Copy image path"
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Created"
@@ -23458,6 +23511,9 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Virtual size"
 msgstr ""
 
+msgid "GoogleCloudPlatformService|%{link_start}Explore Google Cloud integration with GitLab%{link_end}, for CI/CD and more."
+msgstr ""
+
 msgid "GoogleCloudPlatformService|Example: %{code_open}314053285323%{code_close}"
 msgstr ""
 
@@ -23486,6 +23542,9 @@ msgid "GoogleCloudPlatformService|ID of the Workload Identity Pool."
 msgstr ""
 
 msgid "GoogleCloudPlatformService|Manage permissions for Google Cloud resources with Identity and Access Management (IAM)."
+msgstr ""
+
+msgid "GoogleCloudPlatformService|Manage permissions for Google Cloud resources with Identity and Access Management (IAM). Simplify and secure your usage, without the need to manage accounts or keys."
 msgstr ""
 
 msgid "GoogleCloudPlatformService|Manage your artifacts in Google Artifact Registry."
@@ -33031,6 +33090,9 @@ msgstr ""
 msgid "No matching results for \"%{query}\""
 msgstr ""
 
+msgid "No matching templates"
+msgstr ""
+
 msgid "No matching work item found."
 msgstr ""
 
@@ -34025,7 +34087,7 @@ msgstr ""
 msgid "ObservabilityMetrics|Name"
 msgstr ""
 
-msgid "ObservabilityMetrics|No data found for the selected metric."
+msgid "ObservabilityMetrics|No data found for the selected time range %{time}"
 msgstr ""
 
 msgid "ObservabilityMetrics|Search"
@@ -34761,10 +34823,16 @@ msgstr ""
 msgid "Organization|An error occurred changing your organization URL. Please try again."
 msgstr ""
 
+msgid "Organization|An error occurred creating a group in this organization. Please try again."
+msgstr ""
+
 msgid "Organization|An error occurred creating an organization. Please try again."
 msgstr ""
 
 msgid "Organization|An error occurred deleting the project. Please refresh the page to try again."
+msgstr ""
+
+msgid "Organization|An error occurred loading organizations. Please refresh the page to try again."
 msgstr ""
 
 msgid "Organization|An error occurred loading the groups. Please refresh the page to try again."
@@ -42650,7 +42718,7 @@ msgstr ""
 msgid "Runners|Administrator"
 msgstr ""
 
-msgid "Runners|After GitLab Runner is installed and registered, an autoscaling fleet of runners is available to execute your CI/CD jobs in Google Cloud"
+msgid "Runners|After GitLab Runner is installed and registered, an autoscaling fleet of runners is available to execute your CI/CD jobs in Google Cloud."
 msgstr ""
 
 msgid "Runners|After you complete the steps below, an autoscaling fleet of runners is available to execute your CI/CD jobs in Google Cloud. Based on demand, a runner manager automatically creates temporary runners."
@@ -42717,6 +42785,9 @@ msgid "Runners|Available to all projects"
 msgstr ""
 
 msgid "Runners|Available to all projects and subgroups in the group"
+msgstr ""
+
+msgid "Runners|Before you begin"
 msgstr ""
 
 msgid "Runners|Can run untagged jobs"
@@ -42788,6 +42859,9 @@ msgstr ""
 msgid "Runners|Created by %{user} %{timeAgo}"
 msgstr ""
 
+msgid "Runners|Creator"
+msgstr ""
+
 msgid "Runners|Delete"
 msgstr ""
 
@@ -42835,6 +42909,12 @@ msgstr ""
 msgid "Runners|Enable stale runner cleanup?"
 msgstr ""
 
+msgid "Runners|Ensure that %{linkStart}billing is enabled for your Google Cloud project%{linkEnd}."
+msgstr ""
+
+msgid "Runners|Ensure you have the %{linkStart}Owner%{linkEnd} IAM role on your Google Cloud project."
+msgstr ""
+
 msgid "Runners|Enter the job timeout in seconds. Must be a minimum of 600 seconds."
 msgstr ""
 
@@ -42868,7 +42948,7 @@ msgstr ""
 msgid "Runners|Fleet dashboard"
 msgstr ""
 
-msgid "Runners|For most CI/CD jobs, use a %{linkStart}N2D standard machine type.%{linkEnd}"
+msgid "Runners|For most CI/CD jobs, use a %{linkStart}N2D standard machine type%{linkEnd}."
 msgstr ""
 
 msgid "Runners|Get started with runners"
@@ -42886,7 +42966,7 @@ msgstr ""
 msgid "Runners|Google Cloud project ID"
 msgstr ""
 
-msgid "Runners|Google Cloud provisioning is disabled for this project"
+msgid "Runners|Google Cloud provisioning is disabled for this top-level namespace"
 msgstr ""
 
 msgid "Runners|Group"
@@ -43157,7 +43237,7 @@ msgstr ""
 msgid "Runners|Revision"
 msgstr ""
 
-msgid "Runners|Run the following on your command line. You might be prompted to sign in to Google"
+msgid "Runners|Run the following on your command line. You might be prompted to sign in to Google."
 msgstr ""
 
 msgid "Runners|Runner"
@@ -43316,7 +43396,7 @@ msgstr ""
 msgid "Runners|Step 1"
 msgstr ""
 
-msgid "Runners|Step 1: Configure Google Cloud project"
+msgid "Runners|Step 1: Configure your Google Cloud project"
 msgstr ""
 
 msgid "Runners|Step 1: Specify environment"
@@ -43393,7 +43473,7 @@ msgstr ""
 msgid "Runners|These runners are assigned to this project."
 msgstr ""
 
-msgid "Runners|These setup instructions use your specifications and follow the best practices for performance and security"
+msgid "Runners|These setup instructions use your specifications and follow the best practices for performance and security."
 msgstr ""
 
 msgid "Runners|This group currently has 1 stale runner."
@@ -43431,6 +43511,9 @@ msgstr ""
 msgid "Runners|This step creates the required infrastructure in Google Cloud, installs GitLab Runner, and registers it to this GitLab project. "
 msgstr ""
 
+msgid "Runners|To follow the setup instructions, %{gcloudLinkStart}install the Google Cloud CLI%{gcloudLinkEnd} and %{terraformLinkStart}install Terraform%{terraformLinkEnd}."
+msgstr ""
+
 msgid "Runners|To improve security, use a dedicated project for CI/CD, separate from resources and identity management projects. %{linkStart}Where’s my project ID in Google Cloud?%{linkEnd}"
 msgstr ""
 
@@ -43449,10 +43532,13 @@ msgstr ""
 msgid "Runners|To view the runner, go to %{runnerListName}."
 msgstr ""
 
-msgid "Runners|To view the setup instructions, complete the previous form"
+msgid "Runners|To view the setup instructions, complete the previous form."
 msgstr ""
 
 msgid "Runners|To view the setup instructions, complete the previous form. The instructions help you set up an autoscaling fleet of runners to execute your CI/CD jobs in Google Cloud."
+msgstr ""
+
+msgid "Runners|To view the setup instructions, make sure all form fields are completed and correct."
 msgstr ""
 
 msgid "Runners|Token expiry"
@@ -43488,7 +43574,7 @@ msgstr ""
 msgid "Runners|Use Group runners when you want all projects in a group to have access to a set of runners."
 msgstr ""
 
-msgid "Runners|Use a text editor to create a main.tf file with the following Terraform configuration"
+msgid "Runners|Use a text editor to create a %{codeStart}main.tf%{codeEnd} file with the following Terraform configuration."
 msgstr ""
 
 msgid "Runners|Use the dashboard to view performance statistics of your runner fleet."
@@ -44332,6 +44418,9 @@ msgid "Search results"
 msgstr ""
 
 msgid "Search settings"
+msgstr ""
+
+msgid "Search templates"
 msgstr ""
 
 msgid "Search users"
@@ -45278,10 +45367,10 @@ msgstr ""
 msgid "SecurityOrchestration|Summary"
 msgstr ""
 
-msgid "SecurityOrchestration|The %{oldNameStart}Scan result policy%{oldNameEnd} is now called the %{newNameStart}Merge request approval policy%{newNameEnd} to better align with its purpose. For more details, see the release notes."
+msgid "SecurityOrchestration|The %{oldNameStart}Scan result policy%{oldNameEnd} is now called the %{newNameStart}Merge request approval policy%{newNameEnd} to better align with its purpose."
 msgstr ""
 
-msgid "SecurityOrchestration|The Scan result policy is now called the Merge request approval policy to better align with its purpose. For more details, see the release notes."
+msgid "SecurityOrchestration|The Scan result policy is now called the Merge request approval policy to better align with its purpose."
 msgstr ""
 
 msgid "SecurityOrchestration|The following branches do not exist on this development project: %{branches}. Please review all protected branches to ensure the values are accurate before updating this policy."
@@ -45393,6 +45482,15 @@ msgid "SecurityOrchestration|You can't unprotect this branch because its protect
 msgstr ""
 
 msgid "SecurityOrchestration|You don't have any security policies yet"
+msgstr ""
+
+msgid "SecurityOrchestration|You must select one or more compliance frameworks to which this policy should apply."
+msgstr ""
+
+msgid "SecurityOrchestration|You must select one or more projects to be excluded from this policy."
+msgstr ""
+
+msgid "SecurityOrchestration|You must select one or more projects to which this policy should apply."
 msgstr ""
 
 msgid "SecurityOrchestration|a license scanner found license violations"
@@ -47350,6 +47448,9 @@ msgid "SlackIntegration|Generated for %{host} by GitLab %{version}."
 msgstr ""
 
 msgid "SlackIntegration|GitLab for Slack"
+msgstr ""
+
+msgid "SlackIntegration|GitLab for Slack app configured on the group or instance level and can only be modified there."
 msgstr ""
 
 msgid "SlackIntegration|GitLab for Slack was successfully installed."
@@ -49591,6 +49692,9 @@ msgid "Template"
 msgstr ""
 
 msgid "Template to append to all Service Desk issues"
+msgstr ""
+
+msgid "Template: %{title}"
 msgstr ""
 
 msgid "TemplateRepository|Create common files more quickly, and standardize their format."
@@ -52710,6 +52814,9 @@ msgstr ""
 msgid "Tracing|Traces"
 msgstr ""
 
+msgid "Tracing|You must select a Service and Operation first."
+msgstr ""
+
 msgid "Tracing|longer than"
 msgstr ""
 
@@ -52970,13 +53077,25 @@ msgstr ""
 msgid "Trials|Your trial ends on %{boldStart}%{trialEndDate}%{boldEnd}. We hope you’re enjoying the features of GitLab %{planName}. To keep those features after your trial ends, you’ll need to buy a subscription. (You can also choose GitLab Premium if it meets your needs.)"
 msgstr ""
 
+msgid "Trial| By clicking Continue or registering through a third party, you accept the %{gitlabSubscriptionAgreement} and acknowledge the %{privacyStatement} and %{cookiePolicy}."
+msgstr ""
+
 msgid "Trial|Allowed characters: +, 0-9, -, and spaces."
 msgstr ""
 
 msgid "Trial|Continue"
 msgstr ""
 
+msgid "Trial|Cookie Policy"
+msgstr ""
+
+msgid "Trial|GitLab Subscription Agreement"
+msgstr ""
+
 msgid "Trial|Please select"
+msgstr ""
+
+msgid "Trial|Privacy Statement"
 msgstr ""
 
 msgid "Trial|State/Province"
@@ -56472,10 +56591,19 @@ msgstr ""
 msgid "WikiPageConfirmDelete|Are you sure you want to delete this page?"
 msgstr ""
 
+msgid "WikiPageConfirmDelete|Are you sure you want to delete this template?"
+msgstr ""
+
 msgid "WikiPageConfirmDelete|Delete page"
 msgstr ""
 
-msgid "WikiPageConfirmDelete|Delete page %{pageTitle}?"
+msgid "WikiPageConfirmDelete|Delete page \"%{pageTitle}\"?"
+msgstr ""
+
+msgid "WikiPageConfirmDelete|Delete template"
+msgstr ""
+
+msgid "WikiPageConfirmDelete|Delete template \"%{pageTitle}\"?"
 msgstr ""
 
 msgid "WikiPageConflictMessage|Someone edited the page the same time you did. Please check out %{wikiLinkStart}the page%{wikiLinkEnd} and make sure your changes will not unintentionally remove theirs."
@@ -56496,6 +56624,12 @@ msgstr ""
 msgid "WikiPage|Create page"
 msgstr ""
 
+msgid "WikiPage|Create template"
+msgstr ""
+
+msgid "WikiPage|Create template %{pageTitle}"
+msgstr ""
+
 msgid "WikiPage|Format"
 msgstr ""
 
@@ -56506,6 +56640,9 @@ msgid "WikiPage|Page title"
 msgstr ""
 
 msgid "WikiPage|Save changes"
+msgstr ""
+
+msgid "WikiPage|Template title"
 msgstr ""
 
 msgid "WikiPage|Tip: You can move this page by adding the path to the beginning of the title."
@@ -56523,16 +56660,31 @@ msgstr ""
 msgid "WikiPage|Update %{pageTitle}"
 msgstr ""
 
+msgid "WikiPage|Update template %{pageTitle}"
+msgstr ""
+
 msgid "WikiPage|Write your content or drag files here…"
 msgstr ""
 
 msgid "Wiki|Edit Page"
 msgstr ""
 
+msgid "Wiki|Edit Template"
+msgstr ""
+
 msgid "Wiki|New Page"
 msgstr ""
 
+msgid "Wiki|New Template"
+msgstr ""
+
 msgid "Wiki|New page"
+msgstr ""
+
+msgid "Wiki|New template"
+msgstr ""
+
+msgid "Wiki|No templates found"
 msgstr ""
 
 msgid "Wiki|Page history"
@@ -56544,6 +56696,15 @@ msgstr ""
 msgid "Wiki|Pages"
 msgstr ""
 
+msgid "Wiki|Template history"
+msgstr ""
+
+msgid "Wiki|Template version"
+msgstr ""
+
+msgid "Wiki|Templates"
+msgstr ""
+
 msgid "Wiki|The sidebar failed to load. You can reload the page to try again."
 msgstr ""
 
@@ -56551,6 +56712,9 @@ msgid "Wiki|View All Pages"
 msgstr ""
 
 msgid "Wiki|Wiki Pages"
+msgstr ""
+
+msgid "Wiki|Wiki Templates"
 msgstr ""
 
 msgid "Will be created"
@@ -58663,9 +58827,6 @@ msgstr ""
 msgid "cannot be changed to %{new_type} with these child item types."
 msgstr ""
 
-msgid "cannot be destroyed because this is a synced work item for a legacy epic"
-msgstr ""
-
 msgid "cannot be enabled"
 msgstr ""
 
@@ -60606,6 +60767,9 @@ msgid "wiki page"
 msgstr ""
 
 msgid "with %{additions} additions, %{deletions} deletions."
+msgstr ""
+
+msgid "with Admin Mode"
 msgstr ""
 
 msgid "with expiry changing from %{old_expiry} to %{new_expiry}"

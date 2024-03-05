@@ -4,19 +4,25 @@ require 'spec_helper'
 
 RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
   include GraphqlHelpers
+  using RSpec::Parameterized::TableSyntax
 
-  let_it_be_with_refind(:project) { create(:project) }
-  let_it_be(:maintainer) { create(:user).tap { |user| project.add_maintainer(user) } }
-  let_it_be_with_refind(:wlif_integration) do
+  let_it_be_with_refind(:group) { create(:group) }
+  let_it_be(:group_owner) { create(:user).tap { |user| group.add_owner(user) } }
+  let_it_be_with_refind(:group_wlif_integration) do
+    create(:google_cloud_platform_workload_identity_federation_integration, project: nil, group: group)
+  end
+
+  let_it_be_with_refind(:project) { create(:project, group: group) }
+  let_it_be(:project_maintainer) { create(:user).tap { |user| group.add_maintainer(user) } }
+  let_it_be_with_refind(:project_wlif_integration) do
     create(:google_cloud_platform_workload_identity_federation_integration, project: project)
   end
 
-  let(:current_user) { maintainer }
   let(:google_cloud_project_id) { 'project-id-override' }
   let(:inner_fragment) { query_graphql_fragment('CiRunnerGoogleCloudProvisioning') }
   let(:query) do
     graphql_query_for(
-      :project, { fullPath: project.full_path },
+      parent_field, { fullPath: container.full_path },
       query_graphql_field(
         :runner_cloud_provisioning, { provider: :GOOGLE_CLOUD, cloud_project_id: google_cloud_project_id },
         "... on CiRunnerGoogleCloudProvisioning {
@@ -28,7 +34,7 @@ RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
 
   let(:options_response) do
     request
-    graphql_data_at('project', 'runnerCloudProvisioning')
+    graphql_data_at(GraphqlHelpers.fieldnamerize(parent_field), 'runnerCloudProvisioning')
   end
 
   subject(:request) do
@@ -39,353 +45,156 @@ RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
     stub_saas_features(google_cloud_support: true)
   end
 
-  context 'when cloud_project_id is invalid' do
-    let(:google_cloud_project_id) { 'project_id_override' }
-
-    it 'returns an error' do
-      request
-
-      expect_graphql_errors_to_include('"project_id_override" is not a valid project name')
-    end
+  where(:parent_field, :container, :current_user) do
+    :group   | ref(:group)   | ref(:group_owner)
+    :project | ref(:project) | ref(:project_maintainer)
   end
 
-  describe 'collections' do
-    let(:client_klass) { GoogleCloudPlatform::Compute::Client }
-    let(:expected_compute_client_args) do
-      {
-        wlif_integration: wlif_integration,
-        user: current_user,
-        params: { google_cloud_project_id: google_cloud_project_id }
-      }
-    end
+  with_them do
+    context 'when cloud_project_id is invalid' do
+      let(:google_cloud_project_id) { 'project_id_override' }
 
-    let(:current_page_token) { nil }
-    let(:expected_next_page_token) { nil }
-    let(:base_item_query_args) { {} }
-    let(:item_query_args) { {} }
-    let(:node_name) { :regions }
-    let(:item_type) { 'CiRunnerCloudProvisioningRegion' }
-    let(:inner_fragment) do
-      query_nodes(
-        node_name,
-        args: base_item_query_args.merge(item_query_args),
-        of: item_type,
-        include_pagination_info: true)
-    end
-
-    shared_examples 'a query handling client errors' do
-      shared_examples 'returns error when client raises' do |error_klass, message|
-        it "returns error when client raises #{error_klass}" do
-          expect_next_instance_of(GoogleCloudPlatform::Compute::Client, expected_compute_client_args) do |client|
-            expect(client).to receive(client_method).and_raise(error_klass, message)
-          end
-
-          post_graphql(query, current_user: current_user)
-          expect_graphql_errors_to_include(message)
-        end
-      end
-
-      it_behaves_like 'returns error when client raises', GoogleCloudPlatform::ApiError, 'api error'
-      it_behaves_like 'returns error when client raises', GoogleCloudPlatform::AuthenticationError,
-        'Unable to authenticate against Google Cloud'
-    end
-
-    shared_examples 'a query calling compute client' do
-      let(:page_size) { GoogleCloudPlatform::Compute::BaseService::MAX_RESULTS_LIMIT }
-      let(:actual_returned_nodes) { returned_nodes }
-      let(:expected_client_args) { {} }
-      let(:expected_pagination_client_args) do
-        { max_results: page_size, page_token: current_page_token, order_by: nil }
-      end
-
-      before do
-        allow_next_instance_of(client_klass, expected_compute_client_args) do |client|
-          allow(client).to receive(client_method)
-            .with(a_hash_including(**expected_pagination_client_args.merge(expected_client_args))) do
-            compute_type = client_method.to_s.camelize.singularize
-            google_cloud_object_list(compute_type, actual_returned_nodes, next_page_token: expected_next_page_token)
-          end
-        end
-
+      it 'returns an error' do
         request
-      end
 
-      shared_examples 'a client returning paginated response' do
-        it 'returns paginated response with items from client' do
-          graphql_field_name = GraphqlHelpers.fieldnamerize(client_method)
-
-          expect(options_response[graphql_field_name]).to match({
-            'nodes' => expected_nodes.map { |node_props| a_graphql_entity_for(nil, **node_props) },
-            'pageInfo' => a_hash_including(
-              'hasPreviousPage' => !!current_page_token,
-              'hasNextPage' => !!expected_next_page_token,
-              'endCursor' => expected_next_page_token
-            )
-          })
-        end
-      end
-
-      it_behaves_like 'a working graphql query'
-      it_behaves_like 'a client returning paginated response'
-
-      context 'with arguments' do
-        let(:current_page_token) { 'prev_page_token' }
-        let(:page_size) { 10 }
-        let(:base_item_query_args) do
-          { after: current_page_token, first: page_size }
-        end
-
-        it_behaves_like 'a client returning paginated response'
-
-        context 'with pagination arguments requesting next page' do
-          let(:current_page_token) { 'next_page_token' }
-          let(:expected_next_page_token) { 'next_page_token2' }
-          let(:page_size) { 1 }
-          let(:expected_nodes) { returned_nodes[1..] }
-          let(:actual_returned_nodes) { returned_nodes[1..] }
-          let(:base_item_query_args) { { after: current_page_token, first: page_size } }
-
-          it_behaves_like 'a client returning paginated response'
-        end
+        expect_graphql_errors_to_include('"project_id_override" is not a valid project name')
       end
     end
 
-    describe 'regions' do
-      let(:item_type) { 'CiRunnerCloudProvisioningRegion' }
-      let(:client_method) { :regions }
-      let(:node_name) { :regions }
-      let(:regions) do
-        [
-          { name: 'us-east1', description: 'us-east1' },
-          { name: 'us-west1', description: 'us-west1' }
-        ]
+    describe 'projectSetupShellScript' do
+      let(:inner_fragment) { 'projectSetupShellScript' }
+      let(:options_response) do
+        request
+
+        graphql_data_at(
+          GraphqlHelpers.fieldnamerize(parent_field), 'runnerCloudProvisioning', 'projectSetupShellScript')
       end
 
-      let(:returned_nodes) { regions }
-      let(:expected_nodes) { returned_nodes }
-      let(:expected_client_args) { { filter: nil } }
+      it 'returns a script' do
+        request
+        expect_graphql_errors_to_be_empty
 
-      it_behaves_like 'a query handling client errors'
-      it_behaves_like 'a query calling compute client'
-    end
-
-    describe 'zones' do
-      let(:item_type) { 'CiRunnerCloudProvisioningZone' }
-      let(:client_method) { :zones }
-      let(:node_name) { :zones }
-      let(:zones) do
-        [
-          { name: 'us-east1-a', description: 'us-east1-a' },
-          { name: 'us-west1-a', description: 'us-west1-a' }
-        ]
-      end
-
-      let(:returned_nodes) { zones }
-      let(:expected_nodes) { returned_nodes }
-      let(:expected_client_args) { { filter: nil } }
-
-      it_behaves_like 'a query handling client errors'
-      it_behaves_like 'a query calling compute client'
-
-      context 'with specified region' do
-        let(:region) { 'us-east1' }
-        let(:item_query_args) { { region: region } }
-        let(:returned_nodes) { zones.select { |z| z[:name].starts_with?(region) } }
-        let(:expected_next_page_token) { 'next_page_token' }
-
-        it_behaves_like 'a query calling compute client' do
-          let(:expected_client_args) { { filter: "name=#{region}-*" } }
-        end
+        expect(options_response).to be_a(String)
+        expect(options_response).to include google_cloud_project_id
       end
     end
 
-    describe 'machineTypes' do
-      let(:item_type) { 'CiRunnerCloudProvisioningMachineType' }
-      let(:client_method) { :machine_types }
-      let(:node_name) { :machine_types }
-      let(:machine_types) do
-        [
-          { zone: zone, name: 'e2-highcpu-8', description: 'Efficient Instance, 8 vCPUs, 8 GB RAM' },
-          { zone: zone, name: 'e2-highcpu-16', description: 'Efficient Instance, 16 vCPUs, 16 GB RAM' }
-        ]
-      end
+    describe 'provisioningSteps' do
+      let_it_be(:runner) { create(:ci_runner, :project, projects: [project]) }
 
-      let(:zone) { 'us-east1-a' }
-      let(:item_query_args) { { zone: zone } }
-      let(:returned_nodes) { machine_types }
-      let(:expected_nodes) { returned_nodes }
-      let(:expected_client_args) { { filter: "name=#{zone}-*" } }
-
-      it_behaves_like 'a query handling client errors'
-      it_behaves_like 'a query calling compute client'
-    end
-
-    context 'when integration is not present' do
-      before do
-        wlif_integration.destroy!
-      end
-
-      it 'returns error' do
-        post_graphql(query, current_user: current_user)
-        expect_graphql_errors_to_include(/integration not set/)
-      end
-    end
-
-    context 'when integration is inactive' do
-      before do
-        wlif_integration.update_column(:active, false)
-      end
-
-      it 'returns error' do
-        post_graphql(query, current_user: current_user)
-        expect_graphql_errors_to_include(/integration not active/)
-      end
-    end
-
-    private
-
-    def google_cloud_object_list(compute_type, returned_nodes, next_page_token:)
-      item_type = "Google::Cloud::Compute::V1::#{compute_type}"
-
-      # rubocop:disable RSpec/VerifiedDoubles -- these generated objects don't actually expose the methods
-      double("#{item_type}List",
-        items: returned_nodes.map { |props| double(item_type, **props) },
-        next_page_token: next_page_token
-      )
-      # rubocop:enable RSpec/VerifiedDoubles
-    end
-  end
-
-  describe 'projectSetupShellScript' do
-    let(:inner_fragment) { 'projectSetupShellScript' }
-    let(:options_response) do
-      request
-      graphql_data_at('project', 'runnerCloudProvisioning', 'projectSetupShellScript')
-    end
-
-    it 'returns a script' do
-      request
-      expect_graphql_errors_to_be_empty
-
-      expect(options_response).to be_a(String)
-      expect(options_response).to include google_cloud_project_id
-    end
-  end
-
-  describe 'provisioningSteps' do
-    let_it_be(:runner) { create(:ci_runner, :project, projects: [project]) }
-
-    let(:region) { 'us-central1' }
-    let(:zone) { 'us-central1-a' }
-    let(:machine_type) { 'n2d-standard-2' }
-    let(:runner_token) { runner.token }
-    let(:args) do
-      {
-        region: region,
-        zone: zone,
-        ephemeral_machine_type: machine_type,
-        runner_token: runner_token
-      }
-    end
-
-    let(:inner_fragment) do
-      query_graphql_field(:provisioning_steps, args,
-        all_graphql_fields_for('CiRunnerCloudProvisioningStep'), '[CiRunnerCloudProvisioningStep!]')
-    end
-
-    let(:options_response) do
-      request
-      graphql_data_at('project', 'runnerCloudProvisioning', 'provisioningSteps')
-    end
-
-    it 'returns provisioning steps', :aggregate_failures do
-      request
-      expect_graphql_errors_to_be_empty
-
-      expect(options_response).to match([
+      let(:region) { 'us-central1' }
+      let(:zone) { 'us-central1-a' }
+      let(:machine_type) { 'n2d-standard-2' }
+      let(:runner_token) { runner.token }
+      let(:args) do
         {
-          'instructions' => /google_project += "#{google_cloud_project_id}"/,
-          'languageIdentifier' => 'terraform',
-          'title' => 'Save the Terraform script to a file'
-        },
-        {
-          'instructions' => /gitlab_runner="#{runner_token}"/,
-          'languageIdentifier' => 'shell',
-          'title' => 'Apply the Terraform script'
+          region: region,
+          zone: zone,
+          ephemeral_machine_type: machine_type,
+          runner_token: runner_token
         }
-      ])
-    end
+      end
 
-    context 'with nil runner token' do
-      let(:runner_token) { nil }
+      let(:inner_fragment) do
+        query_graphql_field(:provisioning_steps, args,
+          all_graphql_fields_for('CiRunnerCloudProvisioningStep'), '[CiRunnerCloudProvisioningStep!]')
+      end
 
-      it 'is successful and generates a unique deployment id' do
+      let(:options_response) do
+        request
+        graphql_data_at(GraphqlHelpers.fieldnamerize(parent_field), 'runnerCloudProvisioning', 'provisioningSteps')
+      end
+
+      it 'returns provisioning steps', :aggregate_failures do
         request
         expect_graphql_errors_to_be_empty
 
         expect(options_response).to match([
-          a_hash_including('instructions' => /name = "grit-[A-Za-z0-9_\-]{8}"/),
-          an_instance_of(Hash)
+          {
+            'instructions' => /google_project += "#{google_cloud_project_id}"/,
+            'languageIdentifier' => 'terraform',
+            'title' => 'Save the Terraform script to a file'
+          },
+          {
+            'instructions' => /runner_token="#{runner_token}"/,
+            'languageIdentifier' => 'shell',
+            'title' => 'Apply the Terraform script'
+          }
         ])
       end
 
-      context 'when user does not have permissions to create runner' do
+      context 'with nil runner token' do
+        let(:runner_token) { nil }
+
+        it 'is successful and generates a unique deployment id' do
+          request
+          expect_graphql_errors_to_be_empty
+
+          expect(options_response).to match([
+            a_hash_including('instructions' => /name = "grit-[A-Za-z0-9_\-]{8}"/),
+            an_instance_of(Hash)
+          ])
+        end
+
+        context 'when user does not have permissions to create runner' do
+          before do
+            allow(Ability).to receive(:allowed?).and_call_original
+            allow(Ability).to receive(:allowed?).with(current_user, :create_runner, anything).and_return(false)
+          end
+
+          it 'returns an error' do
+            request
+
+            expect_graphql_errors_to_include(s_('Runners|The user is not allowed to create a runner'))
+          end
+        end
+      end
+
+      context 'with invalid runner token' do
+        let(:runner_token) { 'invalid-token' }
+
+        it 'returns an error' do
+          request
+
+          expect_graphql_errors_to_include(s_('Runners|The runner authentication token is invalid'))
+        end
+      end
+
+      context 'when user cannot provision runners' do
         before do
           allow(Ability).to receive(:allowed?).and_call_original
-          allow(Ability).to receive(:allowed?).with(current_user, :create_runner, anything).and_return(false)
+          allow(Ability).to receive(:allowed?).with(current_user, :provision_cloud_runner, container)
+            .and_return(false)
         end
 
         it 'returns an error' do
           request
 
-          expect_graphql_errors_to_include(s_('Runners|The user is not allowed to create a runner'))
+          expect_graphql_errors_to_include("You don't have permissions to provision cloud runners")
         end
       end
     end
 
-    context 'with invalid runner token' do
-      let(:runner_token) { 'invalid-token' }
+    context 'when user is not a maintainer or higher' do
+      let(:current_user) { create(:user).tap { |user| container.add_developer(user) } }
 
-      it 'returns an error' do
-        request
-
-        expect_graphql_errors_to_include(s_('Runners|The runner authentication token is invalid'))
-      end
+      it { is_expected.to be nil }
     end
 
-    context 'when user cannot provision runners' do
+    context 'when SaaS feature is not enabled' do
       before do
-        allow(Ability).to receive(:allowed?).and_call_original
-        allow(Ability).to receive(:allowed?).with(current_user, :provision_cloud_runner, project).and_return(false)
+        stub_saas_features(google_cloud_support: false)
       end
 
-      it 'returns an error' do
-        request
+      it { is_expected.to be nil }
+    end
 
-        expect_graphql_errors_to_include("You don't have permissions to provision cloud runners")
+    context 'when google_cloud_support_feature_flag FF is disabled' do
+      before do
+        stub_feature_flags(google_cloud_support_feature_flag: false)
       end
+
+      it { is_expected.to be nil }
     end
-  end
-
-  context 'when user is not a maintainer or higher' do
-    let(:current_user) { create(:user).tap { |user| project.add_developer(user) } }
-
-    it { is_expected.to be nil }
-  end
-
-  context 'when SaaS feature is not enabled' do
-    before do
-      stub_saas_features(google_cloud_support: false)
-    end
-
-    it { is_expected.to be nil }
-  end
-
-  context 'when google_cloud_runner_provisioning FF is disabled' do
-    before do
-      stub_feature_flags(google_cloud_runner_provisioning: false)
-    end
-
-    it { is_expected.to be nil }
   end
 end

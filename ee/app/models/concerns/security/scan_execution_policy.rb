@@ -58,8 +58,15 @@ module Security
       scope_service = Security::SecurityOrchestrationPolicies::PolicyScopeService.new(project: project)
 
       active_scan_execution_policies
-        .select { |policy| scope_service.policy_applicable?(policy) && applicable_for_ref?(policy, ref, branch_service) }
+        .select { |policy| scope_service.policy_applicable?(policy) }
+        .select { |policy| applicable_for_ref?(block_given? ? yield(policy[:rules]) : policy[:rules], ref, branch_service) }
         .flat_map { |policy| policy[:actions] }
+    end
+
+    def active_policies_pipeline_scan_actions_for_project(ref, project)
+      active_policies_scan_actions_for_project(ref, project) do |policy_rules|
+        policy_rules.select { |rule| rule[:type] == RULE_TYPES[:pipeline] }
+      end
     end
 
     private
@@ -81,16 +88,11 @@ module Security
       end
     end
 
-    def applicable_for_ref?(policy, ref, service)
+    def applicable_for_ref?(policy_rules, ref, service)
       return false unless Gitlab::Git.branch_ref?(ref)
 
       ref_name = Gitlab::Git.ref_name(ref)
-      applicable_for_ref_by_branches_and_branch_type?(policy, ref_name, service)
-    end
-
-    def applicable_for_ref_by_branches_and_branch_type?(policy, ref_name, service)
-      pipeline_rules = policy[:rules].select { |rule| rule[:type] == RULE_TYPES[:pipeline] }
-      applicable_branches = service.scan_execution_branches(pipeline_rules)
+      applicable_branches = service.scan_execution_branches(policy_rules)
 
       ref_name.in?(applicable_branches)
     end

@@ -1,11 +1,15 @@
 <script>
+import { GlLoadingIcon } from '@gitlab/ui';
 import { DORA_PERFORMERS_SCORE_PROJECT_ERROR } from 'ee/analytics/dashboards/constants';
 import DoraPerformersScoreChart from 'ee/analytics/dashboards/components/dora_performers_score_chart.vue';
+import GroupOrProjectProvider from 'ee/analytics/dashboards/components/group_or_project_provider.vue';
 
 export default {
   name: 'DoraPerformersScoreVisualization',
   components: {
     DoraPerformersScoreChart,
+    GlLoadingIcon,
+    GroupOrProjectProvider,
   },
   props: {
     data: {
@@ -20,24 +24,33 @@ export default {
     },
   },
   computed: {
-    isProject() {
-      return this.data.namespace.isProject;
-    },
-    formattedData() {
-      return { namespace: this.data.namespace.requestPath };
+    fullPath() {
+      return this.data?.namespace;
     },
   },
-  mounted() {
-    if (this.isProject) {
-      this.$emit('error', { error: DORA_PERFORMERS_SCORE_PROJECT_ERROR, canRetry: false });
-    }
+  methods: {
+    handleResolveNamespace({ isProject = false }) {
+      if (isProject) {
+        this.$emit('error', { error: DORA_PERFORMERS_SCORE_PROJECT_ERROR, canRetry: false });
+      }
+    },
   },
 };
 </script>
 <template>
-  <dora-performers-score-chart
-    v-if="!isProject"
-    :data="formattedData"
-    @error="$emit('error', arguments[0])"
-  />
+  <group-or-project-provider
+    #default="{ isNamespaceLoading, isProject }"
+    :full-path="fullPath"
+    @done="handleResolveNamespace"
+    @error="(errorMsg) => $emit('error', errorMsg)"
+  >
+    <div v-if="isNamespaceLoading" class="gl--flex-center gl-h-full">
+      <gl-loading-icon size="lg" />
+    </div>
+    <dora-performers-score-chart
+      v-else-if="!isNamespaceLoading && !isProject"
+      :data="data"
+      @error="$emit('error', arguments[0])"
+    />
+  </group-or-project-provider>
 </template>

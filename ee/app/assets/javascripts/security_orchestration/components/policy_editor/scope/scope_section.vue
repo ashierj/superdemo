@@ -11,6 +11,7 @@ import PolicyPopover from 'ee/security_orchestration/components/policy_popover.v
 import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
 import GroupProjectsDropdown from '../../group_projects_dropdown.vue';
 import ComplianceFrameworkDropdown from './compliance_framework_dropdown.vue';
+import ScopeSectionAlert from './scope_section_alert.vue';
 import {
   PROJECTS_WITH_FRAMEWORK,
   PROJECT_SCOPE_TYPE_LISTBOX_ITEMS,
@@ -64,6 +65,7 @@ export default {
     GlSprintf,
     GroupProjectsDropdown,
     PolicyPopover,
+    ScopeSectionAlert,
   },
   apollo: {
     linkedSppItems: {
@@ -129,6 +131,7 @@ export default {
       errorDescription: '',
       linkedSppItems: [],
       showLinkedSppItemsError: false,
+      isFormDirty: false,
     };
   },
   computed: {
@@ -196,6 +199,18 @@ export default {
     showLoader() {
       return this.$apollo.queries.linkedSppItems?.loading && !this.isGroupLevel;
     },
+    isProjectsWithoutExceptions() {
+      return this.selectedExceptionType === WITHOUT_EXCEPTIONS;
+    },
+    projectsEmpty() {
+      return this.projectIds.length === 0;
+    },
+    complianceFrameworksEmpty() {
+      return this.complianceFrameworksIds.length === 0;
+    },
+    complianceFrameworksValidState() {
+      return this.complianceFrameworksEmpty && this.isFormDirty;
+    },
   },
   methods: {
     resetPolicyScope() {
@@ -208,22 +223,29 @@ export default {
       this.$emit('changed', payload);
     },
     selectProjectScopeType(scopeType) {
+      this.isFormDirty = false;
+
       this.selectedProjectScopeType = scopeType;
       this.projectsPayloadKey =
         this.selectedProjectScopeType === ALL_PROJECTS_IN_GROUP ? EXCLUDING : INCLUDING;
       this.resetPolicyScope();
     },
     selectExceptionType(type) {
+      this.isFormDirty = false;
+
       this.selectedExceptionType = type;
       this.resetPolicyScope();
     },
     setSelectedProjectIds(projects) {
+      this.isFormDirty = true;
       const projectsIds = projects.map(({ id }) => ({ id: getIdFromGraphQLId(id) }));
       const payload = { projects: { [this.projectsPayloadKey]: projectsIds } };
 
       this.triggerChanged(payload);
     },
     setSelectedFrameworkIds(ids) {
+      this.isFormDirty = true;
+
       const payload = ids.map((id) => ({ id }));
       this.triggerChanged({ compliance_frameworks: payload });
     },
@@ -240,6 +262,14 @@ export default {
 
 <template>
   <div>
+    <scope-section-alert
+      :compliance-frameworks-empty="complianceFrameworksEmpty"
+      :is-dirty="isFormDirty"
+      :is-projects-without-exceptions="isProjectsWithoutExceptions"
+      :project-scope-type="selectedProjectScopeType"
+      :project-empty="projectsEmpty"
+    />
+
     <gl-alert v-if="showAlert" class="gl-mb-5" variant="danger" :dismissible="false">
       {{ errorDescription }}
     </gl-alert>
@@ -279,6 +309,7 @@ export default {
               <compliance-framework-dropdown
                 :selected-framework-ids="complianceFrameworksIds"
                 :full-path="rootNamespacePath"
+                :show-error="complianceFrameworksValidState"
                 @framework-query-error="
                   setShowAlert($options.i18n.complianceFrameworkErrorDescription)
                 "
@@ -310,7 +341,7 @@ export default {
               v-if="showGroupProjectsDropdown"
               :group-full-path="groupProjectsFullPath"
               :selected="projectIds"
-              state
+              :state="!projectsEmpty"
               @projects-query-error="setShowAlert($options.i18n.groupProjectErrorDescription)"
               @select="setSelectedProjectIds"
             />

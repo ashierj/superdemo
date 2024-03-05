@@ -1477,6 +1477,32 @@ Input type: `AiAgentCreateInput`
 | <a id="mutationaiagentcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationaiagentcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
+### `Mutation.aiAgentUpdate`
+
+DETAILS:
+**Introduced** in GitLab 16.10.
+**Status**: Experiment.
+
+Input type: `AiAgentUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationaiagentupdateagentid"></a>`agentId` | [`AiAgentID!`](#aiagentid) | ID of the agent. |
+| <a id="mutationaiagentupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationaiagentupdatename"></a>`name` | [`String`](#string) | Name of the agent. |
+| <a id="mutationaiagentupdateprojectpath"></a>`projectPath` | [`ID!`](#id) | Project to which the agent belongs. |
+| <a id="mutationaiagentupdateprompt"></a>`prompt` | [`String`](#string) | Prompt for the agent. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationaiagentupdateagent"></a>`agent` | [`AiAgent`](#aiagent) | Agent after mutation. |
+| <a id="mutationaiagentupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationaiagentupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.alertSetAssignees`
 
 Input type: `AlertSetAssigneesInput`
@@ -3933,6 +3959,31 @@ Input type: `DiscussionToggleResolveInput`
 | <a id="mutationdiscussiontoggleresolveclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationdiscussiontoggleresolvediscussion"></a>`discussion` | [`Discussion`](#discussion) | Discussion after mutation. |
 | <a id="mutationdiscussiontoggleresolveerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
+### `Mutation.duoUserFeedback`
+
+DETAILS:
+**Introduced** in GitLab 16.10.
+**Status**: Experiment.
+
+Input type: `DuoUserFeedbackInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationduouserfeedbackagentversionid"></a>`agentVersionId` | [`AiAgentVersionID`](#aiagentversionid) | Global ID of the agent to answer the chat. |
+| <a id="mutationduouserfeedbackaimessageid"></a>`aiMessageId` | [`String!`](#string) | ID of the AI Message. |
+| <a id="mutationduouserfeedbackclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationduouserfeedbackextendedfeedback"></a>`extendedFeedback` | [`String`](#string) | Freeform user feedback. |
+| <a id="mutationduouserfeedbackselectedfeedbackoptions"></a>`selectedFeedbackOptions` | [`[String!]`](#string) | User selected feedback options. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationduouserfeedbackclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationduouserfeedbackerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.echoCreate`
 
@@ -8510,10 +8561,6 @@ Input type: `VulnerabilitiesDismissInput`
 
 ### `Mutation.vulnerabilitiesRemoveAllFromProject`
 
-DETAILS:
-**Introduced** in GitLab 16.7.
-**Status**: Experiment.
-
 Input type: `VulnerabilitiesRemoveAllFromProjectInput`
 
 #### Arguments
@@ -9055,6 +9102,29 @@ The precise type of `Edge` and `Item` depends on the kind of connection. A
 Some of the types in the schema exist solely to model connections. Each connection
 has a distinct, named type, with a distinct named edge type. These are listed separately
 below.
+
+#### `AccessLevelDeployKeyConnection`
+
+The connection type for [`AccessLevelDeployKey`](#accessleveldeploykey).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="accessleveldeploykeyconnectionedges"></a>`edges` | [`[AccessLevelDeployKeyEdge]`](#accessleveldeploykeyedge) | A list of edges. |
+| <a id="accessleveldeploykeyconnectionnodes"></a>`nodes` | [`[AccessLevelDeployKey]`](#accessleveldeploykey) | A list of nodes. |
+| <a id="accessleveldeploykeyconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `AccessLevelDeployKeyEdge`
+
+The edge type for [`AccessLevelDeployKey`](#accessleveldeploykey).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="accessleveldeploykeyedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="accessleveldeploykeyedgenode"></a>`node` | [`AccessLevelDeployKey`](#accessleveldeploykey) | The item at the end of the edge. |
 
 #### `AchievementConnection`
 
@@ -9950,75 +10020,6 @@ The edge type for [`CiProjectVariable`](#ciprojectvariable).
 | ---- | ---- | ----------- |
 | <a id="ciprojectvariableedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="ciprojectvariableedgenode"></a>`node` | [`CiProjectVariable`](#ciprojectvariable) | The item at the end of the edge. |
-
-#### `CiRunnerCloudProvisioningMachineTypeConnection`
-
-The connection type for [`CiRunnerCloudProvisioningMachineType`](#cirunnercloudprovisioningmachinetype).
-
-##### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="cirunnercloudprovisioningmachinetypeconnectionedges"></a>`edges` | [`[CiRunnerCloudProvisioningMachineTypeEdge]`](#cirunnercloudprovisioningmachinetypeedge) | A list of edges. |
-| <a id="cirunnercloudprovisioningmachinetypeconnectionnodes"></a>`nodes` | [`[CiRunnerCloudProvisioningMachineType]`](#cirunnercloudprovisioningmachinetype) | A list of nodes. |
-| <a id="cirunnercloudprovisioningmachinetypeconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
-
-#### `CiRunnerCloudProvisioningMachineTypeEdge`
-
-The edge type for [`CiRunnerCloudProvisioningMachineType`](#cirunnercloudprovisioningmachinetype).
-
-##### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="cirunnercloudprovisioningmachinetypeedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
-| <a id="cirunnercloudprovisioningmachinetypeedgenode"></a>`node` | [`CiRunnerCloudProvisioningMachineType`](#cirunnercloudprovisioningmachinetype) | The item at the end of the edge. |
-
-#### `CiRunnerCloudProvisioningRegionConnection`
-
-The connection type for [`CiRunnerCloudProvisioningRegion`](#cirunnercloudprovisioningregion).
-
-##### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="cirunnercloudprovisioningregionconnectionedges"></a>`edges` | [`[CiRunnerCloudProvisioningRegionEdge]`](#cirunnercloudprovisioningregionedge) | A list of edges. |
-| <a id="cirunnercloudprovisioningregionconnectionnodes"></a>`nodes` | [`[CiRunnerCloudProvisioningRegion]`](#cirunnercloudprovisioningregion) | A list of nodes. |
-| <a id="cirunnercloudprovisioningregionconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
-
-#### `CiRunnerCloudProvisioningRegionEdge`
-
-The edge type for [`CiRunnerCloudProvisioningRegion`](#cirunnercloudprovisioningregion).
-
-##### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="cirunnercloudprovisioningregionedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
-| <a id="cirunnercloudprovisioningregionedgenode"></a>`node` | [`CiRunnerCloudProvisioningRegion`](#cirunnercloudprovisioningregion) | The item at the end of the edge. |
-
-#### `CiRunnerCloudProvisioningZoneConnection`
-
-The connection type for [`CiRunnerCloudProvisioningZone`](#cirunnercloudprovisioningzone).
-
-##### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="cirunnercloudprovisioningzoneconnectionedges"></a>`edges` | [`[CiRunnerCloudProvisioningZoneEdge]`](#cirunnercloudprovisioningzoneedge) | A list of edges. |
-| <a id="cirunnercloudprovisioningzoneconnectionnodes"></a>`nodes` | [`[CiRunnerCloudProvisioningZone]`](#cirunnercloudprovisioningzone) | A list of nodes. |
-| <a id="cirunnercloudprovisioningzoneconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
-
-#### `CiRunnerCloudProvisioningZoneEdge`
-
-The edge type for [`CiRunnerCloudProvisioningZone`](#cirunnercloudprovisioningzone).
-
-##### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="cirunnercloudprovisioningzoneedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
-| <a id="cirunnercloudprovisioningzoneedgenode"></a>`node` | [`CiRunnerCloudProvisioningZone`](#cirunnercloudprovisioningzone) | The item at the end of the edge. |
 
 #### `CiRunnerConnection`
 
@@ -14923,6 +14924,7 @@ Extra metadata for AI message.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="aimessageextrashasfeedback"></a>`hasFeedback` | [`Boolean`](#boolean) | Whether the user has provided feedback for the mesage. |
 | <a id="aimessageextrassources"></a>`sources` | [`[JSON!]`](#json) | Sources used to form the message. |
 
 ### `AlertManagementAlert`
@@ -15126,7 +15128,6 @@ Represents the approval policy.
 | <a id="approvalpolicyenabled"></a>`enabled` | [`Boolean!`](#boolean) | Indicates whether this policy is enabled. |
 | <a id="approvalpolicygroupapprovers"></a>`groupApprovers` **{warning-solid}** | [`[Group!]`](#group) | **Deprecated** in GitLab 16.5. Use `allGroupApprovers`. |
 | <a id="approvalpolicyname"></a>`name` | [`String!`](#string) | Name of the policy. |
-| <a id="approvalpolicypolicyscope"></a>`policyScope` | [`PolicyScope`](#policyscope) | Scope of the policy. |
 | <a id="approvalpolicyroleapprovers"></a>`roleApprovers` | [`[MemberAccessLevelName!]`](#memberaccesslevelname) | Approvers of the role type. Users belonging to these role(s) alone will be approvers. |
 | <a id="approvalpolicysource"></a>`source` | [`SecurityPolicySource!`](#securitypolicysource) | Source of the policy. Its fields depend on the source type. |
 | <a id="approvalpolicyupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the policy YAML was last updated. |
@@ -16075,7 +16076,6 @@ four standard [pagination arguments](#pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="cicatalogresourceversionsname"></a>`name` | [`String`](#string) | Name of the version. |
-| <a id="cicatalogresourceversionssort"></a>`sort` | [`CiCatalogResourceVersionSort`](#cicatalogresourceversionsort) | Sort versions by given criteria. |
 
 ### `CiCatalogResourceComponent`
 
@@ -16592,29 +16592,6 @@ Returns [`CiRunnerStatus!`](#cirunnerstatus).
 | ---- | ---- | ----------- |
 | <a id="cirunnerstatuslegacymode"></a>`legacyMode` **{warning-solid}** | [`String`](#string) | **Deprecated** in GitLab 15.0. Will be removed in 17.0. |
 
-### `CiRunnerCloudProvisioningMachineType`
-
-Machine type used for runner cloud provisioning.
-
-#### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="cirunnercloudprovisioningmachinetypedescription"></a>`description` | [`String`](#string) | Description of the machine type. |
-| <a id="cirunnercloudprovisioningmachinetypename"></a>`name` | [`GoogleCloudMachineType`](#googlecloudmachinetype) | Name of the machine type. |
-| <a id="cirunnercloudprovisioningmachinetypezone"></a>`zone` | [`GoogleCloudZone`](#googlecloudzone) | Zone of the machine type. |
-
-### `CiRunnerCloudProvisioningRegion`
-
-Region used for runner cloud provisioning.
-
-#### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="cirunnercloudprovisioningregiondescription"></a>`description` | [`String`](#string) | Description of the region. |
-| <a id="cirunnercloudprovisioningregionname"></a>`name` | [`GoogleCloudRegion`](#googlecloudregion) | Name of the region. |
-
 ### `CiRunnerCloudProvisioningStep`
 
 Step used to provision the runner to Google Cloud.
@@ -16627,17 +16604,6 @@ Step used to provision the runner to Google Cloud.
 | <a id="cirunnercloudprovisioningsteplanguageidentifier"></a>`languageIdentifier` | [`String`](#string) | Identifier of the language used for the instructions field. This identifier can be any of the identifiers specified in the [list of supported languages and lexers](https://github.com/rouge-ruby/rouge/wiki/List-of-supported-languages-and-lexers). |
 | <a id="cirunnercloudprovisioningsteptitle"></a>`title` | [`String`](#string) | Title of the step. |
 
-### `CiRunnerCloudProvisioningZone`
-
-Zone used for runner cloud provisioning.
-
-#### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="cirunnercloudprovisioningzonedescription"></a>`description` | [`String`](#string) | Description of the zone. |
-| <a id="cirunnercloudprovisioningzonename"></a>`name` | [`GoogleCloudZone`](#googlecloudzone) | Name of the zone. |
-
 ### `CiRunnerGoogleCloudProvisioning`
 
 Information used for runner Google Cloud provisioning.
@@ -16647,25 +16613,8 @@ Information used for runner Google Cloud provisioning.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="cirunnergooglecloudprovisioningprojectsetupshellscript"></a>`projectSetupShellScript` | [`String`](#string) | Instructions for setting up a Google Cloud project. |
-| <a id="cirunnergooglecloudprovisioningregions"></a>`regions` | [`CiRunnerCloudProvisioningRegionConnection`](#cirunnercloudprovisioningregionconnection) | Regions available for provisioning a runner. (see [Connections](#connections)) |
 
 #### Fields with arguments
-
-##### `CiRunnerGoogleCloudProvisioning.machineTypes`
-
-Machine types available for provisioning a runner.
-
-Returns [`CiRunnerCloudProvisioningMachineTypeConnection`](#cirunnercloudprovisioningmachinetypeconnection).
-
-This field returns a [connection](#connections). It accepts the
-four standard [pagination arguments](#pagination-arguments):
-`before: String`, `after: String`, `first: Int`, and `last: Int`.
-
-###### Arguments
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="cirunnergooglecloudprovisioningmachinetypeszone"></a>`zone` | [`GoogleCloudZone!`](#googlecloudzone) | Zone to retrieve machine types for. |
 
 ##### `CiRunnerGoogleCloudProvisioning.provisioningSteps`
 
@@ -16681,22 +16630,6 @@ Returns [`[CiRunnerCloudProvisioningStep!]`](#cirunnercloudprovisioningstep).
 | <a id="cirunnergooglecloudprovisioningprovisioningstepsregion"></a>`region` | [`GoogleCloudRegion!`](#googlecloudregion) | Name of the region to provision the runner in. |
 | <a id="cirunnergooglecloudprovisioningprovisioningstepsrunnertoken"></a>`runnerToken` | [`String`](#string) | Authentication token of the runner. |
 | <a id="cirunnergooglecloudprovisioningprovisioningstepszone"></a>`zone` | [`GoogleCloudZone!`](#googlecloudzone) | Name of the zone to provision the runner in. |
-
-##### `CiRunnerGoogleCloudProvisioning.zones`
-
-Zones available for provisioning a runner.
-
-Returns [`CiRunnerCloudProvisioningZoneConnection`](#cirunnercloudprovisioningzoneconnection).
-
-This field returns a [connection](#connections). It accepts the
-four standard [pagination arguments](#pagination-arguments):
-`before: String`, `after: String`, `first: Int`, and `last: Int`.
-
-###### Arguments
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="cirunnergooglecloudprovisioningzonesregion"></a>`region` | [`GoogleCloudRegion`](#googlecloudregion) | Region to retrieve zones for. Returns all zones if not specified. |
 
 ### `CiRunnerManager`
 
@@ -19972,6 +19905,7 @@ Represents a docker artifact of Google Artifact Registry.
 | <a id="googlecloudartifactregistrydockerimagetags"></a>`tags` | [`[String!]`](#string) | Tags attached to the image. |
 | <a id="googlecloudartifactregistrydockerimageupdatetime"></a>`updateTime` | [`Time`](#time) | Time when the image was last updated. |
 | <a id="googlecloudartifactregistrydockerimageuploadtime"></a>`uploadTime` | [`Time`](#time) | Time when the image was uploaded. |
+| <a id="googlecloudartifactregistrydockerimageuri"></a>`uri` | [`String!`](#string) | Google Cloud URI to access the image. |
 
 ### `GoogleCloudArtifactRegistryDockerImageDetails`
 
@@ -20012,7 +19946,7 @@ Represents a repository of Google Artifact Registry.
 
 ##### `GoogleCloudArtifactRegistryRepository.artifacts`
 
-Google Artifact Registry repository artifacts. Returns `null` if `gcp_artifact_registry` feature flag is disabled or GitLab.com feature is unavailable.
+Google Artifact Registry repository artifacts. Returns `null` if `google_cloud_support_feature_flag` feature flag is disabled or GitLab.com feature is unavailable.
 
 Returns [`GoogleCloudArtifactRegistryArtifactConnection`](#googlecloudartifactregistryartifactconnection).
 
@@ -20639,6 +20573,7 @@ four standard [pagination arguments](#pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="groupgroupmembersaccesslevels"></a>`accessLevels` | [`[AccessLevelEnum!]`](#accesslevelenum) | Filter members by the given access levels. |
+| <a id="groupgroupmembersenterprise"></a>`enterprise` | [`Boolean`](#boolean) | Filter members by enterprise users. |
 | <a id="groupgroupmembersrelations"></a>`relations` | [`[GroupMemberRelation!]`](#groupmemberrelation) | Filter members by the given member relations. |
 | <a id="groupgroupmemberssearch"></a>`search` | [`String`](#string) | Search query. |
 | <a id="groupgroupmemberssort"></a>`sort` | [`MemberSort`](#membersort) | sort query. |
@@ -20985,6 +20920,23 @@ four standard [pagination arguments](#pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="groupreleasessort"></a>`sort` | [`GroupReleaseSort`](#groupreleasesort) | Sort group releases by given criteria. |
+
+##### `Group.runnerCloudProvisioning`
+
+Information used for provisioning the runner on a cloud provider. Returns `null` if `:google_cloud_support_feature_flag` feature flag is disabled, or the GitLab instance is not a SaaS instance.
+
+DETAILS:
+**Introduced** in GitLab 16.10.
+**Status**: Experiment.
+
+Returns [`CiRunnerCloudProvisioning`](#cirunnercloudprovisioning).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="grouprunnercloudprovisioningcloudprojectid"></a>`cloudProjectId` | [`GoogleCloudProject!`](#googlecloudproject) | Identifier of the cloud project. |
+| <a id="grouprunnercloudprovisioningprovider"></a>`provider` | [`CiRunnerCloudProvider!`](#cirunnercloudprovider) | Identifier of the cloud provider. |
 
 ##### `Group.runners`
 
@@ -25182,8 +25134,19 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="pipelinesecurityreportfindingstate"></a>`state` | [`VulnerabilityState`](#vulnerabilitystate) | Finding status. |
 | <a id="pipelinesecurityreportfindingstatecomment"></a>`stateComment` | [`String`](#string) | Comment for the state of the security report finding. |
 | <a id="pipelinesecurityreportfindingtitle"></a>`title` | [`String`](#string) | Title of the vulnerability finding. |
+| <a id="pipelinesecurityreportfindinguserpermissions"></a>`userPermissions` | [`PipelineSecurityReportFindingPermissions!`](#pipelinesecurityreportfindingpermissions) | Permissions for the current user on the resource. |
 | <a id="pipelinesecurityreportfindinguuid"></a>`uuid` | [`String`](#string) | UUIDv5 digest based on the vulnerability's report type, primary identifier, location, fingerprint, project identifier. |
 | <a id="pipelinesecurityreportfindingvulnerability"></a>`vulnerability` | [`Vulnerability`](#vulnerability) | Vulnerability related to the security report finding. |
+
+### `PipelineSecurityReportFindingPermissions`
+
+Check permissions for the current user on a vulnerability finding.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="pipelinesecurityreportfindingpermissionsadminvulnerability"></a>`adminVulnerability` | [`Boolean!`](#boolean) | If `true`, the user can perform `admin_vulnerability` on this resource. |
 
 ### `PipelineTrigger`
 
@@ -25209,16 +25172,6 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="policyapprovalgroupfullpath"></a>`fullPath` | [`ID!`](#id) | Full path of the namespace. |
 | <a id="policyapprovalgroupid"></a>`id` | [`ID!`](#id) | ID of the namespace. |
 | <a id="policyapprovalgroupweburl"></a>`webUrl` | [`String!`](#string) | Web URL of the group. |
-
-### `PolicyScope`
-
-#### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="policyscopecomplianceframeworks"></a>`complianceFrameworks` | [`ComplianceFrameworkConnection!`](#complianceframeworkconnection) | Compliance Frameworks linked to the policy. (see [Connections](#connections)) |
-| <a id="policyscopeexcludingprojects"></a>`excludingProjects` | [`ProjectConnection!`](#projectconnection) | Projects to which the policy should not be applied to. (see [Connections](#connections)) |
-| <a id="policyscopeincludingprojects"></a>`includingProjects` | [`ProjectConnection!`](#projectconnection) | Projects to which the policy should be applied to. (see [Connections](#connections)) |
 
 ### `PreviewBillableUserChange`
 
@@ -25272,7 +25225,7 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="projectforkingaccesslevel"></a>`forkingAccessLevel` | [`ProjectFeatureAccess`](#projectfeatureaccess) | Access level required for forking access. |
 | <a id="projectforkscount"></a>`forksCount` | [`Int!`](#int) | Number of times the project has been forked. |
 | <a id="projectfullpath"></a>`fullPath` | [`ID!`](#id) | Full path of the project. |
-| <a id="projectgooglecloudartifactregistryrepository"></a>`googleCloudArtifactRegistryRepository` **{warning-solid}** | [`GoogleCloudArtifactRegistryRepository`](#googlecloudartifactregistryrepository) | **Introduced** in GitLab 16.10. **Status**: Experiment. Google Artifact Registry repository. Returns `null` if `gcp_artifact_registry` feature flag is disabled. |
+| <a id="projectgooglecloudartifactregistryrepository"></a>`googleCloudArtifactRegistryRepository` **{warning-solid}** | [`GoogleCloudArtifactRegistryRepository`](#googlecloudartifactregistryrepository) | **Introduced** in GitLab 16.10. **Status**: Experiment. Google Artifact Registry repository. Returns `null` if `google_cloud_support_feature_flag` feature flag is disabled. |
 | <a id="projectgrafanaintegration"></a>`grafanaIntegration` | [`GrafanaIntegration`](#grafanaintegration) | Grafana integration details for the project. |
 | <a id="projectgroup"></a>`group` | [`Group`](#group) | Group of the project. |
 | <a id="projecthasjiravulnerabilityissuecreationenabled"></a>`hasJiraVulnerabilityIssueCreationEnabled` | [`Boolean!`](#boolean) | Indicates whether Jira issue creation from vulnerabilities is enabled. |
@@ -25290,6 +25243,7 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="projectlanguages"></a>`languages` | [`[RepositoryLanguage!]`](#repositorylanguage) | Programming languages used in the project. |
 | <a id="projectlastactivityat"></a>`lastActivityAt` | [`Time`](#time) | Timestamp of the project last activity. |
 | <a id="projectlfsenabled"></a>`lfsEnabled` | [`Boolean`](#boolean) | Indicates if the project has Large File Storage (LFS) enabled. |
+| <a id="projectmarkedfordeletionon"></a>`markedForDeletionOn` **{warning-solid}** | [`Time`](#time) | **Introduced** in GitLab 16.10. **Status**: Experiment. Date when project was scheduled to be deleted. |
 | <a id="projectmaxaccesslevel"></a>`maxAccessLevel` | [`AccessLevel!`](#accesslevel) | The maximum access level of the current user in the project. |
 | <a id="projectmergecommittemplate"></a>`mergeCommitTemplate` | [`String`](#string) | Template used to create merge commit message in merge requests. |
 | <a id="projectmergerequestsaccesslevel"></a>`mergeRequestsAccessLevel` | [`ProjectFeatureAccess`](#projectfeatureaccess) | Access level required for merge requests access. |
@@ -25497,6 +25451,22 @@ Returns [`[AutocompletedUser!]`](#autocompleteduser).
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="projectautocompleteuserssearch"></a>`search` | [`String`](#string) | Query to search users by name, username, or public email. |
+
+##### `Project.availableDeployKeys`
+
+List of available deploy keys.
+
+Returns [`AccessLevelDeployKeyConnection`](#accessleveldeploykeyconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectavailabledeploykeystitlequery"></a>`titleQuery` | [`String`](#string) | Term by which to search deploy key titles. |
 
 ##### `Project.board`
 
@@ -26561,7 +26531,7 @@ four standard [pagination arguments](#pagination-arguments):
 
 ##### `Project.runnerCloudProvisioning`
 
-Information used for provisioning the runner on a cloud provider. Returns `null` if `:google_cloud_runner_provisioning` feature flag is disabled, or the GitLab instance is not a SaaS instance.
+Information used for provisioning the runner on a cloud provider. Returns `null` if `:google_cloud_support_feature_flag` feature flag is disabled, or the GitLab instance is not a SaaS instance.
 
 DETAILS:
 **Introduced** in GitLab 16.9.
@@ -27940,7 +27910,6 @@ Represents the scan execution policy.
 | <a id="scanexecutionpolicyeditpath"></a>`editPath` | [`String!`](#string) | URL of policy edit page. |
 | <a id="scanexecutionpolicyenabled"></a>`enabled` | [`Boolean!`](#boolean) | Indicates whether this policy is enabled. |
 | <a id="scanexecutionpolicyname"></a>`name` | [`String!`](#string) | Name of the policy. |
-| <a id="scanexecutionpolicypolicyscope"></a>`policyScope` | [`PolicyScope`](#policyscope) | Scope of the policy. |
 | <a id="scanexecutionpolicysource"></a>`source` | [`SecurityPolicySource!`](#securitypolicysource) | Source of the policy. Its fields depend on the source type. |
 | <a id="scanexecutionpolicyupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the policy YAML was last updated. |
 | <a id="scanexecutionpolicyyaml"></a>`yaml` | [`String!`](#string) | YAML definition of the policy. |
@@ -27959,7 +27928,6 @@ Represents the scan result policy.
 | <a id="scanresultpolicyenabled"></a>`enabled` | [`Boolean!`](#boolean) | Indicates whether this policy is enabled. |
 | <a id="scanresultpolicygroupapprovers"></a>`groupApprovers` **{warning-solid}** | [`[Group!]`](#group) | **Deprecated** in GitLab 16.5. Use `allGroupApprovers`. |
 | <a id="scanresultpolicyname"></a>`name` | [`String!`](#string) | Name of the policy. |
-| <a id="scanresultpolicypolicyscope"></a>`policyScope` | [`PolicyScope`](#policyscope) | Scope of the policy. |
 | <a id="scanresultpolicyroleapprovers"></a>`roleApprovers` | [`[MemberAccessLevelName!]`](#memberaccesslevelname) | Approvers of the role type. Users belonging to these role(s) alone will be approvers. |
 | <a id="scanresultpolicysource"></a>`source` | [`SecurityPolicySource!`](#securitypolicysource) | Source of the policy. Its fields depend on the source type. |
 | <a id="scanresultpolicyupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the policy YAML was last updated. |
@@ -30788,17 +30756,6 @@ Values for sorting catalog resources.
 | <a id="cicatalogresourcesortname_desc"></a>`NAME_DESC` | Name by descending order. |
 | <a id="cicatalogresourcesortstar_count_asc"></a>`STAR_COUNT_ASC` | Star count by ascending order. |
 | <a id="cicatalogresourcesortstar_count_desc"></a>`STAR_COUNT_DESC` | Star count by descending order. |
-
-### `CiCatalogResourceVersionSort`
-
-Values for sorting catalog resource versions.
-
-| Value | Description |
-| ----- | ----------- |
-| <a id="cicatalogresourceversionsortcreated_asc"></a>`CREATED_ASC` | Created at ascending order. |
-| <a id="cicatalogresourceversionsortcreated_desc"></a>`CREATED_DESC` | Created at descending order. |
-| <a id="cicatalogresourceversionsortreleased_at_asc"></a>`RELEASED_AT_ASC` | Released at by ascending order. |
-| <a id="cicatalogresourceversionsortreleased_at_desc"></a>`RELEASED_AT_DESC` | Released at by descending order. |
 
 ### `CiConfigIncludeType`
 
@@ -34781,7 +34738,6 @@ Implementations:
 | <a id="orchestrationpolicyeditpath"></a>`editPath` | [`String!`](#string) | URL of policy edit page. |
 | <a id="orchestrationpolicyenabled"></a>`enabled` | [`Boolean!`](#boolean) | Indicates whether this policy is enabled. |
 | <a id="orchestrationpolicyname"></a>`name` | [`String!`](#string) | Name of the policy. |
-| <a id="orchestrationpolicypolicyscope"></a>`policyScope` | [`PolicyScope`](#policyscope) | Scope of the policy. |
 | <a id="orchestrationpolicyupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the policy YAML was last updated. |
 | <a id="orchestrationpolicyyaml"></a>`yaml` | [`String!`](#string) | YAML definition of the policy. |
 

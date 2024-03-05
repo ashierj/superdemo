@@ -199,5 +199,7 @@ export const EVENT_LABEL_VIEWED_DASHBOARD = 'user_viewed_dashboard';
 
 export const EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER = 'user_viewed_visualization_designer';
 export const EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION = 'user_created_custom_visualization';
+export const EVENT_LABEL_USER_SUBMITTED_GITLAB_DUO_QUERY_FROM_VISUALIZATION_DESIGNER =
+  'user_submitted_gitlab_duo_query_from_visualization_designer';
 
 export const EVENT_LABEL_EXCLUDE_ANONYMISED_USERS = 'exclude_anonymised_users';

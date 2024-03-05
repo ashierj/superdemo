@@ -34,10 +34,7 @@ module Organizations
     end
 
     def organization_index_app_data
-      {
-        new_organization_url: new_organization_path,
-        organizations_empty_state_svg_path: image_path('illustrations/empty-state/empty-organizations-md.svg')
-      }
+      shared_organization_index_app_data
     end
 
     def organization_user_app_data(organization)
@@ -66,6 +63,10 @@ module Organizations
       }.to_json
     end
 
+    def admin_organizations_index_app_data
+      shared_organization_index_app_data.to_json
+    end
+
     private
 
     def shared_groups_and_projects_app_data(organization)
@@ -73,7 +74,7 @@ module Organizations
         organization_gid: organization.to_global_id,
         projects_empty_state_svg_path: image_path('illustrations/empty-state/empty-projects-md.svg'),
         groups_empty_state_svg_path: image_path('illustrations/empty-state/empty-groups-md.svg'),
-        new_group_path: new_group_path,
+        new_group_path: new_groups_organization_path(organization),
         new_project_path: new_project_path,
         can_create_group: can?(current_user, :create_group, organization),
         can_create_project: current_user&.can_create_project?,
@@ -86,6 +87,13 @@ module Organizations
         preview_markdown_path: preview_markdown_organizations_path,
         organizations_path: organizations_path,
         root_url: root_url
+      }
+    end
+
+    def shared_organization_index_app_data
+      {
+        new_organization_url: new_organization_path,
+        organizations_empty_state_svg_path: image_path('illustrations/empty-state/empty-organizations-md.svg')
       }
     end
 

@@ -35,7 +35,7 @@ RSpec.describe Resolvers::Analytics::ValueStreamDashboard::CountResolver, featur
 
       context 'when requesting the contributors metric', :click_house do
         before do
-          stub_feature_flags(clickhouse_data_collection: true)
+          allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
 
           arguments[:identifier] = 'contributors'
 

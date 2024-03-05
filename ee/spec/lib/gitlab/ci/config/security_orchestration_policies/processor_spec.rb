@@ -198,6 +198,27 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
       end
     end
 
+    context 'when policy only contains scheduled pipelines' do
+      let_it_be(:namespace_policy) do
+        build(:scan_execution_policy, :with_schedule, actions: [
+          { scan: 'sast' }
+        ])
+      end
+
+      let_it_be(:policy) do
+        build(:scan_execution_policy, :with_schedule, actions: [
+          { scan: 'secret_detection' }
+        ])
+      end
+
+      let_it_be(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
+      let_it_be(:namespace_policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [namespace_policy]) }
+
+      it 'does not modify the config' do
+        expect(perform_service).to eq(config)
+      end
+    end
+
     context 'when policy is applicable on branch from the pipeline' do
       let(:ref) { 'refs/heads/master' }
 

@@ -1,4 +1,4 @@
-import { GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
+import { GlLoadingIcon, GlEmptyState, GlSprintf } from '@gitlab/ui';
 import MetricsDetails from 'ee/metrics/details/metrics_details.vue';
 import { createMockClient } from 'helpers/mock_observability_client';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -36,6 +36,16 @@ describe('MetricsDetails', () => {
   const findUrlSync = () => wrapper.findComponent(UrlSync);
   const findChart = () => findMetricDetails().findComponent(MetricsChart);
   const findEmptyState = () => findMetricDetails().findComponent(GlEmptyState);
+  const findFilteredSearch = () => findMetricDetails().findComponent(FilteredSearch);
+
+  const setFilters = async (attributes, dateRange, groupBy) => {
+    findFilteredSearch().vm.$emit('submit', {
+      attributes: prepareTokens(attributes),
+      dateRange,
+      groupBy,
+    });
+    await waitForPromises();
+  };
 
   const defaultProps = {
     metricId: METRIC_ID,
@@ -56,6 +66,9 @@ describe('MetricsDetails', () => {
         ...defaultProps,
         ...props,
         observabilityClient: observabilityClientMock,
+      },
+      stubs: {
+        GlSprintf,
       },
     });
     await waitForPromises();
@@ -167,7 +180,6 @@ describe('MetricsDetails', () => {
         await mountComponent();
       });
 
-      const findFilteredSearch = () => findMetricDetails().findComponent(FilteredSearch);
       it('renders the FilteredSearch component', () => {
         const filteredSearch = findFilteredSearch();
         expect(filteredSearch.exists()).toBe(true);
@@ -352,15 +364,6 @@ describe('MetricsDetails', () => {
       });
 
       describe('on search submit', () => {
-        const setFilters = async (attributes, dateRange, groupBy) => {
-          findFilteredSearch().vm.$emit('submit', {
-            attributes: prepareTokens(attributes),
-            dateRange,
-            groupBy,
-          });
-          await waitForPromises();
-        };
-
         beforeEach(async () => {
           await setFilters(
             {
@@ -463,9 +466,20 @@ describe('MetricsDetails', () => {
         expect(findHeaderLastIngested().text()).toBe('Last ingested:\u00a03 days ago');
         expect(findHeaderDescription().text()).toBe('System disk operations');
       });
-      it('renders the empty state', () => {
+
+      it('renders the empty state, with description for selected time range', () => {
         expect(findEmptyState().exists()).toBe(true);
-        expect(findEmptyState().text()).toContain('Last ingested:\u00a03 days ago');
+        expect(findEmptyState().text()).toMatchInterpolatedText(
+          'No data found for the selected time range (last 1 hour) Last ingested: 3 days ago',
+        );
+      });
+
+      it('renders the empty state, with no description for the selected time range', async () => {
+        await setFilters({}, { value: 'custom' });
+        expect(findEmptyState().exists()).toBe(true);
+        expect(findEmptyState().text()).toMatchInterpolatedText(
+          'No data found for the selected time range Last ingested: 3 days ago',
+        );
       });
     });
   });

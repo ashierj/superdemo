@@ -113,6 +113,7 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
           'nodes' => [{
             'name' => docker_image.name,
             'tags' => docker_image.tags,
+            'uri' => docker_image.uri,
             'uploadTime' => Time.now.iso8601,
             'updateTime' => Time.now.iso8601,
             'image' => image,
@@ -193,9 +194,9 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
     it { is_expected.to be_nil }
   end
 
-  context 'when gcp_artifact_registry FF is disabled' do
+  context 'when google_cloud_support_feature_flag FF is disabled' do
     before do
-      stub_feature_flags(gcp_artifact_registry: false)
+      stub_feature_flags(google_cloud_support_feature_flag: false)
     end
 
     it { is_expected.to be_nil }

@@ -70,6 +70,7 @@ issues:
 - issue_customer_relations_contacts
 - email
 - issuable_resource_links
+- synced_epic
 work_item_type:
 - issues
 - namespace
@@ -1104,3 +1105,5 @@ timelog_category:
   - description
   - billable
   - billing_rate
+note_diff_file:
+  - diff_note

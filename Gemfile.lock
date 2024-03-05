@@ -433,7 +433,7 @@ GEM
       git
     css_parser (1.14.0)
       addressable
-    cssbundling-rails (1.3.3)
+    cssbundling-rails (1.4.0)
       railties (>= 6.0.0)
     cvss-suite (3.0.1)
     danger (9.4.2)
@@ -739,7 +739,7 @@ GEM
       omniauth (>= 1.3, < 3)
       pyu-ruby-sasl (>= 0.0.3.3, < 0.1)
       rubyntlm (~> 0.5)
-    gitlab_quality-test_tooling (1.15.0)
+    gitlab_quality-test_tooling (1.17.0)
       activesupport (>= 6.1, < 7.1)
       amatch (~> 0.4.1)
       gitlab (~> 4.19)
@@ -1268,7 +1268,7 @@ GEM
       tty-color (~> 0.5)
     peek (1.1.0)
       railties (>= 4.0.0)
-    pg (1.5.5)
+    pg (1.5.6)
     pg_query (5.1.0)
       google-protobuf (>= 3.22.3)
     plist (3.7.0)
@@ -1389,7 +1389,7 @@ GEM
       actionpack (>= 5, < 8)
       redis-rack (>= 2.1.0, < 4)
       redis-store (>= 1.1.0, < 2)
-    redis-client (0.20.0)
+    redis-client (0.21.0)
       connection_pool
     redis-cluster-client (0.7.5)
       redis-client (~> 0.12)
@@ -1471,11 +1471,10 @@ GEM
     rspec-support (3.12.0)
     rspec_junit_formatter (0.6.0)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rspec_profiling (0.0.6)
+    rspec_profiling (0.0.8)
       activerecord
-      pg
+      get_process_mem
       rails
-      sqlite3
     rubocop (1.57.2)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
@@ -1509,7 +1508,7 @@ GEM
     ruby-fogbugz (0.3.0)
       crack (~> 0.4)
       multipart-post (~> 2.0)
-    ruby-lsp (0.14.2)
+    ruby-lsp (0.14.3)
       language_server-protocol (~> 3.17.0)
       prism (>= 0.22.0, < 0.25)
       sorbet-runtime (>= 0.5.10782)
@@ -1632,8 +1631,6 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
-    sqlite3 (1.6.0)
-      mini_portile2 (~> 2.8.0)
     ssh_data (1.3.0)
     ssrf_filter (1.0.8)
     stackprof (0.2.25)
@@ -1861,7 +1858,7 @@ DEPENDENCIES
   countries (~> 4.0.0)
   creole (~> 0.5.0)
   crystalball (~> 0.7.0)
-  cssbundling-rails (= 1.3.3)
+  cssbundling-rails (= 1.4.0)
   csv_builder!
   cvss-suite (~> 3.0.1)
   database_cleaner-active_record (~> 2.1.0)
@@ -1929,7 +1926,7 @@ DEPENDENCIES
   gitlab-utils!
   gitlab_chronic_duration (~> 0.12)
   gitlab_omniauth-ldap (~> 2.2.0)
-  gitlab_quality-test_tooling (~> 1.15.0)
+  gitlab_quality-test_tooling (~> 1.17.0)
   gon (~> 6.4.0)
   google-apis-androidpublisher_v3 (~> 0.34.0)
   google-apis-cloudbilling_v1 (~> 0.21.0)
@@ -2042,7 +2039,7 @@ DEPENDENCIES
   parser (~> 3.3, >= 3.3.0.2)
   parslet (~> 1.8)
   peek (~> 1.1)
-  pg (~> 1.5.5)
+  pg (~> 1.5.6)
   pg_query (~> 5.1.0)
   png_quantizator (~> 0.2.1)
   premailer-rails (~> 1.10.3)
@@ -2079,10 +2076,10 @@ DEPENDENCIES
   rspec-rails (~> 6.1.0)
   rspec-retry (~> 0.6.2)
   rspec_junit_formatter
-  rspec_profiling (~> 0.0.6)
+  rspec_profiling (~> 0.0.8)
   rubocop
   ruby-fogbugz (~> 0.3.0)
-  ruby-lsp (~> 0.14.2)
+  ruby-lsp (~> 0.14.3)
   ruby-lsp-rails (~> 0.3.0)
   ruby-lsp-rspec (~> 0.1.10)
   ruby-magic (~> 0.6)

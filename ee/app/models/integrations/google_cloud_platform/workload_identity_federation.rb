@@ -3,6 +3,8 @@
 module Integrations
   module GoogleCloudPlatform
     class WorkloadIdentityFederation < Integration
+      include HasAvatar
+
       attribute :alert_events, default: false
       attribute :commit_events, default: false
       attribute :confidential_issues_events, default: false
@@ -127,13 +129,13 @@ module Integrations
       end
 
       def identity_provider_resource_name
-        return unless parent.google_cloud_workload_identity_federation_enabled? && activated?
+        return unless parent.google_cloud_support_enabled? && activated?
 
         "//#{identity_pool_resource_name}/providers/#{workload_identity_pool_provider_id}"
       end
 
       def identity_pool_resource_name
-        return unless parent.google_cloud_workload_identity_federation_enabled? && activated?
+        return unless parent.google_cloud_support_enabled? && activated?
 
         "iam.googleapis.com/projects/#{workload_identity_federation_project_number}/" \
           "locations/global/workloadIdentityPools/#{workload_identity_pool_id}"

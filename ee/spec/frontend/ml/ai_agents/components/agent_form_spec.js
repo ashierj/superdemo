@@ -1,4 +1,4 @@
-import { GlButton, GlFormInput, GlFormTextarea, GlAlert } from '@gitlab/ui';
+import { GlButton, GlFormInput, GlFormTextarea, GlAlert, GlFormFields } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import AgentForm from 'ee/ml/ai_agents/components/agent_form.vue';
 
@@ -21,6 +21,7 @@ describe('AI Agents Form', () => {
     });
   };
 
+  const findFormFields = () => wrapper.findComponent(GlFormFields);
   const findTextInput = () => wrapper.findComponent(GlFormInput);
   const findTextareaInput = () => wrapper.findComponent(GlFormTextarea);
   const findSubmitButton = () => wrapper.findComponent(GlButton);
@@ -60,6 +61,16 @@ describe('AI Agents Form', () => {
     expect(findSubmitButton().props('loading')).toBe(true);
   });
 
+  it('displays the input values when the props are supplied', () => {
+    createComponent({
+      agentNameValue: 'agent_1',
+      agentPromptValue: 'Do something',
+    });
+
+    expect(findFormFields().props('values').name).toEqual('agent_1');
+    expect(findFormFields().props('values').prompt).toEqual('Do something');
+  });
+
   it('emits an event with the form data when the form is submitted', async () => {
     createComponent();
 
@@ -70,6 +81,7 @@ describe('AI Agents Form', () => {
 
     expect(wrapper.emitted('submit')[0][0]).toEqual({
       projectPath: 'path/to/project',
+      agentId: '',
       name: 'agent_1',
       prompt: 'Do something',
     });

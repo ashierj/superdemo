@@ -269,6 +269,7 @@ export default {
     },
     showLimitedAccessModal() {
       this.isLimitedAccessModalShown = true;
+      this.trackBuyAdditionalMinutesClick();
     },
   },
   LABEL_BUY_ADDITIONAL_MINUTES,
@@ -310,7 +311,6 @@ export default {
           data-track-property="pipeline_quota_page"
           category="primary"
           variant="confirm"
-          class="js-buy-additional-minutes"
           @click="trackBuyAdditionalMinutesClick"
         >
           {{ $options.LABEL_BUY_ADDITIONAL_MINUTES }}
@@ -321,7 +321,6 @@ export default {
           data-testid="buy-compute-minutes"
           category="primary"
           variant="confirm"
-          class="js-buy-additional-minutes"
           @click="showLimitedAccessModal"
         >
           {{ $options.LABEL_BUY_ADDITIONAL_MINUTES }}

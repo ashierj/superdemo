@@ -51,6 +51,11 @@ module Types
           null: false,
           description: "Image's digest."
 
+        field :uri,
+          GraphQL::Types::String,
+          null: false,
+          description: 'Google Cloud URI to access the image.'
+
         def upload_time
           return unless artifact.upload_time
 

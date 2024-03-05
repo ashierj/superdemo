@@ -368,14 +368,41 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
         stub_feature_flags(cs_connect_with_sales: false)
       end
 
-      it { is_expected.to eql(data) }
+      context 'when duo pro bulk assignment is available' do
+        before do
+          allow(helper).to receive(:duo_pro_bulk_user_assignment_available?).and_return(true)
+        end
+
+        it { is_expected.to eql(data.merge(duo_pro_bulk_user_assignment_available: 'true')) }
+      end
+
+      context 'when duo pro bulk assignment is not available' do
+        before do
+          allow(helper).to receive(:duo_pro_bulk_user_assignment_available?).and_return(false)
+        end
+
+        it { is_expected.to eql(data.merge(duo_pro_bulk_user_assignment_available: 'false')) }
+      end
     end
 
     context 'when cs_connect_with_sales ff is enabled' do
-      it 'contains data for hand raise lead button' do
-        hand_raise_lead_button_data = helper.code_suggestions_hand_raise_props(group)
+      let(:code_suggestions_hand_raise_props) { helper.code_suggestions_hand_raise_props(group) }
+      let(:expected_data) { data.merge(code_suggestions_hand_raise_props) }
 
-        expect(subject).to eq(data.merge(hand_raise_lead_button_data))
+      context 'when duo pro bulk assignment is available' do
+        before do
+          allow(helper).to receive(:duo_pro_bulk_user_assignment_available?).and_return(true)
+        end
+
+        it { is_expected.to eql(expected_data.merge(duo_pro_bulk_user_assignment_available: 'true')) }
+      end
+
+      context 'when duo pro bulk assignment is not available' do
+        before do
+          allow(helper).to receive(:duo_pro_bulk_user_assignment_available?).and_return(false)
+        end
+
+        it { is_expected.to eql(expected_data.merge(duo_pro_bulk_user_assignment_available: 'false')) }
       end
     end
   end

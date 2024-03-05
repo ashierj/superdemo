@@ -46,7 +46,14 @@ export const addOnEligibleUserListTableFields = {
   user: {
     key: 'user',
     label: __('User'),
-    thClass: `gl-pl-2! ${thWidthPercent(30)}`,
+    thClass: `gl-pl-2! ${thWidthPercent(25)}`,
+    tdClass: 'gl-vertical-align-middle! gl-pl-2!',
+  },
+  checkbox: {
+    key: 'checkbox',
+    label: '',
+    headerTitle: __('Checkbox'),
+    thClass: __(`${thWidthPercent(5)} gl-pl-2!`),
     tdClass: 'gl-vertical-align-middle! gl-pl-2!',
   },
 };

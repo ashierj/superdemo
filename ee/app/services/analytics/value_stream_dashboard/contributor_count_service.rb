@@ -26,7 +26,7 @@ module Analytics
       end
 
       def execute
-        return feature_unavailable_error unless Feature.enabled?(:clickhouse_data_collection, group)
+        return feature_unavailable_error unless Gitlab::ClickHouse.enabled_for_analytics?(group)
         return not_authorized_error unless can?(current_user, :read_group_analytics_dashboards, group)
 
         ServiceResponse.success(payload: { count: contributor_count })

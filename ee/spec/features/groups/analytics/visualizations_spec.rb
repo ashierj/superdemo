@@ -19,7 +19,8 @@ RSpec.describe 'Analytics Dashboard Visualizations', :js, feature_category: :val
       before do
         stub_licensed_features(group_level_analytics_dashboard: true, dora4_analytics: true, security_dashboard: true,
           cycle_analytics_for_groups: true)
-        stub_feature_flags(clickhouse_data_collection: true)
+
+        allow(Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
 
         sign_in(user)
 
@@ -33,11 +34,12 @@ RSpec.describe 'Analytics Dashboard Visualizations', :js, feature_category: :val
       it_behaves_like 'renders contributor count'
     end
 
-    context 'with clickhouse_data_collection disabled', :saas do
+    context 'when ClickHouse is disabled for analytics', :saas do
       before do
         stub_licensed_features(group_level_analytics_dashboard: true, dora4_analytics: true, security_dashboard: true,
           cycle_analytics_for_groups: true)
-        stub_feature_flags(clickhouse_data_collection: false)
+
+        allow(Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(false)
 
         sign_in(user)
 
@@ -74,9 +76,11 @@ RSpec.describe 'Analytics Dashboard Visualizations', :js, feature_category: :val
 
   context 'with legacy value streams dashboard' do
     before do
-      stub_feature_flags(group_analytics_dashboard_dynamic_vsd: false, clickhouse_data_collection: true)
+      stub_feature_flags(group_analytics_dashboard_dynamic_vsd: false)
       stub_licensed_features(group_level_analytics_dashboard: true, dora4_analytics: true, security_dashboard: true,
         cycle_analytics_for_groups: true)
+
+      allow(Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
 
       sign_in(user)
 

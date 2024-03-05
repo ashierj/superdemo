@@ -372,12 +372,12 @@ RSpec.describe Gitlab::Ci::YamlProcessor, feature_category: :pipeline_compositio
 
     context 'when feature flag is disabled' do
       before do
-        stub_feature_flags(ci_yaml_support_for_identity_provider: false)
+        stub_feature_flags(google_cloud_support_feature_flag: false)
       end
 
       it 'returns errors' do
         expect(result.errors).to include(
-          'build job: ci_yaml_support_for_identity_provider feature flag is not enabled for this project')
+          'build job: google_cloud_support_feature_flag feature flag is not enabled for the top-level namespace')
       end
     end
 

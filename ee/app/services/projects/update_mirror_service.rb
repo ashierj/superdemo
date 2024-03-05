@@ -35,16 +35,17 @@ module Projects
         return error("The mirror user is not allowed to push code to all branches on this project.")
       end
 
+      checksum_before = project.repository.checksum
+
       update_tags do
         project.fetch_mirror(forced: true, check_tags_changed: true)
       end
 
       update_branches
 
-      # We know updating LFS objects is expensive since it requires scanning for blobs with pointers.
-      # However we do NOT want to skip this because when some LFS file failed in last update mirror
-      # user may manually trigger mirror again to retry update LFS file even repo not changed.
-      update_lfs_objects
+      # Updating LFS objects is expensive since it requires scanning for blobs with pointers.
+      # Let's skip this if the repository hasn't changed.
+      update_lfs_objects if project.repository.checksum != checksum_before
 
       # Running git fetch in the repository creates loose objects in the same
       # way running git push *to* the repository does, so ensure we run regular
@@ -160,7 +161,8 @@ module Projects
 
       if result[:status] == :error
         log_error(result[:message])
-        raise UpdateError, result[:message]
+        # Uncomment once https://gitlab.com/gitlab-org/gitlab-foss/issues/61834 is closed
+        # raise UpdateError, result[:message]
       end
     end
 

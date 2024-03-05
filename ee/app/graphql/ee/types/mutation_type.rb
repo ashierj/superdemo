@@ -45,7 +45,7 @@ module EE
         mount_mutation ::Mutations::Security::Finding::RevertToDetected
         mount_mutation ::Mutations::Vulnerabilities::Create
         mount_mutation ::Mutations::Vulnerabilities::BulkDismiss
-        mount_mutation ::Mutations::Vulnerabilities::RemoveAllFromProject, alpha: { milestone: '16.7' }
+        mount_mutation ::Mutations::Vulnerabilities::RemoveAllFromProject
         mount_mutation ::Mutations::Vulnerabilities::Dismiss
         mount_mutation ::Mutations::Vulnerabilities::Resolve
         mount_mutation ::Mutations::Vulnerabilities::Confirm
@@ -122,6 +122,7 @@ module EE
         mount_mutation ::Mutations::Deployments::DeploymentApprove
         mount_mutation ::Mutations::MergeRequests::UpdateApprovalRule
         mount_mutation ::Mutations::Ai::Action, alpha: { milestone: '15.11' }
+        mount_mutation ::Mutations::Ai::DuoUserFeedback, alpha: { milestone: '16.10' }
         mount_mutation ::Mutations::AuditEvents::InstanceExternalAuditEventDestinations::Create
         mount_mutation ::Mutations::AuditEvents::InstanceExternalAuditEventDestinations::Destroy
         mount_mutation ::Mutations::AuditEvents::InstanceExternalAuditEventDestinations::Update
@@ -151,6 +152,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::Streaming::HTTP::NamespaceFilters::Create
         mount_mutation ::Mutations::AuditEvents::Streaming::HTTP::NamespaceFilters::Delete
         mount_mutation ::Mutations::Ai::Agents::Create, alpha: { milestone: '16.8' }
+        mount_mutation ::Mutations::Ai::Agents::Update, alpha: { milestone: '16.10' }
         mount_mutation ::Mutations::ComplianceManagement::Standards::RefreshAdherenceChecks
         mount_mutation ::Mutations::Groups::SavedReplies::Create, alpha: { milestone: '16.10' }
         mount_mutation ::Mutations::Groups::SavedReplies::Update, alpha: { milestone: '16.10' }

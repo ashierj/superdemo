@@ -54,7 +54,7 @@ RSpec.describe 'Multiple value streams', :js, feature_category: :value_stream_ma
   shared_examples 'create a value stream' do |custom_value_stream_name|
     before do
       toggle_value_stream_dropdown
-      page.find_button(_('Create new Value Stream')).click
+      page.find_button(_('New Value Stream')).click
     end
 
     it 'includes additional form fields' do

@@ -6,21 +6,24 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
   subject { described_class.new(data) }
 
   let(:content) { 'response' }
+  let(:user) { build_stubbed(:user) }
   let(:data) do
     {
       timestamp: timestamp,
       id: 'uuid',
       request_id: 'original_request_id',
       errors: ['some error1', 'another error'],
+      extras: {},
       role: 'user',
       content: content,
       ai_action: 'chat',
       client_subscription_id: 'client_subscription_id',
-      user: build_stubbed(:user),
+      user: user,
       chunk_id: 1,
       type: 'tool',
-      context: Gitlab::Llm::AiMessageContext.new(resource: build_stubbed(:user)),
-      agent_version_id: 1
+      context: Gitlab::Llm::AiMessageContext.new(resource: user),
+      agent_version_id: 1,
+      referer_url: 'http://127.0.0.1:3000'
     }
   end
 
@@ -35,6 +38,30 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
       allow(SecureRandom).to receive(:uuid).once.and_return('123')
 
       expect(described_class.new(data.except(:id)).id).to eq('123')
+    end
+  end
+
+  describe '#initialize' do
+    context 'when the attribute is not in the ATTRIBUTES_LIST' do
+      before do
+        stub_const("#{described_class}::ATTRIBUTES_LIST", [:id, :role, :user])
+      end
+
+      it 'does not set the attribute' do
+        result = described_class.new(data)
+        expect(result.referer_url).to be_nil
+      end
+    end
+
+    context 'when the attribute is in the ATTRIBUTES_LIST' do
+      before do
+        stub_const("#{described_class}::ATTRIBUTES_LIST", [:id, :role, :user, :referer_url])
+      end
+
+      it 'sets the attribute' do
+        result = described_class.new(data)
+        expect(result.referer_url).to eq('http://127.0.0.1:3000')
+      end
     end
   end
 

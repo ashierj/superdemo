@@ -84,6 +84,21 @@ describe('App component', () => {
         ]);
       });
     });
+
+    describe('when existing policy selected', () => {
+      it('should display correct title', () => {
+        factory({
+          provide: {
+            existingPolicy: {
+              id: 'policy-id',
+              value: 'approval',
+            },
+          },
+        });
+
+        expect(findTitle()).toBe('Edit policy');
+      });
+    });
   });
 
   describe('when there is a type query parameter', () => {
@@ -156,6 +171,25 @@ describe('App component', () => {
 
       it('should display the title correctly', () => {
         expect(findTitle()).toBe('Edit merge request approval policy');
+      });
+    });
+
+    describe('invalid url parameter', () => {
+      beforeEach(() => {
+        jest.spyOn(urlUtils, 'getParameterByName').mockReturnValue('invalid');
+        factory({
+          provide: {
+            namespaceType: NAMESPACE_TYPES.PROJECT,
+            existingPolicy: {
+              id: 'policy-id',
+              value: 'scanResult',
+            },
+          },
+        });
+      });
+
+      it('should display the title correctly', () => {
+        expect(findTitle()).toBe('Edit policy');
       });
     });
   });

@@ -198,6 +198,10 @@ module EE
         @subject.custom_roles_enabled?
       end
 
+      condition(:google_cloud_support_available, scope: :global) do
+        ::Gitlab::Saas.feature_available?(:google_cloud_support)
+      end
+
       desc "Custom role on group that enables read dependency"
       condition(:role_enables_read_dependency) do
         ::Auth::MemberRoleAbilityLoader.new(
@@ -715,6 +719,11 @@ module EE
         enable :create_saved_replies
         enable :destroy_saved_replies
         enable :update_saved_replies
+      end
+
+      rule { google_cloud_support_available & can?(:maintainer_access) }.policy do
+        enable :read_runner_cloud_provisioning_info
+        enable :provision_cloud_runner
       end
     end
 

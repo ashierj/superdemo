@@ -9,7 +9,7 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
     shared_examples 'logging an error' do |message:|
       it 'logs an error' do
         expect(service).to receive(:log_error)
-          .with(class_name: described_class.name, project_id: project.id, message: message)
+          .with(class_name: described_class.name, container_id: project.id, message: message)
 
         subject
       end
@@ -21,9 +21,9 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
       it_behaves_like 'returning an error service response', message: 'Access denied'
     end
 
-    context 'with google_cloud_runner_provisioning FF disabled' do
+    context 'with google_cloud_support_feature_flag FF disabled' do
       before do
-        stub_feature_flags(google_cloud_runner_provisioning: false)
+        stub_feature_flags(google_cloud_support_feature_flag: false)
       end
 
       it_behaves_like 'returning an error service response', message: 'Feature flag not enabled'

@@ -20,16 +20,20 @@ module Mutations
       def ready?(**args)
         raise Gitlab::Graphql::Errors::ArgumentError, 'group_path argument is required.' if missing_group_path?(args)
 
+        if extra_group_path?(args)
+          raise Gitlab::Graphql::Errors::ArgumentError, 'group_path argument is not allowed on self-managed instances.'
+        end
+
         super
       end
 
       def resolve(**args)
-        group = ::Gitlab::Graphql::Lazy.force(find_object(group_path: args.delete(:group_path))) if args[:group_path]
-
-        authorize_admin_roles!(group)
+        group = find_group(args.delete(:group_path))
 
         params = canonicalize(args.merge(namespace: group))
         response = ::MemberRoles::CreateService.new(current_user, params).execute
+
+        raise_resource_not_available_error! if response.error? && response.reason == :unauthorized
 
         {
           member_role: response.payload[:member_role],
@@ -39,31 +43,31 @@ module Mutations
 
       private
 
+      def find_group(group_path)
+        return unless group_path
+
+        group = ::Gitlab::Graphql::Lazy.force(find_object(group_path: group_path))
+
+        raise_resource_not_available_error! unless group
+
+        group
+      end
+
       def find_object(group_path:)
         resolve_namespace(full_path: group_path)
-      end
-
-      def authorize_admin_roles!(group)
-        return authorize_group_member_roles!(group) if group
-
-        authorize_instance_member_roles!
-      end
-
-      def authorize_group_member_roles!(group)
-        raise_resource_not_available_error! if restrict_member_roles? && !gitlab_com_subscription?
-        raise_resource_not_available_error! unless Ability.allowed?(current_user, :admin_member_role, group)
-        raise_resource_not_available_error! unless group.custom_roles_enabled?
-      end
-
-      def authorize_instance_member_roles!
-        raise_resource_not_available_error! unless Ability.allowed?(current_user, :admin_member_role)
-        raise_resource_not_available_error! if gitlab_com_subscription?
       end
 
       def missing_group_path?(args)
         return false unless gitlab_com_subscription?
 
         args[:group_path].blank?
+      end
+
+      def extra_group_path?(args)
+        return false if args[:group_path].blank?
+        return false if gitlab_com_subscription?
+
+        restrict_member_roles?
       end
 
       def canonicalize(args)

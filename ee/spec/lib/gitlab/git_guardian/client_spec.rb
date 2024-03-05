@@ -66,7 +66,7 @@ RSpec.describe ::Gitlab::GitGuardian::Client, feature_category: :source_code_man
       end
     end
 
-    context 'when a blob without path' do
+    context 'when a blob has no path' do
       let(:blobs) { [fake_blob(path: nil)] }
       let(:request_body) { [{ document: 'foo' }] }
 
@@ -191,6 +191,77 @@ RSpec.describe ::Gitlab::GitGuardian::Client, feature_category: :source_code_man
           "Secrets detection policy violated at 'lib/.env' for username 'jen_barber'"
         ]
         expect(guardian_api_request).to have_been_requested
+      end
+    end
+
+    context 'with multiple blob batches' do
+      let(:blobs) { Array.new(46) { |i| fake_blob(path: "fake_path#{i}.txt") } }
+      let(:policies_breaks_message) do
+        [
+          "Filenames policy violated at 'lib/.env' for filename '.env'",
+          "Secrets detection policy violated at 'lib/.env' for username 'jen_barber'"
+        ]
+      end
+
+      let(:stub_guardian_request) do
+        stub_request(:post, guardian_url).to_return(
+          { status: status, body: stubbed_response }
+        )
+      end
+
+      before do
+        allow(client).to receive(:process_response).and_return([], policies_breaks_message, [])
+      end
+
+      it 'returns appropriate error messages' do
+        expect(client_response).to eq [
+          "Filenames policy violated at 'lib/.env' for filename '.env'",
+          "Secrets detection policy violated at 'lib/.env' for username 'jen_barber'"
+        ]
+        expect(guardian_api_request).to have_been_requested.times(3)
+      end
+    end
+
+    describe 'filename limit' do
+      let(:response) { instance_double(Net::HTTPResponse, body: stubbed_response) }
+      let(:response_double) do
+        instance_double(HTTParty::Response, code: status, response: response)
+      end
+
+      context 'when file names is withing the limit' do
+        let(:file_paths) { %w[test_path/file.md lib/.env] }
+
+        let(:params) do
+          [
+            { document: blobs[0].data, filename: 'file.md' },
+            { document: blobs[1].data, filename: '.env' }
+          ]
+        end
+
+        it 'does not raise an error' do
+          expect(client).to receive(:perform_request).with(params).and_return(response)
+          expect(client_response).to eq []
+        end
+      end
+
+      context 'when file name is outside of the limit' do
+        let(:filler) { 'x' * 237 }
+        let(:long_filename) { "NOT_256_CHARACTERS_#{filler}.txt" }
+        let(:long_path) { "test/#{long_filename}" }
+        let(:file_paths) { ["test_path/file.md", long_path] }
+        let(:params) do
+          [
+            { document: blobs[0].data, filename: 'file.md' },
+            { document: blobs[1].data, filename: "256_CHARACTERS_#{filler}.txt" }
+          ]
+        end
+
+        it 'does not raise an error' do
+          number_of_trimmed_characters = long_filename.length - described_class::FILENAME_LIMIT
+          expect(number_of_trimmed_characters).to be(4)
+          expect(client).to receive(:perform_request).with(params).and_return(response)
+          expect(client_response).to eq []
+        end
       end
     end
   end

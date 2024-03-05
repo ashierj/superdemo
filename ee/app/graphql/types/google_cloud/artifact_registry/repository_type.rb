@@ -28,8 +28,8 @@ module Types
           Types::GoogleCloud::ArtifactRegistry::ArtifactType.connection_type,
           null: true,
           description: 'Google Artifact Registry repository artifacts. ' \
-                       'Returns `null` if `gcp_artifact_registry` feature flag is disabled or GitLab.com feature ' \
-                       'is unavailable.',
+                       'Returns `null` if `google_cloud_support_feature_flag` feature flag ' \
+                       'is disabled or GitLab.com feature is unavailable.',
           resolver: ::Resolvers::GoogleCloud::ArtifactRegistry::RepositoryArtifactsResolver,
           connection_extension: Gitlab::Graphql::Extensions::ExternallyPaginatedArrayExtension
 

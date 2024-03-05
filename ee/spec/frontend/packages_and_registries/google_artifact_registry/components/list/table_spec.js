@@ -137,8 +137,8 @@ describe('ListTable', () => {
 
     it('renders the clipboard button', () => {
       expect(findClipboardButton().props()).toMatchObject({
-        text: 'alpine@sha256:1234567890abcdef1234567890abcdef12345678',
-        title: 'Copy image name',
+        text: imageData.uri,
+        title: 'Copy image path',
       });
     });
 

@@ -29,6 +29,7 @@ module EE
 
         check_membership_lock!
         check_quota!
+        check_seats!
       end
 
       def check_quota!
@@ -46,6 +47,19 @@ module EE
 
         @membership_locked = true # rubocop:disable Gitlab/ModuleWithInstanceVariables
         raise ::Members::CreateService::MembershipLockedError
+      end
+
+      def check_seats!
+        root_namespace = source.root_ancestor
+
+        return unless root_namespace.block_seat_overages?
+
+        # Work in progress. Handle email invites in https://gitlab.com/gitlab-org/gitlab/-/issues/443383.
+        invited_user_ids = invites.select { |i| i.to_i.to_s == i }
+
+        return if root_namespace.seats_available_for?(invited_user_ids.map(&:to_i))
+
+        raise ::Members::CreateService::SeatLimitExceededError, s_('AddMember|Not enough seats for this many users.')
       end
 
       def invite_quota_exceeded?

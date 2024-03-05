@@ -3,6 +3,7 @@
 module Audit
   class NamespaceSettingChangesAuditor < BaseChangesAuditor
     EVENT_NAME_PER_COLUMN = {
+      duo_features_enabled: 'duo_features_enabled_updated',
       experiment_features_enabled: 'experiment_features_enabled_updated'
     }.freeze
 

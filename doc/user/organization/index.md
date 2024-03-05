@@ -9,9 +9,9 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/409913) in GitLab 16.1 [with a flag](../../administration/feature_flags.md) named `ui_for_organizations`. Disabled by default.
 
 FLAG:
-This feature is not ready for production use.
 On self-managed GitLab, by default this feature is not available. To make it available, an administrator can [enable the feature flag](../../administration/feature_flags.md) named `ui_for_organizations`.
 On GitLab.com and GitLab Dedicated, this feature is not available.
+This feature is not ready for production use.
 
 DISCLAIMER:
 This page contains information related to upcoming products, features, and functionality.
@@ -75,6 +75,17 @@ To view the organizations you have access to:
    - To search for specific groups or projects, in the search box enter your search term.
    - To view only groups or projects, from the **Display** dropdown list select an option.
 1. Optional. To sort the results by name, date created, or date updated, from the dropdown list select an option. Then select ascending (**{sort-lowest}**) or descending (**{sort-highest}**) order.
+
+## Create a group in an organization
+
+1. On the left sidebar, select **Organizations** and find the organization you want to create a group in.
+1. Select **Manage > Groups and projects**.
+1. Select **New group**.
+1. In the **Group name** text box, enter the name of the group. For a list of words that cannot be used as group names, see
+   [reserved names](../reserved_names.md).
+1. In the **Group URL** text box, enter the path for the group used for the [namespace](../namespace/index.md).
+1. Select the [**Visibility level**](../public_access.md) of the group.
+1. Select **Create group**.
 
 ## Manage users
 

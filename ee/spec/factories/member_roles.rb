@@ -5,6 +5,7 @@ FactoryBot.define do
     namespace { association(:group) }
     base_access_level { Gitlab::Access::DEVELOPER }
     read_code { true }
+    name { generate(:title) }
 
     trait(:developer) { base_access_level { Gitlab::Access::DEVELOPER } }
     trait(:maintainer) { base_access_level { Gitlab::Access::MAINTAINER } }

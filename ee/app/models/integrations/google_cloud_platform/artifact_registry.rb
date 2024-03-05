@@ -3,6 +3,8 @@
 module Integrations
   module GoogleCloudPlatform
     class ArtifactRegistry < Integration
+      include HasAvatar
+
       SECTION_TYPE_GOOGLE_CLOUD_ARTIFACT_REGISTRY = 'google_cloud_artifact_registry'
 
       attribute :alert_events, default: false
@@ -91,7 +93,7 @@ module Integrations
       end
 
       def ci_variables
-        return [] unless project.gcp_artifact_registry_enabled? && activated?
+        return [] unless project.google_cloud_support_enabled? && activated?
 
         [
           { key: 'GOOGLE_ARTIFACT_REGISTRY_PROJECT_ID', value: artifact_registry_project_id },

@@ -179,114 +179,116 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
         stub_licensed_features(custom_roles: true)
       end
 
-      context "when unauthorized" do
-        it "returns unauthorized error" do
-          subject
-
-          expect(response).to have_gitlab_http_status(:unauthorized)
-        end
-      end
-
-      context "when a less privileged user" do
-        let(:current_user) { user }
-
-        it "does not allow less privileged user to add member roles" do
-          expect do
+      context 'when on SaaS', :saas do
+        context "when unauthorized" do
+          it "returns unauthorized error" do
             subject
-          end.not_to change { group_with_member_roles.member_roles.count }
 
-          expect(response).to have_gitlab_http_status(:forbidden)
-        end
-      end
-
-      context "when owner of the group" do
-        let(:current_user) { owner }
-
-        it "returns ok and add member role" do
-          expect do
-            subject
-          end.to change { group_with_member_roles.member_roles.count }.by(1)
-
-          aggregate_failures "testing response" do
-            expect(response).to have_gitlab_http_status(:created)
-            expect(json_response['base_access_level']).to eq(::Gitlab::Access::GUEST)
-            expect(json_response['read_code']).to eq(true)
-            expect(json_response['name']).to eq('Guest + read_code')
-            expect(json_response['description']).to eq('My custom guest role')
+            expect(response).to have_gitlab_http_status(:unauthorized)
           end
         end
 
-        context "when no name param is passed" do
-          let_it_be(:params) do
-            {
-              base_access_level: ::Gitlab::Access::REPORTER,
-              read_vulnerability: true,
-              name: nil
-            }
-          end
+        context "when a less privileged user" do
+          let(:current_user) { user }
 
-          it "populates a default name based on the access level passed in" do
+          it "does not allow less privileged user to add member roles" do
+            expect do
+              subject
+            end.not_to change { group_with_member_roles.member_roles.count }
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+
+        context "when owner of the group" do
+          let(:current_user) { owner }
+
+          it "returns ok and add member role" do
             expect do
               subject
             end.to change { group_with_member_roles.member_roles.count }.by(1)
 
             aggregate_failures "testing response" do
               expect(response).to have_gitlab_http_status(:created)
-              expect(json_response['base_access_level']).to eq(::Gitlab::Access::REPORTER)
-              expect(json_response['read_vulnerability']).to eq(true)
-              expect(json_response['name']).to eq('Reporter - custom')
-              expect(json_response['description']).to eq(nil)
-            end
-          end
-        end
-
-        context "when params are missing" do
-          let(:params) { { read_code: false } }
-
-          it "returns a 400 error when params are missing" do
-            subject
-
-            expect(response).to have_gitlab_http_status(:bad_request)
-            expect(json_response['error']).to match(/base_access_level is missing/)
-          end
-        end
-
-        context "when params are invalid" do
-          let(:params) { { base_access_level: 1 } }
-
-          it "returns a 400 error when params are invalid" do
-            subject
-
-            expect(response).to have_gitlab_http_status(:bad_request)
-            expect(json_response['error']).to eq('base_access_level does not have a valid value')
-          end
-        end
-
-        context 'when group is not a root group' do
-          let_it_be(:group_id) { child_group.id }
-
-          it "returns not found error" do
-            subject
-
-            expect(response).to have_gitlab_http_status(:bad_request)
-            expect(json_response['message']).to match(/Namespace must be top-level namespace/)
-          end
-        end
-
-        context "when errors during creation of new record" do
-          before do
-            allow_next_instance_of(MemberRole) do |instance|
-              instance.errors.add(:base, 'validation error')
-
-              allow(instance).to receive(:valid?).and_return(false)
+              expect(json_response['base_access_level']).to eq(::Gitlab::Access::GUEST)
+              expect(json_response['read_code']).to eq(true)
+              expect(json_response['name']).to eq('Guest + read_code')
+              expect(json_response['description']).to eq('My custom guest role')
             end
           end
 
-          it "returns a error message with 400 code" do
-            subject
+          context "when no name param is passed" do
+            let_it_be(:params) do
+              {
+                base_access_level: ::Gitlab::Access::REPORTER,
+                read_vulnerability: true,
+                name: nil
+              }
+            end
 
-            expect(response).to have_gitlab_http_status(:bad_request)
-            expect(json_response['message']).to eq('validation error')
+            it "populates a default name based on the access level passed in" do
+              expect do
+                subject
+              end.to change { group_with_member_roles.member_roles.count }.by(1)
+
+              aggregate_failures "testing response" do
+                expect(response).to have_gitlab_http_status(:created)
+                expect(json_response['base_access_level']).to eq(::Gitlab::Access::REPORTER)
+                expect(json_response['read_vulnerability']).to eq(true)
+                expect(json_response['name']).to eq('Reporter - custom')
+                expect(json_response['description']).to eq(nil)
+              end
+            end
+          end
+
+          context "when params are missing" do
+            let(:params) { { read_code: false } }
+
+            it "returns a 400 error when params are missing" do
+              subject
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(json_response['error']).to match(/base_access_level is missing/)
+            end
+          end
+
+          context "when params are invalid" do
+            let(:params) { { base_access_level: 1 } }
+
+            it "returns a 400 error when params are invalid" do
+              subject
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(json_response['error']).to eq('base_access_level does not have a valid value')
+            end
+          end
+
+          context 'when group is not a root group' do
+            let_it_be(:group_id) { child_group.id }
+
+            it "returns not found error" do
+              subject
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(json_response['message']).to match(/Creation of member role is allowed only for root groups/)
+            end
+          end
+
+          context "when errors during creation of new record" do
+            before do
+              allow_next_instance_of(MemberRole) do |instance|
+                instance.errors.add(:base, 'validation error')
+
+                allow(instance).to receive(:valid?).and_return(false)
+              end
+            end
+
+            it "returns a error message with 400 code" do
+              subject
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(json_response['message']).to eq('validation error')
+            end
           end
         end
       end

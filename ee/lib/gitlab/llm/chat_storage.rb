@@ -31,10 +31,21 @@ module Gitlab
         clear_memoization(:messages)
       end
 
+      def set_has_feedback(message)
+        with_redis do |redis|
+          redis.multi do |multi|
+            multi.sadd(feedback_key, [message.id])
+            multi.expire(feedback_key, EXPIRE_TIME)
+          end
+        end
+        clear_memoization(:messages)
+      end
+
       def messages
         with_redis do |redis|
+          feedback_markers = redis.smembers(feedback_key)
           redis.xrange(key).map do |_id, data|
-            load_message(data)
+            load_message(data).tap { |message| message.extras['has_feedback'] = feedback_markers.include?(message.id) }
           end
         end
       end
@@ -67,6 +78,7 @@ module Gitlab
       def clean!
         with_redis do |redis|
           redis.xtrim(key, 0)
+          redis.del(feedback_key)
         end
         clear_memoization(:messages)
       end
@@ -77,8 +89,10 @@ module Gitlab
 
       def cache_data(data)
         with_redis do |redis|
-          redis.xadd(key, data, maxlen: MAX_MESSAGES)
-          redis.expire(key, EXPIRE_TIME)
+          redis.multi do |multi|
+            multi.xadd(key, data, maxlen: MAX_MESSAGES)
+            multi.expire(key, EXPIRE_TIME)
+          end
         end
       end
 
@@ -86,6 +100,10 @@ module Gitlab
         return "ai_chat:#{user.id}:#{agent_version_id}" if agent_version_id
 
         "ai_chat:#{user.id}"
+      end
+
+      def feedback_key
+        "#{key}:feedback"
       end
 
       def with_redis(&block)
@@ -101,7 +119,7 @@ module Gitlab
 
       def dump_message(message)
         # Message is stored only partially. Some data might be missing after reloading from storage.
-        result = message.to_h.slice(*%w[id request_id role content])
+        result = message.to_h.slice(*%w[id request_id role content referer_url])
 
         result['errors'] = message.errors&.to_json
         result['extras'] = message.extras&.to_json

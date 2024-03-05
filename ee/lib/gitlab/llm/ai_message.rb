@@ -13,7 +13,7 @@ module Gitlab
       ATTRIBUTES_LIST = [
         :id, :request_id, :content, :role, :timestamp, :errors, :extras,
         :user, :ai_action, :client_subscription_id, :type, :chunk_id, :context,
-        :agent_version_id
+        :agent_version_id, :referer_url
       ].freeze
 
       attr_accessor(*ATTRIBUTES_LIST)
@@ -40,6 +40,7 @@ module Gitlab
         @id ||= SecureRandom.uuid
         @timestamp ||= Time.current
         @errors ||= []
+        @extras ||= {}
       end
 
       def to_h

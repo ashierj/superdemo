@@ -103,6 +103,35 @@ RSpec.describe Gitlab::Ci::Variables::Builder::ScanExecutionPolicies, feature_ca
         end
       end
 
+      context 'when policy is defined for scheduled pipelines' do
+        let_it_be(:project_policy) do
+          build(:scan_execution_policy, :with_schedule, actions: [
+            { scan: 'sast', variables: { SAST_EXCLUDED_ANALYZERS: 'semgrep' } }
+          ])
+        end
+
+        let_it_be(:namespace_policy) do
+          build(:scan_execution_policy, :with_schedule, actions: [
+            { scan: 'container_scanning', tags: ['runner-tag'], variables: { CS_REGISTRY_USER: 'user' } }
+          ])
+        end
+
+        let_it_be(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [project_policy]) }
+        let_it_be(:namespace_policy_yaml) do
+          build(:orchestration_policy_yaml, scan_execution_policy: [namespace_policy])
+        end
+
+        where(:job_name, :expected_variables_lambda) do
+          'build-job'                              | -> { [] }
+          'container-scanning-0'                   | -> { [item(key: 'CS_REGISTRY_USER', value: 'user')] }
+          'brakeman-sast-1'                        | -> { [item(key: 'SAST_EXCLUDED_ANALYZERS', value: 'semgrep')] }
+        end
+
+        with_them do
+          it { is_expected.to match_array(expected_variables_lambda.call) }
+        end
+      end
+
       context 'when feature is not licensed' do
         let(:licensed_feature) { false }
 

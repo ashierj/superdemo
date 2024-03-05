@@ -52,7 +52,7 @@ gem 'sprockets', '~> 3.7.0' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'view_component', '~> 3.11.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Supported DBs
-gem 'pg', '~> 1.5.5' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'pg', '~> 1.5.6' # rubocop:todo Gemfile/MissingFeatureCategory
 
 gem 'neighbor', '~> 0.2.3' # rubocop:todo Gemfile/MissingFeatureCategory
 
@@ -341,7 +341,7 @@ gem 'gitlab_chronic_duration', '~> 0.12' # rubocop:todo Gemfile/MissingFeatureCa
 
 gem 'rack-proxy', '~> 0.7.7' # rubocop:todo Gemfile/MissingFeatureCategory
 
-gem 'cssbundling-rails', '1.3.3', feature_category: :shared
+gem 'cssbundling-rails', '1.4.0', feature_category: :shared
 gem 'terser', '1.0.2' # rubocop:todo Gemfile/MissingFeatureCategory
 
 gem 'click_house-client', path: 'gems/click_house-client', require: 'click_house/client' # rubocop:todo Gemfile/MissingFeatureCategory
@@ -414,7 +414,7 @@ group :development do
 
   gem 'listen', '~> 3.7' # rubocop:todo Gemfile/MissingFeatureCategory
 
-  gem 'ruby-lsp', "~> 0.14.2", require: false, feature_category: :tooling
+  gem 'ruby-lsp', "~> 0.14.3", require: false, feature_category: :tooling
 
   gem 'ruby-lsp-rails', "~> 0.3.0", feature_category: :tooling
 
@@ -500,7 +500,7 @@ end
 group :test do
   gem 'fuubar', '~> 2.2.0' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'rspec-retry', '~> 0.6.2', feature_category: :tooling
-  gem 'rspec_profiling', '~> 0.0.6', feature_category: :tooling
+  gem 'rspec_profiling', '~> 0.0.8', feature_category: :tooling
   gem 'rspec-benchmark', '~> 0.6.0', feature_category: :tooling
   gem 'rspec-parameterized', '~> 1.0', require: false, feature_category: :tooling
   gem 'os', '~> 1.1', feature_category: :tooling
@@ -524,7 +524,7 @@ group :test do
   # Moved in `test` because https://gitlab.com/gitlab-org/gitlab/-/issues/217527
   gem 'derailed_benchmarks', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 
-  gem 'gitlab_quality-test_tooling', '~> 1.15.0', require: false, feature_category: :tooling
+  gem 'gitlab_quality-test_tooling', '~> 1.17.0', require: false, feature_category: :tooling
 end
 
 gem 'octokit', '~> 8.0', feature_category: :importers

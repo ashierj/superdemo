@@ -923,8 +923,11 @@ module EE
       names = []
 
       names << 'github' unless github_integration_enabled?
-      names << 'google_cloud_platform_artifact_registry' unless gcp_artifact_registry_enabled?
-      names << 'google_cloud_platform_workload_identity_federation' unless google_cloud_workload_identity_federation_enabled?
+
+      unless google_cloud_support_enabled?
+        names << 'google_cloud_platform_artifact_registry'
+        names << 'google_cloud_platform_workload_identity_federation'
+      end
 
       super + names
     end
@@ -1247,12 +1250,8 @@ module EE
       ::Gitlab::FIPS.enabled? ? ::Feature.enabled?(:dast_ods_browser_based_scanner, self) : true
     end
 
-    def gcp_artifact_registry_enabled?
-      ::Feature.enabled?(:gcp_artifact_registry, self) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
-    end
-
-    def google_cloud_workload_identity_federation_enabled?
-      ::Feature.enabled?(:google_cloud_workload_identity_federation, self) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
+    def google_cloud_support_enabled?
+      ::Feature.enabled?(:google_cloud_support_feature_flag, self.root_ancestor) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
     end
 
     private

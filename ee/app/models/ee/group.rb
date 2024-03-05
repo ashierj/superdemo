@@ -540,6 +540,22 @@ module EE
       project
     end
 
+    override :block_seat_overages?
+    def block_seat_overages?
+      ::Feature.enabled?(:block_seat_overages, self, type: :gitlab_com_derisk) &&
+        ::Gitlab::Saas.feature_available?(:gitlab_com_subscriptions)
+    end
+
+    def seats_available_for?(user_ids)
+      return true unless gitlab_subscription
+
+      billable_ids = billed_user_ids[:user_ids].to_a
+
+      new_user_ids = user_ids - billable_ids
+
+      gitlab_subscription.seats >= (billable_ids.count + new_user_ids.count)
+    end
+
     def calculate_reactive_cache
       billable_members_count
     end
@@ -951,8 +967,8 @@ module EE
       users_without_bots(members, merge_condition: merge_condition)
     end
 
-    def google_cloud_workload_identity_federation_enabled?
-      ::Feature.enabled?(:google_cloud_workload_identity_federation, self) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
+    def google_cloud_support_enabled?
+      ::Feature.enabled?(:google_cloud_support_feature_flag, self.root_ancestor) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
     end
 
     def assigning_role_too_high?(current_user, access_level)

@@ -13,9 +13,11 @@ import {
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import { createAlert } from '~/alert';
 import { s__, __ } from '~/locale';
+import { fetchPolicies } from '~/lib/graphql';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_CI_RUNNER } from '~/graphql_shared/constants';
 import runnerForRegistrationQuery from '../../graphql/register/runner_for_registration.query.graphql';
+import provisionGoogleCloudRunnerGroup from '../../graphql/register/provision_google_cloud_runner_group.query.graphql';
 import provisionGoogleCloudRunnerProject from '../../graphql/register/provision_google_cloud_runner_project.query.graphql';
 import {
   I18N_FETCH_ERROR,
@@ -30,6 +32,16 @@ export default {
     heading: s__('Runners|Register runner'),
     headingDescription: s__(
       'Runners|After you complete the steps below, an autoscaling fleet of runners is available to execute your CI/CD jobs in Google Cloud. Based on demand, a runner manager automatically creates temporary runners.',
+    ),
+    beforeHeading: s__('Runners|Before you begin'),
+    permissionsText: s__(
+      'Runners|Ensure you have the %{linkStart}Owner%{linkEnd} IAM role on your Google Cloud project.',
+    ),
+    billingLinkText: s__(
+      'Runners|Ensure that %{linkStart}billing is enabled for your Google Cloud project%{linkEnd}.',
+    ),
+    preInstallText: s__(
+      'Runners|To follow the setup instructions, %{gcloudLinkStart}install the Google Cloud CLI%{gcloudLinkEnd} and %{terraformLinkStart}install Terraform%{terraformLinkEnd}.',
     ),
     stepOneHeading: s__('Runners|Step 1: Specify environment'),
     stepOneDescription: s__(
@@ -56,43 +68,56 @@ export default {
       'Runners|Machine type with preset amounts of virtual machines processors (vCPUs) and memory',
     ),
     machineTypeDescription: s__(
-      'Runners|For most CI/CD jobs, use a %{linkStart}N2D standard machine type.%{linkEnd}',
+      'Runners|For most CI/CD jobs, use a %{linkStart}N2D standard machine type%{linkEnd}.',
     ),
     runnerSetupBtnText: s__('Runners|Setup instructions'),
     modal: {
       subtitle: s__(
-        'Runners|These setup instructions use your specifications and follow the best practices for performance and security',
+        'Runners|These setup instructions use your specifications and follow the best practices for performance and security.',
       ),
-      step2_1Header: s__('Runners|Step 1: Configure Google Cloud project'),
+      step2_1Header: s__('Runners|Step 1: Configure your Google Cloud project'),
       step2_1Body: s__(
         `Runners|If you haven't already configured your Google Cloud project, this step enables the required services and creates a service account with the required permissions. `,
       ),
       step2_1Substep1: s__(
-        'Runners|Run the following on your command line. You might be prompted to sign in to Google',
+        'Runners|Run the following on your command line. You might be prompted to sign in to Google.',
       ),
       step2_2Header: s__('Runners|Step 2: Install and register GitLab Runner'),
       step2_2Body: s__(
         'Runners|This step creates the required infrastructure in Google Cloud, installs GitLab Runner, and registers it to this GitLab project. ',
       ),
       step2_2Substep1: s__(
-        'Runners|Use a text editor to create a main.tf file with the following Terraform configuration',
+        'Runners|Use a text editor to create a %{codeStart}main.tf%{codeEnd} file with the following Terraform configuration.',
       ),
       step2_2Substep2: s__(
         'Runners|In the directory with that Terraform configuration file, run the following on your command line.',
       ),
       step2_2Substep3: s__(
-        'Runners|After GitLab Runner is installed and registered, an autoscaling fleet of runners is available to execute your CI/CD jobs in Google Cloud',
+        'Runners|After GitLab Runner is installed and registered, an autoscaling fleet of runners is available to execute your CI/CD jobs in Google Cloud.',
       ),
     },
-    alertBody: s__('Runners|To view the setup instructions, complete the previous form'),
+    copyCommands: __('Copy commands'),
+    emptyFieldsAlertMessage: s__(
+      'Runners|To view the setup instructions, complete the previous form.',
+    ),
+    invalidFieldsAlertMessage: s__(
+      'Runners|To view the setup instructions, make sure all form fields are completed and correct.',
+    ),
     invalidFormButton: s__('Runners|Go to first invalid form field'),
+    externalLink: __('(external link)'),
   },
   links: {
+    permissionsLink: 'https://cloud.google.com/iam/docs/understanding-roles#owner',
+    billingLink:
+      'https://cloud.google.com/billing/docs/how-to/verify-billing-enabled#confirm_billing_is_enabled_on_a_project',
+    gcloudLink: 'https://cloud.google.com/sdk/docs/install',
+    terraformLink: 'https://developer.hashicorp.com/terraform/install',
     projectIdLink:
       'https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects',
     regionAndZonesLink: 'https://cloud.google.com/compute/docs/regions-zones',
     zonesLink: 'https://console.cloud.google.com/compute/zones?pli=1',
-    machineTypesLink:
+    machineTypesLink: 'https://cloud.google.com/compute/docs/machine-resource',
+    n2dMachineTypesLink:
       'https://cloud.google.com/compute/docs/general-purpose-machines#n2d_machine_types',
   },
   components: {
@@ -132,6 +157,7 @@ export default {
       token: '',
       runner: null,
       showInstructionsModal: false,
+      showInstructionsButtonVariant: 'default',
       validations: {
         projectId: false,
         region: false,
@@ -140,6 +166,8 @@ export default {
       provisioningSteps: [],
       setupBashScript: '',
       showAlert: false,
+      group: null,
+      project: null,
     };
   },
   apollo: {
@@ -175,6 +203,7 @@ export default {
     },
     project: {
       query: provisionGoogleCloudRunnerProject,
+      fetchPolicy: fetchPolicies.NETWORK_ONLY,
       variables() {
         return {
           fullPath: this.projectPath,
@@ -185,15 +214,44 @@ export default {
           runnerToken: this.token,
         };
       },
-      result({ data }) {
-        this.provisioningSteps = data.project.runnerCloudProvisioning?.provisioningSteps;
-        this.setupBashScript = data.project.runnerCloudProvisioning?.projectSetupShellScript;
+      result({ data, error }) {
+        if (!error) {
+          this.showAlert = false;
+          this.provisioningSteps = data.project.runnerCloudProvisioning?.provisioningSteps;
+          this.setupBashScript = data.project.runnerCloudProvisioning?.projectSetupShellScript;
+        }
       },
       error(error) {
-        captureException({ error, component: this.$options.name });
+        this.handleError(error);
       },
       skip() {
         return !this.projectPath || this.invalidFields.length > 0;
+      },
+    },
+    group: {
+      query: provisionGoogleCloudRunnerGroup,
+      variables() {
+        return {
+          fullPath: this.groupPath,
+          cloudProjectId: this.projectId,
+          region: this.region,
+          zone: this.zone,
+          machineType: this.machineType,
+          runnerToken: this.token,
+        };
+      },
+      result({ data, error }) {
+        if (!error) {
+          this.showAlert = false;
+          this.provisioningSteps = data.group.runnerCloudProvisioning?.provisioningSteps;
+          this.setupBashScript = data.group.runnerCloudProvisioning?.projectSetupShellScript;
+        }
+      },
+      error(error) {
+        this.handleError(error);
+      },
+      skip() {
+        return !this.groupPath || this.invalidFields.length > 0;
       },
     },
   },
@@ -227,7 +285,7 @@ export default {
     },
     codeStyles() {
       return {
-        height: '300px',
+        maxHeight: '300px',
       };
     },
   },
@@ -235,6 +293,9 @@ export default {
     invalidFields() {
       if (this.invalidFields.length === 0) {
         this.showAlert = false;
+        this.showInstructionsButtonVariant = 'confirm';
+      } else {
+        this.showInstructionsButtonVariant = 'default';
       }
     },
   },
@@ -273,17 +334,25 @@ export default {
         this.$refs[this.invalidFields[0]].$el.focus();
       }
     },
+    handleError(error) {
+      if (error.message.includes('GraphQL error')) {
+        this.showAlert = true;
+      }
+      if (error.networkError) {
+        captureException({ error, component: this.$options.name });
+      }
+    },
   },
   cancelModalOptions: {
-    text: __('Cancel'),
+    text: __('Close'),
   },
 };
 </script>
 
 <template>
   <div>
-    <div class="gl-mb-2">
-      <h1 class="gl-font-size-h1">{{ $options.i18n.heading }}</h1>
+    <div class="gl-mt-5">
+      <h1 class="gl-heading-1">{{ $options.i18n.heading }}</h1>
       <p>
         <gl-icon name="information-o" class="gl-text-blue-600!" />
         <gl-sprintf :message="tokenMessage">
@@ -309,11 +378,54 @@ export default {
     </div>
     <hr />
 
-    <!-- start: step one -->
-    <div class="gl-pb-4">
-      <h2 class="gl-font-lg">{{ $options.i18n.stepOneHeading }}</h2>
-      <p>{{ $options.i18n.stepOneDescription }}</p>
+    <!-- start: before you begin -->
+    <div>
+      <h2 class="gl-heading-2">{{ $options.i18n.beforeHeading }}</h2>
+      <ul>
+        <li>
+          <gl-sprintf :message="$options.i18n.permissionsText">
+            <template #link="{ content }">
+              <gl-link :href="$options.links.permissionsLink" target="_blank">
+                {{ content }}
+                <gl-icon name="external-link" :aria-label="$options.i18n.externalLink" />
+              </gl-link>
+            </template>
+          </gl-sprintf>
+        </li>
+        <li>
+          <gl-sprintf :message="$options.i18n.billingLinkText">
+            <template #link="{ content }">
+              <gl-link :href="$options.links.billingLink" target="_blank">
+                {{ content }}
+                <gl-icon name="external-link" :aria-label="$options.i18n.externalLink" />
+              </gl-link>
+            </template>
+          </gl-sprintf>
+        </li>
+        <li>
+          <gl-sprintf :message="$options.i18n.preInstallText">
+            <template #gcloudLink="{ content }">
+              <gl-link :href="$options.links.gcloudLink" target="_blank">
+                {{ content }}
+                <gl-icon name="external-link" :aria-label="$options.i18n.externalLink" />
+              </gl-link>
+            </template>
+            <template #terraformLink="{ content }">
+              <gl-link :href="$options.links.terraformLink" target="_blank">
+                {{ content }}
+                <gl-icon name="external-link" :aria-label="$options.i18n.externalLink" />
+              </gl-link>
+            </template>
+          </gl-sprintf>
+        </li>
+      </ul>
     </div>
+    <hr />
+    <!-- end: before you begin -->
+
+    <!-- start: step one -->
+    <h2 class="gl-heading-2">{{ $options.i18n.stepOneHeading }}</h2>
+    <p>{{ $options.i18n.stepOneDescription }}</p>
 
     <gl-form-group :label="$options.i18n.projectIdLabel" label-for="project-id">
       <template #description>
@@ -324,7 +436,8 @@ export default {
               target="_blank"
               data-testid="project-id-link"
             >
-              {{ content }} <gl-icon name="external-link" />
+              {{ content }}
+              <gl-icon name="external-link" :aria-label="$options.i18n.externalLink" />
             </gl-link>
           </template>
         </gl-sprintf>
@@ -342,14 +455,15 @@ export default {
       <template #label>
         <div>
           {{ $options.i18n.regionLabel }}
-          <gl-icon id="region-popover" class="gl-ml-2" name="question-o" />
+          <gl-icon id="region-popover" name="question-o" class="gl-text-blue-600" />
           <gl-popover triggers="hover" placement="top" target="region-popover">
             <template #default>
               <p>{{ $options.i18n.regionHelpText }}</p>
               <gl-sprintf :message="$options.i18n.learnMore">
                 <template #link="{ content }">
                   <gl-link :href="$options.links.regionAndZonesLink" target="_blank">
-                    {{ content }} <gl-icon name="external-link" />
+                    {{ content }}
+                    <gl-icon name="external-link" :aria-label="$options.i18n.externalLink" />
                   </gl-link>
                 </template>
               </gl-sprintf>
@@ -369,14 +483,15 @@ export default {
       <template #label>
         <div>
           {{ $options.i18n.zoneLabel }}
-          <gl-icon id="zone-popover" class="gl-ml-2" name="question-o" />
+          <gl-icon id="zone-popover" name="question-o" class="gl-text-blue-600" />
           <gl-popover triggers="hover" placement="top" target="zone-popover">
             <template #default>
               <p>{{ $options.i18n.zoneHelpText }}</p>
-              <gl-sprintf :message="$options.i18n.machineTypeDescription">
+              <gl-sprintf :message="$options.i18n.learnMore">
                 <template #link="{ content }">
                   <gl-link :href="$options.links.regionAndZonesLink" target="_blank">
-                    {{ content }} <gl-icon name="external-link" />
+                    {{ content }}
+                    <gl-icon name="external-link" :aria-label="$options.i18n.externalLink" />
                   </gl-link>
                 </template>
               </gl-sprintf>
@@ -387,7 +502,7 @@ export default {
       <template #description>
         <gl-link :href="$options.links.zonesLink" target="_blank" data-testid="zone-link">
           {{ $options.i18n.zonesLinkText }}
-          <gl-icon name="external-link" />
+          <gl-icon name="external-link" :aria-label="$options.i18n.externalLink" />
         </gl-link>
       </template>
       <gl-form-input
@@ -402,10 +517,18 @@ export default {
       <template #label>
         <div>
           {{ $options.i18n.machineTypeLabel }}
-          <gl-icon id="machine-type-popover" class="gl-ml-2" name="question-o" />
+          <gl-icon id="machine-type-popover" name="question-o" class="gl-text-blue-600" />
           <gl-popover triggers="hover" placement="top" target="machine-type-popover">
             <template #default>
-              {{ $options.i18n.machineTypeHelpText }}
+              <p>{{ $options.i18n.machineTypeHelpText }}</p>
+              <gl-sprintf :message="$options.i18n.learnMore">
+                <template #link="{ content }">
+                  <gl-link :href="$options.links.machineTypesLink" target="_blank">
+                    {{ content }}
+                    <gl-icon name="external-link" :aria-label="$options.i18n.externalLink" />
+                  </gl-link>
+                </template>
+              </gl-sprintf>
             </template>
           </gl-popover>
         </div>
@@ -414,11 +537,12 @@ export default {
         <gl-sprintf :message="$options.i18n.machineTypeDescription">
           <template #link="{ content }">
             <gl-link
-              :href="$options.links.machineTypesLink"
+              :href="$options.links.n2dMachineTypesLink"
               target="_blank"
               data-testid="machine-types-link"
             >
-              {{ content }} <gl-icon name="external-link" />
+              {{ content }}
+              <gl-icon name="external-link" :aria-label="$options.i18n.externalLink" />
             </gl-link>
           </template>
         </gl-sprintf>
@@ -430,10 +554,8 @@ export default {
     <!-- end: step one -->
 
     <!-- start: step two -->
-    <div class="gl-pb-4">
-      <h2 class="gl-font-lg">{{ $options.i18n.stepTwoHeading }}</h2>
-      <p>{{ $options.i18n.stepTwoDescription }}</p>
-    </div>
+    <h2 class="gl-heading-2">{{ $options.i18n.stepTwoHeading }}</h2>
+    <p>{{ $options.i18n.stepTwoDescription }}</p>
     <gl-alert
       v-if="showAlert"
       :primary-button-text="$options.i18n.invalidFormButton"
@@ -442,11 +564,20 @@ export default {
       class="gl-mb-4"
       @primaryAction="goToFirstInvalidField"
     >
-      {{ $options.i18n.alertBody }}
+      <template v-if="invalidFields.length > 0">
+        {{ $options.i18n.emptyFieldsAlertMessage }}
+      </template>
+      <template v-else>
+        {{ $options.i18n.invalidFieldsAlertMessage }}
+      </template>
     </gl-alert>
-    <gl-button data-testid="show-instructions-button" @click="showInstructions">{{
-      $options.i18n.runnerSetupBtnText
-    }}</gl-button>
+    <gl-button
+      data-testid="show-instructions-button"
+      :variant="showInstructionsButtonVariant"
+      category="secondary"
+      @click="showInstructions"
+      >{{ $options.i18n.runnerSetupBtnText }}</gl-button
+    >
     <gl-modal
       v-model="showInstructionsModal"
       cancel-variant="light"
@@ -457,34 +588,38 @@ export default {
       :title="s__('Runners|Setup instructions')"
     >
       <p>{{ $options.i18n.modal.subtitle }}</p>
-      <strong>{{ $options.i18n.modal.step2_1Header }}</strong>
+      <h3 class="gl-heading-4">{{ $options.i18n.modal.step2_1Header }}</h3>
       <p>{{ $options.i18n.modal.step2_1Body }}</p>
       <p>{{ $options.i18n.modal.step2_1Substep1 }}</p>
-      <div class="gl-display-flex gl-my-4">
-        <pre
-          class="gl-w-full gl-py-4 gl-display-flex gl-justify-content-space-between gl-m-0"
-          data-testid="bash-instructions"
-          :style="codeStyles"
-          >{{ bashInstructions }}</pre
-        >
+      <div class="gl-display-flex gl-align-items-flex-start">
+        <pre class="gl-w-full gl-mb-5" data-testid="bash-instructions" :style="codeStyles">{{
+          bashInstructions
+        }}</pre>
       </div>
 
-      <strong>{{ $options.i18n.modal.step2_2Header }}</strong>
+      <h3 class="gl-heading-4">{{ $options.i18n.modal.step2_2Header }}</h3>
       <p>{{ $options.i18n.modal.step2_2Body }}</p>
-      <p>{{ $options.i18n.modal.step2_2Substep1 }}</p>
-      <div class="gl-display-flex gl-my-4">
+      <p>
+        <gl-sprintf :message="$options.i18n.modal.step2_2Substep1">
+          <template #code="{ content }">
+            <code>{{ content }}</code>
+          </template>
+        </gl-sprintf>
+      </p>
+      <div class="gl-display-flex gl-align-items-flex-start">
         <pre
-          class="gl-w-full gl-py-4 gl-display-flex gl-justify-content-space-between gl-m-0"
+          class="gl-w-full gl-mb-5"
           data-testid="terraform-script-instructions"
           :style="codeStyles"
           >{{ terraformScriptInstructions }}</pre
         >
       </div>
       <p>{{ $options.i18n.modal.step2_2Substep2 }}</p>
-      <div class="gl-display-flex gl-my-4">
+      <div class="gl-display-flex gl-align-items-flex-start">
         <pre
-          class="gl-w-full gl-py-4 gl-display-flex gl-justify-content-space-between gl-m-0"
+          class="gl-w-full gl-mb-5"
           data-testid="terraform-apply-instructions"
+          :style="codeStyles"
           >{{ terraformApplyInstructions }}</pre
         >
       </div>

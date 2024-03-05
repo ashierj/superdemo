@@ -1,5 +1,13 @@
 <script>
-import { GlForm, GlButton, GlFormGroup, GlFormInput, GlFormSelect } from '@gitlab/ui';
+import {
+  GlForm,
+  GlButton,
+  GlFormGroup,
+  GlFormInput,
+  GlFormSelect,
+  GlSprintf,
+  GlLink,
+} from '@gitlab/ui';
 import CountryOrRegionSelector from 'jh_else_ee/trials/components/country_or_region_selector.vue';
 import csrf from '~/lib/utils/csrf';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
@@ -16,6 +24,10 @@ import {
   TRIAL_COMPANY_SIZE_PROMPT,
   TRIAL_FORM_SUBMIT_TEXT,
   TRIAL_PHONE_DESCRIPTION,
+  TRIAL_TERMS_TEXT,
+  TRIAL_GITLAB_SUBSCRIPTION_AGREEMENT,
+  TRIAL_PRIVACY_STATEMENT,
+  TRIAL_COOKIE_POLICY,
 } from '../constants';
 
 export default {
@@ -28,6 +40,8 @@ export default {
     GlFormInput,
     GlFormSelect,
     CountryOrRegionSelector,
+    GlSprintf,
+    GlLink,
   },
   directives: {
     autofocusonshow,
@@ -61,6 +75,10 @@ export default {
     formSubmitText: TRIAL_FORM_SUBMIT_TEXT,
     companySizeSelectPrompt: TRIAL_COMPANY_SIZE_PROMPT,
     phoneNumberDescription: TRIAL_PHONE_DESCRIPTION,
+    termsText: TRIAL_TERMS_TEXT,
+    gitlabSubscription: TRIAL_GITLAB_SUBSCRIPTION_AGREEMENT,
+    privacyStatement: TRIAL_PRIVACY_STATEMENT,
+    cookiePolicy: TRIAL_COOKIE_POLICY,
   },
 };
 </script>
@@ -139,5 +157,25 @@ export default {
     <gl-button type="submit" variant="confirm" class="gl-w-20" data-testid="continue">
       {{ $options.i18n.formSubmitText }}
     </gl-button>
+
+    <div class="gl-mt-4">
+      <gl-sprintf :message="$options.i18n.termsText">
+        <template #gitlabSubscriptionAgreement>
+          <gl-link :href="$options.i18n.gitlabSubscription.url" target="_blank">
+            {{ $options.i18n.gitlabSubscription.text }}
+          </gl-link>
+        </template>
+        <template #privacyStatement>
+          <gl-link :href="$options.i18n.privacyStatement.url" target="_blank">
+            {{ $options.i18n.privacyStatement.text }}
+          </gl-link>
+        </template>
+        <template #cookiePolicy>
+          <gl-link :href="$options.i18n.cookiePolicy.url" target="_blank">
+            {{ $options.i18n.cookiePolicy.text }}
+          </gl-link>
+        </template>
+      </gl-sprintf>
+    </div>
   </gl-form>
 </template>

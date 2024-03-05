@@ -343,7 +343,7 @@ module EE
           null: true,
           alpha: { milestone: '16.9' },
           description: 'Information used for provisioning the runner on a cloud provider. ' \
-                       'Returns `null` if `:google_cloud_runner_provisioning` feature flag is disabled, ' \
+                       'Returns `null` if `:google_cloud_support_feature_flag` feature flag is disabled, ' \
                        'or the GitLab instance is not a SaaS instance.' do
                          argument :provider, ::Types::Ci::RunnerCloudProviderEnum, required: true,
                            description: 'Identifier of the cloud provider.'
@@ -362,7 +362,7 @@ module EE
           null: true,
           alpha: { milestone: '16.10' },
           description: 'Google Artifact Registry repository. ' \
-                       'Returns `null` if `gcp_artifact_registry` feature flag is disabled'
+                       'Returns `null` if `google_cloud_support_feature_flag` feature flag is disabled'
 
         field :ai_agent, ::Types::Ai::Agents::AgentType,
           null: true,
@@ -375,6 +375,11 @@ module EE
           description: 'Information about Value Stream Analytics within the project.',
           null: true,
           resolver_method: :object
+
+        field :marked_for_deletion_on, ::Types::TimeType,
+          null: true,
+          description: 'Date when project was scheduled to be deleted.',
+          alpha: { milestone: '16.10' }
       end
 
       def tracking_key
@@ -421,22 +426,29 @@ module EE
       end
 
       def runner_cloud_provisioning(provider:, cloud_project_id:)
-        return if ::Feature.disabled?(:google_cloud_runner_provisioning, project)
+        return if ::Feature.disabled?(:google_cloud_support_feature_flag, project.root_ancestor)
 
         {
-          project: project,
+          container: project,
           provider: provider,
           cloud_project_id: cloud_project_id
         }
       end
 
       def google_cloud_artifact_registry_repository
-        integrations_available = project.google_cloud_workload_identity_federation_enabled? &&
-          project.gcp_artifact_registry_enabled? &&
+        integrations_available = project.google_cloud_support_enabled? &&
           project.google_cloud_platform_workload_identity_federation_integration&.operating? &&
           project.google_cloud_platform_artifact_registry_integration&.operating?
 
         project if integrations_available
+      end
+
+      def marked_for_deletion_on
+        ## marked_for_deletion_at is deprecated in our v5 REST API in favor of marked_for_deletion_on
+        ## https://docs.gitlab.com/ee/api/projects.html#removals-in-api-v5
+        return unless project.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
+
+        project.marked_for_deletion_at
       end
     end
   end

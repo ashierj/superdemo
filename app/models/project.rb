@@ -694,6 +694,7 @@ class Project < ApplicationRecord
   scope :with_push, -> { joins(:events).merge(Event.pushed_action) }
   scope :with_project_feature, -> { joins('LEFT JOIN project_features ON projects.id = project_features.project_id') }
   scope :with_jira_dvcs_server, -> { joins(:feature_usage).merge(ProjectFeatureUsage.with_jira_dvcs_integration_enabled(cloud: false)) }
+  scope :by_name, ->(name) { where('projects.name LIKE ?', "#{sanitize_sql_like(name)}%") }
   scope :inc_routes, -> { includes(:route, namespace: :route) }
   scope :with_statistics, -> { includes(:statistics) }
   scope :with_namespace, -> { includes(:namespace) }
@@ -714,6 +715,11 @@ class Project < ApplicationRecord
     joins("INNER JOIN routes rs ON rs.source_id = projects.id AND rs.source_type = 'Project'")
       .where('rs.path LIKE ?', "#{sanitize_sql_like(path)}/%")
       .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/421843')
+  end
+
+  scope :with_jira_installation, ->(installation_id) do
+    joins(namespace: :jira_connect_subscriptions)
+    .where(jira_connect_subscriptions: { jira_connect_installation_id: installation_id })
   end
 
   scope :with_feature_enabled, ->(feature) {
@@ -2890,12 +2896,24 @@ class Project < ApplicationRecord
   end
 
   def default_branch_protected?
+    if Feature.enabled?(:default_branch_protection_defaults, self)
+      branch_protection = Gitlab::Access::DefaultBranchProtection.new(self)
+
+      return !branch_protection.developer_can_push?
+    end
+
     branch_protection = Gitlab::Access::BranchProtection.new(self.namespace.default_branch_protection)
 
     branch_protection.fully_protected? || branch_protection.developer_can_merge? || branch_protection.developer_can_initial_push?
   end
 
   def initial_push_to_default_branch_allowed_for_developer?
+    if Feature.enabled?(:default_branch_protection_defaults, self)
+      branch_protection = Gitlab::Access::DefaultBranchProtection.new(self)
+
+      return branch_protection.developer_can_push? || branch_protection.developer_can_initial_push?
+    end
+
     branch_protection = Gitlab::Access::BranchProtection.new(self.namespace.default_branch_protection)
 
     !branch_protection.any? || branch_protection.developer_can_push? || branch_protection.developer_can_initial_push?

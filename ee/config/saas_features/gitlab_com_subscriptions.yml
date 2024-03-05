@@ -2,4 +2,4 @@
 name: gitlab_com_subscriptions
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/
 milestone: '16.9'
-group: group::purchase
+group: group::subscription management

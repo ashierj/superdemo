@@ -49,8 +49,11 @@ export default {
       ];
     },
     title() {
-      if (this.existingPolicy || this.selectedPolicy) {
-        return this.$options.i18n.editTitles[this.selectedPolicy.value];
+      if (this.existingPolicy) {
+        return (
+          this.$options.i18n.editTitles[this.selectedPolicy?.value] ||
+          this.$options.i18n.editTitles.fallBack
+        );
       }
 
       return this.$options.i18n.titles.default;
@@ -99,7 +102,7 @@ export default {
       [POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value]: s__(
         'SecurityOrchestration|Edit scan execution policy',
       ),
-      default: s__('SecurityOrchestration|New policy'),
+      fallBack: s__('SecurityOrchestration|Edit policy'),
     },
     choosePolicyType: s__('SecurityOrchestration|Step 1: Choose a policy type'),
     policyDetails: s__('SecurityOrchestration|Step 2: Policy details'),

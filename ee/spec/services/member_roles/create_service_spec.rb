@@ -97,14 +97,14 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
       end
     end
 
-    context 'for group member roles', :saas do
+    context 'for group member roles' do
       let(:audit_entity_id) { group.id }
       let(:audit_entity_type) { 'Group' }
       let(:fail_condition!) do
         allow(group).to receive(:custom_roles_enabled?).and_return(false)
       end
 
-      context 'with unauthorized user' do
+      context 'with unauthorized user', :saas do
         before_all do
           group.add_maintainer(user)
         end
@@ -119,9 +119,33 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
           group.add_owner(user)
         end
 
-        it_behaves_like 'member role creation'
+        context 'with root group' do
+          context 'when on SaaS', :saas do
+            it_behaves_like 'member role creation'
+          end
 
-        context 'with non-root group' do
+          context 'when on self-managed' do
+            context 'when restrict_member_roles feature-flag is enabled' do
+              let(:error_message) { 'Operation not allowed' }
+
+              before do
+                stub_feature_flags(restrict_member_roles: true)
+              end
+
+              it_behaves_like 'service returns error'
+            end
+
+            context 'when restrict_member_roles feature-flag is disabled' do
+              before do
+                stub_feature_flags(restrict_member_roles: false)
+              end
+
+              it_behaves_like 'member role creation'
+            end
+          end
+        end
+
+        context 'with non-root group', :saas do
           before_all do
             group.update!(parent: create(:group))
           end

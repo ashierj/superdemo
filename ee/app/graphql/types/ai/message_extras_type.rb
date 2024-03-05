@@ -10,6 +10,10 @@ module Types
       field :sources, [GraphQL::Types::JSON],
         null: true,
         description: "Sources used to form the message."
+
+      field :has_feedback, GraphQL::Types::Boolean,
+        null: true,
+        description: "Whether the user has provided feedback for the mesage."
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end

@@ -37,6 +37,24 @@ module API
       end
     end
 
+    resource :organizations do
+      params do
+        requires :id, types: [String, Integer], desc: 'The ID of the organization'
+      end
+      desc 'Generate a dependency list export on an organization-level'
+      post ':id/dependency_list_exports' do
+        not_found! unless Feature.enabled?(:explore_dependencies, current_user)
+
+        organization = find_organization!(params[:id])
+        authorize! :read_dependency, organization
+
+        export = ::Dependencies::CreateExportService
+          .new(organization, current_user)
+          .execute
+        present export, with: EE::API::Entities::DependencyListExport
+      end
+    end
+
     resource :pipelines do
       params do
         requires :id, types: [String, Integer], desc: 'The ID of the pipeline'

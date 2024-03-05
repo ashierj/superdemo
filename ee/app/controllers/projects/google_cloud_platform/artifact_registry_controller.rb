@@ -18,7 +18,7 @@ module Projects
       private
 
       def ensure_feature!
-        render_404 unless project.gcp_artifact_registry_enabled?
+        render_404 unless project.google_cloud_support_enabled?
       end
     end
   end

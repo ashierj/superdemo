@@ -20,9 +20,13 @@ RSpec.describe Analytics::ValueStreamDashboard::ContributorCountService, feature
     ).execute
   end
 
-  context 'when the clickhouse_data_collection feature flag is off' do
+  before do
+    allow(Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
+  end
+
+  context 'when the clickhouse is not available for analytics' do
     before do
-      stub_feature_flags(clickhouse_data_collection: false)
+      allow(Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(false)
     end
 
     it 'returns service error' do
@@ -37,7 +41,7 @@ RSpec.describe Analytics::ValueStreamDashboard::ContributorCountService, feature
     let(:current_user) { other_user }
 
     before do
-      stub_feature_flags(clickhouse_data_collection: group)
+      allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
       stub_licensed_features(group_level_analytics_dashboard: true)
     end
 
@@ -51,7 +55,7 @@ RSpec.describe Analytics::ValueStreamDashboard::ContributorCountService, feature
 
   context 'when the group is not licensed' do
     before do
-      stub_feature_flags(clickhouse_data_collection: group)
+      allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
       stub_licensed_features(group_level_analytics_dashboard: false)
     end
 
@@ -65,7 +69,7 @@ RSpec.describe Analytics::ValueStreamDashboard::ContributorCountService, feature
 
   context 'when the feature is available', :click_house do
     before do
-      stub_feature_flags(clickhouse_data_collection: group)
+      allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
       stub_licensed_features(group_level_analytics_dashboard: true)
     end
 

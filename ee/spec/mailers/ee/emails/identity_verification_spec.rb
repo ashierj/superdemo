@@ -9,9 +9,10 @@ RSpec.describe Emails::IdentityVerification, feature_category: :instance_resilie
 
   describe 'confirmation_instructions_email' do
     let_it_be(:user) { build_stubbed(:user) }
+    let_it_be(:email) { user.email }
     let_it_be(:token) { '123456' }
 
-    subject(:mail) { Notify.confirmation_instructions_email(user.email, token: token) }
+    subject(:mail) { Notify.confirmation_instructions_email(email, token: token) }
 
     it_behaves_like 'an email sent from GitLab'
 
@@ -39,5 +40,13 @@ RSpec.describe Emails::IdentityVerification, feature_category: :instance_resilie
     end
 
     it_behaves_like 'an email with information about unconfirmed user settings'
+
+    context 'with an email containing multiple addresses' do
+      let(:email) { 'foo@bar.com,bar@foo.com' }
+
+      it 'raises an error' do
+        expect { mail.deliver_now }.to raise_error(Gitlab::Email::MultipleRecipientsError)
+      end
+    end
   end
 end

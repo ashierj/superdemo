@@ -221,7 +221,7 @@ the related documentation.
 | Maximum registered runners                                                       | Free tier: `50` per-group / `50` per-project<br/>All paid tiers: `1000` per-group  / `1000` per-project                   | See [Number of registered runners per scope](../../administration/instance_limits.md#number-of-registered-runners-per-scope). |
 | Limit of dotenv variables                                                        | Free tier: `50` / Premium tier: `100` / Ultimate tier: `150`                                                              | See [Limit dotenv variables](../../administration/instance_limits.md#limit-dotenv-variables). |
 | Authorization token duration (minutes)                                           | `15`                                                                                                                      | To set a custom value, in the Rails console, run `ApplicationSetting.last.update(container_registry_token_expire_delay: <integer>)`, where `<integer>` is the desired number of minutes. |
-| Maximum downstream pipelines triggered in a project per user                     | `350`                                                                                                                     | See [Maximum downstream pipelines triggered per project](../../administration/settings/continuous_integration.md#maximum-downstream-pipelines-triggered-per-project). |
+| Maximum downstream pipeline trigger rate (for a given project, user, and commit) | `350` per minute                                                                                                          | See [Maximum downstream pipeline trigger rate](../../administration/settings/continuous_integration.md#maximum-downstream-pipeline-trigger-rate). |
 
 ## Package registry limits
 
@@ -254,6 +254,7 @@ the default value [is the same as for self-managed instances](../../administrati
 | [Maximum download file size when importing from source GitLab instances by direct transfer](../../administration/settings/import_and_export_settings.md#maximum-download-file-size-for-imports-by-direct-transfer) | 5 GiB              |
 | Maximum attachment size                                                                                                                                                                                            | 100 MiB            |
 | [Maximum decompressed file size for imported archives](../../administration/settings/import_and_export_settings.md#maximum-decompressed-file-size-for-imported-archives)                                           | 25 GiB             |
+| [Maximum push size](../../administration/settings/account_and_limit_settings.md#max-push-size)                                                                                                                     | 5 GiB              |
 
 If you are near or over the repository size limit, you can either:
 

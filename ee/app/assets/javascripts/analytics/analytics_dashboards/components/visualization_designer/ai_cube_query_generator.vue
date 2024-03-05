@@ -8,6 +8,8 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT, TYPENAME_USER } from '~/graphql_shared/constants';
 import { __, s__ } from '~/locale';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import { InternalEvents } from '~/tracking';
+import { EVENT_LABEL_USER_SUBMITTED_GITLAB_DUO_QUERY_FROM_VISUALIZATION_DESIGNER } from 'ee/analytics/analytics_dashboards/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 
 import generateCubeQuery from '../../graphql/mutations/generate_cube_query.mutation.graphql';
@@ -21,9 +23,13 @@ export default {
     GlIcon,
     GlFormTextarea,
   },
+  mixins: [InternalEvents.mixin()],
   inject: {
     namespaceId: {
       type: String,
+    },
+    currentUserId: {
+      type: Number,
     },
   },
   props: {
@@ -61,6 +67,7 @@ export default {
         if (!confirmed) return;
       }
 
+      this.trackEvent(EVENT_LABEL_USER_SUBMITTED_GITLAB_DUO_QUERY_FROM_VISUALIZATION_DESIGNER);
       this.skipSubscription = false;
       this.submitting = true;
       this.error = null;
@@ -110,7 +117,7 @@ export default {
         variables() {
           return {
             resourceId: convertToGraphQLId(TYPENAME_PROJECT, this.namespaceId),
-            userId: convertToGraphQLId(TYPENAME_USER, window.gon.current_user_id),
+            userId: convertToGraphQLId(TYPENAME_USER, this.currentUserId),
             clientSubscriptionId: this.clientSubscriptionId,
           };
         },

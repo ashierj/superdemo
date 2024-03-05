@@ -860,7 +860,7 @@ CREATE TABLE p_ci_builds (
     queued_at timestamp without time zone,
     lock_version integer DEFAULT 0,
     coverage_regex character varying,
-    auto_canceled_by_id integer,
+    auto_canceled_by_id_convert_to_bigint integer,
     retried boolean,
     protected boolean,
     failure_reason integer,
@@ -875,7 +875,7 @@ CREATE TABLE p_ci_builds (
     stage_id bigint,
     partition_id bigint NOT NULL,
     auto_canceled_by_partition_id bigint DEFAULT 100 NOT NULL,
-    auto_canceled_by_id_convert_to_bigint bigint,
+    auto_canceled_by_id bigint,
     commit_id_convert_to_bigint bigint,
     erased_by_id_convert_to_bigint bigint,
     project_id_convert_to_bigint bigint,
@@ -5758,7 +5758,7 @@ CREATE TABLE ci_builds (
     queued_at timestamp without time zone,
     lock_version integer DEFAULT 0,
     coverage_regex character varying,
-    auto_canceled_by_id integer,
+    auto_canceled_by_id_convert_to_bigint integer,
     retried boolean,
     protected boolean,
     failure_reason integer,
@@ -5773,7 +5773,7 @@ CREATE TABLE ci_builds (
     stage_id bigint,
     partition_id bigint NOT NULL,
     auto_canceled_by_partition_id bigint DEFAULT 100 NOT NULL,
-    auto_canceled_by_id_convert_to_bigint bigint,
+    auto_canceled_by_id bigint,
     commit_id_convert_to_bigint bigint,
     erased_by_id_convert_to_bigint bigint,
     project_id_convert_to_bigint bigint,
@@ -7759,6 +7759,7 @@ CREATE TABLE dependency_list_exports (
     group_id bigint,
     pipeline_id bigint,
     export_type smallint DEFAULT 0 NOT NULL,
+    organization_id bigint,
     CONSTRAINT check_fff6fc9b2f CHECK ((char_length(file) <= 255))
 );
 
@@ -24177,9 +24178,9 @@ CREATE INDEX p_ci_builds_metadata_project_id_idx ON ONLY p_ci_builds_metadata US
 
 CREATE INDEX index_ci_builds_metadata_on_project_id ON ci_builds_metadata USING btree (project_id);
 
-CREATE INDEX p_ci_builds_auto_canceled_by_id_idx ON ONLY p_ci_builds USING btree (auto_canceled_by_id);
+CREATE INDEX p_ci_builds_auto_canceled_by_id_idx ON ONLY p_ci_builds USING btree (auto_canceled_by_id) WHERE (auto_canceled_by_id IS NOT NULL);
 
-CREATE INDEX index_ci_builds_on_auto_canceled_by_id ON ci_builds USING btree (auto_canceled_by_id);
+CREATE INDEX index_ci_builds_on_auto_canceled_by_id ON ci_builds USING btree (auto_canceled_by_id) WHERE (auto_canceled_by_id IS NOT NULL);
 
 CREATE INDEX p_ci_builds_commit_id_stage_idx_created_at_idx ON ONLY p_ci_builds USING btree (commit_id, stage_idx, created_at);
 
@@ -24751,6 +24752,8 @@ CREATE UNIQUE INDEX index_dep_prox_manifests_on_group_id_file_name_and_status ON
 
 CREATE INDEX index_dependency_list_exports_on_group_id ON dependency_list_exports USING btree (group_id);
 
+CREATE INDEX index_dependency_list_exports_on_organization_id ON dependency_list_exports USING btree (organization_id);
+
 CREATE INDEX index_dependency_list_exports_on_pipeline_id ON dependency_list_exports USING btree (pipeline_id);
 
 CREATE INDEX index_dependency_list_exports_on_project_id ON dependency_list_exports USING btree (project_id);
@@ -24911,6 +24914,8 @@ CREATE INDEX index_environments_cluster_agent_id ON environments USING btree (cl
 
 CREATE INDEX index_environments_for_name_search_within_folder ON environments USING btree (project_id, lower(ltrim((name)::text, ((environment_type)::text || '/'::text))) varchar_pattern_ops, state);
 
+CREATE INDEX index_environments_name_without_type ON environments USING btree (project_id, lower(ltrim(ltrim((name)::text, (environment_type)::text), '/'::text)) varchar_pattern_ops, state);
+
 CREATE INDEX index_environments_on_merge_request_id ON environments USING btree (merge_request_id);
 
 CREATE INDEX index_environments_on_name_varchar_pattern_ops ON environments USING btree (name varchar_pattern_ops);
@@ -25050,10 +25055,6 @@ CREATE UNIQUE INDEX index_feature_flags_clients_on_project_id_and_token_encrypte
 CREATE UNIQUE INDEX index_feature_gates_on_feature_key_and_key_and_value ON feature_gates USING btree (feature_key, key, value);
 
 CREATE UNIQUE INDEX index_features_on_key ON features USING btree (key);
-
-CREATE INDEX p_ci_builds_auto_canceled_by_id_bigint_idx ON ONLY p_ci_builds USING btree (auto_canceled_by_id_convert_to_bigint) WHERE (auto_canceled_by_id_convert_to_bigint IS NOT NULL);
-
-CREATE INDEX index_ffe1233676 ON ci_builds USING btree (auto_canceled_by_id_convert_to_bigint) WHERE (auto_canceled_by_id_convert_to_bigint IS NOT NULL);
 
 CREATE INDEX index_for_security_scans_scan_type ON security_scans USING btree (scan_type, project_id, pipeline_id) WHERE (status = 1);
 
@@ -25557,7 +25558,11 @@ CREATE INDEX index_member_approval_on_requested_by_id ON member_approvals USING 
 
 CREATE INDEX index_member_approval_on_reviewed_by_id ON member_approvals USING btree (reviewed_by_id);
 
+CREATE UNIQUE INDEX index_member_roles_on_name_unique ON member_roles USING btree (name) WHERE (namespace_id IS NULL);
+
 CREATE INDEX index_member_roles_on_namespace_id ON member_roles USING btree (namespace_id);
+
+CREATE UNIQUE INDEX index_member_roles_on_namespace_id_name_unique ON member_roles USING btree (namespace_id, name) WHERE (namespace_id IS NOT NULL);
 
 CREATE INDEX index_member_roles_on_occupies_seat ON member_roles USING btree (occupies_seat);
 
@@ -26276,6 +26281,8 @@ CREATE INDEX index_project_export_jobs_on_project_id_and_jid ON project_export_j
 CREATE INDEX index_project_export_jobs_on_project_id_and_status ON project_export_jobs USING btree (project_id, status);
 
 CREATE INDEX index_project_export_jobs_on_status ON project_export_jobs USING btree (status);
+
+CREATE INDEX index_project_export_jobs_on_updated_at_and_id ON project_export_jobs USING btree (updated_at, id);
 
 CREATE INDEX index_project_feature_usages_on_project_id ON project_feature_usages USING btree (project_id);
 
@@ -29201,8 +29208,6 @@ ALTER INDEX p_ci_builds_commit_id_bigint_type_ref_idx ATTACH PARTITION index_fc4
 
 ALTER INDEX p_ci_builds_commit_id_bigint_type_name_ref_idx ATTACH PARTITION index_feafb4d370;
 
-ALTER INDEX p_ci_builds_auto_canceled_by_id_bigint_idx ATTACH PARTITION index_ffe1233676;
-
 ALTER INDEX p_ci_builds_user_id_name_idx ATTACH PARTITION index_partial_ci_builds_on_user_id_name_parser_features;
 
 ALTER INDEX p_ci_pipeline_variables_pipeline_id_key_partition_id_idx ATTACH PARTITION index_pipeline_variables_on_pipeline_id_key_partition_id_unique;
@@ -30186,6 +30191,9 @@ ALTER TABLE ONLY packages_packages
 ALTER TABLE ONLY sbom_occurrences
     ADD CONSTRAINT fk_c2a5562923 FOREIGN KEY (source_id) REFERENCES sbom_sources(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY dependency_list_exports
+    ADD CONSTRAINT fk_c348f16f10 FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY issues
     ADD CONSTRAINT fk_c34dd2b036 FOREIGN KEY (tmp_epic_id) REFERENCES epics(id) ON DELETE CASCADE;
 
@@ -30332,9 +30340,6 @@ ALTER TABLE ONLY workspaces
 
 ALTER TABLE ONLY epics
     ADD CONSTRAINT fk_dccd3f98fc FOREIGN KEY (assignee_id) REFERENCES users(id) ON DELETE SET NULL;
-
-ALTER TABLE p_ci_builds
-    ADD CONSTRAINT fk_dd3c83bdee FOREIGN KEY (auto_canceled_by_id_convert_to_bigint) REFERENCES ci_pipelines(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY protected_branches
     ADD CONSTRAINT fk_de9216e774 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
@@ -32364,8 +32369,8 @@ ALTER TABLE issue_search_data
 ALTER TABLE issue_search_data
     ADD CONSTRAINT issue_search_data_project_id_fkey FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY ci_builds
-    ADD CONSTRAINT tmp_fk_3a9eaa254d_p FOREIGN KEY (partition_id, stage_id) REFERENCES p_ci_stages(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
+ALTER TABLE p_ci_builds
+    ADD CONSTRAINT tmp_fk_3a9eaa254d_p FOREIGN KEY (partition_id, stage_id) REFERENCES p_ci_stages(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY user_follow_users
     ADD CONSTRAINT user_follow_users_followee_id_fkey FOREIGN KEY (followee_id) REFERENCES users(id) ON DELETE CASCADE;

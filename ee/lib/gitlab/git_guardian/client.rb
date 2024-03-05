@@ -6,6 +6,7 @@ module Gitlab
       API_URL = "https://api.gitguardian.com/v1/multiscan"
       TIMEOUT = 5.seconds
       BATCH_SIZE = 20
+      FILENAME_LIMIT = 256
 
       Error = Class.new(StandardError)
       ConfigError = Class.new(Error)
@@ -20,14 +21,30 @@ module Gitlab
       end
 
       def execute(blobs = [])
-        blobs.each_slice(BATCH_SIZE).with_object([]) do |blobs_batch, _|
+        threaded_batches = []
+        blobs.each_slice(BATCH_SIZE).map.with_object([]) do |blobs_batch, _|
+          threaded_batches << execute_batched_request(blobs_batch)
+        end
+
+        threaded_batches.filter_map(&:value).flatten
+      end
+
+      private
+
+      def execute_batched_request(blobs_batch)
+        Thread.new do
           params = blobs_batch.map do |blob|
             blob_params = { document: blob.data }
 
             # GitGuardian limits filename field to 256 characters.
             # That is why we only pass file name, which is sufficient for Git Guardian to perform its checks.
             # See: https://api.gitguardian.com/docs#operation/multiple_scan
-            blob_params[:filename] = File.basename(blob.path) if blob.path.present?
+            if blob.path.present?
+              filename = File.basename(blob.path)
+              limited_filename = limit_filename(filename)
+
+              blob_params[:filename] = limited_filename
+            end
 
             blob_params
           end
@@ -36,11 +53,20 @@ module Gitlab
           blobs_paths = blobs_batch.map(&:path)
           policy_breaks = process_response(response, blobs_paths)
 
-          break policy_breaks if policy_breaks.present?
+          policy_breaks.presence
         end
       end
 
-      private
+      def limit_filename(filename)
+        filename_size = filename.length
+        over_limit = filename.length - FILENAME_LIMIT
+        return filename if over_limit <= 0
+
+        # We splice the filename to keep it under 256 characters
+        # in a First-In-First-Out to keep the file extension
+        # which is necessary to some GitGuardian policies checks
+        filename[over_limit..filename_size]
+      end
 
       def perform_request(params)
         options = {

@@ -2115,21 +2115,84 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
     let(:commits) { double }
     let(:committers) { double }
 
-    context 'when not given with_merge_commits' do
+    context 'when not given with_merge_commits and lazy' do
       it 'calls committers on the commits object with the expected param' do
         expect(subject).to receive(:commits).and_return(commits)
-        expect(commits).to receive(:committers).with(with_merge_commits: false).and_return(committers)
+        expect(commits).to receive(:committers).with(with_merge_commits: false, lazy: false).and_return(committers)
 
         expect(subject.committers).to eq(committers)
+      end
+
+      context 'when with_merge_commits and lazy arguments changes' do
+        it 'does not use memoized value' do
+          subject.committers # this memoizes the value with with_merge_commits and lazy as false
+
+          expect(subject).to receive(:commits).and_return(commits)
+          expect(commits).to receive(:committers).with(with_merge_commits: true, lazy: true).and_return(committers)
+          subject.committers(with_merge_commits: true, lazy: true)
+        end
       end
     end
 
     context 'when given with_merge_commits true' do
       it 'calls committers on the commits object with the expected param' do
         expect(subject).to receive(:commits).and_return(commits)
-        expect(commits).to receive(:committers).with(with_merge_commits: true).and_return(committers)
+        expect(commits).to receive(:committers).with(with_merge_commits: true, lazy: false).and_return(committers)
 
         expect(subject.committers(with_merge_commits: true)).to eq(committers)
+      end
+    end
+
+    context 'when given lazy true' do
+      it 'calls committers on the commits object with the expected param' do
+        expect(subject).to receive(:commits).and_return(commits)
+        expect(commits).to receive(:committers).with(with_merge_commits: false, lazy: true).and_return(committers)
+
+        expect(subject.committers(lazy: true)).to eq(committers)
+      end
+    end
+
+    context 'when lazy_merge_request_committers feature flag is disabled' do
+      before do
+        stub_feature_flags(lazy_merge_request_committers: false)
+      end
+
+      context 'when not given with_merge_commits and lazy' do
+        it 'calls committers on the commits object with the expected param' do
+          expect(subject).to receive(:commits).and_return(commits)
+          expect(commits).to receive(:committers).with(with_merge_commits: false).and_return(committers)
+
+          expect(subject.committers).to eq(committers)
+        end
+
+        context 'when with_merge_commits and lazy arguments changes' do
+          it 'does not use memoized value' do
+            subject.committers # this memoizes the value with with_merge_commits and lazy as false
+
+            expect(subject).to receive(:commits).and_return(commits)
+            expect(commits).to receive(:committers).with(with_merge_commits: true).and_return(committers)
+
+            subject.committers(with_merge_commits: true, lazy: true)
+          end
+        end
+      end
+
+      context 'when given with_merge_commits true' do
+        it 'calls committers on the commits object with the expected param' do
+          expect(subject).to receive(:commits).and_return(commits)
+          expect(commits).to receive(:committers).with(with_merge_commits: true).and_return(committers)
+
+          expect(subject.committers(with_merge_commits: true)).to eq(committers)
+        end
+      end
+
+      context 'when given lazy true' do
+        it 'calls committers on the commits object with the expected param' do
+          expect(subject).to receive(:commits).and_return(commits)
+          expect(commits).to receive(:committers).with(with_merge_commits: false).and_return(committers)
+
+          expect(subject.committers(lazy: true)).to eq(committers)
+        end
       end
     end
   end
@@ -4684,30 +4747,6 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
       expect(subject).to receive(:expire_ancestor_cache).and_call_original
 
       subject.fetch_ref!
-
-      expect(subject.target_project.repository.ref_exists?(subject.ref_path)).to be_truthy
-    end
-  end
-
-  describe '#eager_fetch_ref!' do
-    let(:project) { create(:project, :repository) }
-
-    # We use build instead of create to test that an IID is allocated
-    subject { build(:merge_request, source_project: project) }
-
-    it 'fetches the ref and expires the ancestor cache' do
-      expect(subject).to receive(:expire_ancestor_cache).and_call_original
-      expect(subject.iid).to be_nil
-
-      expect { subject.eager_fetch_ref! }.to change { subject.iid.to_i }.by(1)
-
-      expect(subject.target_project.repository.ref_exists?(subject.ref_path)).to be_truthy
-    end
-
-    it 'only fetches the ref once after saved' do
-      expect(subject.target_project.repository).to receive(:fetch_source_branch!).once.and_call_original
-
-      subject.save!
 
       expect(subject.target_project.repository.ref_exists?(subject.ref_path)).to be_truthy
     end

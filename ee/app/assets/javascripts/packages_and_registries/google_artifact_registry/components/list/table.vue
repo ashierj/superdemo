@@ -61,9 +61,6 @@ export default {
       // remove sha256: from the string, and show only the first 12 char
       return digest.substring(7, 19);
     },
-    getImageNameAndDigest(item) {
-      return `${item.image}@${item.digest}`;
-    },
     getImageNameAndShortDigest(item) {
       return `${item.image}@${this.getShortDigest(item.digest)}`;
     },
@@ -149,8 +146,8 @@ export default {
             />
           </router-link>
           <clipboard-button
-            :title="s__('GoogleArtifactRegistry|Copy image name')"
-            :text="getImageNameAndDigest(item)"
+            :title="s__('GoogleArtifactRegistry|Copy image path')"
+            :text="item.uri"
             category="tertiary"
           />
         </div>
