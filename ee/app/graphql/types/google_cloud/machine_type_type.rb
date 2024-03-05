@@ -6,7 +6,7 @@ module Types
       graphql_name 'GoogleCloudMachineType'
       description 'Represents a Google Cloud Compute machine type'
 
-      GOOGLE_CLOUD_MACHINE_TYPE_REGEXP = /\A[a-z0-9]+-[a-z0-9-]+\z/
+      GOOGLE_CLOUD_MACHINE_TYPE_REGEXP = /\A[a-z]([-a-z0-9]*[a-z0-9])?\z/
 
       def self.coerce_input(input_value, _context)
         unless input_value.match?(GOOGLE_CLOUD_MACHINE_TYPE_REGEXP)
