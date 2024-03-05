@@ -16,3 +16,74 @@ RSpec.shared_examples 'service account creation success' do
     let(:email_domain) { "noreply.#{Gitlab.config.gitlab.host}" }
   end
 end
+
+RSpec.shared_examples 'service account creation with customized params' do
+  subject(:service) { described_class.new(current_user, params) }
+
+  let_it_be(:username_prefix) { "service_account" }
+  let(:params) do
+    {
+      name: 'John Doe',
+      username: 'test'
+    }
+  end
+
+  it 'creates a service account successfully', :aggregate_failures do
+    result = service.execute
+
+    expect(result.status).to eq(:success)
+    expect(result.payload.confirmed?).to eq(true)
+    expect(result.payload.user_type).to eq('service_account')
+    expect(result.payload.external).to eq(true)
+  end
+
+  it 'sets user attributes according to supplied params' do
+    user = service.execute.payload
+
+    expect(user.username).to eq(params[:username])
+    expect(user.name).to eq(params[:name])
+  end
+
+  context 'when username is not supplied' do
+    let_it_be(:params) do
+      {
+        name: 'John Doe'
+      }
+    end
+
+    it 'sets auto generated username' do
+      result = service.execute
+      user = result.payload
+
+      expect(result.status).to eq(:success)
+      expect(user.username).to start_with(username_prefix)
+      expect(user.name).to eq(params[:name])
+    end
+  end
+
+  context 'when name is not supplied' do
+    let_it_be(:params) do
+      {
+        username: 'test'
+      }
+    end
+
+    it 'sets auto generated username' do
+      result = service.execute
+      user = result.payload
+
+      expect(result.status).to eq(:success)
+      expect(user.name).to eq("Service account user")
+      expect(user.username).to eq(params[:username])
+    end
+
+    it 'throws error when record with same username already exists' do
+      create(:user, { username: 'test' })
+
+      result = service.execute
+
+      expect(result.status).to eq(:error)
+      expect(result.message).to eq('Username has already been taken')
+    end
+  end
+end
