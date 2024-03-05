@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::TransferService do
+RSpec.describe Projects::TransferService, feature_category: :groups_and_projects do
   include EE::GeoHelpers
 
   let_it_be(:user) { create(:user) }
@@ -161,8 +161,30 @@ RSpec.describe Projects::TransferService do
     context 'when the project has a compliance framework setting' do
       let!(:compliance_framework_setting) { create(:compliance_framework_project_setting, project: project) }
 
-      it 'deletes the compliance framework setting' do
-        expect { subject.execute(group) }.to change { ::ComplianceManagement::ComplianceFramework::ProjectSettings.count }.from(1).to(0)
+      context 'when the project is transferring under the same top level group' do
+        let_it_be(:project) { create(:project, group: group) }
+        let_it_be(:sub_group) { create(:group, parent: group) }
+
+        it 'does not delete the compliance framework setting' do
+          subject.execute(sub_group)
+
+          expect(project.reload.compliance_framework_setting).to eq(compliance_framework_setting)
+        end
+      end
+
+      context 'when the project is transferring to a new group' do
+        let_it_be(:old_group) { create(:group, :public) }
+        let_it_be(:project) { create(:project, group: old_group) }
+
+        before do
+          old_group.add_owner(user)
+        end
+
+        it 'deletes the compliance framework setting' do
+          subject.execute(group)
+
+          expect(project.reload.compliance_framework_setting).to be nil
+        end
       end
     end
 
