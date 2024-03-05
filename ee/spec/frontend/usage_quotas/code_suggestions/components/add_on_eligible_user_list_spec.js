@@ -4,6 +4,7 @@ import {
   GlSkeletonLoader,
   GlKeysetPagination,
   GlTable,
+  GlFormCheckbox,
 } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
@@ -29,6 +30,7 @@ describe('Add On Eligible User List', () => {
 
   const createComponent = ({
     enableAddOnUsersFiltering = false,
+    isBulkAddOnAssignmentEnabled = false,
     mountFn = shallowMount,
     props = {},
     slots = {},
@@ -46,6 +48,7 @@ describe('Add On Eligible User List', () => {
           glFeatures: {
             enableAddOnUsersFiltering,
           },
+          isBulkAddOnAssignmentEnabled,
         },
         slots,
       }),
@@ -98,6 +101,10 @@ describe('Add On Eligible User List', () => {
   const findSerializedTable = (tableWrapper) => {
     return tableWrapper.findAll('tbody tr').wrappers.map(serializeTableRow);
   };
+  const findSelectAllUsersCheckbox = () => wrapper.findByTestId('select-all-users');
+  const findSelectedUsersSummary = () => wrapper.findByTestId('selected-users-summary');
+  const findSelectUserCheckboxAt = (index) =>
+    wrapper.find('tbody').findAllComponents(GlFormCheckbox).at(index);
 
   describe('renders table', () => {
     beforeEach(() => {
@@ -124,6 +131,19 @@ describe('Add On Eligible User List', () => {
           user: {
             avatarLabeled: { size: '32', src: 'path/to/img_usertwo', text: 'User Two  @usertwo' },
             avatarLink: { alt: 'User Two', href: 'path/to/usertwo' },
+          },
+        },
+        {
+          email: 'Private',
+          lastActivityOn: '2023-03-19',
+          tooltip: 'An email address is only visible for users with public emails.',
+          user: {
+            avatarLabeled: {
+              size: '32',
+              src: 'path/to/img_userthree',
+              text: 'User Three  @userthree',
+            },
+            avatarLink: { alt: 'User Three', href: 'path/to/userthree' },
           },
         },
       ];
@@ -204,10 +224,81 @@ describe('Add On Eligible User List', () => {
                 avatarLink: { alt: 'User Two', href: 'path/to/usertwo' },
               },
             },
+            {
+              email: 'Private',
+              lastActivityOn: '2023-03-19',
+              maxRole: 'developer',
+              tooltip: 'An email address is only visible for users with public emails.',
+              user: {
+                avatarLabeled: {
+                  size: '32',
+                  src: 'path/to/img_userthree',
+                  text: 'User Three  @userthree',
+                },
+                avatarLink: { alt: 'User Three', href: 'path/to/userthree' },
+              },
+            },
           ];
           const actualUserListData = findSerializedTable(findTable());
 
           expect(actualUserListData).toStrictEqual(expectedUserListData);
+        });
+      });
+    });
+
+    describe('with isBulkAddOnAssignmentEnabled enabled', () => {
+      beforeEach(() => {
+        return createComponent({ isBulkAddOnAssignmentEnabled: true });
+      });
+
+      it('passes the correct fields configuration', () => {
+        expect(findTableKeys()).toEqual([
+          'checkbox',
+          'user',
+          'codeSuggestionsAddon',
+          'email',
+          'lastActivityTime',
+        ]);
+      });
+    });
+
+    describe('with enableAddOnUsersFiltering and isBulkAddOnAssignmentEnabled enabled', () => {
+      beforeEach(() => {
+        return createComponent({
+          enableAddOnUsersFiltering: true,
+          isBulkAddOnAssignmentEnabled: true,
+        });
+      });
+
+      it('passes the correct fields configuration', () => {
+        expect(findTableKeys()).toEqual([
+          'checkbox',
+          'user',
+          'codeSuggestionsAddon',
+          'email',
+          'lastActivityTime',
+        ]);
+      });
+
+      describe('when eligible users have maxRole field', () => {
+        beforeEach(() => {
+          return createComponent({
+            mountFn: mount,
+            enableAddOnUsersFiltering: true,
+            isBulkAddOnAssignmentEnabled: true,
+            props: { users: eligibleUsersWithMaxRole },
+          });
+        });
+
+        it('passes the correct fields configuration', () => {
+          expect(findTableKeys()).toEqual([
+            'checkbox',
+            'user',
+            'codeSuggestionsAddon',
+            'email',
+            'maxRole',
+            'lastActivityTime',
+          ]);
         });
       });
     });
@@ -223,6 +314,11 @@ describe('Add On Eligible User List', () => {
             },
             {
               userId: 'gid://gitlab/User/2',
+              addOnAssignments: [],
+              addOnPurchaseId,
+            },
+            {
+              userId: 'gid://gitlab/User/3',
               addOnAssignments: [],
               addOnPurchaseId,
             },
@@ -415,6 +511,78 @@ describe('Add On Eligible User List', () => {
       });
 
       expect(wrapper.find('.user-cell').text()).toBe('A user cell content');
+    });
+  });
+
+  describe('bulk assignment', () => {
+    describe('when using select all option', () => {
+      beforeEach(async () => {
+        await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
+
+        findSelectAllUsersCheckbox().find('input').setChecked(true);
+        await nextTick();
+      });
+
+      it('shows a summary of all users selected when select all users checkbox is clicked', () => {
+        expect(findSelectedUsersSummary().text()).toMatchInterpolatedText(
+          `${eligibleUsers.length} users selected`,
+        );
+      });
+
+      it('does not show a summary of users when unselect all users checkbox is clicked', async () => {
+        findSelectAllUsersCheckbox().find('input').setChecked(false);
+        await nextTick();
+
+        expect(findSelectedUsersSummary().exists()).toBe(false);
+      });
+    });
+
+    describe('when using individual checkboxes', () => {
+      it('shows a summary of only the selected users', async () => {
+        await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
+
+        findSelectUserCheckboxAt(1).find('input').setChecked(true);
+        findSelectUserCheckboxAt(2).find('input').setChecked(true);
+        await nextTick();
+
+        expect(findSelectedUsersSummary().text()).toMatchInterpolatedText('2 users selected');
+      });
+
+      it('pluralises user count appropriately', async () => {
+        await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
+
+        findSelectUserCheckboxAt(1).find('input').setChecked(true);
+        await nextTick();
+
+        expect(findSelectedUsersSummary().text()).toMatchInterpolatedText('1 user selected');
+      });
+    });
+
+    describe('when paginating', () => {
+      beforeEach(async () => {
+        createComponent({
+          mountFn: mount,
+          isBulkAddOnAssignmentEnabled: true,
+          props: { pageInfo: pageInfoWithMorePages },
+        });
+
+        findSelectAllUsersCheckbox().find('input').setChecked(true);
+        await nextTick();
+      });
+
+      it('resets user selection on navigating to next page', async () => {
+        findPagination().vm.$emit('next');
+        await waitForPromises();
+
+        expect(findSelectedUsersSummary().exists()).toBe(false);
+      });
+
+      it('resets user selection on navigating to previous page', async () => {
+        findPagination().vm.$emit('prev');
+        await waitForPromises();
+
+        expect(findSelectedUsersSummary().exists()).toBe(false);
+      });
     });
   });
 });

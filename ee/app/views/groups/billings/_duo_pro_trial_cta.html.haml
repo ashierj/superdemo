@@ -1,3 +1,2 @@
-- if Feature.enabled?(:duo_pro_trials, current_user, type: :wip)
-  = render Pajamas::ButtonComponent.new(href: new_trials_duo_pro_path(namespace_id: namespace.id), category: button_category, variant: 'confirm') do
-    = s_("BillingPlans|Start a free GitLab Duo Pro trial")
+= render Pajamas::ButtonComponent.new(href: new_trials_duo_pro_path(namespace_id: namespace.id), category: button_category, variant: 'confirm') do
+  = s_("BillingPlans|Start a free GitLab Duo Pro trial")

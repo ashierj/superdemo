@@ -14,58 +14,126 @@ RSpec.describe Projects::ProtectDefaultBranchService do
     end
   end
 
-  describe '#protect_branch?' do
-    context 'when project has security_policy_project' do
-      include_context 'has security_policy_project'
+  context 'when feature flag `default_branch_protection_defaults` is disabled' do
+    before do
+      stub_feature_flags(default_branch_protection_defaults: false)
+    end
 
-      it 'returns true' do
-        expect(service.protect_branch?).to eq(true)
+    describe '#protect_branch?' do
+      context 'when project has security_policy_project' do
+        include_context 'has security_policy_project'
+
+        it 'returns true' do
+          expect(service.protect_branch?).to eq(true)
+        end
+      end
+
+      it { expect(service.protect_branch?).to eq(false) }
+    end
+
+    describe '#push_access_level' do
+      context 'when project has security_policy_project' do
+        include_context 'has security_policy_project'
+
+        it 'returns NO_ACCESS access level' do
+          expect(service.push_access_level).to eq(Gitlab::Access::NO_ACCESS)
+        end
+      end
+
+      context 'when project does not have security_policy_project' do
+        before do
+          allow(project.namespace)
+            .to receive(:default_branch_protection)
+                  .and_return(Gitlab::Access::PROTECTION_DEV_CAN_PUSH)
+        end
+
+        it 'returns DEVELOPER access level' do
+          expect(service.push_access_level).to eq(Gitlab::Access::DEVELOPER)
+        end
       end
     end
 
-    it { expect(service.protect_branch?).to eq(false) }
+    describe '#merge_access_level' do
+      context 'when project has security_policy_project' do
+        include_context 'has security_policy_project'
+
+        it 'returns Maintainer access level' do
+          expect(service.merge_access_level).to eq(Gitlab::Access::MAINTAINER)
+        end
+      end
+
+      context 'when project does not have security_policy_project' do
+        before do
+          allow(project.namespace)
+            .to receive(:default_branch_protection)
+                  .and_return(Gitlab::Access::PROTECTION_DEV_CAN_MERGE)
+        end
+
+        it 'returns DEVELOPER access level' do
+          expect(service.merge_access_level).to eq(Gitlab::Access::DEVELOPER)
+        end
+      end
+    end
   end
 
-  describe '#push_access_level' do
-    context 'when project has security_policy_project' do
-      include_context 'has security_policy_project'
+  context 'when feature flag `default_branch_protection_defaults` is enabled' do
+    before do
+      stub_feature_flags(default_branch_protection_defaults: true)
+    end
 
-      it 'returns NO_ACCESS access level' do
-        expect(service.push_access_level).to eq(Gitlab::Access::NO_ACCESS)
+    describe '#protect_branch?' do
+      context 'when project has security_policy_project' do
+        include_context 'has security_policy_project'
+
+        it 'returns true' do
+          expect(service.protect_branch?).to eq(true)
+        end
+      end
+
+      it { expect(service.protect_branch?).to eq(false) }
+    end
+
+    describe '#push_access_level' do
+      context 'when project has security_policy_project' do
+        include_context 'has security_policy_project'
+
+        it 'returns NO_ACCESS access level' do
+          expect(service.push_access_level).to eq(Gitlab::Access::NO_ACCESS)
+        end
+      end
+
+      context 'when project does not have security_policy_project' do
+        before do
+          allow(project.namespace)
+            .to receive(:default_branch_protection_settings)
+                  .and_return(Gitlab::Access::BranchProtection.protection_partial)
+        end
+
+        it 'returns DEVELOPER access level' do
+          expect(service.push_access_level).to eq(Gitlab::Access::DEVELOPER)
+        end
       end
     end
 
-    context 'when project does not have security_policy_project' do
-      before do
-        allow(project.namespace)
-          .to receive(:default_branch_protection)
-                .and_return(Gitlab::Access::PROTECTION_DEV_CAN_PUSH)
+    describe '#merge_access_level' do
+      context 'when project has security_policy_project' do
+        include_context 'has security_policy_project'
+
+        it 'returns Maintainer access level' do
+          expect(service.merge_access_level).to eq(Gitlab::Access::MAINTAINER)
+        end
       end
 
-      it 'returns DEVELOPER access level' do
-        expect(service.push_access_level).to eq(Gitlab::Access::DEVELOPER)
-      end
-    end
-  end
+      context 'when project does not have security_policy_project' do
+        before do
+          allow(project.namespace)
+            .to receive(:default_branch_protection_settings)
+                  .and_return(Gitlab::Access::BranchProtection.protected_against_developer_pushes)
+        end
 
-  describe '#merge_access_level' do
-    context 'when project has security_policy_project' do
-      include_context 'has security_policy_project'
-
-      it 'returns Maintainer access level' do
-        expect(service.merge_access_level).to eq(Gitlab::Access::MAINTAINER)
-      end
-    end
-
-    context 'when project does not have security_policy_project' do
-      before do
-        allow(project.namespace)
-          .to receive(:default_branch_protection)
-                .and_return(Gitlab::Access::PROTECTION_DEV_CAN_MERGE)
-      end
-
-      it 'returns DEVELOPER access level' do
-        expect(service.merge_access_level).to eq(Gitlab::Access::DEVELOPER)
+        it 'returns DEVELOPER access level' do
+          expect(service.merge_access_level).to eq(Gitlab::Access::DEVELOPER)
+        end
       end
     end
   end

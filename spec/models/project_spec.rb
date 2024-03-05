@@ -2181,6 +2181,32 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
     end
   end
 
+  describe '.sorted_by_similarity_desc' do
+    let_it_be(:project_a) { create(:project, path: 'similar-1', name: 'similar-1', description: 'A similar project') }
+    let_it_be_with_reload(:project_b) { create(:project, path: 'similar-2', name: 'similar-2', description: 'A related project') }
+    let_it_be(:project_c) { create(:project, path: 'different-path', name: 'different-name', description: 'A different project') }
+
+    let(:search_term) { 'similar' }
+
+    subject(:relation) { described_class.sorted_by_similarity_desc(search_term) }
+
+    context 'when sorting with full similarity' do
+      it 'sorts projects based on path, name, and description similarity' do
+        expect(relation).to eq([project_a, project_b, project_c])
+      end
+    end
+
+    context 'when sorting with path-only similarity' do
+      let(:search_term) { 'diff' }
+
+      subject(:relation) { described_class.sorted_by_similarity_desc(search_term, full_path_only: true) }
+
+      it 'sorts projects based on path similarity only' do
+        expect(relation).to eq([project_c, project_b, project_a])
+      end
+    end
+  end
+
   describe '.with_shared_runners_enabled' do
     subject { described_class.with_shared_runners_enabled }
 
@@ -2887,49 +2913,111 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
     end
   end
 
-  describe '#default_branch_protected?' do
-    let_it_be(:namespace) { create(:namespace) }
-    let_it_be(:project) { create(:project, namespace: namespace) }
-
-    subject { project.default_branch_protected? }
-
-    where(:default_branch_protection_level, :result) do
-      Gitlab::Access::PROTECTION_NONE                 | false
-      Gitlab::Access::PROTECTION_DEV_CAN_PUSH         | false
-      Gitlab::Access::PROTECTION_DEV_CAN_MERGE        | true
-      Gitlab::Access::PROTECTION_FULL                 | true
-      Gitlab::Access::PROTECTION_DEV_CAN_INITIAL_PUSH | true
+  context 'when feature flag `default_branch_protection_defaults` is disabled' do
+    before do
+      stub_feature_flags(default_branch_protection_defaults: false)
     end
 
-    with_them do
-      before do
-        expect(project.namespace).to receive(:default_branch_protection).and_return(default_branch_protection_level)
+    describe '#default_branch_protected?' do
+      let_it_be(:namespace) { create(:namespace) }
+      let_it_be(:project) { create(:project, namespace: namespace) }
+
+      subject { project.default_branch_protected? }
+
+      where(:default_branch_protection_level, :result) do
+        Gitlab::Access::PROTECTION_NONE                 | false
+        Gitlab::Access::PROTECTION_DEV_CAN_PUSH         | false
+        Gitlab::Access::PROTECTION_DEV_CAN_MERGE        | true
+        Gitlab::Access::PROTECTION_FULL                 | true
+        Gitlab::Access::PROTECTION_DEV_CAN_INITIAL_PUSH | true
       end
 
-      it { is_expected.to eq(result) }
+      with_them do
+        before do
+          expect(project.namespace).to receive(:default_branch_protection).and_return(default_branch_protection_level)
+        end
+
+        it { is_expected.to eq(result) }
+      end
+    end
+
+    describe 'initial_push_to_default_branch_allowed_for_developer?' do
+      let_it_be(:namespace) { create(:namespace) }
+      let_it_be(:project) { create(:project, namespace: namespace) }
+
+      subject { project.initial_push_to_default_branch_allowed_for_developer? }
+
+      where(:default_branch_protection_level, :result) do
+        Gitlab::Access::PROTECTION_NONE                 | true
+        Gitlab::Access::PROTECTION_DEV_CAN_PUSH         | true
+        Gitlab::Access::PROTECTION_DEV_CAN_MERGE        | false
+        Gitlab::Access::PROTECTION_FULL                 | false
+        Gitlab::Access::PROTECTION_DEV_CAN_INITIAL_PUSH | true
+      end
+
+      with_them do
+        before do
+          expect(project.namespace).to receive(:default_branch_protection).and_return(default_branch_protection_level)
+        end
+
+        it { is_expected.to eq(result) }
+      end
     end
   end
 
-  describe 'initial_push_to_default_branch_allowed_for_developer?' do
-    let_it_be(:namespace) { create(:namespace) }
-    let_it_be(:project) { create(:project, namespace: namespace) }
-
-    subject { project.initial_push_to_default_branch_allowed_for_developer? }
-
-    where(:default_branch_protection_level, :result) do
-      Gitlab::Access::PROTECTION_NONE                 | true
-      Gitlab::Access::PROTECTION_DEV_CAN_PUSH         | true
-      Gitlab::Access::PROTECTION_DEV_CAN_MERGE        | false
-      Gitlab::Access::PROTECTION_FULL                 | false
-      Gitlab::Access::PROTECTION_DEV_CAN_INITIAL_PUSH | true
+  context 'when feature flag `default_branch_protection_defaults` is enabled' do
+    before do
+      stub_feature_flags(default_branch_protection_defaults: true)
     end
 
-    with_them do
-      before do
-        expect(project.namespace).to receive(:default_branch_protection).and_return(default_branch_protection_level)
+    describe '#default_branch_protected?' do
+      let_it_be(:namespace) { create(:namespace) }
+      let_it_be(:project) { create(:project, namespace: namespace) }
+
+      subject { project.default_branch_protected? }
+
+      where(:default_branch_protection_level, :result) do
+        Gitlab::Access::BranchProtection.protection_none                    | false
+        Gitlab::Access::BranchProtection.protection_partial                 | false
+        Gitlab::Access::BranchProtection.protected_against_developer_pushes | true
+        Gitlab::Access::BranchProtection.protected_fully                    | true
+        Gitlab::Access::BranchProtection.protected_after_initial_push       | true
       end
 
-      it { is_expected.to eq(result) }
+      with_them do
+        before do
+          expect(project.namespace)
+            .to receive(:default_branch_protection_settings)
+                  .and_return(default_branch_protection_level)
+        end
+
+        it { is_expected.to eq(result) }
+      end
+    end
+
+    describe 'initial_push_to_default_branch_allowed_for_developer?' do
+      let_it_be(:namespace) { create(:namespace) }
+      let_it_be(:project) { create(:project, namespace: namespace) }
+
+      subject { project.initial_push_to_default_branch_allowed_for_developer? }
+
+      where(:default_branch_protection_level, :result) do
+        Gitlab::Access::BranchProtection.protection_none                    | true
+        Gitlab::Access::BranchProtection.protection_partial                 | true
+        Gitlab::Access::BranchProtection.protected_against_developer_pushes | false
+        Gitlab::Access::BranchProtection.protected_fully                    | false
+        Gitlab::Access::BranchProtection.protected_after_initial_push       | true
+      end
+
+      with_them do
+        before do
+          expect(project.namespace)
+            .to receive(:default_branch_protection_settings)
+                  .and_return(default_branch_protection_level)
+        end
+
+        it { is_expected.to eq(result) }
+      end
     end
   end
 
@@ -5907,50 +5995,108 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
       end
     end
 
-    context 'branch protection' do
-      let_it_be(:namespace) { create(:namespace) }
-
-      let(:project) { create(:project, :repository, namespace: namespace) }
-
+    context 'when feature flag `default_branch_protection_defaults` is disabled' do
       before do
-        create(:import_state, :started, project: project)
+        stub_feature_flags(default_branch_protection_defaults: false)
       end
 
-      it 'does not protect when branch protection is disabled' do
-        expect(project.namespace).to receive(:default_branch_protection).and_return(Gitlab::Access::PROTECTION_NONE)
+      context 'branch protection' do
+        let_it_be(:namespace) { create(:namespace) }
+        let_it_be(:project) { create(:project, :repository, namespace: namespace) }
 
-        project.after_import
+        before do
+          create(:import_state, :started, project: project)
+        end
 
-        expect(project.protected_branches).to be_empty
+        it 'does not protect when branch protection is disabled' do
+          expect(project.namespace).to receive(:default_branch_protection).and_return(Gitlab::Access::PROTECTION_NONE)
+
+          project.after_import
+
+          expect(project.protected_branches).to be_empty
+        end
+
+        it "gives developer access to push when branch protection is set to 'developers can push'" do
+          expect(project.namespace).to receive(:default_branch_protection).and_return(Gitlab::Access::PROTECTION_DEV_CAN_PUSH)
+
+          project.after_import
+
+          expect(project.protected_branches).not_to be_empty
+          expect(project.default_branch).to eq(project.protected_branches.first.name)
+          expect(project.protected_branches.first.push_access_levels.map(&:access_level)).to eq([Gitlab::Access::DEVELOPER])
+        end
+
+        it "gives developer access to merge when branch protection is set to 'developers can merge'" do
+          expect(project.namespace).to receive(:default_branch_protection).and_return(Gitlab::Access::PROTECTION_DEV_CAN_MERGE)
+
+          project.after_import
+
+          expect(project.protected_branches).not_to be_empty
+          expect(project.default_branch).to eq(project.protected_branches.first.name)
+          expect(project.protected_branches.first.merge_access_levels.map(&:access_level)).to eq([Gitlab::Access::DEVELOPER])
+        end
+
+        it 'protects default branch' do
+          project.after_import
+
+          expect(project.protected_branches).not_to be_empty
+          expect(project.default_branch).to eq(project.protected_branches.first.name)
+          expect(project.protected_branches.first.push_access_levels.map(&:access_level)).to eq([Gitlab::Access::MAINTAINER])
+          expect(project.protected_branches.first.merge_access_levels.map(&:access_level)).to eq([Gitlab::Access::MAINTAINER])
+        end
+      end
+    end
+
+    context 'when feature flag `default_branch_protection_defaults` is enabled' do
+      before do
+        stub_feature_flags(default_branch_protection_defaults: true)
       end
 
-      it "gives developer access to push when branch protection is set to 'developers can push'" do
-        expect(project.namespace).to receive(:default_branch_protection).and_return(Gitlab::Access::PROTECTION_DEV_CAN_PUSH)
+      context 'branch protection' do
+        let_it_be(:namespace) { create(:namespace) }
 
-        project.after_import
+        let_it_be(:project) { create(:project, :repository, namespace: namespace) }
 
-        expect(project.protected_branches).not_to be_empty
-        expect(project.default_branch).to eq(project.protected_branches.first.name)
-        expect(project.protected_branches.first.push_access_levels.map(&:access_level)).to eq([Gitlab::Access::DEVELOPER])
-      end
+        before do
+          create(:import_state, :started, project: project)
+        end
 
-      it "gives developer access to merge when branch protection is set to 'developers can merge'" do
-        expect(project.namespace).to receive(:default_branch_protection).and_return(Gitlab::Access::PROTECTION_DEV_CAN_MERGE)
+        it 'does not protect when branch protection is disabled' do
+          expect(project.namespace).to receive(:default_branch_protection_settings).and_return(Gitlab::Access::BranchProtection.protection_none)
 
-        project.after_import
+          project.after_import
 
-        expect(project.protected_branches).not_to be_empty
-        expect(project.default_branch).to eq(project.protected_branches.first.name)
-        expect(project.protected_branches.first.merge_access_levels.map(&:access_level)).to eq([Gitlab::Access::DEVELOPER])
-      end
+          expect(project.protected_branches).to be_empty
+        end
 
-      it 'protects default branch' do
-        project.after_import
+        it "gives developer access to push when branch protection is set to 'developers can push'" do
+          expect(project.namespace).to receive(:default_branch_protection_settings).and_return(Gitlab::Access::BranchProtection.protection_partial)
 
-        expect(project.protected_branches).not_to be_empty
-        expect(project.default_branch).to eq(project.protected_branches.first.name)
-        expect(project.protected_branches.first.push_access_levels.map(&:access_level)).to eq([Gitlab::Access::MAINTAINER])
-        expect(project.protected_branches.first.merge_access_levels.map(&:access_level)).to eq([Gitlab::Access::MAINTAINER])
+          project.after_import
+
+          expect(project.protected_branches).not_to be_empty
+          expect(project.default_branch).to eq(project.protected_branches.first.name)
+          expect(project.protected_branches.first.push_access_levels.map(&:access_level)).to eq([Gitlab::Access::DEVELOPER])
+        end
+
+        it "gives developer access to merge when branch protection is set to 'developers can merge'" do
+          expect(project.namespace).to receive(:default_branch_protection_settings).and_return(Gitlab::Access::BranchProtection.protected_against_developer_pushes)
+
+          project.after_import
+
+          expect(project.protected_branches).not_to be_empty
+          expect(project.default_branch).to eq(project.protected_branches.first.name)
+          expect(project.protected_branches.first.merge_access_levels.map(&:access_level)).to eq([Gitlab::Access::DEVELOPER])
+        end
+
+        it 'protects default branch' do
+          project.after_import
+
+          expect(project.protected_branches).not_to be_empty
+          expect(project.default_branch).to eq(project.protected_branches.first.name)
+          expect(project.protected_branches.first.push_access_levels.map(&:access_level)).to eq([Gitlab::Access::MAINTAINER])
+          expect(project.protected_branches.first.merge_access_levels.map(&:access_level)).to eq([Gitlab::Access::MAINTAINER])
+        end
       end
     end
 

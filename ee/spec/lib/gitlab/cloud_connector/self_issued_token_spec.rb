@@ -4,8 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::CloudConnector::SelfIssuedToken, feature_category: :cloud_connector do
   let_it_be(:user) { create(:user) }
+  let(:extra_claims) { {} }
 
-  subject(:token) { described_class.new(user, scopes: [:code_suggestions]) }
+  subject(:token) { described_class.new(user, scopes: [:code_suggestions], extra_claims: extra_claims) }
 
   describe '#payload' do
     subject(:payload) { token.payload }
@@ -18,6 +19,14 @@ RSpec.describe Gitlab::CloudConnector::SelfIssuedToken, feature_category: :cloud
       expect(payload[:iat]).to eq(now)
       expect(payload[:nbf]).to eq(now - 5.seconds.freeze)
       expect(payload[:exp]).to eq(now + 1.hour.freeze)
+    end
+
+    context 'when passing extra claims' do
+      let(:extra_claims) { { custom: 123 } }
+
+      it 'includes them in payload' do
+        expect(payload[:custom]).to eq(123)
+      end
     end
   end
 

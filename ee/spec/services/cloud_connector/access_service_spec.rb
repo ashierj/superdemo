@@ -15,11 +15,11 @@ RSpec.describe CloudConnector::AccessService, feature_category: :cloud_connector
   let_it_be(:cloud_connector_access) { create(:cloud_connector_access, data: data) }
 
   describe '#access_token' do
-    subject(:access_token) { described_class.new.access_token(scopes) }
+    subject(:access_token) { described_class.new.access_token(scopes: scopes) }
 
     let(:scopes) { [:code_suggestions, :duo_chat] }
 
-    context 'when Self-managed' do
+    context 'when self-managed' do
       let_it_be(:older_active_token) { create(:service_access_token, :active) }
       let_it_be(:newer_active_token) { create(:service_access_token, :active) }
       let_it_be(:inactive_token) { create(:service_access_token, :expired) }
@@ -32,10 +32,26 @@ RSpec.describe CloudConnector::AccessService, feature_category: :cloud_connector
 
       it 'returns the constructed token' do
         expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(nil,
-          scopes: scopes).and_return(instance_double('Gitlab::CloudConnector::SelfIssuedToken',
-            encoded: encoded_token_string))
+          scopes: scopes,
+          extra_claims: {}
+        ).and_return(instance_double('Gitlab::CloudConnector::SelfIssuedToken', encoded: encoded_token_string))
 
         expect(access_token).to eq(encoded_token_string)
+      end
+
+      context 'when passing additional claims' do
+        let(:extra_claims) { { 'custom_claim' => 'custom_value' } }
+
+        subject(:access_token) { described_class.new.access_token(scopes: scopes, extra_claims: extra_claims) }
+
+        it 'includes extra_claims element in token payload' do
+          expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(nil,
+            scopes: scopes,
+            extra_claims: extra_claims
+          ).and_return(instance_double('Gitlab::CloudConnector::SelfIssuedToken', encoded: encoded_token_string))
+
+          expect(access_token).to eq(encoded_token_string)
+        end
       end
     end
   end

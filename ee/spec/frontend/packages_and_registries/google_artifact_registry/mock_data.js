@@ -13,11 +13,11 @@ export const imageData = {
   tags: ['latest', 'v1.0.0', 'v1.0.1'],
   uploadTime: '2019-01-01T00:00:00Z',
   updateTime: '2020-01-01T00:00:00Z',
+  uri:
+    'us-east1-docker.pkg.dev/dev-package-container-96a3ff34/myrepo/alpine@sha256:6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
 };
 
 export const imageDetailsFields = {
-  uri:
-    'us-east1-docker.pkg.dev/dev-package-container-96a3ff34/myrepo/alpine@sha256:6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
   imageSizeBytes: 2827903,
   buildTime: '2023-12-07T11:48:47.598511Z',
   mediaType: 'application/vnd.docker.distribution.manifest.v2+json',

@@ -24914,6 +24914,8 @@ CREATE INDEX index_environments_cluster_agent_id ON environments USING btree (cl
 
 CREATE INDEX index_environments_for_name_search_within_folder ON environments USING btree (project_id, lower(ltrim((name)::text, ((environment_type)::text || '/'::text))) varchar_pattern_ops, state);
 
+CREATE INDEX index_environments_name_without_type ON environments USING btree (project_id, lower(ltrim(ltrim((name)::text, (environment_type)::text), '/'::text)) varchar_pattern_ops, state);
+
 CREATE INDEX index_environments_on_merge_request_id ON environments USING btree (merge_request_id);
 
 CREATE INDEX index_environments_on_name_varchar_pattern_ops ON environments USING btree (name varchar_pattern_ops);
@@ -26279,6 +26281,8 @@ CREATE INDEX index_project_export_jobs_on_project_id_and_jid ON project_export_j
 CREATE INDEX index_project_export_jobs_on_project_id_and_status ON project_export_jobs USING btree (project_id, status);
 
 CREATE INDEX index_project_export_jobs_on_status ON project_export_jobs USING btree (status);
+
+CREATE INDEX index_project_export_jobs_on_updated_at_and_id ON project_export_jobs USING btree (updated_at, id);
 
 CREATE INDEX index_project_feature_usages_on_project_id ON project_feature_usages USING btree (project_id);
 
@@ -32365,8 +32369,8 @@ ALTER TABLE issue_search_data
 ALTER TABLE issue_search_data
     ADD CONSTRAINT issue_search_data_project_id_fkey FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY ci_builds
-    ADD CONSTRAINT tmp_fk_3a9eaa254d_p FOREIGN KEY (partition_id, stage_id) REFERENCES p_ci_stages(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
+ALTER TABLE p_ci_builds
+    ADD CONSTRAINT tmp_fk_3a9eaa254d_p FOREIGN KEY (partition_id, stage_id) REFERENCES p_ci_stages(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY user_follow_users
     ADD CONSTRAINT user_follow_users_followee_id_fkey FOREIGN KEY (followee_id) REFERENCES users(id) ON DELETE CASCADE;

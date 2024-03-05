@@ -11,7 +11,7 @@ module Gitlab
 
       attr_reader :issued_at
 
-      def initialize(user, scopes:)
+      def initialize(user, scopes:, extra_claims: {})
         @id = SecureRandom.uuid
         @audience = JWT_AUDIENCE
         @issuer = Doorkeeper::OpenidConnect.configuration.issuer
@@ -19,13 +19,14 @@ module Gitlab
         @not_before = @issued_at - NOT_BEFORE_TIME
         @expire_time = @issued_at + EXPIRES_IN
         @scopes = scopes
+        @extra_claims = extra_claims
         @user = user
       end
 
       def encoded
         headers = { typ: 'JWT' }
 
-        JWT.encode(payload.merge(claims), key, 'RS256', headers)
+        JWT.encode(payload, key, 'RS256', headers)
       end
 
       def payload
@@ -36,16 +37,16 @@ module Gitlab
           iat: @issued_at,
           nbf: @not_before,
           exp: @expire_time
-        }
+        }.merge(custom_claims)
       end
 
       private
 
-      def claims
+      def custom_claims
         {
           gitlab_realm: Gitlab::CloudConnector.gitlab_realm,
           scopes: @scopes
-        }
+        }.merge(@extra_claims)
       end
 
       def key

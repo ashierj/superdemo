@@ -29,6 +29,21 @@ export default {
       required: false,
       default: false,
     },
+    agentId: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    agentNameValue: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    agentPromptValue: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {
@@ -44,8 +59,8 @@ export default {
         },
       },
       formValues: {
-        name: '',
-        prompt: '',
+        name: this.agentNameValue,
+        prompt: this.agentPromptValue,
       },
     };
   },
@@ -53,6 +68,7 @@ export default {
     onSubmit() {
       this.$emit('submit', {
         projectPath: this.projectPath,
+        agentId: this.agentId,
         name: this.formValues.name,
         prompt: this.formValues.prompt,
       });

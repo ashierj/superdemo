@@ -19,7 +19,7 @@ RSpec.describe Users::RejectService, feature_category: :user_management do
         context 'when user is successfully rejected' do
           it 'logs an audit event', :aggregate_failures do
             expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including({
-              name: 'user_approved'
+              name: 'user_rejected'
             })).and_call_original
 
             expect { reject_user }.to change { AuditEvent.count }.by(1)

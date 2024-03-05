@@ -49,7 +49,10 @@ module EE
               return "Commit message contains the forbidden pattern '#{push_rule.commit_message_negative_regex}'"
             end
 
-            unless push_rule.author_email_allowed?(commit.committer_email)
+            # Historically, when a commit is created via Web UI, the committer and author emails are the same
+            # It changes with https://gitlab.com/gitlab-org/gitaly/-/issues/5715 issue and now the committer email
+            # of the commits created by Gitaly has an instance email like <noreply@gitlab.com>
+            if !updated_from_web? && !push_rule.author_email_allowed?(commit.committer_email)
               return "Committer's email '#{commit.committer_email}' does not follow the pattern '#{push_rule.author_email_regex}'"
             end
 
@@ -69,33 +72,44 @@ module EE
             end
 
             # Check whether author is a GitLab member
-            if push_rule.member_check
-              unless ::User.find_by_any_email(commit.author_email).present?
-                return "Author '#{commit.author_email}' is not a member of team"
-              end
-
-              if commit.author_email.casecmp(commit.committer_email) == -1
-                unless ::User.find_by_any_email(commit.committer_email).present?
-                  return "Committer '#{commit.committer_email}' is not a member of team"
-                end
-              end
-            end
+            member_error_message = check_member(commit)
+            return member_error_message if member_error_message
 
             nil
           end
 
+          def check_member(commit)
+            return if updated_from_web?
+            return unless push_rule.member_check
+
+            unless ::User.find_by_any_email(commit.author_email).present?
+              return "Author '#{commit.author_email}' is not a member of team"
+            end
+
+            if commit.author_email.casecmp(commit.committer_email) != 0
+              unless ::User.find_by_any_email(commit.committer_email).present?
+                "Committer '#{commit.committer_email}' is not a member of team"
+              end
+            end
+          end
+
           def committer_check(commit)
-            unless push_rule.committer_allowed?(commit.committer_email, user_access.user)
+            # Historically, when a commit is created via Web UI, the committer and author emails are the same
+            # It changes with https://gitlab.com/gitlab-org/gitaly/-/issues/5715 issue and now the committer email
+            # of the commits created by Gitaly has an instance email like <noreply@gitlab.com>
+            committer_email = updated_from_web? ? commit.author_email : commit.committer_email
+
+            unless push_rule.committer_allowed?(committer_email, user_access.user)
               # We can assume only one user holds an unconfirmed primary email address. Since we want
               # to give feedback whether this is an unconfirmed address, we look for any user that
               # matches by disabling the confirmation requirement.
               committer = commit.committer(confirmed: false)
               committer_is_current_user = committer == user_access.user
 
-              if committer_is_current_user && !committer.verified_email?(commit.committer_email)
-                return ERROR_MESSAGES[:committer_not_verified] % { committer_email: commit.committer_email }
+              if committer_is_current_user && !committer.verified_email?(committer_email)
+                return ERROR_MESSAGES[:committer_not_verified] % { committer_email: committer_email }
               else
-                return ERROR_MESSAGES[:committer_not_allowed] % { committer_email: commit.committer_email }
+                return ERROR_MESSAGES[:committer_not_allowed] % { committer_email: committer_email }
               end
             end
 

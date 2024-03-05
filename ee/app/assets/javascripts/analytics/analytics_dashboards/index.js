@@ -120,6 +120,7 @@ export default () => {
       rootNamespaceName,
       rootNamespaceFullPath,
       dataSourceClickhouse: parseBoolean(dataSourceClickhouse),
+      currentUserId: window.gon?.current_user_id,
     },
     render(h) {
       return h(DashboardsApp);

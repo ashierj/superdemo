@@ -1,0 +1,21 @@
+---
+description: Triggered when a user submits a GitLab Duo natural language query from the Product Analytics visualization designer.
+category: InternalEventTracking
+action: user_submitted_gitlab_duo_query_from_visualization_designer
+label_description:
+property_description:
+value_description:
+extra_properties:
+identifiers:
+  - project
+  - user
+  - namespace
+product_section: analytics
+product_stage: monitor
+product_group: product_analytics
+milestone: '16.10'
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/145463
+distributions:
+  - ee
+tiers:
+  - ultimate

@@ -1,12 +1,8 @@
 <script>
-import { GridStack } from 'gridstack';
 import { GlButton, GlFormInput, GlFormGroup, GlLink, GlIcon, GlSprintf } from '@gitlab/ui';
-import { breakpoints } from '@gitlab/ui/dist/utils';
 import { isEqual } from 'lodash';
-import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
 import { cloneWithoutReferences } from '~/lib/utils/common_utils';
-import { loadCSSFile } from '~/lib/utils/css_utils';
 import { slugify } from '~/lib/utils/text_utility';
 import { s__, __ } from '~/locale';
 import { InternalEvents } from '~/tracking';
@@ -19,19 +15,12 @@ import {
 } from 'ee/analytics/analytics_dashboards/constants';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import PanelsBase from './panels_base.vue';
-import {
-  GRIDSTACK_MARGIN,
-  GRIDSTACK_CSS_HANDLE,
-  GRIDSTACK_CELL_HEIGHT,
-  GRIDSTACK_MIN_ROW,
-  CURSOR_GRABBING_CLASS,
-  DASHBOARD_DOCUMENTATION_LINKS,
-} from './constants';
+import GridstackWrapper from './gridstack_wrapper.vue';
+import { DASHBOARD_DOCUMENTATION_LINKS } from './constants';
 import AvailableVisualizationsDrawer from './dashboard_editor/available_visualizations_drawer.vue';
 import {
   getDashboardConfig,
   filtersToQueryParams,
-  getUniquePanelId,
   availableVisualizationsValidator,
 } from './utils';
 
@@ -49,6 +38,7 @@ export default {
     PanelsBase,
     UrlSync,
     AvailableVisualizationsDrawer,
+    GridstackWrapper,
   },
   mixins: [InternalEvents.mixin(), glFeatureFlagsMixin()],
   props: {
@@ -112,20 +102,14 @@ export default {
   data() {
     return {
       dashboard: this.createDraftDashboard(this.initialDashboard),
-      grid: undefined,
-      cssLoaded: false,
-      mounted: true,
       editing: this.isNewDashboard,
       filters: this.defaultFilters,
       alert: null,
       visualizationDrawerOpen: false,
-      gridStackRenderKey: 0,
+      dashboardRenderKey: 0,
     };
   },
   computed: {
-    loaded() {
-      return this.cssLoaded && this.mounted;
-    },
     showFilters() {
       return !this.editing && (this.showDateRangeFilter || this.showAnonUsersFilter);
     },
@@ -159,12 +143,6 @@ export default {
     },
   },
   watch: {
-    cssLoaded() {
-      this.initGridStack();
-    },
-    mounted() {
-      this.initGridStack();
-    },
     isNewDashboard(isNew) {
       this.editing = isNew;
     },
@@ -199,17 +177,7 @@ export default {
       this.resetToInitialDashboard();
     },
   },
-  async created() {
-    try {
-      await loadCSSFile(gon.gridstack_css_path);
-      this.cssLoaded = true;
-    } catch (e) {
-      Sentry.captureException(e);
-    }
-  },
   mounted() {
-    this.mounted = true;
-
     const wrappers = document.querySelectorAll('.container-fluid.container-limited');
 
     wrappers.forEach((el) => {
@@ -220,8 +188,6 @@ export default {
     window.addEventListener('beforeunload', this.onPageUnload);
   },
   beforeDestroy() {
-    this.mounted = false;
-
     const wrappers = document.querySelectorAll('.container-fluid.not-container-limited');
 
     wrappers.forEach((el) => {
@@ -245,94 +211,15 @@ export default {
       return returnValue;
     },
     createDraftDashboard(dashboard) {
-      const draft = cloneWithoutReferences(dashboard);
-      return {
-        ...draft,
-        // Gridstack requires unique panel IDs for mutations
-        panels: draft.panels.map((panel) => ({
-          ...panel,
-          id: getUniquePanelId(),
-        })),
-      };
+      return cloneWithoutReferences(dashboard);
     },
-    async resetToInitialDashboard() {
+    resetToInitialDashboard() {
       this.dashboard = this.createDraftDashboard(this.initialDashboard);
       // Update the element key to force re-render
-      this.gridStackRenderKey += 1;
-      await this.$nextTick();
-      // Reinitialize gridstack for the new grid items
-      this.initGridStack();
+      this.dashboardRenderKey += 1;
     },
     onTitleInput(submitting) {
       this.$emit('title-input', this.dashboard.title, submitting);
-    },
-    initGridStack() {
-      if (this.loaded) {
-        this.grid = GridStack.init({
-          staticGrid: !this.editing,
-          margin: GRIDSTACK_MARGIN,
-          handle: GRIDSTACK_CSS_HANDLE,
-          cellHeight: GRIDSTACK_CELL_HEIGHT,
-          minRow: GRIDSTACK_MIN_ROW,
-          columnOpts: { breakpoints: [{ w: breakpoints.md, c: 1 }] },
-          alwaysShowResizeHandle: true,
-          animate: false,
-        });
-
-        this.grid.on('dragstart', () => {
-          this.$el.classList.add(CURSOR_GRABBING_CLASS);
-        });
-        this.grid.on('dragstop', () => {
-          this.$el.classList.remove(CURSOR_GRABBING_CLASS);
-        });
-        this.grid.on('change', (event, items) => {
-          items.forEach((item) => {
-            this.updatePanelWithGridStackItem(item);
-          });
-        });
-        this.grid.on('added', (event, items) => {
-          items.forEach((item) => {
-            this.updatePanelWithGridStackItem(item);
-          });
-        });
-      }
-    },
-    registerNewGridPanel(panelId) {
-      this.grid.makeWidget(`#${panelId}`);
-
-      document.getElementById(panelId)?.scrollIntoView({ behavior: 'smooth' });
-    },
-    getGridAttribute(panel, attribute) {
-      const { gridAttributes = {} } = panel;
-
-      return gridAttributes[attribute];
-    },
-    async addSelectedVisualizations(selected) {
-      const panelIds = selected.map((visualization) => {
-        const panel = createNewVisualizationPanel(visualization);
-        this.dashboard.panels.push(panel);
-        return panel.id;
-      });
-
-      // Wait for the panels to render
-      await this.$nextTick();
-
-      panelIds.forEach((id) => this.registerNewGridPanel(id));
-      this.closeVisualizationDrawer();
-    },
-    async deletePanel(panel) {
-      const panelIndex = this.dashboard.panels.indexOf(panel);
-      this.dashboard.panels.splice(panelIndex, 1);
-
-      this.grid.removeWidget(document.getElementById(panel.id), false);
-    },
-    convertToGridAttributes(gridStackProperties) {
-      return {
-        yPos: gridStackProperties.y,
-        xPos: gridStackProperties.x,
-        width: gridStackProperties.w,
-        height: gridStackProperties.h,
-      };
     },
     startEdit() {
       this.editing = true;
@@ -380,7 +267,7 @@ export default {
 
         if (!confirmed) return;
 
-        await this.resetToInitialDashboard();
+        this.resetToInitialDashboard();
       }
 
       if (this.isNewDashboard) {
@@ -403,12 +290,6 @@ export default {
         primaryBtnText: __('Discard changes'),
         cancelBtnText,
       });
-    },
-    updatePanelWithGridStackItem(item) {
-      const updatedPanel = this.dashboard.panels.find((panel) => panel.id === item.id);
-      if (updatedPanel) {
-        updatedPanel.gridAttributes = this.convertToGridAttributes(item);
-      }
     },
     setDateRangeFilter({ dateRangeOption, startDate, endDate }) {
       this.filters = {
@@ -436,6 +317,11 @@ export default {
     },
     panelTestId({ visualization: { slug = '' } }) {
       return `panel-${slug.replaceAll('_', '-')}`;
+    },
+    createVisualizationPanels(visualizations) {
+      this.closeVisualizationDrawer();
+
+      return visualizations.map((viz) => createNewVisualizationPanel(viz));
     },
   },
   HISTORY_REPLACE_UPDATE_METHOD,
@@ -571,24 +457,9 @@ export default {
               {{ s__('Analytics|Add visualization') }}
             </div>
           </button>
-          <div :key="gridStackRenderKey" data-testid="gridstack-grid" class="grid-stack">
-            <div
-              v-for="panel in dashboard.panels"
-              :id="panel.id"
-              :key="panel.id"
-              :gs-id="panel.id"
-              :gs-x="getGridAttribute(panel, 'xPos')"
-              :gs-y="getGridAttribute(panel, 'yPos')"
-              :gs-h="getGridAttribute(panel, 'height')"
-              :gs-w="getGridAttribute(panel, 'width')"
-              :gs-min-h="getGridAttribute(panel, 'minHeight')"
-              :gs-min-w="getGridAttribute(panel, 'minWidth')"
-              :gs-max-h="getGridAttribute(panel, 'maxHeight')"
-              :gs-max-w="getGridAttribute(panel, 'maxWidth')"
-              class="grid-stack-item"
-              :class="{ 'gl-cursor-grab': editing }"
-              data-testid="grid-stack-panel"
-            >
+
+          <gridstack-wrapper :key="dashboardRenderKey" v-model="dashboard" :editing="editing">
+            <template #panel="{ panel, deletePanel }">
               <panels-base
                 :title="panel.title"
                 :visualization="panel.visualization"
@@ -598,17 +469,19 @@ export default {
                 :data-testid="panelTestId(panel)"
                 @delete="deletePanel(panel)"
               />
-            </div>
-          </div>
+            </template>
+            <template #drawer="{ addPanels }">
+              <available-visualizations-drawer
+                :visualizations="availableVisualizations.visualizations"
+                :loading="availableVisualizations.loading"
+                :has-error="availableVisualizations.hasError"
+                :open="visualizationDrawerOpen"
+                @select="(visualizations) => addPanels(createVisualizationPanels(visualizations))"
+                @close="closeVisualizationDrawer"
+              />
+            </template>
+          </gridstack-wrapper>
         </div>
-        <available-visualizations-drawer
-          :visualizations="availableVisualizations.visualizations"
-          :loading="availableVisualizations.loading"
-          :has-error="availableVisualizations.hasError"
-          :open="visualizationDrawerOpen"
-          @select="addSelectedVisualizations"
-          @close="closeVisualizationDrawer"
-        />
       </div>
     </div>
     <template v-if="editing">

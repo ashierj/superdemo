@@ -8,7 +8,7 @@ module QA
           module AnalyticsDashboards
             class Dashboard < QA::Page::Base
               view 'ee/app/assets/javascripts/vue_shared/components/' \
-                   'customizable_dashboard/customizable_dashboard.vue' do
+                   'customizable_dashboard/gridstack_wrapper.vue' do
                 element 'grid-stack-panel'
               end
 

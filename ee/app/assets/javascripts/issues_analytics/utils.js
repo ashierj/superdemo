@@ -3,7 +3,7 @@ import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { RENAMED_FILTER_KEYS_DEFAULT } from 'ee/issues_analytics/constants';
 import { dateFormats } from '~/analytics/shared/constants';
 import dateFormat from '~/lib/dateformat';
-import { getMonthNames } from '~/lib/utils/datetime_utility';
+import { getMonthNames, newDate } from '~/lib/utils/datetime_utility';
 
 /**
  * Returns an object with renamed filter keys.
@@ -80,27 +80,20 @@ export const generateChartDateRangeData = (startDate, endDate, format = dateForm
   const formatDate = (date) => dateFormat(date, format, true);
 
   for (
-    let dateCursor = new Date(endDate);
-    dateCursor >= startDate;
-    dateCursor.setMonth(dateCursor.getMonth(), 0)
+    let fromDate = newDate(startDate);
+    fromDate < endDate;
+    fromDate.setMonth(fromDate.getMonth() + 1, 1)
   ) {
-    const monthIndex = dateCursor.getMonth();
-    const month = abbrMonthNames[monthIndex];
-    const year = dateCursor.getFullYear();
-    const fromDate = new Date(year, monthIndex, 1);
-    const toDate = new Date(year, monthIndex + 1, 1);
+    let toDate = newDate(fromDate);
+    toDate.setMonth(toDate.getMonth() + 1, 1);
+    if (toDate > endDate) toDate = endDate;
 
-    chartDateRangeData.unshift({
+    chartDateRangeData.push({
       fromDate: formatDate(fromDate),
       toDate: formatDate(toDate),
-      month,
-      year,
+      month: abbrMonthNames[fromDate.getMonth()],
+      year: fromDate.getFullYear(),
     });
-  }
-
-  if (chartDateRangeData.length) {
-    chartDateRangeData[0].fromDate = formatDate(startDate);
-    chartDateRangeData.at(-1).toDate = formatDate(endDate);
   }
 
   return chartDateRangeData;

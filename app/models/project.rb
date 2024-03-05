@@ -654,14 +654,21 @@ class Project < ApplicationRecord
     )
   end
 
-  scope :sorted_by_similarity_desc, -> (search, include_in_select: false) do
+  scope :sorted_by_similarity_desc, -> (search, full_path_only: false) do
+    rules = if full_path_only
+              [{ column: arel_table["path"], multiplier: 1 }]
+            else
+              [
+                { column: arel_table["path"], multiplier: 1 },
+                { column: arel_table["name"], multiplier: 0.7 },
+                { column: arel_table["description"], multiplier: 0.2 }
+              ]
+            end
+
     order_expression = Gitlab::Database::SimilarityScore.build_expression(
       search: search,
-      rules: [
-        { column: arel_table["path"], multiplier: 1 },
-        { column: arel_table["name"], multiplier: 0.7 },
-        { column: arel_table["description"], multiplier: 0.2 }
-      ])
+      rules: rules
+    )
 
     order = Gitlab::Pagination::Keyset::Order.build(
       [
@@ -2896,12 +2903,24 @@ class Project < ApplicationRecord
   end
 
   def default_branch_protected?
+    if Feature.enabled?(:default_branch_protection_defaults, self)
+      branch_protection = Gitlab::Access::DefaultBranchProtection.new(self)
+
+      return !branch_protection.developer_can_push?
+    end
+
     branch_protection = Gitlab::Access::BranchProtection.new(self.namespace.default_branch_protection)
 
     branch_protection.fully_protected? || branch_protection.developer_can_merge? || branch_protection.developer_can_initial_push?
   end
 
   def initial_push_to_default_branch_allowed_for_developer?
+    if Feature.enabled?(:default_branch_protection_defaults, self)
+      branch_protection = Gitlab::Access::DefaultBranchProtection.new(self)
+
+      return branch_protection.developer_can_push? || branch_protection.developer_can_initial_push?
+    end
+
     branch_protection = Gitlab::Access::BranchProtection.new(self.namespace.default_branch_protection)
 
     !branch_protection.any? || branch_protection.developer_can_push? || branch_protection.developer_can_initial_push?

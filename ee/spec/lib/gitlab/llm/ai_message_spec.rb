@@ -13,6 +13,7 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
       id: 'uuid',
       request_id: 'original_request_id',
       errors: ['some error1', 'another error'],
+      extras: {},
       role: 'user',
       content: content,
       ai_action: 'chat',

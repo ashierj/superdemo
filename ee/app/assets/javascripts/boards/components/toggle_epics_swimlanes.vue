@@ -77,7 +77,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-md-display-flex gl-align-items-center gl-ml-3">
+  <div class="gl-md-display-flex gl-align-items-center gl-ml-3 gl-mb-4 gl-sm-mb-0">
     <label
       for="swimlane-listbox"
       class="gl-white-space-nowrap gl-font-weight-bold gl-line-height-normal gl-m-0"

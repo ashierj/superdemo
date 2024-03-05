@@ -458,27 +458,6 @@ export const mockIssuesAnalyticsCountsChartData = [
   { name: 'Closed', data: [0, 0, 1, 3, 4, 9, 13, 12, 14, 21, 24, 45, 60] },
 ];
 
-export const mockChartDateRangeData = [
-  {
-    fromDate: '2023-07-04',
-    toDate: '2023-08-01',
-    month: 'Jul',
-    year: 2023,
-  },
-  {
-    fromDate: '2023-08-01',
-    toDate: '2023-09-01',
-    month: 'Aug',
-    year: 2023,
-  },
-  {
-    fromDate: '2023-09-01',
-    toDate: '2023-09-15',
-    month: 'Sep',
-    year: 2023,
-  },
-];
-
 export const mockOriginalFilters = {
   author_username: 'root',
   assignee_username: ['bob', 'smith'],
