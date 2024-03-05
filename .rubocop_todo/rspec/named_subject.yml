@@ -3338,7 +3338,6 @@ RSpec/NamedSubject:
     - 'spec/services/packages/helm/extract_file_metadata_service_spec.rb'
     - 'spec/services/packages/mark_package_files_for_destruction_service_spec.rb'
     - 'spec/services/packages/mark_packages_for_destruction_service_spec.rb'
-    - 'spec/services/packages/maven/find_or_create_package_service_spec.rb'
     - 'spec/services/packages/maven/metadata/append_package_file_service_spec.rb'
     - 'spec/services/packages/maven/metadata/create_plugins_xml_service_spec.rb'
     - 'spec/services/packages/maven/metadata/create_versions_xml_service_spec.rb'
