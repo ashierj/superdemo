@@ -2,35 +2,34 @@ import VueApollo from 'vue-apollo';
 import { __ } from '~/locale';
 import createDefaultClient from '~/lib/graphql';
 import { GROUP_VIEW_TYPE, PROJECT_VIEW_TYPE } from '~/usage_quotas/constants';
-import {
-  GROUP_TRANSFER_TAB_METADATA_EL_SELECTOR,
-  PROJECT_TRANSFER_TAB_METADATA_EL_SELECTOR,
-} from '../constants';
+import { TRANSFER_TAB_METADATA_EL_SELECTOR } from '../constants';
 import GroupTransferApp from './components/group_transfer_app.vue';
 import ProjectTransferApp from './components/project_transfer_app.vue';
 
-export const parseProvideData = (el) => {
+const parseProvideData = (el) => {
   const { fullPath } = el.dataset;
   return {
     fullPath,
   };
 };
 
-export const getTransferTabMetadata = ({ viewType = null, includeEl = false } = {}) => {
-  let elSelector;
-  let vueComponent;
-
+const getViewComponent = (viewType) => {
   if (viewType === GROUP_VIEW_TYPE) {
-    elSelector = GROUP_TRANSFER_TAB_METADATA_EL_SELECTOR;
-    vueComponent = GroupTransferApp;
-  } else if (viewType === PROJECT_VIEW_TYPE) {
-    elSelector = PROJECT_TRANSFER_TAB_METADATA_EL_SELECTOR;
-    vueComponent = ProjectTransferApp;
+    return GroupTransferApp;
   }
 
-  const el = document.querySelector(elSelector);
+  if (viewType === PROJECT_VIEW_TYPE) {
+    return ProjectTransferApp;
+  }
 
-  if (!el) return false;
+  return {};
+};
+
+export const getTransferTabMetadata = ({ viewType = null, includeEl = false } = {}) => {
+  const el = document.querySelector(TRANSFER_TAB_METADATA_EL_SELECTOR);
+  const vueComponent = getViewComponent(viewType);
+
+  if (!el || !vueComponent) return false;
 
   const apolloProvider = new VueApollo({
     defaultClient: createDefaultClient(),
