@@ -1,5 +1,5 @@
 <script>
-import { GlLoadingIcon, GlInfiniteScroll } from '@gitlab/ui';
+import { GlLoadingIcon, GlInfiniteScroll, GlSprintf } from '@gitlab/ui';
 import { throttle } from 'lodash';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
@@ -7,6 +7,7 @@ import { visitUrl, joinPaths, queryToObject } from '~/lib/utils/url_utility';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { contentTop, isMetaClick } from '~/lib/utils/common_utils';
 import { DEFAULT_SORTING_OPTION } from '~/observability/constants';
+import axios from '~/lib/utils/axios_utils';
 import {
   queryToFilterObj,
   filterObjToQuery,
@@ -18,7 +19,7 @@ import FilteredSearch from './filter_bar/tracing_filtered_search.vue';
 import TracingAnalytics from './tracing_analytics.vue';
 
 const PAGE_SIZE = 50;
-const TRACING_LIST_VERTICAL_PADDING = 140; // Accounts for the search bar height + the legend height + some more v padding
+const TRACING_LIST_VERTICAL_PADDING = 150; // Accounts for the search bar height + the legend height + some more v padding
 
 export default {
   components: {
@@ -26,8 +27,12 @@ export default {
     TracingTableList,
     FilteredSearch,
     UrlSync,
+    GlSprintf,
     GlInfiniteScroll,
     TracingAnalytics,
+  },
+  i18n: {
+    infiniteScrollLegend: s__(`Tracing|Showing %{count} traces`),
   },
   props: {
     observabilityClient: {
@@ -42,6 +47,8 @@ export default {
     return {
       loadingTraces: false,
       loadingAnalytics: false,
+      fetchTracesAbortController: null,
+      fetchAnalyticsAbortController: null,
       traces: [],
       analytics: [],
       filters: queryToFilterObj(filterQuery),
@@ -62,10 +69,6 @@ export default {
     initialFilterValue() {
       return filterObjToFilterToken(this.filters);
     },
-    infiniteScrollLegend() {
-      if (this.traces.length > 0) return s__(`Tracing|Showing ${this.traces.length} traces`);
-      return null;
-    },
   },
   created() {
     this.fetchTraces();
@@ -83,8 +86,13 @@ export default {
   },
   methods: {
     async fetchTraces() {
-      this.loadingTraces = true;
+      if (this.fetchTracesAbortController) {
+        this.fetchTracesAbortController.abort();
+        this.fetchTracesAbortController = null;
+      }
       try {
+        this.loadingTraces = true;
+        this.fetchTracesAbortController = new AbortController();
         const {
           traces,
           next_page_token: nextPageToken,
@@ -93,31 +101,43 @@ export default {
           pageToken: this.nextPageToken,
           pageSize: PAGE_SIZE,
           sortBy: this.sortBy,
+          abortController: this.fetchTracesAbortController,
         });
         this.traces = [...this.traces, ...traces];
         if (nextPageToken) {
           this.nextPageToken = nextPageToken;
         }
-      } catch (e) {
-        createAlert({
-          message: s__('Tracing|Failed to load traces.'),
-        });
-      } finally {
         this.loadingTraces = false;
+        this.fetchTracesAbortController = null;
+      } catch (e) {
+        if (!axios.isCancel(e)) {
+          this.loadingTraces = false;
+          createAlert({
+            message: s__('Tracing|Failed to load traces.'),
+          });
+        }
       }
     },
     async fetchAnalytics() {
-      this.loadingAnalytics = true;
+      if (this.fetchAnalyticsAbortController) {
+        this.fetchAnalyticsAbortController.abort();
+        this.fetchAnalyticsAbortController = null;
+      }
       try {
+        this.loadingAnalytics = true;
+        this.fetchAnalyticsAbortController = new AbortController();
         this.analytics = await this.observabilityClient.fetchTracesAnalytics({
           filters: this.filters,
+          abortController: this.fetchAnalyticsAbortController,
         });
-      } catch {
-        createAlert({
-          message: s__('Tracing|Failed to load tracing analytics.'),
-        });
-      } finally {
         this.loadingAnalytics = false;
+      } catch (e) {
+        if (!axios.isCancel(e)) {
+          this.loadingAnalytics = false;
+          createAlert({
+            message: s__('Tracing|Failed to load tracing analytics.'),
+          });
+        }
       }
     },
     onTraceClicked({ traceId, clickEvent = {} }) {
@@ -153,44 +173,43 @@ export default {
 
 <template>
   <div class="gl-px-8">
+    <url-sync :query="query" />
+    <filtered-search
+      :initial-filters="initialFilterValue"
+      :observability-client="observabilityClient"
+      :initial-sort="sortBy"
+      @submit="handleFilters"
+      @sort="onSort"
+    />
+
+    <tracing-analytics
+      :analytics="analytics"
+      :loading="loadingAnalytics"
+      :chart-height="analyticsChartsHeight"
+    />
+
     <div v-if="loadingTraces && traces.length === 0" class="gl-py-5">
       <gl-loading-icon size="lg" />
     </div>
 
-    <template v-else>
-      <url-sync :query="query" />
-      <filtered-search
-        :initial-filters="initialFilterValue"
-        :observability-client="observabilityClient"
-        :initial-sort="sortBy"
-        @submit="handleFilters"
-        @sort="onSort"
-      />
+    <gl-infinite-scroll
+      v-else
+      :max-list-height="listHeight"
+      :fetched-items="traces.length"
+      @bottomReached="bottomReached"
+    >
+      <template #items>
+        <tracing-table-list :traces="traces" @trace-clicked="onTraceClicked" />
+      </template>
 
-      <tracing-analytics
-        v-if="traces.length"
-        :analytics="analytics"
-        :loading="loadingAnalytics"
-        :chart-height="analyticsChartsHeight"
-      />
-
-      <gl-infinite-scroll
-        ref="infiniteScroll"
-        :max-list-height="listHeight"
-        :fetched-items="traces.length"
-        @bottomReached="bottomReached"
-      >
-        <template #items>
-          <tracing-table-list ref="tableList" :traces="traces" @trace-clicked="onTraceClicked" />
-        </template>
-
-        <template #default>
-          <gl-loading-icon v-if="loadingTraces" size="md" />
-          <span v-else data-testid="tracing-infinite-scrolling-legend">{{
-            infiniteScrollLegend
-          }}</span>
-        </template>
-      </gl-infinite-scroll>
-    </template>
+      <template #default>
+        <gl-loading-icon v-if="loadingTraces" size="md" />
+        <span v-else data-testid="tracing-infinite-scrolling-legend">
+          <gl-sprintf v-if="traces.length" :message="$options.i18n.infiniteScrollLegend">
+            <template #count>{{ traces.length }}</template>
+          </gl-sprintf>
+        </span>
+      </template>
+    </gl-infinite-scroll>
   </div>
 </template>
