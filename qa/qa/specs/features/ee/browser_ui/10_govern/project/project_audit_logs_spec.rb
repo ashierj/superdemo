@@ -124,7 +124,7 @@ module QA
           Page::Project::Menu.perform(&:go_to_general_settings)
           Page::Project::Settings::Main.perform(&:expand_advanced_settings)
           Page::Project::Settings::Advanced.perform(&:archive_project)
-          Support::Waiter.wait_until { page.has_text?('Archived project!') }
+          Support::Waiter.wait_until { page.has_text?('This is an archived project.') }
 
           # Unarchive project
           Page::Project::Menu.perform(&:go_to_general_settings)

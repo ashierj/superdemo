@@ -24,7 +24,7 @@
             - else
               = annual_price_text
     - unless free?
-      = render Pajamas::ButtonComponent.new(href: cta_url, variant: :confirm, category: cta_category, button_options: { class: 'gl-mb-5', data: cta_data }) do
+      = render Pajamas::ButtonComponent.new(href: cta_url, variant: :confirm, category: cta_category, button_options: { data: cta_data }) do
         = cta_text
   - c.with_footer do
     .gl-font-weight-bold.gl-font-lg.gl-mb-4

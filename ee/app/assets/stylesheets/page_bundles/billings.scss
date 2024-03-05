@@ -220,7 +220,7 @@ $badge-height: $gl-spacing-scale-7;
   }
 
   .gl-card-body {
-    height: 288px;
+    min-height: 288px;
   }
 
   .billing-plan-card-price {
