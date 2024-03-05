@@ -20,6 +20,34 @@ export const createAiAgentsResponses = {
   },
 };
 
+export const updateAiAgentsResponses = {
+  success: {
+    data: {
+      aiAgentUpdate: {
+        agent: {
+          id: 'gid://gitlab/Ai::Agent/1',
+          routeId: 2,
+          name: 'New name',
+          latestVersion: {
+            id: 'gid://gitlab/Ai::AgentVersion/1',
+            prompt: 'my prompt',
+            model: 'default',
+          },
+        },
+        errors: [],
+      },
+    },
+  },
+  validationFailure: {
+    data: {
+      aiAgentUpdate: {
+        agent: null,
+        errors: ['Name is invalid'],
+      },
+    },
+  },
+};
+
 export const listAiAgentsResponses = {
   data: {
     project: {
@@ -60,4 +88,37 @@ export const listAiAgentsEmptyResponses = {
       },
     },
   },
+};
+
+export const getLatestAiAgentResponse = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      aiAgent: {
+        id: 'gid://gitlab/Ai::Agent/1',
+        routeId: 2,
+        name: 'agent-1',
+        versions: [
+          {
+            id: 'gid://gitlab/Ai::AgentVersion/1',
+            prompt: 'example prompt',
+            model: 'default',
+          },
+        ],
+        latestVersion: {
+          id: 'gid://gitlab/Ai::AgentVersion/1',
+          prompt: 'example prompt',
+          model: 'default',
+        },
+      },
+    },
+  },
+};
+
+export const getLatestAiAgentErrorResponse = {
+  errors: [
+    {
+      message: 'An error has occurred when loading the agent.',
+    },
+  ],
 };

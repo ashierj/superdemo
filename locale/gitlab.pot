@@ -1939,6 +1939,9 @@ msgstr ""
 msgid "AIAgents|New agent"
 msgstr ""
 
+msgid "AIAgents|The requested agent was not found."
+msgstr ""
+
 msgid "AIAgent|AI Agent: %{agentId}"
 msgstr ""
 
@@ -1954,10 +1957,16 @@ msgstr ""
 msgid "AIAgent|Create agent"
 msgstr ""
 
+msgid "AIAgent|Edit Ai Agent"
+msgstr ""
+
 msgid "AIAgent|Prompt (optional)"
 msgstr ""
 
 msgid "AIAgent|Try out your agent"
+msgstr ""
+
+msgid "AIAgent|Update agent"
 msgstr ""
 
 msgid "AIAgent|Your agent's system prompt will be applied to the chat input."
