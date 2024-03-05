@@ -1,29 +1,21 @@
 import { nextTick } from 'vue';
-import { GridStack } from 'gridstack';
 import { RouterLinkStub } from '@vue/test-utils';
 import { GlLink, GlSprintf } from '@gitlab/ui';
-import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
 import { mockTracking } from 'helpers/tracking_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
-import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
+import GridstackWrapper from 'ee/vue_shared/components/customizable_dashboard/gridstack_wrapper.vue';
 import AnonUsersFilter from 'ee/vue_shared/components/customizable_dashboard/filters/anon_users_filter.vue';
 import DateRangeFilter from 'ee/vue_shared/components/customizable_dashboard/filters/date_range_filter.vue';
-import {
-  GRIDSTACK_MARGIN,
-  GRIDSTACK_CSS_HANDLE,
-  GRIDSTACK_CELL_HEIGHT,
-  GRIDSTACK_MIN_ROW,
-} from 'ee/vue_shared/components/customizable_dashboard/constants';
-import { loadCSSFile } from '~/lib/utils/css_utils';
 import waitForPromises from 'helpers/wait_for_promises';
+import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
+import AvailableVisualizationsDrawer from 'ee/vue_shared/components/customizable_dashboard/dashboard_editor/available_visualizations_drawer.vue';
 import {
   filtersToQueryParams,
   buildDefaultDashboardFilters,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
-import AvailableVisualizationsDrawer from 'ee/vue_shared/components/customizable_dashboard/dashboard_editor/available_visualizations_drawer.vue';
 import {
   NEW_DASHBOARD,
   EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
@@ -34,6 +26,8 @@ import {
   TEST_EMPTY_DASHBOARD_SVG_PATH,
 } from 'ee_jest/analytics/analytics_dashboards/mock_data';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
+import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
+import { stubComponent } from 'helpers/stub_component';
 import { dashboard, builtinDashboard, mockDateRangeFilterChangePayload } from './mock_data';
 
 jest.mock('~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal');
@@ -45,35 +39,17 @@ jest.mock('~/alert', () => ({
   })),
 }));
 
-const mockGridSetStatic = jest.fn();
-jest.mock('gridstack', () => ({
-  GridStack: {
-    init: jest.fn(() => {
-      return {
-        on: jest.fn(),
-        destroy: jest.fn(),
-        makeWidget: jest.fn(),
-        setStatic: mockGridSetStatic,
-        removeWidget: jest.fn(),
-      };
-    }),
-  },
-}));
-
-jest.mock('~/lib/utils/css_utils', () => ({
-  loadCSSFile: jest.fn(),
-}));
-
 describe('CustomizableDashboard', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
   let trackingSpy;
 
-  const sentryError = new Error('Network error');
-
   const $router = {
     push: jest.fn(),
   };
+
+  const addPanelsMock = jest.fn();
+  const deletePanelMock = jest.fn();
 
   const createWrapper = (
     props = {},
@@ -96,6 +72,19 @@ describe('CustomizableDashboard', () => {
       stubs: {
         RouterLink: RouterLinkStub,
         GlSprintf,
+        GridstackWrapper: stubComponent(GridstackWrapper, {
+          props: ['value', 'editing'],
+          methods: {
+            addPanels: addPanelsMock,
+            deletePanel: deletePanelMock,
+          },
+          template: `<div data-testid="gridstack-wrapper">
+              <template v-for="panel in value.panels">
+                <slot name="panel" v-bind="{ deletePanel, panel }"></slot>
+              </template>
+              <slot name="drawer" v-bind="{ addPanels }"></slot>
+          </div>`,
+        }),
       },
       mocks: {
         $router,
@@ -110,11 +99,9 @@ describe('CustomizableDashboard', () => {
     });
   };
 
+  const findPanels = () => wrapper.findAllComponents(PanelsBase);
   const findDashboardTitle = () => wrapper.findByTestId('dashboard-title');
   const findEditModeTitle = () => wrapper.findByTestId('edit-mode-title');
-  const findGridStackPanels = () => wrapper.findAllByTestId('grid-stack-panel');
-  const findPanels = () => wrapper.findAllComponents(PanelsBase);
-  const findPanelById = (panelId) => wrapper.find(`#${panelId}`);
   const findEditButton = () => wrapper.findByTestId('dashboard-edit-btn');
   const findAddVisualizationButton = () => wrapper.findByTestId('add-visualization-button');
   const findTitleInput = () => wrapper.findByTestId('dashboard-title-input');
@@ -129,6 +116,7 @@ describe('CustomizableDashboard', () => {
   const findVisualizationDrawer = () => wrapper.findComponent(AvailableVisualizationsDrawer);
   const findDashboardDescription = () => wrapper.findByTestId('dashboard-description');
   const findDashboardHelpLink = () => wrapper.findByTestId('dashboard-help-link');
+  const findGridstackWrapper = () => wrapper.findComponent(GridstackWrapper);
 
   const enterDashboardTitle = async (title, titleValidationError = '') => {
     await findTitleInput().vm.$emit('input', title);
@@ -139,29 +127,21 @@ describe('CustomizableDashboard', () => {
     await findDescriptionInput().vm.$emit('input', description);
   };
 
+  const addDashboardPanels = async (currentDashboard, panels) => {
+    await findGridstackWrapper().vm.$emit('input', {
+      ...currentDashboard,
+      panels,
+    });
+  };
+
   beforeEach(() => {
     trackingSpy = mockTracking(undefined, window.document, jest.spyOn);
   });
 
-  describe('when being created and an error occurs while loading the CSS', () => {
-    beforeEach(() => {
-      jest.spyOn(Sentry, 'captureException');
-      loadCSSFile.mockRejectedValue(sentryError);
-
-      createWrapper();
-    });
-
-    it('reports the error to sentry', async () => {
-      await waitForPromises();
-      expect(Sentry.captureException.mock.calls[0][0]).toStrictEqual(sentryError);
-    });
-  });
-
   describe('when mounted updates', () => {
     let wrapperLimited;
-    beforeEach(() => {
-      loadCSSFile.mockResolvedValue();
 
+    beforeEach(() => {
       wrapperLimited = document.createElement('div');
       wrapperLimited.classList.add('container-fluid', 'container-limited');
       document.body.appendChild(wrapperLimited);
@@ -187,56 +167,15 @@ describe('CustomizableDashboard', () => {
 
   describe('default behaviour', () => {
     beforeEach(() => {
-      loadCSSFile.mockResolvedValue();
-
       createWrapper({}, dashboard);
     });
 
-    it('sets up GridStack', () => {
-      expect(GridStack.init).toHaveBeenCalledWith({
-        alwaysShowResizeHandle: true,
-        staticGrid: true,
-        animate: false,
-        margin: GRIDSTACK_MARGIN,
-        handle: GRIDSTACK_CSS_HANDLE,
-        cellHeight: GRIDSTACK_CELL_HEIGHT,
-        minRow: GRIDSTACK_MIN_ROW,
-        columnOpts: {
-          breakpoints: [
-            {
-              c: 1,
-              w: 768,
-            },
-          ],
-        },
+    it('shows the gridstack wrapper', () => {
+      expect(findGridstackWrapper().props()).toMatchObject({
+        value: dashboard,
+        editing: false,
       });
     });
-
-    it.each(
-      dashboard.panels.map((panel, index) => [
-        panel.title,
-        panel.visualization,
-        panel.gridAttributes,
-        panel.queryOverrides,
-        index,
-      ]),
-    )(
-      'should render the panel for %s',
-      (title, visualization, gridAttributes, queryOverrides, index) => {
-        expect(findPanels().at(index).props()).toMatchObject({
-          title,
-          visualization,
-          // The panel component defaults `queryOverrides` to {} when falsy
-          queryOverrides: queryOverrides || {},
-        });
-
-        expect(findGridStackPanels().at(index).attributes()).toMatchObject({
-          'gs-id': expect.stringContaining('panel-'),
-          'gs-h': `${gridAttributes.height}`,
-          'gs-w': `${gridAttributes.width}`,
-        });
-      },
-    );
 
     it('shows the dashboard title', () => {
       expect(findDashboardTitle().text()).toBe('Analytics Overview');
@@ -277,8 +216,6 @@ describe('CustomizableDashboard', () => {
 
   describe('when a dashboard has no description', () => {
     beforeEach(() => {
-      loadCSSFile.mockResolvedValue();
-
       createWrapper({}, { ...dashboard, description: undefined });
     });
 
@@ -289,8 +226,6 @@ describe('CustomizableDashboard', () => {
 
   describe('when the slug is "value_stream_dashboard"', () => {
     beforeEach(() => {
-      loadCSSFile.mockResolvedValue();
-
       createWrapper({}, { ...builtinDashboard, slug: 'value_stream_dashboard' });
     });
 
@@ -304,8 +239,6 @@ describe('CustomizableDashboard', () => {
 
   describe('when a dashboard is custom', () => {
     beforeEach(() => {
-      loadCSSFile.mockResolvedValue();
-
       createWrapper({}, dashboard);
     });
 
@@ -316,8 +249,6 @@ describe('CustomizableDashboard', () => {
 
   describe('when a dashboard is built-in', () => {
     beforeEach(() => {
-      loadCSSFile.mockResolvedValue();
-
       createWrapper({}, builtinDashboard);
     });
 
@@ -344,8 +275,6 @@ describe('CustomizableDashboard', () => {
       beforeUnloadEvent = new Event('beforeunload');
       windowDialogSpy = jest.spyOn(beforeUnloadEvent, 'returnValue', 'set');
 
-      loadCSSFile.mockResolvedValue();
-
       createWrapper({}, dashboard);
 
       await waitForPromises();
@@ -365,8 +294,12 @@ describe('CustomizableDashboard', () => {
       );
     });
 
-    it('sets the grid to non-static mode', () => {
-      expect(mockGridSetStatic).toHaveBeenCalledWith(false);
+    it('passes the editing state to the gridstack-wrapper', () => {
+      expect(findGridstackWrapper().props('editing')).toBe(true);
+    });
+
+    it('passes the editing state to the panels', () => {
+      expect(findPanels().at(0).props('editing')).toBe(true);
     });
 
     it('shows the edit mode page title', () => {
@@ -379,25 +312,6 @@ describe('CustomizableDashboard', () => {
 
     it('shows the Save button', () => {
       expect(findSaveButton().props('loading')).toBe(false);
-    });
-
-    it('updates grid panels when their values change', async () => {
-      const gridPanel = findGridStackPanels().at(0);
-
-      await wrapper.vm.updatePanelWithGridStackItem({
-        id: gridPanel.attributes('id'),
-        x: 10,
-        y: 20,
-        w: 30,
-        h: 40,
-      });
-
-      expect(gridPanel.attributes()).toMatchObject({
-        'gs-h': '40',
-        'gs-w': '30',
-        'gs-x': '10',
-        'gs-y': '20',
-      });
     });
 
     it('shows an input element with the title as value', () => {
@@ -456,8 +370,8 @@ describe('CustomizableDashboard', () => {
         expect(findEditModeTitle().exists()).toBe(false);
       });
 
-      it('sets the grid to static mode', () => {
-        expect(mockGridSetStatic).toHaveBeenCalledWith(true);
+      it('sets "editing" to false on the gridstack wrapper', () => {
+        expect(findGridstackWrapper().props('editing')).toBe(false);
       });
     });
 
@@ -467,9 +381,12 @@ describe('CustomizableDashboard', () => {
       expect(windowDialogSpy).not.toHaveBeenCalled();
     });
 
-    describe('and changed were made', () => {
+    describe('and changes were made', () => {
       beforeEach(() => {
-        return findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
+        return findGridstackWrapper().vm.$emit('input', {
+          ...dashboard,
+          title: 'new title',
+        });
       });
 
       it('shows the browser confirmation dialog when the "beforeunload" is emitted', () => {
@@ -485,7 +402,7 @@ describe('CustomizableDashboard', () => {
           confirmAction.mockReset();
         });
 
-        it('shows confirm modal when the title was changed', async () => {
+        it('shows the confirm modal', async () => {
           confirmAction.mockReturnValue(new Promise(() => {}));
 
           await findCancelButton().vm.$emit('click');
@@ -499,25 +416,23 @@ describe('CustomizableDashboard', () => {
           );
         });
 
-        it('resets the dashboard if the user confirms', async () => {
-          confirmAction.mockResolvedValue(true);
+        it.each`
+          action                | confirmed | expectedKey
+          ${'confirm discard'}  | ${true}   | ${1}
+          ${'continue editing'} | ${false}  | ${0}
+        `(
+          'sets the gridstack-wrapper render key to "$expectedKey" on $action',
+          async ({ confirmed, expectedKey }) => {
+            confirmAction.mockResolvedValue(confirmed);
 
-          await findCancelButton().vm.$emit('click');
-          await waitForPromises();
+            expect(findGridstackWrapper().vm.$vnode.key).toBe(0);
 
-          expect(GridStack.init).toHaveBeenCalledTimes(2);
-          expect(findPanels()).toHaveLength(dashboard.panels.length);
-        });
+            await findCancelButton().vm.$emit('click');
+            await waitForPromises();
 
-        it('does nothing if the user opts to keep editing', async () => {
-          confirmAction.mockResolvedValue(false);
-
-          await findCancelButton().vm.$emit('click');
-          await waitForPromises();
-
-          expect(GridStack.init).toHaveBeenCalledTimes(1);
-          expect(findPanels()).toHaveLength(dashboard.panels.length + 1);
-        });
+            expect(findGridstackWrapper().vm.$vnode.key).toBe(expectedKey);
+          },
+        );
       });
     });
 
@@ -525,36 +440,72 @@ describe('CustomizableDashboard', () => {
       expect(findEditButton().exists()).toBe(false);
     });
 
-    it('shows the visualization drawer', () => {
-      expect(findVisualizationDrawer().props()).toMatchObject({
-        visualizations: {},
-        loading: true,
-        open: false,
+    describe('with the visualization drawer', () => {
+      it('renders the closed visualization drawer', () => {
+        expect(findVisualizationDrawer().props()).toMatchObject({
+          visualizations: {},
+          loading: true,
+          open: false,
+        });
+      });
+
+      describe('and the user clicks on the "Add visualization" button', () => {
+        beforeEach(() => {
+          return findAddVisualizationButton().trigger('click');
+        });
+
+        it('opens the drawer', () => {
+          expect(findVisualizationDrawer().props('open')).toBe(true);
+        });
+
+        it('closes the drawer when the user clicks on the same button again', async () => {
+          await findAddVisualizationButton().trigger('click');
+
+          expect(findVisualizationDrawer().props('open')).toBe(false);
+        });
+      });
+
+      describe('and the drawer emits a close event', () => {
+        beforeEach(async () => {
+          await findVisualizationDrawer().vm.$emit('close');
+        });
+
+        it('closes the drawer', () => {
+          expect(findVisualizationDrawer().props('open')).toBe(false);
+        });
+      });
+
+      describe('and the drawer emits a selected event', () => {
+        beforeEach(async () => {
+          await findAddVisualizationButton().trigger('click');
+          await findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
+        });
+
+        it('closes the drawer', () => {
+          expect(findVisualizationDrawer().props('open')).toBe(false);
+        });
+
+        it('calls the wrapper method to add new panels', () => {
+          expect(addPanelsMock).toHaveBeenCalledWith(
+            expect.arrayContaining([
+              expect.objectContaining({
+                ...createNewVisualizationPanel(TEST_VISUALIZATION()),
+                id: expect.stringContaining('panel-'),
+              }),
+            ]),
+          );
+        });
       });
     });
 
-    it('closes the drawer when the visualization drawer emits "close"', async () => {
-      await findVisualizationDrawer().vm.$emit('close');
+    describe('add a panel is deleted', () => {
+      beforeEach(async () => {
+        await findPanels().at(0).vm.$emit('delete', dashboard.panels[0]);
+      });
 
-      expect(findVisualizationDrawer().props('open')).toBe(false);
-    });
-
-    it('closes the drawer when a visualization is selected', async () => {
-      await findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
-
-      expect(findVisualizationDrawer().props('open')).toBe(false);
-    });
-
-    it('add a new panel when a visualization is selected', async () => {
-      expect(findPanels()).toHaveLength(2);
-
-      const visualization = TEST_VISUALIZATION();
-      await findVisualizationDrawer().vm.$emit('select', [visualization]);
-      await nextTick();
-
-      const updatedPanels = findPanels();
-      expect(updatedPanels).toHaveLength(3);
-      expect(updatedPanels.at(-1).props('visualization')).toMatchObject(visualization);
+      it('calls the wrapper method to delete the panel', () => {
+        expect(deletePanelMock).toHaveBeenCalledWith(dashboard.panels[0]);
+      });
     });
   });
 
@@ -563,8 +514,6 @@ describe('CustomizableDashboard', () => {
 
     describe('when showDateRangeFilter is false', () => {
       beforeEach(() => {
-        loadCSSFile.mockResolvedValue();
-
         createWrapper({
           showDateRangeFilter: false,
           syncUrlFilters: true,
@@ -582,8 +531,6 @@ describe('CustomizableDashboard', () => {
     describe('when the date range filter is enabled and configured', () => {
       describe('by default', () => {
         beforeEach(() => {
-          loadCSSFile.mockResolvedValue();
-
           createWrapper({ showDateRangeFilter: true, syncUrlFilters: true, defaultFilters });
         });
 
@@ -622,8 +569,6 @@ describe('CustomizableDashboard', () => {
 
       describe.each([0, 12, 31])('when given a date range limit of %d', (dateRangeLimit) => {
         beforeEach(() => {
-          loadCSSFile.mockResolvedValue();
-
           createWrapper({
             showDateRangeFilter: true,
             syncUrlFilters: true,
@@ -642,8 +587,6 @@ describe('CustomizableDashboard', () => {
 
     describe('filtering anonymous users', () => {
       beforeEach(() => {
-        loadCSSFile.mockResolvedValue();
-
         createWrapper({
           showAnonUsersFilter: true,
           syncUrlFilters: true,
@@ -687,14 +630,15 @@ describe('CustomizableDashboard', () => {
   });
 
   describe('when a dashboard is new and the editing feature flag is enabled', () => {
-    beforeEach(() => {
-      loadCSSFile.mockResolvedValue();
+    const newDashboard = NEW_DASHBOARD();
+    const newPanels = [dashboard.panels[0]];
 
+    beforeEach(() => {
       createWrapper(
         {
           isNewDashboard: true,
         },
-        NEW_DASHBOARD(),
+        newDashboard,
       );
     });
 
@@ -718,12 +662,15 @@ describe('CustomizableDashboard', () => {
       });
 
       beforeEach(() => {
-        return findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
+        confirmAction.mockResolvedValue(true);
+
+        return findGridstackWrapper().vm.$emit('input', {
+          ...newDashboard,
+          title: 'new title',
+        });
       });
 
       it('shows a confirmation modal for new dashboards', async () => {
-        confirmAction.mockReturnValue(new Promise(() => {}));
-
         await findCancelButton().vm.$emit('click');
 
         expect(confirmAction).toHaveBeenCalledWith(
@@ -744,15 +691,13 @@ describe('CustomizableDashboard', () => {
         expect($router.push).toHaveBeenCalledWith('/');
       });
 
-      it('does nothing if the user opts to keep creating', async () => {
+      it('does not route to the dashboard listing if the user opts to continue editing', async () => {
         confirmAction.mockResolvedValue(false);
 
         await findCancelButton().vm.$emit('click');
         await waitForPromises();
 
         expect($router.push).not.toHaveBeenCalled();
-        expect(GridStack.init).toHaveBeenCalledTimes(1);
-        expect(findPanels()).toHaveLength(NEW_DASHBOARD().panels.length + 1);
       });
     });
 
@@ -769,24 +714,8 @@ describe('CustomizableDashboard', () => {
       expect(findAnonUsersFilter().exists()).toBe(false);
     });
 
-    describe('and the user clicks on the "Add visualization" button', () => {
-      beforeEach(() => {
-        return findAddVisualizationButton().trigger('click');
-      });
-
-      it('opens the drawer', () => {
-        expect(findVisualizationDrawer().props('open')).toBe(true);
-      });
-
-      it('closes the drawer when the user clicks on the same button again', async () => {
-        await findAddVisualizationButton().trigger('click');
-
-        expect(findVisualizationDrawer().props('open')).toBe(false);
-      });
-    });
-
     describe('when saving', () => {
-      describe('and there is no title nor visualizations', () => {
+      describe('and there is no title nor panels', () => {
         beforeEach(async () => {
           findTitleInput().element.focus = jest.fn();
 
@@ -823,7 +752,7 @@ describe('CustomizableDashboard', () => {
         });
       });
 
-      describe('and there is a title but no visualizations', () => {
+      describe('and there is a title but no panels', () => {
         beforeEach(async () => {
           await enterDashboardTitle('New Title');
           await findSaveButton().vm.$emit('click');
@@ -849,9 +778,9 @@ describe('CustomizableDashboard', () => {
           });
         });
 
-        describe('and saved is clicked after a visualization has been added', () => {
+        describe('and saved is clicked after a panel has been added', () => {
           beforeEach(async () => {
-            await findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
+            await addDashboardPanels(newDashboard, newPanels);
 
             await findSaveButton().vm.$emit('click');
           });
@@ -862,25 +791,29 @@ describe('CustomizableDashboard', () => {
         });
       });
 
-      describe('and there is a title and visualizations', () => {
+      describe('and the dashboard has a title and panels', () => {
         beforeEach(async () => {
+          await addDashboardPanels(newDashboard, newPanels);
+
           await enterDashboardTitle('New Title');
-
-          await findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
-
-          await findSaveButton().vm.$emit('click');
         });
 
-        it('shows title input as valid', () => {
+        it('shows title input as valid', async () => {
+          await findSaveButton().vm.$emit('click');
+
           expect(findTitleFormGroup().attributes('state')).toBe('true');
           expect(findTitleInput().attributes('state')).toBe('true');
         });
 
-        it('does not show an alert', () => {
+        it('does not show an alert', async () => {
+          await findSaveButton().vm.$emit('click');
+
           expect(mockAlertDismiss).not.toHaveBeenCalled();
         });
 
-        it('saves the dashboard with a new a slug', () => {
+        it('saves the dashboard with a new a slug', async () => {
+          await findSaveButton().vm.$emit('click');
+
           expect(wrapper.emitted('save')).toStrictEqual([
             [
               'new_title',
@@ -888,37 +821,25 @@ describe('CustomizableDashboard', () => {
                 slug: 'new_title',
                 title: 'New Title',
                 description: '',
-                panels: [expect.any(Object)],
+                panels: newPanels,
                 userDefined: true,
               },
             ],
           ]);
         });
-      });
 
-      describe('and there is a title, visualizations and a description', () => {
-        beforeEach(async () => {
-          await enterDashboardTitle('New Title');
-          await findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
+        describe('and a description is added', () => {
+          beforeEach(async () => {
+            await enterDashboardDescription('New description');
+          });
 
-          await enterDashboardDescription('New description');
+          it('saves the dashboard with a new description', async () => {
+            await findSaveButton().vm.$emit('click');
 
-          await findSaveButton().vm.$emit('click');
-        });
-
-        it('saves the dashboard with a new description', () => {
-          expect(wrapper.emitted('save')).toStrictEqual([
-            [
-              'new_title',
-              {
-                slug: 'new_title',
-                title: 'New Title',
-                description: 'New description',
-                panels: [expect.any(Object)],
-                userDefined: true,
-              },
-            ],
-          ]);
+            expect(wrapper.emitted('save')[0][1]).toMatchObject({
+              description: 'New description',
+            });
+          });
         });
       });
     });
@@ -926,8 +847,6 @@ describe('CustomizableDashboard', () => {
 
   describe('when saving while editing and the editor is enabled', () => {
     beforeEach(() => {
-      loadCSSFile.mockResolvedValue();
-
       createWrapper({ isSaving: true }, dashboard);
 
       findEditButton().vm.$emit('click');
@@ -957,29 +876,6 @@ describe('CustomizableDashboard', () => {
     );
   });
 
-  describe('when panel emits "delete" event', () => {
-    beforeEach(() => {
-      loadCSSFile.mockResolvedValue();
-
-      createWrapper();
-    });
-
-    it('should remove the panel from the dashboard', async () => {
-      const gridPanel = findGridStackPanels().at(0);
-      const panelId = gridPanel.attributes('id');
-      const panel = gridPanel.findComponent(PanelsBase);
-
-      expect(findPanels()).toHaveLength(2);
-      expect(findPanelById(panelId).exists()).toBe(true);
-
-      panel.vm.$emit('delete', { id: panelId });
-      await nextTick();
-
-      expect(findPanels()).toHaveLength(1);
-      expect(findPanelById(panelId).exists()).toBe(false);
-    });
-  });
-
   describe('when editing a custom dashboard with no panels', () => {
     const dashboardWithoutPanels = {
       ...dashboard,
@@ -987,8 +883,6 @@ describe('CustomizableDashboard', () => {
     };
 
     beforeEach(() => {
-      loadCSSFile.mockResolvedValue();
-
       createWrapper({}, dashboardWithoutPanels);
 
       return findEditButton().vm.$emit('click');
@@ -1027,8 +921,6 @@ describe('CustomizableDashboard', () => {
       'when isSaving=$isSaving and changesMade=$changesMade',
       ({ isSaving, changesMade, expected }) => {
         beforeEach(async () => {
-          loadCSSFile.mockResolvedValue();
-
           createWrapper({ isSaving }, dashboard);
 
           await findEditButton().vm.$emit('click');
