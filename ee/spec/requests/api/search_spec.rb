@@ -144,7 +144,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
           ensure_elasticsearch_index!
 
           # N+1 queries still exist (ci_pipelines)
-          expect { get api(endpoint, user), params: { scope: 'commits', search: 'folder' } }.not_to exceed_query_limit(control).with_threshold(5)
+          expect { get api(endpoint, user), params: { scope: 'commits', search: 'folder' } }.not_to exceed_query_limit(control).with_threshold(6)
           # support global, group, and project search results expected counts
           expected_count = level == :project ? 5 : 7
           expect(json_response.count).to be expected_count

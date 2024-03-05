@@ -180,7 +180,8 @@ describe('Comparison chart', () => {
   describe('loading table and chart data', () => {
     beforeEach(() => {
       setGraphqlQueryHandlerResponses();
-      createWrapper();
+
+      createWrapper({ apolloProvider: createMockApolloProvider() });
     });
 
     it('will pass skeleton data to the comparison table', () => {
@@ -406,7 +407,7 @@ describe('Comparison chart', () => {
     });
   });
 
-  describe('isProject=true', () => {
+  describe('with a project namespace', () => {
     const fakeProjectPath = 'fake/project/path';
 
     beforeEach(async () => {

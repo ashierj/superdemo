@@ -129,6 +129,7 @@ export default {
         :key="index"
         :title="title"
         :data="data"
+        :full-path="data.namespace"
         data-testid="panel-dora-chart"
       />
 

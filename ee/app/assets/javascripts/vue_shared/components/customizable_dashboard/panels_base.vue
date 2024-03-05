@@ -135,11 +135,7 @@ export default {
       };
     },
     namespace() {
-      return {
-        name: this.namespaceName,
-        requestPath: this.namespaceFullPath,
-        isProject: this.isProject,
-      };
+      return this.namespaceFullPath;
     },
     panelTitle() {
       return sprintf(this.title, { namespaceName: this.rootNamespaceName });
