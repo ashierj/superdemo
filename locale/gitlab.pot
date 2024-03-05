@@ -23437,7 +23437,7 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Copy image URI"
 msgstr ""
 
-msgid "GoogleArtifactRegistry|Copy image name"
+msgid "GoogleArtifactRegistry|Copy image path"
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Created"
