@@ -45,6 +45,12 @@ module EE
             optional :service_access_tokens_expiration_enforced,
               type: ::Grape::API::Boolean,
               desc: "To enforce token expiration for Service accounts users for group"
+            optional :duo_features_enabled,
+              type: ::Grape::API::Boolean,
+              desc: "Indicates whether GitLab Duo features are enabled for the group"
+            optional :lock_duo_features_enabled,
+              type: ::Grape::API::Boolean,
+              desc: "Indicates if the GitLab Duo features enabled setting is enforced for all subgroups"
           end
 
           params :optional_projects_params_ee do

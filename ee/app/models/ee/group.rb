@@ -266,6 +266,10 @@ module EE
       ::Feature.enabled?(:group_saved_replies_flag, self, type: :wip) && licensed_feature_available?(:group_saved_replies)
     end
 
+    def licensed_ai_features_available?
+      licensed_feature_available?(:ai_features) || licensed_feature_available?(:ai_chat)
+    end
+
     class_methods do
       def groups_user_can(groups, user, action, same_root: false)
         # If :use_traversal_ids is enabled we can use filter optmization

@@ -66,6 +66,8 @@ module EE
             optional :anthropic_api_key, type: String, desc: "Anthropic API key"
             optional :make_profile_private, type: Grape::API::Boolean, desc: 'Flag indicating if users are permitted to make their profiles private'
             optional :service_access_tokens_expiration_enforced, type: Grape::API::Boolean, desc: "To enforce token expiration for Service accounts users"
+            optional :duo_features_enabled, type: ::Grape::API::Boolean, desc: "Indicates whether GitLab Duo features are enabled for the group"
+            optional :lock_duo_features_enabled, type: ::Grape::API::Boolean, desc: "Indicates if the GitLab Duo features enabled setting is enforced for all subgroups"
           end
         end
 

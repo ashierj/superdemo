@@ -74,7 +74,9 @@ module EE
         :security_policy_global_group_approvers_enabled,
         :security_approval_policies_limit,
         :anthropic_api_key,
-        :use_clickhouse_for_analytics
+        :use_clickhouse_for_analytics,
+        :duo_features_enabled,
+        :lock_duo_features_enabled
       ]
     end
 

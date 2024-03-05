@@ -1063,16 +1063,16 @@ RSpec.describe License, feature_category: :sm_provisioning do
     end
   end
 
+  def create_license(add_ons: {}, plan: nil)
+    gl_license = create(:gitlab_license, restrictions: { add_ons: add_ons, plan: plan })
+    create(:license, data: gl_license.export)
+  end
+
   # rubocop: disable Gitlab/FeatureAvailableUsage
   # Disabling Cop because we are testing the instance method instead of the class method
   # and it's a valid usage.
   describe '.feature_available?' do
     subject { described_class.feature_available?(feature) }
-
-    def create_license(add_ons: {}, plan: nil)
-      gl_license = create(:gitlab_license, restrictions: { add_ons: add_ons, plan: plan })
-      create(:license, data: gl_license.export)
-    end
 
     it 'returns true if add-on exists and have a quantity greater than 0' do
       create_license(add_ons: { 'GitLab_FileLocks' => 1 })
@@ -1182,6 +1182,26 @@ RSpec.describe License, feature_category: :sm_provisioning do
     end
   end
   # rubocop: enable Gitlab/FeatureAvailableUsage
+
+  describe '.ai_features_available?' do
+    using RSpec::Parameterized::TableSyntax
+
+    subject { described_class.ai_features_available? }
+
+    where(:plan, :ai_features_available) do
+      License::STARTER_PLAN | false
+      License::PREMIUM_PLAN | true
+      License::ULTIMATE_PLAN | true
+    end
+
+    with_them do
+      before do
+        create_license(plan: plan)
+      end
+
+      it { is_expected.to be(ai_features_available) }
+    end
+  end
 
   describe '#subscription_id' do
     it 'has correct subscription_id' do
