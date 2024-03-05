@@ -5,6 +5,8 @@ module Integrations
     class WorkloadIdentityFederation < Integration
       include HasAvatar
 
+      SECTION_TYPE_GOOGLE_CLOUD_IAM = 'google_cloud_iam'
+
       attribute :alert_events, default: false
       attribute :commit_events, default: false
       attribute :confidential_issues_events, default: false
@@ -28,6 +30,7 @@ module Integrations
 
       field :workload_identity_federation_project_id,
         required: true,
+        section: SECTION_TYPE_CONFIGURATION,
         title: -> { s_('GoogleCloudPlatformService|Project ID') },
         description: -> {
           s_('GoogleCloudPlatformService|Google Cloud project ID for the Workload Identity Federation.')
@@ -44,6 +47,7 @@ module Integrations
 
       field :workload_identity_federation_project_number,
         required: true,
+        section: SECTION_TYPE_CONFIGURATION,
         title: -> { s_('GoogleCloudPlatformService|Project number') },
         description: -> {
           s_('GoogleCloudPlatformService|Google Cloud project number for the Workload Identity Federation.')
@@ -60,11 +64,13 @@ module Integrations
 
       field :workload_identity_pool_id,
         required: true,
+        section: SECTION_TYPE_CONFIGURATION,
         title: -> { s_('GoogleCloudPlatformService|Pool ID') },
         description: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool.') }
 
       field :workload_identity_pool_provider_id,
         required: true,
+        section: SECTION_TYPE_CONFIGURATION,
         title: -> { s_('GoogleCloudPlatformService|Provider ID') },
         description: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool provider.') }
 
@@ -81,6 +87,14 @@ module Integrations
 
       def self.to_param
         'google_cloud_platform_workload_identity_federation'
+      end
+
+      def sections
+        [
+          {
+            type: SECTION_TYPE_GOOGLE_CLOUD_IAM
+          }
+        ]
       end
 
       def self.supported_events
