@@ -16,6 +16,7 @@ FactoryBot.define do
     client_subscription_id { nil }
     type { nil }
     chunk_id { nil }
+    agent_version_id { nil }
     add_attribute(:context) { {} }
 
     transient do

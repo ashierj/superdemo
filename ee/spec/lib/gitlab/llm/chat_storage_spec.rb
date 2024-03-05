@@ -68,6 +68,16 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
     end
   end
 
+  describe '#set_has_feedback' do
+    let(:message) { create(:ai_chat_message, user: user, agent_version_id: agent_version_id) }
+
+    it 'marks the message as having feedback' do
+      subject.set_has_feedback(message)
+
+      expect(subject.messages.find { |m| m.id == message.id }.extras['has_feedback']).to be(true)
+    end
+  end
+
   describe '#messages' do
     before do
       subject.add(build(:ai_chat_message, payload.merge(content: 'msg1', role: 'user', request_id: '1')))

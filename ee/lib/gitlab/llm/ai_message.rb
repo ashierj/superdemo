@@ -40,6 +40,7 @@ module Gitlab
         @id ||= SecureRandom.uuid
         @timestamp ||= Time.current
         @errors ||= []
+        @extras ||= {}
       end
 
       def to_h
