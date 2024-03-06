@@ -23436,16 +23436,31 @@ msgid_plural "GoogleArtifactRegistry|%d more tags"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "GoogleArtifactRegistry|After the policies have been created, select %{strongStart}Save changes%{strongEnd} to continue."
+msgstr ""
+
 msgid "GoogleArtifactRegistry|An error occurred while fetching the artifact details."
 msgstr ""
 
 msgid "GoogleArtifactRegistry|An error occurred while fetching the artifacts."
 msgstr ""
 
+msgid "GoogleArtifactRegistry|Before you begin, %{linkStart}install the Google Cloud CLI%{linkEnd}."
+msgstr ""
+
 msgid "GoogleArtifactRegistry|Built"
 msgstr ""
 
+msgid "GoogleArtifactRegistry|Configuration instructions"
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Configure Google Cloud IAM policies"
+msgstr ""
+
 msgid "GoogleArtifactRegistry|Configure in settings"
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Copy command"
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Copy digest"
@@ -23490,10 +23505,19 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Push new ones from your CI/CD pipeline."
 msgstr ""
 
+msgid "GoogleArtifactRegistry|Replace %{codeStart}your_access_token%{codeEnd} with a new %{linkStart}personal access token%{linkEnd} with the %{strongStart}read_api%{strongEnd} scope. This token gets information from your Google Cloud IAM integration in GitLab."
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Replace %{codeStart}your_google_cloud_project_id%{codeEnd} with your Google Cloud project ID."
+msgstr ""
+
 msgid "GoogleArtifactRegistry|Repository"
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Repository: %{repository}"
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Run the following command to setup IAM read and write policies in your Google Cloud project."
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Tags"
@@ -23509,6 +23533,12 @@ msgid "GoogleArtifactRegistry|View them in %{strong_start}Deploy &gt; Google Art
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Virtual size"
+msgstr ""
+
+msgid "GoogleArtifactRegistry|You might be prompted to sign into Google."
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Your Google Cloud project must have specific Identity and Access Management (IAM) policies to use the Artifact Registry repository in this GitLab project."
 msgstr ""
 
 msgid "GoogleCloudPlatformService|%{link_start}Explore Google Cloud integration with GitLab%{link_end}, for CI/CD and more."

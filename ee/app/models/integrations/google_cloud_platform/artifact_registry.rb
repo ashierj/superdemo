@@ -29,20 +29,20 @@ module Integrations
 
       field :artifact_registry_project_id,
         required: true,
-        section: SECTION_TYPE_CONNECTION,
+        section: SECTION_TYPE_CONFIGURATION,
         title: -> { s_('GoogleCloudPlatformService|Google Cloud project ID') },
         label_description: -> { s_('GoogleCloudPlatformService|Project with the Artifact Registry repository.') },
         help: -> { artifact_registry_project_id_help }
 
       field :artifact_registry_repositories,
         required: true,
-        section: SECTION_TYPE_CONNECTION,
+        section: SECTION_TYPE_CONFIGURATION,
         title: -> { s_('GoogleCloudPlatformService|Repository name') },
         help: -> { s_('GoogleCloudPlatformService|Repository must be Docker format and Standard mode.') }
 
       field :artifact_registry_location,
         required: true,
-        section: SECTION_TYPE_CONNECTION,
+        section: SECTION_TYPE_CONFIGURATION,
         title: -> { s_('GoogleCloudPlatformService|Repository location') }
 
       alias_method :artifact_registry_repository, :artifact_registry_repositories
