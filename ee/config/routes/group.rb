@@ -129,6 +129,8 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
 
     get :seat_usage, to: 'seat_usage#show'
 
+    resources :comment_templates, only: [:index, :show], action: :index
+
     resources :epics, concerns: :awardable, constraints: { id: /\d+/ } do
       member do
         get '/descriptions/:version_id/diff', action: :description_diff, as: :description_diff

@@ -49,6 +49,10 @@ module Gitlab
         return unless previous_question
 
         attributes['time_since_last_question'] = (current_message.timestamp - previous_question.timestamp).to_i
+
+        return unless current_message.referer_url.present? && previous_question.referer_url.present?
+
+        attributes['asked_on_the_same_page'] = current_message.referer_url == previous_question.referer_url
       end
 
       def analyze_is_first_question_after_reset!

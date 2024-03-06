@@ -20,8 +20,6 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
     stub_signing_key
     stub_application_setting(check_namespace_plan: true)
 
-    stub_feature_flags(show_billing_eoa_banner: true)
-
     stub_billing_plans(nil)
     stub_billing_plans(namespace.id, plan.name, plans_data.to_json)
     stub_eoa_eligibility_request(namespace.id)
@@ -36,16 +34,6 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
 
     if Plan::PAID_HOSTED_PLANS.include?(plan.name)
       "#{subscription_portal_url}/gitlab/namespaces/#{namespace.id}/upgrade/#{plan.name}-external-id"
-    end
-  end
-
-  shared_examples 'does not display EoA banner' do
-    it 'does not display the banner', :js do
-      travel_to(Date.parse(EE::Users::CalloutsHelper::EOA_BRONZE_PLAN_END_DATE) - 1.day) do
-        visit page_path
-
-        expect(page).not_to have_content("End of availability for the Bronze Plan")
-      end
     end
   end
 
@@ -209,22 +197,6 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
       it_behaves_like 'can not contact sales'
       it_behaves_like 'plan with subscription table'
 
-      it 'shows the EoA bronze banner that can be dismissed permanently', :js do
-        travel_to(Date.parse(EE::Users::CalloutsHelper::EOA_BRONZE_PLAN_END_DATE) - 1.day) do
-          visit page_path
-
-          page.within(".js-eoa-bronze-plan-banner") do
-            expect(page).to have_content("End of availability for the Bronze Plan")
-
-            click_button "Dismiss"
-          end
-
-          visit page_path
-
-          expect(page).not_to have_content("End of availability for the Bronze Plan")
-        end
-      end
-
       it 'displays the free upgrade' do
         visit page_path
 
@@ -278,7 +250,6 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
       it_behaves_like 'upgradable plan'
       it_behaves_like 'can not contact sales'
       it_behaves_like 'plan with subscription table'
-      it_behaves_like 'does not display EoA banner'
     end
 
     context 'on ultimate plan' do
@@ -290,7 +261,6 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
       it_behaves_like 'downgradable plan'
       it_behaves_like 'non-upgradable plan'
       it_behaves_like 'plan with subscription table'
-      it_behaves_like 'does not display EoA banner'
     end
 
     context 'when CustomersDot is unavailable' do
