@@ -2,7 +2,7 @@ import * as types from 'ee/ai/tanuki_bot/store/mutation_types';
 import mutations from 'ee/ai/tanuki_bot/store/mutations';
 import createState from 'ee/ai/tanuki_bot/store/state';
 import { GENIE_CHAT_MODEL_ROLES, CHAT_MESSAGE_TYPES } from 'ee/ai/constants';
-import { MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE } from '../mock_data';
+import { MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE, MOCK_FAILING_USER_MESSAGE } from '../mock_data';
 
 describe('GitLab Duo Chat Store Mutations', () => {
   let state;
@@ -32,6 +32,7 @@ describe('GitLab Duo Chat Store Mutations', () => {
       it.each`
         messageData                                                                  | expectedState
         ${MOCK_USER_MESSAGE}                                                         | ${[MOCK_USER_MESSAGE]}
+        ${MOCK_FAILING_USER_MESSAGE}                                                 | ${[{ ...MOCK_FAILING_USER_MESSAGE, requestId: expect.any(String) }]}
         ${{ content: 'foo', role: GENIE_CHAT_MODEL_ROLES.assistant }}                | ${[{ content: 'foo', role: GENIE_CHAT_MODEL_ROLES.assistant, chunks: [] }]}
         ${{ content: 'foo', source: 'bar', role: GENIE_CHAT_MODEL_ROLES.assistant }} | ${[{ content: 'foo', source: 'bar', role: GENIE_CHAT_MODEL_ROLES.assistant, chunks: [] }]}
         ${{}}                                                                        | ${[]}
@@ -175,6 +176,9 @@ describe('GitLab Duo Chat Store Mutations', () => {
       ${[MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE, { ...MOCK_USER_MESSAGE, requestId }]} | ${{ ...MOCK_TANUKI_MESSAGE, requestId }}    | ${false}
       ${[{ ...MOCK_USER_MESSAGE, requestId }]}                                         | ${{ ...MOCK_TANUKI_MESSAGE, requestId }}    | ${false}
       ${[MOCK_USER_MESSAGE]}                                                           | ${MOCK_TANUKI_MESSAGE}                      | ${false}
+      ${[]}                                                                            | ${MOCK_FAILING_USER_MESSAGE}                | ${false}
+      ${[{ MOCK_FAILING_USER_MESSAGE, requestId: 'faux-id' }]}                         | ${MOCK_FAILING_USER_MESSAGE}                | ${false}
+      ${[MOCK_USER_MESSAGE]}                                                           | ${MOCK_FAILING_USER_MESSAGE}                | ${false}
     `(
       'correctly manages the loading state when initial state is "$initState" and new message is "$newMessageData"',
       ({ initState, newMessageData, expectedLoadingState }) => {
