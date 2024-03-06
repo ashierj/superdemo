@@ -6,4 +6,4 @@ feature_category: "code_review"
 milestone: "15.4"
 saved_to_database: false
 streamed: true
-scope: [-]
+scope: [Project]
