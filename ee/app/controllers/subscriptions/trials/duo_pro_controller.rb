@@ -7,6 +7,7 @@ module Subscriptions
       include OneTrustCSP
       include GoogleAnalyticsCSP
       include RegistrationsTracking
+      include ::Gitlab::Utils::StrongMemoize
 
       layout 'minimal'
 
@@ -19,15 +20,27 @@ module Subscriptions
 
       def new
         if params[:step] == GitlabSubscriptions::Trials::CreateService::TRIAL
+          track_event('render_duo_pro_trial_page')
+
           render :step_namespace
         else
+          track_event('render_duo_pro_lead_page')
+
           render :step_lead
         end
       end
 
       def create
-        # TODO: Implement actual duo pro trial activation
+        # TODO: Implement actual duo pro trial activation and move all the logic
+        # to separate service
         # https://gitlab.com/gitlab-org/gitlab/-/issues/435875
+        case params[:step]
+        when GitlabSubscriptions::Trials::CreateService::LEAD
+          lead_flow
+        when GitlabSubscriptions::Trials::CreateService::TRIAL
+          trial_flow
+        end
+
         redirect_to new_trials_duo_pro_path(
           namespace_id: params[:namespace_id],
           step: GitlabSubscriptions::Trials::CreateService::TRIAL
@@ -35,6 +48,22 @@ module Subscriptions
       end
 
       private
+
+      def lead_flow
+        if true # rubocop: disable Lint/LiteralAsCondition -- Implement actual duo pro lead
+          track_event('duo_pro_lead_creation_success')
+        else
+          track_event('duo_pro_lead_creation_failure')
+        end
+      end
+
+      def trial_flow
+        if true # rubocop: disable Lint/LiteralAsCondition -- Implement actual duo pro trial
+          track_event('duo_pro_trial_registration_success')
+        else
+          track_event('duo_pro_trial_registration_failure')
+        end
+      end
 
       def authenticate_user!
         return if current_user
@@ -49,6 +78,15 @@ module Subscriptions
         end
 
         render_404
+      end
+
+      def namespace
+        current_user.manageable_namespaces_eligible_for_trial.find_by_id(params[:namespace_id])
+      end
+      strong_memoize_attr :namespace
+
+      def track_event(action)
+        Gitlab::InternalEvents.track_event(action, user: current_user, namespace: namespace)
       end
     end
   end

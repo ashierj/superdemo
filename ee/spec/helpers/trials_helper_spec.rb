@@ -98,7 +98,8 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
       let(:extra_params) { { namespace_id: non_existing_record_id } }
 
       it 'provides the submit path with the namespace_id' do
-        expect(helper.create_duo_pro_lead_form_data[:submit_path]).to eq(trials_duo_pro_path(**params.permit!))
+        expect(helper.create_duo_pro_lead_form_data[:submit_path])
+          .to eq(trials_duo_pro_path(step: :lead, **params.permit!))
       end
     end
 
