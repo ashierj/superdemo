@@ -12,7 +12,11 @@ module TrialsHelper
   end
 
   def create_duo_pro_lead_form_data
-    _lead_form_data.merge(submit_path: trials_duo_pro_path(namespace_id: params[:namespace_id]))
+    _lead_form_data.merge(
+      submit_path: trials_duo_pro_path(
+        step: GitlabSubscriptions::Trials::CreateService::LEAD, namespace_id: params[:namespace_id]
+      )
+    )
   end
 
   def create_company_form_data
