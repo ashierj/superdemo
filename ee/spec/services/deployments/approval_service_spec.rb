@@ -12,8 +12,26 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
   let(:status) { 'approved' }
   let(:comment) { nil }
   let(:job) { create(:ci_build, :manual, project: project) }
-  let(:deployment) { create(:deployment, :blocked, project: project, environment: environment, deployable: job) }
-  let!(:protected_environment) { create(:protected_environment, :maintainers_can_deploy, name: environment.name, project: project, **access_level_setting) }
+  let(:deployment) do
+    create(
+      :deployment,
+      :blocked,
+      project: project,
+      environment: environment,
+      deployable: job
+    )
+  end
+
+  let!(:protected_environment) do
+    create(
+      :protected_environment,
+      :maintainers_can_deploy,
+      name: environment.name,
+      project: project,
+      **access_level_setting
+    )
+  end
+
   let(:access_level_setting) { unified_access_level }
 
   # Unified Access Level setting (MVC version)
@@ -103,6 +121,46 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
       include_examples 'reject'
       include_examples 'comment'
       include_examples 'set approval rule'
+    end
+
+    context 'when user approves for different groups' do
+      let!(:group1) { create(:group, name: 'group1') }
+      let!(:group2) { create(:group, name: 'group2') }
+
+      let!(:approval_rule1) do
+        create(
+          :protected_environment_approval_rule,
+          group: group1,
+          protected_environment: protected_environment
+        )
+      end
+
+      let!(:approval_rule2) do
+        create(
+          :protected_environment_approval_rule,
+          group: group2,
+          protected_environment: protected_environment
+        )
+      end
+
+      before do
+        group1.add_maintainer(user)
+        group2.add_maintainer(user)
+      end
+
+      it 'creates a new approval', :aggregate_failures do
+        service = described_class.new(project, user, params.merge(represented_as: 'group1'))
+        deployment.reload
+        service_result1 = service.execute(deployment, status)
+        expect(service_result1[:approval].approval_rule).to eq(approval_rule1)
+
+        service = described_class.new(project, user, params.merge(represented_as: 'group2'))
+        service_result2 = service.execute(deployment, status)
+        expect(service_result2[:approval].approval_rule).to eq(approval_rule2)
+
+        expect(service_result1[:approval].id)
+          .not_to eq(service_result2[:approval].id)
+      end
     end
 
     context 'when user already approved' do
