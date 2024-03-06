@@ -29,7 +29,8 @@ class GroupHook < WebHook
     :subgroup_hooks,
     :feature_flag_hooks,
     :confidential_note_hooks,
-    :emoji_hooks
+    :emoji_hooks,
+    :resource_access_token_hooks
   ]
 
   belongs_to :group

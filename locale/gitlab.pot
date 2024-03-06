@@ -56162,6 +56162,9 @@ msgstr ""
 msgid "Webhooks|A wiki page is created or updated."
 msgstr ""
 
+msgid "Webhooks|An access token is going to expire in the next 7 days. %{help_link}?"
+msgstr ""
+
 msgid "Webhooks|An emoji is awarded or revoked. %{help_link}?"
 msgstr ""
 
@@ -56241,6 +56244,9 @@ msgid "Webhooks|Name (optional)"
 msgstr ""
 
 msgid "Webhooks|Pipeline events"
+msgstr ""
+
+msgid "Webhooks|Project or group access token events"
 msgstr ""
 
 msgid "Webhooks|Regular expression"
@@ -56460,6 +56466,9 @@ msgid "Which API requests are affected?"
 msgstr ""
 
 msgid "Which emoji events trigger webhooks"
+msgstr ""
+
+msgid "Which project or group access token events trigger webhooks"
 msgstr ""
 
 msgid "While it's rare to have no vulnerabilities, it can happen. In any event, we ask that you please double check your settings to make sure you've set up your dashboard correctly."
