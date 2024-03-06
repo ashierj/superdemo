@@ -19,8 +19,7 @@ module EE
           private
 
           def google_artifact_registry_menu_item
-            unless context.project.google_cloud_support_enabled? &&
-                can?(context.current_user, :read_google_cloud_artifact_registry, context.project)
+            unless show_google_artifact_registry_menu_item?
               return ::Sidebars::NilMenuItem.new(item_id: :google_artifact_registry)
             end
 
@@ -31,6 +30,13 @@ module EE
               active_routes: { controller: 'projects/google_cloud_platform/artifact_registry' },
               item_id: :google_artifact_registry
             )
+          end
+
+          def show_google_artifact_registry_menu_item?
+            context.project.google_cloud_support_enabled? &&
+              can?(context.current_user, :read_google_cloud_artifact_registry, context.project) &&
+              context.project.google_cloud_platform_workload_identity_federation_integration&.operating? &&
+              context.project.google_cloud_platform_artifact_registry_integration&.operating?
           end
         end
       end

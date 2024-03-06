@@ -5,6 +5,16 @@ require 'spec_helper'
 RSpec.describe Sidebars::Projects::SuperSidebarPanel, feature_category: :navigation do
   let_it_be(:project) { create(:project, :repository) }
 
+  # required by the Google Artifact Registry items
+  let_it_be(:artifact_registry_integration) do
+    create(:google_cloud_platform_artifact_registry_integration, project: project)
+  end
+
+  # required by the Google Artifact Registry items
+  let_it_be(:wlif_integration) do
+    create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+  end
+
   let(:user) { project.first_owner }
   let(:context) do
     Sidebars::Projects::Context.new(

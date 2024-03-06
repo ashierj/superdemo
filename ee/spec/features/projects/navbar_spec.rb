@@ -169,6 +169,14 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
   end
 
   context 'when google artifact registry is available' do
+    let_it_be(:artifact_registry_integration) do
+      create(:google_cloud_platform_artifact_registry_integration, project: project)
+    end
+
+    let_it_be(:wlif_integration) do
+      create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+    end
+
     before do
       stub_config(registry: { enabled: true })
       stub_saas_features(google_cloud_support: true)
