@@ -2,11 +2,7 @@
 import { GlDaterangePicker } from '@gitlab/ui';
 import { periodToDate } from '~/observability/utils';
 import DateRangesDropdown from '~/analytics/shared/components/date_ranges_dropdown.vue';
-import {
-  TIME_RANGE_OPTIONS,
-  TIME_RANGE_OPTIONS_VALUES,
-  CUSTOM_DATE_RANGE_OPTION,
-} from '~/observability/constants';
+import { TIME_RANGE_OPTIONS, CUSTOM_DATE_RANGE_OPTION } from '~/observability/constants';
 
 export default {
   components: {
@@ -44,6 +40,11 @@ export default {
     shouldShowDateRangePicker() {
       return this.dateRange.value === CUSTOM_DATE_RANGE_OPTION;
     },
+    shouldStartOpened() {
+      return (
+        this.shouldShowDateRangePicker && (!this.dateRange.startDate || !this.dateRange.endDate)
+      );
+    },
   },
   methods: {
     onSelectPredefinedDateRange({ value, startDate, endDate }) {
@@ -55,13 +56,11 @@ export default {
       this.$emit('onDateRangeSelected', this.dateRange);
     },
     onSelectCustomDateRange() {
-      const defaultDateRange = periodToDate(TIME_RANGE_OPTIONS_VALUES.ONE_MONTH);
       this.dateRange = {
         value: CUSTOM_DATE_RANGE_OPTION,
-        startDate: defaultDateRange.min,
-        endDate: defaultDateRange.max,
+        startDate: undefined,
+        endDate: undefined,
       };
-      this.$emit('onDateRangeSelected', this.dateRange);
     },
     onCustomRangeSelected({ startDate, endDate }) {
       this.dateRange = {
@@ -88,6 +87,7 @@ export default {
     />
     <gl-daterange-picker
       v-if="shouldShowDateRangePicker"
+      :start-opened="shouldStartOpened"
       :default-start-date="dateRange.startDate"
       :default-end-date="dateRange.endDate"
       @input="onCustomRangeSelected"

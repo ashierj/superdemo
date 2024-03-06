@@ -1,7 +1,7 @@
 import { GlFilteredSearchToken, GlButton, GlLoadingIcon } from '@gitlab/ui';
+import DateRangeFilter from '~/observability/components/date_range_filter.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import MetricsFilteredSearch from 'ee/metrics/details/filter_bar/metrics_filtered_search.vue';
-import DateRangeFilter from 'ee/metrics/details/filter_bar/date_range_filter.vue';
 import GroupByFilter from 'ee/metrics/details/filter_bar/groupby_filter.vue';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import { OPERATORS_IS_NOT } from '~/vue_shared/components/filtered_search_bar/constants';

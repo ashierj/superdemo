@@ -359,7 +359,7 @@ function addMetricsAttributeFilterToQueryParams(dimensionFilter, params) {
   });
 }
 
-function addMetricsDateRangeFilterToQueryParams(dateRangeFilter, params) {
+function addDateRangeFilterToQueryParams(dateRangeFilter, params) {
   if (!dateRangeFilter || !params) return;
 
   const { value, endDate, startDate } = dateRangeFilter;
@@ -406,7 +406,7 @@ async function fetchMetric(searchUrl, name, type, options = {}) {
     }
 
     if (dateRange) {
-      addMetricsDateRangeFilterToQueryParams(dateRange, params);
+      addDateRangeFilterToQueryParams(dateRange, params);
     }
 
     if (groupBy) {
@@ -451,16 +451,21 @@ async function fetchMetricSearchMetadata(searchMetadataUrl, name, type) {
   }
 }
 
-export async function fetchLogs(logsSearchUrl, { pageToken, pageSize } = {}) {
+export async function fetchLogs(logsSearchUrl, { pageToken, pageSize, filters = {} } = {}) {
   try {
     const params = new URLSearchParams();
+
+    const { dateRange } = filters;
+    if (dateRange) {
+      addDateRangeFilterToQueryParams(dateRange, params);
+    }
+
     if (pageToken) {
       params.append('page_token', pageToken);
     }
     if (pageSize) {
       params.append('page_size', pageSize);
     }
-
     const { data } = await axios.get(logsSearchUrl, {
       withCredentials: true,
       params,
