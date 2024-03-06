@@ -155,6 +155,10 @@ Hosted Runners for Dedicated are available upon invitation for existing GitLab D
 IP ranges for runners hosted by GitLab are available upon request. IP ranges are maintained on a best-effort basis and may change at any time during the Beta due to changes in the infrastructure.
 Please reach out to your Customer Success Manager or Account representative.
 
+##### Machine types available for Linux (x86-64)
+
+Instance runners available during the Beta are using EC2 `M7i` general-purpose machines.
+
 ##### Bring Your Own
 
 With GitLab Dedicated, you must [install the GitLab Runner application](https://docs.gitlab.com/runner/install/index.html) on infrastructure that you own or manage. If hosting GitLab Runners on AWS, you can avoid having requests from the Runner fleet route through the public internet by setting up a secure connection from the Runner VPC to the GitLab Dedicated endpoint via AWS Private Link. Learn more about [networking options](#secure-networking).
