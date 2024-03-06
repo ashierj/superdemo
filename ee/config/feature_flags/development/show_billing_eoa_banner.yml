@@ -1,8 +1,0 @@
----
-name: show_billing_eoa_banner
-introduced_by_url:
-rollout_issue_url:
-milestone: '13.9'
-type: development
-group: group::subscription management
-default_enabled: false
