@@ -18,7 +18,8 @@
 
       = yield :before_form
 
-      = gitlab_ui_form_for '', url: trials_duo_pro_path, class: 'js-saas-duo-pro-trial-group' do |f|
+      = gitlab_ui_form_for '', url: trials_duo_pro_path(step: GitlabSubscriptions::Trials::CreateService::TRIAL),
+        class: 'js-saas-duo-pro-trial-group' do |f|
         .js-namespace-selector{ data: namespace_selector_data({}) }
         - if should_ask_company_question?
           .form-group

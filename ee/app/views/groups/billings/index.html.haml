@@ -37,7 +37,10 @@
               tag_pair(docs_link, :linkStart, :linkEnd), tag_pair(duo_pro_link, :duoLinkStart, :duoLinkEnd))
           .gl-display-flex.gl-gap-3
             - if Feature.enabled?(:duo_pro_trials, current_user, type: :wip)
-              = render 'duo_pro_trial_cta', namespace: @group, button_category: 'primary'
+              = render 'duo_pro_trial_cta',
+                namespace: @group,
+                button_category: 'primary',
+                button_options: { data: { event_tracking: 'click_duo_pro_trial_billing_page' } }
 
             .js-hand-raise-lead-button{ data: code_suggestions_hand_raise_props(@group) }
 
