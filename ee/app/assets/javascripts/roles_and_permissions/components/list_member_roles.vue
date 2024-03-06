@@ -1,5 +1,13 @@
 <script>
-import { GlBadge, GlButton, GlCard, GlEmptyState, GlModal, GlTable } from '@gitlab/ui';
+import {
+  GlBadge,
+  GlButton,
+  GlCard,
+  GlEmptyState,
+  GlModal,
+  GlTable,
+  GlLoadingIcon,
+} from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { sprintf, s__, __ } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -22,12 +30,17 @@ export default {
     addNewRole: s__('MemberRole|Add new role'),
     cardTitle: s__('MemberRole|Custom roles'),
     deleteRole: s__('MemberRole|Delete role'),
+    cancel: __('Cancel'),
+    deleteModalTitle: s__('MemberRole|Are you sure you want to delete this role?'),
+    deleteModalWarning: s__(
+      'MemberRole|To delete the custom role make sure no group member has this custom role',
+    ),
     emptyTitle: s__('MemberRole|No custom roles found'),
     emptyDescription: s__(`MemberRole|To add a new role select 'Add new role'.`),
     fetchRolesError: s__('MemberRole|Failed to fetch roles.'),
     deleteSuccess: s__('MemberRole|Role successfully deleted.'),
     deleteError: s__('MemberRole|Failed to delete role.'),
-    deleteErrorWithReason: s__('MemberRole|Failed to delete role. %{message}'),
+    deleteErrorWithReason: s__('MemberRole|Failed to delete role. %{error}'),
     createSuccess: s__('MemberRole|Role successfully created.'),
   },
   components: {
@@ -38,6 +51,7 @@ export default {
     GlEmptyState,
     GlModal,
     GlTable,
+    GlLoadingIcon,
   },
   props: {
     groupFullPath: {
@@ -49,6 +63,8 @@ export default {
   data() {
     return {
       alert: null,
+      isDeletingRole: false,
+      isDeleteRoleModalVisible: false,
       memberRoles: [],
       memberRoleToDelete: null,
       showCreateMemberForm: false,
@@ -87,77 +103,62 @@ export default {
       return this.groupFullPath ? groupMemberRolesQuery : instanceMemberRolesQuery;
     },
     isLoading() {
-      return this.$apollo.queries.memberRoles.loading;
+      return this.$apollo.queries.memberRoles.loading || this.isDeletingRole;
     },
-    isModalVisible() {
-      return this.memberRoleToDelete !== null;
+    modalActions() {
+      return {
+        primary: {
+          text: this.$options.i18n.deleteRole,
+          attributes: { variant: 'danger' },
+        },
+        cancel: {
+          text: this.$options.i18n.cancel,
+        },
+      };
     },
   },
   methods: {
     async deleteMemberRole() {
+      // Dismiss any existing alerts.
       this.alert?.dismiss();
+      this.isDeletingRole = true;
 
-      this.$apollo
-        .mutate({
+      try {
+        const response = await this.$apollo.mutate({
           mutation: deleteMemberRoleMutation,
-          refetchQueries: [this.fetchMemberRolesQuery],
-          variables: {
-            input: { id: this.memberRoleToDelete },
-          },
-          update: (_, result) => {
-            const { errors } = result.data.memberRoleDelete;
-
-            if (errors?.length) {
-              const errorMessage = sprintf(this.$options.i18n.deleteErrorWithReason, {
-                message: errors.join('. '),
-              });
-              createAlert({ message: errorMessage });
-            } else {
-              this.$toast.show(this.$options.i18n.deleteSuccess);
-            }
-          },
-        })
-        .catch(() => {
-          this.alert = createAlert({
-            message: this.$options.i18n.deleteError,
-          });
-        })
-        .finally(() => {
-          this.memberRoleToDelete = null;
+          variables: { input: { id: this.memberRoleToDelete } },
         });
+        const error = response.data.memberRoleDelete.errors[0];
+
+        if (error) {
+          this.alert = createAlert({
+            message: sprintf(this.$options.i18n.deleteErrorWithReason, { error }),
+          });
+        } else {
+          this.$toast.show(this.$options.i18n.deleteSuccess);
+          this.refetchRoles();
+        }
+      } catch ({ message }) {
+        this.alert = createAlert({ message: this.$options.i18n.deleteError });
+      } finally {
+        this.memberRoleToDelete = null;
+        this.isDeletingRole = false;
+      }
+    },
+    refetchRoles() {
+      this.$apollo.queries.memberRoles.refetch();
     },
     onCreatedMemberRole() {
       this.$toast.show(this.$options.i18n.createSuccess);
       this.showCreateMemberForm = false;
-      this.$apollo.queries.memberRoles.refetch();
+      this.refetchRoles();
     },
-    onModalHide() {
-      this.memberRoleToDelete = null;
-    },
-    showConfirm(memberRoleId) {
-      this.memberRoleToDelete = `${memberRoleId}`;
+    showDeleteModal(id) {
+      this.memberRoleToDelete = id;
+      this.isDeleteRoleModalVisible = true;
     },
   },
   FIELDS,
-  modal: {
-    actionPrimary: {
-      text: s__('MemberRole|Delete role'),
-      attributes: {
-        variant: 'danger',
-      },
-    },
-    actionSecondary: {
-      text: __('Cancel'),
-      attributes: {
-        variant: 'default',
-      },
-    },
-    id: 'confirm-delete-role',
-    title: s__('MemberRole|Are you sure you want to delete this role?'),
-    warning: s__(
-      'MemberRole|To delete the custom role make sure no group member has this custom role',
-    ),
-  },
   getIdFromGraphQLId,
 };
 </script>
@@ -202,7 +203,16 @@ export default {
       :description="$options.i18n.emptyDescription"
     />
 
-    <gl-table v-else :fields="$options.FIELDS" :items="memberRoles" :busy="isLoading" stacked="sm">
+    <gl-table
+      v-else-if="memberRoles.length || !showCreateMemberForm"
+      :fields="$options.FIELDS"
+      :items="memberRoles"
+      :busy="isLoading"
+      stacked="sm"
+    >
+      <template #table-busy>
+        <gl-loading-icon size="lg" />
+      </template>
       <template #cell(id)="{ item }">
         {{ $options.getIdFromGraphQLId(item.id) }}
       </template>
@@ -231,22 +241,22 @@ export default {
           category="tertiary"
           :aria-label="$options.i18n.deleteRole"
           icon="remove"
-          @click="showConfirm(id)"
+          data-testid="delete-role-button"
+          @click="showDeleteModal(id)"
         />
       </template>
     </gl-table>
 
     <gl-modal
-      :visible="isModalVisible"
-      :modal-id="$options.modal.id"
+      v-model="isDeleteRoleModalVisible"
+      modal-id="confirm-delete-role"
       size="sm"
-      :title="$options.modal.title"
-      :action-primary="$options.modal.actionPrimary"
-      :action-secondary="$options.modal.actionSecondary"
+      :title="$options.i18n.deleteModalTitle"
+      :action-primary="modalActions.primary"
+      :action-secondary="modalActions.cancel"
       @primary="deleteMemberRole"
-      @hide="onModalHide"
     >
-      <p>{{ $options.modal.warning }}</p>
+      <p>{{ $options.i18n.deleteModalWarning }}</p>
     </gl-modal>
   </gl-card>
 </template>
