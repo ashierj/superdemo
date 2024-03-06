@@ -475,7 +475,9 @@ describe('MR Widget Security Reports', () => {
       await waitForPromises();
 
       expect(
-        wrapper.findByText('Parsing schema failed. Check the output of the scanner.').exists(),
+        wrapper
+          .findByText('Parsing schema failed. Check the validity of your .gitlab-ci.yml content.')
+          .exists(),
       ).toBe(true);
 
       expect(wrapper.findByText('SAST: Loading resulted in an error').exists()).toBe(false);
