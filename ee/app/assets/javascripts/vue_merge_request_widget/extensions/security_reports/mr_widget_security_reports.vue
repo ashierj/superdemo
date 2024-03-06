@@ -251,11 +251,9 @@ export default {
             const report = { ...props, error: true };
             this.$set(this.collapsedData, reportType, report);
 
-            // This is a special case, when the endpoint returns 400 it's because
-            // the .gitlab-ci.yml file is erroneous.
             if (status === 400) {
               this.topLevelErrorMessage = s__(
-                'ciReport|Parsing schema failed. Check the output of the scanner.',
+                'ciReport|Parsing schema failed. Check the validity of your .gitlab-ci.yml content.',
               );
             }
 
