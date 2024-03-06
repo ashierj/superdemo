@@ -25,9 +25,9 @@ module EE
 
             ::Sidebars::MenuItem.new(
               title: _('Google Artifact Registry'),
-              link: project_google_cloud_platform_artifact_registry_index_path(context.project),
+              link: project_google_cloud_artifact_registry_index_path(context.project),
               super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::DeployMenu,
-              active_routes: { controller: 'projects/google_cloud_platform/artifact_registry' },
+              active_routes: { controller: 'projects/google_cloud/artifact_registry' },
               item_id: :google_artifact_registry
             )
           end
