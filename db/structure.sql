@@ -27270,6 +27270,10 @@ CREATE INDEX index_vulnerability_occurrences_for_issue_links_migration ON vulner
 
 CREATE INDEX index_vulnerability_occurrences_for_override_uuids_logic ON vulnerability_occurrences USING btree (project_id, report_type, location_fingerprint);
 
+CREATE INDEX index_vulnerability_occurrences_on_initial_pipeline_id ON vulnerability_occurrences USING btree (initial_pipeline_id);
+
+CREATE INDEX index_vulnerability_occurrences_on_latest_pipeline_id ON vulnerability_occurrences USING btree (latest_pipeline_id);
+
 CREATE INDEX index_vulnerability_occurrences_on_location_image ON vulnerability_occurrences USING gin (((location -> 'image'::text))) WHERE (report_type = ANY (ARRAY[2, 7]));
 
 CREATE INDEX index_vulnerability_occurrences_on_location_k8s_agent_id ON vulnerability_occurrences USING gin ((((location -> 'kubernetes_resource'::text) -> 'agent_id'::text))) WHERE (report_type = 7);
