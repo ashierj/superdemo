@@ -123,17 +123,16 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
 
   describe '.full_definition' do
     let(:definition) do
-      <<~XML
-       <tool_description>
+      <<~XML.chomp
+       <tool>
        <tool_name>TEST_TOOL</tool_name>
        <description>
        TEST
        </description>
        <example>
-       Here is an example of using this tool:
        EXAMPLE
        </example>
-       </tool_description>
+       </tool>
       XML
     end
 
