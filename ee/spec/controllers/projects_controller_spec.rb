@@ -659,62 +659,6 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
         end
       end
     end
-
-    context 'compliance framework settings' do
-      let(:group) { create(:group) }
-      let(:project) { create(:project, group: group) }
-
-      shared_examples 'no compliance framework is set' do
-        it 'does not change compliance framework for project' do
-          put :update, params: {
-            namespace_id: project.group,
-            id: project,
-            project: params
-          }
-          project.reload
-
-          expect(project.compliance_framework_setting).to be_nil
-        end
-      end
-
-      context 'when unlicensed' do
-        let(:framework) { create(:compliance_framework, namespace: project.group.root_ancestor) }
-        let(:params) { { compliance_framework_setting_attributes: { framework: framework.id } } }
-
-        before do
-          stub_licensed_features(compliance_framework: false)
-        end
-
-        it_behaves_like 'no compliance framework is set'
-      end
-
-      context 'when licensed' do
-        let(:framework) { create(:compliance_framework, namespace: project.group.root_ancestor) }
-        let(:params) { { compliance_framework_setting_attributes: { framework: framework.id } } }
-
-        before do
-          stub_licensed_features(compliance_framework: true)
-          project.add_owner(user)
-        end
-
-        context 'current_user is a project owner' do
-          before do
-            sign_in(user)
-          end
-
-          it 'sets the compliance framework' do
-            put :update, params: {
-              namespace_id: project.group,
-              id: project,
-              project: params
-            }
-            project.reload
-
-            expect(project.compliance_framework_setting.compliance_management_framework).to eq(framework)
-          end
-        end
-      end
-    end
   end
 
   describe '#download_export', feature_category: :importers do

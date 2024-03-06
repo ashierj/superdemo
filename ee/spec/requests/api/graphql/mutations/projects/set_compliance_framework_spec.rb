@@ -34,16 +34,6 @@ RSpec.describe 'Set project compliance framework', feature_category: :compliance
     graphql_mutation_response(:project_set_compliance_framework)
   end
 
-  shared_examples 'update project compliance framework' do
-    it_behaves_like 'a working GraphQL mutation'
-
-    it 'updates the framework' do
-      expect { post_graphql_mutation(mutation, current_user: current_user) }.to change {
-        project.reload.compliance_management_framework
-      }.from(nil).to(framework)
-    end
-  end
-
   describe '#resolve' do
     context 'when feature is not available' do
       before do
@@ -60,20 +50,12 @@ RSpec.describe 'Set project compliance framework', feature_category: :compliance
         stub_licensed_features(compliance_framework: true)
       end
 
-      context 'with assign_compliance_project_service feature enabled' do
-        before do
-          stub_feature_flags(assign_compliance_project_service: true)
-        end
+      it_behaves_like 'a working GraphQL mutation'
 
-        it_behaves_like 'update project compliance framework'
-      end
-
-      context 'with assign_compliance_project_service feature disabled' do
-        before do
-          stub_feature_flags(assign_compliance_project_service: false)
-        end
-
-        it_behaves_like 'update project compliance framework'
+      it 'updates the framework' do
+        expect { post_graphql_mutation(mutation, current_user: current_user) }.to change {
+          project.reload.compliance_management_framework
+        }.from(nil).to(framework)
       end
     end
   end

@@ -27,7 +27,6 @@ module EE
         shared_runners_setting
         mirror_user_setting
         mirror_branch_setting
-        compliance_framework_setting
 
         return update_failed! if project.errors.any?
 
@@ -142,32 +141,6 @@ module EE
         ::Security::ScanResultPolicies::SyncProjectWorker.perform_async(project.id)
       end
 
-      override :publish_events
-      def publish_events
-        super
-        publish_compliance_framework_changed_event
-      end
-
-      # this should be removed as part of assign_compliance_project_service FF removal
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/442302
-      def publish_compliance_framework_changed_event
-        return unless project.compliance_framework_setting
-
-        settings_params = params[:compliance_framework_setting_attributes]
-        return if settings_params.blank?
-
-        destroyed = settings_params[:_destroy].present?
-        return unless destroyed || project.compliance_framework_setting.previous_changes.present?
-
-        event = ::Projects::ComplianceFrameworkChangedEvent.new(data: {
-          project_id: project.id,
-          compliance_framework_id: project.compliance_framework_setting.framework_id,
-          event_type: destroyed ? ::Projects::ComplianceFrameworkChangedEvent::EVENT_TYPES[:removed] : ::Projects::ComplianceFrameworkChangedEvent::EVENT_TYPES[:added]
-        })
-
-        ::Gitlab::EventStore.publish(event)
-      end
-
       def default_branch_update_blocked_by_security_policy?
         ::Security::SecurityOrchestrationPolicies::DefaultBranchUpdationCheckService.new(project: project).execute
       end
@@ -201,24 +174,6 @@ module EE
       def mirror_branch_setting
         params[:only_mirror_protected_branches] = false if params[:mirror_branch_regex].present?
         params[:mirror_branch_regex] = nil if params[:only_mirror_protected_branches]
-      end
-
-      # this should be removed as part of assign_compliance_project_service FF removal
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/442302
-      def compliance_framework_setting
-        settings = params[:compliance_framework_setting_attributes]
-        return unless settings.present?
-
-        if can?(current_user, :admin_compliance_framework, project)
-          framework_identifier = settings.delete(:framework)
-          if framework_identifier.blank?
-            settings.merge!(_destroy: true)
-          else
-            settings[:compliance_management_framework] = project.namespace.root_ancestor.compliance_management_frameworks.find(framework_identifier)
-          end
-        else
-          params.delete(:compliance_framework_setting_attributes)
-        end
       end
 
       def log_audit_events
