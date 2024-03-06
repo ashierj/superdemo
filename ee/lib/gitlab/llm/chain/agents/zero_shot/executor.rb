@@ -93,8 +93,8 @@ module Gitlab
             def options
               @options ||= {
                 tool_names: tools.map { |tool_class| tool_class::Executor::NAME }.join(', '),
-                tools_definitions: tools.map.with_index do |tool_class, idx|
-                  "#{idx + 1}. #{tool_class::Executor.full_definition}" \
+                tools_definitions: tools.map do |tool_class|
+                  tool_class::Executor.full_definition
                 end.join("\n"),
                 user_input: user_input,
                 agent_scratchpad: +"",
@@ -200,9 +200,9 @@ module Gitlab
                   Answer the question as accurate as you can.
 
                   You have access only to the following tools:
-                  <tools>
+                  <tool_list>
                   %<tools_definitions>s
-                  </tools>
+                  </tool_list>
                   Consider every tool before making a decision.
                   Ensure that your answer is accurate and contain only information directly supported by the information retrieved using provided tools.
 

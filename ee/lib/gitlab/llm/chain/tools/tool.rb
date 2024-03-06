@@ -16,25 +16,17 @@ module Gitlab
 
           delegate :resource, :resource=, to: :context
 
-          def self.full_example
-            [EXAMPLE_INTRO, example].join("\n")
-          end
-
-          def self.example
-            self::EXAMPLE
-          end
-
           def self.full_definition
             [
-              "<tool_description>",
+              "<tool>",
               "<tool_name>#{self::NAME}</tool_name>",
               "<description>",
               self::DESCRIPTION,
               "</description>",
               "<example>",
-              full_example,
+              self::EXAMPLE,
               "</example>",
-              "</tool_description>\n"
+              "</tool>"
             ].join("\n")
           end
 
