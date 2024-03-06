@@ -25,7 +25,8 @@
     "alert_status",
     "disabled_until",
     "url_variables",
-    "custom_webhook_template"
+    "custom_webhook_template",
+    "resource_access_token_events"
   ],
   "properties": {
     "id": {
@@ -99,6 +100,9 @@
       "type": "boolean"
     },
     "emoji_events": {
+      "type": "boolean"
+    },
+    "resource_access_token_events": {
       "type": "boolean"
     },
     "alert_status": {

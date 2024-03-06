@@ -213,7 +213,8 @@ module IntegrationsHelper
       wiki_page_events: s_('Webhooks|Wiki page events'),
       deployment_events: s_('Webhooks|Deployment events'),
       feature_flag_events: s_('Webhooks|Feature flag events'),
-      releases_events: s_('Webhooks|Releases events')
+      releases_events: s_('Webhooks|Releases events'),
+      resource_access_token_events: s_('Webhooks|Project or group access token events')
     }
 
     event_i18n_map[event] || event.to_s.humanize
