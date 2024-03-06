@@ -1325,6 +1325,16 @@ entry.
 - [Bump the finalize_after date of backfill migration](gitlab-org/gitlab@770ab7faa2048bfeb8bddd506e6f37fe18bb4d06) ([merge request](gitlab-org/gitlab!140109))
 - [Remove code_suggestions_completion_api feature](gitlab-org/gitlab@988e2f57f9635ed9cc3896b15965b608fce54756) ([merge request](gitlab-org/gitlab!138174)) **GitLab Enterprise Edition**
 
+## 16.7.7 (2024-03-06)
+
+### Fixed (1 change)
+
+- [Use the backup database connection while restoring timeouts](gitlab-org/security/gitlab@796d1a2904fee95a7a1f9f4eb7bcfb4f431bf720)
+
+### Security (1 change)
+
+- [Reset approvals when reopening a MR](gitlab-org/security/gitlab@4be38a72793e54c0f7f653be0e2b744d22dc1e0e) ([merge request](gitlab-org/security/gitlab!3829))
+
 ## 16.7.6 (2024-02-20)
 
 ### Fixed (2 changes)
