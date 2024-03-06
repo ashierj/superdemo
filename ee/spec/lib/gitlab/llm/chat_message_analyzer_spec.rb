@@ -62,6 +62,50 @@ RSpec.describe Gitlab::Llm::ChatMessageAnalyzer, feature_category: :duo_chat do
           'time_since_last_question' => 1
         )
       end
+
+      context 'when current question does not have a referer URL' do
+        before do
+          messages << build(:ai_chat_message, referer_url: 'http://127.0.0.1:3000')
+          messages << build(:ai_chat_message)
+        end
+
+        it 'does not include asked_on_the_same_page attribute' do
+          expect(result['asked_on_the_same_page']).to be_nil
+        end
+      end
+
+      context 'when previous question does not have a referer URL' do
+        before do
+          messages << build(:ai_chat_message)
+          messages << build(:ai_chat_message, referer_url: 'http://127.0.0.1:3000')
+        end
+
+        it 'does not include asked_on_the_same_page attribute' do
+          expect(result['asked_on_the_same_page']).to be_nil
+        end
+      end
+
+      context 'when previous question has a different referer URL' do
+        before do
+          messages << build(:ai_chat_message, referer_url: 'http://127.0.0.1:3000')
+          messages << build(:ai_chat_message, referer_url: 'http://127.0.0.1:3000/dashboard/')
+        end
+
+        it 'returns false for the asked_on_the_same_page attribute' do
+          expect(result['asked_on_the_same_page']).to eq(false)
+        end
+      end
+
+      context 'when previous question has the same referer URL' do
+        before do
+          messages << build(:ai_chat_message, referer_url: 'http://127.0.0.1:3000')
+          messages << build(:ai_chat_message, referer_url: 'http://127.0.0.1:3000')
+        end
+
+        it 'returns true for the asked_on_the_same_page attribute' do
+          expect(result['asked_on_the_same_page']).to eq(true)
+        end
+      end
     end
 
     context 'when messages is empty' do
