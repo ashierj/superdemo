@@ -11,7 +11,7 @@ describe('ProductAnalyticsGroupMonthlyUsageChart', () => {
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findChart = () => wrapper.findComponent(GlAreaChart);
 
-  const createComponent = (props = {}) => {
+  const createComponent = (props = { isLoading: false }) => {
     wrapper = shallowMountExtended(ProductAnalyticsGroupMonthlyUsageChart, {
       propsData: {
         ...props,
