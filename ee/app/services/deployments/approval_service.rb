@@ -27,7 +27,10 @@ module Deployments
     private
 
     def upsert_approval(deployment, status, comment)
-      if (approval = deployment.approvals.find_by_user_id(current_user.id))
+      if approval = deployment.approvals.find_by_user_id_and_approval_rule_id(
+        current_user.id, approval_rule&.id
+      )
+
         return approval if approval.status == status
 
         approval.tap { |a| a.update(status: status, comment: comment) }
