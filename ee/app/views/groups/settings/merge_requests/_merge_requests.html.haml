@@ -5,6 +5,6 @@
         = _('Merge requests')
       = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
         = expanded ? _('Collapse') : _('Expand')
-      %p= s_('GroupSettings|Choose the merge request checks for projects in this group. This setting overrides the same settings configured on each project in this group.')
+      %p.gl-text-secondary= s_('GroupSettings|Choose the merge request checks for projects in this group. This setting overrides the same settings configured on each project in this group.')
     .settings-content
       = render 'groups/settings/merge_requests/merge_request_pipelines_and_threads_options'
