@@ -3,7 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe Sidebars::Projects::Menus::PackagesRegistriesMenu, feature_category: :container_registry do
-  let_it_be(:project) { create(:project) }
+  let_it_be_with_reload(:project) { create(:project) }
+
+  let_it_be_with_refind(:artifact_registry_integration) do
+    create(:google_cloud_platform_artifact_registry_integration, project: project)
+  end
+
+  let_it_be_with_refind(:wlif_integration) do
+    create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+  end
+
   let(:user) { project.first_owner }
   let(:context) { Sidebars::Projects::Context.new(current_user: user, container: project) }
 
@@ -55,6 +64,28 @@ RSpec.describe Sidebars::Projects::Menus::PackagesRegistriesMenu, feature_catego
         let(:user) { nil }
 
         it_behaves_like 'the menu item is not added to list of menu items'
+      end
+
+      %i[wlif artifact_registry].each do |integration_type|
+        context "with the #{integration_type} integration" do
+          let(:integration) { public_send("#{integration_type}_integration") }
+
+          context 'when not present' do
+            before do
+              integration.destroy!
+            end
+
+            it_behaves_like 'the menu item is not added to list of menu items'
+          end
+
+          context 'when inactive' do
+            before do
+              integration.update_column(:active, false)
+            end
+
+            it_behaves_like 'the menu item is not added to list of menu items'
+          end
+        end
       end
     end
   end
