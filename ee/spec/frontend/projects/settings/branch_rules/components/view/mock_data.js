@@ -122,6 +122,7 @@ export const branchProtectionsMockResponse = {
           {
             __typename: 'BranchRule',
             name: 'main',
+            id: 'gid://gitlab/Projects/BranchRule/1',
             branchProtection: {
               __typename: 'BranchProtection',
               allowForcePush: true,
@@ -148,6 +149,7 @@ export const branchProtectionsMockResponse = {
           {
             __typename: 'BranchRule',
             name: '*',
+            id: 'gid://gitlab/Projects/BranchRule/2',
             branchProtection: {
               __typename: 'BranchProtection',
               allowForcePush: true,
@@ -173,6 +175,15 @@ export const branchProtectionsMockResponse = {
           },
         ],
       },
+    },
+  },
+};
+
+export const deleteBranchRuleMockResponse = {
+  data: {
+    branchRuleDelete: {
+      errors: [],
+      __typename: 'BranchRuleDeletePayload',
     },
   },
 };

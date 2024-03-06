@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import RuleView from 'ee/projects/settings/branch_rules/components/view/index.vue';
 import branchRulesQuery from 'ee/projects/settings/branch_rules/queries/branch_rules_details.query.graphql';
+import deleteBranchRuleMutation from '~/projects/settings/branch_rules/mutations/branch_rule_delete.mutation.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -15,6 +16,7 @@ import {
 import Protection from '~/projects/settings/branch_rules/components/view/protection.vue';
 import { sprintf } from '~/locale';
 import {
+  deleteBranchRuleMockResponse,
   branchProtectionsMockResponse,
   approvalRulesMock,
   statusChecksRulesMock,
@@ -44,13 +46,17 @@ describe('View branch rules in enterprise edition', () => {
   const statusChecksPath = 'status/checks';
   const branchProtectionsMockRequestHandler = (response = branchProtectionsMockResponse) =>
     jest.fn().mockResolvedValue(response);
+  const deleteBranchRuleMockRequestHandler = (response = deleteBranchRuleMockResponse) =>
+    jest.fn().mockResolvedValue(response);
 
   const createComponent = async (
     { showApprovers, showStatusChecks, showCodeOwners } = {},
     mockResponse,
+    mutationMockResponse,
   ) => {
     fakeApollo = createMockApollo([
       [branchRulesQuery, branchProtectionsMockRequestHandler(mockResponse)],
+      [deleteBranchRuleMutation, deleteBranchRuleMockRequestHandler(mutationMockResponse)],
     ]);
 
     wrapper = shallowMountExtended(RuleView, {

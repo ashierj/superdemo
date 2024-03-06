@@ -34,6 +34,7 @@ export const branchRulesMockResponse = {
         nodes: [
           {
             name: 'main',
+            id: 'gid://gitlab/Projects/BranchRule/1',
             isDefault: true,
             matchingBranchesCount: 1,
             branchProtection: {

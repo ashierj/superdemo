@@ -3,6 +3,7 @@ query getBranchRulesDetailsEE($projectPath: ID!) {
     id
     branchRules {
       nodes {
+        id
         name
         branchProtection {
           allowForcePush
