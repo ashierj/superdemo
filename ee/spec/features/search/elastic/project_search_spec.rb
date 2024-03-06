@@ -96,7 +96,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
     before do
       sign_in(user)
 
-      visit search_path(project_id: project.id, repository_ref: repository_ref, scope: scope)
+      visit search_path(project_id: project.id, repository_ref: repository_ref, scope: scope, search: 'test')
     end
 
     context "when `repository_ref` is the default branch" do

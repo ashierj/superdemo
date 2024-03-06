@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Projects
-  module GoogleCloudPlatform
+  module GoogleCloud
     class ArtifactRegistryController < ::Projects::ApplicationController
       layout 'project'
 
