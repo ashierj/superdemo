@@ -1,5 +1,13 @@
 <script>
-import { GlButton, GlIcon, GlLink, GlLoadingIcon, GlPopover, GlTooltipDirective } from '@gitlab/ui';
+import {
+  GlButton,
+  GlIcon,
+  GlIntersectionObserver,
+  GlLink,
+  GlLoadingIcon,
+  GlPopover,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 import { STATUS_OPEN } from '~/issues/constants';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { __, n__, sprintf, s__ } from '~/locale';
@@ -15,6 +23,7 @@ export default {
   components: {
     GlButton,
     GlIcon,
+    GlIntersectionObserver,
     GlLink,
     GlLoadingIcon,
     GlPopover,
@@ -70,6 +79,8 @@ export default {
     return {
       isCollapsed: collapsed,
       listsWithIssues: [],
+      showShadow: false,
+      laneScrollOffset: 0,
     };
   },
   apollo: {
@@ -136,6 +147,11 @@ export default {
       return formatListIssuesForLanes(this.listsWithIssues);
     },
   },
+  watch: {
+    listsWithIssues() {
+      this.setLaneScrollOffset();
+    },
+  },
   methods: {
     async toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed;
@@ -156,6 +172,17 @@ export default {
     getIssuesByList(listId) {
       return this.issuesByList[listId];
     },
+    setLaneScrollOffset() {
+      this.laneScrollOffset =
+        document.querySelector('[data-testid="board-swimlanes-headers"]')?.getBoundingClientRect()
+          .height || 0 + this.$refs.header.getBoundingClientRect().height;
+    },
+    setShowShadow() {
+      this.showShadow = true;
+    },
+    setHideShadow() {
+      this.showShadow = false;
+    },
   },
 };
 </script>
@@ -163,48 +190,59 @@ export default {
 <template>
   <div v-if="shouldDisplay" class="board-epic-lane-container">
     <div
+      ref="header"
       class="board-epic-lane gl-w-full gl-max-w-full gl-sticky gl-left-0 gl-display-inline-block"
       :class="{
         'board-epic-lane-shadow': !isCollapsed,
+        show: showShadow,
       }"
       data-testid="board-epic-lane"
     >
       <div class="gl-py-3 gl-px-3 gl-display-flex gl-align-items-center">
-        <gl-button
-          v-gl-tooltip.hover.right
-          :aria-label="chevronTooltip"
-          :title="chevronTooltip"
-          :icon="chevronIcon"
-          class="gl-mr-2 gl-cursor-pointer"
-          category="tertiary"
-          size="small"
-          @click="toggleCollapsed"
-        />
-        <h4
-          ref="epicTitle"
-          class="gl-my-0 gl-mr-3 gl-font-weight-bold gl-font-base gl-white-space-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
-        >
-          {{ epic.title }}
-        </h4>
-        <gl-popover :target="() => $refs.epicTitle" placement="top">
-          <template #title>{{ epic.title }} &middot; {{ epic.reference }}</template>
-          <div>{{ epicTimeAgoString }}</div>
-          <div class="gl-mb-2">{{ epicDateString }}</div>
-          <gl-link :href="epic.webUrl" class="gl-font-sm">{{ __('Go to epic') }}</gl-link>
-        </gl-popover>
-        <span
-          v-if="!isLoading"
-          v-gl-tooltip.hover
-          :title="issuesCountTooltipText"
-          class="gl-display-flex gl-align-items-center gl-text-gray-500"
-          tabindex="0"
-          :aria-label="issuesCountTooltipText"
-          data-testid="epic-lane-issue-count"
-        >
-          <gl-icon class="gl-mr-2 gl-flex-shrink-0" name="issues" />
-          <span aria-hidden="true">{{ issuesCount }}</span>
-        </span>
-        <gl-loading-icon v-else class="gl-p-2" />
+        <div class="gl-display-flex gl-align-items-center gl-sticky gl-left-0">
+          <gl-button
+            v-gl-tooltip.hover.right
+            :aria-label="chevronTooltip"
+            :title="chevronTooltip"
+            :icon="chevronIcon"
+            class="gl-mr-2 gl-cursor-pointer"
+            category="tertiary"
+            size="small"
+            @click="toggleCollapsed"
+          />
+          <h4
+            ref="epicTitle"
+            class="gl-my-0 gl-mr-3 gl-font-weight-bold gl-font-base gl-white-space-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
+          >
+            {{ epic.title }}
+          </h4>
+          <gl-popover :target="() => $refs.epicTitle" placement="top">
+            <template #title>{{ epic.title }} &middot; {{ epic.reference }}</template>
+            <div>{{ epicTimeAgoString }}</div>
+            <div class="gl-mb-2">{{ epicDateString }}</div>
+            <gl-link :href="epic.webUrl" class="gl-font-sm">{{ __('Go to epic') }}</gl-link>
+          </gl-popover>
+          <span
+            v-if="!isLoading"
+            v-gl-tooltip.hover
+            :title="issuesCountTooltipText"
+            class="gl-display-flex gl-align-items-center gl-text-gray-500"
+            tabindex="0"
+            :aria-label="issuesCountTooltipText"
+            data-testid="epic-lane-issue-count"
+          >
+            <gl-icon class="gl-mr-2 gl-flex-shrink-0" name="issues" />
+            <span aria-hidden="true">{{ issuesCount }}</span>
+          </span>
+          <gl-loading-icon v-else class="gl-p-2" />
+        </div>
+      </div>
+    </div>
+    <div class="gl-relative">
+      <div :style="`top: -${laneScrollOffset}px`" class="gl-absolute gl-w-full">
+        <gl-intersection-observer @appear="setHideShadow" @disappear="setShowShadow">
+          <div></div>
+        </gl-intersection-observer>
       </div>
     </div>
     <div
