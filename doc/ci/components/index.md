@@ -293,6 +293,19 @@ To publish the component project in the catalog again, you need to [publish a ne
 
 This section describes some best practices for creating high quality component projects.
 
+### Manage dependencies
+
+While it's possible for a component to use other components in turn, make sure to carefully select the dependencies. To manage dependencies, you should:
+
+- Keep dependencies to a minimum. A small amount of duplication is usually better than having dependencies.
+- Rely on local dependencies whenever possible. For example, using [`include:local`](../../ci/yaml/index.md#includelocal) is a good way
+  to ensure the same Git SHA is used across multiple files.
+- When depending on components from other projects, pin their version to a release from the catalog rather than using moving target
+  versions such as `~latest` or a Git reference. Using a release or Git SHA guarantees that you are fetching the same revision
+  all the time and that consumers of your component get consistent behavior.
+- Update your dependencies regularly by pinning them to newer releases. Then publish a new release of your components with updated
+  dependencies.
+
 ### Write a clear `README.md`
 
 Each component project should have clear and comprehensive documentation. To
