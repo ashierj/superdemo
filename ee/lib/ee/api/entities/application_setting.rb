@@ -39,6 +39,8 @@ module EE
           expose :make_profile_private, if: ->(_instance, _opts) do
             ::License.feature_available?(:disable_private_profiles) && ::Feature.enabled?(:disallow_private_profiles)
           end
+          expose :duo_features_enabled, if: ->(_instance, _opts) { ::License.ai_features_available? }
+          expose :lock_duo_features_enabled, if: ->(_instance, _opts) { ::License.ai_features_available? }
         end
       end
     end

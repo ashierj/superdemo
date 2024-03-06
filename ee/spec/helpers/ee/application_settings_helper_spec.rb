@@ -19,6 +19,10 @@ RSpec.describe EE::ApplicationSettingsHelper do
     it 'contains anthropic_api_key value' do
       expect(visible_attributes).to include(*%i[anthropic_api_key])
     end
+
+    it 'contains duo_features_enabled parameters' do
+      expect(visible_attributes).to include(*%i[duo_features_enabled lock_duo_features_enabled])
+    end
   end
 
   describe '.registration_features_can_be_prompted?' do

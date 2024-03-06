@@ -86,6 +86,10 @@ module EE
               attrs = attrs.except(:service_access_tokens_expiration_enforced)
             end
 
+            unless License.ai_features_available?
+              attrs = attrs.except(:duo_features_enabled, :lock_duo_features_enabled)
+            end
+
             attrs
           end
           # rubocop:enable Metrics/CyclomaticComplexity

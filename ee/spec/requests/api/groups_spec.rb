@@ -530,6 +530,36 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
         end
       end
     end
+
+    context 'duo_features_enabled' do
+      using RSpec::Parameterized::TableSyntax
+
+      context 'authenticated as group owner' do
+        where(:feature_enabled, :param, :value, :result) do
+          false | 'duo_features_enabled' | false | nil
+          false | 'lock_duo_features_enabled' | true | nil
+          true | 'duo_features_enabled' | false | false
+          true | 'lock_duo_features_enabled' | true | true
+        end
+
+        with_them do
+          let(:params) { { param => value } }
+
+          before do
+            group.add_owner(user)
+
+            stub_licensed_features(ai_features: feature_enabled)
+          end
+
+          it 'updates the attribute as expected' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response[param]).to eq(result)
+          end
+        end
+      end
+    end
   end
 
   describe "POST /groups" do

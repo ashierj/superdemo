@@ -3685,4 +3685,23 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       end
     end
   end
+
+  describe '#licensed_ai_features_available?' do
+    subject { group.licensed_ai_features_available? }
+
+    where(:ai_features, :ai_chat, :licensed_ai_features_available) do
+      true | true | true
+      true | false | true
+      false | true | true
+      false | false | false
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(ai_features: ai_features, ai_chat: ai_chat)
+      end
+
+      it { is_expected.to be(licensed_ai_features_available) }
+    end
+  end
 end
