@@ -61,6 +61,7 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
       it 'includes Google Artifact Registry fields' do
         is_expected.to include(
           artifact_registry_path: project_google_cloud_platform_artifact_registry_index_path(project),
+          personal_access_tokens_path: user_settings_personal_access_tokens_path,
           operating: 'true'
         )
       end

@@ -2,12 +2,16 @@
 // eslint-disable-next-line no-restricted-imports
 import { mapGetters } from 'vuex';
 import { GlButton } from '@gitlab/ui';
+import Configuration from '~/integrations/edit/components/sections/configuration.vue';
 import Connection from '~/integrations/edit/components/sections/connection.vue';
+import ConfigurationInstructions from 'ee/integrations/edit/components/google_cloud_artifact_registry/configuration_instructions.vue';
 
 export default {
   name: 'IntegrationSectionGoogleCloudArtifactRegistry',
   components: {
+    Configuration,
     Connection,
+    ConfigurationInstructions,
     GlButton,
   },
   computed: {
@@ -40,6 +44,10 @@ export default {
       </div>
       <hr />
     </template>
-    <connection :fields="dynamicFields" />
+    <connection />
+    <h3 class="gl-mt-0">{{ s__('GoogleArtifactRegistry|Repository') }}</h3>
+    <configuration :fields="dynamicFields" class="gl-form-input-xl" />
+    <hr />
+    <configuration-instructions />
   </div>
 </template>
