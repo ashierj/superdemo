@@ -45,6 +45,7 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanExecutionP
               project, id: CGI.escape(policy[:name]), type: 'scan_execution_policy'
             ),
             enabled: policy[:enabled],
+            policy_scope: nil,
             yaml: YAML.dump(policy.deep_stringify_keys),
             updated_at: policy_configuration.policy_last_updated_at,
             source: {

@@ -132,10 +132,6 @@ module EE
 
       attrs += merge_request_rules_params
 
-      # this should be removed as part of assign_compliance_project_service FF removal
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/442302
-      attrs += compliance_framework_params
-
       if project&.feature_available?(:auto_rollback)
         attrs << :auto_rollback_enabled
       end
@@ -190,14 +186,6 @@ module EE
 
     def allow_merge_trains_params?
       project&.feature_available?(:merge_trains)
-    end
-
-    # this should be removed as part of assign_compliance_project_service FF removal
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/442302
-    def compliance_framework_params
-      return [] unless current_user.can?(:admin_compliance_framework, project)
-
-      [compliance_framework_setting_attributes: [:framework]]
     end
 
     def log_audit_event(message:, event_type:)

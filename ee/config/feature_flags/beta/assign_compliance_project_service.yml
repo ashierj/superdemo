@@ -1,9 +1,0 @@
----
-name: assign_compliance_project_service
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/411502
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/144429
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/442302
-milestone: '16.10'
-group: group::authorization
-type: beta
-default_enabled: false

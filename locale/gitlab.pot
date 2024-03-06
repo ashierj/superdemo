@@ -8199,10 +8199,25 @@ msgstr ""
 msgid "Billing|An error occurred while removing a billable member."
 msgstr ""
 
+msgid "Billing|Are you sure you want to continue?"
+msgstr ""
+
+msgid "Billing|Assign seat"
+msgstr ""
+
+msgid "Billing|Assign seats"
+msgstr ""
+
 msgid "Billing|Awaiting member signup"
 msgstr ""
 
 msgid "Billing|Cannot remove user"
+msgstr ""
+
+msgid "Billing|Confirm bulk seat allocation"
+msgstr ""
+
+msgid "Billing|Confirm bulk seat unassignment"
 msgstr ""
 
 msgid "Billing|Direct memberships"
@@ -8246,6 +8261,12 @@ msgstr ""
 msgid "Billing|Project invite"
 msgstr ""
 
+msgid "Billing|Remove seat"
+msgstr ""
+
+msgid "Billing|Remove seats"
+msgstr ""
+
 msgid "Billing|Remove user %{username} from your subscription"
 msgstr ""
 
@@ -8254,6 +8275,16 @@ msgstr ""
 
 msgid "Billing|Something went wrong when un-assigning the add-on to this member. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}."
 msgstr ""
+
+msgid "Billing|This action will assign a GitLab Duo Pro seat to 1 user"
+msgid_plural "Billing|This action will assign a GitLab Duo Pro seat to %d users"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Billing|This action will remove GitLab Duo Pro seat from 1 user"
+msgid_plural "Billing|This action will remove GitLab Duo Pro seats from %d users"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Billing|To ensure all members can access the group when your trial ends, you can upgrade to a paid tier."
 msgstr ""
@@ -52839,6 +52870,9 @@ msgid "Tracing|Select a service to load suggestions"
 msgstr ""
 
 msgid "Tracing|Service"
+msgstr ""
+
+msgid "Tracing|Showing %{count} traces"
 msgstr ""
 
 msgid "Tracing|Status"

@@ -5,7 +5,7 @@ import { s__ } from '~/locale';
 import { OPERATORS_IS_NOT } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import { OPERATORS_LIKE_NOT } from '~/observability/constants';
-import DateRangeFilter from './date_range_filter.vue';
+import DateRangeFilter from '~/observability/components/date_range_filter.vue';
 import GroupByFilter from './groupby_filter.vue';
 
 function defaultGroupByFunction(searchMetadata) {
@@ -66,7 +66,6 @@ export default {
   },
   data() {
     return {
-      shouldShowDateRangePicker: false,
       filters: this.attributeFilters,
       dateRange: this.dateRangeFilter,
       groupBy: {

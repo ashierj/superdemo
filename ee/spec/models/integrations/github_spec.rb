@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Integrations::Github do
-  let(:project) { create(:project) }
-  let(:pipeline) { create(:ci_pipeline, project: project) }
+RSpec.describe Integrations::Github, feature_category: :integrations do
+  let_it_be_with_refind(:project) { create(:project) }
+  let_it_be_with_reload(:pipeline) { create(:ci_pipeline, project: project) }
   let(:pipeline_sample_data) { Gitlab::DataBuilder::Pipeline.build(pipeline) }
   let(:owner) { 'my-user' }
   let(:token) { 'aaaaaaaaa' }
@@ -31,6 +31,8 @@ RSpec.describe Integrations::Github do
   describe 'default values' do
     it { expect(subject.pipeline_events).to eq(true) }
   end
+
+  it_behaves_like Integrations::HasAvatar
 
   it_behaves_like Integrations::ResetSecretFields do
     let(:integration) { subject }
@@ -251,7 +253,7 @@ RSpec.describe Integrations::Github do
     context 'when an external pull request pipeline exists' do
       let(:external_pr) { create(:external_pull_request, project: project) }
 
-      let!(:external_pipeline) do
+      before do
         create(:ci_pipeline,
           source: :external_pull_request_event,
           external_pull_request: external_pr,

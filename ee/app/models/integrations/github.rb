@@ -3,6 +3,7 @@
 module Integrations
   class Github < Integration
     include Gitlab::Routing
+    include HasAvatar
 
     delegate :api_url, :owner, :repository_name, to: :remote_project
 
