@@ -2,10 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::ComplianceReportCsvService, feature_category: :compliance_management do
+RSpec.describe Groups::ComplianceReportCsvService, :freeze_time, feature_category: :compliance_management do
   subject(:service) { described_class.new(user, group, filters) }
 
-  let(:filters) { { from: 10.years.ago, to: Time.current } }
+  let(:from) { 10.years.ago }
+  let(:filters) { { from: from, to: Time.current } }
 
   let_it_be(:user) { create(:user, name: 'John Cena') }
 
@@ -107,9 +108,9 @@ RSpec.describe Groups::ComplianceReportCsvService, feature_category: :compliance
 
     context 'when verifying the csv data' do
       let(:all_commits) do
-        commits = project1.repository.commits(nil, limit: 100).map(&:sha) +
-          project2.repository.commits(nil, limit: 100).map(&:sha) +
-          sub_group_project.repository.commits(nil, limit: 100).map(&:sha)
+        commits = project1.repository.commits(nil, limit: 100, after: from).map(&:sha) +
+          project2.repository.commits(nil, limit: 100, after: from).map(&:sha) +
+          sub_group_project.repository.commits(nil, limit: 100, after: from).map(&:sha)
         commits.sort.uniq
       end
 
