@@ -1,8 +1,5 @@
 mutation deleteMemberRole($input: MemberRoleDeleteInput!) {
   memberRoleDelete(input: $input) {
     errors
-    memberRole {
-      id
-    }
   }
 }

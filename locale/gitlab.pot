@@ -30516,7 +30516,7 @@ msgstr ""
 msgid "MemberRole|Failed to delete role."
 msgstr ""
 
-msgid "MemberRole|Failed to delete role. %{message}"
+msgid "MemberRole|Failed to delete role. %{error}"
 msgstr ""
 
 msgid "MemberRole|Failed to fetch roles."

@@ -30,8 +30,7 @@ describe('ListMemberRoles', () => {
   const instanceRolesSuccessQueryHandler = jest.fn().mockResolvedValue(mockInstanceMemberRoles);
   const deleteMutationSuccessHandler = jest
     .fn()
-    .mockResolvedValue({ data: { memberRoleDelete: { errors: null, memberRole: { id: '1' } } } });
-
+    .mockResolvedValue({ data: { memberRoleDelete: { errors: [] } } });
   const failedQueryHandler = jest.fn().mockRejectedValue(new Error('GraphQL error'));
 
   const createComponent = ({
@@ -55,11 +54,13 @@ describe('ListMemberRoles', () => {
         },
       },
     });
+
+    return waitForPromises();
   };
 
   const findTitle = () => wrapper.findByTestId('card-title');
   const findAddRoleButton = () => wrapper.findByTestId('add-role');
-  const findButtonByText = (text) => wrapper.findByRole('button', { name: text });
+  const findFirstDeleteRoleButton = () => wrapper.findByTestId('delete-role-button');
   const findCounter = () => wrapper.findByTestId('counter');
   const findCreateMemberRole = () => wrapper.findComponent(CreateMemberRole);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
@@ -232,100 +233,86 @@ describe('ListMemberRoles', () => {
     });
   });
 
-  describe('deleting member role', () => {
-    beforeEach(() => {
-      createComponent({ mountFn: mountExtended });
+  describe('delete role', () => {
+    // This is the delete role button in each table row.
+    const clickFirstDeleteRoleButton = () => {
+      return findFirstDeleteRoleButton().trigger('click');
+    };
+    // This is the confirm delete button in the delete confirmation modal.
+    const clickConfirmDeleteButton = () => {
+      // Need to emit both events: primary invokes the delete mutation, and change updates the modal visible state.
+      findModal().vm.$emit('primary');
+      findModal().vm.$emit('change', false);
       return waitForPromises();
-    });
+    };
 
-    it('shows confirm modal', async () => {
+    it('shows confirm modal when the delete icon is clicked', async () => {
+      await createComponent({ mountFn: mountExtended });
+
       expect(findModal().props('visible')).toBe(false);
 
-      findButtonByText('Delete role').trigger('click');
-      await nextTick();
+      await clickFirstDeleteRoleButton();
 
       expect(findModal().props('visible')).toBe(true);
     });
 
-    describe('when the role is deleted successfully', () => {
+    describe('when delete succeeds', () => {
       beforeEach(async () => {
-        findButtonByText('Delete role').trigger('click');
-        await nextTick();
-
-        findModal().vm.$emit('primary');
-        await waitForPromises();
+        await createComponent({ mountFn: mountExtended });
+        await clickFirstDeleteRoleButton();
       });
 
-      it('delete the role', () => {
+      it('calls the role deletion mutation with the expected data', async () => {
+        await clickConfirmDeleteButton();
+
+        expect(deleteMutationSuccessHandler).toHaveBeenCalledTimes(1);
         expect(deleteMutationSuccessHandler).toHaveBeenCalledWith({
-          input: {
-            id: 'gid://gitlab/MemberRole/1',
-          },
+          input: { id: 'gid://gitlab/MemberRole/1' },
         });
       });
 
-      it('shows toast', () => {
+      it('shows a toast', async () => {
+        await clickConfirmDeleteButton();
+
         expect(mockToastShow).toHaveBeenCalledWith('Role successfully deleted.');
       });
 
-      it('refetches roles', () => {
+      it('refetches roles', async () => {
+        expect(groupRolesSuccessQueryHandler).toHaveBeenCalledTimes(1);
+
+        await clickConfirmDeleteButton();
+
         expect(groupRolesSuccessQueryHandler).toHaveBeenCalledTimes(2);
       });
-    });
 
-    describe('deleting instance-level member role', () => {
-      beforeEach(() => {
-        createComponent({ mountFn: mountExtended, groupFullPath: null });
-        return waitForPromises();
-      });
+      it('closes the modal', async () => {
+        expect(findModal().props('visible')).toBe(true); // Verify that the modal is open first.
 
-      describe('when the role is deleted successfully', () => {
-        beforeEach(async () => {
-          findButtonByText('Delete role').trigger('click');
-          await nextTick();
+        await clickConfirmDeleteButton();
 
-          findModal().vm.$emit('primary');
-          await waitForPromises();
-        });
-
-        it('delete the role', () => {
-          expect(deleteMutationSuccessHandler).toHaveBeenCalledWith({
-            input: {
-              id: 'gid://gitlab/MemberRole/2',
-            },
-          });
-        });
-
-        it('shows toast', () => {
-          expect(mockToastShow).toHaveBeenCalledWith('Role successfully deleted.');
-        });
-
-        it('refetches roles', () => {
-          expect(instanceRolesSuccessQueryHandler).toHaveBeenCalledTimes(2);
-        });
+        expect(findModal().props('visible')).toBe(false);
       });
     });
 
-    describe('when there is an error deleting the role', () => {
-      const mutationMock = jest.fn().mockResolvedValue({
-        data: { memberRoleDelete: { errors: ['reason'], memberRole: null } },
-      });
-
+    describe('when delete fails', () => {
       beforeEach(async () => {
-        createComponent({ deleteMutationHandler: mutationMock, mountFn: mountExtended });
-        await waitForPromises();
-
-        findButtonByText('Delete role').trigger('click');
-        await nextTick();
-
-        findModal().vm.$emit('primary');
-        await waitForPromises();
+        const deleteMutationHandler = jest.fn().mockRejectedValue(new Error('I failed'));
+        await createComponent({ deleteMutationHandler, mountFn: mountExtended });
+        return clickFirstDeleteRoleButton();
       });
 
-      it('shows alert', () => {
-        expect(createAlert).toHaveBeenCalledWith({
-          message: 'Failed to delete role. reason',
-        });
+      it('shows alert', async () => {
+        await clickConfirmDeleteButton();
+
+        expect(createAlert).toHaveBeenCalledWith({ message: 'Failed to delete role.' });
+      });
+
+      it('closes the modal', async () => {
+        expect(findModal().props('visible')).toBe(true); // Verify that the modal is open first.
+
+        await clickConfirmDeleteButton();
+
+        expect(findModal().props('visible')).toBe(false);
       });
     });
   });
