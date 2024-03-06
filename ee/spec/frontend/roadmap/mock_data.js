@@ -1065,7 +1065,7 @@ export const mockLabelTokenConfig = {
 
 export const mockMilestoneTokenConfig = {
   type: TOKEN_TYPE_MILESTONE,
-  icon: 'clock',
+  icon: 'milestone',
   title: TOKEN_TITLE_MILESTONE,
   unique: true,
   symbol: '%',

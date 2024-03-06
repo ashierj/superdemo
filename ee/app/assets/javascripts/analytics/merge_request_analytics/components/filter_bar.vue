@@ -74,7 +74,7 @@ export default {
           fetchBranches: this.fetchBranches,
         },
         {
-          icon: 'clock',
+          icon: 'milestone',
           title: TOKEN_TITLE_MILESTONE,
           type: TOKEN_TYPE_MILESTONE,
           token: MilestoneToken,

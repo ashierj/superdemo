@@ -471,7 +471,7 @@ export default {
             </template>
 
             <template v-else-if="hasMilestoneSelection">
-              <gl-icon class="gl-flex-shrink-0" name="clock" />
+              <gl-icon class="gl-flex-shrink-0" name="milestone" />
               <span class="gl-text-truncate">{{ selectedItem.title }}</span>
             </template>
 
