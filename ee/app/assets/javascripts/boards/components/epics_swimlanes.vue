@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlButton, GlIcon, GlIntersectionObserver, GlTooltipDirective } from '@gitlab/ui';
 import VirtualList from 'vue-virtual-scroll-list';
 import Draggable from 'vuedraggable';
 import BoardListHeader from 'ee_else_ce/boards/components/board_list_header.vue';
@@ -29,6 +29,7 @@ export default {
     IssuesLaneList,
     GlButton,
     GlIcon,
+    GlIntersectionObserver,
     SwimlanesLoadingSkeleton,
     VirtualList,
   },
@@ -70,6 +71,8 @@ export default {
       isLoadingMoreIssues: false,
       totalIssuesCountByListId: {},
       showNewForm: [],
+      showShadow: false,
+      laneScrollOffset: 0,
     };
   },
   apollo: {
@@ -151,6 +154,11 @@ export default {
       return !this.isUnassignedCollapsed && this.hasMoreUnassignedIssues;
     },
   },
+  watch: {
+    isUnassignedCollapsed() {
+      this.setLaneScrollOffset();
+    },
+  },
   mounted() {
     this.bufferSize = calculateSwimlanesBufferSize(this.$el.offsetTop);
   },
@@ -216,6 +224,17 @@ export default {
       } else {
         this.showNewForm = [...this.showNewForm, listId];
       }
+    },
+    setLaneScrollOffset() {
+      this.laneScrollOffset = document
+        .querySelector('[data-testid="board-swimlanes-headers"]')
+        ?.getBoundingClientRect().height;
+    },
+    setShowShadow() {
+      this.showShadow = true;
+    },
+    setHideShadow() {
+      this.showShadow = false;
     },
   },
 };
@@ -301,30 +320,40 @@ export default {
           </gl-button>
         </div>
         <div>
+          <div class="gl-relative">
+            <div :style="`top: -${laneScrollOffset}px`" class="gl-absolute gl-w-full">
+              <gl-intersection-observer @appear="setHideShadow" @disappear="setShowShadow">
+                <div></div>
+              </gl-intersection-observer>
+            </div>
+          </div>
           <div
             class="board-lane-unassigned-issues-title gl-w-full gl-max-w-full gl-sticky gl-display-inline-block gl-left-0"
             :class="{
               'board-epic-lane-shadow': !isUnassignedCollapsed,
+              show: showShadow,
             }"
             data-testid="board-lane-unassigned-issues-title"
           >
             <div class="gl-py-3 gl-px-3 gl-display-flex gl-align-items-center">
-              <gl-button
-                v-gl-tooltip.hover.right
-                :aria-label="chevronTooltip"
-                :title="chevronTooltip"
-                :icon="chevronIcon"
-                class="gl-mr-2 gl-cursor-pointer"
-                category="tertiary"
-                size="small"
-                data-testid="unassigned-lane-toggle"
-                @click="toggleUnassignedLane"
-              />
-              <span
-                class="gl-mr-3 gl-font-weight-bold gl-white-space-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
-              >
-                {{ __('Issues with no epic assigned') }}
-              </span>
+              <div class="gl-sticky gl-left-0">
+                <gl-button
+                  v-gl-tooltip.hover.right
+                  :aria-label="chevronTooltip"
+                  :title="chevronTooltip"
+                  :icon="chevronIcon"
+                  class="gl-mr-2 gl-cursor-pointer"
+                  category="tertiary"
+                  size="small"
+                  data-testid="unassigned-lane-toggle"
+                  @click="toggleUnassignedLane"
+                />
+                <span
+                  class="gl-mr-3 gl-font-weight-bold gl-white-space-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
+                >
+                  {{ __('Issues with no epic assigned') }}
+                </span>
+              </div>
             </div>
           </div>
           <div v-if="!isUnassignedCollapsed" data-testid="board-lane-unassigned-issues">

@@ -1,3 +1,4 @@
+import { GlIntersectionObserver } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VirtualList from 'vue-virtual-scroll-list';
 import Draggable from 'vuedraggable';
@@ -31,6 +32,7 @@ describe('EpicsSwimlanes', () => {
   const findToggleUnassignedLaneButton = () => wrapper.findByTestId('unassigned-lane-toggle');
   const findLoadMoreIssuesButton = () => wrapper.findByTestId('board-lane-load-more-issues-button');
   const findLoadingSkeleton = () => wrapper.findComponent(SwimlanesLoadingSkeleton);
+  const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
 
   const epicsSwimlanesQueryHandlerSuccess = jest
     .fn()
@@ -170,6 +172,15 @@ describe('EpicsSwimlanes', () => {
       expect(
         wrapper.findAll('[data-testid="board-header-container"]').at(0).classes(),
       ).not.toContain('is-draggable');
+    });
+    describe('unassigned issues lane', () => {
+      it('adds a shadow to the unassigned issues lane header when the intersection observer is hidden', async () => {
+        expect(findLaneUnassignedIssues().classes()).not.toContain('show');
+        findIntersectionObserver().vm.$emit('disappear');
+
+        await nextTick();
+        expect(findLaneUnassignedIssues().classes()).toContain('show');
+      });
     });
   });
 

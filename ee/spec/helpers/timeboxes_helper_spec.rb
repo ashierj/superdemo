@@ -40,42 +40,6 @@ RSpec.describe TimeboxesHelper do
     end
   end
 
-  describe '#show_burndown_placeholder?' do
-    let_it_be(:user) { build(:user) }
-
-    subject { helper.show_burndown_placeholder?(milestone) }
-
-    before do
-      allow(helper).to receive(:current_user).and_return(user)
-    end
-
-    describe('milestone does not support burndown charts') do
-      let(:milestone) { double('Milestone', supports_milestone_charts?: false) }
-
-      it { is_expected.to be false }
-    end
-
-    describe('user without permission') do
-      let(:milestone) { double('Milestone', supports_milestone_charts?: true, resource_parent: 'board') }
-
-      before do
-        stub_can_admin_milestone(false)
-      end
-
-      it { is_expected.to be false }
-    end
-
-    describe('user with permission') do
-      let(:milestone) { double('Milestone', supports_milestone_charts?: true, resource_parent: 'board') }
-
-      before do
-        stub_can_admin_milestone(true)
-      end
-
-      it { is_expected.to be true }
-    end
-  end
-
   describe '#legacy_milestone?' do
     let_it_be(:issue) { create(:issue) }
 
