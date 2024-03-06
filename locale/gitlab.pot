@@ -32259,9 +32259,6 @@ msgstr ""
 msgid "My awesome group"
 msgstr ""
 
-msgid "My comment templates"
-msgstr ""
-
 msgid "My company or team"
 msgstr ""
 
