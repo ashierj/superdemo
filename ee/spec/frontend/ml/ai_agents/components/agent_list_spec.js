@@ -54,6 +54,7 @@ describe('AI Agents List View', () => {
 
     it('shows the empty state view', () => {
       expect(findEmptyState().exists()).toBe(true);
+      expect(findEmptyState().props('svgPath')).toBe('file-mock');
     });
   });
 
