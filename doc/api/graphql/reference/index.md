@@ -31538,7 +31538,6 @@ Detailed representation of whether a GitLab merge request can be merged.
 | <a id="detailedmergestatusneed_rebase"></a>`NEED_REBASE` | Merge request needs to be rebased. |
 | <a id="detailedmergestatusnot_approved"></a>`NOT_APPROVED` | Merge request must be approved before merging. |
 | <a id="detailedmergestatusnot_open"></a>`NOT_OPEN` | Merge request must be open before merging. |
-| <a id="detailedmergestatuspolicies_denied"></a>`POLICIES_DENIED` | There are denied policies for the merge request. |
 | <a id="detailedmergestatuspreparing"></a>`PREPARING` | Merge request diff is being created. |
 | <a id="detailedmergestatusunchecked"></a>`UNCHECKED` | Merge status has not been checked. |
 

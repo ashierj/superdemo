@@ -16821,9 +16821,6 @@ msgstr ""
 msgid "Denied authorization of chat nickname %{user_name}."
 msgstr ""
 
-msgid "Denied licenses must be removed or approved."
-msgstr ""
-
 msgid "Deny"
 msgstr ""
 
