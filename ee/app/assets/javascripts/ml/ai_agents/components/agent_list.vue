@@ -1,5 +1,6 @@
 <script>
 import { GlLoadingIcon, GlTableLite, GlEmptyState } from '@gitlab/ui';
+import emptyStateSvgUrl from '@gitlab/svgs/dist/illustrations/tanuki-ai-md.svg?url';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { s__ } from '~/locale';
 import { ROUTE_SHOW_AGENT } from '../constants';
@@ -16,6 +17,7 @@ export default {
   inject: ['projectPath'],
   data() {
     return {
+      emptyStateSvgUrl,
       agents: {},
       errorMessage: undefined,
     };
@@ -24,7 +26,6 @@ export default {
     emptyState: {
       title: s__('AiAgents|Create your own AI Agents'),
       description: s__('AiAgents|Create and manage your AI Agents'),
-      svgPath: '/assets/illustrations/tanuki_ai_logo.svg',
     },
   },
   fields: [
@@ -113,7 +114,7 @@ export default {
     <gl-empty-state
       v-else
       :title="$options.i18n.emptyState.title"
-      :svg-path="$options.i18n.emptyState.svgPath"
+      :svg-path="emptyStateSvgUrl"
       :svg-height="null"
       :description="$options.i18n.emptyState.description"
       class="gl-py-8"
