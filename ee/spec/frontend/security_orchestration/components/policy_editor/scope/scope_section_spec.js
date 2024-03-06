@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlAlert, GlSprintf, GlLoadingIcon, GlIcon } from '@gitlab/ui';
+import { GlAlert, GlSprintf, GlIcon } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
@@ -9,6 +9,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import ScopeSection from 'ee/security_orchestration/components/policy_editor/scope/scope_section.vue';
 import ComplianceFrameworkDropdown from 'ee/security_orchestration/components/policy_editor/scope/compliance_framework_dropdown.vue';
 import GroupProjectsDropdown from 'ee/security_orchestration/components/group_projects_dropdown.vue';
+import LoaderWithMessage from 'ee/security_orchestration/components/loader_with_message.vue';
 import ScopeSectionAlert from 'ee/security_orchestration/components/policy_editor/scope/scope_section_alert.vue';
 import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -62,6 +63,7 @@ describe('PolicyScope', () => {
       stubs: {
         GlSprintf,
         ScopeSectionAlert,
+        LoaderWithMessage,
       },
     });
   };
@@ -72,7 +74,7 @@ describe('PolicyScope', () => {
   const findProjectScopeTypeDropdown = () => wrapper.findByTestId('project-scope-type');
   const findExceptionTypeDropdown = () => wrapper.findByTestId('exception-type');
   const findPolicyScopeProjectText = () => wrapper.findByTestId('policy-scope-project-text');
-  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findLoader = () => wrapper.findComponent(LoaderWithMessage);
   const findScopeSectionAlert = () => wrapper.findComponent(ScopeSectionAlert);
   const findLoadingText = () => wrapper.findByTestId('loading-text');
   const findErrorMessage = () => wrapper.findByTestId('policy-scope-project-error');
@@ -302,7 +304,7 @@ describe('PolicyScope', () => {
 
       await waitForPromises();
 
-      expect(findLoadingIcon().exists()).toBe(false);
+      expect(findLoader().exists()).toBe(false);
       expect(findProjectScopeTypeDropdown().exists()).toBe(true);
       expect(requestHandler).toHaveBeenCalledTimes(0);
       expect(findPolicyScopeProjectText().exists()).toBe(false);
@@ -357,7 +359,7 @@ describe('PolicyScope', () => {
         },
       });
 
-      expect(findLoadingIcon().exists()).toBe(true);
+      expect(findLoader().exists()).toBe(true);
       expect(findLoadingText().text()).toBe('Fetching the scope information.');
     });
 
@@ -431,7 +433,7 @@ describe('PolicyScope', () => {
       await waitForPromises();
 
       expect(requestHandler).toHaveBeenCalledTimes(0);
-      expect(findLoadingIcon().exists()).toBe(false);
+      expect(findLoader().exists()).toBe(false);
     });
   });
 

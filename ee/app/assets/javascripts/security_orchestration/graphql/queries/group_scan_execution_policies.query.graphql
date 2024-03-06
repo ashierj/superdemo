@@ -1,4 +1,5 @@
 #import "../fragments/scan_policy_source.fragment.graphql"
+#import "../fragments/policy_scope.fragment.graphql"
 
 query groupScanExecutionPolicies(
   $fullPath: ID!
@@ -12,6 +13,9 @@ query groupScanExecutionPolicies(
         yaml
         editPath
         enabled
+        policyScope {
+          ...PolicyScope
+        }
         source {
           ...SecurityPolicySource
         }

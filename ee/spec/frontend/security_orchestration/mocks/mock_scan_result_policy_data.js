@@ -8,6 +8,7 @@
  * match), please name them similarly (e.g. fooBarScanResultManifest and fooBarScanResultObject)
  * and keep them near each other.
  */
+import { POLICY_SCOPE_MOCK } from 'ee_jest/security_orchestration/mocks/mock_apollo';
 import { actionId, ruleId } from './mock_data';
 
 export const mockForcePushSettingsManifest = `type: approval_policy
@@ -141,6 +142,7 @@ export const mockProjectScanResultPolicy = {
   userApprovers: [],
   allGroupApprovers: [],
   roleApprovers: [],
+  ...POLICY_SCOPE_MOCK,
   source: {
     __typename: 'ProjectSecurityPolicySource',
     project: {
@@ -159,6 +161,7 @@ export const mockGroupScanResultPolicy = {
   userApprovers: [],
   allGroupApprovers: [],
   roleApprovers: [],
+  ...POLICY_SCOPE_MOCK,
   source: {
     __typename: 'GroupSecurityPolicySource',
     inherited: true,

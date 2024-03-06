@@ -1,4 +1,5 @@
 #import "../fragments/scan_policy_source.fragment.graphql"
+#import "../fragments/policy_scope.fragment.graphql"
 
 query projectScanResultPolicies(
   $fullPath: ID!
@@ -13,6 +14,9 @@ query projectScanResultPolicies(
         editPath
         enabled
         updatedAt
+        policyScope {
+          ...PolicyScope
+        }
         userApprovers {
           id
           name

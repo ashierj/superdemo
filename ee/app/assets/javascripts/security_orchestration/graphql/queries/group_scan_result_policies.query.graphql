@@ -1,4 +1,5 @@
 #import "../fragments/scan_policy_source.fragment.graphql"
+#import "../fragments/policy_scope.fragment.graphql"
 
 query groupScanResultPolicies(
   $fullPath: ID!
@@ -24,6 +25,9 @@ query groupScanResultPolicies(
           webUrl
         }
         roleApprovers
+        policyScope {
+          ...PolicyScope
+        }
         source {
           ...SecurityPolicySource
         }

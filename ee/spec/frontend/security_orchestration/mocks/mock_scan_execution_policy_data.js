@@ -1,3 +1,4 @@
+import { POLICY_SCOPE_MOCK } from 'ee_jest/security_orchestration/mocks/mock_apollo';
 import { actionId, ruleId, unsupportedManifest, unsupportedManifestObject } from './mock_data';
 
 export const customYaml = `variable: true
@@ -88,6 +89,7 @@ export const mockProjectScanExecutionPolicy = {
   yaml: mockDastScanExecutionManifest,
   editPath: '/policies/policy-name/edit?type="scan_execution_policy"',
   enabled: true,
+  ...POLICY_SCOPE_MOCK,
   source: {
     __typename: 'ProjectSecurityPolicySource',
     project: {
@@ -103,6 +105,7 @@ export const mockGroupScanExecutionPolicy = {
   yaml: mockDastScanExecutionManifest,
   editPath: '/policies/policy-name/edit?type="scan_execution_policy"',
   enabled: false,
+  ...POLICY_SCOPE_MOCK,
   source: {
     __typename: 'GroupSecurityPolicySource',
     inherited: true,
