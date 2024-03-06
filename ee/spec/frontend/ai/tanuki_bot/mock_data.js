@@ -30,6 +30,7 @@ export const MOCK_TANUKI_MESSAGE = {
   role: MESSAGE_TYPES.TANUKI,
   extras: {
     sources: MOCK_SOURCES,
+    hasFeedback: false,
   },
   requestId: '987',
   errors: [],
