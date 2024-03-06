@@ -5,8 +5,11 @@ import { createAlert } from '~/alert';
 import { contentTop } from '~/lib/utils/common_utils';
 import LogsTable from './logs_table.vue';
 import LogsDrawer from './logs_drawer.vue';
+import LogsFilteredSearch from './filter_bar/logs_filtered_search.vue';
 
-const LIST_V_PADDING = 30;
+const DEFAULT_TIME_RANGE = '1h';
+
+const LIST_V_PADDING = 100;
 const PAGE_SIZE = 100;
 
 export default {
@@ -16,6 +19,7 @@ export default {
     LogsDrawer,
     GlInfiniteScroll,
     GlSprintf,
+    LogsFilteredSearch,
   },
   i18n: {
     infiniteScrollLegend: s__(`ObservabilityLogs|Showing %{count} logs`),
@@ -30,6 +34,11 @@ export default {
     return {
       loading: false,
       logs: [],
+      filters: {
+        dateRange: {
+          value: DEFAULT_TIME_RANGE,
+        },
+      },
       isDrawerOpen: false,
       selectedLog: null,
       nextPageToken: null,
@@ -50,6 +59,7 @@ export default {
         const { logs, nextPageToken } = await this.observabilityClient.fetchLogs({
           pageToken: this.nextPageToken,
           pageSize: PAGE_SIZE,
+          filters: this.filters,
         });
         this.logs = [...this.logs, ...logs];
         if (nextPageToken) {
@@ -77,6 +87,14 @@ export default {
     bottomReached() {
       this.fetchLogs();
     },
+    onFilter({ dateRange }) {
+      this.nextPageToken = null;
+      this.logs = [];
+      this.filters = {
+        dateRange,
+      };
+      this.fetchLogs();
+    },
   },
 };
 </script>
@@ -87,9 +105,10 @@ export default {
       <gl-loading-icon size="lg" />
     </div>
 
-    <template v-else>
+    <div v-else class="gl-px-4">
+      <logs-filtered-search :date-range-filter="filters.dateRange" @filter="onFilter" />
+
       <gl-infinite-scroll
-        class="gl-mx-4"
         :max-list-height="listHeight"
         :fetched-items="logs.length"
         @bottomReached="bottomReached"
@@ -109,6 +128,6 @@ export default {
       </gl-infinite-scroll>
 
       <logs-drawer :log="selectedLog" :open="Boolean(selectedLog)" @close="closeDrawer" />
-    </template>
+    </div>
   </div>
 </template>

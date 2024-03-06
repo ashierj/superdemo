@@ -2,6 +2,7 @@ import { GlLoadingIcon, GlInfiniteScroll, GlSprintf } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import LogsTable from 'ee/logs/list/logs_table.vue';
 import LogsDrawer from 'ee/logs/list/logs_drawer.vue';
+import LogsFilteredSearch from 'ee/logs/list/filter_bar/logs_filtered_search.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import LogsList from 'ee/logs/list/logs_list.vue';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -166,6 +167,7 @@ describe('LogsList', () => {
         expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
           pageSize: 100,
           pageToken: 'page-2',
+          filters: { dateRange: { value: '1h' } },
         });
 
         expect(findInfiniteScrolling().props('fetchedItems')).toBe(
@@ -180,6 +182,7 @@ describe('LogsList', () => {
         expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
           pageSize: 100,
           pageToken: null,
+          filters: { dateRange: { value: '1h' } },
         });
 
         // hit last page (no logs, no page token)
@@ -192,6 +195,7 @@ describe('LogsList', () => {
         expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
           pageSize: 100,
           pageToken: 'page-2',
+          filters: { dateRange: { value: '1h' } },
         });
 
         await bottomReached();
@@ -200,6 +204,7 @@ describe('LogsList', () => {
         expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
           pageSize: 100,
           pageToken: 'page-2',
+          filters: { dateRange: { value: '1h' } },
         });
       });
 
@@ -227,6 +232,60 @@ describe('LogsList', () => {
       // an empty legend is needed to override the default legend
       it('shows an empty legend when there are 0 items', () => {
         expect(findInfiniteScrollingLegend().text()).toBe('');
+      });
+    });
+  });
+
+  describe('filtered search', () => {
+    beforeEach(async () => {
+      await mountComponent();
+    });
+
+    const findFilteredSearch = () => wrapper.findComponent(LogsFilteredSearch);
+
+    it('renders the FilteredSearch component', () => {
+      expect(findFilteredSearch().exists()).toBe(true);
+    });
+
+    it('sets data-range-filter prop to the default date range', () => {
+      expect(findFilteredSearch().props('dateRangeFilter')).toEqual({ value: '1h' });
+    });
+
+    it('fetches logs with default time range filter', () => {
+      expect(observabilityClientMock.fetchLogs).toHaveBeenCalledWith({
+        filters: {
+          dateRange: {
+            value: '1h',
+          },
+        },
+        pageSize: 100,
+        pageToken: null,
+      });
+    });
+
+    describe('when filter changes', () => {
+      beforeEach(async () => {
+        observabilityClientMock.fetchLogs.mockReset();
+
+        await findFilteredSearch().vm.$emit('filter', { dateRange: { value: '7d' } });
+        await waitForPromises();
+      });
+
+      it('fetches logs with the updated filters', () => {
+        expect(observabilityClientMock.fetchLogs).toHaveBeenCalledTimes(1);
+        expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
+          filters: {
+            dateRange: {
+              value: '7d',
+            },
+          },
+          pageSize: 100,
+          pageToken: null,
+        });
+      });
+
+      it('updates the filtered searc props', () => {
+        expect(findFilteredSearch().props('dateRangeFilter')).toEqual({ value: '7d' });
       });
     });
   });

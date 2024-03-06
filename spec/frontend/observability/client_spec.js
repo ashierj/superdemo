@@ -1058,7 +1058,7 @@ describe('buildClient', () => {
       axiosMock.onGet(logsSearchUrl).reply(200, mockResponse);
     });
 
-    it('fetches logs from the tracing URL', async () => {
+    it('fetches logs from the logs URL', async () => {
       const result = await client.fetchLogs();
 
       expect(axios.get).toHaveBeenCalledTimes(1);
@@ -1096,6 +1096,46 @@ describe('buildClient', () => {
 
       await expect(client.fetchLogs()).rejects.toThrow(FETCHING_LOGS_ERROR);
       expectErrorToBeReported(new Error(FETCHING_LOGS_ERROR));
+    });
+
+    describe('filters', () => {
+      describe('date range filter', () => {
+        it('handle predefined date range value', async () => {
+          await client.fetchLogs({
+            filters: { dateRange: { value: '5m' } },
+          });
+          expect(getQueryParam()).toContain(`period=5m`);
+        });
+
+        it('handle custom date range value', async () => {
+          await client.fetchLogs({
+            filters: {
+              dateRange: {
+                endDate: new Date('2020-07-06'),
+                startDate: new Date('2020-07-05'),
+                value: 'custom',
+              },
+            },
+          });
+          expect(getQueryParam()).toContain(
+            'start_time=2020-07-05T00:00:00.000Z&end_time=2020-07-06T00:00:00.000Z',
+          );
+        });
+      });
+
+      it('ignores empty filter', async () => {
+        await client.fetchLogs({
+          filters: { dateRange: {} },
+        });
+        expect(getQueryParam()).toBe('');
+      });
+
+      it('ignores undefined filter', async () => {
+        await client.fetchLogs({
+          filters: { dateRange: undefined },
+        });
+        expect(getQueryParam()).toBe('');
+      });
     });
   });
 });
