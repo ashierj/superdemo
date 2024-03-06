@@ -20,6 +20,7 @@ import {
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { ADD_ON_ERROR_DICTIONARY } from 'ee/usage_quotas/error_constants';
 import { scrollToElement } from '~/lib/utils/common_utils';
+import AddOnBulkActionConfirmationModal from 'ee/usage_quotas/code_suggestions/components/add_on_bulk_action_confirmation_modal.vue';
 
 jest.mock('~/lib/utils/common_utils');
 
@@ -105,6 +106,9 @@ describe('Add On Eligible User List', () => {
   const findSelectedUsersSummary = () => wrapper.findByTestId('selected-users-summary');
   const findSelectUserCheckboxAt = (index) =>
     wrapper.find('tbody').findAllComponents(GlFormCheckbox).at(index);
+  const findAssignSeatsButton = () => wrapper.findByTestId('assign-seats-button');
+  const findUnassignSeatsButton = () => wrapper.findByTestId('unassign-seats-button');
+  const findConfirmationModal = () => wrapper.findComponent(AddOnBulkActionConfirmationModal);
 
   describe('renders table', () => {
     beforeEach(() => {
@@ -535,16 +539,38 @@ describe('Add On Eligible User List', () => {
 
         expect(findSelectedUsersSummary().exists()).toBe(false);
       });
+
+      it('shows confirmation modal when assign seats CTA is clicked', async () => {
+        findAssignSeatsButton().vm.$emit('click');
+        await nextTick();
+
+        expect(findConfirmationModal().props()).toEqual({
+          bulkAction: 'ASSIGN_BULK_ACTION',
+          userCount: eligibleUsers.length,
+        });
+      });
+
+      it('shows confirmation modal when unassign seats CTA is clicked', async () => {
+        findUnassignSeatsButton().vm.$emit('click');
+        await nextTick();
+
+        expect(findConfirmationModal().props()).toEqual({
+          bulkAction: 'UNASSIGN_BULK_ACTION',
+          userCount: eligibleUsers.length,
+        });
+      });
     });
 
     describe('when using individual checkboxes', () => {
-      it('shows a summary of only the selected users', async () => {
+      beforeEach(async () => {
         await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
 
         findSelectUserCheckboxAt(1).find('input').setChecked(true);
         findSelectUserCheckboxAt(2).find('input').setChecked(true);
         await nextTick();
+      });
 
+      it('shows a summary of only the selected users', () => {
         expect(findSelectedUsersSummary().text()).toMatchInterpolatedText('2 users selected');
       });
 
@@ -555,6 +581,49 @@ describe('Add On Eligible User List', () => {
         await nextTick();
 
         expect(findSelectedUsersSummary().text()).toMatchInterpolatedText('1 user selected');
+      });
+
+      it('shows confirmation modal when assign seats CTA is clicked', async () => {
+        findAssignSeatsButton().vm.$emit('click');
+        await nextTick();
+
+        expect(findConfirmationModal().props()).toEqual({
+          bulkAction: 'ASSIGN_BULK_ACTION',
+          userCount: 2,
+        });
+      });
+
+      it('shows confirmation modal when unassign seats CTA is clicked', async () => {
+        findUnassignSeatsButton().vm.$emit('click');
+        await nextTick();
+
+        expect(findConfirmationModal().props()).toEqual({
+          bulkAction: 'UNASSIGN_BULK_ACTION',
+          userCount: 2,
+        });
+      });
+    });
+
+    describe('confirmation modal', () => {
+      beforeEach(async () => {
+        await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
+      });
+
+      it('does not show confirmation modal when no users are selected', () => {
+        expect(findConfirmationModal().exists()).toBe(false);
+      });
+
+      it('hides the confirmation modal when cancelled', async () => {
+        findSelectAllUsersCheckbox().find('input').setChecked(true);
+        await nextTick();
+
+        findAssignSeatsButton().vm.$emit('click');
+        await nextTick();
+
+        findConfirmationModal().vm.$emit('cancel');
+        await nextTick();
+
+        expect(findConfirmationModal().exists()).toBe(false);
       });
     });
 
