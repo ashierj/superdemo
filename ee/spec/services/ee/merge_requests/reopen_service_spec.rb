@@ -41,5 +41,20 @@ RSpec.describe MergeRequests::ReopenService, feature_category: :code_review_work
         end
       end
     end
+
+    context 'when the MR contains approvals' do
+      let(:user) { create(:user) }
+      let(:user2) { create(:user) }
+
+      before do
+        create(:approval, merge_request: merge_request, user: user)
+        create(:approval, merge_request: merge_request, user: user2)
+      end
+
+      it 'deletes all the approvals' do
+        expect { merge_request_reopen_service }.to change { merge_request.reload.approvals.size }
+          .from(2).to(0)
+      end
+    end
   end
 end
