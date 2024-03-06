@@ -771,6 +771,19 @@ entry.
 
 - [Add remediation badge to vulnerability report](gitlab-org/gitlab@e6236197509eae1bb27edf8fb2c63ccf769c2642) ([merge request](gitlab-org/gitlab!142455))
 
+## 16.8.4 (2024-03-06)
+
+### Fixed (3 changes)
+
+- [Backport 145801 (Fix CI linter error when repository is empty) to 16.8](gitlab-org/security/gitlab@0cf6a481f8555cf6c94d1b8b6bbc74af5a29c99f)
+- [Fix container repositories checksum mismatch errors](gitlab-org/security/gitlab@3ac997e5fe461b828dcc5ef3990ec88e24d1ffb2) **GitLab Enterprise Edition**
+- [Use the backup database connection while restoring timeouts](gitlab-org/security/gitlab@d5376ee9362c5a14e921f4f5fd54a1214480551f)
+
+### Security (2 changes)
+
+- [Restrict group token rotation for custom roles](gitlab-org/security/gitlab@fb35694c0a16a12cd62b2737937e4d20e04e155f) ([merge request](gitlab-org/security/gitlab!3904))
+- [Reset approvals when reopening a MR](gitlab-org/security/gitlab@717aa058de09f0357914f0f8dce84340f10bfb45) ([merge request](gitlab-org/security/gitlab!3828))
+
 ## 16.8.3 (2024-02-20)
 
 ### Added (1 change)
