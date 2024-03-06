@@ -5,6 +5,8 @@ import {
   processFilters,
 } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 import { FILTERED_SEARCH_TERM } from '~/vue_shared/components/filtered_search_bar/constants';
+import { TIME_RANGE_OPTIONS_VALUES, TIME_RANGE_OPTIONS } from '~/observability/constants';
+import { isValidDate, getDayDifference } from '~/lib/utils/datetime_utility';
 
 export const PERIOD_FILTER_TOKEN_TYPE = 'period';
 export const SERVICE_NAME_FILTER_TOKEN_TYPE = 'service-name';
@@ -15,6 +17,51 @@ export const ATTRIBUTE_FILTER_TOKEN_TYPE = 'attribute';
 export const STATUS_FILTER_TOKEN_TYPE = 'status';
 
 const DEFAULT_PERIOD_FILTER = [{ operator: '=', value: '1h' }];
+
+const TIME_OPTIONS = [
+  TIME_RANGE_OPTIONS_VALUES.FIVE_MIN,
+  TIME_RANGE_OPTIONS_VALUES.FIFTEEN_MIN,
+  TIME_RANGE_OPTIONS_VALUES.THIRTY_MIN,
+  TIME_RANGE_OPTIONS_VALUES.ONE_HOUR,
+  TIME_RANGE_OPTIONS_VALUES.FOUR_HOURS,
+  TIME_RANGE_OPTIONS_VALUES.TWELVE_HOURS,
+  TIME_RANGE_OPTIONS_VALUES.ONE_DAY,
+  TIME_RANGE_OPTIONS_VALUES.ONE_WEEK,
+];
+
+const isValidPeriodValue = (value) => TIME_OPTIONS.includes(value);
+
+export const PERIOD_FILTER_OPTIONS = TIME_RANGE_OPTIONS.filter(({ value }) =>
+  isValidPeriodValue(value),
+);
+
+export const MAX_PERIOD_DAYS = 7;
+
+/**
+ * Returns true if the filter is a valid period filter. It can either be a string from a list of allowed values e.g. 5m, 1h
+ * or a custom date range such as '2024-01-01 - 2024-01-02' ( note the date range must be less than 7 days)
+ * */
+
+function isValidPeriodFilter(filter = []) {
+  if (filter.length !== 1 || !filter[0].value) return false;
+
+  const { value } = filter[0];
+  if (value.trim().indexOf(' ') < 0) {
+    return isValidPeriodValue(value);
+  }
+  const dateParts = value.split(' - ');
+  if (dateParts.length === 2) {
+    const [start, end] = dateParts;
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    return (
+      isValidDate(startDate) &&
+      isValidDate(endDate) &&
+      getDayDifference(startDate, endDate) <= MAX_PERIOD_DAYS
+    );
+  }
+  return false;
+}
 
 export function queryToFilterObj(query) {
   const filter = urlQueryToFilter(query, {
@@ -31,7 +78,7 @@ export function queryToFilterObj(query) {
     ],
   });
   const {
-    period = DEFAULT_PERIOD_FILTER,
+    period = undefined,
     service = undefined,
     operation = undefined,
     trace_id: traceId = undefined,
@@ -41,7 +88,7 @@ export function queryToFilterObj(query) {
   } = filter;
   const search = filter[FILTERED_SEARCH_TERM];
   return {
-    period,
+    period: isValidPeriodFilter(period) ? period : DEFAULT_PERIOD_FILTER,
     service,
     operation,
     traceId,

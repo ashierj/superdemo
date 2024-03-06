@@ -101,6 +101,24 @@ describe('utils', () => {
         service: [{ operator: '=', value: 'accountingservice' }],
       });
     });
+
+    it.each(['5m', '15m', '30m', '1h', '4h', '12h', '24h', '7d', '2024-02-15 - 2024-02-22'])(
+      'handles valid periods',
+      (value) => {
+        expect(queryToFilterObj(`period[]=${value}`)).toEqual({
+          period: [{ operator: '=', value }],
+        });
+      },
+    );
+
+    it.each(['30d', 'foo', 'foo - bar', '123-456', '2024-02-01 - 2024-02-20'])(
+      'ignores invalid period',
+      (val) => {
+        expect(queryToFilterObj(`period[]=${val}`)).toEqual({
+          period: [{ operator: '=', value: '1h' }],
+        });
+      },
+    );
   });
 
   describe('filterObjToQuery', () => {

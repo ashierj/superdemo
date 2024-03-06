@@ -3,7 +3,7 @@ import { s__ } from '~/locale';
 import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import DateRangeToken from '~/vue_shared/components/filtered_search_bar/tokens/daterange_token.vue';
-import { SORTING_OPTIONS, TIME_RANGE_OPTIONS } from '~/observability/constants';
+import { SORTING_OPTIONS } from '~/observability/constants';
 import {
   PERIOD_FILTER_TOKEN_TYPE,
   SERVICE_NAME_FILTER_TOKEN_TYPE,
@@ -12,6 +12,8 @@ import {
   DURATION_MS_FILTER_TOKEN_TYPE,
   ATTRIBUTE_FILTER_TOKEN_TYPE,
   STATUS_FILTER_TOKEN_TYPE,
+  PERIOD_FILTER_OPTIONS,
+  MAX_PERIOD_DAYS,
 } from './filters';
 import ServiceToken from './service_search_token.vue';
 import OperationToken from './operation_search_token.vue';
@@ -70,7 +72,8 @@ export default {
           token: DateRangeToken,
           operators: OPERATORS_IS,
           unique: true,
-          options: TIME_RANGE_OPTIONS,
+          options: PERIOD_FILTER_OPTIONS,
+          maxDateRange: MAX_PERIOD_DAYS,
         },
         {
           title: s__('Tracing|Service'),
