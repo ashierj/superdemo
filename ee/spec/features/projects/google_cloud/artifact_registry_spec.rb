@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_registry do
   include GoogleApi::CloudPlatformHelpers
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project) }
+  let_it_be_with_reload(:project) { create(:project) }
   let_it_be_with_refind(:artifact_registry_integration) do
     create(:google_cloud_platform_artifact_registry_integration, project: project)
   end
@@ -116,7 +116,7 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
     end
 
     it 'has a page title set' do
-      visit project_google_cloud_platform_artifact_registry_image_path(project, {
+      visit project_google_cloud_artifact_registry_image_path(project, {
         image: "#{image}@#{digest}",
         project: artifact_registry_integration.artifact_registry_project_id,
         repository: artifact_registry_integration.artifact_registry_repository,
@@ -133,7 +133,7 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
   private
 
   def visit_page
-    visit project_google_cloud_platform_artifact_registry_index_path(project)
+    visit project_google_cloud_artifact_registry_index_path(project)
   end
 
   def dummy_list_docker_images_response

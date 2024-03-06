@@ -26,7 +26,7 @@ module EE
 
       if integration.is_a?(::Integrations::GoogleCloudPlatform::ArtifactRegistry)
         form_data.merge!(
-          artifact_registry_path: project_google_cloud_platform_artifact_registry_index_path(project),
+          artifact_registry_path: project_google_cloud_artifact_registry_index_path(project),
           personal_access_tokens_path: user_settings_personal_access_tokens_path,
           operating: integration.operating?.to_s
         )

@@ -54,7 +54,7 @@ RSpec.describe EE::PackagesHelper, feature_category: :package_registry do
 
     it { is_expected.to include(full_path: project.full_path) }
 
-    it { is_expected.to include(endpoint: project_google_cloud_platform_artifact_registry_index_path(project)) }
+    it { is_expected.to include(endpoint: project_google_cloud_artifact_registry_index_path(project)) }
 
     describe 'settings_path' do
       before do
