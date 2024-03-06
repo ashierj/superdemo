@@ -37,6 +37,7 @@ The following languages are supported:
 
 | Language         | VS Code                | JetBrains IDEs         | Visual Studio          | Neovim |
 |------------------|------------------------|------------------------|------------------------|--------|
+| C                | **{check-circle}** Yes | **{dotted-circle}** No | **{check-circle}** Yes | **{check-circle}** Yes |
 | C++              | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
 | C#               | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes | **{check-circle}** Yes |
 | CSS              | **{dotted-circle}** No  | **{check-circle}** Yes | **{dotted-circle}** No  | **{dotted-circle}** No  |
