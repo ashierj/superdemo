@@ -107,6 +107,7 @@ module IntegrationsHelper
   def integration_form_data(integration, project: nil, group: nil)
     form_data = {
       id: integration.id,
+      project_id: integration.project_id,
       show_active: integration.show_active_box?.to_s,
       activated: (integration.active || (integration.new_record? && integration.activate_disabled_reason.nil?)).to_s,
       activate_disabled: integration.activate_disabled_reason.present?.to_s,

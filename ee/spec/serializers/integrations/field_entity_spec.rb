@@ -47,7 +47,7 @@ RSpec.describe Integrations::FieldEntity do
 
         it 'exposes correct attributes' do
           expected_hash = {
-            section: 'connection',
+            section: 'configuration',
             type: 'text',
             name: 'artifact_registry_project_id',
             title: 'Google Cloud project ID',
