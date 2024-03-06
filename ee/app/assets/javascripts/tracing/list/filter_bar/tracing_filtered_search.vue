@@ -134,6 +134,7 @@ export default {
       :initial-filter-value="initialFilters"
       terms-as-tokens
       :sort-options="sortOptions"
+      sync-filter-and-sort
       @onFilter="$emit('submit', $event)"
       @onSort="$emit('sort', $event)"
     />

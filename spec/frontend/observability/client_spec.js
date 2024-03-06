@@ -203,6 +203,19 @@ describe('buildClient', () => {
       expectErrorToBeReported(new Error(FETCHING_TRACES_ERROR));
     });
 
+    it('passes the abort controller to axios', async () => {
+      axiosMock.onGet(tracingUrl).reply(200, { traces: [] });
+
+      const abortController = new AbortController();
+      await client.fetchTraces({ abortController });
+
+      expect(axios.get).toHaveBeenCalledWith(tracingUrl, {
+        withCredentials: true,
+        params: expect.any(URLSearchParams),
+        signal: abortController.signal,
+      });
+    });
+
     describe('sort order', () => {
       beforeEach(() => {
         axiosMock.onGet(tracingUrl).reply(200, {
@@ -429,6 +442,19 @@ describe('buildClient', () => {
       axiosMock.onGet(tracingAnalyticsUrl).reply(200, {});
 
       expect(await client.fetchTracesAnalytics()).toEqual([]);
+    });
+
+    it('passes the abort controller to axios', async () => {
+      axiosMock.onGet(tracingAnalyticsUrl).reply(200, {});
+
+      const abortController = new AbortController();
+      await client.fetchTracesAnalytics({ abortController });
+
+      expect(axios.get).toHaveBeenCalledWith(tracingAnalyticsUrl, {
+        withCredentials: true,
+        params: expect.any(URLSearchParams),
+        signal: abortController.signal,
+      });
     });
 
     describe('query filter', () => {

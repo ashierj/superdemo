@@ -52841,6 +52841,9 @@ msgstr ""
 msgid "Tracing|Service"
 msgstr ""
 
+msgid "Tracing|Showing %{count} traces"
+msgstr ""
+
 msgid "Tracing|Status"
 msgstr ""
 
