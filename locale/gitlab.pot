@@ -12305,7 +12305,7 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
-msgid "ColorMode|Dark (alpha)"
+msgid "ColorMode|Dark (Experiment)"
 msgstr ""
 
 msgid "ColorMode|Light"
@@ -32450,9 +32450,6 @@ msgstr ""
 msgid "NavigationTheme|Blue"
 msgstr ""
 
-msgid "NavigationTheme|Dark Mode (alpha)"
-msgstr ""
-
 msgid "NavigationTheme|Gray"
 msgstr ""
 
@@ -32465,9 +32462,6 @@ msgstr ""
 msgid "NavigationTheme|Light Blue"
 msgstr ""
 
-msgid "NavigationTheme|Light Gray"
-msgstr ""
-
 msgid "NavigationTheme|Light Green"
 msgstr ""
 
@@ -32475,6 +32469,9 @@ msgid "NavigationTheme|Light Indigo"
 msgstr ""
 
 msgid "NavigationTheme|Light Red"
+msgstr ""
+
+msgid "NavigationTheme|Neutral"
 msgstr ""
 
 msgid "NavigationTheme|Red"
@@ -37508,10 +37505,19 @@ msgstr ""
 msgid "Preferences|%{link_start}List of keyboard shortcuts%{link_end}"
 msgstr ""
 
+msgid "Preferences|Appearance"
+msgstr ""
+
 msgid "Preferences|Automatically add new list items"
 msgstr ""
 
 msgid "Preferences|Behavior"
+msgstr ""
+
+msgid "Preferences|Choose the appearance of the application."
+msgstr ""
+
+msgid "Preferences|Choose the navigation theme."
 msgstr ""
 
 msgid "Preferences|Choose what content you want to see by default on your homepage."
@@ -37527,9 +37533,6 @@ msgid "Preferences|Color for added lines"
 msgstr ""
 
 msgid "Preferences|Color for removed lines"
-msgstr ""
-
-msgid "Preferences|Color theme"
 msgstr ""
 
 msgid "Preferences|Configure how dates and times display for you."
@@ -37548,9 +37551,6 @@ msgid "Preferences|Customize the appearance of the syntax."
 msgstr ""
 
 msgid "Preferences|Customize the behavior of the system layout and default views."
-msgstr ""
-
-msgid "Preferences|Customize the color of GitLab."
 msgstr ""
 
 msgid "Preferences|Customize the colors of removed and added lines in diffs."
@@ -37605,6 +37605,9 @@ msgid "Preferences|Layout width"
 msgstr ""
 
 msgid "Preferences|Must be a number between %{min} and %{max}"
+msgstr ""
+
+msgid "Preferences|Navigation theme"
 msgstr ""
 
 msgid "Preferences|Preview"

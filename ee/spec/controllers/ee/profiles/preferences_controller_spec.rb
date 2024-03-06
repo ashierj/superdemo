@@ -13,6 +13,7 @@ RSpec.describe Profiles::PreferencesController, feature_category: :user_profile 
     def go(params: {}, format: :json)
       params.reverse_merge!(
         color_scheme_id: '1',
+        color_mode_id: '1',
         dashboard: 'stars',
         theme_id: '1'
       )
