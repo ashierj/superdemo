@@ -59,7 +59,7 @@ module EE
     end
 
     override :check_access
-    def check_access(current_user)
+    def check_access(current_user, current_project = project)
       super do
         break current_user.id == user_id if user?
         break group_access_allowed?(current_user) if group?

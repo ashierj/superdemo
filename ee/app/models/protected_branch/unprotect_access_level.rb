@@ -36,4 +36,11 @@ class ProtectedBranch::UnprotectAccessLevel < ApplicationRecord
   def self.declarative_policy_class
     'ProtectedBranchPolicy'
   end
+
+  # We cannot delegate to :protected_branch here (even with allow_nil: true)
+  # like above because it results in
+  # 'undefined method `project_group_links' for nil:NilClass' errors.
+  def protected_branch_group
+    protected_branch.group
+  end
 end
