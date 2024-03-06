@@ -5,16 +5,17 @@ require 'spec_helper'
 RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
   include FilteredSearchHelpers
 
-  let(:group) { create(:group, :public, name: 'group') }
-  let(:user) { create(:user) }
-  let(:user_dev) { create(:user) }
-  let!(:bug_label) { create(:group_label, group: group, title: 'Bug') }
-  let!(:docs_label) { create(:group_label, group: group, title: 'Documentation') }
-  let!(:enhancement_label) { create(:group_label, group: group, title: 'Enhancement') }
-  let!(:critical_label) { create(:group_label, group: group, title: 'Critical') }
+  let_it_be(:group) { create(:group, :public, name: 'group') }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:user_dev) { create(:user) }
+  let_it_be(:bug_label) { create(:group_label, group: group, title: 'Bug') }
+  let_it_be(:docs_label) { create(:group_label, group: group, title: 'Documentation') }
+  let_it_be(:enhancement_label) { create(:group_label, group: group, title: 'Enhancement') }
+  let_it_be(:critical_label) { create(:group_label, group: group, title: 'Critical') }
 
   before do
     stub_licensed_features(epics: true)
+    stub_feature_flags(namespace_level_work_items: false)
 
     sign_in(user)
   end
@@ -25,14 +26,14 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
     available_sort_options = ['Created date', 'Updated date', default_sort_option, 'Due date', 'Title']
 
     describe 'within a group' do
-      let!(:epic1) { create(:epic, group: group, start_date: '2020-12-15', end_date: '2021-1-15', labels: [docs_label]) }
-      let!(:epic2) { create(:epic, group: group, start_date: '2020-12-15', labels: [docs_label, enhancement_label]) }
-      let!(:epic3) { create(:epic, group: group, end_date: '2021-1-15', labels: [enhancement_label]) }
-      let!(:blocked_epic) { create(:epic, group: group, end_date: '2022-1-15') }
-      let!(:epic_link) { create(:related_epic_link, source: epic2, target: blocked_epic, link_type: IssuableLink::TYPE_BLOCKS) }
-      let!(:award_emoji_star) { create(:award_emoji, name: 'star', user: user, awardable: epic1) }
-      let!(:award_emoji_upvote) { create(:award_emoji, :upvote, user: user, awardable: epic1) }
-      let!(:award_emoji_downvote) { create(:award_emoji, :downvote, user: user, awardable: epic2) }
+      let_it_be(:epic1) { create(:epic, group: group, start_date: '2020-12-15', end_date: '2021-1-15', labels: [docs_label]) }
+      let_it_be(:epic2) { create(:epic, group: group, start_date: '2020-12-15', labels: [docs_label, enhancement_label]) }
+      let_it_be(:epic3) { create(:epic, group: group, end_date: '2021-1-15', labels: [enhancement_label]) }
+      let_it_be(:blocked_epic) { create(:epic, group: group, end_date: '2022-1-15') }
+      let_it_be(:epic_link) { create(:related_epic_link, source: epic2, target: blocked_epic, link_type: IssuableLink::TYPE_BLOCKS) }
+      let_it_be(:award_emoji_star) { create(:award_emoji, name: 'star', user: user, awardable: epic1) }
+      let_it_be(:award_emoji_upvote) { create(:award_emoji, :upvote, user: user, awardable: epic1) }
+      let_it_be(:award_emoji_downvote) { create(:award_emoji, :downvote, user: user, awardable: epic2) }
 
       shared_examples 'epic list' do
         it 'renders epics list', :aggregate_failures do
@@ -49,7 +50,7 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
             expect(page).to have_text("&#{epic2.iid}")
             expect(page).to have_selector('.issuable-meta [data-testid="issuable-downvotes"]')
             expect(page.find('.issuable-meta [data-testid="issuable-blocking-count"]')).to have_content('1')
-            expect(page).to have_text("created just now by #{epic2.author.name}")
+            expect(page).to have_text(%r{created .* by #{epic2.author.name}})
           end
 
           page.within(".issuable-list #issuable_#{epic1.id}.issue") do
@@ -58,26 +59,26 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
         end
 
         it 'renders epic item timeframe', :aggregate_failures do
-          issues = page.all('.issue')
-
-          expect(issues[0]).to have_text('Dec 15, 2020 – No due date')
-          expect(issues[1]).to have_text('Dec 15, 2020 – Jan 15, 2021')
-          expect(issues[3]).to have_text('No start date – Jan 15, 2021')
+          expect(page.find('.issue:nth-of-type(1)')).to have_text('Dec 15, 2020 – No due date')
+          expect(page.find('.issue:nth-of-type(2)')).to have_text('Dec 15, 2020 – Jan 15, 2021')
+          expect(page.find('.issue:nth-of-type(4)')).to have_text('No start date – Jan 15, 2021')
         end
       end
 
       context 'when signed in' do
-        before do
+        before_all do
           group.add_developer(user)
           group.add_developer(user_dev)
+        end
+
+        before do
           visit group_epics_path(group)
-          wait_for_requests
         end
 
         it 'renders epics list header actions', :aggregate_failures do
           page.within('.issuable-list-container .nav-controls') do
             expect(page).to have_button('Bulk edit')
-            expect(page).to have_button('New epic')
+            expect(page).to have_link('New epic')
           end
         end
 
@@ -88,8 +89,6 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
         it 'filters epics list based on labels with "=" operator' do
           select_tokens 'Label', '=', docs_label.title, submit: true
 
-          wait_for_requests
-
           page.within('.issuable-list-container') do
             expect(page.find('.issuable-list')).to have_selector('li.issue', count: 2)
           end
@@ -98,8 +97,6 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
         it 'filters epics list based on labels with "!=" operator', :aggregate_failures do
           select_tokens 'Label', '=', docs_label.title
           select_tokens 'Label', '!=', enhancement_label.title, submit: true
-
-          wait_for_requests
 
           page.within('.issuable-list-container .issuable-list') do
             expect(page).to have_selector('li.issue', count: 1)
@@ -110,8 +107,6 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
         it 'filters epics list based on labels with "||" operator', :aggregate_failures do
           select_tokens 'Label', '||', docs_label.title
           select_tokens 'Label', '||', enhancement_label.title, submit: true
-
-          wait_for_requests
 
           page.within('.issuable-list-container .issuable-list') do
             expect(page).to have_selector('li.issue', count: 3)
@@ -125,7 +120,6 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
 
           before do
             visit group_epics_path(group)
-            wait_for_requests
           end
 
           it 'filters by group', :aggregate_failures do
@@ -179,12 +173,8 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
             page.within('aside.right-sidebar') do
               find('button.js-dropdown-button').click
 
-              wait_for_requests
-
               click_link bug_label.title
               click_button 'Update selected'
-
-              wait_for_requests
             end
           end
 
@@ -197,24 +187,46 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
         before do
           sign_out user
           visit group_epics_path(group)
-          wait_for_requests
         end
 
         it_behaves_like 'epic list'
       end
+
+      context 'when namespace_level_work_items is enabled' do
+        let_it_be(:epic_work_item_1) { create(:work_item, :epic, namespace: group) }
+        let_it_be(:epic_work_item_2) { create(:work_item, :epic, namespace: group) }
+
+        before do
+          stub_feature_flags(namespace_level_work_items: true)
+        end
+
+        it 'renders work item epics' do
+          visit group_epics_path(group)
+
+          page.within('.issuable-list-container') do
+            expect(page).to have_selector('.gl-tabs')
+            expect(page).to have_selector('.vue-filtered-search-bar-container')
+            expect(page.find('.issuable-list')).to have_selector('li.issue', count: 2)
+            expect(page.find('.issuable-list')).to have_content(epic_work_item_1.title)
+            expect(page.find('.issuable-list')).to have_content(epic_work_item_2.title)
+          end
+        end
+      end
     end
 
     describe 'within a sub-group group' do
-      let!(:subgroup) { create(:group, parent: group, name: 'subgroup') }
-      let!(:sub_epic1) { create(:epic, group: subgroup, start_date: '2020-12-15', end_date: '2021-1-15') }
-      let!(:sub_epic2) { create(:epic, group: subgroup, start_date: '2020-12-15') }
-      let!(:award_emoji_star) { create(:award_emoji, name: 'star', user: user, awardable: sub_epic1) }
+      let_it_be(:subgroup) { create(:group, parent: group, name: 'subgroup') }
+      let_it_be(:sub_epic1) { create(:epic, group: subgroup, start_date: '2020-12-15', end_date: '2021-1-15') }
+      let_it_be(:sub_epic2) { create(:epic, group: subgroup, start_date: '2020-12-15') }
+      let_it_be(:award_emoji_star) { create(:award_emoji, name: 'star', user: user, awardable: sub_epic1) }
 
-      before do
+      before_all do
         subgroup.add_developer(user)
         subgroup.add_developer(user_dev)
+      end
+
+      before do
         visit group_epics_path(subgroup)
-        wait_for_requests
       end
 
       it_behaves_like 'filtered search bar', available_tokens, available_sort_options, default_sort_option
