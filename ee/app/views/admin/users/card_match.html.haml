@@ -15,7 +15,7 @@
 .row
   - if @similar_credit_card_validations.present?
     .col-md-12
-      %table.table
+      %table.gl-table
         %thead
           %th= _('ID')
           %th= _('User')
@@ -44,7 +44,7 @@
               - if user.current_sign_in_ip
                 = user.current_sign_in_ip
                 = link_to sprite_icon('earth'), "https://api.hostip.info/country.php?ip=#{user.current_sign_in_ip}", target: '_blank', rel: 'noreferrer'
-      = _('* All times are in UTC unless specified')
+      %p.gl-mt-5= _('* All times are in UTC unless specified')
       = paginate @similar_credit_card_validations, theme: 'gitlab'
 
 
