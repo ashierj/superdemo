@@ -52,17 +52,11 @@ module EE
           store.subscribe ::Security::RefreshComplianceFrameworkSecurityPoliciesWorker,
             to: ::Projects::ComplianceFrameworkChangedEvent
 
-          store.subscribe ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler,
-            to: ::WorkItems::WorkItemCreatedEvent
-          store.subscribe ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler,
-            to: ::WorkItems::WorkItemUpdatedEvent, if: ->(event) {
-              ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler.can_handle_update?(event)
-            }
-
           register_threat_insights_subscribers(store)
 
           subscribe_to_epic_events(store)
           subscribe_to_external_issue_links_events(store)
+          subscribe_to_work_item_events(store)
         end
 
         def register_threat_insights_subscribers(store)
@@ -102,6 +96,17 @@ module EE
             if: ->(event) {
                   ::Feature.enabled?(:handle_vulnerability_external_issue_link_via_events, event.project)
                 }
+        end
+
+        def subscribe_to_work_item_events(store)
+          store.subscribe ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler,
+            to: ::WorkItems::WorkItemCreatedEvent
+          store.subscribe ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler,
+            to: ::WorkItems::WorkItemDeletedEvent
+          store.subscribe ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler,
+            to: ::WorkItems::WorkItemUpdatedEvent, if: ->(event) {
+              ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler.can_handle_update?(event)
+            }
         end
       end
     end
