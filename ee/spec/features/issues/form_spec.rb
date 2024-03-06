@@ -51,7 +51,6 @@ RSpec.describe 'New/edit issue', :js, feature_category: :team_planning do
       it 'displays selected users even if they are not part of the original API call' do
         fill_in 'Search users', with: user2.name
         click_link user2.name
-        find('.js-dropdown-input-clear').click
 
         page.within '.dropdown-menu-user' do
           expect(page).to have_content user.name
