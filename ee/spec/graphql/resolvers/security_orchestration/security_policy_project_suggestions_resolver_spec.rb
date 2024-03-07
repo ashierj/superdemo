@@ -43,6 +43,12 @@ RSpec.describe Resolvers::SecurityOrchestration::SecurityPolicyProjectSuggestion
     )
   end
 
+  describe 'max_page_size' do
+    subject(:size) { described_class.max_page_size }
+
+    it { is_expected.to be(::Security::SecurityPolicyProjectsFinder::SUGGESTION_LIMIT) }
+  end
+
   shared_examples 'suggests security policy projects' do
     context 'when SaaS' do
       let(:args) { { search: "project" } }
