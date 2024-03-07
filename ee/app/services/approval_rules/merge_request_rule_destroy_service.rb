@@ -9,20 +9,13 @@ module ApprovalRules
     end
 
     def action
-      return error("Merge request already merged") if @rule.merge_request.merged?
+      return ServiceResponse.error(message: "Merge request already merged") if rule.merge_request.merged?
 
-      @rule.destroy
-
-      if @rule.destroyed?
-        success
-      else
-        error(rule.errors.messages)
-      end
+      rule.destroy ? success : error
     end
 
     def success
-      merge_request_activity_counter
-        .track_approval_rule_deleted_action(user: current_user)
+      merge_request_activity_counter.track_approval_rule_deleted_action(user: current_user)
 
       super
     end

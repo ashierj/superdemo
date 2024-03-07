@@ -302,6 +302,8 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
 end
 
 RSpec.shared_examples 'an API endpoint for updating project approval rule' do
+  include AfterNextHelpers
+
   let(:params) { {} }
 
   shared_examples 'a user with access' do
@@ -515,6 +517,17 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
         let_it_be(:scan_result_policy_rule) { create(:approval_project_rule, :license_scanning, project: project) }
 
         it_behaves_like 'cannot update rule'
+      end
+    end
+
+    context 'when user is authorized but cannot edit the approval rule' do
+      it 'returns forbidden' do
+        expect_next(::ApprovalRules::UpdateService).to receive(:can_edit?).and_return(false)
+
+        put api(url, current_user, admin_mode: current_user.admin?), params: params
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(json_response['message']).to match_array(['Prohibited'])
       end
     end
   end

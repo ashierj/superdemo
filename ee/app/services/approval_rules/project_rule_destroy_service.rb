@@ -6,6 +6,7 @@ module ApprovalRules
 
     def initialize(approval_rule, current_user)
       @rule = approval_rule
+
       super(approval_rule.project, current_user)
     end
 
@@ -17,15 +18,16 @@ module ApprovalRules
         rule.destroy
       end
 
-      if rule.destroyed?
-        audit_deletion
-        success
-      else
-        error(rule.errors.messages)
-      end
+      rule.destroyed? ? success : error
     end
 
     private
+
+    def success
+      audit_deletion
+
+      super
+    end
 
     def remove_associated_approval_rules_from_unmerged_merge_requests
       ApprovalMergeRequestRule

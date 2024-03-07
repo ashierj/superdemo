@@ -54,7 +54,7 @@ RSpec.describe ApprovalRules::MergeRequestRuleDestroyService do
 
     context 'when rule not successfully deleted' do
       before do
-        allow(rule).to receive(:destroyed?).and_return(false)
+        allow(rule).to receive(:destroy).and_return(false)
       end
 
       it 'returns error status' do

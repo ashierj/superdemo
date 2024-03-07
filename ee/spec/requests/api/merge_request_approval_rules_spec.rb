@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_management do
+  include AfterNextHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:other_user) { create(:user) }
 
@@ -320,6 +322,17 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
             expect(rule['groups']).to match([hash_including('id' => group.id)])
           end
         end
+      end
+    end
+
+    context 'when service prevents user from editing' do
+      it 'returns forbidden' do
+        expect_next(::ApprovalRules::CreateService).to receive(:can_edit?)
+
+        action
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(json_response['message']).to match_array(['Prohibited'])
       end
     end
   end

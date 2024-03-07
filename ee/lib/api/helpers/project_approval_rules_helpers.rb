@@ -79,10 +79,10 @@ module API
 
         result = ::ApprovalRules::CreateService.new(user_project, current_user, declared_params(include_missing: false)).execute
 
-        if result[:status] == :success
+        if result.success?
           present result[:rule], with: present_with, current_user: current_user
         else
-          render_api_error!(result[:message], result[:http_status] || 400)
+          render_api_error!(result.message, result.cause.access_denied? ? 403 : 400)
         end
       end
 
@@ -95,10 +95,10 @@ module API
 
         result = ::ApprovalRules::UpdateService.new(approval_rule, current_user, params).execute
 
-        if result[:status] == :success
+        if result.success?
           present result[:rule], with: present_with, current_user: current_user
         else
-          render_api_error!(result[:message], result[:http_status] || 400)
+          render_api_error!(result.message, result.cause.access_denied? ? 403 : 400)
         end
       end
 

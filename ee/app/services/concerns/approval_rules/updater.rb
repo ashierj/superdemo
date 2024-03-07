@@ -4,26 +4,10 @@ module ApprovalRules
   module Updater
     include ::Audit::Changes
 
-    def action
-      filter_eligible_users!
-      filter_eligible_groups!
-      filter_eligible_protected_branches!
-
-      return save_rule_without_audit unless current_user
-
-      if with_audit_logged { rule.update(params) }
-        log_audit_event(rule)
-        rule.reset
-
-        success
-      else
-        error(rule.errors.messages)
-      end
-    end
-
     def execute
-      return error("The feature approval_group_rules is not enabled.") if group_rule? && Feature.disabled?(
-        :approval_group_rules, rule.group)
+      if group_rule? && Feature.disabled?(:approval_group_rules, rule.group)
+        return ServiceResponse.error(message: "The feature approval_group_rules is not enabled.")
+      end
 
       super
     end
@@ -40,26 +24,12 @@ module ApprovalRules
       rule.is_a?(ApprovalGroupRule)
     end
 
-    def save_rule_without_audit
-      if rule.update(params)
-        rule.reset
+    def action
+      filter_eligible_users!
+      filter_eligible_groups!
+      filter_eligible_protected_branches!
 
-        success
-      else
-        error(rule.errors.messages)
-      end
-    end
-
-    def with_audit_logged(&block)
-      name = rule.new_record? ? 'approval_rule_created' : 'update_approval_rules'
-      audit_context = {
-        name: name,
-        author: current_user,
-        scope: container,
-        target: rule
-      }
-
-      ::Gitlab::Audit::Auditor.audit(audit_context, &block)
+      update_rule ? success : error
     end
 
     def filter_eligible_users!
@@ -95,25 +65,15 @@ module ApprovalRules
     end
 
     def filter_eligible_protected_branches!
-      return unless params.key?(:protected_branch_ids)
-
       protected_branch_ids = params.delete(:protected_branch_ids)
 
-      # Currently group approval rules support only all protected branches.
-      return if group_container?
+      return unless protected_branch_ids && can_create_rule_for_protected_branches?
 
-      return unless project.multiple_approval_rules_available? &&
-        (skip_authorization || can?(current_user, :admin_project, project))
-
-      params[:protected_branches] =
-        ProtectedBranch
-          .id_in(protected_branch_ids)
-          .for_project(project)
+      params[:protected_branches] = ProtectedBranch.id_in(protected_branch_ids).for_project(project)
 
       return unless allow_protected_branches_for_group?(project.group) && project.root_namespace.is_a?(Group)
 
-      params[:protected_branches] +=
-        ProtectedBranch.id_in(protected_branch_ids).for_group(project.root_namespace)
+      params[:protected_branches] += ProtectedBranch.id_in(protected_branch_ids).for_group(project.root_namespace)
     end
 
     def allow_protected_branches_for_group?(group)
@@ -121,7 +81,28 @@ module ApprovalRules
         ::Feature.enabled?(:allow_protected_branches_for_group, group)
     end
 
-    def log_audit_event(rule)
+    def update_rule
+      return rule.update(params) unless current_user
+
+      audit_context = {
+        name: rule.new_record? ? 'approval_rule_created' : 'update_approval_rules',
+        author: current_user,
+        scope: container,
+        target: rule
+      }
+
+      ::Gitlab::Audit::Auditor.audit(audit_context) { rule.update(params) }
+    end
+
+    def success
+      audit_changes_to_approvals_required if current_user
+
+      rule.reset
+
+      super
+    end
+
+    def audit_changes_to_approvals_required
       audit_changes(
         :approvals_required,
         as: 'number of required approvals',
@@ -129,6 +110,13 @@ module ApprovalRules
         model: rule,
         event_type: 'update_approval_rules'
       )
+    end
+
+    def can_create_rule_for_protected_branches?
+      # Currently group approval rules support only all protected branches.
+      return false if group_container? || !project.multiple_approval_rules_available?
+
+      skip_authorization || can?(current_user, :admin_project, project)
     end
   end
 end
