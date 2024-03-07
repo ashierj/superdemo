@@ -53,13 +53,19 @@ RSpec.describe 'Analytics Dashboard - Value Streams Dashboard', :js, feature_cat
 
   context 'with a valid user' do
     before_all do
+      group.add_developer(user)
       project.add_developer(user)
     end
 
     context 'with combined_project_analytics_dashboards and project_level_analytics_dashboard license' do
+      let_it_be(:environment) { create(:environment, :production, project: project) }
+
       before do
-        stub_licensed_features(combined_project_analytics_dashboards: true, project_level_analytics_dashboard: true,
-          dora4_analytics: true, security_dashboard: true, cycle_analytics_for_projects: true)
+        stub_licensed_features(
+          combined_project_analytics_dashboards: true, project_level_analytics_dashboard: true,
+          dora4_analytics: true, security_dashboard: true, cycle_analytics_for_projects: true,
+          group_level_analytics_dashboard: true, cycle_analytics_for_groups: true
+        )
 
         sign_in(user)
         visit_project_analytics_dashboards_list(project)
@@ -73,12 +79,16 @@ RSpec.describe 'Analytics Dashboard - Value Streams Dashboard', :js, feature_cat
       it_behaves_like 'has value streams dashboard link'
       context 'for Value streams dashboard' do
         before do
+          create_mock_usage_overview_metrics(project)
+          create_mock_dora_chart_metrics(environment)
+
           visit_project_value_streams_dashboard(project)
         end
 
         it_behaves_like 'VSD renders as an analytics dashboard'
         it_behaves_like 'renders link to the feedback survey'
         it_behaves_like 'renders usage overview metrics'
+
         it_behaves_like 'renders metrics comparison table' do
           let(:group_name) { group.name }
         end
