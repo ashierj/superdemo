@@ -5,13 +5,15 @@ import { GlButton } from '@gitlab/ui';
 import Configuration from '~/integrations/edit/components/sections/configuration.vue';
 import Connection from '~/integrations/edit/components/sections/connection.vue';
 import ConfigurationInstructions from 'ee/integrations/edit/components/google_cloud_artifact_registry/configuration_instructions.vue';
+import EmptyState from 'ee/integrations/edit/components/google_cloud_artifact_registry/empty_state.vue';
 
 export default {
   name: 'IntegrationSectionGoogleCloudArtifactRegistry',
   components: {
     Configuration,
-    Connection,
     ConfigurationInstructions,
+    Connection,
+    EmptyState,
     GlButton,
   },
   computed: {
@@ -25,12 +27,20 @@ export default {
     operating() {
       return this.propsSource.operating;
     },
+    editable() {
+      return this.propsSource.editable;
+    },
+    workloadIdentityFederationPath() {
+      return (
+        this.propsSource.googleCloudArtifactRegistryProps?.workloadIdentityFederationPath ?? '#'
+      );
+    },
   },
 };
 </script>
 
 <template>
-  <div>
+  <div v-if="editable">
     <template v-if="operating">
       <div class="gl-display-flex gl-gap-3">
         <gl-button
@@ -50,4 +60,5 @@ export default {
     <hr />
     <configuration-instructions />
   </div>
+  <empty-state v-else :path="workloadIdentityFederationPath" />
 </template>
