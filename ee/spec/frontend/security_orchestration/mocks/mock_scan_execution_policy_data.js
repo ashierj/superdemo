@@ -83,7 +83,7 @@ export const mockBranchExceptionsScanExecutionObject = {
 
 export const mockProjectScanExecutionPolicy = {
   __typename: 'ScanExecutionPolicy',
-  name: mockDastScanExecutionObject.name,
+  name: `${mockDastScanExecutionObject.name}-project`,
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDastScanExecutionManifest,
   editPath: '/policies/policy-name/edit?type="scan_execution_policy"',
@@ -98,7 +98,7 @@ export const mockProjectScanExecutionPolicy = {
 
 export const mockGroupScanExecutionPolicy = {
   __typename: 'ScanExecutionPolicy',
-  name: mockDastScanExecutionObject.name,
+  name: `${mockDastScanExecutionObject.name}-group`,
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDastScanExecutionManifest,
   editPath: '/policies/policy-name/edit?type="scan_execution_policy"',

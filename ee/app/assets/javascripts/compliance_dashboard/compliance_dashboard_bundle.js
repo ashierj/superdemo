@@ -22,6 +22,7 @@ export default () => {
     pipelineConfigurationFullPathEnabled,
     pipelineConfigurationEnabled,
     complianceFrameworkReportUiEnabled,
+    securityPoliciesPolicyScopeToggleEnabled,
   } = el.dataset;
 
   Vue.use(VueApollo);
@@ -49,6 +50,9 @@ export default () => {
       pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
       pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
       complianceFrameworkReportUiEnabled: parseBoolean(complianceFrameworkReportUiEnabled),
+      securityPoliciesPolicyScopeToggleEnabled: parseBoolean(
+        securityPoliciesPolicyScopeToggleEnabled,
+      ),
       mergeCommitsCsvExportPath,
       violationsCsvExportPath,
       projectFrameworksCsvExportPath,

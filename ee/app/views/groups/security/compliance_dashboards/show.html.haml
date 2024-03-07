@@ -12,4 +12,5 @@
   pipeline_configuration_full_path_enabled: can?(current_user, :admin_compliance_pipeline_configuration, @group).to_s,
   base_path: group_security_compliance_dashboard_path(@group),
   pipeline_configuration_enabled: @group.licensed_feature_available?(:compliance_pipeline_configuration).to_s,
+  security_policies_policy_scope_toggle_enabled: security_policies_policy_scope_toggle_enabled?(@group).to_s,
   compliance_framework_report_ui_enabled: Feature.enabled?(:compliance_framework_report_ui, @group).to_s } }

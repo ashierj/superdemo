@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe "groups/security/compliance_dashboards/show", type: :view, feature_category: :compliance_management do
   let_it_be(:user) { build_stubbed(:user) }
-  let_it_be(:group) { build_stubbed(:group) }
+  let_it_be(:group) { build_stubbed(:group, namespace_settings: build_stubbed(:namespace_settings)) }
   let(:project_framework_csv_export_path) do
     group_security_compliance_project_framework_reports_path(group, format: :csv)
   end

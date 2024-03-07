@@ -1,9 +1,30 @@
-import { __, s__ } from '~/locale';
+import { __, s__, n__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
 export const i18n = {
   basicInformation: s__('ComplianceFrameworks|Basic information'),
   basicInformationDetails: s__('ComplianceFrameworks|Name, description'),
+
+  policies: s__('ComplianceFrameworks|Policy'),
+  policiesLinkedCount: (count) =>
+    n__(
+      'ComplianceFrameworks|%{count} linked policy.',
+      'ComplianceFrameworks|%{count} linked policies.',
+      count,
+    ),
+  policiesTotalCount: (/* count */) =>
+    s__('ComplianceFrameworks|Total policies in the group: %{count}'),
+  policiesTableFields: {
+    linked: s__('ComplianceFrameworks|Linked'),
+    name: s__('ComplianceFrameworks|Policy name'),
+    description: s__('ComplianceFrameworks|Summary'),
+  },
+  policiesLinkedTooltip: s__(
+    `ComplianceFrameworks|To unlink this policy and framework, edit the policy's scope.`,
+  ),
+  policiesUnlinkedTooltip: s__(
+    `ComplianceFrameworks|To link this policy and framework,  edit  the policy's scope.`,
+  ),
 
   addFrameworkTitle: s__('ComplianceFrameworks|Create a compliance framework'),
   editFrameworkTitle: s__('ComplianceFrameworks|Edit a compliance framework'),

@@ -133,7 +133,7 @@ export const mockDeprecatedScanResultObject = {
 
 export const mockProjectScanResultPolicy = {
   __typename: 'ScanResultPolicy',
-  name: mockDefaultBranchesScanResultObject.name,
+  name: `${mockDefaultBranchesScanResultObject.name}-project`,
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDefaultBranchesScanResultManifest,
   editPath: '/policies/policy-name/edit?type="approval_policy"',
@@ -151,7 +151,7 @@ export const mockProjectScanResultPolicy = {
 
 export const mockGroupScanResultPolicy = {
   __typename: 'ScanResultPolicy',
-  name: mockDefaultBranchesScanResultObject.name,
+  name: `${mockDefaultBranchesScanResultObject.name}-group`,
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDefaultBranchesScanResultManifest,
   editPath: '/policies/policy-name/edit?type="approval_policy"',

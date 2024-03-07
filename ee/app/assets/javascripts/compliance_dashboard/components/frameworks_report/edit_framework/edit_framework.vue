@@ -17,12 +17,15 @@ import deleteComplianceFrameworkMutation from '../../../graphql/mutations/delete
 
 import DeleteModal from './components/delete_modal.vue';
 import BasicInformationSection from './components/basic_information_section.vue';
+import PoliciesSection from './components/policies_section.vue';
 
 import { i18n } from './constants';
 
 export default {
   components: {
     BasicInformationSection,
+    PoliciesSection,
+
     DeleteModal,
 
     GlAlert,
@@ -30,7 +33,11 @@ export default {
     GlForm,
     GlLoadingIcon,
   },
-  inject: ['pipelineConfigurationFullPathEnabled', 'groupPath'],
+  inject: [
+    'pipelineConfigurationFullPathEnabled',
+    'securityPoliciesPolicyScopeToggleEnabled',
+    'groupPath',
+  ],
   data() {
     return {
       errorMessage: '',
@@ -111,6 +118,10 @@ export default {
 
     disableSubmitBtn() {
       return !this.isBasicInformationValid;
+    },
+
+    shouldRenderPolicySection() {
+      return this.securityPoliciesPolicyScopeToggleEnabled && !this.isNewFramework;
     },
   },
 
@@ -216,6 +227,13 @@ export default {
           :expandable="!isNewFramework"
           @valid="isBasicInformationValid = $event"
         />
+
+        <policies-section
+          v-if="shouldRenderPolicySection"
+          :full-path="groupPath"
+          :graphql-id="graphqlId"
+        />
+
         <div class="gl-display-flex gl-pt-5 gl-gap-3">
           <gl-button
             type="submit"

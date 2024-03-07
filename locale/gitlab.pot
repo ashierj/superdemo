@@ -12823,6 +12823,11 @@ msgstr ""
 msgid "ComplianceFrameworks| Project frameworks export"
 msgstr ""
 
+msgid "ComplianceFrameworks|%{count} linked policy."
+msgid_plural "ComplianceFrameworks|%{count} linked policies."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "ComplianceFrameworks|Active compliance frameworks"
 msgstr ""
 
@@ -12898,6 +12903,9 @@ msgstr ""
 msgid "ComplianceFrameworks|Invalid format"
 msgstr ""
 
+msgid "ComplianceFrameworks|Linked"
+msgstr ""
+
 msgid "ComplianceFrameworks|Name"
 msgstr ""
 
@@ -12917,6 +12925,12 @@ msgid "ComplianceFrameworks|No compliance frameworks are set up yet"
 msgstr ""
 
 msgid "ComplianceFrameworks|No framework"
+msgstr ""
+
+msgid "ComplianceFrameworks|Policy"
+msgstr ""
+
+msgid "ComplianceFrameworks|Policy name"
 msgstr ""
 
 msgid "ComplianceFrameworks|Remove default"
@@ -12940,7 +12954,19 @@ msgstr ""
 msgid "ComplianceFrameworks|Set default"
 msgstr ""
 
+msgid "ComplianceFrameworks|Summary"
+msgstr ""
+
 msgid "ComplianceFrameworks|There can be only one default framework."
+msgstr ""
+
+msgid "ComplianceFrameworks|To link this policy and framework,  edit  the policy's scope."
+msgstr ""
+
+msgid "ComplianceFrameworks|To unlink this policy and framework, edit the policy's scope."
+msgstr ""
+
+msgid "ComplianceFrameworks|Total policies in the group: %{count}"
 msgstr ""
 
 msgid "ComplianceFrameworks|Unable to save this compliance framework. Please try again"
