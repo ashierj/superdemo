@@ -25,7 +25,7 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
   end
 
   shared_examples 'filter and sorting' do
-    subject(:dependencies) { described_class.new(project_or_group, params: params).execute }
+    subject(:dependencies) { described_class.new(project_or_group, current_user: nil, params: params).execute }
 
     context 'without params' do
       let_it_be(:params) { {} }
@@ -254,5 +254,19 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
     let(:project_or_group) { organization }
 
     include_examples 'filter and sorting'
+
+    context 'with current user' do
+      subject(:dependencies) { described_class.new(organization, current_user: current_user).execute }
+
+      let_it_be(:current_user) { create(:user) }
+      let_it_be(:other_project) { create(:project, organization: organization, group: group) }
+      let_it_be(:visible_occurrence) { create(:sbom_occurrence, project: other_project) }
+
+      before_all do
+        other_project.add_developer(current_user)
+      end
+
+      it { is_expected.to match_array([visible_occurrence]) }
+    end
   end
 end

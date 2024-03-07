@@ -67,13 +67,13 @@ RSpec.describe Organizations::OrganizationPolicy, feature_category: :system_acce
     context 'when dependency scanning is enabled' do
       include_context 'with licensed features', dependency_scanning: true
 
-      it { is_expected.to be_disallowed(:read_dependency) }
+      it { is_expected.to be_allowed(:read_dependency) }
     end
 
     context 'when license scanning is enabled' do
       include_context 'with licensed features', license_scanning: true
 
-      it { is_expected.to be_disallowed(:read_licenses) }
+      it { is_expected.to be_allowed(:read_licenses) }
     end
 
     it { is_expected.to be_disallowed(:read_dependency) }

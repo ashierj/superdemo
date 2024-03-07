@@ -32,13 +32,25 @@ RSpec.describe Explore::DependenciesController, feature_category: :dependency_ma
         end
 
         context 'when user is not admin' do
-          let_it_be(:user) { create(:user) }
+          let_it_be(:user) { create(:user, :without_default_org) }
 
           before do
             sign_in(user)
           end
 
           include_examples 'returning response status', :forbidden
+        end
+
+        context 'when the user is a member the default organization' do
+          let_it_be(:user) { create(:user, :without_default_org) }
+          let_it_be(:organization) { create(:organization, :default) }
+          let_it_be(:organization_user) { create(:organization_user, organization: organization, user: user) }
+
+          before do
+            sign_in(user)
+          end
+
+          include_examples 'returning response status', :ok
         end
 
         context 'when a user is not logged in' do
@@ -132,8 +144,41 @@ RSpec.describe Explore::DependenciesController, feature_category: :dependency_ma
           include_examples 'returning response status', :ok
         end
 
-        context 'when user is not admin' do
+        context 'when user is a member of some projects in the organization' do
           let_it_be(:user) { create(:user) }
+          let_it_be(:organization) { create(:organization, :default) }
+          let_it_be(:group) { create(:group, organization: organization) }
+          let_it_be(:project_a) { create(:project, organization: organization, group: group) }
+          let_it_be(:project_b) { create(:project, organization: organization, group: group) }
+
+          let_it_be(:occurrence_a) { create(:sbom_occurrence, project: project_a) }
+          let_it_be(:occurrence_b) { create(:sbom_occurrence, project: project_b) }
+
+          before do
+            sign_in(user)
+          end
+
+          before_all do
+            project_a.add_developer(user)
+          end
+
+          it 'returns the dependencies from the projects that the user has access to' do
+            get explore_dependencies_path, as: :json
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response["dependencies"]).to match_array([
+              {
+                'name' => occurrence_a.name,
+                'packager' => occurrence_a.packager,
+                'version' => occurrence_a.version,
+                'location' => occurrence_a.location.as_json
+              }
+            ])
+          end
+        end
+
+        context 'when user is not admin' do
+          let_it_be(:user) { create(:user, :without_default_org) }
 
           before do
             sign_in(user)

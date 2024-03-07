@@ -128,6 +128,12 @@ module Sbom
       order(highest_severity_arel_nodes(direction))
     end
 
+    scope :visible_to, ->(user) do
+      return self if user.can_read_all_resources?
+
+      where(project_id: user.project_authorizations.select(:project_id))
+    end
+
     def location
       {
         blob_path: input_file_blob_path,
