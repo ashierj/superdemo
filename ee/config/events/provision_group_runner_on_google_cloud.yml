@@ -1,0 +1,18 @@
+---
+description: Group runner provisioned in Google Cloud through GRIT
+category: InternalEventTracking
+action: provision_group_runner_on_google_cloud
+identifiers:
+  - namespace
+  - user
+product_section: ci
+product_stage: verify
+product_group: runner
+milestone: '16.10'
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/146063
+distributions:
+  - ee
+tiers:
+  - free
+  - premium
+  - ultimate
