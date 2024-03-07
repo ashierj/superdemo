@@ -9,12 +9,30 @@ module Security
         }
       }.freeze
 
+      SCAN_VARIABLES_WITH_RESTRICTED_VARIABLES = {
+        secret_detection: {
+          'SECRET_DETECTION_HISTORIC_SCAN' => 'false',
+          'SECRET_DETECTION_EXCLUDED_PATHS' => ''
+        },
+        dependency_scanning: {
+          'DS_EXCLUDED_PATHS' => 'spec, test, tests, tmp'
+        },
+        sast: {
+          'SAST_EXCLUDED_PATHS' => 'spec, test, tests, tmp'
+        },
+        sast_iac: {
+          'SAST_EXCLUDED_PATHS' => 'spec, test, tests, tmp'
+        }
+      }.freeze
+
       attr_reader :project, :base_variables, :context, :custom_ci_yaml_allowed
 
-      def initialize(context, base_variables: SCAN_VARIABLES, custom_ci_yaml_allowed: false)
+      def initialize(context, base_variables: {}, custom_ci_yaml_allowed: false)
+        default_scan_variables = allow_restricted_variables? ? SCAN_VARIABLES_WITH_RESTRICTED_VARIABLES : SCAN_VARIABLES
+
         @project = context.project
         @context = context
-        @base_variables = base_variables
+        @base_variables = default_scan_variables.deep_merge(base_variables)
         @custom_ci_yaml_allowed = custom_ci_yaml_allowed
       end
 
@@ -47,7 +65,7 @@ module Security
 
       def collect_config_variables(actions, configs)
         actions.zip(configs).each_with_object({}) do |(action, config), hash|
-          variables = action_variables(action)
+          variables = scan_variables_with_action_variables(action, fallback: action_variables(action))
           jobs = custom_scan?(action) ? Gitlab::Ci::Config.new(config.to_yaml).jobs : config
 
           jobs&.each_key do |key|
@@ -83,10 +101,10 @@ module Security
       def prepare_policy_configuration(action, index)
         return unless valid_scan_type?(action[:scan]) || custom_scan?(action)
 
-        variables = scan_variables(action)
+        variables = scan_variables_with_action_variables(action, fallback: scan_variables(action))
 
         ::Security::SecurityOrchestrationPolicies::CiConfigurationService
-          .new
+          .new(project)
           .execute(action, variables, context, index)
           .deep_symbolize_keys
       end
@@ -99,6 +117,12 @@ module Security
         action[:variables].to_h.stringify_keys
       end
 
+      def scan_variables_with_action_variables(action, fallback: {})
+        return fallback unless allow_restricted_variables?
+
+        scan_variables(action).merge(action_variables(action))
+      end
+
       def custom_ci_yaml_enabled?
         return false if project.group.nil?
 
@@ -107,6 +131,10 @@ module Security
 
       def compliance_pipeline_in_policies_enabled?
         Feature.enabled?(:compliance_pipeline_in_policies, project)
+      end
+
+      def allow_restricted_variables?
+        Feature.enabled?(:allow_restricted_variables_at_policy_level, project, type: :gitlab_com_derisk)
       end
 
       def custom_ci_experiment_enabled?

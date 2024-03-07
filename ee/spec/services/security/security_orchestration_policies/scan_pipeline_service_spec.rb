@@ -59,18 +59,28 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
     context 'when there is only one action' do
       let(:actions) { [{ scan: 'secret_detection' }] }
 
-      it_behaves_like 'creates scan jobs', pipeline_scan_job_templates: %w[Jobs/Secret-Detection], variables: { 'secret-detection-0': {} }
+      context 'when allow_restricted_variables_at_policy_level is disabled' do
+        before do
+          stub_feature_flags(allow_restricted_variables_at_policy_level: false)
+        end
+
+        it_behaves_like 'creates scan jobs', pipeline_scan_job_templates: %w[Jobs/Secret-Detection], variables: { 'secret-detection-0': {} }
+      end
+
+      context 'when allow_restricted_variables_at_policy_level is enabled' do
+        it_behaves_like 'creates scan jobs', pipeline_scan_job_templates: %w[Jobs/Secret-Detection], variables: { 'secret-detection-0': { 'SECRET_DETECTION_EXCLUDED_PATHS' => '', 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' } }
+      end
     end
 
-    context 'when action contains variables' do
-      let(:actions) { [{ scan: 'sast', variables: { SAST_EXCLUDED_ANALYZERS: 'semgrep' } }] }
+    context 'when action contains variables overriding predefined ones' do
+      let(:actions) { [{ scan: 'sast', variables: { SAST_EXCLUDED_ANALYZERS: 'semgrep', 'SAST_EXCLUDED_PATHS' => 'spec, test, tests, tmp, other_location' } }] }
 
-      it_behaves_like 'creates scan jobs', pipeline_scan_job_templates: %w[Jobs/SAST], variables: { 'sast-0': { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' } }
+      it_behaves_like 'creates scan jobs', pipeline_scan_job_templates: %w[Jobs/SAST], variables: { 'sast-0': { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep', 'SAST_EXCLUDED_PATHS' => 'spec, test, tests, tmp, other_location' } }
 
-      it 'does not pass variables from the action into configuration service' do
+      it 'allows passing variables from the action into configuration service' do
         expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
           expect(ci_configuration_service).to receive(:execute).once
-            .with(actions.first, {}, context, 0).and_call_original
+            .with(actions.first, { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep', 'SAST_EXCLUDED_PATHS' => 'spec, test, tests, tmp, other_location' }, context, 0).and_call_original
         end
 
         subject
@@ -83,13 +93,30 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
       context 'when SECRET_DETECTION_HISTORIC_SCAN is provided when initializing the service' do
         let(:service) { described_class.new(context, base_variables: { secret_detection: { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' } }) }
 
-        it 'ignores action variables and sets base_variables' do
-          expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
-            expect(ci_configuration_service).to receive(:execute).once
-              .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }, context, 0).and_call_original
+        context 'when allow_restricted_variables_at_policy_level is disabled' do
+          before do
+            stub_feature_flags(allow_restricted_variables_at_policy_level: false)
           end
 
-          subject
+          it 'ignores action variables and sets base_variables' do
+            expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
+              expect(ci_configuration_service).to receive(:execute).once
+                .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }, context, 0).and_call_original
+            end
+
+            subject
+          end
+        end
+
+        context 'when allow_restricted_variables_at_policy_level is enabled' do
+          it 'sets the value provided from action variables' do
+            expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
+              expect(ci_configuration_service).to receive(:execute).once
+                .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true', 'SECRET_DETECTION_EXCLUDED_PATHS' => '' }, context, 0).and_call_original
+            end
+
+            subject
+          end
         end
       end
     end
@@ -102,7 +129,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
         it 'sets the value provided when initializing the service' do
           expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
             expect(ci_configuration_service).to receive(:execute).once
-              .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' }, context, 0).and_call_original
+              .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true', 'SECRET_DETECTION_EXCLUDED_PATHS' => '' }, context, 0).and_call_original
           end
 
           subject
@@ -121,10 +148,23 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
         ]
       end
 
-      it_behaves_like 'creates scan jobs',
-        on_demand_jobs: %i[dast-on-demand-0],
-        pipeline_scan_job_templates: %w[Jobs/Secret-Detection Jobs/Container-Scanning Jobs/SAST],
-        variables: { 'container-scanning-1': {}, 'dast-on-demand-0': {}, 'sast-2': {}, 'secret-detection-0': {} }
+      context 'when allow_restricted_variables_at_policy_level is disabled' do
+        before do
+          stub_feature_flags(allow_restricted_variables_at_policy_level: false)
+        end
+
+        it_behaves_like 'creates scan jobs',
+          on_demand_jobs: %i[dast-on-demand-0],
+          pipeline_scan_job_templates: %w[Jobs/Secret-Detection Jobs/Container-Scanning Jobs/SAST],
+          variables: { 'container-scanning-1': {}, 'dast-on-demand-0': {}, 'sast-2': {}, 'secret-detection-0': {} }
+      end
+
+      context 'when allow_restricted_variables_at_policy_level is enabled' do
+        it_behaves_like 'creates scan jobs',
+          on_demand_jobs: %i[dast-on-demand-0],
+          pipeline_scan_job_templates: %w[Jobs/Secret-Detection Jobs/Container-Scanning Jobs/SAST],
+          variables: { 'container-scanning-1': {}, 'dast-on-demand-0': {}, 'sast-2': { 'SAST_EXCLUDED_PATHS' => 'spec, test, tests, tmp' }, 'secret-detection-0': { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false', 'SECRET_DETECTION_EXCLUDED_PATHS' => '' } }
+      end
     end
 
     context 'when there are valid and invalid actions' do
@@ -135,7 +175,17 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
         ]
       end
 
-      it_behaves_like 'creates scan jobs', pipeline_scan_job_templates: %w[Jobs/Secret-Detection], variables: { 'secret-detection-0': {} }
+      context 'when allow_restricted_variables_at_policy_level is disabled' do
+        before do
+          stub_feature_flags(allow_restricted_variables_at_policy_level: false)
+        end
+
+        it_behaves_like 'creates scan jobs', pipeline_scan_job_templates: %w[Jobs/Secret-Detection], variables: { 'secret-detection-0': {} }
+      end
+
+      context 'when allow_restricted_variables_at_policy_level is enabled' do
+        it_behaves_like 'creates scan jobs', pipeline_scan_job_templates: %w[Jobs/Secret-Detection], variables: { 'secret-detection-0': { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false', 'SECRET_DETECTION_EXCLUDED_PATHS' => '' } }
+      end
     end
 
     context 'with custom scan type' do

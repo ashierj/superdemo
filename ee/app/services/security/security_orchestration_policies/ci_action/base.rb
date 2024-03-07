@@ -6,11 +6,12 @@ module Security
       class Base
         attr_reader :action, :ci_variables, :context, :index
 
-        def initialize(action, ci_variables, context, index = 0)
+        def initialize(action, ci_variables, context, index = 0, opts = {})
           @action = action
           @ci_variables = ci_variables
           @context = context
           @index = index
+          @opts = opts
         end
 
         def config

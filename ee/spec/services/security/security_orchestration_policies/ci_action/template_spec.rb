@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Template,
   feature_category: :security_policy_management do
   describe '#config' do
-    subject(:config) { described_class.new(action, ci_variables, ci_context, 0).config }
+    subject(:config) { described_class.new(action, ci_variables, ci_context, 0, opts).config }
 
     let_it_be(:ci_variables) do
       { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false', 'SECRET_DETECTION_DISABLED' => nil }
@@ -13,6 +13,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Template,
 
     let(:ci_context) { Gitlab::Ci::Config::External::Context.new(user: user) }
     let(:user) { create(:user) }
+    let(:opts) { { allow_restricted_variables_at_policy_level: allow_restricted_variables_at_policy_level } }
+    let(:allow_restricted_variables_at_policy_level) { true }
 
     shared_examples 'with template name for scan type' do
       it 'fetches template content using ::TemplateFinder' do
@@ -138,7 +140,34 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Template,
 
       context 'when scan type is sast', :aggregate_failures do
         let_it_be(:action) { { scan: 'sast', tags: ['runner-tag'] } }
-        let_it_be(:ci_variables) { { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep', 'SAST_DISABLED' => nil } }
+        let_it_be(:ci_variables) { { 'SAST_DISABLED' => nil } }
+
+        let(:expected_jobs) do
+          [
+            :"sast-0",
+            :"bandit-sast-0",
+            :"eslint-sast-0",
+            :"security-code-scan-sast-0",
+            :"gosec-sast-0",
+            *expected_jobs_with_excluded_variable_rules
+          ]
+        end
+
+        let(:expected_jobs_with_excluded_variable_rules) do
+          [
+            :"brakeman-sast-0",
+            :"flawfinder-sast-0",
+            :"kubesec-sast-0",
+            :"mobsf-android-sast-0",
+            :"mobsf-ios-sast-0",
+            :"nodejs-scan-sast-0",
+            :"phpcs-security-audit-sast-0",
+            :"pmd-apex-sast-0",
+            :"semgrep-sast-0",
+            :"sobelow-sast-0",
+            :"spotbugs-sast-0"
+          ]
+        end
 
         it 'returns prepared CI configuration for SAST' do
           expected_jobs = [
@@ -164,7 +193,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Template,
             'SEARCH_MAX_DEPTH' => 4,
             'SECURE_ANALYZERS_PREFIX' => '$CI_TEMPLATE_REGISTRY_HOST/security-products',
             'SAST_IMAGE_SUFFIX' => '',
-            'SAST_EXCLUDED_ANALYZERS' => 'semgrep',
+            'SAST_EXCLUDED_ANALYZERS' => '',
             'SAST_EXCLUDED_PATHS' => 'spec, test, tests, tmp',
             'SCAN_KUBERNETES_MANIFESTS' => 'false'
           }
@@ -175,29 +204,54 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Template,
         end
 
         it_behaves_like 'removes rules which disable jobs'
+
+        context 'when SAST_EXCLUDED_ANALYZERS is provided as variable set in the policy' do
+          let_it_be(:ci_variables) { { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' } }
+
+          context 'when allow_restricted_variables_at_policy_level feature flag is disabled' do
+            let(:allow_restricted_variables_at_policy_level) { false }
+
+            it_behaves_like 'removes rules which disable jobs'
+          end
+
+          context 'when allow_restricted_variables_at_policy_level feature flag is enabled' do
+            it 'does not remove SAST_EXCLUDED_ANALYZERS rule or variable' do
+              expect(config[:'sast-0'][:variables].stringify_keys).to include(ci_variables)
+
+              config.values_at(*expected_jobs_with_excluded_variable_rules).each do |configuration|
+                expect(configuration[:rules]).to include(hash_including(if: /SAST_EXCLUDED_ANALYZERS/))
+              end
+            end
+          end
+        end
       end
 
       context 'when scan type is dependency_scanning', :aggregate_failures do
         let_it_be(:action) { { scan: 'dependency_scanning', tags: ['runner-tag'] } }
-        let_it_be(:ci_variables) do
-          { 'DS_EXCLUDED_ANALYZERS' => 'gemnasium-python' }
+        let_it_be(:ci_variables) { { 'DEPENDENCY_SCANNING_DISABLED' => nil } }
+
+        let(:expected_jobs) do
+          [
+            :"dependency-scanning-0",
+            :"bundler-audit-dependency-scanning-0",
+            :"retire-js-dependency-scanning-0",
+            *expected_jobs_with_excluded_variable_rules
+          ]
+        end
+
+        let(:expected_jobs_with_excluded_variable_rules) do
+          [
+            :"gemnasium-dependency-scanning-0",
+            :"gemnasium-maven-dependency-scanning-0",
+            :"gemnasium-python-dependency-scanning-0"
+          ]
         end
 
         it 'returns prepared CI configuration for Dependency Scanning' do
-          expected_jobs = [
-            :"dependency-scanning-0",
-            :"gemnasium-dependency-scanning-0",
-            :"gemnasium-maven-dependency-scanning-0",
-            :"gemnasium-python-dependency-scanning-0",
-            :"bundler-audit-dependency-scanning-0",
-            :"retire-js-dependency-scanning-0"
-          ]
-
           expected_variables = {
             'SECURE_ANALYZERS_PREFIX' => "$CI_TEMPLATE_REGISTRY_HOST/security-products",
             'DS_EXCLUDED_PATHS' => "spec, test, tests, tmp",
-            'DS_MAJOR_VERSION' => 4,
-            'DS_EXCLUDED_ANALYZERS' => "gemnasium-python"
+            'DS_MAJOR_VERSION' => 4
           }
 
           expect(config[:variables]).to be_nil
@@ -206,6 +260,24 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Template,
         end
 
         it_behaves_like 'removes rules which disable jobs'
+
+        context 'when DS_EXCLUDED_ANALYZERS is provided as variable set in the policy' do
+          let_it_be(:ci_variables) { { 'DS_EXCLUDED_ANALYZERS' => 'gemnasium-maven' } }
+
+          context 'when allow_restricted_variables_at_policy_level feature flag is disabled' do
+            let(:allow_restricted_variables_at_policy_level) { false }
+
+            it_behaves_like 'removes rules which disable jobs'
+          end
+
+          context 'when allow_restricted_variables_at_policy_level feature flag is enabled' do
+            it 'does not remove DS_EXCLUDED_ANALYZERS rule' do
+              config.values_at(*expected_jobs_with_excluded_variable_rules).each do |configuration|
+                expect(configuration[:rules]).to include(hash_including(if: /DS_EXCLUDED_ANALYZERS/))
+              end
+            end
+          end
+        end
       end
 
       context 'when scan type is sast_iac', :aggregate_failures do

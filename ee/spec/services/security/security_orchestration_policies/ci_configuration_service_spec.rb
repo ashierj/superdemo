@@ -5,12 +5,14 @@ require 'spec_helper'
 RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
   feature_category: :security_policy_management do
   describe '#execute' do
-    subject(:execute_service) { described_class.new.execute(action, ci_variables, context, index) }
-
+    let_it_be(:project) { create(:project) }
     let(:action) { { scan: scan_type } }
     let(:ci_variables) { { KEY: 'value' } }
     let(:context) { 'context' }
     let(:index) { 0 }
+    let(:opts) { { allow_restricted_variables_at_policy_level: true } }
+
+    subject(:execute_service) { described_class.new(project).execute(action, ci_variables, context, index) }
 
     shared_examples_for 'a template scan' do
       it 'configures a template scan' do
@@ -18,12 +20,35 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
           action,
           ci_variables,
           context,
-          index
+          index,
+          opts
         ) do |instance|
           expect(instance).to receive(:config)
         end
 
         execute_service
+      end
+
+      context 'when allow_restricted_variables_at_policy_level is disabled' do
+        before do
+          stub_feature_flags(allow_restricted_variables_at_policy_level: false)
+        end
+
+        let(:opts) { { allow_restricted_variables_at_policy_level: false } }
+
+        it 'configures a template scan with disabled flag' do
+          expect_next_instance_of(Security::SecurityOrchestrationPolicies::CiAction::Template,
+            action,
+            ci_variables,
+            context,
+            index,
+            allow_restricted_variables_at_policy_level: false
+          ) do |instance|
+            expect(instance).to receive(:config)
+          end
+
+          execute_service
+        end
       end
     end
 
@@ -65,7 +90,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
           action,
           ci_variables,
           context,
-          index
+          index,
+          opts
         ) do |instance|
           expect(instance).to receive(:config)
         end
@@ -82,7 +108,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
           action,
           ci_variables,
           context,
-          index
+          index,
+          opts
         ) do |instance|
           expect(instance).to receive(:config)
         end
