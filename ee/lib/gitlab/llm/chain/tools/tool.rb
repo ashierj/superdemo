@@ -10,7 +10,6 @@ module Gitlab
           NAME = 'Base Tool'
           DESCRIPTION = 'Base Tool description'
           EXAMPLE = 'Example description'
-          EXAMPLE_INTRO = 'Here is an example of using this tool:'
 
           attr_reader :context, :options
 

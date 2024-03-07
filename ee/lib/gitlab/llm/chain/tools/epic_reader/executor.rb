@@ -18,11 +18,12 @@ module Gitlab
 
             EXAMPLE =
               <<~PROMPT
-                Question: Please identify the author of &epic_identifier epic.
-                Picked tools: "EpicReader" tool.
-                Reason: You have access to the same resources as user who asks a question.
+                Question: Please identify the author of &123 epic.
+                Thought: You have access to the same resources as user who asks a question.
                   The question is about an epic, so you need to use "EpicReader" tool.
                   Based on this information you can present final answer.
+                Action: EpicReader
+                ActionInput: Please identify the author of &123 epic.
               PROMPT
 
             PROVIDER_PROMPT_CLASSES = {
