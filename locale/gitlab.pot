@@ -5086,6 +5086,9 @@ msgstr ""
 msgid "An error occurred creating the new branch."
 msgstr ""
 
+msgid "An error occurred editing the blob"
+msgstr ""
+
 msgid "An error occurred fetching the approval rules."
 msgstr ""
 
