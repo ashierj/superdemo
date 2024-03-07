@@ -16,6 +16,17 @@ export const mockPermissions = {
   },
 };
 
+export const mockEmptyMemberRoles = {
+  data: {
+    namespace: {
+      id: 'gid://gitlab/Group/1',
+      memberRoles: {
+        nodes: [],
+      },
+    },
+  },
+};
+
 export const mockMemberRoles = {
   data: {
     namespace: {
@@ -25,7 +36,6 @@ export const mockMemberRoles = {
           {
             baseAccessLevel: {
               integerValue: 20,
-              stringValue: 'REPORTER',
               __typename: 'AccessLevel',
             },
             id: 'gid://gitlab/MemberRole/1',
@@ -60,7 +70,6 @@ export const mockInstanceMemberRoles = {
         {
           baseAccessLevel: {
             integerValue: 10,
-            stringValue: 'GUEST',
             __typename: 'AccessLevel',
           },
           id: 'gid://gitlab/MemberRole/2',

@@ -20,7 +20,7 @@ RSpec.describe MemberRolesHelper, feature_category: :permissions do
     let(:expected_data) do
       {
         documentation_path: help_page_path('user/custom_roles'),
-        empty_state_svg_path: start_with('/assets/illustrations/empty-state/empty-devops-md')
+        empty_state_svg_path: start_with('/assets/illustrations/empty-state/empty-user-settings-md')
       }
     end
 
