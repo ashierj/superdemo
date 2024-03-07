@@ -275,7 +275,7 @@ module EE
       def groups_user_can(groups, user, action, same_root: false)
         # If :use_traversal_ids is enabled we can use filter optmization
         # to skip some permission check queries in group descendants.
-        if same_root && can_use_epics_filtering_optimization?(groups)
+        if same_root && can_use_epics_filtering_optimization?(groups, action)
           filter_groups_user_can(groups: groups, user: user, action: action)
         else
           groups = ::Gitlab::GroupPlansPreloader.new.preload(groups)
@@ -286,13 +286,12 @@ module EE
           # https://gitlab.com/gitlab-org/gitlab/issues/11539
           preset_root_ancestor_for(groups) if same_root
 
-          DeclarativePolicy.user_scope do
-            groups.select { |group| Ability.allowed?(user, action, group) }
-          end
+          super
         end
       end
 
-      def can_use_epics_filtering_optimization?(groups)
+      def can_use_epics_filtering_optimization?(groups, action)
+        return false unless ALLOWED_ACTIONS_TO_USE_FILTERING_OPTIMIZATION.include?(action)
         return false unless groups.any?
 
         groups.first.use_traversal_ids?
@@ -336,8 +335,6 @@ module EE
       #
       # More information at https://gitlab.com/gitlab-org/gitlab/-/issues/367868#note_1027151497
       def filter_groups_user_can(groups:, user:, action:)
-        return ::Group.none unless ALLOWED_ACTIONS_TO_USE_FILTERING_OPTIMIZATION.include?(action)
-
         top_level_group = groups.first&.root_ancestor
 
         return ::Group.none unless top_level_group

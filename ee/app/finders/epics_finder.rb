@@ -124,7 +124,7 @@ class EpicsFinder < IssuableFinder
     return epics if can_read_all_epics_in_related_groups?
 
     group_set =
-      if Group.can_use_epics_filtering_optimization?(groups)
+      if Group.can_use_epics_filtering_optimization?(groups, :read_confidential_epic)
         related_groups
       else
         groups

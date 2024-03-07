@@ -582,8 +582,10 @@ RSpec.describe Group, feature_category: :groups_and_projects do
         private_subgroup_1.add_reporter(user)
       end
 
-      it 'returns an empty list' do
-        expect(subject).to be_empty
+      it 'returns groups without using filter optimization' do
+        expect(described_class).not_to receive(:filter_groups_user_can)
+
+        expect(subject).to match_array([public_group, internal_subgroup, private_subgroup_1, private_subgroup_2])
       end
     end
 
