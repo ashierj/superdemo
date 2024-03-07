@@ -12,13 +12,10 @@ import issueAnalyticsStore from './stores';
 
 export default class FilteredSearchIssueAnalytics extends FilteredSearchManager {
   constructor({ hasIssuesCompletedFeature = false }) {
-    const supportsIssuesCompletedFeature =
-      gon.features?.issuesCompletedAnalyticsFeatureFlag && hasIssuesCompletedFeature;
-
     // iteration token will be excluded until https://gitlab.com/gitlab-org/gitlab/-/issues/419743 is completed
     const excludedTokenKeys = [TOKEN_TYPE_RELEASE, TOKEN_TYPE_ITERATION];
 
-    if (supportsIssuesCompletedFeature) {
+    if (hasIssuesCompletedFeature) {
       IssuableFilteredSearchTokenKeys.enableMultipleAssignees();
     }
 

@@ -35,7 +35,7 @@ export default {
   computed: {
     ...mapGetters('issueAnalytics', ['appliedFilters']),
     supportsIssuesCompletedAnalytics() {
-      return this.hasIssuesCompletedFeature && this.glFeatures?.issuesCompletedAnalyticsFeatureFlag;
+      return this.hasIssuesCompletedFeature;
     },
     monthsBack() {
       const { months_back: monthsBack } = this.appliedFilters ?? {};
