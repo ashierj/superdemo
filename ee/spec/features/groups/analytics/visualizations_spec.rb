@@ -9,20 +9,25 @@ RSpec.describe 'Analytics Dashboard Visualizations', :js, feature_category: :val
   let_it_be(:user) { current_user }
   let_it_be(:group) { create(:group, name: "vsd test group") }
   let_it_be(:project) { create(:project, :repository, name: "vsd project", group: group) }
+  let_it_be(:environment) { create(:environment, :production, project: project) }
 
   before_all do
     group.add_developer(user)
   end
 
   context 'for dora_chart visualization' do
-    context 'with all features enabled', :saas do
+    before do
+      stub_licensed_features(group_level_analytics_dashboard: true, dora4_analytics: true, security_dashboard: true,
+        cycle_analytics_for_groups: true)
+
+      create_mock_dora_chart_metrics(environment)
+
+      sign_in(user)
+    end
+
+    context 'when ClickHouse is enabled for analytics', :saas do
       before do
-        stub_licensed_features(group_level_analytics_dashboard: true, dora4_analytics: true, security_dashboard: true,
-          cycle_analytics_for_groups: true)
-
         allow(Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
-
-        sign_in(user)
 
         visit_group_value_streams_dashboard(group)
       end
@@ -36,14 +41,13 @@ RSpec.describe 'Analytics Dashboard Visualizations', :js, feature_category: :val
 
     context 'when ClickHouse is disabled for analytics', :saas do
       before do
-        stub_licensed_features(group_level_analytics_dashboard: true, dora4_analytics: true, security_dashboard: true,
-          cycle_analytics_for_groups: true)
-
         allow(Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(false)
 
-        sign_in(user)
-
         visit_group_value_streams_dashboard(group)
+      end
+
+      it_behaves_like 'renders metrics comparison table' do
+        let(:group_name) { group.name }
       end
 
       it_behaves_like 'does not render contributor count'
@@ -53,6 +57,8 @@ RSpec.describe 'Analytics Dashboard Visualizations', :js, feature_category: :val
   context 'for usage_overview visualization' do
     before do
       stub_licensed_features(group_level_analytics_dashboard: true)
+
+      create_mock_usage_overview_metrics(project)
 
       sign_in(user)
 
@@ -64,7 +70,9 @@ RSpec.describe 'Analytics Dashboard Visualizations', :js, feature_category: :val
 
   context 'for dora_performers_score visualization' do
     before do
-      stub_licensed_features(group_level_analytics_dashboard: true)
+      stub_licensed_features(dora4_analytics: true, group_level_analytics_dashboard: true)
+
+      create_mock_dora_performers_score_metrics(group)
 
       sign_in(user)
 
@@ -81,6 +89,9 @@ RSpec.describe 'Analytics Dashboard Visualizations', :js, feature_category: :val
         cycle_analytics_for_groups: true)
 
       allow(Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
+
+      create_mock_dora_chart_metrics(environment)
+      create_mock_dora_performers_score_metrics(group)
 
       sign_in(user)
 
