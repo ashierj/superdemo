@@ -71,7 +71,8 @@ RSpec.describe Iteration, feature_category: :team_planning do
           'namespace' => 'gitlab-org',
           'project' => 'gitlab-ce',
           'iteration_id' => '123',
-          'iteration_name' => nil
+          'iteration_name' => nil,
+          'absolute_path' => nil
         )
       end
     end
@@ -84,7 +85,8 @@ RSpec.describe Iteration, feature_category: :team_planning do
           'namespace' => 'gitlab-org',
           'project' => 'gitlab-ce',
           'iteration_id' => nil,
-          'iteration_name' => 'my-iteration'
+          'iteration_name' => 'my-iteration',
+          'absolute_path' => nil
         )
       end
     end
@@ -97,7 +99,8 @@ RSpec.describe Iteration, feature_category: :team_planning do
           'namespace' => 'gitlab-org',
           'project' => 'gitlab-ce',
           'iteration_id' => nil,
-          'iteration_name' => 'my-iteration'
+          'iteration_name' => 'my-iteration',
+          'absolute_path' => nil
         )
       end
     end
