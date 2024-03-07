@@ -14,8 +14,8 @@ module Epics
       error_message = validate_objects
       return error(error_message) if error_message.present?
 
-      error_message = set_new_parent
-      return error(error_message) if error_message.present?
+      service_response = set_new_parent
+      return error(service_response[:message]) if service_response&.fetch(:status) == :error
 
       move!
       success
@@ -26,10 +26,13 @@ module Epics
     def set_new_parent
       return unless new_parent && new_parent_different?
 
-      service = create_issuable_links(new_parent)
-      return unless service[:status] == :error
+      service_response = create_issuable_links(new_parent)
+      return service_response if service_response[:status] == :error
 
-      service[:message]
+      # The `moving_object` references might have changed.
+      @moving_object = service_response[:created_references].first
+
+      service_response
     end
 
     def new_parent_different?

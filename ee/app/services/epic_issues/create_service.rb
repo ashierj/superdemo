@@ -16,6 +16,11 @@ module EpicIssues
       schedule_new_link_worker(link, referenced_issue, params)
 
       transaction_result = ApplicationRecord.transaction do
+        # When an EpicIssue gets saved, we validate if the current WorkItems::ParentLink
+        # matches the set epic (if one exists).
+        # As we change the epic before changing the `ParentLink` it would error.
+        # We therefore run this in a transaction and skip the validation.
+        link.work_item_syncing = true
         create_synced_work_item_link!(link) if link.save
       end
 

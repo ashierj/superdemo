@@ -85,6 +85,17 @@ RSpec.describe EpicIssue, feature_category: :portfolio_management do
         expect(subject).to be_invalid
         expect(subject.errors.full_messages).to include('Issue already assigned to an epic')
       end
+
+      context 'when work_item_syncing is set' do
+        it 'skips the validation' do
+          work_item_epic = create(:work_item, :epic, project: project)
+          create(:parent_link, work_item_parent: work_item_epic, work_item: WorkItem.find(issue.id))
+
+          subject.work_item_syncing = true
+
+          expect(subject).to be_valid
+        end
+      end
     end
   end
 

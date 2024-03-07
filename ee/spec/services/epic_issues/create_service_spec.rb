@@ -215,13 +215,37 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
                 end
               end
 
-              it 'syncs link with work item parent link' do
+              it 'creates link with work item parent link' do
                 expect { subject }.to change { EpicIssue.count }.by(1)
                   .and(change { WorkItems::ParentLink.count }.by(1))
 
                 expect(created_link).to have_attributes(epic: epic)
                 expect(created_link.issue_id).to eq(epic.work_item.child_links[0].work_item_id)
                 expect(created_link.relative_position).to eq(epic.work_item.child_links[0].relative_position)
+              end
+
+              context 'when work item already has a parent' do
+                before do
+                  create(:epic_issue, epic: epic, issue: issue)
+                  create(:parent_link, work_item_parent: epic.work_item, work_item: WorkItem.find(issue.id))
+                  issue.reload
+                end
+
+                subject do
+                  params = { issuable_references: [valid_reference] }
+
+                  described_class.new(another_epic, user, params).execute
+                end
+
+                let_it_be(:another_epic) { create(:epic, :with_synced_work_item, group: group) }
+
+                it 'updates the existing link' do
+                  expect { subject }.not_to change { WorkItems::ParentLink.count }
+                  expect(subject[:status]).to eq(:success)
+
+                  expect(issue.reload.epic).to eq(another_epic)
+                  expect(WorkItem.find(issue.id).work_item_parent).to eq(another_epic.work_item)
+                end
               end
 
               it 'triggers the issuable_epic_updated subscription' do
