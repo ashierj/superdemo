@@ -5700,6 +5700,9 @@ msgstr ""
 msgid "Analytics|Failed to fetch data"
 msgstr ""
 
+msgid "Analytics|Failed to load dashboard"
+msgstr ""
+
 msgid "Analytics|Generate with Duo"
 msgstr ""
 
@@ -5752,6 +5755,9 @@ msgid "Analytics|Pages"
 msgstr ""
 
 msgid "Analytics|Referer"
+msgstr ""
+
+msgid "Analytics|Refresh the page to try again or see %{linkStart}troubleshooting documentation%{linkEnd}."
 msgstr ""
 
 msgid "Analytics|Resulting Data"
