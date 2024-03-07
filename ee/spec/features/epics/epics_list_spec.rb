@@ -77,7 +77,7 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
         it 'renders epics list header actions', :aggregate_failures do
           page.within('.issuable-list-container .nav-controls') do
             expect(page).to have_button('Bulk edit')
-            expect(page).to have_link('New epic')
+            expect(page).to have_button('New epic')
           end
         end
 
