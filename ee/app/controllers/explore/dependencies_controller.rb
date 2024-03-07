@@ -39,6 +39,7 @@ module Explore
     def finder
       ::Sbom::DependenciesFinder.new(
         organization,
+        current_user: current_user,
         params: finder_params
       )
     end

@@ -5,8 +5,9 @@ module Sbom
     include Gitlab::Utils::StrongMemoize
 
     # @param dependable [Organization, Group, Project] the container for detected SBoM occurrences
-    def initialize(dependable, params: {})
+    def initialize(dependable, current_user: nil, params: {})
       @dependable = dependable
+      @current_user = current_user
       @params = params
     end
 
@@ -16,12 +17,13 @@ module Sbom
       filter_by_package_managers
       filter_by_component_names
       filter_by_licences
+      filter_by_visibility
       sort
     end
 
     private
 
-    attr_reader :dependable, :params
+    attr_reader :current_user, :dependable, :params
 
     def filter_by_package_managers
       return if params[:package_managers].blank?
@@ -39,6 +41,12 @@ module Sbom
       return if params[:licenses].blank?
 
       @collection = @collection.by_licenses(params[:licenses])
+    end
+
+    def filter_by_visibility
+      return if current_user.blank?
+
+      @collection = @collection.visible_to(current_user)
     end
 
     def sort_direction
