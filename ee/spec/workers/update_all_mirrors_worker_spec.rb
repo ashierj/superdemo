@@ -53,7 +53,7 @@ RSpec.describe UpdateAllMirrorsWorker, feature_category: :source_code_management
 
       worker.perform
 
-      expect(inner_context).to eq(outer_context.slice('correlation_id'))
+      expect(inner_context).to eq(outer_context.slice('correlation_id', 'meta.sidekiq_destination_shard_redis'))
     end
 
     it 'schedules mirrors' do

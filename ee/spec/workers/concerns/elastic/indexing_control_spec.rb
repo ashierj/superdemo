@@ -23,7 +23,9 @@ RSpec.describe Elastic::IndexingControl, feature_category: :global_search do
   end
 
   let(:worker_args) { [project.id] }
-  let(:worker_context) { { 'correlation_id' => 'context_correlation_id' } }
+  let(:worker_context) do
+    { 'correlation_id' => 'context_correlation_id', 'meta.sidekiq_destination_shard_redis' => 'main' }
+  end
 
   describe '::WORKERS' do
     it 'only includes classes which inherit from this class' do
