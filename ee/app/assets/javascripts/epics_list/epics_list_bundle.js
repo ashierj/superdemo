@@ -69,10 +69,12 @@ export default function initEpicsList({ mountPointSelector }) {
       epicNewPath,
       listEpicsPath,
       groupFullPath,
+      fullPath: groupFullPath,
       labelsManagePath,
       groupMilestonesPath,
       emptyStatePath,
       isSignedIn: parseBoolean(isSignedIn),
+      isGroup: true,
     },
     render: (createElement) =>
       createElement(EpicsListApp, {

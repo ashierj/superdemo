@@ -7,10 +7,14 @@ import EpicsFilteredSearchMixin from 'jh_else_ee/roadmap/mixins/filtered_search_
 import { createAlert } from '~/alert';
 
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { issuableListTabs, DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 import { humanTimeframe } from '~/lib/utils/datetime_utility';
 import { s__ } from '~/locale';
+
+import CreateWorkItemModal from '~/work_items/components/create_work_item_modal.vue';
+import { WORK_ITEM_TYPE_ENUM_EPIC } from '~/work_items/constants';
 
 import { transformFetchEpicFilterParams } from '../../roadmap/utils/epic_utils';
 import { epicsSortOptions } from '../constants';
@@ -20,11 +24,13 @@ import EpicsListEmptyState from './epics_list_empty_state.vue';
 import EpicsListBulkEditSidebar from './epics_list_bulk_edit_sidebar.vue';
 
 export default {
+  WORK_ITEM_TYPE_ENUM_EPIC,
   issuableListTabs,
   epicsSortOptions,
   defaultPageSize: DEFAULT_PAGE_SIZE,
   epicSymbol: '&',
   components: {
+    CreateWorkItemModal,
     GlButton,
     GlIcon,
     IssuableList,
@@ -34,7 +40,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  mixins: [EpicsFilteredSearchMixin],
+  mixins: [EpicsFilteredSearchMixin, glFeatureFlagsMixin()],
   inject: [
     'canCreateEpic',
     'canBulkEditEpics',
@@ -268,8 +274,12 @@ export default {
         @click="showBulkEditSidebar = true"
         >{{ __('Bulk edit') }}</gl-button
       >
+      <create-work-item-modal
+        v-if="canCreateEpic && glFeatures.namespaceLevelWorkItems"
+        :work-item-type="$options.WORK_ITEM_TYPE_ENUM_EPIC"
+      />
       <gl-button
-        v-if="canCreateEpic"
+        v-else-if="canCreateEpic"
         category="primary"
         variant="confirm"
         :href="epicNewPath"

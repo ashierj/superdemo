@@ -56875,9 +56875,6 @@ msgstr ""
 msgid "WorkItem|Create %{workItemType}"
 msgstr ""
 
-msgid "WorkItem|Create work item"
-msgstr ""
-
 msgid "WorkItem|Dates"
 msgstr ""
 

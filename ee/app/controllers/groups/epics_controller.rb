@@ -21,6 +21,7 @@ class Groups::EpicsController < Groups::ApplicationController
     push_frontend_feature_flag(:preserve_unchanged_markdown, @group)
     push_frontend_feature_flag(:or_issuable_queries, @group)
     push_frontend_feature_flag(:notifications_todos_buttons, current_user)
+    push_frontend_feature_flag(:namespace_level_work_items, @group)
   end
 
   before_action only: :show do
