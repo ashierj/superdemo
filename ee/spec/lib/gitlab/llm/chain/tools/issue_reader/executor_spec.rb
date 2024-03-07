@@ -42,7 +42,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueReader::Executor, feature_categor
   describe '#description' do
     it 'returns tool description' do
       expect(described_class::DESCRIPTION)
-        .to include('Useful tool when you need to retrieve information about specific issue')
+        .to include('Gets the content of the current issue (also referenced as this or that)')
     end
   end
 

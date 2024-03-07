@@ -7,10 +7,10 @@ module Gitlab
         attr_reader :context
 
         TOOLS = [
-          ::Gitlab::Llm::Chain::Tools::CiEditorAssistant,
           ::Gitlab::Llm::Chain::Tools::IssueReader,
           ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
-          ::Gitlab::Llm::Chain::Tools::EpicReader
+          ::Gitlab::Llm::Chain::Tools::EpicReader,
+          ::Gitlab::Llm::Chain::Tools::CiEditorAssistant
         ].freeze
 
         COMMAND_TOOLS = TOOLS + [

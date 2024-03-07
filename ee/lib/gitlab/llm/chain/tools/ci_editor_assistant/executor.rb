@@ -20,9 +20,10 @@ module Gitlab
             EXAMPLE =
               <<~PROMPT
                 Question: Please create a deployment configuration for a node.js application.
-                Picked tools: "CiEditorAssistant" tool.
-                Reason: You have asked a question related to deployment of an application or CI/CD pipelines.
+                Thought: You have asked a question related to deployment of an application or CI/CD pipelines.
                   "CiEditorAssistant" tool can assist with this kind of questions.
+                Action: CiEditorAssistant
+                ActionInput: Please create a deployment configuration for a node.js application.
               PROMPT
 
             PROVIDER_PROMPT_CLASSES = {
