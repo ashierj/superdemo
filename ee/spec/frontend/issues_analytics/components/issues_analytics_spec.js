@@ -37,7 +37,6 @@ describe('IssuesAnalytics', () => {
     props = {},
     provide = {},
     hasIssuesCompletedFeature = false,
-    issuesCompletedAnalyticsFeatureFlag = false,
   } = {}) => {
     const filterBlockEl = document.querySelector('#mock-filter');
 
@@ -50,9 +49,6 @@ describe('IssuesAnalytics', () => {
       },
       provide: {
         hasIssuesCompletedFeature,
-        glFeatures: {
-          issuesCompletedAnalyticsFeatureFlag,
-        },
         ...provide,
       },
       store,
@@ -99,22 +95,18 @@ describe('IssuesAnalytics', () => {
 
   describe('chart', () => {
     it.each`
-      hasIssuesCompletedFeature | issuesCompletedAnalyticsFeatureFlag | shouldShowTotalIssuesAnalyticsChart | shouldShowIssuesAnalyticsChart
-      ${true}                   | ${true}                             | ${true}                             | ${false}
-      ${false}                  | ${true}                             | ${false}                            | ${true}
-      ${true}                   | ${false}                            | ${false}                            | ${true}
-      ${false}                  | ${false}                            | ${false}                            | ${true}
+      hasIssuesCompletedFeature | shouldShowTotalIssuesAnalyticsChart | shouldShowIssuesAnalyticsChart
+      ${true}                   | ${true}                             | ${false}
+      ${false}                  | ${false}                            | ${true}
     `(
-      'renders the correct chart component when hasIssuesCompletedFeature=$hasIssuesCompletedFeature and issuesCompletedAnalyticsFeatureFlag=$issuesCompletedAnalyticsFeatureFlag',
+      'renders the correct chart component when hasIssuesCompletedFeature=$hasIssuesCompletedFeature',
       ({
         hasIssuesCompletedFeature,
-        issuesCompletedAnalyticsFeatureFlag,
         shouldShowTotalIssuesAnalyticsChart,
         shouldShowIssuesAnalyticsChart,
       }) => {
         createComponent({
           hasIssuesCompletedFeature,
-          issuesCompletedAnalyticsFeatureFlag,
         });
 
         expect(findTotalIssuesAnalyticsChart().exists()).toBe(shouldShowTotalIssuesAnalyticsChart);
@@ -127,7 +119,6 @@ describe('IssuesAnalytics', () => {
     beforeEach(() => {
       createComponent({
         hasIssuesCompletedFeature: true,
-        issuesCompletedAnalyticsFeatureFlag: true,
       });
     });
 

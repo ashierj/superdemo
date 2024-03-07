@@ -12,21 +12,13 @@ describe('FilteredSearchIssueAnalytics', () => {
     const supportedTokenKeys = ['author', 'assignee', 'milestone', 'label', 'epic', 'weight'];
 
     describe.each`
-      shouldEnableMultipleAssignees | issuesCompletedAnalyticsFeatureFlag | hasIssuesCompletedFeature
-      ${false}                      | ${false}                            | ${false}
-      ${false}                      | ${false}                            | ${true}
-      ${false}                      | ${true}                             | ${false}
-      ${true}                       | ${true}                             | ${true}
+      shouldEnableMultipleAssignees | hasIssuesCompletedFeature
+      ${false}                      | ${false}
+      ${true}                       | ${true}
     `(
-      'when issuesCompletedAnalyticsFeatureFlag=$issuesCompletedAnalyticsFeatureFlag and hasIssuesCompletedFeature=$hasIssuesCompletedFeature',
-      ({
-        issuesCompletedAnalyticsFeatureFlag,
-        hasIssuesCompletedFeature,
-        shouldEnableMultipleAssignees,
-      }) => {
+      'when hasIssuesCompletedFeature=$hasIssuesCompletedFeature',
+      ({ hasIssuesCompletedFeature, shouldEnableMultipleAssignees }) => {
         beforeEach(() => {
-          gon.features = { issuesCompletedAnalyticsFeatureFlag };
-
           setHTMLFixture(fixture);
 
           enableMultipleAssigneesSpy = jest
