@@ -1,0 +1,154 @@
+<script>
+import { GlButton, GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
+import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
+import { STATE_MANUAL } from './constants';
+
+export default {
+  components: {
+    GlButton,
+    GlIcon,
+    GlLink,
+    GlSprintf,
+    ClipboardButton,
+  },
+  curlLine: `export GL_PAT=<your_access_token>
+curl --request GET
+  --data 'google_cloud_project_id=<your_google_cloud_project_id>'
+  --header "PRIVATE-TOKEN: $GL_PAT"
+  --url "https://gitlab.com/api/v4/projects/<your_gitlab_project_id>/google_cloud/setup/wlif.sh"
+| bash`,
+  STATE_MANUAL,
+};
+</script>
+
+<template>
+  <div>
+    <h3>{{ s__('GoogleCloudPlatformService|Guided setup') }}</h3>
+    <p>
+      <gl-sprintf
+        :message="
+          s__(
+            'GoogleCloudPlatformService|%{linkStart}Switch to the manual setup%{linkEnd} if you cannot manage workload identity federation in Google Cloud. %{link2Start}What are the required permissions?%{link2End}',
+          )
+        "
+      >
+        <template #link="{ content }">
+          <gl-link @click="$emit('show', $options.STATE_MANUAL)">{{ content }}</gl-link>
+        </template>
+        >
+        <template #link2="{ content }">
+          <gl-link
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://cloud.google.com/iam/docs/manage-workload-identity-pools-providers#required-roles"
+          >
+            {{ content }}
+            <gl-icon name="external-link" :aria-label="__('(external link)')" />
+          </gl-link>
+        </template>
+      </gl-sprintf>
+    </p>
+
+    <h4>{{ s__('GoogleCloudPlatformService|Instructions') }}</h4>
+    <p>
+      <gl-sprintf
+        :message="
+          s__(
+            'GoogleCloudPlatformService|Before you begin, %{linkStart}install the Google Cloud CLI%{linkEnd}.',
+          )
+        "
+      >
+        <template #link="{ content }">
+          <gl-link
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://cloud.google.com/sdk/docs/install#installation_instructions"
+          >
+            {{ content }}
+            <gl-icon name="external-link" :aria-label="__('(external link)')" />
+          </gl-link>
+        </template>
+      </gl-sprintf>
+    </p>
+    <p>
+      {{
+        s__(
+          'GoogleCloudPlatformService|Run the following command to set up and connect to your Google Cloud project with workload identity federation.',
+        )
+      }}
+    </p>
+    <ul>
+      <li>
+        <gl-sprintf
+          :message="
+            s__(
+              'GoogleCloudPlatformService|Replace %{codeStart}your_access_token%{codeEnd} with a %{linkStart}new personal access token%{linkEnd} with the %{strongStart}api%{strongEnd} scope. This token sets up your Google Cloud IAM integration in GitLab.',
+            )
+          "
+        >
+          <template #code="{ content }">
+            <code>&lt;{{ content }}&gt;</code>
+          </template>
+          <template #link="{ content }">
+            <gl-link target="_blank" href="/-/user_settings/personal_access_tokens">{{
+              content
+            }}</gl-link>
+          </template>
+          <template #strong="{ content }">
+            <strong>{{ content }}</strong>
+          </template>
+        </gl-sprintf>
+      </li>
+      <li>
+        <gl-sprintf
+          :message="
+            s__(
+              'GoogleCloudPlatformService|Replace %{codeStart}your_google_cloud_project_id%{codeEnd} with your Google Cloud project ID. To improve security, use a dedicated project for identity management, separate from resources and CI/CD projects. %{linkStart}Where’s my project ID?%{linkEnd}',
+            )
+          "
+        >
+          <template #code="{ content }">
+            <code>&lt;{{ content }}&gt;</code>
+          </template>
+          <template #link="{ content }">
+            <gl-link
+              href="https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects"
+              target="_blank"
+              rel="noopener noreferrer"
+              >{{ content }}
+              <gl-icon name="external-link" :aria-label="__('(external link)')" />
+            </gl-link>
+          </template>
+        </gl-sprintf>
+      </li>
+      <li>{{ s__('GoogleCloudPlatformService|You might be prompted to sign in to Google.') }}</li>
+    </ul>
+    <div class="position-relative">
+      <pre class="gl-w-full">{{ $options.curlLine }}</pre>
+      <clipboard-button
+        :text="$options.curlLine"
+        :title="__('Copy')"
+        category="tertiary"
+        class="gl-display-none gl-md-display-flex position-absolute position-top-0 position-right-0 gl-m-3"
+      />
+    </div>
+    <p>
+      <gl-sprintf
+        :message="
+          s__(
+            'GoogleCloudPlatformService|After Google Cloud workload identity federation has been set up, select %{strongStart}Continue%{strongEnd}.',
+          )
+        "
+      >
+        <template #strong="{ content }">
+          <strong>{{ content }}</strong>
+        </template>
+      </gl-sprintf>
+    </p>
+
+    <div class="gl-mt-6 gl-display-flex gl-gap-3">
+      <gl-button variant="confirm" @click="$emit('show', 'form')">{{ __('Continue') }}</gl-button>
+      <gl-button @click="$emit('show', 'empty')">{{ __('Cancel') }}</gl-button>
+    </div>
+  </div>
+</template>
