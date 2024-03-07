@@ -1,15 +1,20 @@
 <script>
-import { GlAlert, GlButton, GlModal, GlSprintf } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLink, GlModal, GlSprintf, GlToggle } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import linkSecurityPolicyProject from '../../graphql/mutations/link_security_policy_project.mutation.graphql';
 import unlinkSecurityPolicyProject from '../../graphql/mutations/unlink_security_policy_project.mutation.graphql';
-import InstanceProjectSelector from './instance_project_selector.vue';
+import SppSelector from './spp_selector.vue';
 
 export default {
   i18n: {
     modal: {
-      okTitle: __('Save'),
-      header: s__('SecurityOrchestration|Select security project'),
+      header: s__('SecurityOrchestration|Select security policy project'),
+      subheader: s__('SecurityOrchestration|Filter and search projects'),
+      description: s__(
+        `SecurityOrchestration|Security policy projects store your organization's security policies. They are identified when policies are created, or when a project is linked as a security policy project. %{linkStart}Learn more%{linkEnd}.`,
+      ),
+      showOption: s__('SecurityOrchestration|Show only security policies projects'),
+      saveButtonText: __('Save'),
     },
     save: {
       okLink: s__('SecurityOrchestration|Security policy project was linked successfully'),
@@ -34,9 +39,11 @@ export default {
   components: {
     GlAlert,
     GlButton,
+    GlLink,
     GlModal,
     GlSprintf,
-    InstanceProjectSelector,
+    GlToggle,
+    SppSelector,
   },
   inject: [
     'disableSecurityPolicyProject',
@@ -52,12 +59,17 @@ export default {
     },
   },
   data() {
+    const initialSelectedProject = this.assignedPolicyProject
+      ? { ...this.assignedPolicyProject }
+      : null;
+
     return {
-      previouslySelectedProject: {},
-      selectedProject: { ...this.assignedPolicyProject },
+      initialSelectedProject,
+      selectedProject: initialSelectedProject,
       hasSelectedNewProject: false,
       shouldShowUnlinkWarning: false,
       savingChanges: false,
+      searchOnlyPolicyProjects: false,
     };
   },
   computed: {
@@ -89,7 +101,7 @@ export default {
           throw new Error(data.securityPolicyProjectAssign.errors);
         }
 
-        this.previouslySelectedProject = this.selectedProject;
+        this.initialSelectedProject = this.selectedProject;
 
         this.$emit('project-updated', {
           text: this.$options.i18n.save.okLink,
@@ -97,8 +109,9 @@ export default {
           hasPolicyProject: true,
         });
       } catch (e) {
-        const text = e?.message || this.$options.i18n.save.errorLink;
+        this.selectedProject = null;
 
+        const text = e?.message || this.$options.i18n.save.errorLink;
         this.$emit('project-updated', {
           text,
           variant: 'danger',
@@ -123,15 +136,16 @@ export default {
         }
 
         this.shouldShowUnlinkWarning = false;
-        this.previouslySelectedProject = {};
+        this.initialSelectedProject = null;
         this.$emit('project-updated', {
           text: this.$options.i18n.save.okUnlink,
           variant: 'success',
           hasPolicyProject: false,
         });
       } catch (e) {
-        const text = e?.message || this.$options.i18n.save.errorUnlink;
+        this.selectedProject = { ...this.assignedPolicyProject };
 
+        const text = e?.message || this.$options.i18n.save.errorUnlink;
         this.$emit('project-updated', {
           text,
           variant: 'danger',
@@ -163,7 +177,7 @@ export default {
       this.hasSelectedNewProject = true;
     },
     restoreProject() {
-      this.selectedProject = this.previouslySelectedProject;
+      this.selectedProject = this.initialSelectedProject;
     },
     closeModal() {
       if (this.hasSelectedNewProject && !this.savingChanges) {
@@ -186,7 +200,7 @@ export default {
     size="sm"
     modal-id="scan-new-policy"
     :scrollable="false"
-    :ok-title="$options.i18n.modal.okTitle"
+    :ok-title="$options.i18n.modal.saveButtonText"
     :title="$options.i18n.modal.header"
     :ok-disabled="isModalOkButtonDisabled"
     :visible="visible"
@@ -210,10 +224,25 @@ export default {
       >
         {{ $options.i18n.unlinkWarning }}
       </gl-alert>
+      <div>
+        <h5>{{ $options.i18n.modal.subheader }}</h5>
+        <gl-sprintf :message="$options.i18n.modal.description">
+          <template #link="{ content }">
+            <gl-link :href="documentationPath" target="_blank">{{ content }}</gl-link>
+          </template>
+        </gl-sprintf>
+        <gl-toggle
+          v-model="searchOnlyPolicyProjects"
+          class="gl-my-3"
+          :label="$options.i18n.modal.showOption"
+          label-position="left"
+        />
+      </div>
       <div class="gl-display-flex gl-mb-3">
-        <instance-project-selector
-          class="gl-w-full"
+        <spp-selector
+          class="gl-w-90p"
           :disabled="disableSecurityPolicyProject"
+          :only-linked="searchOnlyPolicyProjects"
           :selected-project="selectedProject"
           @projectClicked="setSelectedProject"
         />
@@ -224,15 +253,6 @@ export default {
           :aria-label="$options.i18n.unlinkButtonLabel"
           @click="confirmDeletion"
         />
-      </div>
-      <div class="gl-pb-5">
-        <gl-sprintf :message="$options.i18n.description">
-          <template #link="{ content }">
-            <gl-button class="gl-pb-1!" variant="link" :href="documentationPath" target="_blank">
-              {{ content }}
-            </gl-button>
-          </template>
-        </gl-sprintf>
       </div>
     </div>
   </gl-modal>

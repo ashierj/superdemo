@@ -10545,6 +10545,9 @@ msgstr ""
 msgid "Choose a file"
 msgstr ""
 
+msgid "Choose a project"
+msgstr ""
+
 msgid "Choose a template"
 msgstr ""
 
@@ -45227,6 +45230,9 @@ msgstr ""
 msgid "SecurityOrchestration|Fill in branch name with project name in the format of %{boldStart}branch-name@project-path,%{boldEnd} separate with `,`"
 msgstr ""
 
+msgid "SecurityOrchestration|Filter and search projects"
+msgstr ""
+
 msgid "SecurityOrchestration|Following projects:"
 msgstr ""
 
@@ -45454,6 +45460,9 @@ msgstr ""
 msgid "SecurityOrchestration|Security policy project was unlinked successfully"
 msgstr ""
 
+msgid "SecurityOrchestration|Security policy projects store your organization's security policies. They are identified when policies are created, or when a project is linked as a security policy project. %{linkStart}Learn more%{linkEnd}."
+msgstr ""
+
 msgid "SecurityOrchestration|Select a project to store your security policies in. %{linkStart}More information.%{linkEnd}"
 msgstr ""
 
@@ -45472,7 +45481,7 @@ msgstr ""
 msgid "SecurityOrchestration|Select scan type"
 msgstr ""
 
-msgid "SecurityOrchestration|Select security project"
+msgid "SecurityOrchestration|Select security policy project"
 msgstr ""
 
 msgid "SecurityOrchestration|Select users"
@@ -45491,6 +45500,9 @@ msgid "SecurityOrchestration|Show all included projects"
 msgstr ""
 
 msgid "SecurityOrchestration|Show more projects"
+msgstr ""
+
+msgid "SecurityOrchestration|Show only security policies projects"
 msgstr ""
 
 msgid "SecurityOrchestration|Something went wrong, unable to fetch policies"

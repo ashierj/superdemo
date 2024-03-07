@@ -2,9 +2,10 @@
 import { GlAvatar, GlCollapsibleListbox, GlTruncate, GlTooltipDirective } from '@gitlab/ui';
 import produce from 'immer';
 import { __ } from '~/locale';
-import getUsersProjects from '~/graphql_shared/queries/get_users_projects.query.graphql';
-import { PAGE_SIZE } from 'ee/security_orchestration/constants';
+import { NAMESPACE_TYPES, PAGE_SIZE } from 'ee/security_orchestration/constants';
 import { AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
+import getProjectSPPSuggestions from '../../graphql/queries/get_project_spp_suggestions.query.graphql';
+import getGroupSPPSuggestions from '../../graphql/queries/get_group_spp_suggestions.query.graphql';
 
 const defaultPageInfo = { endCursor: '', hasNextPage: false };
 
@@ -15,27 +16,31 @@ export default {
   QUERY_TOO_SHORT_ERROR: 'QUERY_TOO_SHORT_ERROR',
   NO_RESULTS_ERROR: 'NO_RESULTS_ERROR',
   i18n: {
-    defaultPlaceholder: __('Select a project'),
+    defaultPlaceholder: __('Choose a project'),
     errorNetworkMessage: __('Something went wrong, unable to search projects'),
     noResultsText: __('Sorry, no projects matched your search'),
     searchText: __('Enter at least three characters to search'),
   },
   apollo: {
     projects: {
-      query: getUsersProjects,
+      query() {
+        return this.namespaceType === NAMESPACE_TYPES.PROJECT
+          ? getProjectSPPSuggestions
+          : getGroupSPPSuggestions;
+      },
       variables() {
         return {
           search: this.searchQuery,
           first: PAGE_SIZE,
-          searchNamespaces: true,
-          sort: 'similarity',
+          fullPath: this.namespacePath,
+          onlyLinked: this.onlyLinked,
         };
       },
-      update(data) {
-        return data?.projects?.nodes || [];
+      update(data = {}) {
+        return data[this.namespaceType]?.securityPolicyProjectSuggestions?.nodes || [];
       },
-      result({ data }) {
-        const projects = data?.projects || {};
+      result({ data = {} }) {
+        const projects = data[this.namespaceType]?.securityPolicyProjectSuggestions || {};
 
         this.pageInfo = projects.pageInfo || defaultPageInfo;
 
@@ -59,11 +64,17 @@ export default {
     GlCollapsibleListbox,
     GlTruncate,
   },
+  inject: ['namespacePath', 'namespaceType'],
   props: {
     headerText: {
       type: String,
       required: false,
       default: __('Select a project'),
+    },
+    onlyLinked: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
     selectedProject: {
       type: Object,
@@ -112,6 +123,11 @@ export default {
         ? this.$options.i18n.searchText
         : this.$options.i18n.noResultsText;
     },
+    sppQuery() {
+      return this.namespaceType === NAMESPACE_TYPES.PROJECT
+        ? getProjectSPPSuggestions
+        : getGroupSPPSuggestions;
+    },
   },
   methods: {
     cancelSearch() {
@@ -126,9 +142,9 @@ export default {
           // Transform the previous result with new data
           updateQuery: (previousResult, { fetchMoreResult }) => {
             return produce(fetchMoreResult, (draftData) => {
-              draftData.projects.nodes = [
-                ...previousResult.projects.nodes,
-                ...draftData.projects.nodes,
+              draftData[this.namespaceType].securityPolicyProjectSuggestions.nodes = [
+                ...previousResult[this.namespaceType].securityPolicyProjectSuggestions.nodes,
+                ...draftData[this.namespaceType].securityPolicyProjectSuggestions.nodes,
               ];
             });
           },
