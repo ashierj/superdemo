@@ -17,6 +17,9 @@ module EE
 
         @security_policy_target_project_id = @params.delete(:security_policy_target_project_id)
         @security_policy_target_namespace_id = @params.delete(:security_policy_target_namespace_id)
+
+        @mirror = ::Gitlab::Utils.to_boolean(@params.delete(:mirror))
+        @mirror_trigger_builds = ::Gitlab::Utils.to_boolean(@params.delete(:mirror_trigger_builds))
       end
 
       override :execute
@@ -27,9 +30,6 @@ module EE
           return ::Projects::CreateFromTemplateService.new(current_user, params).execute
         end
 
-        mirror = ::Gitlab::Utils.to_boolean(params.delete(:mirror))
-        mirror_user_id = current_user.id if mirror
-        mirror_trigger_builds = params.delete(:mirror_trigger_builds)
         ci_cd_only = ::Gitlab::Utils.to_boolean(params.delete(:ci_cd_only))
         group_with_project_templates_id = params.delete(:group_with_project_templates_id) if params[:template_name].blank? && params[:template_project_id].blank?
 
@@ -37,12 +37,6 @@ module EE
           limit = params.delete(:repository_size_limit)
           # Repository size limit comes as MB from the view
           project.repository_size_limit = ::Gitlab::Utils.try_megabytes_to_bytes(limit) if limit
-
-          if mirror && can?(current_user, :admin_mirror, project)
-            project.mirror = mirror unless mirror.nil?
-            project.mirror_trigger_builds = mirror_trigger_builds unless mirror_trigger_builds.nil?
-            project.mirror_user_id = mirror_user_id
-          end
 
           validate_namespace_used_with_template(project, group_with_project_templates_id)
         end
@@ -57,6 +51,8 @@ module EE
       end
 
       private
+
+      attr_reader :mirror, :mirror_trigger_builds
 
       def remove_unallowed_params
         params.delete(:repository_size_limit) unless current_user&.can_admin_all_resources?
@@ -77,12 +73,23 @@ module EE
 
         create_predefined_push_rule if ::Feature.disabled?(:inherited_push_rule_for_project, project)
         set_default_compliance_framework
+        setup_pull_mirroring
 
         return unless project.group
 
         run_compliance_standards_checks
         sync_group_scan_result_policies
         create_security_policy_project_bot
+      end
+
+      def setup_pull_mirroring
+        if mirror && can?(current_user, :admin_mirror, project)
+          project.update!(
+            mirror: mirror,
+            mirror_trigger_builds: mirror_trigger_builds,
+            mirror_user_id: current_user.id
+          )
+        end
       end
 
       def create_security_policy_configuration_if_exists
