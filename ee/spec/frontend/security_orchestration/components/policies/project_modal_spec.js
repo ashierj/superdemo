@@ -1,14 +1,14 @@
-import { GlModal, GlAlert, GlCollapsibleListbox } from '@gitlab/ui';
+import { GlModal, GlAlert } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import ProjectModal from 'ee/security_orchestration/components/policies/project_modal.vue';
 import linkSecurityPolicyProject from 'ee/security_orchestration/graphql/mutations/link_security_policy_project.mutation.graphql';
 import unlinkSecurityPolicyProject from 'ee/security_orchestration/graphql/mutations/unlink_security_policy_project.mutation.graphql';
-import InstanceProjectSelector from 'ee/security_orchestration/components/policies/instance_project_selector.vue';
+import SppSelector from 'ee/security_orchestration/components/policies/spp_selector.vue';
 import {
   mockLinkSecurityPolicyProjectResponses,
   mockUnlinkSecurityPolicyProjectResponses,
@@ -23,14 +23,13 @@ describe('ProjectModal Component', () => {
     name: 'Test 1',
   };
 
-  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
-  const findInstanceProjectSelector = () => wrapper.findComponent(InstanceProjectSelector);
+  const findSppSelector = () => wrapper.findComponent(SppSelector);
   const findUnlinkButton = () => wrapper.findByLabelText('Unlink project');
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findModal = () => wrapper.findComponent(GlModal);
 
   const selectProject = async ({ project = sampleProject, shouldSubmit = true } = {}) => {
-    findInstanceProjectSelector().vm.$emit('projectClicked', project);
+    findSppSelector().vm.$emit('projectClicked', project);
     await waitForPromises();
 
     if (shouldSubmit) {
@@ -44,7 +43,7 @@ describe('ProjectModal Component', () => {
     mutationResult = mockLinkSecurityPolicyProjectResponses.success,
     provide = {},
   } = {}) => {
-    wrapper = mountExtended(ProjectModal, {
+    wrapper = shallowMountExtended(ProjectModal, {
       apolloProvider: createMockApollo([[mutationQuery, mutationResult]]),
       stubs: {
         GlModal: stubComponent(GlModal, {
@@ -77,7 +76,7 @@ describe('ProjectModal Component', () => {
         modalId: 'scan-new-policy',
         size: 'sm',
         visible: false,
-        title: 'Select security project',
+        title: 'Select security policy project',
       });
 
       expect(findModal().attributes()).toEqual({
@@ -85,10 +84,6 @@ describe('ProjectModal Component', () => {
         'ok-title': 'Save',
         'cancel-variant': 'light',
       });
-    });
-
-    it('displays a placeholder when no project is selected', () => {
-      expect(findDropdown().props('toggleText')).toBe('Select a project');
     });
 
     it('does not display the remove button when no project is selected', () => {
@@ -106,43 +101,51 @@ describe('ProjectModal Component', () => {
 
     findModal().vm.$emit('change');
     expect(wrapper.emitted('close')).toEqual([[]]);
-    expect(findInstanceProjectSelector().props('selectedProject').name).toBe('Test 1');
+    expect(findSppSelector().props('selectedProject').name).toBe('Test 1');
 
     // should restore the previous state when action is not submitted
     await nextTick();
-    expect(findInstanceProjectSelector().props('selectedProject').name).toBeUndefined();
+    expect(findSppSelector().props('selectedProject')).toBe(null);
   });
 
   describe('unlinking project', () => {
     const unlinkText =
       'Unlinking a security project removes all policies stored in the linked security project. Save to confirm this action.';
+    const assignedPolicyProject = { id: 'gid://gitlab/Project/0', name: 'Test 0' };
+
+    it('displays the warning text when unlink has been clicked', async () => {
+      createWrapper({ provide: { assignedPolicyProject } });
+
+      expect(findModal().attributes('ok-disabled')).toBe('true');
+      expect(wrapper.findByText(unlinkText).exists()).toBe(false);
+
+      await findUnlinkButton().vm.$emit('click');
+
+      expect(wrapper.findByText(unlinkText).exists()).toBe(true);
+      expect(findModal().attributes('ok-disabled')).toBeUndefined();
+    });
 
     it.each`
-      mutationResult | expectedVariant | expectedText                                           | expectedHasPolicyProject
-      ${'success'}   | ${'success'}    | ${'Security policy project was unlinked successfully'} | ${false}
-      ${'failure'}   | ${'danger'}     | ${'unlink failed'}                                     | ${true}
+      mutationType | expectedVariant | expectedText                                           | expectedHasPolicyProject | expectedSelectedProject
+      ${'success'} | ${'success'}    | ${'Security policy project was unlinked successfully'} | ${false}                 | ${null}
+      ${'failure'} | ${'danger'}     | ${'unlink failed'}                                     | ${true}                  | ${assignedPolicyProject}
     `(
-      'unlinks a project and handles $mutationResult case',
-      async ({ mutationResult, expectedVariant, expectedText, expectedHasPolicyProject }) => {
+      'unlinks a project and handles $mutationType case',
+      async ({
+        mutationType,
+        expectedVariant,
+        expectedText,
+        expectedHasPolicyProject,
+        expectedSelectedProject,
+      }) => {
         createWrapper({
           mutationQuery: unlinkSecurityPolicyProject,
-          mutationResult: mockUnlinkSecurityPolicyProjectResponses[mutationResult],
-          provide: { assignedPolicyProject: { id: 'gid://gitlab/Project/0', name: 'Test 0' } },
+          mutationResult: mockUnlinkSecurityPolicyProjectResponses[mutationType],
+          provide: { assignedPolicyProject },
         });
 
-        // Initial state
-        expect(findModal().attributes('ok-disabled')).toBe('true');
-        expect(wrapper.findByText(unlinkText).exists()).toBe(false);
-
-        // When we click on the delete button, the component should display a warning
-        findUnlinkButton().trigger('click');
-        await nextTick();
-
-        expect(wrapper.findByText(unlinkText).exists()).toBe(true);
-        expect(findModal().attributes('ok-disabled')).toBeUndefined();
-
-        // Clicking the OK button should submit a GraphQL query
-        findModal().vm.$emit('ok');
+        await findUnlinkButton().vm.$emit('click');
+        await findModal().vm.$emit('ok');
         await waitForPromises();
 
         expect(wrapper.emitted('project-updated')).toEqual([
@@ -154,6 +157,8 @@ describe('ProjectModal Component', () => {
             },
           ],
         ]);
+
+        expect(findSppSelector().props('selectedProject')).toEqual(expectedSelectedProject);
       },
     );
   });
@@ -167,7 +172,7 @@ describe('ProjectModal Component', () => {
 
       expect(findModal().attributes('ok-disabled')).toBe('true');
 
-      findInstanceProjectSelector().vm.$emit('projectClicked', {
+      findSppSelector().vm.$emit('projectClicked', {
         id: 'gid://gitlab/Project/1',
         name: 'Test 1',
       });
@@ -197,7 +202,7 @@ describe('ProjectModal Component', () => {
         ]);
 
         if (selectedProject) {
-          expect(findInstanceProjectSelector().props('selectedProject')).toEqual(selectedProject);
+          expect(findSppSelector().props('selectedProject')).toEqual(selectedProject);
         }
       },
     );
@@ -218,7 +223,7 @@ describe('ProjectModal Component', () => {
     });
 
     it('disables the dropdown', () => {
-      expect(findDropdown().props('disabled')).toBe(true);
+      expect(findSppSelector().props('disabled')).toBe(true);
     });
 
     it('displays a warning', () => {

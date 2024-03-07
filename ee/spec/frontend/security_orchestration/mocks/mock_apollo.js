@@ -54,16 +54,40 @@ export const groupScanResultPolicies = (nodes) =>
   });
 
 export const mockLinkSecurityPolicyProjectResponses = {
-  success: jest.fn().mockResolvedValue({ data: { securityPolicyProjectAssign: { errors: [] } } }),
-  failure: jest
-    .fn()
-    .mockResolvedValue({ data: { securityPolicyProjectAssign: { errors: ['link failed'] } } }),
+  success: jest.fn().mockResolvedValue({
+    data: {
+      securityPolicyProjectAssign: {
+        errors: [],
+        __typename: 'SecurityPolicyProjectAssignPayload',
+      },
+    },
+  }),
+  failure: jest.fn().mockResolvedValue({
+    data: {
+      securityPolicyProjectAssign: {
+        errors: ['link failed'],
+        __typename: 'SecurityPolicyProjectAssignPayload',
+      },
+    },
+  }),
 };
 
 export const mockUnlinkSecurityPolicyProjectResponses = {
-  success: jest.fn().mockResolvedValue({ data: { securityPolicyProjectUnassign: { errors: [] } } }),
+  success: jest.fn().mockResolvedValue({
+    data: {
+      securityPolicyProjectUnassign: {
+        errors: [],
+        __typename: 'SecurityPolicyProjectUnassignPayload',
+      },
+    },
+  }),
   failure: jest.fn().mockResolvedValue({
-    data: { securityPolicyProjectUnassign: { errors: ['unlink failed'] } },
+    data: {
+      securityPolicyProjectUnassign: {
+        errors: ['unlink failed'],
+        __typename: 'SecurityPolicyProjectUnassignPayload',
+      },
+    },
   }),
 };
 
