@@ -1,7 +1,8 @@
-import { GlButton, GlSprintf } from '@gitlab/ui';
+import { GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
 import { nextTick } from 'vue';
-import ExperimentFeaturesBanner from 'ee/security_orchestration/components/policies/experiment_features_banner.vue';
-import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
+import ApprovalPolicyNameUpdateBanner from 'ee/security_orchestration/components/policies/banners/approval_policy_name_update_banner.vue';
+import BreakingChangesBanner from 'ee/security_orchestration/components/policies/banners/breaking_changes_banner.vue';
+import ExperimentFeaturesBanner from 'ee/security_orchestration/components/policies/banners/experiment_features_banner.vue';
 import ListHeader from 'ee/security_orchestration/components/policies/list_header.vue';
 import ProjectModal from 'ee/security_orchestration/components/policies/project_modal.vue';
 import { NEW_POLICY_BUTTON_TEXT } from 'ee/security_orchestration/components/constants';
@@ -15,7 +16,6 @@ describe('List Header Component', () => {
   const projectLinkSuccessText = 'Project was linked successfully.';
 
   const findErrorAlert = () => wrapper.findByTestId('error-alert');
-  const findMigrationAlert = () => wrapper.findByTestId('migration-alert');
   const findScanNewPolicyModal = () => wrapper.findComponent(ProjectModal);
   const findHeader = () => wrapper.findByRole('heading');
   const findMoreInformationLink = () => wrapper.findComponent(GlButton);
@@ -24,7 +24,9 @@ describe('List Header Component', () => {
   const findNewPolicyButton = () => wrapper.findByTestId('new-policy-button');
   const findSubheader = () => wrapper.findByTestId('policies-subheader');
   const findExperimentFeaturesBanner = () => wrapper.findComponent(ExperimentFeaturesBanner);
-  const findLocalStorageSync = () => wrapper.findComponent(LocalStorageSync);
+  const findApprovalPolicyNameUpdateBanner = () =>
+    wrapper.findComponent(ApprovalPolicyNameUpdateBanner);
+  const findBreakingChangesBanner = () => wrapper.findComponent(BreakingChangesBanner);
 
   const linkSecurityPoliciesProject = async () => {
     findScanNewPolicyModal().vm.$emit('project-updated', {
@@ -115,16 +117,39 @@ describe('List Header Component', () => {
     });
 
     describe('migration alert', () => {
-      it('displays the migration alert', () => {
-        expect(findLocalStorageSync().exists()).toBe(true);
-        expect(findMigrationAlert().exists()).toBe(true);
+      it('shows the migration alert by default', () => {
+        expect(findApprovalPolicyNameUpdateBanner().exists()).toBe(true);
       });
 
-      it('dismisses the alert when the dismiss button is clicked', async () => {
-        await findMigrationAlert().vm.$emit('dismiss');
-        expect(findMigrationAlert().exists()).toBe(false);
-        expect(findLocalStorageSync().props().value).toBe(true);
+      it('dismiss migration alert', async () => {
+        await findApprovalPolicyNameUpdateBanner().vm.$emit('dismiss', true);
+
+        expect(findApprovalPolicyNameUpdateBanner().findComponent(GlAlert).exists()).toBe(false);
       });
+    });
+  });
+
+  describe('breaking changes alert', () => {
+    beforeEach(() => {
+      createWrapper({
+        provide: {
+          glFeatures: {
+            securityPoliciesBreakingChanges: true,
+          },
+        },
+      });
+    });
+
+    it('hides shows breaking change alert by default', () => {
+      expect(findBreakingChangesBanner().exists()).toBe(true);
+      expect(findApprovalPolicyNameUpdateBanner().exists()).toBe(false);
+    });
+
+    it('shows migration alert when breaking changes are dismissed', async () => {
+      await findBreakingChangesBanner().vm.$emit('dismiss', true);
+
+      expect(findBreakingChangesBanner().findComponent(GlAlert).exists()).toBe(false);
+      expect(findApprovalPolicyNameUpdateBanner().exists()).toBe(true);
     });
   });
 

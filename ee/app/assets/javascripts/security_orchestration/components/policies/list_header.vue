@@ -1,22 +1,24 @@
 <script>
 import { GlAlert, GlButton, GlIcon, GlSprintf } from '@gitlab/ui';
 import { joinPaths } from '~/lib/utils/url_utility';
-import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NEW_POLICY_BUTTON_TEXT } from '../constants';
-import ExperimentFeaturesBanner from './experiment_features_banner.vue';
+import ApprovalPolicyNameUpdateBanner from './banners/approval_policy_name_update_banner.vue';
+import BreakingChangesBanner from './banners/breaking_changes_banner.vue';
+import ExperimentFeaturesBanner from './banners/experiment_features_banner.vue';
 import ProjectModal from './project_modal.vue';
 
 export default {
   BANNER_STORAGE_KEY: 'security_policies_scan_result_name_change',
   components: {
+    ApprovalPolicyNameUpdateBanner,
+    BreakingChangesBanner,
     ExperimentFeaturesBanner,
     GlAlert,
     GlButton,
     GlIcon,
     GlSprintf,
-    LocalStorageSync,
     ProjectModal,
   },
   mixins: [glFeatureFlagMixin()],
@@ -35,26 +37,28 @@ export default {
     newPolicyButtonText: NEW_POLICY_BUTTON_TEXT,
     editPolicyProjectButtonText: s__('SecurityOrchestration|Edit policy project'),
     viewPolicyProjectButtonText: s__('SecurityOrchestration|View policy project'),
-    migrationTitle: s__('SecurityOrchestration|Updated policy name'),
-    migrationDescription: s__(
-      'SecurityOrchestration|The %{oldNameStart}Scan result policy%{oldNameEnd} is now called the %{newNameStart}Merge request approval policy%{newNameEnd} to better align with its purpose.',
-    ),
   },
   data() {
     return {
       projectIsBeingLinked: false,
       showAlert: false,
-      migrationAlertDismissed: false,
       alertVariant: '',
       alertText: '',
       modalVisible: false,
+      approvalPolicyNameBannerVisible: false,
     };
   },
   computed: {
+    approvalPolicyNameBannerEnabled() {
+      return this.approvalPolicyNameBannerVisible || !this.breakingChangesBannerEnabled;
+    },
     feedbackBannerEnabled() {
       return (
         this.glFeatures.securityPoliciesPolicyScope || this.glFeatures.compliancePipelineInPolicies
       );
+    },
+    breakingChangesBannerEnabled() {
+      return this.glFeatures.securityPoliciesBreakingChanges;
     },
     hasAssignedPolicyProject() {
       return Boolean(this.assignedPolicyProject?.id);
@@ -83,11 +87,11 @@ export default {
     dismissAlert() {
       this.showAlert = false;
     },
-    dismissMigrationAlert() {
-      this.migrationAlertDismissed = true;
-    },
     showNewPolicyModal() {
       this.modalVisible = true;
+    },
+    showApprovalPolicyBanner(hideBreakingChangesBanner) {
+      this.approvalPolicyNameBannerVisible = hideBreakingChangesBanner;
     },
   },
 };
@@ -163,27 +167,13 @@ export default {
         @updating-project="isUpdatingProject"
       />
     </header>
-    <local-storage-sync
-      v-model="migrationAlertDismissed"
-      :storage-key="$options.BANNER_STORAGE_KEY"
-    >
-      <gl-alert
-        v-if="!migrationAlertDismissed"
-        class="gl-mt-3 gl-mb-6"
-        :dismissible="true"
-        :title="$options.i18n.migrationTitle"
-        data-testid="migration-alert"
-        @dismiss="dismissMigrationAlert()"
-      >
-        <gl-sprintf :message="$options.i18n.migrationDescription">
-          <template #oldName="{ content }">
-            <b>{{ content }}</b>
-          </template>
-          <template #newName="{ content }">
-            <b>{{ content }}</b>
-          </template>
-        </gl-sprintf>
-      </gl-alert>
-    </local-storage-sync>
+
+    <approval-policy-name-update-banner v-if="approvalPolicyNameBannerEnabled" class="gl-my-3" />
+
+    <breaking-changes-banner
+      v-if="breakingChangesBannerEnabled"
+      class="gl-mt-3 gl-mb-6"
+      @dismiss="showApprovalPolicyBanner"
+    />
   </div>
 </template>

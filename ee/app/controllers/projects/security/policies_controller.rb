@@ -14,6 +14,7 @@ module Projects
         push_frontend_feature_flag(:scan_result_policies_block_unprotecting_branches, project)
         push_frontend_feature_flag(:security_policies_policy_scope_project, project)
         push_frontend_feature_flag(:compliance_pipeline_in_policies, project)
+        push_frontend_feature_flag(:security_policies_breaking_changes, project)
       end
 
       feature_category :security_policy_management
