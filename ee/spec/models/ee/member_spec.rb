@@ -262,6 +262,7 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
           expect(approval.new_access_level).to eq(new_access_level)
           expect(approval.old_access_level).to eq(member.access_level)
           expect(approval.requested_by).to eq(requested_by)
+          expect(approval.user_id).to eq(member.user_id)
         end.to change(member.member_approvals, :count).by(1)
       end
     end
