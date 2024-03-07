@@ -268,24 +268,29 @@ export default {
     @filter="handleFilterEpics"
   >
     <template v-if="canCreateEpic || canBulkEditEpics" #nav-actions>
-      <gl-button
-        v-if="canBulkEditEpics"
-        :disabled="showBulkEditSidebar"
-        @click="showBulkEditSidebar = true"
-        >{{ __('Bulk edit') }}</gl-button
-      >
-      <create-work-item-modal
-        v-if="canCreateEpic && glFeatures.namespaceLevelWorkItems"
-        :work-item-type="$options.WORK_ITEM_TYPE_ENUM_EPIC"
-      />
-      <gl-button
-        v-else-if="canCreateEpic"
-        category="primary"
-        variant="confirm"
-        :href="epicNewPath"
-        data-testid="new-epic-button"
-        >{{ __('New epic') }}</gl-button
-      >
+      <div class="gl-display-flex gl-gap-3">
+        <gl-button
+          v-if="canBulkEditEpics"
+          class="gl-w-auto! gl-flex-grow-1"
+          :disabled="showBulkEditSidebar"
+          @click="showBulkEditSidebar = true"
+          >{{ __('Bulk edit') }}</gl-button
+        >
+        <create-work-item-modal
+          v-if="canCreateEpic && glFeatures.namespaceLevelWorkItems"
+          class="gl-flex-grow-1"
+          :work-item-type="$options.WORK_ITEM_TYPE_ENUM_EPIC"
+        />
+        <gl-button
+          v-else-if="canCreateEpic"
+          category="primary"
+          variant="confirm"
+          class="gl-w-auto! gl-flex-grow-1"
+          :href="epicNewPath"
+          data-testid="new-epic-button"
+          >{{ __('New epic') }}</gl-button
+        >
+      </div>
     </template>
     <template #bulk-edit-actions="{ checkedIssuables }">
       <gl-button
