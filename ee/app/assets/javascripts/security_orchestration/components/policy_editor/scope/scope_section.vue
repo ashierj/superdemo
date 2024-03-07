@@ -84,7 +84,7 @@ export default {
         const items = [...linkedProjects, ...linkedNamespaces];
 
         if (isEmpty(this.policyScope) && items.length > 1 && !this.isGroupLevel) {
-          this.triggerChanged({ compliance_frameworks: [] });
+          this.triggerChanged({ projects: { excluding: [] } });
         }
 
         return items;
@@ -107,15 +107,19 @@ export default {
     },
   },
   data() {
-    let selectedProjectScopeType = PROJECTS_WITH_FRAMEWORK;
+    let selectedProjectScopeType = ALL_PROJECTS_IN_GROUP;
     let selectedExceptionType = WITHOUT_EXCEPTIONS;
     let projectsPayloadKey = EXCLUDING;
 
     const { projects = [] } = this.policyScope || {};
 
     if (projects?.excluding) {
-      selectedProjectScopeType = ALL_PROJECTS_IN_GROUP;
-      selectedExceptionType = EXCEPT_PROJECTS;
+      selectedExceptionType =
+        projects?.excluding?.length > 0 ? EXCEPT_PROJECTS : WITHOUT_EXCEPTIONS;
+    }
+
+    if (this.policyScope?.compliance_frameworks) {
+      selectedProjectScopeType = PROJECTS_WITH_FRAMEWORK;
     }
 
     if (projects?.including) {
