@@ -19,7 +19,7 @@ RSpec.describe ::Ai::Agents::UpdateAgentService, feature_category: :mlops do
       let(:project) { agent.project }
 
       it 'updates an agent', :aggregate_failures do
-        expect(updated_agent.name).to eq(name)
+        expect(updated_agent.reload.name).to eq(name)
         expect(updated_agent.latest_version.prompt).to eq(prompt)
       end
     end
