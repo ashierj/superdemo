@@ -247,7 +247,7 @@ describe('AnalyticsDashboard', () => {
   });
 
   describe('when dashboard fails to load', () => {
-    const error = new Error('ruh roh some error');
+    let error = new Error();
 
     beforeEach(() => {
       mockAnalyticsDashboardsHandler = jest.fn().mockRejectedValue(error);
@@ -267,13 +267,39 @@ describe('AnalyticsDashboard', () => {
     it('creates an alert', () => {
       expect(createAlert).toHaveBeenCalledWith({
         message: expect.stringContaining(
-          'Something went wrong while loading the dashboard. Refresh the page to try again',
+          'ruh roh some error. Refresh the page to try again or see %{linkStart}troubleshooting documentation%{linkEnd}',
         ),
         messageLinks: {
           link: '/help/user/analytics/analytics_dashboards#troubleshooting',
         },
         captureError: true,
         error,
+        title: 'Failed to load dashboard',
+      });
+    });
+
+    describe('with a specified error message', () => {
+      error = new Error('ruh roh some error');
+
+      beforeEach(() => {
+        mockAnalyticsDashboardsHandler = jest.fn().mockRejectedValue(error);
+
+        createWrapper();
+        return waitForPromises();
+      });
+
+      it('creates an alert with the error message and a troubleshooting link', () => {
+        expect(createAlert).toHaveBeenCalledWith({
+          message: expect.stringContaining(
+            'ruh roh some error. Refresh the page to try again or see %{linkStart}troubleshooting documentation%{linkEnd}',
+          ),
+          messageLinks: {
+            link: '/help/user/analytics/analytics_dashboards#troubleshooting',
+          },
+          captureError: true,
+          error,
+          title: 'Failed to load dashboard',
+        });
       });
     });
   });
@@ -445,6 +471,7 @@ describe('AnalyticsDashboard', () => {
             message: 'Error while saving dashboard',
             captureError: true,
             error: new Error(`Bad save dashboard response. Status:${HTTP_STATUS_FORBIDDEN}`),
+            title: '',
           });
         });
 
@@ -458,6 +485,7 @@ describe('AnalyticsDashboard', () => {
             error: newError,
             message: 'Error while saving dashboard',
             captureError: true,
+            title: '',
           });
         });
 
@@ -506,6 +534,7 @@ describe('AnalyticsDashboard', () => {
           message,
           error: badRequestError,
           captureError: false,
+          title: '',
         });
       });
 

@@ -189,6 +189,12 @@ export const DEFAULT_VISUALIZATION_TITLE = '';
 export const DEFAULT_SELECTED_VISUALIZATION_TYPE = '';
 
 export const FILE_ALREADY_EXISTS_SERVER_RESPONSE = 'A file with this name already exists';
+export const DEFAULT_DASHBOARD_LOADING_ERROR = s__(
+  'Analytics|Something went wrong while loading the dashboard. Refresh the page to try again or see %{linkStart}troubleshooting documentation%{linkEnd}.',
+);
+export const DASHBOARD_REFRESH_MESSAGE = s__(
+  'Analytics|Refresh the page to try again or see %{linkStart}troubleshooting documentation%{linkEnd}.',
+);
 
 export const EVENT_LABEL_CREATED_DASHBOARD = 'user_created_custom_dashboard';
 export const EVENT_LABEL_EDITED_DASHBOARD = 'user_edited_custom_dashboard';

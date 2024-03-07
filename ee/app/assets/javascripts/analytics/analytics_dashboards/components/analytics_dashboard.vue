@@ -29,6 +29,8 @@ import {
   EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
   EVENT_LABEL_VIEWED_BUILTIN_DASHBOARD,
   EVENT_LABEL_VIEWED_DASHBOARD,
+  DEFAULT_DASHBOARD_LOADING_ERROR,
+  DASHBOARD_REFRESH_MESSAGE,
 } from '../constants';
 import getCustomizableDashboardQuery from '../graphql/queries/get_customizable_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_customizable_visualizations.query.graphql';
@@ -175,12 +177,16 @@ export default {
         this.breadcrumbState.updateName(this.initialDashboard?.title || '');
       },
       error(error) {
+        const message = [
+          error.message || DEFAULT_DASHBOARD_LOADING_ERROR,
+          DASHBOARD_REFRESH_MESSAGE,
+        ].join('. ');
+
         this.showError({
           error,
           capture: true,
-          message: s__(
-            'Analytics|Something went wrong while loading the dashboard. Refresh the page to try again or see %{linkStart}troubleshooting documentation%{linkEnd}.',
-          ),
+          title: s__('Analytics|Failed to load dashboard'),
+          message,
           messageLinks: {
             link: helpPagePath('user/analytics/analytics_dashboards', {
               anchor: '#troubleshooting',
@@ -291,8 +297,9 @@ export default {
         this.isSaving = false;
       }
     },
-    showError({ error, capture, message, messageLinks }) {
+    showError({ error, capture, message, messageLinks, title = '' }) {
       this.alert = createAlert({
+        title,
         message: message || s__('Analytics|Error while saving dashboard'),
         messageLinks,
         error,
