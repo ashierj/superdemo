@@ -256,8 +256,8 @@ RSpec.describe ApprovalRules::CreateService, feature_category: :source_code_mana
         target.add_maintainer(user)
       end
 
-      it 'returns a forbidden status' do
-        expect(subject[:http_status]).to eq 403
+      it 'returns a reason :access_denied' do
+        expect(subject.reason).to eq(:access_denied)
       end
     end
 

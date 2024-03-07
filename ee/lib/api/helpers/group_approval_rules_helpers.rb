@@ -32,13 +32,13 @@ module API
       def create_group_approval_rule(present_with:)
         authorize_group_approval_rule!
 
-        result = ::ApprovalRules::CreateService.new(user_group, current_user,
-          declared_params(include_missing: false)).execute
+        create_params = declared_params(include_missing: false)
+        result = ::ApprovalRules::CreateService.new(user_group, current_user, create_params).execute
 
         if result[:status] == :success
           present result[:rule], with: present_with, current_user: current_user
         else
-          render_api_error!(result[:message], result[:http_status] || 400)
+          render_api_error!(result.message, result.cause.access_denied? ? 403 : 400)
         end
       end
 
@@ -48,13 +48,13 @@ module API
         approval_rule = user_group.approval_rules.find_by_id(params[:approval_rule_id])
         not_found!('Approval Rule') unless approval_rule
 
-        result = ::ApprovalRules::UpdateService.new(approval_rule, current_user,
-          declared_params(include_missing: false)).execute
+        update_params = declared_params(include_missing: false)
+        result = ::ApprovalRules::UpdateService.new(approval_rule, current_user, update_params).execute
 
         if result[:status] == :success
           present result[:rule], with: present_with, current_user: current_user
         else
-          render_api_error!(result[:message], result[:http_status] || 400)
+          render_api_error!(result.message, result.cause.access_denied? ? 403 : 400)
         end
       end
     end

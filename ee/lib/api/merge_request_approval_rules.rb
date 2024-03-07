@@ -49,10 +49,10 @@ module API
           merge_request = find_merge_request_with_access(params[:merge_request_iid], :update_approvers)
           result = ::ApprovalRules::CreateService.new(merge_request, current_user, declared_params(include_missing: false)).execute
 
-          if result[:status] == :success
+          if result.success?
             present result[:rule], with: EE::API::Entities::MergeRequestApprovalRule, current_user: current_user
           else
-            render_api_error!(result[:message], result[:http_status] || 400)
+            render_api_error!(result.message, result.cause.access_denied? ? 403 : 400)
           end
         end
 
@@ -90,10 +90,10 @@ module API
             approval_rule = find_merge_request_approval_rule(merge_request, params.delete(:approval_rule_id))
             result = ::ApprovalRules::UpdateService.new(approval_rule, current_user, params).execute
 
-            if result[:status] == :success
+            if result.success?
               present result[:rule], with: EE::API::Entities::MergeRequestApprovalRule, current_user: current_user
             else
-              render_api_error!(result[:message], result[:http_status] || 400)
+              render_api_error!(result.message, result.cause.access_denied? ? 403 : 400)
             end
           end
 
@@ -111,8 +111,8 @@ module API
             destroy_conditionally!(approval_rule) do |rule|
               result = ::ApprovalRules::MergeRequestRuleDestroyService.new(rule, current_user).execute
 
-              if result[:status] == :error
-                render_api_error!(result[:message], result[:http_status] || 400)
+              if result.error?
+                render_api_error!(result.message, result.cause.access_denied? ? 403 : 400)
               end
             end
           end

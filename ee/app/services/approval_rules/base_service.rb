@@ -3,7 +3,7 @@
 module ApprovalRules
   class BaseService < BaseContainerService
     def execute
-      return error(['Prohibited'], 403) unless can_edit?
+      return ServiceResponse.error(message: %w[Prohibited], reason: :access_denied) unless can_edit?
 
       action
     end
@@ -30,8 +30,12 @@ module ApprovalRules
       @skip_authorization ||= params&.delete(:skip_authorization)
     end
 
-    def success(*args, &blk)
-      super.tap { |hsh| hsh[:rule] = rule }
+    def success
+      ServiceResponse.success(payload: { rule: rule })
+    end
+
+    def error
+      ServiceResponse.error(message: rule.errors.messages)
     end
 
     def merge_request_activity_counter

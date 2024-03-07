@@ -84,7 +84,7 @@ module EE
               if result[:status] == :success
                 present_approval(merge_request)
               else
-                render_api_error!(result[:message], result[:http_status] || 400)
+                render_api_error!(result.message, result.cause.access_denied? ? 403 : 400)
               end
             end
           end
