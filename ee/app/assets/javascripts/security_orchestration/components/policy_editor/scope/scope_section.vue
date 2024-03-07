@@ -1,6 +1,6 @@
 <script>
 import { isEmpty } from 'lodash';
-import { GlAlert, GlCollapsibleListbox, GlIcon, GlSprintf, GlLoadingIcon } from '@gitlab/ui';
+import { GlAlert, GlCollapsibleListbox, GlIcon, GlSprintf } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -9,6 +9,7 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
+import LoaderWithMessage from '../../loader_with_message.vue';
 import GroupProjectsDropdown from '../../group_projects_dropdown.vue';
 import ComplianceFrameworkDropdown from './compliance_framework_dropdown.vue';
 import ScopeSectionAlert from './scope_section_alert.vue';
@@ -61,9 +62,9 @@ export default {
     GlAlert,
     GlIcon,
     GlCollapsibleListbox,
-    GlLoadingIcon,
     GlSprintf,
     GroupProjectsDropdown,
+    LoaderWithMessage,
     PolicyPopover,
     ScopeSectionAlert,
   },
@@ -278,10 +279,7 @@ export default {
       {{ errorDescription }}
     </gl-alert>
 
-    <div v-if="showLoader" class="gl-display-flex gl-gap-3 gl-align-items-baseline gl-mb-4">
-      <gl-loading-icon inline />
-      <span data-testid="loading-text">{{ $options.i18n.policyScopeLoadingText }}</span>
-    </div>
+    <loader-with-message v-if="showLoader" class="gl-mb-4" />
 
     <div v-else class="gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap gl-mt-2 gl-mb-6">
       <template v-if="showLinkedSppItemsError">

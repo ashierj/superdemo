@@ -138,3 +138,36 @@ export const complianceFrameworksResponse = [
     },
   },
 ];
+
+export const mockLinkedSppItemsResponse = ({ projects = [], namespaces = [] } = {}) =>
+  jest.fn().mockResolvedValue({
+    data: {
+      project: {
+        id: '1',
+        securityPolicyProjectLinkedProjects: {
+          nodes: projects,
+        },
+        securityPolicyProjectLinkedNamespaces: {
+          nodes: namespaces,
+        },
+      },
+    },
+  });
+
+export const POLICY_SCOPE_MOCK = {
+  policyScope: {
+    __typename: 'PolicyScope',
+    complianceFrameworks: {
+      nodes: [],
+      pageInfo: {},
+    },
+    excludingProjects: {
+      nodes: [],
+      pageInfo: {},
+    },
+    includingProjects: {
+      nodes: [],
+      pageInfo: {},
+    },
+  },
+};
