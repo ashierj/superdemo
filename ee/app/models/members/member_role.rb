@@ -177,6 +177,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   end
 
   def set_occupies_seat
-    self.occupies_seat = self.class.elevating_permissions.any? { |attr| self[attr] }
+    self.occupies_seat = base_access_level > Gitlab::Access::GUEST ||
+      self.class.elevating_permissions.any? { |attr| self[attr] }
   end
 end
