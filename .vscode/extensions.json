@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "gitlab.gitlab-workflow",
-    "shopify.ruby-lsp"
+    "shopify.ruby-lsp",
+    "deque-systems.vscode-axe-linter"
   ]
 }
