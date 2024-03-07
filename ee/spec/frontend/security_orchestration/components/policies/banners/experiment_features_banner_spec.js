@@ -1,5 +1,5 @@
 import { GlBanner, GlLink, GlSprintf } from '@gitlab/ui';
-import ExperimentFeaturesBanner from 'ee/security_orchestration/components/policies/experiment_features_banner.vue';
+import ExperimentFeaturesBanner from 'ee/security_orchestration/components/policies/banners/experiment_features_banner.vue';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
