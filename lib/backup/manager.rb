@@ -16,6 +16,7 @@ module Backup
       @remote_storage = Backup::RemoteStorage.new(progress: progress, options: options)
     end
 
+    # @return [Boolean] whether all tasks succeeded
     def create
       # Deprecation: Using backup_id (ENV['BACKUP']) to specify previous backup was deprecated in 15.0
       previous_backup = options.previous_backup || options.backup_id
@@ -27,9 +28,11 @@ module Backup
            "and are not included in this backup. You will need these files to restore a backup.\n" \
            "Please back them up manually.".color(:red)
       puts_time "Backup #{backup_id} is done."
+      true
     end
 
     # @param [Gitlab::Backup::Tasks::Task] task
+    # @return [Boolean] whether the task succeeded
     def run_create_task(task)
       build_backup_information
 
@@ -37,20 +40,22 @@ module Backup
 
       unless task.enabled?
         puts_time "Dumping #{task.human_name} ... ".color(:blue) + "[DISABLED]".color(:cyan)
-        return
+        return true
       end
 
       if options.skip_task?(task.id)
         puts_time "Dumping #{task.human_name} ... ".color(:blue) + "[SKIPPED]".color(:cyan)
-        return
+        return true
       end
 
       puts_time "Dumping #{task.human_name} ... ".color(:blue)
       task.target.dump(destination_dir, backup_id)
       puts_time "Dumping #{task.human_name} ... ".color(:blue) + "done".color(:green)
+      true
 
     rescue Backup::DatabaseBackupError, Backup::FileBackupError => e
       puts_time "Dumping #{task.human_name} failed: #{e.message}".color(:red)
+      false
     end
 
     def restore
