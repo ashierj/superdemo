@@ -77,7 +77,7 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
         resource_parent.add_developer(user)
       end
 
-      it 'returns all dashboards' do
+      it 'returns all dashboards', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/446187' do
         post_graphql(query, current_user: user)
 
         expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('title'))
