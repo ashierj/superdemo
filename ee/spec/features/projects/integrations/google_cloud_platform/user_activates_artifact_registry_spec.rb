@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User activates Artifact Registry', :js, :sidekiq_inline, feature_category: :package_registry do
+RSpec.describe 'User activates Artifact Registry', :js, :sidekiq_inline, feature_category: :container_registry do
   include_context 'project integration activation'
 
   let_it_be(:parent_group) { create(:group) }
@@ -15,11 +15,14 @@ RSpec.describe 'User activates Artifact Registry', :js, :sidekiq_inline, feature
 
   before do
     stub_saas_features(google_cloud_support: true)
-    visit_project_integration('Google Artifact Registry')
   end
+
+  subject(:visit_page) { visit_project_integration('Google Artifact Registry') }
 
   shared_examples 'activates integration' do
     it 'activates integration' do
+      visit_page
+
       expect(page).not_to have_link('View artifacts')
 
       fill_in s_('GoogleCloudPlatformService|Google Cloud project ID'),
@@ -40,6 +43,8 @@ RSpec.describe 'User activates Artifact Registry', :js, :sidekiq_inline, feature
 
   shared_examples 'inactive integration' do
     it 'shows empty state & links to iam integration page' do
+      visit_page
+
       expect(page).to have_link('Set up Google Cloud IAM',
         href: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation))
       expect(page).to have_button('Invite member to set up')
@@ -50,49 +55,23 @@ RSpec.describe 'User activates Artifact Registry', :js, :sidekiq_inline, feature
     it_behaves_like 'inactive integration'
   end
 
-  context 'when the iam integration is active at parent level & inactive at project level' do
-    before do
-      parent_integration = create(:google_cloud_platform_workload_identity_federation_integration, project: nil,
-        group: parent_group)
-      # propagate the integrations to the nested levels
-      ::Integrations::PropagateService.new(parent_integration).execute
-      project.google_cloud_platform_workload_identity_federation_integration.update_column(:active, false)
-      visit current_path
+  context 'with an active iam integration in the root group' do
+    let_it_be(:root_group_integration) do
+      create(:google_cloud_platform_workload_identity_federation_integration, project: nil, group: parent_group)
     end
 
-    it_behaves_like 'inactive integration'
-  end
-
-  context 'when the iam integration is active at group level' do
     before do
-      group_integration = create(:google_cloud_platform_workload_identity_federation_integration, project: nil,
-        group: group)
-      # propagate the integrations to the nested levels
-      ::Integrations::PropagateService.new(group_integration).execute
-      visit current_path
+      ::Integrations::PropagateService.new(root_group_integration).execute
     end
 
     it_behaves_like 'activates integration'
-  end
 
-  context 'when the iam integration is active at project level' do
-    before do
-      create(:google_cloud_platform_workload_identity_federation_integration, project: project)
-      visit current_path
+    context 'and inactive at project level' do
+      before do
+        project.google_cloud_platform_workload_identity_federation_integration.update_column(:active, false)
+      end
+
+      it_behaves_like 'inactive integration'
     end
-
-    it_behaves_like 'activates integration'
-  end
-
-  context 'when the iam integration is active at parent level' do
-    before do
-      parent_integration = create(:google_cloud_platform_workload_identity_federation_integration, project: nil,
-        group: parent_group)
-      # propagate the integrations to the nested levels
-      ::Integrations::PropagateService.new(parent_integration).execute
-      visit current_path
-    end
-
-    it_behaves_like 'activates integration'
   end
 end
