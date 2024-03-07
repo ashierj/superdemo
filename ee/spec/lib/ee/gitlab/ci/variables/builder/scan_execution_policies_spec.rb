@@ -67,18 +67,22 @@ RSpec.describe Gitlab::Ci::Variables::Builder::ScanExecutionPolicies, feature_ca
       end
 
       # the suffixes get assigned in order of the actions in the policies
-      where(:job_name, :expected_variables_lambda) do
-        'build-job'                              | -> { [] }
-        'dast-on-demand-0'                       | -> { [item(key: 'DAST_WEBSITE', value: 'https://my.site.com')] }
-        'container-scanning-0'                   | -> { [item(key: 'CS_REGISTRY_USER', value: 'user')] }
-        'brakeman-sast-1'                        | -> { [item(key: 'SAST_EXCLUDED_ANALYZERS', value: 'semgrep')] }
-        'secret-detection-2'                     | -> { [item(key: 'SECRET_DETECTION_HISTORIC_SCAN', value: 'true')] }
-        'kics-iac-sast-3'                        | -> { [item(key: 'SAST_IMAGE_SUFFIX', value: '-fips')] }
-        'gemnasium-python-dependency-scanning-4' | -> { [item(key: 'DS_IMAGE_SUFFIX', value: '-fips')] }
+      where(:job_name, :expected_variables) do
+        'build-job'                              | {}
+        'dast-on-demand-0'                       | { 'DAST_WEBSITE' => 'https://my.site.com' }
+        'container-scanning-0'                   | { 'CS_REGISTRY_USER' => 'user' }
+        'brakeman-sast-1'                        | { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep',
+                                                     'SAST_EXCLUDED_PATHS' => 'spec, test, tests, tmp' }
+        'secret-detection-2'                     | { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true',
+                                                      'SECRET_DETECTION_EXCLUDED_PATHS' => '' }
+        'kics-iac-sast-3'                        | { 'SAST_IMAGE_SUFFIX' => '-fips',
+                                                     'SAST_EXCLUDED_PATHS' => 'spec, test, tests, tmp' }
+        'gemnasium-python-dependency-scanning-4' | { 'DS_IMAGE_SUFFIX' => '-fips',
+                                                     'DS_EXCLUDED_PATHS' => 'spec, test, tests, tmp' }
       end
 
       with_them do
-        it { is_expected.to match_array(expected_variables_lambda.call) }
+        it { is_expected.to match_array(expected_variables.map { |key, value| item(key: key, value: value) }) }
       end
 
       describe 'memoization' do
@@ -88,7 +92,10 @@ RSpec.describe Gitlab::Ci::Variables::Builder::ScanExecutionPolicies, feature_ca
           end
 
           2.times do
-            expect(builder.variables(job)).to match_array(item(key: 'SECRET_DETECTION_HISTORIC_SCAN', value: 'true'))
+            expect(builder.variables(job)).to match_array([
+              item(key: 'SECRET_DETECTION_HISTORIC_SCAN', value: 'true'),
+              item(key: 'SECRET_DETECTION_EXCLUDED_PATHS', value: '')
+            ])
           end
         end
       end
@@ -122,13 +129,20 @@ RSpec.describe Gitlab::Ci::Variables::Builder::ScanExecutionPolicies, feature_ca
         end
 
         where(:job_name, :expected_variables_lambda) do
-          'build-job'                              | -> { [] }
-          'container-scanning-0'                   | -> { [item(key: 'CS_REGISTRY_USER', value: 'user')] }
-          'brakeman-sast-1'                        | -> { [item(key: 'SAST_EXCLUDED_ANALYZERS', value: 'semgrep')] }
+          'build-job'            | -> { [] }
+          'container-scanning-0' | -> { [item(key: 'CS_REGISTRY_USER', value: 'user')] }
+          'brakeman-sast-1'      | -> do
+            [
+              item(key: 'SAST_EXCLUDED_PATHS', value: 'spec, test, tests, tmp'),
+              item(key: 'SAST_EXCLUDED_ANALYZERS', value: 'semgrep')
+            ]
+          end
         end
 
         with_them do
-          it { is_expected.to match_array(expected_variables_lambda.call) }
+          it do
+            is_expected.to match_array(expected_variables_lambda.call)
+          end
         end
       end
 

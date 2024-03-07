@@ -2,7 +2,7 @@
 
 module Security
   module SecurityOrchestrationPolicies
-    class CiConfigurationService
+    class CiConfigurationService < ::BaseService
       ACTION_CLASSES = {
         'secret_detection' => CiAction::Template,
         'container_scanning' => CiAction::Template,
@@ -15,7 +15,15 @@ module Security
       def execute(action, ci_variables, context, index = 0)
         action_class = ACTION_CLASSES[action[:scan]] || CiAction::Unknown
 
-        action_class.new(action, ci_variables, context, index).config
+        opts = { allow_restricted_variables_at_policy_level: allow_restricted_variables_at_policy_level? }
+
+        action_class.new(action, ci_variables, context, index, opts).config
+      end
+
+      private
+
+      def allow_restricted_variables_at_policy_level?
+        Feature.enabled?(:allow_restricted_variables_at_policy_level, project, type: :gitlab_com_derisk)
       end
     end
   end
