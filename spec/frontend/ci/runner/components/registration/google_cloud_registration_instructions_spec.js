@@ -11,6 +11,7 @@ import GoogleCloudRegistrationInstructions from '~/ci/runner/components/registra
 import runnerForRegistrationQuery from '~/ci/runner/graphql/register/runner_for_registration.query.graphql';
 import provisionGoogleCloudRunnerQueryProject from '~/ci/runner/graphql/register/provision_google_cloud_runner_project.query.graphql';
 import provisionGoogleCloudRunnerQueryGroup from '~/ci/runner/graphql/register/provision_google_cloud_runner_group.query.graphql';
+import { STATUS_ONLINE } from '~/ci/runner/constants';
 import {
   runnerForRegistration,
   mockAuthenticationToken,
@@ -33,6 +34,14 @@ const mockRunnerWithoutTokenResponse = {
     runner: {
       ...runnerForRegistration.data.runner,
       ephemeralAuthenticationToken: null,
+    },
+  },
+};
+const mockRunnerOnlineResponse = {
+  data: {
+    runner: {
+      ...runnerForRegistration.data.runner,
+      status: STATUS_ONLINE,
     },
   },
 };
@@ -97,6 +106,7 @@ describe('GoogleCloudRegistrationInstructions', () => {
 
   const runnerWithTokenResolver = jest.fn().mockResolvedValue(mockRunnerResponse);
   const runnerWithoutTokenResolver = jest.fn().mockResolvedValue(mockRunnerWithoutTokenResponse);
+  const runnerOnlineResolver = jest.fn().mockResolvedValue(mockRunnerOnlineResponse);
   const projectInstructionsResolver = jest.fn().mockResolvedValue(mockProjectRunnerCloudSteps);
   const groupInstructionsResolver = jest.fn().mockResolvedValue(mockGroupRunnerCloudSteps);
 
@@ -223,6 +233,19 @@ describe('GoogleCloudRegistrationInstructions', () => {
     expect(findModalBashInstructions().text()).not.toBeNull();
     expect(findModalTerraformInstructions().text()).not.toBeNull();
     expect(findModalTerraformApplyInstructions().text()).not.toBeNull();
+  });
+
+  it('Shows feedback when runner is online', async () => {
+    createComponent([[runnerForRegistrationQuery, runnerOnlineResolver]]);
+
+    await waitForPromises();
+
+    expect(runnerOnlineResolver).toHaveBeenCalledTimes(1);
+    expect(runnerOnlineResolver).toHaveBeenCalledWith({
+      id: expect.stringContaining(mockRunnerId),
+    });
+
+    expect(wrapper.text()).toContain('Your runner is online');
   });
 
   describe('Field validation', () => {
