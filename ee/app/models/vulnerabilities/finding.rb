@@ -41,6 +41,11 @@ module Vulnerabilities
 
     has_many :finding_pipelines, class_name: 'Vulnerabilities::FindingPipeline', inverse_of: :finding, foreign_key: 'occurrence_id'
 
+    # rubocop: disable Rails/InverseOf -- these relations are not present on Ci::Pipeline
+    belongs_to :initial_finding_pipeline, class_name: '::Ci::Pipeline', foreign_key: 'initial_pipeline_id'
+    belongs_to :latest_finding_pipeline, class_name: '::Ci::Pipeline', foreign_key: 'latest_pipeline_id'
+    # rubocop:enable Rails/InverseOf
+
     has_many :signatures, class_name: 'Vulnerabilities::FindingSignature', inverse_of: :finding
 
     has_many :vulnerability_flags, class_name: 'Vulnerabilities::Flag', inverse_of: :finding, foreign_key: 'vulnerability_occurrence_id'
