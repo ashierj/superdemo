@@ -5,19 +5,17 @@ module Security
     module CiAction
       class Custom < Base
         def config
-          if @action[:ci_configuration]
-            custom_pipeline_configuration
-          elsif @action[:ci_configuration_path]
-            Gitlab::Ci::Config::External::Processor.new(
-              { include: action[:ci_configuration_path] }, @context
-            ).perform
-          end
-        end
+          @ci_config = Gitlab::Ci::Config.new(yaml_config, inject_edge_stages: false, user: @context.user)
 
-        private
+          job_names = parse_job_names
 
-        def custom_pipeline_configuration
-          Gitlab::Ci::Config.new(@action[:ci_configuration], inject_edge_stages: false, user: @context.user).to_hash
+          @ci_config = @ci_config.to_hash
+
+          assign_default_stage(job_names)
+
+          @ci_config.delete(:stages)
+
+          @ci_config
         rescue Gitlab::Ci::Config::ConfigError => e
           {
             generate_job_name_with_index('security_policy_ci') => {
@@ -25,6 +23,22 @@ module Security
               'allow_failure' => true
             }
           }
+        end
+
+        private
+
+        def parse_job_names
+          @ci_config.jobs.present? ? @ci_config.jobs.keys : []
+        end
+
+        def assign_default_stage(job_names)
+          job_names.each do |name|
+            @ci_config[name][:stage] = '.pipeline-policy-test' unless @ci_config[name].key?(:stage)
+          end
+        end
+
+        def yaml_config
+          action[:ci_configuration] || { include: action[:ci_configuration_path] }.to_yaml
         end
       end
     end

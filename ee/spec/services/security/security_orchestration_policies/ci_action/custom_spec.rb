@@ -17,10 +17,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Custom,
     let(:ci_configuration) do
       <<~CI_CONFIG
       image: busybox:latest
-      stages:
-        - custom_stage
       custom:
-        stage: custom_stage
+        stage: test
         script:
           - echo "Defined in security policy"
       CI_CONFIG
@@ -38,10 +36,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Custom,
               script: [
                 "echo \"Defined in security policy\""
               ],
-              stage: "custom_stage"
+              stage: "test"
             },
-            image: "busybox:latest",
-            stages: ["custom_stage"]
+            image: "busybox:latest"
           }
         )
       end
@@ -99,6 +96,55 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Custom,
 
         it { is_expected.to eq(image: 'busybox:latest') }
       end
+
+      context 'when custom stages are defined' do
+        let(:ci_configuration) do
+          <<~CI_CONFIG
+          stages:
+            - custom_stage
+          custom:
+            stage: test
+            script:
+              - echo "Defined in security policy"
+          CI_CONFIG
+        end
+
+        it 'removes custom stage definitions' do
+          is_expected.to eq(
+            {
+              custom: {
+                script: [
+                  "echo \"Defined in security policy\""
+                ],
+                stage: "test"
+              }
+            }
+          )
+        end
+      end
+
+      context 'when the job is not assigned to a stage' do
+        let(:ci_configuration) do
+          <<~CI_CONFIG
+          custom:
+            script:
+              - echo "Defined in security policy"
+          CI_CONFIG
+        end
+
+        it 'will be assigned to the .pipeline-policy-test stage' do
+          is_expected.to eq(
+            {
+              custom: {
+                script: [
+                  "echo \"Defined in security policy\""
+                ],
+                stage: ".pipeline-policy-test"
+              }
+            }
+          )
+        end
+      end
     end
 
     context 'with ci_configuration_path' do
@@ -127,10 +173,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Custom,
               script: [
                 "echo \"Defined in security policy\""
               ],
-              stage: "custom_stage"
+              stage: "test"
             },
-            image: "busybox:latest",
-            stages: ["custom_stage"]
+            image: "busybox:latest"
           }
         )
       end
@@ -165,10 +210,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Custom,
               script: [
                 "echo \"Defined in security policy\""
               ],
-              stage: "custom_stage"
+              stage: "test"
             },
-            image: "busybox:latest",
-            stages: ["custom_stage"]
+            image: "busybox:latest"
           }
         )
       end
