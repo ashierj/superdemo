@@ -9,6 +9,8 @@ RSpec.describe AuditEvents::Group::ExternalStreamingDestination, feature_categor
     it 'belongs to a group' do
       expect(destination.group).not_to be_nil
     end
+
+    it { is_expected.to have_many(:event_type_filters) }
   end
 
   describe 'Validations' do

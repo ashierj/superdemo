@@ -14,6 +14,8 @@ module AuditEvents
       validate :top_level_group?
       validates :name, uniqueness: { scope: :group_id }
 
+      has_many :event_type_filters, class_name: 'AuditEvents::Group::EventTypeFilter'
+
       def top_level_group?
         errors.add(:group, 'must not be a subgroup. Use a top-level group.') if group.subgroup?
       end
