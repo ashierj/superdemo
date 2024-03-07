@@ -617,6 +617,11 @@ msgstr ""
 msgid "%{count} %{scope} for term '%{term}'"
 msgstr ""
 
+msgid "%{count} Custom role"
+msgid_plural "%{count} Custom roles"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%{count} LOC/commit"
 msgstr ""
 
@@ -30783,6 +30788,9 @@ msgstr ""
 msgid "MemberRole|Create new role"
 msgstr ""
 
+msgid "MemberRole|Custom permissions"
+msgstr ""
+
 msgid "MemberRole|Custom role"
 msgstr ""
 
@@ -30793,6 +30801,9 @@ msgid "MemberRole|Delete role"
 msgstr ""
 
 msgid "MemberRole|Description"
+msgstr ""
+
+msgid "MemberRole|Edit role"
 msgstr ""
 
 msgid "MemberRole|Enter a short name."
@@ -30853,6 +30864,9 @@ msgid "MemberRole|To add a new role select 'Add new role'."
 msgstr ""
 
 msgid "MemberRole|To delete the custom role make sure no group member has this custom role"
+msgstr ""
+
+msgid "MemberRole|You can create a custom role by adding specific %{linkStart}permissions to a base role.%{linkEnd}"
 msgstr ""
 
 msgid "MemberRole|can't be changed"

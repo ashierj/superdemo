@@ -9,6 +9,7 @@ fragment MemberRoles on MemberRoleConnection {
     enabledPermissions {
       nodes {
         name
+        value
       }
     }
   }
