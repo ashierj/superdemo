@@ -3709,6 +3709,57 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
+  describe 'static_avatar_path?' do
+    subject { user.static_avatar_path? }
+
+    context 'when user is not a security policy bot' do
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when user is a security policy bot' do
+      let(:user) { build(:user, :security_policy_bot) }
+
+      it { is_expected.to eq(true) }
+    end
+  end
+
+  describe 'static_avatar_path' do
+    subject { user.static_avatar_path }
+
+    shared_examples 'returns the default image' do
+      it 'returns the default image' do
+        expect(subject).to eq('http://localhost/assets/bot_avatars/security-bot.png')
+      end
+    end
+
+    context 'when size parameter is provided' do
+      subject { user.static_avatar_path(size) }
+
+      context 'when the size is a valid avatar size' do
+        using RSpec::Parameterized::TableSyntax
+        where(:size) { Avatarable::USER_AVATAR_SIZES }
+
+        with_them do
+          let(:options) { { size: size } }
+
+          it 'returns a image of the given size' do
+            expect(subject).to eq("http://localhost/assets/bot_avatars/security-bot_#{size}.png")
+          end
+        end
+      end
+
+      context 'when the size is not a valid avatar size' do
+        let(:size) { 1999 }
+
+        it_behaves_like 'returns the default image'
+      end
+    end
+
+    context 'when size parameter is not provided' do
+      it_behaves_like 'returns the default image'
+    end
+  end
+
   describe '#unlock_access!' do
     let_it_be_with_reload(:user) { create(:user) }
 
