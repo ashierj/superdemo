@@ -634,5 +634,11 @@ export default {
     </gl-modal>
     <hr />
     <!-- end: step two -->
+    <section v-if="isRunnerOnline">
+      <h2 class="gl-heading-2">🎉 {{ s__("Runners|You've registered a new runner!") }}</h2>
+      <p>
+        {{ s__('Runners|Your runner is online and ready to run jobs.') }}
+      </p>
+    </section>
   </div>
 </template>
