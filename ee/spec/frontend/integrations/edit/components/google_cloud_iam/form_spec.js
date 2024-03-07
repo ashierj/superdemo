@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import GcIamForm from 'ee_component/integrations/edit/components/google_cloud_iam/form.vue';
+import GcIamForm from 'ee/integrations/edit/components/google_cloud_iam/form.vue';
 import Configuration from '~/integrations/edit/components/sections/configuration.vue';
 import Connection from '~/integrations/edit/components/sections/connection.vue';
 import { createStore } from '~/integrations/edit/store';

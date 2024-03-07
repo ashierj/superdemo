@@ -13,6 +13,7 @@ RSpec.describe 'User activates Workload Identity Federation', feature_category: 
 
   it 'activates integration', :js do
     visit_project_integration(integration.title)
+    click_on s_('GoogleCloudPlatformService|Manual setup')
 
     fill_in(
       s_('GoogleCloudPlatformService|Project ID'),
