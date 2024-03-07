@@ -30,6 +30,15 @@ module EE
           personal_access_tokens_path: user_settings_personal_access_tokens_path,
           operating: integration.operating?.to_s
         )
+
+        unless project.google_cloud_platform_workload_identity_federation_integration&.operating?
+          form_data.merge!(
+            editable: 'false',
+            workload_identity_federation_path: edit_project_settings_integration_path(
+              project, :google_cloud_platform_workload_identity_federation
+            )
+          )
+        end
       end
 
       form_data

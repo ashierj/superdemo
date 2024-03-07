@@ -23556,7 +23556,13 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Digest"
 msgstr ""
 
+msgid "GoogleArtifactRegistry|First, secure your usage with the %{strongStart}Google Cloud Identity and Access Management (IAM)%{strongEnd} integration. Simplify access without the need to manage accounts or keys."
+msgstr ""
+
 msgid "GoogleArtifactRegistry|Image"
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Invite member to set up"
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Location"
@@ -23598,10 +23604,16 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Run the following command to setup IAM read and write policies in your Google Cloud project."
 msgstr ""
 
+msgid "GoogleArtifactRegistry|Set up Google Cloud IAM"
+msgstr ""
+
 msgid "GoogleArtifactRegistry|Tags"
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Updated"
+msgstr ""
+
+msgid "GoogleArtifactRegistry|Use Google Cloud securely"
 msgstr ""
 
 msgid "GoogleArtifactRegistry|View artifacts"

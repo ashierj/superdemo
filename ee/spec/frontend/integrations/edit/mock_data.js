@@ -3,6 +3,7 @@ export const mockIntegrationProps = {
   projectId: 1,
   operating: true,
   personalAccessTokensPath: '/path/to/personal/access/tokens',
+  editable: true,
   googleCloudArtifactRegistryProps: {
     artifactRegistryPath: '/path/to/artifact/registry',
   },
