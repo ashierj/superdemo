@@ -125,11 +125,15 @@ RSpec.describe Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesS
           execute
         end
 
-        it 'persists violation details', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444868' do
+        it 'persists violation details', :aggregate_failures do
           execute
 
-          expect(merge_request.scan_result_policy_violations.last.violation_data)
-            .to match({ 'violations' => { 'scan_finding' => { 'uuids' => { 'previously_existing' => uuids } } } })
+          violation_data = merge_request.scan_result_policy_violations.last.violation_data
+          expect(violation_data)
+            .to match({ 'violations' => { 'scan_finding' =>
+              { 'uuids' => { 'previously_existing' => array_including(uuids) } } } })
+          expect(violation_data.dig('violations', 'scan_finding', 'uuids', 'previously_existing'))
+            .to match_array(uuids)
         end
 
         context 'when feature flag "save_policy_violation_data" is disabled' do
