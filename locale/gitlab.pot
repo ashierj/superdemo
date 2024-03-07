@@ -5601,6 +5601,9 @@ msgstr ""
 msgid "Analytics|Configure Dashboard Project"
 msgstr ""
 
+msgid "Analytics|Configure analytics reports."
+msgstr ""
+
 msgid "Analytics|Continue creating"
 msgstr ""
 
@@ -5830,6 +5833,9 @@ msgid "Analytics|Updating visualization %{visualizationName}"
 msgstr ""
 
 msgid "Analytics|Usage breakdown"
+msgstr ""
+
+msgid "Analytics|Use ClickHouse for supported analytics reports. Available when %{link_start}ClickHouse is configured%{link_end}."
 msgstr ""
 
 msgid "Analytics|Use the visualization designer to create custom visualizations. After you save a visualization, you can add it to a dashboard."
@@ -19043,6 +19049,9 @@ msgid "Enable Amazon EKS integration"
 msgstr ""
 
 msgid "Enable Auto DevOps"
+msgstr ""
+
+msgid "Enable ClickHouse"
 msgstr ""
 
 msgid "Enable GitLab Error Tracking"

@@ -1,0 +1,19 @@
+- return unless Feature.enabled?(:clickhouse_data_collection)
+- expanded = integration_expanded?('use_clickhouse_')
+
+%section.settings.no-animate#js-analytics-settings{ class: ('expanded' if expanded) }
+  .settings-header
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
+      = _('Analytics')
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+      = expanded ? _('Collapse') : _('Expand')
+    %p.gl-text-secondary
+      = s_('Analytics|Configure analytics reports.')
+  .settings-content
+    = gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-analytics-settings'), html: { class: 'fieldset-form', id: 'analytics-settings' } do |f|
+      = form_errors(@application_setting)
+      .form-group
+        - configuration_link = link_to('', help_page_path('integration/clickhouse'), target: '_blank', rel: 'noopener noreferrer')
+        = f.gitlab_ui_checkbox_component :use_clickhouse_for_analytics, _('Enable ClickHouse'), help_text: safe_format(s_('Analytics|Use ClickHouse for supported analytics reports. Available when %{link_start}ClickHouse is configured%{link_end}.'), tag_pair(configuration_link, :link_start, :link_end)), checkbox_options: { disabled: !Gitlab::ClickHouse.configured? }
+
+      = f.submit _('Save changes'), pajamas_button: true
