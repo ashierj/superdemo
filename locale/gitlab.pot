@@ -20892,6 +20892,9 @@ msgstr ""
 msgid "Failed to delete custom emoji. Please try again."
 msgstr ""
 
+msgid "Failed to delete model"
+msgstr ""
+
 msgid "Failed to deploy to"
 msgstr ""
 
@@ -32082,10 +32085,16 @@ msgstr ""
 msgid "Modal|Close"
 msgstr ""
 
+msgid "Model deleted but failed to remove associated packages"
+msgstr ""
+
 msgid "Model experiments"
 msgstr ""
 
 msgid "Model registry"
+msgstr ""
+
+msgid "Model was successfully deleted"
 msgstr ""
 
 msgid "ModelRegistry|Model registry"
