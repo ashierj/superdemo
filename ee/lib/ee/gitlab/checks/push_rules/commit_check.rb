@@ -52,7 +52,7 @@ module EE
             # Historically, when a commit is created via Web UI, the committer and author emails are the same
             # It changes with https://gitlab.com/gitlab-org/gitaly/-/issues/5715 issue and now the committer email
             # of the commits created by Gitaly has an instance email like <noreply@gitlab.com>
-            if !updated_from_web? && !push_rule.author_email_allowed?(commit.committer_email)
+            if !skip_committer_email_check? && !push_rule.author_email_allowed?(commit.committer_email)
               return "Committer's email '#{commit.committer_email}' does not follow the pattern '#{push_rule.author_email_regex}'"
             end
 
@@ -79,7 +79,7 @@ module EE
           end
 
           def check_member(commit)
-            return if updated_from_web?
+            return if skip_committer_email_check?
             return unless push_rule.member_check
 
             unless ::User.find_by_any_email(commit.author_email).present?
@@ -97,7 +97,7 @@ module EE
             # Historically, when a commit is created via Web UI, the committer and author emails are the same
             # It changes with https://gitlab.com/gitlab-org/gitaly/-/issues/5715 issue and now the committer email
             # of the commits created by Gitaly has an instance email like <noreply@gitlab.com>
-            committer_email = updated_from_web? ? commit.author_email : commit.committer_email
+            committer_email = skip_committer_email_check? ? commit.author_email : commit.committer_email
 
             unless push_rule.committer_allowed?(committer_email, user_access.user)
               # We can assume only one user holds an unconfirmed primary email address. Since we want
@@ -116,6 +116,10 @@ module EE
             if commit.committer_email == commit.author_email && !push_rule.committer_name_allowed?(commit.author_name, user_access.user)
               "Your git username is inconsistent with GitLab account name"
             end
+          end
+
+          def skip_committer_email_check?
+            updated_from_web? && ::Feature.enabled?(:skip_committer_email_check, project)
           end
         end
       end

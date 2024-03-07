@@ -105,6 +105,18 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
 
           expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Author's email 'joan@invalid.com' does not follow the pattern '.*@valid.com'")
         end
+
+        context 'when skip_committer_email_check is disabled' do
+          before do
+            stub_feature_flags(skip_committer_email_check: false)
+          end
+
+          it 'returns an error if the rule fails for the committer' do
+            allow_any_instance_of(Commit).to receive(:committer_email).and_return('ana@invalid.com')
+
+            expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Committer's email 'ana@invalid.com' does not follow the pattern '.*@valid.com'")
+          end
+        end
       end
     end
 
@@ -153,6 +165,16 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
 
           it 'does not raise an error' do
             expect { subject.validate! }.not_to raise_error
+          end
+        end
+
+        context 'when skip_committer_email_check is disabled' do
+          before do
+            stub_feature_flags(skip_committer_email_check: false)
+          end
+
+          it 'returns an error if the commit author is not a GitLab member' do
+            expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Author 'some@mail.com' is not a member of team")
           end
         end
       end
@@ -295,6 +317,18 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
                 it 'does not raise an error' do
                   expect { subject.validate! }.not_to raise_error
                 end
+
+                context 'when skip_committer_email_check is disabled' do
+                  before do
+                    stub_feature_flags(skip_committer_email_check: false)
+                  end
+
+                  it 'raises an error' do
+                    expect { subject.validate! }
+                      .to raise_error(Gitlab::GitAccess::ForbiddenError,
+                                      "Committer email '#{user.email}' is not verified.")
+                  end
+                end
               end
             end
           end
@@ -341,6 +375,18 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
 
                 it 'does not raise an error' do
                   expect { subject.validate! }.not_to raise_error
+                end
+
+                context 'when skip_committer_email_check is disabled' do
+                  before do
+                    stub_feature_flags(skip_committer_email_check: false)
+                  end
+
+                  it 'raises an error' do
+                    expect { subject.validate! }
+                      .to raise_error(Gitlab::GitAccess::ForbiddenError,
+                                      "You cannot push commits for '#{email.email}'. You can only push commits if the committer email is one of your own verified emails.")
+                  end
                 end
               end
             end
