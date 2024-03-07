@@ -15,10 +15,13 @@ class EpicIssue < ApplicationRecord
   alias_attribute :parent_ids, :epic_id
   alias_attribute :parent, :epic
 
+  attr_accessor :work_item_syncing
+  alias_method :work_item_syncing?, :work_item_syncing
+
   scope :in_epic, ->(epic_id) { where(epic_id: epic_id) }
 
   validate :validate_confidential_epic
-  validate :check_existing_parent_link
+  validate :check_existing_parent_link, unless: :work_item_syncing?
   after_destroy :set_epic_id_to_update_cache
   after_save :set_epic_id_to_update_cache
 

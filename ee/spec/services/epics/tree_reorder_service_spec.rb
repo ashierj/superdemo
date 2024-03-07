@@ -221,6 +221,27 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
                 expect { subject }.to change { Note.system.count }.by(3)
               end
             end
+
+            context 'with synced epic work items' do
+              let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
+              let(:work_item) { WorkItem.find(epic_issue2.issue.id) }
+
+              let_it_be(:new_epic) { create(:epic, :with_synced_work_item, group: group) }
+              let_it_be(:old_epic) { create(:epic, :with_synced_work_item, group: group) }
+
+              let_it_be_with_reload(:epic) { new_epic }
+              let_it_be_with_reload(:epic1) { old_epic }
+
+              before do
+                epic_issue2.update!(epic: old_epic)
+                create(:parent_link, work_item_parent: old_epic.work_item, work_item: work_item)
+              end
+
+              it 'updates the parent' do
+                expect { subject }.to change { tree_object_2.reload.epic }.from(old_epic).to(new_epic)
+                .and change { work_item.reload.work_item_parent }.from(old_epic.work_item).to(new_epic.work_item)
+              end
+            end
           end
         end
 
