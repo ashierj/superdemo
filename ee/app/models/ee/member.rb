@@ -123,6 +123,7 @@ module EE
       ) do |new_approval|
         new_approval.old_access_level = access_level
         new_approval.requested_by = requested_by
+        new_approval.user_id = user_id
       end
     rescue ActiveRecord::RecordNotUnique
       member_approvals.find_by(
