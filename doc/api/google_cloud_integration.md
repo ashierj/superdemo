@@ -1,9 +1,11 @@
 ---
 stage: Govern
 group: Authentication
-info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
+info: >-
+  To determine the technical writer assigned to the Stage/Group associated with
+  this page, see
+  https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
-
 # Google Cloud Integration API
 
 DETAILS:
@@ -83,4 +85,33 @@ Example request:
 curl --request GET \
      --header "PRIVATE-TOKEN: <your_access_token>" \
      --url "https://gitlab.com/api/v4/projects/<your_project_id>/google_cloud/setup/integrations.sh"
+```
+
+### Script to configure a Google Cloud project for runner provisioning
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/145525) in GitLab 16.10.
+
+Users with at least the Maintainer role for the project can use the following endpoint to
+query a shell script to configure a Google Cloud project for runner provisioning and execution:
+
+```plaintext
+GET /projects/:id/google_cloud/setup/runner_deployment_project.sh
+```
+
+The script performs preparatory configuration steps in the specified Google Cloud project,
+namely enabling required services and creating a `GRITProvisioner` role and a `grit-provisioner` service account.
+
+Supported attributes:
+
+| Attribute                 | Type    | Required | Description                            |
+|---------------------------|---------|----------|----------------------------------------|
+| `id`                      | integer | Yes      | The ID of a GitLab project.            |
+| `google_cloud_project_id` | string  | Yes      | The ID of the Google Cloud project.    |
+
+Example request:
+
+```shell
+curl --request GET \
+     --header "PRIVATE-TOKEN: <your_access_token>" \
+     --url "https://gitlab.com/api/v4/projects/<your_project_id>/google_cloud/setup/runner_deployment_project.sh?google_cloud_project_id=<your_google_cloud_project_id>"
 ```
