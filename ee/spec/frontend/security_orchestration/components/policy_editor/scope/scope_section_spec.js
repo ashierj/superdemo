@@ -17,6 +17,7 @@ import {
   ALL_PROJECTS_IN_GROUP,
   SPECIFIC_PROJECTS,
   EXCEPT_PROJECTS,
+  WITHOUT_EXCEPTIONS,
 } from 'ee/security_orchestration/components/policy_editor/scope/constants';
 
 describe('PolicyScope', () => {
@@ -83,27 +84,27 @@ describe('PolicyScope', () => {
   });
 
   it('should render framework dropdown in initial state', () => {
-    expect(findProjectScopeTypeDropdown().props('selected')).toBe(PROJECTS_WITH_FRAMEWORK);
-    expect(findComplianceFrameworkDropdown().exists()).toBe(true);
+    expect(findProjectScopeTypeDropdown().props('selected')).toBe(ALL_PROJECTS_IN_GROUP);
+    expect(findExceptionTypeDropdown().exists()).toBe(true);
+    expect(findExceptionTypeDropdown().props('selected')).toBe(WITHOUT_EXCEPTIONS);
 
-    expect(findExceptionTypeDropdown().exists()).toBe(false);
     expect(findGroupProjectsDropdown().exists()).toBe(false);
+    expect(findComplianceFrameworkDropdown().exists()).toBe(false);
     expect(findGlAlert().exists()).toBe(false);
   });
 
   it('should change scope and reset it', async () => {
-    await findProjectScopeTypeDropdown().vm.$emit('select', ALL_PROJECTS_IN_GROUP);
+    await findProjectScopeTypeDropdown().vm.$emit('select', PROJECTS_WITH_FRAMEWORK);
 
-    expect(findComplianceFrameworkDropdown().exists()).toBe(false);
+    expect(findComplianceFrameworkDropdown().exists()).toBe(true);
 
-    expect(findExceptionTypeDropdown().exists()).toBe(true);
+    expect(findExceptionTypeDropdown().exists()).toBe(false);
     expect(findGroupProjectsDropdown().exists()).toBe(false);
+
     expect(wrapper.emitted('changed')).toEqual([
       [
         {
-          projects: {
-            excluding: [],
-          },
+          compliance_frameworks: [],
         },
       ],
     ]);
@@ -116,9 +117,7 @@ describe('PolicyScope', () => {
     expect(wrapper.emitted('changed')).toEqual([
       [
         {
-          projects: {
-            excluding: [],
-          },
+          compliance_frameworks: [],
         },
       ],
       [
@@ -186,10 +185,12 @@ describe('PolicyScope', () => {
     ]);
   });
 
-  it('should select compliance frameworks', () => {
+  it('should select compliance frameworks', async () => {
+    await findProjectScopeTypeDropdown().vm.$emit('select', PROJECTS_WITH_FRAMEWORK);
     findComplianceFrameworkDropdown().vm.$emit('select', ['id1', 'id2']);
 
     expect(wrapper.emitted('changed')).toEqual([
+      [{ compliance_frameworks: [] }],
       [{ compliance_frameworks: [{ id: 'id1' }, { id: 'id2' }] }],
     ]);
   });
@@ -275,6 +276,8 @@ describe('PolicyScope', () => {
     });
 
     it('should render alert message for compliance framework dropdown', async () => {
+      await findProjectScopeTypeDropdown().vm.$emit('select', PROJECTS_WITH_FRAMEWORK);
+
       await findComplianceFrameworkDropdown().vm.$emit('framework-query-error');
       expect(findGlAlert().exists()).toBe(true);
     });
@@ -300,7 +303,7 @@ describe('PolicyScope', () => {
       await waitForPromises();
 
       expect(findLoadingIcon().exists()).toBe(false);
-      expect(findComplianceFrameworkDropdown().exists()).toBe(true);
+      expect(findProjectScopeTypeDropdown().exists()).toBe(true);
       expect(requestHandler).toHaveBeenCalledTimes(0);
       expect(findPolicyScopeProjectText().exists()).toBe(false);
     });
@@ -340,7 +343,8 @@ describe('PolicyScope', () => {
       await waitForPromises();
 
       expect(findPolicyScopeProjectText().exists()).toBe(false);
-      expect(findComplianceFrameworkDropdown().exists()).toBe(true);
+      expect(findProjectScopeTypeDropdown().exists()).toBe(true);
+      expect(findExceptionTypeDropdown().props('selected')).toBe(WITHOUT_EXCEPTIONS);
     });
 
     it('shows loading state', () => {
@@ -399,7 +403,7 @@ describe('PolicyScope', () => {
 
       await waitForPromises();
 
-      expect(wrapper.emitted('changed')).toEqual([[{ compliance_frameworks: [] }]]);
+      expect(wrapper.emitted('changed')).toEqual([[{ projects: { excluding: [] } }]]);
     });
 
     it('does not emit default policy scope on group level', async () => {
@@ -526,6 +530,7 @@ describe('PolicyScope', () => {
 
       expect(findScopeAlert().exists()).toBe(false);
 
+      await findExceptionTypeDropdown().vm.$emit('select', EXCEPT_PROJECTS);
       await findGroupProjectsDropdown().vm.$emit('select', ['id1']);
 
       expect(findScopeAlert().exists()).toBe(true);

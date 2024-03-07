@@ -10,11 +10,13 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
 import {
-  DEFAULT_SCAN_EXECUTION_POLICY_WITH_SCOPE,
+  SCAN_EXECUTION_DEFAULT_POLICY_WITH_SCOPE,
+  SCAN_EXECUTION_DEFAULT_POLICY,
+} from 'ee_jest/security_orchestration/mocks/mock_data';
+import {
   DEFAULT_SCAN_EXECUTION_POLICY,
   buildScannerAction,
   fromYaml,
-  createPolicyObject,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
 import {
@@ -399,8 +401,8 @@ enabled: true`;
   describe('policy scope', () => {
     it.each`
       securityPoliciesPolicyScope | manifest
-      ${true}                     | ${DEFAULT_SCAN_EXECUTION_POLICY_WITH_SCOPE}
-      ${false}                    | ${DEFAULT_SCAN_EXECUTION_POLICY}
+      ${true}                     | ${SCAN_EXECUTION_DEFAULT_POLICY_WITH_SCOPE}
+      ${false}                    | ${SCAN_EXECUTION_DEFAULT_POLICY}
     `('should render default policy', ({ securityPoliciesPolicyScope, manifest }) => {
       const features = {
         securityPoliciesPolicyScope,
@@ -413,7 +415,7 @@ enabled: true`;
         },
       });
 
-      expect(findPolicyEditorLayout().props('policy')).toEqual(createPolicyObject(manifest).policy);
+      expect(findPolicyEditorLayout().props('policy')).toEqual(manifest);
     });
   });
 });

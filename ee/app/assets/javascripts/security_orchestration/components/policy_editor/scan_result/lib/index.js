@@ -29,7 +29,8 @@ name: ''
 description: ''
 enabled: true
 policy_scope:
-  compliance_frameworks: []
+  projects:
+    excluding: []
 rules:
   - type: ''
 actions:

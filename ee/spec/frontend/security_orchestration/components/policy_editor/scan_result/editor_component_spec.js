@@ -7,7 +7,6 @@ import EditorLayout from 'ee/security_orchestration/components/policy_editor/edi
 import {
   SCAN_FINDING,
   ANY_MERGE_REQUEST,
-  DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE,
   DEFAULT_SCAN_RESULT_POLICY,
   getInvalidBranches,
   fromYaml,
@@ -26,7 +25,11 @@ import {
   mockDeprecatedScanResultManifest,
   mockDeprecatedScanResultObject,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
-import { unsupportedManifest } from 'ee_jest/security_orchestration/mocks/mock_data';
+import {
+  unsupportedManifest,
+  APPROVAL_POLICY_DEFAULT_POLICY,
+  APPROVAL_POLICY_DEFAULT_POLICY_WITH_SCOPE,
+} from 'ee_jest/security_orchestration/mocks/mock_data';
 import { visitUrl } from '~/lib/utils/url_utility';
 import {
   PERMITTED_INVALID_SETTINGS,
@@ -712,8 +715,8 @@ describe('EditorComponent', () => {
   describe('policy scope', () => {
     it.each`
       securityPoliciesPolicyScope | manifest
-      ${true}                     | ${DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE}
-      ${false}                    | ${DEFAULT_SCAN_RESULT_POLICY}
+      ${true}                     | ${APPROVAL_POLICY_DEFAULT_POLICY_WITH_SCOPE}
+      ${false}                    | ${APPROVAL_POLICY_DEFAULT_POLICY}
     `('should render default policy', ({ securityPoliciesPolicyScope, manifest }) => {
       const features = {
         securityPoliciesPolicyScope,
@@ -724,7 +727,7 @@ describe('EditorComponent', () => {
         glFeatures: features,
       });
 
-      expect(findPolicyEditorLayout().props('policy')).toEqual(fromYaml({ manifest }));
+      expect(findPolicyEditorLayout().props('policy')).toEqual(manifest);
     });
   });
 
