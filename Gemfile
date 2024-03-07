@@ -160,7 +160,7 @@ gem 'hamlit', '~> 2.15.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Files attachments
 gem 'carrierwave', '~> 1.3' # rubocop:todo Gemfile/MissingFeatureCategory
-gem 'mini_magick', '~> 4.10.1' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'mini_magick', '~> 4.12' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # for backups
 gem 'fog-aws', '~> 3.18' # rubocop:todo Gemfile/MissingFeatureCategory
