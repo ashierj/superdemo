@@ -6,7 +6,7 @@ RSpec.describe Gitlab::CloudConnector::SelfIssuedToken, feature_category: :cloud
   let_it_be(:user) { create(:user) }
   let(:extra_claims) { {} }
 
-  subject(:token) { described_class.new(user, scopes: [:code_suggestions], extra_claims: extra_claims) }
+  subject(:token) { described_class.new(user, subject: 'ABC-123', scopes: [:code_suggestions], extra_claims: extra_claims) }
 
   describe '#payload' do
     subject(:payload) { token.payload }
@@ -16,6 +16,7 @@ RSpec.describe Gitlab::CloudConnector::SelfIssuedToken, feature_category: :cloud
 
       expect(payload[:iss]).to eq(Doorkeeper::OpenidConnect.configuration.issuer)
       expect(payload[:aud]).to eq('gitlab-ai-gateway')
+      expect(payload[:sub]).to eq('ABC-123')
       expect(payload[:iat]).to eq(now)
       expect(payload[:nbf]).to eq(now - 5.seconds.freeze)
       expect(payload[:exp]).to eq(now + 1.hour.freeze)
@@ -46,6 +47,7 @@ RSpec.describe Gitlab::CloudConnector::SelfIssuedToken, feature_category: :cloud
         expect(payload.keys).to contain_exactly(
           "jti",
           "aud",
+          "sub",
           "iss",
           "iat",
           "nbf",

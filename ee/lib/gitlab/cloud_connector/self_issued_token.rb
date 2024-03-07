@@ -11,9 +11,10 @@ module Gitlab
 
       attr_reader :issued_at
 
-      def initialize(user, scopes:, extra_claims: {})
+      def initialize(user, subject:, scopes:, extra_claims: {})
         @id = SecureRandom.uuid
         @audience = JWT_AUDIENCE
+        @subject = subject
         @issuer = Doorkeeper::OpenidConnect.configuration.issuer
         @issued_at = Time.now.to_i
         @not_before = @issued_at - NOT_BEFORE_TIME
@@ -33,6 +34,7 @@ module Gitlab
         {
           jti: @id,
           aud: @audience,
+          sub: @subject,
           iss: @issuer,
           iat: @issued_at,
           nbf: @not_before,

@@ -28,10 +28,16 @@ RSpec.describe CloudConnector::AccessService, feature_category: :cloud_connector
     end
 
     context 'when .com', :saas do
+      let(:gitlab_instance_id) { 'ABC-123' }
       let(:encoded_token_string) { 'token_string' }
+
+      before do
+        allow(Gitlab::CurrentSettings).to receive(:uuid).and_return(gitlab_instance_id)
+      end
 
       it 'returns the constructed token' do
         expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(nil,
+          subject: gitlab_instance_id,
           scopes: scopes,
           extra_claims: {}
         ).and_return(instance_double('Gitlab::CloudConnector::SelfIssuedToken', encoded: encoded_token_string))
@@ -46,6 +52,7 @@ RSpec.describe CloudConnector::AccessService, feature_category: :cloud_connector
 
         it 'includes extra_claims element in token payload' do
           expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(nil,
+            subject: gitlab_instance_id,
             scopes: scopes,
             extra_claims: extra_claims
           ).and_return(instance_double('Gitlab::CloudConnector::SelfIssuedToken', encoded: encoded_token_string))
