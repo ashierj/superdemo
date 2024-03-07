@@ -8,7 +8,7 @@
         = sprite_icon('epic')
         %span
           = _('None')
-    .title.hide-collapsed
+    .title.hide-collapsed.gl-font-weight-bold{ class: 'gl-line-height-28!' }
       = _('Epic')
     .dropdown
       .dropdown-menu.promotion-issue-sidebar-message
@@ -26,5 +26,5 @@
             = link_button_to s_("Promotions|Don't show me this again"), '#', class: 'js-close js-close-callout gl-mt-2'
 
     .hide-collapsed
-      = s_('Promotions|This feature is locked.')
+      %span.gl-text-secondary= s_('Promotions|This feature is locked.')
       = link_to s_('Promotions|Upgrade plan') , '#', class: 'btn-link', data: { toggle: "dropdown", target: ".js-epics-sidebar-callout", display: 'static' }

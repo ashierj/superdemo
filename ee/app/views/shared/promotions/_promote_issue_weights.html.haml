@@ -7,10 +7,10 @@
       %span{ data: { toggle: "tooltip", placement: "left", container: "body" }, title: _("Weight") }
         = sprite_icon('scale')
         %span No
-    .title.hide-collapsed
+    .title.hide-collapsed.gl-font-weight-bold{ class: 'gl-line-height-28!' }
       = s_('Promotions|Weight')
     .hide-collapsed.js-toggle-container.promotion-issue-weight-sidebar-message
-      = s_('Promotions|This feature is locked.')
+      %span.gl-text-secondary= s_('Promotions|This feature is locked.')
       %a.btn-link.js-toggle-button.js-weight-sidebar-callout-btn{ href: '#' }
         = _('Learn more')
         = sprite_icon('chevron-up', css_class: 'js-sidebar-collapse hidden')
