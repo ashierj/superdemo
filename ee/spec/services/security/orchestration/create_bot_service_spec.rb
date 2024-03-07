@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Security::Orchestration::CreateBotService, feature_category: :security_policy_management do
   let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:organization) { create(:organization) }
+  let_it_be(:project) { create(:project, group: group, organization: organization) }
   let_it_be(:user) { create(:user) }
   let!(:security_orchestration_policy_configuration) do
     create(:security_orchestration_policy_configuration, project: project)
@@ -82,6 +83,7 @@ RSpec.describe Security::Orchestration::CreateBotService, feature_category: :sec
       expect(bot_user.user_type).to eq('security_policy_bot')
       expect(bot_user.external).to eq(true)
       expect(bot_user.avatar).to be_instance_of AvatarUploader
+      expect(bot_user.namespace.organization).to eq(project.organization)
     end
 
     it 'adds the bot user as a guest to the project', :aggregate_failures do
