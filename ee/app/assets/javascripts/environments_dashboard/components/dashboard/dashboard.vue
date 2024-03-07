@@ -96,6 +96,9 @@ export default {
         this.paginateDashboard(newPage);
       },
     },
+    showDashboard() {
+      return this.projects.length || this.isLoadingProjects;
+    },
     projectsPerPage() {
       return this.projectsPage.pageInfo.perPage;
     },
@@ -161,6 +164,78 @@ export default {
 
 <template>
   <div class="environments-dashboard">
+    <template v-if="showDashboard">
+      <div class="page-title-holder gl-display-flex gl-align-items-center">
+        <h1
+          class="page-title gl-font-size-h-display gl-white-space-nowrap gl-flex-grow-1"
+          data-testid="dashboard-title"
+        >
+          {{ $options.dashboardHeader }}
+        </h1>
+        <gl-button
+          v-gl-modal="$options.modalId"
+          data-testid="add-projects-button"
+          variant="confirm"
+        >
+          {{ $options.addProjectsButton }}
+        </gl-button>
+      </div>
+      <p class="gl-mt-3 gl-mb-6" data-testid="page-limits-message">
+        <gl-sprintf :message="$options.informationText">
+          <template #link="{ content }">
+            <gl-link :href="environmentsDashboardHelpPath" target="_blank">
+              {{ content }}
+            </gl-link>
+          </template>
+        </gl-sprintf>
+      </p>
+      <div v-if="projects.length">
+        <div v-for="project in projects" :key="project.id">
+          <project-header :project="project" @remove="removeProject" />
+          <div class="row gl-mt-3 no-gutters mx-n2">
+            <environment
+              v-for="environment in project.environments"
+              :key="environment.id"
+              :environment="environment"
+              class="col-12 col-md-6 col-xl-4 px-2"
+            />
+          </div>
+        </div>
+
+        <gl-pagination
+          v-if="shouldPaginate"
+          v-model="currentPage"
+          :per-page="projectsPerPage"
+          :total-items="totalProjects"
+          align="center"
+          class="gl-w-full gl-mt-3"
+        />
+      </div>
+
+      <gl-dashboard-skeleton v-else-if="isLoadingProjects" />
+    </template>
+
+    <gl-empty-state
+      v-else
+      :title="$options.emptyDashboardHeader"
+      :description="$options.emptyDashboardDocs"
+      :svg-path="emptyDashboardSvgPath"
+    >
+      <template #actions>
+        <gl-button
+          v-gl-modal="$options.modalId"
+          data-testid="add-projects-button"
+          variant="confirm"
+          class="gl-mx-2"
+        >
+          {{ $options.addProjectsButton }}
+        </gl-button>
+        <gl-button :href="emptyDashboardHelpPath" class="gl-mx-2" data-testid="documentation-link">
+          {{ $options.viewDocumentationButton }}
+        </gl-button>
+      </template>
+    </gl-empty-state>
+
     <gl-modal
       :modal-id="$options.modalId"
       :title="$options.addProjectsModalHeader"
@@ -192,68 +267,5 @@ export default {
         @bottomReached="fetchNextPage"
       />
     </gl-modal>
-    <div class="page-title-holder flex-fill d-flex gl-align-items-center">
-      <h1 class="js-dashboard-title page-title gl-font-size-h-display text-nowrap flex-fill">
-        {{ $options.dashboardHeader }}
-      </h1>
-      <gl-button v-gl-modal="$options.modalId" class="js-add-projects-button" variant="confirm">
-        {{ $options.addProjectsButton }}
-      </gl-button>
-    </div>
-    <p class="mt-2 mb-4 js-page-limits-message">
-      <gl-sprintf :message="$options.informationText">
-        <template #link="{ content }">
-          <gl-link :href="environmentsDashboardHelpPath" target="_blank">
-            {{ content }}
-          </gl-link>
-        </template>
-      </gl-sprintf>
-    </p>
-    <div class="gl-mt-3">
-      <div v-if="projects.length">
-        <div v-for="project in projects" :key="project.id">
-          <project-header :project="project" @remove="removeProject" />
-          <div class="row gl-mt-3 no-gutters mx-n2">
-            <environment
-              v-for="environment in project.environments"
-              :key="environment.id"
-              :environment="environment"
-              class="col-12 col-md-6 col-xl-4 px-2"
-            />
-          </div>
-        </div>
-
-        <gl-pagination
-          v-if="shouldPaginate"
-          v-model="currentPage"
-          :per-page="projectsPerPage"
-          :total-items="totalProjects"
-          align="center"
-          class="gl-w-full gl-mt-3"
-        />
-      </div>
-
-      <gl-dashboard-skeleton v-else-if="isLoadingProjects" />
-
-      <gl-empty-state
-        v-else
-        :title="$options.emptyDashboardHeader"
-        :svg-path="emptyDashboardSvgPath"
-        :svg-height="150"
-      >
-        <template #description>
-          {{ $options.emptyDashboardDocs }}
-          <gl-link :href="emptyDashboardHelpPath" class="js-documentation-link">{{
-            $options.viewDocumentationButton
-          }}</gl-link
-          >.
-        </template>
-        <template #actions>
-          <gl-button v-gl-modal="$options.modalId" variant="confirm" class="js-add-projects-button">
-            {{ s__('ModalButton|Add projects') }}
-          </gl-button>
-        </template>
-      </gl-empty-state>
-    </div>
   </div>
 </template>
