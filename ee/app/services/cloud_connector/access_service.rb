@@ -37,7 +37,6 @@ module CloudConnector
 
     def saas_token(scopes, extra_claims)
       Gitlab::CloudConnector::SelfIssuedToken.new(
-        nil,
         subject: Gitlab::CurrentSettings.uuid,
         scopes: scopes,
         extra_claims: extra_claims

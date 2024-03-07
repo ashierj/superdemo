@@ -3,10 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::CloudConnector::SelfIssuedToken, feature_category: :cloud_connector do
-  let_it_be(:user) { create(:user) }
   let(:extra_claims) { {} }
 
-  subject(:token) { described_class.new(user, subject: 'ABC-123', scopes: [:code_suggestions], extra_claims: extra_claims) }
+  subject(:token) { described_class.new(subject: 'ABC-123', scopes: [:code_suggestions], extra_claims: extra_claims) }
 
   describe '#payload' do
     subject(:payload) { token.payload }

@@ -11,7 +11,7 @@ module Gitlab
 
       attr_reader :issued_at
 
-      def initialize(user, subject:, scopes:, extra_claims: {})
+      def initialize(subject:, scopes:, extra_claims: {})
         @id = SecureRandom.uuid
         @audience = JWT_AUDIENCE
         @subject = subject
@@ -21,7 +21,6 @@ module Gitlab
         @expire_time = @issued_at + EXPIRES_IN
         @scopes = scopes
         @extra_claims = extra_claims
-        @user = user
       end
 
       def encoded

@@ -36,7 +36,7 @@ RSpec.describe CloudConnector::AccessService, feature_category: :cloud_connector
       end
 
       it 'returns the constructed token' do
-        expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(nil,
+        expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(
           subject: gitlab_instance_id,
           scopes: scopes,
           extra_claims: {}
@@ -51,7 +51,7 @@ RSpec.describe CloudConnector::AccessService, feature_category: :cloud_connector
         subject(:access_token) { described_class.new.access_token(scopes: scopes, extra_claims: extra_claims) }
 
         it 'includes extra_claims element in token payload' do
-          expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(nil,
+          expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(
             subject: gitlab_instance_id,
             scopes: scopes,
             extra_claims: extra_claims
