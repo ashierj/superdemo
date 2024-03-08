@@ -14,6 +14,12 @@ module Ai
                           resource: self
                         })
       end
+
+      def current_page_sentence
+        <<~SENTENCE
+          The user is currently on a page that shows an epic which has a description, comments, etc. Which the user might reference for example as "current", "this" or "that".
+        SENTENCE
+      end
     end
   end
 end

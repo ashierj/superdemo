@@ -22,6 +22,16 @@ module Gitlab
           @agent_version = agent_version
         end
 
+        def current_page_sentence
+          resource_wrapper_class = "Ai::AiResource::#{resource.class}".safe_constantize
+          # We need to implement it for all models we want to take into considerations
+          raise ArgumentError, "#{resource.class} is not a valid AiResource class" unless resource_wrapper_class
+
+          return '' unless Utils::ChatAuthorizer.resource(resource: resource, user: current_user).allowed?
+
+          resource_wrapper_class.new(resource).current_page_sentence
+        end
+
         def resource_serialized(content_limit:)
           resource_wrapper_class = "Ai::AiResource::#{resource.class}".safe_constantize
           # We need to implement it for all models we want to take into considerations
