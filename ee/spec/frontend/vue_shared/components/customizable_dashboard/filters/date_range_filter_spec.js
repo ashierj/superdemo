@@ -1,4 +1,4 @@
-import { GlDaterangePicker, GlDropdown, GlDropdownItem, GlIcon } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlDaterangePicker, GlIcon } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import DateRangeFilter from 'ee/vue_shared/components/customizable_dashboard/filters/date_range_filter.vue';
@@ -13,12 +13,8 @@ describe('DateRangeFilter', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
-  const dateRangeOptionIndex = DATE_RANGE_OPTIONS.findIndex(
-    (option) => !option.showDateRangePicker,
-  );
-  const customRangeOptionIndex = DATE_RANGE_OPTIONS.findIndex(
-    (option) => option.showDateRangePicker,
-  );
+  const dateRangeOption = DATE_RANGE_OPTIONS.find((option) => !option.showDateRangePicker);
+  const customRangeOption = DATE_RANGE_OPTIONS.find((option) => option.showDateRangePicker);
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(DateRangeFilter, {
@@ -32,8 +28,7 @@ describe('DateRangeFilter', () => {
   };
 
   const findDateRangePicker = () => wrapper.findComponent(GlDaterangePicker);
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
+  const findCollapsibleListBox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findHelpIcon = () => wrapper.findComponent(GlIcon);
 
   describe('default behaviour', () => {
@@ -41,24 +36,22 @@ describe('DateRangeFilter', () => {
       createWrapper();
     });
 
-    it('renders a dropdown with the text set to the default selected option', () => {
-      expect(findDropdown().props().text).toBe(
-        DATE_RANGE_OPTIONS[DEFAULT_SELECTED_OPTION_INDEX].text,
+    it('renders a dropdown with the value set to the default selected option', () => {
+      expect(findCollapsibleListBox().props().selected).toBe(
+        DATE_RANGE_OPTIONS[DEFAULT_SELECTED_OPTION_INDEX].key,
       );
     });
 
     it('renders a dropdown item for each option', () => {
       DATE_RANGE_OPTIONS.forEach((option, idx) => {
-        expect(findDropdownItems().at(idx).text()).toBe(option.text);
+        expect(findCollapsibleListBox().props('items').at(idx).text).toBe(option.text);
       });
     });
 
     it('emits the selected date range when a dropdown item with a date range is clicked', () => {
-      findDropdownItems().at(dateRangeOptionIndex).vm.$emit('click');
+      findCollapsibleListBox().vm.$emit('select', dateRangeOption.key);
 
-      expect(wrapper.emitted('change')).toStrictEqual([
-        [dateRangeOptionToFilter(DATE_RANGE_OPTIONS[dateRangeOptionIndex])],
-      ]);
+      expect(wrapper.emitted('change')).toStrictEqual([[dateRangeOptionToFilter(dateRangeOption)]]);
     });
 
     it('should show an icon with a tooltip explaining dates are in UTC', () => {
@@ -78,14 +71,12 @@ describe('DateRangeFilter', () => {
   });
 
   describe('with a default option', () => {
-    const customOption = DATE_RANGE_OPTIONS[customRangeOptionIndex];
-
     beforeEach(() => {
-      createWrapper({ defaultOption: customOption.key });
+      createWrapper({ defaultOption: customRangeOption.key });
     });
 
     it('selects the provided default option', () => {
-      expect(findDropdown().props().text).toBe(customOption.text);
+      expect(findCollapsibleListBox().props().selected).toBe(customRangeOption.key);
     });
   });
 
@@ -98,13 +89,13 @@ describe('DateRangeFilter', () => {
       });
 
       it('adds the class "gl-flex-direction-column" when a custom date range is selected', async () => {
-        await findDropdownItems().at(customRangeOptionIndex).vm.$emit('click');
+        await findCollapsibleListBox().vm.$emit('select', customRangeOption.key);
 
         expect(wrapper.classes()).toContain('gl-flex-direction-column');
       });
 
       it('does not emit a new date range when the option shows the date range picker', async () => {
-        await findDropdownItems().at(customRangeOptionIndex).vm.$emit('click');
+        await findCollapsibleListBox().vm.$emit('select', customRangeOption.key);
 
         expect(wrapper.emitted('change')).toBeUndefined();
       });
@@ -112,7 +103,7 @@ describe('DateRangeFilter', () => {
       it('shows the date range picker with the provided date range when the option enables it', async () => {
         expect(findDateRangePicker().exists()).toBe(false);
 
-        await findDropdownItems().at(customRangeOptionIndex).vm.$emit('click');
+        await findCollapsibleListBox().vm.$emit('select', customRangeOption.key);
 
         expect(findDateRangePicker().props()).toMatchObject({
           toLabel: 'To',
@@ -145,7 +136,7 @@ describe('DateRangeFilter', () => {
         it('shows the date range picker with date range limit applied', async () => {
           expect(findDateRangePicker().exists()).toBe(false);
 
-          await findDropdownItems().at(customRangeOptionIndex).vm.$emit('click');
+          await findCollapsibleListBox().vm.$emit('select', customRangeOption.key);
 
           expect(findDateRangePicker().props()).toMatchObject({
             tooltip: expectedTooltip,

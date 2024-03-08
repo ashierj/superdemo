@@ -1,11 +1,5 @@
 <script>
-import {
-  GlDaterangePicker,
-  GlDropdown,
-  GlDropdownItem,
-  GlIcon,
-  GlTooltipDirective,
-} from '@gitlab/ui';
+import { GlCollapsibleListbox, GlDaterangePicker, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { n__ } from '~/locale';
 import { dateRangeOptionToFilter, getDateRangeOption } from '../utils';
 import { TODAY, DATE_RANGE_OPTIONS, DEFAULT_SELECTED_OPTION_INDEX } from './constants';
@@ -13,9 +7,8 @@ import { TODAY, DATE_RANGE_OPTIONS, DEFAULT_SELECTED_OPTION_INDEX } from './cons
 export default {
   name: 'DateRangeFilter',
   components: {
+    GlCollapsibleListbox,
     GlDaterangePicker,
-    GlDropdown,
-    GlDropdownItem,
     GlIcon,
   },
   directives: {
@@ -45,7 +38,7 @@ export default {
   },
   data() {
     return {
-      selectedOption: getDateRangeOption(this.defaultOption),
+      selectedItem: getDateRangeOption(this.defaultOption),
     };
   },
   computed: {
@@ -57,7 +50,7 @@ export default {
         this.$emit(
           'change',
           dateRangeOptionToFilter({
-            ...this.selectedOption,
+            ...this.selectedItem,
             startDate,
             endDate,
           }),
@@ -75,13 +68,18 @@ export default {
 
       return null;
     },
+    dropdownItems() {
+      return this.$options.DATE_RANGE_OPTIONS.map((item) => {
+        return { text: item.text, value: item.key };
+      });
+    },
   },
   methods: {
-    selectOption(option) {
-      this.selectedOption = option;
+    selectItem(key) {
+      const item = this.$options.DATE_RANGE_OPTIONS.find((option) => option.key === key);
+      this.selectedItem = item;
 
-      const { startDate, endDate, showDateRangePicker = false } = option;
-
+      const { startDate, endDate, showDateRangePicker = false } = item;
       if (!showDateRangePicker && startDate && endDate) {
         this.dateRange = { startDate, endDate };
       }
@@ -97,20 +95,17 @@ export default {
 <template>
   <div
     class="gl-display-flex gl-sm-flex-direction-row gl-gap-3 gl-w-full gl-sm-w-auto"
-    :class="{ 'gl-flex-direction-column': selectedOption.showDateRangePicker }"
+    :class="{ 'gl-flex-direction-column': selectedItem.showDateRangePicker }"
   >
-    <gl-dropdown class="gl-w-full gl-sm-w-auto" :text="selectedOption.text">
-      <gl-dropdown-item
-        v-for="(option, idx) in $options.DATE_RANGE_OPTIONS"
-        :key="idx"
-        @click="selectOption(option)"
-      >
-        {{ option.text }}
-      </gl-dropdown-item>
-    </gl-dropdown>
+    <gl-collapsible-listbox
+      class="gl-w-full gl-sm-w-auto"
+      :items="dropdownItems"
+      :selected="selectedItem.key"
+      @select="selectItem($event)"
+    />
     <div class="gl-display-flex gl-gap-3">
       <gl-daterange-picker
-        v-if="selectedOption.showDateRangePicker"
+        v-if="selectedItem.showDateRangePicker"
         v-model="dateRange"
         :default-start-date="dateRange.startDate"
         :default-end-date="dateRange.endDate"
