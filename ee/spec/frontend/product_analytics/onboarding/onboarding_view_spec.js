@@ -42,6 +42,7 @@ describe('ProductAnalyticsOnboardingView', () => {
         chartEmptyStateIllustrationPath: TEST_HOST,
         collectorHost: TEST_COLLECTOR_HOST,
         trackingKey: TEST_TRACKING_KEY,
+        dashboardsPath: '/analytics/dashboards',
       },
       mocks: {
         $router,

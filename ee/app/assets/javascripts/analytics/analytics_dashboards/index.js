@@ -115,6 +115,7 @@ export default () => {
       chartEmptyStateIllustrationPath,
       dashboardEmptyStateIllustrationPath,
       analyticsSettingsPath,
+      dashboardsPath: router.resolve('/').href,
       features: convertArrayToCamelCase(JSON.parse(features)),
       vsdAvailableVisualizations,
       rootNamespaceName,
