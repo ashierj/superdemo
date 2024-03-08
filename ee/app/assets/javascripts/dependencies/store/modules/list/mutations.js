@@ -8,6 +8,9 @@ export default {
   [types.SET_EXPORT_DEPENDENCIES_ENDPOINT](state, exportEndpoint) {
     state.exportEndpoint = exportEndpoint;
   },
+  [types.SET_NAMESPACE_TYPE](state, namespaceType) {
+    state.namespaceType = namespaceType;
+  },
   [types.SET_FETCHING_IN_PROGRESS](state, fetchingInProgress) {
     state.fetchingInProgress = fetchingInProgress;
   },

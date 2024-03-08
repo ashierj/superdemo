@@ -10,6 +10,7 @@ export default () => ({
   isLoading: false,
   errorLoading: false,
   dependencies: [],
+  namespaceType: '',
   pageInfo: {
     total: 0,
   },

@@ -62,6 +62,7 @@ export const FETCH_EXPORT_ERROR_MESSAGE = s__(
 );
 
 export const DEPENDENCIES_FILENAME = 'dependencies.json';
+export const DEPENDENCIES_CSV_FILENAME = 'dependencies.csv';
 
 export const LICENSES_FETCH_ERROR_MESSAGE = s__(
   'Dependencies|There was a problem fetching the licenses for this group.',
