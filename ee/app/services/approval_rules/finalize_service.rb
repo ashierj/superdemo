@@ -74,6 +74,8 @@ module ApprovalRules
         if new_rule.valid?
           new_rule.save!
         else
+          merge_request.approval_rules.delete(new_rule)
+
           Gitlab::AppLogger.debug(
             "Failed to persist approval rule: #{new_rule.errors.full_messages}."
           )
