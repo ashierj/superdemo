@@ -120,7 +120,7 @@ planned for release in 16.9.1.
   | 16.5                    |  All                    | None     |
   | 16.6                    |  All                    | None     |
   | 16.7                    |  All                    | None     |
-  | 16.8                    |  16.8.0 - 18.8.3        | 16.8.4   |
+  | 16.8                    |  16.8.0 - 16.8.3        | 16.8.4   |
   | 16.9                    |  16.9.0 - 16.9.1        | 16.9.2   |
 
 ## 16.8.0
@@ -170,7 +170,7 @@ you must take one of the following actions based on your configuration:
   | 16.5                    |  All                    | None     |
   | 16.6                    |  All                    | None     |
   | 16.7                    |  All                    | None     |
-  | 16.8                    |  16.8.0 - 18.8.3        | 16.8.4   |
+  | 16.8                    |  16.8.0 - 16.8.3        | 16.8.4   |
   | 16.9                    |  16.9.0 - 16.9.1        | 16.9.2   |
 
 ## 16.7.0
@@ -240,7 +240,7 @@ take one of the following actions based on your configuration:
   | 16.5                    |  All                    | None     |
   | 16.6                    |  All                    | None     |
   | 16.7                    |  All                    | None     |
-  | 16.8                    |  16.8.0 - 18.8.3        | 16.8.4   |
+  | 16.8                    |  16.8.0 - 16.8.3        | 16.8.4   |
   | 16.9                    |  16.9.0 - 16.9.1        | 16.9.2   |
 
 ## 16.6.0
@@ -286,7 +286,7 @@ take one of the following actions based on your configuration:
   | 16.5                    |  All                    | None     |
   | 16.6                    |  All                    | None     |
   | 16.7                    |  All                    | None     |
-  | 16.8                    |  16.8.0 - 18.8.3        | 16.8.4   |
+  | 16.8                    |  16.8.0 - 16.8.3        | 16.8.4   |
   | 16.9                    |  16.9.0 - 16.9.1        | 16.9.2   |
 
 ## 16.5.0
@@ -426,7 +426,7 @@ Specific information applies to installations using Geo:
   | 16.5                    |  All                    | None     |
   | 16.6                    |  All                    | None     |
   | 16.7                    |  All                    | None     |
-  | 16.8                    |  16.8.0 - 18.8.3        | 16.8.4   |
+  | 16.8                    |  16.8.0 - 16.8.3        | 16.8.4   |
   | 16.9                    |  16.9.0 - 16.9.1        | 16.9.2   |
 
 ## 16.4.0
