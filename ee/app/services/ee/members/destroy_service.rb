@@ -40,6 +40,7 @@ module EE
           target_details: member.user ? member.user.name : 'Deleted User',
           additional_details: {
             remove: "user_access",
+            as: member.human_access_labeled,
             member_id: member.id
           }
         }
