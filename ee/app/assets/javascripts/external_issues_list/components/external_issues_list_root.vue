@@ -84,12 +84,20 @@ export default {
     },
     hasFiltersApplied() {
       return Boolean(
-        this.filterParams.projects || this.filterParams.labels || this.filterParams.search,
+        this.filterParams.project ||
+          this.filterParams.status ||
+          this.filterParams.authorUsername ||
+          this.filterParams.assigneeUsername ||
+          this.filterParams.labels ||
+          this.filterParams.search,
       );
     },
     urlParams() {
       return {
-        'projects[]': this.filterParams.projects,
+        project: this.filterParams.project,
+        status: this.filterParams.status,
+        author_username: this.filterParams.authorUsername,
+        assignee_username: this.filterParams.assigneeUsername,
         'labels[]': this.filterParams.labels,
         search: this.filterParams.search,
         ...(this.currentPage === 1 ? {} : { page: this.currentPage }),
@@ -109,7 +117,10 @@ export default {
           page: this.currentPage, // navigation attributes
           sort: this.sortedBy, // navigation attributes
           state: this.currentState, // navigation attributes
-          projects: this.filterParams.projects, // filter attributes
+          project: this.filterParams.project, // filter attributes
+          status: this.filterParams.status, // filter attributes
+          authorUsername: this.filterParams.authorUsername, // filter attributes
+          assigneeUsername: this.filterParams.assigneeUsername, // filter attributes
           labels: this.filterParams.labels, // filter attributes
           search: this.filterParams.search, // filter attributes
         };
@@ -225,7 +236,10 @@ export default {
 
       this.filterParams = {
         ...filterParams,
-        projects: this.filterParams.projects,
+        project: this.filterParams.project,
+        status: this.filterParams.status,
+        authorUsername: this.filterParams.authorUsername,
+        assigneeUsername: this.filterParams.assigneeUsername,
       };
     },
   },

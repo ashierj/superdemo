@@ -62,6 +62,9 @@ describe('ExternalIssuesListRoot', () => {
   let mock;
 
   const mockProject = 'ES';
+  const mockStatus = 'To Do';
+  const mockAuthor = 'Author User';
+  const mockAssignee = 'Assignee User';
   const mockLabel = 'ecosystem';
   const mockSearchTerm = 'test issue';
   const expectedParams = {
@@ -70,7 +73,10 @@ describe('ExternalIssuesListRoot', () => {
     page: 1,
     sort: 'created_desc',
     state: 'opened',
-    projects: undefined,
+    project: undefined,
+    status: undefined,
+    author_username: undefined,
+    assignee_username: undefined,
     labels: undefined,
     search: undefined,
   };
@@ -149,7 +155,10 @@ describe('ExternalIssuesListRoot', () => {
 
       createComponent({
         initialFilterParams: {
-          projects: [mockProject],
+          project: mockProject,
+          status: mockStatus,
+          authorUsername: mockAuthor,
+          assigneeUsername: mockAssignee,
           labels: [mockLabel],
           search: mockSearchTerm,
         },
@@ -163,7 +172,10 @@ describe('ExternalIssuesListRoot', () => {
         expect.objectContaining({
           params: {
             ...expectedParams,
-            projects: [mockProject],
+            project: mockProject,
+            status: mockStatus,
+            author_username: mockAuthor,
+            assignee_username: mockAssignee,
             labels: [mockLabel],
             search: mockSearchTerm,
           },
@@ -178,7 +190,10 @@ describe('ExternalIssuesListRoot', () => {
         { type: TOKEN_TYPE_LABEL, value: { data: mockLabel } },
         { type: FILTERED_SEARCH_TERM, value: { data: mockSearchTerm } },
       ]);
-      expect(issuableList.props('urlParams')['projects[]']).toEqual([mockProject]);
+      expect(issuableList.props('urlParams').project).toBe(mockProject);
+      expect(issuableList.props('urlParams').status).toBe(mockStatus);
+      expect(issuableList.props('urlParams').author_username).toBe(mockAuthor);
+      expect(issuableList.props('urlParams').assignee_username).toBe(mockAssignee);
       expect(issuableList.props('urlParams')['labels[]']).toEqual([mockLabel]);
       expect(issuableList.props('urlParams').search).toBe(mockSearchTerm);
     });
@@ -199,7 +214,10 @@ describe('ExternalIssuesListRoot', () => {
           expect(axios.get).toHaveBeenCalledWith(mockProvide.issuesFetchPath, {
             params: {
               ...expectedParams,
-              projects: [mockProject],
+              project: mockProject,
+              status: mockStatus,
+              author_username: mockAuthor,
+              assignee_username: mockAssignee,
               ...expected,
             },
           });
