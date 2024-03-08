@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search do
-  subject { described_class.new }
+  subject(:worker) { described_class.new }
 
   context 'when ES is disabled' do
     before do
@@ -16,7 +16,7 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
       expect(ElasticWikiIndexerWorker).not_to receive(:perform_async)
       expect(Elastic::ProcessBookkeepingService).not_to receive(:maintain_indexed_group_associations!)
 
-      expect(subject.perform(1, "index")).to be_truthy
+      expect(worker.perform(1, "index")).to be_truthy
     end
   end
 
@@ -34,32 +34,45 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
       it 'indexes all projects belonging to the namespace' do
         expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(*projects)
 
-        subject.perform(namespace.id, :index)
+        worker.perform(namespace.id, :index)
       end
 
       it 'calls Elastic::ProcessBookkeepingService.maintain_indexed_group_associations! for group namespaces' do
         expect(Elastic::ProcessBookkeepingService).to receive(:maintain_indexed_group_associations!).with(*group).once
 
-        subject.perform(group.id, :index)
+        worker.perform(group.id, :index)
       end
 
       it 'does not call maintain_indexed_group_associations! for non-group namespaces' do
         expect(Elastic::ProcessBookkeepingService).not_to receive(:maintain_indexed_group_associations!)
 
-        subject.perform(namespace.id, :index)
+        worker.perform(namespace.id, :index)
       end
 
       it 'deletes all projects belonging to the namespace' do
-        args = projects.map { |project| [project.id, project.es_id] }
+        args = projects.map { |project| [project.id, project.es_id, { delete_project: false }] }
         expect(ElasticDeleteProjectWorker).to receive(:bulk_perform_async).with(args)
 
-        subject.perform(namespace.id, :delete)
+        worker.perform(namespace.id, :delete)
+      end
+
+      context 'when the search_index_all_projects feature flag is disabled' do
+        before do
+          stub_feature_flags(search_index_all_projects: false)
+        end
+
+        it 'deletes all projects belonging to the namespace' do
+          args = projects.map { |project| [project.id, project.es_id, { delete_project: true }] }
+          expect(ElasticDeleteProjectWorker).to receive(:bulk_perform_async).with(args)
+
+          worker.perform(namespace.id, :delete)
+        end
       end
 
       it 'does not enqueue Search::ElasticGroupAssociationDeletionWorker' do
         expect(Search::ElasticGroupAssociationDeletionWorker).not_to receive(:perform_async)
 
-        subject.perform(namespace.id, :delete)
+        worker.perform(namespace.id, :delete)
       end
 
       context 'when namespace is group' do
@@ -72,7 +85,7 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
               elastic_wiki_indexer_worker_random_delay_range, group.id, group.class.name, { force: true })
           end
 
-          subject.perform(group_namespace.id, :index)
+          worker.perform(group_namespace.id, :index)
         end
 
         it 'deletes all group wikis belonging to the namespace' do
@@ -81,7 +94,7 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
               elastic_delete_group_wiki_worker_random_delay_range, group.id, namespace_routing_id: group_namespace.id)
           end
 
-          subject.perform(group_namespace.id, :delete)
+          worker.perform(group_namespace.id, :delete)
         end
 
         context 'when the namespace is a group' do
@@ -101,7 +114,7 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
             expect(Search::ElasticGroupAssociationDeletionWorker).not_to receive(:perform_in)
               .with(anything, another_group.id, parent_group.id)
 
-            subject.perform(group.id, :delete)
+            worker.perform(group.id, :delete)
           end
 
           it 'enqueues Search::ElasticGroupAssociationDeletionWorker for group namespaces and its descendents' do
@@ -120,7 +133,7 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
             expect(Search::ElasticGroupAssociationDeletionWorker).not_to receive(:perform_in)
               .with(anything, another_group.id, anything)
 
-            subject.perform(group.id, :delete)
+            worker.perform(group.id, :delete)
           end
         end
       end
