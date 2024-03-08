@@ -7,8 +7,9 @@ module CodeSuggestions
         include Gitlab::Utils::StrongMemoize
 
         GATEWAY_PROMPT_VERSION = 2
-        # claude-2 max_input_tokens is 100K tokens, token =~ 4 characters, 1000 tokens are left for prompt itself
-        MAX_INPUT_CHARS = 99000 * 4
+        # although claude-2's prompt limit is much bigger, response time grows with prompt size,
+        # so we don't attempt to use the whole size of prompt window
+        MAX_INPUT_CHARS = 50000
         MAX_LIBS_COUNT = 50 # this is arbitrary number to keep prompt reasonably concise
 
         def request_params
@@ -68,9 +69,8 @@ module CodeSuggestions
         def existing_code_block
           return unless params[:prefix].present?
 
-          limit = params[:prompt_limit] || MAX_INPUT_CHARS
-          trimmed_prefix = prefix.to_s.last(limit)
-          trimmed_suffix = suffix.to_s.first(limit - trimmed_prefix.size)
+          trimmed_prefix = prefix.to_s.last(MAX_INPUT_CHARS)
+          trimmed_suffix = suffix.to_s.first(MAX_INPUT_CHARS - trimmed_prefix.size)
 
           <<~CODE
             <existing_code>
