@@ -12,10 +12,10 @@ export default {
     ClipboardButton,
   },
   curlLine: `export GL_PAT=<your_access_token>
-curl --request GET
-  --data 'google_cloud_project_id=<your_google_cloud_project_id>'
-  --header "PRIVATE-TOKEN: $GL_PAT"
-  --url "https://gitlab.com/api/v4/projects/<your_gitlab_project_id>/google_cloud/setup/wlif.sh"
+curl --request GET \\
+  --header "PRIVATE-TOKEN: $GL_PAT" \\
+  --data 'google_cloud_project_id=<your_google_cloud_project_id>' \\
+  --url "https://gitlab.com/api/v4/projects/<your_gitlab_project_id>/google_cloud/setup/wlif.sh" \\
 | bash`,
   STATE_MANUAL,
 };
