@@ -179,7 +179,10 @@ RSpec.describe(
         # I'm not sure how to properly handle this since the path is somehow calculated
         # like tmp/tests/artifacts/5f/9c/5f9c4ab08cac7457e9111a30e4664920607ea2c115a1433d7be98e97e64244ca/2022_09_20
         # /21/21/gl-sast-report-with-signatures-and-flags.json
-        create(:ee_ci_job_artifact, :sast_with_signatures_and_vulnerability_flags, job_id: ci_build.id)
+        create(:ee_ci_job_artifact,
+          :sast_with_signatures_and_vulnerability_flags,
+          job_id: ci_build.id,
+          partition_id: ci_testing_partition_id)
         # rubocop:enable RSpec/FactoriesInMigrationSpecs
         security_scan = create_security_scan(ci_build, sast_scan_type, project_id: project.id)
         @security_finding = create_security_finding(security_scan, scanner, uuid: known_uuid)
@@ -420,7 +423,7 @@ RSpec.describe(
 
   def create_ci_pipeline(overrides = {})
     attrs = {
-      partition_id: 100
+      partition_id: ci_testing_partition_id
     }.merge(overrides)
     ci_pipelines.create!(attrs)
   end
@@ -428,7 +431,7 @@ RSpec.describe(
   def create_ci_build(overrides = {})
     attrs = {
       type: 'Ci::Build',
-      partition_id: 100
+      partition_id: ci_testing_partition_id
     }.merge(overrides)
     ci_builds.create!(attrs)
   end
@@ -437,7 +440,8 @@ RSpec.describe(
     attrs = {
       project_id: project.id,
       file_type: file_type,
-      job_id: build.id
+      job_id: build.id,
+      partition_id: ci_testing_partition_id
     }.merge(overrides)
 
     ci_job_artifacts.create!(attrs)
