@@ -8,7 +8,11 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  inject: ['hasBlockedIssuesFeature'],
+  inject: {
+    hasBlockedIssuesFeature: {
+      default: false,
+    },
+  },
   props: {
     blockingIssuesCount: {
       type: Number,

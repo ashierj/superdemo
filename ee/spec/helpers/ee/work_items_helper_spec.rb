@@ -51,7 +51,9 @@ RSpec.describe EE::WorkItemsHelper, feature_category: :team_planning do
   describe '#work_items_list_data' do
     let_it_be(:group) { build(:group) }
 
-    subject(:work_items_list_data) { helper.work_items_list_data(group) }
+    let(:current_user) { double.as_null_object }
+
+    subject(:work_items_list_data) { helper.work_items_list_data(group, current_user) }
 
     before do
       stub_licensed_features(
