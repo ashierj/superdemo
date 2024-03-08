@@ -158,3 +158,6 @@ module Epics
     end
   end
 end
+
+# JH required
+::Epics::Findable.prepend_mod
