@@ -2,6 +2,7 @@ import { GlEmptyState, GlLoadingIcon, GlLink } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { s__ } from '~/locale';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import DependenciesApp from 'ee/dependencies/components/app.vue';
 import DependenciesActions from 'ee/dependencies/components/dependencies_actions.vue';
@@ -10,7 +11,11 @@ import DependencyListJobFailedAlert from 'ee/dependencies/components/dependency_
 import PaginatedDependenciesTable from 'ee/dependencies/components/paginated_dependencies_table.vue';
 import createStore from 'ee/dependencies/store';
 import { DEPENDENCY_LIST_TYPES } from 'ee/dependencies/store/constants';
-import { NAMESPACE_ORGANIZATION } from 'ee/dependencies/constants';
+import {
+  NAMESPACE_GROUP,
+  NAMESPACE_ORGANIZATION,
+  NAMESPACE_PROJECT,
+} from 'ee/dependencies/constants';
 import { REPORT_STATUS } from 'ee/dependencies/store/modules/list/constants';
 import { TEST_HOST } from 'helpers/test_constants';
 import { getDateInPast } from '~/lib/utils/datetime_utility';
@@ -251,6 +256,25 @@ describe('DependenciesApp component', () => {
           findExportButton().vm.$emit('click');
 
           expect(store.dispatch).toHaveBeenCalledWith(`${allNamespace}/fetchExport`);
+        });
+
+        describe.each`
+          namespaceType             | expectedTooltip
+          ${NAMESPACE_ORGANIZATION} | ${s__('Dependencies|Export as CSV')}
+          ${NAMESPACE_PROJECT}      | ${s__('Dependencies|Export as JSON')}
+          ${NAMESPACE_GROUP}        | ${s__('Dependencies|Export as JSON')}
+        `('with namespaceType set to $namespaceType', ({ namespaceType, expectedTooltip }) => {
+          beforeEach(async () => {
+            factory({
+              provide: { namespaceType },
+            });
+            setStateLoaded();
+            await nextTick();
+          });
+
+          it('shows a tooltip for a CSV export', () => {
+            expect(findExportButton().attributes('title')).toBe(expectedTooltip);
+          });
         });
 
         describe('with fetching in progress', () => {

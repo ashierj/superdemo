@@ -71,6 +71,11 @@ export default {
     exportButtonIcon() {
       return this.fetchingInProgress ? '' : 'export';
     },
+    exportTooltip() {
+      return this.isOrganizationNamespace
+        ? s__('Dependencies|Export as CSV')
+        : s__('Dependencies|Export as JSON');
+    },
     currentListIndex: {
       get() {
         return this.listTypes.map(({ namespace }) => namespace).indexOf(this.currentList);
@@ -208,7 +213,7 @@ export default {
       <gl-button
         v-if="exportEndpoint"
         v-gl-tooltip.hover
-        :title="s__('Dependencies|Export as JSON')"
+        :title="exportTooltip"
         class="gl-mt-3 gl-md-mt-0"
         :icon="exportButtonIcon"
         data-testid="export"
