@@ -367,7 +367,7 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
           context 'with a public project' do
             it_behaves_like 'handling different token types',
               personal_access_token_cases: [
-                [:anonymous,     nil,   nil,            :forbidden],
+                [:anonymous,     nil,   nil,            :unauthorized],
                 [:guest,         true,  :custom_header, :ok],
                 [:guest,         true,  :basic_auth,    :ok],
                 [:guest,         false, :custom_header, :unauthorized],
