@@ -69,6 +69,17 @@ describe('TracingListFilteredSearch', () => {
       const tokens = getTokens();
       const token = tokens.find((t) => t.type === 'period');
       expect(token.token).toBe(DateRangeToken);
+      expect(token.maxDateRange).toBe(7);
+      expect(token.options.map(({ value }) => value)).toEqual([
+        '5m',
+        '15m',
+        '30m',
+        '1h',
+        '4h',
+        '12h',
+        '24h',
+        '7d',
+      ]);
     });
 
     it('configure the attribute token', () => {
