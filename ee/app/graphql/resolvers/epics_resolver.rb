@@ -204,3 +204,6 @@ module Resolvers
     end
   end
 end
+
+# JH required
+::Resolvers::EpicsResolver.prepend_mod
