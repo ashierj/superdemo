@@ -8,8 +8,8 @@ import {
   IMPORT_NPM_PACKAGE,
   INIT_TRACKING,
   HTML_SCRIPT_SETUP,
-  BROWSER_SDK_DOCS_URL,
 } from 'ee/product_analytics/onboarding/constants';
+import { helpPagePath } from '~/helpers/help_page_helper';
 
 export default {
   name: 'ProductAnalyticsInstrumentationInstructions',
@@ -62,7 +62,9 @@ export default {
       `ProductAnalytics|For more information, see the %{linkStart}docs%{linkEnd}.`,
     ),
   },
-  BROWSER_SDK_DOCS_URL,
+  BROWSER_SDK_DOCS_URL: helpPagePath('user/product_analytics/instrumentation/browser_sdk', {
+    anchor: 'browser-sdk-initialization-options',
+  }),
   INSTALL_NPM_PACKAGE,
   IMPORT_NPM_PACKAGE,
   INIT_TRACKING,

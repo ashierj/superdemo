@@ -16,6 +16,9 @@ export default {
     OnboardingEmptyState: () => import('./components/onboarding_empty_state.vue'),
     OnboardingSetup: () => import('ee/product_analytics/onboarding/onboarding_setup.vue'),
   },
+  inject: {
+    dashboardsPath: {},
+  },
   data() {
     return {
       state: '',
@@ -77,6 +80,6 @@ export default {
       @error="showError($event)"
     />
 
-    <onboarding-setup v-else-if="showSetup" is-initial-setup dashboards-path="/" />
+    <onboarding-setup v-else-if="showSetup" is-initial-setup :dashboards-path="dashboardsPath" />
   </div>
 </template>
