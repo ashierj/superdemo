@@ -2,6 +2,7 @@
 import { GlSkeletonLoader } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { COVERAGE_CHECK_NAME } from 'ee/approvals/constants';
 import { s__ } from '~/locale';
 import UnconfiguredSecurityRule from './unconfigured_security_rule.vue';
@@ -11,6 +12,7 @@ export default {
     UnconfiguredSecurityRule,
     GlSkeletonLoader,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: {
     coverageCheckHelpPagePath: {
       default: '',
@@ -48,6 +50,15 @@ export default {
   },
   methods: {
     ...mapActions({ openCreateModal: 'createModal/open' }),
+    ...mapActions({ openCreateDrawer: 'openCreateDrawer' }),
+    handleAddRule(ruleName) {
+      const rule = { defaultRuleName: ruleName };
+      if (this.glFeatures.approvalRulesDrawer) {
+        this.openCreateDrawer(rule);
+        return;
+      }
+      this.openCreateModal(rule);
+    },
     hasApprovalRuleDefined(matchRule) {
       return this.rules.some((rule) => {
         return matchRule.name === rule.name;
@@ -71,7 +82,7 @@ export default {
         v-else
         :key="rule.name"
         :rule="rule"
-        @enable="openCreateModal({ defaultRuleName: rule.name })"
+        @enable="handleAddRule(rule.name)"
       />
     </tbody>
   </table>

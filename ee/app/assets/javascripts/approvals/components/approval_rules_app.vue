@@ -2,14 +2,17 @@
 import { GlButton, GlCard, GlIcon, GlLoadingIcon } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { __ } from '~/locale';
 import showToast from '~/vue_shared/plugins/global_toast';
+import DrawerRuleCreate from './rule_drawer/create_rule.vue';
 import ModalRuleCreate from './rule_modal/create_rule.vue';
 import ModalRuleRemove from './rule_modal/remove_rule.vue';
 
 export default {
   name: 'ApprovalRulesApp',
   components: {
+    DrawerRuleCreate,
     ModalRuleCreate,
     ModalRuleRemove,
     GlButton,
@@ -17,6 +20,7 @@ export default {
     GlIcon,
     GlLoadingIcon,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     isMrEdit: {
       type: Boolean,
@@ -29,6 +33,7 @@ export default {
       settings: 'settings',
       rules: (state) => state.approvals.rules,
       isLoading: (state) => state.approvals.isLoading,
+      drawerOpen: (state) => state.approvals.drawerOpen,
       hasLoaded: (state) => state.approvals.hasLoaded,
       targetBranch: (state) => state.approvals.targetBranch,
     }),
@@ -51,6 +56,8 @@ export default {
   methods: {
     ...mapActions(['fetchRules', 'undoRulesChange']),
     ...mapActions({ openCreateModal: 'createModal/open' }),
+    ...mapActions({ openCreateDrawer: 'openCreateDrawer' }),
+    ...mapActions({ closeCreateDrawer: 'closeCreateDrawer' }),
     resetToProjectDefaults() {
       const { targetBranch } = this;
 
@@ -65,6 +72,13 @@ export default {
           },
         });
       });
+    },
+    handleAddRule() {
+      if (this.glFeatures.approvalRulesDrawer) {
+        this.openCreateDrawer();
+        return;
+      }
+      this.openCreateModal(null);
     },
   },
 };
@@ -95,7 +109,7 @@ export default {
           category="secondary"
           size="small"
           data-testid="add-approval-rule"
-          @click="openCreateModal(null)"
+          @click="handleAddRule()"
         >
           {{ __('Add approval rule') }}
         </gl-button>
@@ -122,7 +136,13 @@ export default {
     <template v-if="$scopedSlots.footer" #footer>
       <slot name="footer"></slot>
     </template>
-    <modal-rule-create :modal-id="createModalId" :is-mr-edit="isMrEdit" />
+    <drawer-rule-create
+      v-if="glFeatures.approvalRulesDrawer"
+      :is-mr-edit="isMrEdit"
+      :is-open="drawerOpen"
+      @close="closeCreateDrawer"
+    />
+    <modal-rule-create v-else :modal-id="createModalId" :is-mr-edit="isMrEdit" />
     <modal-rule-remove :modal-id="removeModalId" />
   </gl-card>
 </template>

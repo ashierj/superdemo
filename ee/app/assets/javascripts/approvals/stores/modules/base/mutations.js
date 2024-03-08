@@ -34,4 +34,10 @@ export default {
     state.resetToDefault = false;
     state.rules = [...state.oldRules];
   },
+  [types.SET_DRAWER_OPEN](state, isOpen) {
+    state.drawerOpen = isOpen;
+  },
+  [types.SET_EDIT_RULE](state, rule) {
+    state.editRule = rule;
+  },
 };

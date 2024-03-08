@@ -27,7 +27,7 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
   it 'adds approver' do
     visit project_settings_merge_requests_path(project)
 
-    open_modal(text: 'Add approval rule', expand: false)
+    click_button('Add approval rule')
     click_button 'Search users or groups'
 
     expect_listbox_item(user.name)
@@ -41,8 +41,8 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
 
     expect_no_listbox_item(user.name)
 
-    within('.modal-content') do
-      click_button 'Add approval rule'
+    within('.gl-drawer') do
+      click_button 'Save changes'
     end
     wait_for_requests
 
@@ -52,7 +52,7 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
   it 'adds approver group' do
     visit project_settings_merge_requests_path(project)
 
-    open_modal(text: 'Add approval rule', expand: false)
+    click_button('Add approval rule')
     click_button 'Search users or groups'
 
     expect_listbox_item(group.name)
@@ -61,8 +61,8 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
 
     expect(find('.content-list')).to have_content(group.name)
 
-    within('.modal-content') do
-      click_button 'Add approval rule'
+    within('.gl-drawer') do
+      click_button 'Save changes'
     end
     wait_for_requests
 
@@ -82,13 +82,69 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
       visit project_settings_merge_requests_path(project)
 
       expect_avatar(find_by_testid('approvals-table-members'), rule.approvers)
-
-      open_modal(text: 'Edit', expand: false)
-      remove_approver(group.name)
-      click_button "Update approval rule"
+      wait_for_requests
+      within(find_by_testid('approvals-table-controls')) do
+        click_button 'Edit'
+      end
+      remove_approver(group.name, '.gl-drawer-body')
+      within('.gl-drawer') do
+        click_button 'Save changes'
+      end
       wait_for_requests
 
       expect_avatar(find_by_testid('approvals-table-members'), [non_group_approver])
+    end
+  end
+
+  context 'with approval_rules_drawer feature flag disabled' do
+    before do
+      stub_feature_flags(approval_rules_drawer: false)
+    end
+
+    it 'adds approver' do
+      visit project_settings_merge_requests_path(project)
+
+      open_modal(text: 'Add approval rule', expand: false)
+      click_button 'Search users or groups'
+
+      expect_listbox_item(user.name)
+      expect_no_listbox_item(non_member.name)
+
+      select_listbox_item(user.name)
+
+      expect(find('.content-list')).to have_content(user.name)
+
+      click_button 'Search users or groups'
+
+      expect_no_listbox_item(user.name)
+
+      within('.modal-content') do
+        click_button 'Add approval rule'
+      end
+      wait_for_requests
+
+      expect_avatar(find_by_testid('approvals-table-members'), user)
+    end
+
+    it 'adds approver group' do
+      visit project_settings_merge_requests_path(project)
+
+      open_modal(text: 'Add approval rule', expand: false)
+      click_button 'Search users or groups'
+
+      expect_listbox_item(group.name)
+
+      select_listbox_item(group.name)
+
+      expect(find('.content-list')).to have_content(group.name)
+
+      within('.modal-content') do
+        click_button 'Add approval rule'
+      end
+      wait_for_requests
+
+      group_users = group.group_members.preload_users.map(&:user)
+      expect_avatar(find_by_testid('approvals-table-members'), group_users)
     end
   end
 end

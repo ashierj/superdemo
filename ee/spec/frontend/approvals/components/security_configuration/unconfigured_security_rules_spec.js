@@ -16,9 +16,10 @@ describe('UnconfiguredSecurityRules component', () => {
 
   const TEST_PROJECT_ID = '7';
 
-  const createWrapper = (props = {}) => {
+  const createWrapper = (props = {}, approvalRulesDrawer = false) => {
     wrapper = shallowMount(UnconfiguredSecurityRules, {
-      store,
+      store: new Vuex.Store(store),
+      provide: { glFeatures: { approvalRulesDrawer } },
       propsData: {
         ...props,
       },
@@ -26,10 +27,13 @@ describe('UnconfiguredSecurityRules component', () => {
   };
 
   beforeEach(() => {
-    store = new Vuex.Store(
-      createStoreOptions({ approvals: projectSettingsModule() }, { projectId: TEST_PROJECT_ID }),
+    store = createStoreOptions(
+      { approvals: projectSettingsModule() },
+      { projectId: TEST_PROJECT_ID },
     );
-    jest.spyOn(store, 'dispatch');
+
+    store.modules.approvals.actions = { openCreateDrawer: jest.fn() };
+    jest.spyOn(store.modules.approvals.actions, 'openCreateDrawer');
   });
 
   describe('when created', () => {
@@ -54,6 +58,15 @@ describe('UnconfiguredSecurityRules component', () => {
 
     it(`should ${shouldRender ? '' : 'not'} render the loading skeleton`, () => {
       expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(shouldRender);
+    });
+  });
+
+  describe('approvalRulesDrawer feature flag enabled', () => {
+    it('opens the drawer when a rule is Enabled', () => {
+      createWrapper({}, true);
+      wrapper.findComponent(UnconfiguredSecurityRule).vm.$emit('enable');
+
+      expect(store.modules.approvals.actions.openCreateDrawer).toHaveBeenCalled();
     });
   });
 });

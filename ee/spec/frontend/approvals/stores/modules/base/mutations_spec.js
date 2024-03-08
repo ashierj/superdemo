@@ -59,4 +59,22 @@ describe('EE approvals base module mutations', () => {
       expect(state.rules).toEqual(oldRules);
     });
   });
+
+  describe(types.SET_DRAWER_OPEN, () => {
+    it('sets drawerOpen', () => {
+      const drawerOpen = true;
+      mutations[types.SET_DRAWER_OPEN](state, drawerOpen);
+
+      expect(state.drawerOpen).toEqual(drawerOpen);
+    });
+  });
+
+  describe(types.SET_EDIT_RULE, () => {
+    it('sets editRule', () => {
+      const editRule = { id: 1 };
+      mutations[types.SET_EDIT_RULE](state, editRule);
+
+      expect(state.editRule).toEqual(editRule);
+    });
+  });
 });
