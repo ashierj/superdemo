@@ -6,6 +6,7 @@ module Gitlab
       module Tools
         class Tool
           include Gitlab::Utils::StrongMemoize
+          include Langsmith::RunHelpers
 
           NAME = 'Base Tool'
           DESCRIPTION = 'Base Tool description'

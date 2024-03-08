@@ -8,6 +8,7 @@ module Gitlab
           module Prompts
             class Anthropic < Base
               include Concerns::AnthropicPrompt
+              extend Langsmith::RunHelpers
 
               def self.prompt(options)
                 human_role = ROLE_NAMES[Llm::AiMessage::ROLE_USER]
@@ -21,6 +22,7 @@ module Gitlab
 
                 Requests::Anthropic.prompt(text)
               end
+              traceable :prompt, name: 'Build prompt', run_type: 'prompt', class_method: true
 
               # Returns messages from previous conversation. To assure that overall prompt size is not too big,
               # we keep adding messages from most-recent to older until we reach overall prompt limit.

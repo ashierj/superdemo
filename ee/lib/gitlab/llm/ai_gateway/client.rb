@@ -8,6 +8,7 @@ module Gitlab
         include ::Gitlab::Llm::Concerns::EventTracking
         include ::Gitlab::Utils::StrongMemoize
         include ::API::Helpers::CloudConnector
+        include Langsmith::RunHelpers
 
         DEFAULT_PROVIDER = 'anthropic'
         DEFAULT_MODEL = 'claude-2.0'
@@ -54,6 +55,7 @@ module Gitlab
 
           response_body
         end
+        traceable :stream, name: 'Request to AI Gateway', run_type: 'llm'
 
         private
 

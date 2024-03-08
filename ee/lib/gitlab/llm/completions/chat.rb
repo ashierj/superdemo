@@ -4,6 +4,8 @@ module Gitlab
   module Llm
     module Completions
       class Chat < Base
+        include Langsmith::RunHelpers
+
         attr_reader :context
 
         TOOLS = [
@@ -77,6 +79,7 @@ module Gitlab
           response_post_processing
           response_modifier
         end
+        traceable :execute, name: 'Run Duo Chat'
 
         private
 

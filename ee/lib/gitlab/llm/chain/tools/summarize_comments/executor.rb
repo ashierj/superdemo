@@ -74,6 +74,7 @@ module Gitlab
                 status: :ok, context: context, content: content, tool: nil, is_final: false
               )
             end
+            traceable :perform, run_type: 'tool'
 
             private
 

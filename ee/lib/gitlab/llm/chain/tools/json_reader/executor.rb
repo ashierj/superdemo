@@ -65,6 +65,7 @@ module Gitlab
               logger.error(message: "error message", error: e.message)
               Answer.error_answer(context: context, content: _("Unexpected error"))
             end
+            traceable :perform, run_type: 'tool'
 
             private
 

@@ -50,6 +50,7 @@ module Gitlab
 
             not_found
           end
+          traceable :perform, run_type: 'tool'
 
           private
 
@@ -87,6 +88,7 @@ module Gitlab
               extract_resource(resource_identifier, resource_identifier_type)
             end
           end
+          traceable :identify_resource, name: 'Identify resource', run_type: 'parser'
 
           def extract_json(response)
             response = "```json
