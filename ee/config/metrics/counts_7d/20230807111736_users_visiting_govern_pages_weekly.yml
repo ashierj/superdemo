@@ -14,7 +14,7 @@ data_category: optional
 instrumentation_class: AggregatedMetric
 options:
   aggregate:
-    attribute: user_id
+    attribute: user.id
   events:
     - i_code_review_merge_request_widget_security_reports_expand
     - users_visiting_security_policies

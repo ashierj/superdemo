@@ -14,7 +14,7 @@ data_category: optional
 instrumentation_class: AggregatedMetric
 options:
   aggregate:
-    attribute: user_id
+    attribute: user.id
   events:
     - users_visiting_security_policies
     - users_creating_merge_requests_with_security_policies

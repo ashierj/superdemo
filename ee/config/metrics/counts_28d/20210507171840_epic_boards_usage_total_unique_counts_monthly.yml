@@ -13,7 +13,7 @@ data_source: redis_hll
 instrumentation_class: AggregatedMetric
 options:
   aggregate:
-    attribute: user_id
+    attribute: user.id
   events:
   - g_project_management_users_creating_epic_boards
   - g_project_management_users_viewing_epic_boards
