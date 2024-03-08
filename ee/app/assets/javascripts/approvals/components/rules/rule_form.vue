@@ -258,6 +258,7 @@ export default {
 
       try {
         await submission();
+        this.$emit('close');
       } catch (failureResponse) {
         this.serverValidationErrors = mapServerResponseToValidationErrors(
           failureResponse?.response?.data?.message || {},
@@ -350,7 +351,7 @@ export default {
 </script>
 
 <template>
-  <form novalidate @submit.prevent.stop="submit">
+  <form novalidate @submit.prevent.stop="submit" @keydown.enter="submit">
     <gl-form-group
       v-if="showName"
       :label="$options.APPROVAL_DIALOG_I18N.form.nameLabel"
@@ -366,6 +367,7 @@ export default {
         :disabled="isNameDisabled"
         :state="isValidName"
         data-testid="rule-name-field"
+        autofocus
       />
     </gl-form-group>
     <gl-form-group

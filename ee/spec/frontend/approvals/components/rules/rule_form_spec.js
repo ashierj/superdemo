@@ -271,6 +271,12 @@ describe('EE Approvals RuleForm', () => {
         createComponent({ isMrEdit: false });
       });
 
+      it('displays the correct label for required approvals', () => {
+        expect(findApprovalsRequiredValidation().attributes('label')).toBe(
+          'Required number of approvals',
+        );
+      });
+
       it('at first, shows no validation', () => {
         expect(inputsAreValid(findValidationsWithBranch())).toBe(true);
       });
@@ -747,6 +753,13 @@ describe('EE Approvals RuleForm', () => {
             }),
           );
         });
+      });
+
+      it('submits on keydown.enter', () => {
+        createComponent({ initRule: { ...TEST_RULE, name: inputName } });
+        findForm().trigger('keydown.enter');
+
+        expect(actions.putRule).toHaveBeenCalled();
       });
     });
   });

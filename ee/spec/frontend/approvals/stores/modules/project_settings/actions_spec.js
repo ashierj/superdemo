@@ -46,6 +46,34 @@ describe('EE approvals project settings module actions', () => {
     mock.restore();
   });
 
+  describe('drawer', () => {
+    it('openCreateDrawer', () => {
+      return testAction(
+        actions.openCreateDrawer,
+        TEST_RULE_RESPONSE,
+        {},
+        [
+          { type: types.SET_DRAWER_OPEN, payload: true },
+          { type: types.SET_EDIT_RULE, payload: TEST_RULE_RESPONSE },
+        ],
+        [],
+      );
+    });
+
+    it('closeCreateDrawer', () => {
+      return testAction(
+        actions.closeCreateDrawer,
+        null,
+        {},
+        [
+          { type: types.SET_DRAWER_OPEN, payload: false },
+          { type: types.SET_EDIT_RULE, payload: null },
+        ],
+        [],
+      );
+    });
+  });
+
   describe('requestRules', () => {
     it('sets loading', () => {
       return testAction(

@@ -4,6 +4,7 @@ import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ApprovalRulesApp from 'ee/approvals/components/approval_rules_app.vue';
+import DrawerRuleCreate from 'ee/approvals/components/rule_drawer/create_rule.vue';
 import ModalRuleCreate from 'ee/approvals/components/rule_modal/create_rule.vue';
 import ModalRuleRemove from 'ee/approvals/components/rule_modal/remove_rule.vue';
 import { createStoreOptions } from 'ee/approvals/stores';
@@ -23,10 +24,11 @@ describe('EE Approvals App', () => {
   let slots;
 
   const targetBranchName = 'development';
-  const factory = () => {
+  const factory = (approvalRulesDrawer = false) => {
     wrapper = shallowMountExtended(ApprovalRulesApp, {
       slots,
       store: new Vuex.Store(store),
+      provide: { glFeatures: { approvalRulesDrawer } },
       stubs: {
         GlCard,
       },
@@ -39,6 +41,7 @@ describe('EE Approvals App', () => {
   const findRules = () => wrapper.find(`.${TEST_RULES_CLASS}`);
   const findRulesCount = () => wrapper.findByTestId('rules-count');
   const findRulesCountIcon = () => wrapper.findComponent(GlIcon);
+  const findRuleCreateDrawer = () => wrapper.findComponent(DrawerRuleCreate);
 
   beforeEach(() => {
     slots = {
@@ -55,11 +58,15 @@ describe('EE Approvals App', () => {
 
     store.modules.approvals.actions = {
       fetchRules: jest.fn().mockResolvedValue(),
+      openCreateDrawer: jest.fn().mockResolvedValue(),
+      closeCreateDrawer: jest.fn().mockResolvedValue(),
     };
 
     store.modules.approvals.state.targetBranch = targetBranchName;
 
     jest.spyOn(store.modules.approvals.actions, 'fetchRules');
+    jest.spyOn(store.modules.approvals.actions, 'openCreateDrawer');
+    jest.spyOn(store.modules.approvals.actions, 'closeCreateDrawer');
     jest.spyOn(store.modules.createModal.actions, 'open');
   });
 
@@ -211,6 +218,26 @@ describe('EE Approvals App', () => {
           expect.anything(),
           null,
         );
+      });
+    });
+
+    describe('approvalRulesDrawer feature flag enabled', () => {
+      beforeEach(() => factory(true));
+
+      it('renders a RuleCreateDrawer drawer component with correct props', () => {
+        expect(findRuleCreateDrawer().props()).toEqual({ isMrEdit: true, isOpen: false });
+      });
+
+      it('opens the drawer when a rule is added', () => {
+        findAddButton().vm.$emit('click');
+
+        expect(store.modules.approvals.actions.openCreateDrawer).toHaveBeenCalled();
+      });
+
+      it('closes the drawer when a close event is emitted', () => {
+        findRuleCreateDrawer().vm.$emit('close');
+
+        expect(store.modules.approvals.actions.closeCreateDrawer).toHaveBeenCalled();
       });
     });
   });

@@ -76,7 +76,7 @@ export const GROUP_APPROVAL_SETTINGS_LABELS_I18N = {
 
 export const APPROVAL_DIALOG_I18N = {
   form: {
-    approvalsRequiredLabel: s__('ApprovalRule|Approvals required'),
+    approvalsRequiredLabel: s__('ApprovalRule|Required number of approvals'),
     approvalTypeLabel: s__('ApprovalRule|Approver Type'),
     approversLabel: s__('ApprovalRule|Add approvers'),
     nameLabel: s__('ApprovalRule|Rule name'),

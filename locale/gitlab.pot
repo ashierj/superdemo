@@ -6355,6 +6355,9 @@ msgstr ""
 msgid "ApprovalRule|Reduce your time to merge."
 msgstr ""
 
+msgid "ApprovalRule|Required number of approvals"
+msgstr ""
+
 msgid "ApprovalRule|Resolved"
 msgstr ""
 
@@ -18757,6 +18760,9 @@ msgid "Edit System Hook"
 msgstr ""
 
 msgid "Edit application"
+msgstr ""
+
+msgid "Edit approval rule"
 msgstr ""
 
 msgid "Edit audio description"

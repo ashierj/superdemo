@@ -3,6 +3,7 @@ import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
 import { __ } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { TABLE_HEADERS } from '../../constants';
 import RuleInput from './rule_input.vue';
 import EmptyRuleName from './empty_rule_name.vue';
@@ -22,6 +23,7 @@ export default {
     addApprovalRule: __('Add approval rule'),
   },
   TABLE_HEADERS,
+  mixins: [glFeatureFlagsMixin()],
   props: {
     rule: {
       type: Object,
@@ -53,6 +55,14 @@ export default {
   },
   methods: {
     ...mapActions({ openCreateModal: 'createModal/open' }),
+    ...mapActions({ openCreateDrawer: 'openCreateDrawer' }),
+    handleAddRule() {
+      if (this.glFeatures.approvalRulesDrawer) {
+        this.openCreateDrawer();
+        return;
+      }
+      this.openCreateModal(null);
+    },
   },
 };
 </script>
@@ -82,7 +92,7 @@ export default {
           category="tertiary"
           icon="plus"
           data-testid="add-approval-rule"
-          @click="openCreateModal(null)"
+          @click="handleAddRule()"
         />
       </div>
     </td>

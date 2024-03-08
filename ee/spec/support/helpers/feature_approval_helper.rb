@@ -13,8 +13,8 @@ module FeatureApprovalHelper
     end
   end
 
-  def remove_approver(name)
-    el = page.find("#{modal_selector} .content-list li", text: /#{name}/i)
+  def remove_approver(name, selector = modal_selector)
+    el = page.find("#{selector} .content-list li", text: /#{name}/i)
     el.find('button').click
   end
 

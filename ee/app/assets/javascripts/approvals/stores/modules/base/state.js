@@ -7,4 +7,6 @@ export default () => ({
   initialRules: [],
   oldRules: [],
   resetToDefault: false,
+  drawerOpen: false,
+  editRule: null,
 });
