@@ -19574,6 +19574,12 @@ msgstr ""
 msgid "Environments|Create an environment"
 msgstr ""
 
+msgid "Environments|Dashboard is up to date"
+msgstr ""
+
+msgid "Environments|Dashboard synced"
+msgstr ""
+
 msgid "Environments|Delete"
 msgstr ""
 
@@ -19679,6 +19685,12 @@ msgstr ""
 msgid "Environments|Re-deploy to environment"
 msgstr ""
 
+msgid "Environments|Refresh dashboard"
+msgstr ""
+
+msgid "Environments|Refresh to sync new data"
+msgstr ""
+
 msgid "Environments|Rollback environment"
 msgstr ""
 
@@ -19740,6 +19752,12 @@ msgid "Environments|Upcoming deployment"
 msgstr ""
 
 msgid "Environments|Updated"
+msgstr ""
+
+msgid "Environments|Updating"
+msgstr ""
+
+msgid "Environments|Updating dashboard"
 msgstr ""
 
 msgid "Environments|by %{avatar}"
