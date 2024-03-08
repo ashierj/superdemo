@@ -68,6 +68,8 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanResultPoli
       before do
         stub_licensed_features(security_orchestration_policies: true)
 
+        stub_feature_flags(security_policies_breaking_changes: false)
+
         allow_next_instance_of(Repository) do |repository|
           allow(repository).to receive(:blob_data_at).and_return({ scan_result_policy: [policy] }.to_yaml)
         end
@@ -75,6 +77,42 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanResultPoli
 
       it 'returns the policy' do
         expect(resolve_policies).to match_array(expected_response)
+      end
+
+      context 'when the feature flag security_policies_breaking_changes is enabled' do
+        before do
+          stub_feature_flags(security_policies_breaking_changes: true)
+        end
+
+        let(:expected_response) do
+          [
+            {
+              name: policy[:name],
+              description: policy[:description],
+              edit_path: Gitlab::Routing.url_helpers.edit_project_security_policy_url(
+                project, id: CGI.escape(policy[:name]), type: 'approval_policy'
+              ),
+              enabled: policy[:enabled],
+              policy_scope: nil,
+              yaml: YAML.dump(policy.deep_stringify_keys),
+              updated_at: policy_configuration.policy_last_updated_at,
+              user_approvers: [],
+              group_approvers: [],
+              all_group_approvers: [],
+              deprecated_properties: [],
+              role_approvers: [],
+              source: {
+                inherited: false,
+                namespace: nil,
+                project: project
+              }
+            }
+          ]
+        end
+
+        it 'returns the policy' do
+          expect(resolve_policies).to match_array(expected_response)
+        end
       end
     end
   end

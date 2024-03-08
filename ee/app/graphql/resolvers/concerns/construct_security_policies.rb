@@ -27,7 +27,7 @@ module ConstructSecurityPolicies
   def construct_scan_result_policies(policies)
     policies.map do |policy|
       approvers = approvers(policy)
-      {
+      scan_result_policy = {
         name: policy[:name],
         description: policy[:description],
         edit_path: edit_path(policy, :approval_policy),
@@ -45,6 +45,12 @@ module ConstructSecurityPolicies
           inherited: policy[:inherited]
         }
       }
+
+      if Feature.enabled?(:security_policies_breaking_changes, object)
+        scan_result_policy[:deprecated_properties] = policy[:config].deprecated_properties
+      end
+
+      scan_result_policy
     end
   end
 

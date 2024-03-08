@@ -14,6 +14,10 @@ module Types
       field :all_group_approvers, [::Types::SecurityOrchestration::ApprovalGroupType],
             null: true,
             description: 'All potential approvers of the group type, including groups inaccessible to the user.'
+      field :deprecated_properties, [::GraphQL::Types::String], null: true,
+            description: 'All deprecated properties in the policy. Returns `null` ' \
+                         'if security_policies_breaking_changes feature flag is disabled.',
+            alpha: { milestone: '16.10' }
       field :group_approvers, ['::Types::GroupType'], null: true, description: 'Approvers of the group type.',
             deprecated: { reason: 'Use `allGroupApprovers`', milestone: '16.5' }
       field :role_approvers, [::Types::MemberAccessLevelNameEnum],
