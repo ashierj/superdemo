@@ -259,12 +259,13 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
       subject(:dependencies) { described_class.new(organization, current_user: current_user).execute }
 
       let_it_be(:current_user) { create(:user) }
-      let_it_be(:other_project) { create(:project, organization: organization, group: group) }
-      let_it_be(:visible_occurrence) { create(:sbom_occurrence, project: other_project) }
-
-      before_all do
-        other_project.add_developer(current_user)
+      let_it_be(:other_project) do
+        create(:project, organization: organization, group: group).tap do |project|
+          project.add_developer(current_user)
+        end
       end
+
+      let_it_be(:visible_occurrence) { create(:sbom_occurrence, project: other_project) }
 
       it { is_expected.to match_array([visible_occurrence]) }
     end
