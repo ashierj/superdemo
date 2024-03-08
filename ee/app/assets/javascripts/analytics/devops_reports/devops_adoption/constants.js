@@ -93,7 +93,6 @@ export const CUSTOM_PALETTE = [DATA_VIZ_ORANGE_600, DATA_VIZ_AQUA_500, DATA_VIZ_
 export const DEVOPS_ADOPTION_OVERALL_CONFIGURATION = {
   title: s__('DevopsAdoption|Overall adoption'),
   icon: 'tanuki',
-  variant: 'primary',
   cols: [],
 };
 
@@ -103,7 +102,6 @@ export const DEVOPS_ADOPTION_TABLE_CONFIGURATION = [
     key: 'dev',
     tab: 'dev',
     icon: 'code',
-    variant: 'warning',
     testId: 'devCol',
     cols: [
       {
@@ -137,7 +135,6 @@ export const DEVOPS_ADOPTION_TABLE_CONFIGURATION = [
     tab: 'sec',
     key: 'sec',
     icon: 'shield',
-    variant: 'info',
     testId: 'secCol',
     cols: [
       {
@@ -167,7 +164,6 @@ export const DEVOPS_ADOPTION_TABLE_CONFIGURATION = [
     tab: 'ops',
     key: 'ops',
     icon: 'rocket',
-    variant: 'success',
     testId: 'opsCol',
     cols: [
       {

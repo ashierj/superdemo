@@ -157,10 +157,10 @@ export default {
           <gl-icon
             v-if="header.tooltip"
             v-gl-tooltip.hover="header.tooltip"
-            name="information-o"
-            class="gl-text-blue-500 gl-ml-3"
-            :size="16"
-            data-testid="information-icon"
+            name="question-o"
+            class="gl-ml-3 gl-text-blue-600"
+            size="16"
+            data-testid="question-icon"
           />
         </div>
       </template>
@@ -195,6 +195,7 @@ export default {
           :key="col.key"
           :data-testid="col.testId"
           :enabled="Boolean(item.latestSnapshot[col.key])"
+          with-text="true"
         />
       </template>
 

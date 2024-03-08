@@ -25,34 +25,50 @@ exports[`DevopsAdoptionOverviewChart chart tooltip displays the tooltip informat
       >
         Dev
       </div>
-      <div>
-        <devops-adoption-table-cell-flag-stub
-          class="gl-mr-3"
-          variant="warning"
-        />
-        Approvals
-      </div>
-      <div>
-        <devops-adoption-table-cell-flag-stub
-          class="gl-mr-3"
-          variant="warning"
-        />
-        Code owners
-      </div>
-      <div>
-        <devops-adoption-table-cell-flag-stub
-          class="gl-mr-3"
-          variant="warning"
-        />
-        Issues
-      </div>
-      <div>
-        <devops-adoption-table-cell-flag-stub
-          class="gl-mr-3"
-          enabled="true"
-          variant="warning"
-        />
-        MRs
+      <div
+        class="gl-display-flex gl-flex-direction-column gl-gap-2"
+      >
+        <div>
+          <div
+            class="gl-display-flex"
+          >
+            <devops-adoption-table-cell-flag-stub
+              class="gl-mr-3"
+            />
+            Approvals
+          </div>
+        </div>
+        <div>
+          <div
+            class="gl-display-flex"
+          >
+            <devops-adoption-table-cell-flag-stub
+              class="gl-mr-3"
+            />
+            Code owners
+          </div>
+        </div>
+        <div>
+          <div
+            class="gl-display-flex"
+          >
+            <devops-adoption-table-cell-flag-stub
+              class="gl-mr-3"
+            />
+            Issues
+          </div>
+        </div>
+        <div>
+          <div
+            class="gl-display-flex"
+          >
+            <devops-adoption-table-cell-flag-stub
+              class="gl-mr-3"
+              enabled="true"
+            />
+            MRs
+          </div>
+        </div>
       </div>
     </div>
     <div
@@ -63,37 +79,53 @@ exports[`DevopsAdoptionOverviewChart chart tooltip displays the tooltip informat
       >
         Sec
       </div>
-      <div>
-        <devops-adoption-table-cell-flag-stub
-          class="gl-mr-3"
-          enabled="true"
-          variant="info"
-        />
-        DAST
-      </div>
-      <div>
-        <devops-adoption-table-cell-flag-stub
-          class="gl-mr-3"
-          enabled="true"
-          variant="info"
-        />
-        Dependency Scanning
-      </div>
-      <div>
-        <devops-adoption-table-cell-flag-stub
-          class="gl-mr-3"
-          enabled="true"
-          variant="info"
-        />
-        Fuzz Testing
-      </div>
-      <div>
-        <devops-adoption-table-cell-flag-stub
-          class="gl-mr-3"
-          enabled="true"
-          variant="info"
-        />
-        SAST
+      <div
+        class="gl-display-flex gl-flex-direction-column gl-gap-2"
+      >
+        <div>
+          <div
+            class="gl-display-flex"
+          >
+            <devops-adoption-table-cell-flag-stub
+              class="gl-mr-3"
+              enabled="true"
+            />
+            DAST
+          </div>
+        </div>
+        <div>
+          <div
+            class="gl-display-flex"
+          >
+            <devops-adoption-table-cell-flag-stub
+              class="gl-mr-3"
+              enabled="true"
+            />
+            Dependency Scanning
+          </div>
+        </div>
+        <div>
+          <div
+            class="gl-display-flex"
+          >
+            <devops-adoption-table-cell-flag-stub
+              class="gl-mr-3"
+              enabled="true"
+            />
+            Fuzz Testing
+          </div>
+        </div>
+        <div>
+          <div
+            class="gl-display-flex"
+          >
+            <devops-adoption-table-cell-flag-stub
+              class="gl-mr-3"
+              enabled="true"
+            />
+            SAST
+          </div>
+        </div>
       </div>
     </div>
     <div>
@@ -102,28 +134,41 @@ exports[`DevopsAdoptionOverviewChart chart tooltip displays the tooltip informat
       >
         Ops
       </div>
-      <div>
-        <devops-adoption-table-cell-flag-stub
-          class="gl-mr-3"
-          enabled="true"
-          variant="success"
-        />
-        Deploys
-      </div>
-      <div>
-        <devops-adoption-table-cell-flag-stub
-          class="gl-mr-3"
-          variant="success"
-        />
-        Pipelines
-      </div>
-      <div>
-        <devops-adoption-table-cell-flag-stub
-          class="gl-mr-3"
-          enabled="true"
-          variant="success"
-        />
-        Runners
+      <div
+        class="gl-display-flex gl-flex-direction-column gl-gap-2"
+      >
+        <div>
+          <div
+            class="gl-display-flex"
+          >
+            <devops-adoption-table-cell-flag-stub
+              class="gl-mr-3"
+              enabled="true"
+            />
+            Deploys
+          </div>
+        </div>
+        <div>
+          <div
+            class="gl-display-flex"
+          >
+            <devops-adoption-table-cell-flag-stub
+              class="gl-mr-3"
+            />
+            Pipelines
+          </div>
+        </div>
+        <div>
+          <div
+            class="gl-display-flex"
+          >
+            <devops-adoption-table-cell-flag-stub
+              class="gl-mr-3"
+              enabled="true"
+            />
+            Runners
+          </div>
+        </div>
       </div>
     </div>
   </div>

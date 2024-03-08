@@ -81,5 +81,4 @@ export const overallAdoptionData = {
   }),
   icon: 'tanuki',
   title: 'Overall adoption',
-  variant: 'primary',
 };
