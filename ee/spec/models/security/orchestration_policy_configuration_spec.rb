@@ -1738,6 +1738,92 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
   end
 
+  describe '#deprecated_properties' do
+    subject { security_orchestration_policy_configuration.deprecated_properties }
+
+    context 'when the policy is a scan_execution_policy' do
+      let(:policy_yaml) do
+        build(:orchestration_policy_yaml, scan_execution_policy: [build(:scan_execution_policy)])
+
+        it { is_expected.to be_empty }
+      end
+    end
+
+    context 'when the policy is a scan_result_policy' do
+      let(:policy_yaml) do
+        build(:orchestration_policy_yaml, scan_result_policy: [build(:scan_result_policy, rules: rules)])
+      end
+
+      context 'when the policy has no rules' do
+        let(:rules) { nil }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when the policy has rules' do
+        let(:rule) do
+          {
+            type: 'license_finding',
+            branches: %w[master],
+            match_on_inclusion_license: true,
+            license_types: %w[BSD MIT],
+            license_states: %w[detected]
+          }
+        end
+
+        let(:rules) { [rule] }
+
+        context 'when the policy does not contains deprecated properties' do
+          it { is_expected.to be_empty }
+        end
+
+        context 'when the policy contains deprecated properties' do
+          let(:rule) do
+            {
+              type: 'license_finding',
+              branches: %w[master],
+              match_on_inclusion: true,
+              license_types: %w[BSD MIT],
+              license_states: %w[newly_detected]
+            }
+          end
+
+          context 'when the policy contains multiple deprecated properties' do
+            it { is_expected.to match_array(%w[match_on_inclusion newly_detected]) }
+          end
+
+          context 'when the policy contains the match_on_inclusion property' do
+            let(:rule) do
+              {
+                type: 'license_finding',
+                branches: %w[master],
+                match_on_inclusion: true,
+                license_types: %w[BSD MIT],
+                license_states: %w[detected]
+              }
+            end
+
+            it { is_expected.to match_array(['match_on_inclusion']) }
+          end
+
+          context 'when the policy contains the license_state newly_detected' do
+            let(:rule) do
+              {
+                type: 'license_finding',
+                branches: %w[master],
+                match_on_inclusion_license: true,
+                license_types: %w[BSD MIT],
+                license_states: %w[newly_detected]
+              }
+            end
+
+            it { is_expected.to match_array(['newly_detected']) }
+          end
+        end
+      end
+    end
+  end
+
   describe '#delete_scan_finding_rules' do
     subject(:delete_scan_finding_rules) { security_orchestration_policy_configuration.delete_scan_finding_rules }
 
