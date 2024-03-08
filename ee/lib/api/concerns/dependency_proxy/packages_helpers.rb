@@ -36,7 +36,7 @@ module API
               return setting if can?(current_user, :read_package, setting)
 
               # guest users can have :read_project but not :read_package
-              forbidden! if can?(current_user, :read_project, project)
+              wrap_error_response { forbidden! } if can?(current_user, :read_project, project)
             end
             strong_memoize_attr :dependency_proxy_setting
 
