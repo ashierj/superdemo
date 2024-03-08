@@ -89,8 +89,13 @@ module Vulnerabilities
     validates :raw_metadata, presence: true
     validates :details, json_schema: { filename: 'vulnerability_finding_details', draft: 7 }
 
-    validates :description, length: { maximum: 15000 }
-    validates :solution, length: { maximum: 7000 }
+    COLUMN_LENGTH_LIMITS = {
+      description: 15_000,
+      solution: 7_000
+    }.freeze
+
+    validates :description, length: { maximum: COLUMN_LENGTH_LIMITS[:description] }
+    validates :solution, length: { maximum: COLUMN_LENGTH_LIMITS[:solution] }
     validates :cve, length: { maximum: 48400 }
 
     delegate :name, :external_id, to: :scanner, prefix: true, allow_nil: true
