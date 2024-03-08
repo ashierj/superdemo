@@ -2700,6 +2700,18 @@ msgstr ""
 msgid "Achievements|%{namespace_link} awarded you the %{bold_start}%{achievement_name}%{bold_end} achievement!"
 msgstr ""
 
+msgid "Achievements|Achievement description cannot be longer than %{length} characters."
+msgstr ""
+
+msgid "Achievements|Achievement has been added."
+msgstr ""
+
+msgid "Achievements|Achievement name cannot be longer than %{length} characters."
+msgstr ""
+
+msgid "Achievements|Achievement name is required."
+msgstr ""
+
 msgid "Achievements|Achievements"
 msgstr ""
 
@@ -2707,6 +2719,15 @@ msgid "Achievements|Awarded %{timeAgo} by %{namespace}"
 msgstr ""
 
 msgid "Achievements|Awarded %{timeAgo} by a private namespace"
+msgstr ""
+
+msgid "Achievements|Description"
+msgstr ""
+
+msgid "Achievements|Name"
+msgstr ""
+
+msgid "Achievements|New achievement"
 msgstr ""
 
 msgid "Achievements|There are currently no achievements."
