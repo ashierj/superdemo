@@ -20,13 +20,13 @@ describe('Security Dashboard Table', () => {
   let store;
   let wrapper;
 
-  const createWrapper = ({ slots, canAdminVulnerability = true, glFeatures = {} } = {}) => {
+  const createWrapper = ({ slots, canAdminVulnerability = true } = {}) => {
     store = new Vuex.Store();
     setupStore(store);
     wrapper = shallowMountExtended(SecurityDashboardTable, {
       store,
       slots,
-      provide: { canAdminVulnerability, glFeatures },
+      provide: { canAdminVulnerability },
     });
     store.state.vulnerabilities.vulnerabilitiesEndpoint = vulnerabilitiesEndpoint;
   };
@@ -94,35 +94,18 @@ describe('Security Dashboard Table', () => {
         });
       };
 
-      describe('with security_findings_finder_lateral_join flag on', () => {
-        beforeEach(() => {
-          createWrapper({ glFeatures: { securityFindingsFinderLateralJoin: true } });
-          commitToStore({ page: 1, nextPage: 2, prevPage: NaN });
-        });
-
-        it('should show compact pagination', () => {
-          expect(findCompactPagination().exists()).toBe(true);
-          expect(findNumberedPagination().exists()).toBe(false);
-
-          expect(findCompactPagination().props()).toMatchObject({
-            value: 1,
-            nextPage: 2,
-            prevPage: null,
-          });
-        });
+      beforeEach(() => {
+        commitToStore({ page: 1, nextPage: 2, prevPage: NaN });
       });
 
-      describe('with security_findings_finder_lateral_join flag off', () => {
-        beforeEach(() => {
-          createWrapper({ securityFindingsFinderLateralJoin: false });
-          commitToStore({ total: 1 });
-        });
+      it('should show compact pagination', () => {
+        expect(findCompactPagination().exists()).toBe(true);
+        expect(findNumberedPagination().exists()).toBe(false);
 
-        it('should show normal pagination', () => {
-          expect(findNumberedPagination().exists()).toBe(true);
-          expect(findCompactPagination().exists()).toBe(false);
-
-          expect(findNumberedPagination().props('pageInfo')).toMatchObject({ total: 1 });
+        expect(findCompactPagination().props()).toMatchObject({
+          value: 1,
+          nextPage: 2,
+          prevPage: null,
         });
       });
     });
