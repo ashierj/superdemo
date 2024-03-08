@@ -2,6 +2,12 @@ import { GlButton, GlLink, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { STATE_MANUAL } from 'ee/integrations/edit/components/google_cloud_iam/constants';
 import GuidedSetup from 'ee/integrations/edit/components/google_cloud_iam/guided_setup.vue';
+import { refreshCurrentPage } from '~/lib/utils/url_utility';
+
+jest.mock('~/lib/utils/url_utility', () => ({
+  ...jest.requireActual('~/lib/utils/url_utility'),
+  refreshCurrentPage: jest.fn(),
+}));
 
 describe('GuidedSetup', () => {
   let wrapper;
@@ -49,13 +55,12 @@ describe('GuidedSetup', () => {
       expect(continueButton.text()).toBe('Continue');
     });
 
-    it('emits `show` event', () => {
-      expect(wrapper.emitted().show).toBeUndefined();
+    it('refreshes the page on the continue button', () => {
+      expect(refreshCurrentPage).not.toHaveBeenCalled();
 
       continueButton.vm.$emit('click');
 
-      expect(wrapper.emitted().show).toHaveLength(1);
-      expect(wrapper.emitted().show[0]).toContain('form');
+      expect(refreshCurrentPage).toHaveBeenCalled();
     });
   });
 
