@@ -24,6 +24,20 @@ RSpec.describe Security::Ingestion::Tasks::IngestFindings, feature_category: :vu
                                .and change { finding_maps.map(&:vulnerability_id) }.from(Array.new(4)).to(expected_vulnerability_ids)
     end
 
+    context 'if attribute exceeds database limit' do
+      before do
+        %w[description solution].each do |attr|
+          finding_maps.each do |finding_map|
+            finding_map.report_finding.original_data[attr] = "a" * (Vulnerabilities::Finding::COLUMN_LENGTH_LIMITS[attr.to_sym] + 1)
+          end
+        end
+      end
+
+      it 'ingests findings' do
+        expect { ingest_findings }.to change { Vulnerabilities::Finding.count }.by(3)
+      end
+    end
+
     it_behaves_like 'bulk insertable task'
   end
 end

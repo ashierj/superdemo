@@ -22,7 +22,16 @@ module Security
         end
 
         def attributes
-          finding_maps.map(&:to_hash)
+          finding_maps
+            .map(&:to_hash)
+            .map { |attrs| truncate_columns(attrs) }
+        end
+
+        def truncate_columns(attrs)
+          Vulnerabilities::Finding::COLUMN_LENGTH_LIMITS.each do |attr_name, limit|
+            attrs[attr_name] = attrs[attr_name]&.truncate(limit)
+          end
+          attrs
         end
       end
     end
