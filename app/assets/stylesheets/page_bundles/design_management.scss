@@ -37,6 +37,20 @@ $t-gray-a-16-design-pin: rgba($black, 0.16);
   }
 }
 
+.design-disclosure-enter-to {
+  transform: translateX(0);
+}
+
+.design-disclosure-enter,
+.design-disclosure-leave-to {
+  transform: translateX(100%);
+}
+
+.design-disclosure-enter-active,
+.design-disclosure-leave-active {
+  transition: all .2s ease;
+}
+
 .design-list-item {
   height: 160px;
   text-decoration: none;
