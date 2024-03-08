@@ -126,6 +126,18 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
         })
       end
 
+      it 'rejects an email invite' do
+        group.gitlab_subscription.update!(seats: 1)
+
+        post api(url, owner), params: { access_level: Member::DEVELOPER, email: 'guy@example.com' }
+
+        expect(group.members.map(&:user_id)).to contain_exactly(owner.id)
+        expect(json_response).to eq({
+          'status' => 'error',
+          'message' => 'Not enough seats for this many users.'
+        })
+      end
+
       context 'when the feature flag is disabled' do
         before do
           stub_feature_flags(block_seat_overages: false)

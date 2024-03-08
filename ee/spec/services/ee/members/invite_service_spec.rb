@@ -74,6 +74,27 @@ RSpec.describe Members::InviteService, :aggregate_failures, :saas, feature_categ
       end
     end
 
+    context 'when block seat overages is enabled', :saas do
+      let_it_be(:subscription) { create(:gitlab_subscription, :premium, namespace: root_ancestor, seats: 1) }
+
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+        stub_feature_flags(block_seat_overages: true)
+      end
+
+      context 'with an email invite that begins with the id of a user in the group' do
+        let(:params) { { email: ["#{user.id}_abc@example.com"] } }
+
+        it 'rejects adding the member' do
+          expect { result }.not_to change(ProjectMember, :count)
+          expect(result).to eq({
+            status: :error,
+            message: 'Not enough seats for this many users.'
+          })
+        end
+      end
+    end
+
     context 'without a plan' do
       let(:plan) { nil }
 
