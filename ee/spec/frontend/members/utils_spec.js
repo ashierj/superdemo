@@ -5,16 +5,19 @@ import {
   canUnban,
   roleDropdownItems,
   initialSelectedRole,
+  handleMemberRoleUpdate,
 } from 'ee/members/utils';
 import { member as memberMock, directMember, inheritedMember } from 'jest/members/mock_data';
-
+import showGlobalToast from '~/vue_shared/plugins/global_toast';
 import { customRoles } from './mock_data';
 
+jest.mock('~/vue_shared/plugins/global_toast');
 jest.mock('lodash/uniqueId', () => (prefix) => `${prefix}0`);
 jest.mock('~/members/utils', () => ({
   ...jest.requireActual('~/members/utils'),
   roleDropdownItems: jest.fn().mockReturnValue({ flatten: [] }),
 }));
+const CEUtils = jest.requireMock('~/members/utils');
 
 describe('Members Utils', () => {
   describe('generateBadges', () => {
@@ -135,6 +138,35 @@ describe('Members Utils', () => {
           },
         ),
       ).toBe('role-custom-0');
+    });
+  });
+
+  describe('handleMemberRoleUpdate', () => {
+    const update = {
+      currentRole: 'guest',
+      requestedRole: 'dev',
+      response: { data: { enqueued: true } },
+    };
+
+    describe('enqueueing role change', () => {
+      it('shows a toast', () => {
+        handleMemberRoleUpdate(update);
+        expect(showGlobalToast).toHaveBeenCalledWith(
+          'Role change request was sent to the administrator.',
+        );
+      });
+
+      it('returns current user role', () => {
+        const role = handleMemberRoleUpdate(update);
+        expect(role).toBe(update.currentRole);
+      });
+    });
+
+    it('calls CE as a fallback for immediate role change', () => {
+      const immediateUpdate = { ...update, response: {} };
+      jest.spyOn(CEUtils, 'handleMemberRoleUpdate');
+      handleMemberRoleUpdate(immediateUpdate);
+      expect(CEUtils.handleMemberRoleUpdate).toHaveBeenCalledWith(immediateUpdate);
     });
   });
 });
