@@ -374,7 +374,7 @@ describe('DevopsAdoptionApp', () => {
 
           wrapper.findByTestId(testId).vm.$emit('click');
 
-          expect(API.trackInternalEvent).toHaveBeenCalledWith(event);
+          expect(API.trackInternalEvent).toHaveBeenCalledWith(event, {});
           expect(trackingSpy).toHaveBeenCalledWith(undefined, event, {
             context: {
               schema: 'iglu:com.gitlab/gitlab_service_ping/jsonschema/1-0-1',
