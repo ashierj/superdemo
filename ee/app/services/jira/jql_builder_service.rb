@@ -8,8 +8,10 @@ module Jira
     # https://confluence.atlassian.com/jirasoftwareserver082/search-syntax-for-text-fields-974359692.html
     JQL_SPECIAL_CHARS = %w[" + . , ; ? | * / % ^ $ # @ [ ] \\].freeze
 
-    def initialize(jira_project_key, params = {})
-      @jira_project_key = jira_project_key
+    # @param [String|Array<String>] jira_project_keys - Jira project keys. Can be a string of comma separated values or an array
+    # @param [Hash] params - Search parameters
+    def initialize(jira_project_keys, params = {})
+      @jira_project_keys = jira_project_keys
       @search = params[:search]
       @labels = params[:labels]
       @status = params[:status]
@@ -31,7 +33,7 @@ module Jira
 
     private
 
-    attr_reader :jira_project_key, :sort, :sort_direction, :search, :labels, :status, :reporter, :assignee, :state, :vulnerability_ids, :issue_ids
+    attr_reader :jira_project_keys, :sort, :sort_direction, :search, :labels, :status, :reporter, :assignee, :state, :vulnerability_ids, :issue_ids
 
     def jql_filters
       [
@@ -55,7 +57,7 @@ module Jira
     end
 
     def by_project
-      %(project = "#{escape_quotes(jira_project_key)}")
+      %(project in \(#{normalized_project_keys}\))
     end
 
     def by_labels
@@ -121,6 +123,14 @@ module Jira
 
     def remove_special_chars(param)
       param.delete(JQL_SPECIAL_CHARS.join).downcase.squish
+    end
+
+    # Jira project keys can be an array or a string
+    # This method normalizes the input to a string of comma separated values
+    def normalized_project_keys
+      keys = jira_project_keys.is_a?(Array) ? jira_project_keys.join(',') : jira_project_keys
+
+      escape_quotes(keys.delete(' '))
     end
   end
 end
