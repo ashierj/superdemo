@@ -135,6 +135,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
   # is being mutated.
   skip_factory_defaults = %i[
     ci_catalog_resource_component
+    ci_catalog_resource_component_usage
     ci_catalog_resource_version
     ci_job_token_project_scope_link
     ci_subscriptions_project
