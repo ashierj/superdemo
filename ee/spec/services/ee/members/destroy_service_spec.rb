@@ -69,7 +69,7 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
 
       it 'audits event with name' do
         expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
-          hash_including(name: "member_destroyed")
+          hash_including(name: "member_destroyed", additional_details: hash_including(as: "Default role: Developer"))
         ).and_call_original
 
         destroy_service
