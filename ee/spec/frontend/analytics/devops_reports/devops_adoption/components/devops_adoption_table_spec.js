@@ -72,8 +72,8 @@ describe('DevopsAdoptionTable', () => {
         describe(`helper information for "${label}"`, () => {
           const expected = Boolean(tooltipText);
 
-          it(`${expected ? 'displays' : "doesn't display"} an information icon`, () => {
-            expect(headerWrapper.find(`[data-testid="information-icon"]`).exists()).toBe(expected);
+          it(`${expected ? 'displays' : "doesn't display"} a question icon`, () => {
+            expect(headerWrapper.find(`[data-testid="question-icon"]`).exists()).toBe(expected);
           });
 
           if (expected) {

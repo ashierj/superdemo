@@ -202,14 +202,14 @@ export default {
           v-if="item.group.latestSnapshot"
           :key="col.key"
           :data-testid="col.testId"
-          class="gl-display-flex gl-align-items-center gl-justify-content-end gl-md-justify-content-start"
+          class="gl-display-flex gl-flex-direction-column gl-gap-3 gl-align-items-flex-end gl-md-align-items-flex-start"
         >
-          <span class="gl-w-7 gl-mr-3">{{ item.adoption[col.key].percent }}</span>
+          {{ item.adoption[col.key].adopted }}/{{ item.adoption[col.key].total }}
+          {{ __('features adopted') }}
           <gl-progress-bar
             :value="item.adoption[col.key].adopted"
             :max="item.adoption[col.key].total"
             class="gl-w-half"
-            :variant="col.variant"
           />
         </div>
       </template>

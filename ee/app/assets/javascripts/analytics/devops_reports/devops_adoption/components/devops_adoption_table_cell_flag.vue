@@ -1,9 +1,12 @@
 <script>
-import { GlTooltipDirective } from '@gitlab/ui';
+import { GlTooltipDirective, GlIcon } from '@gitlab/ui';
 import { I18N_CELL_FLAG_TRUE_TEXT, I18N_CELL_FLAG_FALSE_TEXT } from '../constants';
 
 export default {
   name: 'DevopsAdoptionTableCellFlag',
+  components: {
+    GlIcon,
+  },
   directives: {
     GlTooltip: GlTooltipDirective,
   },
@@ -12,10 +15,10 @@ export default {
       type: Boolean,
       required: true,
     },
-    variant: {
-      type: String,
+    withText: {
+      type: Boolean,
       required: false,
-      default: 'default',
+      default: false,
     },
   },
   computed: {
@@ -26,9 +29,18 @@ export default {
 };
 </script>
 <template>
-  <span
-    v-gl-tooltip.hover="tooltipText"
-    class="circle"
-    :class="{ [`circle-enabled-${variant}`]: enabled }"
-  ></span>
+  <div>
+    <div v-if="enabled" class="gl-display-flex gl-justify-content-end gl-sm-justify-content-start">
+      <gl-icon
+        name="status_success_solid"
+        class="gl-text-green-500"
+        :class="{ 'gl-mr-3': withText }"
+      />
+      <div v-if="withText">{{ __('Adopted') }}</div>
+    </div>
+    <div v-if="!enabled" class="gl-display-flex gl-justify-content-end gl-sm-justify-content-start">
+      <gl-icon name="issue-open-m" class="gl-text-gray-500" :class="{ 'gl-mr-3': withText }" />
+      <div v-if="withText">{{ __('Not adopted') }}</div>
+    </div>
+  </div>
 </template>

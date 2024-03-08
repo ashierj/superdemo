@@ -70,21 +70,3 @@
     color: $gray-400;
   }
 }
-
-.progress-bar {
-  &.bg-primary {
-    @include important-background($data-viz-blue-600);
-  }
-
-  &.bg-warning {
-    @include important-background($data-viz-orange-600);
-  }
-
-  &.bg-info {
-    @include important-background($data-viz-aqua-500);
-  }
-
-  &.bg-success {
-    @include important-background($data-viz-green-600);
-  }
-}

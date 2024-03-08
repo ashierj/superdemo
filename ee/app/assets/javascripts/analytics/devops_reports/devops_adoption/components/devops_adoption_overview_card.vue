@@ -22,11 +22,6 @@ export default {
       type: String,
       required: true,
     },
-    variant: {
-      type: String,
-      required: false,
-      default: 'primary',
-    },
     featureMeta: {
       type: Array,
       required: false,
@@ -80,7 +75,6 @@ export default {
       :value="adoptedCount"
       :max="featuresCount"
       class="gl-mb-2 gl-md-mr-5"
-      :variant="variant"
       :height="$options.progressBarHeight"
     />
     <div class="gl-text-gray-400 gl-mb-1" data-testid="card-description">{{ description }}</div>
@@ -91,11 +85,7 @@ export default {
         class="gl-display-flex gl-align-items-center gl-mt-2"
         data-testid="card-meta-row"
       >
-        <devops-adoption-table-cell-flag
-          :enabled="feature.adopted"
-          :variant="variant"
-          class="gl-mr-3"
-        />
+        <devops-adoption-table-cell-flag :enabled="feature.adopted" class="gl-mr-3" />
         <span class="gl-text-gray-600 gl-font-sm" data-testid="card-meta-row-title">{{
           feature.title
         }}</span>

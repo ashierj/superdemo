@@ -88,7 +88,6 @@ export default {
         class="gl-mb-5"
         :icon="item.icon"
         :title="item.title"
-        :variant="item.variant"
         :feature-meta="item.featureMeta"
         :display-meta="item.displayMeta"
         @card-title-clicked="trackCardTitleClick(item)"
