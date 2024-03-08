@@ -4,6 +4,11 @@ import * as types from 'ee/dependencies/store/mutation_types';
 import createState from 'ee/dependencies/store/state';
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
+import {
+  NAMESPACE_ORGANIZATION,
+  NAMESPACE_GROUP,
+  NAMESPACE_PROJECT,
+} from 'ee/dependencies/constants';
 
 describe('Dependencies actions', () => {
   describe('addListType', () => {
@@ -29,6 +34,9 @@ describe('Dependencies actions', () => {
     actionName                         | payload
     ${'setDependenciesEndpoint'}       | ${TEST_HOST}
     ${'setExportDependenciesEndpoint'} | ${TEST_HOST}
+    ${'setNamespaceType'}              | ${NAMESPACE_ORGANIZATION}
+    ${'setNamespaceType'}              | ${NAMESPACE_GROUP}
+    ${'setNamespaceType'}              | ${NAMESPACE_PROJECT}
     ${'setSortField'}                  | ${undefined}
   `('$actionName', ({ actionName, payload }) => {
     it(`dispatches the ${actionName} action on each list module`, () => {

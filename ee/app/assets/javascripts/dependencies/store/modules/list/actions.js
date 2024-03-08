@@ -5,11 +5,13 @@ import {
   normalizeHeaders,
   parseIntPagination,
 } from '~/lib/utils/common_utils';
+import { NAMESPACE_ORGANIZATION } from 'ee/dependencies/constants';
 import { __, sprintf } from '~/locale';
 import pollUntilComplete from '~/lib/utils/poll_until_complete';
 import download from '~/lib/utils/downloader';
 import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import {
+  DEPENDENCIES_CSV_FILENAME,
   DEPENDENCIES_FILENAME,
   FETCH_ERROR_MESSAGE,
   FETCH_ERROR_MESSAGE_WITH_DETAILS,
@@ -25,6 +27,8 @@ export const setDependenciesEndpoint = ({ commit }, endpoint) =>
 
 export const setExportDependenciesEndpoint = ({ commit }, payload) =>
   commit(types.SET_EXPORT_DEPENDENCIES_ENDPOINT, payload);
+
+export const setNamespaceType = ({ commit }, payload) => commit(types.SET_NAMESPACE_TYPE, payload);
 
 export const setInitialState = ({ commit }, payload) => commit(types.SET_INITIAL_STATE, payload);
 
@@ -157,13 +161,19 @@ export const fetchExport = ({ state, commit, dispatch }) => {
     });
 };
 
-export const downloadExport = ({ commit }, dependencyListExportEndpoint) => {
+const exportFilenameFor = (namespaceType) => {
+  return namespaceType === NAMESPACE_ORGANIZATION
+    ? DEPENDENCIES_CSV_FILENAME
+    : DEPENDENCIES_FILENAME;
+};
+
+export const downloadExport = ({ state, commit }, dependencyListExportEndpoint) => {
   pollUntilComplete(dependencyListExportEndpoint)
     .then((response) => {
       if (response.data?.has_finished) {
         download({
           url: response.data?.download,
-          fileName: DEPENDENCIES_FILENAME,
+          fileName: exportFilenameFor(state?.namespaceType),
         });
       }
     })

@@ -3,9 +3,15 @@ import MockAdapter from 'axios-mock-adapter';
 import { sortBy } from 'lodash';
 import * as actions from 'ee/dependencies/store/modules/list/actions';
 import {
+  NAMESPACE_ORGANIZATION,
+  NAMESPACE_GROUP,
+  NAMESPACE_PROJECT,
+} from 'ee/dependencies/constants';
+import {
   FILTER,
   SORT_DESCENDING,
   FETCH_EXPORT_ERROR_MESSAGE,
+  DEPENDENCIES_CSV_FILENAME,
   DEPENDENCIES_FILENAME,
   LICENSES_FETCH_ERROR_MESSAGE,
   VULNERABILITIES_FETCH_ERROR_MESSAGE,
@@ -453,25 +459,33 @@ describe('Dependencies actions', () => {
           .replyOnce(HTTP_STATUS_OK, mockResponseExportEndpoint);
       });
 
-      it('sets SET_FETCHING_IN_PROGRESS and calls download', () =>
-        testAction(
-          actions.downloadExport,
-          mockResponseExportEndpoint.self,
-          undefined,
-          [
-            {
-              type: 'SET_FETCHING_IN_PROGRESS',
-              payload: false,
-            },
-          ],
-          [],
-        ).then(() => {
+      describe.each`
+        namespaceType             | fileName
+        ${NAMESPACE_ORGANIZATION} | ${DEPENDENCIES_CSV_FILENAME}
+        ${NAMESPACE_GROUP}        | ${DEPENDENCIES_FILENAME}
+        ${NAMESPACE_PROJECT}      | ${DEPENDENCIES_FILENAME}
+      `('$namespaceType', ({ namespaceType, fileName }) => {
+        it(`saves the file as ${fileName}`, async () => {
+          await testAction(
+            actions.downloadExport,
+            mockResponseExportEndpoint.self,
+            { namespaceType },
+            [
+              {
+                type: 'SET_FETCHING_IN_PROGRESS',
+                payload: false,
+              },
+            ],
+            [],
+          );
+
           expect(download).toHaveBeenCalledTimes(1);
           expect(download).toHaveBeenCalledWith({
             url: mockResponseExportEndpoint.download,
-            fileName: DEPENDENCIES_FILENAME,
+            fileName,
           });
-        }));
+        });
+      });
     });
 
     describe('on failure', () => {

@@ -171,6 +171,7 @@ describe('DependenciesApp component', () => {
       expect(store.dispatch.mock.calls).toEqual([
         ['setDependenciesEndpoint', basicAppProps.endpoint],
         ['setExportDependenciesEndpoint', basicAppProps.exportEndpoint],
+        ['setNamespaceType', basicAppProps.namespaceType],
         ['setSortField', 'severity'],
       ]);
     });

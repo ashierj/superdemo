@@ -128,12 +128,14 @@ export default {
   created() {
     this.setDependenciesEndpoint(this.endpoint);
     this.setExportDependenciesEndpoint(this.exportEndpoint);
+    this.setNamespaceType(this.namespaceType);
     this.setSortField(SORT_FIELD_SEVERITY);
   },
   methods: {
     ...mapActions([
       'setDependenciesEndpoint',
       'setExportDependenciesEndpoint',
+      'setNamespaceType',
       'setSortField',
       'setCurrentList',
     ]),
