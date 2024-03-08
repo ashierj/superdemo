@@ -123,6 +123,15 @@ planned for release in 16.9.1.
   | 16.8                    |  16.8.0 - 16.8.3        | 16.8.4   |
   | 16.9                    |  16.9.0 - 16.9.1        | 16.9.2   |
 
+- You might experience verification failures on a subset of container registry images due to checksum mismatch between the primary site and the secondary site. [Issue 442667](https://gitlab.com/gitlab-org/gitlab/-/issues/442667) describes the details. While there is no direct risk of data loss as the data is being correctly replicated to the secondary sites, it is not being successfully verified. There are no known workarounds at this time.
+
+  **Affected releases**:
+
+  | Affected minor releases | Affected patch releases | Fixed in |
+  | ----------------------- | ----------------------- | -------- |
+  | 16.8                    |  16.8.0 - 16.8.3        | 16.8.4   |
+  | 16.9                    |  16.9.0 - 16.9.1        | 16.9.2   |
+
 ## 16.8.0
 
 - In GitLab 16.8.0 and 16.8.1, the Sidekiq gem was upgraded, and the newer version requires Redis 6.2 or later. If you are using Redis 6.0, upgrade
@@ -170,6 +179,15 @@ you must take one of the following actions based on your configuration:
   | 16.5                    |  All                    | None     |
   | 16.6                    |  All                    | None     |
   | 16.7                    |  All                    | None     |
+  | 16.8                    |  16.8.0 - 16.8.3        | 16.8.4   |
+  | 16.9                    |  16.9.0 - 16.9.1        | 16.9.2   |
+
+- You might experience verification failures on a subset of container registry images due to checksum mismatch between the primary site and the secondary site. [Issue 442667](https://gitlab.com/gitlab-org/gitlab/-/issues/442667) describes the details. While there is no direct risk of data loss as the data is being correctly replicated to the secondary sites, it is not being successfully verified. There are no known workarounds at this time.
+
+  **Affected releases**:
+
+  | Affected minor releases | Affected patch releases | Fixed in |
+  | ----------------------- | ----------------------- | -------- |
   | 16.8                    |  16.8.0 - 16.8.3        | 16.8.4   |
   | 16.9                    |  16.9.0 - 16.9.1        | 16.9.2   |
 
