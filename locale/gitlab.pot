@@ -36261,9 +36261,6 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
-msgid "Pending Deletion"
-msgstr ""
-
 msgid "Pending comments"
 msgstr ""
 
@@ -60653,9 +60650,6 @@ msgid "password"
 msgstr ""
 
 msgid "pending comment"
-msgstr ""
-
-msgid "pending deletion"
 msgstr ""
 
 msgid "personal access token"
