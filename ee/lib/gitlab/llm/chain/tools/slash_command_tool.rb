@@ -14,6 +14,7 @@ module Gitlab
           rescue StandardError
             Answer.error_answer(context: context, content: _("Unexpected error"))
           end
+          traceable :perform, run_type: 'tool'
 
           private
 

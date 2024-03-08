@@ -6,6 +6,7 @@ module Gitlab
       class Client
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
         include ::Gitlab::Llm::Concerns::EventTracking
+        include Langsmith::RunHelpers
 
         URL = 'https://api.anthropic.com'
         DEFAULT_MODEL = 'claude-2.0'
@@ -50,6 +51,7 @@ module Gitlab
 
           response_body
         end
+        traceable :stream, name: 'Request to Anthropic', run_type: 'llm'
 
         private
 

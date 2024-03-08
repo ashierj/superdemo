@@ -53,6 +53,7 @@ module Gitlab
                 extras: response_modifier.extras
               )
             end
+            traceable :perform, run_type: 'tool'
 
             private
 

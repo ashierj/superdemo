@@ -4,6 +4,7 @@ module Gitlab
   module Llm
     class TanukiBot
       include ::Gitlab::Loggable
+      include Langsmith::RunHelpers
 
       REQUEST_TIMEOUT = 30
       CONTENT_ID_FIELD = 'ATTRS'
@@ -94,6 +95,7 @@ module Gitlab
           }
         end
       end
+      traceable :get_nearest_neighbors, name: 'Retrieve GitLab documents', run_type: 'retriever'
 
       private
 

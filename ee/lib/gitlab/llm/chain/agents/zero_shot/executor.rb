@@ -8,6 +8,7 @@ module Gitlab
           class Executor
             include Gitlab::Utils::StrongMemoize
             include Concerns::AiDependent
+            include Langsmith::RunHelpers
 
             attr_reader :tools, :user_input, :context, :response_handler
             attr_accessor :iterations
@@ -76,6 +77,7 @@ module Gitlab
                 content: _("GitLab Duo didn't respond. Try again? If it fails again, your request might be too large.")
               )
             end
+            traceable :execute, name: 'Run ReAct'
 
             private
 

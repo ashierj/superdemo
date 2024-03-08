@@ -4,6 +4,8 @@ module Gitlab
   module Llm
     module Chain
       class Answer
+        extend Langsmith::RunHelpers
+
         attr_accessor :status, :content, :context, :tool, :suggestions, :is_final, :extras
         alias_method :is_final?, :is_final
 
@@ -37,6 +39,7 @@ module Gitlab
             is_final: false
           )
         end
+        traceable :from_response, name: 'Get answer from response', run_type: 'parser', class_method: true
 
         def self.final_answer(context:, content:, extras: nil)
           logger.info_or_debug(context.current_user, message: "Final answer", content: content)
