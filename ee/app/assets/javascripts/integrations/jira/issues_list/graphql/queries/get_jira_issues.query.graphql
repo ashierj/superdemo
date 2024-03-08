@@ -6,7 +6,10 @@ query jiraIssues(
   $page: Integer
   $sort: String
   $state: String
-  $projects: String
+  $project: String
+  $status: String
+  $authorUsername: String
+  $assigneeUsername: String
   $labels: String
   $search: String
 ) {
@@ -15,7 +18,10 @@ query jiraIssues(
     page: $page
     sort: $sort
     state: $state
-    projects: $projects
+    project: $project
+    status: $status
+    authorUsername: $authorUsername
+    assigneeUsername: $assigneeUsername
     labels: $labels
     search: $search
   ) @client {

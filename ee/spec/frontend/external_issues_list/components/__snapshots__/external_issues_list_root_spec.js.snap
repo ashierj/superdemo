@@ -213,9 +213,12 @@ Object {
   "totalItems": 3,
   "truncateCounts": false,
   "urlParams": Object {
+    "assignee_username": undefined,
+    "author_username": undefined,
     "labels[]": undefined,
-    "projects[]": undefined,
+    "project": undefined,
     "search": undefined,
+    "status": undefined,
   },
   "useKeysetPagination": false,
 }

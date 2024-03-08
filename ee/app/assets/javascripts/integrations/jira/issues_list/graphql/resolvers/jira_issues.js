@@ -58,7 +58,18 @@ export const transformJiraIssuesREST = (response) => {
 
 export default function jiraIssuesResolver(
   _,
-  { issuesFetchPath, page, sort, state, projects, labels, search },
+  {
+    issuesFetchPath,
+    page,
+    sort,
+    state,
+    project,
+    status,
+    authorUsername,
+    assigneeUsername,
+    labels,
+    search,
+  },
 ) {
   return axios
     .get(issuesFetchPath, {
@@ -68,7 +79,10 @@ export default function jiraIssuesResolver(
         page,
         sort,
         state,
-        projects,
+        project,
+        status,
+        author_username: authorUsername,
+        assignee_username: assigneeUsername,
         labels,
         search,
       },
