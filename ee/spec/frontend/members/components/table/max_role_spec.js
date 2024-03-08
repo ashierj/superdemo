@@ -18,13 +18,15 @@ Vue.use(Vuex);
 
 jest.mock('ee/members/guest_overage_confirm_action');
 jest.mock('~/sentry/sentry_browser_wrapper');
+jest.mock('~/lib/logger');
 guestOverageConfirmAction.mockResolvedValue(true);
 
 describe('MaxRole', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
   let actions;
 
-  const createStore = ({ updateMemberRoleReturn = () => Promise.resolve() } = {}) => {
+  const createStore = ({ updateMemberRoleReturn = () => Promise.resolve({ data: {} }) } = {}) => {
     actions = {
       updateMemberRole: jest.fn(() => updateMemberRoleReturn()),
     };

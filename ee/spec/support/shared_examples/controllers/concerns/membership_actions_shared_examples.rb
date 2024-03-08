@@ -8,7 +8,7 @@ RSpec.shared_examples 'member promotion management' do
 
   context 'when members are queued for approval' do
     context 'when all members are queued' do
-      it 'returns Some members were queued for approval' do
+      it 'indicates that some members were queued for approval' do
         requester.update!(access_level: Gitlab::Access::GUEST)
         requester2.update!(access_level: Gitlab::Access::GUEST)
         create(:user_highest_role, :guest, user: requester.user)
@@ -21,12 +21,12 @@ RSpec.shared_examples 'member promotion management' do
         expect(requester.reload.human_access).to eq('Guest')
         expect(requester2.reload.human_access).to eq('Guest')
         expect(response).to have_gitlab_http_status(:success)
-        expect(json_response).to eq({ 'message' => 'Some members were queued for approval' })
+        expect(json_response).to eq({ 'enqueued' => true })
       end
     end
 
     context 'when some members are queued and some updated' do
-      it 'returns Some members were queued for approval' do
+      it 'indicates that some members were queued for approval' do
         requester.update!(access_level: Gitlab::Access::GUEST)
         create(:user_highest_role, :guest, user: requester.user)
         requester2.update!(access_level: Gitlab::Access::DEVELOPER)
@@ -39,7 +39,7 @@ RSpec.shared_examples 'member promotion management' do
         expect(requester.reload.human_access).to eq('Guest')
         expect(requester2.reload.human_access).to eq('Maintainer')
         expect(response).to have_gitlab_http_status(:success)
-        expect(json_response).to eq({ 'message' => 'Some members were queued for approval' })
+        expect(json_response).to eq({ 'enqueued' => true })
       end
     end
   end

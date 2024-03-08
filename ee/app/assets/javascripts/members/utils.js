@@ -1,9 +1,11 @@
 import { uniqueId } from 'lodash';
+import showGlobalToast from '~/vue_shared/plugins/global_toast';
 import { __, s__ } from '~/locale';
 import {
   generateBadges as CEGenerateBadges,
   roleDropdownItems as CERoleDropdownItems,
   isDirectMember,
+  handleMemberRoleUpdate as CEHandleMemberRoleUpdate,
 } from '~/members/utils';
 
 export {
@@ -107,4 +109,23 @@ export const canOverride = (member) => member.canOverride && isDirectMember(memb
 
 export const canUnban = (member) => {
   return Boolean(member.banned) && member.canUnban;
+};
+
+/**
+ * Handles role change response, whether it was immediate or enqueued
+ *
+ * @param {object} update
+ *  @param {string} update.currentRole
+ *  @param {string} update.requestedRole
+ *  @param {object} update.response server response
+ * @returns {string} actual new member role
+ */
+export const handleMemberRoleUpdate = ({ currentRole, requestedRole, response }) => {
+  // key and enum are defined in ee/app/controllers/concerns/ee/membership_actions.rb
+  if (response?.data?.enqueued) {
+    showGlobalToast(s__('Members|Role change request was sent to the administrator.'));
+    return currentRole;
+  }
+
+  return CEHandleMemberRoleUpdate({ currentRole, requestedRole, response });
 };

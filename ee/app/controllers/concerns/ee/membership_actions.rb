@@ -24,7 +24,7 @@ module EE
       response_data = {}
       response_data = super if result[:members].present?
       if result[:members_queued_for_approval].present?
-        response_data[:message] = _('Some members were queued for approval')
+        response_data[:enqueued] = true
       end
 
       response_data
