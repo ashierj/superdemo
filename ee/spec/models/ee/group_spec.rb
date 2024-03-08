@@ -3633,19 +3633,19 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       end
 
       it 'returns true if there are enough seats' do
-        user_ids = [1, 2, 3]
+        user_ids = %w[1 2 3]
 
         expect(group.seats_available_for?(user_ids)).to eq(true)
       end
 
       it 'returns false if there are not enough seats' do
-        user_ids = [1, 2, 3, 4, 5, 6]
+        user_ids = %w[1 2 3 4 5 6]
 
         expect(group.seats_available_for?(user_ids)).to eq(false)
       end
 
       it 'returns true if there are exactly enough seats remaining' do
-        user_ids = [1, 2, 3, 4, 5]
+        user_ids = %w[1 2 3 4 5]
 
         expect(group.seats_available_for?(user_ids)).to eq(true)
       end
@@ -3653,7 +3653,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it 'counts members in subgroups as consuming seats' do
         subgroup = create(:group, parent: group)
         subgroup.add_developer(user)
-        user_ids = [1, 2, 3, 4, 5]
+        user_ids = %w[1 2 3 4 5]
 
         expect(group.seats_available_for?(user_ids)).to eq(false)
       end
@@ -3662,7 +3662,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
         group.gitlab_subscription.update!(seats: 1)
         group.add_developer(user)
 
-        expect(group.seats_available_for?([user.id])).to eq(true)
+        expect(group.seats_available_for?([user.id.to_s])).to eq(true)
       end
 
       it 'returns true if passed an empty array' do
@@ -3679,7 +3679,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
 
     context 'without a subscription' do
       it 'returns true' do
-        user_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        user_ids = %w[1 2 3 4 5 6 7 8 9 10 11 12]
 
         expect(group.seats_available_for?(user_ids)).to eq(true)
       end

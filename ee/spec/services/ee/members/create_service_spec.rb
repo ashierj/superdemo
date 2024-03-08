@@ -299,29 +299,4 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
       end
     end
   end
-
-  context 'with block seat overages enabled', :saas do
-    let_it_be(:user) { create(:user) }
-    let_it_be(:group) { create(:group_with_plan, plan: :premium_plan) }
-    let_it_be(:project) { create(:project, group: group) }
-
-    before_all do
-      project.add_maintainer(user)
-    end
-
-    before do
-      stub_saas_features(gitlab_com_subscriptions: true)
-      stub_feature_flags(block_seat_overages: true)
-    end
-
-    context 'with invited emails' do
-      let(:invites) { ['email@example.com'] }
-
-      it 'removes invite emails from the seat check' do
-        group.gitlab_subscription.update!(seats: 1)
-
-        expect { execute_service }.to change { project.members.count }.by(1)
-      end
-    end
-  end
 end
