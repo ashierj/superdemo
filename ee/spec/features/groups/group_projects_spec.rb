@@ -24,7 +24,7 @@ RSpec.describe 'Group projects page', feature_category: :groups_and_projects do
 
       expect(page).to have_link project.name
       expect(page).not_to have_css('span.badge.badge-warning', text: 'archived')
-      expect(page).to have_css('span.badge.badge-warning', text: 'pending deletion')
+      expect(page).to have_css('span.badge.badge-warning', text: 'Pending deletion')
     end
   end
 end

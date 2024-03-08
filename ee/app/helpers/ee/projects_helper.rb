@@ -146,6 +146,12 @@ module EE
       super
     end
 
+    def show_pending_deletion_project_banner?(project)
+      return false unless project.present? && project.saved?
+
+      project.marked_for_deletion?
+    end
+
     override :remote_mirror_setting_enabled?
     def remote_mirror_setting_enabled?
       ::Gitlab::CurrentSettings.import_sources.any? && ::License.feature_available?(:ci_cd_projects) && ::Gitlab::CurrentSettings.current_application_settings.mirror_available
