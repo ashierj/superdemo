@@ -7,7 +7,7 @@ module Search
 
       MAX_NAMESPACES_TO_REMOVE = 1000
       DELETE_BATCH_SIZE = 100
-      DELAY_INTERVAL = 12.hours
+      DELAY_INTERVAL = 5.minutes
 
       def execute
         return 0 unless ::Gitlab::Saas.feature_available?(:advanced_search)
