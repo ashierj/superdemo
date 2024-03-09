@@ -318,7 +318,12 @@ export default {
         this.isCreatingMR = val;
       }
     },
-    handleSetPolicyProperty(property, value) {
+    handleRemoveProperty(property) {
+      const { [property]: removedProperty, ...updatedPolicy } = this.policy;
+      this.policy = updatedPolicy;
+      this.updateYamlEditorValue(this.policy);
+    },
+    handleUpdateProperty(property, value) {
       this.policy[property] = value;
       this.updateYamlEditorValue(this.policy);
     },
@@ -395,7 +400,8 @@ export default {
     :yaml-editor-value="yamlEditorValue"
     @remove-policy="handleModifyPolicy($options.SECURITY_POLICY_ACTIONS.REMOVE)"
     @save-policy="handleModifyPolicy()"
-    @set-policy-property="handleSetPolicyProperty"
+    @remove-property="handleRemoveProperty"
+    @update-property="handleUpdateProperty"
     @update-yaml="updateYaml"
     @update-editor-mode="changeEditorMode"
   >

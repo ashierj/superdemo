@@ -69,7 +69,7 @@ describe('EditorComponent', () => {
     fullPath: 'path/to/existing-project',
   };
 
-  const factory = ({ propsData = {}, provide = {} } = {}) => {
+  const factory = ({ propsData = {}, provide = {}, glFeatures = {} } = {}) => {
     wrapper = shallowMountExtended(EditorComponent, {
       propsData: {
         assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
@@ -81,18 +81,20 @@ describe('EditorComponent', () => {
         namespacePath: defaultProjectPath,
         scanPolicyDocumentationPath,
         customCiToggleEnabled: true,
+        glFeatures,
         ...provide,
       },
     });
   };
 
-  const factoryWithExistingPolicy = () => {
+  const factoryWithExistingPolicy = ({ policy = {}, glFeatures = {} } = {}) => {
     return factory({
       propsData: {
         assignedPolicyProject,
-        existingPolicy: mockDastScanExecutionObject,
+        existingPolicy: { ...mockDastScanExecutionObject, ...policy },
         isEditing: true,
       },
+      glFeatures,
     });
   };
 
@@ -193,24 +195,48 @@ enabled: true`;
       });
     });
 
-    it.each`
-      component        | oldValue | newValue
-      ${'name'}        | ${''}    | ${'new policy name'}
-      ${'description'} | ${''}    | ${'new description'}
-      ${'enabled'}     | ${true}  | ${false}
-    `('triggers a change on $component', async ({ component, newValue, oldValue }) => {
-      expect(findPolicyEditorLayout().props('policy')[component]).toBe(oldValue);
-      expect(findPolicyEditorLayout().props('yamlEditorValue')).toMatch(
-        `${component}: ${oldValue}`,
-      );
+    describe('properties', () => {
+      it.each`
+        component        | oldValue | newValue
+        ${'name'}        | ${''}    | ${'new policy name'}
+        ${'description'} | ${''}    | ${'new description'}
+        ${'enabled'}     | ${true}  | ${false}
+      `('updates the $component property', async ({ component, newValue, oldValue }) => {
+        expect(findPolicyEditorLayout().props('policy')[component]).toBe(oldValue);
+        expect(findPolicyEditorLayout().props('yamlEditorValue')).toMatch(
+          `${component}: ${oldValue}`,
+        );
 
-      findPolicyEditorLayout().vm.$emit('set-policy-property', component, newValue);
-      await nextTick();
+        findPolicyEditorLayout().vm.$emit('update-property', component, newValue);
+        await nextTick();
 
-      expect(findPolicyEditorLayout().props('policy')[component]).toBe(newValue);
-      expect(findPolicyEditorLayout().props('yamlEditorValue')).toMatch(
-        `${component}: ${newValue}`,
-      );
+        expect(findPolicyEditorLayout().props('policy')[component]).toBe(newValue);
+        expect(findPolicyEditorLayout().props('yamlEditorValue')).toMatch(
+          `${component}: ${newValue}`,
+        );
+      });
+
+      it('removes the policy scope property', async () => {
+        const oldValue = {
+          policy_scope: { compliance_frameworks: [{ id: 'id1' }, { id: 'id2' }] },
+        };
+
+        const features = {
+          securityPoliciesPolicyScope: true,
+        };
+
+        window.gon = { features };
+
+        factoryWithExistingPolicy({
+          policy: oldValue,
+          glFeatures: features,
+        });
+        expect(findPolicyEditorLayout().props('policy').policy_scope).toEqual(
+          oldValue.policy_scope,
+        );
+        await findPolicyEditorLayout().vm.$emit('remove-property', 'policy_scope');
+        expect(findPolicyEditorLayout().props('policy').policy_scope).toBe(undefined);
+      });
     });
   });
 
