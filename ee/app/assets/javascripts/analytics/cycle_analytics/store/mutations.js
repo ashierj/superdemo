@@ -82,12 +82,15 @@ export default {
     state.stageCounts = {};
   },
   [types.REQUEST_GROUP_STAGES](state) {
+    state.isFetchingGroupStagesAndEvents = true;
     state.stages = [];
   },
   [types.RECEIVE_GROUP_STAGES_ERROR](state) {
+    state.isFetchingGroupStagesAndEvents = false;
     state.stages = [];
   },
   [types.RECEIVE_GROUP_STAGES_SUCCESS](state, stages) {
+    state.isFetchingGroupStagesAndEvents = false;
     state.stages = transformRawStages(stages);
   },
   [types.REQUEST_GROUP_LABELS](state) {

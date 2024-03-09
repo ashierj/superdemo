@@ -31,6 +31,7 @@ export default () => ({
   isDeletingValueStream: false,
   isFetchingGroupLabels: false,
   isCreatingAggregation: false,
+  isFetchingGroupStagesAndEvents: false,
 
   createValueStreamErrors: {},
   deleteValueStreamError: null,
