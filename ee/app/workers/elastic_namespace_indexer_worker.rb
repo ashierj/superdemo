@@ -50,8 +50,9 @@ class ElasticNamespaceIndexerWorker # rubocop:disable Scalability/IdempotentWork
   end
 
   def delete_from_index(namespace)
+    delete_project = ::Feature.disabled?(:search_index_all_projects, namespace.root_ancestor)
     namespace.all_projects.find_in_batches do |batch|
-      args = batch.map { |project| [project.id, project.es_id] }
+      args = batch.map { |project| [project.id, project.es_id, { delete_project: delete_project }] }
       ElasticDeleteProjectWorker.bulk_perform_async(args) # rubocop:disable Scalability/BulkPerformWithContext
     end
 
