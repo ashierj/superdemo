@@ -14,6 +14,8 @@ For example:
   contains specs which test the `Query.workspaces` field in the GraphQL API schema (note that
   only admins may use this field).
 
+If you add new spec files, you should update `tests.yml` and `scripts/verify-tff-mapping` accordingly.
+
 The `shared.rb` file in the root contains RSpec shared contexts and examples used by all
 specs in this directory.
 
