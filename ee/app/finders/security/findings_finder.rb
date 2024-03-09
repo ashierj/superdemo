@@ -137,6 +137,7 @@ module Security
         .with_scanner
         .with_state_transitions
         .with_issue_links
+        .with_external_issue_links
         .with_merge_request_links
         .merge(::Security::Scan.by_pipeline_ids(pipeline.id))
         .merge(::Security::Scan.latest_successful)

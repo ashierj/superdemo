@@ -30,6 +30,7 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
       it { is_expected.to have_many(:feedbacks).with_primary_key('uuid').class_name('Vulnerabilities::Feedback').with_foreign_key('finding_uuid') }
       it { is_expected.to have_many(:state_transitions).through(:vulnerability) }
       it { is_expected.to have_many(:issue_links).through(:vulnerability) }
+      it { is_expected.to have_many(:external_issue_links).through(:vulnerability) }
       it { is_expected.to have_many(:merge_request_links).through(:vulnerability) }
       it { is_expected.to have_many(:security_findings).class_name('Security::Finding') }
     end

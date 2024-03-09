@@ -29,6 +29,7 @@ module Vulnerabilities
     has_one :one_vulnerability, class_name: 'Vulnerability', inverse_of: :vulnerability_finding
     has_many :state_transitions, through: :vulnerability
     has_many :issue_links, through: :vulnerability
+    has_many :external_issue_links, through: :vulnerability
     has_many :merge_request_links, through: :vulnerability
 
     has_many :finding_identifiers, class_name: 'Vulnerabilities::FindingIdentifier', inverse_of: :finding, foreign_key: 'occurrence_id'
