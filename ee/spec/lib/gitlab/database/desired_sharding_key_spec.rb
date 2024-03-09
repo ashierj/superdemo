@@ -36,6 +36,15 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
     end
   end
 
+  it 'does not allow tables that have a desired sharding key to have `gitlab_main` schema' do
+    expect(tables_with_desired_sharding_keys_not_in_cell_local_schema).to be_empty,
+      "Tables: #{tables_with_desired_sharding_keys_not_in_cell_local_schema.join(', ')} " \
+      "have a desired sharding key defined, but does not have a cell-local schema assigned. " \
+      "Tables having desired sharding keys should have a cell-local schema like " \
+      "`gitlab_main_cell` or `gitlab_ci`. " \
+      "Please change the `gitlab_schema` of these tables accordingly."
+  end
+
   it 'does not allow tables that are permanently exempted from sharding to have desired sharding keys' do
     tables_exempted_from_sharding.each do |entry|
       expect(entry.desired_sharding_key).to be_nil,
@@ -174,6 +183,12 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
   def desired_sharding_key_entries
     ::Gitlab::Database::Dictionary.entries.select do |entry|
       entry.desired_sharding_key.present?
+    end
+  end
+
+  def tables_with_desired_sharding_keys_not_in_cell_local_schema
+    desired_sharding_key_entries.filter_map do |entry|
+      entry.table_name unless ::Gitlab::Database::GitlabSchema.cell_local?(entry.gitlab_schema)
     end
   end
 
