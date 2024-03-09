@@ -2,6 +2,13 @@
 - merge_trains_help_link_url = help_page_path('ci/pipelines/merge_trains')
 - merge_trains_help_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: merge_trains_help_link_url }
 
+- terms_link = '<a href="https://about.gitlab.com/handbook/legal/testing-agreement/" target="_blank" rel="noopener noreferrer">GitLab Testing Agreement</a>'.html_safe
+
+- skip_trains_help_text1 = s_('ProjectSettings|This feature is an experiment. When you enable this, you accept the %{link}.') % { link: terms_link }
+- skip_trains_help_text2 = s_('ProjectSettings|Merge requests can be set to merge immediately without restarting pipelines for other trains in the queue. ')
+- skip_trains_help_text3 = s_('ProjectSettings|Commits in earlier merge train pipelines might not get validated with immediately merged commits. ')
+- full_skip_trains_help_test = (skip_trains_help_text1 + "<br />" + skip_trains_help_text2 + "<br />" + skip_trains_help_text3 + "<br />").html_safe
+
 .gl-pl-6
   = form.gitlab_ui_checkbox_component :merge_trains_enabled,
     s_('ProjectSettings|Enable merge trains'),
@@ -10,5 +17,5 @@
   - if Feature.enabled?(:merge_trains_skip_train)
     = form.gitlab_ui_checkbox_component :merge_trains_skip_train_allowed,
       s_('ProjectSettings|Allow skipping the merge train'),
-      help_text: s_('ProjectSettings|Merge requests can be set to merge immediately without interrupting the merge train. Commits in earlier merge train pipelines might not get validated with immediately merged commits.'),
+      help_text: full_skip_trains_help_test,
       checkbox_options: { class: 'js-merge-options-merge-trains-skip-train-allowed' }
