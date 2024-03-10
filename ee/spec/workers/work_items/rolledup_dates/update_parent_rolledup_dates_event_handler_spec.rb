@@ -40,7 +40,7 @@ RSpec.describe WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler, 
         parent = instance_double(::WorkItem)
 
         expect(::WorkItem)
-          .to receive(:find)
+          .to receive(:find_by_id)
             .with(1)
             .and_return(instance_double(::WorkItem, work_item_parent: parent))
 
@@ -58,7 +58,7 @@ RSpec.describe WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler, 
     context "when work item does not have a parent" do
       it "updates the work_item hierarchy" do
         expect(::WorkItem)
-          .to receive(:find)
+          .to receive(:find_by_id)
             .with(1)
             .and_return(instance_double(::WorkItem, work_item_parent: nil))
 
@@ -69,6 +69,16 @@ RSpec.describe WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler, 
 
         handler = described_class.new
         handler.handle_event(event)
+      end
+    end
+
+    context 'when the work item no longer exists' do
+      it 'does not raise an error' do
+        event = ::WorkItems::WorkItemCreatedEvent.new(data: { id: non_existing_record_id, namespace_id: 2 })
+
+        handler = described_class.new
+
+        expect { handler.handle_event(event) }.not_to raise_error
       end
     end
   end

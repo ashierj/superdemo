@@ -25,7 +25,7 @@ module WorkItems
       end
 
       def handle_event(event)
-        parent = ::WorkItem.find(event.data[:id])&.work_item_parent
+        parent = ::WorkItem.find_by_id(event.data[:id])&.work_item_parent
         return if parent.blank?
 
         ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateService
