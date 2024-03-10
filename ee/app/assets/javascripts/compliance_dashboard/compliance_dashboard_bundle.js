@@ -22,6 +22,7 @@ export default () => {
     pipelineConfigurationFullPathEnabled,
     pipelineConfigurationEnabled,
     securityPoliciesPolicyScopeToggleEnabled,
+    disableScanPolicyUpdate,
   } = el.dataset;
 
   Vue.use(VueApollo);
@@ -43,6 +44,7 @@ export default () => {
     name: 'ComplianceReportsApp',
     router,
     provide: {
+      namespaceType: 'group',
       groupPath,
       canAddEdit,
       pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
@@ -50,6 +52,7 @@ export default () => {
       securityPoliciesPolicyScopeToggleEnabled: parseBoolean(
         securityPoliciesPolicyScopeToggleEnabled,
       ),
+      disableScanPolicyUpdate: parseBoolean(disableScanPolicyUpdate),
       mergeCommitsCsvExportPath,
       violationsCsvExportPath,
       projectFrameworksCsvExportPath,

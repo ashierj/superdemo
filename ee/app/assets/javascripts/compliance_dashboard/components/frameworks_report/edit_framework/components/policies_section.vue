@@ -1,8 +1,10 @@
 <script>
-import { GlBadge, GlFormCheckbox, GlTable, GlTooltipDirective } from '@gitlab/ui';
+import { GlBadge, GlFormCheckbox, GlLoadingIcon, GlTable, GlTooltipDirective } from '@gitlab/ui';
 
 import { sprintf } from '~/locale';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import DrawerWrapper from 'ee/security_orchestration/components/policy_drawer/drawer_wrapper.vue';
+import { getPolicyType } from 'ee/security_orchestration/utils';
 import { i18n } from '../constants';
 import complianceFrameworkPoliciesQuery from '../graphql/compliance_frameworks_policies.query.graphql';
 
@@ -18,16 +20,24 @@ function extractPolicies(policies) {
 
 export default {
   components: {
+    DrawerWrapper,
     EditSection,
 
     GlBadge,
+    GlLoadingIcon,
     GlFormCheckbox,
     GlTable,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-
+  provide() {
+    return {
+      // required for drawer component
+      rootNamespacePath: this.fullPath,
+    };
+  },
+  inject: ['disableScanPolicyUpdate'],
   props: {
     fullPath: {
       type: String,
@@ -41,6 +51,7 @@ export default {
 
   data() {
     return {
+      selectedPolicy: null,
       rawPolicies: {
         globalApprovalPolicies: [],
         globalScanExecutionPolicies: [],
@@ -160,10 +171,34 @@ export default {
         sprintf(i18n.policiesTotalCount(count), { count }),
       ].join(' ');
     },
+
+    policyType() {
+      // eslint-disable-next-line no-underscore-dangle
+      return this.selectedPolicy ? getPolicyType(this.selectedPolicy.__typename) : '';
+    },
   },
+
   methods: {
     getTooltip(policy) {
       return policy.linked ? i18n.policieslinkedTooltip : i18n.policiesUnlinkedTooltip;
+    },
+
+    presentPolicyDrawer(rows) {
+      if (rows.length === 0) return;
+
+      const [selectedPolicy] = rows;
+
+      this.selectedPolicy = null;
+      this.$nextTick(() => {
+        this.selectedPolicy = selectedPolicy;
+      });
+    },
+
+    deselectPolicy() {
+      this.selectedPolicy = null;
+
+      const bTable = this.$refs.policiesTable.$children[0];
+      bTable.clearSelected();
     },
   },
 
@@ -189,11 +224,17 @@ export default {
 <template>
   <edit-section :title="$options.i18n.policies" :description="description" expandable>
     <gl-table
+      ref="policiesTable"
       :items="policies"
       :fields="$options.tableFields"
       :busy="$apollo.queries.rawGroupPolicies.loading"
       responsive
       stacked="md"
+      hover
+      selectable
+      select-mode="single"
+      selected-variant="primary"
+      @row-selected="presentPolicyDrawer"
     >
       <template #cell(linked)="{ item }">
         <div v-gl-tooltip="getTooltip(item)" class="gl-w-5 gl-display-inline-block">
@@ -208,6 +249,18 @@ export default {
           </gl-badge>
         </div>
       </template>
+
+      <template #table-busy>
+        <gl-loading-icon size="lg" />
+      </template>
     </gl-table>
+    <drawer-wrapper
+      container-class=".content-wrapper"
+      :open="Boolean(selectedPolicy)"
+      :policy="selectedPolicy"
+      :policy-type="policyType"
+      :disable-scan-policy-update="disableScanPolicyUpdate"
+      @close="deselectPolicy"
+    />
   </edit-section>
 </template>

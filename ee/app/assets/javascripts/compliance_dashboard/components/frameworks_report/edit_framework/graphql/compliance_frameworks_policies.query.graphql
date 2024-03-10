@@ -1,4 +1,5 @@
 #import "~/graphql_shared/fragments/page_info.fragment.graphql"
+#import "ee/security_orchestration/graphql/fragments/scan_policy_source.fragment.graphql"
 
 query complianceFrameworkPolicies(
   $fullPath: ID!
@@ -13,8 +14,25 @@ query complianceFrameworkPolicies(
     approvalPolicies(after: $approvalPoliciesGlobalAfter) {
       nodes {
         name
+        yaml
+        editPath
         enabled
         description
+        source {
+          ...SecurityPolicySource
+        }
+        updatedAt
+        userApprovers {
+          id
+          name
+          webUrl
+        }
+        allGroupApprovers {
+          id
+          fullPath
+          webUrl
+        }
+        roleApprovers
       }
       pageInfo {
         ...PageInfo
@@ -23,8 +41,14 @@ query complianceFrameworkPolicies(
     scanExecutionPolicies(after: $scanExecutionPoliciesGlobalAfter) {
       nodes {
         name
+        yaml
+        editPath
         enabled
         description
+        source {
+          ...SecurityPolicySource
+        }
+        updatedAt
       }
       pageInfo {
         ...PageInfo

@@ -136,27 +136,33 @@ describe('DrawerLayout component', () => {
   });
 
   describe('policy scope', () => {
-    it.each`
-      namespaceType              | securityPoliciesPolicyScope | expectedResult
-      ${NAMESPACE_TYPES.PROJECT} | ${true}                     | ${false}
-      ${NAMESPACE_TYPES.GROUP}   | ${true}                     | ${true}
-      ${NAMESPACE_TYPES.PROJECT} | ${false}                    | ${false}
-      ${NAMESPACE_TYPES.GROUP}   | ${false}                    | ${false}
-    `(
-      `renders policy scope for $namespaceType $expectedResult`,
-      ({ namespaceType, securityPoliciesPolicyScope, expectedResult }) => {
-        factory({
-          propsData: {
-            policy: mockProjectScanExecutionPolicy,
-          },
-          provide: {
-            glFeatures: { securityPoliciesPolicyScope },
-            namespaceType,
-          },
-        });
+    describe.each`
+      providerSource      | provideFn
+      ${'glFeatures'}     | ${(value) => ({ glFeatures: { securityPoliciesPolicyScope: value } })}
+      ${'direct provide'} | ${(value) => ({ securityPoliciesPolicyScopeToggleEnabled: value })}
+    `('when providing scope configuration via $providerSource', ({ provideFn }) => {
+      it.each`
+        namespaceType              | securityPoliciesPolicyScope | expectedResult
+        ${NAMESPACE_TYPES.PROJECT} | ${true}                     | ${false}
+        ${NAMESPACE_TYPES.GROUP}   | ${true}                     | ${true}
+        ${NAMESPACE_TYPES.PROJECT} | ${false}                    | ${false}
+        ${NAMESPACE_TYPES.GROUP}   | ${false}                    | ${false}
+      `(
+        `renders policy scope for $namespaceType $expectedResult`,
+        ({ namespaceType, securityPoliciesPolicyScope, expectedResult }) => {
+          factory({
+            propsData: {
+              policy: mockProjectScanExecutionPolicy,
+            },
+            provide: {
+              ...provideFn(securityPoliciesPolicyScope),
+              namespaceType,
+            },
+          });
 
-        expect(findScopeInfoRow().exists()).toBe(expectedResult);
-      },
-    );
+          expect(findScopeInfoRow().exists()).toBe(expectedResult);
+        },
+      );
+    });
   });
 });

@@ -1,8 +1,10 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlTable } from '@gitlab/ui';
 
 import PoliciesSection from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/policies_section.vue';
+import DrawerWrapper from 'ee/security_orchestration/components/policy_drawer/drawer_wrapper.vue';
+
 import complianceFrameworkPoliciesQuery from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/graphql/compliance_frameworks_policies.query.graphql';
 
 import { mountExtended } from 'helpers/vue_test_utils_helper';
@@ -19,22 +21,64 @@ const pageInfo = (endCursor) => ({
   __typename: 'PageInfo',
 });
 
+const makePolicy = ({ name, enabled, description, __typename, ...rest }) => ({
+  name,
+  enabled,
+  description,
+  yaml: '',
+  editPath: '',
+  source: {
+    inherited: false,
+    namespace: {
+      id: '1',
+      fullPath: '',
+      name,
+    },
+  },
+  updatedAt: Date.now(),
+  userApprovers: [],
+  allGroupApprovers: [],
+  roleApprovers: [],
+  __typename,
+  ...rest,
+});
+
 const makeFakeResponse = () => ({
   data: {
     namespace: {
       id: 'gid://gitlab/Group/29',
       approvalPolicies: {
         nodes: [
-          { name: 'test', enabled: false, description: 'Test1', __typename: 'ApprovalPolicy' },
-          { name: 'test2', enabled: true, description: 'Test2', __typename: 'ApprovalPolicy' },
+          makePolicy({
+            name: 'test',
+            enabled: false,
+            description: 'Test1',
+            __typename: 'ApprovalPolicy',
+          }),
+          makePolicy({
+            name: 'test2',
+            enabled: true,
+            description: 'Test2',
+            __typename: 'ApprovalPolicy',
+          }),
         ],
         pageInfo: pageInfo('A1'),
         __typename: 'ApprovalPolicyConnection',
       },
       scanExecutionPolicies: {
         nodes: [
-          { name: 'testE', enabled: false, description: 'E1', __typename: 'ScanExecutionPolicy' },
-          { name: 'testE2', enabled: true, description: 'E2', __typename: 'ScanExecutionPolicy' },
+          makePolicy({
+            name: 'testE',
+            enabled: false,
+            description: 'E1',
+            __typename: 'ScanExecutionPolicy',
+          }),
+          makePolicy({
+            name: 'testE2',
+            enabled: true,
+            description: 'E2',
+            __typename: 'ScanExecutionPolicy',
+          }),
         ],
         pageInfo: pageInfo('SE1'),
         __typename: 'ScanExecutionPolicyConnection',
@@ -67,9 +111,16 @@ const makeFakeResponse = () => ({
 describe('Basic information section', () => {
   let wrapper;
 
-  function createComponent({ requestHandlers = [] } = {}) {
+  function createComponent({ requestHandlers = [], provide } = {}) {
     return mountExtended(PoliciesSection, {
       apolloProvider: createMockApollo(requestHandlers),
+      provide: {
+        disableScanPolicyUpdate: false,
+        ...provide,
+      },
+      stubs: {
+        DrawerWrapper: true,
+      },
       propsData: {
         fullPath: 'Commit451',
         graphqlId: 'gid://gitlab/ComplianceManagement::Framework/1',
@@ -151,6 +202,25 @@ describe('Basic information section', () => {
         false,
         true,
       ]);
+    });
+
+    describe('Drawer', () => {
+      it('renders with selected policy', async () => {
+        const drawer = wrapper.findComponent(DrawerWrapper);
+        await wrapper.find('table tbody tr').trigger('click');
+        await nextTick();
+        expect(drawer.props('policy').name).toBe('test');
+      });
+
+      it('deselects policy when drawer generates close event', async () => {
+        const drawer = wrapper.findComponent(DrawerWrapper);
+        await wrapper.find('table tbody tr').trigger('click');
+        await nextTick();
+        expect(drawer.props('policy').name).toBe('test');
+        drawer.vm.$emit('close');
+        await nextTick();
+        expect(drawer.props('policy')).toBe(null);
+      });
     });
   });
 });
