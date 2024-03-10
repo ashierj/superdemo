@@ -50,7 +50,6 @@ describe('ComplianceReportsApp component', () => {
           'router-view': stubComponent({}),
         },
         provide: {
-          complianceFrameworkReportUiEnabled: false,
           ...defaultInjects,
           ...provide,
         },
@@ -117,23 +116,15 @@ describe('ComplianceReportsApp component', () => {
 
   describe('projects report', () => {
     beforeEach(() => {
-      wrapper = createComponent(
-        mount,
-        {
-          $route: {
-            name: ROUTE_PROJECTS,
-          },
+      wrapper = createComponent(mount, {
+        $route: {
+          name: ROUTE_PROJECTS,
         },
-        { complianceFrameworkReportUiEnabled: false },
-      );
+      });
     });
 
     it('renders the projects report tab', () => {
       expect(findProjectsTab().exists()).toBe(true);
-    });
-
-    it('does not render the frameworks report tab', () => {
-      expect(findProjectFrameworksTab().exists()).toBe(false);
     });
 
     it('passes the expected values to the header', () => {
@@ -167,15 +158,11 @@ describe('ComplianceReportsApp component', () => {
 
   describe('frameworks report', () => {
     beforeEach(() => {
-      wrapper = createComponent(
-        mount,
-        {
-          $route: {
-            name: ROUTE_PROJECTS,
-          },
+      wrapper = createComponent(mount, {
+        $route: {
+          name: ROUTE_PROJECTS,
         },
-        { complianceFrameworkReportUiEnabled: true },
-      );
+      });
     });
 
     it('renders the projects tab', () => {
@@ -189,17 +176,11 @@ describe('ComplianceReportsApp component', () => {
 
   describe('tracking', () => {
     beforeEach(() => {
-      wrapper = createComponent(
-        mount,
-        {
-          $route: {
-            name: ROUTE_VIOLATIONS,
-          },
+      wrapper = createComponent(mount, {
+        $route: {
+          name: ROUTE_VIOLATIONS,
         },
-        {
-          complianceFrameworkReportUiEnabled: true,
-        },
-      );
+      });
       trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
     });
 

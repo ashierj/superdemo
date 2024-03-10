@@ -31,7 +31,6 @@ export default {
     'projectFrameworksCsvExportPath',
     'violationsCsvExportPath',
     'adherencesCsvExportPath',
-    'complianceFrameworkReportUiEnabled',
   ],
   computed: {
     tabIndex() {
@@ -114,7 +113,6 @@ export default {
         @click="goTo($options.ROUTE_VIOLATIONS)"
       />
       <gl-tab
-        v-if="complianceFrameworkReportUiEnabled"
         :title="$options.i18n.frameworksTab"
         :title-link-attributes="frameworksTabLinkAttributes"
         data-testid="frameworks-tab-content"

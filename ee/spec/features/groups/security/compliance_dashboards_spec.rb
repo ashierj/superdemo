@@ -18,7 +18,6 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
   let(:compliance_framework_ff) { false }
 
   before do
-    stub_feature_flags(compliance_framework_report_ui: compliance_framework_ff)
     stub_licensed_features(group_level_compliance_dashboard: true)
     group.add_owner(user)
     sign_in(user)
@@ -54,59 +53,33 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
           expect(find('[aria-selected="true"]').text).to eq('Projects')
         end
       end
-    end
 
-    context 'with feature flag `compliance_framework_report_ui` enabled' do
-      let(:compliance_framework_ff) { true }
+      it 'displays list of projects with their frameworks' do
+        visit group_security_compliance_dashboard_path(group, vueroute: :projects)
+        wait_for_requests
 
-      context 'when `Frameworks` tab is clicked' do
-        it 'has the `Frameworks` tab selected' do
-          page.within('.gl-tabs') do
-            click_link _('Frameworks')
+        expect(all('tbody > tr').count).to eq(3)
 
-            expect(find('[aria-selected="true"]').text).to eq('Frameworks')
-          end
-        end
-      end
+        expect(first_row).to have_content(project_2.name)
+        expect(first_row).to have_content(project_2.full_path)
+        expect(first_row).to have_content("Add framework")
 
-      context 'when `Projects` tab is clicked' do
-        it 'has the projects tab selected' do
-          page.within('.gl-tabs') do
-            click_link _('Projects')
+        expect(second_row).to have_content(project.name)
+        expect(second_row).to have_content(project.full_path)
+        expect(second_row).to have_content(framework2.name)
 
-            expect(find('[aria-selected="true"]').text).to eq('Projects')
-          end
-        end
-
-        it 'displays list of projects with their frameworks' do
-          visit group_security_compliance_dashboard_path(group, vueroute: :projects)
-          wait_for_requests
-
-          expect(all('tbody > tr').count).to eq(3)
-
-          expect(first_row).to have_content(project_2.name)
-          expect(first_row).to have_content(project_2.full_path)
-          expect(first_row).to have_content("Add framework")
-
-          expect(second_row).to have_content(project.name)
-          expect(second_row).to have_content(project.full_path)
-          expect(second_row).to have_content(framework2.name)
-
-          expect(third_row).to have_content(subgroup_project.name)
-          expect(third_row).to have_content(subgroup_project.full_path)
-          expect(third_row).to have_content(framework1.name)
-        end
+        expect(third_row).to have_content(subgroup_project.name)
+        expect(third_row).to have_content(subgroup_project.full_path)
+        expect(third_row).to have_content(framework1.name)
       end
     end
 
-    context 'with feature flag `compliance_framework_report_ui` disabled' do
-      context 'when `Projects` tab is clicked' do
-        it 'has the projects tab selected' do
-          page.within('.gl-tabs') do
-            click_link _('Projects')
+    context 'when `Frameworks` tab is clicked' do
+      it 'has the `Frameworks` tab selected' do
+        page.within('.gl-tabs') do
+          click_link _('Frameworks')
 
-            expect(find('[aria-selected="true"]').text).to eq('Projects')
-          end
+          expect(find('[aria-selected="true"]').text).to eq('Frameworks')
         end
       end
     end

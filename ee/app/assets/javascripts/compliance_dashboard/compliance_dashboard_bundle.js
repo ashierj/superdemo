@@ -21,7 +21,6 @@ export default () => {
     rootAncestorPath,
     pipelineConfigurationFullPathEnabled,
     pipelineConfigurationEnabled,
-    complianceFrameworkReportUiEnabled,
     securityPoliciesPolicyScopeToggleEnabled,
   } = el.dataset;
 
@@ -36,7 +35,6 @@ export default () => {
     mergeCommitsCsvExportPath,
     groupPath,
     rootAncestorPath,
-    complianceFrameworkReportUiEnabled: parseBoolean(complianceFrameworkReportUiEnabled),
   });
 
   return new Vue({
@@ -49,7 +47,6 @@ export default () => {
       canAddEdit,
       pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
       pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
-      complianceFrameworkReportUiEnabled: parseBoolean(complianceFrameworkReportUiEnabled),
       securityPoliciesPolicyScopeToggleEnabled: parseBoolean(
         securityPoliciesPolicyScopeToggleEnabled,
       ),

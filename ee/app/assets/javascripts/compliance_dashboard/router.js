@@ -20,15 +20,10 @@ import ProjectsReport from './components/projects_report/report.vue';
 import StandardsReport from './components/standards_adherence_report/report.vue';
 
 export function createRouter(basePath, props) {
-  const {
-    complianceFrameworkReportUiEnabled,
-    mergeCommitsCsvExportPath,
-    groupPath,
-    rootAncestorPath,
-  } = props;
+  const { mergeCommitsCsvExportPath, groupPath, rootAncestorPath } = props;
 
   const defaultRoute = ROUTE_STANDARDS_ADHERENCE;
-  const FrameworkReport = complianceFrameworkReportUiEnabled ? FrameworksReport : ProjectsReport;
+  const FrameworkReport = FrameworksReport;
 
   const routes = [
     {
