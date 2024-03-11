@@ -129,7 +129,7 @@ export default {
     approvalLabel: s__('ProtectedEnvironment|Required approvals'),
     deployerLabel: s__('ProtectedEnvironments|Allowed to deploy'),
     deployerHelp: s__(
-      'ProtectedEnvironments|Set which groups, access levels or users that are allowed to deploy to this environment',
+      'ProtectedEnvironments|Set which groups, access levels, or users can deploy to this environment. Groups and users must be members of the project.',
     ),
     buttonText: s__('ProtectedEnvironment|Protect'),
     buttonTextCancel: __('Cancel'),

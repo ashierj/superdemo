@@ -193,7 +193,7 @@ export default {
   i18n: {
     approverLabel: s__('ProtectedEnvironment|Approvers'),
     approverHelp: s__(
-      'ProtectedEnvironments|Set which groups, access levels or users are required to approve.',
+      'ProtectedEnvironments|Set which groups, access levels, or users are required to approve. Groups and users must be members of the project.',
     ),
     approvalRulesLabel: s__('ProtectedEnvironments|Approval rules'),
     approvalsInvalid: s__('ProtectedEnvironments|Number of approvals must be between 1 and 5'),
