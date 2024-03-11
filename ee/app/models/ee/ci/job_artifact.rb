@@ -20,12 +20,7 @@ module EE
 
       with_replicator ::Geo::JobArtifactReplicator
 
-      has_one :job_artifact_state,
-        ->(artifact) { in_partition(artifact) },
-        autosave: false,
-        inverse_of: :job_artifact,
-        partition_foreign_key: :partition_id,
-        class_name: '::Geo::JobArtifactState'
+      has_one :job_artifact_state, autosave: false, inverse_of: :job_artifact, class_name: '::Geo::JobArtifactState'
 
       EE_REPORT_FILE_TYPES = EE::Enums::Ci::JobArtifact.ee_report_file_types
 
