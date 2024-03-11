@@ -24,9 +24,12 @@ export default {
   sastHelpPage: helpPagePath('user/application_security/sast/index.md', {
     anchor: 'configuration',
   }),
-  secretDetectionHelpPage: helpPagePath('user/application_security/secret_detection/index.md', {
-    anchor: 'configuration',
-  }),
+  secretDetectionHelpPage: helpPagePath(
+    'user/application_security/secret_detection/pipeline/index.md',
+    {
+      anchor: 'configuration',
+    },
+  ),
 };
 </script>
 
