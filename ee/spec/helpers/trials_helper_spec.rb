@@ -84,22 +84,23 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
       allow(helper).to receive(:current_user).and_return(user)
     end
 
+    subject(:form_data) { helper.create_duo_pro_lead_form_data }
+
     it 'provides expected form data' do
       keys = extra_params.keys + [:submit_path]
 
-      expect(helper.create_duo_pro_lead_form_data.keys.map(&:to_sym)).to match_array(keys)
+      expect(form_data.keys.map(&:to_sym)).to match_array(keys)
     end
 
     it 'allows overriding data with params' do
-      expect(helper.create_duo_pro_lead_form_data).to match(a_hash_including(extra_params))
+      expect(form_data).to match(a_hash_including(extra_params))
     end
 
     context 'when namespace_id is in the params' do
       let(:extra_params) { { namespace_id: non_existing_record_id } }
 
       it 'provides the submit path with the namespace_id' do
-        expect(helper.create_duo_pro_lead_form_data[:submit_path])
-          .to eq(trials_duo_pro_path(step: :lead, **params.permit!))
+        expect(form_data[:submit_path]).to eq(trials_duo_pro_path(step: :lead, **params.permit!))
       end
     end
 

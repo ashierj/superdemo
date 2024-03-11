@@ -19,7 +19,7 @@ module Subscriptions
       urgency :low
 
       def new
-        if params[:step] == GitlabSubscriptions::Trials::CreateService::TRIAL
+        if params[:step] == GitlabSubscriptions::Trials::CreateDuoProService::TRIAL
           track_event('render_duo_pro_trial_page')
 
           render :step_namespace
@@ -31,39 +31,40 @@ module Subscriptions
       end
 
       def create
-        # TODO: Implement actual duo pro trial activation and move all the logic
-        # to separate service
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/435875
-        case params[:step]
-        when GitlabSubscriptions::Trials::CreateService::LEAD
-          lead_flow
-        when GitlabSubscriptions::Trials::CreateService::TRIAL
-          trial_flow
-        end
+        @result = GitlabSubscriptions::Trials::CreateDuoProService.new(
+          step: params[:step], lead_params: lead_params, trial_params: trial_params, user: current_user
+        ).execute
 
-        redirect_to new_trials_duo_pro_path(
-          namespace_id: params[:namespace_id],
-          step: GitlabSubscriptions::Trials::CreateService::TRIAL
-        )
+        if @result.success?
+          # lead and trial created
+
+          track_event('duo_pro_trial_registration_success')
+
+          redirect_to group_path(@result.payload[:namespace])
+        elsif @result.reason == GitlabSubscriptions::Trials::CreateDuoProService::NO_SINGLE_NAMESPACE
+          # lead created, but we now need to select namespace and then apply a trial
+          redirect_to new_trials_duo_pro_path(@result.payload[:trial_selection_params])
+        elsif @result.reason == GitlabSubscriptions::Trials::CreateDuoProService::NOT_FOUND
+          # namespace not found/not permitted to create
+          render_404
+        elsif @result.reason == GitlabSubscriptions::Trials::CreateDuoProService::LEAD_FAILED
+          render :step_lead_failed
+        elsif @result.reason == GitlabSubscriptions::Trials::CreateDuoProService::NAMESPACE_CREATE_FAILED
+          # namespace creation failed
+          params[:namespace_id] = @result.payload[:namespace_id]
+
+          render :step_namespace_failed
+        else
+          # trial creation failed
+          track_event('duo_pro_trial_registration_failure')
+
+          params[:namespace_id] = @result.payload[:namespace_id]
+
+          render :trial_failed
+        end
       end
 
       private
-
-      def lead_flow
-        if true # rubocop: disable Lint/LiteralAsCondition -- Implement actual duo pro lead
-          track_event('duo_pro_lead_creation_success')
-        else
-          track_event('duo_pro_lead_creation_failure')
-        end
-      end
-
-      def trial_flow
-        if true # rubocop: disable Lint/LiteralAsCondition -- Implement actual duo pro trial
-          track_event('duo_pro_trial_registration_success')
-        else
-          track_event('duo_pro_trial_registration_failure')
-        end
-      end
 
       def authenticate_user!
         return if current_user
@@ -81,12 +82,23 @@ module Subscriptions
       end
 
       def namespace
-        current_user.manageable_namespaces_eligible_for_trial.find_by_id(params[:namespace_id])
+        current_user.owned_groups.find_by_id(params[:namespace_id])
       end
       strong_memoize_attr :namespace
 
       def track_event(action)
         Gitlab::InternalEvents.track_event(action, user: current_user, namespace: namespace)
+      end
+
+      def lead_params
+        params.permit(
+          :company_name, :company_size, :first_name, :last_name, :phone_number,
+          :country, :state, :website_url, :glm_content, :glm_source
+        ).to_h
+      end
+
+      def trial_params
+        params.permit(:new_group_name, :namespace_id, :trial_entity, :glm_source, :glm_content).to_h
       end
     end
   end

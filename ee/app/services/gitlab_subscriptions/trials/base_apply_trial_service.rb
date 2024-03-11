@@ -51,6 +51,11 @@ module GitlabSubscriptions
         Gitlab::SubscriptionPortal::Client
       end
 
+      def namespace
+        Namespace.find_by_id(trial_user_information[:namespace_id])
+      end
+      strong_memoize_attr :namespace
+
       def after_success_hook
         # overridden in subclasses
       end

@@ -89,38 +89,68 @@ RSpec.shared_examples 'when on the lead step' do
         expect(execute.reason).to eq(:lead_failed)
       end
     end
+  end
+end
 
-    def expect_create_lead(trial_user_params, success: true)
-      response = if success
-                   ServiceResponse.success
-                 else
-                   ServiceResponse.error(message: '_lead_fail_')
-                 end
+RSpec.shared_examples 'with tracking duo pro trial lead' do
+  let_it_be(:group) { create(:group, name: 'gitlab').tap { |record| record.add_owner(user) } }
 
-      expect_next_instance_of(lead_service_class) do |instance|
-        expect(instance).to receive(:execute).with(trial_user_params).and_return(response)
+  context 'when lead creation is successful regardless' do
+    before do
+      expect_create_lead_success(trial_user_params)
+      expect_apply_trial_fail(user, group, extra_params: existing_group_attrs(group))
+    end
+
+    it_behaves_like 'internal event tracking' do
+      let(:event) { 'duo_pro_lead_creation_success' }
+      let(:namespace) { group }
+
+      subject(:track_event) do
+        execute
       end
     end
-    alias_method :expect_create_lead_success, :expect_create_lead
+  end
 
-    def expect_create_lead_fail(trial_user_params)
-      expect_create_lead(trial_user_params, success: false)
+  context 'when lead creation fails' do
+    before do
+      expect_create_lead_fail(trial_user_params)
     end
 
-    def stub_lead_without_trial(trial_user_params)
-      expect_create_lead_success(trial_user_params)
-      expect(apply_trial_service_class).not_to receive(:new)
-    end
+    it_behaves_like 'internal event tracking' do
+      let(:event) { 'duo_pro_lead_creation_failure' }
 
-    def expect_to_trigger_trial_step(execution, lead_payload_params, trial_payload_params)
-      expect(execution).to be_error
-      expect(execution.reason).to eq(:no_single_namespace)
-      trial_selection_params = {
-        step: described_class::TRIAL
-      }.merge(lead_payload_params).merge(trial_payload_params.slice(:namespace_id))
-      expect(execution.payload).to match(trial_selection_params: trial_selection_params)
+      subject(:track_event) do
+        execute
+      end
     end
   end
+end
+
+def expect_create_lead_success(trial_user_params)
+  expect_next_instance_of(lead_service_class) do |instance|
+    expect(instance).to receive(:execute).with(trial_user_params).and_return(ServiceResponse.success)
+  end
+end
+
+def expect_create_lead_fail(trial_user_params)
+  expect_next_instance_of(lead_service_class) do |instance|
+    expect(instance).to receive(:execute).with(trial_user_params)
+                                         .and_return(ServiceResponse.error(message: '_lead_fail_'))
+  end
+end
+
+def stub_lead_without_trial(trial_user_params)
+  expect_create_lead_success(trial_user_params)
+  expect(apply_trial_service_class).not_to receive(:new)
+end
+
+def expect_to_trigger_trial_step(execution, lead_payload_params, trial_payload_params)
+  expect(execution).to be_error
+  expect(execution.reason).to eq(:no_single_namespace)
+  trial_selection_params = {
+    step: described_class::TRIAL
+  }.merge(lead_payload_params).merge(trial_payload_params.slice(:namespace_id))
+  expect(execution.payload).to match(trial_selection_params: trial_selection_params)
 end
 
 RSpec.shared_examples 'when on trial step' do

@@ -14,6 +14,11 @@ module Gitlab
             http_post("trials", admin_headers, trial_user_params)
           end
 
+          def generate_addon_trial(params)
+            trial_user_params = params[:trial_user] ? params : { trial_user: params }
+            http_post("trials/create_addon", admin_headers, trial_user_params)
+          end
+
           def generate_lead(params)
             http_post("trials/create_hand_raise_lead", admin_headers, params)
           end
