@@ -38,7 +38,7 @@ exports[`Card Security Showcase App renders correctly 1`] = `
     <card-showcase-stub
       description="Scan your code to detect unintentionally committed secrets, like keys, passwords, and API tokens."
       primaryaction="Enable Secret Detection"
-      primarylink="/help/user/application_security/secret_detection/index.md#configuration"
+      primarylink="/help/user/application_security/secret_detection/pipeline/index.md#configuration"
       primarylinkicon="external-link"
       primarytrackinglabel="enable_secret_detection"
       primarytrackingproperty=""
