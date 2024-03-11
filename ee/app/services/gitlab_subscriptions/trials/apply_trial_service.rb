@@ -16,11 +16,6 @@ module GitlabSubscriptions
       def after_success_hook
         ::Onboarding::ProgressService.new(namespace).execute(action: :trial_started)
       end
-
-      def namespace
-        Namespace.find_by_id(trial_user_information[:namespace_id])
-      end
-      strong_memoize_attr :namespace
     end
   end
 end

@@ -101,6 +101,23 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest, feature_category: :sub
     end
   end
 
+  describe '#generate_addon_trial' do
+    subject do
+      client.generate_addon_trial({})
+    end
+
+    it_behaves_like 'when response is successful'
+    it_behaves_like 'when response code is 422'
+    it_behaves_like 'when response code is 500'
+    it_behaves_like 'when http call raises an exception'
+
+    it "nests in the trial_user param if needed" do
+      expect(client).to receive(:http_post).with('trials/create_addon', anything, { trial_user: { foo: 'bar' } })
+
+      client.generate_addon_trial(foo: 'bar')
+    end
+  end
+
   describe '#generate_lead' do
     subject do
       client.generate_lead({})
