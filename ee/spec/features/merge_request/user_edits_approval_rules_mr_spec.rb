@@ -51,10 +51,10 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
 
     click_button "Add approval rule"
 
-    within '[role="dialog"]' do
+    within('.gl-drawer') do
       fill_in 'Rule name', with: rule_name
       select_from_listbox approver.name, from: 'Search users or groups'
-      click_button 'Add approval rule'
+      click_button 'Save changes'
     end
 
     expect(page_rule_names.last).to have_text(rule_name)

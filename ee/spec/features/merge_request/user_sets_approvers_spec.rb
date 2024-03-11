@@ -10,7 +10,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
   let(:user) { create(:user) }
   let(:project) { create(:project, :public, :repository) }
   let(:config_selector) { '[data-testid="mr-approval-rules"]' }
-  let(:modal_selector) { '#mr-edit-approvals-create-modal' }
+  let(:drawer_selector) { '.gl-drawer' }
 
   before do
     stub_licensed_features(merge_request_approvers: true)
@@ -29,7 +29,8 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
     end
 
     it 'does not allow setting the author as an approver but allows setting the current user as an approver' do
-      open_modal(text: 'Add approval rule')
+      click_button('Approval rules')
+      click_button('Add approval rule')
       click_button 'Search users or groups'
 
       expect_no_listbox_item(author.name)
@@ -51,7 +52,8 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
     end
 
     it 'allows setting other users as approvers but does not allow setting the current user as an approver, and filters non members from approvers list', :sidekiq_might_not_need_inline do
-      open_modal(text: 'Add approval rule')
+      click_button('Approval rules')
+      click_button('Add approval rule')
       click_button 'Search users or groups'
 
       expect_listbox_item(other_user.name)
@@ -77,7 +79,8 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
       it 'allows setting groups as approvers', :sidekiq_inline do
         visit project_new_merge_request_path(project, merge_request: { target_branch: 'master', source_branch: 'feature' })
 
-        open_modal(text: 'Add approval rule')
+        click_button('Approval rules')
+        click_button('Add approval rule')
         click_button 'Search users or groups'
 
         expect_no_listbox_item(group.name)
@@ -85,15 +88,16 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         group.add_developer(user) # only display groups that user has access to
 
         visit project_new_merge_request_path(project, merge_request: { target_branch: 'master', source_branch: 'feature' })
-        open_modal(text: 'Add approval rule')
+        click_button('Approval rules')
+        click_button('Add approval rule')
         click_button 'Search users or groups'
 
         expect_listbox_item(group.name)
 
         select_listbox_item(group.name)
 
-        within('.modal-content') do
-          click_button 'Add approval rule'
+        within(drawer_selector) do
+          click_button 'Save changes'
         end
 
         click_on("Create merge request")
@@ -110,14 +114,17 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
         visit project_new_merge_request_path(project, merge_request: { target_branch: 'master', source_branch: 'feature' })
 
-        open_modal
-        remove_approver(group.name)
+        click_button('Approval rules')
+        within(find_by_testid('approvals-table-controls')) do
+          click_button 'Edit'
+        end
+        remove_approver(group.name, '.gl-drawer-body')
 
-        within(modal_selector) do
+        within(drawer_selector) do
           expect(page).to have_css('.content-list li', count: 1)
+          click_button 'Save changes'
         end
 
-        click_button 'Update approval rule'
         click_on("Create merge request")
         wait_for_all_requests
         click_button 'Expand eligible approvers'
@@ -146,14 +153,15 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
         visit edit_project_merge_request_path(group_project, group_project_merge_request)
 
-        open_modal(text: 'Add approval rule')
+        click_button('Approval rules')
+        click_button('Add approval rule')
         click_button 'Search users or groups'
 
         expect_listbox_item(group.name)
 
         select_listbox_item(group.name)
-        within('.modal-content') do
-          click_button 'Add approval rule'
+        within(drawer_selector) do
+          click_button 'Save changes'
         end
 
         click_on("Save changes")
@@ -172,15 +180,18 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
         visit edit_project_merge_request_path(project, merge_request)
 
-        open_modal
-        remove_approver(group.name)
+        click_button('Approval rules')
+        within(find_by_testid('approvals-table-controls')) do
+          click_button 'Edit'
+        end
+        remove_approver(group.name, '.gl-drawer-body')
 
         wait_for_requests
-        within(modal_selector) do
+        within(drawer_selector) do
           expect(page).to have_css('.content-list li', count: 1)
+          click_button 'Save changes'
         end
 
-        click_button 'Update approval rule'
         click_on("Save changes")
         wait_for_all_requests
 
@@ -204,14 +215,17 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         expect(page).to have_content("Requires 2 approvals from eligible users")
 
         find('.detail-page-header-actions').click_on 'Edit'
-        open_modal
+        click_button('Approval rules')
+        within(find_by_testid('approvals-table-controls')) do
+          click_button 'Edit'
+        end
 
-        within('.modal-content') do
+        within(drawer_selector) do
           expect(page).to have_field 'Required number of approvals', with: '2'
 
           fill_in 'Required number of approvals', with: '3'
 
-          click_button 'Update approval rule'
+          click_button 'Save changes'
         end
 
         click_on('Save changes')
@@ -222,9 +236,10 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
         # new MR setting on the edit MR page
         find('.detail-page-header-actions').click_on 'Edit'
-        wait_for_requests
-
-        open_modal
+        click_button('Approval rules')
+        within(find_by_testid('approvals-table-controls')) do
+          click_button 'Edit'
+        end
 
         expect(page).to have_field 'Required number of approvals', with: '3'
       end

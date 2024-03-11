@@ -20,4 +20,32 @@ describe('Approval MR edit module actions', () => {
       await testAction(actions.undoRulesChange, null, {}, [{ type: types.UNDO_RULES }], []);
     });
   });
+
+  describe('drawer', () => {
+    it('openCreateDrawer', () => {
+      return testAction(
+        actions.openCreateDrawer,
+        '',
+        {},
+        [
+          { type: types.SET_DRAWER_OPEN, payload: true },
+          { type: types.SET_EDIT_RULE, payload: '' },
+        ],
+        [],
+      );
+    });
+
+    it('closeCreateDrawer', () => {
+      return testAction(
+        actions.closeCreateDrawer,
+        null,
+        {},
+        [
+          { type: types.SET_DRAWER_OPEN, payload: false },
+          { type: types.SET_EDIT_RULE, payload: null },
+        ],
+        [],
+      );
+    });
+  });
 });

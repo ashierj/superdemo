@@ -33,7 +33,11 @@ describe('EE Approvals RuleControls', () => {
     ['requestEditRule', 'requestDeleteRule'].forEach((actionName) =>
       jest.spyOn(actions, actionName),
     );
+
+    window.gon.features = {}; // mocked because we check `gon.features`in the Vuex actions
   });
+
+  afterEach(() => delete window.gon.features);
 
   describe('when allow multi rule', () => {
     beforeEach(() => {
