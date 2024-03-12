@@ -17,7 +17,7 @@ FactoryBot.define do
         options do
           {
             artifacts: {
-              paths: [Ci::JobArtifact::DEFAULT_FILE_NAMES[report_type]]
+              paths: [Enums::Ci::JobArtifact.default_file_names[report_type]]
             }
           }
         end
@@ -28,7 +28,7 @@ FactoryBot.define do
           {
             artifacts: {
               reports: {
-                report_type => Ci::JobArtifact::DEFAULT_FILE_NAMES[report_type]
+                report_type => Enums::Ci::JobArtifact.default_file_names[report_type]
               }
             }
           }

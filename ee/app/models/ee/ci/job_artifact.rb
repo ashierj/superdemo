@@ -10,8 +10,6 @@ module EE
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
 
-    SECURITY_REPORT_FILE_TYPES = EE::Enums::Ci::JobArtifact.security_report_file_types
-
     prepended do
       include ::Geo::ReplicableModel
       include ::Geo::VerifiableModel
@@ -24,10 +22,10 @@ module EE
 
       EE_REPORT_FILE_TYPES = EE::Enums::Ci::JobArtifact.ee_report_file_types
 
-      scope :security_reports, -> (file_types: SECURITY_REPORT_FILE_TYPES) do
+      scope :security_reports, -> (file_types: EE::Enums::Ci::JobArtifact.security_report_file_types) do
         requested_file_types = *file_types
 
-        with_file_types(requested_file_types & SECURITY_REPORT_FILE_TYPES)
+        with_file_types(requested_file_types & EE::Enums::Ci::JobArtifact.security_report_file_types)
       end
 
       scope :with_files_stored_locally, -> { where(file_store: ::ObjectStorage::Store::LOCAL) }
@@ -125,7 +123,7 @@ module EE
     # specific method here for now.
     def security_report(validate: false)
       strong_memoize(:security_report) do
-        next unless file_type.in?(SECURITY_REPORT_FILE_TYPES)
+        next unless file_type.in?(EE::Enums::Ci::JobArtifact.security_report_file_types)
 
         signatures_enabled = project.licensed_feature_available?(:vulnerability_finding_signatures)
 

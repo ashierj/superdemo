@@ -109,7 +109,7 @@ module EE
         job_artifacts.security_reports.any?
       end
 
-      def collect_security_reports!(security_reports, report_types: ::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES)
+      def collect_security_reports!(security_reports, report_types: ::EE::Enums::Ci::JobArtifact.security_report_file_types)
         each_report(report_types) do |file_type, blob, report_artifact|
           security_reports.get_report(file_type, report_artifact).tap do |security_report|
             next unless project.feature_available?(LICENSED_PARSER_FEATURES.fetch(file_type))
@@ -124,7 +124,7 @@ module EE
       def unmerged_security_reports
         security_reports = ::Gitlab::Ci::Reports::Security::Reports.new(pipeline)
 
-        each_report(::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES) do |file_type, blob, report_artifact|
+        each_report(::EE::Enums::Ci::JobArtifact.security_report_file_types) do |file_type, blob, report_artifact|
           report = security_reports.get_report(file_type, report_artifact)
           parse_raw_security_artifact_blob(report, blob)
         end
