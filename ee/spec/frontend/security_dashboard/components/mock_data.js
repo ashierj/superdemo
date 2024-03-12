@@ -113,7 +113,6 @@ export const generateVulnerabilities = () => [
       id: 'mr-1',
       webUrl: 'www.testmr.com/1',
       state: 'status_warning',
-      securityAutoFix: true,
       iid: 1,
     },
     identifiers: [

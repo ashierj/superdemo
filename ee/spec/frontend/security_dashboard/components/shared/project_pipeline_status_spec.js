@@ -38,7 +38,6 @@ describe('Project Pipeline Status Component', () => {
   const findSbomTimeAgoTooltip = () => findSbomPipelineContainer().findComponent(TimeAgoTooltip);
   const findSbomLink = () => findSbomPipelineContainer().findComponent(GlLink);
   const findParsingStatusNotice = () => wrapper.findByTestId('parsing-status-notice');
-  const findAutoFixMrsLink = () => wrapper.findByTestId('auto-fix-mrs-link');
 
   const createWrapper = (options = {}) => {
     wrapper = extendedWrapper(
@@ -49,14 +48,6 @@ describe('Project Pipeline Status Component', () => {
             propsData: {
               pipeline: defaultPipeline,
               sbomPipeline: emptySbomPipeline,
-            },
-            provide: {
-              projectFullPath: '/group/project',
-              glFeatures: { securityAutoFix: true },
-              autoFixMrsPath: '/merge_requests?label_name=GitLab-auto-fix',
-            },
-            data() {
-              return { autoFixMrsCount: 0 };
             },
           },
           options,
@@ -125,34 +116,6 @@ describe('Project Pipeline Status Component', () => {
         expect(parsingStatus.text()).toBe(expectedMessage);
       },
     );
-  });
-
-  describe('auto-fix MRs', () => {
-    describe('when there are auto-fix MRs', () => {
-      beforeEach(() => {
-        createWrapper({
-          data() {
-            return { autoFixMrsCount: 12 };
-          },
-        });
-      });
-
-      it('renders the auto-fix container', () => {
-        expect(findAutoFixMrsLink().exists()).toBe(true);
-      });
-
-      it('renders a link to open auto-fix MRs if any', () => {
-        const link = findAutoFixMrsLink().findComponent(GlLink);
-        expect(link.exists()).toBe(true);
-        expect(link.attributes('href')).toBe('/merge_requests?label_name=GitLab-auto-fix');
-      });
-    });
-
-    it('does not render the link if there are no open auto-fix MRs', () => {
-      createWrapper();
-
-      expect(findAutoFixMrsLink().exists()).toBe(false);
-    });
   });
 
   describe('has sbom pipeline data', () => {

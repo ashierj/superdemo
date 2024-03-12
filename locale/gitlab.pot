@@ -7455,21 +7455,6 @@ msgstr ""
 msgid "AutoRemediation|!%{mergeRequestIid}"
 msgstr ""
 
-msgid "AutoRemediation|!%{mergeRequestIid}: Auto-fix"
-msgstr ""
-
-msgid "AutoRemediation|%{mrsCount} ready for review"
-msgstr ""
-
-msgid "AutoRemediation|Auto-fix solutions"
-msgstr ""
-
-msgid "AutoRemediation|If you're using dependency and/or container scanning, and auto-fix is enabled, auto-fix automatically creates merge requests with fixes to vulnerabilities."
-msgstr ""
-
-msgid "AutoRemediation|Introducing GitLab auto-fix"
-msgstr ""
-
 msgid "AutoRollback|Automatic rollbacks start when a critical alert is triggered. If the last successful deployment fails to roll back automatically, it can still be done manually."
 msgstr ""
 

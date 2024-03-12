@@ -5,7 +5,6 @@ import MergeRequestBadge from 'ee/security_dashboard/components/shared/merge_req
 const TEST_MERGE_REQUEST_DATA = {
   webUrl: 'https://gitlab.com/gitlab-org/gitlab/-/merge_requests/48820',
   state: 'merged',
-  securityAutoFix: true,
   iid: 48820,
 };
 
@@ -40,16 +39,4 @@ describe('Merge Request Badge component', () => {
   it('popover should contain Link with passed href', () => {
     expect(findLink().attributes('href')).toBe(TEST_MERGE_REQUEST_DATA.webUrl);
   });
-
-  it.each`
-    securityAutoFix | expectedText
-    ${true}         | ${'!48820: Auto-fix'}
-    ${false}        | ${'!48820'}
-  `(
-    'popover should contain merge request ID with text "$expectedText"',
-    ({ securityAutoFix, expectedText }) => {
-      wrapper = createWrapper({ securityAutoFix });
-      expect(findLink().text()).toBe(expectedText);
-    },
-  );
 });
