@@ -29,10 +29,10 @@ export default {
       required: false,
       default: false,
     },
-    agentId: {
-      type: String,
+    agentVersion: {
+      type: Object,
       required: false,
-      default: '',
+      default: () => ({}),
     },
     agentNameValue: {
       type: String,
@@ -64,14 +64,32 @@ export default {
       },
     };
   },
+  mounted() {
+    this.resizePromptInputToContent();
+  },
   methods: {
+    onReset() {
+      if (this.agentVersion.routeId) {
+        this.$router.push({
+          name: 'show',
+          params: { agentId: this.agentVersion.routeId },
+        });
+      } else {
+        this.$router.push({
+          name: 'list',
+        });
+      }
+    },
     onSubmit() {
       this.$emit('submit', {
         projectPath: this.projectPath,
-        agentId: this.agentId,
+        agentId: this.agentVersion.id,
         name: this.formValues.name,
         prompt: this.formValues.prompt,
       });
+    },
+    resizePromptInputToContent() {
+      this.$refs.promptInput.$el.style.height = `${this.$refs.promptInput.$el.scrollHeight}px`;
     },
   },
 };
@@ -83,13 +101,20 @@ export default {
       {{ errorMessage }}
     </gl-alert>
 
-    <gl-form @submit.prevent="onSubmit">
+    <gl-form class="gl-mb-8" @submit.prevent="onSubmit" @reset.prevent="onReset">
       <gl-form-fields v-model="formValues" :fields="fields" :form-id="$options.formId">
         <template #input(prompt)="{ id, value, input }">
-          <gl-form-textarea :id="id" :value="value" @input="input" />
+          <gl-form-textarea
+            :id="id"
+            ref="promptInput"
+            :value="value"
+            :no-resize="false"
+            @input="input"
+          />
         </template>
       </gl-form-fields>
       <gl-button type="submit" variant="confirm" :loading="loading">{{ buttonLabel }}</gl-button>
+      <gl-button type="reset">{{ __('Cancel') }}</gl-button>
     </gl-form>
   </div>
 </template>

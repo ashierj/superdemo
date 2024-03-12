@@ -5,6 +5,11 @@ import AgentForm from 'ee/ml/ai_agents/components/agent_form.vue';
 describe('AI Agents Form', () => {
   let wrapper;
 
+  const push = jest.fn();
+  const $router = {
+    push,
+  };
+
   const defaultPropsData = {
     buttonLabel: 'Create agent',
     errorMessage: '',
@@ -17,6 +22,9 @@ describe('AI Agents Form', () => {
       propsData: {
         ...defaultPropsData,
         ...props,
+      },
+      mocks: {
+        $router,
       },
     });
   };
@@ -81,9 +89,33 @@ describe('AI Agents Form', () => {
 
     expect(wrapper.emitted('submit')[0][0]).toEqual({
       projectPath: 'path/to/project',
-      agentId: '',
       name: 'agent_1',
       prompt: 'Do something',
+    });
+  });
+
+  it('redirects to the list page when the create form is reset', () => {
+    createComponent();
+
+    wrapper.find('form').trigger('reset.prevent');
+
+    expect($router.push).toHaveBeenCalledWith({
+      name: 'list',
+    });
+  });
+
+  it('redirects to the agent show page when the update form is reset', () => {
+    createComponent({
+      agentVersion: {
+        routeId: 1,
+      },
+    });
+
+    wrapper.find('form').trigger('reset.prevent');
+
+    expect($router.push).toHaveBeenCalledWith({
+      name: 'show',
+      params: { agentId: 1 },
     });
   });
 });

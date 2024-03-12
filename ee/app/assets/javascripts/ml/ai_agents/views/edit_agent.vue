@@ -1,5 +1,5 @@
 <script>
-import { GlExperimentBadge, GlLoadingIcon, GlAlert, GlEmptyState } from '@gitlab/ui';
+import { GlExperimentBadge, GlLoadingIcon, GlEmptyState, GlAlert } from '@gitlab/ui';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import getLatestAiAgentVersion from '../graphql/queries/get_latest_ai_agent_version.query.graphql';
@@ -18,9 +18,9 @@ export default {
     TitleArea,
     GlExperimentBadge,
     GlLoadingIcon,
-    GlAlert,
     AgentForm,
     GlEmptyState,
+    GlAlert,
   },
   I18N_UPDATE_AGENT,
   I18N_DEFAULT_SAVE_ERROR,
@@ -58,6 +58,9 @@ export default {
         agentId: `gid://gitlab/Ai::Agent/${this.$route.params.agentId}`,
       };
     },
+    agentVersionNotFound() {
+      return this.latestAgentVersion && Object.keys(this.latestAgentVersion).length === 0;
+    },
   },
   methods: {
     async updateAgent(requestData) {
@@ -93,30 +96,34 @@ export default {
 
 <template>
   <div>
-    <gl-empty-state
-      v-if="latestAgentVersion === undefined"
-      :title="$options.I18N_DEFAULT_NOT_FOUND_ERROR"
-    />
-
-    <gl-loading-icon v-else-if="isLoading" size="lg" class="gl-my-5" />
+    <gl-loading-icon v-if="isLoading" size="lg" class="gl-my-5" />
 
     <gl-alert v-else-if="errorMessage" :dismissible="false" variant="danger" class="gl-mb-3">
       {{ errorMessage }}
     </gl-alert>
 
+    <gl-empty-state
+      v-else-if="agentVersionNotFound"
+      :title="$options.I18N_DEFAULT_NOT_FOUND_ERROR"
+    />
+
     <div v-else>
       <title-area>
         <template #title>
           <div class="gl-flex-grow-1 gl-display-flex gl-align-items-center">
-            <span>{{ $options.I18N_EDIT_AGENT }}: {{ latestAgentVersion.name }}</span>
+            <span>{{ s__('AIAgents|Agent Settings') }}</span>
             <gl-experiment-badge />
           </div>
         </template>
       </title-area>
 
+      <p class="gl-text-secondary">
+        {{ s__('AIAgents|Update the name and prompt for this agent.') }}
+      </p>
+
       <agent-form
         :project-path="projectPath"
-        :agent-id="latestAgentVersion.id"
+        :agent-version="latestAgentVersion"
         :agent-name-value="latestAgentVersion.name"
         :agent-prompt-value="latestAgentVersion.latestVersion.prompt"
         :button-label="$options.I18N_UPDATE_AGENT"

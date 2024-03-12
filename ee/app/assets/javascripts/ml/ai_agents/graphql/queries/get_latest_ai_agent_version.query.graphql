@@ -4,6 +4,7 @@ query getLatestAiAgentVersion($fullPath: ID!, $agentId: AiAgentID!) {
     aiAgent(id: $agentId) {
       id
       name
+      routeId
       latestVersion {
         id
         prompt
