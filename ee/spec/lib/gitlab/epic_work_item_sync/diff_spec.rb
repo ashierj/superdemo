@@ -110,30 +110,33 @@ RSpec.describe Gitlab::EpicWorkItemSync::Diff, feature_category: :team_planning 
         it { is_expected.to include("parent_id") }
       end
 
-      context 'when relative_position is equal' do
+      context 'with relative position check' do
         let_it_be_with_reload(:epic) do
           create(:epic, :with_synced_work_item, group: group, parent: parent_epic, relative_position: 10)
         end
 
-        before do
-          create(:parent_link, work_item_parent: parent_epic.work_item, work_item: epic.work_item,
-            relative_position: 10)
+        context 'when relative_position is equal' do
+          before do
+            create(:parent_link, work_item_parent: parent_epic.work_item, work_item: epic.work_item,
+              relative_position: 10)
+          end
+
+          it { is_expected.to be_empty }
         end
 
-        it { is_expected.to be_empty }
-      end
+        context 'when relative_position is not equal' do
+          before do
+            create(:parent_link, work_item_parent: parent_epic.work_item, work_item: epic.work_item,
+              relative_position: 11)
+          end
 
-      context 'when relative_position is not equal' do
-        let_it_be_with_reload(:epic) do
-          create(:epic, :with_synced_work_item, group: group, parent: parent_epic, relative_position: 9)
+          it { is_expected.to include("relative_position") }
         end
 
-        before do
-          create(:parent_link, work_item_parent: parent_epic.work_item, work_item: epic.work_item,
-            relative_position: 10)
+        context 'when work_item_parent_link record is missing' do
+          it { is_expected.not_to include("relative_position") }
+          it { is_expected.to include("parent_id") }
         end
-
-        it { is_expected.to include("relative_position") }
       end
     end
 

@@ -85,8 +85,9 @@ module Gitlab
       end
 
       def check_relative_position
-        return if epic.relative_position.nil? && work_item.parent_link&.relative_position.nil?
-        return if epic.relative_position == work_item.parent_link&.relative_position
+        # if there is no parent_link there is nothing to compare with
+        return if work_item.parent_link.blank?
+        return if epic.relative_position == work_item.parent_link.relative_position
 
         mismatched_attributes.push("relative_position")
       end
