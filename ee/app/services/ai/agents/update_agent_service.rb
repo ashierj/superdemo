@@ -12,7 +12,7 @@ module Ai
       def execute
         Ai::Agent.transaction do
           @agent.name = @name unless @name.nil?
-          @agent.latest_version.prompt = @prompt unless @prompt.nil?
+          @agent.latest_version.update(prompt: @prompt) unless @prompt.nil?
           @agent.save # this method doesn't raise if it fails so that we can show vailidation errors to the user
         end
 
