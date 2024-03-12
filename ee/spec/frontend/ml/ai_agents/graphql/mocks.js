@@ -115,6 +115,15 @@ export const getLatestAiAgentResponse = {
   },
 };
 
+export const getLatestAiAgentNotFoundResponse = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      aiAgent: null,
+    },
+  },
+};
+
 export const getLatestAiAgentErrorResponse = {
   errors: [
     {

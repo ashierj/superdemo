@@ -21,6 +21,7 @@ import {
   updateAiAgentsResponses,
   getLatestAiAgentResponse,
   getLatestAiAgentErrorResponse,
+  getLatestAiAgentNotFoundResponse,
 } from '../graphql/mocks';
 
 Vue.use(VueApollo);
@@ -77,7 +78,7 @@ describe('ee/ml/ai_agents/views/edit_agent', () => {
     });
 
     it('renders the page title', () => {
-      expect(findTitleArea().text()).toContain('Edit Ai Agent');
+      expect(findTitleArea().text()).toContain('Agent Settings');
     });
 
     it('displays the experiment badge', () => {
@@ -102,7 +103,7 @@ describe('ee/ml/ai_agents/views/edit_agent', () => {
       apolloMocks = [
         [
           getLatestAiAgentVersionQuery,
-          jest.fn().mockResolvedValueOnce(getLatestAiAgentErrorResponse),
+          jest.fn().mockResolvedValueOnce(getLatestAiAgentNotFoundResponse),
         ],
       ];
       createComponent();
@@ -111,6 +112,25 @@ describe('ee/ml/ai_agents/views/edit_agent', () => {
 
     it('displays an error', () => {
       expect(findEmptyState().text()).toBe('The requested agent was not found.');
+    });
+  });
+
+  describe('when an exceptions happens loading data', () => {
+    beforeEach(async () => {
+      apolloMocks = [
+        [
+          getLatestAiAgentVersionQuery,
+          jest.fn().mockResolvedValueOnce(getLatestAiAgentErrorResponse),
+        ],
+      ];
+      createComponent();
+      await waitForPromises();
+    });
+
+    it('displays an error', () => {
+      expect(findErrorAlert().text()).toBe(
+        'GraphQL error: An error has occurred when loading the agent.',
+      );
     });
   });
 
