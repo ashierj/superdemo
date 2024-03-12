@@ -91,6 +91,20 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
           end
         end
 
+        context 'when new deployment name ends with dashes' do
+          it 'removes the trailing dashes' do
+            expect(Devise).to receive(:friendly_token).with(Ci::Runner::RUNNER_SHORT_SHA_LENGTH).and_return('1234----')
+
+            expect(execute).to be_success
+
+            steps = execute.payload[:provisioning_steps]
+            expect(steps).to match([
+              a_hash_including(instructions: /name = "grit-1234"/),
+              an_instance_of(Hash)
+            ])
+          end
+        end
+
         context 'when user does not have permissions to create runner' do
           before do
             allow(Ability).to receive(:allowed?).and_call_original
