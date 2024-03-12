@@ -249,7 +249,7 @@ module EE
       end
 
       def has_security_reports?
-        security_and_license_scanning_file_types = Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES | %w[license_scanning]
+        security_and_license_scanning_file_types = EE::Enums::Ci::JobArtifact.security_report_file_types | %w[license_scanning]
 
         complete_or_manual_and_has_reports?(::Ci::JobArtifact.with_file_types(security_and_license_scanning_file_types))
       end

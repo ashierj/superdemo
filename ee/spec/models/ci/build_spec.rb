@@ -440,7 +440,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
         let!(:artifact) { create(:ee_ci_job_artifact, :codequality, job: job, project: job.project) }
 
         before do
-          stub_const("Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES", %w[codequality])
+          allow(EE::Enums::Ci::JobArtifact).to receive(:security_report_file_types).and_return(%w[codequality])
         end
 
         it 'stores an error' do
