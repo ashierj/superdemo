@@ -30423,9 +30423,6 @@ ALTER TABLE p_ci_builds
 ALTER TABLE ONLY ci_sources_pipelines
     ADD CONSTRAINT fk_d4e29af7d7 FOREIGN KEY (source_pipeline_id) REFERENCES ci_pipelines(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY work_item_dates_sources
-    ADD CONSTRAINT fk_d602f0955d FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE SET NULL;
-
 ALTER TABLE ONLY incident_management_timeline_events
     ADD CONSTRAINT fk_d606a2a890 FOREIGN KEY (promoted_from_note_id) REFERENCES notes(id) ON DELETE SET NULL;
 
@@ -32516,6 +32513,9 @@ ALTER TABLE ONLY timelogs
 
 ALTER TABLE ONLY timelogs
     ADD CONSTRAINT fk_timelogs_note_id FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY work_item_dates_sources
+    ADD CONSTRAINT fk_work_item_dates_sources_on_namespace_id FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE issue_search_data
     ADD CONSTRAINT issue_search_data_issue_id_fkey FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE;
