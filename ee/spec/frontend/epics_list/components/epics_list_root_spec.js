@@ -4,7 +4,7 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import EpicsListRoot from 'ee/epics_list/components/epics_list_root.vue';
 import { epicsSortOptions } from 'ee/epics_list/constants';
-import groupEpicsQuery from 'ee/epics_list//queries/group_epics.query.graphql';
+import groupEpicsQuery from 'jh_else_ee/epics_list/queries/group_epics.query.graphql';
 import { mockFormattedEpic } from 'ee_jest/roadmap/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';

@@ -3,6 +3,7 @@ import { GlButton, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 
 import EpicsFilteredSearchMixin from 'jh_else_ee/roadmap/mixins/filtered_search_mixin';
+import groupEpics from 'jh_else_ee/epics_list/queries/group_epics.query.graphql';
 
 import { createAlert } from '~/alert';
 
@@ -18,7 +19,6 @@ import { WORK_ITEM_TYPE_ENUM_EPIC } from '~/work_items/constants';
 
 import { transformFetchEpicFilterParams } from '../../roadmap/utils/epic_utils';
 import { epicsSortOptions } from '../constants';
-import groupEpics from '../queries/group_epics.query.graphql';
 
 import EpicsListEmptyState from './epics_list_empty_state.vue';
 import EpicsListBulkEditSidebar from './epics_list_bulk_edit_sidebar.vue';
