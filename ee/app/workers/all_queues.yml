@@ -1947,15 +1947,6 @@
   :weight: 1
   :idempotent: true
   :tags: []
-- :name: security_auto_fix
-  :worker_name: Security::AutoFixWorker
-  :feature_category: :software_composition_analysis
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: security_generate_policy_violation_comment
   :worker_name: Security::GeneratePolicyViolationCommentWorker
   :feature_category: :security_policy_management
