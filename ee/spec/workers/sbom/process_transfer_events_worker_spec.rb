@@ -42,7 +42,7 @@ RSpec.describe Sbom::ProcessTransferEventsWorker, feature_category: :dependency_
     it_behaves_like 'subscribes to event'
 
     it 'enqueues a sync job for the project id' do
-      expect(::Sbom::SyncProjectTraversalIdsWorker).to receive(:perform_bulk).with([[project.id]])
+      expect(::Sbom::SyncProjectTraversalIdsWorker).to receive(:bulk_perform_async).with([[project.id]])
 
       use_event
     end
@@ -54,7 +54,7 @@ RSpec.describe Sbom::ProcessTransferEventsWorker, feature_category: :dependency_
     it_behaves_like 'subscribes to event'
 
     it 'enqueues a sync job for each project id belonging to the namespace id' do
-      expect(::Sbom::SyncProjectTraversalIdsWorker).to receive(:perform_bulk).with(
+      expect(::Sbom::SyncProjectTraversalIdsWorker).to receive(:bulk_perform_async).with(
         array_including([project.id], [other_project.id])
       )
 
@@ -67,7 +67,7 @@ RSpec.describe Sbom::ProcessTransferEventsWorker, feature_category: :dependency_
     let(:event) { project_event }
 
     it 'does not enqueue a sync job' do
-      expect(::Sbom::SyncProjectTraversalIdsWorker).to receive(:perform_bulk).with([])
+      expect(::Sbom::SyncProjectTraversalIdsWorker).to receive(:bulk_perform_async).with([])
 
       use_event
     end

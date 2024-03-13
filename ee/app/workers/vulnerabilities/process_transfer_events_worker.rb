@@ -17,7 +17,9 @@ module Vulnerabilities
     private
 
     def bulk_schedule_worker(project_ids)
-      Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker.perform_bulk(project_ids.zip)
+      # rubocop:disable Scalability/BulkPerformWithContext -- allow context omission
+      Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker.bulk_perform_async(project_ids.zip)
+      # rubocop:enable Scalability/BulkPerformWithContext
     end
 
     def project_ids(event)
