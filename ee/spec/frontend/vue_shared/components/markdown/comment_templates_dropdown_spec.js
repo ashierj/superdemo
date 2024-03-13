@@ -9,7 +9,7 @@ import savedRepliesQuery from 'ee/vue_shared/components/markdown/saved_replies.q
 let wrapper;
 let savedRepliesResp;
 
-function createReponse() {
+function createResponse() {
   return {
     data: {
       group: {
@@ -44,7 +44,7 @@ function createReponse() {
   };
 }
 
-function createMockApolloProvider(response = createReponse()) {
+function createMockApolloProvider(response = createResponse()) {
   Vue.use(VueApollo);
 
   savedRepliesResp = jest.fn().mockResolvedValue(response);
