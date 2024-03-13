@@ -560,7 +560,7 @@
 {"name":"rspec-retry","version":"0.6.2","platform":"ruby","checksum":"6101ba23a38809811ae3484acde4ab481c54d846ac66d5037ccb40131a60d858"},
 {"name":"rspec-support","version":"3.12.0","platform":"ruby","checksum":"dd4d44b247ff679b95b5607ac5641d197a5f9b1d33f916123cb98fc5f917c58b"},
 {"name":"rspec_junit_formatter","version":"0.6.0","platform":"ruby","checksum":"40dde674e6ae4e6cc0ff560da25497677e34fefd2338cc467a8972f602b62b15"},
-{"name":"rspec_profiling","version":"0.0.8","platform":"ruby","checksum":"b31ee456811b8914806a9d46b07959877fc319a0515b1c207987d70a1c499445"},
+{"name":"rspec_profiling","version":"0.0.9","platform":"ruby","checksum":"6199be2daeaa14bac3d10d704dbb0a8df052cf046332c505603263aea24f7590"},
 {"name":"rubocop","version":"1.57.2","platform":"ruby","checksum":"8f679dfe42d7821dc61dafb17d14b1294343157a197b9f8a23720ca17fb9161b"},
 {"name":"rubocop-ast","version":"1.29.0","platform":"ruby","checksum":"d1da2ab279a074baefc81758ac430c5768a8da8c7438dd4e5819ce5984d00ba1"},
 {"name":"rubocop-capybara","version":"2.19.0","platform":"ruby","checksum":"fa329e0f185be313fa5dabd6056f83a718db7f4a259aa97fc287a40254899ccb"},

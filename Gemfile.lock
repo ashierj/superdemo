@@ -1471,7 +1471,7 @@ GEM
     rspec-support (3.12.0)
     rspec_junit_formatter (0.6.0)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rspec_profiling (0.0.8)
+    rspec_profiling (0.0.9)
       activerecord
       get_process_mem
       rails
@@ -2076,7 +2076,7 @@ DEPENDENCIES
   rspec-rails (~> 6.1.0)
   rspec-retry (~> 0.6.2)
   rspec_junit_formatter
-  rspec_profiling (~> 0.0.8)
+  rspec_profiling (~> 0.0.9)
   rubocop
   ruby-fogbugz (~> 0.3.0)
   ruby-lsp (~> 0.14.4)
