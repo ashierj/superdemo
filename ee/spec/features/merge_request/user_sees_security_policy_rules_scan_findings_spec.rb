@@ -68,6 +68,23 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
       sign_in(user)
     end
 
+    shared_examples 'blocks the MR' do
+      it 'merge blocked text is present' do
+        visit(merge_request_path)
+        wait_for_requests
+        expect(page).to have_content 'Merge blocked'
+      end
+    end
+
+    shared_examples 'does not block the MR' do
+      it 'merge blocked text is not present' do
+        visit(merge_request_path)
+        wait_for_requests
+        expect(page).not_to have_content 'Merge blocked'
+        expect(page).to have_button('Merge', exact: true)
+      end
+    end
+
     context 'when scanner from pipeline matches the policy' do
       let(:scanners) { %w[sast] }
 
@@ -75,11 +92,7 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
         create_policy_setup
       end
 
-      it 'blocks the MR' do
-        visit(merge_request_path)
-        wait_for_requests
-        expect(page).to have_content 'Merge blocked'
-      end
+      it_behaves_like 'blocks the MR'
     end
 
     context 'with severity level defined' do
@@ -92,11 +105,7 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
           create_policy_setup
         end
 
-        it 'blocks the MR' do
-          visit(merge_request_path)
-          wait_for_requests
-          expect(page).to have_content 'Merge blocked'
-        end
+        it_behaves_like 'blocks the MR'
       end
 
       context 'when it differs from policy' do
@@ -106,12 +115,7 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
           create_policy_setup
         end
 
-        it 'does not block the MR' do
-          visit(merge_request_path)
-          wait_for_requests
-          expect(page).not_to have_content 'Merge blocked'
-          expect(page).to have_button('Merge', exact: true)
-        end
+        it_behaves_like 'does not block the MR'
       end
     end
 
@@ -122,12 +126,7 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
         create_policy_setup
       end
 
-      it 'does not block the MR' do
-        visit(merge_request_path)
-        wait_for_requests
-        expect(page).not_to have_content 'Merge blocked'
-        expect(page).to have_button('Merge', exact: true)
-      end
+      it_behaves_like 'does not block the MR'
     end
 
     context 'when policy is defined for protected branches using branch_type' do
@@ -147,11 +146,7 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
         create_policy_setup
       end
 
-      it 'blocks the MR' do
-        visit(merge_request_path)
-        wait_for_requests
-        expect(page).to have_content 'Merge blocked'
-      end
+      it_behaves_like 'blocks the MR'
     end
 
     context 'when policy is defined for pre-existing vulnerabilities' do
@@ -163,11 +158,7 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
         create_policy_setup
       end
 
-      it 'blocks the MR' do
-        visit(merge_request_path)
-        wait_for_requests
-        expect(page).to have_content 'Merge blocked'
-      end
+      it_behaves_like 'blocks the MR'
     end
   end
 end
