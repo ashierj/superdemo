@@ -35,7 +35,7 @@ module ApprovalRules
     end
 
     def error
-      ServiceResponse.error(message: rule.errors.messages)
+      ServiceResponse.error(message: rule.errors.messages, payload: { rule: rule })
     end
 
     def merge_request_activity_counter
