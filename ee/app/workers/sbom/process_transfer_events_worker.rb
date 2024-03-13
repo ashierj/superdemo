@@ -13,7 +13,9 @@ module Sbom
     def handle_event(event)
       args = project_ids(event).zip
 
-      ::Sbom::SyncProjectTraversalIdsWorker.perform_bulk(args)
+      # rubocop:disable Scalability/BulkPerformWithContext -- allow context omission
+      ::Sbom::SyncProjectTraversalIdsWorker.bulk_perform_async(args)
+      # rubocop:enable Scalability/BulkPerformWithContext
     end
 
     private
