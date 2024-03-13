@@ -18,6 +18,8 @@ module Resolvers
         default_value: false,
         description: 'Whether to suggest only projects already linked as security policy projects.'
 
+      max_page_size ::Security::SecurityPolicyProjectsFinder::SUGGESTION_LIMIT
+
       def resolve(**args)
         args[:search_globally] = !gitlab_com_subscription?
 
