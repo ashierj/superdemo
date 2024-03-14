@@ -43,6 +43,7 @@ export default {
       const url = joinPaths(
         '/',
         gon.relative_url_root,
+        !this.isProject ? 'groups' : '',
         this.requestPath,
         this.isProject ? projectLink : groupLink,
       );

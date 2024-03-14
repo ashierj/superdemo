@@ -7,7 +7,7 @@ describe('Metric table cell', () => {
 
   const identifier = 'issues';
   const metricLabel = 'Issues created';
-  const groupRequestPath = 'groups/test';
+  const groupRequestPath = 'test';
   const groupMetricPath = '-/issues_analytics';
   const projectRequestPath = 'test/project';
   const projectMetricPath = '-/analytics/issues_analytics';
@@ -32,17 +32,14 @@ describe('Metric table cell', () => {
 
   describe('drill-down link', () => {
     describe.each`
-      isProject | relativeUrlRoot | requestPath           | metricPath
-      ${false}  | ${'/'}          | ${groupRequestPath}   | ${groupMetricPath}
-      ${true}   | ${'/'}          | ${projectRequestPath} | ${projectMetricPath}
-      ${false}  | ${'/path'}      | ${groupRequestPath}   | ${groupMetricPath}
-      ${true}   | ${'/path'}      | ${projectRequestPath} | ${projectMetricPath}
+      isProject | relativeUrlRoot | requestPath           | metricPath           | url
+      ${false}  | ${'/'}          | ${groupRequestPath}   | ${groupMetricPath}   | ${`/groups/${groupRequestPath}/-/issues_analytics`}
+      ${true}   | ${'/'}          | ${projectRequestPath} | ${projectMetricPath} | ${`/${projectRequestPath}/-/analytics/issues_analytics`}
+      ${false}  | ${'/path'}      | ${groupRequestPath}   | ${groupMetricPath}   | ${`/path/groups/${groupRequestPath}/-/issues_analytics`}
+      ${true}   | ${'/path'}      | ${projectRequestPath} | ${projectMetricPath} | ${`/path/${projectRequestPath}/-/analytics/issues_analytics`}
     `(
       'when isProject=$isProject and relativeUrlRoot=$relativeUrlRoot',
-      ({ isProject, relativeUrlRoot, requestPath, metricPath }) => {
-        const rootPath = relativeUrlRoot === '/' ? '' : relativeUrlRoot;
-        const metricUrl = `${rootPath}/${requestPath}/${metricPath}`;
-
+      ({ isProject, relativeUrlRoot, requestPath, url }) => {
         beforeEach(() => {
           gon.relative_url_root = relativeUrlRoot;
         });
@@ -57,7 +54,7 @@ describe('Metric table cell', () => {
           });
 
           it('should render the correct link URL', () => {
-            expect(findMetricLabel().attributes('href')).toBe(metricUrl);
+            expect(findMetricLabel().attributes('href')).toBe(url);
           });
         });
 
@@ -67,7 +64,7 @@ describe('Metric table cell', () => {
           });
 
           it(`should append filter labels params to the link's URL`, () => {
-            const expectedUrl = `${metricUrl}${labelParams}`;
+            const expectedUrl = `${url}${labelParams}`;
 
             expect(findMetricLabel().attributes('href')).toBe(expectedUrl);
           });
