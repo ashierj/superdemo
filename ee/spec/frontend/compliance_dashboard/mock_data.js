@@ -234,46 +234,6 @@ const mockPageInfo = () => ({
   __typename: 'PageInfo',
 });
 
-export const createComplianceFrameworksTokenResponse = () => {
-  return {
-    data: {
-      namespace: {
-        id: 'gid://gitlab/Group/1',
-        name: 'Gitlab Shell',
-        __typename: 'Namespace',
-        complianceFrameworks: {
-          pageInfo: mockPageInfo(),
-          nodes: [
-            {
-              id: 'gid://gitlab/ComplianceManagement::Framework/1',
-              name: 'some framework',
-              default: false,
-              description: 'this is a framework',
-              color: '#3cb371',
-              projects: { nodes: [] },
-              pipelineConfigurationFullPath:
-                '.compliance-gitlab-ci.yml@gitlab-shell/compliance-framework',
-              __typename: 'ComplianceFramework',
-            },
-            {
-              id: 'gid://gitlab/ComplianceManagement::Framework/2',
-              name: 'another framework',
-              default: false,
-              description: 'this is another framework',
-              color: '#3cb371',
-              projects: { nodes: [] },
-              pipelineConfigurationFullPath:
-                '.compliance-gitlab-ci.yml@gitlab-shell/compliance-framework',
-              __typename: 'ComplianceFramework',
-            },
-          ],
-          __typename: 'ComplianceFrameworkConnection',
-        },
-      },
-    },
-  };
-};
-
 export const createFramework = ({ id, isDefault = false, projects = 0 } = {}) => ({
   id: `gid://gitlab/ComplianceManagement::Framework/${id}`,
   name: `Some framework ${id}`,
@@ -285,9 +245,45 @@ export const createFramework = ({ id, isDefault = false, projects = 0 } = {}) =>
       .fill(null)
       .map((_, pid) => createProject({ id: pid })),
   },
+  scanResultPolicies: {
+    pageInfo: {
+      startCursor: null,
+    },
+  },
+  scanExecutionPolicies: {
+    pageInfo: {
+      startCursor: null,
+    },
+  },
   pipelineConfigurationFullPath: null,
   __typename: 'ComplianceFramework',
 });
+
+export const createComplianceFrameworksTokenResponse = () => {
+  return {
+    data: {
+      namespace: {
+        id: 'gid://gitlab/Group/1',
+        name: 'Gitlab Shell',
+        __typename: 'Namespace',
+        complianceFrameworks: {
+          pageInfo: mockPageInfo(),
+          nodes: [
+            createFramework({
+              id: 'gid://gitlab/ComplianceManagement::Framework/1',
+              name: 'some framework',
+            }),
+            createFramework({
+              id: 'gid://gitlab/ComplianceManagement::Framework/2',
+              name: 'another framework',
+            }),
+          ],
+          __typename: 'ComplianceFrameworkConnection',
+        },
+      },
+    },
+  };
+};
 
 export const createComplianceFrameworksReportResponse = ({ count = 1, projects = 0 } = {}) => {
   return {

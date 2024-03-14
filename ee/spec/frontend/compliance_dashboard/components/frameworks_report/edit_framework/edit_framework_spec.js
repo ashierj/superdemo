@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlAlert, GlLoadingIcon } from '@gitlab/ui';
+import getComplianceFrameworkQuery from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/graphql/get_compliance_framework.query.graphql';
 import * as Utils from 'ee/groups/settings/compliance_frameworks/utils';
 import EditFramework from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/edit_framework.vue';
 import PoliciesSection from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/policies_section.vue';
@@ -8,7 +9,6 @@ import DeleteModal from 'ee/compliance_dashboard/components/frameworks_report/ed
 import createComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/mutations/create_compliance_framework.mutation.graphql';
 import updateComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/mutations/update_compliance_framework.mutation.graphql';
 import deleteComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/mutations/delete_compliance_framework.mutation.graphql';
-import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
@@ -184,6 +184,26 @@ describe('Edit Framework Form', () => {
       await waitForPromises();
 
       expect(findDeleteButton().exists()).toBe(false);
+    });
+
+    it('is disabled if there are linked policies', async () => {
+      const response = createComplianceFrameworksReportResponse();
+      response.data.namespace.complianceFrameworks.nodes[0].scanResultPolicies.pageInfo.startCursor =
+        'MQ';
+      wrapper = createComponent(shallowMountExtended, {
+        requestHandlers: [[getComplianceFrameworkQuery, () => response]],
+      });
+
+      await waitForPromises();
+
+      expect(findDeleteButton().props('disabled')).toBe(true);
+    });
+
+    it('is not disabled if there are no linked policies', async () => {
+      wrapper = createComponent(shallowMountExtended);
+      await waitForPromises();
+
+      expect(findDeleteButton().props('disabled')).toBe(false);
     });
 
     it('renders delete button if editing existing framework', async () => {

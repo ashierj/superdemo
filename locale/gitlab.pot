@@ -12908,6 +12908,9 @@ msgstr ""
 msgid "ComplianceFrameworks|Compliance framework deleted successfully"
 msgstr ""
 
+msgid "ComplianceFrameworks|Compliance frameworks that are linked to an active policy can't be deleted"
+msgstr ""
+
 msgid "ComplianceFrameworks|Compliance pipeline configuration (optional)"
 msgstr ""
 

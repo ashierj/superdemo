@@ -163,7 +163,7 @@ export default {
   },
   methods: {
     getTooltip(policy) {
-      return policy.linked ? i18n.policieslinkedTooltip : i18n.policiesUnlinkedTooltip;
+      return policy.isLinked ? i18n.policiesLinkedTooltip : i18n.policiesUnlinkedTooltip;
     },
   },
 

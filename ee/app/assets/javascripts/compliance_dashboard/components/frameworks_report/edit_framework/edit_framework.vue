@@ -1,10 +1,9 @@
 <script>
-import { GlAlert, GlButton, GlForm, GlLoadingIcon } from '@gitlab/ui';
+import { GlAlert, GlButton, GlForm, GlLoadingIcon, GlTooltip } from '@gitlab/ui';
 
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 
-import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import { SAVE_ERROR } from 'ee/groups/settings/compliance_frameworks/constants';
 import {
   getSubmissionParams,
@@ -14,6 +13,7 @@ import {
 import createComplianceFrameworkMutation from '../../../graphql/mutations/create_compliance_framework.mutation.graphql';
 import updateComplianceFrameworkMutation from '../../../graphql/mutations/update_compliance_framework.mutation.graphql';
 import deleteComplianceFrameworkMutation from '../../../graphql/mutations/delete_compliance_framework.mutation.graphql';
+import getComplianceFrameworkQuery from './graphql/get_compliance_framework.query.graphql';
 
 import DeleteModal from './components/delete_modal.vue';
 import BasicInformationSection from './components/basic_information_section.vue';
@@ -32,6 +32,7 @@ export default {
     GlButton,
     GlForm,
     GlLoadingIcon,
+    GlTooltip,
   },
   inject: [
     'pipelineConfigurationFullPathEnabled',
@@ -82,6 +83,21 @@ export default {
 
     isNewFramework() {
       return !this.$route.params.id;
+    },
+
+    hasLinkedPolicies() {
+      return Boolean(
+        this.formData.scanResultPolicies?.pageInfo.startCursor ||
+          this.formData.scanExecutionPolicies?.pageInfo.startCursor,
+      );
+    },
+
+    deleteBtnDisabled() {
+      return this.hasLinkedPolicies;
+    },
+
+    deleteBtnDisabledTooltip() {
+      return i18n.deleteButtonDisabledTooltip;
     },
 
     refetchConfig() {
@@ -245,16 +261,24 @@ export default {
             {{ saveButtonText }}
           </gl-button>
           <gl-button data-testid="cancel-btn" @click="onCancel">{{ __('Cancel') }}</gl-button>
-          <gl-button
-            v-if="graphqlId"
-            variant="danger"
-            class="gl-ml-auto"
-            data-testid="delete-btn"
-            :loading="isDeleting"
-            @click="onDelete"
-          >
-            {{ $options.i18n.deleteButtonText }}
-          </gl-button>
+          <template v-if="graphqlId">
+            <gl-tooltip
+              v-if="deleteBtnDisabled"
+              :target="() => $refs.deleteBtn"
+              :title="deleteBtnDisabledTooltip"
+            />
+            <div ref="deleteBtn" class="gl-ml-auto">
+              <gl-button
+                variant="danger"
+                data-testid="delete-btn"
+                :loading="isDeleting"
+                :disabled="deleteBtnDisabled"
+                @click="onDelete"
+              >
+                {{ $options.i18n.deleteButtonText }}
+              </gl-button>
+            </div>
+          </template>
         </div>
       </gl-form>
     </template>
