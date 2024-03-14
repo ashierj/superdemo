@@ -53,7 +53,6 @@ describe('UsageOverview', () => {
   it('passess the correct props to GlProgressBar', () => {
     expect(findGlProgressBar().attributes()).toMatchObject({
       value: defaultUsageOverviewProps.minutesUsedPercentage,
-      variant: 'success',
     });
   });
 });

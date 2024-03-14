@@ -56,7 +56,7 @@ export default {
     </section>
     <section class="gl-text-right gl-w-full gl-md-w-50p">
       <div data-testid="minutes-used-percentage">{{ minutesUsedPercentage }}</div>
-      <gl-progress-bar :value="minutesUsedPercentage" variant="success" />
+      <gl-progress-bar :value="minutesUsedPercentage" />
     </section>
   </section>
 </template>
