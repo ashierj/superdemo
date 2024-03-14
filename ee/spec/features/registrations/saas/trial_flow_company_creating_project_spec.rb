@@ -11,7 +11,7 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
   end
 
   with_them do
-    it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
+    it 'registers the user and creates a group and project reaching onboarding', :snowplow_micro, :sidekiq_inline do
       sign_up_method.call(glm_params)
 
       ensure_onboarding { expect_to_see_welcome_form }
@@ -41,6 +41,7 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
       click_on 'Ok, let\'s go'
 
       expect_to_be_in_learn_gitlab
+      expect(tracking_events_key).to have_all_expected_events
     end
   end
 

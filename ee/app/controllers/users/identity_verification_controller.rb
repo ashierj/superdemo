@@ -130,10 +130,12 @@ module Users
       accept_pending_invitations(user: @user)
       sign_in(@user)
       session.delete(:verification_user_id)
+
+      # order matters here because set_redirect_url removes our ability to detect trial in the tracking label
+      @tracking_label = onboarding_status.tracking_label
+
       set_redirect_url
       experiment(:phone_verification_for_low_risk_users, user: @user).track(:registration_completed)
-
-      render 'devise/sessions/successful_verification', locals: { tracking_label: onboarding_status.tracking_label }
     end
 
     def verify_credit_card
