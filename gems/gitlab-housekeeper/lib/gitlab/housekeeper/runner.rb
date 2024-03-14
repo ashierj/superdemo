@@ -96,7 +96,7 @@ module Gitlab
       end
 
       def git
-        @git ||= ::Gitlab::Housekeeper::Git.new(logger: @logger)
+        @git ||= ::Gitlab::Housekeeper::Git.new(logger: @logger, branch_from: @target_branch)
       end
 
       def require_keeps
