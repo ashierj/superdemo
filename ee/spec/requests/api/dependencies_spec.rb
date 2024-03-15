@@ -32,9 +32,10 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
       end
 
       context 'when a pipeline exists' do
-        let_it_be(:finding) { create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata) }
         let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report, project: project) }
-        let_it_be(:finding_pipeline) { create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline) }
+        let_it_be(:finding) do
+          create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, pipeline: pipeline)
+        end
 
         it 'returns paginated dependencies' do
           expect(response).to have_gitlab_http_status(:ok)

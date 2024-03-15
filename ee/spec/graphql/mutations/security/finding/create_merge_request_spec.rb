@@ -37,12 +37,9 @@ RSpec.describe Mutations::Security::Finding::CreateMergeRequest, feature_categor
         project: project,
         report_type: :dependency_scanning,
         summary: 'Test remediation',
-        raw_metadata: report_finding.raw_metadata
+        raw_metadata: report_finding.raw_metadata,
+        pipeline: pipeline
       )
-    end
-
-    let_it_be(:vulnerability_pipeline) do
-      create(:vulnerabilities_finding_pipeline, finding: vulnerability_finding, pipeline: pipeline)
     end
 
     subject(:execute) { mutation.resolve(uuid: security_finding.uuid) }

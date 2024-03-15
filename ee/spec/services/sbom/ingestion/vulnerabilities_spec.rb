@@ -40,19 +40,16 @@ RSpec.describe Sbom::Ingestion::Vulnerabilities, feature_category: :dependency_m
       end
 
       context 'with vulnerability findings sharing the same dependency' do
-        let(:finding_2) do
+        let!(:finding_2) do
           create(:vulnerabilities_finding,
             :with_dependency_scanning_metadata,
             vulnerability: vulnerability_2,
-            severity: severity
+            severity: severity,
+            pipeline: pipeline
           )
         end
 
         let(:severity) { :critical }
-
-        before do
-          create(:vulnerabilities_finding_pipeline, finding: finding_2, pipeline: pipeline)
-        end
 
         it do
           is_expected.to eq({
@@ -74,12 +71,9 @@ RSpec.describe Sbom::Ingestion::Vulnerabilities, feature_category: :dependency_m
       end
 
       context 'with vulnerability findings not sharing the same dependency' do
-        let(:finding_2) do
-          create(:vulnerabilities_finding, :with_container_scanning_metadata, vulnerability: vulnerability_2)
-        end
-
         before do
-          create(:vulnerabilities_finding_pipeline, finding: finding_2, pipeline: pipeline)
+          create(:vulnerabilities_finding, :with_container_scanning_metadata, vulnerability: vulnerability_2,
+            pipeline: pipeline)
         end
 
         it { is_expected.to eq({ vulnerability_ids: [finding.vulnerability_id], highest_severity: finding.severity }) }

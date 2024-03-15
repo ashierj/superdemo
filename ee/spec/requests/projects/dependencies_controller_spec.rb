@@ -65,20 +65,18 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
 
           context 'with params' do
             let_it_be(:finding) do
-              create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, :with_pipeline)
-            end
-
-            let_it_be(:finding_pipeline) do
-              create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline)
+              create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, pipeline: pipeline)
             end
 
             let_it_be(:other_finding) do
-              create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata,
-                package: 'debug', file: 'yarn/yarn.lock', version: '1.0.5', raw_severity: 'Unknown')
-            end
-
-            let_it_be(:other_pipeline) do
-              create(:vulnerabilities_finding_pipeline, finding: other_finding, pipeline: pipeline)
+              create(
+                :vulnerabilities_finding, :detected, :with_dependency_scanning_metadata,
+                package: 'debug',
+                file: 'yarn/yarn.lock',
+                version: '1.0.5',
+                raw_severity: 'Unknown',
+                pipeline: pipeline
+              )
             end
 
             context 'with sorting params' do
@@ -245,11 +243,7 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
           end
 
           let_it_be(:finding) do
-            create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, :with_pipeline)
-          end
-
-          let_it_be(:finding_pipeline) do
-            create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline)
+            create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, pipeline: pipeline)
           end
 
           before do

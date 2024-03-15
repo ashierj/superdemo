@@ -45,6 +45,10 @@ FactoryBot.define do
       finding.project = evaluator.vulnerability.project if evaluator.vulnerability
     end
 
+    transient do
+      pipeline { nil }
+    end
+
     name { 'Cipher with no integrity' }
     project
     project_fingerprint { generate(:project_fingerprint) }
@@ -147,6 +151,23 @@ FactoryBot.define do
           ]
         }
       }.to_json
+    end
+
+    after(:create) do |finding, evaluator|
+      if evaluator.pipeline
+        create(
+          :vulnerabilities_finding_pipeline,
+          finding: finding,
+          pipeline: evaluator.pipeline
+        )
+      end
+    end
+
+    trait :with_pipeline do
+      pipeline { association(:ci_pipeline, project: project) }
+
+      initial_pipeline_id { pipeline.id }
+      latest_pipeline_id { pipeline.id }
     end
 
     trait :detected do
@@ -257,13 +278,6 @@ FactoryBot.define do
           }
         ]
         finding.raw_metadata = raw_metadata.to_json
-      end
-    end
-
-    trait :with_pipeline do
-      after(:create) do |finding|
-        pipeline = create(:ci_pipeline, project: finding.project)
-        create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline)
       end
     end
 
