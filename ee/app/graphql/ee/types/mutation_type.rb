@@ -158,6 +158,7 @@ module EE
         mount_mutation ::Mutations::Groups::SavedReplies::Update, alpha: { milestone: '16.10' }
         mount_mutation ::Mutations::Groups::SavedReplies::Destroy, alpha: { milestone: '16.10' }
         mount_mutation ::Mutations::BranchRules::ApprovalProjectRules::Create, alpha: { milestone: '16.10' }
+        mount_mutation ::Mutations::ApprovalProjectRules::Update, alpha: { milestone: '16.10' }
 
         prepend(Types::DeprecatedMutations)
       end
