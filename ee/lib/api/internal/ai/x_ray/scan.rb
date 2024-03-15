@@ -22,14 +22,14 @@ module API
             include ::Gitlab::Utils::StrongMemoize
 
             def x_ray_enabled_on_instance?
-              return true if ::Gitlab.org_or_com?
+              return true if ::Gitlab::Saas.feature_available?(:code_suggestions_x_ray)
               return false unless ::License.feature_available?(:code_suggestions)
 
               ::GitlabSubscriptions::AddOnPurchase.for_gitlab_duo_pro.any?
             end
 
             def x_ray_available?
-              if Gitlab.org_or_com?
+              if ::Gitlab::Saas.feature_available?(:code_suggestions_x_ray)
                 gitlab_duo_pro_add_on?
               else
                 ai_gateway_token.present?
