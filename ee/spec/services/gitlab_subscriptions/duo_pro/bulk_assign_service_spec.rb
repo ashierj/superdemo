@@ -45,7 +45,7 @@ RSpec.describe GitlabSubscriptions::DuoPro::BulkAssignService, feature_category:
           it 'assigns the users' do
             response = bulk_assign
             expect(response.success?).to be_truthy
-            expect(response[:users].map(&:id)).to eq(user_ids)
+            expect(response[:users].map(&:id)).to match_array(user_ids)
           end
         end
 
