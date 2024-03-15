@@ -40,7 +40,12 @@ export default {
     projectTypeLabel: PROJECT_TYPE_LABEL,
   },
   mixins: [glFeatureFlagsMixin()],
-  inject: ['namespaceType'],
+  inject: {
+    namespaceType: {},
+    securityPoliciesPolicyScopeToggleEnabled: {
+      default: false,
+    },
+  },
   props: {
     description: {
       type: String,
@@ -66,8 +71,13 @@ export default {
     isGroup() {
       return this.namespaceType === NAMESPACE_TYPES.GROUP;
     },
+
     showScopeInfoBox() {
-      return this.glFeatures.securityPoliciesPolicyScope && this.isGroup;
+      return (
+        (this.securityPoliciesPolicyScopeToggleEnabled ||
+          this.glFeatures.securityPoliciesPolicyScope) &&
+        this.isGroup
+      );
     },
     isInherited() {
       return isPolicyInherited(this.policy.source);
