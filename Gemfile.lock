@@ -697,11 +697,11 @@ GEM
     gitlab-experiment (0.9.1)
       activesupport (>= 3.0)
       request_store (>= 1.0)
-    gitlab-fog-azure-rm (1.8.0)
+    gitlab-fog-azure-rm (1.9.1)
       azure-storage-blob (~> 2.0)
       azure-storage-common (~> 2.0)
-      fog-core (= 2.1.0)
-      fog-json (~> 1.2.0)
+      fog-core (~> 2.1)
+      fog-json (~> 1.2)
       mime-types
     gitlab-glfm-markdown (0.0.13)
       rb_sys (~> 0.9.86)
@@ -1906,7 +1906,7 @@ DEPENDENCIES
   gitlab-chronic (~> 0.10.5)
   gitlab-dangerfiles (~> 4.7.0)
   gitlab-experiment (~> 0.9.1)
-  gitlab-fog-azure-rm (~> 1.8.0)
+  gitlab-fog-azure-rm (~> 1.9.1)
   gitlab-glfm-markdown (~> 0.0.13)
   gitlab-housekeeper!
   gitlab-http!
