@@ -69,7 +69,7 @@ module EE
 
       override :zoekt_projects
       def zoekt_projects
-        @zoekt_projects ||= Array(project).map(&:id)
+        @zoekt_projects ||= ::Project.id_in(project)
       end
     end
   end

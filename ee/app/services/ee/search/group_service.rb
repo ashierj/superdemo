@@ -16,6 +16,11 @@ module EE
         group
       end
 
+      override :zoekt_filters
+      def zoekt_filters
+        super.merge(include_archived: params[:include_archived])
+      end
+
       override :elastic_global
       def elastic_global
         false
@@ -28,7 +33,7 @@ module EE
 
       override :zoekt_projects
       def zoekt_projects
-        @zoekt_projects ||= projects.pluck_primary_key
+        @zoekt_projects ||= projects
       end
 
       override :execute
