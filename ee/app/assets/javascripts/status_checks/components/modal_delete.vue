@@ -8,9 +8,9 @@ import { __, s__, sprintf } from '~/locale';
 const i18n = {
   cancelButton: __('Cancel'),
   deleteError: s__('StatusCheck|An error occurred deleting the %{name} status check.'),
-  primaryButton: s__('StatusCheck|Remove status check'),
-  title: s__('StatusCheck|Remove status check?'),
-  warningText: s__('StatusCheck|You are about to remove the %{name} status check.'),
+  primaryButton: s__('StatusCheck|Delete status check'),
+  title: s__('StatusCheck|Delete status check?'),
+  warningText: s__('StatusCheck|You are about to delete the %{name} status check.'),
 };
 
 export default {

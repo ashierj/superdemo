@@ -25,7 +25,7 @@ describe('EE Approvals RuleControls', () => {
   };
 
   const findEditButton = () => wrapper.findByTestId('edit-rule-button');
-  const findRemoveButton = () => wrapper.findByTestId('delete-rule-button');
+  const findDeleteButton = () => wrapper.findByTestId('delete-rule-button');
 
   beforeEach(() => {
     store = createStoreOptions({ approvals: MREditModule() });
@@ -65,23 +65,23 @@ describe('EE Approvals RuleControls', () => {
       });
     });
 
-    describe('remove button', () => {
+    describe('delete button', () => {
       beforeEach(() => {
         factory();
       });
 
       it('exists', () => {
-        expect(findRemoveButton().exists()).toBe(true);
+        expect(findDeleteButton().exists()).toBe(true);
       });
 
       it('references correct rule name in aria-label', () => {
-        expect(findRemoveButton().attributes('aria-label')).toBe('Remove test rule');
+        expect(findDeleteButton().attributes('aria-label')).toBe('Delete test rule');
       });
 
       it('when click, opens delete modal', () => {
         expect(store.modules.approvals.actions.requestDeleteRule).not.toHaveBeenCalled();
 
-        findRemoveButton().vm.$emit('click');
+        findDeleteButton().vm.$emit('click');
 
         expect(store.modules.approvals.actions.requestDeleteRule).toHaveBeenCalledWith(
           expect.anything(),
@@ -100,8 +100,8 @@ describe('EE Approvals RuleControls', () => {
       expect(findEditButton().exists()).toBe(true);
     });
 
-    it('does remove button', () => {
-      expect(findRemoveButton().exists()).toBe(true);
+    it('does delete button', () => {
+      expect(findDeleteButton().exists()).toBe(true);
     });
   });
 });

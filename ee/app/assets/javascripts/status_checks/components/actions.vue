@@ -1,11 +1,14 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script>
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 import { __ } from '~/locale';
 
 export default {
   components: {
     GlButton,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     statusCheck: {
@@ -15,15 +18,16 @@ export default {
   },
   i18n: {
     editButton: __('Edit'),
-    removeButton: __('Remove'),
+    deleteButton: __('Delete'),
   },
 };
 </script>
 
 <template>
-  <div class="gl-display-flex gl-justify-content-end gl-mt-n2 gl-mb-n2">
+  <div class="gl-my-n3! gl-pr-5 gl-text-right">
     <gl-button
-      size="small"
+      v-gl-tooltip
+      category="tertiary"
       icon="pencil"
       :title="$options.i18n.editButton"
       :aria-label="$options.i18n.editButton"
@@ -31,14 +35,13 @@ export default {
       @click="$emit('open-update-modal', statusCheck)"
     />
     <gl-button
-      size="small"
-      category="secondary"
-      variant="danger"
+      v-gl-tooltip
+      category="tertiary"
       icon="remove"
-      class="gl-ml-3"
-      :title="$options.i18n.removeButton"
-      :aria-label="$options.i18n.removeButton"
-      data-testid="remove-btn"
+      class="gl-ml-2"
+      :title="$options.i18n.deleteButton"
+      :aria-label="$options.i18n.deleteButton"
+      data-testid="delete-btn"
       @click="$emit('open-delete-modal', statusCheck)"
     />
   </div>

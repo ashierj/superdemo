@@ -72,11 +72,7 @@ export default {
     <td colspan="2" :data-label="$options.TABLE_HEADERS.name">
       <empty-rule-name :eligible-approvers-docs-path="eligibleApproversDocsPath" />
     </td>
-    <td
-      v-if="showProtectedBranch"
-      class="gl-text-center"
-      :data-label="$options.TABLE_HEADERS.branches"
-    >
+    <td v-if="showProtectedBranch" :data-label="$options.TABLE_HEADERS.branches">
       <rule-branches :rule="rule" />
     </td>
     <td class="gl-py-5!" :data-label="$options.TABLE_HEADERS.approvalsRequired">
