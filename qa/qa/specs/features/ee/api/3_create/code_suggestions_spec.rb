@@ -25,8 +25,7 @@ module QA
         it 'returns a suggestion', testcase: testcase do
           response = get_suggestion(prompt_data)
 
-          expect(response).not_to be_nil
-          expect(response.code).to be(200), "Request returned (#{response.code}): `#{response}`"
+          expect_status_code(200, response)
 
           actual_response_data = parse_body(response)
           expect(actual_response_data).to match(a_hash_including(expected_response_data))
@@ -46,11 +45,18 @@ module QA
         it 'streams a suggestion', testcase: testcase do
           response = get_suggestion(prompt_data)
 
-          expect(response).not_to be_nil
-          expect(response.code).to be(200), "Request returned (#{response.code}): `#{response}`"
+          expect_status_code(200, response)
 
           expect(response.headers[:content_type].include?('event-stream')).to be_truthy, 'Expected an event stream'
           expect(response).not_to be_empty, 'Expected the first line of a stream'
+        end
+      end
+
+      shared_examples 'unauthorized' do |testcase|
+        it 'returns no suggestion', testcase: testcase do
+          response = get_suggestion(prompt_data)
+
+          expect_status_code(401, response)
         end
       end
 
@@ -77,15 +83,26 @@ module QA
           it_behaves_like 'completions API with PAT auth', :code_completion, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/436992'
         end
 
-        context 'on Self-managed', :orchestrated, :ai_gateway, quarantine: {
-          type: :investigating,
-          issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/450385"
-        } do
+        context 'on Self-managed', :orchestrated do
           let(:project_path) { nil }
           let(:project_id) { nil }
-          let(:expected_language) { 'ruby' }
 
-          it_behaves_like 'completions API with PAT auth', :code_completion, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/436993'
+          context 'with a valid license' do
+            context 'with a Duo Pro add-on' do
+              context 'when seat is assigned', :ai_gateway, quarantine: {
+                type: :investigating,
+                issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/450385'
+              } do
+                let(:expected_language) { 'ruby' }
+
+                it_behaves_like 'completions API with PAT auth', :code_completion, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/436993'
+              end
+            end
+          end
+
+          context 'with no license', :ai_gateway_no_license do
+            it_behaves_like 'unauthorized', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/446249'
+          end
         end
       end
 
@@ -145,6 +162,11 @@ module QA
             'Content-Type': 'application/json'
           }
         )
+      end
+
+      def expect_status_code(expected_code, response)
+        expect(response).not_to be_nil
+        expect(response.code).to be(expected_code), "Request returned (#{response.code}): `#{response}`"
       end
     end
   end
