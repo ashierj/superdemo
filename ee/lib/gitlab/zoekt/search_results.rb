@@ -15,14 +15,14 @@ module Gitlab
       # It allows us to search only for projects user has access to
       attr_reader :limit_project_ids, :node_id
 
-      def initialize(current_user, query, project_ids = nil, node_id:, order_by: nil, sort: nil, filters: {}, modes: {})
+      def initialize(current_user, query, projects = nil, node_id:, order_by: nil, sort: nil, filters: {}, modes: {})
         @current_user = current_user
         @query = query
-        @limit_project_ids = project_ids
+        @filters = filters
+        @limit_project_ids = filtered_project_ids(projects)
         @node_id = node_id
         @order_by = order_by
         @sort = sort
-        @filters = filters
         @modes = modes
       end
 
@@ -91,7 +91,7 @@ module Gitlab
       end
 
       def blobs(page: 1, per_page: DEFAULT_PER_PAGE, count_only: false, preload_method: nil)
-        return Kaminari.paginate_array([]) if query.blank?
+        return Kaminari.paginate_array([]) if query.blank? || limit_project_ids.empty?
 
         strong_memoize(memoize_key(:blobs, page: page, per_page: per_page, count_only: count_only)) do
           search_as_found_blob(
@@ -247,6 +247,15 @@ module Gitlab
 
       def default_search_mode
         Feature.enabled?(:zoekt_exact_search, type: :wip) ? :exact : :regex
+      end
+
+      def filtered_project_ids(projects)
+        return projects if projects == :any
+        return projects.pluck_primary_key if Feature.disabled?(:search_add_archived_filter_to_zoekt, current_user)
+
+        filtered_projects = projects
+        filtered_projects = filtered_projects.non_archived unless filters[:include_archived]
+        filtered_projects.pluck_primary_key
       end
     end
   end

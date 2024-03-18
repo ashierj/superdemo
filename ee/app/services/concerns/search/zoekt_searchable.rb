@@ -25,6 +25,10 @@ module Search
       raise NotImplementedError
     end
 
+    def zoekt_filters
+      { language: params[:language] }
+    end
+
     def zoekt_node_id
       @zoekt_node_id ||= zoekt_nodes.first.id
     end
@@ -51,7 +55,7 @@ module Search
         node_id: zoekt_node_id,
         order_by: params[:order_by],
         sort: params[:sort],
-        filters: { language: params[:language] },
+        filters: zoekt_filters,
         modes: { regex: params[:regex] }
       )
     end

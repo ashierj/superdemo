@@ -31,7 +31,7 @@ RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_
   end
 
   def search_for(term, node_id)
-    ::Gitlab::Zoekt::SearchResults.new(user, term, Project.pluck(:id), node_id: node_id).objects('blobs').map(&:path)
+    ::Gitlab::Zoekt::SearchResults.new(user, term, Project.all, node_id: node_id).objects('blobs').map(&:path)
   end
 
   describe '#update_zoekt_index!' do
