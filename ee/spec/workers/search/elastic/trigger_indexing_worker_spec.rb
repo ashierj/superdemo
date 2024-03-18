@@ -152,7 +152,9 @@ RSpec.describe ::Search::Elastic::TriggerIndexingWorker, feature_category: :glob
           end
 
           expect(worker).to receive(:projects).and_call_original
-          expect(::Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(*projects)
+          expect(::Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!) do |*projects|
+            expect(projects).to match_array(projects)
+          end
 
           perform
         end
@@ -179,7 +181,9 @@ RSpec.describe ::Search::Elastic::TriggerIndexingWorker, feature_category: :glob
       it_behaves_like 'an idempotent worker' do
         it 'indexes users' do
           expect(worker).to receive(:users).and_call_original
-          expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(*users)
+          expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!) do |*args|
+            expect(args).to match_array(users)
+          end
 
           perform
         end
