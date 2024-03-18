@@ -76,7 +76,10 @@ module QA
           'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/437111'
       end
 
-      context 'on Self-managed', :orchestrated, :ai_gateway do
+      context 'on Self-managed', :orchestrated, :ai_gateway, quarantine: {
+        type: :investigating,
+        issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/450384"
+      } do
         it_behaves_like 'a code completion suggestion',
           'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/439625'
       end
