@@ -77,7 +77,10 @@ module QA
           it_behaves_like 'completions API with PAT auth', :code_completion, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/436992'
         end
 
-        context 'on Self-managed', :orchestrated, :ai_gateway do
+        context 'on Self-managed', :orchestrated, :ai_gateway, quarantine: {
+          type: :investigating,
+          issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/450385"
+        } do
           let(:project_path) { nil }
           let(:project_id) { nil }
           let(:expected_language) { 'ruby' }
