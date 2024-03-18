@@ -66,11 +66,11 @@ RSpec.describe PackageMetadata::Package, type: :model, feature_category: :softwa
         it 'logs the exception' do
           log_params = {
             id: package.id, version: input_version, message: "semver_dialects parse error",
-            error: a_string_including("undefined method")
+            error: a_string_including("invalid constraint")
           }
 
           expect(Gitlab::ErrorTracking).to receive(:log_exception)
-            .with(an_instance_of(NoMethodError), **log_params)
+            .with(an_instance_of(SemverDialects::InvalidConstraintError), **log_params)
             .and_call_original
 
           license_ids
