@@ -116,7 +116,6 @@ RSpec.describe Groups::EnterpriseUsers::BulkAssociateByDomainWorker, :saas, feat
 
         let!(:enterprise_user_of_some_group_with_the_specified_domain) do
           create(
-            :user,
             :enterprise_user,
             email: "enterprise_user_of_some_group_with_the_specified_domain@#{pages_domain.domain}"
           )

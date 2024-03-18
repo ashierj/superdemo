@@ -45,7 +45,7 @@ RSpec.describe Repositories::GitHttpController, type: :request, feature_category
     context 'when ssh certificates are enforced for the top-level group' do
       let_it_be(:group) { create(:group) }
       let_it_be(:project) { create(:project, :public, :repository, group: group) }
-      let_it_be(:user) { create(:user, :enterprise_user, enterprise_group: group) }
+      let_it_be(:user) { create(:enterprise_user, enterprise_group: group) }
 
       before do
         stub_licensed_features(ssh_certificates: group)

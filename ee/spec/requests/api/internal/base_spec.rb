@@ -1052,7 +1052,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
       end
 
       context 'when the user is an enterprise user of the group' do
-        let(:user) { create(:user, :enterprise_user, enterprise_group: group) }
+        let(:user) { create(:enterprise_user, enterprise_group: group) }
 
         it 'finds the cert and the user' do
           get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)

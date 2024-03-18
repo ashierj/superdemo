@@ -21,7 +21,7 @@ RSpec.describe UserDetail, feature_category: :system_access do
     describe '.with_enterprise_group' do
       subject(:scope) { described_class.with_enterprise_group }
 
-      let_it_be(:user_detail_with_enterprise_group) { create(:user, :enterprise_user).user_detail }
+      let_it_be(:user_detail_with_enterprise_group) { create(:enterprise_user).user_detail }
       let_it_be(:user_details_without_enterprise_group) { create_list(:user_detail, 3, enterprise_group: nil) }
 
       it 'returns user details with enterprise group' do
