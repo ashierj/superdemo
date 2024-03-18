@@ -20556,6 +20556,9 @@ ALTER TABLE sprints
 ALTER TABLE web_hook_logs
     ADD CONSTRAINT check_df72cb58f5 CHECK ((char_length(url_hash) <= 44)) NOT VALID;
 
+ALTER TABLE vulnerability_reads
+    ADD CONSTRAINT check_f5ba7c2496 CHECK ((traversal_ids IS NOT NULL)) NOT VALID;
+
 ALTER TABLE projects
     ADD CONSTRAINT check_fa75869cb1 CHECK ((project_namespace_id IS NOT NULL)) NOT VALID;
 
