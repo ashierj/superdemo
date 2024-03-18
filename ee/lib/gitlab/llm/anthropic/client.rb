@@ -9,7 +9,7 @@ module Gitlab
         include Langsmith::RunHelpers
 
         URL = 'https://api.anthropic.com'
-        DEFAULT_MODEL = 'claude-2.0'
+        DEFAULT_MODEL = 'claude-2.1'
         DEFAULT_TEMPERATURE = 0
         DEFAULT_MAX_TOKENS = 2048
         DEFAULT_TIMEOUT = 30.seconds
@@ -122,11 +122,7 @@ module Gitlab
         end
 
         def model
-          if Feature.enabled?(:ai_claude_2_1, user)
-            'claude-2.1'
-          else
-            DEFAULT_MODEL
-          end
+          DEFAULT_MODEL
         end
       end
     end
