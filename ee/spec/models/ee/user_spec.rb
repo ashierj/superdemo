@@ -92,7 +92,7 @@ RSpec.describe User, feature_category: :system_access do
       end
 
       context 'when user is an enterprise user' do
-        let(:user) { create(:user, :enterprise_user) }
+        let(:user) { create(:enterprise_user) }
 
         # Neither domain removal/expiration nor change in group plan disassociates related enterprise users from enterprise group
         # see https://gitlab.com/gitlab-org/gitlab/-/issues/406277.
@@ -286,7 +286,7 @@ RSpec.describe User, feature_category: :system_access do
 
       it 'excludes users that are enterprise users of the specified group' do
         _enterprise_user_of_the_group = create(:user_detail, enterprise_group_id: group.id).user
-        enterprise_user_of_some_group = create(:user, :enterprise_user)
+        enterprise_user_of_some_group = create(:enterprise_user)
         not_enterprise_user = create(:user_detail, enterprise_group_id: nil).user
         user_without_user_detail_record = create(:user)
         user_without_user_detail_record.user_detail.destroy!
@@ -536,7 +536,7 @@ RSpec.describe User, feature_category: :system_access do
             end
 
             context 'when user is an enterprise user' do
-              let(:user) { create(:user, :enterprise_user) }
+              let(:user) { create(:enterprise_user) }
 
               it 'schedules Groups::EnterpriseUsers::DisassociateWorker' do
                 expect(Groups::EnterpriseUsers::DisassociateWorker).to receive(:perform_async).with(user.id)

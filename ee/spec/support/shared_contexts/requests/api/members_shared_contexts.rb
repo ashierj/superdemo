@@ -2,7 +2,7 @@
 
 RSpec.shared_context 'group with enterprise users in group members' do
   let(:user_member) { create(:user) }
-  let(:enterprise_user_member) { create(:user, :enterprise_user, enterprise_group: group) }
+  let(:enterprise_user_member) { create(:enterprise_user, enterprise_group: group) }
 
   before do
     group.add_maintainer(user_member)
@@ -12,7 +12,7 @@ end
 
 RSpec.shared_context 'group with enterprise users from another group in group members' do
   let(:another_group) { create(:group) }
-  let(:enterprise_user_member_from_another_group) { create(:user, :enterprise_user, enterprise_group: another_group) }
+  let(:enterprise_user_member_from_another_group) { create(:enterprise_user, enterprise_group: another_group) }
 
   before do
     another_group.add_owner(owner)
@@ -24,7 +24,7 @@ end
 RSpec.shared_context 'subgroup with enterprise users in group members' do
   let(:subgroup) { create :group, parent: group }
   let(:user_member_in_subgroup) { create(:user) }
-  let(:enterprise_user_member_in_subgroup) { create(:user, :enterprise_user, enterprise_group: group) }
+  let(:enterprise_user_member_in_subgroup) { create(:enterprise_user, enterprise_group: group) }
 
   before do
     subgroup.add_developer(user_member_in_subgroup)
@@ -34,7 +34,7 @@ end
 
 RSpec.shared_context 'project with enterprise users in project members' do
   let(:user_member) { create(:user) }
-  let(:enterprise_user_member) { create(:user, :enterprise_user, enterprise_group: group) }
+  let(:enterprise_user_member) { create(:enterprise_user, enterprise_group: group) }
 
   before do
     project.add_maintainer(user_member)
@@ -44,7 +44,7 @@ end
 
 RSpec.shared_context 'project with enterprise users from another group in project members' do
   let(:another_group) { create(:group) }
-  let(:enterprise_user_member_from_another_group) { create(:user, :enterprise_user, enterprise_group: another_group) }
+  let(:enterprise_user_member_from_another_group) { create(:enterprise_user, enterprise_group: another_group) }
 
   before do
     another_group.add_owner(owner)

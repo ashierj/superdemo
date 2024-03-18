@@ -17,19 +17,6 @@ FactoryBot.modify do
       end
     end
 
-    trait :enterprise_user do
-      transient do
-        enterprise_group { association(:group) }
-      end
-
-      after(:create) do |user, evaluator|
-        user.user_detail.update!(
-          enterprise_group_id: evaluator.enterprise_group.id,
-          enterprise_group_associated_at: Time.current
-        )
-      end
-    end
-
     trait :service_user do
       user_type { :service_user }
     end
@@ -78,4 +65,13 @@ FactoryBot.define do
   factory :auditor, parent: :user, traits: [:auditor]
   factory :external_user, parent: :user, traits: [:external]
   factory :service_account, parent: :user, traits: [:service_account]
+  factory :enterprise_user, parent: :user do
+    transient do
+      enterprise_group { association(:group) }
+    end
+
+    user_detail do
+      association :user_detail, :enterprise, enterprise_group: enterprise_group, strategy: :build
+    end
+  end
 end

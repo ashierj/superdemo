@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Groups::SshCertificates::FindService, feature_category: :source_code_management do
   let_it_be(:ssh_certificate) { create(:group_ssh_certificate) }
   let_it_be(:group) { ssh_certificate.group }
-  let_it_be(:user) { create(:user, :enterprise_user, enterprise_group: group) }
+  let_it_be(:user) { create(:enterprise_user, enterprise_group: group) }
 
   let(:ca_fingerprint) { ssh_certificate.fingerprint }
   let(:user_identifier) { user.username }

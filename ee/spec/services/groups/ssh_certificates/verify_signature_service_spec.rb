@@ -11,7 +11,7 @@ RSpec.describe Groups::SshCertificates::VerifySignatureService, feature_category
 
   let_it_be_with_refind(:ssh_certificate) { create(:group_ssh_certificate, key: ca_key.public_key.openssh) }
   let_it_be_with_refind(:group) { ssh_certificate.group }
-  let_it_be_with_refind(:user) { create(:user, :enterprise_user, enterprise_group: group) }
+  let_it_be_with_refind(:user) { create(:enterprise_user, enterprise_group: group) }
   let_it_be_with_refind(:project) { create(:project, :repository, group: group) }
 
   let(:signature) do

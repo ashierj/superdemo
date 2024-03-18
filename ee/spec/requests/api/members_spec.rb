@@ -401,18 +401,18 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
         end
 
         group.add_developer(create(:user))
-        group.add_developer(create(:user, :enterprise_user, enterprise_group: group))
-        group.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+        group.add_developer(create(:enterprise_user, enterprise_group: group))
+        group.add_developer(create(:enterprise_user, enterprise_group: create(:group)))
 
         subgroup = create(:group, parent: group)
         subgroup.add_developer(create(:user))
-        subgroup.add_developer(create(:user, :enterprise_user, enterprise_group: group))
-        subgroup.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+        subgroup.add_developer(create(:enterprise_user, enterprise_group: group))
+        subgroup.add_developer(create(:enterprise_user, enterprise_group: create(:group)))
 
         project = create(:project, group: group)
         project.add_developer(create(:user))
-        project.add_developer(create(:user, :enterprise_user, enterprise_group: group))
-        project.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+        project.add_developer(create(:enterprise_user, enterprise_group: group))
+        project.add_developer(create(:enterprise_user, enterprise_group: create(:group)))
 
         expect do
           get api(url, owner)
@@ -511,12 +511,12 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
           end
 
           group.add_developer(create(:user))
-          group.add_developer(create(:user, :enterprise_user, enterprise_group: group))
-          group.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+          group.add_developer(create(:enterprise_user, enterprise_group: group))
+          group.add_developer(create(:enterprise_user, enterprise_group: create(:group)))
 
           subgroup.add_developer(create(:user))
-          subgroup.add_developer(create(:user, :enterprise_user, enterprise_group: group))
-          subgroup.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+          subgroup.add_developer(create(:enterprise_user, enterprise_group: group))
+          subgroup.add_developer(create(:enterprise_user, enterprise_group: create(:group)))
 
           expect do
             get api(url, owner)
@@ -605,7 +605,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
       end
 
       context 'for enterprise user' do
-        let(:user) { create(:user, :enterprise_user, enterprise_group: group) }
+        let(:user) { create(:enterprise_user, enterprise_group: group) }
 
         it_behaves_like 'member response with exposed email' do
           let(:email) { user.email }
@@ -613,7 +613,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
       end
 
       context 'for enterprise user from another group' do
-        let(:user) { create(:user, :enterprise_user, enterprise_group: another_group) }
+        let(:user) { create(:enterprise_user, enterprise_group: another_group) }
 
         it_behaves_like 'member response with hidden email'
       end
@@ -774,18 +774,18 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
         end
 
         group.add_developer(create(:user))
-        group.add_developer(create(:user, :enterprise_user, enterprise_group: group))
-        group.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+        group.add_developer(create(:enterprise_user, enterprise_group: group))
+        group.add_developer(create(:enterprise_user, enterprise_group: create(:group)))
 
         subgroup = create(:group, parent: group)
         subgroup.add_developer(create(:user))
-        subgroup.add_developer(create(:user, :enterprise_user, enterprise_group: group))
-        subgroup.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+        subgroup.add_developer(create(:enterprise_user, enterprise_group: group))
+        subgroup.add_developer(create(:enterprise_user, enterprise_group: create(:group)))
 
         project = create(:project, group: group)
         project.add_developer(create(:user))
-        project.add_developer(create(:user, :enterprise_user, enterprise_group: group))
-        project.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+        project.add_developer(create(:enterprise_user, enterprise_group: group))
+        project.add_developer(create(:enterprise_user, enterprise_group: create(:group)))
 
         expect do
           get api(url, owner)
@@ -843,12 +843,12 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
         end
 
         group.add_developer(create(:user))
-        group.add_developer(create(:user, :enterprise_user, enterprise_group: group))
-        group.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+        group.add_developer(create(:enterprise_user, enterprise_group: group))
+        group.add_developer(create(:enterprise_user, enterprise_group: create(:group)))
 
         project.add_developer(create(:user))
-        project.add_developer(create(:user, :enterprise_user, enterprise_group: group))
-        project.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+        project.add_developer(create(:enterprise_user, enterprise_group: group))
+        project.add_developer(create(:enterprise_user, enterprise_group: create(:group)))
 
         expect do
           get api(url, owner)
@@ -910,12 +910,12 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
         end
 
         group.add_developer(create(:user))
-        group.add_developer(create(:user, :enterprise_user, enterprise_group: group))
-        group.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+        group.add_developer(create(:enterprise_user, enterprise_group: group))
+        group.add_developer(create(:enterprise_user, enterprise_group: create(:group)))
 
         project.add_developer(create(:user))
-        project.add_developer(create(:user, :enterprise_user, enterprise_group: group))
-        project.add_developer(create(:user, :enterprise_user, enterprise_group: create(:group)))
+        project.add_developer(create(:enterprise_user, enterprise_group: group))
+        project.add_developer(create(:enterprise_user, enterprise_group: create(:group)))
 
         expect do
           get api(url, owner)
@@ -967,7 +967,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
       end
 
       context 'for enterprise user' do
-        let(:user) { create(:user, :enterprise_user, enterprise_group: group) }
+        let(:user) { create(:enterprise_user, enterprise_group: group) }
 
         it_behaves_like 'member response with exposed email' do
           let(:email) { user.email }
@@ -975,7 +975,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
       end
 
       context 'for enterprise user from another group' do
-        let(:user) { create(:user, :enterprise_user, enterprise_group: another_group) }
+        let(:user) { create(:enterprise_user, enterprise_group: another_group) }
 
         it_behaves_like 'member response with hidden email'
       end

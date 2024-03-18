@@ -26,7 +26,7 @@ RSpec.describe Emails::EnterpriseUsers, feature_category: :user_management do
     end
 
     context 'when user is an enterprise user' do
-      let_it_be(:user) { create(:user, :enterprise_user) } # rubocop:todo RSpec/FactoryBot/AvoidCreate
+      let_it_be(:user) { create(:enterprise_user) } # rubocop:todo RSpec/FactoryBot/AvoidCreate -- The user needs to be persisted to check if email was delivered
 
       it 'delivers mail to user email' do
         expect(subject).to deliver_to(user.email)
@@ -58,7 +58,7 @@ RSpec.describe Emails::EnterpriseUsers, feature_category: :user_management do
       end
 
       context 'when enterprise user is unconfirmed' do
-        let_it_be(:user) { create(:user, :enterprise_user, :unconfirmed) } # rubocop:todo RSpec/FactoryBot/AvoidCreate
+        let_it_be(:user) { create(:enterprise_user, :unconfirmed) } # rubocop:todo RSpec/FactoryBot/AvoidCreate -- The user needs to be persisted to check if email was delivered
 
         it 'delivers mail to user email' do
           expect(subject).to deliver_to(user.email)

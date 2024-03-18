@@ -68,7 +68,7 @@ RSpec.describe Admin::UsersController, :enable_admin_mode, feature_category: :us
 
   describe 'PATCH #update' do
     context 'when user is an enterprise user' do
-      let(:user) { create(:user, :enterprise_user) }
+      let(:user) { create(:enterprise_user) }
 
       context "when new email is not owned by the user's enterprise group" do
         let(:new_email) { 'new-email@example.com' }

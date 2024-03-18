@@ -27,7 +27,7 @@ RSpec.describe 'Resolvers::GroupMembersResolver', feature_category: :groups_and_
     let_it_be(:user) { create(:user, name: 'test user') }
     let_it_be(:resource_member) { create(:group_member, user: user, group: group) }
 
-    let_it_be(:enterprise_user) { create(:user, :enterprise_user, enterprise_group: group) }
+    let_it_be(:enterprise_user) { create(:enterprise_user, enterprise_group: group) }
     let_it_be(:enterprise_user_member) { group.add_developer(enterprise_user) }
 
     subject(:group_members) do

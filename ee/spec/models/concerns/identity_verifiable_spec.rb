@@ -554,7 +554,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
       end
 
       context 'when a user is an enterprise user' do
-        let(:user) { create(:user, :enterprise_user) }
+        let(:user) { create(:enterprise_user) }
 
         it { is_expected.to be_falsy }
       end
@@ -597,7 +597,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     end
 
     context 'when a user is an enterprise user' do
-      let(:user) { create(:user, :enterprise_user) }
+      let(:user) { create(:enterprise_user) }
 
       it { is_expected.to be true }
     end
