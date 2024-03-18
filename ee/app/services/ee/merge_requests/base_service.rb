@@ -57,6 +57,8 @@ module EE
         # In case there is still a temporary flag on the MR
         merge_request.approval_state.expire_unapproved_key!
 
+        merge_request.batch_update_reviewer_state(approver_ids, :unapproved)
+
         trigger_merge_request_merge_status_updated(merge_request)
         trigger_merge_request_approval_state_updated(merge_request)
         publish_approvals_reset_event(merge_request, cause, approver_ids)
