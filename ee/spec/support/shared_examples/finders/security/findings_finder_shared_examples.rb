@@ -15,8 +15,6 @@ RSpec.shared_examples 'security findings finder' do
   let(:confidence_levels) { nil }
   let(:report_types) { nil }
   let(:scope) { nil }
-  let(:page) { nil }
-  let(:per_page) { nil }
   let(:scanner) { nil }
   let(:state) { nil }
   let(:sort) { nil }
@@ -27,8 +25,6 @@ RSpec.shared_examples 'security findings finder' do
       confidence: confidence_levels,
       report_type: report_types,
       scope: scope,
-      page: page,
-      per_page: per_page,
       scanner: scanner,
       state: state,
       sort: sort
@@ -99,103 +95,6 @@ RSpec.shared_examples 'security findings finder' do
         end
       end
 
-      describe '#current_page' do
-        subject { finder_result.current_page }
-
-        context 'when the page is not provided' do
-          it { is_expected.to be(1) }
-        end
-
-        context 'when the page is provided' do
-          let(:page) { 2 }
-
-          it { is_expected.to be(2) }
-        end
-      end
-
-      describe '#limit_value' do
-        subject { finder_result.limit_value }
-
-        context 'when the per_page is not provided' do
-          it { is_expected.to be(20) }
-        end
-
-        context 'when the per_page is provided' do
-          let(:per_page) { 100 }
-
-          it { is_expected.to be(100) }
-        end
-      end
-
-      describe '#total_pages' do
-        subject { finder_result.total_pages }
-
-        context 'when the per_page is not provided' do
-          it { is_expected.to be(1) }
-        end
-
-        context 'when the per_page is provided' do
-          let(:per_page) { 3 }
-
-          it { is_expected.to be(3) }
-        end
-      end
-
-      describe '#total_count' do
-        subject { finder_result.total_count }
-
-        context 'when the scope is not provided' do
-          let(:finding_to_dismiss) { Security::Finding.first }
-
-          before do
-            vulnerability_finding = create(:vulnerabilities_finding, uuid: finding_to_dismiss.uuid)
-
-            create(:vulnerability, state: :dismissed, findings: [vulnerability_finding])
-          end
-
-          it { is_expected.to be(7) }
-        end
-
-        context 'when the scope is provided as `all`' do
-          let(:scope) { 'all' }
-
-          it { is_expected.to be(8) }
-        end
-      end
-
-      describe '#next_page' do
-        subject { finder_result.next_page }
-
-        context 'when the page is not provided' do
-          # Limit per_page to force pagination on smaller dataset
-          let(:per_page) { 2 }
-
-          it { is_expected.to be(2) }
-        end
-
-        context 'when the page is provided' do
-          let(:page) { 2 }
-
-          it { is_expected.to be_nil }
-        end
-      end
-
-      describe '#prev_page' do
-        subject { finder_result.prev_page }
-
-        context 'when the page is not provided' do
-          it { is_expected.to be_nil }
-        end
-
-        context 'when the page is provided' do
-          let(:page) { 2 }
-          # Limit per_page to force pagination on smaller dataset
-          let(:per_page) { 2 }
-
-          it { is_expected.to be(1) }
-        end
-      end
-
       describe '#findings' do
         subject { findings.map(&:uuid) }
 
@@ -214,22 +113,6 @@ RSpec.shared_examples 'security findings finder' do
           end
 
           it { is_expected.to match_array([uuid]) }
-        end
-
-        context 'when the page is provided' do
-          let(:page) { 2 }
-          # Limit per_page to force pagination on smaller dataset
-          let(:per_page) { 2 }
-          let(:expected_uuids) { Security::Finding.deduplicated.ordered.pluck(:uuid)[2..3] }
-
-          it { is_expected.to match_array(expected_uuids) }
-        end
-
-        context 'when the per_page is provided' do
-          let(:per_page) { 1 }
-          let(:expected_uuids) { [Security::Finding.deduplicated.ordered.pick(:uuid)] }
-
-          it { is_expected.to match_array(expected_uuids) }
         end
 
         context 'when the `severity_levels` is provided' do

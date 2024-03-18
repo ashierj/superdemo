@@ -25,6 +25,11 @@ module EE
             ::Types::PipelineSecurityReportFindingType.connection_type,
             null: true,
             description: 'Vulnerability findings reported on the pipeline. By default all the states except dismissed are included in the response.',
+            # Although we're not paginating an Array here we're using this
+            # connection extension because it leaves the pagination
+            # arguments available for the resolver.  Otherwise they are
+            # removed by the framework.
+            connection_extension: ::Gitlab::Graphql::Extensions::ExternallyPaginatedArrayExtension,
             resolver: ::Resolvers::PipelineSecurityReportFindingsResolver
           # rubocop:enable Layout/LineLength
 
