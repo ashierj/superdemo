@@ -108,10 +108,13 @@ export default {
     <div class="hide-collapsed help-button gl-float-right">
       <gl-link :href="$options.crmDocsLink" target="_blank"><gl-icon name="question-o" /></gl-link>
     </div>
-    <div class="title hide-collapsed gl-mb-2 gl-line-height-20 gl-font-weight-bold">
+    <div class="hide-collapsed gl-line-height-20 gl-font-weight-bold">
       {{ contactsLabel }}
     </div>
-    <div class="hide-collapsed gl-display-flex gl-flex-wrap">
+    <div
+      class="hide-collapsed gl-display-flex gl-flex-wrap"
+      :class="contacts.length > 0 ? 'gl-mt-2' : ''"
+    >
       <div
         v-for="(contact, index) in contacts"
         :id="`contact_container_${index}`"
