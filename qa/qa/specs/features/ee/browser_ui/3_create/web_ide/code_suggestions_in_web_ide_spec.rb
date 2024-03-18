@@ -7,6 +7,7 @@ module QA
     describe 'Code Suggestions in Web IDE' do
       let(:project) { create(:project, :with_readme, name: 'webide-code-suggestions-project') }
       let(:file_name) { 'new_file.rb' }
+      let(:prompt_data) { 'def reverse_string' }
 
       before do
         Flow::Login.sign_in
@@ -21,8 +22,6 @@ module QA
       end
 
       shared_examples 'a code generation suggestion' do |testcase|
-        let(:prompt_data) { 'def reverse_string' }
-
         it 'returns a code generation suggestion which can be accepted', testcase: testcase do
           Page::Project::WebIDE::VSCode.perform do |ide|
             ide.add_prompt_into_a_file(file_name, prompt_data)
@@ -68,6 +67,19 @@ module QA
         end
       end
 
+      shared_examples 'unauthorized' do |testcase|
+        it 'returns no suggestion', testcase: testcase do
+          Page::Project::WebIDE::VSCode.perform do |ide|
+            ide.add_prompt_into_a_file(file_name, prompt_data, wait_for_code_suggestions: false)
+            previous_content_length = ide.editor_content_length
+
+            expect(ide).to have_code_suggestions_disabled
+
+            expect(ide.editor_content_length).to eq(previous_content_length), "Expected no suggestion"
+          end
+        end
+      end
+
       context 'on GitLab.com', :smoke, only: { pipeline: %i[staging staging-canary canary production] } do
         it_behaves_like 'a code generation suggestion',
           'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/425756'
@@ -76,12 +88,22 @@ module QA
           'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/437111'
       end
 
-      context 'on Self-managed', :orchestrated, :ai_gateway, quarantine: {
-        type: :investigating,
-        issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/450384"
-      } do
-        it_behaves_like 'a code completion suggestion',
-          'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/439625'
+      context 'on Self-managed', :orchestrated do
+        context 'with a valid license' do
+          context 'with a Duo Pro add-on' do
+            context 'when seat is assigned', :ai_gateway, quarantine: {
+              type: :investigating,
+              issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/450384'
+            } do
+              it_behaves_like 'a code completion suggestion',
+                'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/439625'
+            end
+          end
+        end
+
+        context 'with no license', :ai_gateway_no_license do
+          it_behaves_like 'unauthorized', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/448662'
+        end
       end
     end
   end
