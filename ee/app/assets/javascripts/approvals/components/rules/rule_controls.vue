@@ -7,9 +7,9 @@ import { __, sprintf } from '~/locale';
 export default {
   i18n: {
     edit: __('Edit'),
-    remove: __('Remove'),
+    remove: __('Delete'),
     editItemLabel: __('Edit %{ruleName}'),
-    removeItemLabel: __('Remove %{ruleName}'),
+    removeItemLabel: __('Delete %{ruleName}'),
   },
   components: {
     GlButton,

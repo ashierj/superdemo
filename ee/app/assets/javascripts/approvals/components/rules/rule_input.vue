@@ -67,7 +67,7 @@ export default {
       :id="uniqueInputId"
       :value="rule.approvalsRequired"
       :disabled="!settings.canEdit"
-      class="form-control gl-ml-auto gl-sm-mr-auto gl-w-10 gl-my-n3 gl-text-center"
+      class="form-control gl-ml-auto gl-sm-mr-auto gl-w-10 gl-my-n3"
       type="number"
       name="approvals-number-field"
       :min="minInputValue"

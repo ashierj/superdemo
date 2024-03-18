@@ -117,8 +117,8 @@ export default {
           <th v-if="hasNamedRule" class="gl-w-half d-none d-sm-table-cell">
             <span>{{ members }}</span>
           </th>
-          <th v-if="settings.allowMultiRule" class="gl-text-center">{{ branches }}</th>
-          <th class="gl-text-center">{{ approvalsRequired }}</th>
+          <th v-if="settings.allowMultiRule">{{ branches }}</th>
+          <th>{{ approvalsRequired }}</th>
           <th>{{ actions }}</th>
         </tr>
       </template>
@@ -147,7 +147,6 @@ export default {
             </td>
             <td
               v-if="settings.allowMultiRule"
-              class="gl-text-center"
               data-testid="approvals-table-branches"
               :data-label="branches"
             >

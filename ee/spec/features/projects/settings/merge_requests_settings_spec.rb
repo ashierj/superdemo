@@ -72,17 +72,17 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js, feature_category: 
           expect(find_by_testid('status-checks-table')).to have_content('Something new')
         end
 
-        it 'removes the status check' do
+        it 'deletes the status check' do
           visit project_settings_merge_requests_path(project)
 
           expect(find_by_testid('status-checks-table')).to have_content(rule.name)
 
           within_testid('status-checks-table') do
-            click_button 'Remove'
+            click_button 'Delete'
           end
 
           within('.modal-content') do
-            click_button 'Remove status check'
+            click_button 'Delete status check'
           end
 
           wait_for_requests

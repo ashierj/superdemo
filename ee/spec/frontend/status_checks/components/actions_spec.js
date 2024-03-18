@@ -28,12 +28,12 @@ describe('Status checks actions', () => {
   });
 
   const findEditBtn = () => wrapper.findByTestId('edit-btn');
-  const findRemoveBtn = () => wrapper.findByTestId('remove-btn');
+  const findDeleteBtn = () => wrapper.findByTestId('delete-btn');
 
   describe.each`
     ariaLabel   | button           | event
     ${'Edit'}   | ${findEditBtn}   | ${'open-update-modal'}
-    ${'Remove'} | ${findRemoveBtn} | ${'open-delete-modal'}
+    ${'Delete'} | ${findDeleteBtn} | ${'open-delete-modal'}
   `('$text button', ({ ariaLabel, button, event }) => {
     it(`renders the button with the aria-label '${ariaLabel}'`, () => {
       expect(button().attributes('aria-label')).toBe(ariaLabel);
