@@ -11,8 +11,7 @@
 #     confidence:  Array<String>
 #     report_type: Array<String>
 #     scope:       String
-#     page:        Int
-#     per_page:    Int
+#     limit:       Int
 
 module Security
   class FindingsFinder
@@ -23,8 +22,7 @@ module Security
         :next_page, :prev_page, :page, :empty?, :without_count, to: :relation
     end
 
-    DEFAULT_PAGE = 1
-    DEFAULT_PER_PAGE = 20
+    DEFAULT_LIMIT = 20
 
     def initialize(pipeline, params: {})
       @pipeline = pipeline
@@ -32,7 +30,7 @@ module Security
     end
 
     def execute
-      return ResultSet.new(Security::Finding.none.page(DEFAULT_PAGE), []) unless has_security_findings?
+      return ResultSet.new(Security::Finding.none, []) unless has_security_findings?
 
       ResultSet.new(security_findings, findings)
     end
@@ -122,7 +120,7 @@ module Security
         .then { |relation| by_scanner_external_ids(relation) }
         .then { |relation| by_state(relation) }
         .then { |relation| by_include_dismissed(relation) }
-        .limit((per_page * page) + 1)
+        .limit(limit + 1)
 
       from_sql = <<~SQL.squish
           "security_scans",
@@ -143,16 +141,10 @@ module Security
         .merge(::Security::Scan.latest_successful)
         .ordered(params[:sort])
         .then { |relation| by_report_types(relation) }
-        .page(page)
-        .per(per_page)
     end
 
-    def per_page
-      @per_page ||= params[:per_page] || DEFAULT_PER_PAGE
-    end
-
-    def page
-      @page ||= params[:page] || DEFAULT_PAGE
+    def limit
+      @limit ||= params[:limit] || DEFAULT_LIMIT
     end
 
     def include_dismissed?

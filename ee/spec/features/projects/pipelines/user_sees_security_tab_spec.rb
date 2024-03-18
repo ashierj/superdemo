@@ -9,6 +9,13 @@ RSpec.describe "Pipeline > User sees security tab", :js, feature_category: :vuln
     create(:ee_ci_pipeline, :success, :with_sast_report, project: project)
   end
 
+  let(:vulnerabilities_scanner) do
+    create(
+      :vulnerabilities_scanner,
+      project: project
+    )
+  end
+
   let!(:security_scan) do
     create(
       :security_scan,
@@ -26,6 +33,7 @@ RSpec.describe "Pipeline > User sees security tab", :js, feature_category: :vuln
       :security_finding,
       21, # rubocop:disable RSpec/FactoryBot/ExcessiveCreateList -- see note above
       :with_finding_data,
+      scanner: vulnerabilities_scanner,
       scan: security_scan,
       deduplicated: true
     )
@@ -35,9 +43,6 @@ RSpec.describe "Pipeline > User sees security tab", :js, feature_category: :vuln
     stub_licensed_features(
       security_dashboard: true,
       sast: true
-    )
-    stub_feature_flags(
-      pipeline_security_dashboard_graphql: false
     )
   end
 
