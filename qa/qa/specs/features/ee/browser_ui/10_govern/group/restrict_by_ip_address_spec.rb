@@ -2,9 +2,8 @@
 
 module QA
   RSpec.describe 'Govern' do
-    describe 'Group access',
-      :requires_admin, :skip_live_env, :reliable, product_group: :authentication do
-      include Runtime::IPAddress
+    describe 'Group access', :requires_admin, :skip_live_env, :reliable, product_group: :authentication do
+      let(:admin_api_client) { Runtime::API::Client.as_admin }
 
       let(:sandbox_group) do
         Resource::Sandbox.fabricate! do |sandbox_group|
@@ -14,11 +13,12 @@ module QA
 
       let(:group) { create(:group, path: "ip-address-restricted-group-#{SecureRandom.hex(8)}", sandbox: sandbox_group) }
       let(:project) { create(:project, :with_readme, name: 'project-in-ip-restricted-group', group: group) }
-      let(:user) do
-        Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1)
-      end
-
+      let(:user) { create(:user, api_client: admin_api_client) }
       let(:api_client) { Runtime::API::Client.new(:gitlab, user: user) }
+
+      let!(:current_ip_address) do
+        Flow::Login.while_signed_in(as: user) { user.reload!.api_response[:current_sign_in_ip] }
+      end
 
       before do
         project.add_member(user)
@@ -37,7 +37,7 @@ module QA
       end
 
       context 'when restricted by another ip address' do
-        let(:ip_address) { get_next_ip_address(fetch_current_ip_address) }
+        let(:ip_address) { get_next_ip_address(current_ip_address) }
 
         context 'with UI' do
           it 'denies access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347923' do
@@ -85,7 +85,7 @@ module QA
       end
 
       context 'when restricted by user\'s ip address' do
-        let(:ip_address) { fetch_current_ip_address }
+        let(:ip_address) { current_ip_address }
 
         context 'with UI' do
           it 'allows access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347926' do
@@ -151,12 +151,12 @@ module QA
         end
       end
 
-      def get_next_ip_address(current_ip_address)
-        current_last_part = current_ip_address.split(".").pop.to_i
+      def get_next_ip_address(address)
+        current_last_part = address.split(".").pop.to_i
 
         updated_last_part = current_last_part < 255 ? current_last_part + 1 : 1
 
-        current_ip_address.split(".")[0...-1].push(updated_last_part).join(".")
+        address.split(".")[0...-1].push(updated_last_part).join(".")
       end
 
       def enable_plan_on_group(group, plan)
