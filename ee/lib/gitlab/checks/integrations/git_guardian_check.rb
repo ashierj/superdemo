@@ -7,6 +7,7 @@ module Gitlab
         BLOB_BYTES_LIMIT = 1.megabyte
 
         LOG_MESSAGE = 'Starting GitGuardian scan...'
+        SPECIAL_COMMIT_FLAG = /\[skip secret detection\]/i
 
         def initialize(integration_check)
           @changes_access = integration_check.changes_access
@@ -14,6 +15,7 @@ module Gitlab
 
         def validate!
           return unless integration_activated?
+          return if skip_secret_detection?
 
           logger.log_timed(LOG_MESSAGE) do
             blobs = changed_blobs(timeout: logger.time_left)
@@ -37,6 +39,10 @@ module Gitlab
           ::Gitlab::Checks::ChangedBlobs.new(
             project, revisions, bytes_limit: BLOB_BYTES_LIMIT + 1, with_paths: true
           ).execute(timeout: timeout)
+        end
+
+        def skip_secret_detection?
+          changes_access.commits.any? { |commit| commit.safe_message =~ SPECIAL_COMMIT_FLAG }
         end
 
         def revisions
