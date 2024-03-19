@@ -1,11 +1,21 @@
 <script>
-import { GlCard, GlLink, GlSprintf, GlButton, GlSkeletonLoader } from '@gitlab/ui';
+import {
+  GlCard,
+  GlLink,
+  GlSprintf,
+  GlButton,
+  GlSkeletonLoader,
+  GlModalDirective,
+} from '@gitlab/ui';
 import { s__ } from '~/locale';
 import UsageStatistics from 'ee/usage_quotas/components/usage_statistics.vue';
 import { codeSuggestionsLearnMoreLink } from 'ee/usage_quotas/code_suggestions/constants';
 import { addSeatsText } from 'ee/usage_quotas/seats/constants';
 import Tracking from '~/tracking';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
+import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
+import { visitUrl } from '~/lib/utils/url_utility';
+import { LIMITED_ACCESS_KEYS } from 'ee/usage_quotas/components/constants';
 
 export default {
   name: 'CodeSuggestionsUsageInfoCard',
@@ -26,6 +36,10 @@ export default {
     GlSprintf,
     UsageStatistics,
     GlSkeletonLoader,
+    LimitedAccessModal,
+  },
+  directives: {
+    GlModalDirective,
   },
   mixins: [Tracking.mixin()],
   inject: ['addDuoProHref', 'isSaaS'],
@@ -36,6 +50,11 @@ export default {
       default: null,
     },
   },
+  data() {
+    return {
+      showLimitedAccessModal: false,
+    };
+  },
   computed: {
     parsedGroupId() {
       return parseInt(this.groupId, 10);
@@ -44,9 +63,6 @@ export default {
       if (this.isLoading || !this.addDuoProHref) {
         return false;
       }
-      if (this.isSaaS) {
-        return this.groupId && this.subscriptionPermissions?.canAddDuoProSeats;
-      }
       return true;
     },
     isLoading() {
@@ -54,6 +70,15 @@ export default {
     },
     trackingPreffix() {
       return this.isSaaS ? 'saas' : 'sm';
+    },
+    shouldShowModal() {
+      return !this.subscriptionPermissions?.canAddDuoProSeats && this.hasLimitedAccess;
+    },
+    hasLimitedAccess() {
+      return LIMITED_ACCESS_KEYS.includes(this.permissionReason);
+    },
+    permissionReason() {
+      return this.subscriptionPermissions?.reason;
     },
   },
   apollo: {
@@ -70,6 +95,7 @@ export default {
       },
       update: (data) => ({
         canAddDuoProSeats: data.subscription.canAddDuoProSeats,
+        reason: data.userActionAccess?.limitedAccessReason,
       }),
     },
   },
@@ -79,6 +105,15 @@ export default {
         label: `add_duo_pro_${this.trackingPreffix}`,
         property: 'usage_quotas_page',
       });
+    },
+    handleAddSeats() {
+      if (this.shouldShowModal) {
+        this.showLimitedAccessModal = true;
+        return;
+      }
+
+      this.handleAddDuoProClick();
+      visitUrl(this.addDuoProHref);
     },
   },
 };
@@ -108,14 +143,21 @@ export default {
       <template #actions>
         <gl-button
           v-if="shouldShowAddSeatsButton"
+          v-gl-modal-directive="'limited-access-modal-id'"
           category="primary"
-          variant="confirm"
           target="_blank"
-          :href="addDuoProHref"
-          @click="handleAddDuoProClick"
+          variant="confirm"
+          class="gl-ml-3 gl-align-self-start"
+          data-testid="purchase-button"
+          @click="handleAddSeats"
         >
           {{ $options.i18n.addSeatsText }}
         </gl-button>
+        <limited-access-modal
+          v-if="shouldShowModal"
+          v-model="showLimitedAccessModal"
+          :limited-access-reason="permissionReason"
+        />
       </template>
     </usage-statistics>
   </gl-card>
