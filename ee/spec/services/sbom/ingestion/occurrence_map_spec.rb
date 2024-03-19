@@ -263,7 +263,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
 
   context 'with vulnerability data' do
     let(:pipeline) { vulnerability_info.pipeline }
-    let(:finding) do
+    let!(:finding) do
       create(
         :vulnerabilities_finding,
         :detected,
@@ -271,12 +271,9 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
         project: pipeline.project,
         file: occurrence_map.input_file_path,
         package: occurrence_map.name,
-        version: occurrence_map.version
+        version: occurrence_map.version,
+        pipeline: pipeline
       )
-    end
-
-    before do
-      create(:vulnerabilities_finding_pipeline, pipeline: pipeline, finding: finding)
     end
 
     it { expect(occurrence_map.vulnerability_ids).to eq([finding.vulnerability_id]) }
@@ -293,7 +290,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
           purl_type: 'apk', namespace: 'alpine', name: 'alpine-baselayout')
       end
 
-      let(:finding) do
+      let!(:finding) do
         create(
           :vulnerabilities_finding,
           :detected,
@@ -301,7 +298,8 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
           project: pipeline.project,
           file: occurrence_map.input_file_path,
           package: report_component.name_without_namespace,
-          version: occurrence_map.version
+          version: occurrence_map.version,
+          pipeline: pipeline
         )
       end
 

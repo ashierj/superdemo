@@ -45,8 +45,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
 
     context 'with dependency_scanning dependencies' do
       let_it_be(:vulnerability) { create(:vulnerability, report_type: :dependency_scanning) }
-      let_it_be(:finding) { create(:vulnerabilities_finding, :with_dependency_scanning_metadata, vulnerability: vulnerability) }
-      let_it_be(:finding_pipeline) { create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline) }
+      let_it_be(:finding) { create(:vulnerabilities_finding, :with_dependency_scanning_metadata, vulnerability: vulnerability, pipeline: pipeline) }
 
       it 'does not causes N+1 query' do
         control = ActiveRecord::QueryRecorder.new do
@@ -56,8 +55,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
         end
 
         vuln2 = create(:vulnerability, report_type: :dependency_scanning)
-        finding2 = create(:vulnerabilities_finding, :with_dependency_scanning_metadata, package: 'mini_portile2', vulnerability: vuln2)
-        create(:vulnerabilities_finding_pipeline, finding: finding2, pipeline: pipeline)
+        create(:vulnerabilities_finding, :with_dependency_scanning_metadata, package: 'mini_portile2', vulnerability: vuln2, pipeline: pipeline)
 
         expect do
           ActiveRecord::QueryRecorder.new do
@@ -78,8 +76,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
 
       context 'when severity is not part of metadata' do
         let_it_be(:vuln2) { create(:vulnerability, report_type: :dependency_scanning) }
-        let_it_be(:finding2) { create(:vulnerabilities_finding, :with_dependency_scanning_metadata, vulnerability: vuln2, raw_severity: nil) }
-        let_it_be(:finding_pipeline2) { create(:vulnerabilities_finding_pipeline, finding: finding2, pipeline: pipeline) }
+        let_it_be(:finding2) { create(:vulnerabilities_finding, :with_dependency_scanning_metadata, vulnerability: vuln2, raw_severity: nil, pipeline: pipeline) }
 
         it 'returns the correct severity' do
           dependency_for_vuln2 = report.dependencies.flat_map { |dep| dep[:vulnerabilities] }.find { |dep| dep[:id] == vuln2.id }
@@ -89,8 +86,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
       end
 
       context 'with newfound dependency' do
-        let_it_be(:other_finding) { create(:vulnerabilities_finding, :with_dependency_scanning_metadata, vulnerability: vulnerability, package: 'giri') }
-        let_it_be(:finding_pipeline) { create(:vulnerabilities_finding_pipeline, finding: other_finding, pipeline: pipeline) }
+        let_it_be(:other_finding) { create(:vulnerabilities_finding, :with_dependency_scanning_metadata, vulnerability: vulnerability, package: 'giri', pipeline: pipeline) }
 
         it 'adds new dependency and vulnerability to the report' do
           giri = report.dependencies.detect { |dep| dep[:name] == 'giri' }
@@ -103,8 +99,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
 
     context 'with container_scanning dependencies' do
       let_it_be(:vulnerability) { create(:vulnerability, report_type: :container_scanning) }
-      let_it_be(:finding) { create(:vulnerabilities_finding, :with_container_scanning_metadata, vulnerability: vulnerability) }
-      let_it_be(:finding_pipeline) { create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline) }
+      let_it_be(:finding) { create(:vulnerabilities_finding, :with_container_scanning_metadata, vulnerability: vulnerability, pipeline: pipeline) }
 
       it 'adds new dependency and vulnerability to the report with modified path' do
         cs_dependency = report.dependencies.detect { |dep| dep[:name] == 'org.apache.logging.log4j:log4j-api' }

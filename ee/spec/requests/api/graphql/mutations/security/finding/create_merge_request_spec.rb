@@ -35,12 +35,9 @@ RSpec.describe 'Creating a Merge Request from a Security::Finding', feature_cate
       project: project,
       report_type: :dependency_scanning,
       summary: 'Test remediation',
-      raw_metadata: report_finding.raw_metadata
+      raw_metadata: report_finding.raw_metadata,
+      pipeline: pipeline
     )
-  end
-
-  let_it_be(:vulnerability_pipeline) do
-    create(:vulnerabilities_finding_pipeline, finding: vulnerability_finding, pipeline: pipeline)
   end
 
   let(:mutation_name) { :security_finding_create_merge_request }

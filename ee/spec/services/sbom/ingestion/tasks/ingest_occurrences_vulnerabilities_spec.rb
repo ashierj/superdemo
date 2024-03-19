@@ -6,7 +6,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrencesVulnerabilities, feature
   describe '#execute' do
     let_it_be(:pipeline) { build(:ci_pipeline) }
 
-    let(:finding_1) do
+    let!(:finding_1) do
       create(
         :vulnerabilities_finding,
         :detected,
@@ -14,11 +14,12 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrencesVulnerabilities, feature
         project: pipeline.project,
         file: occurrence_map_1.input_file_path,
         package: occurrence_map_1.name,
-        version: occurrence_map_1.version
+        version: occurrence_map_1.version,
+        pipeline: pipeline
       )
     end
 
-    let(:finding_2) do
+    let!(:finding_2) do
       create(
         :vulnerabilities_finding,
         :detected,
@@ -26,7 +27,8 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrencesVulnerabilities, feature
         project: pipeline.project,
         file: occurrence_map_2.input_file_path,
         package: occurrence_map_2.name,
-        version: occurrence_map_2.version
+        version: occurrence_map_2.version,
+        pipeline: pipeline
       )
     end
 
@@ -43,11 +45,6 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrencesVulnerabilities, feature
 
     subject(:ingest_occurrences_vulnerabilities) do
       described_class.execute(pipeline, occurrence_maps)
-    end
-
-    before do
-      create(:vulnerabilities_finding_pipeline, pipeline: pipeline, finding: finding_1)
-      create(:vulnerabilities_finding_pipeline, pipeline: pipeline, finding: finding_2)
     end
 
     it_behaves_like 'bulk insertable task'
@@ -86,17 +83,16 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrencesVulnerabilities, feature
 
     context 'when there is more than one vulnerability per occurrence' do
       before do
-        finding = create(
+        create(
           :vulnerabilities_finding,
           :detected,
           :with_dependency_scanning_metadata,
           project: pipeline.project,
           file: occurrence_map_1.input_file_path,
           package: occurrence_map_1.name,
-          version: occurrence_map_1.version
+          version: occurrence_map_1.version,
+          pipeline: pipeline
         )
-
-        create(:vulnerabilities_finding_pipeline, pipeline: pipeline, finding: finding)
       end
 
       it 'creates all related occurrences_vulnerabilities' do

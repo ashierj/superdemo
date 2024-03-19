@@ -55,18 +55,15 @@ RSpec.describe ScanSecurityReportSecretsWorker, feature_category: :secret_detect
         }.to_json
       end
 
-      let(:vulnerability) do
+      let!(:vulnerability) do
         create(
           :vulnerabilities_finding,
           :with_secret_detection,
           project: project,
           raw_metadata: raw_metadata,
-          security_findings: [security_finding]
+          security_findings: [security_finding],
+          pipeline: pipeline
         )
-      end
-
-      before do
-        create(:vulnerabilities_finding_pipeline, finding: vulnerability, pipeline: pipeline)
       end
     end
 
@@ -80,15 +77,13 @@ RSpec.describe ScanSecurityReportSecretsWorker, feature_category: :secret_detect
       it 'avoids N+1 queries' do
         control = ActiveRecord::QueryRecorder.new { worker.perform(pipeline.id) }
 
-        3.times do
-          finding = create(:vulnerabilities_finding,
-            :with_secret_detection,
-            project: project,
-            raw_metadata: raw_metadata,
-            security_findings: [security_finding])
-
-          create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline)
-        end
+        create_list(
+          :vulnerabilities_finding, 3, :with_secret_detection,
+          project: project,
+          raw_metadata: raw_metadata,
+          security_findings: [security_finding],
+          pipeline: pipeline
+        )
 
         expect { worker.perform(pipeline.id) }.not_to exceed_query_limit(control)
       end
