@@ -15572,8 +15572,10 @@ msgstr ""
 msgid "CycleAnalyticsStage|is not available for the selected group"
 msgstr ""
 
-msgid "CycleAnalytics|%{selectedLabelsCount} selected (%{maxLabels} max)"
-msgstr ""
+msgid "CycleAnalytics|%{selectedLabelsCount} label selected (%{maxLabels} max)"
+msgid_plural "CycleAnalytics|%{selectedLabelsCount} labels selected (%{maxLabels} max)"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "CycleAnalytics|'%{name}' is collecting the data. This can take a few minutes."
 msgstr ""
@@ -15597,9 +15599,6 @@ msgid "CycleAnalytics|Data is collecting and loading."
 msgstr ""
 
 msgid "CycleAnalytics|Date"
-msgstr ""
-
-msgid "CycleAnalytics|Display chart filters"
 msgstr ""
 
 msgid "CycleAnalytics|If you have recently upgraded your GitLab license from a tier without this feature, it can take up to 30 minutes for data to collect and display."
