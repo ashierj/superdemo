@@ -68,6 +68,7 @@ export default {
       isProject: false,
       hasNamespaceError: false,
       filterLabelsResults: [],
+      chartErrors: [],
     };
   },
   computed: {
@@ -147,6 +148,20 @@ export default {
       </div>
 
       <gl-alert
+        v-if="chartErrors.length"
+        :title="s__('Analytics|Failed to fetch data')"
+        variant="danger"
+        :dismissible="false"
+        data-testid="comparison-chart-errors"
+      >
+        <ul class="gl-m-0">
+          <li v-for="error in chartErrors" :key="error">
+            {{ error }}
+          </li>
+        </ul>
+      </gl-alert>
+
+      <gl-alert
         v-if="loadLabelsError"
         variant="danger"
         :dismissible="false"
@@ -160,6 +175,7 @@ export default {
         :is-project="isProject"
         :exclude-metrics="excludeMetrics"
         :filter-labels="filterLabelNames"
+        @set-errors="({ errors }) => (chartErrors = errors)"
       />
     </div>
   </group-or-project-provider>

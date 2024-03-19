@@ -88,5 +88,13 @@ describe('DoraChart Visualization', () => {
         requestPath: 'some/fake/path',
       });
     });
+
+    it('echos `set-errors` event from the comparison chart', () => {
+      const payload = { errors: ['one', 'two'], fullPanelError: true };
+      findChart().vm.$emit('set-errors', payload);
+
+      expect(wrapper.emitted('set-errors').length).toBe(1);
+      expect(wrapper.emitted('set-errors')[0][0]).toEqual(payload);
+    });
   });
 });

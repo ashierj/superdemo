@@ -72,7 +72,7 @@ describe('DoraPerformersScoreCard', () => {
     beforeEach(async () => {
       await createWrapper();
 
-      findDoraPerformersScoreChart().vm.$emit('error', { error: mockError });
+      findDoraPerformersScoreChart().vm.$emit('error', mockError);
     });
 
     it('renders the default panel title', () => {

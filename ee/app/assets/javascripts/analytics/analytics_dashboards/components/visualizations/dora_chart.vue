@@ -39,6 +39,7 @@ export default {
       :is-project="isProject"
       :exclude-metrics="data.excludeMetrics"
       :filter-labels="data.filterLabels"
+      @set-errors="$emit('set-errors', $event)"
     />
   </group-or-project-provider>
 </template>

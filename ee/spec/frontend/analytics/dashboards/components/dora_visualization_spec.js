@@ -212,4 +212,20 @@ describe('DoraVisualization', () => {
       );
     });
   });
+
+  describe('comparison chart errors', () => {
+    const errors = ['one', 'two'];
+
+    beforeEach(async () => {
+      await createWrapper();
+      findComparisonChart().vm.$emit('set-errors', { errors });
+    });
+
+    it('renders an error alert', () => {
+      const errorAlert = wrapper.findByTestId('comparison-chart-errors');
+
+      expect(errorAlert.props().title).toBe('Failed to fetch data');
+      errors.forEach((error) => expect(errorAlert.text()).toContain(error));
+    });
+  });
 });

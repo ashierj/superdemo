@@ -192,9 +192,7 @@ describe('DoraPerformersScoreChart', () => {
     it('emits an error event', () => {
       const emitted = wrapper.emitted('error');
       expect(emitted).toHaveLength(1);
-      expect(emitted[0]).toEqual([
-        { error: `Failed to load DORA performance scores for Group: ${fullPath}` },
-      ]);
+      expect(emitted[0]).toEqual([`Failed to load DORA performance scores for Group: ${fullPath}`]);
     });
   });
 

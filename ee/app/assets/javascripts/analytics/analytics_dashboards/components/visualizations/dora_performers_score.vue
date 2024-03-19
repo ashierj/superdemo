@@ -31,8 +31,14 @@ export default {
   methods: {
     handleResolveNamespace({ isProject = false }) {
       if (isProject) {
-        this.$emit('error', { error: DORA_PERFORMERS_SCORE_PROJECT_ERROR, canRetry: false });
+        this.$emit('set-errors', {
+          errors: [DORA_PERFORMERS_SCORE_PROJECT_ERROR],
+          canRetry: false,
+        });
       }
+    },
+    handleError(error) {
+      this.$emit('set-errors', { errors: [error] });
     },
   },
 };
@@ -42,7 +48,7 @@ export default {
     #default="{ isNamespaceLoading, isProject }"
     :full-path="fullPath"
     @done="handleResolveNamespace"
-    @error="(errorMsg) => $emit('error', errorMsg)"
+    @error="handleError"
   >
     <div v-if="isNamespaceLoading" class="gl--flex-center gl-h-full">
       <gl-loading-icon size="lg" />
@@ -50,7 +56,7 @@ export default {
     <dora-performers-score-chart
       v-else-if="!isNamespaceLoading && !isProject"
       :data="data"
-      @error="$emit('error', arguments[0])"
+      @error="handleError"
     />
   </group-or-project-provider>
 </template>

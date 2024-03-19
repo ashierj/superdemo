@@ -254,22 +254,33 @@ describe('PanelsBase', () => {
       const error = 'test error';
       const mockData = [{ name: 'foo' }];
 
-      describe.each([true, false])('can be retried: %s', (canRetry) => {
+      describe.each`
+        canRetry | fullPanelError
+        ${false} | ${false}
+        ${true}  | ${false}
+        ${false} | ${true}
+        ${true}  | ${true}
+      `('canRetry: $canRetry, fullPanelError: $fullPanelError', ({ canRetry, fullPanelError }) => {
         beforeEach(async () => {
           jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(mockData);
           createWrapper();
 
           await waitForPromises();
 
-          findVisualization().vm.$emit('error', { error, canRetry });
+          findVisualization().vm.$emit('set-errors', { errors: [error], canRetry, fullPanelError });
         });
 
-        it('should hide the visualization', () => {
-          expect(findVisualization().exists()).toBe(false);
+        it(`${fullPanelError ? 'hides' : 'does not hide'} the visualization`, () => {
+          expect(findVisualization().exists()).toBe(!fullPanelError);
         });
 
-        it('should render the error state', () => {
-          expect(wrapper.text()).toContain('Something went wrong.');
+        it(`${fullPanelError ? 'renders' : 'does not render'} the error state`, () => {
+          const errorText = 'Something went wrong.';
+          if (fullPanelError) {
+            expect(wrapper.text()).toContain(errorText);
+          } else {
+            expect(wrapper.text()).not.toContain(errorText);
+          }
         });
 
         it('should log the error to Sentry', () => {
