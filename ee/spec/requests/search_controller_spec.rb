@@ -36,6 +36,20 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
   end
 
   describe 'GET /search' do
+    context 'when zoekt is enabled', :zoekt do
+      context 'when search_add_archived_filter_to_zoekt is set' do
+        before do
+          zoekt_ensure_project_indexed!(project)
+        end
+
+        it 'exposes the required feature flags' do
+          send_search_request({ group_id: group.id, search: 'test', scope: 'blobs' })
+
+          expect(response.body).to have_pushed_frontend_feature_flags(searchAddArchivedFilterToZoekt: true)
+        end
+      end
+    end
+
     context 'when elasticsearch is enabled', :elastic, :sidekiq_inline do
       before do
         stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
