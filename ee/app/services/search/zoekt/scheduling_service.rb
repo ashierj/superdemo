@@ -68,24 +68,25 @@ module Search
             .limit(DOT_COM_ROLLOUT_SEARCH_LIMIT)
             .update_all(search: true, updated_at: Time.zone.now)
 
-          size = 0
-          sizes = {}
-
           indexed_namespaces_ids = Search::Zoekt::EnabledNamespace.find_each.map(&:root_namespace_id).to_set
-          namespaces_to_add = GitlabSubscription.with_a_paid_hosted_plan
-                                                .where('end_date > ? OR end_date IS NULL', Date.today)
-          scope = Group.includes(:root_storage_statistics)
-                        .where(parent_id: nil)
-                        .where(id: namespaces_to_add.select(:namespace_id))
-          scope.find_each do |n|
-            next if indexed_namespaces_ids.include?(n.id)
 
-            sizes[n.id] = n.root_storage_statistics.repository_size if n.root_storage_statistics
+          sizes = {}
+          GitlabSubscription.with_a_paid_hosted_plan.not_expired.each_batch(of: 100) do |batch|
+            namespace_ids = batch.pluck(:namespace_id) # rubocop:disable Database/AvoidUsingPluckWithoutLimit -- each_batch limits the query
+            filtered_namespace_ids = namespace_ids.reject { |id| indexed_namespaces_ids.include?(id) }
+
+            scope = Group.includes(:root_storage_statistics).where(parent_id: nil).where(id: filtered_namespace_ids)
+
+            scope.find_each do |n|
+              sizes[n.id] = n.root_storage_statistics.repository_size if n.root_storage_statistics
+            end
           end
 
           sorted = sizes.to_a.sort_by { |_k, v| v }
 
           count = 0
+          size = 0
+
           sorted.take(DOT_COM_ROLLOUT_LIMIT).each do |id, s|
             size += s
             break count if size > DOT_COM_ROLLOUT_TARGET_BYTES
