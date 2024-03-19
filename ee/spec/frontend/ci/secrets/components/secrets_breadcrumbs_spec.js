@@ -7,6 +7,11 @@ import createRouter from 'ee/ci/secrets/router';
 import { s__ } from '~/locale';
 import { INDEX_ROUTE_NAME, DETAILS_ROUTE_NAME } from 'ee/ci/secrets/constants';
 
+const defaultProps = {
+  groupId: '1',
+  groupPath: '/path/to/group',
+};
+
 describe('SecretsBreadcrumbs', () => {
   const rootBreadcrumb = {
     text: s__('Secrets|Secrets'),
@@ -25,7 +30,7 @@ describe('SecretsBreadcrumbs', () => {
   const findBreadcrumbs = () => wrapper.findComponent(GlBreadcrumb);
 
   const createWrapper = () => {
-    router = createRouter('/-/secrets');
+    router = createRouter('/-/secrets', defaultProps);
 
     wrapper = shallowMount(SecretsBreadcrumbs, { router });
   };

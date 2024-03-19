@@ -2523,6 +2523,9 @@ msgstr ""
 msgid "Access granted"
 msgstr ""
 
+msgid "Access permission"
+msgstr ""
+
 msgid "Access requests"
 msgstr ""
 
@@ -2992,6 +2995,9 @@ msgid "Add image comment"
 msgstr ""
 
 msgid "Add internal note"
+msgstr ""
+
+msgid "Add interval"
 msgstr ""
 
 msgid "Add key"
@@ -20471,6 +20477,9 @@ msgstr ""
 msgid "Every %{action} attempt has failed: %{job_error_message}. Please try again."
 msgstr ""
 
+msgid "Every 2 weeks"
+msgstr ""
+
 msgid "Every 3 months"
 msgstr ""
 
@@ -23446,6 +23455,9 @@ msgid "Go back (while searching for files)"
 msgstr ""
 
 msgid "Go back to configuration"
+msgstr ""
+
+msgid "Go back to edit"
 msgstr ""
 
 msgid "Go full screen"
@@ -42886,6 +42898,9 @@ msgstr ""
 msgid "Root cause analysis is a feature that analyzes your logs to determine why a job may have failed and the potential ways to fix it. To generate this analysis, we may share information in your job logs with %{linkStart}Third-Party AI providers%{linkEnd}. Before initiating this analysis, please do not include in your logs any information that could impact the security or privacy of your account."
 msgstr ""
 
+msgid "Rotation schedule"
+msgstr ""
+
 msgid "Ruby"
 msgstr ""
 
@@ -44912,7 +44927,16 @@ msgstr ""
 msgid "Secrets|Actions"
 msgstr ""
 
+msgid "Secrets|Add a description for the secret"
+msgstr ""
+
 msgid "Secrets|Add a new secret to the group by following the instructions in the form below."
+msgstr ""
+
+msgid "Secrets|Add a new secret to the project by following the instructions in the form below."
+msgstr ""
+
+msgid "Secrets|Add custom interval."
 msgstr ""
 
 msgid "Secrets|Add secret"
@@ -44933,6 +44957,12 @@ msgstr ""
 msgid "Secrets|Edit secret"
 msgstr ""
 
+msgid "Secrets|Enter a key name"
+msgstr ""
+
+msgid "Secrets|Intervals"
+msgstr ""
+
 msgid "Secrets|Last accessed"
 msgstr ""
 
@@ -44942,10 +44972,19 @@ msgstr ""
 msgid "Secrets|New secret"
 msgstr ""
 
+msgid "Secrets|Preview for %{secretKey}"
+msgstr ""
+
 msgid "Secrets|Revoke"
 msgstr ""
 
+msgid "Secrets|Rotation period"
+msgstr ""
+
 msgid "Secrets|Secret details"
+msgstr ""
+
+msgid "Secrets|Secret key"
 msgstr ""
 
 msgid "Secrets|Secrets"
@@ -44954,7 +44993,22 @@ msgstr ""
 msgid "Secrets|Secrets represent sensitive information your CI job needs to complete work. This sensitive information can be items like API tokens, database credentials, or private keys. Unlike CI/CD variables, which are always presented to a job, secrets must be explicitly required by a job."
 msgstr ""
 
+msgid "Secrets|Select a rotation interval"
+msgstr ""
+
+msgid "Secrets|Select environment"
+msgstr ""
+
+msgid "Secrets|Set expiration"
+msgstr ""
+
 msgid "Secrets|Stored secrets"
+msgstr ""
+
+msgid "Secrets|Value"
+msgstr ""
+
+msgid "Secrets|Value for the key"
 msgstr ""
 
 msgid "Secure Code Warrior"
@@ -46592,6 +46646,9 @@ msgstr ""
 msgid "Select milestone"
 msgstr ""
 
+msgid "Select permission"
+msgstr ""
+
 msgid "Select private project"
 msgstr ""
 
@@ -46614,6 +46671,9 @@ msgid "Select report"
 msgstr ""
 
 msgid "Select reviewers"
+msgstr ""
+
+msgid "Select roles or users"
 msgstr ""
 
 msgid "Select severity (optional)"
@@ -54647,6 +54707,9 @@ msgid "Use %{code_start}::%{code_end} to create a %{link_start}scoped label set%
 msgstr ""
 
 msgid "Use .gitlab-ci.yml"
+msgstr ""
+
+msgid "Use CRON syntax. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
 msgid "Use Secure Files to store files used by your pipelines such as Android keystores, or Apple provisioning profiles and signing certificates."
