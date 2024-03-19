@@ -37281,9 +37281,6 @@ msgstr ""
 msgid "Pipelines|Your changes have been successfully committed. Now redirecting to the new merge request page."
 msgstr ""
 
-msgid "Pipelines|created"
-msgstr ""
-
 msgid "Pipelines|error"
 msgstr ""
 
