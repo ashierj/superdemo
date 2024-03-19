@@ -143,6 +143,7 @@ RSpec.describe SessionsController, :geo, feature_category: :system_access do
       it 'does not authenticate the user' do
         post(:create, params: { user: { login: user.username, password: user.password } })
 
+        expect(response).to have_gitlab_http_status(:ok)
         expect(@request.env['warden']).not_to be_authenticated
         expect(flash[:alert]).to include(I18n.t('devise.failure.invalid'))
       end
