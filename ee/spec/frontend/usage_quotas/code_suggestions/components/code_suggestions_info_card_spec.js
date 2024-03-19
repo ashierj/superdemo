@@ -1,15 +1,21 @@
 import { GlLink, GlSprintf, GlButton, GlSkeletonLoader } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Tracking from '~/tracking';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
+import { PROMO_URL, visitUrl } from 'jh_else_ce/lib/utils/url_utility';
 import CodeSuggestionsInfoCard from 'ee/usage_quotas/code_suggestions/components/code_suggestions_info_card.vue';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import { createMockClient } from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
 
 Vue.use(VueApollo);
+
+jest.mock('~/lib/utils/url_utility', () => ({
+  ...jest.requireActual('~/lib/utils/url_utility'),
+  visitUrl: jest.fn().mockName('visitUrlMock'),
+}));
 
 const defaultProvide = {
   addDuoProHref: 'http://customers.gitlab.com/namespaces/10/duo_pro_seats',
@@ -33,6 +39,7 @@ describe('CodeSuggestionsInfoCard', () => {
   const findCodeSuggestionsLearnMoreLink = () => wrapper.findComponent(GlLink);
   const findCodeSuggestionsInfoTitle = () => wrapper.findByTestId('title');
   const findAddSeatsButton = () => wrapper.findComponent(GlButton);
+  const findLimitedAccessModal = () => wrapper.findComponent(LimitedAccessModal);
 
   const createComponent = (options = {}) => {
     const { props = {}, provide = {}, apolloData = defaultApolloData } = options;
@@ -55,6 +62,7 @@ describe('CodeSuggestionsInfoCard', () => {
       apolloProvider: mockApollo,
       stubs: {
         GlSprintf,
+        LimitedAccessModal,
         UsageStatistics: {
           template: `
             <div>
@@ -136,47 +144,12 @@ describe('CodeSuggestionsInfoCard', () => {
         it('renders button if addDuoProHref link is passed', () => {
           expect(findAddSeatsButton().exists()).toBe(true);
         });
-
-        it('renders button with the correct attributes', () => {
-          expect(findAddSeatsButton().attributes()).toMatchObject({
-            href: defaultProvide.addDuoProHref,
-            target: '_blank',
-          });
-        });
       });
 
       it('does not render add seats button if link is empty', async () => {
         createComponent({ provide: { addDuoProHref: '' } });
         // wait for apollo to load
         await waitForPromises();
-        expect(findAddSeatsButton().exists()).toBe(false);
-      });
-
-      it('does not render add seats button if canAddDuoProSeats is false', async () => {
-        createComponent({
-          apolloData: {
-            subscription: {
-              canAddSeats: false,
-              canRenew: false,
-              communityPlan: false,
-              canAddDuoProSeats: false,
-            },
-            userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
-          },
-        });
-
-        // wait for apollo to load
-        await waitForPromises();
-
-        expect(findAddSeatsButton().exists()).toBe(false);
-      });
-
-      it('does not render add seats button if  groupId is null', async () => {
-        createComponent({ props: { groupId: null } });
-
-        // wait for apollo to load
-        await waitForPromises();
-
         expect(findAddSeatsButton().exists()).toBe(false);
       });
     });
@@ -203,6 +176,83 @@ describe('CodeSuggestionsInfoCard', () => {
           }),
         );
       });
+    });
+
+    describe('limited access modal', () => {
+      describe.each`
+        canAddDuoProSeats | limitedAccessReason
+        ${false}          | ${'MANAGED_BY_RESELLER'}
+        ${false}          | ${'RAMP_SUBSCRIPTION'}
+      `(
+        'when canAddDuoProSeats=$canAddDuoProSeats and limitedAccessReason=$limitedAccessReason',
+        ({ canAddDuoProSeats, limitedAccessReason }) => {
+          beforeEach(async () => {
+            createComponent({
+              apolloData: {
+                subscription: {
+                  canAddSeats: false,
+                  canRenew: false,
+                  communityPlan: false,
+                  canAddDuoProSeats,
+                },
+                userActionAccess: { limitedAccessReason },
+              },
+            });
+            await waitForPromises();
+
+            findAddSeatsButton().vm.$emit('click');
+
+            await nextTick();
+          });
+
+          it('shows modal', () => {
+            expect(findLimitedAccessModal().isVisible()).toBe(true);
+          });
+
+          it('sends correct props', () => {
+            expect(findLimitedAccessModal().props('limitedAccessReason')).toBe(limitedAccessReason);
+          });
+
+          it('does not navigate to URL', () => {
+            expect(visitUrl).not.toHaveBeenCalled();
+          });
+        },
+      );
+
+      describe.each`
+        canAddDuoProSeats | limitedAccessReason
+        ${true}           | ${'MANAGED_BY_RESELLER'}
+        ${true}           | ${'RAMP_SUBSCRIPTION'}
+      `(
+        'when canAddDuoProSeats=$canAddDuoProSeats and limitedAccessReason=$limitedAccessReason',
+        ({ canAddDuoProSeats, limitedAccessReason }) => {
+          beforeEach(async () => {
+            createComponent({
+              apolloData: {
+                subscription: {
+                  canAddSeats: false,
+                  canRenew: false,
+                  communityPlan: false,
+                  canAddDuoProSeats,
+                },
+                userActionAccess: { limitedAccessReason },
+              },
+            });
+            await waitForPromises();
+
+            findAddSeatsButton().vm.$emit('click');
+            await nextTick();
+          });
+
+          it('does not show modal', () => {
+            expect(findLimitedAccessModal().exists()).toBe(false);
+          });
+
+          it('navigates to URL', () => {
+            expect(visitUrl).toHaveBeenCalledWith(defaultProvide.addDuoProHref);
+          });
+        },
+      );
     });
   });
 });
