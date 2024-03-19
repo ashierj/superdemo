@@ -1,5 +1,4 @@
 <script>
-import { GlAlert } from '@gitlab/ui';
 import { uniq } from 'lodash';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { toYmd } from '~/analytics/shared/utils';
@@ -55,7 +54,6 @@ const extractQueryResponseFromNamespace = ({ result, resultKey }) => {
 export default {
   name: 'ComparisonChart',
   components: {
-    GlAlert,
     ComparisonTable,
   },
   inject: {
@@ -86,8 +84,6 @@ export default {
   data() {
     return {
       tableData: [],
-      failedTableMetrics: [],
-      failedChartMetrics: [],
     };
   },
   computed: {
@@ -106,12 +102,6 @@ export default {
         },
       ].filter(({ metrics }) => this.areAnyMetricsIncluded(metrics));
     },
-    tableError() {
-      return this.failedTableMetrics.join(', ');
-    },
-    chartError() {
-      return this.failedChartMetrics.join(', ');
-    },
     shouldRenderContributorsCountMetric() {
       // Contributors count metric is not supported at the project level or when the Clickhouse data store is disabled
       return !this.isProject && this.dataSourceClickhouse;
@@ -124,8 +114,20 @@ export default {
     },
   },
   async mounted() {
-    this.failedTableMetrics = await this.resolveQueries(this.fetchTableMetrics);
-    this.failedChartMetrics = await this.resolveQueries(this.fetchSparklineCharts);
+    const failedTableMetrics = await this.resolveQueries(this.fetchTableMetrics);
+    const failedChartMetrics = await this.resolveQueries(this.fetchSparklineCharts);
+
+    if ([...failedTableMetrics, ...failedChartMetrics].length > 0) {
+      const errors = [];
+      if (failedTableMetrics) {
+        errors.push(`${DASHBOARD_LOADING_FAILURE}: ${failedTableMetrics.join(', ')}`);
+      }
+      if (failedChartMetrics) {
+        errors.push(`${CHART_LOADING_FAILURE}: ${failedChartMetrics.join(', ')}`);
+      }
+
+      this.$emit('set-errors', { errors, fullPanelError: false });
+    }
   },
   created() {
     this.tableData = generateSkeletonTableData(this.skippedMetrics);
@@ -271,32 +273,10 @@ export default {
     },
   },
   now,
-  i18n: {
-    DASHBOARD_LOADING_FAILURE,
-    CHART_LOADING_FAILURE,
-  },
 };
 </script>
 <template>
   <div data-testid="dora-comparison-chart">
-    <gl-alert
-      v-if="tableError"
-      class="gl-mb-3"
-      data-testid="table-error-alert"
-      variant="danger"
-      :title="$options.i18n.DASHBOARD_LOADING_FAILURE"
-      :dismissible="false"
-      >{{ tableError }}</gl-alert
-    >
-    <gl-alert
-      v-if="chartError"
-      class="gl-mb-3"
-      data-testid="chart-error-alert"
-      variant="danger"
-      :title="$options.i18n.CHART_LOADING_FAILURE"
-      :dismissible="false"
-      >{{ chartError }}</gl-alert
-    >
     <comparison-table
       :table-data="tableData"
       :request-path="requestPath"

@@ -80,6 +80,14 @@ describe('DoraPerformersScore Visualization', () => {
         namespace,
       });
     });
+
+    it('emits `set-errors` event when chart emits `error`', () => {
+      const payload = { errors: ['error message'] };
+      findChart().vm.$emit('error', payload.errors[0]);
+
+      expect(wrapper.emitted('set-errors').length).toBe(1);
+      expect(wrapper.emitted('set-errors')[0][0]).toEqual(payload);
+    });
   });
 
   describe('for projects', () => {
@@ -91,11 +99,14 @@ describe('DoraPerformersScore Visualization', () => {
       expect(findChart().exists()).toBe(false);
     });
 
-    it('emits an error event', () => {
-      const emitted = wrapper.emitted('error');
+    it('emits `set-errors` event', () => {
+      const emitted = wrapper.emitted('set-errors');
       expect(emitted).toHaveLength(1);
       expect(emitted[0]).toEqual([
-        { error: 'This visualization is not supported for project namespaces.', canRetry: false },
+        {
+          errors: ['This visualization is not supported for project namespaces.'],
+          canRetry: false,
+        },
       ]);
     });
   });

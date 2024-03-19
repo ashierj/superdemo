@@ -122,8 +122,6 @@ describe('Comparison chart', () => {
   };
 
   const findComparisonTable = () => wrapper.findComponent(ComparisonTable);
-  const findTableErrorAlert = () => wrapper.findComponentByTestId('table-error-alert');
-  const findChartErrorAlert = () => wrapper.findComponentByTestId('chart-error-alert');
 
   const getTableData = () => findComparisonTable().props('tableData');
   const getTableDataForMetric = (identifier) =>
@@ -371,14 +369,19 @@ describe('Comparison chart', () => {
       await createWrapper({ apolloProvider: mockApolloProvider });
     });
 
-    it('will show an alert if the table data failed to load', () => {
+    it('will emit `set-errors` with the failed metric names', () => {
       expect(Sentry.captureException).toHaveBeenCalled();
-      expect(findTableErrorAlert().exists()).toBe(true);
-      expect(findTableErrorAlert().text()).toBe('Deployment frequency');
+      expect(wrapper.emitted('set-errors').length).toBe(1);
+      expect(wrapper.emitted('set-errors')[0][0]).toEqual({
+        errors: expect.arrayContaining([
+          'Some metric comparisons failed to load: Deployment frequency',
+        ]),
+        fullPanelError: false,
+      });
     });
   });
 
-  describe('failed chart request', () => {
+  describe('failed chart requests', () => {
     const mockResolvedDoraMetricsResponse = {
       data: { group: { id: 'fake-dora-metrics-request', dora: mockDoraMetricsResponseData } },
     };
@@ -400,10 +403,13 @@ describe('Comparison chart', () => {
       await createWrapper({ apolloProvider: mockApolloProvider });
     });
 
-    it('will show an alert if the chart data failed to load', () => {
+    it('will emit `set-errors` with the failed metric names', () => {
       expect(Sentry.captureException).toHaveBeenCalled();
-      expect(findChartErrorAlert().exists()).toBe(true);
-      expect(findChartErrorAlert().text()).toBe('Deployment frequency');
+      expect(wrapper.emitted('set-errors').length).toBe(1);
+      expect(wrapper.emitted('set-errors')[0][0]).toEqual({
+        errors: expect.arrayContaining(['Some metric charts failed to load: Deployment frequency']),
+        fullPanelError: false,
+      });
     });
   });
 

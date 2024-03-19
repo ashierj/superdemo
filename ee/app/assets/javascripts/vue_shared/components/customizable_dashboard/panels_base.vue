@@ -90,6 +90,7 @@ export default {
       errors: validationErrors || [],
       hasValidationErrors,
       canRetryError: !hasValidationErrors,
+      fullPanelError: hasValidationErrors,
       data: null,
       loading: false,
       panelTitleTooltip: '',
@@ -158,7 +159,7 @@ export default {
       const { queryOverrides, filters } = this;
       const { type: dataType, query } = this.visualization.data;
       this.loading = true;
-      this.errors = [];
+      this.clearErrors();
 
       try {
         const { fetch } = await dataSources[dataType]();
@@ -174,8 +175,8 @@ export default {
           filters,
         });
       } catch (error) {
-        this.handleError({
-          error,
+        this.setErrors({
+          errors: [error],
 
           // bad or malformed CubeJS query, retry won't fix
           canRetry: !this.isCubeJsBadRequest(error),
@@ -184,11 +185,17 @@ export default {
         this.loading = false;
       }
     },
-    handleError({ error, canRetry = true }) {
+    clearErrors() {
+      this.errors = [];
+      this.fullPanelError = false;
+    },
+    setErrors({ errors, canRetry = true, fullPanelError = true }) {
       if (!canRetry) this.canRetryError = false;
 
-      this.errors = [error];
-      Sentry.captureException(error);
+      this.errors = errors;
+      this.fullPanelError = fullPanelError;
+
+      errors.forEach((error) => Sentry.captureException(error));
     },
     isCubeJsBadRequest(error) {
       return Boolean(error.status === HTTP_STATUS_BAD_REQUEST && error.response?.message);
@@ -265,7 +272,7 @@ export default {
           {{ s__('Analytics|No results match your query or filter.') }}
         </div>
 
-        <div v-else-if="showErrorState" class="gl-text-secondary">
+        <div v-else-if="showErrorState && fullPanelError" class="gl-text-secondary">
           {{ s__('Analytics|Something went wrong.') }}
         </div>
 
@@ -275,7 +282,7 @@ export default {
           class="gl-overflow-hidden"
           :data="data"
           :options="visualization.options"
-          @error="handleError"
+          @set-errors="setErrors"
           @showTooltip="handleShowTooltip"
         />
       </div>

@@ -71,8 +71,8 @@ export default {
         };
       },
       error() {
-        const error = sprintf(this.$options.i18n.loadingError, { fullPath: this.fullPath });
-        this.$emit('error', { error });
+        const { fullPath } = this;
+        this.$emit('error', sprintf(this.$options.i18n.loadingError, { fullPath }));
       },
     },
   },

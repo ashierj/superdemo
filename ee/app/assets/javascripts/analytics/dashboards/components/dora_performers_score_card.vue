@@ -64,7 +64,7 @@ export default {
     },
   },
   methods: {
-    handleChartError({ error }) {
+    handleChartError(error) {
       this.chartError = error;
     },
   },
