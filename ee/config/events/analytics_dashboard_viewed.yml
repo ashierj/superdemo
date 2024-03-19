@@ -1,0 +1,17 @@
+---
+description: Number of views of any single analytics dashboard
+category: InternalEventTracking
+action: analytics_dashboard_viewed
+identifiers:
+- project
+- namespace
+- user
+product_section: analytics
+product_stage: monitor
+product_group: product_analytics
+milestone: '16.10'
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/146296
+distributions:
+- ee
+tiers:
+- ultimate
