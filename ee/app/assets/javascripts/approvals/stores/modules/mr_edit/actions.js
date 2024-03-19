@@ -126,8 +126,22 @@ export const putFallbackRule = ({ commit, dispatch }, fallback) => {
   dispatch('createModal/close');
 };
 
+export const openCreateDrawer = ({ commit }, rule) => {
+  commit(types.SET_DRAWER_OPEN, true);
+  commit(types.SET_EDIT_RULE, rule);
+};
+
+export const closeCreateDrawer = ({ commit }) => {
+  commit(types.SET_DRAWER_OPEN, false);
+  commit(types.SET_EDIT_RULE, null);
+};
+
 export const requestEditRule = ({ dispatch }, rule) => {
-  dispatch('createModal/open', rule);
+  if (gon.features.approvalRulesDrawer) {
+    dispatch('openCreateDrawer', rule);
+  } else {
+    dispatch('createModal/open', rule);
+  }
 };
 
 export const requestDeleteRule = ({ dispatch }, rule) => {
