@@ -15,7 +15,6 @@ import {
   PQL_MODAL_FOOTER_TEXT,
 } from 'ee/hand_raise_leads/hand_raise_lead/constants';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
-import * as CalloutsApi from 'ee/api/callouts_api';
 import { FORM_DATA } from './mock_data';
 
 Vue.use(VueApollo);
@@ -29,7 +28,6 @@ describe('HandRaiseLeadButton', () => {
       provide: {
         small: false,
         createHandRaiseLeadPath: '/-/subscriptions/hand_raise_leads',
-        dismissFeatureId: undefined,
         user: {
           namespaceId: '1',
           userName: 'joe',
@@ -270,8 +268,7 @@ describe('HandRaiseLeadButton', () => {
 
   describe('form', () => {
     beforeEach(async () => {
-      wrapper = createComponent({ dismissFeatureId: '_dismiss_feature_id_' });
-      jest.spyOn(CalloutsApi, 'dismissUsersCallouts').mockResolvedValue();
+      wrapper = createComponent();
       trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
       await fillForm({ stateRequired: true, comment: 'comment' });
     });
@@ -314,10 +311,6 @@ describe('HandRaiseLeadButton', () => {
           label: 'hand_raise_lead_form',
         });
       });
-
-      it('dismisses banner with lead button', () => {
-        expect(CalloutsApi.dismissUsersCallouts).toHaveBeenCalledWith('_dismiss_feature_id_');
-      });
     });
 
     describe('failed submission', () => {
@@ -331,10 +324,6 @@ describe('HandRaiseLeadButton', () => {
         expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_submit_form_failed', {
           label: 'hand_raise_lead_form',
         });
-      });
-
-      it('does not dismiss banner with lead button', () => {
-        expect(CalloutsApi.dismissUsersCallouts).not.toHaveBeenCalled();
       });
     });
 
