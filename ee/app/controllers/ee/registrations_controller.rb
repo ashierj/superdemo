@@ -19,19 +19,7 @@ module EE
         push_frontend_feature_flag(:arkose_labs_signup_challenge)
       end
       before_action :ensure_can_remove_self, only: [:destroy]
-    end
-
-    override :create
-    def create
-      unless verify_arkose_labs_token
-        flash[:alert] =
-          s_('Session|There was a error loading the user verification challenge. Refresh to try again.')
-
-        render action: 'new'
-        return
-      end
-
-      super
+      before_action :verify_arkose_labs_challenge!, only: :create
     end
 
     override :destroy
@@ -46,9 +34,27 @@ module EE
 
     private
 
-    override :after_request_hook
-    def after_request_hook(user)
+    def verify_arkose_labs_challenge!
+      return if verify_arkose_labs_token
+
+      flash[:alert] =
+        s_('Session|There was a error loading the user verification challenge. Refresh to try again.')
+
+      render action: 'new'
+    end
+
+    override :after_successful_create_hook
+    def after_successful_create_hook(user)
+      # The order matters here as the arkose call needs to come before the devise action happens.
+      # In that devise create action the user.active_for_authentication? call needs to return false so that
+      # RegistrationsController#after_inactive_sign_up_path_for is correctly called with the custom_attributes
+      # that are added by this action so that the IdentityVerifiable module observation of them is correct.
+      # Identity Verification feature specs cover this ordering.
+      record_arkose_data
+
       super
+
+      send_custom_confirmation_instructions
 
       service = PhoneVerification::Users::RateLimitService
       service.assume_user_high_risk_if_daily_limit_exceeded!(user)
@@ -75,9 +81,8 @@ module EE
       identity_verification_path
     end
 
-    override :send_custom_confirmation_instructions
     def send_custom_confirmation_instructions
-      return unless resource.persisted? && identity_verification_enabled?
+      return unless identity_verification_enabled?
 
       custom_confirmation_instructions_service.send_instructions
     end
@@ -96,8 +101,6 @@ module EE
     end
 
     def log_audit_event(user)
-      return unless user&.persisted?
-
       ::Gitlab::Audit::Auditor.audit({
         name: "registration_created",
         author: user,
@@ -117,7 +120,6 @@ module EE
     end
 
     def record_arkose_data
-      return unless resource&.persisted?
       return unless arkose_labs_enabled?
       return unless arkose_labs_verify_response
 
