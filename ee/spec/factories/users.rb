@@ -71,7 +71,7 @@ FactoryBot.define do
     end
 
     user_detail do
-      association :user_detail, :enterprise, enterprise_group: enterprise_group, strategy: :build
+      association :user_detail, :enterprise, enterprise_group: enterprise_group, user: instance
     end
   end
 end
