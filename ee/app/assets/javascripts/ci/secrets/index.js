@@ -19,7 +19,7 @@ const apolloProvider = new VueApollo({
 });
 
 const initSecretsApp = (el, app, props, basePath) => {
-  const router = createRouter(basePath);
+  const router = createRouter(basePath, props);
 
   injectVueAppBreadcrumbs(router, SecretsBreadcrumbs);
 
