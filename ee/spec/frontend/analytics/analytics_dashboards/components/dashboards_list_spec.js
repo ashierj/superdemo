@@ -361,7 +361,7 @@ describe('DashboardsList', () => {
         });
       });
 
-      it('dimisses the alert when the component is destroyed', async () => {
+      it('dismisses the alert when the component is destroyed', async () => {
         wrapper.destroy();
 
         await nextTick();
