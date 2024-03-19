@@ -9,7 +9,6 @@ import {
   GlModalDirective,
 } from '@gitlab/ui';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
-import * as CalloutsApi from 'ee/api/callouts_api';
 import { createAlert, VARIANT_SUCCESS } from '~/alert';
 import { sprintf } from '~/locale';
 import Tracking from '~/tracking';
@@ -59,7 +58,6 @@ export default {
   mixins: [Tracking.mixin()],
   inject: {
     createHandRaiseLeadPath: {},
-    dismissFeatureId: {},
     user: {
       default: {},
     },
@@ -187,10 +185,6 @@ export default {
           });
           this.resetForm();
           this.track('hand_raise_submit_form_succeeded');
-
-          if (this.dismissFeatureId) {
-            CalloutsApi.dismissUsersCallouts(this.dismissFeatureId);
-          }
         })
         .catch((error) => {
           createAlert({

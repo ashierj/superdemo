@@ -21,7 +21,6 @@ export const initHandRaiseLeadButton = (el) => {
     buttonAttributes,
     buttonText,
     createHandRaiseLeadPath,
-    dismissFeatureId,
   } = el.dataset;
 
   return new Vue({
@@ -29,7 +28,6 @@ export const initHandRaiseLeadButton = (el) => {
     apolloProvider,
     provide: {
       createHandRaiseLeadPath,
-      dismissFeatureId,
       buttonAttributes: buttonAttributes && JSON.parse(buttonAttributes),
       buttonText: buttonText || PQL_BUTTON_TEXT,
       user: {
