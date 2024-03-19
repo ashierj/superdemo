@@ -96,6 +96,7 @@ module EE
         params_ee << :enforce_ssh_certificates if current_group&.ssh_certificates_available?
         params_ee << { value_stream_dashboard_aggregation_attributes: [:enabled] } if can?(current_user, :modify_value_stream_dashboard_settings, current_group)
         params_ee << :experiment_features_enabled if experiment_settings_allowed?
+        params_ee.push(%i[duo_features_enabled lock_duo_features_enabled]) if licensed_ai_features_available?
         params_ee << :product_analytics_enabled if product_analytics_settings_allowed?
       end + security_policies_toggle_params
     end
@@ -115,6 +116,10 @@ module EE
 
     def experiment_settings_allowed?
       current_group&.experiment_settings_allowed?
+    end
+
+    def licensed_ai_features_available?
+      current_group&.licensed_ai_features_available?
     end
 
     def product_analytics_settings_allowed?
